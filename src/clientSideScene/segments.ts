@@ -50,8 +50,9 @@ export function straightSegment({
     })
   }
 
-  const material = new MeshBasicMaterial({ color: 0xffffff })
-  const mesh = new Mesh(geometry, material)
+  const body = new MeshBasicMaterial({ color: 0xffffff })
+  const arrowMaterial = new MeshBasicMaterial({ color: 0xffffff })
+  const mesh = new Mesh(geometry, body)
   mesh.userData.type = isDraftSegment
     ? 'straight-segment-body-dashed'
     : 'straight-segment-body'
@@ -64,9 +65,9 @@ export function straightSegment({
     pathToNode,
   }
 
-  const arrowheadMesh = new Mesh(new ConeGeometry(0.3, 0.9, 16), material)
+  const arrowheadMesh = new Mesh(new ConeGeometry(0.3, 0.9, 16), arrowMaterial)
   arrowheadMesh.position.set(0, -0.35, 0)
-  const sphereMesh = new Mesh(new SphereGeometry(0.3, 16, 16), material)
+  const sphereMesh = new Mesh(new SphereGeometry(0.3, 16, 16), arrowMaterial)
 
   const arrowGroup = new Group()
   arrowGroup.userData.type = 'arrowhead'

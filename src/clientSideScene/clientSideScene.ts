@@ -152,7 +152,6 @@ class ClientSideScene {
         },
         onMove: () => {},
         onClick: ({ object }) => {
-          // const parent = getParentGroup(object)
           const event = getEventForSegmentSelection(
             getParentGroup(object)?.userData?.pathToNode
           )
@@ -172,11 +171,16 @@ class ClientSideScene {
               'CallExpression'
             ).node
             setupSingleton.highlightCallback([node.start, node.end])
+            const yellow = 0xffff00
+            colorSegment(object, yellow)
             return
           }
           setupSingleton.highlightCallback([0, 0])
         },
-        onMouseLeave: () => setupSingleton.highlightCallback([0, 0]),
+        onMouseLeave: ({ object }) => {
+          setupSingleton.highlightCallback([0, 0])
+          colorSegment(object, 0xffffff)
+        },
       })
     } else {
       setupSingleton.setCallbacks({
@@ -549,11 +553,14 @@ function prepareTruncatedMemoryAndAst(
   }
 }
 
-function getParentGroup(object: any): Group | null {
-  if (['straight-segment'].includes(object?.userData?.type)) {
+function getParentGroup(
+  object: any,
+  stopAt: string[] = ['straight-segment']
+): Group | null {
+  if (stopAt.includes(object?.userData?.type)) {
     return object
   } else if (object.parent) {
-    return getParentGroup(object.parent)
+    return getParentGroup(object.parent, stopAt)
   }
   return null
 }
@@ -577,4 +584,25 @@ export function quaternionFromSketchGroup(
   let rotationMatrix = new Matrix4()
   rotationMatrix.makeBasis(xAxisVec, yAxisVecNormalized, zAxisVecNormalized)
   return new Quaternion().setFromRotationMatrix(rotationMatrix)
+}
+
+function colorSegment(object: any, color: number) {
+  const arrowHead = getParentGroup(object, ['arrowhead'])
+  if (arrowHead) {
+    arrowHead.traverse((child) => {
+      if (child instanceof Mesh) {
+        child.material.color.set(color)
+      }
+    })
+    return
+  }
+  const straightSegmentBody = getParentGroup(object, ['straight-segment'])
+  if (straightSegmentBody) {
+    straightSegmentBody.traverse((child) => {
+      if (child instanceof Mesh) {
+        child.material.color.set(color)
+      }
+    })
+    return
+  }
 }
