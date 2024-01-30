@@ -40,7 +40,7 @@ import { kclManager } from 'lang/KclSingleton'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 import { executeAst } from 'useStore'
 import { engineCommandManager } from 'lang/std/engineConnection'
-import { dashed, straightSegment } from './segments'
+import { dashed, straightSegment, tangentialArcToSegment } from './segments'
 import { addNewSketchLn, changeSketchArguments } from 'lang/std/sketch'
 import { isReducedMotion } from 'lib/utils'
 import {
@@ -128,13 +128,25 @@ class ClientSideScene {
       )
       const isDraftSegment =
         draftSegment && index === sketchGroup.value.length - 1
-      const seg = straightSegment({
-        from: segment.from,
-        to: segment.to,
-        id: segment.__geoMeta.id,
-        pathToNode: segPathToNode,
-        isDraftSegment,
-      })
+      let seg
+      if (segment.type === 'tangentialArcTo') {
+        seg = tangentialArcToSegment({
+          prevSegment: sketchGroup.value[index - 1],
+          from: segment.from,
+          to: segment.to,
+          id: segment.__geoMeta.id,
+          pathToNode: segPathToNode,
+          isDraftSegment,
+        })
+      } else {
+        seg = straightSegment({
+          from: segment.from,
+          to: segment.to,
+          id: segment.__geoMeta.id,
+          pathToNode: segPathToNode,
+          isDraftSegment,
+        })
+      }
       seg.layers.set(SKETCH_LAYER)
       seg.traverse((child) => {
         child.layers.set(SKETCH_LAYER)
