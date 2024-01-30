@@ -292,9 +292,9 @@ fn use_native_function_id() {
 #[tokio::test]
 async fn computed_object_property() {
     let program = r#"
-    let obj = {a: true, b: false}
+    let obj = {a: {b: true}}
     let prop0 = "a"
-    let val = obj[prop0] // should be `true`
+    let val = obj[prop0]
     "#;
     let (_plan, scope) = must_plan(program);
     let Some(EpBinding::Single(address_of_val)) = scope.get("val") else {
@@ -306,7 +306,7 @@ async fn computed_object_property() {
     let mem = crate::execute(ast, None).await.unwrap();
     use ept::ReadMemory;
     // Should be 'true', based on the above KCL program.
-    assert_eq!(mem.get(address_of_val).unwrap(), &ept::Primitive::Bool(true));
+    assert_eq!(mem.get(&address_of_val).unwrap(), &ept::Primitive::Bool(true));
 }
 
 #[tokio::test]
