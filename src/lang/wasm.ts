@@ -232,6 +232,9 @@ export function getTangentialArcToInfo({
   center: Coords2d
   arcMidPoint: Coords2d
   radius: number
+  startAngle: number
+  endAngle: number
+  ccw: boolean
 } {
   const result = get_tangential_arc_to_info(
     new TangentialArcInfoInputWasm(
@@ -245,5 +248,8 @@ export function getTangentialArcToInfo({
     center: [result.center.x, result.center.y],
     arcMidPoint: [result.arc_mid_point.x, result.arc_mid_point.y],
     radius: result.radius,
+    startAngle: result.start_angle,
+    endAngle: result.end_angle,
+    ccw: result.ccw > 0,
   }
 }

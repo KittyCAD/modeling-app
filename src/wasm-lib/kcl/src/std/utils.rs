@@ -573,6 +573,12 @@ pub struct TangentialArcInfoOutput {
     pub arc_mid_point: Coords2d,
     /// The radius of the arc.
     pub radius: f64,
+    /// Start angle of the arc in radians.
+    pub start_angle: f64,
+    /// End angle of the arc in radians.
+    pub end_angle: f64,
+    /// If the arc is counter-clockwise.
+    pub ccw: i32,
 }
 
 // tanPreviousPoint and arcStartPoint make up a straight segment leading into the arc (of which the arc should be tangential). The arc should start at arcStartPoint and end at, arcEndPoint
@@ -619,10 +625,17 @@ pub fn get_tangential_arc_to_info(input: TangentialArcInfoInput) -> TangentialAr
         input.obtuse,
     );
 
+    let start_angle = (input.arc_start_point[1] - center[1]).atan2(input.arc_start_point[0] - center[0]);
+    let end_angle = (input.arc_end_point[1] - center[1]).atan2(input.arc_end_point[0] - center[0]);
+    let ccw = is_points_ccw(&[input.arc_start_point, arc_mid_point, input.arc_end_point]);
+
     TangentialArcInfoOutput {
         center,
         radius,
         arc_mid_point,
+        start_angle,
+        end_angle,
+        ccw,
     }
 }
 
@@ -648,6 +661,9 @@ mod get_tangential_arc_to_info_tests {
         assert_relative_eq!(result.arc_mid_point[0], 2.0);
         assert_relative_eq!(result.arc_mid_point[1], 2.0);
         assert_relative_eq!(result.radius, 2.0);
+        assert_relative_eq!(result.start_angle, PI);
+        assert_relative_eq!(result.end_angle, 0.0);
+        assert_eq!(result.ccw, -1);
     }
 
     #[test]
@@ -663,6 +679,9 @@ mod get_tangential_arc_to_info_tests {
         assert_relative_eq!(round_to_three_decimals(result.arc_mid_point[0]), 2.0);
         assert_relative_eq!(round_to_three_decimals(result.arc_mid_point[1]), 2.0);
         assert_relative_eq!(result.radius, (2.0f64 * 2.0 + 2.0 * 2.0).sqrt());
+        assert_relative_eq!(result.start_angle, -PI / 4.0);
+        assert_relative_eq!(result.end_angle, 3.0 * PI / 4.0);
+        assert_eq!(result.ccw, 1);
     }
 
     #[test]
@@ -679,6 +698,9 @@ mod get_tangential_arc_to_info_tests {
         assert_relative_eq!(result.arc_mid_point[0], expected_radius);
         assert_relative_eq!(round_to_three_decimals(result.arc_mid_point[1]), -0.0);
         assert_relative_eq!(result.radius, expected_radius);
+        assert_relative_eq!(result.start_angle, -PI / 4.0);
+        assert_relative_eq!(result.end_angle, PI / 4.0);
+        assert_eq!(result.ccw, 1);
     }
 
     #[test]
@@ -695,6 +717,9 @@ mod get_tangential_arc_to_info_tests {
         assert_relative_eq!(result.radius, expected_radius);
         assert_relative_eq!(round_to_three_decimals(result.arc_mid_point[0]), 0.0);
         assert_relative_eq!(result.arc_mid_point[1], expected_radius);
+        assert_relative_eq!(result.start_angle, -PI / 4.0);
+        assert_relative_eq!(result.end_angle, -3.0 * PI / 4.0);
+        assert_eq!(result.ccw, 1);
     }
 
     #[test]
@@ -711,6 +736,10 @@ mod get_tangential_arc_to_info_tests {
         assert_relative_eq!(result.radius, expected_radius);
         assert_relative_eq!(round_to_three_decimals(result.arc_mid_point[0]), -0.0);
         assert_relative_eq!(result.arc_mid_point[1], -expected_radius);
+        assert_relative_eq!(result.start_angle, -PI / 4.0);
+        assert_relative_eq!(result.end_angle, -3.0 * PI / 4.0);
+        // would be cw if it was obtuse
+        assert_eq!(result.ccw, -1);
     }
 
     #[test]
@@ -727,6 +756,9 @@ mod get_tangential_arc_to_info_tests {
         assert_relative_eq!(result.radius, 2.0);
         assert_relative_eq!(result.arc_mid_point[0], -arc_end);
         assert_relative_eq!(result.arc_mid_point[1], arc_end);
+        assert_relative_eq!(result.start_angle, 0.0);
+        assert_relative_eq!(result.end_angle, -PI / 2.0);
+        assert_eq!(result.ccw, 1);
     }
 }
 

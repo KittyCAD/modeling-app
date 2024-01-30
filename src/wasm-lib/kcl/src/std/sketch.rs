@@ -1,8 +1,6 @@
 //! Functions related to sketching.
 
-use crate::std::utils::{
-    get_tangent_point_from_previous_arc, get_tangential_arc_to_info, is_points_ccw, TangentialArcInfoInput,
-};
+use crate::std::utils::{get_tangent_point_from_previous_arc, get_tangential_arc_to_info, TangentialArcInfoInput};
 use anyhow::Result;
 use derive_docs::stdlib;
 use kittycad::types::{Angle, ModelingCmd, Point3D};
@@ -1304,7 +1302,7 @@ async fn inner_tangential_arc_to(
             },
         },
         center: result.center,
-        ccw: is_points_ccw(&[tan_previous_point, [from.x, from.y], to]) > 0,
+        ccw: result.ccw > 0,
     };
 
     let mut new_sketch_group = sketch_group.clone();

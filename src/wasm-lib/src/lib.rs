@@ -247,20 +247,32 @@ impl TangentialArcInfoInputWasm {
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 pub struct TangentialArcInfoOutputWasm {
+    /// The geometric center of the arc.
     pub center: Xy,
+    /// The midpoint of the arc.
     pub arc_mid_point: Xy,
+    /// The radius of the arc.
     pub radius: f64,
+    /// Start angle of the arc in radians.
+    pub start_angle: f64,
+    /// End angle of the arc in radians.
+    pub end_angle: f64,
+    /// If the arc is counter-clockwise.
+    pub ccw: i32,
 }
 
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 impl TangentialArcInfoOutputWasm {
     #[wasm_bindgen(constructor)]
-    pub fn new(center: Xy, arc_mid_point: Xy, radius: f64) -> Self {
+    pub fn new(center: Xy, arc_mid_point: Xy, radius: f64, start_angle: f64, end_angle: f64, ccw: i32) -> Self {
         Self {
             center,
             arc_mid_point,
             radius,
+            start_angle,
+            end_angle,
+            ccw,
         }
     }
 }
@@ -284,5 +296,8 @@ pub fn get_tangential_arc_to_info(input: TangentialArcInfoInputWasm) -> Tangenti
             y: result.arc_mid_point[1],
         },
         radius: result.radius,
+        start_angle: result.start_angle,
+        end_angle: result.end_angle,
+        ccw: result.ccw,
     }
 }
