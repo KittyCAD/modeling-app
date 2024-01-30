@@ -14,9 +14,11 @@ import {
   Vector3,
 } from 'three'
 import {
+  DEFAULT_PLANES,
   DefaultPlane,
   defaultPlaneColor,
   INTERSECTION_PLANE_LAYER,
+  RAYCASTABLE_PLANE,
   setupSingleton,
   SKETCH_LAYER,
   XZ_PLANE,
@@ -51,6 +53,12 @@ import { getEventForSegmentSelection } from 'lib/selections'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
+const SKETCH_GROUP_SEGMENTS = 'sketch-group-segments'
+export const STRAIGHT_SEGMENT = 'straight-segment'
+export const STRAIGHT_SEGMENT_BODY = 'straight-segment-body'
+export const STRAIGHT_SEGMENT_DASH = 'straight-segment-body-dashed'
+export const ARROWHEAD = 'arrowhead'
+
 class ClientSideScene {
   scene: Scene
   sceneProgramMemory: ProgramMemory = { root: {}, return: null }
@@ -69,13 +77,13 @@ class ClientSideScene {
       opacity: 0.5,
     })
     this.intersectionPlane = new Mesh(planeGeometry, planeMaterial)
-    this.intersectionPlane.userData = { type: 'raycastable-plane' }
+    this.intersectionPlane.userData = { type: RAYCASTABLE_PLANE }
     this.intersectionPlane.layers.set(INTERSECTION_PLANE_LAYER)
     this.scene.add(this.intersectionPlane)
   }
   removeIntersectionPlane() {
     const intersectionPlane = this.scene.children.find(
-      ({ userData }) => userData?.type === 'raycastable-plane'
+      ({ userData }) => userData?.type === RAYCASTABLE_PLANE
     )
     if (intersectionPlane) this.scene.remove(intersectionPlane)
   }
@@ -110,7 +118,7 @@ class ClientSideScene {
     ] as SketchGroup
     const group = new Group()
     group.userData = {
-      type: 'sketch-group-segments',
+      type: SKETCH_GROUP_SEGMENTS,
       pathToNode: sketchPathToNode,
     }
     sketchGroup.value.forEach((segment, index) => {
@@ -349,7 +357,7 @@ class ClientSideScene {
         //     group: group,
         //   })
         // } else
-        if (type === 'straight-segment') {
+        if (type === STRAIGHT_SEGMENT) {
           this.updateStraightSegment({
             from: segment.from,
             to: segment.to,
@@ -369,7 +377,7 @@ class ClientSideScene {
     group: Group
   }) {
     const arrowGroup = group.children.find(
-      (child) => child.userData.type === 'arrowhead'
+      (child) => child.userData.type === ARROWHEAD
     ) as Group
 
     arrowGroup.position.set(to[0], to[1], 0)
@@ -383,7 +391,7 @@ class ClientSideScene {
     arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
 
     const straightSegmentBody = group.children.find(
-      (child) => child.userData.type === 'straight-segment-body'
+      (child) => child.userData.type === STRAIGHT_SEGMENT_BODY
     ) as Mesh
     if (straightSegmentBody) {
       const line = new LineCurve3(
@@ -400,7 +408,7 @@ class ClientSideScene {
       )
     }
     const straightSegmentBodyDashed = group.children.find(
-      (child) => child.userData.type === 'straight-segment-body-dashed'
+      (child) => child.userData.type === STRAIGHT_SEGMENT_DASH
     ) as Mesh
     if (straightSegmentBodyDashed) {
       const shape = new Shape()
@@ -422,7 +430,7 @@ class ClientSideScene {
     reject: () => void
   ) {
     const sketchSegments = this.scene.children.find(
-      ({ userData }) => userData?.type === 'sketch-group-segments'
+      ({ userData }) => userData?.type === SKETCH_GROUP_SEGMENTS
     )
     let shouldResolve = false
     if (sketchSegments) {
@@ -458,12 +466,12 @@ class ClientSideScene {
   setupDefaultPlaneHover() {
     setupSingleton.setCallbacks({
       onMouseEnter: ({ object }) => {
-        if (object.parent.userData.type !== 'default-planes') return
+        if (object.parent.userData.type !== DEFAULT_PLANES) return
         const type: DefaultPlane = object.userData.type
         object.material.color = defaultPlaneColor(type, 0.5, 1)
       },
       onMouseLeave: ({ object }) => {
-        if (object.parent.userData.type !== 'default-planes') return
+        if (object.parent.userData.type !== DEFAULT_PLANES) return
         const type: DefaultPlane = object.userData.type
         object.material.color = defaultPlaneColor(type)
       },
@@ -579,7 +587,7 @@ function prepareTruncatedMemoryAndAst(
 
 function getParentGroup(
   object: any,
-  stopAt: string[] = ['straight-segment']
+  stopAt: string[] = [STRAIGHT_SEGMENT]
 ): Group | null {
   if (stopAt.includes(object?.userData?.type)) {
     return object
@@ -611,7 +619,7 @@ export function quaternionFromSketchGroup(
 }
 
 function colorSegment(object: any, color: number) {
-  const arrowHead = getParentGroup(object, ['arrowhead'])
+  const arrowHead = getParentGroup(object, [ARROWHEAD])
   if (arrowHead) {
     arrowHead.traverse((child) => {
       if (child instanceof Mesh) {
@@ -620,7 +628,7 @@ function colorSegment(object: any, color: number) {
     })
     return
   }
-  const straightSegmentBody = getParentGroup(object, ['straight-segment'])
+  const straightSegmentBody = getParentGroup(object, [STRAIGHT_SEGMENT])
   if (straightSegmentBody) {
     straightSegmentBody.traverse((child) => {
       if (child instanceof Mesh) {

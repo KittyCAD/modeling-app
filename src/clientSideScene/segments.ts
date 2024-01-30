@@ -14,6 +14,12 @@ import {
 } from 'three'
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { PathToNode } from 'lang/wasm'
+import {
+  ARROWHEAD,
+  STRAIGHT_SEGMENT,
+  STRAIGHT_SEGMENT_BODY,
+  STRAIGHT_SEGMENT_DASH,
+} from './clientSideScene'
 
 export function straightSegment({
   from,
@@ -54,11 +60,11 @@ export function straightSegment({
   const arrowMaterial = new MeshBasicMaterial({ color: 0xffffff })
   const mesh = new Mesh(geometry, body)
   mesh.userData.type = isDraftSegment
-    ? 'straight-segment-body-dashed'
-    : 'straight-segment-body'
+    ? STRAIGHT_SEGMENT_DASH
+    : STRAIGHT_SEGMENT_BODY
 
   group.userData = {
-    type: 'straight-segment',
+    type: STRAIGHT_SEGMENT,
     id,
     from,
     to,
@@ -71,7 +77,7 @@ export function straightSegment({
   const sphereMesh = new Mesh(new SphereGeometry(0.3, 16, 16), arrowMaterial)
 
   const arrowGroup = new Group()
-  arrowGroup.userData.type = 'arrowhead'
+  arrowGroup.userData.type = ARROWHEAD
   arrowGroup.add(arrowheadMesh)
   arrowGroup.add(sphereMesh)
   arrowGroup.lookAt(new Vector3(0, 1, 0))

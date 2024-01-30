@@ -17,7 +17,10 @@ import { isCursorInSketchCommandRange } from 'lang/util'
 import { Program } from 'lang/wasm'
 import { doesPipeHaveCallExp, getNodeFromPath } from 'lang/queryAst'
 import { CommandArgument } from './commandTypes'
-import { clientSideScene } from 'clientSideScene/clientSideScene'
+import {
+  STRAIGHT_SEGMENT,
+  clientSideScene,
+} from 'clientSideScene/clientSideScene'
 import { Mesh } from 'three'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
@@ -381,7 +384,7 @@ export function processCodeMirrorRanges({
 function updateSceneObjectColors(codeBasedSelections: Selection[]) {
   const updated = parse(recast(kclManager.ast))
   Object.values(clientSideScene.activeSegments).forEach((segmentGroup) => {
-    if (segmentGroup?.userData?.type !== 'straight-segment') return
+    if (segmentGroup?.userData?.type !== STRAIGHT_SEGMENT) return
     const node = getNodeFromPath<CallExpression>(
       updated,
       segmentGroup.userData.pathToNode,

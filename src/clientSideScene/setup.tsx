@@ -51,6 +51,9 @@ export const SKETCH_LAYER = 2
 const DEBUG_SHOW_INTERSECTION_PLANE = false
 export const DEBUG_SHOW_BOTH_SCENES = false
 
+export const RAYCASTABLE_PLANE = 'raycastable-plane'
+export const DEFAULT_PLANES = 'default-planes'
+
 const tempQuaternion = new Quaternion() // just used for maths
 
 interface ThreeCamValues {
@@ -546,7 +549,7 @@ class SetupSingleton {
     )
     if (
       planeIntersects.length > 0 &&
-      planeIntersects[0].object.userData.type !== 'raycastable-plane'
+      planeIntersects[0].object.userData.type !== RAYCASTABLE_PLANE
     ) {
       const intersect = planeIntersects[0]
       return {
@@ -557,7 +560,7 @@ class SetupSingleton {
     if (
       !(
         planeIntersects.length > 0 &&
-        planeIntersects[0].object.userData.type === 'raycastable-plane'
+        planeIntersects[0].object.userData.type === RAYCASTABLE_PLANE
       )
     )
       return null
@@ -738,7 +741,7 @@ class SetupSingleton {
       addPlane({ x: -Math.PI / 2, y: 0, z: 0 }, XZ_PLANE),
     ]
     const planesGroup = new Group()
-    planesGroup.userData.type = 'default-planes'
+    planesGroup.userData.type = DEFAULT_PLANES
     planesGroup.add(...planes)
     planesGroup.traverse((child) => {
       if (child instanceof Mesh) {
@@ -750,7 +753,7 @@ class SetupSingleton {
   }
   removeDefaultPlanes() {
     const planesGroup = this.scene.children.find(
-      ({ userData }) => userData.type === 'default-planes'
+      ({ userData }) => userData.type === DEFAULT_PLANES
     )
     if (planesGroup) this.scene.remove(planesGroup)
   }
