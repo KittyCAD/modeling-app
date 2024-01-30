@@ -67,7 +67,7 @@ export class LanguageServerClient {
 
   async initialize() {
     // Start the client in the background.
-    this.client.start()
+    await this.client.start()
 
     this.ready = true
   }
@@ -81,12 +81,12 @@ export class LanguageServerClient {
   textDocumentDidOpen(params: LSP.DidOpenTextDocumentParams) {
     this.notify('textDocument/didOpen', params)
 
-    this.updateSemanticTokens(params.textDocument.uri)
+    void this.updateSemanticTokens(params.textDocument.uri)
   }
 
   textDocumentDidChange(params: LSP.DidChangeTextDocumentParams) {
     this.notify('textDocument/didChange', params)
-    this.updateSemanticTokens(params.textDocument.uri)
+    void this.updateSemanticTokens(params.textDocument.uri)
   }
 
   async updateSemanticTokens(uri: string) {

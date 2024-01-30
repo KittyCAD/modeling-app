@@ -59,7 +59,7 @@ class KclManager {
     } catch (e) {
       console.error(e)
     }
-    this.executeAst(ast)
+    void this.executeAst(ast)
   }, 600)
 
   private _isExecutingCallback: (arg: boolean) => void = () => {}
@@ -376,15 +376,15 @@ class KclManager {
   }
 
   showPlanes() {
-    this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, false)
-    this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, false)
-    this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, false)
+    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, false)
+    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, false)
+    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, false)
   }
 
   hidePlanes() {
-    this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, true)
-    this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, true)
-    this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, true)
+    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, true)
+    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, true)
+    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, true)
   }
 }
 

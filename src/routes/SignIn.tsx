@@ -22,7 +22,6 @@ const SignIn = () => {
     },
   } = useGlobalStateContext()
 
-  const appliedTheme = theme === Themes.System ? getSystemTheme() : theme
   const signInTauri = async () => {
     // We want to invoke our command to login via device auth.
     try {

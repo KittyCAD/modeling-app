@@ -91,7 +91,7 @@ export const Stream = ({ className = '' }) => {
       ) {
         return
       }
-      engineCommandManager.sendSceneCommand({
+      void engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
           type: 'handle_mouse_drag_start',
@@ -100,7 +100,7 @@ export const Stream = ({ className = '' }) => {
         cmd_id: newId,
       })
     } else if (!state.matches('Sketch.Line Tool')) {
-      engineCommandManager.sendSceneCommand({
+      void engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
           type: 'camera_drag_start',
@@ -118,7 +118,7 @@ export const Stream = ({ className = '' }) => {
   const fps = 60
   const handleScroll: WheelEventHandler<HTMLVideoElement> = throttle((e) => {
     if (!cameraMouseDragGuards[cameraControls].zoom.scrollCallback(e)) return
-    engineCommandManager.sendSceneCommand({
+    void engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd: {
         type: 'default_camera_zoom',
@@ -161,13 +161,13 @@ export const Stream = ({ className = '' }) => {
         selection_type: 'add',
         selected_at_window: { x, y },
       }
-      engineCommandManager.sendSceneCommand(command)
+      void engineCommandManager.sendSceneCommand(command)
     } else if (!didDragInStream && state.matches('Sketch.Line Tool')) {
       command.cmd = {
         type: 'mouse_click',
         window: { x, y },
       }
-      engineCommandManager.sendSceneCommand(command).then(async (resp) => {
+      void engineCommandManager.sendSceneCommand(command).then(async (resp) => {
         const entities_modified = resp?.data?.data?.entities_modified
         if (!entities_modified) return
         if (state.matches('Sketch.Line Tool.No Points')) {
@@ -251,20 +251,20 @@ export const Stream = ({ className = '' }) => {
         selection_type: 'add',
       }
 
-      engineCommandManager.sendSceneCommand(command)
+      void engineCommandManager.sendSceneCommand(command)
     } else if (!didDragInStream && state.matches('Sketch.Move Tool')) {
       command.cmd = {
         type: 'select_with_point',
         selected_at_window: { x, y },
         selection_type: 'add',
       }
-      engineCommandManager.sendSceneCommand(command)
+      void engineCommandManager.sendSceneCommand(command)
     } else if (didDragInStream && state.matches('Sketch.Move Tool')) {
       command.cmd = {
         type: 'handle_mouse_drag_end',
         window: { x, y },
       }
-      engineCommandManager.sendSceneCommand(command).then(async () => {
+      void engineCommandManager.sendSceneCommand(command).then(async () => {
         if (!context.sketchPathToNode) return
         getNodeFromPath<VariableDeclarator>(
           kclManager.ast,
@@ -353,10 +353,10 @@ export const Stream = ({ className = '' }) => {
           ]
         }
 
-        kclManager.executeAstMock(modifiedAst, true)
+        void kclManager.executeAstMock(modifiedAst, true)
       })
     } else {
-      engineCommandManager.sendSceneCommand(command)
+      void engineCommandManager.sendSceneCommand(command)
     }
 
     setDidDragInStream(false)

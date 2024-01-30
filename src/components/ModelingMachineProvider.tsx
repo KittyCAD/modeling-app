@@ -97,19 +97,19 @@ export const ModelingMachineProvider = ({
         'Modify AST': () => {},
         'Update code selection cursors': () => {},
         'show default planes': () => {
-          kclManager.showPlanes()
+          void kclManager.showPlanes()
         },
         'create path': assign({
           sketchEnginePathId: () => {
             const sketchUuid = uuidv4()
-            engineCommandManager.sendSceneCommand({
+            void engineCommandManager.sendSceneCommand({
               type: 'modeling_cmd_req',
               cmd_id: sketchUuid,
               cmd: {
                 type: 'start_path',
               },
             })
-            engineCommandManager.sendSceneCommand({
+            void engineCommandManager.sendSceneCommand({
               type: 'modeling_cmd_req',
               cmd_id: uuidv4(),
               cmd: {
@@ -177,7 +177,7 @@ export const ModelingMachineProvider = ({
                 raw: {} as any,
               }
 
-            kclManager.executeAstMock(astWithUpdatedSource, true)
+            void kclManager.executeAstMock(astWithUpdatedSource, true)
 
             return {
               sketchPathToNode: _pathToNode,
@@ -228,7 +228,7 @@ export const ModelingMachineProvider = ({
               pathToNode: sketchPathToNode,
             })
             const _modifiedAst = newSketchLn.modifiedAst
-            kclManager.executeAstMock(_modifiedAst, true).then(() => {
+            void kclManager.executeAstMock(_modifiedAst, true).then(() => {
               const lineCallExp = getNodeFromPath<CallExpression>(
                 kclManager.ast,
                 newSketchLn.pathToNode
@@ -249,22 +249,22 @@ export const ModelingMachineProvider = ({
               programMemory: kclManager.programMemory,
               pathToNode: sketchPathToNode,
             })
-            engineCommandManager.sendSceneCommand({
+            void engineCommandManager.sendSceneCommand({
               type: 'modeling_cmd_req',
               cmd_id: uuidv4(),
               cmd: { type: 'edit_mode_exit' },
             })
-            engineCommandManager.sendSceneCommand({
+            void engineCommandManager.sendSceneCommand({
               type: 'modeling_cmd_req',
               cmd_id: uuidv4(),
               cmd: { type: 'default_camera_disable_sketch_mode' },
             })
-            kclManager.executeAstMock(_modifiedAst, true)
+            void kclManager.executeAstMock(_modifiedAst, true)
             // updateAst(_modifiedAst, true)
           }
         },
         'sketch exit execute': () => {
-          kclManager.executeAst()
+          void kclManager.executeAst()
         },
         'set tool': () => {}, // TODO
         'Set selection': assign(({ selectionRanges }, event) => {
