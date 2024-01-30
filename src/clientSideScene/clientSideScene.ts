@@ -151,7 +151,17 @@ class ClientSideScene {
           })
         },
         onMove: () => {},
-        onClick: ({ object }) => {
+        onClick: (args) => {
+          if (!args) {
+            setupSingleton.modelingSend({
+              type: 'Set selection',
+              data: {
+                selectionType: 'singleCodeCursor',
+              },
+            })
+            return
+          }
+          const { object } = args
           const event = getEventForSegmentSelection(
             getParentGroup(object)?.userData?.pathToNode
           )
@@ -179,13 +189,17 @@ class ClientSideScene {
         },
         onMouseLeave: ({ object }) => {
           setupSingleton.highlightCallback([0, 0])
-          colorSegment(object, 0xffffff)
+          const parent = getParentGroup(object)
+          const isSelected = parent?.userData?.isSelected
+          colorSegment(object, isSelected ? 0x0000ff : 0xffffff)
         },
       })
     } else {
       setupSingleton.setCallbacks({
         onDrag: () => {},
-        onClick: async ({ intersection2d }) => {
+        onClick: async (args) => {
+          if (!args) return
+          const { intersection2d } = args
           if (!intersection2d) return
           const lastSegment = sketchGroup.value.slice(-1)[0]
           const newSketchLn = addNewSketchLn({
@@ -453,7 +467,9 @@ class ClientSideScene {
         const type: DefaultPlane = object.userData.type
         object.material.color = defaultPlaneColor(type)
       },
-      onClick: ({ object, event, intersection }) => {
+      onClick: (args) => {
+        if (!args) return
+        const { object, intersection } = args
         const type = object?.userData?.type || ''
         const posNorm = Number(intersection.normal?.z) > 0
         let planeString: DefaultPlaneStr = posNorm ? 'XY' : '-XY'

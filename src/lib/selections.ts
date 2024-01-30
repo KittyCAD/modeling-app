@@ -394,6 +394,11 @@ function updateSceneObjectColors(codeBasedSelections: Selection[]) {
     segmentGroup.traverse(
       (child) => child instanceof Mesh && child.material.color.set(color)
     )
+    // TODO if we had access to the xstate context and therefore selections
+    // we wouldn't need to set this here,
+    // it would be better to treat xstate context as the source of truth instead of having
+    // extra redundant state floating around
+    segmentGroup.userData.isSelected = groupHasCursor
   })
 }
 

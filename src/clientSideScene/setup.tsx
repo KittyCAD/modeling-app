@@ -118,13 +118,13 @@ class SetupSingleton {
   interactionGuards: MouseGuard = cameraMouseDragGuards.KittyCAD
   onDragCallback: (arg: OnDragCallbackArgs) => void = () => {}
   onMoveCallback: (arg: onMoveCallbackArgs) => void = () => {}
-  onClickCallback: (arg: OnClickCallbackArgs) => void = () => {}
+  onClickCallback: (arg?: OnClickCallbackArgs) => void = () => {}
   onMouseEnter: (arg: BaseCallbackArgs) => void = () => {}
   onMouseLeave: (arg: BaseCallbackArgs) => void = () => {}
   setCallbacks = (callbacks: {
     onDrag?: (arg: OnDragCallbackArgs) => void
     onMove?: (arg: onMoveCallbackArgs) => void
-    onClick?: (arg: OnClickCallbackArgs) => void
+    onClick?: (arg?: OnClickCallbackArgs) => void
     onMouseEnter?: (arg: BaseCallbackArgs) => void
     onMouseLeave?: (arg: BaseCallbackArgs) => void
   }) => {
@@ -696,9 +696,13 @@ class SetupSingleton {
           event,
           ...planeIntersectPoint,
         })
+      } else {
+        this.onClickCallback()
       }
       // Clear the selected state whether it was dragged or not
       this.selected = null
+    } else {
+      this.onClickCallback()
     }
   }
   showDefaultPlanes() {

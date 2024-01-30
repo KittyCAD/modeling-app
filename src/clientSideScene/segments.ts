@@ -63,6 +63,7 @@ export function straightSegment({
     from,
     to,
     pathToNode,
+    isSelected: false,
   }
 
   const arrowheadMesh = new Mesh(new ConeGeometry(0.3, 0.9, 16), arrowMaterial)
