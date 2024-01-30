@@ -329,9 +329,19 @@ impl Planner {
                 if properties.iter().any(|(_property, computed)| *computed) {
                     // There's a computed property, so the property/index can only be determined at runtime.
                     let mut instructions: Vec<Instruction> = Vec::new();
-                    // For now we can only handle computed properties of *arrays*, no other type.
-                    let mut start_of_array = match binding {
-                        EpBinding::Sequence { length_at, elements: _ } => *length_at,
+                    // For now we can only handle computed properties of arrays and objects, no other type.
+                    enum ValType {
+                        Array,
+                        Object,
+                    }
+                    // TODO: `val_type` might need to be mutable so we can properly process
+                    // arrays within objects within arrays etc.
+                    let (val_type, mut val_start) = match binding {
+                        EpBinding::Sequence { length_at, elements: _ } => (ValType::Array, *length_at),
+                        EpBinding::Map {
+                            length_at,
+                            properties: _,
+                        } => (ValType::Object, *length_at),
                         _ => todo!("handle computed properties besides arrays"),
                     };
                     for (property, _computed) in properties {
@@ -355,20 +365,27 @@ impl Planner {
                                 ep::Operand::Literal(kcl_literal_to_kcep_literal(litval.value))
                             }
                         };
-                        instructions.push(Instruction::GetElement {
-                            index,
-                            start: start_of_array,
+                        instructions.push(match val_type {
+                            ValType::Array => Instruction::GetElement {
+                                index,
+                                start: val_start,
+                            },
+                            ValType::Object => Instruction::GetProperty {
+                                start: val_start,
+                                property: index,
+                            },
                         });
+
                         // Point `start_of_array` to the location we just indexed, so that if there's
                         // another index expression to a child array, `start_of_array` is in the right place.
-                        start_of_array = self.next_addr.offset_by(1);
+                        val_start = self.next_addr.offset_by(1);
                         instructions.push(Instruction::StackPop {
-                            destination: Some(start_of_array),
+                            destination: Some(val_start),
                         });
                     }
                     Ok(EvalPlan {
                         instructions,
-                        binding: EpBinding::Single(start_of_array),
+                        binding: EpBinding::Single(val_start),
                     })
                 } else {
                     // Compiler optimization:
