@@ -1090,69 +1090,102 @@ export const modelingMachine = createMachine(
         }),
       // TODO implement source ranges for all of these constraints
       // need to make the async like the modal constraints
-      'Make selection horizontal': ({ selectionRanges }) => {
+      'Make selection horizontal': ({ selectionRanges, sketchPathToNode }) => {
         const { modifiedAst } = applyConstraintHorzVert(
           selectionRanges,
           'horizontal',
           kclManager.ast,
           kclManager.programMemory
         )
-        kclManager.updateAst(modifiedAst, true)
+        clientSideScene.updateAstAndRejigSketch(
+          sketchPathToNode || [],
+          modifiedAst
+        )
       },
-      'Make selection vertical': ({ selectionRanges }) => {
+      'Make selection vertical': ({ selectionRanges, sketchPathToNode }) => {
         const { modifiedAst } = applyConstraintHorzVert(
           selectionRanges,
           'vertical',
           kclManager.ast,
           kclManager.programMemory
         )
-        kclManager.updateAst(modifiedAst, true)
+        clientSideScene.updateAstAndRejigSketch(
+          sketchPathToNode || [],
+          modifiedAst
+        )
       },
-      'Constrain horizontally align': ({ selectionRanges }) => {
+      'Constrain horizontally align': ({
+        selectionRanges,
+        sketchPathToNode,
+      }) => {
         const { modifiedAst } = applyConstraintHorzVertAlign({
           selectionRanges,
           constraint: 'setVertDistance',
         })
-        kclManager.updateAst(modifiedAst, true)
+        clientSideScene.updateAstAndRejigSketch(
+          sketchPathToNode || [],
+          modifiedAst
+        )
       },
-      'Constrain vertically align': ({ selectionRanges }) => {
+      'Constrain vertically align': ({ selectionRanges, sketchPathToNode }) => {
         const { modifiedAst } = applyConstraintHorzVertAlign({
           selectionRanges,
           constraint: 'setHorzDistance',
         })
-        kclManager.updateAst(modifiedAst, true)
+        clientSideScene.updateAstAndRejigSketch(
+          sketchPathToNode || [],
+          modifiedAst
+        )
       },
-      'Constrain snap to X': ({ selectionRanges }) => {
+      'Constrain snap to X': ({ selectionRanges, sketchPathToNode }) => {
         const { modifiedAst } = applyConstraintAxisAlign({
           selectionRanges,
           constraint: 'snapToXAxis',
         })
-        kclManager.updateAst(modifiedAst, true)
+        clientSideScene.updateAstAndRejigSketch(
+          sketchPathToNode || [],
+          modifiedAst
+        )
       },
-      'Constrain snap to Y': ({ selectionRanges }) => {
+      'Constrain snap to Y': ({ selectionRanges, sketchPathToNode }) => {
         const { modifiedAst } = applyConstraintAxisAlign({
           selectionRanges,
           constraint: 'snapToYAxis',
         })
-        kclManager.updateAst(modifiedAst, true)
+        clientSideScene.updateAstAndRejigSketch(
+          sketchPathToNode || [],
+          modifiedAst
+        )
       },
-      'Constrain equal length': ({ selectionRanges }) => {
+      'Constrain equal length': ({ selectionRanges, sketchPathToNode }) => {
         const { modifiedAst } = applyConstraintEqualLength({
           selectionRanges,
         })
-        kclManager.updateAst(modifiedAst, true)
+        clientSideScene.updateAstAndRejigSketch(
+          sketchPathToNode || [],
+          modifiedAst
+        )
       },
-      'Constrain parallel': ({ selectionRanges }) => {
+      'Constrain parallel': ({ selectionRanges, sketchPathToNode }) => {
         const { modifiedAst } = applyConstraintEqualAngle({
           selectionRanges,
         })
-        kclManager.updateAst(modifiedAst, true)
+        clientSideScene.updateAstAndRejigSketch(
+          sketchPathToNode || [],
+          modifiedAst
+        )
       },
-      'Constrain remove constraints': ({ selectionRanges }) => {
+      'Constrain remove constraints': ({
+        selectionRanges,
+        sketchPathToNode,
+      }) => {
         const { modifiedAst } = applyRemoveConstrainingValues({
           selectionRanges,
         })
-        kclManager.updateAst(modifiedAst, true)
+        clientSideScene.updateAstAndRejigSketch(
+          sketchPathToNode || [],
+          modifiedAst
+        )
       },
       'AST extrude': (_, event) => {
         if (!event.data) return

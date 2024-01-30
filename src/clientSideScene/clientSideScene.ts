@@ -218,6 +218,14 @@ class ClientSideScene {
     }
     setupSingleton.controls.enableRotate = false
   }
+  updateAstAndRejigSketch = async (
+    sketchPathToNode: PathToNode,
+    modifiedAst: Program
+  ) => {
+    await kclManager.updateAst(modifiedAst, false)
+    await this.tearDownSketch()
+    this.setupSketch({ sketchPathToNode })
+  }
   setUpDraftLine = async (sketchPathToNode: PathToNode) => {
     await this.tearDownSketch() // todo remove animation part of tearDownSketch
     this.setupSketch({ sketchPathToNode, draftSegment: 'line' })
