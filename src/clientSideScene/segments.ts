@@ -187,10 +187,11 @@ export function tangentialArcToSegment({
   arrowGroup.add(sphereMesh)
   arrowGroup.lookAt(new Vector3(0, 1, 0))
   arrowGroup.position.set(to[0], to[1], 0)
-  const dir = new Vector3()
-    .subVectors(new Vector3(to[0], to[1], 0), new Vector3(from[0], from[1], 0))
-    .normalize()
-  arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
+  const arrowheadAngle = endAngle + (Math.PI / 2) * (ccw ? 1 : -1)
+  arrowGroup.quaternion.setFromUnitVectors(
+    new Vector3(0, 1, 0),
+    new Vector3(Math.cos(arrowheadAngle), Math.sin(arrowheadAngle), 0)
+  )
 
   group.add(mesh, arrowGroup)
 
