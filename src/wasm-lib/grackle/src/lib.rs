@@ -11,6 +11,7 @@ use kcl_lib::{
     ast,
     ast::types::{BodyItem, FunctionExpressionParts, KclNone, LiteralValue, Program},
 };
+use kcl_value_group::into_single_value;
 use kittycad_execution_plan::{self as ep, Address, Destination, Instruction};
 use kittycad_execution_plan_traits as ept;
 use kittycad_execution_plan_traits::NumericPrimitive;
@@ -18,7 +19,7 @@ use kittycad_modeling_session::Session;
 
 use self::binding_scope::{BindingScope, EpBinding, GetFnResult};
 use self::error::{CompileError, Error};
-use self::kcl_value_group::{KclValueGroup, SingleValue};
+use self::kcl_value_group::SingleValue;
 
 /// Execute a KCL program by compiling into an execution plan, then running that.
 pub async fn execute(ast: Program, session: Option<Session>) -> Result<ep::Memory, Error> {
@@ -57,19 +58,17 @@ impl Planner {
                 }
                 let mut ctx = Context::default();
                 let instructions_for_this_node = match item {
-                    BodyItem::ExpressionStatement(node) => match KclValueGroup::from(node.expression) {
-                        KclValueGroup::Single(value) => self.plan_to_compute_single(&mut ctx, value)?.instructions,
-                        KclValueGroup::ObjectExpression(_) => todo!(),
-                    },
+                    BodyItem::ExpressionStatement(node) => {
+                        self.plan_to_compute_single(&mut ctx, SingleValue::from(node.expression))?
+                            .instructions
+                    }
                     BodyItem::VariableDeclaration(node) => self.plan_to_bind(node)?,
-                    BodyItem::ReturnStatement(node) => match KclValueGroup::from(node.argument) {
-                        KclValueGroup::Single(value) => {
-                            let EvalPlan { instructions, binding } = self.plan_to_compute_single(&mut ctx, value)?;
-                            retval = Some(binding);
-                            instructions
-                        }
-                        KclValueGroup::ObjectExpression(_) => todo!(),
-                    },
+                    BodyItem::ReturnStatement(node) => {
+                        let EvalPlan { instructions, binding } =
+                            self.plan_to_compute_single(&mut ctx, SingleValue::from(node.argument))?;
+                        retval = Some(binding);
+                        instructions
+                    }
                 };
                 instructions.extend(instructions_for_this_node);
                 Ok((instructions, retval))
@@ -80,7 +79,7 @@ impl Planner {
     /// Returns the instructions, and the destination address of the value.
     fn plan_to_compute_single(&mut self, ctx: &mut Context, value: SingleValue) -> Result<EvalPlan, CompileError> {
         match value {
-            SingleValue::KclNoneExpression(KclNone { start: _, end: _ }) => {
+            SingleValue::None(KclNone { start: _, end: _ }) => {
                 let address = self.next_addr.offset_by(1);
                 Ok(EvalPlan {
                     instructions: vec![Instruction::SetPrimitive {
@@ -154,7 +153,7 @@ impl Planner {
                 })
             }
             SingleValue::UnaryExpression(expr) => {
-                let operand = self.plan_to_compute_single(ctx, SingleValue::from(expr.argument))?;
+                let operand = self.plan_to_compute_single(ctx, into_single_value(expr.argument))?;
                 let EpBinding::Single(binding) = operand.binding else {
                     return Err(CompileError::InvalidOperand(
                         "you tried to use a composite value (e.g. array or object) as the operand to some math",
@@ -178,8 +177,8 @@ impl Planner {
                 })
             }
             SingleValue::BinaryExpression(expr) => {
-                let l = self.plan_to_compute_single(ctx, SingleValue::from(expr.left))?;
-                let r = self.plan_to_compute_single(ctx, SingleValue::from(expr.right))?;
+                let l = self.plan_to_compute_single(ctx, into_single_value(expr.left))?;
+                let r = self.plan_to_compute_single(ctx, into_single_value(expr.right))?;
                 let EpBinding::Single(l_binding) = l.binding else {
                     return Err(CompileError::InvalidOperand(
                         "you tried to use a composite value (e.g. array or object) as the operand to some math",
@@ -226,10 +225,7 @@ impl Planner {
                         let EvalPlan {
                             instructions: new_instructions,
                             binding: arg,
-                        } = match KclValueGroup::from(argument) {
-                            KclValueGroup::Single(value) => self.plan_to_compute_single(ctx, value)?,
-                            KclValueGroup::ObjectExpression(expr) => self.plan_to_bind_object(ctx, *expr)?,
-                        };
+                        } = self.plan_to_compute_single(ctx, SingleValue::from(argument))?;
                         acc_instrs.extend(new_instructions);
                         acc_args.push(arg);
                         Ok((acc_instrs, acc_args))
@@ -405,17 +401,11 @@ impl Planner {
                 let EvalPlan {
                     mut instructions,
                     binding: mut current_value,
-                } = match KclValueGroup::from(first) {
-                    KclValueGroup::Single(v) => self.plan_to_compute_single(ctx, v)?,
-                    KclValueGroup::ObjectExpression(_) => todo!(),
-                };
+                } = self.plan_to_compute_single(ctx, SingleValue::from(first))?;
 
                 // Handle the remaining bodies.
                 for body in bodies {
-                    let value = match KclValueGroup::from(body) {
-                        KclValueGroup::Single(v) => v,
-                        KclValueGroup::ObjectExpression(_) => todo!(),
-                    };
+                    let value = SingleValue::from(body);
                     // This body will probably contain a % (pipe substitution character).
                     // So it needs to know what the previous pipeline body's value is,
                     // to replace the % with that value.
@@ -435,6 +425,66 @@ impl Planner {
                     binding: current_value,
                 })
             }
+            SingleValue::ObjectExpression(expr) => {
+                let length_at = self.next_addr.offset_by(1);
+                let key_count = expr.properties.len();
+                // Compute elements
+                let (instructions_for_each_element, bindings, keys) = expr.properties.into_iter().try_fold(
+                    (Vec::new(), HashMap::new(), Vec::with_capacity(key_count)),
+                    |(mut acc_instrs, mut acc_properties, mut acc_keys), property| {
+                        let key = property.key.name;
+                        acc_keys.push(key.clone());
+
+                        // Some elements will have their own length header (e.g. arrays).
+                        // For all other elements, we'll need to add a length header.
+                        let element_has_its_own_header = matches!(
+                            SingleValue::from(property.value.clone()),
+                            SingleValue::ArrayExpression(_) | SingleValue::ObjectExpression(_)
+                        );
+                        let element_needs_its_own_header = !element_has_its_own_header;
+                        let length_at = element_needs_its_own_header.then(|| self.next_addr.offset_by(1));
+
+                        let instrs_for_this_element = {
+                            // If this element of the array is a single value, then binding it is
+                            // straightforward -- you got a single binding, no need to change anything.
+                            let EvalPlan { instructions, binding } =
+                                self.plan_to_compute_single(ctx, SingleValue::from(property.value))?;
+                            acc_properties.insert(key, binding);
+                            instructions
+                        };
+                        // If we decided to add a length header for this element,
+                        // this is where we actually add it.
+                        if let Some(length_at) = length_at {
+                            let length_of_this_element = (self.next_addr - length_at) - 1;
+                            // Append element's length
+                            acc_instrs.push(Instruction::SetPrimitive {
+                                address: length_at,
+                                value: length_of_this_element.into(),
+                            });
+                        }
+                        // Append element's value
+                        acc_instrs.extend(instrs_for_this_element);
+                        Ok((acc_instrs, acc_properties, acc_keys))
+                    },
+                )?;
+                // The array's overall instructions are:
+                // - Write a length header
+                // - Write everything to calculate its elements.
+                let mut instructions = vec![Instruction::SetPrimitive {
+                    address: length_at,
+                    value: ept::ObjectHeader {
+                        properties: keys,
+                        size: (self.next_addr - length_at) - 1,
+                    }
+                    .into(),
+                }];
+                instructions.extend(instructions_for_each_element);
+                let binding = EpBinding::Map {
+                    length_at,
+                    properties: bindings,
+                };
+                Ok(EvalPlan { instructions, binding })
+            }
             SingleValue::ArrayExpression(expr) => {
                 let length_at = self.next_addr.offset_by(1);
                 let element_count = expr.elements.len();
@@ -442,44 +492,22 @@ impl Planner {
                 let (instructions_for_each_element, bindings) = expr.elements.into_iter().try_fold(
                     (Vec::new(), Vec::new()),
                     |(mut acc_instrs, mut acc_bindings), element| {
-                        // Only write this element's length to memory if the element isn't an array.
-                        // Why?
-                        // Because if the element is an array, then it'll have an array header
-                        // which shows its length instead.
-                        let elem_is_array = matches!(
-                            KclValueGroup::from(element.clone()),
-                            KclValueGroup::Single(SingleValue::ArrayExpression(_))
+                        // Some elements will have their own length header (e.g. arrays).
+                        // For all other elements, we'll need to add a length header.
+                        let element_has_its_own_header = matches!(
+                            SingleValue::from(element.clone()),
+                            SingleValue::ArrayExpression(_) | SingleValue::ObjectExpression(_)
                         );
-                        let length_at = (!elem_is_array).then(|| self.next_addr.offset_by(1));
+                        let element_needs_its_own_header = !element_has_its_own_header;
+                        let length_at = element_needs_its_own_header.then(|| self.next_addr.offset_by(1));
 
-                        let instrs_for_this_element = match KclValueGroup::from(element) {
-                            KclValueGroup::Single(value) => {
-                                // If this element of the array is a single value, then binding it is
-                                // straightforward -- you got a single binding, no need to change anything.
-                                let EvalPlan { instructions, binding } = self.plan_to_compute_single(ctx, value)?;
-                                acc_bindings.push(binding);
-                                instructions
-                            }
-                            KclValueGroup::ObjectExpression(expr) => {
-                                // If this element of the array is an object, then we need to
-                                // emit a plan to calculate each value of each property of the object.
-                                // Then we collect the bindings for each child value, and bind them to one
-                                // element of the parent array.
-                                let map = HashMap::with_capacity(expr.properties.len());
-                                let (instrs, binding) = expr
-                                    .properties
-                                    .into_iter()
-                                    .try_fold((Vec::new(), map), |(mut instrs, mut map), property| {
-                                        let EvalPlan { instructions, binding } =
-                                            self.plan_to_bind_one(ctx, property.value)?;
-                                        map.insert(property.key.name, binding);
-                                        instrs.extend(instructions);
-                                        Ok((instrs, map))
-                                    })
-                                    .map(|(ins, b)| (ins, EpBinding::Map(b)))?;
-                                acc_bindings.push(binding);
-                                instrs
-                            }
+                        let instrs_for_this_element = {
+                            // If this element of the array is a single value, then binding it is
+                            // straightforward -- you got a single binding, no need to change anything.
+                            let EvalPlan { instructions, binding } =
+                                self.plan_to_compute_single(ctx, SingleValue::from(element))?;
+                            acc_bindings.push(binding);
+                            instructions
                         };
                         // If we decided to add a length header for this element,
                         // this is where we actually add it.
@@ -529,70 +557,12 @@ impl Planner {
             .declarations
             .into_iter()
             .try_fold(Vec::new(), |mut acc, declaration| {
-                let EvalPlan { instructions, binding } = self.plan_to_bind_one(&mut ctx, declaration.init)?;
+                let EvalPlan { instructions, binding } =
+                    self.plan_to_compute_single(&mut ctx, SingleValue::from(declaration.init))?;
                 self.binding_scope.bind(declaration.id.name, binding);
                 acc.extend(instructions);
                 Ok(acc)
             })
-    }
-
-    fn plan_to_bind_one(
-        &mut self,
-        ctx: &mut Context,
-        value_being_bound: ast::types::Value,
-    ) -> Result<EvalPlan, CompileError> {
-        match KclValueGroup::from(value_being_bound) {
-            KclValueGroup::Single(init_value) => {
-                // Simple! Just evaluate it, note where the final value will be stored in KCEP memory,
-                // and bind it to the KCL identifier.
-                self.plan_to_compute_single(ctx, init_value)
-            }
-            KclValueGroup::ObjectExpression(expr) => self.plan_to_bind_object(ctx, *expr),
-        }
-    }
-
-    fn plan_to_bind_object(
-        &mut self,
-        ctx: &mut Context,
-        expr: ast::types::ObjectExpression,
-    ) -> Result<EvalPlan, CompileError> {
-        // Convert the object to a sequence of key-value pairs.
-        let mut kvs = expr.properties.into_iter().map(|prop| (prop.key, prop.value));
-        let (instructions, each_property_binding) = kvs.try_fold(
-            (Vec::new(), HashMap::new()),
-            |(mut acc_instrs, mut acc_bindings), (key, value)| {
-                match KclValueGroup::from(value) {
-                    KclValueGroup::Single(value) => {
-                        let EvalPlan { instructions, binding } = self.plan_to_compute_single(ctx, value)?;
-                        acc_instrs.extend(instructions);
-                        acc_bindings.insert(key.name, binding);
-                    }
-                    KclValueGroup::ObjectExpression(expr) => {
-                        // If this value of the object is _itself_ an object, then we need to
-                        // emit a plan to calculate each value of each property of the child object.
-                        // Then we collect the bindings for each child value, and bind them to one
-                        // property of the parent object.
-                        let n = expr.properties.len();
-                        let binding = expr
-                            .properties
-                            .into_iter()
-                            .try_fold(HashMap::with_capacity(n), |mut map, property| {
-                                let EvalPlan { instructions, binding } = self.plan_to_bind_one(ctx, property.value)?;
-                                map.insert(property.key.name, binding);
-                                acc_instrs.extend(instructions);
-                                Ok(map)
-                            })
-                            .map(EpBinding::Map)?;
-                        acc_bindings.insert(key.name, binding);
-                    }
-                };
-                Ok((acc_instrs, acc_bindings))
-            },
-        )?;
-        Ok(EvalPlan {
-            instructions,
-            binding: EpBinding::Map(each_property_binding),
-        })
     }
 }
 
