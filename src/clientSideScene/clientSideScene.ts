@@ -47,6 +47,7 @@ import {
   createLiteral,
   createPipeSubstitution,
 } from 'lang/modifyAst'
+import { getEventForSegmentSelection } from 'lib/selections'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -150,7 +151,14 @@ class ClientSideScene {
           })
         },
         onMove: () => {},
-        onClick: () => {},
+        onClick: ({ object }) => {
+          // const parent = getParentGroup(object)
+          const event = getEventForSegmentSelection(
+            getParentGroup(object)?.userData?.pathToNode
+          )
+          if (!event) return
+          setupSingleton.modelingSend(event)
+        },
         onMouseEnter: ({ object }) => {
           // TODO change the color of the segment to yellow?
           // Give a few pixels grace around each of the segments

@@ -685,17 +685,20 @@ class SetupSingleton {
     this.currentMouseVector.y = -(event.clientY / window.innerHeight) * 2 + 1
     const planeIntersectPoint = this.getPlaneIntersectPoint()
 
-    if (this.selected && this.selected.hasBeenDragged) {
-      // this is where we could fire a onDragEnd event
-      // console.log('onDragEnd', this.selected)
+    if (this.selected) {
+      if (this.selected.hasBeenDragged) {
+        // this is where we could fire a onDragEnd event
+        // console.log('onDragEnd', this.selected)
+      } else if (planeIntersectPoint) {
+        // fire onClick event as there was no drags
+        this.onClickCallback({
+          object: this.selected?.object,
+          event,
+          ...planeIntersectPoint,
+        })
+      }
+      // Clear the selected state whether it was dragged or not
       this.selected = null
-    } else if (planeIntersectPoint) {
-      // fire onClick event as there was no drags
-      this.onClickCallback({
-        object: this.selected?.object,
-        event,
-        ...planeIntersectPoint,
-      })
     }
   }
   showDefaultPlanes() {

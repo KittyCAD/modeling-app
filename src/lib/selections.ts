@@ -1,6 +1,6 @@
 import { Models } from '@kittycad/lib'
 import { engineCommandManager } from 'lang/std/engineConnection'
-import { SourceRange } from 'lang/wasm'
+import { CallExpression, PathToNode, SourceRange } from 'lang/wasm'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { v4 as uuidv4 } from 'uuid'
 import { EditorSelection } from '@codemirror/state'
@@ -9,7 +9,7 @@ import { SelectionRange } from '@uiw/react-codemirror'
 import { isOverlap } from 'lib/utils'
 import { isCursorInSketchCommandRange } from 'lang/util'
 import { Program } from 'lang/wasm'
-import { doesPipeHaveCallExp } from 'lang/queryAst'
+import { doesPipeHaveCallExp, getNodeFromPath } from 'lang/queryAst'
 import { CommandArgument } from './commandTypes'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
@@ -169,6 +169,25 @@ export async function getEventForSelectWithPoint(
       // line-end is used to indicate that headVertexId should be sent to the engine as "selected"
       // not the whole curve
       selection: { range: _sourceRange, type: 'line-end' },
+    },
+  }
+}
+
+export function getEventForSegmentSelection(
+  pathToNode?: PathToNode
+): ModelingMachineEvent | null {
+  if (!pathToNode) return null
+  const node = getNodeFromPath<CallExpression>(
+    kclManager.ast,
+    pathToNode,
+    'CallExpression'
+  ).node
+  const range: SourceRange = [node.start, node.end]
+  return {
+    type: 'Set selection',
+    data: {
+      selectionType: 'singleCodeCursor',
+      selection: { range, type: 'default' },
     },
   }
 }
