@@ -665,7 +665,7 @@ function prepareTruncatedMemoryAndAst(
 
 function getParentGroup(
   object: any,
-  stopAt: string[] = [STRAIGHT_SEGMENT]
+  stopAt: string[] = [STRAIGHT_SEGMENT, TANGENTIAL_ARC_TO_SEGMENT]
 ): Group | null {
   if (stopAt.includes(object?.userData?.type)) {
     return object
@@ -706,7 +706,10 @@ function colorSegment(object: any, color: number) {
     })
     return
   }
-  const straightSegmentBody = getParentGroup(object, [STRAIGHT_SEGMENT])
+  const straightSegmentBody = getParentGroup(object, [
+    STRAIGHT_SEGMENT,
+    TANGENTIAL_ARC_TO_SEGMENT,
+  ])
   if (straightSegmentBody) {
     straightSegmentBody.traverse((child) => {
       if (child instanceof Mesh) {

@@ -19,6 +19,7 @@ import { doesPipeHaveCallExp, getNodeFromPath } from 'lang/queryAst'
 import { CommandArgument } from './commandTypes'
 import {
   STRAIGHT_SEGMENT,
+  TANGENTIAL_ARC_TO_SEGMENT,
   clientSideScene,
 } from 'clientSideScene/clientSideScene'
 import { Mesh } from 'three'
@@ -384,7 +385,12 @@ export function processCodeMirrorRanges({
 function updateSceneObjectColors(codeBasedSelections: Selection[]) {
   const updated = parse(recast(kclManager.ast))
   Object.values(clientSideScene.activeSegments).forEach((segmentGroup) => {
-    if (segmentGroup?.userData?.type !== STRAIGHT_SEGMENT) return
+    if (
+      ![STRAIGHT_SEGMENT, TANGENTIAL_ARC_TO_SEGMENT].includes(
+        segmentGroup?.userData?.type
+      )
+    )
+      return
     const node = getNodeFromPath<CallExpression>(
       updated,
       segmentGroup.userData.pathToNode,
