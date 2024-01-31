@@ -200,7 +200,27 @@ export const Toolbar = () => {
                   bgClassName,
                 }}
               >
-                Tangential Arc 2
+                TangArc 2
+              </ActionButton>
+            </li>
+            <li className="contents" key="tangential-arc-button-3">
+              <ActionButton
+                Element="button"
+                onClick={() =>
+                  state.matches('Sketch.Tangential arc to 3') &&
+                  !state.matches('Sketch.Move Tool')
+                    ? send('CancelSketch')
+                    : send('Equip tangential arc to 3')
+                }
+                // disabled={!state.can('Equip tangential arc to 2')}
+                aria-pressed={state.matches('Sketch.Tangential arc to 3')}
+                className="pressed:bg-energy-10/20 dark:pressed:bg-energy-80"
+                icon={{
+                  icon: 'line',
+                  bgClassName,
+                }}
+              >
+                TangArc 3
               </ActionButton>
             </li>
           </>

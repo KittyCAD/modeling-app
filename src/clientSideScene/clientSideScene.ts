@@ -43,12 +43,16 @@ import { executeAst } from 'useStore'
 import { engineCommandManager } from 'lang/std/engineConnection'
 import {
   createArcGeometry,
-  dashed,
+  dashedStraight,
   straightSegment,
   tangentialArcToSegment,
 } from './segments'
-import { addNewSketchLn, changeSketchArguments } from 'lang/std/sketch'
-import { isReducedMotion } from 'lib/utils'
+import {
+  Coords2d,
+  addNewSketchLn,
+  changeSketchArguments,
+} from 'lang/std/sketch'
+import { isReducedMotion, throttle } from 'lib/utils'
 import {
   createArrayExpression,
   createCallExpressionStdLib,
@@ -271,6 +275,10 @@ class ClientSideScene {
     await this.tearDownSketch()
     this.setupSketch({ sketchPathToNode })
   }
+  setUpDraftArc = async (sketchPathToNode: PathToNode) => {
+    await this.tearDownSketch() // todo remove animation part of tearDownSketch
+    this.setupSketch({ sketchPathToNode, draftSegment: 'tangentialArcTo' })
+  }
   setUpDraftLine = async (sketchPathToNode: PathToNode) => {
     await this.tearDownSketch() // todo remove animation part of tearDownSketch
     this.setupSketch({ sketchPathToNode, draftSegment: 'line' })
@@ -416,15 +424,15 @@ class ClientSideScene {
           )
         : prevSegment.from
 
-    const { center, radius, startAngle, endAngle, ccw } =
-      getTangentialArcToInfo({
-        arcStartPoint: from,
-        arcEndPoint: to,
-        tanPreviousPoint: previousPoint,
-        obtuse: true,
-      })
+    const arcInfo = getTangentialArcToInfo({
+      arcStartPoint: from,
+      arcEndPoint: to,
+      tanPreviousPoint: previousPoint,
+      obtuse: true,
+    })
 
-    const arrowheadAngle = endAngle + (Math.PI / 2) * (ccw ? 1 : -1)
+    const arrowheadAngle =
+      arcInfo.endAngle + (Math.PI / 2) * (arcInfo.ccw ? 1 : -1)
     arrowGroup.quaternion.setFromUnitVectors(
       new Vector3(0, 1, 0),
       new Vector3(Math.cos(arrowheadAngle), Math.sin(arrowheadAngle), 0)
@@ -435,16 +443,26 @@ class ClientSideScene {
     ) as Mesh
 
     if (tangentialArcToSegmentBody) {
-      const newGeo = createArcGeometry({
-        center,
-        radius,
-        startAngle,
-        endAngle,
-        ccw,
-      })
+      const newGeo = createArcGeometry(arcInfo)
       tangentialArcToSegmentBody.geometry = newGeo
     }
+    const tangentialArcToSegmentBodyDashed = group.children.find(
+      (child) => child.userData.type === TANGENTIAL_ARC_TO__SEGMENT_DASH
+    ) as Mesh
+    if (tangentialArcToSegmentBodyDashed) {
+      // consider throttling the whole updateTangentialArcToSegment
+      // if there are more perf considerations going forward
+      this.throttledUpdateDashedArcGeo({
+        mesh: tangentialArcToSegmentBodyDashed,
+        ...arcInfo,
+      })
+    }
   }
+  throttledUpdateDashedArcGeo = throttle(
+    (args: Parameters<typeof createArcGeometry>[0] & { mesh: Mesh }) =>
+      (args.mesh.geometry = createArcGeometry(args)),
+    1000 / 30
+  )
   updateStraightSegment({
     from,
     to,
@@ -492,7 +510,7 @@ class ClientSideScene {
       const shape = new Shape()
       shape.moveTo(0, -0.08)
       shape.lineTo(0, 0.08) // The width of the line
-      straightSegmentBodyDashed.geometry = dashed(from, to, shape)
+      straightSegmentBodyDashed.geometry = dashedStraight(from, to, shape)
     }
   }
   async animateAfterSketch() {
@@ -597,12 +615,33 @@ function prepareTruncatedMemoryAndAst(
 } {
   const bodyIndex = Number(sketchPathToNode?.[1]?.[0]) || 0
   const _ast = JSON.parse(JSON.stringify(ast))
-  if (draftSegment === 'line') {
+
+  const variableDeclarationName =
+    getNodeFromPath<VariableDeclaration>(
+      _ast,
+      sketchPathToNode || [],
+      'VariableDeclaration'
+    )?.node?.declarations?.[0]?.id?.name || ''
+  const lastSeg = (
+    programMemory.root[variableDeclarationName] as SketchGroup
+  ).value.slice(-1)[0]
+  if (draftSegment) {
     // truncatedAst needs to setup with another segment at the end
-    const newSegment = createCallExpressionStdLib('line', [
-      createArrayExpression([createLiteral(0), createLiteral(0)]),
-      createPipeSubstitution(),
-    ])
+    let newSegment
+    if (draftSegment === 'line') {
+      newSegment = createCallExpressionStdLib('line', [
+        createArrayExpression([createLiteral(0), createLiteral(0)]),
+        createPipeSubstitution(),
+      ])
+    } else {
+      newSegment = createCallExpressionStdLib('tangentialArcTo', [
+        createArrayExpression([
+          createLiteral(lastSeg.to[0]),
+          createLiteral(lastSeg.to[1]),
+        ]),
+        createPipeSubstitution(),
+      ])
+    }
     ;(
       (_ast.body[bodyIndex] as VariableDeclaration).declarations[0]
         .init as PipeExpression
@@ -629,12 +668,6 @@ function prepareTruncatedMemoryAndAst(
     init.end = lastPipeItem.end
     init.body.slice(-1)[0].end = lastPipeItem.end
   }
-  const variableDeclarationName =
-    getNodeFromPath<VariableDeclaration>(
-      _ast,
-      sketchPathToNode || [],
-      'VariableDeclaration'
-    )?.node?.declarations?.[0]?.id?.name || ''
   const truncatedAst: Program = {
     ..._ast,
     body: [JSON.parse(JSON.stringify(_ast.body[bodyIndex]))],

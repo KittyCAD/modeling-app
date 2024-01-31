@@ -49,7 +49,7 @@ export function straightSegment({
 
   let geometry
   if (isDraftSegment) {
-    geometry = dashed(from, to, shape)
+    geometry = dashedStraight(from, to, shape)
   } else {
     const line = new LineCurve3(
       new Vector3(from[0], from[1], 0),
@@ -138,6 +138,7 @@ export function tangentialArcToSegment({
     startAngle,
     endAngle,
     ccw,
+    isDashed: isDraftSegment,
   })
 
   const body = new MeshBasicMaterial({ color: 0xffffff })
@@ -183,13 +184,17 @@ export function createArcGeometry({
   startAngle,
   endAngle,
   ccw,
+  isDashed = false,
 }: {
   center: Coords2d
   radius: number
   startAngle: number
   endAngle: number
   ccw: boolean
-}): ExtrudeGeometry {
+  isDashed?: boolean
+}): BufferGeometry {
+  const dashSize = 1.8
+  const gapSize = 1.8
   const arc = new EllipseCurve(
     center[0],
     center[1],
@@ -204,18 +209,81 @@ export function createArcGeometry({
   shape.moveTo(0, -0.08)
   shape.lineTo(0, 0.08) // The width of the line
 
-  const points = arc.getPoints(50)
-  const path = new CurvePath<Vector3>()
-  path.add(new CatmullRomCurve3(points.map((p) => new Vector3(p.x, p.y, 0))))
+  if (!isDashed) {
+    const points = arc.getPoints(50)
+    const path = new CurvePath<Vector3>()
+    path.add(new CatmullRomCurve3(points.map((p) => new Vector3(p.x, p.y, 0))))
 
-  return new ExtrudeGeometry(shape, {
-    steps: 100,
-    bevelEnabled: false,
-    extrudePath: path,
-  })
+    return new ExtrudeGeometry(shape, {
+      steps: 100,
+      bevelEnabled: false,
+      extrudePath: path,
+    })
+  }
+
+  const length = arc.getLength()
+
+  const pointsPerDash = 6 // needs to be a even integer
+  const numberOfDashPoints = (length / (dashSize + gapSize)) * pointsPerDash
+  const dashPoints = arc.getPoints(numberOfDashPoints)
+  const dashGeometries = []
+  let hasCreatedMiddleDash = false
+
+  for (let i = 0; i < numberOfDashPoints; i += pointsPerDash) {
+    // only do the first 500 and last 500 points
+    const startEndDashes = 50
+    const initialStartIndex = startEndDashes * pointsPerDash
+    const initialEndIndex = numberOfDashPoints - startEndDashes * pointsPerDash
+    const path = new CurvePath<Vector3>()
+    let curve
+    let steps = 4
+    const isInMiddleOfMassiveArc =
+      numberOfDashPoints > startEndDashes * pointsPerDash * 2 &&
+      i > initialStartIndex &&
+      i < initialEndIndex
+    if (!isInMiddleOfMassiveArc) {
+      const newIndex = i + 1 + pointsPerDash / 2
+      const endIndex =
+        newIndex > numberOfDashPoints ? numberOfDashPoints : newIndex
+      curve = new CatmullRomCurve3(
+        dashPoints.slice(i, endIndex).map((p) => new Vector3(p?.x, p?.y, 0))
+      )
+    } else if (hasCreatedMiddleDash) {
+      continue
+    } else {
+      hasCreatedMiddleDash = true
+      steps = 50
+      curve = new CatmullRomCurve3(
+        Array.from({ length: steps }, (_, i) => {
+          const index = Math.round(
+            initialStartIndex +
+              ((initialEndIndex - initialStartIndex) * i) / (steps - 1)
+          )
+          return new Vector3(dashPoints[index]?.x, dashPoints[index]?.y, 0)
+        })
+      )
+    }
+
+    if (curve.points.length < 2) {
+      continue
+    }
+    path.add(curve)
+
+    const dashGeometry = new ExtrudeGeometry(shape, {
+      steps,
+      bevelEnabled: false,
+      extrudePath: path,
+    })
+    dashGeometries.push(dashGeometry)
+  }
+  const geo = dashGeometries.length
+    ? mergeGeometries(dashGeometries)
+    : new BufferGeometry()
+  geo.userData.type = 'dashed'
+  return geo
 }
 
-export function dashed(
+export function dashedStraight(
   from: Coords2d,
   to: Coords2d,
   shape: Shape
