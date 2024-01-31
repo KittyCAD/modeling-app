@@ -119,7 +119,10 @@ export const TextEditor = ({
       setEditorView(viewUpdate.view)
     }
     if (setupSingleton.selected) return // mid drag
-    const ignoreEvents: ModelingMachineEvent['type'][] = ['Equip Line tool 3']
+    const ignoreEvents: ModelingMachineEvent['type'][] = [
+      'Equip Line tool 3',
+      'Equip tangential arc to 3',
+    ]
     if (ignoreEvents.includes(state.event.type)) return
     const eventInfo = processCodeMirrorRanges({
       codeMirrorRanges: viewUpdate.state.selection.ranges,

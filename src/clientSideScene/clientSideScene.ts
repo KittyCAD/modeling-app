@@ -233,6 +233,7 @@ class ClientSideScene {
       setupSingleton.setCallbacks({
         onDrag: () => {},
         onClick: async (args) => {
+          console.log('onClick', args)
           if (!args) return
           const { intersection2d } = args
           if (!intersection2d) return
@@ -242,7 +243,10 @@ class ClientSideScene {
             programMemory: kclManager.programMemory,
             to: [intersection2d.x, intersection2d.y],
             from: [lastSegment.to[0], lastSegment.to[1]],
-            fnName: 'line',
+            fnName:
+              lastSegment.type === 'tangentialArcTo'
+                ? 'tangentialArcTo'
+                : 'line',
             pathToNode: sketchPathToNode,
           })
           const _modifiedAst = newSketchLn.modifiedAst
@@ -276,11 +280,13 @@ class ClientSideScene {
     this.setupSketch({ sketchPathToNode })
   }
   setUpDraftArc = async (sketchPathToNode: PathToNode) => {
-    await this.tearDownSketch() // todo remove animation part of tearDownSketch
+    await this.tearDownSketch()
+    await new Promise((resolve) => setTimeout(resolve, 100))
     this.setupSketch({ sketchPathToNode, draftSegment: 'tangentialArcTo' })
   }
   setUpDraftLine = async (sketchPathToNode: PathToNode) => {
-    await this.tearDownSketch() // todo remove animation part of tearDownSketch
+    await this.tearDownSketch()
+    await new Promise((resolve) => setTimeout(resolve, 100))
     this.setupSketch({ sketchPathToNode, draftSegment: 'line' })
   }
   onDraftLineMouseMove = () => {}
@@ -453,8 +459,9 @@ class ClientSideScene {
       // consider throttling the whole updateTangentialArcToSegment
       // if there are more perf considerations going forward
       this.throttledUpdateDashedArcGeo({
-        mesh: tangentialArcToSegmentBodyDashed,
         ...arcInfo,
+        mesh: tangentialArcToSegmentBodyDashed,
+        isDashed: true,
       })
     }
   }

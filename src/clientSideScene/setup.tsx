@@ -86,11 +86,15 @@ const throttledUpdateEngineFov = throttle(
   1000 / 15
 )
 
-interface BaseCallbackArgs {
+interface BaseCallbackArgs2 {
   object: any
   event: any
 }
+interface BaseCallbackArgs {
+  event: any
+}
 interface OnDragCallbackArgs extends BaseCallbackArgs {
+  object: any
   intersection2d: Vector2
   intersectPoint: Vector3
   intersection: Intersection<Object3D<Object3DEventMap>>
@@ -99,6 +103,7 @@ interface OnClickCallbackArgs extends BaseCallbackArgs {
   intersection2d?: Vector2
   intersectPoint: Vector3
   intersection: Intersection<Object3D<Object3DEventMap>>
+  object?: any
 }
 
 interface onMoveCallbackArgs {
@@ -122,14 +127,14 @@ class SetupSingleton {
   onDragCallback: (arg: OnDragCallbackArgs) => void = () => {}
   onMoveCallback: (arg: onMoveCallbackArgs) => void = () => {}
   onClickCallback: (arg?: OnClickCallbackArgs) => void = () => {}
-  onMouseEnter: (arg: BaseCallbackArgs) => void = () => {}
-  onMouseLeave: (arg: BaseCallbackArgs) => void = () => {}
+  onMouseEnter: (arg: BaseCallbackArgs2) => void = () => {}
+  onMouseLeave: (arg: BaseCallbackArgs2) => void = () => {}
   setCallbacks = (callbacks: {
     onDrag?: (arg: OnDragCallbackArgs) => void
     onMove?: (arg: onMoveCallbackArgs) => void
     onClick?: (arg?: OnClickCallbackArgs) => void
-    onMouseEnter?: (arg: BaseCallbackArgs) => void
-    onMouseLeave?: (arg: BaseCallbackArgs) => void
+    onMouseEnter?: (arg: BaseCallbackArgs2) => void
+    onMouseLeave?: (arg: BaseCallbackArgs2) => void
   }) => {
     this.onDragCallback = callbacks.onDrag || this.onDragCallback
     this.onMoveCallback = callbacks.onMove || this.onMoveCallback
@@ -704,6 +709,11 @@ class SetupSingleton {
       }
       // Clear the selected state whether it was dragged or not
       this.selected = null
+    } else if (planeIntersectPoint) {
+      this.onClickCallback({
+        event,
+        ...planeIntersectPoint,
+      })
     } else {
       this.onClickCallback()
     }
