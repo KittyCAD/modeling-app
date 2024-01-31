@@ -10,11 +10,7 @@ import {
 import { assign, createMachine } from 'xstate'
 import { v4 as uuidv4 } from 'uuid'
 import { isCursorInSketchCommandRange } from 'lang/util'
-import {
-  doesPipeHaveCallExp,
-  getNodePathFromSourceRange,
-  hasExtrudeSketchGroup,
-} from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { kclManager } from 'lang/KclSinglton'
 import {
   horzVertInfo,
@@ -817,7 +813,7 @@ export const modelingMachine = createMachine(
         }),
       }),
       'sketch mode enabled': ({ sketchPlaneId }) => {
-        engineCommandManager.sendSceneCommand({
+        void engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
@@ -838,7 +834,7 @@ export const modelingMachine = createMachine(
           selectionRanges
         )
         pathId &&
-          engineCommandManager.sendSceneCommand({
+          void engineCommandManager.sendSceneCommand({
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
             cmd: {
@@ -848,7 +844,7 @@ export const modelingMachine = createMachine(
           })
       },
       'hide default planes': () => {
-        kclManager.hidePlanes()
+        void kclManager.hidePlanes()
       },
       edit_mode_exit: () =>
         engineCommandManager.sendSceneCommand({
@@ -914,7 +910,7 @@ export const modelingMachine = createMachine(
           kclManager.ast,
           kclManager.programMemory
         )
-        kclManager.updateAst(modifiedAst, true)
+        void kclManager.updateAst(modifiedAst, true)
       },
       'Make selection vertical': ({ selectionRanges }) => {
         const { modifiedAst } = applyConstraintHorzVert(
@@ -923,53 +919,53 @@ export const modelingMachine = createMachine(
           kclManager.ast,
           kclManager.programMemory
         )
-        kclManager.updateAst(modifiedAst, true)
+        void kclManager.updateAst(modifiedAst, true)
       },
       'Constrain horizontally align': ({ selectionRanges }) => {
         const { modifiedAst } = applyConstraintHorzVertAlign({
           selectionRanges,
           constraint: 'setVertDistance',
         })
-        kclManager.updateAst(modifiedAst, true)
+        void kclManager.updateAst(modifiedAst, true)
       },
       'Constrain vertically align': ({ selectionRanges }) => {
         const { modifiedAst } = applyConstraintHorzVertAlign({
           selectionRanges,
           constraint: 'setHorzDistance',
         })
-        kclManager.updateAst(modifiedAst, true)
+        void kclManager.updateAst(modifiedAst, true)
       },
       'Constrain snap to X': ({ selectionRanges }) => {
         const { modifiedAst } = applyConstraintAxisAlign({
           selectionRanges,
           constraint: 'snapToXAxis',
         })
-        kclManager.updateAst(modifiedAst, true)
+        void kclManager.updateAst(modifiedAst, true)
       },
       'Constrain snap to Y': ({ selectionRanges }) => {
         const { modifiedAst } = applyConstraintAxisAlign({
           selectionRanges,
           constraint: 'snapToYAxis',
         })
-        kclManager.updateAst(modifiedAst, true)
+        void kclManager.updateAst(modifiedAst, true)
       },
       'Constrain equal length': ({ selectionRanges }) => {
         const { modifiedAst } = applyConstraintEqualLength({
           selectionRanges,
         })
-        kclManager.updateAst(modifiedAst, true)
+        void kclManager.updateAst(modifiedAst, true)
       },
       'Constrain parallel': ({ selectionRanges }) => {
         const { modifiedAst } = applyConstraintEqualAngle({
           selectionRanges,
         })
-        kclManager.updateAst(modifiedAst, true)
+        void kclManager.updateAst(modifiedAst, true)
       },
       'Constrain remove constraints': ({ selectionRanges }) => {
         const { modifiedAst } = applyRemoveConstrainingValues({
           selectionRanges,
         })
-        kclManager.updateAst(modifiedAst, true)
+        void kclManager.updateAst(modifiedAst, true)
       },
       'AST extrude': (_, event) => {
         if (!event.data) return
@@ -985,7 +981,7 @@ export const modelingMachine = createMachine(
           distance
         )
         // TODO not handling focusPath correctly I think
-        kclManager.updateAst(modifiedAst, true, {
+        void kclManager.updateAst(modifiedAst, true, {
           focusPath: pathToExtrudeArg,
         })
       },

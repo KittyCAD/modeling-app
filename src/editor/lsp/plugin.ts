@@ -62,7 +62,7 @@ export class LanguageServerPlugin implements PluginValue {
 
     this.client.attachPlugin(this)
 
-    this.initialize({
+    void this.initialize({
       documentText: this.view.state.doc.toString(),
     })
   }
@@ -70,7 +70,7 @@ export class LanguageServerPlugin implements PluginValue {
   update({ docChanged }: ViewUpdate) {
     if (!docChanged) return
 
-    this.sendChange({
+    void this.sendChange({
       documentText: this.view.state.doc.toString(),
     })
   }
@@ -127,7 +127,7 @@ export class LanguageServerPlugin implements PluginValue {
   }
 
   requestDiagnostics(view: EditorView) {
-    this.sendChange({ documentText: view.state.doc.toString() })
+    void this.sendChange({ documentText: view.state.doc.toString() })
   }
 
   async requestHoverTooltip(
@@ -140,7 +140,7 @@ export class LanguageServerPlugin implements PluginValue {
     )
       return null
 
-    this.sendChange({ documentText: view.state.doc.toString() })
+    await this.sendChange({ documentText: view.state.doc.toString() })
     const result = await this.client.textDocumentHover({
       textDocument: { uri: this.documentUri },
       position: { line, character },
@@ -178,7 +178,7 @@ export class LanguageServerPlugin implements PluginValue {
     )
       return null
 
-    this.sendChange({
+    await this.sendChange({
       documentText: context.state.doc.toString(),
     })
 

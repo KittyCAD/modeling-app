@@ -39,7 +39,7 @@ export function useConvertToVariable() {
         variableName
       )
 
-      kclManager.updateAst(_modifiedAst, true)
+      void kclManager.updateAst(_modifiedAst, true)
     } catch (e) {
       console.log('error', e)
     }
