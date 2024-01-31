@@ -57,6 +57,10 @@ const SKETCH_GROUP_SEGMENTS = 'sketch-group-segments'
 export const STRAIGHT_SEGMENT = 'straight-segment'
 export const STRAIGHT_SEGMENT_BODY = 'straight-segment-body'
 export const STRAIGHT_SEGMENT_DASH = 'straight-segment-body-dashed'
+export const TANGENTIAL_ARC_TO_SEGMENT = 'tangential-arc-to-segment'
+export const TANGENTIAL_ARC_TO_SEGMENT_BODY = 'tangential-arc-to-segment-body'
+export const TANGENTIAL_ARC_TO__SEGMENT_DASH =
+  'tangential-arc-to-segment-body-dashed'
 export const ARROWHEAD = 'arrowhead'
 
 class ClientSideScene {

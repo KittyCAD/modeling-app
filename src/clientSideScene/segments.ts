@@ -22,6 +22,9 @@ import {
   STRAIGHT_SEGMENT,
   STRAIGHT_SEGMENT_BODY,
   STRAIGHT_SEGMENT_DASH,
+  TANGENTIAL_ARC_TO_SEGMENT,
+  TANGENTIAL_ARC_TO_SEGMENT_BODY,
+  TANGENTIAL_ARC_TO__SEGMENT_DASH,
 } from './clientSideScene'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 
@@ -165,11 +168,11 @@ export function tangentialArcToSegment({
   const arrowMaterial = new MeshBasicMaterial({ color: 0xffffff })
   const mesh = new Mesh(geometry, body)
   mesh.userData.type = isDraftSegment
-    ? STRAIGHT_SEGMENT_DASH
-    : STRAIGHT_SEGMENT_BODY
+    ? TANGENTIAL_ARC_TO__SEGMENT_DASH
+    : TANGENTIAL_ARC_TO_SEGMENT_BODY
 
   group.userData = {
-    type: 'yo',
+    type: TANGENTIAL_ARC_TO_SEGMENT,
     id,
     from,
     to,
