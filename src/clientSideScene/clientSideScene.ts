@@ -26,6 +26,7 @@ import {
 } from './setup'
 import {
   CallExpression,
+  getTangentialArcToInfo,
   parse,
   Path,
   PathToNode,
@@ -40,7 +41,12 @@ import { kclManager } from 'lang/KclSingleton'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 import { executeAst } from 'useStore'
 import { engineCommandManager } from 'lang/std/engineConnection'
-import { dashed, straightSegment, tangentialArcToSegment } from './segments'
+import {
+  createArcGeometry,
+  dashed,
+  straightSegment,
+  tangentialArcToSegment,
+} from './segments'
 import { addNewSketchLn, changeSketchArguments } from 'lang/std/sketch'
 import { isReducedMotion } from 'lib/utils'
 import {
@@ -50,6 +56,7 @@ import {
   createPipeSubstitution,
 } from 'lang/modifyAst'
 import { getEventForSegmentSelection } from 'lib/selections'
+import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -364,16 +371,15 @@ class ClientSideScene {
           this.activeSegments[pathToNodeStr] ||
           this.activeSegments[originalPathToNodeStr]
         // const prevSegment = sketchGroup.slice(index - 1)[0]
-        const { type, from, to } = group.userData
-        // if (type === 'tangentialArcTo') {
-        //   sketchCanvasHelper.updateTangentialArcToSegment({
-        //     prevSegment,
-        //     from: segment.from,
-        //     to: segment.to,
-        //     group: group,
-        //   })
-        // } else
-        if (type === STRAIGHT_SEGMENT) {
+        const { type } = group.userData
+        if (type === TANGENTIAL_ARC_TO_SEGMENT) {
+          this.updateTangentialArcToSegment({
+            prevSegment: sketchGroup[index - 1],
+            from: segment.from,
+            to: segment.to,
+            group: group,
+          })
+        } else if (type === STRAIGHT_SEGMENT) {
           this.updateStraightSegment({
             from: segment.from,
             to: segment.to,
@@ -382,6 +388,62 @@ class ClientSideScene {
         }
       })
     })()
+  }
+
+  updateTangentialArcToSegment({
+    prevSegment,
+    from,
+    to,
+    group,
+  }: {
+    prevSegment: SketchGroup['value'][number]
+    from: [number, number]
+    to: [number, number]
+    group: Group
+  }) {
+    const arrowGroup = group.children.find(
+      (child) => child.userData.type === ARROWHEAD
+    ) as Group
+
+    arrowGroup.position.set(to[0], to[1], 0)
+
+    const previousPoint =
+      prevSegment?.type === 'tangentialArcTo'
+        ? getTangentPointFromPreviousArc(
+            prevSegment.center,
+            prevSegment.ccw,
+            prevSegment.to
+          )
+        : prevSegment.from
+
+    const { center, radius, startAngle, endAngle, ccw } =
+      getTangentialArcToInfo({
+        arcStartPoint: from,
+        arcEndPoint: to,
+        tanPreviousPoint: previousPoint,
+        obtuse: true,
+      })
+
+    const arrowheadAngle = endAngle + (Math.PI / 2) * (ccw ? 1 : -1)
+    arrowGroup.quaternion.setFromUnitVectors(
+      new Vector3(0, 1, 0),
+      new Vector3(Math.cos(arrowheadAngle), Math.sin(arrowheadAngle), 0)
+    )
+
+    const tangentialArcToSegmentBody = group.children.find(
+      (child) => child.userData.type === TANGENTIAL_ARC_TO_SEGMENT_BODY
+    ) as Mesh
+
+    if (tangentialArcToSegmentBody) {
+      const newGeo = createArcGeometry({
+        center,
+        radius,
+        startAngle,
+        endAngle,
+        ccw,
+      })
+      tangentialArcToSegmentBody.geometry = newGeo
+    }
   }
   updateStraightSegment({
     from,

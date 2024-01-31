@@ -116,9 +116,9 @@ export function tangentialArcToSegment({
 }): Group {
   const group = new Group()
 
-  const shape = new Shape()
-  shape.moveTo(0, -0.08)
-  shape.lineTo(0, 0.08) // The width of the line
+  // const shape = new Shape()
+  // shape.moveTo(0, -0.08)
+  // shape.lineTo(0, 0.08) // The width of the line
 
   const previousPoint =
     prevSegment?.type === 'tangentialArcTo'
@@ -129,39 +129,19 @@ export function tangentialArcToSegment({
         )
       : prevSegment.from
 
-  const {
-    arcMidPoint: [midX, midY],
-    center,
-    radius,
-    startAngle,
-    endAngle,
-    ccw,
-  } = getTangentialArcToInfo({
+  const { center, radius, startAngle, endAngle, ccw } = getTangentialArcToInfo({
     arcStartPoint: from,
     arcEndPoint: to,
     tanPreviousPoint: previousPoint,
     obtuse: true,
   })
 
-  const arc = new EllipseCurve(
-    center[0],
-    center[1],
-    radius,
+  const geometry = createArcGeometry({
+    center,
     radius,
     startAngle,
     endAngle,
-    !ccw,
-    0
-  )
-
-  const points = arc.getPoints(50)
-  const path = new CurvePath<Vector3>()
-  path.add(new CatmullRomCurve3(points.map((p) => new Vector3(p.x, p.y, 0))))
-
-  const geometry = new ExtrudeGeometry(shape, {
-    steps: 100,
-    bevelEnabled: false,
-    extrudePath: path,
+    ccw,
   })
 
   const body = new MeshBasicMaterial({ color: 0xffffff })
@@ -199,6 +179,44 @@ export function tangentialArcToSegment({
   group.add(mesh, arrowGroup)
 
   return group
+}
+
+export function createArcGeometry({
+  center,
+  radius,
+  startAngle,
+  endAngle,
+  ccw,
+}: {
+  center: Coords2d
+  radius: number
+  startAngle: number
+  endAngle: number
+  ccw: boolean
+}): ExtrudeGeometry {
+  const arc = new EllipseCurve(
+    center[0],
+    center[1],
+    radius,
+    radius,
+    startAngle,
+    endAngle,
+    !ccw,
+    0
+  )
+  const shape = new Shape()
+  shape.moveTo(0, -0.08)
+  shape.lineTo(0, 0.08) // The width of the line
+
+  const points = arc.getPoints(50)
+  const path = new CurvePath<Vector3>()
+  path.add(new CatmullRomCurve3(points.map((p) => new Vector3(p.x, p.y, 0))))
+
+  return new ExtrudeGeometry(shape, {
+    steps: 100,
+    bevelEnabled: false,
+    extrudePath: path,
+  })
 }
 
 export function dashed(
