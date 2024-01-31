@@ -116,10 +116,6 @@ export function tangentialArcToSegment({
 }): Group {
   const group = new Group()
 
-  // const shape = new Shape()
-  // shape.moveTo(0, -0.08)
-  // shape.lineTo(0, 0.08) // The width of the line
-
   const previousPoint =
     prevSegment?.type === 'tangentialArcTo'
       ? getTangentPointFromPreviousArc(
