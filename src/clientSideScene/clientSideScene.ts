@@ -233,7 +233,6 @@ class ClientSideScene {
       setupSingleton.setCallbacks({
         onDrag: () => {},
         onClick: async (args) => {
-          console.log('onClick', args)
           if (!args) return
           const { intersection2d } = args
           if (!intersection2d) return
@@ -724,8 +723,15 @@ export function quaternionFromSketchGroup(
     Array.isArray(a)
       ? new Vector3(a[0], a[1], a[2])
       : new Vector3(a.x, a.y, a.z)
-  const zAxisVec = massageFormats(sketchGroup.zAxis)
-  const yAxisVec = massageFormats(sketchGroup.yAxis)
+  if (!sketchGroup?.zAxis) {
+    // sometimes sketchGroup is undefined,
+    // I don't quiet understand the circumstances yet
+    // and it's very intermittent so leaving this here for now
+    console.log('no zAxis', sketchGroup)
+    console.trace('no zAxis')
+  }
+  const zAxisVec = massageFormats(sketchGroup?.zAxis)
+  const yAxisVec = massageFormats(sketchGroup?.yAxis)
   const xAxisVec = new Vector3().crossVectors(yAxisVec, zAxisVec).normalize()
 
   let yAxisVecNormalized = yAxisVec.clone().normalize()

@@ -219,6 +219,10 @@ export const Toolbar = () => {
                   icon: 'line',
                   bgClassName,
                 }}
+                disabled={
+                  !state.can('Equip tangential arc to 3') &&
+                  !state.matches('Sketch.Tangential arc to 3')
+                }
               >
                 TangArc 3
               </ActionButton>
