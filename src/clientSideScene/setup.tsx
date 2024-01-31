@@ -627,18 +627,10 @@ class SetupSingleton {
       })
     }
 
-    // TODO hover logic later
-    // Update the raycaster with the camera and mouse position
-    this.raycaster.setFromCamera(this.currentMouseVector, this.camera)
+    const intersect = this.raycastRing()
 
-    // Calculate objects intersecting the picking ray
-    const intersects = this.raycaster.intersectObjects(
-      this.scene.children,
-      true
-    )
-
-    if (intersects.length > 0) {
-      const firstIntersectObject = intersects[0].object
+    if (intersect) {
+      const firstIntersectObject = intersect.object
       if (this.hoveredObject !== firstIntersectObject) {
         if (this.hoveredObject) {
           this.onMouseLeave({
@@ -663,25 +655,66 @@ class SetupSingleton {
     }
   }
 
+  raycastRing = (
+    pixelRadius = 8,
+    rayRingCount = 32
+  ): Intersection<Object3D<Object3DEventMap>> | undefined => {
+    const mouseDownVector = this.currentMouseVector.clone()
+    let closestIntersection:
+      | Intersection<Object3D<Object3DEventMap>>
+      | undefined = undefined
+    let closestDistance = Infinity
+
+    const updateClosestIntersection = (
+      intersections: Intersection<Object3D<Object3DEventMap>>[]
+    ) => {
+      if (
+        intersections.length > 0 &&
+        intersections[0].distance < closestDistance
+      ) {
+        closestDistance = intersections[0].distance
+        closestIntersection = intersections[0]
+      }
+    }
+
+    // Check the center point
+    this.raycaster.setFromCamera(mouseDownVector, this.camera)
+    updateClosestIntersection(
+      this.raycaster.intersectObjects(this.scene.children, true)
+    )
+
+    // Check the ring points
+    for (let i = 0; i < rayRingCount; i++) {
+      const angle = (i / rayRingCount) * Math.PI * 2
+
+      const offsetX = ((pixelRadius * Math.cos(angle)) / window.innerWidth) * 2
+      const offsetY = ((pixelRadius * Math.sin(angle)) / window.innerHeight) * 2
+      const ringVector = new Vector2(
+        mouseDownVector.x + offsetX,
+        mouseDownVector.y - offsetY
+      )
+      this.raycaster.setFromCamera(ringVector, this.camera)
+      updateClosestIntersection(
+        this.raycaster.intersectObjects(this.scene.children, true)
+      )
+    }
+
+    return closestIntersection
+  }
+
   onMouseDown = (event: MouseEvent) => {
     this.currentMouseVector.x = (event.clientX / window.innerWidth) * 2 - 1
     this.currentMouseVector.y = -(event.clientY / window.innerHeight) * 2 + 1
 
     const mouseDownVector = this.currentMouseVector.clone()
-    this.raycaster.setFromCamera(mouseDownVector, this.camera)
+    const intersect = this.raycastRing()
 
-    // Calculate objects intersecting the picking ray
-    const intersects = this.raycaster.intersectObjects(
-      this.scene.children,
-      true
-    )
-
-    if (intersects.length > 0) {
-      const intersectParent = intersects?.[0]?.object?.parent as Group
+    if (intersect) {
+      const intersectParent = intersect?.object?.parent as Group
       this.selected = intersectParent.isGroup
         ? {
             mouseDownVector,
-            object: intersects?.[0]?.object,
+            object: intersect?.object,
             hasBeenDragged: false,
           }
         : null
