@@ -47,7 +47,12 @@ import {
   straightSegment,
   tangentialArcToSegment,
 } from './segments'
-import { addNewSketchLn, changeSketchArguments } from 'lang/std/sketch'
+import {
+  addCloseToPipe,
+  addNewSketchLn,
+  changeSketchArguments,
+  compareVec2Epsilon2,
+} from 'lang/std/sketch'
 import { isReducedMotion, throttle } from 'lib/utils'
 import {
   createArrayExpression,
@@ -232,20 +237,37 @@ class ClientSideScene {
           if (!args) return
           const { intersection2d } = args
           if (!intersection2d) return
-          const lastSegment = sketchGroup.value.slice(-1)[0]
-          const newSketchLn = addNewSketchLn({
-            node: kclManager.ast,
-            programMemory: kclManager.programMemory,
-            to: [intersection2d.x, intersection2d.y],
-            from: [lastSegment.to[0], lastSegment.to[1]],
-            fnName:
-              lastSegment.type === 'tangentialArcTo'
-                ? 'tangentialArcTo'
-                : 'line',
-            pathToNode: sketchPathToNode,
-          })
-          const _modifiedAst = newSketchLn.modifiedAst
-          kclManager.executeAstMock(_modifiedAst, { updates: 'code' })
+
+          const firstSeg = sketchGroup.value[0]
+          const isClosingSketch = compareVec2Epsilon2(
+            firstSeg.from,
+            [intersection2d.x, intersection2d.y],
+            1
+          )
+          let modifiedAst
+          if (isClosingSketch) {
+            // TODO close needs a better UX
+            modifiedAst = addCloseToPipe({
+              node: kclManager.ast,
+              programMemory: kclManager.programMemory,
+              pathToNode: sketchPathToNode,
+            })
+          } else {
+            const lastSegment = sketchGroup.value.slice(-1)[0]
+            modifiedAst = addNewSketchLn({
+              node: kclManager.ast,
+              programMemory: kclManager.programMemory,
+              to: [intersection2d.x, intersection2d.y],
+              from: [lastSegment.to[0], lastSegment.to[1]],
+              fnName:
+                lastSegment.type === 'tangentialArcTo'
+                  ? 'tangentialArcTo'
+                  : 'line',
+              pathToNode: sketchPathToNode,
+            }).modifiedAst
+          }
+
+          kclManager.executeAstMock(modifiedAst, { updates: 'code' })
           await this.tearDownSketch()
           this.setupSketch({ sketchPathToNode, draftSegment })
         },
