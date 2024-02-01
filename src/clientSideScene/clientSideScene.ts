@@ -48,7 +48,6 @@ import {
   tangentialArcToSegment,
 } from './segments'
 import {
-  Coords2d,
   addNewSketchLn,
   changeSketchArguments,
 } from 'lang/std/sketch'
@@ -414,6 +413,8 @@ class ClientSideScene {
     to: [number, number]
     group: Group
   }) {
+    group.userData.from = from
+    group.userData.to = to
     const arrowGroup = group.children.find(
       (child) => child.userData.type === ARROWHEAD
     ) as Group
@@ -478,6 +479,8 @@ class ClientSideScene {
     to: [number, number]
     group: Group
   }) {
+    group.userData.from = from
+    group.userData.to = to
     const arrowGroup = group.children.find(
       (child) => child.userData.type === ARROWHEAD
     ) as Group
