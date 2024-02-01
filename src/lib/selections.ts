@@ -12,14 +12,13 @@ import { Program } from 'lang/wasm'
 import { doesPipeHaveCallExp, getNodeFromPath } from 'lang/queryAst'
 import { CommandArgument } from './commandTypes'
 import {
-  AXIS_GROUP,
   STRAIGHT_SEGMENT,
   TANGENTIAL_ARC_TO_SEGMENT,
-  X_AXIS,
   clientSideScene,
   getParentGroup,
 } from 'clientSideScene/clientSideScene'
 import { Mesh } from 'three'
+import { AXIS_GROUP, X_AXIS } from 'clientSideScene/setup'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'

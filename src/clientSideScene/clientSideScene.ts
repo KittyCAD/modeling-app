@@ -15,6 +15,7 @@ import {
   Vector3,
 } from 'three'
 import {
+  AXIS_GROUP,
   DEFAULT_PLANES,
   DefaultPlane,
   defaultPlaneColor,
@@ -22,7 +23,9 @@ import {
   RAYCASTABLE_PLANE,
   setupSingleton,
   SKETCH_LAYER,
+  X_AXIS,
   XZ_PLANE,
+  Y_AXIS,
   YZ_PLANE,
 } from './setup'
 import {
@@ -75,9 +78,6 @@ export const TANGENTIAL_ARC_TO_SEGMENT_BODY = 'tangential-arc-to-segment-body'
 export const TANGENTIAL_ARC_TO__SEGMENT_DASH =
   'tangential-arc-to-segment-body-dashed'
 export const ARROWHEAD = 'arrowhead'
-export const X_AXIS = 'xAxis'
-export const Y_AXIS = 'yAxis'
-export const AXIS_GROUP = 'axisGroup'
 
 class ClientSideScene {
   scene: Scene
@@ -104,8 +104,8 @@ class ClientSideScene {
     this.scene.add(this.intersectionPlane)
   }
   createSketchAxis() {
-    const baseXColor = 0x0000aa
-    const baseYColor = 0xaa0000
+    const baseXColor = 0x000055
+    const baseYColor = 0x550000
     const xAxisGeometry = new BoxGeometry(100000, 0.3, 0.01)
     const yAxisGeometry = new BoxGeometry(0.3, 100000, 0.01)
     const xAxisMaterial = new MeshBasicMaterial({
@@ -123,10 +123,12 @@ class ClientSideScene {
     xAxisMesh.userData = {
       type: X_AXIS,
       baseColor: baseXColor,
+      isSelected: false,
     }
     yAxisMesh.userData = {
       type: Y_AXIS,
       baseColor: baseYColor,
+      isSelected: false,
     }
 
     this.axisGroup = new Group()
@@ -257,7 +259,7 @@ class ClientSideScene {
             const obj = object as Mesh
             const mat = obj.material as MeshBasicMaterial
             mat.color.set(obj.userData.baseColor)
-            mat.color.offsetHSL(0, 0, 0.2)
+            mat.color.offsetHSL(0, 0, 0.5)
           }
           const parent = getParentGroup(object)
           if (parent?.userData?.pathToNode) {
@@ -283,6 +285,7 @@ class ClientSideScene {
             const obj = object as Mesh
             const mat = obj.material as MeshBasicMaterial
             mat.color.set(obj.userData.baseColor)
+            if (obj.userData.isSelected) mat.color.offsetHSL(0, 0, 0.2)
           }
         },
       })

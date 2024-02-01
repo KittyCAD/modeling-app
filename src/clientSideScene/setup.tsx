@@ -36,6 +36,7 @@ import { MouseGuard, cameraMouseDragGuards } from 'lib/cameraControls'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { SourceRange } from 'lang/wasm'
 import { useStore } from 'useStore'
+import { Axis } from 'lib/selections'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -53,6 +54,10 @@ export const DEBUG_SHOW_BOTH_SCENES = false
 
 export const RAYCASTABLE_PLANE = 'raycastable-plane'
 export const DEFAULT_PLANES = 'default-planes'
+
+export const X_AXIS = 'xAxis'
+export const Y_AXIS = 'yAxis'
+export const AXIS_GROUP = 'axisGroup'
 
 const tempQuaternion = new Quaternion() // just used for maths
 
@@ -800,6 +805,27 @@ class SetupSingleton {
     )
     if (planesGroup) this.scene.remove(planesGroup)
   }
+  updateOtherSelectionColors = (otherSelections: Axis[]) => {
+    const axisGroup = setupSingleton.scene.children.find(
+      ({ userData }) => userData?.type === AXIS_GROUP
+    )
+    const axisMap: { [key: string]: Axis } = {
+      [X_AXIS]: 'x-axis',
+      [Y_AXIS]: 'y-axis',
+    }
+    axisGroup?.children.forEach((_mesh) => {
+      const mesh = _mesh as Mesh
+      const mat = mesh.material as MeshBasicMaterial
+      if (otherSelections.includes(axisMap[mesh.userData?.type])) {
+        mat.color.set(mesh?.userData?.baseColor)
+        mat.color.offsetHSL(0, 0, 0.2)
+        mesh.userData.isSelected = true
+      } else {
+        mat.color.set(mesh?.userData?.baseColor)
+        mesh.userData.isSelected = false
+      }
+    })
+  }
 }
 
 export const setupSingleton = new SetupSingleton()
@@ -847,6 +873,11 @@ export const ClientSideScene = ({
   useEffect(() => {
     setupSingleton.setInteractionGuards(cameraMouseDragGuards[cameraControls])
   }, [cameraControls])
+  useEffect(() => {
+    setupSingleton.updateOtherSelectionColors(
+      state?.context?.selectionRanges?.otherSelections || []
+    )
+  }, [state?.context?.selectionRanges?.otherSelections])
 
   useEffect(() => {
     if (!canvasRef.current) return
