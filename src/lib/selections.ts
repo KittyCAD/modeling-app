@@ -1,12 +1,6 @@
 import { Models } from '@kittycad/lib'
 import { engineCommandManager } from 'lang/std/engineConnection'
-import {
-  CallExpression,
-  PathToNode,
-  SourceRange,
-  parse,
-  recast,
-} from 'lang/wasm'
+import { CallExpression, SourceRange, parse, recast } from 'lang/wasm'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { v4 as uuidv4 } from 'uuid'
 import { EditorSelection } from '@codemirror/state'
@@ -18,9 +12,12 @@ import { Program } from 'lang/wasm'
 import { doesPipeHaveCallExp, getNodeFromPath } from 'lang/queryAst'
 import { CommandArgument } from './commandTypes'
 import {
+  AXIS_GROUP,
   STRAIGHT_SEGMENT,
   TANGENTIAL_ARC_TO_SEGMENT,
+  X_AXIS,
   clientSideScene,
+  getParentGroup,
 } from 'clientSideScene/clientSideScene'
 import { Mesh } from 'three'
 
@@ -186,8 +183,21 @@ export async function getEventForSelectWithPoint(
 }
 
 export function getEventForSegmentSelection(
-  pathToNode?: PathToNode
+  obj: any
 ): ModelingMachineEvent | null {
+  const group = getParentGroup(obj)
+  const axisGroup = getParentGroup(obj, [AXIS_GROUP])
+  if (!group && !axisGroup) return null
+  if (axisGroup?.userData.type === AXIS_GROUP) {
+    return {
+      type: 'Set selection',
+      data: {
+        selectionType: 'otherSelection',
+        selection: obj?.userData?.type === X_AXIS ? 'x-axis' : 'y-axis',
+      },
+    }
+  }
+  const pathToNode = group?.userData?.pathToNode
   if (!pathToNode) return null
   const node = getNodeFromPath<CallExpression>(
     kclManager.ast,
@@ -270,7 +280,6 @@ export function handleSelectionWithShift({
     })
   }
   if (otherSelection) {
-    console.log('otherSelection in handleSelectionWithShift', otherSelection)
     return handleSelectionBatch({
       selections: {
         codeBasedSelections: isShiftDown

@@ -40,7 +40,7 @@ import {
 } from 'lang/wasm'
 import { kclManager } from 'lang/KclSingleton'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
-import { executeAst } from 'useStore'
+import { defaultProgramMemory, executeAst } from 'useStore'
 import { engineCommandManager } from 'lang/std/engineConnection'
 import {
   createArcGeometry,
@@ -75,9 +75,9 @@ export const TANGENTIAL_ARC_TO_SEGMENT_BODY = 'tangential-arc-to-segment-body'
 export const TANGENTIAL_ARC_TO__SEGMENT_DASH =
   'tangential-arc-to-segment-body-dashed'
 export const ARROWHEAD = 'arrowhead'
-const X_AXIS = 'xAxis'
-const Y_AXIS = 'yAxis'
-const AXIS_GROUP = 'axisGroup'
+export const X_AXIS = 'xAxis'
+export const Y_AXIS = 'yAxis'
+export const AXIS_GROUP = 'axisGroup'
 
 class ClientSideScene {
   scene: Scene
@@ -105,26 +105,25 @@ class ClientSideScene {
   }
   createSketchAxis() {
     const baseXColor = 0x0000aa
+    const baseYColor = 0xaa0000
     const xAxisGeometry = new BoxGeometry(100000, 0.3, 0.01)
+    const yAxisGeometry = new BoxGeometry(0.3, 100000, 0.01)
     const xAxisMaterial = new MeshBasicMaterial({
       color: baseXColor,
       depthTest: false,
     })
-    const xAxisMesh = new Mesh(xAxisGeometry, xAxisMaterial)
-    xAxisMesh.renderOrder = -2
-    xAxisMesh.userData = {
-      type: X_AXIS,
-      baseColor: baseXColor,
-    }
-
-    const baseYColor = 0xaa0000
-    const yAxisGeometry = new BoxGeometry(0.3, 100000, 0.01)
     const yAxisMaterial = new MeshBasicMaterial({
       color: baseYColor,
       depthTest: false,
     })
+    const xAxisMesh = new Mesh(xAxisGeometry, xAxisMaterial)
     const yAxisMesh = new Mesh(yAxisGeometry, yAxisMaterial)
+    xAxisMesh.renderOrder = -2
     yAxisMesh.renderOrder = -1
+    xAxisMesh.userData = {
+      type: X_AXIS,
+      baseColor: baseXColor,
+    }
     yAxisMesh.userData = {
       type: Y_AXIS,
       baseColor: baseYColor,
@@ -236,7 +235,7 @@ class ClientSideScene {
         },
         onMove: () => {},
         onClick: (args) => {
-          if (!args) {
+          if (!args || !args.object) {
             setupSingleton.modelingSend({
               type: 'Set selection',
               data: {
@@ -246,9 +245,7 @@ class ClientSideScene {
             return
           }
           const { object } = args
-          const event = getEventForSegmentSelection(
-            getParentGroup(object)?.userData?.pathToNode
-          )
+          const event = getEventForSegmentSelection(object)
           if (!event) return
           setupSingleton.modelingSend(event)
         },
@@ -761,7 +758,7 @@ function prepareTruncatedMemoryAndAst(
     body: [JSON.parse(JSON.stringify(_ast.body[bodyIndex]))],
   }
   const programMemoryOverride: ProgramMemory = {
-    root: {},
+    root: defaultProgramMemory(),
     return: null,
   }
   for (let i = 0; i < bodyIndex; i++) {
@@ -784,13 +781,13 @@ function prepareTruncatedMemoryAndAst(
   }
 }
 
-function getParentGroup(
+export function getParentGroup(
   object: any,
   stopAt: string[] = [STRAIGHT_SEGMENT, TANGENTIAL_ARC_TO_SEGMENT]
 ): Group | null {
   if (stopAt.includes(object?.userData?.type)) {
     return object
-  } else if (object.parent) {
+  } else if (object?.parent) {
     return getParentGroup(object.parent, stopAt)
   }
   return null

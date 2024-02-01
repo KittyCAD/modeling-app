@@ -151,7 +151,7 @@ export const useStore = create<StoreState>()(
   )
 )
 
-const defaultProgramMemory: ProgramMemory['root'] = {
+export const defaultProgramMemory: () => ProgramMemory['root'] = () => ({
   _0: {
     type: 'UserVal',
     value: 0,
@@ -177,7 +177,7 @@ const defaultProgramMemory: ProgramMemory['root'] = {
     value: Math.PI,
     __meta: [],
   },
-}
+})
 
 export async function executeCode({
   engineCommandManager,
@@ -271,14 +271,14 @@ export async function executeAst({
       ? enginelessExecutor(
           ast,
           programMemoryOverride || {
-            root: defaultProgramMemory,
+            root: defaultProgramMemory(),
             return: null,
           }
         )
       : _executor(
           ast,
           {
-            root: defaultProgramMemory,
+            root: defaultProgramMemory(),
             return: null,
           },
           engineCommandManager
