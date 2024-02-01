@@ -47,10 +47,7 @@ import {
   straightSegment,
   tangentialArcToSegment,
 } from './segments'
-import {
-  addNewSketchLn,
-  changeSketchArguments,
-} from 'lang/std/sketch'
+import { addNewSketchLn, changeSketchArguments } from 'lang/std/sketch'
 import { isReducedMotion, throttle } from 'lib/utils'
 import {
   createArrayExpression,
