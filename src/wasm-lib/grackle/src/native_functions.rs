@@ -3,7 +3,7 @@
 //! But some other stdlib functions will be written in KCL.
 
 use kcl_lib::std::sketch::PlaneData;
-use kittycad_execution_plan::{Address, BinaryArithmetic, Instruction};
+use kittycad_execution_plan::{Address, BinaryArithmetic, Destination, Instruction};
 use kittycad_execution_plan_traits::Value;
 
 use crate::{CompileError, EpBinding, EvalPlan};
@@ -104,7 +104,7 @@ impl Callable for Add {
                     operand0: kittycad_execution_plan::Operand::Reference(arg0),
                     operand1: kittycad_execution_plan::Operand::Reference(arg1),
                 },
-                destination,
+                destination: Destination::Address(destination),
             }],
             binding: EpBinding::Single(destination),
         })

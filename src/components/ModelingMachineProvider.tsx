@@ -195,7 +195,9 @@ export const ModelingMachineProvider = ({
               }
             }
 
-            kclManager.executeAstMock(astWithUpdatedSource, { updates: 'code' })
+            void kclManager.executeAstMock(astWithUpdatedSource, {
+              updates: 'code',
+            })
 
             return {
               sketchPathToNode: _pathToNode,
@@ -248,7 +250,7 @@ export const ModelingMachineProvider = ({
               pathToNode: sketchPathToNode,
             })
             const _modifiedAst = newSketchLn.modifiedAst
-            kclManager
+            void kclManager
               .executeAstMock(_modifiedAst, { updates: 'code' })
               .then(() => {
                 const lineCallExp = getNodeFromPath<CallExpression>(
@@ -321,22 +323,22 @@ export const ModelingMachineProvider = ({
               programMemory: kclManager.programMemory,
               pathToNode: sketchPathToNode,
             })
-            engineCommandManager.sendSceneCommand({
+            void engineCommandManager.sendSceneCommand({
               type: 'modeling_cmd_req',
               cmd_id: uuidv4(),
               cmd: { type: 'edit_mode_exit' },
             })
-            engineCommandManager.sendSceneCommand({
+            void engineCommandManager.sendSceneCommand({
               type: 'modeling_cmd_req',
               cmd_id: uuidv4(),
               cmd: { type: 'default_camera_disable_sketch_mode' },
             })
-            kclManager.executeAstMock(_modifiedAst, { updates: 'code' })
+            void kclManager.executeAstMock(_modifiedAst, { updates: 'code' })
             // updateAst(_modifiedAst, true)
           }
         },
         'sketch exit execute': () => {
-          kclManager.executeAst()
+          void kclManager.executeAst()
         },
         'Set selection': assign(({ selectionRanges }, event) => {
           if (event.type !== 'Set selection') return {} // this was needed for ts after adding 'Set selection' action to on done modal events

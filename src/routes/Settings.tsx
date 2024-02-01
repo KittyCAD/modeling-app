@@ -71,7 +71,7 @@ export const Settings = () => {
     }
   }
 
-  function restartOnboarding() {
+  async function restartOnboarding() {
     send({
       type: 'Set Onboarding Status',
       data: { onboardingStatus: '' },
@@ -80,7 +80,7 @@ export const Settings = () => {
     if (isFileSettings) {
       navigate(dotDotSlash(1) + paths.ONBOARDING.INDEX)
     } else {
-      createAndOpenNewProject()
+      await createAndOpenNewProject()
     }
   }
 

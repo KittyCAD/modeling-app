@@ -79,10 +79,12 @@ export const TextEditor = ({
     const fromServer: FromServer = FromServer.create()
     const client = new Client(fromServer, intoServer)
     if (!TEST) {
-      Server.initialize(intoServer, fromServer).then((lspServer) => {
-        lspServer.start()
-        setIsLSPServerReady(true)
-      })
+      Server.initialize(intoServer, fromServer)
+        .then((lspServer) => {
+          void lspServer.start()
+          setIsLSPServerReady(true)
+        })
+        .catch((e) => console.log(e))
     }
 
     const lspClient = new LanguageServerClient({ client })
@@ -159,7 +161,7 @@ export const TextEditor = ({
           key: editorShortcutMeta.convertToVariable.codeMirror,
           run: () => {
             if (convertEnabled) {
-              convertCallback()
+              void convertCallback()
               return true
             }
             return false

@@ -12,6 +12,7 @@ kittycad-execution-plan = { workspace = true }
 kittycad-execution-plan-traits = { workspace = true }
 kittycad-modeling-session = { workspace = true }
 thiserror = "1.0.56"
+tokio = { version = "1.35.1", features = ["macros", "rt"] }
 
 
 [dev-dependencies]

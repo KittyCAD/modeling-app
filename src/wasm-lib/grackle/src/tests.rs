@@ -1,4 +1,7 @@
-use ep::UnaryArithmetic;
+use std::collections::HashMap;
+
+use ep::{Destination, UnaryArithmetic};
+use ept::{ListHeader, ObjectHeader};
 use pretty_assertions::assert_eq;
 
 use super::*;
@@ -42,22 +45,49 @@ fn assignments() {
 }
 
 #[test]
-fn bind_array() {
+fn bind_array_simple() {
     let program = r#"let x = [44, 55, "sixty-six"]"#;
     let (plan, _scope) = must_plan(program);
     assert_eq!(
         plan,
         vec![
+            // Array length
             Instruction::SetPrimitive {
                 address: Address::ZERO,
+                value: ListHeader {
+                    // The list has 3 elements
+                    count: 3,
+                    // The 3 elements each take 2 primitives (one for length, one for value),
+                    // so 6 in total.
+                    size: 6
+                }
+                .into()
+            },
+            // Elem 0
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 1,
+                value: 1usize.into()
+            },
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 2,
                 value: 44i64.into(),
             },
+            // Elem 1
             Instruction::SetPrimitive {
-                address: Address::ZERO.offset(1),
-                value: 55i64.into(),
+                address: Address::ZERO + 3,
+                value: 1usize.into()
             },
             Instruction::SetPrimitive {
-                address: Address::ZERO.offset(2),
+                address: Address::ZERO + 4,
+                value: 55i64.into(),
+            },
+            // Elem 2
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 5,
+                value: 1usize.into()
+            },
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 6,
                 value: "sixty-six".to_owned().into(),
             }
         ]
@@ -71,18 +101,51 @@ fn bind_nested_array() {
     assert_eq!(
         plan,
         vec![
+            // Outer array length
             Instruction::SetPrimitive {
                 address: Address::ZERO,
+                value: ListHeader {
+                    count: 2,
+                    // 2 for each of the 3 elements, plus 1 for the inner array header.
+                    size: 2 + 2 + 2 + 1,
+                }
+                .into(),
+            },
+            // Outer array element 0 length
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 1,
+                value: 1usize.into(),
+            },
+            // Outer array element 0 value
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 2,
                 value: 44i64.into(),
             },
+            // Outer array element 1 length (i.e. inner array header)
             Instruction::SetPrimitive {
-                address: Address::ZERO.offset(1),
+                address: Address::ZERO + 3,
+                value: ListHeader { count: 2, size: 4 }.into(),
+            },
+            // Inner array elem0 length
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 4,
+                value: 1usize.into(),
+            },
+            // Inner array elem0 value
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 5,
                 value: 55i64.into(),
             },
+            // Inner array elem1 length
             Instruction::SetPrimitive {
-                address: Address::ZERO.offset(2),
+                address: Address::ZERO + 6,
+                value: 1usize.into(),
+            },
+            // Inner array elem1 value
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 7,
                 value: "sixty-six".to_owned().into(),
-            }
+            },
         ]
     );
 }
@@ -94,18 +157,44 @@ fn bind_arrays_with_objects_elements() {
     assert_eq!(
         plan,
         vec![
+            // List header
             Instruction::SetPrimitive {
                 address: Address::ZERO,
+                value: ListHeader { count: 2, size: 7 }.into()
+            },
+            // Array contents
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 1,
+                value: 1usize.into(),
+            },
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 2,
                 value: 44i64.into(),
             },
             Instruction::SetPrimitive {
-                address: Address::ZERO.offset(1),
-                value: 55i64.into(),
+                address: Address::ZERO + 3,
+                value: ObjectHeader {
+                    size: 4,
+                    properties: vec!["a".to_owned(), "b".to_owned(),]
+                }
+                .into(),
             },
             Instruction::SetPrimitive {
-                address: Address::ZERO.offset(2),
-                value: "sixty-six".to_owned().into(),
-            }
+                address: Address::ZERO + 4,
+                value: 1usize.into(),
+            },
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 5,
+                value: 55i64.into()
+            },
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 6,
+                value: 1usize.into(),
+            },
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 7,
+                value: "sixty-six".to_owned().into()
+            },
         ]
     );
 }
@@ -181,7 +270,7 @@ fn use_native_function_add() {
                     operand0: ep::Operand::Reference(Address::ZERO),
                     operand1: ep::Operand::Reference(Address::ZERO.offset(1))
                 },
-                destination: Address::ZERO.offset(2),
+                destination: Destination::Address(Address::ZERO.offset(2)),
             }
         ]
     );
@@ -200,23 +289,121 @@ fn use_native_function_id() {
     );
 }
 
-#[test]
-#[ignore = "haven't done computed properties yet"]
-fn computed_array_index() {
+#[tokio::test]
+async fn computed_object_property() {
     let program = r#"
-    let array = ["a", "b", "c"]
-    let index = 1+1
-    let prop = array[index]
+    let obj = {a: true, b: false}
+    let prop0 = "a"
+    let val = obj[prop0] // should be `true`
     "#;
     let (_plan, scope) = must_plan(program);
-    match scope.get("prop").unwrap() {
-        EpBinding::Single(addr) => {
-            assert_eq!(*addr, Address::ZERO + 1);
-        }
-        other => {
-            panic!("expected 'prop' bound to 0x0 but it was bound to {other:?}");
-        }
+    let Some(EpBinding::Single(address_of_val)) = scope.get("val") else {
+        panic!("Unexpected binding for variable 'val': {:?}", scope.get("val"));
+    };
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+        .ast()
+        .unwrap();
+    let mem = crate::execute(ast, None).await.unwrap();
+    use ept::ReadMemory;
+    // Should be 'true', based on the above KCL program.
+    assert_eq!(mem.get(address_of_val).unwrap(), &ept::Primitive::Bool(true));
+}
+
+#[tokio::test]
+async fn computed_array_index() {
+    let program = r#"
+    let array = ["a", "b", "c"]
+    let index = 1+1 // should be "c"
+    let prop = array[index]
+    "#;
+    let (plan, scope) = must_plan(program);
+    let expected_address_of_prop = Address::ZERO + 10;
+    if let Some(EpBinding::Single(addr)) = scope.get("prop") {
+        assert_eq!(*addr, expected_address_of_prop);
+    } else {
+        panic!("expected 'prop' bound to 0 but it was {:?}", scope.get("prop"));
     }
+    assert_eq!(
+        plan,
+        vec![
+            // Setting the array
+            // First, the length of the array (number of elements).
+            Instruction::SetPrimitive {
+                address: Address::ZERO,
+                value: ListHeader { count: 3, size: 6 }.into()
+            },
+            // Elem 0 length
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 1,
+                value: 1usize.into()
+            },
+            // Elem 0 value
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 2,
+                value: "a".to_owned().into()
+            },
+            // Elem 1 length
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 3,
+                value: 1usize.into()
+            },
+            // Elem 1 value
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 4,
+                value: "b".to_owned().into()
+            },
+            // Elem 2 length
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 5,
+                value: 1usize.into()
+            },
+            // Elem 2 value
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 6,
+                value: "c".to_owned().into()
+            },
+            // Calculate the index (1+1)
+            // First, the left operand
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 7,
+                value: 1i64.to_owned().into()
+            },
+            // Then the right operand
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 8,
+                value: 1i64.to_owned().into()
+            },
+            // Then index, which is left operand + right operand
+            Instruction::BinaryArithmetic {
+                arithmetic: ep::BinaryArithmetic {
+                    operation: ep::BinaryOperation::Add,
+                    operand0: ep::Operand::Reference(Address::ZERO + 7),
+                    operand1: ep::Operand::Reference(Address::ZERO + 8)
+                },
+                destination: Destination::Address(Address::ZERO + 9)
+            },
+            // Get the element at the index
+            Instruction::GetElement {
+                start: Address::ZERO,
+                index: ep::Operand::Reference(Address::ZERO + 9)
+            },
+            // Write it to the next free address.
+            Instruction::StackPop {
+                destination: Some(expected_address_of_prop)
+            },
+        ]
+    );
+    // Now let's run the program and check what's actually in the memory afterwards.
+    let tokens = kcl_lib::token::lexer(program);
+    let parser = kcl_lib::parser::Parser::new(tokens);
+    let ast = parser.ast().unwrap();
+    let mem = crate::execute(ast, None).await.unwrap();
+    use ept::ReadMemory;
+    // Should be "b", as pointed out in the KCL program's comment.
+    assert_eq!(
+        mem.get(&expected_address_of_prop).unwrap(),
+        &ept::Primitive::String("c".to_owned())
+    );
 }
 
 #[test]
@@ -247,7 +434,7 @@ fn member_expressions_object() {
     let (_plan, scope) = must_plan(program);
     match scope.get("prop").unwrap() {
         EpBinding::Single(addr) => {
-            assert_eq!(*addr, Address::ZERO + 1);
+            assert_eq!(*addr, Address::ZERO + 4);
         }
         other => {
             panic!("expected 'prop' bound to 0x0 but it was bound to {other:?}");
@@ -257,26 +444,40 @@ fn member_expressions_object() {
 
 #[test]
 fn member_expressions_array() {
-    let program = "
-    let array = [[1,2],[3,4]]
+    let program = r#"
+    let array = [["a", "b"],["c", "d"]]
     let first = array[0][0]
     let last = array[1][1]
-    ";
+    "#;
+    /*
+    Memory layout:
+    Header(2, 10) // outer array
+    Header(2, 4) // first inner array
+    1
+    a
+    1
+    b
+    Header(2,4) // second inner array
+    1
+    c
+    1
+    d
+     */
     let (_plan, scope) = must_plan(program);
     match scope.get("first").unwrap() {
-        EpBinding::Single(addr) => {
-            assert_eq!(*addr, Address::ZERO);
-        }
-        other => {
-            panic!("expected 'number' bound to 0x0 but it was bound to {other:?}");
-        }
-    }
-    match scope.get("last").unwrap() {
         EpBinding::Single(addr) => {
             assert_eq!(*addr, Address::ZERO + 3);
         }
         other => {
-            panic!("expected 'number' bound to 0x3 but it was bound to {other:?}");
+            panic!("expected 'number' bound to addr 3 but it was bound to {other:?}");
+        }
+    }
+    match scope.get("last").unwrap() {
+        EpBinding::Single(addr) => {
+            assert_eq!(*addr, Address::ZERO + 10);
+        }
+        other => {
+            panic!("expected 'number' bound to addr 10 but it was bound to {other:?}");
         }
     }
 }
@@ -296,7 +497,7 @@ fn compile_flipped_sign() {
                 operation: ep::UnaryOperation::Neg,
                 operand: ep::Operand::Reference(Address::ZERO),
             },
-            destination: Address::ZERO + 1,
+            destination: Destination::Address(Address::ZERO + 1),
         },
     ];
     assert_eq!(plan, expected);
@@ -323,7 +524,7 @@ fn add_literals() {
                     operand0: ep::Operand::Reference(Address::ZERO),
                     operand1: ep::Operand::Reference(Address::ZERO.offset(1)),
                 },
-                destination: Address::ZERO.offset(2),
+                destination: Destination::Address(Address::ZERO.offset(2)),
             }
         ]
     );
@@ -355,7 +556,7 @@ fn add_vars() {
                     operand0: ep::Operand::Reference(addr0),
                     operand1: ep::Operand::Reference(addr1),
                 },
-                destination: Address::ZERO.offset(2),
+                destination: Destination::Address(Address::ZERO.offset(2)),
             }
         ]
     );
@@ -396,7 +597,7 @@ fn composite_binary_exprs() {
                     operand0: ep::Operand::Reference(addr0),
                     operand1: ep::Operand::Reference(addr1),
                 },
-                destination: addr3,
+                destination: Destination::Address(addr3),
             },
             // Adds `x` + 3, where `x` is (1 + 2)
             Instruction::BinaryArithmetic {
@@ -405,7 +606,7 @@ fn composite_binary_exprs() {
                     operand0: ep::Operand::Reference(addr3),
                     operand1: ep::Operand::Reference(addr2),
                 },
-                destination: Address::ZERO.offset(4),
+                destination: Destination::Address(Address::ZERO.offset(4)),
             }
         ]
     );
@@ -464,7 +665,7 @@ fn use_kcl_functions_with_optional_params() {
                         operand0: ep::Operand::Reference(Address::ZERO),
                         operand1: ep::Operand::Reference(Address::ZERO + 2)
                     },
-                    destination,
+                    destination: Destination::Address(destination),
                 }
             ],
             "failed test {i}"
@@ -585,7 +786,7 @@ fn use_kcl_functions_with_params() {
                         operand0: ep::Operand::Reference(Address::ZERO),
                         operand1: ep::Operand::Reference(Address::ZERO.offset(1))
                     },
-                    destination,
+                    destination: Destination::Address(destination),
                 }
             ],
             "failed test {i}"
@@ -666,33 +867,69 @@ fn store_object() {
     let expected = vec![
         Instruction::SetPrimitive {
             address: Address::ZERO,
+            value: ObjectHeader {
+                properties: vec!["a".to_owned(), "b".to_owned(), "c".to_owned()],
+                size: 7,
+            }
+            .into(),
+        },
+        // Key a header
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 1,
+            value: 1usize.into(),
+        },
+        // Key a value
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 2,
             value: 1i64.into(),
         },
+        // Key b header
         Instruction::SetPrimitive {
-            address: Address::ZERO.offset(1),
+            address: Address::ZERO + 3,
+            value: 1usize.into(),
+        },
+        // Key b value
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 4,
             value: 2i64.into(),
         },
+        // Inner object (i.e. key c) header
         Instruction::SetPrimitive {
-            address: Address::ZERO.offset(2),
+            address: Address::ZERO + 5,
+            value: ObjectHeader {
+                properties: vec!["d".to_owned()],
+                size: 2,
+            }
+            .into(),
+        },
+        // Key d header
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 6,
+            value: 1usize.into(),
+        },
+        // Key d value
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 7,
             value: 3i64.into(),
         },
     ];
     assert_eq!(actual, expected);
-    eprintln!("{bindings:#?}");
-    assert_eq!(
-        bindings.get("x0").unwrap(),
-        &EpBinding::Map(HashMap::from([
-            ("a".to_owned(), EpBinding::Single(Address::ZERO),),
-            ("b".to_owned(), EpBinding::Single(Address::ZERO.offset(1))),
+    let actual = bindings.get("x0").unwrap();
+    let expected = EpBinding::Map {
+        length_at: Address::ZERO,
+        properties: HashMap::from([
+            ("a".to_owned(), EpBinding::Single(Address::ZERO + 2)),
+            ("b".to_owned(), EpBinding::Single(Address::ZERO + 4)),
             (
                 "c".to_owned(),
-                EpBinding::Map(HashMap::from([(
-                    "d".to_owned(),
-                    EpBinding::Single(Address::ZERO.offset(2))
-                )]))
+                EpBinding::Map {
+                    length_at: Address::ZERO + 5,
+                    properties: HashMap::from([("d".to_owned(), EpBinding::Single(Address::ZERO + 7))]),
+                },
             ),
-        ]))
-    )
+        ]),
+    };
+    assert_eq!(actual, &expected)
 }
 
 #[test]
@@ -702,31 +939,61 @@ fn store_object_with_array_property() {
     let expected = vec![
         Instruction::SetPrimitive {
             address: Address::ZERO,
-            value: 1i64.into(),
+            value: ObjectHeader {
+                properties: vec!["a".to_owned(), "b".to_owned()],
+                size: 7,
+            }
+            .into(),
         },
         Instruction::SetPrimitive {
-            address: Address::ZERO.offset(1),
+            address: Address::ZERO + 1,
+            value: 1usize.into(),
+        },
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 2,
+            value: 1i64.into(),
+        },
+        // Array header
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 3,
+            value: ListHeader { count: 2, size: 4 }.into(),
+        },
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 4,
+            value: 1usize.into(),
+        },
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 5,
             value: 2i64.into(),
         },
         Instruction::SetPrimitive {
-            address: Address::ZERO.offset(2),
+            address: Address::ZERO + 6,
+            value: 1usize.into(),
+        },
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 7,
             value: 3i64.into(),
         },
     ];
     assert_eq!(actual, expected);
-    eprintln!("{bindings:#?}");
     assert_eq!(
         bindings.get("x0").unwrap(),
-        &EpBinding::Map(HashMap::from([
-            ("a".to_owned(), EpBinding::Single(Address::ZERO),),
-            (
-                "b".to_owned(),
-                EpBinding::Sequence(vec![
-                    EpBinding::Single(Address::ZERO.offset(1)),
-                    EpBinding::Single(Address::ZERO.offset(2)),
-                ])
-            ),
-        ]))
+        &EpBinding::Map {
+            length_at: Address::ZERO,
+            properties: HashMap::from([
+                ("a".to_owned(), EpBinding::Single(Address::ZERO + 2)),
+                (
+                    "b".to_owned(),
+                    EpBinding::Sequence {
+                        length_at: Address::ZERO + 3,
+                        elements: vec![
+                            EpBinding::Single(Address::ZERO + 5),
+                            EpBinding::Single(Address::ZERO + 7),
+                        ]
+                    }
+                ),
+            ])
+        }
     )
 }
 
@@ -742,4 +1009,92 @@ fn stdlib_api_calls() {
         const x6 = extrude(20, x5)
       show(x6)";
     must_plan(program);
+}
+
+#[test]
+fn objects_as_parameters() {
+    let program = "fn identity = (x) => { return x }
+    let obj = identity({x: 1})";
+    let (plan, scope) = must_plan(program);
+    let expected_plan = vec![
+        // Object contents
+        Instruction::SetPrimitive {
+            address: Address::ZERO,
+            value: ObjectHeader {
+                properties: vec!["x".to_owned()],
+                size: 2,
+            }
+            .into(),
+        },
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 1,
+            value: 1usize.into(),
+        },
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 2,
+            value: 1i64.into(),
+        },
+    ];
+    assert_eq!(plan, expected_plan);
+    assert_eq!(
+        scope.get("obj").unwrap(),
+        &EpBinding::Map {
+            length_at: Address::ZERO,
+            properties: HashMap::from([("x".to_owned(), EpBinding::Single(Address::ZERO + 2))])
+        }
+    )
+}
+
+#[test]
+fn arrays_as_parameters() {
+    let program = r#"fn identity = (x) => { return x }
+    let array = identity(["a","b","c"])"#;
+    let (plan, scope) = must_plan(program);
+    const INDEX_OF_A: usize = 2;
+    const INDEX_OF_B: usize = 4;
+    const INDEX_OF_C: usize = 6;
+    let expected_plan = vec![
+        // Array length
+        Instruction::SetPrimitive {
+            address: Address::ZERO,
+            value: ListHeader { count: 3, size: 6 }.into(),
+        },
+        // Array contents
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 1,
+            value: 1usize.into(),
+        },
+        Instruction::SetPrimitive {
+            address: Address::ZERO + INDEX_OF_A,
+            value: "a".to_owned().into(),
+        },
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 3,
+            value: 1usize.into(),
+        },
+        Instruction::SetPrimitive {
+            address: Address::ZERO + INDEX_OF_B,
+            value: "b".to_owned().into(),
+        },
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 5,
+            value: 1usize.into(),
+        },
+        Instruction::SetPrimitive {
+            address: Address::ZERO + INDEX_OF_C,
+            value: "c".to_owned().into(),
+        },
+    ];
+    assert_eq!(plan, expected_plan);
+    assert_eq!(
+        scope.get("array").unwrap(),
+        &EpBinding::Sequence {
+            length_at: Address::ZERO,
+            elements: vec![
+                EpBinding::Single(Address::ZERO + INDEX_OF_A),
+                EpBinding::Single(Address::ZERO + INDEX_OF_B),
+                EpBinding::Single(Address::ZERO + INDEX_OF_C),
+            ]
+        }
+    )
 }

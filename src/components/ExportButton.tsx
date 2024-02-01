@@ -93,7 +93,7 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
       if (values.type === 'ply' || values.type === 'stl') {
         values.selection = { type: 'default_scene' }
       }
-      engineCommandManager.sendSceneCommand({
+      void engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
           type: 'export',
