@@ -191,7 +191,8 @@ class ClientSideScene {
       const isDraftSegment =
         draftSegment && index === sketchGroup.value.length - 1
       let seg
-      if (segment.type === 'tangentialArcTo') {
+      // TODO figure out what's going on with rust types here
+      if (segment.type === ('tangentialArcTo' as 'tangentialarcto')) {
         seg = tangentialArcToSegment({
           prevSegment: sketchGroup.value[index - 1],
           from: segment.from,
@@ -319,7 +320,8 @@ class ClientSideScene {
               to: [intersection2d.x, intersection2d.y],
               from: [lastSegment.to[0], lastSegment.to[1]],
               fnName:
-                lastSegment.type === 'tangentialArcTo'
+                // TODO figure out what's going on with rust types here
+                lastSegment.type === ('tangentialArcTo' as 'tangentialarcto')
                   ? 'tangentialArcTo'
                   : 'line',
               pathToNode: sketchPathToNode,
@@ -500,7 +502,8 @@ class ClientSideScene {
     arrowGroup.position.set(to[0], to[1], 0)
 
     const previousPoint =
-      prevSegment?.type === 'tangentialArcTo'
+      // TODO figure out what's going on with rust types here
+      prevSegment?.type === ('tangentialArcTo' as 'tangentialarcto')
         ? getTangentPointFromPreviousArc(
             prevSegment.center,
             prevSegment.ccw,

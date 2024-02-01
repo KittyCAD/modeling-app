@@ -1,19 +1,26 @@
 import { browser, $, expect } from '@wdio/globals'
 import fs from 'fs/promises'
 
-describe('KCMA (Tauri, Linux)', () => {
-  it('opens the auth page, signs in, and signs out', async () => {
-    // Clean up previous tests
+const defaultDir = `${process.env.HOME}/Documents/zoo-modeling-app-projects`
+const userCodeDir = '/tmp/kittycad_user_code'
+
+async function click(element: WebdriverIO.Element): Promise<void> {
+  // Workaround for .click(), see https://github.com/tauri-apps/tauri/issues/6541
+  await element.waitForClickable()
+  await browser.execute('arguments[0].click();', element)
+}
+
+describe('ZMA (Tauri, Linux)', () => {
+  it('opens the auth page and signs in', async () => {
+    // Clean up filesystem from previous tests
     await new Promise((resolve) => setTimeout(resolve, 100))
-    await fs.rm('/tmp/kittycad_user_code', { force: true })
-    await browser.execute('window.localStorage.clear()')
+    await fs.rm(defaultDir, { force: true, recursive: true })
+    await fs.rm(userCodeDir, { force: true })
 
     const signInButton = await $('[data-testid="sign-in-button"]')
     expect(await signInButton.getText()).toEqual('Sign in')
 
-    // Workaround for .click(), see https://github.com/tauri-apps/tauri/issues/6541
-    await signInButton.waitForClickable()
-    await browser.execute('arguments[0].click();', signInButton)
+    await click(signInButton)
     await new Promise((resolve) => setTimeout(resolve, 2000))
 
     // Get from main.rs
@@ -49,14 +56,51 @@ describe('KCMA (Tauri, Linux)', () => {
     // Now should be signed in
     const newFileButton = await $('[data-testid="home-new-file"]')
     expect(await newFileButton.getText()).toEqual('New file')
+  })
 
-    // So let's sign out!
+  it('opens the settings page, checks filesystem settings, and closes the settings page', async () => {
     const menuButton = await $('[data-testid="user-sidebar-toggle"]')
-    await menuButton.waitForClickable()
-    await browser.execute('arguments[0].click();', menuButton)
+    await click(menuButton)
+
+    const settingsButton = await $('[data-testid="settings-button"]')
+    await click(settingsButton)
+
+    const defaultDirInput = await $('[data-testid="default-directory-input"]')
+    expect(await defaultDirInput.getValue()).toEqual(defaultDir)
+
+    const nameInput = await $('[data-testid="name-input"]')
+    expect(await nameInput.getValue()).toEqual('project-$nnn')
+
+    const closeButton = await $('[data-testid="close-button"]')
+    await click(closeButton)
+  })
+
+  it('checks that no file exists, creates a new file', async () => {
+    const homeSection = await $('[data-testid="home-section"]')
+    expect(await homeSection.getText()).toContain('No Projects found')
+
+    const newFileButton = await $('[data-testid="home-new-file"]')
+    await click(newFileButton)
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+
+    expect(await homeSection.getText()).toContain('project-000')
+  })
+
+  it('opens the new file and expects an error on Linux', async () => {
+    const projectLink = await $('[data-testid="project-link"]')
+    await click(projectLink)
+    const error = await $('h3')
+    expect(await error.getText()).toContain(
+      "Can't find variable: RTCPeerConnection"
+    )
+    await browser.execute('window.location.href = "tauri://localhost/home"')
+  })
+
+  it('signs out', async () => {
+    const menuButton = await $('[data-testid="user-sidebar-toggle"]')
+    await click(menuButton)
     const signoutButton = await $('[data-testid="user-sidebar-sign-out"]')
-    await signoutButton.waitForClickable()
-    await browser.execute('arguments[0].click();', signoutButton)
+    await click(signoutButton)
     const newSignInButton = await $('[data-testid="sign-in-button"]')
     expect(await newSignInButton.getText()).toEqual('Sign in')
   })

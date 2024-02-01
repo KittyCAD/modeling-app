@@ -108,6 +108,7 @@ function ProjectCard({
             <Link
               className="flex-1 text-liquid-100 after:content-[''] after:absolute after:inset-0"
               to={`${paths.FILE}/${encodeURIComponent(project.path)}`}
+              data-testid="project-link"
             >
               {project.name?.replace(FILE_EXT, '')}
             </Link>

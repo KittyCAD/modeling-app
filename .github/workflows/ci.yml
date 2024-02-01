@@ -123,6 +123,7 @@ jobs:
     needs: [prepare-json-files]
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
     steps:
@@ -243,6 +244,7 @@ jobs:
           args: "${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }} ${{ env.TAURI_CONF_ARGS }}"
 
       - uses: actions/upload-artifact@v3
+        if: matrix.os != 'ubuntu-latest'
         env:
           PREFIX: ${{ matrix.os == 'macos-latest' && 'src-tauri/target/universal-apple-darwin' || 'src-tauri/target' }}
           MODE: ${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}
@@ -279,7 +281,6 @@ jobs:
         run: |
           ls -l artifact/*/*oo*
           DARWIN_SIG=`cat artifact/macos/*.app.tar.gz.sig`
-          LINUX_SIG=`cat artifact/appimage/*.AppImage.tar.gz.sig`
           WINDOWS_SIG=`cat artifact/msi/*.msi.zip.sig`
           RELEASE_DIR=https://${WEBSITE_DIR}/${VERSION}
           jq --null-input \
@@ -288,8 +289,6 @@ jobs:
             --arg notes "${NOTES}" \
             --arg darwin_sig "$DARWIN_SIG" \
             --arg darwin_url "$RELEASE_DIR/macos/Zoo%20Modeling%20App.app.tar.gz" \
-            --arg linux_sig "$LINUX_SIG" \
-            --arg linux_url "$RELEASE_DIR/appimage/zoo-modeling-app_${VERSION_NO_V}_amd64.AppImage.tar.gz" \
             --arg windows_sig "$WINDOWS_SIG" \
             --arg windows_url "$RELEASE_DIR/msi/Zoo%20Modeling%20App_${VERSION_NO_V}_x64_en-US.msi.zip" \
             '{
@@ -304,10 +303,6 @@ jobs:
                 "darwin-aarch64": {
                   "signature": $darwin_sig,
                   "url": $darwin_url
-                },
-                "linux-x86_64": {
-                  "signature": $linux_sig,
-                  "url": $linux_url
                 },
                 "windows-x86_64": {
                   "signature": $windows_sig,
@@ -325,7 +320,6 @@ jobs:
             --arg pub_date "${PUB_DATE}" \
             --arg notes "${NOTES}" \
             --arg darwin_url "$RELEASE_DIR/dmg/Zoo%20Modeling%20App_${VERSION_NO_V}_universal.dmg" \
-            --arg linux_url "$RELEASE_DIR/appimage/zoo-modeling-app_${VERSION_NO_V}_amd64.AppImage" \
             --arg windows_url "$RELEASE_DIR/msi/Zoo%20Modeling%20App_${VERSION_NO_V}_x64_en-US.msi" \
             '{
               "version": $version,
@@ -334,9 +328,6 @@ jobs:
               "platforms": {
                 "dmg-universal": {
                   "url": $darwin_url
-                },
-                "appimage-x86_64": {
-                  "url": $linux_url
                 },
                 "msi-x86_64": {
                   "url": $windows_url
@@ -359,7 +350,7 @@ jobs:
         uses: google-github-actions/upload-cloud-storage@v2.0.0
         with:
           path: artifact
-          glob: '*/*oo*'
+          glob: '*/Zoo*'
           parent: false
           destination: ${{ env.BUCKET_DIR }}/${{ env.VERSION }}
 
@@ -379,4 +370,4 @@ jobs:
         if: ${{ github.event_name == 'release' }}
         uses: softprops/action-gh-release@v1
         with:
-          files: artifact/*/*oo*
+          files: 'artifact/*/Zoo*'

@@ -118,7 +118,8 @@ export function tangentialArcToSegment({
   const group = new Group()
 
   const previousPoint =
-    prevSegment?.type === 'tangentialArcTo'
+    // TODO figure out what's going on with rust types here
+    prevSegment?.type === ('tangentialArcTo' as 'tangentialarcto')
       ? getTangentPointFromPreviousArc(
           prevSegment.center,
           prevSegment.ccw,

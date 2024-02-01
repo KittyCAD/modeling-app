@@ -4,6 +4,8 @@ use std::{collections::HashMap, sync::Arc};
 
 use anyhow::Result;
 use async_recursion::async_recursion;
+use kittycad::types::{Color, ModelingCmd, Point3D};
+use kittycad_execution_plan_macros::ExecutionPlanValue;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -167,6 +169,7 @@ pub enum PlaneType {
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct UserVal {
+    #[ts(type = "any")]
     pub value: serde_json::Value,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
@@ -537,7 +540,7 @@ impl Point2d {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, ts_rs::TS, JsonSchema, ExecutionPlanValue)]
 #[ts(export)]
 pub struct Point3d {
     pub x: f64,

@@ -1,0 +1,18 @@
+[package]
+name = "grackle"
+version = "0.1.0"
+edition = "2021"
+description = "A new executor for KCL which compiles to Execution Plans"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+kcl-lib = { path = "../kcl" }
+kittycad-execution-plan = { workspace = true }
+kittycad-execution-plan-traits = { workspace = true }
+kittycad-modeling-session = { workspace = true }
+thiserror = "1.0.56"
+
+
+[dev-dependencies]
+pretty_assertions = "1"

@@ -4,6 +4,7 @@ use crate::std::utils::{get_tangent_point_from_previous_arc, get_tangential_arc_
 use anyhow::Result;
 use derive_docs::stdlib;
 use kittycad::types::{Angle, ModelingCmd, Point3D};
+use kittycad_execution_plan_macros::ExecutionPlanValue;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -649,7 +650,7 @@ async fn inner_start_sketch_at(data: LineData, args: Args) -> Result<Box<SketchG
 }
 
 /// Data for a plane.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, ExecutionPlanValue)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub enum PlaneData {
@@ -1085,10 +1086,8 @@ async fn inner_arc(data: ArcData, sketch_group: Box<SketchGroup>, args: Args) ->
         ModelingCmd::ExtendPath {
             path: sketch_group.id,
             segment: kittycad::types::PathSegment::Arc {
-                angle_start: angle_start.degrees(),
-                angle_end: angle_end.degrees(),
-                start: Some(angle_start),
-                end: Some(angle_end),
+                start: angle_start,
+                end: angle_end,
                 center: center.into(),
                 radius,
                 relative: false,

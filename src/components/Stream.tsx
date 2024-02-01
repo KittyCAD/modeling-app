@@ -7,7 +7,7 @@ import {
 } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { useStore } from '../useStore'
-import { getNormalisedCoordinates, isOverlap } from '../lib/utils'
+import { getNormalisedCoordinates, isOverlap, throttle } from '../lib/utils'
 import Loading from './Loading'
 import { cameraMouseDragGuards } from 'lib/cameraControls'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
@@ -117,9 +117,9 @@ export const Stream = ({ className = '' }) => {
     setClickCoords({ x, y })
   }
 
-  const handleScroll: WheelEventHandler<HTMLVideoElement> = (e) => {
+  const fps = 60
+  const handleScroll: WheelEventHandler<HTMLVideoElement> = throttle((e) => {
     if (!cameraMouseDragGuards[cameraControls].zoom.scrollCallback(e)) return
-
     engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd: {
@@ -128,7 +128,7 @@ export const Stream = ({ className = '' }) => {
       },
       cmd_id: uuidv4(),
     })
-  }
+  }, Math.round(1000 / fps))
 
   const handleMouseUp: MouseEventHandler<HTMLVideoElement> = ({
     clientX,
