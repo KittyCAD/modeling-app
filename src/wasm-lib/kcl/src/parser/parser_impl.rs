@@ -266,6 +266,7 @@ fn binary_operator(i: TokenSlice) -> PResult<BinaryOperator> {
             "/" => BinaryOperator::Div,
             "*" => BinaryOperator::Mul,
             "%" => BinaryOperator::Mod,
+            "^" => BinaryOperator::Pow,
             _ => {
                 return Err(KclError::Syntax(KclErrorDetails {
                     source_ranges: token.as_source_ranges(),

@@ -201,12 +201,8 @@ impl Planner {
                             ast::types::BinaryOperator::Sub => ep::BinaryOperation::Sub,
                             ast::types::BinaryOperator::Mul => ep::BinaryOperation::Mul,
                             ast::types::BinaryOperator::Div => ep::BinaryOperation::Div,
-                            ast::types::BinaryOperator::Mod => {
-                                todo!("execution plan instruction set doesn't support Mod yet")
-                            }
-                            ast::types::BinaryOperator::Pow => {
-                                todo!("execution plan instruction set doesn't support Pow yet")
-                            }
+                            ast::types::BinaryOperator::Mod => ep::BinaryOperation::Mod,
+                            ast::types::BinaryOperator::Pow => ep::BinaryOperation::Pow,
                         },
                         operand0: ep::Operand::Reference(l_binding),
                         operand1: ep::Operand::Reference(r_binding),
