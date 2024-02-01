@@ -13,6 +13,7 @@ import {
   NormalBufferAttributes,
   Shape,
   SphereGeometry,
+  Vector2,
   Vector3,
 } from 'three'
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
@@ -193,9 +194,9 @@ export function createArcGeometry({
   ccw: boolean
   isDashed?: boolean
 }): BufferGeometry {
-  const dashSize = 1.8
-  const gapSize = 1.8
-  const arc = new EllipseCurve(
+  const dashSize = 1.2
+  const gapSize = 1.2
+  const arcStart = new EllipseCurve(
     center[0],
     center[1],
     radius,
@@ -205,12 +206,22 @@ export function createArcGeometry({
     !ccw,
     0
   )
+  const arcEnd = new EllipseCurve(
+    center[0],
+    center[1],
+    radius,
+    radius,
+    endAngle,
+    startAngle,
+    ccw,
+    0
+  )
   const shape = new Shape()
   shape.moveTo(0, -0.08)
   shape.lineTo(0, 0.08) // The width of the line
 
   if (!isDashed) {
-    const points = arc.getPoints(50)
+    const points = arcStart.getPoints(50)
     const path = new CurvePath<Vector3>()
     path.add(new CatmullRomCurve3(points.map((p) => new Vector3(p.x, p.y, 0))))
 
@@ -221,61 +232,72 @@ export function createArcGeometry({
     })
   }
 
-  const length = arc.getLength()
+  const length = arcStart.getLength()
+  const totalDashes = length / (dashSize + gapSize) // rounding makes the dashes jittery since the new dash is suddenly appears instead of growing into place
+  const dashesAtEachEnd = Math.min(100, totalDashes / 2) // Assuming we want 50 dashes total, 25 at each end
 
-  const pointsPerDash = 6 // needs to be a even integer
-  const numberOfDashPoints = (length / (dashSize + gapSize)) * pointsPerDash
-  const dashPoints = arc.getPoints(numberOfDashPoints)
   const dashGeometries = []
-  let hasCreatedMiddleDash = false
 
-  for (let i = 0; i < numberOfDashPoints; i += pointsPerDash) {
-    // only do the first 500 and last 500 points
-    const startEndDashes = 50
-    const initialStartIndex = startEndDashes * pointsPerDash
-    const initialEndIndex = numberOfDashPoints - startEndDashes * pointsPerDash
-    const path = new CurvePath<Vector3>()
-    let curve
-    let steps = 4
-    const isInMiddleOfMassiveArc =
-      numberOfDashPoints > startEndDashes * pointsPerDash * 2 &&
-      i > initialStartIndex &&
-      i < initialEndIndex
-    if (!isInMiddleOfMassiveArc) {
-      const newIndex = i + 1 + pointsPerDash / 2
-      const endIndex =
-        newIndex > numberOfDashPoints ? numberOfDashPoints : newIndex
-      curve = new CatmullRomCurve3(
-        dashPoints.slice(i, endIndex).map((p) => new Vector3(p?.x, p?.y, 0))
-      )
-    } else if (hasCreatedMiddleDash) {
-      continue
-    } else {
-      hasCreatedMiddleDash = true
-      steps = 50
-      curve = new CatmullRomCurve3(
-        Array.from({ length: steps }, (_, i) => {
-          const index = Math.round(
-            initialStartIndex +
-              ((initialEndIndex - initialStartIndex) * i) / (steps - 1)
-          )
-          return new Vector3(dashPoints[index]?.x, dashPoints[index]?.y, 0)
-        })
-      )
-    }
-
-    if (curve.points.length < 2) {
-      continue
-    }
-    path.add(curve)
-
-    const dashGeometry = new ExtrudeGeometry(shape, {
-      steps,
+  // Function to create a dash at a specific t value (0 to 1 along the curve)
+  const createDashAt = (t: number, curve: EllipseCurve) => {
+    const startVec = curve.getPoint(t)
+    const endVec = curve.getPoint(Math.min(0.5, t + dashSize / length))
+    const midVec = curve.getPoint(Math.min(0.5, t + dashSize / length / 2))
+    const dashCurve = new CurvePath<Vector3>()
+    dashCurve.add(
+      new CatmullRomCurve3([
+        new Vector3(startVec.x, startVec.y, 0),
+        new Vector3(midVec.x, midVec.y, 0),
+        new Vector3(endVec.x, endVec.y, 0),
+      ])
+    )
+    return new ExtrudeGeometry(shape, {
+      steps: 3,
       bevelEnabled: false,
-      extrudePath: path,
+      extrudePath: dashCurve,
     })
-    dashGeometries.push(dashGeometry)
   }
+
+  // Create dashes at the start of the arc
+  for (let i = 0; i < dashesAtEachEnd; i++) {
+    const t = i / totalDashes
+    dashGeometries.push(createDashAt(t, arcStart))
+    dashGeometries.push(createDashAt(t, arcEnd))
+  }
+
+  // fill in the remaining arc
+  const remainingArcLength = length - dashesAtEachEnd * 2 * (dashSize + gapSize)
+  if (remainingArcLength > 0) {
+    const remainingArcStartT = dashesAtEachEnd / totalDashes
+    const remainingArcEndT = 1 - remainingArcStartT
+    const centerVec = new Vector2(center[0], center[1])
+    const remainingArcStartVec = arcStart.getPoint(remainingArcStartT)
+    const remainingArcEndVec = arcStart.getPoint(remainingArcEndT)
+    const remainingArcCurve = new EllipseCurve(
+      arcStart.aX,
+      arcStart.aY,
+      arcStart.xRadius,
+      arcStart.yRadius,
+      new Vector2().subVectors(centerVec, remainingArcStartVec).angle() +
+        Math.PI,
+      new Vector2().subVectors(centerVec, remainingArcEndVec).angle() + Math.PI,
+      !ccw
+    )
+    const remainingArcPoints = remainingArcCurve.getPoints(50)
+    const remainingArcPath = new CurvePath<Vector3>()
+    remainingArcPath.add(
+      new CatmullRomCurve3(
+        remainingArcPoints.map((p) => new Vector3(p.x, p.y, 0))
+      )
+    )
+    const remainingArcGeometry = new ExtrudeGeometry(shape, {
+      steps: 50,
+      bevelEnabled: false,
+      extrudePath: remainingArcPath,
+    })
+    dashGeometries.push(remainingArcGeometry)
+  }
+
   const geo = dashGeometries.length
     ? mergeGeometries(dashGeometries)
     : new BufferGeometry()
