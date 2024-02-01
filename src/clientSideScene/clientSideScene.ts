@@ -1,4 +1,5 @@
 import {
+  BoxGeometry,
   DoubleSide,
   ExtrudeGeometry,
   Group,
@@ -74,12 +75,17 @@ export const TANGENTIAL_ARC_TO_SEGMENT_BODY = 'tangential-arc-to-segment-body'
 export const TANGENTIAL_ARC_TO__SEGMENT_DASH =
   'tangential-arc-to-segment-body-dashed'
 export const ARROWHEAD = 'arrowhead'
+const X_AXIS = 'xAxis'
+const Y_AXIS = 'yAxis'
+const AXIS_GROUP = 'axisGroup'
 
 class ClientSideScene {
   scene: Scene
   sceneProgramMemory: ProgramMemory = { root: {}, return: null }
   activeSegments: { [key: string]: Group } = {}
   intersectionPlane: Mesh | null = null
+  axisGroup: Group | null = null
+  currentSketchQuaternion: Quaternion | null = null
   constructor() {
     this.scene = setupSingleton?.scene
   }
@@ -96,6 +102,45 @@ class ClientSideScene {
     this.intersectionPlane.userData = { type: RAYCASTABLE_PLANE }
     this.intersectionPlane.layers.set(INTERSECTION_PLANE_LAYER)
     this.scene.add(this.intersectionPlane)
+  }
+  createSketchAxis() {
+    const baseXColor = 0x0000aa
+    const xAxisGeometry = new BoxGeometry(100000, 0.3, 0.01)
+    const xAxisMaterial = new MeshBasicMaterial({
+      color: baseXColor,
+      depthTest: false,
+    })
+    const xAxisMesh = new Mesh(xAxisGeometry, xAxisMaterial)
+    xAxisMesh.renderOrder = -2
+    xAxisMesh.userData = {
+      type: X_AXIS,
+      baseColor: baseXColor,
+    }
+
+    const baseYColor = 0xaa0000
+    const yAxisGeometry = new BoxGeometry(0.3, 100000, 0.01)
+    const yAxisMaterial = new MeshBasicMaterial({
+      color: baseYColor,
+      depthTest: false,
+    })
+    const yAxisMesh = new Mesh(yAxisGeometry, yAxisMaterial)
+    yAxisMesh.renderOrder = -1
+    yAxisMesh.userData = {
+      type: Y_AXIS,
+      baseColor: baseYColor,
+    }
+
+    this.axisGroup = new Group()
+    this.axisGroup.add(xAxisMesh, yAxisMesh)
+    this.currentSketchQuaternion &&
+      this.axisGroup.setRotationFromQuaternion(this.currentSketchQuaternion)
+
+    this.axisGroup.userData = { type: AXIS_GROUP }
+    this.axisGroup.layers.set(SKETCH_LAYER)
+    this.axisGroup.traverse((child) => {
+      child.layers.set(SKETCH_LAYER)
+    })
+    this.scene.add(this.axisGroup)
   }
   removeIntersectionPlane() {
     const intersectionPlane = this.scene.children.find(
@@ -172,10 +217,13 @@ class ClientSideScene {
       this.activeSegments[JSON.stringify(segPathToNode)] = seg
     })
 
-    const quaternion = quaternionFromSketchGroup(sketchGroup)
-    group.setRotationFromQuaternion(quaternion)
+    this.currentSketchQuaternion = quaternionFromSketchGroup(sketchGroup)
+    group.setRotationFromQuaternion(this.currentSketchQuaternion)
     this.intersectionPlane &&
-      this.intersectionPlane.setRotationFromQuaternion(quaternion)
+      this.intersectionPlane.setRotationFromQuaternion(
+        this.currentSketchQuaternion
+      )
+    setTimeout(() => this.createSketchAxis(), 200)
 
     this.scene.add(group)
     if (!draftSegment) {
@@ -208,6 +256,12 @@ class ClientSideScene {
           // TODO change the color of the segment to yellow?
           // Give a few pixels grace around each of the segments
           // for hover.
+          if ([X_AXIS, Y_AXIS].includes(object?.userData?.type)) {
+            const obj = object as Mesh
+            const mat = obj.material as MeshBasicMaterial
+            mat.color.set(obj.userData.baseColor)
+            mat.color.offsetHSL(0, 0, 0.2)
+          }
           const parent = getParentGroup(object)
           if (parent?.userData?.pathToNode) {
             const updatedAst = parse(recast(kclManager.ast))
@@ -228,6 +282,11 @@ class ClientSideScene {
           const parent = getParentGroup(object)
           const isSelected = parent?.userData?.isSelected
           colorSegment(object, isSelected ? 0x0000ff : 0xffffff)
+          if ([X_AXIS, Y_AXIS].includes(object?.userData?.type)) {
+            const obj = object as Mesh
+            const mat = obj.material as MeshBasicMaterial
+            mat.color.set(obj.userData.baseColor)
+          }
         },
       })
     } else {
@@ -573,6 +632,7 @@ class ClientSideScene {
       }
     }
     if (this.intersectionPlane) this.scene.remove(this.intersectionPlane)
+    if (this.axisGroup) this.scene.remove(this.axisGroup)
     setupSingleton.controls.enableRotate = true
     this.activeSegments = {}
     // maybe should reset onMove etc handlers
