@@ -261,7 +261,7 @@ class SetupSingleton {
     const handleEnd = () => {
       debounceTimer = setTimeout(() => {
         this._isCamMovingCallback(false, false)
-      }, 200) as any as number
+      }, 400) as any as number
     }
     this.controls.addEventListener('start', handleStart)
     this.controls.addEventListener('end', handleEnd)
@@ -772,7 +772,7 @@ class SetupSingleton {
         transparent: true,
         opacity: 0.35,
         side: DoubleSide,
-        // blendAlpha: true,
+        depthTest: false, // needed to avoid transparency issues
       })
       const plane = new Mesh(planeGeometry, planeMaterial)
       const edges = new LineSegments(planeEdges, lineMaterial)
@@ -783,10 +783,21 @@ class SetupSingleton {
       plane.userData.type = type
       return plane
     }
+    const size = 100
+    const divisions = 10
+    const gridHelperMaterial = new LineBasicMaterial({
+      color: 0xaaaaaa,
+      transparent: true,
+      opacity: 0.5,
+    })
+    const gridHelper = new GridHelper(size, divisions, 0x0000ff, 0xffffff)
+    gridHelper.material = gridHelperMaterial
+    gridHelper.rotation.x = Math.PI / 2
     const planes = [
       addPlane({ x: 0, y: Math.PI / 2, z: 0 }, YZ_PLANE),
       addPlane({ x: 0, y: 0, z: 0 }, XY_PLANE),
       addPlane({ x: -Math.PI / 2, y: 0, z: 0 }, XZ_PLANE),
+      gridHelper,
     ]
     const planesGroup = new Group()
     planesGroup.userData.type = DEFAULT_PLANES
@@ -845,7 +856,7 @@ function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
 
   if (DEBUG_SHOW_BOTH_SCENES || !isCamMoving)
     return { hideClient: false, hideServer: false }
-  let hideServer = state.matches('Sketch')
+  let hideServer = state.matches('Sketch') || state.matches('Sketch no face')
   if (isTween) {
     hideServer = false
   }
