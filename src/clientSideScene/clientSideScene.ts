@@ -615,6 +615,8 @@ class ClientSideScene {
     resolve: (val: unknown) => void,
     reject: () => void
   ) {
+    if (this.intersectionPlane) this.scene.remove(this.intersectionPlane)
+    if (this.axisGroup) this.scene.remove(this.axisGroup)
     const sketchSegments = this.scene.children.find(
       ({ userData }) => userData?.type === SKETCH_GROUP_SEGMENTS
     )
@@ -634,8 +636,6 @@ class ClientSideScene {
         reject()
       }
     }
-    if (this.intersectionPlane) this.scene.remove(this.intersectionPlane)
-    if (this.axisGroup) this.scene.remove(this.axisGroup)
     setupSingleton.controls.enableRotate = true
     this.activeSegments = {}
     // maybe should reset onMove etc handlers

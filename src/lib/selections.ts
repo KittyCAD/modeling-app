@@ -198,8 +198,12 @@ export function getEventForSegmentSelection(
   }
   const pathToNode = group?.userData?.pathToNode
   if (!pathToNode) return null
+  // previous drags don't update ast for efficiency reasons
+  // So we want to make sure we have and updated ast with
+  // accurate source ranges
+  const updatedAst = parse(kclManager.code)
   const node = getNodeFromPath<CallExpression>(
-    kclManager.ast,
+    updatedAst,
     pathToNode,
     'CallExpression'
   ).node
