@@ -94,48 +94,6 @@ export const Toolbar = () => {
               <ActionButton
                 Element="button"
                 onClick={() =>
-                  state.matches('Sketch.Line Tool') &&
-                  context.tool === 'sketch_line' &&
-                  !state.matches('Sketch.Move Tool')
-                    ? send('CancelSketch')
-                    : send({ type: 'Equip line tool', data: 'sketch_line' })
-                }
-                aria-pressed={
-                  state.matches('Sketch.Line Tool') &&
-                  context.tool === 'sketch_line'
-                }
-                className="pressed:bg-energy-10/20 dark:pressed:bg-energy-80"
-                icon={{
-                  icon: 'line',
-                  bgClassName,
-                }}
-              >
-                Line
-              </ActionButton>
-            </li>
-            <li className="contents" key="line-button-2">
-              <ActionButton
-                Element="button"
-                onClick={() =>
-                  state?.matches('Sketch.Line tool 2') &&
-                  !state?.matches('Sketch.Move Tool')
-                    ? send('CancelSketch')
-                    : send('Equip Line tool 2')
-                }
-                aria-pressed={state?.matches('Sketch.Line tool 2')}
-                className="pressed:bg-energy-10/20 dark:pressed:bg-energy-80"
-                icon={{
-                  icon: 'line',
-                  bgClassName,
-                }}
-              >
-                Line2
-              </ActionButton>
-            </li>
-            <li className="contents" key="line-button-3">
-              <ActionButton
-                Element="button"
-                onClick={() =>
                   state?.matches('Sketch.Line tool 3') &&
                   !state?.matches('Sketch.Move Tool')
                     ? send('CancelSketch')
@@ -148,62 +106,10 @@ export const Toolbar = () => {
                   bgClassName,
                 }}
               >
-                Line3
+                Line
               </ActionButton>
             </li>
             <li className="contents" key="tangential-arc-button">
-              <ActionButton
-                Element="button"
-                onClick={() =>
-                  state.matches('Sketch.Line Tool') &&
-                  context.tool === 'sketch_tangential_arc' &&
-                  !state.matches('Sketch.Move Tool')
-                    ? send('CancelSketch')
-                    : send({
-                        type: 'Equip tangential arc tool',
-                        data: 'sketch_tangential_arc',
-                      })
-                }
-                disabled={
-                  !state.can({
-                    type: 'Equip tangential arc tool',
-                    data: 'sketch_tangential_arc',
-                  })
-                }
-                aria-pressed={
-                  state.matches('Sketch.Line Tool') &&
-                  context.tool === 'sketch_tangential_arc'
-                }
-                className="pressed:bg-energy-10/20 dark:pressed:bg-energy-80"
-                icon={{
-                  icon: 'line',
-                  bgClassName,
-                }}
-              >
-                Tangential Arc
-              </ActionButton>
-            </li>
-            <li className="contents" key="tangential-arc-button-2">
-              <ActionButton
-                Element="button"
-                onClick={() =>
-                  state.matches('Sketch.tangential arc to 2') &&
-                  !state.matches('Sketch.Move Tool')
-                    ? send('CancelSketch')
-                    : send('Equip tangential arc to 2')
-                }
-                // disabled={!state.can('Equip tangential arc to 2')}
-                aria-pressed={state.matches('Sketch.tangential arc to 2')}
-                className="pressed:bg-energy-10/20 dark:pressed:bg-energy-80"
-                icon={{
-                  icon: 'line',
-                  bgClassName,
-                }}
-              >
-                TangArc 2
-              </ActionButton>
-            </li>
-            <li className="contents" key="tangential-arc-button-3">
               <ActionButton
                 Element="button"
                 onClick={() =>
@@ -224,7 +130,7 @@ export const Toolbar = () => {
                   !state.matches('Sketch.Tangential arc to 3')
                 }
               >
-                TangArc 3
+                Tangential Arc
               </ActionButton>
             </li>
           </>

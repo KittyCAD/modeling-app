@@ -187,44 +187,11 @@ export const Stream = ({ className = '' }) => {
           })
           const coords: Models['CurveGetEndPoints_type'] = curve.data.data
 
-          // We need the normal for the plane we are on.
-          const plane = await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'get_sketch_mode_plane',
-            },
-          })
-          const z_axis = plane.data.data.z_axis
-
-          // Get the current axis.
-          let currentAxis: 'xy' | 'xz' | 'yz' | '-xy' | '-xz' | '-yz' | null =
-            null
-          // if (context.sketchPlaneId === kclManager.getPlaneId('xy')) {
-          //   if (z_axis.z === -1) {
-          //     currentAxis = '-xy'
-          //   } else {
-          //     currentAxis = 'xy'
-          //   }
-          // } else if (context.sketchPlaneId === kclManager.getPlaneId('yz')) {
-          //   if (z_axis.x === -1) {
-          //     currentAxis = '-yz'
-          //   } else {
-          //     currentAxis = 'yz'
-          //   }
-          // } else if (context.sketchPlaneId === kclManager.getPlaneId('xz')) {
-          //   if (z_axis.y === -1) {
-          //     currentAxis = '-xz'
-          //   } else {
-          //     currentAxis = 'xz'
-          //   }
-          // }
-
           send({
             type: 'Add point',
             data: {
               coords: [coords.start, coords.end],
-              axis: currentAxis,
+              axis: null,
               segmentId: entities_modified[0],
             },
           })
@@ -282,104 +249,7 @@ export const Stream = ({ className = '' }) => {
         type: 'handle_mouse_drag_end',
         window: { x, y },
       }
-      void engineCommandManager.sendSceneCommand(command).then(async () => {
-        if (!context.sketchPathToNode) return
-        getNodeFromPath<VariableDeclarator>(
-          kclManager.ast,
-          context.sketchPathToNode,
-          'VariableDeclarator'
-        )
-        // Get the current plane string for plane we are on.
-        let currentPlaneString = ''
-        // if (context.sketchPlaneId === kclManager.getPlaneId('xy')) {
-        //   currentPlaneString = 'XY'
-        // } else if (context.sketchPlaneId === kclManager.getPlaneId('yz')) {
-        //   currentPlaneString = 'YZ'
-        // } else if (context.sketchPlaneId === kclManager.getPlaneId('xz')) {
-        //   currentPlaneString = 'XZ'
-        // }
-
-        // Do not supporting editing/moving lines on a non-default plane.
-        // Eventually we can support this but for now we will just throw an
-        // error.
-        if (currentPlaneString === '') return
-
-        const pathInfo = await engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'path_get_info',
-            path_id: context.sketchEnginePathId,
-          },
-        })
-        const segmentsWithMappings = (
-          pathInfo?.data?.data?.segments as { command_id: string }[]
-        )
-          .filter(({ command_id }) => {
-            return command_id && engineCommandManager.artifactMap[command_id]
-          })
-          .map(({ command_id }) => command_id)
-        const segment2dInfo = await Promise.all(
-          segmentsWithMappings.map(async (segmentId) => {
-            const response = await engineCommandManager.sendSceneCommand({
-              type: 'modeling_cmd_req',
-              cmd_id: uuidv4(),
-              cmd: {
-                type: 'curve_get_end_points',
-                curve_id: segmentId,
-              },
-            })
-            const controlPoints: Models['CurveGetEndPoints_type'] =
-              response.data.data
-            return {
-              ...controlPoints,
-              segmentId,
-            }
-          })
-        )
-
-        let modifiedAst = { ...kclManager.ast }
-        let code = kclManager.code
-        for (const info of segment2dInfo) {
-          const range = engineCommandManager.artifactMap[info.segmentId].range
-          if (!range) continue
-          const _isOverlap = context.selectionRanges.codeBasedSelections.some(
-            ({ range: selectionRange }) => isOverlap(range, selectionRange)
-          )
-          if (!_isOverlap) continue
-
-          const from = info.start
-          const to = info.end
-          const modded = changeSketchArguments(
-            modifiedAst,
-            kclManager.programMemory,
-            range,
-            [to.x, to.y],
-            [from.x, from.y]
-          )
-          modifiedAst = modded.modifiedAst
-
-          // update artifact map ranges now that we have updated the ast.
-          code = recast(modded.modifiedAst)
-          const astWithCurrentRanges = kclManager.safeParse(code)
-          if (!astWithCurrentRanges) return
-          const updateNode = getNodeFromPath<CallExpression>(
-            astWithCurrentRanges,
-            modded.pathToNode
-          ).node
-          engineCommandManager.artifactMap[info.segmentId].range = [
-            updateNode.start,
-            updateNode.end,
-          ]
-        }
-        if (state.matches('Sketch.Move Tool.Move with execute')) {
-          void kclManager.executeAst(modifiedAst, true)
-        } else {
-          await kclManager.executeAstMock(modifiedAst, {
-            updates: 'codeAndArtifactRanges',
-          })
-        }
-      })
+      void engineCommandManager.sendSceneCommand(command)
     } else {
       void engineCommandManager.sendSceneCommand(command)
     }

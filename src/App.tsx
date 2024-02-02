@@ -31,7 +31,6 @@ import { Themes, getSystemTheme } from 'lib/theme'
 import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
 import { engineCommandManager } from './lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
-// import { SketchCanvas } from 'components/SketchCanvas'
 import { ClientSideScene } from 'clientSideScene/setup'
 import { CamToggle } from 'components/CamToggle'
 
@@ -89,8 +88,6 @@ export function App() {
     void engineCommandManager.sendSceneCommand(message)
   }, 16)
   const handleMouseMove: MouseEventHandler<HTMLDivElement> = (e) => {
-    // e.nativeEvent.preventDefault()
-
     if (state.matches('Sketch')) {
       return
     }
@@ -234,13 +231,6 @@ export function App() {
         </div>
       </Resizable>
       <Stream className="absolute inset-0 z-0" />
-      {/* <div
-        className={`absolute inset-0 z-0 bg-black pointer-events-none ${
-          state.matches('Sketch') ? 'opacity-80' : 'opacity-0'
-        }`}
-      >
-        <SketchCanvas />
-      </div> */}
       <ClientSideScene cameraControls={settings.context.cameraControls} />
       {showDebugPanel && (
         <DebugPanel

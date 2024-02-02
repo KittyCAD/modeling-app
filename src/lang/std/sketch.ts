@@ -45,7 +45,7 @@ export function getCoordsFromPaths(skGroup: SketchGroup, index = 0): Coords2d {
   } else if (!currentPath) {
     return [0, 0]
   }
-  if (currentPath.type === 'topoint') {
+  if (currentPath.type === 'ToPoint') {
     return [currentPath.to[0], currentPath.to[1]]
   }
   return [0, 0]

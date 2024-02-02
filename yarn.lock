@@ -2244,13 +2244,6 @@
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.4.tgz#56e2cc26c397c038fab0e3a917a12d5c5909e901"
   integrity sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==
 
-"@types/paper@^0.12.3":
-  version "0.12.3"
-  resolved "https://registry.yarnpkg.com/@types/paper/-/paper-0.12.3.tgz#394b94cf0073fe9eec2fa492c50d29024eeb5073"
-  integrity sha512-kU00AqWZcpb6b5Fnnrilurk3NfdkuyZXG4v+L9GF5+6zAfTYIThXDcieCtjdHFl/HlLfqZr5Zbf+tKvGX3FyFw==
-  dependencies:
-    paper "*"
-
 "@types/parse-json@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@types/parse-json/-/parse-json-4.0.0.tgz#2f8bb441434d163b35fb8ffdccd7138927ffb8c0"
@@ -6689,11 +6682,6 @@ pac-resolver@^7.0.0:
     degenerator "^5.0.0"
     ip "^1.1.8"
     netmask "^2.0.2"
-
-paper@*, paper@^0.12.17:
-  version "0.12.17"
-  resolved "https://registry.yarnpkg.com/paper/-/paper-0.12.17.tgz#57215615f3db5a32826ab60d3e08bc7953614052"
-  integrity sha512-oCe+e1C2w8hKIcGoAqUjD0GGxGPv+itrRXlEFUmp3H8tY/NTnHOkYgpJFPGw6OJ8Q1Wa6+RgzlY7Dx/2WWHtkA==
 
 parent-module@^1.0.0:
   version "1.0.1"

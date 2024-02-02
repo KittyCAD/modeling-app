@@ -902,8 +902,6 @@ export const modelingMachine = createMachine(
   },
   {
     guards: {
-      // 'is editing existing sketch': ({ sketchPathToNode }) =>
-      //   !!sketchPathToNode,
       'is editing existing sketch': ({ sketchPathToNode }) => {
         // should check that the variable declaration is a pipeExpression
         // and that the pipeExpression contains a "startProfileAt" callExpression
@@ -1233,9 +1231,6 @@ export const modelingMachine = createMachine(
           focusPath: pathToExtrudeArg,
         })
       },
-      // 'set default plane id': assign({
-      //   sketchPlaneId: (_, { data }) => data.planeId,
-      // }),
       'set move desc': assign({
         moveDescs: ({ selectionRanges }) =>
           selectionRanges.codeBasedSelections
@@ -1399,21 +1394,6 @@ function getSketchMetadataFromPathToNode(
     (e) => e.type === 'CallExpression' && e.callee.name === 'startSketchOn'
   ) as CallExpression
   if (!sketchCallExpression) return {}
-  // const firstArg = sketchCallExpression.arguments[0]
-  let planeId = ''
-  // if (firstArg.type === 'Literal' && firstArg.value) {
-  // const planeStrCleaned = firstArg.value
-  //   .toString()
-  //   .toLowerCase()
-  //   .replace('-', '')
-  // if (
-  //   planeStrCleaned === 'xy' ||
-  //   planeStrCleaned === 'xz' ||
-  //   planeStrCleaned === 'yz'
-  // ) {
-  //   planeId = kclManager.getPlaneId(planeStrCleaned)
-  // }
-  // }
 
   let sketchEnginePathId: string
   if (selectionRanges) {
@@ -1438,6 +1418,5 @@ function getSketchMetadataFromPathToNode(
   return {
     sketchPathToNode: pathToNode,
     sketchEnginePathId,
-    sketchPlaneId: planeId,
   }
 }

@@ -148,7 +148,6 @@ export function useCalc({
       const { programMemory } = await executeAst({
         ast,
         engineCommandManager,
-        // defaultPlanes: kclManager.defaultPlanes,
         useFakeExecutor: true,
         programMemoryOverride: JSON.parse(
           JSON.stringify(kclManager.programMemory)
