@@ -433,12 +433,8 @@ export const ModelingMachineProvider = ({
         }),
       },
       guards: {
-        'Selection contains axis': () => true,
-        'Selection contains edge': () => true,
-        'Selection contains face': () => true,
         'Selection contains line': () => true,
         'Selection contains point': () => true,
-        'Selection is not empty': () => true,
         'has valid extrude selection': ({ selectionRanges }) => {
           // A user can begin extruding if they either have 1+ faces selected or nothing selected
           // TODO: I believe this guard only allows for extruding a single face at a time
