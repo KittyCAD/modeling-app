@@ -509,7 +509,7 @@ export const tangentialArcTo: SketchLineHelper = {
       _node,
       pathToNode
     )
-    const x = createLiteral(roundOff(to[0], 0))
+    const x = createLiteral(roundOff(to[0], 2))
     const y = createLiteral(roundOff(to[1], 2))
 
     const firstArg = callExpression.arguments?.[0]
