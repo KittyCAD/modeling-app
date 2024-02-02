@@ -46,6 +46,7 @@ jobs:
           workspaces: './src/wasm-lib'
 
       - run: yarn build:wasm
+      - run: yarn xstate:typegen
       - run: yarn tsc
 
 
