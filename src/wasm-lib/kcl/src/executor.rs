@@ -606,9 +606,9 @@ pub struct GeoMeta {
 }
 
 /// A path.
+#[serde(tag = "type")]
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type", rename_all = "camelCase")]
 pub enum Path {
     /// A path that goes to a point.
     ToPoint {
