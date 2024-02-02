@@ -4,7 +4,6 @@ import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
 import { v4 as uuidv4 } from 'uuid'
 import * as Sentry from '@sentry/react'
-import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { setupSingleton } from 'clientSideScene/setup'
 
@@ -873,7 +872,6 @@ export class EngineCommandManager {
   outSequence = 1
   inSequence = 1
   engineConnection?: EngineConnection
-  defaultPlanes: DefaultPlanes = { xy: '', yz: '', xz: '' }
   _commandLogs: CommandLog[] = []
   _commandLogCallBack: (command: CommandLog[]) => void = () => {}
   // Folks should realize that wait for ready does not get called _everytime_

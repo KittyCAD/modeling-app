@@ -16,7 +16,6 @@ import { ProgramReturn } from '../wasm-lib/kcl/bindings/ProgramReturn'
 import { MemoryItem } from '../wasm-lib/kcl/bindings/MemoryItem'
 import type { Program } from '../wasm-lib/kcl/bindings/Program'
 import type { Token } from '../wasm-lib/kcl/bindings/Token'
-import { DefaultPlanes } from '../wasm-lib/kcl/bindings/DefaultPlanes'
 import { Coords2d } from './std/sketch'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'

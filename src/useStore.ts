@@ -6,7 +6,6 @@ import { Selection } from 'lib/selections'
 import { enginelessExecutor } from './lib/testHelpers'
 import { EngineCommandManager } from './lang/std/engineConnection'
 import { KCLError } from './lang/errors'
-import { DefaultPlanes } from './wasm-lib/kcl/bindings/DefaultPlanes'
 
 export type ToolTip =
   | 'lineTo'
