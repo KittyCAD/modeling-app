@@ -5,6 +5,7 @@ use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
 #[cfg(target_arch = "wasm32")]
 use kcl_lib::server::{get_completions_from_stdlib, get_signatures_from_stdlib, Backend};
+#[cfg(target_arch = "wasm32")]
 use kcl_lib::std::utils;
 #[cfg(target_arch = "wasm32")]
 use tower_lsp::{LspService, Server};
