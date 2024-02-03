@@ -395,7 +395,13 @@ export function processCodeMirrorRanges({
 }
 
 function updateSceneObjectColors(codeBasedSelections: Selection[]) {
-  const updated = parse(recast(kclManager.ast))
+  let updated: Program
+  try {
+    updated = parse(recast(kclManager.ast))
+  } catch (e) {
+    console.error('error parsing code in processCodeMirrorRanges', e)
+    return
+  }
   Object.values(clientSideScene.activeSegments).forEach((segmentGroup) => {
     if (
       ![STRAIGHT_SEGMENT, TANGENTIAL_ARC_TO_SEGMENT].includes(
