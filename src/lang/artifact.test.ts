@@ -33,7 +33,7 @@ show(mySketch001)`
         },
         value: [
           {
-            type: 'toPoint',
+            type: 'ToPoint',
             name: '',
             to: [-1.59, -1.54],
             from: [0, 0],
@@ -43,7 +43,7 @@ show(mySketch001)`
             },
           },
           {
-            type: 'toPoint',
+            type: 'ToPoint',
             to: [0.46, -5.82],
             from: [-1.59, -1.54],
             name: '',
