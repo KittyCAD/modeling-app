@@ -1,10 +1,10 @@
 import {
   ONBOARDING_PROJECT_NAME,
   OnboardingButtons,
-  onboardingPaths,
   useDismiss,
   useNextClick,
 } from '.'
+import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { bracket } from 'lib/exampleKcl'

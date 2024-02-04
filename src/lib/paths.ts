@@ -1,4 +1,4 @@
-import { onboardingPaths } from 'routes/Onboarding'
+import { onboardingPaths } from 'routes/Onboarding/paths'
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {
