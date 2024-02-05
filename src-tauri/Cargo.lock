@@ -82,6 +82,7 @@ dependencies = [
  "serde_json",
  "tauri",
  "tauri-build",
+ "tauri-driver",
  "tauri-plugin-fs-extra",
  "tokio",
  "toml 0.8.2",
@@ -1308,6 +1309,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
 
 [[package]]
+name = "home"
+version = "0.5.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e3d1354bf6b7235cb4a0576c2619fd4ed18183f689b12b006a0ee7329eeff9a5"
+dependencies = [
+ "windows-sys 0.52.0",
+]
+
+[[package]]
 name = "html5ever"
 version = "0.25.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1664,9 +1674,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.2.42"
+version = "0.2.49"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6aa554d86b6dbbd976a659c912ae25ce817b4378eb12a5684907e263410f0a7b"
+checksum = "3d3be37e69ef23cac2615c4b1fc132be09b058faf6f6d4553949f3b62c7bd4c5"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2537,6 +2547,12 @@ dependencies = [
  "strum",
  "thiserror",
 ]
+
+[[package]]
+name = "pico-args"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "db8bcd96cb740d03149cbad5518db9fd87126a10ab519c011893b1754134c468"
 
 [[package]]
 name = "pin-project"
@@ -3420,6 +3436,37 @@ dependencies = [
 ]
 
 [[package]]
+name = "signal-hook"
+version = "0.3.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8621587d4798caf8eb44879d42e56b9a93ea5dcd315a6487c357130095b62801"
+dependencies = [
+ "libc",
+ "signal-hook-registry",
+]
+
+[[package]]
+name = "signal-hook-registry"
+version = "1.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d8229b473baa5980ac72ef434c4415e70c4b5e71b423043adb4ba059f89c99a1"
+dependencies = [
+ "libc",
+]
+
+[[package]]
+name = "signal-hook-tokio"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "213241f76fb1e37e27de3b6aa1b068a2c333233b59cca6634f634b80a27ecf1e"
+dependencies = [
+ "futures-core",
+ "libc",
+ "signal-hook",
+ "tokio",
+]
+
+[[package]]
 name = "simd-adler32"
 version = "0.3.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3856,6 +3903,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "tauri-driver"
+version = "0.1.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c0a46011e3018146c2a189bf1fa0339f10ef6be065ab8a5e718018121e3a03bf"
+dependencies = [
+ "anyhow",
+ "futures",
+ "futures-util",
+ "hyper",
+ "pico-args",
+ "serde",
+ "serde_json",
+ "signal-hook",
+ "signal-hook-tokio",
+ "tokio",
+ "which",
+]
+
+[[package]]
 name = "tauri-macros"
 version = "1.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4062,7 +4128,19 @@ dependencies = [
  "num_cpus",
  "pin-project-lite",
  "socket2 0.5.5",
+ "tokio-macros",
  "windows-sys 0.48.0",
+]
+
+[[package]]
+name = "tokio-macros"
+version = "2.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5b8a1e28f2deaa14e508979454cb3a223b10b938b45af148bc0986de36f1923b"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.33",
 ]
 
 [[package]]
@@ -4618,6 +4696,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "which"
+version = "4.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "87ba24419a2078cd2b0f2ede2691b6c66d8e47836da3b6db8265ebad47afbfc7"
+dependencies = [
+ "either",
+ "home",
+ "once_cell",
+ "rustix 0.38.21",
+]
+
+[[package]]
 name = "winapi"
 version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4741,6 +4831,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "677d2418bec65e3338edb076e806bc1ec15693c5d0104683f2efe857f61056a9"
 dependencies = [
  "windows-targets 0.48.0",
+]
+
+[[package]]
+name = "windows-sys"
+version = "0.52.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "282be5f36a8ce781fad8c8ae18fa3f9beff57ec1b52cb3de0789201425d9a33d"
+dependencies = [
+ "windows-targets 0.52.0",
 ]
 
 [[package]]
