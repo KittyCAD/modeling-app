@@ -14,6 +14,7 @@ export interface Typegen0 {
   }
   eventsCausingActions: {
     persistSettings:
+      | 'Set All Settings'
       | 'Set Base Unit'
       | 'Set Camera Controls'
       | 'Set Default Directory'
@@ -23,7 +24,7 @@ export interface Typegen0 {
       | 'Set Theme'
       | 'Set Unit System'
       | 'Toggle Debug Panel'
-    setThemeClass: 'Set Theme' | 'xstate.init'
+    setThemeClass: 'Set All Settings' | 'Set Theme' | 'xstate.init'
     toastSuccess:
       | 'Set Base Unit'
       | 'Set Camera Controls'

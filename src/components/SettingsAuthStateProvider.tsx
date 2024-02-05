@@ -5,7 +5,11 @@ import { authMachine, TOKEN_PERSIST_KEY } from '../machines/authMachine'
 import withBaseUrl from '../lib/withBaseURL'
 import React, { createContext, useEffect, useRef } from 'react'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
-import { SETTINGS_PERSIST_KEY, settingsMachine } from 'machines/settingsMachine'
+import {
+  SETTINGS_FILE_NAME,
+  SETTINGS_PERSIST_KEY,
+  settingsMachine,
+} from 'machines/settingsMachine'
 import { toast } from 'react-hot-toast'
 import { setThemeClass, Themes } from 'lib/theme'
 import {
@@ -18,6 +22,8 @@ import {
 import { isTauri } from 'lib/isTauri'
 import { settingsCommandBarConfig } from 'lib/commandBarConfigs/settingsCommandConfig'
 import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
+import { readTextFile } from '@tauri-apps/api/fs'
+import { sep } from '@tauri-apps/api/path'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -71,6 +77,37 @@ export const SettingsAuthStateProvider = ({
       },
     },
   })
+
+  // If the app is running in the Tauri context,
+  // try to read the settings from a file.
+  useEffect(() => {
+    async function getFileBasedSettings() {
+      if (isTauri()) {
+        const settings = await readTextFile(
+          settingsMachine.context.defaultDirectory + sep + SETTINGS_FILE_NAME
+        )
+
+        if (settings) {
+          try {
+            const settingsJson = JSON.parse(settings)
+            retrievedSettings.current = Object.assign(
+              retrievedSettings.current,
+              settings
+            )
+            settingsSend({
+              type: 'Set All Settings',
+              data: settingsJson,
+            })
+          } catch (e) {
+            console.error(e)
+            toast.error('Failed to read settings from file')
+          }
+        }
+      }
+    }
+
+    void getFileBasedSettings()
+  }, [settingsSend])
 
   useStateMachineCommands({
     machineId: 'settings',

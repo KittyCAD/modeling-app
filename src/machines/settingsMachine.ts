@@ -2,8 +2,13 @@ import { assign, createMachine } from 'xstate'
 import { Themes, getSystemTheme, setThemeClass } from '../lib/theme'
 import { CameraSystem } from 'lib/cameraControls'
 import { Models } from '@kittycad/lib'
+import { isTauri } from 'lib/isTauri'
+import { writeTextFile } from '@tauri-apps/api/fs'
+import { sep } from '@tauri-apps/api/path'
 
 export const DEFAULT_PROJECT_NAME = 'project-$nnn'
+export const SETTINGS_PERSIST_KEY = 'SETTINGS_PERSIST_KEY'
+export const SETTINGS_FILE_NAME = 'settings.json'
 
 export enum UnitSystem {
   Imperial = 'imperial',
@@ -21,7 +26,17 @@ export const baseUnitsUnion = Object.values(baseUnits).flatMap((v) => v)
 
 export type Toggle = 'On' | 'Off'
 
-export const SETTINGS_PERSIST_KEY = 'SETTINGS_PERSIST_KEY'
+type SettingsMachineContext = {
+  baseUnit: BaseUnit
+  cameraControls: CameraSystem
+  defaultDirectory: string
+  defaultProjectName: string
+  onboardingStatus: string
+  showDebugPanel: boolean
+  textWrapping: Toggle
+  theme: Themes
+  unitSystem: UnitSystem
+}
 
 export const settingsMachine = createMachine(
   {
@@ -38,12 +53,26 @@ export const settingsMachine = createMachine(
       textWrapping: 'On' as Toggle,
       theme: Themes.System,
       unitSystem: UnitSystem.Imperial,
-    },
+    } as SettingsMachineContext,
     initial: 'idle',
     states: {
       idle: {
         entry: ['setThemeClass'],
         on: {
+          'Set All Settings': {
+            actions: [
+              assign((c, event) => {
+                console.log(`assign:
+                new: ${JSON.stringify(event.data)}
+                to old: ${JSON.stringify(c)}`)
+                return event.data
+              }),
+              'persistSettings',
+              'setThemeClass',
+            ],
+            target: 'idle',
+            internal: true,
+          },
           'Set Base Unit': {
             actions: [
               assign({
@@ -157,6 +186,7 @@ export const settingsMachine = createMachine(
     tsTypes: {} as import('./settingsMachine.typegen').Typegen0,
     schema: {
       events: {} as
+        | { type: 'Set All Settings'; data: Partial<SettingsMachineContext> }
         | { type: 'Set Base Unit'; data: { baseUnit: BaseUnit } }
         | {
             type: 'Set Camera Controls'
@@ -180,6 +210,15 @@ export const settingsMachine = createMachine(
   {
     actions: {
       persistSettings: (context) => {
+        if (isTauri()) {
+          writeTextFile(
+            context.defaultDirectory + sep + SETTINGS_FILE_NAME,
+            JSON.stringify(context, null, 2)
+          ).catch((err) => {
+            console.error('Error writing settings:', err)
+          })
+        }
+
         try {
           localStorage.setItem(SETTINGS_PERSIST_KEY, JSON.stringify(context))
         } catch (e) {
