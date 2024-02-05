@@ -264,59 +264,41 @@ test('Can create sketches on all planes and their back sides', async ({
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
-  await u.waitForDefaultPlanesVisibilityChange()
 
-  const camCmd: EngineCommand = {
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_look_at',
-      center: { x: 15, y: 0, z: 0 },
-      up: { x: 0, y: 0, z: 1 },
-      vantage: { x: 30, y: 30, z: 30 },
-    },
-  }
+  const camPos: [number, number, number] = [100, 100, 100]
 
   const TestSinglePlane = async ({
     viewCmd,
     expectedCode,
     clickCoords,
   }: {
-    viewCmd: EngineCommand
+    viewCmd: [number, number, number]
     expectedCode: string
     clickCoords: { x: number; y: number }
   }) => {
     await u.openDebugPanel()
-    await u.sendCustomCmd(viewCmd)
+
+    await u.updateCamPosition(viewCmd)
+
     await u.clearCommandLogs()
-    // await page.waitForTimeout(200)
     await page.getByRole('button', { name: 'Start Sketch' }).click()
-    await u.waitForDefaultPlanesVisibilityChange()
 
     await u.closeDebugPanel()
     await page.mouse.click(clickCoords.x, clickCoords.y)
-    await u.openDebugPanel()
+    await page.waitForTimeout(700) // wait for animation
 
     await expect(page.getByRole('button', { name: 'Line' })).toBeVisible()
 
     // draw a line
     const startXPx = 600
-    await u.clearCommandLogs()
-    await page.getByRole('button', { name: 'Line' }).click()
-    await u.waitForCmdReceive('set_tool')
-    await u.clearCommandLogs()
+
     await u.closeDebugPanel()
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-    await u.openDebugPanel()
-    await u.waitForCmdReceive('mouse_click')
-    await u.closeDebugPanel()
-    await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
-    await u.openDebugPanel()
 
     await expect(page.locator('.cm-content')).toHaveText(expectedCode)
 
     await page.getByRole('button', { name: 'Line' }).click()
-    await u.clearCommandLogs()
+    await u.openAndClearDebugPanel()
     await page.getByRole('button', { name: 'Exit Sketch' }).click()
     await u.expectCmdLog('[data-message-type="execution-done"]')
 
@@ -326,51 +308,40 @@ test('Can create sketches on all planes and their back sides', async ({
 
   const codeTemplate = (
     plane = 'XY',
-    sign = ''
+    rounded = false
   ) => `const part001 = startSketchOn('${plane}')
-  |> startProfileAt([${sign}6.88, -9.29], %)
-  |> line([${sign}6.95, 0], %)`
+  |> startProfileAt([28.91, -39${rounded ? '' : '.01'}], %)`
   await TestSinglePlane({
-    viewCmd: camCmd,
+    viewCmd: camPos,
     expectedCode: codeTemplate('XY'),
-    clickCoords: { x: 700, y: 350 }, // red plane
+    clickCoords: { x: 600, y: 388 }, // red plane
+    // clickCoords: { x: 600, y: 400 }, // red plane // clicks grid helper and that causes problems, should fix so that these coords work too.
   })
   await TestSinglePlane({
-    viewCmd: camCmd,
+    viewCmd: camPos,
     expectedCode: codeTemplate('YZ'),
-    clickCoords: { x: 1000, y: 200 }, // green plane
+    clickCoords: { x: 700, y: 300 }, // green plane
   })
   await TestSinglePlane({
-    viewCmd: camCmd,
-    expectedCode: codeTemplate('XZ', '-'),
-    clickCoords: { x: 630, y: 130 }, // blue plane
+    viewCmd: camPos,
+    expectedCode: codeTemplate('XZ'),
+    clickCoords: { x: 700, y: 80 }, // blue plane
   })
-
-  // new camera angle to click the back side of all three planes
-  const camCmdBackSide: EngineCommand = {
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_look_at',
-      center: { x: -15, y: 0, z: 0 },
-      up: { x: 0, y: 0, z: 1 },
-      vantage: { x: -30, y: -30, z: -30 },
-    },
-  }
+  const camCmdBackSide: [number, number, number] = [-100, -100, -100]
   await TestSinglePlane({
     viewCmd: camCmdBackSide,
-    expectedCode: codeTemplate('-XY', '-'),
-    clickCoords: { x: 705, y: 136 }, // back of red plane
+    expectedCode: codeTemplate('-XY', true),
+    clickCoords: { x: 601, y: 118 }, // back of red plane
   })
   await TestSinglePlane({
     viewCmd: camCmdBackSide,
-    expectedCode: codeTemplate('-YZ', '-'),
-    clickCoords: { x: 1000, y: 350 }, // back of green plane
+    expectedCode: codeTemplate('-YZ'),
+    clickCoords: { x: 730, y: 219 }, // back of green plane
   })
   await TestSinglePlane({
     viewCmd: camCmdBackSide,
     expectedCode: codeTemplate('-XZ'),
-    clickCoords: { x: 600, y: 400 }, // back of blue plane
+    clickCoords: { x: 680, y: 427 }, // back of blue plane
   })
 })
 

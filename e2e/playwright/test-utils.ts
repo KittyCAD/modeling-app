@@ -80,6 +80,19 @@ export function getUtils(page: Page) {
     waitForAuthSkipAppStart: () => waitForPageLoad(page),
     removeCurrentCode: () => removeCurrentCode(page),
     sendCustomCmd: (cmd: EngineCommand) => sendCustomCmd(page, cmd),
+    updateCamPosition: async (xyz: [number, number, number]) => {
+      const fillInput = async () => {
+        await page.fill('[data-testid="cam-x-position"]', String(xyz[0]))
+        await page.fill('[data-testid="cam-y-position"]', String(xyz[1]))
+        await page.fill('[data-testid="cam-z-position"]', String(xyz[2]))
+      }
+      await fillInput()
+      await page.waitForTimeout(100)
+      await fillInput()
+      await page.waitForTimeout(100)
+      await fillInput()
+      await page.waitForTimeout(100)
+    },
     clearCommandLogs: () => clearCommandLogs(page),
     expectCmdLog: (locatorStr: string) => expectCmdLog(page, locatorStr),
     waitForDefaultPlanesVisibilityChange: () =>
