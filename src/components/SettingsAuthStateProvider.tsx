@@ -25,14 +25,14 @@ type MachineContext<T extends AnyStateMachine> = {
   send: Prop<InterpreterFrom<T>, 'send'>
 }
 
-type GlobalContext = {
+type SettingsAuthContext = {
   auth: MachineContext<typeof authMachine>
   settings: MachineContext<typeof settingsMachine>
 }
 
-export const GlobalStateContext = createContext({} as GlobalContext)
+export const SettingsAuthStateContext = createContext({} as SettingsAuthContext)
 
-export const GlobalStateProvider = ({
+export const SettingsAuthStateProvider = ({
   children,
 }: {
   children: React.ReactNode
@@ -119,7 +119,7 @@ export const GlobalStateProvider = ({
   })
 
   return (
-    <GlobalStateContext.Provider
+    <SettingsAuthStateContext.Provider
       value={{
         auth: {
           state: authState,
@@ -134,11 +134,11 @@ export const GlobalStateProvider = ({
       }}
     >
       {children}
-    </GlobalStateContext.Provider>
+    </SettingsAuthStateContext.Provider>
   )
 }
 
-export default GlobalStateProvider
+export default SettingsAuthStateProvider
 
 export function logout() {
   localStorage.removeItem(TOKEN_PERSIST_KEY)

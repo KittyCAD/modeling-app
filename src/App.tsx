@@ -21,7 +21,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { getNormalisedCoordinates } from './lib/utils'
 import { useLoaderData } from 'react-router-dom'
 import { IndexLoaderData } from './Router'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { onboardingPaths } from 'routes/Onboarding'
 import { cameraMouseDragGuards } from 'lib/cameraControls'
 import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
@@ -50,7 +50,7 @@ export function App() {
     streamDimensions: s.streamDimensions,
   }))
 
-  const { settings } = useGlobalStateContext()
+  const { settings } = useSettingsAuthContext()
   const { showDebugPanel, onboardingStatus, cameraControls, theme } =
     settings?.context || {}
   const { state, send } = useModelingContext()

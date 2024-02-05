@@ -12,7 +12,7 @@ import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { IndexLoaderData, paths } from '../Router'
 import { Themes } from '../lib/theme'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import {
   CameraSystem,
   cameraSystems,
@@ -53,7 +53,7 @@ export const Settings = () => {
         },
       },
     },
-  } = useGlobalStateContext()
+  } = useSettingsAuthContext()
 
   async function handleDirectorySelection() {
     const newDirectory = await open({

@@ -7,7 +7,7 @@ import {
   createMemoryRouter,
   createRoutesFromElements,
 } from 'react-router-dom'
-import { GlobalStateProvider } from './components/GlobalStateProvider'
+import { SettingsAuthStateProvider } from './components/SettingsAuthStateProvider'
 import CommandBarProvider from 'components/CommandBar/CommandBar'
 import ModelingMachineProvider from 'components/ModelingMachineProvider'
 import { BROWSER_FILE_NAME } from 'Router'
@@ -57,9 +57,9 @@ function TestWrap({ children }: { children: React.ReactNode }) {
         path="/file/:id"
         element={
           <CommandBarProvider>
-            <GlobalStateProvider>
+            <SettingsAuthStateProvider>
               <ModelingMachineProvider>{children}</ModelingMachineProvider>
-            </GlobalStateProvider>
+            </SettingsAuthStateProvider>
           </CommandBarProvider>
         }
       />

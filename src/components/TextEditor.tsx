@@ -8,7 +8,7 @@ import Server from '../editor/lsp/server'
 import Client from '../editor/lsp/client'
 import { TEST } from 'env'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
 import { Themes } from 'lib/theme'
 import { useMemo } from 'react'
@@ -63,7 +63,7 @@ export const TextEditor = ({
   } = useModelingContext()
 
   const { settings: { context: { textWrapping } = {} } = {} } =
-    useGlobalStateContext()
+    useSettingsAuthContext()
   const { commandBarSend } = useCommandsContext()
   const { enable: convertEnabled, handleClick: convertCallback } =
     useConvertToVariable()

@@ -1,7 +1,7 @@
 import { OnboardingButtons, onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from '../../useStore'
 import { SettingsSection } from 'routes/Settings'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import {
   CameraSystem,
   cameraMouseDragGuards,
@@ -21,7 +21,7 @@ export default function Units() {
         context: { cameraControls },
       },
     },
-  } = useGlobalStateContext()
+  } = useSettingsAuthContext()
 
   return (
     <div className="fixed inset-0 z-50 grid items-end justify-start px-4 pointer-events-none">
