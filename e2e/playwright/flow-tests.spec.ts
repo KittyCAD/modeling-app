@@ -53,40 +53,38 @@ test('Basic sketch', async ({ page }) => {
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
-  await u.waitForDefaultPlanesVisibilityChange()
 
   await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
 
   // click on "Start Sketch" button
   await u.clearCommandLogs()
-  await Promise.all([
-    u.doAndWaitForImageDiff(
-      () => page.getByRole('button', { name: 'Start Sketch' }).click(),
-      200
-    ),
-    u.waitForDefaultPlanesVisibilityChange(),
-  ])
+  await u.doAndWaitForImageDiff(
+    () => page.getByRole('button', { name: 'Start Sketch' }).click(),
+    200
+  )
 
   // select a plane
-  await u.doAndWaitForCmd(() => page.mouse.click(700, 200), 'edit_mode_enter')
-  await u.waitForCmdReceive('set_tool')
+  await page.mouse.click(700, 200)
 
-  await u.doAndWaitForCmd(
-    () => page.getByRole('button', { name: 'Line' }).click(),
-    'set_tool'
+  await expect(page.locator('.cm-content')).toHaveText(
+    `const part001 = startSketchOn('-XZ')`
   )
+
+  await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
 
   const startXPx = 600
-  await u.doAndWaitForCmd(
-    () => page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10),
-    'mouse_click',
-    false
-  )
+  await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
+  const startAt = '[23.89, -32.23]'
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt(${startAt}, %)`)
+  await page.waitForTimeout(100)
 
+  await u.closeDebugPanel()
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
+  await page.waitForTimeout(100)
 
-  const startAt = '[18.26, -24.63]'
-  const num = '18.43'
+  const num = 24.11
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
@@ -97,27 +95,22 @@ test('Basic sketch', async ({ page }) => {
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
   |> line([${num}, 0], %)
-  |> line([0, ${num}], %)`)
+  |> line([0, ${num + 0.01}], %)`)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
   |> line([${num}, 0], %)
-  |> line([0, ${num}], %)
-  |> line([-36.69, 0], %)`)
+  |> line([0, ${num + 0.01}], %)
+  |> line([-48, 0], %)`)
 
   // deselect line tool
-  await u.doAndWaitForCmd(
-    () => page.getByRole('button', { name: 'Line' }).click(),
-    'set_tool'
-  )
+  await page.getByRole('button', { name: 'Line' }).click()
+  await page.waitForTimeout(100)
 
   // click between first two clicks to get center of the line
-  await u.doAndWaitForCmd(
-    () => page.mouse.click(startXPx + PUR * 15, 500 - PUR * 10),
-    'select_with_point'
-  )
-  await u.closeDebugPanel()
+  await page.mouse.click(startXPx + PUR * 15, 500 - PUR * 10)
+  await page.waitForTimeout(100)
 
   // hold down shift
   await page.keyboard.down('Shift')
@@ -133,7 +126,7 @@ test('Basic sketch', async ({ page }) => {
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
   |> line({ to: [${num}, 0], tag: 'seg01' }, %)
-  |> line([0, ${num}], %)
+  |> line([0, ${num + 0.01}], %)
   |> angledLine([180, segLen('seg01', %)], %)`)
 })
 

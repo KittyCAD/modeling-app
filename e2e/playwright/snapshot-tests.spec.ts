@@ -62,13 +62,11 @@ test('change camera, show planes', async ({ page, context }) => {
   await page.mouse.up({ button: 'right' })
 
   await u.openDebugPanel()
-  await u.waitForCmdReceive('camera_drag_end')
   await page.waitForTimeout(500)
   await u.clearCommandLogs()
 
   await page.getByRole('button', { name: 'Start Sketch' }).click()
 
-  await u.waitForDefaultPlanesVisibilityChange()
   await u.closeDebugPanel()
 
   await expect(page).toHaveScreenshot({
@@ -77,7 +75,6 @@ test('change camera, show planes', async ({ page, context }) => {
 
   await u.openAndClearDebugPanel()
   await page.getByRole('button', { name: 'Exit Sketch' }).click()
-  await u.waitForDefaultPlanesVisibilityChange()
 
   await u.sendCustomCmd(camCmd)
   await u.waitForCmdReceive('default_camera_look_at')
@@ -93,12 +90,10 @@ test('change camera, show planes', async ({ page, context }) => {
   await page.keyboard.up('Shift')
 
   await u.openDebugPanel()
-  await u.waitForCmdReceive('camera_drag_end')
   await page.waitForTimeout(300)
   await u.clearCommandLogs()
 
   await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await u.waitForDefaultPlanesVisibilityChange()
   await u.closeDebugPanel()
 
   await expect(page).toHaveScreenshot({
@@ -107,7 +102,6 @@ test('change camera, show planes', async ({ page, context }) => {
 
   await u.openAndClearDebugPanel()
   await page.getByRole('button', { name: 'Exit Sketch' }).click()
-  await u.waitForDefaultPlanesVisibilityChange()
 
   await u.sendCustomCmd(camCmd)
   await u.waitForCmdReceive('default_camera_look_at')
@@ -124,12 +118,10 @@ test('change camera, show planes', async ({ page, context }) => {
   await page.keyboard.up('Control')
 
   await u.openDebugPanel()
-  await u.waitForCmdReceive('camera_drag_end')
   await page.waitForTimeout(300)
   await u.clearCommandLogs()
 
   await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await u.waitForDefaultPlanesVisibilityChange()
   await u.closeDebugPanel()
 
   await expect(page).toHaveScreenshot({
@@ -191,7 +183,6 @@ const part001 = startSketchOn('-XZ')
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
-  await u.waitForDefaultPlanesVisibilityChange()
   await u.expectCmdLog('[data-message-type="execution-done"]')
   await u.waitForCmdReceive('extrude')
   await page.waitForTimeout(1000)
