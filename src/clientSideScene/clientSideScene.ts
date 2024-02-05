@@ -584,7 +584,7 @@ class ClientSideScene {
       straightSegmentBody.geometry = new ExtrudeGeometry(
         (straightSegmentBody.geometry as ExtrudeGeometry).parameters.shapes,
         {
-          steps: 100,
+          steps: 2,
           bevelEnabled: false,
           extrudePath: line,
         }

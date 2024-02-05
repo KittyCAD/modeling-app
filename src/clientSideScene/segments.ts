@@ -58,7 +58,7 @@ export function straightSegment({
     )
 
     geometry = new ExtrudeGeometry(shape, {
-      steps: 100,
+      steps: 2,
       bevelEnabled: false,
       extrudePath: line,
     })
