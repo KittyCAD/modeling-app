@@ -29,6 +29,7 @@ import {
 import { ONBOARDING_PROJECT_NAME } from './Onboarding'
 import { sep } from '@tauri-apps/api/path'
 import { bracket } from 'lib/exampleKcl'
+import { APP_VERSION } from 'lib/constants'
 
 export const Settings = () => {
   const loaderData =
@@ -118,7 +119,7 @@ export const Settings = () => {
           Close
         </ActionButton>
       </AppHeader>
-      <div className="max-w-5xl mx-5 lg:mx-auto my-24">
+      <div className="max-w-4xl mx-5 lg:mx-auto my-24">
         <h1 className="text-4xl font-bold">User Settings</h1>
         <p className="max-w-2xl mt-6">
           Don't see the feature you want? Check to see if it's on{' '}
@@ -304,6 +305,16 @@ export const Settings = () => {
             Replay Onboarding
           </ActionButton>
         </SettingsSection>
+        <p className="mt-24 text-sm font-mono">
+          App version {APP_VERSION}.{' '}
+          <a
+            href={`https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View release on GitHub
+          </a>
+        </p>
       </div>
     </div>
   )
