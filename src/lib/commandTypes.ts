@@ -81,9 +81,7 @@ export type CommandArgumentConfig<
   | {
       description?: string
       required: boolean
-      skip?: true
-      defaultValue?: OutputType | ((context: ContextFrom<T>) => OutputType)
-    } & (
+    } & SkipProps<OutputType, T> & (
       | {
           inputType: Extract<CommandInputType, 'options'>
           options:
@@ -105,9 +103,7 @@ export type CommandArgument<
   | {
       description?: string
       required: boolean
-      skip?: true // Skip is used to skip the command argument if provided a default value or a value from the user, such as a selection before extruding.
-      defaultValue?: OutputType // Default value is used as the starting value for the input on this argument.
-    } & (
+    } & SkipProps<OutputType, T> & (
       | {
           inputType: Extract<CommandInputType, 'options'>
           options: CommandArgumentOption<OutputType>[]
@@ -132,4 +128,21 @@ export type CommandArgumentOption<A> = {
   name: string
   isCurrent?: boolean
   value: A
+}
+
+// If skip is true and inputType isn't "selection", then defaultValue is required.
+// but if skip is false, then defaultValue is optional.
+type SkipProps<
+OutputType,
+T extends AnyStateMachine = AnyStateMachine
+> = {
+  skip: true
+  defaultValue: OutputType | ((context: ContextFrom<T>) => OutputType)
+} | {
+  skip: true
+  inputType: 'selection'
+  defaultValue?: OutputType | ((context: ContextFrom<T>) => OutputType)
+} | {
+  skip?: false
+  defaultValue?: OutputType | ((context: ContextFrom<T>) => OutputType)
 }
