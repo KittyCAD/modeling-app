@@ -32,7 +32,7 @@ import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubsc
 import { engineCommandManager } from './lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { ClientSideScene } from 'clientSideScene/setup'
-import { CamToggle } from 'components/CamToggle'
+// import { CamToggle } from 'components/CamToggle'
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData
@@ -243,7 +243,7 @@ export function App() {
           open={openPanes.includes('debug')}
         />
       )}
-      <CamToggle />
+      {/* <CamToggle /> */}
     </div>
   )
 }
