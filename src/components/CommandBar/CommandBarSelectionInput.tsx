@@ -65,7 +65,9 @@ function CommandBarSelectionInput({
     setCanSubmitSelection(canSubmitSelectionArg(selectionsByType, arg))
     const argValue = commandBarState.context.argumentsToSubmit[arg.name]
     if (canSubmitSelection && arg.skip && argValue === undefined) {
-      handleSubmit({ preventDefault: () => {} } as React.FormEvent<HTMLFormElement>)
+      handleSubmit({
+        preventDefault: () => {},
+      } as React.FormEvent<HTMLFormElement>)
     }
   }, [selectionsByType, arg])
 

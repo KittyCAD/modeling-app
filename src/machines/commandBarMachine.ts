@@ -8,7 +8,7 @@ import { Selections } from 'lib/selections'
 
 export const commandBarMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QGED2BbdBDAdhABAEJYBOAxMgDaqxgDaADALqKgAONAlgC6eo6sQAD0QBaAJwA6AGwAmAKwBmBoukAWafIAcDcSoA0IAJ6JZDaZIDs8hgzV6AjA61a1DWQF8PhtJlwFiciowUkYWJBAOWB4+AQiRBFF5CwdpcVkHS1lpVyU5QxNEh1lFGTUsrUUtOQd5SwZLLx8MbDwiUkkqGkgyAHk2MBwwwSiY-kEEswdJNWcNbPFLNMr5AsRFWUtJcVSdRR2VVMUmkF9WgI6u2ggyADFONv98WkowAGNufDeW-2GI0d443iiHESkktUUG1klTsSi0awQDgYWhmqkWjnUslBWhOZyegU61GuZAAghACN8-HhYH92FxAXFQAlRA5FpJ5FjFPYtNDpIpLOkEW4GNs4eJxJoGvJxOVcT82gSrj0AEpgdCoABuYC+8ogNOYI3psQmYlkGUkU2slhc6mkmUUCIyKLc4i0lkU8iUyjUHLlVIuJEkAGUwK8Pg8oDr-WQQ2HPpTzrTIkagUzEDkLHZkQK1CUtKCHAiNlsdjkVAdFEc-ed2oG8W0Xu9uD0kwDjcCEJDplUPfn+Ut7CUhXJJFo6uYbBOMtJq-jLrrnqGmy2HOE6dEGSbESoRSUHOVqpV99Zh7JR+PXPu1G7zI1vKcFwSAOJYbgACzAJAj+FIUAAruggzcLAFBvrgMBfH+JAkEBP4kP+gE4NwrYpoywiIA4qjyDIyR2LmlTSHY8LGBhyjsrm-L2No0hpHys4Kh0L7vp+36-gBQEgQAInAS4fFGiYGv8qFbjkpSWLmswMNK-LOI6UmSKouZOBo8jOPu9EBpITEfl+OCRmxiHAZIJIAO5YDEen4A8bB-twMZ-gARugPBwQhQEoRu7ZpoiyRbLm1HiJC16bLIQo7FYUrVNkKhZJ4971pp2ksZZBkcZIABqWCUJwECvhGZAQPwYCSA8GqoAA1sVGpZTlr5gCS8HsUhHljGhCSZOUMxmjK2Q6FJ+4Iny3bujYmyqVkxzxY+jGvjprGNYZsAZTVuW8HpZCfiQqCBmwlCvgAZtt6CSNV2WrfVC3uYJ66tVuqQlNsaTpKkUlCrMClqNeuhjUslQabWkiqhqnBgCZ9lOS5Ca-Ndyaeam6EIJY0zaFJ0qbC4yKVAi7oiuo6T1Mouguv9BJAyDYNkgQqXNTDbbwwk4qlNCAo8nIshuPkJGI4FMw0dUSKpE4dokx0ZOg2QqrqlqrlNchtPCR2AtSLa4rZq4eaDVyo4+jyHWVg0OJTf6ANi2DACiEAudTctrrDt0dpo2E2NoEqeqyoKa2o2t1OKsw2JC4gi3WH5vOV34NW5SEgYVODFaVFVVStdUR7L+q23TbWIPI73OyUyhOPUslc3oFhqPssxVO45g8kHnQh2Hlkp4tBVFSVOBlZVJ1J82TccXQq6GnDmcIFij2stKljWC42flAiLhnskejuO6NGbIHRs1oq9fh5dUcbdB22SLtB1HV3Z3J7vwEtZuivlFs+w5GO6SqbCg0aDM9TCuKJTuOv944KgCAcBBAJVrIPe23lRALAtAwTIdQbQaHtI6aY7MJQShUJRbObpa5KggOAm+kDigWjzNaVI9RPTSlWFzD00wy6uErBsfYZo1C11jE2b8UM8D4K8gjCuxCcZuDqLULIRZVKonoZhEo6R2Y4IXI2D4kBuH0xBJPbWyJshYmkNYQs1DNjslcFoTCKgzT8lBLXJKul9KX3gEJIed1Zhnh6koa05h9iBSLD6C0Eo+Q7F6s4P6G85yBgsfNSORlTLmTWpGaytklHD33IRbY-l+Q6B8e4rmn0naBSRroWwqlNDmNmslKxYSlqZXPlEuJd1KhSGtKoa0WjZipGkEKDYMwam6DtFyDICha6myqQ7TI4JPr9lUHIdIxFCjaI-h6DkmgNCHhwdvRu1iBneVSGItwPo0gCkWPuUKXNJ5ng9OYdQ+weRlzvF4IAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QGED2BbdBDAdhABAEJYBOAxMgDaqxgDaADALqKgAONAlgC6eo6sQAD0QBaAJwA6AGwAmAKwBmBoukAWafIAcDcSoA0IAJ6JZDaZIDs8hgzV6AjA61a1DWQF8PhtJlwFiciowUkYWJBAOWB4+AQiRBFF5CwdpcVkHS1lpVyU5QxNEh1lFGTUsrUUtOQd5SwZLLx8MbDwiUkkqGkgyAHk2MBwwwSiY-kEEswdJNWcNbPFLNMr5AsRFWUtJcVSdRR2VVMUmkF9WgI6u2ggyADFONv98WkowAGNufDeW-2GI0d443iiHESkktUUG1klTsSi0awQDgYWhmqkWjnUslBWhOZyegU61GuZAAghACN8-HhYH92FxAXFQAlRA5FpJ5FjFPYtNDpIpLOkEW4GNs4eJxJoGvJxOVcT82gSrj0AEpgdCoABuYC+8ogNOYI3psQmYlkGUkU2slhc6mkmUUCIyKLc4i0lkU8iUyjUHLlVIuJEkAGUwK8Pg8oDr-WQQ2HPpTzrTIkagUzEDkLHZkQK1CUtKCHAiNlsdjkVAdFEc-ed2oG8W0Xu9uD0kwDjcCEJDplUPfn+Ut7CUhXJJFo6uYbBOMtJq-jLrrnqGmy2HOE6dEGSbESoRSUHOVqpV99Zh7JR+PXPu1G7zI1vKcFwSAOJYbgACzAJAj+FIUAAruggzcLAFBvrgMBfH+JAkEBP4kP+gE4NwrYpoywiIA4qjyDIyR2LmlTSHY8LGBhyjsrm-L2No0hpHys4Kh0L7vp+36-gBQEgQAInAS4fFGiYGv8qFbjkpSWLmswMNK-LOI6UmSKouZOBo8jOPu9EBpITEfl+OCRmxiHAZIJIAO5YDEen4A8bB-twMZ-gARugPBwQhQEoRu7ZpoiyRbLm1HiJC16bLIQo7FYUrVNkKhZJ4971pp2ksZZBkcZIABqWCUJwECvhGZAQPwYCSA8GqoAA1sVGpZTlr5gCS8HsUhHljGhCTODYVissoxaWPutQInyFhctKSL8jFmwabWWmvjprGNYZsAZTVuW8HpZCfiQqCBmwlCvgAZtt6CSNV2WrfVC3uYJ66tVuqQlNsaTpKkUlCrMClqNeuibHUolTQSqoapwYAmfZTkuQmvzXcmnmpuhCB9eyOieuk1o6C4DokQjZHqKjO66C6-0dIDwOg2SBCpc10NtnDCTiqU0ICjyciyG4+RYwKpQaBmSKpE4dpE4GJMg2QqrqlqrlNch1PCR2vNSLa4rZq4eaDVyo4+jymRqJWDQ4vFj7E2AQMiwAohALmU9La4w7dHaaNhNjaBKnqsqCatqBrdTirMNiQuIgudB+bzld+DVuUhIGFTgxWlRVVUrXV4dS-qNs021iDyO9TslMoTj1LJWN6BYOsyphOhmDkcXNP603IMHoeWcni0FUVJU4GVlUnYnzbNxxdCroasMZwgWKPay0qWNYLhZ+UCIuGeyR6O47o0ZsAcG7XioN2Hl2Rxt0HbZIu0HUd3dnUne-AS1m5y+UWz7DkY7pKpsKDRoMz1MK4olO4G-3jgVAEA4CCASrWIedtvKiAWBaBgmQ6g2g0PaR00xWYSkWB6coHI16ByVBACBt8oHFAtHma0qR6iemlKsLGHppg61cJWDY+wzRqEDrGJs35IZ4AIV5eGswGabG9FJPqdRQo0NUqiBhmESjpFZrghcjYPiQB4bTEEU8NbImyFiaQ1hCw0M2Eja8mEVBmn5KCQOSVdL6SvvAISw87qzDPDKBQ-IdB8npkWH0FoJR8lcOKKeWgHAWNmslaxEcjKmXMmtSM1lbIqJHvuQi2x-KuPMPsQKb1HaBT6roWwqlNDBOYlYyWi1loX2ifEu6lQpDWlUNaHRsxUjSCFBsGY1TdB2i5BkBQgdhYmUqfbTI4JPr9lUHIdIxFCi6M-h6bBWcMz6xrjWbe7xG6Rj7pHAZ3lUgSLcD6NIApFj7jEVMrICkbA0VLjyHWd4vBAA */
     context: {
       commands: [] as Command[],
       selectedCommand: undefined as Command | undefined,
@@ -382,7 +382,7 @@ export const commandBarMachine = createMachine(
           if (!command.args) return {}
           const args: { [x: string]: unknown } = {}
           for (const [argName, arg] of Object.entries(command.args)) {
-            args[argName] = arg.defaultValue
+            args[argName] = arg.skip ? arg.defaultValue : undefined
           }
           return args
         },
@@ -410,10 +410,10 @@ export const commandBarMachine = createMachine(
             let argConfig = context.selectedCommand!.args![argName]
 
             if (
-              typeof arg !== typeof argConfig.payload &&
-              typeof arg !== typeof argConfig.defaultValue &&
-              'options' in argConfig &&
-              typeof arg !== typeof argConfig.options[0].value
+              (argConfig.defaultValue &&
+                typeof arg !== typeof argConfig.defaultValue) ||
+              ('options' in argConfig &&
+                typeof arg !== typeof argConfig.options[0].value)
             ) {
               return reject({
                 message: 'Argument payload is of the wrong type',

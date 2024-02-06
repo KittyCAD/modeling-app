@@ -40,7 +40,8 @@ export const modelingMachineConfig: CommandSetConfig<
       },
       // result: {
       //   inputType: 'options',
-      //   payload: 'add',
+      //   defaultValue: 'add',
+      //   skip: true,
       //   required: true,
       //   options: EXTRUSION_RESULTS.map((r) => ({
       //     name: r,
