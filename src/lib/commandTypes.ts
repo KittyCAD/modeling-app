@@ -106,6 +106,7 @@ export type CommandArgument<
   | {
       description?: string
       required: boolean
+      skip?: true // Skip is used to skip the command argument if given a value in the context
       payload?: OutputType // Payload sets the initialized value and more importantly its type
       defaultValue?: OutputType // Default value is used as the starting value for the input on this argument
     } & (
