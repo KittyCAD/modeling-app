@@ -36,6 +36,7 @@ export const modelingMachineConfig: CommandSetConfig<
         selectionTypes: ['face'],
         multiple: false, // TODO: multiple selection
         required: true,
+        skip: true,
       },
       // result: {
       //   inputType: 'options',
