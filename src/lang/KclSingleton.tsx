@@ -60,7 +60,7 @@ class KclManager {
     } catch (e) {
       console.error(e)
     }
-    void this.executeAst(ast)
+    this.executeAst(ast)
   }, 600)
 
   private _isExecutingCallback: (arg: boolean) => void = () => {}

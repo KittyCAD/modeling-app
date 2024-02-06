@@ -845,7 +845,7 @@ export const modelingMachine = createMachine(
       }),
 
       'sketch mode enabled': ({ sketchPlaneId }) => {
-        void engineCommandManager.sendSceneCommand({
+        engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
@@ -866,7 +866,7 @@ export const modelingMachine = createMachine(
           selectionRanges
         )
         pathId &&
-          void engineCommandManager.sendSceneCommand({
+          engineCommandManager.sendSceneCommand({
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
             cmd: {
@@ -1046,7 +1046,7 @@ export const modelingMachine = createMachine(
           distance
         )
         // TODO not handling focusPath correctly I think
-        void kclManager.updateAst(modifiedAst, true, {
+        kclManager.updateAst(modifiedAst, true, {
           focusPath: pathToExtrudeArg,
         })
       },

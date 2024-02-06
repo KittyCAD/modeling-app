@@ -85,7 +85,7 @@ export function App() {
   useEngineConnectionSubscriptions()
 
   const debounceSocketSend = throttle<EngineCommand>((message) => {
-    void engineCommandManager.sendSceneCommand(message)
+    engineCommandManager.sendSceneCommand(message)
   }, 16)
   const handleMouseMove: MouseEventHandler<HTMLDivElement> = (e) => {
     if (state.matches('Sketch')) {

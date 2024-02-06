@@ -299,12 +299,12 @@ export const ModelingMachineProvider = ({
               programMemory: kclManager.programMemory,
               pathToNode: sketchPathToNode,
             })
-            void engineCommandManager.sendSceneCommand({
+            engineCommandManager.sendSceneCommand({
               type: 'modeling_cmd_req',
               cmd_id: uuidv4(),
               cmd: { type: 'edit_mode_exit' },
             })
-            void engineCommandManager.sendSceneCommand({
+            engineCommandManager.sendSceneCommand({
               type: 'modeling_cmd_req',
               cmd_id: uuidv4(),
               cmd: { type: 'default_camera_disable_sketch_mode' },
@@ -314,7 +314,7 @@ export const ModelingMachineProvider = ({
           }
         },
         'sketch exit execute': () => {
-          void kclManager.executeAst()
+          kclManager.executeAst()
         },
         'Set selection': assign(({ selectionRanges }, event) => {
           if (event.type !== 'Set selection') return {} // this was needed for ts after adding 'Set selection' action to on done modal events

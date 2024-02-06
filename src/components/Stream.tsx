@@ -102,7 +102,7 @@ export const Stream = ({ className = '' }) => {
         cmd_id: newId,
       })
     } else if (!state.matches('Sketch.Line Tool')) {
-      void engineCommandManager.sendSceneCommand({
+      engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
           type: 'camera_drag_start',
@@ -120,7 +120,7 @@ export const Stream = ({ className = '' }) => {
   const fps = 60
   const handleScroll: WheelEventHandler<HTMLVideoElement> = throttle((e) => {
     if (!cameraMouseDragGuards[cameraControls].zoom.scrollCallback(e)) return
-    void engineCommandManager.sendSceneCommand({
+    engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd: {
         type: 'default_camera_zoom',
@@ -165,13 +165,13 @@ export const Stream = ({ className = '' }) => {
         selection_type: 'add',
         selected_at_window: { x, y },
       }
-      void engineCommandManager.sendSceneCommand(command)
+      engineCommandManager.sendSceneCommand(command)
     } else if (!didDragInStream && state.matches('Sketch.Line Tool')) {
       command.cmd = {
         type: 'mouse_click',
         window: { x, y },
       }
-      void engineCommandManager.sendSceneCommand(command).then(async (resp) => {
+      engineCommandManager.sendSceneCommand(command).then(async (resp) => {
         const entities_modified = resp?.data?.data?.entities_modified
         if (!entities_modified) return
         if (state.matches('Sketch.Line Tool.No Points')) {
@@ -226,14 +226,14 @@ export const Stream = ({ className = '' }) => {
         selection_type: 'add',
       }
 
-      void engineCommandManager.sendSceneCommand(command)
+      engineCommandManager.sendSceneCommand(command)
     } else if (!didDragInStream && state.matches('Sketch.Move Tool')) {
       command.cmd = {
         type: 'select_with_point',
         selected_at_window: { x, y },
         selection_type: 'add',
       }
-      void engineCommandManager.sendSceneCommand(command)
+      engineCommandManager.sendSceneCommand(command)
     } else if (didDragInStream && state.matches('Sketch.Move Tool')) {
       if (state.matches('Sketch.Move Tool.No move')) {
         const toastJsx = DragWarningToast(context.moveDescs)
@@ -251,7 +251,7 @@ export const Stream = ({ className = '' }) => {
       }
       void engineCommandManager.sendSceneCommand(command)
     } else {
-      void engineCommandManager.sendSceneCommand(command)
+      engineCommandManager.sendSceneCommand(command)
     }
 
     setDidDragInStream(false)
