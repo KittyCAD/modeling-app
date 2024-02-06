@@ -116,7 +116,6 @@ export const Toolbar = () => {
                     ? send('CancelSketch')
                     : send('Equip tangential arc to 3')
                 }
-                // disabled={!state.can('Equip tangential arc to 2')}
                 aria-pressed={state.matches('Sketch.Tangential arc to 3')}
                 className="pressed:bg-energy-10/20 dark:pressed:bg-energy-80"
                 icon={{
