@@ -77,7 +77,6 @@ export const ModelingMachineProvider = ({
     modelingMachine,
     {
       actions: {
-        'Update code selection cursors': () => {},
         'sketch exit execute': () => {
           kclManager.executeAst()
         },
@@ -198,8 +197,6 @@ export const ModelingMachineProvider = ({
         }),
       },
       guards: {
-        'Selection contains line': () => true,
-        'Selection contains point': () => true,
         'has valid extrude selection': ({ selectionRanges }) => {
           // A user can begin extruding if they either have 1+ faces selected or nothing selected
           // TODO: I believe this guard only allows for extruding a single face at a time
