@@ -8,7 +8,7 @@ import { Selections } from 'lib/selections'
 
 export const commandBarMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QGED2BbdBDAdhABAEJYBOAxMgDaqxgDaADALqKgAONAlgC6eo6sQAD0QBaAJwA6AGwAmAKwBmBoukAWafIAcDcSoA0IAJ6JZDaZIDs8hgzV6AjA61a1DWQF8PhtJlwFiciowUkYWJBAOWB4+AQiRBFF5CwdpcVkHS1lpVyU5QxNEh1lFGTUsrUUtOQd5SwZLLx8MbDwiUkkqGkgyAHk2MBwwwSiY-kEEswdJNWcNbPFLNMr5AsRFWUtJcVSdRR2VVMUmkF9WgI6u2ggyADFONv98WkowAGNufDeW-2GI0d443iiHESkktUUG1klTsSi0awQDgYWhmqkWjnUslBWhOZyegU61GuZAAghACN8-HhYH92FxAXFQAlRA5FpJ5FjFPYtNDpIpLOkEW4GNs4eJxJoGvJxOVcT82gSrj0AEpgdCoABuYC+8ogNOYI3psQmYlkGUkU2slhc6mkmUUCIyKLc4i0lkU8iUyjUHLlVIuJEkAGUwK8Pg8oDr-WQQ2HPpTzrTIkagUzEDkLHZkQK1CUtKCHAiNlsdjkVAdFEc-ed2oGAOJYbgACzAJAj+FIUAAruhBtxYGQACJwUPveO6pMA43AhA5UqWXOzBjS-nOR3LySqXNODTyZwONTV-GXXXPUcfHqTlOM4TrSublb5-lLewlIVySRaOrmGw-jLSI8FRPf0zzjS8HHCOlogZE1ERUEUSgPa05yQ1ZjEQeZP2-VwDzUN1zEabxTlPAkG2bVt207Hs+wHZAm1wGAvi7EgSD7DsSG7XscG4K9oOnNNEVUeQZGSOxc0qaQ7HhdDBJFeRc35extGkNI+UAgNJDIls2xwSMqK4-tJBJAB3LAYl0-AHjYLtuBjLsACN0B4djOL7XixhvBIDxUT8qj5VIkTwtQHRk8oUQcD15LMXQclcdTa00xttMojjqO42BJAANSwShOAgRsIzICB+DASQHg1VAAGtSo1HK8sbMASVSgz3JgmdMnKGYzRlbIdGXA8EX8zd3RsTY9yyY4iLxID6ySiiLP0misrq-LeF0shWxIVBAzYShGwAM229BJFq3LVsa5q3INf5r1gg9JIfXqqh0TQsiFTYrCyJZRpsXJ4oJVUNU4MBjLsxznITX5rqgjzYMsaZtGXaVNhcZFKgRd0RXUdJ6mUXQXX+jpAeB0GyQIRbuNa-jbwQcVSmhAUeTkWQ3HyGSBVKDQMyRAKAsJwNiZBshVXVLUXLSnjoeTPjUxpnmpFtcVs1cPNBq5T8fR5DrKwaHEppIomwCBoWAFEIGcinJcg6XYZnTRhJsbQJU9VlQTVtQNbqcVZhsSFxH5zoWzeSr2ya1z0qKkqypwCrqpOlaGrDiX9WtqdZYSeSEeXEplCceo1xkvQLGCmUIp0Mwck8fWQMVIOQ4spODIHYqcFK8qqpqhPuAu8P+zoCDDRlzzTCkCVWWlSxrBceTygRFxZHZNJbE2VQ5AFAO6PeevI0bmiNpY7bJF2g6jvjs7E8u9KqfTxAkK2fZYuRvdYUGjQZnqYVxRKdx-ZOHBUAgHAQQ00AyD1tgJUQCwLQMEyHUG0Gh7SOmmDuGB6gOTyVBMkDeRJIBgLahA4oFo8zWlSPUT00o0KFA9NMYKrhKwbH2GaQ81cawEljGOdskM8B4OpgkWY9MV5ZjqLUN6MlqGojoRFEo6QWYb1PC8McuCbpD1gosLYrhkTZCxNIawhYxEfW0HhCKKgzT8lBAHLS809KX37Dwm+iIWZSEinjTRy51BFnvNofM7hGZfgXBYuaOlrG9wyiZMya1IxWRsnY4eDi2TONsK45IaghQbEkO4VIKlsaVE2AE8iQTxZN2WufCJMS7o6JSBKNQLp7CT35EKZw2wnDVDyCvBczDmg10NsbYyZS7aZHBNU58q8sTQgxnud+kVsjyQzHrTprDLh11DjY+AyjwFy00DQ2EaQBSLAPLIDGWRNw2BUiXHkwVCJeCAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QGED2BbdBDAdhABAEJYBOAxMgDaqxgDaADALqKgAONAlgC6eo6sQAD0QBaAJwA6AGwAmAKwBmBoukAWafIAcDcSoA0IAJ6JZDaZIDs8hgzV6AjA61a1DWQF8PhtJlwFiciowUkYWJBAOWB4+AQiRBFF5CwdpcVkHS1lpVyU5QxNEh1lFGTUsrUUtOQd5SwZLLx8MbDwiUkkqGkgyAHk2MBwwwSiY-kEEswdJNWcNbPFLNMr5AsRFWUtJcVSdRR2VVMUmkF9WgI6u2ggyADFONv98WkowAGNufDeW-2GI0d443iiHESkktUUG1klTsSi0awQDgYWhmqkWjnUslBWhOZyegU61GuZAAghACN8-HhYH92FxAXFQAlRA5FpJ5FjFPYtNDpIpLOkEW4GNs4eJxJoGvJxOVcT82gSrj0AEpgdCoABuYC+8ogNOYI3psQmYlkGUkU2slhc6mkmUUCIyKLc4i0lkU8iUyjUHLlVIuJEkAGUwK8Pg8oDr-WQQ2HPpTzrTIkagUzEDkLHZkQK1CUtKCHAiNlsdjkVAdFEc-ed2oG8W0Xu9uD0kwDjcCEJDplUPfn+Ut7CUhXJJFo6uYbBOMtJq-jLrrnqGmy2HOE6dEGSbESoRSUHOVqpV99Zh7JR+PXPu1G7zI1vKcFwSAOJYbgACzAJAj+FIUAAruggzcLAFBvrgMBfH+JAkEBP4kP+gE4NwrYpoywiIA4qjyDIyR2LmlTSHY8LGBhyjsrm-L2No0hpHys4Kh0L7vp+36-gBQEgQAInAS4fFGiYGv8qFbjkpSWLmswMNK-LOI6UmSKouZOBo8jOPu9EBpITEfl+OCRmxiHAZIJIAO5YDEen4A8bB-twMZ-gARugPBwQhQEoRu7ZpoiyRbLm1HiJC16bLIQo7FYUrVNkKhZJ4971pp2ksZZBkcZIABqWCUJwECvhGZAQPwYCSA8GqoAA1sVGpZTlr5gCS8HsUhHljGhCSZOUMxmjK2Q6FJ+4Iny3bujYmyqVkxzxY+jGvjprGNYZsAZTVuW8HpZCfiQqCBmwlCvgAZtt6CSNV2WrfVC3uYJ66tVuqQlNsaTpKkUlCrMClqNeuhjUslQabWkiqhqnBgCZ9lOS5Ca-Ndyaeam6EIJY0zaFJ0qbC4yKVAi7oiuo6T1Mouguv9BJAyDYNkgQqXNTDbbwwk4qlNCAo8nIshuPkJGI4FMw0dUSKpE4dokx0ZOg2QqrqlqrlNchtPCR2AtSLa4rZq4eaDVyo4+jyHWVg0OJTf6ANi2DACiEAudTctrrDt0dpo2E2NoEqeqyoKa2o2t1OKsw2JC4gi3WH5vOV34NW5SEgYVODFaVFVVStdUR7L+q23TbWIPI73OyUyhOPUslc3oFhqPssxVO45g8kHnQh2Hlkp4tBVFSVOBlZVJ1J82TccXQq6GnDmcIFij2stKljWC42flAiLhnskejuO6NGbIHRs1oq9fh5dUcbdB22SLtB1HV3Z3J7vwEtZuivlFs+w5GO6SqbCg0aDM9TCuKJTuOv944KgCAcBBAJVrIPe23lRALAtAwTIdQbQaHtI6aY7MJQShUJRbObpa5KggOAm+kDigWjzNaVI9RPTSlWFzD00wy6uErBsfYZo1C11jE2b8UM8D4K8gjCuxCcZuDqLULIRZVKonoZhEo6R2Y4IXI2D4kBuH0xBJPbWyJshYmkNYQs1DNjslcFoTCKgzT8lBLXJKul9KX3gEJIed1Zhnh6koa05h9iBSLD6C0Eo+Q7F6s4P6G85yBgsfNSORlTLmTWpGaytklHD33IRbY-l+Q6B8e4rmn0naBSRroWwqlNDmNmslKxYSlqZXPlEuJd1KhSGtKoa0WjZipGkEKDYMwam6DtFyDICha6myqQ7TI4JPr9lUHIdIxFCjaI-h6DkmgNCHhwdvRu1iBneVSGItwPo0gCkWPuUKXNJ5ng9OYdQ+weRlzvF4IAA */
     context: {
       commands: [] as Command[],
       selectedCommand: undefined as Command | undefined,
@@ -93,20 +93,7 @@ export const commandBarMachine = createMachine(
           },
           {
             target: 'Gathering arguments',
-            actions: [
-              assign({
-                currentArgument: (context, event) => {
-                  const { selectedCommand } = context
-                  if (!(selectedCommand && selectedCommand.args))
-                    return undefined
-                  const argName = Object.keys(selectedCommand.args)[0]
-                  return {
-                    ...selectedCommand.args[argName],
-                    name: argName,
-                  }
-                },
-              }),
-            ],
+            actions: ['Set current argument to first non-skippable'],
           },
         ],
       },
@@ -307,6 +294,44 @@ export const commandBarMachine = createMachine(
           selectedCommand?.onSubmit()
         }
       },
+      'Set current argument to first non-skippable': assign({
+        currentArgument: (context, event) => {
+          const { selectedCommand } = context
+          if (!(selectedCommand && selectedCommand.args)) return undefined
+
+          // Find the first argument that is not to be skipped:
+          // that is, the first argument that is not already in the argumentsToSubmit
+          // or that is not undefined, or that is not marked as "skippable".
+          // TODO validate the type of the existing arguments
+          let argIndex = 0
+          while (argIndex < Object.keys(selectedCommand.args).length) {
+            const argName = Object.keys(selectedCommand.args)[argIndex]
+            console.log('argName', argName)
+            const mustNotSkipArg =
+              !context.argumentsToSubmit.hasOwnProperty(argName) ||
+              context.argumentsToSubmit[argName] === undefined ||
+              !selectedCommand.args[argName].skip
+            console.log('arg config', selectedCommand.args[argName])
+            console.log('context.argumentsToSubmit', context.argumentsToSubmit)
+            console.log('mustNotSkipArg', mustNotSkipArg)
+            if (mustNotSkipArg) {
+              return {
+                ...selectedCommand.args[argName],
+                name: argName,
+              }
+            }
+            argIndex++
+          }
+          // Just show the last argument if all are skippable
+          // TODO: use an XState service to continue onto review step
+          // if all arguments are skippable and contain values.
+          const argName = Object.keys(selectedCommand.args)[argIndex - 1]
+          return {
+            ...selectedCommand.args[argName],
+            name: argName,
+          }
+        },
+      }),
       'Clear current argument': assign({
         currentArgument: undefined,
       }),
