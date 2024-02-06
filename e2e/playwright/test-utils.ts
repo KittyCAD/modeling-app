@@ -95,8 +95,6 @@ export function getUtils(page: Page) {
     },
     clearCommandLogs: () => clearCommandLogs(page),
     expectCmdLog: (locatorStr: string) => expectCmdLog(page, locatorStr),
-    waitForDefaultPlanesVisibilityChange: () =>
-      waitForDefaultPlanesToBeVisible(page),
     openDebugPanel: () => openDebugPanel(page),
     closeDebugPanel: () => closeDebugPanel(page),
     openAndClearDebugPanel: async () => {

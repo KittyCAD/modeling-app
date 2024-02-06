@@ -649,7 +649,6 @@ test('Can extrude from the command bar', async ({ page, context }) => {
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
-  await u.waitForDefaultPlanesVisibilityChange()
   await u.expectCmdLog('[data-message-type="execution-done"]')
 
   let cmdSearchBar = page.getByPlaceholder('Search commands')
