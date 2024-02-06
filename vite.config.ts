@@ -31,6 +31,10 @@ const config = defineConfig({
     viteTsconfigPaths(),
     eslint(),
   ],
+  define: {
+    // Allows us to use `__APP_VERSION__` in our code
+    __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+  },
 })
 
 export default config
