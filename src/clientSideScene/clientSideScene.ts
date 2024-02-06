@@ -7,6 +7,7 @@ import {
   Matrix4,
   Mesh,
   MeshBasicMaterial,
+  PerspectiveCamera,
   PlaneGeometry,
   Quaternion,
   Scene,
@@ -20,6 +21,7 @@ import {
   DefaultPlane,
   defaultPlaneColor,
   INTERSECTION_PLANE_LAYER,
+  isQuaternionVertical,
   RAYCASTABLE_PLANE,
   setupSingleton,
   SKETCH_LAYER,
@@ -40,6 +42,7 @@ import {
   recast,
   SketchGroup,
   VariableDeclaration,
+  VariableDeclarator,
 } from 'lang/wasm'
 import { kclManager } from 'lang/KclSingleton'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
@@ -66,6 +69,7 @@ import {
 } from 'lang/modifyAst'
 import { getEventForSegmentSelection } from 'lib/selections'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
+import { createGridHelper } from './helpers'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -103,7 +107,7 @@ class ClientSideScene {
     this.intersectionPlane.layers.set(INTERSECTION_PLANE_LAYER)
     this.scene.add(this.intersectionPlane)
   }
-  createSketchAxis() {
+  createSketchAxis(sketchPathToNode: PathToNode) {
     const baseXColor = 0x000055
     const baseYColor = 0x550000
     const xAxisGeometry = new BoxGeometry(100000, 0.3, 0.01)
@@ -132,7 +136,11 @@ class ClientSideScene {
     }
 
     this.axisGroup = new Group()
-    this.axisGroup.add(xAxisMesh, yAxisMesh)
+    this.axisGroup.add(
+      xAxisMesh,
+      yAxisMesh,
+      createGridHelper({ size: 100, divisions: 10 })
+    )
     this.currentSketchQuaternion &&
       this.axisGroup.setRotationFromQuaternion(this.currentSketchQuaternion)
 
@@ -141,6 +149,15 @@ class ClientSideScene {
     this.axisGroup.traverse((child) => {
       child.layers.set(SKETCH_LAYER)
     })
+
+    const quat = quaternionFromSketchGroup(
+      sketchGroupFromPathToNode({
+        pathToNode: sketchPathToNode,
+        ast: kclManager.ast,
+        programMemory: kclManager.programMemory,
+      })
+    )
+    this.axisGroup.setRotationFromQuaternion(quat)
     this.scene.add(this.axisGroup)
   }
   removeIntersectionPlane() {
@@ -175,9 +192,11 @@ class ClientSideScene {
       programMemoryOverride,
     })
     this.sceneProgramMemory = programMemory
-    const sketchGroup = programMemory.root[
-      variableDeclarationName
-    ] as SketchGroup
+    const sketchGroup = sketchGroupFromPathToNode({
+      pathToNode: sketchPathToNode,
+      ast: kclManager.ast,
+      programMemory,
+    })
     const group = new Group()
     group.userData = {
       type: SKETCH_GROUP_SEGMENTS,
@@ -224,7 +243,6 @@ class ClientSideScene {
       this.intersectionPlane.setRotationFromQuaternion(
         this.currentSketchQuaternion
       )
-    setTimeout(() => this.createSketchAxis(), 200)
 
     this.scene.add(group)
     if (!draftSegment) {
@@ -327,7 +345,7 @@ class ClientSideScene {
           }
 
           kclManager.executeAstMock(modifiedAst, { updates: 'code' })
-          await this.tearDownSketch()
+          await this.tearDownSketch({ removeAxis: false })
           this.setupSketch({ sketchPathToNode, draftSegment })
         },
         onMove: (args) => {
@@ -352,16 +370,16 @@ class ClientSideScene {
     modifiedAst: Program
   ) => {
     await kclManager.updateAst(modifiedAst, false)
-    await this.tearDownSketch()
+    await this.tearDownSketch({ removeAxis: false })
     this.setupSketch({ sketchPathToNode })
   }
   setUpDraftArc = async (sketchPathToNode: PathToNode) => {
-    await this.tearDownSketch()
+    await this.tearDownSketch({ removeAxis: false })
     await new Promise((resolve) => setTimeout(resolve, 100))
     this.setupSketch({ sketchPathToNode, draftSegment: 'tangentialArcTo' })
   }
   setUpDraftLine = async (sketchPathToNode: PathToNode) => {
-    await this.tearDownSketch()
+    await this.tearDownSketch({ removeAxis: false })
     await new Promise((resolve) => setTimeout(resolve, 100))
     this.setupSketch({ sketchPathToNode, draftSegment: 'line' })
   }
@@ -607,13 +625,17 @@ class ClientSideScene {
       await setupSingleton.animateToPerspective()
     }
   }
+  removeSketchGrid() {
+    if (this.axisGroup) this.scene.remove(this.axisGroup)
+  }
   private _tearDownSketch(
     callDepth = 0,
     resolve: (val: unknown) => void,
-    reject: () => void
+    reject: () => void,
+    { removeAxis = true }: { removeAxis?: boolean }
   ) {
     if (this.intersectionPlane) this.scene.remove(this.intersectionPlane)
-    if (this.axisGroup) this.scene.remove(this.axisGroup)
+    if (this.axisGroup && removeAxis) this.scene.remove(this.axisGroup)
     const sketchSegments = this.scene.children.find(
       ({ userData }) => userData?.type === SKETCH_GROUP_SEGMENTS
     )
@@ -627,7 +649,7 @@ class ClientSideScene {
       const maxCalls = maxTimeRetries / delay
       if (callDepth < maxCalls) {
         setTimeout(() => {
-          this._tearDownSketch(callDepth + 1, resolve, reject)
+          this._tearDownSketch(callDepth + 1, resolve, reject, { removeAxis })
         }, delay)
       } else {
         reject()
@@ -638,13 +660,17 @@ class ClientSideScene {
     // maybe should reset onMove etc handlers
     if (shouldResolve) resolve(true)
   }
-  async tearDownSketch() {
+  async tearDownSketch({
+    removeAxis = true,
+  }: {
+    removeAxis?: boolean
+  } = {}) {
     // I think promisifying this is mostly a side effect of not having
     // "setupSketch" correctly capture a promise when it's done
     // so we're effectively waiting for to be finished setting up the scene just to tear it down
     // TODO is to fix that
     return new Promise((resolve, reject) => {
-      this._tearDownSketch(0, resolve, reject)
+      this._tearDownSketch(0, resolve, reject, { removeAxis })
     })
   }
   setupDefaultPlaneHover() {
@@ -796,6 +822,23 @@ export function getParentGroup(
   return null
 }
 
+export function sketchGroupFromPathToNode({
+  pathToNode,
+  ast,
+  programMemory,
+}: {
+  pathToNode: PathToNode
+  ast: Program
+  programMemory: ProgramMemory
+}): SketchGroup {
+  const varDec = getNodeFromPath<VariableDeclarator>(
+    kclManager.ast,
+    pathToNode,
+    'VariableDeclarator'
+  ).node
+  return programMemory.root[varDec?.id?.name || ''] as SketchGroup
+}
+
 export function quaternionFromSketchGroup(
   sketchGroup: SketchGroup
 ): Quaternion {
@@ -846,4 +889,33 @@ function colorSegment(object: any, color: number) {
     })
     return
   }
+}
+
+export function sketchQuaternion(
+  sketchPathToNode: PathToNode,
+  sketchNormalBackUp: [number, number, number] | null
+): Quaternion {
+  const sketchGroup = sketchGroupFromPathToNode({
+    pathToNode: sketchPathToNode,
+    ast: kclManager.ast,
+    programMemory: kclManager.programMemory,
+  })
+  const zAxis = sketchGroup?.zAxis || sketchNormalBackUp
+  const dummyCam = new PerspectiveCamera()
+  dummyCam.up.set(0, 0, 1)
+  dummyCam.position.set(...zAxis)
+  dummyCam.lookAt(0, 0, 0)
+  dummyCam.updateMatrix()
+  const quaternion = dummyCam.quaternion.clone()
+
+  const isVert = isQuaternionVertical(quaternion)
+
+  // because vertical quaternions are a gimbal lock, for the orbit controls
+  // it's best to set them explicitly to the vertical position with a known good camera up
+  if (isVert && zAxis[2] < 0) {
+    quaternion.set(0, 1, 0, 0)
+  } else if (isVert) {
+    quaternion.set(0, 0, 0, 1)
+  }
+  return quaternion
 }

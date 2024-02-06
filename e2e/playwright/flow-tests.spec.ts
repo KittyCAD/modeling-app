@@ -1,7 +1,5 @@
 import { test, expect } from '@playwright/test'
 import { secrets } from './secrets'
-import { EngineCommand } from '../../src/lang/std/engineConnection'
-import { v4 as uuidv4 } from 'uuid'
 import { getUtils } from './test-utils'
 import waitOn from 'wait-on'
 import { Themes } from '../../src/lib/theme'

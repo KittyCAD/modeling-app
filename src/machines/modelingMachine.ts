@@ -1,9 +1,4 @@
-import {
-  PathToNode,
-  SketchGroup,
-  VariableDeclaration,
-  VariableDeclarator,
-} from 'lang/wasm'
+import { PathToNode, VariableDeclarator } from 'lang/wasm'
 import { engineCommandManager } from 'lang/std/engineConnection'
 import { isReducedMotion } from 'lib/utils'
 import {
@@ -38,7 +33,6 @@ import {
 } from 'lang/modifyAst'
 import { getNodeFromPath } from '../lang/queryAst'
 import { CallExpression, PipeExpression } from '../lang/wasm'
-import { getConstraintLevelFromSourceRange } from 'lang/std/sketchcombos'
 import {
   applyConstraintEqualAngle,
   equalAngleInfo,
@@ -58,9 +52,9 @@ import {
   DefaultPlaneStr,
   clientSideScene,
   quaternionFromSketchGroup,
+  sketchGroupFromPathToNode,
 } from 'clientSideScene/clientSideScene'
-import { isQuaternionVertical, setupSingleton } from 'clientSideScene/setup'
-import { PerspectiveCamera } from 'three'
+import { setupSingleton } from 'clientSideScene/setup'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -119,7 +113,7 @@ export type MoveDesc = { line: number; snippet: string }
 
 export const modelingMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogDsAJgCMAOlEBmABxTRAVgAsggGwyZqhQBoQAT0TThNcYICcg0WdGaZCmgsEBfJ7rQYc+AgGUw7AASwWGDknNy0DEggLGxhPFECCKJKChIyZjRSxlJmMoIOZroGCPJKZuJlSjRmGVk2Ki5u6Fh4UOLYEJhgPn6BwaFcuBG8MRyDvImiDqriCsJzUqpLWZmCRYY2M6LCGlJKUiKqlY0g7i347Z3dAKK47GAAToEA1n7kABbDUaNxExs2s3UNGESiOVQcMnWCHySnEMjK1TEOSm0hOZ08bQ6XQIt3uT1gr3YHyookizFYY24f2hcgqNEEKjUNH2NSUULMR3ENBk8wZ1lkKSUaOaGMu2OufHYDwArhgvuTYuMEoZhDkuXY1JptoJBMooaJNpIdmZlHYQQozMKPK1xN5CR9iGRKJg7W9PvQRhTfsqkrY4RqlIpdZoHOyDaZVDVtYHqqkrec2q6ie9bfb3gBJK49AJBLoDcIe75epWgRJiGgzQNKEHyA3Caxs-RCVTCcRacw6mRWYRqS2uU4im1Jj6pt2Z7HIEivPpQAC2YDu-gAbo9OOQSJh5dFi1SfVZBFJxByDYHROZKsJ9clDya65GRMCK-HRcOU6-x91J9OgnOFwF3qgDzYAAXtw7AbluPwlvwhgmoI4iyOouSqNyqo6E2STMq2VhAlI9LAmYILPkOaajsmH7ENwsBSiQeD+ABQGgXcG7+BA2DUU6YCQTu8SlrBex0vyvY1BW6HFGIKEVLkVgKFIqTKGexEXK+ZEfBRRBUTRdErg8a4sWxHEUFxhYKpSvEwUkZhlAhOHmPYKGWGJiDZPBHLqOYSwclZzj9uiJFuqpGZZhpuDUQ8tG4P4ACCABC3j+AAGtxiq7nxllaHCzJ7D2HI5VIUI9lYCGsny9TAqoSmJqR77BZp4V0bF8UAJrJWZ1I4QobbciJsgVvsawYTssmSOoIJaDQBoiD5TTWsp1VpupdURf4ZBQF0rXemlxiqqY9kKGC8hLJeg2FaYE09sIRyEfWlWBYFi2hVpkVdPg7DumS24peZZYTfBB41pGFh4TsBWyIeYhiNsciHBVvmDnNAU1diIVhctTCPOjuBseQ0qYCQTwGeBRkbdBkwZDIcJLMk5XqCohSDY45SiC2FqXczeSqNNA6zVViMLbVj31ZFDEgWBG6YHoK04FAQwmZ9bV7lZnWqIsnbwtyDL6mNR6glZ1hLDINBPnDPN3Uj3Qo09y6rtg66YBLUvYDLJOpRZOGtpDZ54QamjzPqckzCC1RG9swhhykt0qeblGC8tsC4CQTD+OwqCJS732wRyXLVlMIIHvkKv6jqrYc5qzKpNUXN+Qjyb3QLqN0fHifJ6nLVy1BrtkyacLKKodZZI4yT6nkFNWLkPYB-kwiR-NY711bYAAI7SixL1QG96ftRYgdmHh-1GyIoj6qCEjctTyQmobsMzQmZv88jS10Uw+Pi9Q7c8dSxjVJliL2BoGgpH1EseCtNLrZVZAoBQM8+ZzwfrHOiDwwCzlQCufw5BH53FgJvRW8hir0jKDqXKeoMKKD7m2IEYg8iqlVNfbmt8o7326AAJTAAAWjAHwEI0p7jYK2pkTq1hgSqgPEInsUI+6tijIsQRDlFjQNrtHa4y9sBJwADJ4DAC3VAmB-BSF4RZeQFZZjMl1BkTmYIrw8jhPkAUl0eyZCkPIkcijlFJyJjAO42AWL43IC3XR+jEhZF3lyMQB5mYiDmE5JIZQKYHkNrIVUPJZBOJTFFAA7rRf8gFRbMR0YTTi-g8AADNUAEAgNwMA7RcBLlQK8cQMB2CsJFkxcCmBWHFNQAE5yuRYRdiyAcFCZQjj5UGvUcQ9ZIE2ArOzSBKTxDpMyfRbJLT9LsSJpQQpuASkEEeA8QC4gmB43YCUh4s56l+CacssWbSOldIQPWOwFQuyqkIrnNQA1xLJErHICZ5orBzIWRwa2ulbarMMhsjpZSKlVJqXUhprCdJ6RuVszp78vqfxqK2ewoIEl1EhINZkFN5DninvtCaAKMlAsRaCvJayCmQt2fsw5JBjmATOfC6ldt2korufWYJZ55h5GZKhEQBUjYzBQjyCwOx6RnlEBSxZjVEqbO2eU3AlS8CwsqfCkgAAjWArC+DcpKbymo8EoZyAmjYfaHznKHFmHIA0Rh7D7QVUCpVCUVWlMZQ8A5RyTnsouXqg1RrblooVltM1P9LDJEgbJKJl1DaZWkHTCwZ4ZBuoCEqpqXqoXqphbU7VQb9WsL0Ma1FH0O4Z3uTUGYIhBUHCsosRQBVHU62ZoKXUSg5CZuinFfwOaGUPD2b65lrLTnnMacG0t5bTUWGKkoUEqR5BZE0AVQiFNUhoUsPsQ29Je2rS6LmtVGrqmFsnaww9bCw2Vo-j6PlIDOYcnkCCXe+LxJ1AQmEjkhL6xV3hrzWugKAhXtzT6v1LKA0XqvbO8Nm0LJ8vKPhE0Fo7Aj3fc5HYEhIEti0MkCZtDq6AZHMB-wa83rHuhZq898LyPvFg7e9F96aidXMNdbI1h0gYfuYu8o9lzrzCrKiE29DSKkbo2B4dTL-VsovXRhjnomORqzqCSwIYpB7AtCM8SVRzUOHqIsHkDhe3oweJjbGuN8asTpUZSj+bqNwouaZ8zttLMPFYfkoyCmixKYQ02hC8xFAgg5pGVQBUFDpDhMkZmF8ZKghMxjBcFm8YExsxClFOypOjpkxO+FzmkuuZSx5tL16eVwdJt0-YAX5LBbUKF8LgYouBj7mUOLhGAN3XUeqrROipDZj6HmOIdzF3MkymUbayhCJhZIdIQ83blA2LsK1qBImXykS65olO2jdE4lccnVaf4vE6J8X4vR5XO6IEWAcCoMXBB2C0IsKJ15Ym9VxUkjNq3-K1w2z13R4h0y4A4AQO5exrAVFw-UWSeQW0YW8pIZrGRlApBVn2G+a2Ao-a271-7gP2DA9JIpiNBjFhYoi6CZYRmKz6mZOUCJUPy6qmZnMzHqBtuHlwGyjc-XcwhCG+d6tBwuxnSmDqfadYoSaD+ijtQyIDhzGZxo37h4AByqcAAKqA8DsFgAQKKEAICBHArpfwLAtcg6spWaZ+Q5VmkbMUKYKgKi6gWA4BwKRp6fZriOAHQO7nMxqOMlHabxWanZJyH2U0ygmgmo4z3xGUw+7xySRjRPJgHlhJ5KwzyGTuWp2HCoixF26nbLWOZAAVA7njvEPF8SnHbvgcz9D5yn+DiRAx3YqBFnYOfBV28MBFzdgpXepH1uXyvnBq+19Tn1pR0oVH+BZ2z4bWEndkpp6Ly6x8NNtgtEMlWOweQpP8Bz-wRSSCUB6IN1iYAz+4wCMy9VfvQfjOMJGbkRtMjcnZBaBCDhSh4SqEGRcH7A5wwHgCiCI0J1b0QE5kPGkEdQW3UE0ATU0CPH5Bj1-jKFuixDACgIqwQC7FY1VH2DrHey1m-imAUjkDkC0A9zRy+w+DwIuySDw0DxyGDwrFDwwgOFhFawHhZBsCsiFDjzvlgVwJ81T2clQmzkMSmj3WOmKGulMHhENmrFAUIl7WaWuWs3BU0Q6SYOrUEwpkNju1Eh1F1FtXuVIWULYxw0UhEJUlI05TBXWT0JRQMM-n2ixUTSrHOjuzFWSHB3chVgiwsFyF7Q9S9Q8PvUcDmyj0cDDnyA0AKkjE6nSCskNnJm7V1AiP7UHXcIkOgPuQSLhBNHmDck40sJ2HrHIR5DmFa15Ha1NkcMpRA3wCPX0MKPwN5AEQ5GhzAVSCOAKgnkDy0BdQ-zmH-WaLE1aLIwXHXneCiK6OYN5BMB1EyF3lpjkkWAKiqAkGINGkHg0FmQcJmMWXyyxkKys083SxKWiK2lknNRVg01wxY2ZAay2BZmUF-XmAV26yx10XuIMR2FhHrCsGrEmPUChHyHgjAVyFklkDyGrD+M21Z2x0TyBMCQ0w9msCsnmB7ChNh05jbBsHrAhmBHJxRKV3EA51OQ3ExMuy7B3jfSOAexhHZDwmKmlWkF+grFj3oK9xTEX2x1V38A1y13ANMiKO2JMDEGlQ0HDiOEsId3ghUEgUukxR5APDmQxOWOrS9hMFyG5CW3hDEVh0yFMH6VDiW0ZjH3wEO0n1OwZJKDCS5AODuxyHcm2H1AROFw0HpHMDBKPxPzP0oGdKmGuzMLMT6nF1hzmCPB1DwhQlu2EJcCAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogDMAJhoA6YQHYaMgKwA2AIwAWAJzCRAGhABPRIpHiAHItU1FR2cMWyr8gL73taDDnwEAymHYACWFjByTm5aBiQQFjZgnnCBBBVZRTEjM0NBVSNpWVVtPQRBFVUxNWUaVVTrI2VJR2d0LDwoMWwITDBPbz8AoK5cUN5Ijl7eOPlbMTH5dXkjc2FS5Vz9C3kxGxp5JRphBVV5QVqQFwb8Ztb2gFFcdjAAJz8Aa29yAAt+8MHokcRJRUkJ8q-apGUTKHZLBDSZTJaSqCySdQqEGHY5uJotNoEK43e6wJ7sV5URRhZisIbcb75EFiWTpRTySSSMHKQRKCF7aGKGjKUo2TYpDQo+pos6Yi58di3ACuGHepKiw1iiCMgiMEj+ylkmVkNBMwghihWax1khMOtsNC1QtcjTEHnxr2IZEomHtzze9AGZK+SoQohma0kWpBRhVupZBq5ghp-qM8ktG0kwiM1pOTTdBJedodLwAkucOr5-G0eiFPR9vYrQHENJaxFDVTyLIlZOzZNDStrDcnLDzUyKM69s+785jkCQnl0oABbMDXHwANzunHIJEwcoilYpvuskmjO0Uyfmcd+RgNgkEsnr5jM2zNGWE-dtg6zL9H7XHk-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-xrC+SaiISbDlBcaeH-bxCWDiAJ6NjJ7cgQjtjiDzDWCshSDciHjpKYYLyIIeGpaF4wR0y5x5zSSjpAzgznyGjQi0i2CHSFyJjlYrIdJ3IhYwp6K9IxG9pSDSTZQ0bYSmhVAZByonQyo0hXYpJzKMgYbzwkRVpCrQpbLdGYq9GdR4Rs70gPjSDxFMwnT+jqgJJ7D-KQytHgohphobE7j6xj4G6WAXaOJ5qZATA6g7BgjhxjAXErqtTXHFGmF+h3HNilCawKYbDXrbB870I7CzC6iXh5ELGMoVa4Y9EAleFSBBgSCZBzC4QzSa6nTSZ-AiCqhlCQ4vrL6aoVYib-HmSAmYmUpzqkrBy4RJgQzqCsy9i2Aw6SI-GVY4zVZdbBZJYNaVI3HbR7iOq0gMGskaiTZBz8RSCoazBSAi5m7immLSTRhah16qjMkREQi9QDrVBmDh6jRWBqmH7RjR7sAalhK0gez2QqgqiWKsiRjZC5xY5jBggPgUmv6LZiAH5i406S4XJrh2mIC8gHzHaYlDrYSRhuTGjcgwHdgqiqCWnBnI6W4+A2526GF0leEFzuQ6gg5zB7ChjBHpASDzKiLbClDzroFv604cARklyEJSD0YMjgGyYGhlB35hiWBXSKF+mNkBmr6+KcAb4-atnpCEL2bqBZql64TxI7DnRgxpGhhxiuH+nBQ+Af5UFFEFmxHh5rA0YawSI8imhtgSrQGOSRFuRlA8Fo6kG4Hd74GtmHg6jXiayjFZbFx7BXi3nvLQJxjzGmxSGvnpyCFUTCE5gfk7DY4G4ApwhMjFxQiDHoaEqq77COCOBAA */
     id: 'Modeling',
 
     tsTypes: {} as import('./modelingMachine.typegen').Typegen0,
@@ -157,7 +151,7 @@ export const modelingMachine = createMachine(
 
           'Enter sketch': [
             {
-              target: 'Sketch',
+              target: 'animating to existing sketch',
               cond: 'Selection is one face',
               actions: ['set sketch metadata'],
             },
@@ -480,12 +474,10 @@ export const modelingMachine = createMachine(
           'sketch exit execute',
           'animate after sketch',
           'tear down client sketch',
+          'remove sketch grid',
         ],
 
-        entry: [
-          'setup client side sketch segments',
-          'setup client side sketch camera',
-        ],
+        entry: ['add axis n grid', 'setup client side sketch segments'],
       },
 
       'Sketch no face': {
@@ -494,13 +486,31 @@ export const modelingMachine = createMachine(
         exit: 'hide default planes',
         on: {
           'Select default plane': {
-            target: 'Sketch.SketchIdle',
+            target: 'animating to plane',
             actions: [
               'reset sketch metadata',
               'AST startSketchOn default plane',
             ],
           },
         },
+      },
+
+      'animating to plane': {
+        invoke: {
+          src: 'animate-to-face',
+          id: 'animate-to-face',
+          onDone: 'Sketch',
+        },
+      },
+
+      'animating to existing sketch': {
+        invoke: [
+          {
+            src: 'animate-to-sketch',
+            id: 'animate-to-sketch',
+            onDone: 'Sketch',
+          },
+        ],
       },
     },
 
@@ -772,45 +782,8 @@ export const modelingMachine = createMachine(
           focusPath: pathToExtrudeArg,
         })
       },
-      'setup client side sketch camera': ({
-        sketchPathToNode,
-        sketchNormalBackUp,
-      }) => {
-        const variableDeclarationName =
-          getNodeFromPath<VariableDeclaration>(
-            kclManager.ast,
-            sketchPathToNode || [],
-            'VariableDeclaration'
-          )?.node?.declarations?.[0]?.id?.name || ''
-        const sketchQuaternion = kclManager.programMemory.root[
-          variableDeclarationName
-        ] as SketchGroup
-
-        const zAxis = sketchQuaternion?.zAxis || sketchNormalBackUp
-
-        const dummyCam = new PerspectiveCamera()
-        dummyCam.up.set(0, 0, 1)
-        dummyCam.position.set(
-          ...(sketchQuaternion?.zAxis || sketchNormalBackUp)
-        )
-        dummyCam.lookAt(0, 0, 0)
-        dummyCam.updateMatrix()
-        const quaternion = dummyCam.quaternion.clone()
-
-        const isVert = isQuaternionVertical(quaternion)
-
-        // because vertical quaternions are a gimbal lock, for the orbit controls
-        // it's best to set them explicitly to the vertical position with a known good camera up
-        if (isVert && zAxis[2] < 0) {
-          quaternion.set(0, 1, 0, 0)
-        } else if (isVert) {
-          quaternion.set(0, 0, 0, 1)
-        }
-
-        setupSingleton.tweenCameraToQuaternion(quaternion)
-      },
       'setup client side sketch segments': ({ sketchPathToNode }, { type }) => {
-        if (type !== 'Select default plane') {
+        if (type !== 'done.invoke.animate-to-face') {
           clientSideScene.setupSketch({
             sketchPathToNode: sketchPathToNode || [],
           })
@@ -821,9 +794,9 @@ export const modelingMachine = createMachine(
       'animate after sketch': () => {
         clientSideScene.animateAfterSketch()
       },
-      'tear down client sketch': () => {
-        clientSideScene.tearDownSketch()
-      },
+      'tear down client sketch': () =>
+        clientSideScene.tearDownSketch({ removeAxis: false }),
+      'remove sketch grid': () => clientSideScene.removeSketchGrid(),
       'set up draft line 2': ({ sketchPathToNode }) => {
         clientSideScene.setUpDraftLine(sketchPathToNode || [])
       },
@@ -859,14 +832,11 @@ export const modelingMachine = createMachine(
           // is async and we need time for the ast to have updated.
           // it's very annoying that you can't have async actions in xstate and have to invoke things and have all this extra
           // cruft in the diagram just to handle the occasional wait
-          const varDec = getNodeFromPath<VariableDeclarator>(
-            kclManager.ast,
-            sketchPathToNode || [],
-            'VariableDeclarator'
-          ).node
-          const sketchGroup = kclManager.programMemory.root[
-            varDec.id.name
-          ] as SketchGroup
+          const sketchGroup = sketchGroupFromPathToNode({
+            pathToNode: sketchPathToNode || [],
+            ast: kclManager.ast,
+            programMemory: kclManager.programMemory,
+          })
           const quaternion = quaternionFromSketchGroup(sketchGroup)
           clientSideScene.intersectionPlane &&
             clientSideScene.intersectionPlane.setRotationFromQuaternion(
@@ -890,6 +860,8 @@ export const modelingMachine = createMachine(
           })
         }, 200)
       },
+      'add axis n grid': ({ sketchPathToNode }) =>
+        clientSideScene.createSketchAxis(sketchPathToNode || []),
     },
     // end actions
   }

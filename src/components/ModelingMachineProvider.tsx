@@ -33,6 +33,8 @@ import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
 import useStateMachineCommands from 'hooks/useStateMachineCommands'
 import { modelingMachineConfig } from 'lib/commandBarConfigs/modelingCommandConfig'
+import { setupSingleton } from 'clientSideScene/setup'
+import { sketchQuaternion } from 'clientSideScene/clientSideScene'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -216,6 +218,23 @@ export const ModelingMachineProvider = ({
         },
       },
       services: {
+        'animate-to-face': async ({ sketchPathToNode, sketchNormalBackUp }) => {
+          const quaternion = sketchQuaternion(
+            sketchPathToNode || [],
+            sketchNormalBackUp
+          )
+          await setupSingleton.tweenCameraToQuaternion(quaternion)
+        },
+        'animate-to-sketch': async ({
+          sketchPathToNode,
+          sketchNormalBackUp,
+        }) => {
+          const quaternion = sketchQuaternion(
+            sketchPathToNode || [],
+            sketchNormalBackUp
+          )
+          await setupSingleton.tweenCameraToQuaternion(quaternion)
+        },
         'Get horizontal info': async ({
           selectionRanges,
         }): Promise<SetSelections> => {
@@ -361,10 +380,7 @@ export const ModelingMachineProvider = ({
     send: modelingSend,
     actor: modelingActor,
     commandBarConfig: modelingMachineConfig,
-    onCancel: () => {
-      console.log('firing onCancel!!')
-      modelingSend({ type: 'Cancel' })
-    },
+    onCancel: () => modelingSend({ type: 'Cancel' }),
   })
 
   return (

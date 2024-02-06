@@ -37,6 +37,7 @@ import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { SourceRange } from 'lang/wasm'
 import { useStore } from 'useStore'
 import { Axis } from 'lib/selections'
+import { createGridHelper } from './helpers'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -198,7 +199,6 @@ class SetupSingleton {
     this.reactCameraPropertiesCallback = cb
   }
   setCam = (camProps: ReactCameraProperties) => {
-    console.log('setCam', camProps)
     if (
       camProps.type === 'perspective' &&
       this.camera instanceof OrthographicCamera
@@ -389,53 +389,57 @@ class SetupSingleton {
   tweenCameraToQuaternion(
     targetQuaternion: Quaternion,
     duration: number = 500
-  ) {
-    const camera = this.camera
-    this._isCamMovingCallback(true, true)
-    const initialQuaternion = camera.quaternion.clone()
-    const isVertical = isQuaternionVertical(targetQuaternion)
-    let tweenEnd = isVertical ? 0.99 : 1
-    const controlsTarget = this.controls.target.clone()
-    const initialDistance = controlsTarget.distanceTo(camera.position.clone())
+  ): Promise<void> {
+    return new Promise((resolve) => {
+      const _duration = isReducedMotion() ? 0 : duration
+      const camera = this.camera
+      this._isCamMovingCallback(true, true)
+      const initialQuaternion = camera.quaternion.clone()
+      const isVertical = isQuaternionVertical(targetQuaternion)
+      let tweenEnd = isVertical ? 0.99 : 1
+      const controlsTarget = this.controls.target.clone()
+      const initialDistance = controlsTarget.distanceTo(camera.position.clone())
 
-    const cameraAtTime = (animationProgress: number /* 0 - 1 */) => {
-      const currentQ = tempQuaternion.slerpQuaternions(
-        initialQuaternion,
-        targetQuaternion,
-        animationProgress
-      )
-      if (this.camera instanceof PerspectiveCamera)
-        // changing the camera position back when it's orthographic doesn't do anything
-        // and it messes up animating back to perspective later
-        this.camera.position
-          .set(0, 0, 1)
-          .applyQuaternion(currentQ)
-          .multiplyScalar(initialDistance)
-          .add(controlsTarget)
+      const cameraAtTime = (animationProgress: number /* 0 - 1 */) => {
+        const currentQ = tempQuaternion.slerpQuaternions(
+          initialQuaternion,
+          targetQuaternion,
+          animationProgress
+        )
+        if (this.camera instanceof PerspectiveCamera)
+          // changing the camera position back when it's orthographic doesn't do anything
+          // and it messes up animating back to perspective later
+          this.camera.position
+            .set(0, 0, 1)
+            .applyQuaternion(currentQ)
+            .multiplyScalar(initialDistance)
+            .add(controlsTarget)
 
-      this.camera.up.set(0, 1, 0).applyQuaternion(currentQ).normalize()
-      this.camera.quaternion.copy(currentQ)
-      this.controls.target.copy(controlsTarget)
-      this.controls.update()
-      this.camera.updateProjectionMatrix()
-    }
+        this.camera.up.set(0, 1, 0).applyQuaternion(currentQ).normalize()
+        this.camera.quaternion.copy(currentQ)
+        this.controls.target.copy(controlsTarget)
+        this.controls.update()
+        this.camera.updateProjectionMatrix()
+      }
 
-    new TWEEN.Tween({ t: 0 })
-      .to({ t: tweenEnd }, duration)
-      .easing(TWEEN.Easing.Quadratic.InOut)
-      .onUpdate(({ t }) => cameraAtTime(t))
-      .onComplete(async () => {
-        if (isReducedMotion()) {
-          this.useOrthographicCamera()
-        } else {
-          await this.animateToOrthographic()
-        }
-        if (isVertical) cameraAtTime(1)
-        this.camera.up.set(0, 0, 1)
-        this.controls.enableRotate = false
-        this._isCamMovingCallback(false, true)
-      })
-      .start()
+      new TWEEN.Tween({ t: 0 })
+        .to({ t: tweenEnd }, _duration)
+        .easing(TWEEN.Easing.Quadratic.InOut)
+        .onUpdate(({ t }) => cameraAtTime(t))
+        .onComplete(async () => {
+          if (isReducedMotion()) {
+            this.useOrthographicCamera()
+          } else {
+            await this.animateToOrthographic()
+          }
+          if (isVertical) cameraAtTime(1)
+          this.camera.up.set(0, 0, 1)
+          this.controls.enableRotate = false
+          this._isCamMovingCallback(false, true)
+          resolve()
+        })
+        .start()
+    })
   }
 
   animateToOrthographic = () =>
@@ -758,12 +762,18 @@ class SetupSingleton {
     const updateClosestIntersection = (
       intersections: Intersection<Object3D<Object3DEventMap>>[]
     ) => {
-      if (
-        intersections.length > 0 &&
-        intersections[0].distance < closestDistance
-      ) {
-        closestDistance = intersections[0].distance
-        closestIntersection = intersections[0]
+      let intersection = null
+      for (let i = 0; i < intersections.length; i++) {
+        if (intersections[i].object.type !== 'GridHelper') {
+          intersection = intersections[i]
+          break
+        }
+      }
+      if (!intersection) return
+
+      if (intersection.distance < closestDistance) {
+        closestDistance = intersection.distance
+        closestIntersection = intersection
       }
     }
 
@@ -788,7 +798,6 @@ class SetupSingleton {
         this.raycaster.intersectObjects(this.scene.children, true)
       )
     }
-
     return closestIntersection
   }
 
@@ -868,16 +877,7 @@ class SetupSingleton {
       plane.userData.type = type
       return plane
     }
-    const size = 100
-    const divisions = 10
-    const gridHelperMaterial = new LineBasicMaterial({
-      color: 0xaaaaaa,
-      transparent: true,
-      opacity: 0.5,
-    })
-    const gridHelper = new GridHelper(size, divisions, 0x0000ff, 0xffffff)
-    gridHelper.material = gridHelperMaterial
-    gridHelper.rotation.x = Math.PI / 2
+    const gridHelper = createGridHelper({ size: 100, divisions: 10 })
     const planes = [
       addPlane({ x: 0, y: Math.PI / 2, z: 0 }, YZ_PLANE),
       addPlane({ x: 0, y: 0, z: 0 }, XY_PLANE),
