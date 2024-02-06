@@ -1,83 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
-  "build": {
-    "beforeDevCommand": "yarn start",
-    "devPath": "http://localhost:3000",
-    "distDir": "../build"
-  },
-  "package": {
-    "productName": "zoo-modeling-app",
-    "version": "0.14.0"
-  },
-  "tauri": {
-    "allowlist": {
-      "all": false,
-      "dialog": {
-        "all": true,
-        "ask": true,
-        "confirm": true,
-        "message": true,
-        "open": true,
-        "save": true
-      },
-      "fs": {
-        "scope": [
-          "$HOME/**/*",
-          "$APPDATA/**/*"
-        ],
-        "all": true
-      },
-      "http": {
-        "request": true,
-        "scope": [
-          "https://dev.kittycad.io/*",
-          "https://kittycad.io/*",
-          "https://api.dev.kittycad.io/*"
-        ]
-      },
-      "os": {
-        "all": true
-      },
-      "shell": {
-        "open": true
-      },
-      "path": {
-        "all": true
-      }
-    },
-    "bundle": {
-      "active": true,
-      "category": "DeveloperTool",
-      "copyright": "",
-      "deb": {
-        "depends": []
-      },
-      "externalBin": [],
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "identifier": "io.kittycad.modeling-app",
-      "longDescription": "",
-      "macOS": {
-        "entitlements": null,
-        "exceptionDomain": "",
-        "frameworks": [],
-        "providerShortName": null,
-        "signingIdentity": null
-      },
-      "resources": [],
-      "shortDescription": "",
-      "targets": "all"
-    },
+  "app": {
     "security": {
       "csp": null
-    },
-    "updater": {
-      "active": false
     },
     "windows": [
       {
@@ -88,5 +13,48 @@
         "width": 1800
       }
     ]
-  }
+  },
+  "build": {
+    "beforeDevCommand": "yarn start",
+    "devUrl": "http://localhost:3000",
+    "frontendDist": "../build"
+  },
+  "bundle": {
+    "active": true,
+    "category": "DeveloperTool",
+    "copyright": "",
+    "externalBin": [],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "linux": {
+      "deb": {
+        "depends": []
+      }
+    },
+    "longDescription": "",
+    "macOS": {
+      "entitlements": null,
+      "exceptionDomain": "",
+      "frameworks": [],
+      "providerShortName": null,
+      "signingIdentity": null
+    },
+    "resources": [],
+    "shortDescription": "",
+    "targets": "all"
+  },
+  "identifier": "io.kittycad.modeling-app",
+  "plugins": {
+    "shell": {
+      "open": true
+    },
+    "updater": {}
+  },
+  "productName": "zoo-modeling-app",
+  "version": "0.14.0"
 }

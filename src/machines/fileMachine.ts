@@ -1,6 +1,6 @@
 import { assign, createMachine } from 'xstate'
 import { ProjectWithEntryPointMetadata } from 'Router'
-import { FileEntry } from '@tauri-apps/api/fs'
+import { FileEntry } from '@tauri-apps/plugin-fs'
 
 export const FILE_PERSIST_KEY = 'Last opened KCL files'
 export const DEFAULT_FILE_NAME = 'Untitled'

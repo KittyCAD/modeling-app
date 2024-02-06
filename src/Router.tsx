@@ -22,7 +22,7 @@ import SignIn from './routes/SignIn'
 import { Auth } from './Auth'
 import { isTauri } from './lib/isTauri'
 import Home from './routes/Home'
-import { FileEntry, readDir, readTextFile } from '@tauri-apps/api/fs'
+import { FileEntry, readDir, readTextFile } from '@tauri-apps/plugin-fs'
 import makeUrlPathRelative from './lib/makeUrlPathRelative'
 import {
   initializeProjectDirectory,
@@ -192,20 +192,20 @@ const router = createBrowserRouter(
           const projectAndFile = decodedId.replace(defaultDir + sep, '')
           const firstSlashIndex = projectAndFile.indexOf(sep)
           const projectName = projectAndFile.slice(0, firstSlashIndex)
-          const projectPath = defaultDir + sep + projectName
+          const projectPath = defaultDir + sep() + projectName
           const currentFileName = projectAndFile.slice(firstSlashIndex + 1)
 
           if (firstSlashIndex === -1 || !currentFileName)
             return redirect(
               `${paths.FILE}/${encodeURIComponent(
-                `${params.id}${sep}${PROJECT_ENTRYPOINT}`
+                `${params.id}${sep()}${PROJECT_ENTRYPOINT}`
               )}`
             )
 
           // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
           const code = await readTextFile(decodedId)
           const entrypointMetadata = await metadata(
-            projectPath + sep + PROJECT_ENTRYPOINT
+            projectPath + sep() + PROJECT_ENTRYPOINT
           )
           const children = await readDir(projectPath, { recursive: true })
           kclManager.setCodeAndExecute(code, false)
@@ -277,7 +277,7 @@ const router = createBrowserRouter(
         const projects = await Promise.all(
           projectsNoMeta.map(async (p: FileEntry) => ({
             entrypointMetadata: await metadata(
-              p.path + sep + PROJECT_ENTRYPOINT
+              p.path + sep() + PROJECT_ENTRYPOINT
             ),
             ...p,
           }))

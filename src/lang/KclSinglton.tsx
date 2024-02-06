@@ -20,7 +20,7 @@ import { getNodeFromPath } from './queryAst'
 import { IndexLoaderData } from 'Router'
 import { Params, useLoaderData } from 'react-router-dom'
 import { isTauri } from 'lib/isTauri'
-import { writeTextFile } from '@tauri-apps/api/fs'
+import { writeTextFile } from '@tauri-apps/plugin-fs'
 import { toast } from 'react-hot-toast'
 import { useParams } from 'react-router-dom'
 

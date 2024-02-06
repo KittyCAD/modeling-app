@@ -1,7 +1,7 @@
 import { IndexLoaderData, paths } from 'Router'
 import { ActionButton } from './ActionButton'
 import Tooltip from './Tooltip'
-import { FileEntry } from '@tauri-apps/api/fs'
+import { FileEntry } from '@tauri-apps/plugin-fs'
 import { Dispatch, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Dialog, Disclosure } from '@headlessui/react'

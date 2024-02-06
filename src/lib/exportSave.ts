@@ -1,8 +1,8 @@
 import { isTauri } from './isTauri'
 import { deserialize_files } from '../wasm-lib/pkg/wasm_lib'
 import { browserSaveFile } from './browserSaveFile'
-import { save } from '@tauri-apps/api/dialog'
-import { writeBinaryFile } from '@tauri-apps/api/fs'
+import { save } from '@tauri-apps/plugin-dialog'
+import { writeFile } from '@tauri-apps/plugin-fs'
 
 // Saves files locally from an export call.
 export async function exportSave(data: ArrayBuffer) {
@@ -25,7 +25,7 @@ export async function exportSave(data: ArrayBuffer) {
         }
 
         // Write the file.
-        await writeBinaryFile(filePath, file.contents)
+        await writeFile(filePath, file.contents)
       } else {
         // Download the file to the user's computer.
         // Now we need to download the files to the user's downloads folder.

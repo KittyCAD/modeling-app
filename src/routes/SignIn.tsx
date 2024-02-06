@@ -1,6 +1,6 @@
 import { ActionButton } from '../components/ActionButton'
 import { isTauri } from '../lib/isTauri'
-import { invoke } from '@tauri-apps/api/tauri'
+import { invoke } from '@tauri-apps/api/core'
 import { VITE_KC_SITE_BASE_URL, VITE_KC_API_BASE_URL } from '../env'
 import { Themes, getSystemTheme } from '../lib/theme'
 import { paths } from '../Router'

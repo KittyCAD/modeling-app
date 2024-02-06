@@ -1,5 +1,5 @@
 import { FormEvent, useEffect } from 'react'
-import { removeDir, renameFile } from '@tauri-apps/api/fs'
+import { remove, rename } from '@tauri-apps/plugin-fs'
 import {
   createNewProject,
   getNextProjectIndex,
@@ -67,7 +67,7 @@ const Home = () => {
           commandBarSend({ type: 'Close' })
           navigate(
             `${paths.FILE}/${encodeURIComponent(
-              context.defaultDirectory + sep + event.data.name
+              context.defaultDirectory + sep() + event.data.name
             )}`
           )
         }
@@ -100,7 +100,7 @@ const Home = () => {
           name = interpolateProjectNameWithIndex(name, nextIndex)
         }
 
-        await createNewProject(context.defaultDirectory + sep + name)
+        await createNewProject(context.defaultDirectory + sep() + name)
 
         if (shouldUpdateDefaultProjectName) {
           sendToSettings({
@@ -122,9 +122,10 @@ const Home = () => {
           name = interpolateProjectNameWithIndex(name, nextIndex)
         }
 
-        await renameFile(
-          context.defaultDirectory + sep + oldName,
-          context.defaultDirectory + sep + name
+        await rename(
+          context.defaultDirectory + sep() + oldName,
+          context.defaultDirectory + sep() + name,
+          {}
         )
         return `Successfully renamed "${oldName}" to "${name}"`
       },
@@ -132,7 +133,7 @@ const Home = () => {
         context: ContextFrom<typeof homeMachine>,
         event: EventFrom<typeof homeMachine, 'Delete project'>
       ) => {
-        await removeDir(context.defaultDirectory + sep + event.data.name, {
+        await remove(context.defaultDirectory + sep() + event.data.name, {
           recursive: true,
         })
         return `Successfully deleted "${event.data.name}"`

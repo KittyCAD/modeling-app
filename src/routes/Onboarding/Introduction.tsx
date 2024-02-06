@@ -44,12 +44,12 @@ function OnboardingWithNewFile() {
       nextIndex
     )
     const newFile = await createNewProject(
-      defaultDirectory + sep + name,
+      defaultDirectory + sep() + name,
       bracket
     )
     navigate(
       `${paths.FILE}/${encodeURIComponent(
-        newFile.path + sep + PROJECT_ENTRYPOINT
+        newFile.path + sep() + PROJECT_ENTRYPOINT
       )}${paths.ONBOARDING.INDEX}`
     )
   }

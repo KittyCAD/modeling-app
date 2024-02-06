@@ -1,4 +1,4 @@
-import { FileEntry } from '@tauri-apps/api/fs'
+import { FileEntry } from '@tauri-apps/plugin-fs'
 import {
   MAX_PADDING,
   deepFileFilter,

@@ -1,4 +1,4 @@
-import { Platform, platform } from '@tauri-apps/api/os'
+import { Platform, platform } from '@tauri-apps/plugin-os'
 import { isTauri } from 'lib/isTauri'
 import { useEffect, useState } from 'react'
 

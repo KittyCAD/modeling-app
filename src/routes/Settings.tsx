@@ -1,7 +1,7 @@
 import { faArrowRotateBack, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../components/ActionButton'
 import { AppHeader } from '../components/AppHeader'
-import { open } from '@tauri-apps/api/dialog'
+import { open } from '@tauri-apps/plugin-dialog'
 import {
   BaseUnit,
   DEFAULT_PROJECT_NAME,
@@ -94,7 +94,7 @@ export const Settings = () => {
       nextIndex
     )
     const newFile = await createNewProject(
-      defaultDirectory + sep + name,
+      defaultDirectory + sep() + name,
       bracket
     )
     navigate(`${paths.FILE}/${encodeURIComponent(newFile.path)}`)

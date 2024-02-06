@@ -1,10 +1,9 @@
 import {
-  FileEntry,
-  createDir,
+  mkdir,
   exists,
   readDir,
   writeTextFile,
-} from '@tauri-apps/api/fs'
+} from '@tauri-apps/plugin-fs'
 import { documentDir, homeDir, sep } from '@tauri-apps/api/path'
 import { isTauri } from './isTauri'
 import { ProjectWithEntryPointMetadata } from '../Router'
@@ -28,7 +27,7 @@ export async function initializeProjectDirectory(directory: string) {
   if (directory) {
     const dirExists = await exists(directory)
     if (!dirExists) {
-      await createDir(directory, { recursive: true })
+      await mkdir(directory, { recursive: true })
     }
     return directory
   }
@@ -46,13 +45,13 @@ export async function initializeProjectDirectory(directory: string) {
   const defaultDirExists = await exists(INITIAL_DEFAULT_DIR)
 
   if (!defaultDirExists) {
-    await createDir(INITIAL_DEFAULT_DIR, { recursive: true })
+    await mkdir(INITIAL_DEFAULT_DIR, { recursive: true })
   }
 
   return INITIAL_DEFAULT_DIR
 }
 
-export function isProjectDirectory(fileOrDir: Partial<FileEntry>) {
+export function isProjectDirectory(fileOrDir: Partial<any>) {
   return (
     fileOrDir.children?.length &&
     fileOrDir.children.some((child) => child.name === PROJECT_ENTRYPOINT)
@@ -70,7 +69,7 @@ export async function getProjectsInDir(projectDir: string) {
 
   const projectsWithMetadata = await Promise.all(
     readProjects.map(async (p) => ({
-      entrypointMetadata: await metadata(p.path + sep + PROJECT_ENTRYPOINT),
+      entrypointMetadata: await metadata(p.path + sep() + PROJECT_ENTRYPOINT),
       ...p,
     }))
   )
@@ -78,17 +77,17 @@ export async function getProjectsInDir(projectDir: string) {
   return projectsWithMetadata
 }
 
-export const isHidden = (fileOrDir: FileEntry) =>
+export const isHidden = (fileOrDir: any) =>
   !!fileOrDir.name?.startsWith('.')
 
-export const isDir = (fileOrDir: FileEntry) =>
+export const isDir = (fileOrDir: any) =>
   'children' in fileOrDir && fileOrDir.children !== undefined
 
 export function deepFileFilter(
-  entries: FileEntry[],
-  filterFn: (f: FileEntry) => boolean
-): FileEntry[] {
-  const filteredEntries: FileEntry[] = []
+  entries: any[],
+  filterFn: (f: any) => boolean
+): any[] {
+  const filteredEntries: any[] = []
   for (const fileOrDir of entries) {
     if ('children' in fileOrDir && fileOrDir.children !== undefined) {
       const filteredChildren = deepFileFilter(fileOrDir.children, filterFn)
@@ -106,10 +105,10 @@ export function deepFileFilter(
 }
 
 export function deepFileFilterFlat(
-  entries: FileEntry[],
-  filterFn: (f: FileEntry) => boolean
-): FileEntry[] {
-  const filteredEntries: FileEntry[] = []
+  entries: any[],
+  filterFn: (f: any) => boolean
+): any[] {
+  const filteredEntries: any[] = []
   for (const fileOrDir of entries) {
     if ('children' in fileOrDir && fileOrDir.children !== undefined) {
       const filteredChildren = deepFileFilterFlat(fileOrDir.children, filterFn)
@@ -140,7 +139,7 @@ export async function readProject(projectDir: string) {
 // Given a read project, return the number of .kcl files,
 // both in the root directory and in sub-directories,
 // and folders that contain at least one .kcl file
-export function getPartsCount(project: FileEntry[]) {
+export function getPartsCount(project: any[]) {
   const flatProject = deepFileFilterFlat(project, isRelevantFileOrDir)
 
   const kclFileCount = flatProject.filter((f) =>
@@ -158,7 +157,7 @@ export function getPartsCount(project: FileEntry[]) {
 // i.e. not a hidden file or directory, and is a relevant file type
 // or contains at least one relevant file (even if it's nested)
 // or is a completely empty directory
-export function isRelevantFileOrDir(fileOrDir: FileEntry) {
+export function isRelevantFileOrDir(fileOrDir: any) {
   let isRelevantDir = false
   if ('children' in fileOrDir && fileOrDir.children !== undefined) {
     isRelevantDir =
@@ -178,7 +177,7 @@ export function isRelevantFileOrDir(fileOrDir: FileEntry) {
 // Deeply sort the files and directories in a project like VS Code does:
 // The main.kcl file is always first, then files, then directories
 // Files and directories are sorted alphabetically
-export function sortProject(project: FileEntry[]): FileEntry[] {
+export function sortProject(project: any[]): any[] {
   const sortedProject = project.sort((a, b) => {
     if (a.name === PROJECT_ENTRYPOINT) {
       return -1
@@ -195,7 +194,7 @@ export function sortProject(project: FileEntry[]): FileEntry[] {
     }
   })
 
-  return sortedProject.map((fileOrDir: FileEntry) => {
+  return sortedProject.map((fileOrDir: any) => {
     if ('children' in fileOrDir && fileOrDir.children !== undefined) {
       return {
         ...fileOrDir,
@@ -219,13 +218,13 @@ export async function createNewProject(
 
   const dirExists = await exists(path)
   if (!dirExists) {
-    await createDir(path, { recursive: true }).catch((err) => {
+    await mkdir(path, { recursive: true }).catch((err) => {
       console.error('Error creating new directory:', err)
       throw err
     })
   }
 
-  await writeTextFile(path + sep + PROJECT_ENTRYPOINT, initCode).catch(
+  await writeTextFile(path + sep() + PROJECT_ENTRYPOINT, initCode).catch(
     (err) => {
       console.error('Error creating new file:', err)
       throw err
@@ -235,13 +234,13 @@ export async function createNewProject(
   const m = await metadata(path)
 
   return {
-    name: path.slice(path.lastIndexOf(sep) + 1),
+    name: path.slice(path.lastIndexOf(sep()) + 1),
     path: path,
     entrypointMetadata: m,
     children: [
       {
         name: PROJECT_ENTRYPOINT,
-        path: path + sep + PROJECT_ENTRYPOINT,
+        path: path + sep() + PROJECT_ENTRYPOINT,
         children: [],
       },
     ],
@@ -258,7 +257,7 @@ function interpolateProjectName(projectName: string) {
 }
 
 // Returns the next available index for a project name
-export function getNextProjectIndex(projectName: string, files: FileEntry[]) {
+export function getNextProjectIndex(projectName: string, files: any[]) {
   const regex = interpolateProjectName(projectName)
   const matches = files.map((file) => file.name?.match(regex))
   const indices = matches
