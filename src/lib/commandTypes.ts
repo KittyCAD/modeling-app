@@ -81,20 +81,23 @@ export type CommandArgumentConfig<
   | {
       description?: string
       required: boolean
-    } & SkipProps<OutputType, T> & (
-      | {
-          inputType: Extract<CommandInputType, 'options'>
-          options:
-            | CommandArgumentOption<OutputType>[]
-            | ((context: ContextFrom<T>) => CommandArgumentOption<OutputType>[])
-        }
-      | {
-          inputType: Extract<CommandInputType, 'selection'>
-          selectionTypes: Selection['type'][]
-          multiple: boolean
-        }
-      | { inputType: Exclude<CommandInputType, 'options' | 'selection'> }
-    )
+    } & SkipProps<OutputType, T> &
+      (
+        | {
+            inputType: Extract<CommandInputType, 'options'>
+            options:
+              | CommandArgumentOption<OutputType>[]
+              | ((
+                  context: ContextFrom<T>
+                ) => CommandArgumentOption<OutputType>[])
+          }
+        | {
+            inputType: Extract<CommandInputType, 'selection'>
+            selectionTypes: Selection['type'][]
+            multiple: boolean
+          }
+        | { inputType: Exclude<CommandInputType, 'options' | 'selection'> }
+      )
 
 export type CommandArgument<
   OutputType,
@@ -103,19 +106,20 @@ export type CommandArgument<
   | {
       description?: string
       required: boolean
-    } & SkipProps<OutputType, T> & (
-      | {
-          inputType: Extract<CommandInputType, 'options'>
-          options: CommandArgumentOption<OutputType>[]
-        }
-      | {
-          inputType: Extract<CommandInputType, 'selection'>
-          selectionTypes: Selection['type'][]
-          actor: InterpreterFrom<T>
-          multiple: boolean
-        }
-      | { inputType: Exclude<CommandInputType, 'options' | 'selection'> }
-    )
+    } & SkipProps<OutputType, T> &
+      (
+        | {
+            inputType: Extract<CommandInputType, 'options'>
+            options: CommandArgumentOption<OutputType>[]
+          }
+        | {
+            inputType: Extract<CommandInputType, 'selection'>
+            selectionTypes: Selection['type'][]
+            actor: InterpreterFrom<T>
+            multiple: boolean
+          }
+        | { inputType: Exclude<CommandInputType, 'options' | 'selection'> }
+      )
 
 export type CommandArgumentWithName<
   OutputType,
@@ -132,17 +136,17 @@ export type CommandArgumentOption<A> = {
 
 // If skip is true and inputType isn't "selection", then defaultValue is required.
 // but if skip is false, then defaultValue is optional.
-type SkipProps<
-OutputType,
-T extends AnyStateMachine = AnyStateMachine
-> = {
-  skip: true
-  defaultValue: OutputType | ((context: ContextFrom<T>) => OutputType)
-} | {
-  skip: true
-  inputType: 'selection'
-  defaultValue?: OutputType | ((context: ContextFrom<T>) => OutputType)
-} | {
-  skip?: false
-  defaultValue?: OutputType | ((context: ContextFrom<T>) => OutputType)
-}
+type SkipProps<OutputType, T extends AnyStateMachine = AnyStateMachine> =
+  | {
+      skip: true
+      defaultValue: OutputType | ((context: ContextFrom<T>) => OutputType)
+    }
+  | {
+      skip: true
+      inputType: 'selection'
+      defaultValue?: OutputType | ((context: ContextFrom<T>) => OutputType)
+    }
+  | {
+      skip?: false
+      defaultValue?: OutputType | ((context: ContextFrom<T>) => OutputType)
+    }
