@@ -306,14 +306,10 @@ export const commandBarMachine = createMachine(
           let argIndex = 0
           while (argIndex < Object.keys(selectedCommand.args).length) {
             const argName = Object.keys(selectedCommand.args)[argIndex]
-            console.log('argName', argName)
             const mustNotSkipArg =
               !context.argumentsToSubmit.hasOwnProperty(argName) ||
               context.argumentsToSubmit[argName] === undefined ||
               !selectedCommand.args[argName].skip
-            console.log('arg config', selectedCommand.args[argName])
-            console.log('context.argumentsToSubmit', context.argumentsToSubmit)
-            console.log('mustNotSkipArg', mustNotSkipArg)
             if (mustNotSkipArg) {
               return {
                 ...selectedCommand.args[argName],
