@@ -106,9 +106,9 @@ export type CommandArgument<
   | {
       description?: string
       required: boolean
-      skip?: true // Skip is used to skip the command argument if given a value in the context
+      skip?: true // Skip is used to skip the command argument if provided a default value or a value from the user, such as a selection before extruding.
       payload?: OutputType // Payload sets the initialized value and more importantly its type
-      defaultValue?: OutputType // Default value is used as the starting value for the input on this argument
+      defaultValue?: OutputType // Default value is used as the starting value for the input on this argument.
     } & (
       | {
           inputType: Extract<CommandInputType, 'options'>

@@ -209,7 +209,7 @@ export const commandBarMachine = createMachine(
           onError: [
             {
               target: 'Gathering arguments',
-              actions: ['Set current argument'],
+              actions: ['Set current argument to first non-skippable'],
             },
           ],
         },
@@ -382,7 +382,7 @@ export const commandBarMachine = createMachine(
           if (!command.args) return {}
           const args: { [x: string]: unknown } = {}
           for (const [argName, arg] of Object.entries(command.args)) {
-            args[argName] = arg.payload
+            args[argName] = arg.defaultValue
           }
           return args
         },
