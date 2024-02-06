@@ -27,7 +27,7 @@ function CommandBarSelectionInput({
 }) {
   const { code } = useKclContext()
   const inputRef = useRef<HTMLInputElement>(null)
-  const { commandBarSend } = useCommandsContext()
+  const { commandBarState, commandBarSend } = useCommandsContext()
   const [hasSubmitted, setHasSubmitted] = useState(false)
   const selection = useSelector(arg.actor, selectionSelector)
   const [selectionsByType, setSelectionsByType] = useState<
@@ -59,8 +59,14 @@ function CommandBarSelectionInput({
     )
   }, [selection])
 
+  // Fast-forward through this arg if it's marked as skippable
+  // and we have a valid selection already
   useEffect(() => {
     setCanSubmitSelection(canSubmitSelectionArg(selectionsByType, arg))
+    const argValue = commandBarState.context.argumentsToSubmit[arg.name]
+    if (canSubmitSelection && arg.skip && argValue === undefined) {
+      handleSubmit({ preventDefault: () => {} } as React.FormEvent<HTMLFormElement>)
+    }
   }, [selectionsByType, arg])
 
   function handleChange() {
