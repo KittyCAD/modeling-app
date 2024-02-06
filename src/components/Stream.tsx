@@ -7,22 +7,15 @@ import {
 } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { useStore } from '../useStore'
-import { getNormalisedCoordinates, isOverlap, throttle } from '../lib/utils'
+import { getNormalisedCoordinates, throttle } from '../lib/utils'
 import Loading from './Loading'
 import { cameraMouseDragGuards } from 'lib/cameraControls'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
 import { Models } from '@kittycad/lib'
-import { getNodeFromPath } from 'lang/queryAst'
-import { VariableDeclarator, recast, CallExpression } from 'lang/wasm'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
-import { kclManager, useKclContext } from 'lang/KclSingleton'
-import { changeSketchArguments } from 'lang/std/sketch'
-import toast from 'react-hot-toast'
-import { DragWarningToast } from './DragWarningToast'
-
-type Point2d = Models['Point2d_type']
+import { useKclContext } from 'lang/KclSingleton'
 
 export const Stream = ({ className = '' }) => {
   const [isLoading, setIsLoading] = useState(true)
@@ -90,29 +83,6 @@ export const Stream = ({ className = '' }) => {
       interaction = 'zoom'
     }
 
-    if (state.matches('Sketch.Move Tool.No move')) {
-      // skip scene commands
-    } else if (state.matches('Sketch.Move Tool')) {
-      void engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd: {
-          type: 'handle_mouse_drag_start',
-          window: { x, y },
-        },
-        cmd_id: newId,
-      })
-    } else if (!state.matches('Sketch.Line Tool')) {
-      engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd: {
-          type: 'camera_drag_start',
-          interaction,
-          window: { x, y },
-        },
-        cmd_id: newId,
-      })
-    }
-
     setButtonDownInStream(e.button)
     setClickCoords({ x, y })
   }
@@ -166,56 +136,6 @@ export const Stream = ({ className = '' }) => {
         selected_at_window: { x, y },
       }
       engineCommandManager.sendSceneCommand(command)
-    } else if (!didDragInStream && state.matches('Sketch.Line Tool')) {
-      command.cmd = {
-        type: 'mouse_click',
-        window: { x, y },
-      }
-      engineCommandManager.sendSceneCommand(command).then(async (resp) => {
-        const entities_modified = resp?.data?.data?.entities_modified
-        if (!entities_modified) return
-        if (state.matches('Sketch.Line Tool.No Points')) {
-          send('Add point')
-        } else if (state.matches('Sketch.Line Tool.Point Added')) {
-          const curve = await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'curve_get_end_points',
-              curve_id: entities_modified[0],
-            },
-          })
-          const coords: Models['CurveGetEndPoints_type'] = curve.data.data
-
-          send({
-            type: 'Add point',
-            data: {
-              coords: [coords.start, coords.end],
-              axis: null,
-              segmentId: entities_modified[0],
-            },
-          })
-        } else if (state.matches('Sketch.Line Tool.Segment Added')) {
-          const curveEndpoints = await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'curve_get_end_points',
-              curve_id: entities_modified[0],
-            },
-          })
-          const coords: { end: Point2d; start: Point2d; center: Point2d } =
-            curveEndpoints.data.data
-          send({
-            type: 'Add point',
-            data: {
-              coords: [coords.start, coords.end],
-              axis: null,
-              segmentId: entities_modified[0],
-            },
-          })
-        }
-      })
     } else if (
       !didDragInStream &&
       (state.matches('Sketch.SketchIdle') || state.matches('idle'))
@@ -227,24 +147,14 @@ export const Stream = ({ className = '' }) => {
       }
 
       engineCommandManager.sendSceneCommand(command)
-    } else if (!didDragInStream && state.matches('Sketch.Move Tool')) {
+    } else if (!didDragInStream) {
       command.cmd = {
         type: 'select_with_point',
         selected_at_window: { x, y },
         selection_type: 'add',
       }
       engineCommandManager.sendSceneCommand(command)
-    } else if (didDragInStream && state.matches('Sketch.Move Tool')) {
-      if (state.matches('Sketch.Move Tool.No move')) {
-        const toastJsx = DragWarningToast(context.moveDescs)
-        if (toastJsx) {
-          toast.custom(toastJsx, {
-            position: 'bottom-center',
-            duration: 1000,
-            icon: '🔒',
-          })
-        }
-      }
+    } else if (didDragInStream) {
       command.cmd = {
         type: 'handle_mouse_drag_end',
         window: { x, y },

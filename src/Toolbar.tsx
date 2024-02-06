@@ -94,8 +94,7 @@ export const Toolbar = () => {
               <ActionButton
                 Element="button"
                 onClick={() =>
-                  state?.matches('Sketch.Line tool 3') &&
-                  !state?.matches('Sketch.Move Tool')
+                  state?.matches('Sketch.Line tool 3')
                     ? send('CancelSketch')
                     : send('Equip Line tool 3')
                 }
@@ -113,8 +112,7 @@ export const Toolbar = () => {
               <ActionButton
                 Element="button"
                 onClick={() =>
-                  state.matches('Sketch.Tangential arc to 3') &&
-                  !state.matches('Sketch.Move Tool')
+                  state.matches('Sketch.Tangential arc to 3')
                     ? send('CancelSketch')
                     : send('Equip tangential arc to 3')
                 }
@@ -134,26 +132,6 @@ export const Toolbar = () => {
               </ActionButton>
             </li>
           </>
-        )}
-        {state.matches('Sketch') && (
-          <li className="contents">
-            <ActionButton
-              Element="button"
-              onClick={() =>
-                state.matches('Sketch.Move Tool')
-                  ? send('CancelSketch')
-                  : send('Equip move tool')
-              }
-              aria-pressed={state.matches('Sketch.Move Tool')}
-              className="pressed:bg-energy-10/20 dark:pressed:bg-energy-80"
-              icon={{
-                icon: 'move',
-                bgClassName,
-              }}
-            >
-              Move
-            </ActionButton>
-          </li>
         )}
         {state.matches('Sketch.SketchIdle') &&
           state.nextEvents

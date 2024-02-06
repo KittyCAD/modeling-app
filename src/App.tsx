@@ -101,37 +101,15 @@ export function App() {
 
     const newCmdId = uuidv4()
     if (buttonDownInStream === undefined) {
-      if (state.matches('Sketch.Line Tool')) {
-        debounceSocketSend({
-          type: 'modeling_cmd_req',
-          cmd_id: newCmdId,
-          cmd: {
-            type: 'mouse_move',
-            window: { x, y },
-          },
-        })
-      } else {
-        debounceSocketSend({
-          type: 'modeling_cmd_req',
-          cmd: {
-            type: 'highlight_set_entity',
-            selected_at_window: { x, y },
-          },
-          cmd_id: newCmdId,
-        })
-      }
+      debounceSocketSend({
+        type: 'modeling_cmd_req',
+        cmd: {
+          type: 'highlight_set_entity',
+          selected_at_window: { x, y },
+        },
+        cmd_id: newCmdId,
+      })
     } else {
-      if (state.matches('Sketch.Move Tool')) {
-        debounceSocketSend({
-          type: 'modeling_cmd_req',
-          cmd_id: newCmdId,
-          cmd: {
-            type: 'handle_mouse_drag_move',
-            window: { x, y },
-          },
-        })
-        return
-      }
       const interactionGuards = cameraMouseDragGuards[cameraControls]
       let interaction: CameraDragInteractionType_type
 
