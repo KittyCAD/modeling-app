@@ -391,7 +391,10 @@ class SetupSingleton {
     duration: number = 500
   ): Promise<void> {
     return new Promise((resolve) => {
-      const _duration = isReducedMotion() ? 0 : duration
+      // setting duration to 0 or <100 creates bugs where the plane ends up in the wrong place
+      // A better solution if we want no animation for reduced motion is to skip all the animation logic
+      // instead of just changing teh duration
+      const _duration = isReducedMotion() ? 100 : duration
       const camera = this.camera
       this._isCamMovingCallback(true, true)
       const initialQuaternion = camera.quaternion.clone()

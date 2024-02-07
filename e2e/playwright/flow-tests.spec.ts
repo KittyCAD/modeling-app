@@ -283,7 +283,7 @@ test('Can create sketches on all planes and their back sides', async ({
 
     await u.closeDebugPanel()
     await page.mouse.click(clickCoords.x, clickCoords.y)
-    await page.waitForTimeout(700) // wait for animation
+    await page.waitForTimeout(300) // wait for animation
 
     await expect(page.getByRole('button', { name: 'Line' })).toBeVisible()
 
@@ -571,7 +571,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   await u.closeDebugPanel()
 
   // select a line
-  await page.getByText('|> line([0, 24.12], %)').click()
+  await topHorzSegmentClick()
   await page.waitForTimeout(200)
 
   // enter sketch again

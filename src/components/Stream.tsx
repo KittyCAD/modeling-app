@@ -16,8 +16,9 @@ import { Models } from '@kittycad/lib'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useKclContext } from 'lang/KclSingleton'
+import { ClientSideScene } from 'clientSideScene/setup'
 
-export const Stream = ({ className = '' }) => {
+export const Stream = ({ className = '' }: { className?: string }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [clickCoords, setClickCoords] = useState<{ x: number; y: number }>()
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -61,28 +62,6 @@ export const Stream = ({ className = '' }) => {
       ...streamDimensions,
     })
 
-    const newId = uuidv4()
-
-    const interactionGuards = cameraMouseDragGuards[cameraControls]
-    let interaction: CameraDragInteractionType_type = 'rotate'
-
-    if (
-      interactionGuards.pan.callback(e) ||
-      interactionGuards.pan.lenientDragStartButton === e.button
-    ) {
-      interaction = 'pan'
-    } else if (
-      interactionGuards.rotate.callback(e) ||
-      interactionGuards.rotate.lenientDragStartButton === e.button
-    ) {
-      interaction = 'rotate'
-    } else if (
-      interactionGuards.zoom.dragCallback(e) ||
-      interactionGuards.zoom.lenientDragStartButton === e.button
-    ) {
-      interaction = 'zoom'
-    }
-
     setButtonDownInStream(e.button)
     setClickCoords({ x, y })
   }
@@ -100,7 +79,7 @@ export const Stream = ({ className = '' }) => {
     })
   }, Math.round(1000 / fps))
 
-  const handleMouseUp: MouseEventHandler<HTMLVideoElement> = ({
+  const handleMouseUp: MouseEventHandler<HTMLDivElement> = ({
     clientX,
     clientY,
     ctrlKey,
@@ -129,25 +108,7 @@ export const Stream = ({ className = '' }) => {
       cmd_id: newCmdId,
     }
 
-    if (!didDragInStream && state.matches('Sketch no face')) {
-      command.cmd = {
-        type: 'select_with_point',
-        selection_type: 'add',
-        selected_at_window: { x, y },
-      }
-      engineCommandManager.sendSceneCommand(command)
-    } else if (
-      !didDragInStream &&
-      (state.matches('Sketch.SketchIdle') || state.matches('idle'))
-    ) {
-      command.cmd = {
-        type: 'select_with_point',
-        selected_at_window: { x, y },
-        selection_type: 'add',
-      }
-
-      engineCommandManager.sendSceneCommand(command)
-    } else if (!didDragInStream) {
+    if (!didDragInStream) {
       command.cmd = {
         type: 'select_with_point',
         selected_at_window: { x, y },
@@ -183,14 +144,13 @@ export const Stream = ({ className = '' }) => {
   }
 
   return (
-    <div id="stream" className={className}>
+    <div id="stream" className={className} onMouseUp={handleMouseUp}>
       <video
         ref={videoRef}
         muted
         autoPlay
         controls={false}
         onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
         onContextMenu={(e) => e.preventDefault()}
         onContextMenuCapture={(e) => e.preventDefault()}
         onWheel={handleScroll}
@@ -200,6 +160,7 @@ export const Stream = ({ className = '' }) => {
         disablePictureInPicture
         style={{ transitionDuration: '200ms', transitionProperty: 'filter' }}
       />
+      <ClientSideScene cameraControls={settings.context.cameraControls} />
       {isLoading && (
         <div className="text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
           <Loading>

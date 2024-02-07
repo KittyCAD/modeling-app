@@ -209,7 +209,6 @@ export function App() {
         </div>
       </Resizable>
       <Stream className="absolute inset-0 z-0" />
-      <ClientSideScene cameraControls={settings.context.cameraControls} />
       {showDebugPanel && (
         <DebugPanel
           title="Debug"
