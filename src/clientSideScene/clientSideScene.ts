@@ -479,7 +479,7 @@ class ClientSideScene {
           this.activeSegments[pathToNodeStr] ||
           this.activeSegments[originalPathToNodeStr]
         // const prevSegment = sketchGroup.slice(index - 1)[0]
-        const { type } = group.userData
+        const type = group?.userData?.type
         if (type === TANGENTIAL_ARC_TO_SEGMENT) {
           this.updateTangentialArcToSegment({
             prevSegment: sketchGroup[index - 1],

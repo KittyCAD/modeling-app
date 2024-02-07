@@ -99,8 +99,14 @@ export const useStore = create<StoreState>()(
         setHighlightRange: (selection) => {
           set({ highlightRange: selection })
           const editorView = get().editorView
+          const safeEnd = Math.min(
+            selection[1],
+            editorView?.state.doc.length || selection[1]
+          )
           if (editorView) {
-            editorView.dispatch({ effects: addLineHighlight.of(selection) })
+            editorView.dispatch({
+              effects: addLineHighlight.of([selection[0], safeEnd]),
+            })
           }
         },
         isShiftDown: false,
