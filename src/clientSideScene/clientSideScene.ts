@@ -686,7 +686,7 @@ class ClientSideScene {
         object.material.color = defaultPlaneColor(type)
       },
       onClick: (args) => {
-        if (!args) return
+        if (!args || !args.object) return
         const { object, intersection } = args
         const type = object?.userData?.type || ''
         const posNorm = Number(intersection.normal?.z) > 0

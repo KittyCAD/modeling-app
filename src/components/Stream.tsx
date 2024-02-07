@@ -11,7 +11,6 @@ import { getNormalisedCoordinates, throttle } from '../lib/utils'
 import Loading from './Loading'
 import { cameraMouseDragGuards } from 'lib/cameraControls'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
-import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
 import { Models } from '@kittycad/lib'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
@@ -37,7 +36,7 @@ export const Stream = ({ className = '' }: { className?: string }) => {
   }))
   const { settings } = useGlobalStateContext()
   const cameraControls = settings?.context?.cameraControls
-  const { send, state, context } = useModelingContext()
+  const { state } = useModelingContext()
   const { isExecuting } = useKclContext()
 
   useEffect(() => {
