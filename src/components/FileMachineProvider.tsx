@@ -13,12 +13,7 @@ import {
 } from 'xstate'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { DEFAULT_FILE_NAME, fileMachine } from 'machines/fileMachine'
-import {
-  mkdir,
-  remove,
-  rename,
-  create,
-} from '@tauri-apps/plugin-fs'
+import { mkdir, remove, rename, create } from '@tauri-apps/plugin-fs'
 import { FILE_EXT, readProject } from 'lib/tauriFS'
 import { isTauri } from 'lib/isTauri'
 import { sep } from '@tauri-apps/api/path'
@@ -88,7 +83,7 @@ export const FileMachineProvider = ({
             context.selectedDirectory.path +
               sep() +
               name +
-              (name.endsWith(FILE_EXT) ? '' : FILE_EXT),
+              (name.endsWith(FILE_EXT) ? '' : FILE_EXT)
           )
         }
 
@@ -106,8 +101,9 @@ export const FileMachineProvider = ({
           context.selectedDirectory.path +
             sep() +
             name +
-            (name.endsWith(FILE_EXT) || isDir ? '' : FILE_EXT)
-        , {})
+            (name.endsWith(FILE_EXT) || isDir ? '' : FILE_EXT),
+          {}
+        )
         return (
           oldName !== name && `Successfully renamed "${oldName}" to "${name}"`
         )

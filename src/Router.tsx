@@ -22,14 +22,20 @@ import SignIn from './routes/SignIn'
 import { Auth } from './Auth'
 import { isTauri } from './lib/isTauri'
 import Home from './routes/Home'
-import { FileEntry, readDir, readTextFile } from '@tauri-apps/plugin-fs'
+import {
+  readDir,
+  readTextFile,
+  stat,
+  FileInfo,
+  FileHandle,
+  DirEntry,
+} from '@tauri-apps/plugin-fs'
 import makeUrlPathRelative from './lib/makeUrlPathRelative'
 import {
   initializeProjectDirectory,
   isProjectDirectory,
   PROJECT_ENTRYPOINT,
 } from './lib/tauriFS'
-import { metadata, type Metadata } from 'tauri-plugin-fs-extra-api'
 import DownloadAppBanner from './components/DownloadAppBanner'
 import { WasmErrBanner } from './components/WasmErrBanner'
 import { GlobalStateProvider } from './components/GlobalStateProvider'
@@ -104,11 +110,11 @@ export const BROWSER_FILE_NAME = 'new'
 export type IndexLoaderData = {
   code: string | null
   project?: ProjectWithEntryPointMetadata
-  file?: FileEntry
+  file?: FileHandle
 }
 
-export type ProjectWithEntryPointMetadata = FileEntry & {
-  entrypointMetadata: Metadata
+export type ProjectWithEntryPointMetadata = FileHandle & {
+  entrypointMetadata: FileInfo
 }
 export type HomeLoaderData = {
   projects: ProjectWithEntryPointMetadata[]
@@ -189,8 +195,8 @@ const router = createBrowserRouter(
 
         if (params.id && params.id !== BROWSER_FILE_NAME) {
           const decodedId = decodeURIComponent(params.id)
-          const projectAndFile = decodedId.replace(defaultDir + sep, '')
-          const firstSlashIndex = projectAndFile.indexOf(sep)
+          const projectAndFile = decodedId.replace(defaultDir + sep(), '')
+          const firstSlashIndex = projectAndFile.indexOf(sep())
           const projectName = projectAndFile.slice(0, firstSlashIndex)
           const projectPath = defaultDir + sep() + projectName
           const currentFileName = projectAndFile.slice(firstSlashIndex + 1)
@@ -204,10 +210,11 @@ const router = createBrowserRouter(
 
           // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
           const code = await readTextFile(decodedId)
-          const entrypointMetadata = await metadata(
+          const entrypointMetadata = await stat(
             projectPath + sep() + PROJECT_ENTRYPOINT
           )
-          const children = await readDir(projectPath, { recursive: true })
+          // TODO: add back recursive?
+          const children = await readDir(projectPath)
           kclManager.setCodeAndExecute(code, false)
 
           return {
@@ -275,10 +282,8 @@ const router = createBrowserRouter(
           isProjectDirectory
         )
         const projects = await Promise.all(
-          projectsNoMeta.map(async (p: FileEntry) => ({
-            entrypointMetadata: await metadata(
-              p.path + sep() + PROJECT_ENTRYPOINT
-            ),
+          projectsNoMeta.map(async (p: DirEntry) => ({
+            entrypointMetadata: await stat(p.name + sep() + PROJECT_ENTRYPOINT),
             ...p,
           }))
         )

@@ -1946,11 +1946,6 @@
   dependencies:
     defer-to-connect "^2.0.1"
 
-"@tauri-apps/api@1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@tauri-apps/api/-/api-1.4.0.tgz#b4013ca3d17b853f7df29fe14079ebb4d52dbffa"
-  integrity sha512-Jd6HPoTM1PZSFIzq7FB8VmMu3qSSyo/3lSwLpoapW+lQ41CL5Dow2KryLg+gyazA/58DRWI9vu/XpEeHK4uMdw==
-
 "@tauri-apps/api@2.0.0-beta.0", "@tauri-apps/api@^2.0.0-beta.0":
   version "2.0.0-beta.0"
   resolved "https://registry.yarnpkg.com/@tauri-apps/api/-/api-2.0.0-beta.0.tgz#36b10e6f459fd125530ac083262a355b84ce9b95"
@@ -7766,12 +7761,6 @@ tar@^6.1.11:
     minizlib "^2.1.1"
     mkdirp "^1.0.3"
     yallist "^4.0.0"
-
-"tauri-plugin-fs-extra-api@https://github.com/tauri-apps/tauri-plugin-fs-extra#v1":
-  version "0.0.0"
-  resolved "https://github.com/tauri-apps/tauri-plugin-fs-extra#1344db48a39b44fe46e9943bf7cddca2fa00caaf"
-  dependencies:
-    "@tauri-apps/api" "1.4.0"
 
 test-exclude@^6.0.0:
   version "6.0.0"

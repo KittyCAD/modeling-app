@@ -3,11 +3,11 @@ import {
   exists,
   readDir,
   writeTextFile,
+  stat,
 } from '@tauri-apps/plugin-fs'
 import { documentDir, homeDir, sep } from '@tauri-apps/api/path'
 import { isTauri } from './isTauri'
 import { ProjectWithEntryPointMetadata } from '../Router'
-import { metadata } from 'tauri-plugin-fs-extra-api'
 
 const PROJECT_FOLDER = 'zoo-modeling-app-projects'
 export const FILE_EXT = '.kcl'
@@ -69,7 +69,7 @@ export async function getProjectsInDir(projectDir: string) {
 
   const projectsWithMetadata = await Promise.all(
     readProjects.map(async (p) => ({
-      entrypointMetadata: await metadata(p.path + sep() + PROJECT_ENTRYPOINT),
+      entrypointMetadata: await stat(p.name + sep() + PROJECT_ENTRYPOINT),
       ...p,
     }))
   )
@@ -77,8 +77,7 @@ export async function getProjectsInDir(projectDir: string) {
   return projectsWithMetadata
 }
 
-export const isHidden = (fileOrDir: any) =>
-  !!fileOrDir.name?.startsWith('.')
+export const isHidden = (fileOrDir: any) => !!fileOrDir.name?.startsWith('.')
 
 export const isDir = (fileOrDir: any) =>
   'children' in fileOrDir && fileOrDir.children !== undefined
@@ -231,7 +230,7 @@ export async function createNewProject(
     }
   )
 
-  const m = await metadata(path)
+  const m = await stat(path)
 
   return {
     name: path.slice(path.lastIndexOf(sep()) + 1),
