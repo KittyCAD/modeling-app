@@ -90,36 +90,6 @@ export const ModelingMachineProvider = ({
           if (setSelections.selectionType === 'mirrorCodeMirrorSelections')
             return { selectionRanges: setSelections.selection }
           else if (setSelections.selectionType === 'otherSelection') {
-            // TODO KittyCAD/engine/issues/1620: send axis highlight when it's working (if that's what we settle on)
-            // const axisAddCmd: EngineCommand = {
-            //   type: 'modeling_cmd_req',
-            //   cmd: {
-            //     type: 'highlight_set_entities',
-            //     entities: [
-            //       setSelections.selection === 'x-axis'
-            //         ? X_AXIS_UUID
-            //         : Y_AXIS_UUID,
-            //     ],
-            //   },
-            //   cmd_id: uuidv4(),
-            // }
-
-            // if (!isShiftDown) {
-            //   engineCommandManager
-            //     .sendSceneCommand({
-            //       type: 'modeling_cmd_req',
-            //       cmd: {
-            //         type: 'select_clear',
-            //       },
-            //       cmd_id: uuidv4(),
-            //     })
-            //     .then(() => {
-            //       engineCommandManager.sendSceneCommand(axisAddCmd)
-            //     })
-            // } else {
-            //   engineCommandManager.sendSceneCommand(axisAddCmd)
-            // }
-
             const {
               codeMirrorSelection,
               selectionRangeTypeMap,
