@@ -11,7 +11,7 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
 import { Themes } from 'lib/theme'
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import { linter, lintGutter } from '@codemirror/lint'
 import { useStore } from 'useStore'
 import { processCodeMirrorRanges } from 'lib/selections'
@@ -58,6 +58,7 @@ export const TextEditor = ({
     isShiftDown: s.isShiftDown,
   }))
   const { code, errors } = useKclContext()
+  const lastEvent = useRef({ event: '', time: Date.now() })
 
   const {
     context: { selectionRanges, selectionRangeTypeMap },
@@ -131,6 +132,20 @@ export const TextEditor = ({
       isShiftDown,
     })
     if (!eventInfo) return
+    const deterministicEventInfo = {
+      ...eventInfo,
+      engineEvents: eventInfo.engineEvents.map((e) => ({
+        ...e,
+        cmd_id: 'static',
+      })),
+    }
+    const stringEvent = JSON.stringify(deterministicEventInfo)
+    if (
+      stringEvent === lastEvent.current.event &&
+      Date.now() - lastEvent.current.time < 500
+    )
+      return // don't repeat events
+    lastEvent.current = { event: stringEvent, time: Date.now() }
     send(eventInfo.modelingEvent)
     eventInfo.engineEvents.forEach((event) =>
       engineCommandManager.sendSceneCommand(event)

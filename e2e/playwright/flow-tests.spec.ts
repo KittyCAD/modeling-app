@@ -317,7 +317,7 @@ test('Can create sketches on all planes and their back sides', async ({
   })
   await TestSinglePlane({
     viewCmd: camPos,
-    expectedCode: codeTemplate('YZ'),
+    expectedCode: codeTemplate('YZ', true),
     clickCoords: { x: 700, y: 300 }, // green plane
   })
   await TestSinglePlane({
@@ -338,7 +338,7 @@ test('Can create sketches on all planes and their back sides', async ({
   })
   await TestSinglePlane({
     viewCmd: camCmdBackSide,
-    expectedCode: codeTemplate('-XZ'),
+    expectedCode: codeTemplate('-XZ', true),
     clickCoords: { x: 680, y: 427 }, // back of blue plane
   })
 })

@@ -34,7 +34,8 @@ import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
 import useStateMachineCommands from 'hooks/useStateMachineCommands'
 import { modelingMachineConfig } from 'lib/commandBarConfigs/modelingCommandConfig'
 import { setupSingleton } from 'clientSideScene/setup'
-import { sketchQuaternion } from 'clientSideScene/clientSideScene'
+import { getSketchQuaternion } from 'clientSideScene/clientSideScene'
+import { startSketchOnDefault } from 'lang/modifyAst'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -218,18 +219,24 @@ export const ModelingMachineProvider = ({
         },
       },
       services: {
-        'animate-to-face': async ({ sketchPathToNode, sketchNormalBackUp }) => {
-          const quaternion = sketchQuaternion(
-            sketchPathToNode || [],
-            sketchNormalBackUp
+        'animate-to-face': async (_, { data: { plane, normal } }) => {
+          const { modifiedAst, pathToNode } = startSketchOnDefault(
+            kclManager.ast,
+            plane
           )
+          await kclManager.updateAst(modifiedAst, false)
+          const quaternion = getSketchQuaternion(pathToNode, normal)
           await setupSingleton.tweenCameraToQuaternion(quaternion)
+          return {
+            sketchPathToNode: pathToNode,
+            sketchNormalBackUp: normal,
+          }
         },
         'animate-to-sketch': async ({
           sketchPathToNode,
           sketchNormalBackUp,
         }) => {
-          const quaternion = sketchQuaternion(
+          const quaternion = getSketchQuaternion(
             sketchPathToNode || [],
             sketchNormalBackUp
           )

@@ -844,10 +844,6 @@ export function quaternionFromSketchGroup(
 ): Quaternion {
   // TODO figure what is happening in the executor that it's some times returning
   // [x,y,z] and sometimes {x,y,z}
-  const massageFormats = (a: any): Vector3 =>
-    Array.isArray(a)
-      ? new Vector3(a[0], a[1], a[2])
-      : new Vector3(a.x, a.y, a.z)
   if (!sketchGroup?.zAxis) {
     // sometimes sketchGroup is undefined,
     // I don't quiet understand the circumstances yet
@@ -891,7 +887,7 @@ function colorSegment(object: any, color: number) {
   }
 }
 
-export function sketchQuaternion(
+export function getSketchQuaternion(
   sketchPathToNode: PathToNode,
   sketchNormalBackUp: [number, number, number] | null
 ): Quaternion {
@@ -903,7 +899,8 @@ export function sketchQuaternion(
   const zAxis = sketchGroup?.zAxis || sketchNormalBackUp
   const dummyCam = new PerspectiveCamera()
   dummyCam.up.set(0, 0, 1)
-  dummyCam.position.set(...zAxis)
+  const _zAxis = massageFormats(zAxis)
+  dummyCam.position.copy(_zAxis)
   dummyCam.lookAt(0, 0, 0)
   dummyCam.updateMatrix()
   const quaternion = dummyCam.quaternion.clone()
@@ -912,10 +909,16 @@ export function sketchQuaternion(
 
   // because vertical quaternions are a gimbal lock, for the orbit controls
   // it's best to set them explicitly to the vertical position with a known good camera up
-  if (isVert && zAxis[2] < 0) {
+  if (isVert && _zAxis.z < 0) {
     quaternion.set(0, 1, 0, 0)
   } else if (isVert) {
     quaternion.set(0, 0, 0, 1)
   }
   return quaternion
+}
+
+function massageFormats(a: any): Vector3 {
+  return Array.isArray(a)
+    ? new Vector3(a[0], a[1], a[2])
+    : new Vector3(a.x, a.y, a.z)
 }

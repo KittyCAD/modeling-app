@@ -394,7 +394,6 @@ class SetupSingleton {
       // setting duration to 0 or <100 creates bugs where the plane ends up in the wrong place
       // A better solution if we want no animation for reduced motion is to skip all the animation logic
       // instead of just changing teh duration
-      const _duration = isReducedMotion() ? 100 : duration
       const camera = this.camera
       this._isCamMovingCallback(true, true)
       const initialQuaternion = camera.quaternion.clone()
@@ -425,22 +424,30 @@ class SetupSingleton {
         this.camera.updateProjectionMatrix()
       }
 
+      const onComplete = async () => {
+        if (isReducedMotion()) {
+          cameraAtTime(0.99)
+          this.useOrthographicCamera()
+        } else {
+          await this.animateToOrthographic()
+        }
+        if (isVertical) cameraAtTime(1)
+        this.camera.up.set(0, 0, 1)
+        this.controls.enableRotate = false
+        this._isCamMovingCallback(false, true)
+        resolve()
+      }
+
+      if (isReducedMotion()) {
+        onComplete()
+        return
+      }
+
       new TWEEN.Tween({ t: 0 })
-        .to({ t: tweenEnd }, _duration)
+        .to({ t: tweenEnd }, duration)
         .easing(TWEEN.Easing.Quadratic.InOut)
         .onUpdate(({ t }) => cameraAtTime(t))
-        .onComplete(async () => {
-          if (isReducedMotion()) {
-            this.useOrthographicCamera()
-          } else {
-            await this.animateToOrthographic()
-          }
-          if (isVertical) cameraAtTime(1)
-          this.camera.up.set(0, 0, 1)
-          this.controls.enableRotate = false
-          this._isCamMovingCallback(false, true)
-          resolve()
-        })
+        .onComplete(onComplete)
         .start()
     })
   }

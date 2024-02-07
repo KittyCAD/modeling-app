@@ -33,52 +33,6 @@ import { isLiteralArrayOrStatic } from './std/sketchcombos'
 import { DefaultPlaneStr } from 'clientSideScene/clientSideScene'
 import { roundOff } from 'lib/utils'
 
-export function addStartSketch(
-  node: Program,
-  axis: 'xy' | 'xz' | 'yz' | '-xy' | '-xz' | '-yz',
-  start: [number, number],
-  end: [number, number]
-): { modifiedAst: Program; id: string; pathToNode: PathToNode } {
-  const _node = { ...node }
-  const _name = findUniqueName(node, 'part')
-
-  const startSketchOn = createCallExpressionStdLib('startSketchOn', [
-    createLiteral(axis.toUpperCase()),
-  ])
-  const startProfileAt = createCallExpressionStdLib('startProfileAt', [
-    createArrayExpression([createLiteral(start[0]), createLiteral(start[1])]),
-    createPipeSubstitution(),
-  ])
-  const initialLineTo = createCallExpression('line', [
-    createArrayExpression([createLiteral(end[0]), createLiteral(end[1])]),
-    createPipeSubstitution(),
-  ])
-
-  const pipeBody = [startSketchOn, startProfileAt, initialLineTo]
-
-  const variableDeclaration = createVariableDeclaration(
-    _name,
-    createPipeExpression(pipeBody)
-  )
-
-  const newIndex = node.body.length
-  _node.body = [...node.body, variableDeclaration]
-
-  let pathToNode: PathToNode = [
-    ['body', ''],
-    [newIndex.toString(10), 'index'],
-    ['declarations', 'VariableDeclaration'],
-    ['0', 'index'],
-    ['init', 'VariableDeclarator'],
-  ]
-
-  return {
-    modifiedAst: _node,
-    id: _name,
-    pathToNode,
-  }
-}
-
 export function startSketchOnDefault(
   node: Program,
   axis: DefaultPlaneStr,
@@ -115,6 +69,7 @@ export function addStartProfileAt(
   pathToNode: PathToNode,
   at: [number, number]
 ): { modifiedAst: Program; pathToNode: PathToNode } {
+  console.log('addStartProfileAt called')
   const variableDeclaration = getNodeFromPath<VariableDeclaration>(
     node,
     pathToNode,
