@@ -29,9 +29,9 @@ import {
 import { ONBOARDING_PROJECT_NAME } from './Onboarding'
 import { sep } from '@tauri-apps/api/path'
 import { bracket } from 'lib/exampleKcl'
-import { APP_VERSION } from 'lib/constants'
 
 export const Settings = () => {
+  const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
   const loaderData =
     (useRouteLoaderData(paths.FILE) as IndexLoaderData) || undefined
   const navigate = useNavigate()
@@ -306,6 +306,8 @@ export const Settings = () => {
           </ActionButton>
         </SettingsSection>
         <p className="mt-24 text-sm font-mono">
+          {/* This uses a Vite plugin, set in vite.config.ts
+              to inject the version from package.json */}
           App version {APP_VERSION}.{' '}
           <a
             href={`https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`}
