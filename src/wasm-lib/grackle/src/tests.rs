@@ -310,6 +310,71 @@ async fn computed_object_property() {
 }
 
 #[tokio::test]
+async fn computed_array_in_object() {
+    let program = r#"
+    let complicated = {a: [{b: true}]}
+    let i = 0
+    let prop0 = "a"
+    let prop1 = "b"
+    let val = complicated[prop0][i][prop1] // should be `true`
+    "#;
+    let (_plan, scope) = must_plan(program);
+    let Some(EpBinding::Single(address_of_val)) = scope.get("val") else {
+        panic!("Unexpected binding for variable 'val': {:?}", scope.get("val"));
+    };
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+        .ast()
+        .unwrap();
+    let mem = crate::execute(ast, None).await.unwrap();
+    use ept::ReadMemory;
+    // Should be 'true', based on the above KCL program.
+    assert_eq!(mem.get(address_of_val).unwrap(), &ept::Primitive::Bool(true));
+}
+
+#[tokio::test]
+async fn computed_object_in_array() {
+    let program = r#"
+    let complicated = [{a: {b: true}}]
+    let i = 0
+    let prop0 = "a"
+    let prop1 = "b"
+    let val = complicated[i][prop0][prop1] // should be `true`
+    "#;
+    let (_plan, scope) = must_plan(program);
+    let Some(EpBinding::Single(address_of_val)) = scope.get("val") else {
+        panic!("Unexpected binding for variable 'val': {:?}", scope.get("val"));
+    };
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+        .ast()
+        .unwrap();
+    let mem = crate::execute(ast, None).await.unwrap();
+    use ept::ReadMemory;
+    // Should be 'true', based on the above KCL program.
+    assert_eq!(mem.get(address_of_val).unwrap(), &ept::Primitive::Bool(true));
+}
+
+#[tokio::test]
+async fn computed_nested_object_property() {
+    let program = r#"
+    let obj = {a: {b: true}}
+    let prop0 = "a"
+    let prop1 = "b"
+    let val = obj[prop0][prop1] // should be `true`
+    "#;
+    let (_plan, scope) = must_plan(program);
+    let Some(EpBinding::Single(address_of_val)) = scope.get("val") else {
+        panic!("Unexpected binding for variable 'val': {:?}", scope.get("val"));
+    };
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+        .ast()
+        .unwrap();
+    let mem = crate::execute(ast, None).await.unwrap();
+    use ept::ReadMemory;
+    // Should be 'true', based on the above KCL program.
+    assert_eq!(mem.get(address_of_val).unwrap(), &ept::Primitive::Bool(true));
+}
+
+#[tokio::test]
 async fn computed_array_index() {
     let program = r#"
     let array = ["a", "b", "c"]
@@ -383,13 +448,14 @@ async fn computed_array_index() {
                 destination: Destination::Address(Address::ZERO + 9)
             },
             // Get the element at the index
-            Instruction::GetElement {
-                start: Address::ZERO,
-                index: ep::Operand::Reference(Address::ZERO + 9)
+            Instruction::AddrOfMember {
+                start: ep::Operand::Literal(Address::ZERO.into()),
+                member: ep::Operand::Reference(Address::ZERO + 9)
             },
             // Write it to the next free address.
-            Instruction::StackPop {
-                destination: Some(expected_address_of_prop)
+            Instruction::CopyLen {
+                source_range: ep::Operand::StackPop,
+                destination_range: ep::Operand::Literal(expected_address_of_prop.into()),
             },
         ]
     );
@@ -404,25 +470,6 @@ async fn computed_array_index() {
         mem.get(&expected_address_of_prop).unwrap(),
         &ept::Primitive::String("c".to_owned())
     );
-}
-
-#[test]
-#[ignore = "haven't done computed properties yet"]
-fn computed_member_expressions() {
-    let program = r#"
-    let obj = {x: 1, y: 2}
-    let index = "x"
-    let prop = obj[index]
-    "#;
-    let (_plan, scope) = must_plan(program);
-    match scope.get("prop").unwrap() {
-        EpBinding::Single(addr) => {
-            assert_eq!(*addr, Address::ZERO + 1);
-        }
-        other => {
-            panic!("expected 'prop' bound to 0x0 but it was bound to {other:?}");
-        }
-    }
 }
 
 #[test]
