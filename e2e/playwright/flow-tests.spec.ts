@@ -686,3 +686,127 @@ test('Can extrude from the command bar', async ({ page, context }) => {
     |> extrude(5, %)`
   )
 })
+
+test('Can add multiple sketches', async ({ page }) => {
+  const u = getUtils(page)
+  await page.setViewportSize({ width: 1200, height: 500 })
+  const PUR = 400 / 37.5 //pixeltoUnitRatio
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await u.openDebugPanel()
+
+  await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
+
+  // click on "Start Sketch" button
+  await u.clearCommandLogs()
+  await u.doAndWaitForImageDiff(
+    () => page.getByRole('button', { name: 'Start Sketch' }).click(),
+    200
+  )
+
+  // select a plane
+  await page.mouse.click(700, 200)
+
+  await expect(page.locator('.cm-content')).toHaveText(
+    `const part001 = startSketchOn('-XZ')`
+  )
+
+  await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
+
+  const startXPx = 600
+  await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
+  const startAt = '[23.89, -32.23]'
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt(${startAt}, %)`)
+  await page.waitForTimeout(100)
+
+  await u.closeDebugPanel()
+  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
+  await page.waitForTimeout(100)
+
+  const num = 24.11
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt(${startAt}, %)
+  |> line([${num}, 0], %)`)
+
+  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt(${startAt}, %)
+  |> line([${num}, 0], %)
+  |> line([0, ${num + 0.01}], %)`)
+  await page.mouse.click(startXPx, 500 - PUR * 20)
+  const finalCodeFirstSketch = `const part001 = startSketchOn('-XZ')
+  |> startProfileAt(${startAt}, %)
+  |> line([${num}, 0], %)
+  |> line([0, ${num + 0.01}], %)
+  |> line([-48, 0], %)`
+  await expect(page.locator('.cm-content')).toHaveText(finalCodeFirstSketch)
+
+  // exit the sketch
+
+  await u.openAndClearDebugPanel()
+  await page.getByRole('button', { name: 'Exit Sketch' }).click()
+
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+
+  await u.updateCamPosition([0, 100, 100])
+
+  // start a new sketch
+  await u.clearCommandLogs()
+  await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await page.waitForTimeout(100)
+  await page.mouse.click(673, 384)
+
+  await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
+  await u.clearAndCloseDebugPanel()
+
+  await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
+  const startAt2 = '[23.61, -31.85]'
+  await expect(
+    (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
+  ).toBe(
+    `${finalCodeFirstSketch}
+const part002 = startSketchOn('XY')
+  |> startProfileAt(${startAt2}, %)`.replace(/\s/g, '')
+  )
+  await page.waitForTimeout(100)
+
+  await u.closeDebugPanel()
+  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
+  await page.waitForTimeout(100)
+
+  const num2 = 23.83
+  await expect(
+    (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
+  ).toBe(
+    `${finalCodeFirstSketch}
+const part002 = startSketchOn('XY')
+  |> startProfileAt(${startAt2}, %)
+  |> line([${num2}, 0], %)`.replace(/\s/g, '')
+  )
+
+  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
+  await expect(
+    (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
+  ).toBe(
+    `${finalCodeFirstSketch}
+const part002 = startSketchOn('XY')
+  |> startProfileAt(${startAt2}, %)
+  |> line([${num2}, 0], %)
+  |> line([0, ${num2}], %)`.replace(/\s/g, '')
+  )
+  await page.mouse.click(startXPx, 500 - PUR * 20)
+  await expect(
+    (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
+  ).toBe(
+    `${finalCodeFirstSketch}
+const part002 = startSketchOn('XY')
+  |> startProfileAt(${startAt2}, %)
+  |> line([${num2}, 0], %)
+  |> line([0, ${num2}], %)
+  |> line([-47.44, 0], %)`.replace(/\s/g, '')
+  )
+})
