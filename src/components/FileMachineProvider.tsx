@@ -17,7 +17,7 @@ import {
   mkdir,
   remove,
   rename,
-  writeFile,
+  create,
 } from '@tauri-apps/plugin-fs'
 import { FILE_EXT, readProject } from 'lib/tauriFS'
 import { isTauri } from 'lib/isTauri'
@@ -84,12 +84,11 @@ export const FileMachineProvider = ({
         if (event.data.makeDir) {
           await mkdir(context.selectedDirectory.path + sep() + name)
         } else {
-          await writeFile(
+          await create(
             context.selectedDirectory.path +
               sep() +
               name +
               (name.endsWith(FILE_EXT) ? '' : FILE_EXT),
-            ''
           )
         }
 

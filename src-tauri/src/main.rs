@@ -7,7 +7,8 @@ use std::io::Read;
 
 use anyhow::Result;
 use oauth2::TokenResponse;
-use tauri::{InvokeError, Manager};
+use tauri::ipc::InvokeError;
+use tauri_plugin_shell::ShellExt;
 const DEFAULT_HOST: &str = "https://api.kittycad.io";
 
 /// This command returns the a json string parse from a toml file at the path.
@@ -84,7 +85,8 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
         fs::write("/tmp/kittycad_user_code", details.user_code().secret())
             .expect("Unable to write /tmp/kittycad_user_code file");
     } else {
-        tauri::api::shell::open(&app.shell_scope(), auth_uri.secret(), None)
+        println!("{}", auth_uri.secret().to_string());
+        app.shell().open(auth_uri.secret(), None)
             .map_err(|e| InvokeError::from_anyhow(e.into()))?;
     }
 
@@ -160,7 +162,11 @@ fn main() {
             read_toml,
             read_txt_file
         ])
-        .plugin(tauri_plugin_fs_extra::init())
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_http::init())
+        .plugin(tauri_plugin_os::init())
+        .plugin(tauri_plugin_shell::init())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
