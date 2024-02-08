@@ -154,6 +154,7 @@ class ClientSideScene {
     })
     this.intersectionPlane = new Mesh(planeGeometry, planeMaterial)
     this.intersectionPlane.userData = { type: RAYCASTABLE_PLANE }
+    this.intersectionPlane.name = RAYCASTABLE_PLANE
     this.intersectionPlane.layers.set(INTERSECTION_PLANE_LAYER)
     this.scene.add(this.intersectionPlane)
   }
@@ -188,11 +189,9 @@ class ClientSideScene {
     yAxisMesh.name = Y_AXIS
 
     this.axisGroup = new Group()
-    this.axisGroup.add(
-      xAxisMesh,
-      yAxisMesh,
-      createGridHelper({ size: 100, divisions: 10 })
-    )
+    const gridHelper = createGridHelper({ size: 100, divisions: 10 })
+    gridHelper.renderOrder = -3 // is this working?
+    this.axisGroup.add(xAxisMesh, yAxisMesh, gridHelper)
     this.currentSketchQuaternion &&
       this.axisGroup.setRotationFromQuaternion(this.currentSketchQuaternion)
 
@@ -213,9 +212,7 @@ class ClientSideScene {
     this.scene.add(this.axisGroup)
   }
   removeIntersectionPlane() {
-    const intersectionPlane = this.scene.children.find(
-      ({ userData }) => userData?.type === RAYCASTABLE_PLANE
-    )
+    const intersectionPlane = this.scene.getObjectByName(RAYCASTABLE_PLANE)
     if (intersectionPlane) this.scene.remove(intersectionPlane)
   }
 

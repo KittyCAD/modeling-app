@@ -18,6 +18,7 @@ export function createGridHelper({
     color: 0xaaaaaa,
     transparent: true,
     opacity: 0.5,
+    depthTest: false,
   })
   const gridHelper = new GridHelper(size, divisions, 0x0000ff, 0xffffff)
   gridHelper.material = gridHelperMaterial

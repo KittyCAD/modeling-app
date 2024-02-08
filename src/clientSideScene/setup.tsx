@@ -315,7 +315,7 @@ class SetupSingleton {
       this.controls.target.set(...target)
     }
     this.controls.update()
-    this.controls.addEventListener('change', this.updateEngineCamera)
+    this.controls.addEventListener('change', this.onCameraChange)
     // debounce is needed because the start and end events are fired too often for zoom on scroll
     let debounceTimer = 0
     const handleStart = () => {
@@ -335,13 +335,13 @@ class SetupSingleton {
     ;(this.controls as any).setMouseGuards(this.interactionGuards)
     return this.controls
   }
-  onStreamStart = () => this.updateEngineCamera()
+  onStreamStart = () => this.onCameraChange()
 
   deferReactUpdate = throttle((a: ReactCameraProperties) => {
     this.reactCameraPropertiesCallback(a)
   }, 200)
 
-  updateEngineCamera = () => {
+  onCameraChange = () => {
     this.camera.position.distanceTo(this.controls.target)
     throttledUpdateEngineCamera({
       quaternion: this.camera.quaternion,
@@ -476,7 +476,7 @@ class SetupSingleton {
           } else {
             setTimeout(() => {
               // Once the target FOV is reached, switch to the orthographic camera
-              // Needs to wait a frame a couple frames after the FOV animation is complete
+              // Needs to wait a couple frames after the FOV animation is complete
               this.useOrthographicCamera()
               this.isFovAnimationInProgress = false
               resolve(true)
@@ -548,7 +548,6 @@ class SetupSingleton {
     this.camera.zoom = (ZOOM_MAGIC_NUMBER * fovFactor * 0.8) / distance
 
     this.setupOrbitControls([tx, ty, tz])
-    // in the case where I want to set the quaternion looking up i.e. new Quaternion(1, 0, 0, 0)
     this.camera.quaternion.set(qx, qy, qz, qw)
     this.camera.updateProjectionMatrix()
     this.controls.update()
@@ -583,7 +582,7 @@ class SetupSingleton {
         },
       },
     })
-    this.updateEngineCamera()
+    this.onCameraChange()
     return this.camera
   }
 
@@ -632,8 +631,6 @@ class SetupSingleton {
     const newPosition = this.controls.target
       .clone()
       .add(direction.multiplyScalar(-distanceAfter))
-
-    // Update the camera position
     this.camera.position.copy(newPosition)
 
     const { z_near, z_far } = calculateNearFarFromFOV(this.fov)
@@ -889,6 +886,7 @@ class SetupSingleton {
       plane.rotation.y = rotation.y
       plane.rotation.z = rotation.z
       plane.userData.type = type
+      plane.name = type
       return plane
     }
     const gridHelper = createGridHelper({ size: 100, divisions: 10 })
@@ -1220,7 +1218,7 @@ function convertThreeCamValuesToEngineCam({
 
 function calculateNearFarFromFOV(fov: number) {
   const nearFarRatio = (fov - 3) / (45 - 3)
-  const z_near = 0.1 + nearFarRatio * (5 - 0.1)
+  // const z_near = 0.1 + nearFarRatio * (5 - 0.1)
   const z_far = 1000 + nearFarRatio * (100000 - 1000)
   return { z_near: 0.1, z_far }
 }
