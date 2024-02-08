@@ -38,6 +38,7 @@ import { invoke } from '@tauri-apps/api'
 import toast from 'react-hot-toast'
 
 export const Settings = () => {
+  const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
   const loaderData =
     (useRouteLoaderData(paths.FILE) as IndexLoaderData) || undefined
   const navigate = useNavigate()
@@ -128,7 +129,7 @@ export const Settings = () => {
           Close
         </ActionButton>
       </AppHeader>
-      <div className="max-w-5xl mx-5 lg:mx-auto my-24">
+      <div className="max-w-4xl mx-5 lg:mx-auto my-24">
         <h1 className="text-4xl font-bold">User Settings</h1>
         <p className="max-w-2xl mt-6">
           Don't see the feature you want? Check to see if it's on{' '}
@@ -366,6 +367,18 @@ export const Settings = () => {
               Restore default settings
             </button>
           )}
+        </p>
+        <p className="mt-24 text-sm font-mono">
+          {/* This uses a Vite plugin, set in vite.config.ts
+              to inject the version from package.json */}
+          App version {APP_VERSION}.{' '}
+          <a
+            href={`https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View release on GitHub
+          </a>
         </p>
       </div>
     </div>
