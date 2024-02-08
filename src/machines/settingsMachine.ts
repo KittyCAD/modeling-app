@@ -3,8 +3,7 @@ import { Themes, getSystemTheme, setThemeClass } from '../lib/theme'
 import { CameraSystem } from 'lib/cameraControls'
 import { Models } from '@kittycad/lib'
 import { isTauri } from 'lib/isTauri'
-import { writeTextFile } from '@tauri-apps/api/fs'
-import { sep } from '@tauri-apps/api/path'
+import { writeToSettingsFile } from 'lib/tauriFS'
 
 export const DEFAULT_PROJECT_NAME = 'project-$nnn'
 export const SETTINGS_PERSIST_KEY = 'SETTINGS_PERSIST_KEY'
@@ -38,22 +37,24 @@ type SettingsMachineContext = {
   unitSystem: UnitSystem
 }
 
+export const initialSettings: SettingsMachineContext = {
+  baseUnit: 'in' as BaseUnit,
+  cameraControls: 'KittyCAD' as CameraSystem,
+  defaultDirectory: isTauri() ? '' : '',
+  defaultProjectName: DEFAULT_PROJECT_NAME,
+  onboardingStatus: '',
+  showDebugPanel: false,
+  textWrapping: 'On' as Toggle,
+  theme: Themes.System,
+  unitSystem: UnitSystem.Imperial,
+}
+
 export const settingsMachine = createMachine(
   {
     /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlTQAIAVACzAFswBtABgF1FQAHAe1iYsfbNxAAPRAA42+AEwB2KQFYAzGznKAnADZli1QBoQAT2kBGKfm37lOned3nzqgL6vjlLLgJFSFdCoAETAAMwBDAFdiagAFACc+ACswAGNqADlw5nYuJBB+QWFRfMkEABY5fDYa2rra83LjMwQdLWV8BXLyuxlVLU1Ld090bzxCEnJKYLComODMeLS0PniTXLFCoUwRMTK7fC1zNql7NgUjtnKjU0RlBSqpLVUVPVUda60tYZAvHHG-FNAgBVbBCKjIEywNBMDb5LbFPaILqdfRSORsS4qcxXZqIHqyK6qY4XOxsGTKco-P4+Cb+aYAIXCsDAVFBQjhvAE212pWkskUKnUml0+gUNxaqkU+EccnKF1UCnucnMcjcHl+o3+vkmZBofCgUFIMwARpEoFRYuFsGBiJyCtzEXzWrJlGxlKdVFKvfY1XiEBjyvhVOVzBdzu13pYFNStbTAQFqAB5bAmvjheIQf4QtDhNCRWD2hE7EqgfayHTEh7lHQNSxSf1Scz4cpHHFyFVujTKczuDXYPgQOBiGl4TaOktIhAAWg6X3nC4Xp39050sYw2rpYHHRUnztVhPJqmUlIGbEriv9WhrLZ6uibHcqUr7riAA */
     id: 'Settings',
     predictableActionArguments: true,
-    context: {
-      baseUnit: 'in' as BaseUnit,
-      cameraControls: 'KittyCAD' as CameraSystem,
-      defaultDirectory: '',
-      defaultProjectName: DEFAULT_PROJECT_NAME,
-      onboardingStatus: '',
-      showDebugPanel: false,
-      textWrapping: 'On' as Toggle,
-      theme: Themes.System,
-      unitSystem: UnitSystem.Imperial,
-    } as SettingsMachineContext,
+    context: { ...initialSettings },
     initial: 'idle',
     states: {
       idle: {
@@ -61,11 +62,11 @@ export const settingsMachine = createMachine(
         on: {
           'Set All Settings': {
             actions: [
-              assign((c, event) => {
-                console.log(`assign:
-                new: ${JSON.stringify(event.data)}
-                to old: ${JSON.stringify(c)}`)
-                return event.data
+              assign((context, event) => {
+                return {
+                  ...context,
+                  ...event.data,
+                }
               }),
               'persistSettings',
               'setThemeClass',
@@ -211,14 +212,10 @@ export const settingsMachine = createMachine(
     actions: {
       persistSettings: (context) => {
         if (isTauri()) {
-          writeTextFile(
-            context.defaultDirectory + sep + SETTINGS_FILE_NAME,
-            JSON.stringify(context, null, 2)
-          ).catch((err) => {
+          writeToSettingsFile(context).catch((err) => {
             console.error('Error writing settings:', err)
           })
         }
-
         try {
           localStorage.setItem(SETTINGS_PERSIST_KEY, JSON.stringify(context))
         } catch (e) {

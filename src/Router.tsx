@@ -113,6 +113,7 @@ export type ProjectWithEntryPointMetadata = FileEntry & {
 export type HomeLoaderData = {
   projects: ProjectWithEntryPointMetadata[]
   newDefaultDirectory?: string
+  error: Error | null
 }
 
 type CreateBrowserRouterArg = Parameters<typeof createBrowserRouter>[0]
@@ -262,32 +263,42 @@ const router = createBrowserRouter(
         const projectDir = await initializeProjectDirectory(
           persistedSettings.defaultDirectory || ''
         )
-        let newDefaultDirectory: string | undefined = undefined
-        if (projectDir !== persistedSettings.defaultDirectory) {
-          localStorage.setItem(
-            SETTINGS_PERSIST_KEY,
-            JSON.stringify({
-              ...persistedSettings,
-              defaultDirectory: projectDir,
-            })
-          )
-          newDefaultDirectory = projectDir
-        }
-        const projectsNoMeta = (await readDir(projectDir)).filter(
-          isProjectDirectory
-        )
-        const projects = await Promise.all(
-          projectsNoMeta.map(async (p: FileEntry) => ({
-            entrypointMetadata: await metadata(
-              p.path + sep + PROJECT_ENTRYPOINT
-            ),
-            ...p,
-          }))
-        )
 
-        return {
-          projects,
-          newDefaultDirectory,
+        let newDefaultDirectory: string | undefined = undefined
+        if (projectDir.path) {
+          if (projectDir.path !== persistedSettings.defaultDirectory) {
+            localStorage.setItem(
+              SETTINGS_PERSIST_KEY,
+              JSON.stringify({
+                ...persistedSettings,
+                defaultDirectory: projectDir,
+              })
+            )
+            newDefaultDirectory = projectDir.path
+          }
+          const projectsNoMeta = (await readDir(projectDir.path)).filter(
+            isProjectDirectory
+          )
+          const projects = await Promise.all(
+            projectsNoMeta.map(async (p: FileEntry) => ({
+              entrypointMetadata: await metadata(
+                p.path + sep + PROJECT_ENTRYPOINT
+              ),
+              ...p,
+            }))
+          )
+
+          return {
+            projects,
+            newDefaultDirectory,
+            error: projectDir.error,
+          }
+        } else {
+          return {
+            projects: [],
+            newDefaultDirectory,
+            error: projectDir.error,
+          }
         }
       },
       children: [

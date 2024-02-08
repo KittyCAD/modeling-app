@@ -37,20 +37,32 @@ import { homeCommandBarConfig } from 'lib/commandBarConfigs/homeCommandConfig'
 const Home = () => {
   const { commandBarSend } = useCommandsContext()
   const navigate = useNavigate()
-  const { projects: loadedProjects, newDefaultDirectory } =
-    useLoaderData() as HomeLoaderData
+  const {
+    projects: loadedProjects,
+    newDefaultDirectory,
+    error,
+  } = useLoaderData() as HomeLoaderData
   const {
     settings: {
       context: { defaultDirectory, defaultProjectName },
       send: sendToSettings,
     },
   } = useSettingsAuthContext()
-  if (newDefaultDirectory) {
-    sendToSettings({
-      type: 'Set Default Directory',
-      data: { defaultDirectory: newDefaultDirectory },
-    })
-  }
+
+  useEffect(() => {
+    // If the default directory has changed, update the settings
+    if (newDefaultDirectory) {
+      sendToSettings({
+        type: 'Set All Settings',
+        data: { defaultDirectory: newDefaultDirectory },
+      })
+    }
+
+    // Toast any errors that occurred during the loading process
+    if (error) {
+      toast.error(error.message)
+    }
+  }, [])
 
   const [state, send] = useMachine(homeMachine, {
     context: {

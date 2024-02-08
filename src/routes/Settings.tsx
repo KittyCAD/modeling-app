@@ -5,7 +5,9 @@ import { open } from '@tauri-apps/api/dialog'
 import {
   BaseUnit,
   DEFAULT_PROJECT_NAME,
+  SETTINGS_PERSIST_KEY,
   baseUnits,
+  initialSettings,
 } from '../machines/settingsMachine'
 import { Toggle } from '../components/Toggle/Toggle'
 import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
@@ -24,11 +26,16 @@ import {
   createNewProject,
   getNextProjectIndex,
   getProjectsInDir,
+  getSettingsFilePath,
+  initializeProjectDirectory,
   interpolateProjectNameWithIndex,
 } from 'lib/tauriFS'
 import { ONBOARDING_PROJECT_NAME } from './Onboarding'
 import { sep } from '@tauri-apps/api/path'
 import { bracket } from 'lib/exampleKcl'
+import { isTauri } from 'lib/isTauri'
+import { invoke } from '@tauri-apps/api'
+import toast from 'react-hot-toast'
 
 export const Settings = () => {
   const loaderData =
@@ -304,6 +311,49 @@ export const Settings = () => {
             Replay Onboarding
           </ActionButton>
         </SettingsSection>
+        <p className="font-mono my-6 leading-loose">
+          Your settings are saved in{' '}
+          {isTauri()
+            ? 'a file in the app data folder for your OS.'
+            : "your browser's local storage."}{' '}
+          {isTauri() ? (
+            <span className="flex gap-4 flex-wrap items-center">
+              <button
+                onClick={async () =>
+                  void invoke('show_in_folder', {
+                    path: await getSettingsFilePath(),
+                  })
+                }
+                className="text-base"
+              >
+                Show settings.json in folder
+              </button>
+              <button
+                onClick={async () => {
+                  send({
+                    type: 'Set All Settings',
+                    data: {
+                      ...initialSettings,
+                      defaultDirectory:
+                        (await initializeProjectDirectory('')).path ?? '',
+                    },
+                  })
+                  toast.success('Settings restored to default')
+                }}
+                className="text-base"
+              >
+                Restore default settings
+              </button>
+            </span>
+          ) : (
+            <button
+              onClick={() => localStorage.removeItem(SETTINGS_PERSIST_KEY)}
+              className="text-base"
+            >
+              Restore default settings
+            </button>
+          )}
+        </p>
       </div>
     </div>
   )

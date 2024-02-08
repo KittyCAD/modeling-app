@@ -3,12 +3,16 @@ import {
   createDir,
   exists,
   readDir,
+  readTextFile,
   writeTextFile,
 } from '@tauri-apps/api/fs'
-import { documentDir, homeDir, sep } from '@tauri-apps/api/path'
+import { appConfigDir, documentDir, homeDir, sep } from '@tauri-apps/api/path'
 import { isTauri } from './isTauri'
 import { ProjectWithEntryPointMetadata } from '../Router'
 import { metadata } from 'tauri-plugin-fs-extra-api'
+import { SETTINGS_FILE_NAME, settingsMachine } from 'machines/settingsMachine'
+import { ContextFrom } from 'xstate'
+import toast from 'react-hot-toast'
 
 const PROJECT_FOLDER = 'zoo-modeling-app-projects'
 export const FILE_EXT = '.kcl'
@@ -17,39 +21,101 @@ const INDEX_IDENTIFIER = '$n' // $nn.. will pad the number with 0s
 export const MAX_PADDING = 7
 const RELEVANT_FILE_TYPES = ['kcl']
 
+type PathWithPossibleError = {
+  path: string | null
+  error: Error | null
+}
+
+export async function getInitialDefaultDir() {
+  let dir
+  try {
+    dir = await documentDir()
+  } catch (e) {
+    dir = `${await homeDir()}Documents/` // for headless Linux (eg. Github Actions)
+  }
+
+  return dir + PROJECT_FOLDER
+}
+
 // Initializes the project directory and returns the path
-export async function initializeProjectDirectory(directory: string) {
+// with any Errors that occurred
+export async function initializeProjectDirectory(
+  directory: string
+): Promise<PathWithPossibleError> {
   if (!isTauri()) {
     throw new Error(
       'initializeProjectDirectory() can only be called from a Tauri app'
     )
   }
 
+  let returnValue: PathWithPossibleError = {
+    path: null,
+    error: null,
+  }
+
   if (directory) {
-    const dirExists = await exists(directory)
-    if (!dirExists) {
-      await createDir(directory, { recursive: true })
+    returnValue = await testAndCreateDir(directory, returnValue)
+  }
+
+  // If the directory from settings does not exist or could not be created,
+  // use the default directory
+  if (returnValue.path === null) {
+    const INITIAL_DEFAULT_DIR = await getInitialDefaultDir()
+    const defaultReturnValue = await testAndCreateDir(
+      INITIAL_DEFAULT_DIR,
+      returnValue,
+      {
+        exists: 'Error checking default directory.',
+        create: 'Error creating default directory.',
+      }
+    )
+    returnValue.path = defaultReturnValue.path
+    returnValue.error =
+      returnValue.error === null ? defaultReturnValue.error : returnValue.error
+  }
+
+  return returnValue
+}
+
+async function testAndCreateDir(
+  directory: string,
+  returnValue = {
+    path: null,
+    error: null,
+  } as PathWithPossibleError,
+  errorMessages = {
+    exists:
+      'Error checking directory at path from saved settings. Using default.',
+    create:
+      'Error creating directory at path from saved settings. Using default.',
+  }
+): Promise<PathWithPossibleError> {
+  const dirExists = await exists(directory).catch((e) => {
+    console.error(`Error checking directory ${directory}. Original error:`, e)
+    return new Error(errorMessages.exists)
+  })
+
+  if (dirExists instanceof Error) {
+    returnValue.error = dirExists
+  } else if (dirExists && dirExists === true) {
+    const newDirCreated = await createDir(directory, { recursive: true }).catch(
+      (e) => {
+        console.error(
+          `Error creating directory ${directory}. Original error:`,
+          e
+        )
+        return new Error(errorMessages.create)
+      }
+    )
+
+    if (newDirCreated instanceof Error) {
+      returnValue.error = newDirCreated
+    } else {
+      returnValue.path = directory
     }
-    return directory
   }
 
-  let docDirectory: string
-  try {
-    docDirectory = await documentDir()
-  } catch (e) {
-    console.log('error', e)
-    docDirectory = `${await homeDir()}Documents/` // for headless Linux (eg. Github Actions)
-  }
-
-  const INITIAL_DEFAULT_DIR = docDirectory + PROJECT_FOLDER
-
-  const defaultDirExists = await exists(INITIAL_DEFAULT_DIR)
-
-  if (!defaultDirExists) {
-    await createDir(INITIAL_DEFAULT_DIR, { recursive: true })
-  }
-
-  return INITIAL_DEFAULT_DIR
+  return returnValue
 }
 
 export function isProjectDirectory(fileOrDir: Partial<FileEntry>) {
@@ -299,4 +365,45 @@ function escapeRegExpChars(string: string) {
 function getPaddedIdentifierRegExp() {
   const escapedIdentifier = escapeRegExpChars(INDEX_IDENTIFIER)
   return new RegExp(`${escapedIdentifier}(${escapedIdentifier.slice(-1)}*)`)
+}
+
+export async function getSettingsFilePath() {
+  const dir = await appConfigDir()
+  return dir + SETTINGS_FILE_NAME
+}
+
+export async function writeToSettingsFile(
+  settings: ContextFrom<typeof settingsMachine>
+) {
+  return writeTextFile(
+    await getSettingsFilePath(),
+    JSON.stringify(settings, null, 2)
+  )
+}
+
+export async function readSettingsFile(): Promise<ContextFrom<
+  typeof settingsMachine
+> | null> {
+  const dir = await appConfigDir()
+  const path = dir + SETTINGS_FILE_NAME
+  const dirExists = await exists(dir)
+  if (!dirExists) {
+    await createDir(dir, { recursive: true })
+  }
+
+  const settingsExist = dirExists ? await exists(path) : false
+
+  if (!settingsExist) {
+    console.log(`Settings file does not exist at ${path}`)
+    await writeToSettingsFile(settingsMachine.initialState.context)
+    return null
+  }
+
+  try {
+    const settings = await readTextFile(path)
+    return JSON.parse(settings)
+  } catch (e) {
+    console.error('Error reading settings file:', e)
+    return null
+  }
 }

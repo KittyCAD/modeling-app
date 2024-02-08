@@ -5,11 +5,7 @@ import { authMachine, TOKEN_PERSIST_KEY } from '../machines/authMachine'
 import withBaseUrl from '../lib/withBaseURL'
 import React, { createContext, useEffect, useRef } from 'react'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
-import {
-  SETTINGS_FILE_NAME,
-  SETTINGS_PERSIST_KEY,
-  settingsMachine,
-} from 'machines/settingsMachine'
+import { SETTINGS_PERSIST_KEY, settingsMachine } from 'machines/settingsMachine'
 import { toast } from 'react-hot-toast'
 import { setThemeClass, Themes } from 'lib/theme'
 import {
@@ -22,8 +18,7 @@ import {
 import { isTauri } from 'lib/isTauri'
 import { settingsCommandBarConfig } from 'lib/commandBarConfigs/settingsCommandConfig'
 import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
-import { readTextFile } from '@tauri-apps/api/fs'
-import { sep } from '@tauri-apps/api/path'
+import { initializeProjectDirectory, readSettingsFile } from 'lib/tauriFS'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -46,6 +41,7 @@ export const SettingsAuthStateProvider = ({
   const navigate = useNavigate()
 
   // Settings machine setup
+  // Load settings from local storage
   const retrievedSettings = useRef(
     localStorage?.getItem(SETTINGS_PERSIST_KEY) || '{}'
   )
@@ -83,25 +79,27 @@ export const SettingsAuthStateProvider = ({
   useEffect(() => {
     async function getFileBasedSettings() {
       if (isTauri()) {
-        const settings = await readTextFile(
-          settingsMachine.context.defaultDirectory + sep + SETTINGS_FILE_NAME
-        )
+        const newSettings = await readSettingsFile()
 
-        if (settings) {
-          try {
-            const settingsJson = JSON.parse(settings)
-            retrievedSettings.current = Object.assign(
-              retrievedSettings.current,
-              settings
-            )
-            settingsSend({
-              type: 'Set All Settings',
-              data: settingsJson,
-            })
-          } catch (e) {
-            console.error(e)
-            toast.error('Failed to read settings from file')
+        if (newSettings) {
+          const newDefaultDirectory = await initializeProjectDirectory(
+            newSettings.defaultDirectory || ''
+          )
+          if (newDefaultDirectory.error !== null) {
+            toast.error(newDefaultDirectory.error.message)
           }
+
+          if (newDefaultDirectory.path !== null) {
+            newSettings.defaultDirectory = newDefaultDirectory.path
+          }
+          retrievedSettings.current = Object.assign(
+            retrievedSettings.current,
+            newSettings
+          )
+          settingsSend({
+            type: 'Set All Settings',
+            data: newSettings,
+          })
         }
       }
     }
