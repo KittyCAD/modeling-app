@@ -93,7 +93,7 @@ class ClientSideScene {
   currentSketchQuaternion: Quaternion | null = null
   constructor() {
     this.scene = setupSingleton?.scene
-    setupSingleton.setOnCamChange(this.onCamChange)
+    setupSingleton?.setOnCamChange(this.onCamChange)
   }
 
   onCamChange = () => {
