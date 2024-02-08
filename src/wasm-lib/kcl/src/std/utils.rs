@@ -444,9 +444,6 @@ pub type Coords2d = [f64; 2];
 
 pub fn is_points_ccw_wasm(points: &[f64]) -> i32 {
     // CCW is positive as that the Math convention
-    // assert!(points.len() % 2 == 0, "Points array should have even length");
-    // TODO the same function is defined in `src/wasm-lib/kcl/src/std/sketch.rs`, but I'm too bad a rust
-    // to figure out how to import one into the other
 
     let mut sum = 0.0;
     for i in 0..(points.len() / 2) {

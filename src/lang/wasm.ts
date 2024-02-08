@@ -6,8 +6,6 @@ import init, {
   modify_ast_for_sketch_wasm,
   is_points_ccw,
   get_tangential_arc_to_info,
-  TangentialArcInfoInputWasm,
-  Xy,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
@@ -236,13 +234,13 @@ export function getTangentialArcToInfo({
   ccw: boolean
 } {
   const result = get_tangential_arc_to_info(
-      arcStartPoint[0],
-      arcStartPoint[1],
-      arcEndPoint[0],
-      arcEndPoint[1],
-      tanPreviousPoint[0],
-      tanPreviousPoint[1],
-      obtuse
+    arcStartPoint[0],
+    arcStartPoint[1],
+    arcEndPoint[0],
+    arcEndPoint[1],
+    tanPreviousPoint[0],
+    tanPreviousPoint[1],
+    obtuse
   )
   return {
     center: [result.center_x, result.center_y],
