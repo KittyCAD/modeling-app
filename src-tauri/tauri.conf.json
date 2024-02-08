@@ -60,7 +60,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "io.kittycad.modeling-app",
+      "identifier": "zoo-modeling-app",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
