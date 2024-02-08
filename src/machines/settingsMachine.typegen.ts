@@ -24,11 +24,7 @@ export interface Typegen0 {
       | 'Set Theme'
       | 'Set Unit System'
       | 'Toggle Debug Panel'
-<<<<<<< HEAD
     setThemeClass: 'Set All Settings' | 'Set Theme' | 'xstate.init'
-=======
-    setThemeClass: 'Set Theme' | 'xstate.init'
->>>>>>> main
     toastSuccess:
       | 'Set Base Unit'
       | 'Set Camera Controls'
