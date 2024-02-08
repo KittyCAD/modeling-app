@@ -121,8 +121,8 @@ export const TextEditor = ({
     }
     if (setupSingleton.selected) return // mid drag
     const ignoreEvents: ModelingMachineEvent['type'][] = [
-      'Equip Line tool 3',
-      'Equip tangential arc to 3',
+      'Equip Line tool',
+      'Equip tangential arc to',
     ]
     if (ignoreEvents.includes(state.event.type)) return
     const eventInfo = processCodeMirrorRanges({

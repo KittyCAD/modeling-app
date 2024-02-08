@@ -94,11 +94,11 @@ export const Toolbar = () => {
               <ActionButton
                 Element="button"
                 onClick={() =>
-                  state?.matches('Sketch.Line tool 3')
+                  state?.matches('Sketch.Line tool')
                     ? send('CancelSketch')
-                    : send('Equip Line tool 3')
+                    : send('Equip Line tool')
                 }
-                aria-pressed={state?.matches('Sketch.Line tool 3')}
+                aria-pressed={state?.matches('Sketch.Line tool')}
                 className="pressed:bg-energy-10/20 dark:pressed:bg-energy-80"
                 icon={{
                   icon: 'line',
@@ -112,19 +112,19 @@ export const Toolbar = () => {
               <ActionButton
                 Element="button"
                 onClick={() =>
-                  state.matches('Sketch.Tangential arc to 3')
+                  state.matches('Sketch.Tangential arc to')
                     ? send('CancelSketch')
-                    : send('Equip tangential arc to 3')
+                    : send('Equip tangential arc to')
                 }
-                aria-pressed={state.matches('Sketch.Tangential arc to 3')}
+                aria-pressed={state.matches('Sketch.Tangential arc to')}
                 className="pressed:bg-energy-10/20 dark:pressed:bg-energy-80"
                 icon={{
                   icon: 'line',
                   bgClassName,
                 }}
                 disabled={
-                  !state.can('Equip tangential arc to 3') &&
-                  !state.matches('Sketch.Tangential arc to 3')
+                  !state.can('Equip tangential arc to') &&
+                  !state.matches('Sketch.Tangential arc to')
                 }
               >
                 Tangential Arc

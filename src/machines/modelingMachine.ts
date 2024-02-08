@@ -106,8 +106,8 @@ export type ModelingMachineEvent =
   | { type: 'Constrain remove constraints' }
   | { type: 'Re-execute' }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
-  | { type: 'Equip Line tool 3' }
-  | { type: 'Equip tangential arc to 3' }
+  | { type: 'Equip Line tool' }
+  | { type: 'Equip tangential arc to' }
   | {
       type: 'done.invoke.animate-to-face'
       data: {
@@ -292,10 +292,10 @@ export const modelingMachine = createMachine(
                 ],
               },
 
-              'Equip Line tool 3': 'Line tool 3',
+              'Equip Line tool': 'Line tool',
 
-              'Equip tangential arc to 3': {
-                target: 'Tangential arc to 3',
+              'Equip tangential arc to': {
+                target: 'Tangential arc to',
                 cond: 'is editing existing sketch',
               },
             },
@@ -387,7 +387,7 @@ export const modelingMachine = createMachine(
             },
           },
 
-          'Line tool 3': {
+          'Line tool': {
             exit: [
               'tear down client sketch',
               'setup client side sketch segments',
@@ -395,13 +395,13 @@ export const modelingMachine = createMachine(
 
             on: {
               'Set selection': {
-                target: 'Line tool 3',
+                target: 'Line tool',
                 description: `This is just here to stop one of the higher level "Set selections" firing when we are just trying to set the IDE code without triggering a full engine-execute`,
                 internal: true,
               },
 
-              'Equip tangential arc to 3': {
-                target: 'Tangential arc to 3',
+              'Equip tangential arc to': {
+                target: 'Tangential arc to',
                 cond: 'is editing existing sketch',
               },
             },
@@ -412,7 +412,7 @@ export const modelingMachine = createMachine(
                   {
                     target: 'normal',
                     cond: 'is editing existing sketch',
-                    actions: 'set up draft line 2',
+                    actions: 'set up draft line',
                   },
                   'No Points',
                 ],
@@ -448,25 +448,25 @@ export const modelingMachine = createMachine(
                 target: 'SketchIdle',
                 cond: 'is editing existing sketch',
               },
-              'Line tool 3',
+              'Line tool',
             ],
           },
 
-          'Tangential arc to 3': {
+          'Tangential arc to': {
             exit: [
               'tear down client sketch',
               'setup client side sketch segments',
             ],
 
-            entry: 'set up draft arc 2',
+            entry: 'set up draft arc',
 
             on: {
               'Set selection': {
-                target: 'Tangential arc to 3',
+                target: 'Tangential arc to',
                 internal: true,
               },
 
-              'Equip Line tool 3': 'Line tool 3',
+              'Equip Line tool': 'Line tool',
             },
           },
         },
@@ -804,7 +804,7 @@ export const modelingMachine = createMachine(
             sketchPathToNode: sketchPathToNode || [],
           })
         } else {
-          setupSingleton.modelingSend('Equip Line tool 3')
+          setupSingleton.modelingSend('Equip Line tool')
         }
       },
       'animate after sketch': () => {
@@ -813,10 +813,10 @@ export const modelingMachine = createMachine(
       'tear down client sketch': () =>
         clientSideScene.tearDownSketch({ removeAxis: false }),
       'remove sketch grid': () => clientSideScene.removeSketchGrid(),
-      'set up draft line 2': ({ sketchPathToNode }) => {
+      'set up draft line': ({ sketchPathToNode }) => {
         clientSideScene.setUpDraftLine(sketchPathToNode || [])
       },
-      'set up draft arc 2': ({ sketchPathToNode }) => {
+      'set up draft arc': ({ sketchPathToNode }) => {
         clientSideScene.setUpDraftArc(sketchPathToNode || [])
       },
       'set up draft line without teardown': ({ sketchPathToNode }) =>
