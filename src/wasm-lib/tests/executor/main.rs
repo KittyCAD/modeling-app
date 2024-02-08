@@ -583,6 +583,34 @@ const part = circle([0,0], 2)
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn serial_test_patterns_linear_basic_3d() {
+    let code = r#"fn circle = (pos, radius) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt([pos[0] + radius, pos[1]], %)
+    |> arc({
+       angle_end: 360,
+       angle_start: 0,
+       radius: radius
+     }, %)
+    |> close(%)
+  return sg
+}
+
+const part = startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line([0,1], %)
+    |> line([1, 0], %)
+    |> line([0, -1], %)
+    |> close(%)
+    |> extrude(1, %)
+    |> patternLinear({axis: [1, 0,1], repetitions: 3, distance: 6}, %)
+"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/patterns_linear_basic_3d.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_patterns_linear_basic_negative_distance() {
     let code = r#"fn circle = (pos, radius) => {
   const sg = startSketchOn('XY')
@@ -635,7 +663,7 @@ const part = circle([0,0], 2)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_patterns_linear_basic_zero_axis() {
+async fn serial_test_patterns_linear_basic_holes() {
     let code = r#"fn circle = (pos, radius) => {
   const sg = startSketchOn('XY')
     |> startProfileAt([pos[0] + radius, pos[1]], %)
@@ -648,15 +676,19 @@ async fn serial_test_patterns_linear_basic_zero_axis() {
   return sg
 }
 
-const part = circle([0,0], 2)
-    |> patternLinear({axis: [0,0,0], repetitions: 12, distance: 2}, %)
+const circles = circle([5, 5], 1)
+    |> patternLinear({axis: [1,1,0], repetitions: 12, distance: 3}, %)
+
+const rectangle = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, 50], %)
+  |> line([50, 0], %)
+  |> line([0, -50], %)
+  |> close(%)
+  |> hole(circles, %)
+
 "#;
 
-    let result = execute_and_snapshot(code).await;
-
-    assert!(result.is_err());
-    assert_eq!(
-        result.err().unwrap().to_string(),
-        "semantic: KclErrorDetails { source_ranges: [SourceRange([276, 339])], message: \"The axis of the linear pattern cannot be the zero vector. Otherwise they will just duplicate in place.\" }",
-    );
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/patterns_linear_basic_holes.png", &result, 0.999);
 }

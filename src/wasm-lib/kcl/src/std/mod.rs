@@ -25,7 +25,9 @@ use crate::{
     docs::StdLibFn,
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
-    executor::{ExecutorContext, ExtrudeGroup, Geometry, MemoryItem, Metadata, Plane, SketchGroup, SourceRange},
+    executor::{
+        ExecutorContext, ExtrudeGroup, Geometry, MemoryItem, Metadata, Plane, SketchGroup, SketchGroupSet, SourceRange,
+    },
 };
 
 pub type StdFn = fn(Args) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<MemoryItem, KclError>>>>;
@@ -286,7 +288,7 @@ impl Args {
         Ok((segment_name, sketch_group))
     }
 
-    fn get_sketch_groups(&self) -> Result<(Box<SketchGroup>, Box<SketchGroup>), KclError> {
+    fn get_sketch_groups(&self) -> Result<(SketchGroupSet, Box<SketchGroup>), KclError> {
         let first_value = self.args.first().ok_or_else(|| {
             KclError::Type(KclErrorDetails {
                 message: format!("Expected a SketchGroup as the first argument, found `{:?}`", self.args),
@@ -294,11 +296,16 @@ impl Args {
             })
         })?;
 
-        let sketch_group = if let MemoryItem::SketchGroup(sg) = first_value {
-            sg.clone()
+        let sketch_set = if let MemoryItem::SketchGroup(sg) = first_value {
+            SketchGroupSet::SketchGroup(sg.clone())
+        } else if let MemoryItem::SketchGroups(sg) = first_value {
+            SketchGroupSet::SketchGroups(sg.clone())
         } else {
             return Err(KclError::Type(KclErrorDetails {
-                message: format!("Expected a SketchGroup as the first argument, found `{:?}`", self.args),
+                message: format!(
+                    "Expected a SketchGroup or Vector of SketchGroups as the first argument, found `{:?}`",
+                    self.args
+                ),
                 source_ranges: vec![self.source_range],
             }));
         };
@@ -310,7 +317,7 @@ impl Args {
             })
         })?;
 
-        let second_sketch_group = if let MemoryItem::SketchGroup(sg) = second_value {
+        let sketch_group = if let MemoryItem::SketchGroup(sg) = second_value {
             sg.clone()
         } else {
             return Err(KclError::Type(KclErrorDetails {
@@ -319,7 +326,7 @@ impl Args {
             }));
         };
 
-        Ok((sketch_group, second_sketch_group))
+        Ok((sketch_set, sketch_group))
     }
 
     fn get_sketch_group(&self) -> Result<Box<SketchGroup>, KclError> {

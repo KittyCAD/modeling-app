@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{Geometry, MemoryItem},
+    executor::{Geometries, Geometry, MemoryItem},
     std::Args,
 };
 
@@ -40,10 +40,10 @@ pub async fn pattern_linear(args: Args) -> Result<MemoryItem, KclError> {
         }));
     }
 
-    let new_geometry = inner_pattern_linear(data, geometry, args).await?;
-    match new_geometry {
-        Geometry::SketchGroup(sketch_group) => Ok(MemoryItem::SketchGroup(sketch_group)),
-        Geometry::ExtrudeGroup(extrude_group) => Ok(MemoryItem::ExtrudeGroup(extrude_group)),
+    let new_geometries = inner_pattern_linear(data, geometry, args).await?;
+    match new_geometries {
+        Geometries::SketchGroups(sketch_groups) => Ok(MemoryItem::SketchGroups(sketch_groups)),
+        Geometries::ExtrudeGroups(extrude_groups) => Ok(MemoryItem::ExtrudeGroups(extrude_groups)),
     }
 }
 
@@ -51,19 +51,51 @@ pub async fn pattern_linear(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "patternLinear",
 }]
-async fn inner_pattern_linear(data: LinearPatternData, geometry: Geometry, args: Args) -> Result<Geometry, KclError> {
+async fn inner_pattern_linear(data: LinearPatternData, geometry: Geometry, args: Args) -> Result<Geometries, KclError> {
     let id = uuid::Uuid::new_v4();
 
-    args.send_modeling_cmd(
-        id,
-        ModelingCmd::EntityLinearPattern {
-            axis: data.axis.into(),
-            entity_id: geometry.id(),
-            num_repetitions: data.repetitions as u32,
-            spacing: data.distance,
-        },
-    )
-    .await?;
+    let resp = args
+        .send_modeling_cmd(
+            id,
+            ModelingCmd::EntityLinearPattern {
+                axis: data.axis.into(),
+                entity_id: geometry.id(),
+                num_repetitions: data.repetitions as u32,
+                spacing: data.distance,
+            },
+        )
+        .await?;
 
-    Ok(geometry)
+    let kittycad::types::OkWebSocketResponseData::Modeling {
+        modeling_response: kittycad::types::OkModelingCmdResponse::EntityLinearPattern { data: pattern_info },
+    } = &resp
+    else {
+        return Err(KclError::Engine(KclErrorDetails {
+            message: format!("EntityLinearPattern response was not as expected: {:?}", resp),
+            source_ranges: vec![args.source_range],
+        }));
+    };
+
+    let geometries = match geometry {
+        Geometry::SketchGroup(sketch_group) => {
+            let mut geometries = vec![sketch_group.clone()];
+            for id in pattern_info.entity_ids.iter() {
+                let mut new_sketch_group = sketch_group.clone();
+                new_sketch_group.id = *id;
+                geometries.push(new_sketch_group);
+            }
+            Geometries::SketchGroups(geometries)
+        }
+        Geometry::ExtrudeGroup(extrude_group) => {
+            let mut geometries = vec![extrude_group.clone()];
+            for id in pattern_info.entity_ids.iter() {
+                let mut new_extrude_group = extrude_group.clone();
+                new_extrude_group.id = *id;
+                geometries.push(new_extrude_group);
+            }
+            Geometries::ExtrudeGroups(geometries)
+        }
+    };
+
+    Ok(geometries)
 }

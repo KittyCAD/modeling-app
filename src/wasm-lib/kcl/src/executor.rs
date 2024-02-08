@@ -110,7 +110,9 @@ pub enum MemoryItem {
     UserVal(UserVal),
     Plane(Box<Plane>),
     SketchGroup(Box<SketchGroup>),
+    SketchGroups(Vec<Box<SketchGroup>>),
     ExtrudeGroup(Box<ExtrudeGroup>),
+    ExtrudeGroups(Vec<Box<ExtrudeGroup>>),
     #[ts(skip)]
     ExtrudeTransform(Box<ExtrudeTransform>),
     #[ts(skip)]
@@ -139,6 +141,24 @@ impl Geometry {
             Geometry::ExtrudeGroup(e) => e.id,
         }
     }
+}
+
+/// A set of geometry.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum Geometries {
+    SketchGroups(Vec<Box<SketchGroup>>),
+    ExtrudeGroups(Vec<Box<ExtrudeGroup>>),
+}
+
+/// A sketch group or a group of sketch groups.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
+pub enum SketchGroupSet {
+    SketchGroup(Box<SketchGroup>),
+    SketchGroups(Vec<Box<SketchGroup>>),
 }
 
 /// A plane.
@@ -231,7 +251,15 @@ impl From<MemoryItem> for Vec<SourceRange> {
         match item {
             MemoryItem::UserVal(u) => u.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::SketchGroup(s) => s.meta.iter().map(|m| m.source_range).collect(),
+            MemoryItem::SketchGroups(sgs) => sgs
+                .iter()
+                .flat_map(|sg| sg.meta.iter().map(|m| m.source_range))
+                .collect(),
             MemoryItem::ExtrudeGroup(e) => e.meta.iter().map(|m| m.source_range).collect(),
+            MemoryItem::ExtrudeGroups(egs) => egs
+                .iter()
+                .flat_map(|eg| eg.meta.iter().map(|m| m.source_range))
+                .collect(),
             MemoryItem::ExtrudeTransform(e) => e.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::Function { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::Plane(p) => p.meta.iter().map(|m| m.source_range).collect(),
