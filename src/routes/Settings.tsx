@@ -355,6 +355,10 @@ export const Settings = () => {
             <button
               onClick={() => {
                 localStorage.removeItem(SETTINGS_PERSIST_KEY)
+                send({
+                  type: 'Set All Settings',
+                  data: initialSettings,
+                })
                 toast.success('Settings restored to default')
               }}
               className="text-base"

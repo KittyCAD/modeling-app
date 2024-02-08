@@ -426,7 +426,10 @@ test('Auto complete works', async ({ page }) => {
 })
 
 // Stored settings validation test
-test('Stored settings are validated and fall back to defaults', async ({ page, context }) => {
+test('Stored settings are validated and fall back to defaults', async ({
+  page,
+  context,
+}) => {
   // Override beforeEach test setup
   // with corrupted settings
   await context.addInitScript(async () => {

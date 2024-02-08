@@ -6,7 +6,11 @@ import withBaseUrl from '../lib/withBaseURL'
 import React, { createContext, useEffect, useRef } from 'react'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
 import { settingsMachine } from 'machines/settingsMachine'
-import { SETTINGS_PERSIST_KEY, validateSettings } from 'lib/settings'
+import {
+  initialSettings,
+  SETTINGS_PERSIST_KEY,
+  validateSettings,
+} from 'lib/settings'
 import { toast } from 'react-hot-toast'
 import { setThemeClass, Themes } from 'lib/theme'
 import {
@@ -50,7 +54,8 @@ export const SettingsAuthStateProvider = ({
     )
   )
   const persistedSettings = Object.assign(
-    settingsMachine.initialState.context,
+    {},
+    initialSettings,
     retrievedSettings.current.settings
   )
 
@@ -101,12 +106,15 @@ export const SettingsAuthStateProvider = ({
             validateSettings(newSettings)
 
           retrievedSettings.current = Object.assign(
+            {},
+            initialSettings,
             retrievedSettings.current,
             validatedSettings
           )
+
           settingsSend({
             type: 'Set All Settings',
-            data: newSettings,
+            data: validatedSettings,
           })
 
           return validationErrors
