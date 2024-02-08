@@ -83,7 +83,6 @@ export type CommandArgumentConfig<
       required: boolean
       skip?: true
       defaultValue?: OutputType | ((context: ContextFrom<T>) => OutputType)
-      payload?: OutputType
     } & (
       | {
           inputType: Extract<CommandInputType, 'options'>
@@ -106,8 +105,8 @@ export type CommandArgument<
   | {
       description?: string
       required: boolean
-      payload?: OutputType // Payload sets the initialized value and more importantly its type
-      defaultValue?: OutputType // Default value is used as the starting value for the input on this argument
+      skip?: true
+      defaultValue?: OutputType | ((context: ContextFrom<T>) => OutputType)
     } & (
       | {
           inputType: Extract<CommandInputType, 'options'>

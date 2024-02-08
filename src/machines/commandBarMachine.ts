@@ -8,7 +8,7 @@ import { Selections } from 'lib/selections'
 
 export const commandBarMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QGED2BbdBDAdhABAEJYBOAxMgDaqxgDaADALqKgAONAlgC6eo6sQAD0QBaAJwA6AGwAmAKwBmBoukAWafIAcDcSoA0IAJ6JZDaZIDs8hgzV6AjA61a1DWQF8PhtJlwFiciowUkYWJBAOWB4+AQiRBFF5CwdpcVkHS1lpVyU5QxNEh1lFGTUsrUUtOQd5SwZLLx8MbDwiUkkqGkgyAHk2MBwwwSiY-kEEswdJNWcNbPFLNMr5AsRFWUtJcVSdRR2VVMUmkF9WgI6u2ggyADFONv98WkowAGNufDeW-2GI0d443iiHESkktUUG1klTsSi0awQDgYWhmqkWjnUslBWhOZyegU61GuZAAghACN8-HhYH92FxAXFQAlRA5FpJ5FjFPYtNDpIpLOkEW4GNs4eJxJoGvJxOVcT82gSrj0AEpgdCoABuYC+8ogNOYI3psQmYlkGUkU2slhc6mkmUUCIyKLc4i0lkU8iUyjUHLlVIuJEkAGUwK8Pg8oDr-WQQ2HPpTzrTIkagUzEDkLHZkQK1CUtKCHAiNlsdjkVAdFEc-ed2oGAOJYbgACzAJAj+FIUAAruhBtxYGQACJwUPveO6pMA43AhA5UqWXOzBjS-nOR3LySqXNODTyZwONTV-GXXXPUcfHqTlOM4TrSublb5-lLewlIVySRaOrmGw-jLSI8FRPf0zzjS8HHCOlogZE1ERUEUSgPa05yQ1ZjEQeZP2-VwDzUN1zEabxTlPAkG2bVt207Hs+wHZAm1wGAvi7EgSD7DsSG7XscG4K9oOnNNEVUeQZGSOxc0qaQ7HhdDBJFeRc35extGkNI+UAgNJDIls2xwSMqK4-tJBJAB3LAYl0-AHjYLtuBjLsACN0B4djOL7XixhvBIDxUT8qj5VIkTwtQHRk8oUQcD15LMXQclcdTa00xttMojjqO42BJAANSwShOAgRsIzICB+DASQHg1VAAGtSo1HK8sbMASVSgz3JgmdMnKGYzRlbIdGXA8EX8zd3RsTY9yyY4iLxID6ySiiLP0misrq-LeF0shWxIVBAzYShGwAM229BJFq3LVsa5q3INf5r1gg9JIfXqqh0TQsiFTYrCyJZRpsXJ4oJVUNU4MBjLsxznITX5rqgjzYMsaZtGXaVNhcZFKgRd0RXUdJ6mUXQXX+jpAeB0GyQIRbuNa-jbwQcVSmhAUeTkWQ3HyGSBVKDQMyRAKAsJwNiZBshVXVLUXLSnjoeTPjUxpnmpFtcVs1cPNBq5T8fR5DrKwaHEppIomwCBoWAFEIGcinJcg6XYZnTRhJsbQJU9VlQTVtQNbqcVZhsSFxH5zoWzeSr2ya1z0qKkqypwCrqpOlaGrDiX9WtqdZYSeSEeXEplCceo1xkvQLGCmUIp0Mwck8fWQMVIOQ4spODIHYqcFK8qqpqhPuAu8P+zoCDDRlzzTCkCVWWlSxrBceTygRFxZHZNJbE2VQ5AFAO6PeevI0bmiNpY7bJF2g6jvjs7E8u9KqfTxAkK2fZYuRvdYUGjQZnqYVxRKdx-ZOHBUAgHAQQ00AyD1tgJUQCwLQMEyHUG0Gh7SOmmDuGB6gOTyVBMkDeRJIBgLahA4oFo8zWlSPUT00o0KFA9NMYKrhKwbH2GaQ81cawEljGOdskM8B4OpgkWY9MV5ZjqLUN6MlqGojoRFEo6QWYb1PC8McuCbpD1gosLYrhkTZCxNIawhYxEfW0HhCKKgzT8lBAHLS809KX37Dwm+iIWZSEinjTRy51BFnvNofM7hGZfgXBYuaOlrG9wyiZMya1IxWRsnY4eDi2TONsK45IaghQbEkO4VIKlsaVE2AE8iQTxZN2WufCJMS7o6JSBKNQLp7CT35EKZw2wnDVDyCvBczDmg10NsbYyZS7aZHBNU58q8sTQgxnud+kVsjyQzHrTprDLh11DjY+AyjwFy00DQ2EaQBSLAPLIDGWRNw2BUiXHkwVCJeCAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QGED2BbdBDAdhABAEJYBOAxMgDaqxgDaADALqKgAONAlgC6eo6sQAD0QBaAJwA6AGwAmAKwBmBoukAWafIAcDcSoA0IAJ6JZDaZIDs8hgzV6AjA61a1DWQF8PhtJlwFiciowUkYWJBAOWB4+AQiRBFF5CwdpcVkHS1lpVyU5QxNEh1lFGTUsrUUtOQd5SwZLLx8MbDwiUkkqGkgyAHk2MBwwwSiY-kEEswdJNWcNbPFLNMr5AsRFWUtJcVSdRR2VVMUmkF9WgI6u2ggyADFONv98WkowAGNufDeW-2GI0d443iiHESkktUUG1klTsSi0awQDgYWhmqkWjnUslBWhOZyegU61GuZAAghACN8-HhYH92FxAXFQAlRA5FpJ5FjFPYtNDpIpLOkEW4GNs4eJxJoGvJxOVcT82gSrj0AEpgdCoABuYC+8ogNOYI3psQmYlkGUkU2slhc6mkmUUCIyKLc4i0lkU8iUyjUHLlVIuJEkAGUwK8Pg8oDr-WQQ2HPpTzrTIkagUzEDkLHZkQK1CUtKCHAiNlsdjkVAdFEc-ed2oG8W0Xu9uD0kwDjcCEJDplUPfn+Ut7CUhXJJFo6uYbBOMtJq-jLrrnqGmy2HOE6dEGSbESoRSUHOVqpV99Zh7JR+PXPu1G7zI1vKcFwSAOJYbgACzAJAj+FIUAAruggzcLAFBvrgMBfH+JAkEBP4kP+gE4NwrYpoywiIA4qjyDIyR2LmlTSHY8LGBhyjsrm-L2No0hpHys4Kh0L7vp+36-gBQEgQAInAS4fFGiYGv8qFbjkpSWLmswMNK-LOI6UmSKouZOBo8jOPu9EBpITEfl+OCRmxiHAZIJIAO5YDEen4A8bB-twMZ-gARugPBwQhQEoRu7ZpoiyRbLm1HiJC16bLIQo7FYUrVNkKhZJ4971pp2ksZZBkcZIABqWCUJwECvhGZAQPwYCSA8GqoAA1sVGpZTlr5gCS8HsUhHljGhCTODYVissoxaWPutQInyFhctKSL8jFmwabWWmvjprGNYZsAZTVuW8HpZCfiQqCBmwlCvgAZtt6CSNV2WrfVC3uYJ66tVuqQlNsaTpKkUlCrMClqNeuibHUolTQSqoapwYAmfZTkuQmvzXcmnmpuhCB9eyOieuk1o6C4DokQjZHqKjO66C6-0dIDwOg2SBCpc10NtnDCTiqU0ICjyciyG4+RYwKpQaBmSKpE4dpE4GJMg2QqrqlqrlNch1PCR2vNSLa4rZq4eaDVyo4+jymRqJWDQ4vFj7E2AQMiwAohALmU9La4w7dHaaNhNjaBKnqsqCatqBrdTirMNiQuIgudB+bzld+DVuUhIGFTgxWlRVVUrXV4dS-qNs021iDyO9TslMoTj1LJWN6BYOsyphOhmDkcXNP603IMHoeWcni0FUVJU4GVlUnYnzbNxxdCroasMZwgWKPay0qWNYLhZ+UCIuGeyR6O47o0ZsAcG7XioN2Hl2Rxt0HbZIu0HUd3dnUne-AS1m5y+UWz7DkY7pKpsKDRoMz1MK4olO4G-3jgVAEA4CCASrWIedtvKiAWBaBgmQ6g2g0PaR00xWYSkWB6coHI16ByVBACBt8oHFAtHma0qR6iemlKsLGHppg61cJWDY+wzRqEDrGJs35IZ4AIV5eGswGabG9FJPqdRQo0NUqiBhmESjpFZrghcjYPiQB4bTEEU8NbImyFiaQ1hCw0M2Eja8mEVBmn5KCQOSVdL6SvvAISw87qzDPDKBQ-IdB8npkWH0FoJR8lcOKKeWgHAWNmslaxEcjKmXMmtSM1lbIqJHvuQi2x-KuPMPsQKb1HaBT6roWwqlNDBOYlYyWi1loX2ifEu6lQpDWlUNaHRsxUjSCFBsGY1TdB2i5BkBQgdhYmUqfbTI4JPr9lUHIdIxFCi6M-h6bBWcMz6xrjWbe7xG6Rj7pHAZ3lUgSLcD6NIApFj7jEVMrICkbA0VLjyHWd4vBAA */
     context: {
       commands: [] as Command[],
       selectedCommand: undefined as Command | undefined,
@@ -93,20 +93,7 @@ export const commandBarMachine = createMachine(
           },
           {
             target: 'Gathering arguments',
-            actions: [
-              assign({
-                currentArgument: (context, event) => {
-                  const { selectedCommand } = context
-                  if (!(selectedCommand && selectedCommand.args))
-                    return undefined
-                  const argName = Object.keys(selectedCommand.args)[0]
-                  return {
-                    ...selectedCommand.args[argName],
-                    name: argName,
-                  }
-                },
-              }),
-            ],
+            actions: ['Set current argument to first non-skippable'],
           },
         ],
       },
@@ -222,7 +209,7 @@ export const commandBarMachine = createMachine(
           onError: [
             {
               target: 'Gathering arguments',
-              actions: ['Set current argument'],
+              actions: ['Set current argument to first non-skippable'],
             },
           ],
         },
@@ -307,6 +294,40 @@ export const commandBarMachine = createMachine(
           selectedCommand?.onSubmit()
         }
       },
+      'Set current argument to first non-skippable': assign({
+        currentArgument: (context, event) => {
+          const { selectedCommand } = context
+          if (!(selectedCommand && selectedCommand.args)) return undefined
+
+          // Find the first argument that is not to be skipped:
+          // that is, the first argument that is not already in the argumentsToSubmit
+          // or that is not undefined, or that is not marked as "skippable".
+          // TODO validate the type of the existing arguments
+          let argIndex = 0
+          while (argIndex < Object.keys(selectedCommand.args).length) {
+            const argName = Object.keys(selectedCommand.args)[argIndex]
+            const mustNotSkipArg =
+              !context.argumentsToSubmit.hasOwnProperty(argName) ||
+              context.argumentsToSubmit[argName] === undefined ||
+              !selectedCommand.args[argName].skip
+            if (mustNotSkipArg) {
+              return {
+                ...selectedCommand.args[argName],
+                name: argName,
+              }
+            }
+            argIndex++
+          }
+          // Just show the last argument if all are skippable
+          // TODO: use an XState service to continue onto review step
+          // if all arguments are skippable and contain values.
+          const argName = Object.keys(selectedCommand.args)[argIndex - 1]
+          return {
+            ...selectedCommand.args[argName],
+            name: argName,
+          }
+        },
+      }),
       'Clear current argument': assign({
         currentArgument: undefined,
       }),
@@ -357,7 +378,7 @@ export const commandBarMachine = createMachine(
           if (!command.args) return {}
           const args: { [x: string]: unknown } = {}
           for (const [argName, arg] of Object.entries(command.args)) {
-            args[argName] = arg.payload
+            args[argName] = arg.skip ? arg.defaultValue : undefined
           }
           return args
         },
@@ -385,10 +406,10 @@ export const commandBarMachine = createMachine(
             let argConfig = context.selectedCommand!.args![argName]
 
             if (
-              typeof arg !== typeof argConfig.payload &&
-              typeof arg !== typeof argConfig.defaultValue &&
-              'options' in argConfig &&
-              typeof arg !== typeof argConfig.options[0].value
+              (argConfig.defaultValue &&
+                typeof arg !== typeof argConfig.defaultValue) ||
+              ('options' in argConfig &&
+                typeof arg !== typeof argConfig.options[0].value)
             ) {
               return reject({
                 message: 'Argument payload is of the wrong type',

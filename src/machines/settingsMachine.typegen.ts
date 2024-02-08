@@ -23,17 +23,7 @@ export interface Typegen0 {
       | 'Set Theme'
       | 'Set Unit System'
       | 'Toggle Debug Panel'
-    setThemeClass:
-      | 'Set Base Unit'
-      | 'Set Camera Controls'
-      | 'Set Default Directory'
-      | 'Set Default Project Name'
-      | 'Set Onboarding Status'
-      | 'Set Text Wrapping'
-      | 'Set Theme'
-      | 'Set Unit System'
-      | 'Toggle Debug Panel'
-      | 'xstate.init'
+    setThemeClass: 'Set Theme' | 'xstate.init'
     toastSuccess:
       | 'Set Base Unit'
       | 'Set Camera Controls'
