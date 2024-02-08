@@ -1459,7 +1459,7 @@ async fn inner_hole(
         }
         SketchGroupSet::SketchGroups(hole_sketch_groups) => {
             for hole_sketch_group in hole_sketch_groups {
-                println!("hole_sketch_group: {:?}", hole_sketch_group.id);
+                println!("hole_sketch_group: {:?} {}", hole_sketch_group.id, sketch_group.id);
                 args.send_modeling_cmd(
                     uuid::Uuid::new_v4(),
                     ModelingCmd::Solid2DAddHole {

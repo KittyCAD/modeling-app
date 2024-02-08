@@ -69,13 +69,13 @@ impl EngineConnection {
     async fn start_write_actor(mut tcp_write: WebSocketTcpWrite, mut engine_req_rx: mpsc::Receiver<ToEngineReq>) {
         while let Some(req) = engine_req_rx.recv().await {
             let ToEngineReq { req, request_sent } = req;
-            let res = if let kittycad::types::WebSocketRequest::ModelingCmdReq { cmd, cmd_id: _ } = &req {
-                if let kittycad::types::ModelingCmd::ImportFiles { .. } = cmd {
-                    // Send it as binary.
-                    Self::inner_send_to_engine_binary(req, &mut tcp_write).await
-                } else {
-                    Self::inner_send_to_engine(req, &mut tcp_write).await
-                }
+            let res = if let kittycad::types::WebSocketRequest::ModelingCmdReq {
+                cmd: kittycad::types::ModelingCmd::ImportFiles { .. },
+                cmd_id: _,
+            } = &req
+            {
+                // Send it as binary.
+                Self::inner_send_to_engine_binary(req, &mut tcp_write).await
             } else {
                 Self::inner_send_to_engine(req, &mut tcp_write).await
             };

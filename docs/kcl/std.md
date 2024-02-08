@@ -40,6 +40,7 @@
 	* [`log2`](#log2)
 	* [`max`](#max)
 	* [`min`](#min)
+	* [`patternLinear`](#patternLinear)
 	* [`pi`](#pi)
 	* [`pow`](#pow)
 	* [`segAng`](#segAng)
@@ -2430,12 +2431,12 @@ Use a sketch to cut a hole in another sketch.
 
 
 ```
-hole(hole_sketch_group: SketchGroup, sketch_group: SketchGroup) -> SketchGroup
+hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGroup
 ```
 
 #### Arguments
 
-* `hole_sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `hole_sketch_group`: `SketchGroupSet` - A sketch group or a group of sketch groups.
 ```
 {
 	// The id of the sketch group.
@@ -2455,6 +2456,7 @@ hole(hole_sketch_group: SketchGroup, sketch_group: SketchGroup) -> SketchGroup
 	// The to point.
 	to: [number, number],
 },
+	type: string,
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
@@ -2517,6 +2519,9 @@ hole(hole_sketch_group: SketchGroup, sketch_group: SketchGroup) -> SketchGroup
 	yAxis: [number, number, number],
 	// The z-axis of the sketch group base plane in the 3D space
 	zAxis: [number, number, number],
+} |
+{
+	type: string,
 }
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
@@ -3472,6 +3477,154 @@ min(args: [number]) -> number
 #### Returns
 
 * `number`
+
+
+
+### patternLinear
+
+A linear pattern.
+
+
+
+```
+patternLinear(data: LinearPatternData, geometry: Geometry) -> Geometries
+```
+
+#### Arguments
+
+* `data`: `LinearPatternData` - Data for a linear pattern.
+```
+{
+	// The axis of the pattern. This is a 3D vector.
+	axis: [number, number, number],
+	// The distance between each repetition. This can also be referred to as spacing.
+	distance: number,
+	// The number of repetitions. Must be greater than 0. This excludes the original entity. For example, if `repetitions` is 1, the original entity will be copied once.
+	repetitions: number,
+}
+```
+* `geometry`: `Geometry` - A geometry.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
+	// The position of the sketch group.
+	position: [number, number, number],
+	// The rotation of the sketch group base plane.
+	rotation: [number, number, number, number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+},
+	type: string,
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+}],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
+} |
+{
+	// The height of the extrude group.
+	height: number,
+	// The id of the extrude group.
+	id: uuid,
+	// The position of the extrude group.
+	position: [number, number, number],
+	// The rotation of the extrude group.
+	rotation: [number, number, number, number],
+	type: string,
+	// The extrude surfaces.
+	value: [{
+	// The id of the geometry.
+	id: uuid,
+	// The name.
+	name: string,
+	// The position.
+	position: [number, number, number],
+	// The rotation.
+	rotation: [number, number, number, number],
+	// The source range.
+	sourceRange: [number, number],
+	type: string,
+}],
+}
+```
+
+#### Returns
+
+* `Geometries` - A set of geometry.
+```
+{
+	type: string,
+} |
+{
+	type: string,
+}
+```
 
 
 
