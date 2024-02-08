@@ -71,18 +71,36 @@ interface ThreeCamValues {
   isPerspective: boolean
 }
 
-const throttledUpdateEngineCamera = throttle(
-  (threeValues: ThreeCamValues) =>
-    engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_look_at',
-        ...convertThreeCamValuesToEngineCam(threeValues),
-      },
-    }),
-  1000 / 30
-)
+let lastCmd: any = null
+let lastCmdTime: number = Date.now()
+let lastCmdTimeoutId: number | null = null
+
+const sendLastReliableChannel = () => {
+  if (lastCmd && Date.now() - lastCmdTime >= 300) {
+    engineCommandManager.sendSceneCommand(lastCmd, true)
+    console.log('resending last reliable channel', lastCmd)
+    lastCmdTime = Date.now()
+  }
+}
+
+const throttledUpdateEngineCamera = throttle((threeValues: ThreeCamValues) => {
+  const cmd = {
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_look_at',
+      ...convertThreeCamValuesToEngineCam(threeValues),
+    },
+  } as any
+  engineCommandManager.sendSceneCommand(cmd)
+  lastCmd = cmd
+  lastCmdTime = Date.now()
+
+  if (lastCmdTimeoutId !== null) {
+    clearTimeout(lastCmdTimeoutId)
+  }
+  lastCmdTimeoutId = setTimeout(sendLastReliableChannel, 300) as any as number
+}, 1000 / 30)
 
 const throttledUpdateEngineFov = throttle(
   (vals: {

@@ -50,7 +50,7 @@ export const Stream = ({ className = '' }: { className?: string }) => {
     videoRef.current.srcObject = mediaStream
   }, [mediaStream])
 
-  const handleMouseDown: MouseEventHandler<HTMLVideoElement> = (e) => {
+  const handleMouseDown: MouseEventHandler<HTMLDivElement> = (e) => {
     if (!videoRef.current) return
     if (state.matches('Sketch')) return
     if (state.matches('Sketch no face')) return
@@ -143,13 +143,17 @@ export const Stream = ({ className = '' }: { className?: string }) => {
   }
 
   return (
-    <div id="stream" className={className} onMouseUp={handleMouseUp}>
+    <div
+      id="stream"
+      className={className}
+      onMouseUp={handleMouseUp}
+      onMouseDown={handleMouseDown}
+    >
       <video
         ref={videoRef}
         muted
         autoPlay
         controls={false}
-        onMouseDown={handleMouseDown}
         onContextMenu={(e) => e.preventDefault()}
         onContextMenuCapture={(e) => e.preventDefault()}
         onWheel={handleScroll}

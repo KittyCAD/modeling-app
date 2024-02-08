@@ -1225,7 +1225,10 @@ export class EngineCommandManager {
   registerCommandLogCallback(callback: (command: CommandLog[]) => void) {
     this._commandLogCallBack = callback
   }
-  sendSceneCommand(command: EngineCommand): Promise<any> {
+  sendSceneCommand(
+    command: EngineCommand,
+    forceWebsocket = false
+  ): Promise<any> {
     if (this.engineConnection === undefined) {
       return Promise.resolve()
     }
@@ -1239,7 +1242,9 @@ export class EngineCommandManager {
         command.type === 'modeling_cmd_req' &&
         (command.cmd.type === 'highlight_set_entity' ||
           command.cmd.type === 'mouse_move' ||
-          command.cmd.type === 'camera_drag_move')
+          command.cmd.type === 'camera_drag_move' ||
+          command.cmd.type === 'default_camera_look_at' ||
+          command.cmd.type === ('default_camera_perspective_settings' as any))
       )
     ) {
       // highlight_set_entity, mouse_move and camera_drag_move are sent over the unreliable channel and are too noisy
@@ -1266,10 +1271,13 @@ export class EngineCommandManager {
     const cmd = command.cmd
     if (
       (cmd.type === 'camera_drag_move' ||
-        cmd.type === 'handle_mouse_drag_move') &&
-      this.engineConnection?.unreliableDataChannel
+        cmd.type === 'handle_mouse_drag_move' ||
+        cmd.type === 'default_camera_look_at' ||
+        cmd.type === ('default_camera_perspective_settings' as any)) &&
+      this.engineConnection?.unreliableDataChannel &&
+      !forceWebsocket
     ) {
-      cmd.sequence = this.outSequence
+      ;(cmd as any).sequence = this.outSequence
       this.outSequence++
       this.engineConnection?.unreliableSend(command)
       return Promise.resolve()
@@ -1289,6 +1297,12 @@ export class EngineCommandManager {
       this.outSequence++
       this.engineConnection?.unreliableSend(command)
       return Promise.resolve()
+    }
+    if (
+      command.cmd.type === 'default_camera_look_at' ||
+      command.cmd.type === ('default_camera_perspective_settings' as any)
+    ) {
+      ;(cmd as any).sequence = this.outSequence++
     }
     // since it's not mouse drag or highlighting send over TCP and keep track of the command
     this.engineConnection?.send(command)
