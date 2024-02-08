@@ -1,7 +1,6 @@
 import { type Models } from '@kittycad/lib'
 import { CameraSystem, cameraSystems } from './cameraControls'
 import { Themes } from './theme'
-import { isTauri } from './isTauri'
 
 export const DEFAULT_PROJECT_NAME = 'project-$nnn'
 export const SETTINGS_PERSIST_KEY = 'SETTINGS_PERSIST_KEY'

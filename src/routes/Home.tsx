@@ -28,7 +28,7 @@ import {
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { DEFAULT_PROJECT_NAME } from 'machines/settingsMachine'
+import { DEFAULT_PROJECT_NAME } from 'lib/settings'
 import { sep } from '@tauri-apps/api/path'
 import { homeCommandBarConfig } from 'lib/commandBarConfigs/homeCommandConfig'
 

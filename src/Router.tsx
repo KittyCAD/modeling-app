@@ -33,10 +33,8 @@ import { metadata, type Metadata } from 'tauri-plugin-fs-extra-api'
 import DownloadAppBanner from './components/DownloadAppBanner'
 import { WasmErrBanner } from './components/WasmErrBanner'
 import { SettingsAuthStateProvider } from './components/SettingsAuthStateProvider'
-import {
-  SETTINGS_PERSIST_KEY,
-  settingsMachine,
-} from './machines/settingsMachine'
+import { settingsMachine } from './machines/settingsMachine'
+import { SETTINGS_PERSIST_KEY } from 'lib/settings'
 import { ContextFrom } from 'xstate'
 import CommandBarProvider from 'components/CommandBar/CommandBar'
 import { TEST, VITE_KC_SENTRY_DSN } from './env'

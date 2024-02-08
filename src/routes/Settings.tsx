@@ -8,7 +8,8 @@ import {
   SETTINGS_PERSIST_KEY,
   baseUnits,
   initialSettings,
-} from '../machines/settingsMachine'
+  UnitSystem,
+} from 'lib/settings'
 import { Toggle } from '../components/Toggle/Toggle'
 import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -20,7 +21,6 @@ import {
   cameraSystems,
   cameraMouseDragGuards,
 } from 'lib/cameraControls'
-import { UnitSystem } from 'machines/settingsMachine'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
 import {
   createNewProject,
