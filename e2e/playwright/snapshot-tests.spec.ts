@@ -100,7 +100,7 @@ test('change camera, show planes', async ({ page, context }) => {
   await page.keyboard.down('Control')
   await page.mouse.move(700, 400)
   await page.mouse.down({ button: 'right' })
-  await page.mouse.move(700, 350)
+  await page.mouse.move(700, 300)
   await page.mouse.up({ button: 'right' })
   await page.keyboard.up('Control')
 

@@ -148,14 +148,14 @@ export const Stream = ({ className = '' }: { className?: string }) => {
       className={className}
       onMouseUp={handleMouseUp}
       onMouseDown={handleMouseDown}
+      onContextMenu={(e) => e.preventDefault()}
+      onContextMenuCapture={(e) => e.preventDefault()}
     >
       <video
         ref={videoRef}
         muted
         autoPlay
         controls={false}
-        onContextMenu={(e) => e.preventDefault()}
-        onContextMenuCapture={(e) => e.preventDefault()}
         onWheel={handleScroll}
         onPlay={() => setIsLoading(false)}
         onMouseMoveCapture={handleMouseMove}
