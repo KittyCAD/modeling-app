@@ -37,10 +37,10 @@ export async function initializeProjectDirectory(directory: string) {
     docDirectory = await documentDir()
   } catch (e) {
     console.log('error', e)
-    docDirectory = `${await homeDir()}Documents/` // for headless Linux (eg. Github Actions)
+    docDirectory = `${await homeDir()}Documents` // for headless Linux (eg. Github Actions)
   }
 
-  const INITIAL_DEFAULT_DIR = docDirectory + PROJECT_FOLDER
+  const INITIAL_DEFAULT_DIR = docDirectory + sep() + PROJECT_FOLDER
 
   const defaultDirExists = await exists(INITIAL_DEFAULT_DIR)
 
