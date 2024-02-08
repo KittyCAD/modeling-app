@@ -40,19 +40,8 @@ test('change camera, show planes', async ({ page, context }) => {
   await u.waitForAuthSkipAppStart()
   await u.openAndClearDebugPanel()
 
-  const camCmd: EngineCommand = {
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_look_at',
-      center: { x: 0, y: 0, z: 0 },
-      up: { x: 0, y: 0, z: 1 },
-      vantage: { x: 0, y: 85, z: 85 },
-    },
-  }
-
-  await u.sendCustomCmd(camCmd)
-  await u.waitForCmdReceive('default_camera_look_at')
+  const camPos: [number, number, number] = [0, 85, 85]
+  await u.updateCamPosition(camPos)
 
   // rotate
   await u.closeDebugPanel()
@@ -76,8 +65,7 @@ test('change camera, show planes', async ({ page, context }) => {
   await u.openAndClearDebugPanel()
   await page.getByRole('button', { name: 'Exit Sketch' }).click()
 
-  await u.sendCustomCmd(camCmd)
-  await u.waitForCmdReceive('default_camera_look_at')
+  await u.updateCamPosition(camPos)
 
   await u.clearCommandLogs()
   await u.closeDebugPanel()
@@ -103,8 +91,7 @@ test('change camera, show planes', async ({ page, context }) => {
   await u.openAndClearDebugPanel()
   await page.getByRole('button', { name: 'Exit Sketch' }).click()
 
-  await u.sendCustomCmd(camCmd)
-  await u.waitForCmdReceive('default_camera_look_at')
+  await u.updateCamPosition(camPos)
 
   await u.clearCommandLogs()
   await u.closeDebugPanel()
