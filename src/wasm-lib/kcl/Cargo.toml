@@ -41,13 +41,13 @@ wasm-bindgen-futures = "0.4.38"
 web-sys = { version = "0.3.65", features = ["console"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+approx = "0.5"
 bson = { version = "2.7.0", features = ["uuid-1", "chrono"] }
 futures = { version = "0.3.29" }
 reqwest = { version = "0.11.22", default-features = false }
 tokio = { version = "1.34.0", features = ["full"] }
 tokio-tungstenite = { version = "0.20.0", features = ["rustls-tls-native-roots"] }
 tower-lsp = { version = "0.20.0", features = ["proposed"] }
-approx = "0.5"
 
 [features]
 default = ["engine"]

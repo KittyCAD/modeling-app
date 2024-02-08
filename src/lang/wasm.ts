@@ -236,16 +236,17 @@ export function getTangentialArcToInfo({
   ccw: boolean
 } {
   const result = get_tangential_arc_to_info(
-    new TangentialArcInfoInputWasm(
-      new Xy(arcStartPoint[0], arcStartPoint[1]),
-      new Xy(arcEndPoint[0], arcEndPoint[1]),
-      new Xy(tanPreviousPoint[0], tanPreviousPoint[1]),
+      arcStartPoint[0],
+      arcStartPoint[1],
+      arcEndPoint[0],
+      arcEndPoint[1],
+      tanPreviousPoint[0],
+      tanPreviousPoint[1],
       obtuse
-    )
   )
   return {
-    center: [result.center.x, result.center.y],
-    arcMidPoint: [result.arc_mid_point.x, result.arc_mid_point.y],
+    center: [result.center_x, result.center_y],
+    arcMidPoint: [result.arc_mid_point_x, result.arc_mid_point_y],
     radius: result.radius,
     startAngle: result.start_angle,
     endAngle: result.end_angle,

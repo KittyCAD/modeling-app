@@ -202,100 +202,49 @@ pub fn is_points_ccw(points: &[f64]) -> i32 {
     utils::is_points_ccw_wasm(points)
 }
 
-#[derive(Copy, Clone)]
-#[cfg(target_arch = "wasm32")]
-#[wasm_bindgen]
-pub struct Xy {
-    pub x: f64,
-    pub y: f64,
-}
-
-#[cfg(target_arch = "wasm32")]
-#[wasm_bindgen]
-impl Xy {
-    #[wasm_bindgen(constructor)]
-    pub fn new(x: f64, y: f64) -> Self {
-        Self { x, y }
-    }
-}
-
-#[cfg(target_arch = "wasm32")]
-#[wasm_bindgen]
-pub struct TangentialArcInfoInputWasm {
-    /// The starting point of the arc.
-    pub arc_start_point: Xy,
-    /// The ending point of the arc.
-    pub arc_end_point: Xy,
-    /// The point from which the tangent is drawn.
-    pub tan_previous_point: Xy,
-    /// Flag to determine if the arc is obtuse. Obtuse means it flows smoothly from the previous segment.
-    pub obtuse: bool,
-}
-#[cfg(target_arch = "wasm32")]
-#[wasm_bindgen]
-impl TangentialArcInfoInputWasm {
-    #[wasm_bindgen(constructor)]
-    pub fn new(arc_start_point: Xy, arc_end_point: Xy, tan_previous_point: Xy, obtuse: bool) -> Self {
-        Self {
-            arc_start_point,
-            arc_end_point,
-            tan_previous_point,
-            obtuse,
-        }
-    }
-}
-
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 pub struct TangentialArcInfoOutputWasm {
-    /// The geometric center of the arc.
-    pub center: Xy,
-    /// The midpoint of the arc.
-    pub arc_mid_point: Xy,
+    /// The geometric center of the arc x.
+    pub center_x: f64,
+    /// The geometric center of the arc y.
+    pub center_y: f64,
+    /// The midpoint of the arc x.
+    pub arc_mid_point_x: f64,
+    /// The midpoint of the arc y.
+    pub arc_mid_point_y: f64,
     /// The radius of the arc.
     pub radius: f64,
     /// Start angle of the arc in radians.
     pub start_angle: f64,
     /// End angle of the arc in radians.
     pub end_angle: f64,
-    /// If the arc is counter-clockwise.
+    /// Flag to determine if the arc is counter clockwise.
     pub ccw: i32,
 }
 
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
-impl TangentialArcInfoOutputWasm {
-    #[wasm_bindgen(constructor)]
-    pub fn new(center: Xy, arc_mid_point: Xy, radius: f64, start_angle: f64, end_angle: f64, ccw: i32) -> Self {
-        Self {
-            center,
-            arc_mid_point,
-            radius,
-            start_angle,
-            end_angle,
-            ccw,
-        }
-    }
-}
-
-#[cfg(target_arch = "wasm32")]
-#[wasm_bindgen]
-pub fn get_tangential_arc_to_info(input: TangentialArcInfoInputWasm) -> TangentialArcInfoOutputWasm {
+pub fn get_tangential_arc_to_info(
+    arc_start_point_x: f64,
+    arc_start_point_y: f64,
+    arc_end_point_x: f64,
+    arc_end_point_y: f64,
+    tan_previous_point_x: f64,
+    tan_previous_point_y: f64,
+    obtuse: bool,
+) -> TangentialArcInfoOutputWasm {
     let result = utils::get_tangential_arc_to_info(utils::TangentialArcInfoInput {
-        arc_start_point: [input.arc_start_point.x, input.arc_start_point.y],
-        arc_end_point: [input.arc_end_point.x, input.arc_end_point.y],
-        tan_previous_point: [input.tan_previous_point.x, input.tan_previous_point.y],
-        obtuse: input.obtuse,
+        arc_start_point: [arc_start_point_x, arc_start_point_y],
+        arc_end_point: [arc_end_point_x, arc_end_point_y],
+        tan_previous_point: [tan_previous_point_x, tan_previous_point_y],
+        obtuse: obtuse,
     });
     TangentialArcInfoOutputWasm {
-        center: Xy {
-            x: result.center[0],
-            y: result.center[1],
-        },
-        arc_mid_point: Xy {
-            x: result.arc_mid_point[0],
-            y: result.arc_mid_point[1],
-        },
+        center_x: result.center[0],
+        center_y: result.center[1],
+        arc_mid_point_x: result.arc_mid_point[0],
+        arc_mid_point_y: result.arc_mid_point[1],
         radius: result.radius,
         start_angle: result.start_angle,
         end_angle: result.end_angle,

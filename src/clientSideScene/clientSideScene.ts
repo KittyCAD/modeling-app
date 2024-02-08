@@ -133,7 +133,6 @@ class ClientSideScene {
       }
     })
     if (this.axisGroup) {
-      // const orthoFactor = orthoScale(setupSingleton.camera)
       const factor =
         setupSingleton.camera instanceof OrthographicCamera
           ? orthoFactor
