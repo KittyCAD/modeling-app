@@ -333,6 +333,9 @@ export const Settings = () => {
               </button>
               <button
                 onClick={async () => {
+                  // We have to re-call initializeProjectDirectory
+                  // since we can't set that in the settings machine's
+                  // initial context due to it being async
                   send({
                     type: 'Set All Settings',
                     data: {
@@ -350,7 +353,10 @@ export const Settings = () => {
             </span>
           ) : (
             <button
-              onClick={() => localStorage.removeItem(SETTINGS_PERSIST_KEY)}
+              onClick={() => {
+                localStorage.removeItem(SETTINGS_PERSIST_KEY)
+                toast.success('Settings restored to default')
+              }}
               className="text-base"
             >
               Restore default settings
