@@ -6,7 +6,7 @@ import withBaseUrl from '../lib/withBaseURL'
 import React, { createContext, useEffect, useRef } from 'react'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
 import { settingsMachine } from 'machines/settingsMachine'
-import { SETTINGS_PERSIST_KEY } from 'lib/settings'
+import { SETTINGS_PERSIST_KEY, validateSettings } from 'lib/settings'
 import { toast } from 'react-hot-toast'
 import { setThemeClass, Themes } from 'lib/theme'
 import {
@@ -43,14 +43,15 @@ export const SettingsAuthStateProvider = ({
 
   // Settings machine setup
   // Load settings from local storage
+  // and validate them
   const retrievedSettings = useRef(
-    localStorage?.getItem(SETTINGS_PERSIST_KEY) || '{}'
+    validateSettings(
+      JSON.parse(localStorage?.getItem(SETTINGS_PERSIST_KEY) || '{}')
+    )
   )
   const persistedSettings = Object.assign(
     settingsMachine.initialState.context,
-    JSON.parse(retrievedSettings.current) as Partial<
-      (typeof settingsMachine)['context']
-    >
+    retrievedSettings.current.settings
   )
 
   const [settingsState, settingsSend] = useMachine(settingsMachine, {
@@ -76,36 +77,69 @@ export const SettingsAuthStateProvider = ({
   })
 
   // If the app is running in the Tauri context,
-  // try to read the settings from a file.
+  // try to read the settings from a file
+  // after doing some validation on them
   useEffect(() => {
     async function getFileBasedSettings() {
       if (isTauri()) {
         const newSettings = await readSettingsFile()
 
         if (newSettings) {
-          const newDefaultDirectory = await initializeProjectDirectory(
-            newSettings.defaultDirectory || ''
-          )
-          if (newDefaultDirectory.error !== null) {
-            toast.error(newDefaultDirectory.error.message)
-          }
+          if (newSettings.defaultDirectory) {
+            const newDefaultDirectory = await initializeProjectDirectory(
+              newSettings.defaultDirectory || ''
+            )
+            if (newDefaultDirectory.error !== null) {
+              toast.error(newDefaultDirectory.error.message)
+            }
 
-          if (newDefaultDirectory.path !== null) {
-            newSettings.defaultDirectory = newDefaultDirectory.path
+            if (newDefaultDirectory.path !== null) {
+              newSettings.defaultDirectory = newDefaultDirectory.path
+            }
           }
+          const { settings: validatedSettings, errors: validationErrors } =
+            validateSettings(newSettings)
+
           retrievedSettings.current = Object.assign(
             retrievedSettings.current,
-            newSettings
+            validatedSettings
           )
           settingsSend({
             type: 'Set All Settings',
             data: newSettings,
           })
+
+          return validationErrors
         }
+      } else {
+        // If the app is not running in the Tauri context,
+        // just use the settings from local storage
+        // after they've been validated to ensure they are correct.
+        settingsSend({
+          type: 'Set All Settings',
+          data: retrievedSettings.current.settings,
+        })
       }
+      return []
     }
 
-    void getFileBasedSettings()
+    // If there were validation errors either from local storage or from the file,
+    // log them to the console and show a toast message to the user.
+    void getFileBasedSettings().then((validationErrors: string[]) => {
+      const combinedErrors = new Set([
+        ...retrievedSettings.current.errors,
+        ...validationErrors,
+      ])
+
+      if (combinedErrors.size > 0) {
+        const errorMessage =
+          'Error validating persisted settings: ' +
+          Array.from(combinedErrors).join(', ') +
+          '. Using defaults.'
+        console.error(errorMessage)
+        toast.error(errorMessage)
+      }
+    })
   }, [settingsSend])
 
   useStateMachineCommands({

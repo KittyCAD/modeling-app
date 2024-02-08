@@ -78,7 +78,7 @@ function removeInvalidSettingsKeys(s: Record<string, unknown>) {
 }
 
 export function validateSettings(s: Record<string, unknown>) {
-  let settingsNoInvalidKeys = removeInvalidSettingsKeys(s)
+  let settingsNoInvalidKeys = removeInvalidSettingsKeys({ ...s })
   let errors: (keyof SettingsMachineContext)[] = []
   for (const key in settingsValidators) {
     const k = key as keyof SettingsMachineContext
