@@ -102,6 +102,7 @@ impl ProgramReturn {
     }
 }
 
+/// A memory item.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
@@ -120,6 +121,24 @@ pub enum MemoryItem {
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
+}
+
+/// A geometry.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum Geometry {
+    SketchGroup(Box<SketchGroup>),
+    ExtrudeGroup(Box<ExtrudeGroup>),
+}
+
+impl Geometry {
+    pub fn id(&self) -> uuid::Uuid {
+        match self {
+            Geometry::SketchGroup(s) => s.id,
+            Geometry::ExtrudeGroup(e) => e.id,
+        }
+    }
 }
 
 /// A plane.

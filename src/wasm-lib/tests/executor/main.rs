@@ -481,10 +481,10 @@ async fn optional_params() {
         |> startProfileAt(pos, %)
         |> arc({angle_end: 360, angle_start: 0, radius: radius}, %)
         |> close(%)
-  
+
       return sg
   }
-  
+
   show(circle([2, 2], 20))
 "#;
     let result = execute_and_snapshot(code).await.unwrap();
@@ -558,4 +558,105 @@ circle([0,0], 22) |> extrude(14, %)"#;
 
     let result = execute_and_snapshot(code).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/top_level_expression.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_patterns_linear_basic() {
+    let code = r#"fn circle = (pos, radius) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt([pos[0] + radius, pos[1]], %)
+    |> arc({
+       angle_end: 360,
+       angle_start: 0,
+       radius: radius
+     }, %)
+    |> close(%)
+  return sg
+}
+
+const part = circle([0,0], 2)
+    |> patternLinear({axis: [0,0,1], repetitions: 12, distance: 2}, %)
+"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/patterns_linear_basic.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_patterns_linear_basic_negative_distance() {
+    let code = r#"fn circle = (pos, radius) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt([pos[0] + radius, pos[1]], %)
+    |> arc({
+       angle_end: 360,
+       angle_start: 0,
+       radius: radius
+     }, %)
+    |> close(%)
+  return sg
+}
+
+const part = circle([0,0], 2)
+    |> patternLinear({axis: [0,0,1], repetitions: 12, distance: -2}, %)
+"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/patterns_linear_basic_negative_distance.png",
+        &result,
+        0.999,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_patterns_linear_basic_negative_axis() {
+    let code = r#"fn circle = (pos, radius) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt([pos[0] + radius, pos[1]], %)
+    |> arc({
+       angle_end: 360,
+       angle_start: 0,
+       radius: radius
+     }, %)
+    |> close(%)
+  return sg
+}
+
+const part = circle([0,0], 2)
+    |> patternLinear({axis: [0,0,-1], repetitions: 12, distance: 2}, %)
+"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/patterns_linear_basic_negative_axis.png",
+        &result,
+        0.999,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_patterns_linear_basic_zero_axis() {
+    let code = r#"fn circle = (pos, radius) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt([pos[0] + radius, pos[1]], %)
+    |> arc({
+       angle_end: 360,
+       angle_start: 0,
+       radius: radius
+     }, %)
+    |> close(%)
+  return sg
+}
+
+const part = circle([0,0], 2)
+    |> patternLinear({axis: [0,0,0], repetitions: 12, distance: 2}, %)
+"#;
+
+    let result = execute_and_snapshot(code).await;
+
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        "semantic: KclErrorDetails { source_ranges: [SourceRange([276, 339])], message: \"The axis of the linear pattern cannot be the zero vector. Otherwise they will just duplicate in place.\" }",
+    );
 }
