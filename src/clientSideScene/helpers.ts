@@ -1,4 +1,11 @@
-import { GridHelper, LineBasicMaterial } from 'three'
+import {
+  GridHelper,
+  LineBasicMaterial,
+  OrthographicCamera,
+  PerspectiveCamera,
+  Group,
+  Mesh,
+} from 'three'
 
 export function createGridHelper({
   size,
@@ -17,3 +24,9 @@ export function createGridHelper({
   gridHelper.rotation.x = Math.PI / 2
   return gridHelper
 }
+
+export const orthoScale = (cam: OrthographicCamera | PerspectiveCamera) =>
+  0.55 / cam.zoom
+
+export const perspScale = (cam: PerspectiveCamera, group: Group | Mesh) =>
+  (group.position.distanceTo(cam.position) * cam.fov) / 4000

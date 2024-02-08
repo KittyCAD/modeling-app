@@ -19,7 +19,6 @@ import {
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { PathToNode, SketchGroup, getTangentialArcToInfo } from 'lang/wasm'
 import {
-  ARROWHEAD,
   STRAIGHT_SEGMENT,
   STRAIGHT_SEGMENT_BODY,
   STRAIGHT_SEGMENT_DASH,
@@ -28,6 +27,7 @@ import {
   TANGENTIAL_ARC_TO__SEGMENT_DASH,
 } from './clientSideScene'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
+import { ARROWHEAD } from './setup'
 
 export function straightSegment({
   from,
@@ -35,22 +35,24 @@ export function straightSegment({
   id,
   pathToNode,
   isDraftSegment,
+  scale = 1,
 }: {
   from: Coords2d
   to: Coords2d
   id: string
   pathToNode: PathToNode
   isDraftSegment?: boolean
+  scale?: number
 }): Group {
   const group = new Group()
 
   const shape = new Shape()
-  shape.moveTo(0, -0.08)
-  shape.lineTo(0, 0.08) // The width of the line
+  shape.moveTo(0, -0.08 * scale)
+  shape.lineTo(0, 0.08 * scale) // The width of the line
 
   let geometry
   if (isDraftSegment) {
-    geometry = dashedStraight(from, to, shape)
+    geometry = dashedStraight(from, to, shape, scale)
   } else {
     const line = new LineCurve3(
       new Vector3(from[0], from[1], 0),
@@ -65,11 +67,11 @@ export function straightSegment({
   }
 
   const body = new MeshBasicMaterial({ color: 0xffffff })
-  const arrowMaterial = new MeshBasicMaterial({ color: 0xffffff })
   const mesh = new Mesh(geometry, body)
   mesh.userData.type = isDraftSegment
     ? STRAIGHT_SEGMENT_DASH
     : STRAIGHT_SEGMENT_BODY
+  mesh.name = STRAIGHT_SEGMENT_BODY
 
   group.userData = {
     type: STRAIGHT_SEGMENT,
@@ -80,15 +82,7 @@ export function straightSegment({
     isSelected: false,
   }
 
-  const arrowheadMesh = new Mesh(new ConeGeometry(0.3, 0.9, 16), arrowMaterial)
-  arrowheadMesh.position.set(0, -0.35, 0)
-  const sphereMesh = new Mesh(new SphereGeometry(0.3, 16, 16), arrowMaterial)
-
-  const arrowGroup = new Group()
-  arrowGroup.userData.type = ARROWHEAD
-  arrowGroup.add(arrowheadMesh)
-  arrowGroup.add(sphereMesh)
-  arrowGroup.lookAt(new Vector3(0, 1, 0))
+  const arrowGroup = createArrowhead(scale)
   arrowGroup.position.set(to[0], to[1], 0)
   const dir = new Vector3()
     .subVectors(new Vector3(to[0], to[1], 0), new Vector3(from[0], from[1], 0))
@@ -100,6 +94,21 @@ export function straightSegment({
   return group
 }
 
+function createArrowhead(scale = 1): Group {
+  const arrowMaterial = new MeshBasicMaterial({ color: 0xffffff })
+  const arrowheadMesh = new Mesh(new ConeGeometry(0.31, 1.5, 12), arrowMaterial)
+  arrowheadMesh.position.set(0, -0.6, 0)
+  const sphereMesh = new Mesh(new SphereGeometry(0.27, 12, 12), arrowMaterial)
+
+  const arrowGroup = new Group()
+  arrowGroup.userData.type = ARROWHEAD
+  arrowGroup.name = ARROWHEAD
+  arrowGroup.add(arrowheadMesh, sphereMesh)
+  arrowGroup.lookAt(new Vector3(0, 1, 0))
+  arrowGroup.scale.set(scale, scale, scale)
+  return arrowGroup
+}
+
 export function tangentialArcToSegment({
   prevSegment,
   from,
@@ -107,6 +116,7 @@ export function tangentialArcToSegment({
   id,
   pathToNode,
   isDraftSegment,
+  scale = 1,
 }: {
   prevSegment: SketchGroup['value'][number]
   from: Coords2d
@@ -114,6 +124,7 @@ export function tangentialArcToSegment({
   id: string
   pathToNode: PathToNode
   isDraftSegment?: boolean
+  scale?: number
 }): Group {
   const group = new Group()
 
@@ -140,10 +151,10 @@ export function tangentialArcToSegment({
     endAngle,
     ccw,
     isDashed: isDraftSegment,
+    scale,
   })
 
   const body = new MeshBasicMaterial({ color: 0xffffff })
-  const arrowMaterial = new MeshBasicMaterial({ color: 0xffffff })
   const mesh = new Mesh(geometry, body)
   mesh.userData.type = isDraftSegment
     ? TANGENTIAL_ARC_TO__SEGMENT_DASH
@@ -154,19 +165,12 @@ export function tangentialArcToSegment({
     id,
     from,
     to,
+    prevSegment,
     pathToNode,
     isSelected: false,
   }
 
-  const arrowheadMesh = new Mesh(new ConeGeometry(0.3, 0.9, 16), arrowMaterial)
-  arrowheadMesh.position.set(0, -0.35, 0)
-  const sphereMesh = new Mesh(new SphereGeometry(0.3, 16, 16), arrowMaterial)
-
-  const arrowGroup = new Group()
-  arrowGroup.userData.type = ARROWHEAD
-  arrowGroup.add(arrowheadMesh)
-  arrowGroup.add(sphereMesh)
-  arrowGroup.lookAt(new Vector3(0, 1, 0))
+  const arrowGroup = createArrowhead(scale)
   arrowGroup.position.set(to[0], to[1], 0)
   const arrowheadAngle = endAngle + (Math.PI / 2) * (ccw ? 1 : -1)
   arrowGroup.quaternion.setFromUnitVectors(
@@ -186,6 +190,7 @@ export function createArcGeometry({
   endAngle,
   ccw,
   isDashed = false,
+  scale = 1,
 }: {
   center: Coords2d
   radius: number
@@ -193,9 +198,10 @@ export function createArcGeometry({
   endAngle: number
   ccw: boolean
   isDashed?: boolean
+  scale?: number
 }): BufferGeometry {
-  const dashSize = 1.2
-  const gapSize = 1.2
+  const dashSize = 1.2 * scale
+  const gapSize = 1.2 * scale
   const arcStart = new EllipseCurve(
     center[0],
     center[1],
@@ -217,8 +223,8 @@ export function createArcGeometry({
     0
   )
   const shape = new Shape()
-  shape.moveTo(0, -0.08)
-  shape.lineTo(0, 0.08) // The width of the line
+  shape.moveTo(0, -0.08 * scale)
+  shape.lineTo(0, 0.08 * scale) // The width of the line
 
   if (!isDashed) {
     const points = arcStart.getPoints(50)
@@ -308,10 +314,11 @@ export function createArcGeometry({
 export function dashedStraight(
   from: Coords2d,
   to: Coords2d,
-  shape: Shape
+  shape: Shape,
+  scale = 1
 ): BufferGeometry<NormalBufferAttributes> {
-  const dashSize = 1.2
-  const gapSize = 1.2 // todo: gabSize is not respected
+  const dashSize = 1.2 * scale
+  const gapSize = 1.2 * scale // todo: gabSize is not respected
   const dashLine = new LineCurve3(
     new Vector3(from[0], from[1], 0),
     new Vector3(to[0], to[1], 0)

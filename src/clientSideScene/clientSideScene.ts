@@ -7,6 +7,7 @@ import {
   Matrix4,
   Mesh,
   MeshBasicMaterial,
+  OrthographicCamera,
   PerspectiveCamera,
   PlaneGeometry,
   Quaternion,
@@ -16,6 +17,7 @@ import {
   Vector3,
 } from 'three'
 import {
+  ARROWHEAD,
   AXIS_GROUP,
   DEFAULT_PLANES,
   DefaultPlane,
@@ -24,6 +26,7 @@ import {
   isQuaternionVertical,
   RAYCASTABLE_PLANE,
   setupSingleton,
+  SKETCH_GROUP_SEGMENTS,
   SKETCH_LAYER,
   X_AXIS,
   XZ_PLANE,
@@ -69,11 +72,10 @@ import {
 } from 'lang/modifyAst'
 import { getEventForSegmentSelection } from 'lib/selections'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
-import { createGridHelper } from './helpers'
+import { createGridHelper, orthoScale, perspScale } from './helpers'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
-const SKETCH_GROUP_SEGMENTS = 'sketch-group-segments'
 export const STRAIGHT_SEGMENT = 'straight-segment'
 export const STRAIGHT_SEGMENT_BODY = 'straight-segment-body'
 export const STRAIGHT_SEGMENT_DASH = 'straight-segment-body-dashed'
@@ -81,7 +83,6 @@ export const TANGENTIAL_ARC_TO_SEGMENT = 'tangential-arc-to-segment'
 export const TANGENTIAL_ARC_TO_SEGMENT_BODY = 'tangential-arc-to-segment-body'
 export const TANGENTIAL_ARC_TO__SEGMENT_DASH =
   'tangential-arc-to-segment-body-dashed'
-export const ARROWHEAD = 'arrowhead'
 
 class ClientSideScene {
   scene: Scene
@@ -92,6 +93,56 @@ class ClientSideScene {
   currentSketchQuaternion: Quaternion | null = null
   constructor() {
     this.scene = setupSingleton?.scene
+    setupSingleton.setOnCamChange(this.onCamChange)
+  }
+
+  onCamChange = () => {
+    const orthoFactor = orthoScale(setupSingleton.camera)
+
+    Object.values(this.activeSegments).forEach((segment) => {
+      const factor =
+        setupSingleton.camera instanceof OrthographicCamera
+          ? orthoFactor
+          : perspScale(setupSingleton.camera, segment)
+      if (
+        segment.userData.from &&
+        segment.userData.to &&
+        segment.userData.type === STRAIGHT_SEGMENT
+      ) {
+        this.updateStraightSegment({
+          from: segment.userData.from,
+          to: segment.userData.to,
+          group: segment,
+          scale: factor,
+        })
+      }
+
+      if (
+        segment.userData.from &&
+        segment.userData.to &&
+        segment.userData.prevSegment &&
+        segment.userData.type === TANGENTIAL_ARC_TO_SEGMENT
+      ) {
+        this.updateTangentialArcToSegment({
+          prevSegment: segment.userData.prevSegment,
+          from: segment.userData.from,
+          to: segment.userData.to,
+          group: segment,
+          scale: factor,
+        })
+      }
+    })
+    if (this.axisGroup) {
+      // const orthoFactor = orthoScale(setupSingleton.camera)
+      const factor =
+        setupSingleton.camera instanceof OrthographicCamera
+          ? orthoFactor
+          : perspScale(setupSingleton.camera, this.axisGroup)
+      const x = this.axisGroup.getObjectByName(X_AXIS)
+      x?.scale.set(1, factor, 1)
+      const y = this.axisGroup.getObjectByName(Y_AXIS)
+      y?.scale.set(factor, 1, 1)
+    }
   }
 
   createIntersectionPlane() {
@@ -134,6 +185,8 @@ class ClientSideScene {
       baseColor: baseYColor,
       isSelected: false,
     }
+    xAxisMesh.name = X_AXIS
+    yAxisMesh.name = Y_AXIS
 
     this.axisGroup = new Group()
     this.axisGroup.add(
@@ -202,6 +255,17 @@ class ClientSideScene {
       type: SKETCH_GROUP_SEGMENTS,
       pathToNode: sketchPathToNode,
     }
+    const dummy = new Mesh()
+    dummy.position.set(
+      sketchGroup.position[0],
+      sketchGroup.position[1],
+      sketchGroup.position[2]
+    )
+    const orthoFactor = orthoScale(setupSingleton.camera)
+    const factor =
+      setupSingleton.camera instanceof OrthographicCamera
+        ? orthoFactor
+        : perspScale(setupSingleton.camera, dummy)
     sketchGroup.value.forEach((segment, index) => {
       let segPathToNode = getNodePathFromSourceRange(
         draftSegment ? truncatedAst : kclManager.ast,
@@ -218,6 +282,7 @@ class ClientSideScene {
           id: segment.__geoMeta.id,
           pathToNode: segPathToNode,
           isDraftSegment,
+          scale: factor,
         })
       } else {
         seg = straightSegment({
@@ -226,6 +291,7 @@ class ClientSideScene {
           id: segment.__geoMeta.id,
           pathToNode: segPathToNode,
           isDraftSegment,
+          scale: factor,
         })
       }
       seg.layers.set(SKETCH_LAYER)
@@ -466,6 +532,7 @@ class ClientSideScene {
       this.sceneProgramMemory = programMemory
       const sketchGroup = programMemory.root[variableDeclarationName]
         .value as Path[]
+      const orthoFactor = orthoScale(setupSingleton.camera)
       sketchGroup.forEach((segment, index) => {
         const segPathToNode = getNodePathFromSourceRange(
           modifiedAst,
@@ -480,18 +547,24 @@ class ClientSideScene {
           this.activeSegments[originalPathToNodeStr]
         // const prevSegment = sketchGroup.slice(index - 1)[0]
         const type = group?.userData?.type
+        const factor =
+          setupSingleton.camera instanceof OrthographicCamera
+            ? orthoFactor
+            : perspScale(setupSingleton.camera, group)
         if (type === TANGENTIAL_ARC_TO_SEGMENT) {
           this.updateTangentialArcToSegment({
             prevSegment: sketchGroup[index - 1],
             from: segment.from,
             to: segment.to,
             group: group,
+            scale: factor,
           })
         } else if (type === STRAIGHT_SEGMENT) {
           this.updateStraightSegment({
             from: segment.from,
             to: segment.to,
             group: group,
+            scale: factor,
           })
         }
       })
@@ -503,14 +576,17 @@ class ClientSideScene {
     from,
     to,
     group,
+    scale = 1,
   }: {
     prevSegment: SketchGroup['value'][number]
     from: [number, number]
     to: [number, number]
     group: Group
+    scale?: number
   }) {
     group.userData.from = from
     group.userData.to = to
+    group.userData.prevSegment = prevSegment
     const arrowGroup = group.children.find(
       (child) => child.userData.type === ARROWHEAD
     ) as Group
@@ -539,13 +615,14 @@ class ClientSideScene {
       new Vector3(0, 1, 0),
       new Vector3(Math.cos(arrowheadAngle), Math.sin(arrowheadAngle), 0)
     )
+    arrowGroup.scale.set(scale, scale, scale)
 
     const tangentialArcToSegmentBody = group.children.find(
       (child) => child.userData.type === TANGENTIAL_ARC_TO_SEGMENT_BODY
     ) as Mesh
 
     if (tangentialArcToSegmentBody) {
-      const newGeo = createArcGeometry(arcInfo)
+      const newGeo = createArcGeometry({ ...arcInfo, scale })
       tangentialArcToSegmentBody.geometry = newGeo
     }
     const tangentialArcToSegmentBodyDashed = group.children.find(
@@ -558,25 +635,35 @@ class ClientSideScene {
         ...arcInfo,
         mesh: tangentialArcToSegmentBodyDashed,
         isDashed: true,
+        scale,
       })
     }
   }
   throttledUpdateDashedArcGeo = throttle(
-    (args: Parameters<typeof createArcGeometry>[0] & { mesh: Mesh }) =>
-      (args.mesh.geometry = createArcGeometry(args)),
+    (
+      args: Parameters<typeof createArcGeometry>[0] & {
+        mesh: Mesh
+        scale: number
+      }
+    ) => (args.mesh.geometry = createArcGeometry(args)),
     1000 / 30
   )
   updateStraightSegment({
     from,
     to,
     group,
+    scale = 1,
   }: {
     from: [number, number]
     to: [number, number]
     group: Group
+    scale?: number
   }) {
     group.userData.from = from
     group.userData.to = to
+    const shape = new Shape()
+    shape.moveTo(0, -0.08 * scale)
+    shape.lineTo(0, 0.08 * scale) // The width of the line
     const arrowGroup = group.children.find(
       (child) => child.userData.type === ARROWHEAD
     ) as Group
@@ -590,6 +677,7 @@ class ClientSideScene {
       )
       .normalize()
     arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
+    arrowGroup.scale.set(scale, scale, scale)
 
     const straightSegmentBody = group.children.find(
       (child) => child.userData.type === STRAIGHT_SEGMENT_BODY
@@ -599,23 +687,22 @@ class ClientSideScene {
         new Vector3(from[0], from[1], 0),
         new Vector3(to[0], to[1], 0)
       )
-      straightSegmentBody.geometry = new ExtrudeGeometry(
-        (straightSegmentBody.geometry as ExtrudeGeometry).parameters.shapes,
-        {
-          steps: 2,
-          bevelEnabled: false,
-          extrudePath: line,
-        }
-      )
+      straightSegmentBody.geometry = new ExtrudeGeometry(shape, {
+        steps: 2,
+        bevelEnabled: false,
+        extrudePath: line,
+      })
     }
     const straightSegmentBodyDashed = group.children.find(
       (child) => child.userData.type === STRAIGHT_SEGMENT_DASH
     ) as Mesh
     if (straightSegmentBodyDashed) {
-      const shape = new Shape()
-      shape.moveTo(0, -0.08)
-      shape.lineTo(0, 0.08) // The width of the line
-      straightSegmentBodyDashed.geometry = dashedStraight(from, to, shape)
+      straightSegmentBodyDashed.geometry = dashedStraight(
+        from,
+        to,
+        shape,
+        scale
+      )
     }
   }
   async animateAfterSketch() {

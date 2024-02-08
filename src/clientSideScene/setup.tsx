@@ -59,6 +59,8 @@ export const DEFAULT_PLANES = 'default-planes'
 export const X_AXIS = 'xAxis'
 export const Y_AXIS = 'yAxis'
 export const AXIS_GROUP = 'axisGroup'
+export const SKETCH_GROUP_SEGMENTS = 'sketch-group-segments'
+export const ARROWHEAD = 'arrowhead'
 
 const tempQuaternion = new Quaternion() // just used for maths
 
@@ -278,6 +280,10 @@ class SetupSingleton {
   setIsCamMovingCallback(cb: (isMoving: boolean, isTween: boolean) => void) {
     this._isCamMovingCallback = cb
   }
+  private _onCamChange: () => void = () => {}
+  setOnCamChange(cb: () => void) {
+    this._onCamChange = cb
+  }
   setInteractionGuards = (guard: MouseGuard) => {
     this.interactionGuards = guard
     // setMouseGuards is oun patch-package patch to orbit controls
@@ -331,7 +337,7 @@ class SetupSingleton {
   }
   onStreamStart = () => this.updateEngineCamera()
 
-  deferrReactUpdate = throttle((a: ReactCameraProperties) => {
+  deferReactUpdate = throttle((a: ReactCameraProperties) => {
     this.reactCameraPropertiesCallback(a)
   }, 200)
 
@@ -343,7 +349,7 @@ class SetupSingleton {
       zoom: this.camera.zoom,
       isPerspective: this.isPerspective,
     })
-    this.deferrReactUpdate({
+    this.deferReactUpdate({
       type:
         this.camera instanceof PerspectiveCamera
           ? 'perspective'
@@ -364,6 +370,7 @@ class SetupSingleton {
         roundOff(this.camera.quaternion.w, 2),
       ],
     })
+    this._onCamChange()
   }
 
   onWindowResize = () => {
