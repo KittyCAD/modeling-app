@@ -63,8 +63,11 @@ export const Settings = () => {
   } = useSettingsAuthContext()
 
   async function handleDirectorySelection() {
+    // the `recursive` property added following
+    // this advice for permissions: https://github.com/tauri-apps/tauri/issues/4851#issuecomment-1210711455
     const newDirectory = await open({
       directory: true,
+      recursive: true,
       defaultPath: defaultDirectory || paths.INDEX,
       title: 'Choose a new default directory',
     })
