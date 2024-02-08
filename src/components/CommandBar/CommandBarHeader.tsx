@@ -1,6 +1,6 @@
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CustomIcon } from '../CustomIcon'
-import React, { useState } from 'react'
+import React, { ReactNode, useState } from 'react'
 import { ActionButton } from '../ActionButton'
 import { Selections, getSelectionTypeDisplayText } from 'lib/selections'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -99,15 +99,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                     ) : typeof argumentsToSubmit[argName] === 'object' ? (
                       JSON.stringify(argumentsToSubmit[argName])
                     ) : (
-                      argumentsToSubmit[argName]
-                    )
-                  ) : arg.payload ? (
-                    arg.inputType === 'selection' ? (
-                      getSelectionTypeDisplayText(arg.payload as Selections)
-                    ) : typeof arg.payload === 'object' ? (
-                      JSON.stringify(arg.payload)
-                    ) : (
-                      arg.payload
+                      <em>{argumentsToSubmit[argName] as ReactNode}</em>
                     )
                   ) : (
                     <em>{argName}</em>
