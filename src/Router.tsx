@@ -43,7 +43,7 @@ import { KclContextProvider, kclManager } from 'lang/KclSingleton'
 import FileMachineProvider from 'components/FileMachineProvider'
 import { sep } from '@tauri-apps/api/path'
 import { paths } from 'lib/paths'
-import { IndexLoaderData } from 'lib/types'
+import { IndexLoaderData, HomeLoaderData } from 'lib/types'
 
 if (VITE_KC_SENTRY_DSN && !TEST) {
   Sentry.init({
@@ -213,7 +213,7 @@ const router = createBrowserRouter(
           <Home />
         </Auth>
       ),
-      loader: async () => {
+      loader: async (): Promise<HomeLoaderData | Response> => {
         if (!isTauri()) {
           return redirect(paths.FILE + '/' + BROWSER_FILE_NAME)
         }

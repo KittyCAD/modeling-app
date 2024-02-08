@@ -40,7 +40,7 @@ import { homeCommandBarConfig } from 'lib/commandBarConfigs/homeCommandConfig'
 const Home = () => {
   const { commandBarSend } = useCommandsContext()
   const navigate = useNavigate()
-  const { projects: loadedProjects /*newDefaultDirectory*/ } =
+  const { projects: loadedProjects, newDefaultDirectory } =
     useLoaderData() as HomeLoaderData
   const {
     settings: {
@@ -48,13 +48,18 @@ const Home = () => {
       send: sendToSettings,
     },
   } = useGlobalStateContext()
-  // TODO figure out why newDefaultDirectory isn't on HomeLoaderData anymore
-  // if (newDefaultDirectory) {
-  //   sendToSettings({
-  //     type: 'Set Default Directory',
-  //     data: { defaultDirectory: newDefaultDirectory },
-  //   })
-  // }
+
+  // Set the default directory if it's been updated
+  // during the loading of the home page. This is wrapped
+  // in a single-use effect to avoid a potential infinite loop.
+  useEffect(() => {
+    if (newDefaultDirectory) {
+      sendToSettings({
+        type: 'Set Default Directory',
+        data: { defaultDirectory: newDefaultDirectory },
+      })
+    }
+  }, [])
 
   const [state, send] = useMachine(homeMachine, {
     context: {
