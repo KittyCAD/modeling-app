@@ -2,6 +2,7 @@ import { faExclamation, faWifi } from '@fortawesome/free-solid-svg-icons'
 import { Popover } from '@headlessui/react'
 import { useEffect, useState } from 'react'
 import { ActionIcon } from './ActionIcon'
+import { engineCommandManager } from '../lang/std/engineConnection'
 
 export const NETWORK_CONTENT = {
   good: 'Network health is good',
@@ -17,6 +18,10 @@ export const NetworkHealthIndicator = () => {
   const hasIssues = [...networkIssues.values()].length > 0
 
   useEffect(() => {
+    engineCommandManager.onConnectionStateChange((state: EngineConnectionState) => {
+      console.log("state changed!")
+    })
+
     const offlineListener = () =>
       setNetworkIssues((issues) => {
         return [

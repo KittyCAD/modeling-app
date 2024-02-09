@@ -69,8 +69,17 @@ enum DisconnectedType {
   Quit = 'quit',
 }
 
+interface ErrorType {
+  // We may not necessary have an error to assign.
+  error?: Error,
+
+  // We assign this in the state setter because we may have not failed at
+  // a Connecting state, which we check for there.
+  lastConnectingValue?: ConnectingValue,
+}
+
 type DisconnectedValue =
-  | State<DisconnectedType.Error, Error | undefined>
+  | State<DisconnectedType.Error, ErrorType>
   | State<DisconnectedType.Timeout, void>
   | State<DisconnectedType.Quit, void>
 
@@ -133,22 +142,36 @@ class EngineConnection {
 
   set state(next: EngineConnectionState) {
     console.log(`${JSON.stringify(this.state)} → ${JSON.stringify(next)}`)
+
     if (next.type === EngineConnectionStateType.Disconnected) {
       console.trace()
       const sub = next.value
       if (sub.type === DisconnectedType.Error) {
+        // Record the last step we failed at.
+        // (Check the current state that we're about to override that
+        // it was a Connecting state.)
+        if (this._state.type === EngineConnectionStateType.Connecting) {
+          sub.value.lastConnectingValue = this._state.value
+        }
+
         console.error(sub.value)
       }
     }
     this._state = next
+    this.onConnectionStateChange(this._state)
   }
 
   private failedConnTimeout: Timeout | null
 
   readonly url: string
   private readonly token?: string
-  private onWebsocketOpen: (engineConnection: EngineConnection) => void
-  private onDataChannelOpen: (engineConnection: EngineConnection) => void
+
+  // For now, this is only used by the NetworkHealthIndicator.
+  // We can eventually use it for more, but one step at a time.
+  private onConnectionStateChange: (state: EngineConnectionState) => void
+
+  // These are used for the EngineCommandManager and were created
+  // before onConnectionStateChange existed.
   private onEngineConnectionOpen: (engineConnection: EngineConnection) => void
   private onConnectionStarted: (engineConnection: EngineConnection) => void
   private onClose: (engineConnection: EngineConnection) => void
@@ -160,17 +183,15 @@ class EngineConnection {
   constructor({
     url,
     token,
-    onWebsocketOpen = () => {},
+    onConnectionStateChange = () => {},
     onNewTrack = () => {},
     onEngineConnectionOpen = () => {},
     onConnectionStarted = () => {},
     onClose = () => {},
-    onDataChannelOpen = () => {},
   }: {
     url: string
     token?: string
-    onWebsocketOpen?: (engineConnection: EngineConnection) => void
-    onDataChannelOpen?: (engineConnection: EngineConnection) => void
+    onConnectionStateChange?: (state: EngineConnectionState) => void
     onEngineConnectionOpen?: (engineConnection: EngineConnection) => void
     onConnectionStarted?: (engineConnection: EngineConnection) => void
     onClose?: (engineConnection: EngineConnection) => void
@@ -179,8 +200,7 @@ class EngineConnection {
     this.url = url
     this.token = token
     this.failedConnTimeout = null
-    this.onWebsocketOpen = onWebsocketOpen
-    this.onDataChannelOpen = onDataChannelOpen
+    this.onConnectionStateChange = onConnectionStateChange
     this.onEngineConnectionOpen = onEngineConnectionOpen
     this.onConnectionStarted = onConnectionStarted
 
@@ -353,9 +373,11 @@ class EngineConnection {
               type: EngineConnectionStateType.Disconnected,
               value: {
                 type: DisconnectedType.Error,
-                value: new Error(
-                  'failed to negotiate ice connection; restarting'
-                ),
+                value: {
+                  error: new Error(
+                    'failed to negotiate ice connection; restarting'
+                  ),
+                }
               },
             }
             break
@@ -471,8 +493,6 @@ class EngineConnection {
             dataChannelSpan.resolve?.()
           }
 
-          this.onDataChannelOpen(this)
-
           // Everything is now connected.
           this.state = { type: EngineConnectionStateType.ConnectionEstablished }
 
@@ -480,9 +500,6 @@ class EngineConnection {
         })
 
         this.unreliableDataChannel.addEventListener('close', (event) => {
-          console.log(event)
-          console.log('unreliable data channel closed')
-          this.disconnectAll()
           this.unreliableDataChannel = undefined
 
           if (this.areAllConnectionsClosed()) {
@@ -500,7 +517,9 @@ class EngineConnection {
             type: EngineConnectionStateType.Disconnected,
             value: {
               type: DisconnectedType.Error,
-              value: new Error(event.toString()),
+              value: {
+                error: new Error(event.toString()),
+              }
             },
           }
         })
@@ -524,8 +543,6 @@ class EngineConnection {
           type: ConnectingType.WebSocketEstablished,
         },
       }
-
-      this.onWebsocketOpen(this)
 
       // This is required for when KCMA is running stand-alone / within Tauri.
       // Otherwise when run in a browser, the token is sent implicitly via
@@ -557,7 +574,6 @@ class EngineConnection {
     })
 
     this.websocket.addEventListener('close', (event) => {
-      this.disconnectAll()
       this.websocket = undefined
 
       if (this.areAllConnectionsClosed()) {
@@ -575,7 +591,9 @@ class EngineConnection {
         type: EngineConnectionStateType.Disconnected,
         value: {
           type: DisconnectedType.Error,
-          value: new Error(event.toString()),
+          value: {
+            error: new Error(event.toString()),
+          }
         },
       }
     })
@@ -704,7 +722,9 @@ class EngineConnection {
                 type: EngineConnectionStateType.Disconnected,
                 value: {
                   type: DisconnectedType.Error,
-                  value: error,
+                  value: {
+                    error,
+                  }
                 },
               }
             })
@@ -888,6 +908,8 @@ export class EngineCommandManager {
     }
   } = {} as any
 
+  callbacksEngineStateConnection: ((state: EngineConnectionState) => void)[] = []
+
   constructor() {
     this.engineConnection = undefined
   }
@@ -924,6 +946,11 @@ export class EngineCommandManager {
     this.engineConnection = new EngineConnection({
       url,
       token,
+      onConnectionStateChange: (state: EngineConnectionState) => {
+        for (let cb of this.callbacksEngineStateConnection) {
+          cb(state)
+        }
+      },
       onEngineConnectionOpen: () => {
         this.resolveReady()
         setIsStreamReady(true)
@@ -1174,6 +1201,9 @@ export class EngineCommandManager {
     id: string
   ) {
     delete this.unreliableSubscriptions[event][id]
+  }
+  onConnectionStateChange(callback: (state: EngineConnectionState) => void) {
+    this.callbacksEngineStateConnection.push(callback)
   }
   endSession() {
     // TODO: instead of sending a single command with `object_ids: Object.keys(this.artifactMap)`
