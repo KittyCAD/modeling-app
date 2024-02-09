@@ -6,7 +6,7 @@ use schemars::JsonSchema;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, ExtrudeTransform, MemoryItem, SketchGroup},
+    executor::{ExtrudeGroup, ExtrudeSurface, ExtrudeTransform, GeoMeta, MemoryItem, Path, SketchGroup},
     std::Args,
 };
 
@@ -46,19 +46,94 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
     )
     .await?;
 
-    Ok(Box::new(ExtrudeGroup {
-        // Ok so you would think that the id would be the id of the extrude group,
-        // that we passed in to the function, but it's actually the id of the
-        // sketch group.
-        id: sketch_group.id,
-        // TODO, this is just an empty array now, should be deleted. This
-        // comment was originally in the JS code.
-        value: Default::default(),
+    // TODO maybe this should loop through until it gets a edge_id
+    let first_segment = &sketch_group.value[0];
+    let edge_id = match first_segment {
+        Path::ToPoint { base } => base.geo_meta.id,
+        // Handle other variants if necessary
+        _ => {
+            return Err(KclError::Type(KclErrorDetails {
+                message: "Expected a Path::ToPoint variant".to_string(),
+                source_ranges: vec![args.source_range],
+            }))
+        }
+    };
+
+    let solid3d_info = args
+        .send_modeling_cmd(
+            id,
+            kittycad::types::ModelingCmd::Solid3DGetExtrusionFaceInfo {
+                edge_id: edge_id,
+                object_id: sketch_group.id,
+            },
+        )
+        .await?;
+
+    let face_infos = if let kittycad::types::OkWebSocketResponseData::Modeling {
+        modeling_response: kittycad::types::OkModelingCmdResponse::Solid3DGetExtrusionFaceInfo { data },
+    } = solid3d_info
+    {
+        data.faces
+    } else {
+        return Err(KclError::Type(KclErrorDetails {
+            message: "Invalid solid3dInfo format".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    };
+
+    // Create a hashmap for quick id lookup
+    let mut face_id_map = std::collections::HashMap::new();
+    let mut start_cap_id = None;
+    let mut end_cap_id = None;
+
+    for face_info in face_infos {
+        match face_info.cap {
+            kittycad::types::ExtrusionFaceCapType::Bottom => start_cap_id = face_info.face_id,
+            kittycad::types::ExtrusionFaceCapType::Top => end_cap_id = face_info.face_id,
+            _ => {
+                if let Some(curve_id) = face_info.curve_id {
+                    face_id_map.insert(curve_id, face_info.face_id);
+                }
+            }
+        }
+    }
+
+    // Iterate over the sketch_group.value array and add face_id to GeoMeta
+    let mut new_value: Vec<ExtrudeSurface> = Vec::new();
+    for path in sketch_group.value.iter() {
+        if let Some(face_id) = face_id_map.get(&path.get_base().geo_meta.id) {
+            if let Some(actual_face_id) = face_id {
+                let extrude_surface = ExtrudeSurface::ExtrudePlane {
+                    position: sketch_group.position, // TODO should be for the extrude surface
+                    rotation: sketch_group.rotation, // TODO should be for the extrude surface
+                    face_id: *actual_face_id,
+                    name: path.get_base().name.clone(),
+                    geo_meta: GeoMeta {
+                        id: path.get_base().geo_meta.id,
+                        face_id: Some(*actual_face_id),
+                        metadata: path.get_base().geo_meta.metadata.clone(),
+                    },
+                };
+                new_value.push(extrude_surface);
+            }
+        }
+    }
+
+    let return_value = Ok(Box::new(ExtrudeGroup {
+        id,
+        value: new_value,
         height: length,
         position: sketch_group.position,
         rotation: sketch_group.rotation,
+        x_axis: sketch_group.x_axis,
+        y_axis: sketch_group.y_axis,
+        z_axis: sketch_group.z_axis,
+        start_cap_id,
+        end_cap_id,
         meta: sketch_group.meta,
-    }))
+    }));
+    println!("\n\nreturn_value\n:{:?}\n\n", return_value);
+    return_value
 }
 
 /// Returns the extrude wall transform.

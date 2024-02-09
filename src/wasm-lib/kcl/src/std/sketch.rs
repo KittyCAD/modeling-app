@@ -90,6 +90,7 @@ async fn inner_line_to(
             },
             geo_meta: GeoMeta {
                 id,
+                face_id: None,
                 metadata: args.source_range.into(),
             },
         },
@@ -241,6 +242,7 @@ async fn inner_line(data: LineData, sketch_group: Box<SketchGroup>, args: Args) 
             },
             geo_meta: GeoMeta {
                 id,
+                face_id: None,
                 metadata: args.source_range.into(),
             },
         },
@@ -393,6 +395,7 @@ async fn inner_angled_line(
             },
             geo_meta: GeoMeta {
                 id,
+                face_id: None,
                 metadata: args.source_range.into(),
             },
         },
@@ -917,6 +920,7 @@ async fn inner_start_profile_at(data: LineData, plane: Box<Plane>, args: Args) -
         },
         geo_meta: GeoMeta {
             id,
+            face_id: None,
             metadata: args.source_range.into(),
         },
     };
@@ -979,6 +983,7 @@ async fn inner_close(sketch_group: Box<SketchGroup>, args: Args) -> Result<Box<S
             name: "".into(),
             geo_meta: GeoMeta {
                 id,
+                face_id: None,
                 metadata: args.source_range.into(),
             },
         },
@@ -1110,6 +1115,7 @@ async fn inner_arc(data: ArcData, sketch_group: Box<SketchGroup>, args: Args) ->
             },
             geo_meta: GeoMeta {
                 id,
+                face_id: None,
                 metadata: args.source_range.into(),
             },
         },
@@ -1209,6 +1215,7 @@ async fn inner_tangential_arc(
             name: "".to_string(),
             geo_meta: GeoMeta {
                 id,
+                face_id: None,
                 metadata: args.source_range.into(),
             },
         },
@@ -1299,6 +1306,7 @@ async fn inner_tangential_arc_to(
             name: tag.unwrap_or_default(),
             geo_meta: GeoMeta {
                 id,
+                face_id: None,
                 metadata: args.source_range.into(),
             },
         },
@@ -1408,6 +1416,7 @@ async fn inner_bezier_curve(
             },
             geo_meta: GeoMeta {
                 id,
+                face_id: None,
                 metadata: args.source_range.into(),
             },
         },

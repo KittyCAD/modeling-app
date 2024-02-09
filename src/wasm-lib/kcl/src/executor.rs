@@ -503,6 +503,16 @@ pub struct ExtrudeGroup {
     pub position: Position,
     /// The rotation of the extrude group.
     pub rotation: Rotation,
+    /// The x-axis of the extrude group base plane in the 3D space
+    pub x_axis: Position,
+    /// The y-axis of the extrude group base plane in the 3D space
+    pub y_axis: Position,
+    /// The z-axis of the extrude group base plane in the 3D space
+    pub z_axis: Position,
+    /// The id of the extrusion start cap
+    pub start_cap_id: Option<uuid::Uuid>,
+    /// The id of the extrusion end cap
+    pub end_cap_id: Option<uuid::Uuid>,
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
@@ -695,6 +705,8 @@ pub struct BasePath {
 pub struct GeoMeta {
     /// The id of the geometry.
     pub id: uuid::Uuid,
+    /// The id of the face after extrusion
+    pub face_id: Option<uuid::Uuid>,
     /// Metadata.
     #[serde(flatten)]
     pub metadata: Metadata,
@@ -773,6 +785,17 @@ impl Path {
             Path::TangentialArcTo { base, .. } => base,
         }
     }
+
+    pub fn get_base_mut(&mut self) -> Option<&mut BasePath> {
+        match self {
+            Path::ToPoint { base } => Some(base),
+            Path::Horizontal { base, .. } => Some(base),
+            Path::AngledLineTo { base, .. } => Some(base),
+            Path::Base { base } => Some(base),
+            Path::TangentialArcTo { base, .. } => Some(base),
+            _ => None,
+        }
+    }
 }
 
 /// An extrude surface.
@@ -786,6 +809,8 @@ pub enum ExtrudeSurface {
         position: Position,
         /// The rotation.
         rotation: Rotation,
+        /// The face id for the extrude plane.
+        face_id: uuid::Uuid,
         /// The name.
         name: String,
         /// Metadata.
