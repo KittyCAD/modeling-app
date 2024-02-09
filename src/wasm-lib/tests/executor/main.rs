@@ -25,6 +25,8 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
 
     // Create the client.
     let client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
+    // uncomment to use a local server
+    // client.set_base_url("http://your-local-server:8080/");
 
     let ws = client
         .modeling()
@@ -72,6 +74,23 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
     Ok(actual)
 }
 
+// delete once done with with sketchOnFace development
+// just here to run:
+// cargo test kurts_test -- --nocapture
+#[tokio::test(flavor = "multi_thread")]
+async fn kurts_test() {
+    let code = r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([11.19, 28.35], %)
+  |> line([28.67, -13.25], %)
+  |> line([-4.12, -22.81], %)
+  |> line([-33.24, 14.55], %)
+  |> close(%)
+  |> extrude(5, %)
+"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    assert_eq!(1, 1);
+}
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_execute_with_function_sketch() {
     let code = r#"fn box = (h, l, w) => {
