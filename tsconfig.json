@@ -27,7 +27,8 @@
   },
   "include": [
     "src",
-    "e2e"
+    "e2e",
+    "./*.ts"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

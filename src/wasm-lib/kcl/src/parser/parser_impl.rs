@@ -2721,7 +2721,7 @@ show(b1)
 show(b2)"#;
         let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
-        dbg!(parser.ast().unwrap());
+        parser.ast().unwrap();
     }
 
     #[test]

@@ -115,7 +115,7 @@ function buildCommandArgument<
   const baseCommandArgument = {
     description: arg.description,
     required: arg.required,
-    payload: arg.payload,
+    skip: arg.skip,
     defaultValue:
       arg.defaultValue instanceof Function
         ? arg.defaultValue(state.context)
