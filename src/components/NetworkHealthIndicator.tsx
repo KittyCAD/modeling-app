@@ -1,46 +1,152 @@
-import { faExclamation, faWifi } from '@fortawesome/free-solid-svg-icons'
+import {
+  faExclamation,
+  faWifi,
+  faCheck,
+  faMinus,
+} from '@fortawesome/free-solid-svg-icons'
 import { Popover } from '@headlessui/react'
 import { useEffect, useState } from 'react'
 import { ActionIcon } from './ActionIcon'
-import { engineCommandManager } from '../lang/std/engineConnection'
+import {
+  ConnectingType,
+  ConnectingTypeGroup,
+  DisconnectingType,
+  engineCommandManager,
+  EngineConnectionState,
+  EngineConnectionStateType,
+  ErrorType,
+  initialConnectingTypeGroupState,
+} from '../lang/std/engineConnection'
 
-export const NETWORK_CONTENT = {
-  good: 'Network health is good',
-  bad: 'Network issue',
+enum State {
+  Ok,
+  Issue,
+  Disconnected,
 }
 
-const NETWORK_MESSAGES = {
-  offline: 'You are offline',
+const booleanToColor: Record<string | number | symbol, any> = {
+  true: 'text-cyan-500',
+  undefined: 'text-amber-400',
+  false: 'text-red-500',
+}
+
+const booleanToIcon: Record<string | number | symbol, any> = {
+  true: faCheck,
+  undefined: faMinus,
+  false: faExclamation,
+}
+
+// TODO: Change these as needed @Frank
+const overallConnectionStateColor: Record<State, string> = {
+  [State.Ok]: 'text-cyan-500',
+  [State.Issue]: 'text-amber-400',
+  [State.Disconnected]: 'text-red-500',
+}
+
+const overallConnectionStateIcon = {
+  [State.Ok]: faCheck,
+  [State.Issue]: faExclamation,
+  [State.Disconnected]: faMinus,
 }
 
 export const NetworkHealthIndicator = () => {
-  const [networkIssues, setNetworkIssues] = useState<string[]>([])
-  const hasIssues = [...networkIssues.values()].length > 0
+  const [steps, setSteps] = useState(initialConnectingTypeGroupState)
+  const [internetConnected, setInternetConnected] = useState<boolean>(true)
+  const [overallState, setOverallState] = useState<State>(State.Ok)
+
+  const [error, setError] = useState<ErrorType | undefined>(undefined)
+
+  const issues: Record<ConnectingTypeGroup, boolean> = {
+    [ConnectingTypeGroup.WebSocket]: steps[ConnectingTypeGroup.WebSocket].some(
+      (a: [ConnectingType, boolean | undefined]) => a[1] === false
+    ),
+    [ConnectingTypeGroup.ICE]: steps[ConnectingTypeGroup.ICE].some(
+      (a: [ConnectingType, boolean | undefined]) => a[1] === false
+    ),
+    [ConnectingTypeGroup.WebRTC]: steps[ConnectingTypeGroup.WebRTC].some(
+      (a: [ConnectingType, boolean | undefined]) => a[1] === false
+    ),
+  }
+
+  const hasIssues: boolean =
+    issues[ConnectingTypeGroup.WebSocket] ||
+    issues[ConnectingTypeGroup.ICE] ||
+    issues[ConnectingTypeGroup.WebRTC]
 
   useEffect(() => {
-    engineCommandManager.onConnectionStateChange((state: EngineConnectionState) => {
-      console.log("state changed!")
-    })
+    setOverallState(
+      !internetConnected
+        ? State.Disconnected
+        : hasIssues
+        ? State.Issue
+        : State.Ok
+    )
+  }, [hasIssues, internetConnected])
 
-    const offlineListener = () =>
-      setNetworkIssues((issues) => {
-        return [
-          ...issues.filter((issue) => issue !== NETWORK_MESSAGES.offline),
-          NETWORK_MESSAGES.offline,
-        ]
-      })
-    window.addEventListener('offline', offlineListener)
-
-    const onlineListener = () =>
-      setNetworkIssues((issues) => {
-        return [...issues.filter((issue) => issue !== NETWORK_MESSAGES.offline)]
-      })
-    window.addEventListener('online', onlineListener)
-
-    return () => {
-      window.removeEventListener('offline', offlineListener)
-      window.removeEventListener('online', onlineListener)
+  useEffect(() => {
+    const cb1 = () => {
+      setSteps(initialConnectingTypeGroupState)
+      setInternetConnected(true)
     }
+    const cb2 = () => {
+      setInternetConnected(false)
+    }
+    window.addEventListener('online', cb1)
+    window.addEventListener('offline', cb2)
+    return () => {
+      window.removeEventListener('online', cb1)
+      window.removeEventListener('offline', cb2)
+    }
+  }, [])
+
+  useEffect(() => {
+    engineCommandManager.onConnectionStateChange(
+      (engineConnectionState: EngineConnectionState) => {
+        let hasSetAStep = false
+
+        if (
+          engineConnectionState.type === EngineConnectionStateType.Connecting
+        ) {
+          const groups = Object.values(steps)
+          for (let group of groups) {
+            for (let step of group) {
+              if (step[0] !== engineConnectionState.value.type) continue
+              step[1] = true
+              hasSetAStep = true
+            }
+          }
+        }
+
+        if (
+          engineConnectionState.type === EngineConnectionStateType.Disconnecting
+        ) {
+          const groups = Object.values(steps)
+          for (let group of groups) {
+            for (let step of group) {
+              if (
+                engineConnectionState.value.type === DisconnectingType.Error
+              ) {
+                if (
+                  engineConnectionState.value.value.lastConnectingValue
+                    ?.type === step[0]
+                ) {
+                  step[1] = false
+                  hasSetAStep = true
+                }
+              }
+            }
+
+            if (engineConnectionState.value.type === DisconnectingType.Error) {
+              setError(engineConnectionState.value.value)
+            }
+          }
+        }
+
+        if (hasSetAStep) {
+          setSteps(steps)
+        }
+      }
+    )
   }, [])
 
   return (
@@ -58,57 +164,58 @@ export const NetworkHealthIndicator = () => {
         <ActionIcon
           icon={faWifi}
           className="p-1"
-          iconClassName={
-            hasIssues
-              ? 'text-destroy-80 dark:text-destroy-30'
-              : 'text-succeed-80 dark:text-succeed-30'
-          }
-          bgClassName={
-            'bg-transparent dark:bg-transparent ' +
-            (hasIssues
-              ? 'hover:bg-destroy-10/50 hover:dark:bg-destroy-80/50 rounded'
-              : 'hover:bg-succeed-10/50 hover:dark:bg-succeed-80/50 rounded')
-          }
+          iconClassName={overallConnectionStateColor[overallState]}
+          bgClassName={'fill-me-in'}
         />
       </Popover.Button>
       <Popover.Panel className="absolute right-0 left-auto top-full mt-1 w-56 flex flex-col gap-1 divide-y divide-chalkboard-20 dark:divide-chalkboard-70 align-stretch py-2 bg-chalkboard-10 dark:bg-chalkboard-90 rounded shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50 text-sm">
-        {!hasIssues ? (
-          <span
-            className="flex items-center justify-center gap-1 px-4"
-            data-testid="network-good"
+        <ul className="divide-y divide-chalkboard-20 dark:divide-chalkboard-80">
+          <div
+            className="flex justify-between font-bold text-xs uppercase px-4"
+            data-testid="network"
           >
+            <p className="flex-1 mr-4">
+              {overallState === State.Issue
+                ? 'Problem'
+                : overallState === State.Ok
+                ? 'Connected'
+                : 'Offline'}
+            </p>
             <ActionIcon
-              icon="checkmark"
-              bgClassName={'bg-succeed-10/50 dark:bg-succeed-80/50 rounded-sm'}
-              iconClassName={'text-succeed-80 dark:text-succeed-30'}
+              icon={overallConnectionStateIcon[overallState]}
+              bgClassName={'fill-me-in'}
+              iconClassName={overallConnectionStateColor[overallState]}
+              className="ml-4"
             />
-            {NETWORK_CONTENT.good}
-          </span>
-        ) : (
-          <ul className="divide-y divide-chalkboard-20 dark:divide-chalkboard-80">
-            <span
-              className="font-bold text-xs uppercase text-destroy-60 dark:text-destroy-50 px-4"
-              data-testid="network-bad"
+          </div>
+          {Object.keys(steps).map((name) => (
+            <li
+              key={name}
+              className="flex mr-4 ml-4 items-center gap-1 py-2 my-2 last:mb-0"
             >
-              {NETWORK_CONTENT.bad}
-              {networkIssues.length > 1 ? 's' : ''}
-            </span>
-            {networkIssues.map((issue) => (
-              <li
-                key={issue}
-                className="flex items-center gap-1 py-2 my-2 last:mb-0"
-              >
+              <p className="flex-1 mr-4">{name}</p>
+              {internetConnected ? (
                 <ActionIcon
-                  icon={faExclamation}
-                  bgClassName={'bg-destroy-10/50 dark:bg-destroy-80/50 rounded'}
-                  iconClassName={'text-destroy-80 dark:text-destroy-30'}
+                  icon={
+                    booleanToIcon[
+                      (!issues[name as ConnectingTypeGroup]).toString()
+                    ]
+                  }
+                  bgClassName={'fill-me-in'}
+                  iconClassName={'fill-me-in'}
                   className="ml-4"
                 />
-                <p className="flex-1 mr-4">{issue}</p>
-              </li>
-            ))}
-          </ul>
-        )}
+              ) : (
+                <ActionIcon
+                  icon={faMinus}
+                  bgClassName={'fill-me-in'}
+                  iconClassName={'fill-me-in'}
+                  className="ml-4"
+                />
+              )}
+            </li>
+          ))}
+        </ul>
       </Popover.Panel>
     </Popover>
   )

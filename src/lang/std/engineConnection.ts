@@ -56,35 +56,36 @@ type Value<T, U> = U extends undefined
 
 type State<T, U> = Value<T, U>
 
-enum EngineConnectionStateType {
+export enum EngineConnectionStateType {
   Fresh = 'fresh',
   Connecting = 'connecting',
   ConnectionEstablished = 'connection-established',
+  Disconnecting = 'disconnecting',
   Disconnected = 'disconnected',
 }
 
-enum DisconnectedType {
+export enum DisconnectingType {
   Error = 'error',
   Timeout = 'timeout',
   Quit = 'quit',
 }
 
-interface ErrorType {
+export interface ErrorType {
   // We may not necessary have an error to assign.
-  error?: Error,
+  error?: Error
 
   // We assign this in the state setter because we may have not failed at
   // a Connecting state, which we check for there.
-  lastConnectingValue?: ConnectingValue,
+  lastConnectingValue?: ConnectingValue
 }
 
-type DisconnectedValue =
-  | State<DisconnectedType.Error, ErrorType>
-  | State<DisconnectedType.Timeout, void>
-  | State<DisconnectedType.Quit, void>
+export type DisconnectingValue =
+  | State<DisconnectingType.Error, ErrorType>
+  | State<DisconnectingType.Timeout, void>
+  | State<DisconnectingType.Quit, void>
 
 // These are ordered by the expected sequence.
-enum ConnectingType {
+export enum ConnectingType {
   WebSocketConnecting = 'websocket-connecting',
   WebSocketEstablished = 'websocket-established',
   PeerConnectionCreated = 'peer-connection-created',
@@ -101,7 +102,39 @@ enum ConnectingType {
   DataChannelEstablished = 'data-channel-established',
 }
 
-type ConnectingValue =
+export enum ConnectingTypeGroup {
+  WebSocket = 'WebSocket',
+  ICE = 'ICE',
+  WebRTC = 'WebRTC',
+}
+
+export const initialConnectingTypeGroupState: Record<
+  ConnectingTypeGroup,
+  [ConnectingType, boolean | undefined][]
+> = {
+  [ConnectingTypeGroup.WebSocket]: [
+    [ConnectingType.WebSocketConnecting, undefined],
+    [ConnectingType.WebSocketEstablished, undefined],
+  ],
+  [ConnectingTypeGroup.ICE]: [
+    [ConnectingType.PeerConnectionCreated, undefined],
+    [ConnectingType.ICEServersSet, undefined],
+    [ConnectingType.SetLocalDescription, undefined],
+    [ConnectingType.OfferedSdp, undefined],
+    [ConnectingType.ReceivedSdp, undefined],
+    [ConnectingType.SetRemoteDescription, undefined],
+    [ConnectingType.WebRTCConnecting, undefined],
+    [ConnectingType.ICECandidateReceived, undefined],
+  ],
+  [ConnectingTypeGroup.WebRTC]: [
+    [ConnectingType.TrackReceived, undefined],
+    [ConnectingType.DataChannelRequested, undefined],
+    [ConnectingType.DataChannelConnecting, undefined],
+    [ConnectingType.DataChannelEstablished, undefined],
+  ],
+}
+
+export type ConnectingValue =
   | State<ConnectingType.WebSocketConnecting, void>
   | State<ConnectingType.WebSocketEstablished, void>
   | State<ConnectingType.PeerConnectionCreated, void>
@@ -117,11 +150,12 @@ type ConnectingValue =
   | State<ConnectingType.DataChannelConnecting, string>
   | State<ConnectingType.DataChannelEstablished, void>
 
-type EngineConnectionState =
+export type EngineConnectionState =
   | State<EngineConnectionStateType.Fresh, void>
   | State<EngineConnectionStateType.Connecting, ConnectingValue>
   | State<EngineConnectionStateType.ConnectionEstablished, void>
-  | State<EngineConnectionStateType.Disconnected, DisconnectedValue>
+  | State<EngineConnectionStateType.Disconnecting, DisconnectingValue>
+  | State<EngineConnectionStateType.Disconnected, void>
 
 // EngineConnection encapsulates the connection(s) to the Engine
 // for the EngineCommandManager; namely, the underlying WebSocket
@@ -143,14 +177,16 @@ class EngineConnection {
   set state(next: EngineConnectionState) {
     console.log(`${JSON.stringify(this.state)} → ${JSON.stringify(next)}`)
 
-    if (next.type === EngineConnectionStateType.Disconnected) {
+    if (next.type === EngineConnectionStateType.Disconnecting) {
       console.trace()
       const sub = next.value
-      if (sub.type === DisconnectedType.Error) {
+      if (sub.type === DisconnectingType.Error) {
         // Record the last step we failed at.
         // (Check the current state that we're about to override that
         // it was a Connecting state.)
+        console.log(sub)
         if (this._state.type === EngineConnectionStateType.Connecting) {
+          if (!sub.value) sub.value = {}
           sub.value.lastConnectingValue = this._state.value
         }
 
@@ -216,6 +252,7 @@ class EngineConnection {
         case EngineConnectionStateType.ConnectionEstablished:
           this.send({ type: 'ping' })
           break
+        case EngineConnectionStateType.Disconnecting:
         case EngineConnectionStateType.Disconnected:
           clearInterval(pingInterval)
           break
@@ -227,17 +264,11 @@ class EngineConnection {
     const connectionTimeoutMs = VITE_KC_CONNECTION_TIMEOUT_MS
     let connectRetryInterval = setInterval(() => {
       if (this.state.type !== EngineConnectionStateType.Disconnected) return
-      switch (this.state.value.type) {
-        case DisconnectedType.Error:
-          clearInterval(connectRetryInterval)
-          break
-        case DisconnectedType.Timeout:
-          console.log('Trying to reconnect')
-          this.connect()
-          break
-        default:
-          break
-      }
+
+      // Only try reconnecting when completely disconnected.
+      clearInterval(connectRetryInterval)
+      console.log('Trying to reconnect')
+      this.connect()
     }, connectionTimeoutMs)
   }
 
@@ -252,8 +283,8 @@ class EngineConnection {
   tearDown() {
     this.disconnectAll()
     this.state = {
-      type: EngineConnectionStateType.Disconnected,
-      value: { type: DisconnectedType.Quit },
+      type: EngineConnectionStateType.Disconnecting,
+      value: { type: DisconnectingType.Quit },
     }
   }
 
@@ -370,14 +401,14 @@ class EngineConnection {
           case 'failed':
             this.disconnectAll()
             this.state = {
-              type: EngineConnectionStateType.Disconnected,
+              type: EngineConnectionStateType.Disconnecting,
               value: {
-                type: DisconnectedType.Error,
+                type: DisconnectingType.Error,
                 value: {
                   error: new Error(
                     'failed to negotiate ice connection; restarting'
                   ),
-                }
+                },
               },
             }
             break
@@ -500,26 +531,20 @@ class EngineConnection {
         })
 
         this.unreliableDataChannel.addEventListener('close', (event) => {
-          this.unreliableDataChannel = undefined
-
-          if (this.areAllConnectionsClosed()) {
-            this.state = {
-              type: EngineConnectionStateType.Disconnected,
-              value: { type: DisconnectedType.Quit },
-            }
-          }
+          this.disconnectAll()
+          this.finalizeIfAllConnectionsClosed()
         })
 
         this.unreliableDataChannel.addEventListener('error', (event) => {
           this.disconnectAll()
 
           this.state = {
-            type: EngineConnectionStateType.Disconnected,
+            type: EngineConnectionStateType.Disconnecting,
             value: {
-              type: DisconnectedType.Error,
+              type: DisconnectingType.Error,
               value: {
                 error: new Error(event.toString()),
-              }
+              },
             },
           }
         })
@@ -574,26 +599,20 @@ class EngineConnection {
     })
 
     this.websocket.addEventListener('close', (event) => {
-      this.websocket = undefined
-
-      if (this.areAllConnectionsClosed()) {
-        this.state = {
-          type: EngineConnectionStateType.Disconnected,
-          value: { type: DisconnectedType.Quit },
-        }
-      }
+      this.disconnectAll()
+      this.finalizeIfAllConnectionsClosed()
     })
 
     this.websocket.addEventListener('error', (event) => {
       this.disconnectAll()
 
       this.state = {
-        type: EngineConnectionStateType.Disconnected,
+        type: EngineConnectionStateType.Disconnecting,
         value: {
-          type: DisconnectedType.Error,
+          type: DisconnectingType.Error,
           value: {
             error: new Error(event.toString()),
-          }
+          },
         },
       }
     })
@@ -719,12 +738,12 @@ class EngineConnection {
               // The local description is invalid, so there's no point continuing.
               this.disconnectAll()
               this.state = {
-                type: EngineConnectionStateType.Disconnected,
+                type: EngineConnectionStateType.Disconnecting,
                 value: {
-                  type: DisconnectedType.Error,
+                  type: DisconnectingType.Error,
                   value: {
                     error,
-                  }
+                  },
                 },
               }
             })
@@ -802,13 +821,14 @@ class EngineConnection {
         return
       }
       this.failedConnTimeout = null
-      this.disconnectAll()
       this.state = {
-        type: EngineConnectionStateType.Disconnected,
+        type: EngineConnectionStateType.Disconnecting,
         value: {
-          type: DisconnectedType.Timeout,
+          type: DisconnectingType.Timeout,
         },
       }
+      this.disconnectAll()
+      this.finalizeIfAllConnectionsClosed()
     }, connectionTimeoutMs)
 
     this.onConnectionStarted(this)
@@ -831,11 +851,18 @@ class EngineConnection {
     this.websocket?.close()
     this.unreliableDataChannel?.close()
     this.pc?.close()
+
     this.webrtcStatsCollector = undefined
   }
-  areAllConnectionsClosed() {
+  finalizeIfAllConnectionsClosed() {
     console.log(this.websocket, this.pc, this.unreliableDataChannel)
-    return !this.websocket && !this.pc && !this.unreliableDataChannel
+    const allClosed =
+      this.websocket?.readyState === 3 &&
+      this.pc?.connectionState === 'closed' &&
+      this.unreliableDataChannel?.readyState === 'closed'
+    if (allClosed) {
+      this.state = { type: EngineConnectionStateType.Disconnected }
+    }
   }
 }
 
@@ -908,7 +935,8 @@ export class EngineCommandManager {
     }
   } = {} as any
 
-  callbacksEngineStateConnection: ((state: EngineConnectionState) => void)[] = []
+  callbacksEngineStateConnection: ((state: EngineConnectionState) => void)[] =
+    []
 
   constructor() {
     this.engineConnection = undefined
