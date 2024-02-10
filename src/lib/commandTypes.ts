@@ -7,10 +7,12 @@ import {
   InterpreterFrom,
 } from 'xstate'
 import { Selection } from './selections'
+import { PrevVariable } from 'lang/queryAst'
 
 type Icon = CustomIconName
 const PLATFORMS = ['both', 'web', 'desktop'] as const
-const INPUT_TYPES = ['options', 'string', 'number', 'selection'] as const
+const INPUT_TYPES = ['options', 'string', 'kcl', 'selection'] as const
+export type KCLCommandValue = PrevVariable<string> // These are kcl expressions
 export type CommandInputType = (typeof INPUT_TYPES)[number]
 
 export type CommandSetSchema<T extends AnyStateMachine> = Partial<{
@@ -95,7 +97,8 @@ export type CommandArgumentConfig<
           selectionTypes: Selection['type'][]
           multiple: boolean
         }
-      | { inputType: Exclude<CommandInputType, 'options' | 'selection'> }
+      | { inputType: Extract<CommandInputType, 'kcl'> }
+      | { inputType: Extract<CommandInputType, 'string'> }
     )
 
 export type CommandArgument<
@@ -118,7 +121,8 @@ export type CommandArgument<
           actor: InterpreterFrom<T>
           multiple: boolean
         }
-      | { inputType: Exclude<CommandInputType, 'options' | 'selection'> }
+      | { inputType: Extract<CommandInputType, 'kcl'> }
+      | { inputType: Extract<CommandInputType, 'string'> }
     )
 
 export type CommandArgumentWithName<
