@@ -22,7 +22,7 @@ use serde::{Deserialize, Serialize};
 
 use self::kcl_stdlib::KclStdLibFn;
 use crate::{
-    ast::types::parse_json_number_as_f64,
+    ast::types::{parse_json_number_as_f64, parse_json_value_as_string},
     docs::StdLibFn,
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
@@ -384,7 +384,6 @@ impl Args {
                 })
             })?
             .get_json_value()?;
-
         let data: String = serde_json::from_value(first_value).map_err(|e| {
             KclError::Type(KclErrorDetails {
                 message: format!("Expected a file path string: {}", e),
@@ -401,6 +400,33 @@ impl Args {
                     })
                 })?;
             Ok((data, Some(options)))
+        } else {
+            Ok((data, None))
+        }
+    }
+
+    fn get_data_and_optional_tag<T: serde::de::DeserializeOwned>(&self) -> Result<(T, Option<String>), KclError> {
+        let first_value = self
+            .args
+            .first()
+            .ok_or_else(|| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Expected a struct as the first argument, found `{:?}`", self.args),
+                    source_ranges: vec![self.source_range],
+                })
+            })?
+            .get_json_value()?;
+
+        let data: T = serde_json::from_value(first_value).map_err(|e| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Failed to deserialize struct from JSON: {}", e),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        if let Some(second_value) = self.args.get(1) {
+            let tag = parse_json_value_as_string(&second_value.get_json_value()?);
+            Ok((data, tag))
         } else {
             Ok((data, None))
         }
