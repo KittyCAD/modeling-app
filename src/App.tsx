@@ -71,6 +71,9 @@ export function App() {
   useHotkeys('shift + e', () => togglePane('kclErrors'))
   useHotkeys('shift + d', () => togglePane('debug'))
   useHotkeys('esc', () => send('Cancel'))
+  useHotkeys('backspace', (e) => {
+    e.preventDefault()
+  })
 
   const paneOpacity = [onboardingPaths.CAMERA, onboardingPaths.STREAMING].some(
     (p) => p === onboardingStatus
