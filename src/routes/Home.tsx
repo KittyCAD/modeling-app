@@ -31,6 +31,8 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { DEFAULT_PROJECT_NAME } from 'machines/settingsMachine'
 import { sep } from '@tauri-apps/api/path'
 import { homeCommandBarConfig } from 'lib/commandBarConfigs/homeCommandConfig'
+import { useHotkeys } from 'react-hotkeys-hook'
+import { isTauri } from 'lib/isTauri'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
@@ -51,6 +53,13 @@ const Home = () => {
       data: { defaultDirectory: newDefaultDirectory },
     })
   }
+  useHotkeys(
+    isTauri() ? 'mod+,' : 'shift+mod+,',
+    () => navigate(paths.HOME + paths.SETTINGS),
+    {
+      splitKey: '|',
+    }
+  )
 
   const [state, send] = useMachine(homeMachine, {
     context: {
