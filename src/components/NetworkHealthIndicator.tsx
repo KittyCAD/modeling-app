@@ -1,12 +1,6 @@
-import {
-  faExclamation,
-  faWifi,
-  faCheck,
-  faMinus,
-} from '@fortawesome/free-solid-svg-icons'
 import { Popover } from '@headlessui/react'
 import { useEffect, useState } from 'react'
-import { ActionIcon } from './ActionIcon'
+import { ActionIcon, ActionIconProps } from './ActionIcon'
 import {
   ConnectingType,
   ConnectingTypeGroup,
@@ -17,6 +11,7 @@ import {
   ErrorType,
   initialConnectingTypeGroupState,
 } from '../lang/std/engineConnection'
+import Tooltip from './Tooltip'
 
 enum State {
   Ok,
@@ -24,35 +19,63 @@ enum State {
   Disconnected,
 }
 
-const booleanToColor: Record<string | number | symbol, any> = {
-  true: 'text-cyan-500',
-  undefined: 'text-amber-400',
-  false: 'text-red-500',
+type IconColorConfig = {
+  icon: string
+  bg: string
 }
 
-const booleanToIcon: Record<string | number | symbol, any> = {
-  true: faCheck,
-  undefined: faMinus,
-  false: faExclamation,
+const hasIssueToIcon: Record<
+  string | number | symbol,
+  ActionIconProps['icon']
+> = {
+  true: 'close',
+  undefined: 'horizontalDash',
+  false: 'checkmark',
 }
 
-// TODO: Change these as needed @Frank
-const overallConnectionStateColor: Record<State, string> = {
-  [State.Ok]: 'text-cyan-500',
-  [State.Issue]: 'text-amber-400',
-  [State.Disconnected]: 'text-red-500',
+const hasIssueToIconColors: Record<string | number | symbol, IconColorConfig> =
+  {
+    true: {
+      icon: 'text-destroy-80 dark:text-destroy-10',
+      bg: 'bg-destroy-10 dark:bg-destroy-80',
+    },
+    undefined: {
+      icon: 'text-chalkboard-70 dark:text-chalkboard-30',
+      bg: 'bg-chalkboard-30 dark:bg-chalkboard-70',
+    },
+    false: {
+      icon: 'text-chalkboard-110 dark:!text-chalkboard-10',
+      bg: 'bg-transparent dark:bg-transparent',
+    },
+  }
+
+const overallConnectionStateColor: Record<State, IconColorConfig> = {
+  [State.Ok]: {
+    icon: 'text-energy-80 dark:text-energy-10',
+    bg: 'bg-energy-10/30 dark:bg-energy-80/50',
+  },
+  [State.Issue]: {
+    icon: 'text-destroy-80 dark:text-destroy-10',
+    bg: 'bg-destroy-10 dark:bg-destroy-80',
+  },
+  [State.Disconnected]: {
+    icon: 'text-destroy-80 dark:text-destroy-10',
+    bg: 'bg-destroy-10 dark:bg-destroy-80',
+  },
 }
 
-const overallConnectionStateIcon = {
-  [State.Ok]: faCheck,
-  [State.Issue]: faExclamation,
-  [State.Disconnected]: faMinus,
+const overallConnectionStateIcon: Record<State, ActionIconProps['icon']> = {
+  [State.Ok]: 'network',
+  [State.Issue]: 'networkCrossedOut',
+  [State.Disconnected]: 'networkCrossedOut',
 }
 
 export const NetworkHealthIndicator = () => {
   const [steps, setSteps] = useState(initialConnectingTypeGroupState)
   const [internetConnected, setInternetConnected] = useState<boolean>(true)
   const [overallState, setOverallState] = useState<State>(State.Ok)
+  const [hasCopied, setHasCopied] = useState<boolean>(false)
+  const [wasJustClosed, setWasJustClosed] = useState<boolean>(true)
 
   const [error, setError] = useState<ErrorType | undefined>(undefined)
 
@@ -156,62 +179,94 @@ export const NetworkHealthIndicator = () => {
           'p-0 border-none bg-transparent dark:bg-transparent relative ' +
           (hasIssues
             ? 'focus-visible:outline-destroy-80'
-            : 'focus-visible:outline-succeed-80')
+            : 'focus-visible:outline-energy-80')
         }
         data-testid="network-toggle"
       >
         <span className="sr-only">Network Health</span>
         <ActionIcon
-          icon={faWifi}
+          icon={overallConnectionStateIcon[overallState]}
           className="p-1"
-          iconClassName={overallConnectionStateColor[overallState]}
-          bgClassName={'fill-me-in'}
+          iconClassName={overallConnectionStateColor[overallState].icon}
+          bgClassName={
+            'rounded-sm ' + overallConnectionStateColor[overallState].bg
+          }
         />
+        <Tooltip position="blockEnd" delay={750} className="ui-open:hidden">
+          Network Health
+        </Tooltip>
       </Popover.Button>
-      <Popover.Panel className="absolute right-0 left-auto top-full mt-1 w-56 flex flex-col gap-1 divide-y divide-chalkboard-20 dark:divide-chalkboard-70 align-stretch py-2 bg-chalkboard-10 dark:bg-chalkboard-90 rounded shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50 text-sm">
-        <ul className="divide-y divide-chalkboard-20 dark:divide-chalkboard-80">
-          <div
-            className="flex justify-between font-bold text-xs uppercase px-4"
+      <Popover.Panel className="absolute right-0 left-auto top-full mt-1 w-64 flex flex-col gap-1 align-stretch bg-chalkboard-10 dark:bg-chalkboard-90 rounded shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50 text-sm">
+        <div
+          className={`flex items-center justify-between p-2 rounded-t-sm ${overallConnectionStateColor[overallState].bg} ${overallConnectionStateColor[overallState].icon}`}
+        >
+          <h2 className="text-sm font-sans font-normal">Network health</h2>
+          <p
             data-testid="network"
+            className="font-bold text-xs uppercase px-2 py-1 rounded-sm"
           >
-            <p className="flex-1 mr-4">
-              {overallState === State.Issue
-                ? 'Problem'
-                : overallState === State.Ok
-                ? 'Connected'
-                : 'Offline'}
-            </p>
-            <ActionIcon
-              icon={overallConnectionStateIcon[overallState]}
-              bgClassName={'fill-me-in'}
-              iconClassName={overallConnectionStateColor[overallState]}
-              className="ml-4"
-            />
-          </div>
+            {overallState === State.Issue
+              ? 'Problem'
+              : overallState === State.Ok
+              ? 'Connected'
+              : 'Offline'}
+          </p>
+        </div>
+        <ul className="divide-y divide-chalkboard-20 dark:divide-chalkboard-80">
           {Object.keys(steps).map((name) => (
             <li
               key={name}
-              className="flex mr-4 ml-4 items-center gap-1 py-2 my-2 last:mb-0"
+              className={'flex flex-col px-2 py-4 gap-1 last:mb-0 '}
             >
-              <p className="flex-1 mr-4">{name}</p>
-              {internetConnected ? (
-                <ActionIcon
-                  icon={
-                    booleanToIcon[
-                      (!issues[name as ConnectingTypeGroup]).toString()
-                    ]
-                  }
-                  bgClassName={'fill-me-in'}
-                  iconClassName={'fill-me-in'}
-                  className="ml-4"
-                />
-              ) : (
-                <ActionIcon
-                  icon={faMinus}
-                  bgClassName={'fill-me-in'}
-                  iconClassName={'fill-me-in'}
-                  className="ml-4"
-                />
+              <div className="flex items-center text-left gap-1">
+                <p className="flex-1">{name}</p>
+                {internetConnected ? (
+                  <ActionIcon
+                    size="lg"
+                    icon={
+                      hasIssueToIcon[
+                        issues[name as ConnectingTypeGroup].toString()
+                      ]
+                    }
+                    iconClassName={
+                      hasIssueToIconColors[
+                        issues[name as ConnectingTypeGroup].toString()
+                      ].icon
+                    }
+                    bgClassName={
+                      'rounded-sm ' +
+                      hasIssueToIconColors[
+                        issues[name as ConnectingTypeGroup].toString()
+                      ].bg
+                    }
+                  />
+                ) : (
+                  <ActionIcon
+                    icon={hasIssueToIcon.true}
+                    bgClassName={hasIssueToIconColors.true.bg}
+                    iconClassName={hasIssueToIconColors.true.icon}
+                  />
+                )}
+              </div>
+              {issues[name as ConnectingTypeGroup] && (
+                <button
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(
+                      JSON.stringify(error, null, 2) || ''
+                    )
+                    setHasCopied(true)
+                    setTimeout(() => setHasCopied(false), 5000)
+                  }}
+                  className="flex w-fit gap-2 items-center bg-transparent text-sm p-1 py-0 my-0 -mx-1 text-destroy-80 dark:text-destroy-80 hover:!bg-transparent border-transparent hover:border-destroy-80"
+                >
+                  {hasCopied ? 'Copied' : 'Copy Error'}
+                  <ActionIcon
+                    size="lg"
+                    icon={hasCopied ? 'clipboardCheckmark' : 'clipboardPlus'}
+                    iconClassName="text-inherit dark:text-inherit"
+                    bgClassName="!bg-transparent"
+                  />
+                </button>
               )}
             </li>
           ))}
