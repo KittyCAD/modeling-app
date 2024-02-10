@@ -56,12 +56,11 @@ export const CommandBarProvider = ({
       }}
     >
       {children}
-      <CommandBar />
     </CommandsContext.Provider>
   )
 }
 
-const CommandBar = () => {
+export const CommandBar = () => {
   const { commandBarState, commandBarSend } = useCommandsContext()
   const {
     context: { selectedCommand, currentArgument, commands },
