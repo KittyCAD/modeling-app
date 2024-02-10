@@ -56,7 +56,7 @@ const overallConnectionStateColor: Record<State, IconColorConfig> = {
   },
   [State.Issue]: {
     icon: 'text-destroy-80 dark:text-destroy-10',
-    bg: 'bg-destroy-10 dark:bg-destroy-80',
+    bg: 'bg-destroy-10 dark:bg-destroy-80/80',
   },
   [State.Disconnected]: {
     icon: 'text-destroy-80 dark:text-destroy-10',
@@ -75,7 +75,6 @@ export const NetworkHealthIndicator = () => {
   const [internetConnected, setInternetConnected] = useState<boolean>(true)
   const [overallState, setOverallState] = useState<State>(State.Ok)
   const [hasCopied, setHasCopied] = useState<boolean>(false)
-  const [wasJustClosed, setWasJustClosed] = useState<boolean>(true)
 
   const [error, setError] = useState<ErrorType | undefined>(undefined)
 
@@ -257,7 +256,7 @@ export const NetworkHealthIndicator = () => {
                     setHasCopied(true)
                     setTimeout(() => setHasCopied(false), 5000)
                   }}
-                  className="flex w-fit gap-2 items-center bg-transparent text-sm p-1 py-0 my-0 -mx-1 text-destroy-80 dark:text-destroy-80 hover:!bg-transparent border-transparent hover:border-destroy-80"
+                  className="flex w-fit gap-2 items-center bg-transparent text-sm p-1 py-0 my-0 -mx-1 text-destroy-80 dark:text-destroy-10 hover:bg-transparent border-transparent dark:border-transparent hover:border-destroy-80 dark:hover:border-destroy-80 dark:hover:bg-destroy-80"
                 >
                   {hasCopied ? 'Copied' : 'Copy Error'}
                   <ActionIcon
