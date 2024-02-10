@@ -8,7 +8,7 @@ use kittycad_execution_plan_macros::ExecutionPlanValue;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use crate::executor::SourceRange;
+use crate::executor::{ExtrudeGroup, SourceRange};
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
@@ -647,9 +647,28 @@ pub async fn start_sketch_at(args: Args) -> Result<MemoryItem, KclError> {
 async fn inner_start_sketch_at(data: LineData, args: Args) -> Result<Box<SketchGroup>, KclError> {
     // Let's assume it's the XY plane for now, this is just for backwards compatibility.
     let xy_plane = PlaneData::XY;
-    let plane = inner_start_sketch_on(xy_plane, args.clone()).await?;
-    let sketch_group = inner_start_profile_at(data, plane, args).await?;
-    Ok(sketch_group)
+    let result = inner_start_sketch_on(SketchData::Plane(xy_plane), None, args.clone()).await?;
+    match result {
+        MemoryItem::Plane(plane) => {
+            let sketch_group = inner_start_profile_at(data, plane, args).await?;
+            Ok(sketch_group)
+        }
+        // TODO: we will need to handle an extrude group in the case of sketch on face.
+        _ => Err(KclError::Type(KclErrorDetails {
+            message: "Expected a Plane".to_string(),
+            source_ranges: vec![args.source_range],
+        })),
+    }
+}
+
+/// Data for start sketch on.
+/// You can start a sketch on a plane or an extrude group.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase", untagged)]
+pub enum SketchData {
+    Plane(PlaneData),
+    ExtrudeGroup(Box<ExtrudeGroup>),
 }
 
 /// Data for a plane.
@@ -764,19 +783,45 @@ impl From<PlaneData> for Plane {
     }
 }
 
-/// Start a sketch on a specific plane.
+/// Start a sketch on a specific plane or face.
 pub async fn start_sketch_on(args: Args) -> Result<MemoryItem, KclError> {
-    let data: PlaneData = args.get_data()?;
+    let (data, tag): (SketchData, Option<String>) = args.get_data_and_optional_tag()?;
 
-    let plane = inner_start_sketch_on(data, args).await?;
-    Ok(MemoryItem::Plane(plane))
+    inner_start_sketch_on(data, tag, args).await
 }
 
-/// Start a sketch at a given point.
+/// Start a sketch on a specific plane or face.
 #[stdlib {
     name = "startSketchOn",
 }]
-async fn inner_start_sketch_on(data: PlaneData, args: Args) -> Result<Box<Plane>, KclError> {
+async fn inner_start_sketch_on(data: SketchData, tag: Option<String>, args: Args) -> Result<MemoryItem, KclError> {
+    match data {
+        SketchData::Plane(plane_data) => {
+            let plane = start_sketch_on_plane(plane_data, args).await?;
+            Ok(MemoryItem::Plane(plane))
+        }
+        SketchData::ExtrudeGroup(extrude_group) => {
+            let Some(tag) = tag else {
+                return Err(KclError::Type(KclErrorDetails {
+                    message: "Expected a tag for the face to sketch on".to_string(),
+                    source_ranges: vec![args.source_range],
+                }));
+            };
+            let extrude_group = start_sketch_on_face(extrude_group, &tag, args).await?;
+            Ok(MemoryItem::ExtrudeGroup(extrude_group))
+        }
+    }
+}
+
+async fn start_sketch_on_face(
+    extrude_group: Box<ExtrudeGroup>,
+    tag: &str,
+    args: Args,
+) -> Result<Box<ExtrudeGroup>, KclError> {
+    todo!()
+}
+
+async fn start_sketch_on_plane(data: PlaneData, args: Args) -> Result<Box<Plane>, KclError> {
     let mut plane: Plane = data.clone().into();
     let id = uuid::Uuid::new_v4();
     let default_origin = Point3D { x: 0.0, y: 0.0, z: 0.0 };

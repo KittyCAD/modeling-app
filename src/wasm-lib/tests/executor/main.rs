@@ -74,11 +74,9 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
     Ok(actual)
 }
 
-// delete once done with with sketchOnFace development
-// just here to run:
-// cargo test kurts_test -- --nocapture
 #[tokio::test(flavor = "multi_thread")]
-async fn kurts_test() {
+async fn serial_test_sketch_on_face() {
+    // TODO(kurt) make actually test sketch on face
     let code = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([11.19, 28.35], %)
   |> line([28.67, -13.25], %)
@@ -89,8 +87,9 @@ async fn kurts_test() {
 "#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    assert_eq!(1, 1);
+    twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face.png", &result, 0.999);
 }
+
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_execute_with_function_sketch() {
     let code = r#"fn box = (h, l, w) => {
@@ -500,10 +499,10 @@ async fn optional_params() {
         |> startProfileAt(pos, %)
         |> arc({angle_end: 360, angle_start: 0, radius: radius}, %)
         |> close(%)
-  
+
       return sg
   }
-  
+
   show(circle([2, 2], 20))
 "#;
     let result = execute_and_snapshot(code).await.unwrap();

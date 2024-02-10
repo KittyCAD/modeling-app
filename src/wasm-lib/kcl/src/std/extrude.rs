@@ -63,7 +63,7 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
         .send_modeling_cmd(
             id,
             kittycad::types::ModelingCmd::Solid3DGetExtrusionFaceInfo {
-                edge_id: edge_id,
+                edge_id,
                 object_id: sketch_group.id,
             },
         )
@@ -101,21 +101,19 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
     // Iterate over the sketch_group.value array and add face_id to GeoMeta
     let mut new_value: Vec<ExtrudeSurface> = Vec::new();
     for path in sketch_group.value.iter() {
-        if let Some(face_id) = face_id_map.get(&path.get_base().geo_meta.id) {
-            if let Some(actual_face_id) = face_id {
-                let extrude_surface = ExtrudeSurface::ExtrudePlane {
-                    position: sketch_group.position, // TODO should be for the extrude surface
-                    rotation: sketch_group.rotation, // TODO should be for the extrude surface
-                    face_id: *actual_face_id,
-                    name: path.get_base().name.clone(),
-                    geo_meta: GeoMeta {
-                        id: path.get_base().geo_meta.id,
-                        face_id: Some(*actual_face_id),
-                        metadata: path.get_base().geo_meta.metadata.clone(),
-                    },
-                };
-                new_value.push(extrude_surface);
-            }
+        if let Some(Some(actual_face_id)) = face_id_map.get(&path.get_base().geo_meta.id) {
+            let extrude_surface = ExtrudeSurface::ExtrudePlane {
+                position: sketch_group.position, // TODO should be for the extrude surface
+                rotation: sketch_group.rotation, // TODO should be for the extrude surface
+                face_id: *actual_face_id,
+                name: path.get_base().name.clone(),
+                geo_meta: GeoMeta {
+                    id: path.get_base().geo_meta.id,
+                    face_id: Some(*actual_face_id),
+                    metadata: path.get_base().geo_meta.metadata.clone(),
+                },
+            };
+            new_value.push(extrude_surface);
         }
     }
 
