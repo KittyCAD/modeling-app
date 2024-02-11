@@ -61,9 +61,10 @@ async fn inner_import(
     };
 
     // Get the file contents for each file path.
+    let fsm = crate::fs::FileManager::new();
     let mut import_files: Vec<kittycad::types::ImportFile> = Vec::new();
     for file_path in &file_paths {
-        let file_contents = std::fs::read(file_path).map_err(|e| {
+        let file_contents = fsm.read(file_path).await.map_err(|e| {
             KclError::Semantic(KclErrorDetails {
                 message: e.to_string(),
                 source_ranges: vec![args.source_range],
