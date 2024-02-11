@@ -793,8 +793,6 @@ mod tests {
             buf.push_str(&fn_docs);
         }
 
-        // uncomment to update
-        // std::fs::write("../../../docs/kcl/std.md", &buf).expect("Unable to write to file");
         expectorate::assert_contents("../../../docs/kcl/std.md", &buf);
     }
 
@@ -808,8 +806,6 @@ mod tests {
             let internal_fn = stdlib.fns.get(key).unwrap();
             json_data.push(internal_fn.to_json().unwrap());
         }
-        // uncomment to update
-        // std::fs::write("../../../docs/kcl/std.json", json_output).expect("Unable to write to file");
         expectorate::assert_contents(
             "../../../docs/kcl/std.json",
             &serde_json::to_string_pretty(&json_data).unwrap(),
