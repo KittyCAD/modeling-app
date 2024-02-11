@@ -2323,6 +2323,8 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 * `ExtrudeGroup` - An extrude group is a collection of extrude surfaces.
 ```
 {
+	// The id of the extrusion end cap
+	endCapId: uuid,
 	// The height of the extrude group.
 	height: number,
 	// The id of the extrude group.
@@ -2331,8 +2333,14 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 	position: [number, number, number],
 	// The rotation of the extrude group.
 	rotation: [number, number, number, number],
+	// The id of the extrusion start cap
+	startCapId: uuid,
 	// The extrude surfaces.
 	value: [{
+	// The id of the face after extrusion
+	faceId: uuid,
+	// The face id for the extrude plane.
+	face_id: uuid,
 	// The id of the geometry.
 	id: uuid,
 	// The name.
@@ -2345,6 +2353,12 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 	sourceRange: [number, number],
 	type: string,
 }],
+	// The x-axis of the extrude group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the extrude group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the extrude group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -2386,6 +2400,8 @@ getExtrudeWallTransform(surface_name: string, extrude_group: ExtrudeGroup) -> Ex
 * `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces.
 ```
 {
+	// The id of the extrusion end cap
+	endCapId: uuid,
 	// The height of the extrude group.
 	height: number,
 	// The id of the extrude group.
@@ -2394,8 +2410,14 @@ getExtrudeWallTransform(surface_name: string, extrude_group: ExtrudeGroup) -> Ex
 	position: [number, number, number],
 	// The rotation of the extrude group.
 	rotation: [number, number, number, number],
+	// The id of the extrusion start cap
+	startCapId: uuid,
 	// The extrude surfaces.
 	value: [{
+	// The id of the face after extrusion
+	faceId: uuid,
+	// The face id for the extrude plane.
+	face_id: uuid,
 	// The id of the geometry.
 	id: uuid,
 	// The name.
@@ -2408,6 +2430,12 @@ getExtrudeWallTransform(surface_name: string, extrude_group: ExtrudeGroup) -> Ex
 	sourceRange: [number, number],
 	type: string,
 }],
+	// The x-axis of the extrude group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the extrude group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the extrude group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -4077,7 +4105,7 @@ Start a profile at a given point.
 
 
 ```
-startProfileAt(data: LineData, plane: Plane) -> SketchGroup
+startProfileAt(data: LineData, sketch_surface: SketchSurface) -> SketchGroup
 ```
 
 #### Arguments
@@ -4092,7 +4120,7 @@ startProfileAt(data: LineData, plane: Plane) -> SketchGroup
 } |
 [number, number]
 ```
-* `plane`: `Plane` - A plane.
+* `sketch_surface`: `SketchSurface` - A plane or a face.
 ```
 {
 	// The id of the plane.
@@ -4113,6 +4141,30 @@ string,
 	z: number,
 },
 	// What should the plane’s Y axis be?
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The z-axis (normal).
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+} |
+{
+	// The id of the face.
+	id: uuid,
+	// The tag of the face.
+	tag: string,
+	// What should the face’s X axis be?
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// What should the face’s Y axis be?
 	yAxis: {
 	x: number,
 	y: number,
@@ -4330,17 +4382,17 @@ startSketchAt(data: LineData) -> SketchGroup
 
 ### startSketchOn
 
-Start a sketch at a given point.
+Start a sketch on a specific plane or face.
 
 
 
 ```
-startSketchOn(data: PlaneData) -> Plane
+startSketchOn(data: SketchData, tag: String) -> SketchSurface
 ```
 
 #### Arguments
 
-* `data`: `PlaneData` - Data for a plane.
+* `data`: `SketchData` - Data for start sketch on. You can start a sketch on a plane or an extrude group.
 ```
 string |
 string |
@@ -4375,12 +4427,51 @@ string |
 	z: number,
 },
 },
+} |
+{
+	// The id of the extrusion end cap
+	endCapId: uuid,
+	// The height of the extrude group.
+	height: number,
+	// The id of the extrude group.
+	id: uuid,
+	// The position of the extrude group.
+	position: [number, number, number],
+	// The rotation of the extrude group.
+	rotation: [number, number, number, number],
+	// The id of the extrusion start cap
+	startCapId: uuid,
+	// The extrude surfaces.
+	value: [{
+	// The id of the face after extrusion
+	faceId: uuid,
+	// The face id for the extrude plane.
+	face_id: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The name.
+	name: string,
+	// The position.
+	position: [number, number, number],
+	// The rotation.
+	rotation: [number, number, number, number],
+	// The source range.
+	sourceRange: [number, number],
+	type: string,
+}],
+	// The x-axis of the extrude group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the extrude group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the extrude group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
+* `tag`: `String`
 
 #### Returns
 
-* `Plane` - A plane.
+* `SketchSurface` - A plane or a face.
 ```
 {
 	// The id of the plane.
@@ -4401,6 +4492,30 @@ string,
 	z: number,
 },
 	// What should the plane’s Y axis be?
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The z-axis (normal).
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+} |
+{
+	// The id of the face.
+	id: uuid,
+	// The tag of the face.
+	tag: string,
+	// What should the face’s X axis be?
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// What should the face’s Y axis be?
 	yAxis: {
 	x: number,
 	y: number,

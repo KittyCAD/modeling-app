@@ -647,21 +647,9 @@ pub async fn start_sketch_at(args: Args) -> Result<MemoryItem, KclError> {
 async fn inner_start_sketch_at(data: LineData, args: Args) -> Result<Box<SketchGroup>, KclError> {
     // Let's assume it's the XY plane for now, this is just for backwards compatibility.
     let xy_plane = PlaneData::XY;
-    let result = inner_start_sketch_on(SketchData::Plane(xy_plane), None, args.clone()).await?;
-    match result {
-        MemoryItem::Plane(plane) => {
-            let sketch_group = inner_start_profile_at(data, SketchSurface::Plane(plane), args).await?;
-            Ok(sketch_group)
-        }
-        MemoryItem::Face(face) => {
-            let sketch_group = inner_start_profile_at(data, SketchSurface::Face(face), args).await?;
-            Ok(sketch_group)
-        }
-        _ => Err(KclError::Type(KclErrorDetails {
-            message: "Expected a Plane".to_string(),
-            source_ranges: vec![args.source_range],
-        })),
-    }
+    let sketch_surface = inner_start_sketch_on(SketchData::Plane(xy_plane), None, args.clone()).await?;
+    let sketch_group = inner_start_profile_at(data, sketch_surface, args).await?;
+    Ok(sketch_group)
 }
 
 /// Data for start sketch on.
@@ -828,18 +816,21 @@ impl SketchSurface {
 pub async fn start_sketch_on(args: Args) -> Result<MemoryItem, KclError> {
     let (data, tag): (SketchData, Option<String>) = args.get_data_and_optional_tag()?;
 
-    inner_start_sketch_on(data, tag, args).await
+    match inner_start_sketch_on(data, tag, args).await? {
+        SketchSurface::Plane(plane) => Ok(MemoryItem::Plane(plane)),
+        SketchSurface::Face(face) => Ok(MemoryItem::Face(face)),
+    }
 }
 
 /// Start a sketch on a specific plane or face.
 #[stdlib {
     name = "startSketchOn",
 }]
-async fn inner_start_sketch_on(data: SketchData, tag: Option<String>, args: Args) -> Result<MemoryItem, KclError> {
+async fn inner_start_sketch_on(data: SketchData, tag: Option<String>, args: Args) -> Result<SketchSurface, KclError> {
     match data {
         SketchData::Plane(plane_data) => {
             let plane = start_sketch_on_plane(plane_data, args).await?;
-            Ok(MemoryItem::Plane(plane))
+            Ok(SketchSurface::Plane(plane))
         }
         SketchData::ExtrudeGroup(extrude_group) => {
             let Some(tag) = tag else {
@@ -849,7 +840,7 @@ async fn inner_start_sketch_on(data: SketchData, tag: Option<String>, args: Args
                 }));
             };
             let face = start_sketch_on_face(extrude_group, &tag, args).await?;
-            Ok(MemoryItem::Face(face))
+            Ok(SketchSurface::Face(face))
         }
     }
 }
