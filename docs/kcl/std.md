@@ -123,10 +123,10 @@ angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup)
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -228,10 +228,10 @@ angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup)
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -343,10 +343,10 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -430,10 +430,10 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -541,10 +541,10 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -628,10 +628,10 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -739,10 +739,10 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -826,10 +826,10 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -938,10 +938,10 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -1025,10 +1025,10 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -1136,10 +1136,10 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -1223,10 +1223,10 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -1334,10 +1334,10 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -1421,10 +1421,10 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -1559,10 +1559,10 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -1646,10 +1646,10 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -1806,10 +1806,10 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -1893,10 +1893,10 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -2012,10 +2012,10 @@ close(sketch_group: SketchGroup) -> SketchGroup
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -2099,10 +2099,10 @@ close(sketch_group: SketchGroup) -> SketchGroup
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -2238,10 +2238,10 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -2468,10 +2468,10 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 * `hole_sketch_group`: `SketchGroupSet` - A sketch group or a group of sketch groups.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -2556,10 +2556,10 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -2643,10 +2643,10 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -2851,10 +2851,10 @@ lastSegX(sketch_group: SketchGroup) -> number
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -2954,10 +2954,10 @@ lastSegY(sketch_group: SketchGroup) -> number
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -3130,10 +3130,10 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -3217,10 +3217,10 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -3326,10 +3326,10 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -3413,10 +3413,10 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -3644,10 +3644,10 @@ patternLinear(data: LinearPatternData, geometry: Geometry) -> Geometries
 * `geometry`: `Geometry` - A geometry.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -3836,10 +3836,10 @@ segAng(segment_name: string, sketch_group: SketchGroup) -> number
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -3940,10 +3940,10 @@ segEndX(segment_name: string, sketch_group: SketchGroup) -> number
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -4044,10 +4044,10 @@ segEndY(segment_name: string, sketch_group: SketchGroup) -> number
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -4148,10 +4148,10 @@ segLen(segment_name: string, sketch_group: SketchGroup) -> number
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -4251,10 +4251,10 @@ show(sketch: SketchGroup)
 * `sketch`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -4460,10 +4460,10 @@ startProfileAt(data: LineData, sketch_surface: SketchSurface) -> SketchGroup
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -4572,10 +4572,10 @@ startSketchAt(data: LineData) -> SketchGroup
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -4858,10 +4858,10 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -4945,10 +4945,10 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -5045,10 +5045,10 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchG
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -5133,10 +5133,10 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchG
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -5261,10 +5261,10 @@ number
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -5348,10 +5348,10 @@ number
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -5457,10 +5457,10 @@ number
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -5544,10 +5544,10 @@ number
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -5653,10 +5653,10 @@ number
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -5740,10 +5740,10 @@ number
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -5849,10 +5849,10 @@ number
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -5936,10 +5936,10 @@ number
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
