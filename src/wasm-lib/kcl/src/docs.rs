@@ -287,7 +287,7 @@ pub fn get_type_string_from_schema(schema: &schemars::schema::Schema) -> Result<
             if let Some(format) = &o.format {
                 if format == "uuid" {
                     return Ok((Primitive::Uuid.to_string(), false));
-                } else if format == "double" || format == "uint" {
+                } else if format == "double" || format == "uint" || format == "int64" {
                     return Ok((Primitive::Number.to_string(), false));
                 } else {
                     anyhow::bail!("unknown format: {}", format);
@@ -374,7 +374,7 @@ pub fn get_autocomplete_string_from_schema(schema: &schemars::schema::Schema) ->
             if let Some(format) = &o.format {
                 if format == "uuid" {
                     return Ok(Primitive::Uuid.to_string());
-                } else if format == "double" || format == "uint" {
+                } else if format == "double" || format == "uint" || format == "int64" {
                     return Ok(Primitive::Number.to_string());
                 } else {
                     anyhow::bail!("unknown format: {}", format);

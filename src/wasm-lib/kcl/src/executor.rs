@@ -108,6 +108,7 @@ impl ProgramReturn {
 pub enum MemoryItem {
     UserVal(UserVal),
     Plane(Box<Plane>),
+    Face(Box<Face>),
     SketchGroup(Box<SketchGroup>),
     ExtrudeGroup(Box<ExtrudeGroup>),
     #[ts(skip)]
@@ -136,6 +137,25 @@ pub struct Plane {
     /// What should the plane’s X axis be?
     pub x_axis: Point3d,
     /// What should the plane’s Y axis be?
+    pub y_axis: Point3d,
+    /// The z-axis (normal).
+    pub z_axis: Point3d,
+    #[serde(rename = "__meta")]
+    pub meta: Vec<Metadata>,
+}
+
+/// A face.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct Face {
+    /// The id of the face.
+    pub id: uuid::Uuid,
+    /// The tag of the face.
+    pub tag: String,
+    /// What should the face’s X axis be?
+    pub x_axis: Point3d,
+    /// What should the face’s Y axis be?
     pub y_axis: Point3d,
     /// The z-axis (normal).
     pub z_axis: Point3d,
@@ -216,6 +236,7 @@ impl From<MemoryItem> for Vec<SourceRange> {
             MemoryItem::ExtrudeTransform(e) => e.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::Function { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::Plane(p) => p.meta.iter().map(|m| m.source_range).collect(),
+            MemoryItem::Face(f) => f.meta.iter().map(|m| m.source_range).collect(),
         }
     }
 }
