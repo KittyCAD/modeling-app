@@ -10,12 +10,14 @@ use schemars::JsonSchema;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{ImportedGeometry, MemoryItem},
+    fs::FileSystem,
     std::Args,
 };
 
 /// Import a CAD file.
 /// For formats lacking unit data (STL, OBJ, PLY), the default import unit is millimeters.
 /// Otherwise you can specify the unit by passing in the options parameter.
+/// The file(s) should be of only one format, if multiple files are provided.
 pub async fn import(args: Args) -> Result<MemoryItem, KclError> {
     let (file_paths, options): (Vec<String>, Option<kittycad::types::InputFormat>) = args.get_import_data()?;
 
@@ -24,6 +26,9 @@ pub async fn import(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Import a CAD file.
+/// For formats lacking unit data (STL, OBJ, PLY), the default import unit is millimeters.
+/// Otherwise you can specify the unit by passing in the options parameter.
+/// The file(s) should be of only one format, if multiple files are provided.
 #[stdlib {
     name = "import",
 }]
@@ -39,8 +44,16 @@ async fn inner_import(
         }));
     }
 
-    // TODO: we need to ensure that the file paths are all related to a single mesh and not multiple meshes.
+    // We need to ensure that the file paths are all related to a single mesh and not multiple meshes.
     // In that if there is more than one file, its like a glTF file with binary data.
+    if file_paths.len() > 1 {
+        let Some(options) = &options else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "Multiple file paths were provided, but no format options were provided.".to_string(),
+                source_ranges: vec![args.source_range],
+            }));
+        };
+    }
 
     // Get the format type from the extension of the file.
     let format = if let Some(options) = options {
@@ -64,7 +77,7 @@ async fn inner_import(
     let fsm = crate::fs::FileManager::new();
     let mut import_files: Vec<kittycad::types::ImportFile> = Vec::new();
     for file_path in &file_paths {
-        let file_contents = fsm.read(file_path).await.map_err(|e| {
+        let file_contents = fsm.read(file_path, args.source_range).await.map_err(|e| {
             KclError::Semantic(KclErrorDetails {
                 message: e.to_string(),
                 source_ranges: vec![args.source_range],
