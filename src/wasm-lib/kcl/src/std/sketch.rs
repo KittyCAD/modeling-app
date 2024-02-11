@@ -10,8 +10,8 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
-        BasePath, ExtrudeGroup, GeoMeta, MemoryItem, Path, Plane, PlaneType, Point2d, Point3d, Position, Rotation,
-        SketchGroup, SketchGroupSet, SourceRange,
+        BasePath, ExtrudeGroup, Face, GeoMeta, MemoryItem, Path, Plane, PlaneType, Point2d, Point3d, Position,
+        Rotation, SketchGroup, SketchGroupSet, SourceRange,
     },
     std::{
         utils::{
@@ -652,10 +652,13 @@ async fn inner_start_sketch_at(data: LineData, args: Args) -> Result<Box<SketchG
     let result = inner_start_sketch_on(SketchData::Plane(xy_plane), None, args.clone()).await?;
     match result {
         MemoryItem::Plane(plane) => {
-            let sketch_group = inner_start_profile_at(data, plane, args).await?;
+            let sketch_group = inner_start_profile_at(data, SketchSurface::Plane(plane), args).await?;
             Ok(sketch_group)
         }
-        // TODO: we will need to handle an extrude group in the case of sketch on face.
+        MemoryItem::Face(face) => {
+            let sketch_group = inner_start_profile_at(data, SketchSurface::Face(face), args).await?;
+            Ok(sketch_group)
+        }
         _ => Err(KclError::Type(KclErrorDetails {
             message: "Expected a Plane".to_string(),
             source_ranges: vec![args.source_range],
@@ -785,6 +788,44 @@ impl From<PlaneData> for Plane {
     }
 }
 
+/// A plane or a face.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase", untagged)]
+pub enum SketchSurface {
+    /// A plane.
+    Plane(Box<Plane>),
+    /// A face.
+    Face(Box<Face>),
+}
+
+impl SketchSurface {
+    pub fn id(&self) -> uuid::Uuid {
+        match self {
+            SketchSurface::Plane(plane) => plane.id,
+            SketchSurface::Face(face) => face.id,
+        }
+    }
+    pub fn x_axis(&self) -> Point3d {
+        match self {
+            SketchSurface::Plane(plane) => plane.x_axis.clone(),
+            SketchSurface::Face(face) => face.x_axis.clone(),
+        }
+    }
+    pub fn y_axis(&self) -> Point3d {
+        match self {
+            SketchSurface::Plane(plane) => plane.y_axis.clone(),
+            SketchSurface::Face(face) => face.y_axis.clone(),
+        }
+    }
+    pub fn z_axis(&self) -> Point3d {
+        match self {
+            SketchSurface::Plane(plane) => plane.z_axis.clone(),
+            SketchSurface::Face(face) => face.z_axis.clone(),
+        }
+    }
+}
+
 /// Start a sketch on a specific plane or face.
 pub async fn start_sketch_on(args: Args) -> Result<MemoryItem, KclError> {
     let (data, tag): (SketchData, Option<String>) = args.get_data_and_optional_tag()?;
@@ -809,17 +850,25 @@ async fn inner_start_sketch_on(data: SketchData, tag: Option<String>, args: Args
                     source_ranges: vec![args.source_range],
                 }));
             };
-            let extrude_group = start_sketch_on_face(extrude_group, &tag, args).await?;
-            Ok(MemoryItem::ExtrudeGroup(extrude_group))
+            let face = start_sketch_on_face(extrude_group, &tag, args).await?;
+            Ok(MemoryItem::Face(face))
         }
     }
 }
 
-async fn start_sketch_on_face(
-    extrude_group: Box<ExtrudeGroup>,
-    tag: &str,
-    args: Args,
-) -> Result<Box<ExtrudeGroup>, KclError> {
+async fn start_sketch_on_face(extrude_group: Box<ExtrudeGroup>, tag: &str, args: Args) -> Result<Box<Face>, KclError> {
+    // Enter sketch mode on the face.
+    args.send_modeling_cmd(
+        uuid::Uuid::new_v4(),
+        ModelingCmd::EnableSketchMode {
+            animated: false,
+            ortho: false,
+            entity_id: extrude_group.id, // TODO: this should be the face id , just showing kurt
+                                         // what the command looks like
+        },
+    )
+    .await?;
+
     todo!()
 }
 
@@ -922,9 +971,9 @@ async fn start_sketch_on_plane(data: PlaneData, args: Args) -> Result<Box<Plane>
 
 /// Start a profile at a given point.
 pub async fn start_profile_at(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, plane): (LineData, Box<Plane>) = args.get_data_and_plane()?;
+    let (data, sketch_surface): (LineData, SketchSurface) = args.get_data_and_sketch_surface()?;
 
-    let sketch_group = inner_start_profile_at(data, plane, args).await?;
+    let sketch_group = inner_start_profile_at(data, sketch_surface, args).await?;
     Ok(MemoryItem::SketchGroup(sketch_group))
 }
 
@@ -932,7 +981,11 @@ pub async fn start_profile_at(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "startProfileAt",
 }]
-async fn inner_start_profile_at(data: LineData, plane: Box<Plane>, args: Args) -> Result<Box<SketchGroup>, KclError> {
+async fn inner_start_profile_at(
+    data: LineData,
+    sketch_surface: SketchSurface,
+    args: Args,
+) -> Result<Box<SketchGroup>, KclError> {
     let to = match &data {
         LineData::PointWithTag { to, .. } => *to,
         LineData::Point(to) => *to,
@@ -974,10 +1027,22 @@ async fn inner_start_profile_at(data: LineData, plane: Box<Plane>, args: Args) -
         id: path_id,
         position: Position([0.0, 0.0, 0.0]),
         rotation: Rotation([0.0, 0.0, 0.0, 1.0]),
-        x_axis: Position([plane.x_axis.x, plane.x_axis.y, plane.x_axis.z]),
-        y_axis: Position([plane.y_axis.x, plane.y_axis.y, plane.y_axis.z]),
-        z_axis: Position([plane.z_axis.x, plane.z_axis.y, plane.z_axis.z]),
-        plane_id: Some(plane.id),
+        x_axis: Position([
+            sketch_surface.x_axis().x,
+            sketch_surface.x_axis().y,
+            sketch_surface.x_axis().z,
+        ]),
+        y_axis: Position([
+            sketch_surface.y_axis().x,
+            sketch_surface.y_axis().y,
+            sketch_surface.y_axis().z,
+        ]),
+        z_axis: Position([
+            sketch_surface.z_axis().x,
+            sketch_surface.z_axis().y,
+            sketch_surface.z_axis().z,
+        ]),
+        plane_id: Some(sketch_surface.id()),
         value: vec![],
         start: current_path,
         meta: vec![args.source_range.into()],

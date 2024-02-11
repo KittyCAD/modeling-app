@@ -29,6 +29,7 @@ use crate::{
     executor::{
         ExecutorContext, ExtrudeGroup, Geometry, MemoryItem, Metadata, Plane, SketchGroup, SketchGroupSet, SourceRange,
     },
+    std::sketch::SketchSurface,
 };
 
 pub type StdFn = fn(Args) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<MemoryItem, KclError>>>>;
@@ -513,7 +514,7 @@ impl Args {
         Ok((data, geometry))
     }
 
-    fn get_data_and_plane<T: serde::de::DeserializeOwned>(&self) -> Result<(T, Box<Plane>), KclError> {
+    fn get_data_and_sketch_surface<T: serde::de::DeserializeOwned>(&self) -> Result<(T, SketchSurface), KclError> {
         let first_value = self
             .args
             .first()
@@ -539,16 +540,21 @@ impl Args {
             })
         })?;
 
-        let plane = if let MemoryItem::Plane(p) = second_value {
-            p.clone()
+        let sketch_surface = if let MemoryItem::Plane(p) = second_value {
+            SketchSurface::Plane(p.clone())
+        } else if let MemoryItem::Face(face) = second_value {
+            SketchSurface::Face(face.clone())
         } else {
             return Err(KclError::Type(KclErrorDetails {
-                message: format!("Expected a Plane as the second argument, found `{:?}`", self.args),
+                message: format!(
+                    "Expected a plane or face (SketchSurface) as the second argument, found `{:?}`",
+                    self.args
+                ),
                 source_ranges: vec![self.source_range],
             }));
         };
 
-        Ok((data, plane))
+        Ok((data, sketch_surface))
     }
 
     fn get_segment_name_to_number_sketch_group(&self) -> Result<(String, f64, Box<SketchGroup>), KclError> {
