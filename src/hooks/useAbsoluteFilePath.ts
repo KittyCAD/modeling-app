@@ -1,4 +1,6 @@
-import { BROWSER_FILE_NAME, IndexLoaderData, paths } from 'Router'
+import { BROWSER_FILE_NAME } from 'Router'
+import { type IndexLoaderData } from 'lib/types'
+import { paths } from 'lib/paths'
 import { useRouteLoaderData } from 'react-router-dom'
 
 export function useAbsoluteFilePath() {

@@ -23,6 +23,9 @@ const config = defineConfig({
       provider: 'istanbul' // or 'v8'
     },
     exclude: [...configDefaults.exclude, '**/e2e/playwright/**/*'],
+    deps: {
+      inline: ['vitest-canvas-mock']
+    }
   },
   build: {
     outDir: 'build',

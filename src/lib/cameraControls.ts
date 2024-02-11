@@ -33,7 +33,7 @@ interface MouseGuardZoomHandler {
   lenientDragStartButton?: number
 }
 
-interface MouseGuard {
+export interface MouseGuard {
   pan: MouseGuardHandler
   zoom: MouseGuardZoomHandler
   rotate: MouseGuardHandler

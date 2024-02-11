@@ -21,7 +21,7 @@ import {
 } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { normaliseAngle } from '../../lib/utils'
-import { kclManager } from 'lang/KclSinglton'
+import { kclManager } from 'lang/KclSingleton'
 
 const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
 

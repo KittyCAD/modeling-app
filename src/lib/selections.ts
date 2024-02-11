@@ -1,16 +1,24 @@
 import { Models } from '@kittycad/lib'
 import { engineCommandManager } from 'lang/std/engineConnection'
-import { SourceRange } from 'lang/wasm'
+import { CallExpression, SourceRange, parse, recast } from 'lang/wasm'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { v4 as uuidv4 } from 'uuid'
 import { EditorSelection } from '@codemirror/state'
-import { kclManager } from 'lang/KclSinglton'
+import { kclManager } from 'lang/KclSingleton'
 import { SelectionRange } from '@uiw/react-codemirror'
 import { isOverlap } from 'lib/utils'
 import { isCursorInSketchCommandRange } from 'lang/util'
 import { Program } from 'lang/wasm'
-import { doesPipeHaveCallExp } from 'lang/queryAst'
+import { doesPipeHaveCallExp, getNodeFromPath } from 'lang/queryAst'
 import { CommandArgument } from './commandTypes'
+import {
+  STRAIGHT_SEGMENT,
+  TANGENTIAL_ARC_TO_SEGMENT,
+  clientSideScene,
+  getParentGroup,
+} from 'clientSideScene/clientSideScene'
+import { Mesh } from 'three'
+import { AXIS_GROUP, X_AXIS } from 'clientSideScene/setup'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -173,6 +181,42 @@ export async function getEventForSelectWithPoint(
   }
 }
 
+export function getEventForSegmentSelection(
+  obj: any
+): ModelingMachineEvent | null {
+  const group = getParentGroup(obj)
+  const axisGroup = getParentGroup(obj, [AXIS_GROUP])
+  if (!group && !axisGroup) return null
+  if (axisGroup?.userData.type === AXIS_GROUP) {
+    return {
+      type: 'Set selection',
+      data: {
+        selectionType: 'otherSelection',
+        selection: obj?.userData?.type === X_AXIS ? 'x-axis' : 'y-axis',
+      },
+    }
+  }
+  const pathToNode = group?.userData?.pathToNode
+  if (!pathToNode) return null
+  // previous drags don't update ast for efficiency reasons
+  // So we want to make sure we have and updated ast with
+  // accurate source ranges
+  const updatedAst = parse(kclManager.code)
+  const node = getNodeFromPath<CallExpression>(
+    updatedAst,
+    pathToNode,
+    'CallExpression'
+  ).node
+  const range: SourceRange = [node.start, node.end]
+  return {
+    type: 'Set selection',
+    data: {
+      selectionType: 'singleCodeCursor',
+      selection: { range, type: 'default' },
+    },
+  }
+}
+
 export function handleSelectionBatch({
   selections,
 }: {
@@ -239,7 +283,6 @@ export function handleSelectionWithShift({
     })
   }
   if (otherSelection) {
-    console.log('otherSelection in handleSelectionWithShift', otherSelection)
     return handleSelectionBatch({
       selections: {
         codeBasedSelections: isShiftDown
@@ -335,6 +378,7 @@ export function processCodeMirrorRanges({
     .filter(Boolean) as any
 
   if (!selectionRanges) return null
+  updateSceneObjectColors(codeBasedSelections)
   return {
     modelingEvent: {
       type: 'Set selection',
@@ -348,6 +392,41 @@ export function processCodeMirrorRanges({
     },
     engineEvents: resetAndSetEngineEntitySelectionCmds(idBasedSelections),
   }
+}
+
+function updateSceneObjectColors(codeBasedSelections: Selection[]) {
+  let updated: Program
+  try {
+    updated = parse(recast(kclManager.ast))
+  } catch (e) {
+    console.error('error parsing code in processCodeMirrorRanges', e)
+    return
+  }
+  Object.values(clientSideScene.activeSegments).forEach((segmentGroup) => {
+    if (
+      ![STRAIGHT_SEGMENT, TANGENTIAL_ARC_TO_SEGMENT].includes(
+        segmentGroup?.userData?.type
+      )
+    )
+      return
+    const node = getNodeFromPath<CallExpression>(
+      updated,
+      segmentGroup.userData.pathToNode,
+      'CallExpression'
+    ).node
+    const groupHasCursor = codeBasedSelections.some((selection) => {
+      return isOverlap(selection.range, [node.start, node.end])
+    })
+    const color = groupHasCursor ? 0x0000ff : 0xffffff
+    segmentGroup.traverse(
+      (child) => child instanceof Mesh && child.material.color.set(color)
+    )
+    // TODO if we had access to the xstate context and therefore selections
+    // we wouldn't need to set this here,
+    // it would be better to treat xstate context as the source of truth instead of having
+    // extra redundant state floating around
+    segmentGroup.userData.isSelected = groupHasCursor
+  })
 }
 
 function resetAndSetEngineEntitySelectionCmds(

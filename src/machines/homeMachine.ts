@@ -1,5 +1,5 @@
 import { assign, createMachine } from 'xstate'
-import { ProjectWithEntryPointMetadata } from '../Router'
+import { type ProjectWithEntryPointMetadata } from 'lib/types'
 import { HomeCommandSchema } from 'lib/commandBarConfigs/homeCommandConfig'
 
 export const homeMachine = createMachine(

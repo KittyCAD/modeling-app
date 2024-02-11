@@ -3,7 +3,7 @@ import {
   faArrowUp,
   faCircle,
 } from '@fortawesome/free-solid-svg-icons'
-import { ProjectWithEntryPointMetadata } from '../Router'
+import { type ProjectWithEntryPointMetadata } from 'lib/types'
 
 const DESC = ':desc'
 
