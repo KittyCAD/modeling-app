@@ -27,7 +27,7 @@ use crate::{
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
     executor::{
-        ExecutorContext, ExtrudeGroup, Geometry, MemoryItem, Metadata, Plane, SketchGroup, SketchGroupSet, SourceRange,
+        ExecutorContext, ExtrudeGroup, Geometry, MemoryItem, Metadata, SketchGroup, SketchGroupSet, SourceRange,
     },
     std::sketch::SketchSurface,
 };
