@@ -21,7 +21,7 @@ wasm-bindgen-futures = "0.4.41"
 
 [dev-dependencies]
 anyhow = "1"
-image = "0.24.7"
+image = "0.24.8"
 kittycad = { workspace = true, default-features = true }
 pretty_assertions = "1.4.0"
 reqwest = { version = "0.11.24", default-features = false }
