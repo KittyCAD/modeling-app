@@ -352,7 +352,7 @@ export function processCodeMirrorRanges({
       }
     })
   const idBasedSelections: SelectionToEngine[] = codeBasedSelections
-    .map(({ type, range }): null | SelectionToEngine => {
+    .flatMap(({ type, range }): null | SelectionToEngine[] => {
       // TODO #868: loops over all artifacts will become inefficient at a large scale
       const entriesWithOverlap = Object.entries(
         engineCommandManager.artifactMap || {}
@@ -362,8 +362,7 @@ export function processCodeMirrorRanges({
           : false
       })
       if (entriesWithOverlap.length) {
-        const [id, artifact] = entriesWithOverlap?.[0]
-        return {
+        return entriesWithOverlap.map(([id, artifact]) => ({
           type,
           id:
             type === 'line-end' &&
@@ -371,7 +370,7 @@ export function processCodeMirrorRanges({
             artifact.headVertexId
               ? artifact.headVertexId
               : id,
-        }
+        }))
       }
       return null
     })

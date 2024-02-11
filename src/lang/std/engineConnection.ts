@@ -1075,7 +1075,7 @@ export class EngineCommandManager {
 
     if (command && command.type === 'pending') {
       const resolve = command.resolve
-      this.artifactMap[id] = {
+      const artifact = {
         type: 'result',
         range: command.range,
         pathToNode: command.pathToNode,
@@ -1083,6 +1083,13 @@ export class EngineCommandManager {
         parentId: command.parentId ? command.parentId : undefined,
         data: modelingResponse,
         raw: message,
+      } as const
+      this.artifactMap[id] = artifact
+      if (command.commandType === 'entity_linear_pattern') {
+        const entities = (modelingResponse as any)?.data?.entity_ids
+        entities?.forEach((entity: string) => {
+          this.artifactMap[entity] = artifact
+        })
       }
       resolve({
         id,
@@ -1194,18 +1201,10 @@ export class EngineCommandManager {
         // this fact is very opaque in the api and docs (as to what should can be deleted).
         // Using an array is the list is likely to grow.
         'start_path',
+        'entity_linear_pattern',
       ]
       if (artifactTypesToDelete.includes(artifact.commandType)) {
         artifactsToDelete[id] = artifact
-      }
-      const patternsToDelete : ArtifactMap[string]['commandType'][] = [
-        'entity_linear_pattern'
-      ]
-      if (patternsToDelete.includes(artifact.commandType)) {
-        const entities = (artifact as any)?.data?.data?.entity_ids
-        entities.forEach((entity: string) => {
-          artifactsToDelete[entity] = {}
-        })
       }
     })
     Object.keys(artifactsToDelete).forEach((id) => {
