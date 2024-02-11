@@ -46,6 +46,6 @@ export function useEngineConnectionSubscriptions() {
     engineCommandManager,
     setHighlightRange,
     highlightRange,
-    context.sketchEnginePathId,
+    context?.sketchEnginePathId,
   ])
 }

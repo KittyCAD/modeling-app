@@ -1503,20 +1503,21 @@ function getArgLiteralVal(arg: Value): number {
 export function getConstraintLevelFromSourceRange(
   cursorRange: Selection['range'],
   ast: Program
-): 'free' | 'partial' | 'full' {
+): { range: [number, number]; level: 'free' | 'partial' | 'full' } {
   const { node: sketchFnExp } = getNodeFromPath<CallExpression>(
     ast,
     getNodePathFromSourceRange(ast, cursorRange),
     'CallExpression'
   )
   const name = sketchFnExp?.callee?.name as ToolTip
-  if (!toolTips.includes(name)) return 'free'
+  const range: [number, number] = [sketchFnExp.start, sketchFnExp.end]
+  if (!toolTips.includes(name)) return { level: 'free', range: range }
 
   const firstArg = getFirstArg(sketchFnExp)
 
   // check if the function is fully constrained
   if (isNotLiteralArrayOrStatic(firstArg.val)) {
-    return 'full'
+    return { level: 'full', range: range }
   }
 
   // check if the function has no constraints
@@ -1525,10 +1526,10 @@ export function getConstraintLevelFromSourceRange(
   const isOneValFree =
     !Array.isArray(firstArg.val) && isLiteralArrayOrStatic(firstArg.val)
 
-  if (isTwoValFree) return 'free'
-  if (isOneValFree) return 'partial'
+  if (isTwoValFree) return { level: 'free', range: range }
+  if (isOneValFree) return { level: 'partial', range: range }
 
-  return 'partial'
+  return { level: 'partial', range: range }
 }
 
 export function isLiteralArrayOrStatic(

@@ -169,6 +169,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "08abcc3b4e9339e33a3d0a5ed15d84a687350c05689d825e0f6655eef9e76a94"
 
 [[package]]
+name = "approx"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cab112f0a86d568ea0e627cc1d6be74a1e9cd55214684db5561995f6dad897c6"
+dependencies = [
+ "num-traits 0.2.17",
+]
+
+[[package]]
 name = "arc-swap"
 version = "1.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -505,7 +514,7 @@ version = "0.16.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "64a4b57c8f4e3a2e9ac07e0f6abc9c24b6fc9e1b54c3478cfb598f3d0023e51c"
 dependencies = [
- "approx",
+ "approx 0.1.1",
  "mint",
  "num-traits 0.1.43",
  "rand 0.4.6",
@@ -1134,7 +1143,7 @@ version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3f19d11568a4a46aee488bdab3a2963e5e2c3cfd6091aa0abceaddcea82c0bc1"
 dependencies = [
- "approx",
+ "approx 0.1.1",
  "cgmath",
 ]
 
@@ -1864,6 +1873,7 @@ name = "kcl-lib"
 version = "0.1.40"
 dependencies = [
  "anyhow",
+ "approx 0.5.1",
  "async-recursion",
  "async-trait",
  "bson",
@@ -1913,9 +1923,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.2.45"
+version = "0.2.50"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1fbc350639638b46123619b9d1286b94efba284d9c99e30025eba34fb989e596"
+checksum = "441d8af990a3aab738f985328aa914a9eee5856131c4c6f1fd2bd61ba9d07f98"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -4409,9 +4419,9 @@ checksum = "3528ecfd12c466c6f163363caf2d02a71161dd5e1cc6ae7b34207ea2d42d81ed"
 
 [[package]]
 name = "ts-rs"
-version = "7.1.0"
+version = "7.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ee928abbcfd4d13e0a65a30c5e9904aad823d3053cbdc4327e4c7fa053140c6e"
+checksum = "fc2cae1fc5d05d47aa24b64f9a4f7cba24cdc9187a2084dd97ac57bef5eccae6"
 dependencies = [
  "thiserror",
  "ts-rs-macros",
@@ -4420,9 +4430,9 @@ dependencies = [
 
 [[package]]
 name = "ts-rs-macros"
-version = "7.1.0"
+version = "7.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "89d1f9819299b55836a08a7a6f7cfe3a6f405c03831c81b2e45f8a38b1b1531c"
+checksum = "73f7f9b821696963053a89a7bd8b292dc34420aea8294d7b225274d488f3ec92"
 dependencies = [
  "Inflector",
  "proc-macro2",

@@ -40,19 +40,8 @@ test('change camera, show planes', async ({ page, context }) => {
   await u.waitForAuthSkipAppStart()
   await u.openAndClearDebugPanel()
 
-  const camCmd: EngineCommand = {
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_look_at',
-      center: { x: 0, y: 0, z: 0 },
-      up: { x: 0, y: 0, z: 1 },
-      vantage: { x: 0, y: 85, z: 85 },
-    },
-  }
-
-  await u.sendCustomCmd(camCmd)
-  await u.waitForCmdReceive('default_camera_look_at')
+  const camPos: [number, number, number] = [0, 85, 85]
+  await u.updateCamPosition(camPos)
 
   // rotate
   await u.closeDebugPanel()
@@ -62,13 +51,11 @@ test('change camera, show planes', async ({ page, context }) => {
   await page.mouse.up({ button: 'right' })
 
   await u.openDebugPanel()
-  await u.waitForCmdReceive('camera_drag_end')
   await page.waitForTimeout(500)
   await u.clearCommandLogs()
 
   await page.getByRole('button', { name: 'Start Sketch' }).click()
 
-  await u.waitForDefaultPlanesVisibilityChange()
   await u.closeDebugPanel()
 
   await expect(page).toHaveScreenshot({
@@ -77,10 +64,8 @@ test('change camera, show planes', async ({ page, context }) => {
 
   await u.openAndClearDebugPanel()
   await page.getByRole('button', { name: 'Exit Sketch' }).click()
-  await u.waitForDefaultPlanesVisibilityChange()
 
-  await u.sendCustomCmd(camCmd)
-  await u.waitForCmdReceive('default_camera_look_at')
+  await u.updateCamPosition(camPos)
 
   await u.clearCommandLogs()
   await u.closeDebugPanel()
@@ -93,12 +78,10 @@ test('change camera, show planes', async ({ page, context }) => {
   await page.keyboard.up('Shift')
 
   await u.openDebugPanel()
-  await u.waitForCmdReceive('camera_drag_end')
   await page.waitForTimeout(300)
   await u.clearCommandLogs()
 
   await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await u.waitForDefaultPlanesVisibilityChange()
   await u.closeDebugPanel()
 
   await expect(page).toHaveScreenshot({
@@ -107,10 +90,8 @@ test('change camera, show planes', async ({ page, context }) => {
 
   await u.openAndClearDebugPanel()
   await page.getByRole('button', { name: 'Exit Sketch' }).click()
-  await u.waitForDefaultPlanesVisibilityChange()
 
-  await u.sendCustomCmd(camCmd)
-  await u.waitForCmdReceive('default_camera_look_at')
+  await u.updateCamPosition(camPos)
 
   await u.clearCommandLogs()
   await u.closeDebugPanel()
@@ -119,17 +100,15 @@ test('change camera, show planes', async ({ page, context }) => {
   await page.keyboard.down('Control')
   await page.mouse.move(700, 400)
   await page.mouse.down({ button: 'right' })
-  await page.mouse.move(700, 350)
+  await page.mouse.move(700, 300)
   await page.mouse.up({ button: 'right' })
   await page.keyboard.up('Control')
 
   await u.openDebugPanel()
-  await u.waitForCmdReceive('camera_drag_end')
   await page.waitForTimeout(300)
   await u.clearCommandLogs()
 
   await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await u.waitForDefaultPlanesVisibilityChange()
   await u.closeDebugPanel()
 
   await expect(page).toHaveScreenshot({
@@ -191,7 +170,6 @@ const part001 = startSketchOn('-XZ')
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
-  await u.waitForDefaultPlanesVisibilityChange()
   await u.expectCmdLog('[data-message-type="execution-done"]')
   await u.waitForCmdReceive('extrude')
   await page.waitForTimeout(1000)

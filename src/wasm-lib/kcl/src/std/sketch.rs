@@ -1,5 +1,6 @@
 //! Functions related to sketching.
 
+use crate::std::utils::{get_tangent_point_from_previous_arc, get_tangential_arc_to_info, TangentialArcInfoInput};
 use anyhow::Result;
 use derive_docs::stdlib;
 use kittycad::types::{Angle, ModelingCmd, Point3D};
@@ -774,19 +775,54 @@ pub async fn start_sketch_on(args: Args) -> Result<MemoryItem, KclError> {
 }]
 async fn inner_start_sketch_on(data: PlaneData, args: Args) -> Result<Box<Plane>, KclError> {
     let mut plane: Plane = data.clone().into();
+    let id = uuid::Uuid::new_v4();
+    let default_origin = Point3D { x: 0.0, y: 0.0, z: 0.0 };
+
+    let (x_axis, y_axis) = match data {
+        PlaneData::XY => (Point3D { x: 1.0, y: 0.0, z: 0.0 }, Point3D { x: 0.0, y: 1.0, z: 0.0 }),
+        PlaneData::NegXY => (
+            Point3D {
+                x: -1.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Point3D { x: 0.0, y: 1.0, z: 0.0 },
+        ),
+        PlaneData::XZ => (
+            Point3D {
+                x: -1.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Point3D { x: 0.0, y: 0.0, z: 1.0 },
+        ), // TODO x component for x_axis shouldn't be negative
+        PlaneData::NegXZ => (
+            Point3D {
+                x: 1.0, // TODO this should be -1.0
+                y: 0.0,
+                z: 0.0,
+            },
+            Point3D { x: 0.0, y: 0.0, z: 1.0 },
+        ),
+        PlaneData::YZ => (Point3D { x: 0.0, y: 1.0, z: 0.0 }, Point3D { x: 0.0, y: 0.0, z: 1.0 }),
+        PlaneData::NegYZ => (
+            Point3D {
+                x: 0.0,
+                y: -1.0,
+                z: 0.0,
+            },
+            Point3D { x: 0.0, y: 0.0, z: 1.0 },
+        ),
+        _ => (Point3D { x: 1.0, y: 0.0, z: 0.0 }, Point3D { x: 0.0, y: 1.0, z: 0.0 }),
+    };
 
     plane.id = match data {
-        PlaneData::XY | PlaneData::NegXY => args.ctx.planes.xy,
-        PlaneData::XZ | PlaneData::NegXZ => args.ctx.planes.xz,
-        PlaneData::YZ | PlaneData::NegYZ => args.ctx.planes.yz,
         PlaneData::Plane {
             origin,
             x_axis,
             y_axis,
             z_axis: _,
         } => {
-            let id = uuid::Uuid::new_v4();
-            // Create the plane.
             args.send_modeling_cmd(
                 id,
                 ModelingCmd::MakePlane {
@@ -795,6 +831,21 @@ async fn inner_start_sketch_on(data: PlaneData, args: Args) -> Result<Box<Plane>
                     size: 60.0,
                     x_axis: (*x_axis).into(),
                     y_axis: (*y_axis).into(),
+                    hide: Some(true),
+                },
+            )
+            .await?;
+            id
+        }
+        _ => {
+            args.send_modeling_cmd(
+                id,
+                ModelingCmd::MakePlane {
+                    clobber: false,
+                    origin: default_origin,
+                    size: 60.0,
+                    x_axis,
+                    y_axis,
                     hide: Some(true),
                 },
             )
@@ -872,6 +923,9 @@ async fn inner_start_profile_at(data: LineData, plane: Box<Plane>, args: Args) -
         id: path_id,
         position: Position([0.0, 0.0, 0.0]),
         rotation: Rotation([0.0, 0.0, 0.0, 1.0]),
+        x_axis: Position([plane.x_axis.x, plane.x_axis.y, plane.x_axis.z]),
+        y_axis: Position([plane.y_axis.x, plane.y_axis.y, plane.y_axis.z]),
+        z_axis: Position([plane.z_axis.x, plane.z_axis.y, plane.z_axis.z]),
         plane_id: Some(plane.id),
         value: vec![],
         start: current_path,
@@ -1218,13 +1272,25 @@ async fn inner_tangential_arc_to(
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from: Point2d = sketch_group.get_coords_from_paths()?;
+    let tangent_info = sketch_group.get_tangential_info_from_paths();
+    let tan_previous_point = if tangent_info.is_center {
+        get_tangent_point_from_previous_arc(tangent_info.center_or_tangent_point, tangent_info.ccw, from.into())
+    } else {
+        tangent_info.center_or_tangent_point
+    };
     let [to_x, to_y] = to;
+    let result = get_tangential_arc_to_info(TangentialArcInfoInput {
+        arc_start_point: [from.x, from.y],
+        arc_end_point: to,
+        tan_previous_point,
+        obtuse: true,
+    });
 
     let delta = [to_x - from.x, to_y - from.y];
     let id = uuid::Uuid::new_v4();
     args.send_modeling_cmd(id, tan_arc_to(&sketch_group, &delta)).await?;
 
-    let current_path = Path::ToPoint {
+    let current_path = Path::TangentialArcTo {
         base: BasePath {
             from: from.into(),
             to,
@@ -1234,6 +1300,8 @@ async fn inner_tangential_arc_to(
                 metadata: args.source_range.into(),
             },
         },
+        center: result.center,
+        ccw: result.ccw > 0,
     };
 
     let mut new_sketch_group = sketch_group.clone();

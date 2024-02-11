@@ -6,7 +6,6 @@ import { Selection } from 'lib/selections'
 import { enginelessExecutor } from './lib/testHelpers'
 import { EngineCommandManager } from './lang/std/engineConnection'
 import { KCLError } from './lang/errors'
-import { DefaultPlanes } from './wasm-lib/kcl/bindings/DefaultPlanes'
 
 export type ToolTip =
   | 'lineTo'
@@ -21,6 +20,7 @@ export type ToolTip =
   | 'xLineTo'
   | 'yLineTo'
   | 'angledLineThatIntersects'
+  | 'tangentialArcTo'
 
 export const toolTips = [
   'sketch_line',
@@ -38,6 +38,7 @@ export const toolTips = [
   'xLineTo',
   'yLineTo',
   'angledLineThatIntersects',
+  'tangentialArcTo',
 ] as any as ToolTip[]
 
 export type PaneType =
@@ -98,8 +99,14 @@ export const useStore = create<StoreState>()(
         setHighlightRange: (selection) => {
           set({ highlightRange: selection })
           const editorView = get().editorView
+          const safeEnd = Math.min(
+            selection[1],
+            editorView?.state.doc.length || selection[1]
+          )
           if (editorView) {
-            editorView.dispatch({ effects: addLineHighlight.of(selection) })
+            editorView.dispatch({
+              effects: addLineHighlight.of([selection[0], safeEnd]),
+            })
           }
         },
         isShiftDown: false,
@@ -149,7 +156,7 @@ export const useStore = create<StoreState>()(
   )
 )
 
-const defaultProgramMemory: ProgramMemory['root'] = {
+export const defaultProgramMemory: () => ProgramMemory['root'] = () => ({
   _0: {
     type: 'UserVal',
     value: 0,
@@ -175,19 +182,17 @@ const defaultProgramMemory: ProgramMemory['root'] = {
     value: Math.PI,
     __meta: [],
   },
-}
+})
 
 export async function executeCode({
   engineCommandManager,
   code,
   lastAst,
-  defaultPlanes,
   force,
 }: {
   code: string
   lastAst: Program
   engineCommandManager: EngineCommandManager
-  defaultPlanes: DefaultPlanes
   force?: boolean
 }): Promise<
   | {
@@ -237,7 +242,6 @@ export async function executeCode({
   const { logs, errors, programMemory } = await executeAst({
     ast,
     engineCommandManager,
-    defaultPlanes,
   })
   return {
     ast,
@@ -251,13 +255,11 @@ export async function executeCode({
 export async function executeAst({
   ast,
   engineCommandManager,
-  defaultPlanes,
   useFakeExecutor = false,
   programMemoryOverride,
 }: {
   ast: Program
   engineCommandManager: EngineCommandManager
-  defaultPlanes: DefaultPlanes
   useFakeExecutor?: boolean
   programMemoryOverride?: ProgramMemory
 }): Promise<{
@@ -274,18 +276,17 @@ export async function executeAst({
       ? enginelessExecutor(
           ast,
           programMemoryOverride || {
-            root: defaultProgramMemory,
+            root: defaultProgramMemory(),
             return: null,
           }
         )
       : _executor(
           ast,
           {
-            root: defaultProgramMemory,
+            root: defaultProgramMemory(),
             return: null,
           },
-          engineCommandManager,
-          defaultPlanes
+          engineCommandManager
         ))
 
     await engineCommandManager.waitForAllCommands()
