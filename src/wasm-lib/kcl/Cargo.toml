@@ -65,7 +65,7 @@ debug = true # Flamegraphs of benchmarks require accurate debug symbols
 criterion = "0.5.1"
 expectorate = "1.1.0"
 insta = { version = "1.34.0", features = ["json"] }
-itertools = "0.12.0"
+itertools = "0.12.1"
 pretty_assertions = "1.4.0"
 tokio = { version = "1.34.0", features = ["rt-multi-thread", "macros", "time"] }
 
