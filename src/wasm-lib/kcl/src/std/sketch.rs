@@ -1,6 +1,5 @@
 //! Functions related to sketching.
 
-use crate::std::utils::{get_tangent_point_from_previous_arc, get_tangential_arc_to_info, TangentialArcInfoInput};
 use anyhow::Result;
 use derive_docs::stdlib;
 use kittycad::types::{Angle, ModelingCmd, Point3D};
@@ -8,14 +7,17 @@ use kittycad_execution_plan_macros::ExecutionPlanValue;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use crate::executor::SourceRange;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
         BasePath, GeoMeta, MemoryItem, Path, Plane, PlaneType, Point2d, Point3d, Position, Rotation, SketchGroup,
+        SketchGroupSet, SourceRange,
     },
     std::{
-        utils::{arc_angles, arc_center_and_end, get_x_component, get_y_component, intersection_with_parallel_line},
+        utils::{
+            arc_angles, arc_center_and_end, get_tangent_point_from_previous_arc, get_tangential_arc_to_info,
+            get_x_component, get_y_component, intersection_with_parallel_line, TangentialArcInfoInput,
+        },
         Args,
     },
 };
@@ -1419,7 +1421,7 @@ async fn inner_bezier_curve(
 
 /// Use a sketch to cut a hole in another sketch.
 pub async fn hole(args: Args) -> Result<MemoryItem, KclError> {
-    let (hole_sketch_group, sketch_group): (Box<SketchGroup>, Box<SketchGroup>) = args.get_sketch_groups()?;
+    let (hole_sketch_group, sketch_group): (SketchGroupSet, Box<SketchGroup>) = args.get_sketch_groups()?;
 
     let new_sketch_group = inner_hole(hole_sketch_group, sketch_group, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
@@ -1430,31 +1432,57 @@ pub async fn hole(args: Args) -> Result<MemoryItem, KclError> {
     name = "hole",
 }]
 async fn inner_hole(
-    hole_sketch_group: Box<SketchGroup>,
+    hole_sketch_group: SketchGroupSet,
     sketch_group: Box<SketchGroup>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     //TODO: batch these (once we have batch)
 
-    args.send_modeling_cmd(
-        uuid::Uuid::new_v4(),
-        ModelingCmd::Solid2DAddHole {
-            object_id: sketch_group.id,
-            hole_id: hole_sketch_group.id,
-        },
-    )
-    .await?;
-
-    //suggestion (mike)
-    //we also hide the source hole since its essentially "consumed" by this operation
-    args.send_modeling_cmd(
-        uuid::Uuid::new_v4(),
-        ModelingCmd::ObjectVisible {
-            object_id: hole_sketch_group.id,
-            hidden: true,
-        },
-    )
-    .await?;
+    match hole_sketch_group {
+        SketchGroupSet::SketchGroup(hole_sketch_group) => {
+            args.send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                ModelingCmd::Solid2DAddHole {
+                    object_id: sketch_group.id,
+                    hole_id: hole_sketch_group.id,
+                },
+            )
+            .await?;
+            // suggestion (mike)
+            // we also hide the source hole since its essentially "consumed" by this operation
+            args.send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                ModelingCmd::ObjectVisible {
+                    object_id: hole_sketch_group.id,
+                    hidden: true,
+                },
+            )
+            .await?;
+        }
+        SketchGroupSet::SketchGroups(hole_sketch_groups) => {
+            for hole_sketch_group in hole_sketch_groups {
+                println!("hole_sketch_group: {:?} {}", hole_sketch_group.id, sketch_group.id);
+                args.send_modeling_cmd(
+                    uuid::Uuid::new_v4(),
+                    ModelingCmd::Solid2DAddHole {
+                        object_id: sketch_group.id,
+                        hole_id: hole_sketch_group.id,
+                    },
+                )
+                .await?;
+                // suggestion (mike)
+                // we also hide the source hole since its essentially "consumed" by this operation
+                args.send_modeling_cmd(
+                    uuid::Uuid::new_v4(),
+                    ModelingCmd::ObjectVisible {
+                        object_id: hole_sketch_group.id,
+                        hidden: true,
+                    },
+                )
+                .await?;
+            }
+        }
+    }
 
     // TODO: should we modify the sketch group to include the hole data, probably?
 

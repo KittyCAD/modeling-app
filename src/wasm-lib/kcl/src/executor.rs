@@ -102,6 +102,7 @@ impl ProgramReturn {
     }
 }
 
+/// A memory item.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
@@ -109,7 +110,13 @@ pub enum MemoryItem {
     UserVal(UserVal),
     Plane(Box<Plane>),
     SketchGroup(Box<SketchGroup>),
+    SketchGroups {
+        value: Vec<Box<SketchGroup>>,
+    },
     ExtrudeGroup(Box<ExtrudeGroup>),
+    ExtrudeGroups {
+        value: Vec<Box<ExtrudeGroup>>,
+    },
     #[ts(skip)]
     ExtrudeTransform(Box<ExtrudeTransform>),
     #[ts(skip)]
@@ -120,6 +127,42 @@ pub enum MemoryItem {
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
+}
+
+/// A geometry.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum Geometry {
+    SketchGroup(Box<SketchGroup>),
+    ExtrudeGroup(Box<ExtrudeGroup>),
+}
+
+impl Geometry {
+    pub fn id(&self) -> uuid::Uuid {
+        match self {
+            Geometry::SketchGroup(s) => s.id,
+            Geometry::ExtrudeGroup(e) => e.id,
+        }
+    }
+}
+
+/// A set of geometry.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum Geometries {
+    SketchGroups(Vec<Box<SketchGroup>>),
+    ExtrudeGroups(Vec<Box<ExtrudeGroup>>),
+}
+
+/// A sketch group or a group of sketch groups.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
+pub enum SketchGroupSet {
+    SketchGroup(Box<SketchGroup>),
+    SketchGroups(Vec<Box<SketchGroup>>),
 }
 
 /// A plane.
@@ -212,7 +255,15 @@ impl From<MemoryItem> for Vec<SourceRange> {
         match item {
             MemoryItem::UserVal(u) => u.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::SketchGroup(s) => s.meta.iter().map(|m| m.source_range).collect(),
+            MemoryItem::SketchGroups { value } => value
+                .iter()
+                .flat_map(|sg| sg.meta.iter().map(|m| m.source_range))
+                .collect(),
             MemoryItem::ExtrudeGroup(e) => e.meta.iter().map(|m| m.source_range).collect(),
+            MemoryItem::ExtrudeGroups { value } => value
+                .iter()
+                .flat_map(|eg| eg.meta.iter().map(|m| m.source_range))
+                .collect(),
             MemoryItem::ExtrudeTransform(e) => e.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::Function { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::Plane(p) => p.meta.iter().map(|m| m.source_range).collect(),
@@ -1040,9 +1091,8 @@ fn assign_args_to_params(
 mod tests {
     use pretty_assertions::assert_eq;
 
-    use crate::ast::types::{Identifier, Parameter};
-
     use super::*;
+    use crate::ast::types::{Identifier, Parameter};
 
     pub async fn parse_execute(code: &str) -> Result<ProgramMemory> {
         let tokens = crate::token::lexer(code);
@@ -1702,5 +1752,14 @@ show(bracket)
                 "failed test '{test_name}':\ngot {actual:?}\nbut expected\n{expected:?}"
             );
         }
+    }
+
+    #[test]
+    fn test_serialize_memory_item() {
+        let mem = MemoryItem::ExtrudeGroups {
+            value: Default::default(),
+        };
+        let json = serde_json::to_string(&mem).unwrap();
+        assert_eq!(json, r#"{"type":"ExtrudeGroups","value":[]}"#);
     }
 }

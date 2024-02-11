@@ -810,3 +810,42 @@ const part002 = startSketchOn('XY')
   |> line([-47.44, 0], %)`.replace(/\s/g, '')
   )
 })
+
+test('ProgramMemory can be serialised', async ({ page, context }) => {
+  const u = getUtils(page)
+  await context.addInitScript(async (token) => {
+    localStorage.setItem(
+      'persistCode',
+      `const part = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, 1], %)
+  |> line([1, 0], %)
+  |> line([0, -1], %)
+  |> close(%)
+  |> extrude(1, %)
+  |> patternLinear({
+        axis: [1, 0, 1],
+        repetitions: 3,
+        distance: 6
+      }, %)`
+    )
+  })
+  await page.setViewportSize({ width: 1000, height: 500 })
+  await page.goto('/')
+  const messages: string[] = []
+
+  // Listen for all console events and push the message text to an array
+  page.on('console', (message) => messages.push(message.text()))
+  await u.waitForAuthSkipAppStart()
+
+  // wait for execution done
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+
+  const forbiddenMessages = ['cannot serialize tagged newtype variant']
+  forbiddenMessages.forEach((forbiddenMessage) => {
+    messages.forEach((message) => {
+      expect(message).not.toContain(forbiddenMessage)
+    })
+  })
+})

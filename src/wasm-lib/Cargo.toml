@@ -52,9 +52,9 @@ debug = true
 [workspace]
 members = [
 	"derive-docs",
-  "grackle",
+	"grackle",
 	"kcl",
-  "kcl-macros",
+	"kcl-macros",
 ]
 
 [workspace.dependencies]
