@@ -10,7 +10,7 @@ rust-version = "1.73"
 crate-type = ["cdylib"]
 
 [dependencies]
-bson = { version = "2.7.0", features = ["uuid-1", "chrono"] }
+bson = { version = "2.9.0", features = ["uuid-1", "chrono"] }
 gloo-utils = "0.2.0"
 kcl-lib = { path = "kcl" }
 kittycad = { workspace = true }
