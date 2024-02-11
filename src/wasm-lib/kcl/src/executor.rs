@@ -1754,4 +1754,13 @@ show(bracket)
             );
         }
     }
+
+    #[test]
+    fn test_serialize_memory_item() {
+        let mem = MemoryItem::ExtrudeGroups {
+            value: Default::default(),
+        };
+        let json = serde_json::to_string(&mem).unwrap();
+        assert_eq!(json, r#"{"type":"ExtrudeGroups","value":[]}"#);
+    }
 }
