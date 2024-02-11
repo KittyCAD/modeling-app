@@ -2703,7 +2703,7 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 
 Import a CAD file.
 
-
+For formats lacking unit data (STL, OBJ, PLY), the default import unit is millimeters. Otherwise you can specify the unit by passing in the options parameter. The file(s) should be of only one format, if multiple files are provided.
 
 ```
 import(file_paths: [String], options: kittycad::types::InputFormat) -> ImportedGeometry
