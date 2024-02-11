@@ -1031,7 +1031,7 @@ async fn inner_start_profile_at(
             sketch_surface.z_axis().y,
             sketch_surface.z_axis().z,
         ]),
-        plane_id: Some(sketch_surface.id()),
+        entity_id: Some(sketch_surface.id()),
         value: vec![],
         start: current_path,
         meta: vec![args.source_range.into()],
@@ -1066,8 +1066,8 @@ async fn inner_close(sketch_group: Box<SketchGroup>, args: Args) -> Result<Box<S
     )
     .await?;
 
-    // Exit sketch mode, since if we were in a plane we'd want to disable the sketch mode after.
-    if sketch_group.plane_id.is_some() {
+    // Exit sketch mode, since if we were in a plane or entity we'd want to disable the sketch mode after.
+    if sketch_group.entity_id.is_some() {
         // We were on a plane, disable the sketch mode.
         args.send_modeling_cmd(uuid::Uuid::new_v4(), ModelingCmd::SketchModeDisable {})
             .await?;
