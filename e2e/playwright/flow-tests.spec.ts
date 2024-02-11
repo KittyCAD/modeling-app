@@ -838,7 +838,7 @@ test('ProgramMemory can be serialised', async ({ page, context }) => {
   page.on('console', (message) => messages.push(message.text()))
   await u.waitForAuthSkipAppStart()
 
-  // wait for exection done
+  // wait for execution done
   await u.openDebugPanel()
   await u.expectCmdLog('[data-message-type="execution-done"]')
 
