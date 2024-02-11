@@ -638,8 +638,9 @@ pub fn get_tangential_arc_to_info(input: TangentialArcInfoInput) -> TangentialAr
 
 #[cfg(test)]
 mod get_tangential_arc_to_info_tests {
-    use super::*;
     use approx::assert_relative_eq;
+
+    use super::*;
 
     fn round_to_three_decimals(num: f64) -> f64 {
         (num * 1000.0).round() / 1000.0

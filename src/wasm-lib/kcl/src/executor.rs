@@ -1091,9 +1091,8 @@ fn assign_args_to_params(
 mod tests {
     use pretty_assertions::assert_eq;
 
-    use crate::ast::types::{Identifier, Parameter};
-
     use super::*;
+    use crate::ast::types::{Identifier, Parameter};
 
     pub async fn parse_execute(code: &str) -> Result<ProgramMemory> {
         let tokens = crate::token::lexer(code);

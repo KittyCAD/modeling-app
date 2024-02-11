@@ -17,9 +17,11 @@ use kittycad_execution_plan_traits as ept;
 use kittycad_execution_plan_traits::{Address, NumericPrimitive};
 use kittycad_modeling_session::Session;
 
-use self::binding_scope::{BindingScope, EpBinding, GetFnResult};
-use self::error::{CompileError, Error};
-use self::kcl_value_group::SingleValue;
+use self::{
+    binding_scope::{BindingScope, EpBinding, GetFnResult},
+    error::{CompileError, Error},
+    kcl_value_group::SingleValue,
+};
 
 /// Execute a KCL program by compiling into an execution plan, then running that.
 pub async fn execute(ast: Program, session: Option<Session>) -> Result<ep::Memory, Error> {

@@ -1,6 +1,5 @@
 //! Functions related to sketching.
 
-use crate::std::utils::{get_tangent_point_from_previous_arc, get_tangential_arc_to_info, TangentialArcInfoInput};
 use anyhow::Result;
 use derive_docs::stdlib;
 use kittycad::types::{Angle, ModelingCmd, Point3D};
@@ -8,14 +7,17 @@ use kittycad_execution_plan_macros::ExecutionPlanValue;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use crate::executor::{SketchGroupSet, SourceRange};
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
         BasePath, GeoMeta, MemoryItem, Path, Plane, PlaneType, Point2d, Point3d, Position, Rotation, SketchGroup,
+        SketchGroupSet, SourceRange,
     },
     std::{
-        utils::{arc_angles, arc_center_and_end, get_x_component, get_y_component, intersection_with_parallel_line},
+        utils::{
+            arc_angles, arc_center_and_end, get_tangent_point_from_previous_arc, get_tangential_arc_to_info,
+            get_x_component, get_y_component, intersection_with_parallel_line, TangentialArcInfoInput,
+        },
         Args,
     },
 };
