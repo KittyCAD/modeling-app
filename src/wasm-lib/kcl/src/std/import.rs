@@ -46,13 +46,11 @@ async fn inner_import(
 
     // We need to ensure that the file paths are all related to a single mesh and not multiple meshes.
     // In that if there is more than one file, its like a glTF file with binary data.
-    if file_paths.len() > 1 {
-        let Some(options) = &options else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "Multiple file paths were provided, but no format options were provided.".to_string(),
-                source_ranges: vec![args.source_range],
-            }));
-        };
+    if file_paths.len() > 1 && options.is_none() {
+        return Err(KclError::Semantic(KclErrorDetails {
+            message: "Multiple file paths were provided, but no format options were provided.".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
     }
 
     // Get the format type from the extension of the file.
