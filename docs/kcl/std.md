@@ -27,6 +27,7 @@
 	* [`floor`](#floor)
 	* [`getExtrudeWallTransform`](#getExtrudeWallTransform)
 	* [`hole`](#hole)
+	* [`import`](#import)
 	* [`lastSegX`](#lastSegX)
 	* [`lastSegY`](#lastSegY)
 	* [`legAngX`](#legAngX)
@@ -2693,6 +2694,154 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 	yAxis: [number, number, number],
 	// The z-axis of the sketch group base plane in the 3D space
 	zAxis: [number, number, number],
+}
+```
+
+
+
+### import
+
+Import a CAD file.
+
+
+
+```
+import(file_paths: [String], options: kittycad::types::InputFormat) -> ImportedGeometry
+```
+
+#### Arguments
+
+* `file_paths`: `[String]`
+* `options`: `kittycad::types::InputFormat` - Input format specifier.
+```
+{
+	type: string,
+} |
+{
+	type: string,
+} |
+{
+	// Co-ordinate system of input data.
+
+Defaults to the [KittyCAD co-ordinate system].
+
+[KittyCAD co-ordinate system]: ../coord/constant.KITTYCAD.html
+	coords: {
+	// Axis the front face of a model looks along.
+	forward: {
+	// Axis specifier.
+	axis: string |
+string,
+	// Specifies which direction the axis is pointing.
+	direction: string |
+string,
+},
+	// Axis pointing up and away from a model.
+	up: {
+	// Axis specifier.
+	axis: string |
+string,
+	// Specifies which direction the axis is pointing.
+	direction: string |
+string,
+},
+},
+	type: string,
+	// The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc.
+
+Defaults to meters.
+	units: string |
+string |
+string |
+string |
+string |
+string,
+} |
+{
+	// Co-ordinate system of input data.
+
+Defaults to the [KittyCAD co-ordinate system].
+
+[KittyCAD co-ordinate system]: ../coord/constant.KITTYCAD.html
+	coords: {
+	// Axis the front face of a model looks along.
+	forward: {
+	// Axis specifier.
+	axis: string |
+string,
+	// Specifies which direction the axis is pointing.
+	direction: string |
+string,
+},
+	// Axis pointing up and away from a model.
+	up: {
+	// Axis specifier.
+	axis: string |
+string,
+	// Specifies which direction the axis is pointing.
+	direction: string |
+string,
+},
+},
+	type: string,
+	// The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc.
+	units: string |
+string |
+string |
+string |
+string |
+string,
+} |
+{
+	type: string,
+} |
+{
+	type: string,
+} |
+{
+	// Co-ordinate system of input data.
+
+Defaults to the [KittyCAD co-ordinate system].
+
+[KittyCAD co-ordinate system]: ../coord/constant.KITTYCAD.html
+	coords: {
+	// Axis the front face of a model looks along.
+	forward: {
+	// Axis specifier.
+	axis: string |
+string,
+	// Specifies which direction the axis is pointing.
+	direction: string |
+string,
+},
+	// Axis pointing up and away from a model.
+	up: {
+	// Axis specifier.
+	axis: string |
+string,
+	// Specifies which direction the axis is pointing.
+	direction: string |
+string,
+},
+},
+	type: string,
+	// The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc.
+	units: string |
+string |
+string |
+string |
+string |
+string,
+}
+```
+
+#### Returns
+
+* `ImportedGeometry` - Data for an imported geometry.
+```
+{
+	// The ID of the imported geometry.
+	id: uuid,
 }
 ```
 

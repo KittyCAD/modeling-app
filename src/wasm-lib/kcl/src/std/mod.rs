@@ -1,6 +1,7 @@
 //! Functions implemented for language execution.
 
 pub mod extrude;
+pub mod import;
 pub mod kcl_stdlib;
 pub mod math;
 pub mod patterns;
@@ -71,6 +72,7 @@ lazy_static! {
         Box::new(crate::std::sketch::BezierCurve),
         Box::new(crate::std::sketch::Hole),
         Box::new(crate::std::patterns::PatternLinear),
+        Box::new(crate::std::import::Import),
         Box::new(crate::std::math::Cos),
         Box::new(crate::std::math::Sin),
         Box::new(crate::std::math::Tan),
@@ -369,6 +371,39 @@ impl Args {
         })?;
 
         Ok(data)
+    }
+
+    fn get_import_data(&self) -> Result<(Vec<String>, Option<kittycad::types::InputFormat>), KclError> {
+        let first_value = self
+            .args
+            .first()
+            .ok_or_else(|| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Expected a struct as the first argument, found `{:?}`", self.args),
+                    source_ranges: vec![self.source_range],
+                })
+            })?
+            .get_json_value()?;
+
+        let data: Vec<String> = serde_json::from_value(first_value).map_err(|e| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Expected an array of file path strings: {}", e),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        if let Some(second_value) = self.args.get(1) {
+            let options: kittycad::types::InputFormat = serde_json::from_value(second_value.get_json_value()?)
+                .map_err(|e| {
+                    KclError::Type(KclErrorDetails {
+                        message: format!("Expected input format data: {}", e),
+                        source_ranges: vec![self.source_range],
+                    })
+                })?;
+            Ok((data, Some(options)))
+        } else {
+            Ok((data, None))
+        }
     }
 
     fn get_data_and_sketch_group<T: serde::de::DeserializeOwned>(&self) -> Result<(T, Box<SketchGroup>), KclError> {

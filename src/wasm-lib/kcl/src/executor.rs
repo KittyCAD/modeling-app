@@ -117,6 +117,7 @@ pub enum MemoryItem {
     ExtrudeGroups {
         value: Vec<Box<ExtrudeGroup>>,
     },
+    ImportedGeometry(ImportedGeometry),
     #[ts(skip)]
     ExtrudeTransform(Box<ExtrudeTransform>),
     #[ts(skip)]
@@ -163,6 +164,17 @@ pub enum Geometries {
 pub enum SketchGroupSet {
     SketchGroup(Box<SketchGroup>),
     SketchGroups(Vec<Box<SketchGroup>>),
+}
+
+/// Data for an imported geometry.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct ImportedGeometry {
+    /// The ID of the imported geometry.
+    pub id: uuid::Uuid,
+    #[serde(rename = "__meta")]
+    pub meta: Vec<Metadata>,
 }
 
 /// A plane.
@@ -264,6 +276,7 @@ impl From<MemoryItem> for Vec<SourceRange> {
                 .iter()
                 .flat_map(|eg| eg.meta.iter().map(|m| m.source_range))
                 .collect(),
+            MemoryItem::ImportedGeometry(i) => i.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::ExtrudeTransform(e) => e.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::Function { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::Plane(p) => p.meta.iter().map(|m| m.source_range).collect(),
