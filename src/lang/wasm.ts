@@ -147,6 +147,7 @@ export const _executor = async (
     )
     return memory
   } catch (e: any) {
+    console.log(e)
     const parsed: RustKclError = JSON.parse(e.toString())
     const kclError = new KCLError(
       parsed.kind,
