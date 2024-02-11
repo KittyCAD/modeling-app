@@ -120,16 +120,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -749,16 +749,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -1406,16 +1406,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -2000,16 +2000,16 @@
               }
             }
           },
+          "entityId": {
+            "description": "The plane id or face id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
           "id": {
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
-          },
-          "planeId": {
-            "description": "The plane id of the sketch group.",
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -2647,16 +2647,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -3241,16 +3241,16 @@
               }
             }
           },
+          "entityId": {
+            "description": "The plane id or face id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
           "id": {
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
-          },
-          "planeId": {
-            "description": "The plane id of the sketch group.",
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -3888,16 +3888,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -4482,16 +4482,16 @@
               }
             }
           },
+          "entityId": {
+            "description": "The plane id or face id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
           "id": {
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
-          },
-          "planeId": {
-            "description": "The plane id of the sketch group.",
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -5119,16 +5119,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -5713,16 +5713,16 @@
               }
             }
           },
+          "entityId": {
+            "description": "The plane id or face id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
           "id": {
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
-          },
-          "planeId": {
-            "description": "The plane id of the sketch group.",
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -6360,16 +6360,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -6954,16 +6954,16 @@
               }
             }
           },
+          "entityId": {
+            "description": "The plane id or face id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
           "id": {
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
-          },
-          "planeId": {
-            "description": "The plane id of the sketch group.",
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -7601,16 +7601,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -8195,16 +8195,16 @@
               }
             }
           },
+          "entityId": {
+            "description": "The plane id or face id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
           "id": {
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
-          },
-          "planeId": {
-            "description": "The plane id of the sketch group.",
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -8941,16 +8941,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -9535,16 +9535,16 @@
               }
             }
           },
+          "entityId": {
+            "description": "The plane id or face id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
           "id": {
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
-          },
-          "planeId": {
-            "description": "The plane id of the sketch group.",
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -10290,16 +10290,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -10884,16 +10884,16 @@
               }
             }
           },
+          "entityId": {
+            "description": "The plane id or face id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
           "id": {
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
-          },
-          "planeId": {
-            "description": "The plane id of the sketch group.",
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -11514,16 +11514,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -12108,16 +12108,16 @@
               }
             }
           },
+          "entityId": {
+            "description": "The plane id or face id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
           "id": {
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
-          },
-          "planeId": {
-            "description": "The plane id of the sketch group.",
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -12765,16 +12765,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -13868,16 +13868,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -14461,16 +14461,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -15055,16 +15055,16 @@
               }
             }
           },
+          "entityId": {
+            "description": "The plane id or face id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
           "id": {
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
-          },
-          "planeId": {
-            "description": "The plane id of the sketch group.",
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -15657,16 +15657,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -16269,16 +16269,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -17036,16 +17036,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -17630,16 +17630,16 @@
               }
             }
           },
+          "entityId": {
+            "description": "The plane id or face id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
           "id": {
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
-          },
-          "planeId": {
-            "description": "The plane id of the sketch group.",
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -18276,16 +18276,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -18870,16 +18870,16 @@
               }
             }
           },
+          "entityId": {
+            "description": "The plane id or face id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
           "id": {
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
-          },
-          "planeId": {
-            "description": "The plane id of the sketch group.",
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -19718,16 +19718,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -20338,16 +20338,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -20958,16 +20958,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -21578,16 +21578,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -22190,16 +22190,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -23175,16 +23175,16 @@
               }
             }
           },
+          "entityId": {
+            "description": "The plane id or face id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
           "id": {
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
-          },
-          "planeId": {
-            "description": "The plane id of the sketch group.",
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -23822,16 +23822,16 @@
               }
             }
           },
+          "entityId": {
+            "description": "The plane id or face id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
           "id": {
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
-          },
-          "planeId": {
-            "description": "The plane id of the sketch group.",
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -25178,16 +25178,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -25772,16 +25772,16 @@
               }
             }
           },
+          "entityId": {
+            "description": "The plane id or face id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
           "id": {
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
-          },
-          "planeId": {
-            "description": "The plane id of the sketch group.",
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -26388,16 +26388,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -26991,16 +26991,16 @@
               }
             }
           },
+          "entityId": {
+            "description": "The plane id or face id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
           "id": {
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
-          },
-          "planeId": {
-            "description": "The plane id of the sketch group.",
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -27645,16 +27645,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -28239,16 +28239,16 @@
               }
             }
           },
+          "entityId": {
+            "description": "The plane id or face id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
           "id": {
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
-          },
-          "planeId": {
-            "description": "The plane id of the sketch group.",
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -28875,16 +28875,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -29469,16 +29469,16 @@
               }
             }
           },
+          "entityId": {
+            "description": "The plane id or face id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
           "id": {
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
-          },
-          "planeId": {
-            "description": "The plane id of the sketch group.",
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -30105,16 +30105,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -30699,16 +30699,16 @@
               }
             }
           },
+          "entityId": {
+            "description": "The plane id or face id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
           "id": {
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
-          },
-          "planeId": {
-            "description": "The plane id of the sketch group.",
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -31335,16 +31335,16 @@
                 }
               }
             },
+            "entityId": {
+              "description": "The plane id or face id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "id": {
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
-            },
-            "planeId": {
-              "description": "The plane id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -31929,16 +31929,16 @@
               }
             }
           },
+          "entityId": {
+            "description": "The plane id or face id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
           "id": {
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
-          },
-          "planeId": {
-            "description": "The plane id of the sketch group.",
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
