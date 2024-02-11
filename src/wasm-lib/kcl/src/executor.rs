@@ -30,7 +30,36 @@ pub struct ProgramMemory {
 impl ProgramMemory {
     pub fn new() -> Self {
         Self {
-            root: HashMap::new(),
+            root: HashMap::from([
+                (
+                    "_0".to_string(),
+                    MemoryItem::UserVal(UserVal {
+                        value: serde_json::Value::Number(serde_json::value::Number::from(0)),
+                        meta: Default::default(),
+                    }),
+                ),
+                (
+                    "_90".to_string(),
+                    MemoryItem::UserVal(UserVal {
+                        value: serde_json::Value::Number(serde_json::value::Number::from(90)),
+                        meta: Default::default(),
+                    }),
+                ),
+                (
+                    "_180".to_string(),
+                    MemoryItem::UserVal(UserVal {
+                        value: serde_json::Value::Number(serde_json::value::Number::from(180)),
+                        meta: Default::default(),
+                    }),
+                ),
+                (
+                    "_270".to_string(),
+                    MemoryItem::UserVal(UserVal {
+                        value: serde_json::Value::Number(serde_json::value::Number::from(270)),
+                        meta: Default::default(),
+                    }),
+                ),
+            ]),
             return_: None,
         }
     }
