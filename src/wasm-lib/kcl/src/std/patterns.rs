@@ -42,8 +42,8 @@ pub async fn pattern_linear(args: Args) -> Result<MemoryItem, KclError> {
 
     let new_geometries = inner_pattern_linear(data, geometry, args).await?;
     match new_geometries {
-        Geometries::SketchGroups(sketch_groups) => Ok(MemoryItem::SketchGroups(sketch_groups)),
-        Geometries::ExtrudeGroups(extrude_groups) => Ok(MemoryItem::ExtrudeGroups(extrude_groups)),
+        Geometries::SketchGroups(sketch_groups) => Ok(MemoryItem::SketchGroups { value: sketch_groups }),
+        Geometries::ExtrudeGroups(extrude_groups) => Ok(MemoryItem::ExtrudeGroups { value: extrude_groups }),
     }
 }
 

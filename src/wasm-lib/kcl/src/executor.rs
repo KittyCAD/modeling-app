@@ -110,9 +110,13 @@ pub enum MemoryItem {
     UserVal(UserVal),
     Plane(Box<Plane>),
     SketchGroup(Box<SketchGroup>),
-    SketchGroups(Vec<Box<SketchGroup>>),
+    SketchGroups {
+        value: Vec<Box<SketchGroup>>,
+    },
     ExtrudeGroup(Box<ExtrudeGroup>),
-    ExtrudeGroups(Vec<Box<ExtrudeGroup>>),
+    ExtrudeGroups {
+        value: Vec<Box<ExtrudeGroup>>,
+    },
     #[ts(skip)]
     ExtrudeTransform(Box<ExtrudeTransform>),
     #[ts(skip)]
@@ -251,12 +255,12 @@ impl From<MemoryItem> for Vec<SourceRange> {
         match item {
             MemoryItem::UserVal(u) => u.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::SketchGroup(s) => s.meta.iter().map(|m| m.source_range).collect(),
-            MemoryItem::SketchGroups(sgs) => sgs
+            MemoryItem::SketchGroups { value } => value
                 .iter()
                 .flat_map(|sg| sg.meta.iter().map(|m| m.source_range))
                 .collect(),
             MemoryItem::ExtrudeGroup(e) => e.meta.iter().map(|m| m.source_range).collect(),
-            MemoryItem::ExtrudeGroups(egs) => egs
+            MemoryItem::ExtrudeGroups { value } => value
                 .iter()
                 .flat_map(|eg| eg.meta.iter().map(|m| m.source_range))
                 .collect(),

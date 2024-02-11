@@ -298,8 +298,8 @@ impl Args {
 
         let sketch_set = if let MemoryItem::SketchGroup(sg) = first_value {
             SketchGroupSet::SketchGroup(sg.clone())
-        } else if let MemoryItem::SketchGroups(sg) = first_value {
-            SketchGroupSet::SketchGroups(sg.clone())
+        } else if let MemoryItem::SketchGroups { value } = first_value {
+            SketchGroupSet::SketchGroups(value.clone())
         } else {
             return Err(KclError::Type(KclErrorDetails {
                 message: format!(
