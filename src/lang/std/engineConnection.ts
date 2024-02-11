@@ -1195,11 +1195,21 @@ export class EngineCommandManager {
         // Using an array is the list is likely to grow.
         'start_path',
       ]
-      if (!artifactTypesToDelete.includes(artifact.commandType)) return
-      artifactsToDelete[id] = artifact
+      if (artifactTypesToDelete.includes(artifact.commandType)) {
+        artifactsToDelete[id] = artifact
+      }
+      const patternsToDelete : ArtifactMap[string]['commandType'][] = [
+        'entity_linear_pattern'
+      ]
+      if (patternsToDelete.includes(artifact.commandType)) {
+        const entities = (artifact as any)?.data?.data?.entity_ids
+        entities.forEach((entity: string) => {
+          artifactsToDelete[entity] = {}
+        })
+      }
     })
     Object.keys(artifactsToDelete).forEach((id) => {
-      const deletCmd: EngineCommand = {
+      const deleteCmd: EngineCommand = {
         type: 'modeling_cmd_req',
         cmd_id: uuidv4(),
         cmd: {
@@ -1207,7 +1217,7 @@ export class EngineCommandManager {
           object_ids: [id],
         },
       }
-      this.engineConnection?.send(deletCmd)
+      this.engineConnection?.send(deleteCmd)
     })
   }
   addCommandLog(message: CommandLog) {
