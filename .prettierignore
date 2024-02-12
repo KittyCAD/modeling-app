@@ -10,4 +10,4 @@ src/wasm-lib/kcl/bindings
 e2e/playwright/export-snapshots
 
 # XState generated files
-src/machines/modelingMachine.typegen.ts
+src/machines/**.typegen.ts

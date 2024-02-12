@@ -46,6 +46,7 @@ jobs:
           workspaces: './src/wasm-lib'
 
       - run: yarn build:wasm
+      - run: yarn xstate:typegen
       - run: yarn tsc
 
 
@@ -337,17 +338,17 @@ jobs:
             cat last_download.json
 
       - name: Authenticate to Google Cloud
-        uses: 'google-github-actions/auth@v2.0.0'
+        uses: 'google-github-actions/auth@v2.1.1'
         with:
           credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
 
       - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2.0.0
+        uses: google-github-actions/setup-gcloud@v2.1.0
         with:
           project_id: kittycadapi
 
       - name: Upload release files to public bucket
-        uses: google-github-actions/upload-cloud-storage@v2.0.0
+        uses: google-github-actions/upload-cloud-storage@v2.1.0
         with:
           path: artifact
           glob: '*/Zoo*'
@@ -355,13 +356,13 @@ jobs:
           destination: ${{ env.BUCKET_DIR }}/${{ env.VERSION }}
 
       - name: Upload update endpoint to public bucket
-        uses: google-github-actions/upload-cloud-storage@v2.0.0
+        uses: google-github-actions/upload-cloud-storage@v2.1.0
         with:
           path: last_update.json
           destination: ${{ env.BUCKET_DIR }}
 
       - name: Upload download endpoint to public bucket
-        uses: google-github-actions/upload-cloud-storage@v2.0.0
+        uses: google-github-actions/upload-cloud-storage@v2.1.0
         with:
           path: last_download.json
           destination: ${{ env.BUCKET_DIR }}

@@ -1,6 +1,7 @@
 import { useMachine } from '@xstate/react'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
-import { IndexLoaderData, paths } from '../Router'
+import { type IndexLoaderData } from 'lib/types'
+import { paths } from 'lib/paths'
 import React, { createContext } from 'react'
 import { toast } from 'react-hot-toast'
 import {

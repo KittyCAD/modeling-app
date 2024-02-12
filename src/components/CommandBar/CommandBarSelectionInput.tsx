@@ -1,6 +1,6 @@
 import { useSelector } from '@xstate/react'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { useKclContext } from 'lang/KclSinglton'
+import { useKclContext } from 'lang/KclSingleton'
 import { CommandArgument } from 'lib/commandTypes'
 import {
   ResolvedSelectionType,

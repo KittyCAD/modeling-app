@@ -47,7 +47,10 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
     .await?;
 
     Ok(Box::new(ExtrudeGroup {
-        id,
+        // Ok so you would think that the id would be the id of the extrude group,
+        // that we passed in to the function, but it's actually the id of the
+        // sketch group.
+        id: sketch_group.id,
         // TODO, this is just an empty array now, should be deleted. This
         // comment was originally in the JS code.
         value: Default::default(),
