@@ -284,6 +284,24 @@ pub fn get_description_string_from_schema(schema: &schemars::schema::Schema) -> 
 pub fn get_type_string_from_schema(schema: &schemars::schema::Schema) -> Result<(String, bool)> {
     match schema {
         schemars::schema::Schema::Object(o) => {
+            if let Some(enum_values) = &o.enum_values {
+                let mut parsed_enum_values: Vec<String> = Default::default();
+                let mut had_enum_string = false;
+                for enum_value in enum_values {
+                    if let serde_json::value::Value::String(enum_value) = enum_value {
+                        had_enum_string = true;
+                        parsed_enum_values.push(format!("\"{}\"", enum_value));
+                    } else {
+                        had_enum_string = false;
+                        break;
+                    }
+                }
+
+                if had_enum_string {
+                    return Ok((parsed_enum_values.join(" | "), false));
+                }
+            }
+
             // Check if there
             if let Some(format) = &o.format {
                 if format == "uuid" {
