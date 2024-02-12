@@ -1,10 +1,5 @@
 import { Completion } from '@codemirror/autocomplete'
-import {
-  gutter,
-  gutterLineClass,
-  lineNumbers,
-  useCodeMirror,
-} from '@uiw/react-codemirror'
+import { useCodeMirror } from '@uiw/react-codemirror'
 import { CustomIcon } from 'components/CustomIcon'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
@@ -32,6 +27,7 @@ function CommandBarKclInput({
   const { settings } = useGlobalStateContext()
   const defaultValue = (arg.defaultValue as KCLCommandValue) || { value: '' }
   const [value, setValue] = useState(defaultValue.value || '')
+  const [canSubmit, setCanSubmit] = useState(true)
   useHotkeys('mod + k, mod + /', () => commandBarSend({ type: 'Close' }))
   const editorRef = useRef<HTMLInputElement>(null)
 
@@ -69,8 +65,14 @@ function CommandBarKclInput({
     }
   }, [arg, editorRef])
 
+  useEffect(() => {
+    console.log('calcResult', calcResult)
+    setCanSubmit(calcResult !== 'NAN')
+  }, [calcResult])
+
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    if (!canSubmit) return
     onSubmit({
       key: '', // TODO: Allow user to specify a new variable name
       value,
