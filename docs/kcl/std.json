@@ -15213,6 +15213,656 @@
     "deprecated": false
   },
   {
+    "name": "import",
+    "summary": "Import a CAD file.",
+    "description": "For formats lacking unit data (STL, OBJ, PLY), the default import unit is millimeters. Otherwise you can specify the unit by passing in the options parameter. If you import a gltf file, we will try to find the bin file and import it as well.",
+    "tags": [],
+    "args": [
+      {
+        "name": "file_path",
+        "type": "String",
+        "schema": {
+          "type": "string"
+        },
+        "required": true
+      },
+      {
+        "name": "options",
+        "type": "ImportFormat",
+        "schema": {
+          "description": "Import format specifier",
+          "oneOf": [
+            {
+              "description": "Autodesk Filmbox (FBX) format",
+              "type": "object",
+              "required": [
+                "type"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "fbx"
+                  ]
+                }
+              }
+            },
+            {
+              "description": "Binary glTF 2.0. We refer to this as glTF since that is how our customers refer to it, but this can also import binary glTF (glb).",
+              "type": "object",
+              "required": [
+                "type"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "gltf"
+                  ]
+                }
+              }
+            },
+            {
+              "description": "Wavefront OBJ format.",
+              "type": "object",
+              "required": [
+                "type",
+                "units"
+              ],
+              "properties": {
+                "coords": {
+                  "description": "Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system.",
+                  "type": "object",
+                  "required": [
+                    "forward",
+                    "up"
+                  ],
+                  "properties": {
+                    "forward": {
+                      "description": "Axis the front face of a model looks along.",
+                      "type": "object",
+                      "required": [
+                        "axis",
+                        "direction"
+                      ],
+                      "properties": {
+                        "axis": {
+                          "description": "Axis specifier.",
+                          "oneOf": [
+                            {
+                              "description": "'Y' axis.",
+                              "type": "string",
+                              "enum": [
+                                "y"
+                              ]
+                            },
+                            {
+                              "description": "'Z' axis.",
+                              "type": "string",
+                              "enum": [
+                                "z"
+                              ]
+                            }
+                          ]
+                        },
+                        "direction": {
+                          "description": "Specifies which direction the axis is pointing.",
+                          "oneOf": [
+                            {
+                              "description": "Increasing numbers.",
+                              "type": "string",
+                              "enum": [
+                                "positive"
+                              ]
+                            },
+                            {
+                              "description": "Decreasing numbers.",
+                              "type": "string",
+                              "enum": [
+                                "negative"
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "up": {
+                      "description": "Axis pointing up and away from a model.",
+                      "type": "object",
+                      "required": [
+                        "axis",
+                        "direction"
+                      ],
+                      "properties": {
+                        "axis": {
+                          "description": "Axis specifier.",
+                          "oneOf": [
+                            {
+                              "description": "'Y' axis.",
+                              "type": "string",
+                              "enum": [
+                                "y"
+                              ]
+                            },
+                            {
+                              "description": "'Z' axis.",
+                              "type": "string",
+                              "enum": [
+                                "z"
+                              ]
+                            }
+                          ]
+                        },
+                        "direction": {
+                          "description": "Specifies which direction the axis is pointing.",
+                          "oneOf": [
+                            {
+                              "description": "Increasing numbers.",
+                              "type": "string",
+                              "enum": [
+                                "positive"
+                              ]
+                            },
+                            {
+                              "description": "Decreasing numbers.",
+                              "type": "string",
+                              "enum": [
+                                "negative"
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "nullable": true
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "obj"
+                  ]
+                },
+                "units": {
+                  "description": "The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters.",
+                  "oneOf": [
+                    {
+                      "description": "Centimeters <https://en.wikipedia.org/wiki/Centimeter>",
+                      "type": "string",
+                      "enum": [
+                        "cm"
+                      ]
+                    },
+                    {
+                      "description": "Feet <https://en.wikipedia.org/wiki/Foot_(unit)>",
+                      "type": "string",
+                      "enum": [
+                        "ft"
+                      ]
+                    },
+                    {
+                      "description": "Inches <https://en.wikipedia.org/wiki/Inch>",
+                      "type": "string",
+                      "enum": [
+                        "in"
+                      ]
+                    },
+                    {
+                      "description": "Meters <https://en.wikipedia.org/wiki/Meter>",
+                      "type": "string",
+                      "enum": [
+                        "m"
+                      ]
+                    },
+                    {
+                      "description": "Millimeters <https://en.wikipedia.org/wiki/Millimeter>",
+                      "type": "string",
+                      "enum": [
+                        "mm"
+                      ]
+                    },
+                    {
+                      "description": "Yards <https://en.wikipedia.org/wiki/Yard>",
+                      "type": "string",
+                      "enum": [
+                        "yd"
+                      ]
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "description": "The PLY Polygon File Format.",
+              "type": "object",
+              "required": [
+                "type",
+                "units"
+              ],
+              "properties": {
+                "coords": {
+                  "description": "Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system.",
+                  "type": "object",
+                  "required": [
+                    "forward",
+                    "up"
+                  ],
+                  "properties": {
+                    "forward": {
+                      "description": "Axis the front face of a model looks along.",
+                      "type": "object",
+                      "required": [
+                        "axis",
+                        "direction"
+                      ],
+                      "properties": {
+                        "axis": {
+                          "description": "Axis specifier.",
+                          "oneOf": [
+                            {
+                              "description": "'Y' axis.",
+                              "type": "string",
+                              "enum": [
+                                "y"
+                              ]
+                            },
+                            {
+                              "description": "'Z' axis.",
+                              "type": "string",
+                              "enum": [
+                                "z"
+                              ]
+                            }
+                          ]
+                        },
+                        "direction": {
+                          "description": "Specifies which direction the axis is pointing.",
+                          "oneOf": [
+                            {
+                              "description": "Increasing numbers.",
+                              "type": "string",
+                              "enum": [
+                                "positive"
+                              ]
+                            },
+                            {
+                              "description": "Decreasing numbers.",
+                              "type": "string",
+                              "enum": [
+                                "negative"
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "up": {
+                      "description": "Axis pointing up and away from a model.",
+                      "type": "object",
+                      "required": [
+                        "axis",
+                        "direction"
+                      ],
+                      "properties": {
+                        "axis": {
+                          "description": "Axis specifier.",
+                          "oneOf": [
+                            {
+                              "description": "'Y' axis.",
+                              "type": "string",
+                              "enum": [
+                                "y"
+                              ]
+                            },
+                            {
+                              "description": "'Z' axis.",
+                              "type": "string",
+                              "enum": [
+                                "z"
+                              ]
+                            }
+                          ]
+                        },
+                        "direction": {
+                          "description": "Specifies which direction the axis is pointing.",
+                          "oneOf": [
+                            {
+                              "description": "Increasing numbers.",
+                              "type": "string",
+                              "enum": [
+                                "positive"
+                              ]
+                            },
+                            {
+                              "description": "Decreasing numbers.",
+                              "type": "string",
+                              "enum": [
+                                "negative"
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "nullable": true
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "ply"
+                  ]
+                },
+                "units": {
+                  "description": "The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters.",
+                  "oneOf": [
+                    {
+                      "description": "Centimeters <https://en.wikipedia.org/wiki/Centimeter>",
+                      "type": "string",
+                      "enum": [
+                        "cm"
+                      ]
+                    },
+                    {
+                      "description": "Feet <https://en.wikipedia.org/wiki/Foot_(unit)>",
+                      "type": "string",
+                      "enum": [
+                        "ft"
+                      ]
+                    },
+                    {
+                      "description": "Inches <https://en.wikipedia.org/wiki/Inch>",
+                      "type": "string",
+                      "enum": [
+                        "in"
+                      ]
+                    },
+                    {
+                      "description": "Meters <https://en.wikipedia.org/wiki/Meter>",
+                      "type": "string",
+                      "enum": [
+                        "m"
+                      ]
+                    },
+                    {
+                      "description": "Millimeters <https://en.wikipedia.org/wiki/Millimeter>",
+                      "type": "string",
+                      "enum": [
+                        "mm"
+                      ]
+                    },
+                    {
+                      "description": "Yards <https://en.wikipedia.org/wiki/Yard>",
+                      "type": "string",
+                      "enum": [
+                        "yd"
+                      ]
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "description": "SolidWorks part (SLDPRT) format.",
+              "type": "object",
+              "required": [
+                "type"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "sldprt"
+                  ]
+                }
+              }
+            },
+            {
+              "description": "ISO 10303-21 (STEP) format.",
+              "type": "object",
+              "required": [
+                "type"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "step"
+                  ]
+                }
+              }
+            },
+            {
+              "description": "ST**ereo**L**ithography format.",
+              "type": "object",
+              "required": [
+                "type",
+                "units"
+              ],
+              "properties": {
+                "coords": {
+                  "description": "Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system.",
+                  "type": "object",
+                  "required": [
+                    "forward",
+                    "up"
+                  ],
+                  "properties": {
+                    "forward": {
+                      "description": "Axis the front face of a model looks along.",
+                      "type": "object",
+                      "required": [
+                        "axis",
+                        "direction"
+                      ],
+                      "properties": {
+                        "axis": {
+                          "description": "Axis specifier.",
+                          "oneOf": [
+                            {
+                              "description": "'Y' axis.",
+                              "type": "string",
+                              "enum": [
+                                "y"
+                              ]
+                            },
+                            {
+                              "description": "'Z' axis.",
+                              "type": "string",
+                              "enum": [
+                                "z"
+                              ]
+                            }
+                          ]
+                        },
+                        "direction": {
+                          "description": "Specifies which direction the axis is pointing.",
+                          "oneOf": [
+                            {
+                              "description": "Increasing numbers.",
+                              "type": "string",
+                              "enum": [
+                                "positive"
+                              ]
+                            },
+                            {
+                              "description": "Decreasing numbers.",
+                              "type": "string",
+                              "enum": [
+                                "negative"
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "up": {
+                      "description": "Axis pointing up and away from a model.",
+                      "type": "object",
+                      "required": [
+                        "axis",
+                        "direction"
+                      ],
+                      "properties": {
+                        "axis": {
+                          "description": "Axis specifier.",
+                          "oneOf": [
+                            {
+                              "description": "'Y' axis.",
+                              "type": "string",
+                              "enum": [
+                                "y"
+                              ]
+                            },
+                            {
+                              "description": "'Z' axis.",
+                              "type": "string",
+                              "enum": [
+                                "z"
+                              ]
+                            }
+                          ]
+                        },
+                        "direction": {
+                          "description": "Specifies which direction the axis is pointing.",
+                          "oneOf": [
+                            {
+                              "description": "Increasing numbers.",
+                              "type": "string",
+                              "enum": [
+                                "positive"
+                              ]
+                            },
+                            {
+                              "description": "Decreasing numbers.",
+                              "type": "string",
+                              "enum": [
+                                "negative"
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "nullable": true
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "stl"
+                  ]
+                },
+                "units": {
+                  "description": "The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters.",
+                  "oneOf": [
+                    {
+                      "description": "Centimeters <https://en.wikipedia.org/wiki/Centimeter>",
+                      "type": "string",
+                      "enum": [
+                        "cm"
+                      ]
+                    },
+                    {
+                      "description": "Feet <https://en.wikipedia.org/wiki/Foot_(unit)>",
+                      "type": "string",
+                      "enum": [
+                        "ft"
+                      ]
+                    },
+                    {
+                      "description": "Inches <https://en.wikipedia.org/wiki/Inch>",
+                      "type": "string",
+                      "enum": [
+                        "in"
+                      ]
+                    },
+                    {
+                      "description": "Meters <https://en.wikipedia.org/wiki/Meter>",
+                      "type": "string",
+                      "enum": [
+                        "m"
+                      ]
+                    },
+                    {
+                      "description": "Millimeters <https://en.wikipedia.org/wiki/Millimeter>",
+                      "type": "string",
+                      "enum": [
+                        "mm"
+                      ]
+                    },
+                    {
+                      "description": "Yards <https://en.wikipedia.org/wiki/Yard>",
+                      "type": "string",
+                      "enum": [
+                        "yd"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "nullable": true
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "ImportedGeometry",
+      "schema": {
+        "description": "Data for an imported geometry.",
+        "type": "object",
+        "required": [
+          "__meta",
+          "id",
+          "value"
+        ],
+        "properties": {
+          "__meta": {
+            "type": "array",
+            "items": {
+              "description": "Metadata.",
+              "type": "object",
+              "required": [
+                "sourceRange"
+              ],
+              "properties": {
+                "sourceRange": {
+                  "description": "The source range.",
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "format": "uint",
+                    "minimum": 0.0
+                  },
+                  "maxItems": 2,
+                  "minItems": 2
+                }
+              }
+            }
+          },
+          "id": {
+            "description": "The ID of the imported geometry.",
+            "type": "string",
+            "format": "uuid"
+          },
+          "value": {
+            "description": "The original file paths.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
     "name": "lastSegX",
     "summary": "Returns the last segment of x.",
     "description": "",

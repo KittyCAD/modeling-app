@@ -17,7 +17,8 @@ use wasm_bindgen::prelude::*;
 pub async fn execute_wasm(
     program_str: &str,
     memory_str: &str,
-    manager: kcl_lib::engine::conn_wasm::EngineCommandManager,
+    engine_manager: kcl_lib::engine::conn_wasm::EngineCommandManager,
+    fs_manager: kcl_lib::fs::wasm::FileSystemManager,
 ) -> Result<JsValue, String> {
     // deserialize the ast from a stringified json
 
@@ -25,11 +26,13 @@ pub async fn execute_wasm(
     let program: kcl_lib::ast::types::Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
     let mut mem: kcl_lib::executor::ProgramMemory = serde_json::from_str(memory_str).map_err(|e| e.to_string())?;
 
-    let engine = kcl_lib::engine::EngineConnection::new(manager)
+    let engine = kcl_lib::engine::EngineConnection::new(engine_manager)
         .await
         .map_err(|e| format!("{:?}", e))?;
+    let fs = kcl_lib::fs::FileManager::new(fs_manager);
     let ctx = ExecutorContext {
         engine,
+        fs,
         stdlib: std::sync::Arc::new(kcl_lib::std::StdLib::new()),
     };
 

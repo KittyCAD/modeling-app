@@ -15,6 +15,7 @@ use crate::{
     ast::types::{BodyItem, FunctionExpression, KclNone, Value},
     engine::EngineConnection,
     errors::{KclError, KclErrorDetails},
+    fs::FileManager,
     std::{FunctionKind, StdLib},
 };
 
@@ -146,6 +147,7 @@ pub enum MemoryItem {
     ExtrudeGroups {
         value: Vec<Box<ExtrudeGroup>>,
     },
+    ImportedGeometry(ImportedGeometry),
     #[ts(skip)]
     ExtrudeTransform(Box<ExtrudeTransform>),
     #[ts(skip)]
@@ -192,6 +194,19 @@ pub enum Geometries {
 pub enum SketchGroupSet {
     SketchGroup(Box<SketchGroup>),
     SketchGroups(Vec<Box<SketchGroup>>),
+}
+
+/// Data for an imported geometry.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct ImportedGeometry {
+    /// The ID of the imported geometry.
+    pub id: uuid::Uuid,
+    /// The original file paths.
+    pub value: Vec<String>,
+    #[serde(rename = "__meta")]
+    pub meta: Vec<Metadata>,
 }
 
 /// A plane.
@@ -293,6 +308,7 @@ impl From<MemoryItem> for Vec<SourceRange> {
                 .iter()
                 .flat_map(|eg| eg.meta.iter().map(|m| m.source_range))
                 .collect(),
+            MemoryItem::ImportedGeometry(i) => i.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::ExtrudeTransform(e) => e.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::Function { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::Plane(p) => p.meta.iter().map(|m| m.source_range).collect(),
@@ -835,7 +851,31 @@ impl Default for PipeInfo {
 #[derive(Debug, Clone)]
 pub struct ExecutorContext {
     pub engine: EngineConnection,
+    pub fs: FileManager,
     pub stdlib: Arc<StdLib>,
+}
+
+impl ExecutorContext {
+    /// Create a new default executor context.
+    #[cfg(test)]
+    pub async fn new() -> Result<Self> {
+        Ok(Self {
+            engine: EngineConnection::new().await?,
+            fs: FileManager::new(),
+            stdlib: Arc::new(StdLib::new()),
+        })
+    }
+
+    /// Create a new default executor context.
+    #[cfg(not(test))]
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new(ws: reqwest::Upgraded) -> Result<Self> {
+        Ok(Self {
+            engine: EngineConnection::new(ws).await?,
+            fs: FileManager::new(),
+            stdlib: Arc::new(StdLib::new()),
+        })
+    }
 }
 
 /// Execute a AST's program.
@@ -901,6 +941,10 @@ pub async fn execute(
                                 }
 
                                 memory.return_ = Some(ProgramReturn::Arguments(call_expr.arguments.clone()));
+                            } else {
+                                let args = crate::std::Args::new(args, call_expr.into(), ctx.clone());
+                                let result = func.std_lib_fn()(args).await?;
+                                memory.return_ = Some(ProgramReturn::Value(result));
                             }
                         }
                         FunctionKind::Std(func) => {
@@ -1128,11 +1172,7 @@ mod tests {
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast()?;
         let mut mem: ProgramMemory = Default::default();
-        let engine = EngineConnection::new().await?;
-        let ctx = ExecutorContext {
-            engine,
-            stdlib: Arc::new(StdLib::default()),
-        };
+        let ctx = ExecutorContext::new().await?;
         let memory = execute(program, &mut mem, BodyType::Root, &ctx).await?;
 
         Ok(memory)
