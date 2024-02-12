@@ -55,22 +55,26 @@ const hasIssueToIconColors: Record<string | number | symbol, IconColorConfig> =
     },
   }
 
-const overallConnectionStateColor: Record<NetworkHealthState, IconColorConfig> = {
-  [NetworkHealthState.Ok]: {
-    icon: 'text-energy-80 dark:text-energy-10',
-    bg: 'bg-energy-10/30 dark:bg-energy-80/50',
-  },
-  [NetworkHealthState.Issue]: {
-    icon: 'text-destroy-80 dark:text-destroy-10',
-    bg: 'bg-destroy-10 dark:bg-destroy-80/80',
-  },
-  [NetworkHealthState.Disconnected]: {
-    icon: 'text-destroy-80 dark:text-destroy-10',
-    bg: 'bg-destroy-10 dark:bg-destroy-80',
-  },
-}
+const overallConnectionStateColor: Record<NetworkHealthState, IconColorConfig> =
+  {
+    [NetworkHealthState.Ok]: {
+      icon: 'text-energy-80 dark:text-energy-10',
+      bg: 'bg-energy-10/30 dark:bg-energy-80/50',
+    },
+    [NetworkHealthState.Issue]: {
+      icon: 'text-destroy-80 dark:text-destroy-10',
+      bg: 'bg-destroy-10 dark:bg-destroy-80/80',
+    },
+    [NetworkHealthState.Disconnected]: {
+      icon: 'text-destroy-80 dark:text-destroy-10',
+      bg: 'bg-destroy-10 dark:bg-destroy-80',
+    },
+  }
 
-const overallConnectionStateIcon: Record<NetworkHealthState, ActionIconProps['icon']> = {
+const overallConnectionStateIcon: Record<
+  NetworkHealthState,
+  ActionIconProps['icon']
+> = {
   [NetworkHealthState.Ok]: 'network',
   [NetworkHealthState.Issue]: 'networkCrossedOut',
   [NetworkHealthState.Disconnected]: 'networkCrossedOut',
@@ -79,7 +83,9 @@ const overallConnectionStateIcon: Record<NetworkHealthState, ActionIconProps['ic
 export const NetworkHealthIndicator = () => {
   const [steps, setSteps] = useState(initialConnectingTypeGroupState)
   const [internetConnected, setInternetConnected] = useState<boolean>(true)
-  const [overallState, setOverallState] = useState<NetworkHealthState>(NetworkHealthState.Ok)
+  const [overallState, setOverallState] = useState<NetworkHealthState>(
+    NetworkHealthState.Ok
+  )
   const [hasCopied, setHasCopied] = useState<boolean>(false)
 
   const [error, setError] = useState<ErrorType | undefined>(undefined)
