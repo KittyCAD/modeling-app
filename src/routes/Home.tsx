@@ -14,12 +14,15 @@ import { AppHeader } from '../components/AppHeader'
 import ProjectCard from '../components/ProjectCard'
 import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-import { ProjectWithEntryPointMetadata, HomeLoaderData } from '../Router'
+import {
+  type ProjectWithEntryPointMetadata,
+  type HomeLoaderData,
+} from 'lib/types'
 import Loading from '../components/Loading'
 import { useMachine } from '@xstate/react'
 import { homeMachine } from '../machines/homeMachine'
 import { ContextFrom, EventFrom } from 'xstate'
-import { paths } from '../Router'
+import { paths } from 'lib/paths'
 import {
   getNextSearchParams,
   getSortFunction,
@@ -31,6 +34,8 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { DEFAULT_PROJECT_NAME } from 'machines/settingsMachine'
 import { sep } from '@tauri-apps/api/path'
 import { homeCommandBarConfig } from 'lib/commandBarConfigs/homeCommandConfig'
+import { useHotkeys } from 'react-hotkeys-hook'
+import { isTauri } from 'lib/isTauri'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
@@ -45,12 +50,25 @@ const Home = () => {
       send: sendToSettings,
     },
   } = useGlobalStateContext()
-  if (newDefaultDirectory) {
-    sendToSettings({
-      type: 'Set Default Directory',
-      data: { defaultDirectory: newDefaultDirectory },
-    })
-  }
+
+  // Set the default directory if it's been updated
+  // during the loading of the home page. This is wrapped
+  // in a single-use effect to avoid a potential infinite loop.
+  useEffect(() => {
+    if (newDefaultDirectory) {
+      sendToSettings({
+        type: 'Set Default Directory',
+        data: { defaultDirectory: newDefaultDirectory },
+      })
+    }
+  }, [])
+  useHotkeys(
+    isTauri() ? 'mod+,' : 'shift+mod+,',
+    () => navigate(paths.HOME + paths.SETTINGS),
+    {
+      splitKey: '|',
+    }
+  )
 
   const [state, send] = useMachine(homeMachine, {
     context: {

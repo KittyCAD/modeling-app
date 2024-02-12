@@ -27,6 +27,7 @@
 	* [`floor`](#floor)
 	* [`getExtrudeWallTransform`](#getExtrudeWallTransform)
 	* [`hole`](#hole)
+	* [`import`](#import)
 	* [`lastSegX`](#lastSegX)
 	* [`lastSegY`](#lastSegY)
 	* [`legAngX`](#legAngX)
@@ -40,6 +41,7 @@
 	* [`log2`](#log2)
 	* [`max`](#max)
 	* [`min`](#min)
+	* [`patternLinear`](#patternLinear)
 	* [`pi`](#pi)
 	* [`pow`](#pow)
 	* [`segAng`](#segAng)
@@ -127,7 +129,7 @@ angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup)
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -146,7 +148,20 @@ angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup)
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -155,7 +170,7 @@ angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup)
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -166,7 +181,7 @@ angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup)
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -179,8 +194,14 @@ angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup)
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -213,7 +234,7 @@ angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup)
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -232,7 +253,20 @@ angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup)
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -241,7 +275,7 @@ angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup)
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -252,7 +286,7 @@ angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup)
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -265,8 +299,14 @@ angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup)
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -309,7 +349,7 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -328,7 +368,20 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -337,7 +390,7 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -348,7 +401,7 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -361,8 +414,14 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -377,7 +436,7 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -396,7 +455,20 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -405,7 +477,7 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -416,7 +488,7 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -429,8 +501,14 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -469,7 +547,7 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -488,7 +566,20 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -497,7 +588,7 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -508,7 +599,7 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -521,8 +612,14 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -537,7 +634,7 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -556,7 +653,20 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -565,7 +675,7 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -576,7 +686,7 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -589,8 +699,14 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -629,7 +745,7 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -648,7 +764,20 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -657,7 +786,7 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -668,7 +797,7 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -681,8 +810,14 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -697,7 +832,7 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -716,7 +851,20 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -725,7 +873,7 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -736,7 +884,7 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -749,8 +897,14 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -790,7 +944,7 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -809,7 +963,20 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -818,7 +985,7 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -829,7 +996,7 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -842,8 +1009,14 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -858,7 +1031,7 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -877,7 +1050,20 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -886,7 +1072,7 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -897,7 +1083,7 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -910,8 +1096,14 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -950,7 +1142,7 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -969,7 +1161,20 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -978,7 +1183,7 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -989,7 +1194,7 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -1002,8 +1207,14 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -1018,7 +1229,7 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -1037,7 +1248,20 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -1046,7 +1270,7 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -1057,7 +1281,7 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -1070,8 +1294,14 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -1110,7 +1340,7 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -1129,7 +1359,20 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -1138,7 +1381,7 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -1149,7 +1392,7 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -1162,8 +1405,14 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -1178,7 +1427,7 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -1197,7 +1446,20 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -1206,7 +1468,7 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -1217,7 +1479,7 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -1230,8 +1492,14 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -1297,7 +1565,7 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -1316,7 +1584,20 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -1325,7 +1606,7 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -1336,7 +1617,7 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -1349,8 +1630,14 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -1365,7 +1652,7 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -1384,7 +1671,20 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -1393,7 +1693,7 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -1404,7 +1704,7 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -1417,8 +1717,14 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -1506,7 +1812,7 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -1525,7 +1831,20 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -1534,7 +1853,7 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -1545,7 +1864,7 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -1558,8 +1877,14 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -1574,7 +1899,7 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -1593,7 +1918,20 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -1602,7 +1940,7 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -1613,7 +1951,7 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -1626,8 +1964,14 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -1674,7 +2018,7 @@ close(sketch_group: SketchGroup) -> SketchGroup
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -1693,7 +2037,20 @@ close(sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -1702,7 +2059,7 @@ close(sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -1713,7 +2070,7 @@ close(sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -1726,8 +2083,14 @@ close(sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -1742,7 +2105,7 @@ close(sketch_group: SketchGroup) -> SketchGroup
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -1761,7 +2124,20 @@ close(sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -1770,7 +2146,7 @@ close(sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -1781,7 +2157,7 @@ close(sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -1794,8 +2170,14 @@ close(sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -1862,7 +2244,7 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -1881,7 +2263,20 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -1890,7 +2285,7 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -1901,7 +2296,7 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -1914,8 +2309,14 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -1944,7 +2345,7 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 	rotation: [number, number, number, number],
 	// The source range.
 	sourceRange: [number, number],
-	type: string,
+	type: "extrudePlane",
 }],
 }
 ```
@@ -2007,7 +2408,7 @@ getExtrudeWallTransform(surface_name: string, extrude_group: ExtrudeGroup) -> Ex
 	rotation: [number, number, number, number],
 	// The source range.
 	sourceRange: [number, number],
-	type: string,
+	type: "extrudePlane",
 }],
 }
 ```
@@ -2031,12 +2432,12 @@ Use a sketch to cut a hole in another sketch.
 
 
 ```
-hole(hole_sketch_group: SketchGroup, sketch_group: SketchGroup) -> SketchGroup
+hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGroup
 ```
 
 #### Arguments
 
-* `hole_sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `hole_sketch_group`: `SketchGroupSet` - A sketch group or a group of sketch groups.
 ```
 {
 	// The id of the sketch group.
@@ -2045,7 +2446,7 @@ hole(hole_sketch_group: SketchGroup, sketch_group: SketchGroup) -> SketchGroup
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -2056,6 +2457,7 @@ hole(hole_sketch_group: SketchGroup, sketch_group: SketchGroup) -> SketchGroup
 	// The to point.
 	to: [number, number],
 },
+	type: "sketchGroup",
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
@@ -2064,7 +2466,20 @@ hole(hole_sketch_group: SketchGroup, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -2073,7 +2488,7 @@ hole(hole_sketch_group: SketchGroup, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -2084,7 +2499,7 @@ hole(hole_sketch_group: SketchGroup, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -2097,8 +2512,17 @@ hole(hole_sketch_group: SketchGroup, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
+} |
+{
+	type: "sketchGroups",
 }
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
@@ -2110,7 +2534,7 @@ hole(hole_sketch_group: SketchGroup, sketch_group: SketchGroup) -> SketchGroup
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -2129,7 +2553,20 @@ hole(hole_sketch_group: SketchGroup, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -2138,7 +2575,7 @@ hole(hole_sketch_group: SketchGroup, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -2149,7 +2586,7 @@ hole(hole_sketch_group: SketchGroup, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -2162,8 +2599,14 @@ hole(hole_sketch_group: SketchGroup, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -2178,7 +2621,7 @@ hole(hole_sketch_group: SketchGroup, sketch_group: SketchGroup) -> SketchGroup
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -2197,7 +2640,20 @@ hole(hole_sketch_group: SketchGroup, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -2206,7 +2662,7 @@ hole(hole_sketch_group: SketchGroup, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -2217,7 +2673,7 @@ hole(hole_sketch_group: SketchGroup, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -2230,8 +2686,123 @@ hole(hole_sketch_group: SketchGroup, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
+}
+```
+
+
+
+### import
+
+Import a CAD file.
+
+For formats lacking unit data (STL, OBJ, PLY), the default import unit is millimeters. Otherwise you can specify the unit by passing in the options parameter. If you import a gltf file, we will try to find the bin file and import it as well.
+
+```
+import(file_path: String, options: ImportFormat) -> ImportedGeometry
+```
+
+#### Arguments
+
+* `file_path`: `String`
+* `options`: `ImportFormat` - Import format specifier
+```
+{
+	type: "fbx",
+} |
+{
+	type: "gltf",
+} |
+{
+	// Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system.
+	coords: {
+	// Axis the front face of a model looks along.
+	forward: {
+	// Axis specifier.
+	axis: "y" | "z",
+	// Specifies which direction the axis is pointing.
+	direction: "positive" | "negative",
+},
+	// Axis pointing up and away from a model.
+	up: {
+	// Axis specifier.
+	axis: "y" | "z",
+	// Specifies which direction the axis is pointing.
+	direction: "positive" | "negative",
+},
+},
+	type: "obj",
+	// The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters.
+	units: "cm" | "ft" | "in" | "m" | "mm" | "yd",
+} |
+{
+	// Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system.
+	coords: {
+	// Axis the front face of a model looks along.
+	forward: {
+	// Axis specifier.
+	axis: "y" | "z",
+	// Specifies which direction the axis is pointing.
+	direction: "positive" | "negative",
+},
+	// Axis pointing up and away from a model.
+	up: {
+	// Axis specifier.
+	axis: "y" | "z",
+	// Specifies which direction the axis is pointing.
+	direction: "positive" | "negative",
+},
+},
+	type: "ply",
+	// The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters.
+	units: "cm" | "ft" | "in" | "m" | "mm" | "yd",
+} |
+{
+	type: "sldprt",
+} |
+{
+	type: "step",
+} |
+{
+	// Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system.
+	coords: {
+	// Axis the front face of a model looks along.
+	forward: {
+	// Axis specifier.
+	axis: "y" | "z",
+	// Specifies which direction the axis is pointing.
+	direction: "positive" | "negative",
+},
+	// Axis pointing up and away from a model.
+	up: {
+	// Axis specifier.
+	axis: "y" | "z",
+	// Specifies which direction the axis is pointing.
+	direction: "positive" | "negative",
+},
+},
+	type: "stl",
+	// The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters.
+	units: "cm" | "ft" | "in" | "m" | "mm" | "yd",
+}
+```
+
+#### Returns
+
+* `ImportedGeometry` - Data for an imported geometry.
+```
+{
+	// The ID of the imported geometry.
+	id: uuid,
+	// The original file paths.
+	value: [string],
 }
 ```
 
@@ -2258,7 +2829,7 @@ lastSegX(sketch_group: SketchGroup) -> number
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -2277,7 +2848,20 @@ lastSegX(sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -2286,7 +2870,7 @@ lastSegX(sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -2297,7 +2881,7 @@ lastSegX(sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -2310,8 +2894,14 @@ lastSegX(sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -2342,7 +2932,7 @@ lastSegY(sketch_group: SketchGroup) -> number
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -2361,7 +2951,20 @@ lastSegY(sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -2370,7 +2973,7 @@ lastSegY(sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -2381,7 +2984,7 @@ lastSegY(sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -2394,8 +2997,14 @@ lastSegY(sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -2499,7 +3108,7 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -2518,7 +3127,20 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -2527,7 +3149,7 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -2538,7 +3160,7 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -2551,8 +3173,14 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -2567,7 +3195,7 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -2586,7 +3214,20 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -2595,7 +3236,7 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -2606,7 +3247,7 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -2619,8 +3260,14 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -2657,7 +3304,7 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -2676,7 +3323,20 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -2685,7 +3345,7 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -2696,7 +3356,7 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -2709,8 +3369,14 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -2725,7 +3391,7 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -2744,7 +3410,20 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -2753,7 +3432,7 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -2764,7 +3443,7 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -2777,8 +3456,14 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -2905,6 +3590,154 @@ min(args: [number]) -> number
 
 
 
+### patternLinear
+
+A linear pattern.
+
+
+
+```
+patternLinear(data: LinearPatternData, geometry: Geometry) -> Geometries
+```
+
+#### Arguments
+
+* `data`: `LinearPatternData` - Data for a linear pattern.
+```
+{
+	// The axis of the pattern. This is a 3D vector.
+	axis: [number, number, number],
+	// The distance between each repetition. This can also be referred to as spacing.
+	distance: number,
+	// The number of repetitions. Must be greater than 0. This excludes the original entity. For example, if `repetitions` is 1, the original entity will be copied once.
+	repetitions: number,
+}
+```
+* `geometry`: `Geometry` - A geometry.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
+	// The position of the sketch group.
+	position: [number, number, number],
+	// The rotation of the sketch group base plane.
+	rotation: [number, number, number, number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+},
+	type: "SketchGroup",
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "Horizontal",
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "AngledLineTo",
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "Base",
+}],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
+} |
+{
+	// The height of the extrude group.
+	height: number,
+	// The id of the extrude group.
+	id: uuid,
+	// The position of the extrude group.
+	position: [number, number, number],
+	// The rotation of the extrude group.
+	rotation: [number, number, number, number],
+	type: "ExtrudeGroup",
+	// The extrude surfaces.
+	value: [{
+	// The id of the geometry.
+	id: uuid,
+	// The name.
+	name: string,
+	// The position.
+	position: [number, number, number],
+	// The rotation.
+	rotation: [number, number, number, number],
+	// The source range.
+	sourceRange: [number, number],
+	type: "extrudePlane",
+}],
+}
+```
+
+#### Returns
+
+* `Geometries` - A set of geometry.
+```
+{
+	type: "SketchGroups",
+} |
+{
+	type: "ExtrudeGroups",
+}
+```
+
+
+
 ### pi
 
 Return the value of `pi`. Archimedes’ constant (π).
@@ -2967,7 +3800,7 @@ segAng(segment_name: string, sketch_group: SketchGroup) -> number
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -2986,7 +3819,20 @@ segAng(segment_name: string, sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -2995,7 +3841,7 @@ segAng(segment_name: string, sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -3006,7 +3852,7 @@ segAng(segment_name: string, sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -3019,8 +3865,14 @@ segAng(segment_name: string, sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -3052,7 +3904,7 @@ segEndX(segment_name: string, sketch_group: SketchGroup) -> number
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -3071,7 +3923,20 @@ segEndX(segment_name: string, sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -3080,7 +3945,7 @@ segEndX(segment_name: string, sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -3091,7 +3956,7 @@ segEndX(segment_name: string, sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -3104,8 +3969,14 @@ segEndX(segment_name: string, sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -3137,7 +4008,7 @@ segEndY(segment_name: string, sketch_group: SketchGroup) -> number
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -3156,7 +4027,20 @@ segEndY(segment_name: string, sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -3165,7 +4049,7 @@ segEndY(segment_name: string, sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -3176,7 +4060,7 @@ segEndY(segment_name: string, sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -3189,8 +4073,14 @@ segEndY(segment_name: string, sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -3222,7 +4112,7 @@ segLen(segment_name: string, sketch_group: SketchGroup) -> number
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -3241,7 +4131,20 @@ segLen(segment_name: string, sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -3250,7 +4153,7 @@ segLen(segment_name: string, sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -3261,7 +4164,7 @@ segLen(segment_name: string, sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -3274,8 +4177,14 @@ segLen(segment_name: string, sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -3306,7 +4215,7 @@ show(sketch: SketchGroup)
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -3325,7 +4234,20 @@ show(sketch: SketchGroup)
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -3334,7 +4256,7 @@ show(sketch: SketchGroup)
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -3345,7 +4267,7 @@ show(sketch: SketchGroup)
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -3358,8 +4280,14 @@ show(sketch: SketchGroup)
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -3439,8 +4367,7 @@ startProfileAt(data: LineData, plane: Plane) -> SketchGroup
 	z: number,
 },
 	// Type for a plane.
-	value: string |
-string,
+	value: "XY" | "XZ" | "YZ" | "Custom",
 	// What should the plane’s X axis be?
 	xAxis: {
 	x: number,
@@ -3473,7 +4400,7 @@ string,
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -3492,7 +4419,20 @@ string,
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -3501,7 +4441,7 @@ string,
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -3512,7 +4452,7 @@ string,
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -3525,8 +4465,14 @@ string,
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -3566,7 +4512,7 @@ startSketchAt(data: LineData) -> SketchGroup
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -3585,7 +4531,20 @@ startSketchAt(data: LineData) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -3594,7 +4553,7 @@ startSketchAt(data: LineData) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -3605,7 +4564,7 @@ startSketchAt(data: LineData) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -3618,8 +4577,14 @@ startSketchAt(data: LineData) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -3639,12 +4604,12 @@ startSketchOn(data: PlaneData) -> Plane
 
 * `data`: `PlaneData` - Data for a plane.
 ```
-string |
-string |
-string |
-string |
-string |
-string |
+"XY" |
+"-XY" |
+"XZ" |
+"-XZ" |
+"YZ" |
+"-YZ" |
 {
 	plane: {
 	// Origin of the plane.
@@ -3689,8 +4654,7 @@ string |
 	z: number,
 },
 	// Type for a plane.
-	value: string |
-string,
+	value: "XY" | "XZ" | "YZ" | "Custom",
 	// What should the plane’s X axis be?
 	xAxis: {
 	x: number,
@@ -3771,7 +4735,7 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -3790,7 +4754,20 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -3799,7 +4776,7 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -3810,7 +4787,7 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -3823,8 +4800,14 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -3839,7 +4822,7 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -3858,7 +4841,20 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -3867,7 +4863,7 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -3878,7 +4874,7 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -3891,8 +4887,14 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -3920,7 +4922,7 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchG
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -3939,7 +4941,20 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchG
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -3948,7 +4963,7 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchG
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -3959,7 +4974,7 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchG
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -3972,8 +4987,14 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchG
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 * `tag`: `String`
@@ -3989,7 +5010,7 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchG
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -4008,7 +5029,20 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchG
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -4017,7 +5051,7 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchG
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -4028,7 +5062,7 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchG
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -4041,8 +5075,14 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchG
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -4098,7 +5138,7 @@ number
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -4117,7 +5157,20 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -4126,7 +5179,7 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -4137,7 +5190,7 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -4150,8 +5203,14 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -4166,7 +5225,7 @@ number
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -4185,7 +5244,20 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -4194,7 +5266,7 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -4205,7 +5277,7 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -4218,8 +5290,14 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -4256,7 +5334,7 @@ number
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -4275,7 +5353,20 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -4284,7 +5375,7 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -4295,7 +5386,7 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -4308,8 +5399,14 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -4324,7 +5421,7 @@ number
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -4343,7 +5440,20 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -4352,7 +5462,7 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -4363,7 +5473,7 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -4376,8 +5486,14 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -4414,7 +5530,7 @@ number
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -4433,7 +5549,20 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -4442,7 +5571,7 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -4453,7 +5582,7 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -4466,8 +5595,14 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -4482,7 +5617,7 @@ number
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -4501,7 +5636,20 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -4510,7 +5658,7 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -4521,7 +5669,7 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -4534,8 +5682,14 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -4572,7 +5726,7 @@ number
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -4591,7 +5745,20 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -4600,7 +5767,7 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -4611,7 +5778,7 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -4624,8 +5791,14 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 
@@ -4640,7 +5813,7 @@ number
 	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
-	// The rotation of the sketch group.
+	// The rotation of the sketch group base plane.
 	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
@@ -4659,7 +5832,20 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
 } |
 {
 	// The from point.
@@ -4668,7 +5854,7 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Horizontal",
 	// The x coordinate.
 	x: number,
 } |
@@ -4679,7 +5865,7 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "AngledLineTo",
 	// The x coordinate.
 	x: number,
 	// The y coordinate.
@@ -4692,8 +5878,14 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
-	type: string,
+	type: "Base",
 }],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: [number, number, number],
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: [number, number, number],
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: [number, number, number],
 }
 ```
 

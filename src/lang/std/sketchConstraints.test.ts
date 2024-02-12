@@ -388,7 +388,7 @@ show(part001)`
       [index, index]
     ).segment
     expect(segment).toEqual({
-      type: 'toPoint',
+      type: 'ToPoint',
       to: [5.62, 1.79],
       from: [3.48, 0.44],
       name: '',
@@ -405,7 +405,7 @@ show(part001)`
       to: [0, 0.04],
       from: [0, 0.04],
       name: '',
-      type: 'base',
+      type: 'Base',
     })
   })
 })

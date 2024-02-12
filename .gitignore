@@ -50,3 +50,7 @@ e2e/playwright/export-snapshots/*embedded.gltf
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+
+## generated files
+src/**/*.typegen.ts

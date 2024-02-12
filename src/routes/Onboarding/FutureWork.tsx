@@ -1,7 +1,7 @@
 import { OnboardingButtons, useDismiss } from '.'
 import { useEffect } from 'react'
 import { bracket } from 'lib/exampleKcl'
-import { kclManager } from 'lang/KclSinglton'
+import { kclManager } from 'lang/KclSingleton'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { APP_NAME } from 'lib/constants'
 

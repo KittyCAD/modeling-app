@@ -9,7 +9,7 @@ import styles from './CodeMenu.module.css'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
 import { editorShortcutMeta } from './TextEditor'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { kclManager } from 'lang/KclSinglton'
+import { kclManager } from 'lang/KclSingleton'
 
 export const CodeMenu = ({ children }: PropsWithChildren) => {
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =

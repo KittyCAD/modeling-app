@@ -4,9 +4,8 @@ use databake::*;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use crate::executor::{MemoryItem, SourceRange, UserVal};
-
 use super::ConstraintLevel;
+use crate::executor::{MemoryItem, SourceRange, UserVal};
 
 /// KCL value for an optional parameter which was not given an argument.
 /// (remember, parameters are in the function declaration,
