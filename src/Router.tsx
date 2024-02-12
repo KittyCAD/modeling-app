@@ -32,8 +32,8 @@ import {
 } from '@tauri-apps/plugin-fs'
 import makeUrlPathRelative from './lib/makeUrlPathRelative'
 import {
+  getProjectsInDir,
   initializeProjectDirectory,
-  isProjectDirectory,
   PROJECT_ENTRYPOINT,
 } from './lib/tauriFS'
 import DownloadAppBanner from './components/DownloadAppBanner'
@@ -278,15 +278,7 @@ const router = createBrowserRouter(
           )
           newDefaultDirectory = projectDir
         }
-        const projectsNoMeta = (await readDir(projectDir)).filter(
-          isProjectDirectory
-        )
-        const projects = await Promise.all(
-          projectsNoMeta.map(async (p: DirEntry) => ({
-            entrypointMetadata: await stat(p.name + sep() + PROJECT_ENTRYPOINT),
-            ...p,
-          }))
-        )
+        const projects = await getProjectsInDir(projectDir)
 
         return {
           projects,

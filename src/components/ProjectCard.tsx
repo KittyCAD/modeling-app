@@ -41,6 +41,8 @@ function ProjectCard({
   function getDisplayedTime(date: Date) {
     const startOfToday = new Date()
     startOfToday.setHours(0, 0, 0, 0)
+    // TODO: fix time
+    return ""
     return date.getTime() < startOfToday.getTime()
       ? date.toLocaleDateString()
       : date.toLocaleTimeString()

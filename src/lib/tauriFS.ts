@@ -5,7 +5,7 @@ import {
   writeTextFile,
   stat,
 } from '@tauri-apps/plugin-fs'
-import { documentDir, homeDir, sep } from '@tauri-apps/api/path'
+import { documentDir, homeDir, join, sep } from '@tauri-apps/api/path'
 import { isTauri } from './isTauri'
 import { ProjectWithEntryPointMetadata } from '../Router'
 
@@ -51,26 +51,20 @@ export async function initializeProjectDirectory(directory: string) {
   return INITIAL_DEFAULT_DIR
 }
 
-export function isProjectDirectory(fileOrDir: Partial<any>) {
-  return (
-    fileOrDir.children?.length &&
-    fileOrDir.children.some((child) => child.name === PROJECT_ENTRYPOINT)
-  )
-}
-
 // Read the contents of a directory
 // and return the valid projects
 export async function getProjectsInDir(projectDir: string) {
-  const readProjects = (
-    await readDir(projectDir, {
-      recursive: true,
-    })
-  ).filter(isProjectDirectory)
-
+  const dirs = await readDir(projectDir)
   const projectsWithMetadata = await Promise.all(
-    readProjects.map(async (p) => ({
-      entrypointMetadata: await stat(p.name + sep() + PROJECT_ENTRYPOINT),
-      ...p,
+   dirs 
+      .filter(async (p) => {
+        const files = await readDir(await join(projectDir, p.name))
+        return files.some(d => d.name === PROJECT_ENTRYPOINT)
+      })
+      .map(async (p) => ({
+        entrypointMetadata: await stat(await join(projectDir, p.name, PROJECT_ENTRYPOINT)),
+        path: await join(projectDir, p.name),
+        ...p,
     }))
   )
 
