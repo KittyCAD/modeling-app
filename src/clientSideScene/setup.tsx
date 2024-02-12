@@ -78,7 +78,6 @@ let lastCmdTimeoutId: number | null = null
 const sendLastReliableChannel = () => {
   if (lastCmd && Date.now() - lastCmdTime >= 300) {
     engineCommandManager.sendSceneCommand(lastCmd, true)
-    console.log('resending last reliable channel', lastCmd)
     lastCmdTime = Date.now()
   }
 }
