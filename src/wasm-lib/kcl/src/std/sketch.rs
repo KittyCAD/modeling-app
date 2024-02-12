@@ -848,12 +848,12 @@ async fn inner_start_sketch_on(data: SketchData, tag: Option<String>, args: Args
 }
 
 async fn start_sketch_on_face(extrude_group: Box<ExtrudeGroup>, tag: &str, args: Args) -> Result<Box<Face>, KclError> {
-    let face_id = extrude_group
+    let extrude_plane = extrude_group
         .value
         .iter()
-        .find_map(|extrude_plane| match extrude_plane {
-            ExtrudeSurface::ExtrudePlane { name, face_id, .. } if name == tag => Some(face_id),
-            _ => None,
+        .find_map(|extrude_surface| match extrude_surface {
+            ExtrudeSurface::ExtrudePlane(extrude_plane) if extrude_plane.name == tag => Some(extrude_plane),
+            ExtrudeSurface::ExtrudePlane(_) => None,
         })
         .ok_or_else(|| {
             KclError::Type(KclErrorDetails {
@@ -862,30 +862,26 @@ async fn start_sketch_on_face(extrude_group: Box<ExtrudeGroup>, tag: &str, args:
             })
         })?;
 
-    println!("\n\nface_id: {:?}", face_id);
-
     // Enter sketch mode on the face.
+    let id = uuid::Uuid::new_v4();
     args.send_modeling_cmd(
-        uuid::Uuid::new_v4(),
+        id,
         ModelingCmd::EnableSketchMode {
             animated: false,
             ortho: false,
-            entity_id: *face_id, // TODO: this should be the face id , just showing kurt
-                                 // what the command looks like
+            entity_id: extrude_plane.face_id,
         },
     )
     .await?;
-    println!("\n\nafter enable sketch mode: {:?}", face_id);
 
-    let plane = args
-        .send_modeling_cmd(uuid::Uuid::new_v4(), ModelingCmd::GetSketchModePlane {})
-        .await?;
-
-    print!("{:?}", plane);
-
-    // todo use the plane to for it's axis vecs
-
-    todo!()
+    Ok(Box::new(Face {
+        id,
+        tag: tag.to_string(),
+        x_axis: extrude_group.x_axis,
+        y_axis: extrude_group.y_axis,
+        z_axis: extrude_group.z_axis,
+        meta: vec![args.source_range.into()],
+    }))
 }
 
 async fn start_sketch_on_plane(data: PlaneData, args: Args) -> Result<Box<Plane>, KclError> {
@@ -1043,21 +1039,9 @@ async fn inner_start_profile_at(
         id: path_id,
         position: Position([0.0, 0.0, 0.0]),
         rotation: Rotation([0.0, 0.0, 0.0, 1.0]),
-        x_axis: Position([
-            sketch_surface.x_axis().x,
-            sketch_surface.x_axis().y,
-            sketch_surface.x_axis().z,
-        ]),
-        y_axis: Position([
-            sketch_surface.y_axis().x,
-            sketch_surface.y_axis().y,
-            sketch_surface.y_axis().z,
-        ]),
-        z_axis: Position([
-            sketch_surface.z_axis().x,
-            sketch_surface.z_axis().y,
-            sketch_surface.z_axis().z,
-        ]),
+        x_axis: sketch_surface.x_axis(),
+        y_axis: sketch_surface.y_axis(),
+        z_axis: sketch_surface.z_axis(),
         entity_id: Some(sketch_surface.id()),
         value: vec![],
         start: current_path,

@@ -425,11 +425,11 @@ pub struct SketchGroup {
     /// The rotation of the sketch group base plane.
     pub rotation: Rotation,
     /// The x-axis of the sketch group base plane in the 3D space
-    pub x_axis: Position,
+    pub x_axis: Point3d,
     /// The y-axis of the sketch group base plane in the 3D space
-    pub y_axis: Position,
+    pub y_axis: Point3d,
     /// The z-axis of the sketch group base plane in the 3D space
-    pub z_axis: Position,
+    pub z_axis: Point3d,
     /// The plane id or face id of the sketch group.
     pub entity_id: Option<uuid::Uuid>,
     /// Metadata.
@@ -525,11 +525,11 @@ pub struct ExtrudeGroup {
     /// The rotation of the extrude group.
     pub rotation: Rotation,
     /// The x-axis of the extrude group base plane in the 3D space
-    pub x_axis: Position,
+    pub x_axis: Point3d,
     /// The y-axis of the extrude group base plane in the 3D space
-    pub y_axis: Position,
+    pub y_axis: Point3d,
     /// The z-axis of the extrude group base plane in the 3D space
-    pub z_axis: Position,
+    pub z_axis: Point3d,
     /// The id of the extrusion start cap
     pub start_cap_id: Option<uuid::Uuid>,
     /// The id of the extrusion end cap
@@ -561,6 +561,16 @@ pub enum BodyType {
 #[derive(Debug, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct Position(#[ts(type = "[number, number, number]")] pub [f64; 3]);
+
+impl From<Position> for Point3d {
+    fn from(p: Position) -> Self {
+        Self {
+            x: p.0[0],
+            y: p.0[1],
+            z: p.0[2],
+        }
+    }
+}
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -824,43 +834,49 @@ impl Path {
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum ExtrudeSurface {
     /// An extrude plane.
-    ExtrudePlane {
-        /// The position.
-        position: Position,
-        /// The rotation.
-        rotation: Rotation,
-        /// The face id for the extrude plane.
-        face_id: uuid::Uuid,
-        /// The name.
-        name: String,
-        /// Metadata.
-        #[serde(flatten)]
-        geo_meta: GeoMeta,
-    },
+    ExtrudePlane(ExtrudePlane),
+}
+
+/// An extruded plane.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct ExtrudePlane {
+    /// The position.
+    pub position: Position,
+    /// The rotation.
+    pub rotation: Rotation,
+    /// The face id for the extrude plane.
+    pub face_id: uuid::Uuid,
+    /// The name.
+    pub name: String,
+    /// Metadata.
+    #[serde(flatten)]
+    pub geo_meta: GeoMeta,
 }
 
 impl ExtrudeSurface {
     pub fn get_id(&self) -> uuid::Uuid {
         match self {
-            ExtrudeSurface::ExtrudePlane { geo_meta, .. } => geo_meta.id,
+            ExtrudeSurface::ExtrudePlane(ep) => ep.geo_meta.id,
         }
     }
 
     pub fn get_name(&self) -> String {
         match self {
-            ExtrudeSurface::ExtrudePlane { name, .. } => name.clone(),
+            ExtrudeSurface::ExtrudePlane(ep) => ep.name.clone(),
         }
     }
 
     pub fn get_position(&self) -> Position {
         match self {
-            ExtrudeSurface::ExtrudePlane { position, .. } => *position,
+            ExtrudeSurface::ExtrudePlane(ep) => ep.position,
         }
     }
 
     pub fn get_rotation(&self) -> Rotation {
         match self {
-            ExtrudeSurface::ExtrudePlane { rotation, .. } => *rotation,
+            ExtrudeSurface::ExtrudePlane(ep) => ep.rotation,
         }
     }
 }

@@ -102,7 +102,7 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
     let mut new_value: Vec<ExtrudeSurface> = Vec::new();
     for path in sketch_group.value.iter() {
         if let Some(Some(actual_face_id)) = face_id_map.get(&path.get_base().geo_meta.id) {
-            let extrude_surface = ExtrudeSurface::ExtrudePlane {
+            let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
                 position: sketch_group.position, // TODO should be for the extrude surface
                 rotation: sketch_group.rotation, // TODO should be for the extrude surface
                 face_id: *actual_face_id,
@@ -112,7 +112,7 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
                     face_id: Some(*actual_face_id),
                     metadata: path.get_base().geo_meta.metadata.clone(),
                 },
-            };
+            });
             new_value.push(extrude_surface);
         }
     }
