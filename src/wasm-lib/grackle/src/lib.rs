@@ -588,6 +588,7 @@ fn kcl_literal_to_kcep_literal(expr: LiteralValue) -> ept::Primitive {
         LiteralValue::IInteger(x) => ept::Primitive::NumericValue(NumericPrimitive::Integer(x)),
         LiteralValue::Fractional(x) => ept::Primitive::NumericValue(NumericPrimitive::Float(x)),
         LiteralValue::String(x) => ept::Primitive::String(x),
+        LiteralValue::Bool(b) => ept::Primitive::Bool(b),
     }
 }
 
