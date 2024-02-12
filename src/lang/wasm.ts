@@ -15,6 +15,7 @@ import { MemoryItem } from '../wasm-lib/kcl/bindings/MemoryItem'
 import type { Program } from '../wasm-lib/kcl/bindings/Program'
 import type { Token } from '../wasm-lib/kcl/bindings/Token'
 import { Coords2d } from './std/sketch'
+import { fileSystemManager } from 'wasm-lib/pkg/lang/std/fileSystemManager'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Value } from '../wasm-lib/kcl/bindings/Value'
@@ -143,7 +144,8 @@ export const _executor = async (
     const memory: ProgramMemory = await execute_wasm(
       JSON.stringify(node),
       JSON.stringify(programMemory),
-      engineCommandManager
+      engineCommandManager,
+      fileSystemManager
     )
     return memory
   } catch (e: any) {
