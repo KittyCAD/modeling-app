@@ -5,22 +5,34 @@ import {
 } from '@tauri-apps/api/fs'
 import { isTauri } from 'lib/isTauri'
 
-export function readFile(path: string): Promise<Uint8Array> {
-  // Using local file system only works from Tauri.
-  if (!isTauri()) {
-    throw new Error('This function can only be called from a Tauri application')
+class FileSystemManager {
+  fileMachineProvider: FileMachineProvider
+
+  constructor(fileMachineProvider: FileMachineProvider) {
+    this.fileMachineProvider = fileMachineProvider
   }
 
-  console.log('readFile path', path, BaseDirectory.AppConfig)
-  return readBinaryFile(path, { dir: BaseDirectory.AppConfig })
-}
+  readFile(path: string): Promise<Uint8Array> {
+    // Using local file system only works from Tauri.
+    if (!isTauri()) {
+      throw new Error(
+        'This function can only be called from a Tauri application'
+      )
+    }
 
-export function exists(path: string): Promise<boolean> {
-  // Using local file system only works from Tauri.
-  if (!isTauri()) {
-    throw new Error('This function can only be called from a Tauri application')
+    console.log('readFile path', path, BaseDirectory.AppConfig)
+    return readBinaryFile(path, { dir: BaseDirectory.AppConfig })
   }
-  console.log('exists path', path, BaseDirectory.AppConfig)
 
-  return tauriExists(path, { dir: BaseDirectory.AppConfig })
+  exists(path: string): Promise<boolean> {
+    // Using local file system only works from Tauri.
+    if (!isTauri()) {
+      throw new Error(
+        'This function can only be called from a Tauri application'
+      )
+    }
+    console.log('exists path', path, BaseDirectory.AppConfig)
+
+    return tauriExists(path, { dir: BaseDirectory.AppConfig })
+  }
 }
