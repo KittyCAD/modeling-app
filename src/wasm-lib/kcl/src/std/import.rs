@@ -137,8 +137,7 @@ async fn inner_import(
     }
 
     // Make sure the file exists.
-    let fsm = crate::fs::FileManager::new();
-    if !fsm.exists(&file_path, args.source_range).await? {
+    if !args.ctx.fs.exists(&file_path, args.source_range).await? {
         return Err(KclError::Semantic(KclErrorDetails {
             message: format!("File `{}` does not exist.", file_path),
             source_ranges: vec![args.source_range],
@@ -174,7 +173,7 @@ async fn inner_import(
     };
 
     // Get the file contents for each file path.
-    let file_contents = fsm.read(&file_path, args.source_range).await.map_err(|e| {
+    let file_contents = args.ctx.fs.read(&file_path, args.source_range).await.map_err(|e| {
         KclError::Semantic(KclErrorDetails {
             message: e.to_string(),
             source_ranges: vec![args.source_range],
@@ -225,7 +224,7 @@ async fn inner_import(
                                 })
                             })?;
 
-                        let bin_contents = fsm.read(&bin_path, args.source_range).await.map_err(|e| {
+                        let bin_contents = args.ctx.fs.read(&bin_path, args.source_range).await.map_err(|e| {
                             KclError::Semantic(KclErrorDetails {
                                 message: e.to_string(),
                                 source_ranges: vec![args.source_range],

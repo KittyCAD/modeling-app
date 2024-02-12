@@ -839,6 +839,7 @@ impl ExecutorContext {
 
     /// Create a new default executor context.
     #[cfg(not(test))]
+    #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(ws: reqwest::Upgraded) -> Result<Self> {
         Ok(Self {
             engine: EngineConnection::new(ws).await?,
