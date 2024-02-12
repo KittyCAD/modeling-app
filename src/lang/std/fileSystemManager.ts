@@ -11,6 +11,7 @@ export function readFile(path: string): Promise<Uint8Array> {
     throw new Error('This function can only be called from a Tauri application')
   }
 
+  console.log('readFile path', path, BaseDirectory.AppConfig)
   return readBinaryFile(path, { dir: BaseDirectory.AppConfig })
 }
 
@@ -19,6 +20,7 @@ export function exists(path: string): Promise<boolean> {
   if (!isTauri()) {
     throw new Error('This function can only be called from a Tauri application')
   }
+  console.log('exists path', path, BaseDirectory.AppConfig)
 
   return tauriExists(path, { dir: BaseDirectory.AppConfig })
 }
