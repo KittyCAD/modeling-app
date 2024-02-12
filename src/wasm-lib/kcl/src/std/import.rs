@@ -171,13 +171,66 @@ async fn inner_import(
         })
     })?;
 
-    let import_files = vec![kittycad::types::ImportFile {
-        path: file_path.to_string(),
-        data: file_contents,
+    // We want the file_path to be without the parent.
+    let file_name = std::path::Path::new(&file_path)
+        .file_name()
+        .map(|p| p.to_string_lossy().to_string())
+        .ok_or_else(|| {
+            KclError::Semantic(KclErrorDetails {
+                message: format!("Could not get the file name from the path `{}`", file_path),
+                source_ranges: vec![args.source_range],
+            })
+        })?;
+    let mut import_files = vec![kittycad::types::ImportFile {
+        path: file_name.to_string(),
+        data: file_contents.clone(),
     }];
 
-    // TODO: In the case of a gltf importing a bin file we need to handle that! and figure out where the
+    // In the case of a gltf importing a bin file we need to handle that! and figure out where the
     // file is relative to our current file.
+    if let kittycad::types::InputFormat::Gltf {} = format {
+        // Check if the file is a binary gltf file, in that case we don't need to import the bin
+        // file.
+        if !file_contents.starts_with(b"glTF") {
+            let json = gltf_json::Root::from_slice(&file_contents).map_err(|e| {
+                KclError::Semantic(KclErrorDetails {
+                    message: e.to_string(),
+                    source_ranges: vec![args.source_range],
+                })
+            })?;
+
+            // Read the gltf file and check if there is a bin file.
+            for buffer in json.buffers.iter() {
+                if let Some(uri) = &buffer.uri {
+                    if !uri.starts_with("data:") {
+                        // We want this path relative to the file_path given.
+                        let bin_path = std::path::Path::new(&file_path)
+                            .parent()
+                            .map(|p| p.join(&uri))
+                            .map(|p| p.to_string_lossy().to_string())
+                            .ok_or_else(|| {
+                                KclError::Semantic(KclErrorDetails {
+                                    message: format!("Could not get the parent path of the file `{}`", file_path),
+                                    source_ranges: vec![args.source_range],
+                                })
+                            })?;
+
+                        let bin_contents = fsm.read(&bin_path, args.source_range).await.map_err(|e| {
+                            KclError::Semantic(KclErrorDetails {
+                                message: e.to_string(),
+                                source_ranges: vec![args.source_range],
+                            })
+                        })?;
+
+                        import_files.push(kittycad::types::ImportFile {
+                            path: uri.to_string(),
+                            data: bin_contents,
+                        });
+                    }
+                }
+            }
+        }
+    }
 
     let id = uuid::Uuid::new_v4();
     let resp = args

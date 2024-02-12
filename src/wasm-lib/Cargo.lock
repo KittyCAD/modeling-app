@@ -1416,6 +1416,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "gltf-derive"
+version = "1.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "438ffe1a5540d75403feaf23636b164e816e93f6f03131674722b3886ce32a57"
+dependencies = [
+ "inflections",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.48",
+]
+
+[[package]]
+name = "gltf-json"
+version = "1.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "655951ba557f2bc69ea4b0799446bae281fa78efae6319968bdd2c3e9a06d8e1"
+dependencies = [
+ "gltf-derive",
+ "serde",
+ "serde_derive",
+ "serde_json",
+]
+
+[[package]]
 name = "grackle"
 version = "0.1.0"
 dependencies = [
@@ -1867,6 +1891,7 @@ dependencies = [
  "derive-docs",
  "expectorate",
  "futures",
+ "gltf-json",
  "insta",
  "itertools 0.12.1",
  "js-sys",

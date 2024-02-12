@@ -720,3 +720,27 @@ async fn serial_test_import_obj_with_mtl_units() {
     let result = execute_and_snapshot(code).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/import_obj_with_mtl_units.png", &result, 0.999);
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_import_gltf_with_bin() {
+    let code = r#"const model = import("tests/executor/inputs/cube.gltf")"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/import_gltf_with_bin.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_import_gltf_embedded() {
+    let code = r#"const model = import("tests/executor/inputs/cube-embedded.gltf")"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/import_gltf_embedded.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_import_glb() {
+    let code = r#"const model = import("tests/executor/inputs/cube.glb")"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/import_glb.png", &result, 0.999);
+}
