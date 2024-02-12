@@ -91,10 +91,14 @@ export async function applyConstraintAngleLength({
     let forceVal = valueUsedInTransform || 0
     let calcIdentifier = createIdentifier('ZERO')
     if (isReferencingYAxisAngle) {
-      calcIdentifier = createIdentifier(forceVal < 0 ? 'THREE_QUARTER_TURN' : 'QUARTER_TURN')
+      calcIdentifier = createIdentifier(
+        forceVal < 0 ? 'THREE_QUARTER_TURN' : 'QUARTER_TURN'
+      )
       forceVal = normaliseAngle(forceVal + (forceVal < 0 ? 90 : -90))
     } else if (isReferencingXAxisAngle) {
-      calcIdentifier = createIdentifier(Math.abs(forceVal) > 90 ? 'HALF_TURN' : 'ZERO')
+      calcIdentifier = createIdentifier(
+        Math.abs(forceVal) > 90 ? 'HALF_TURN' : 'ZERO'
+      )
       forceVal =
         Math.abs(forceVal) > 90 ? normaliseAngle(forceVal - 180) : forceVal
     }
