@@ -744,3 +744,15 @@ async fn serial_test_import_glb() {
     let result = execute_and_snapshot(code).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/import_glb.png", &result, 0.999);
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_import_ext_doesnt_match() {
+    let code = r#"const model = import("tests/executor/inputs/cube.gltf", {type: "obj", units: "m"})"#;
+
+    let result = execute_and_snapshot(code).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([14, 82])], message: \"The given format does not match the file extension. Expected: `gltf`, Given: `obj`\" }"#
+    );
+}

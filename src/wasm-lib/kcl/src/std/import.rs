@@ -145,22 +145,32 @@ async fn inner_import(
         }));
     }
 
+    let ext_format = get_import_format_from_extension(file_path.split('.').last().ok_or_else(|| {
+        KclError::Semantic(KclErrorDetails {
+            message: format!("No file extension found for `{}`", file_path),
+            source_ranges: vec![args.source_range],
+        })
+    })?)
+    .map_err(|e| {
+        KclError::Semantic(KclErrorDetails {
+            message: e.to_string(),
+            source_ranges: vec![args.source_range],
+        })
+    })?;
+
     // Get the format type from the extension of the file.
-    let format: kittycad::types::InputFormat = if let Some(options) = options {
-        options.into()
-    } else {
-        get_import_format_from_extension(file_path.split('.').last().ok_or_else(|| {
-            KclError::Semantic(KclErrorDetails {
-                message: format!("No file extension found for `{}`", file_path),
-                source_ranges: vec![args.source_range],
-            })
-        })?)
-        .map_err(|e| {
+    let format = if let Some(options) = options {
+        // Validate the given format with the extension format.
+        let format: kittycad::types::InputFormat = options.into();
+        validate_extension_format(ext_format, format.clone()).map_err(|e| {
             KclError::Semantic(KclErrorDetails {
                 message: e.to_string(),
                 source_ranges: vec![args.source_range],
             })
-        })?
+        })?;
+        format
+    } else {
+        ext_format
     };
 
     // Get the file contents for each file path.
@@ -206,7 +216,7 @@ async fn inner_import(
                         // We want this path relative to the file_path given.
                         let bin_path = std::path::Path::new(&file_path)
                             .parent()
-                            .map(|p| p.join(&uri))
+                            .map(|p| p.join(uri))
                             .map(|p| p.to_string_lossy().to_string())
                             .ok_or_else(|| {
                                 KclError::Semantic(KclErrorDetails {
@@ -303,5 +313,47 @@ fn get_import_format_from_extension(ext: &str) -> Result<kittycad::types::InputF
         }),
         kittycad::types::FileImportFormat::Fbx => Ok(kittycad::types::InputFormat::Fbx {}),
         kittycad::types::FileImportFormat::Sldprt => Ok(kittycad::types::InputFormat::Sldprt {}),
+    }
+}
+
+fn validate_extension_format(ext: kittycad::types::InputFormat, given: kittycad::types::InputFormat) -> Result<()> {
+    if let kittycad::types::InputFormat::Stl { coords: _, units: _ } = ext {
+        if let kittycad::types::InputFormat::Stl { coords: _, units: _ } = given {
+            return Ok(());
+        }
+    }
+
+    if let kittycad::types::InputFormat::Obj { coords: _, units: _ } = ext {
+        if let kittycad::types::InputFormat::Obj { coords: _, units: _ } = given {
+            return Ok(());
+        }
+    }
+
+    if let kittycad::types::InputFormat::Ply { coords: _, units: _ } = ext {
+        if let kittycad::types::InputFormat::Ply { coords: _, units: _ } = given {
+            return Ok(());
+        }
+    }
+
+    if ext == given {
+        return Ok(());
+    }
+
+    anyhow::bail!(
+        "The given format does not match the file extension. Expected: `{}`, Given: `{}`",
+        get_name_of_format(ext),
+        get_name_of_format(given)
+    )
+}
+
+fn get_name_of_format(type_: kittycad::types::InputFormat) -> String {
+    match type_ {
+        kittycad::types::InputFormat::Fbx {} => "fbx".to_string(),
+        kittycad::types::InputFormat::Gltf {} => "gltf".to_string(),
+        kittycad::types::InputFormat::Obj { coords: _, units: _ } => "obj".to_string(),
+        kittycad::types::InputFormat::Ply { coords: _, units: _ } => "ply".to_string(),
+        kittycad::types::InputFormat::Sldprt {} => "sldprt".to_string(),
+        kittycad::types::InputFormat::Step {} => "step".to_string(),
+        kittycad::types::InputFormat::Stl { coords: _, units: _ } => "stl".to_string(),
     }
 }
