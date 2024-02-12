@@ -455,7 +455,7 @@ const setAngleBetweenCreateNode =
         firstHalfValue = createBinaryExpression([
           firstHalfValue,
           '+',
-          createIdentifier('_180'),
+          createIdentifier('HALF_TURN'),
         ])
         valueUsedInTransform = normaliseAngle(valueUsedInTransform - 180)
       }

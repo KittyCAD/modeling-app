@@ -32,28 +32,28 @@ impl ProgramMemory {
         Self {
             root: HashMap::from([
                 (
-                    "_0".to_string(),
+                    "ZERO".to_string(),
                     MemoryItem::UserVal(UserVal {
                         value: serde_json::Value::Number(serde_json::value::Number::from(0)),
                         meta: Default::default(),
                     }),
                 ),
                 (
-                    "_90".to_string(),
+                    "QUARTER_TURN".to_string(),
                     MemoryItem::UserVal(UserVal {
                         value: serde_json::Value::Number(serde_json::value::Number::from(90)),
                         meta: Default::default(),
                     }),
                 ),
                 (
-                    "_180".to_string(),
+                    "HALF_TURN".to_string(),
                     MemoryItem::UserVal(UserVal {
                         value: serde_json::Value::Number(serde_json::value::Number::from(180)),
                         meta: Default::default(),
                     }),
                 ),
                 (
-                    "_270".to_string(),
+                    "THREE_QUARTER_TURN".to_string(),
                     MemoryItem::UserVal(UserVal {
                         value: serde_json::Value::Number(serde_json::value::Number::from(270)),
                         meta: Default::default(),

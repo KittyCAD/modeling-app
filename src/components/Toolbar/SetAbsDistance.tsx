@@ -139,7 +139,7 @@ export function applyConstraintAxisAlign({
     constraint,
   }).transforms
 
-  let finalValue = createIdentifier('_0')
+  let finalValue = createIdentifier('ZERO')
 
   return transformAstSketchLines({
     ast: JSON.parse(JSON.stringify(kclManager.ast)),
