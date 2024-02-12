@@ -19,8 +19,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { getNormalisedCoordinates } from './lib/utils'
-import { useLoaderData } from 'react-router-dom'
-import { IndexLoaderData } from 'lib/types'
+import { useLoaderData, useNavigate } from 'react-router-dom'
+import { type IndexLoaderData } from 'lib/types'
+import { paths } from 'lib/paths'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { cameraMouseDragGuards } from 'lib/cameraControls'
@@ -31,11 +32,13 @@ import { Themes, getSystemTheme } from 'lib/theme'
 import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
 import { engineCommandManager } from './lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
-import { ClientSideScene } from 'clientSideScene/setup'
-// import { CamToggle } from 'components/CamToggle'
+import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
+import { isTauri } from 'lib/isTauri'
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData
+  const navigate = useNavigate()
+  const filePath = useAbsoluteFilePath()
 
   useHotKeyListener()
   const {
@@ -73,6 +76,13 @@ export function App() {
   useHotkeys('shift + e', () => togglePane('kclErrors'))
   useHotkeys('shift + d', () => togglePane('debug'))
   useHotkeys('esc', () => send('Cancel'))
+  useHotkeys(
+    isTauri() ? 'mod + ,' : 'shift + mod + ,',
+    () => navigate(filePath + paths.SETTINGS),
+    {
+      splitKey: '|',
+    }
+  )
 
   const paneOpacity = [onboardingPaths.CAMERA, onboardingPaths.STREAMING].some(
     (p) => p === onboardingStatus
