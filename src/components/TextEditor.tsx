@@ -11,7 +11,7 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
 import { Themes } from 'lib/theme'
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import { linter, lintGutter } from '@codemirror/lint'
 import { useStore } from 'useStore'
 import { processCodeMirrorRanges } from 'lib/selections'
@@ -24,8 +24,10 @@ import { CSSRuleObject } from 'tailwindcss/types/config'
 import { useModelingContext } from 'hooks/useModelingContext'
 import interact from '@replit/codemirror-interact'
 import { engineCommandManager } from '../lang/std/engineConnection'
-import { kclManager, useKclContext } from 'lang/KclSinglton'
+import { kclManager, useKclContext } from 'lang/KclSingleton'
 import { useFileContext } from 'hooks/useFileContext'
+import { ModelingMachineEvent } from 'machines/modelingMachine'
+import { setupSingleton } from 'clientSideScene/setup'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -57,10 +59,12 @@ export const TextEditor = ({
     isShiftDown: s.isShiftDown,
   }))
   const { code, errors } = useKclContext()
+  const lastEvent = useRef({ event: '', time: Date.now() })
 
   const {
     context: { selectionRanges, selectionRangeTypeMap },
     send,
+    state,
   } = useModelingContext()
 
   const { settings: { context: { textWrapping } = {} } = {} } =
@@ -80,12 +84,10 @@ export const TextEditor = ({
     const fromServer: FromServer = FromServer.create()
     const client = new Client(fromServer, intoServer)
     if (!TEST) {
-      Server.initialize(intoServer, fromServer)
-        .then((lspServer) => {
-          void lspServer.start()
-          setIsLSPServerReady(true)
-        })
-        .catch((e) => console.log(e))
+      Server.initialize(intoServer, fromServer).then((lspServer) => {
+        lspServer.start()
+        setIsLSPServerReady(true)
+      })
     }
 
     const lspClient = new LanguageServerClient({ client })
@@ -121,6 +123,12 @@ export const TextEditor = ({
     if (!editorView) {
       setEditorView(viewUpdate.view)
     }
+    if (setupSingleton.selected) return // mid drag
+    const ignoreEvents: ModelingMachineEvent['type'][] = [
+      'Equip Line tool',
+      'Equip tangential arc to',
+    ]
+    if (ignoreEvents.includes(state.event.type)) return
     const eventInfo = processCodeMirrorRanges({
       codeMirrorRanges: viewUpdate.state.selection.ranges,
       selectionRanges,
@@ -128,7 +136,20 @@ export const TextEditor = ({
       isShiftDown,
     })
     if (!eventInfo) return
-
+    const deterministicEventInfo = {
+      ...eventInfo,
+      engineEvents: eventInfo.engineEvents.map((e) => ({
+        ...e,
+        cmd_id: 'static',
+      })),
+    }
+    const stringEvent = JSON.stringify(deterministicEventInfo)
+    if (
+      stringEvent === lastEvent.current.event &&
+      Date.now() - lastEvent.current.time < 500
+    )
+      return // don't repeat events
+    lastEvent.current = { event: stringEvent, time: Date.now() }
     send(eventInfo.modelingEvent)
     eventInfo.engineEvents.forEach((event) =>
       engineCommandManager.sendSceneCommand(event)
@@ -157,7 +178,7 @@ export const TextEditor = ({
           key: editorShortcutMeta.convertToVariable.codeMirror,
           run: () => {
             if (convertEnabled) {
-              void convertCallback()
+              convertCallback()
               return true
             }
             return false

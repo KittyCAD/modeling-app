@@ -3,7 +3,7 @@ import { parse } from '../lang/wasm'
 import { useStore } from '../useStore'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { deferExecution } from 'lib/utils'
-import { kclManager } from 'lang/KclSinglton'
+import { kclManager } from 'lang/KclSingleton'
 
 export function useSetupEngineManager(
   streamRef: React.RefObject<HTMLDivElement>,

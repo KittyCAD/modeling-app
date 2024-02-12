@@ -65,13 +65,13 @@ export function getNodeFromPath<T>(
         }
       }
     } catch (e) {
-      console.error(
-        `Could not find path ${pathItem} in node ${JSON.stringify(
-          currentNode,
-          null,
-          2
-        )}, successful path was ${successfulPaths}`
-      )
+      // console.error(
+      //   `Could not find path ${pathItem} in node ${JSON.stringify(
+      //     currentNode,
+      //     null,
+      //     2
+      //   )}, successful path was ${successfulPaths}`
+      // )
     }
   }
   return {
@@ -266,6 +266,7 @@ function moreNodePathFromSourceRange(
       }
     }
   }
+  if (_node.type === 'PipeSubstitution' && isInRange) return path
   console.error('not implemented: ' + node.type)
   return path
 }
@@ -489,7 +490,7 @@ export function isLinesParallelAndConstrained(
     const constraintLevel = getConstraintLevelFromSourceRange(
       secondaryLine.range,
       ast
-    )
+    ).level
     const isConstrained =
       constraintType === 'angle' || constraintLevel === 'full'
 
