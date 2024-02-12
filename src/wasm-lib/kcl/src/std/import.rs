@@ -14,12 +14,104 @@ use crate::{
     std::Args,
 };
 
+// Zoo co-ordinate system.
+//
+// * Forward: -Y
+// * Up: +Z
+// * Handedness: Right
+const ZOO_COORD_SYSTEM: kittycad::types::System = kittycad::types::System {
+    forward: kittycad::types::AxisDirectionPair {
+        axis: kittycad::types::Axis::Y,
+        direction: kittycad::types::Direction::Negative,
+    },
+    up: kittycad::types::AxisDirectionPair {
+        axis: kittycad::types::Axis::Z,
+        direction: kittycad::types::Direction::Positive,
+    },
+};
+
+/// Import format specifier
+#[derive(serde :: Serialize, serde :: Deserialize, PartialEq, Debug, Clone, schemars :: JsonSchema)]
+#[cfg_attr(feature = "tabled", derive(tabled::Tabled))]
+#[serde(tag = "type")]
+pub enum ImportFormat {
+    /// Autodesk Filmbox (FBX) format
+    #[serde(rename = "fbx")]
+    Fbx {},
+    /// Binary glTF 2.0. We refer to this as glTF since that is how our customers refer to
+    /// it, but this can also import binary glTF (glb).
+    #[serde(rename = "gltf")]
+    Gltf {},
+    /// Wavefront OBJ format.
+    #[serde(rename = "obj")]
+    Obj {
+        /// Co-ordinate system of input data.
+        /// Defaults to the [KittyCAD co-ordinate system.
+        coords: Option<kittycad::types::System>,
+        /// The units of the input data. This is very important for correct scaling and when
+        /// calculating physics properties like mass, etc.
+        /// Defaults to millimeters.
+        units: kittycad::types::UnitLength,
+    },
+    /// The PLY Polygon File Format.
+    #[serde(rename = "ply")]
+    Ply {
+        /// Co-ordinate system of input data.
+        /// Defaults to the [KittyCAD co-ordinate system.
+        coords: Option<kittycad::types::System>,
+        /// The units of the input data. This is very important for correct scaling and when
+        /// calculating physics properties like mass, etc.
+        /// Defaults to millimeters.
+        units: kittycad::types::UnitLength,
+    },
+    /// SolidWorks part (SLDPRT) format.
+    #[serde(rename = "sldprt")]
+    Sldprt {},
+    /// ISO 10303-21 (STEP) format.
+    #[serde(rename = "step")]
+    Step {},
+    /// *ST**ereo**L**ithography format.
+    #[serde(rename = "stl")]
+    Stl {
+        /// Co-ordinate system of input data.
+        /// Defaults to the [KittyCAD co-ordinate system.
+        coords: Option<kittycad::types::System>,
+        /// The units of the input data. This is very important for correct scaling and when
+        /// calculating physics properties like mass, etc.
+        /// Defaults to millimeters.
+        units: kittycad::types::UnitLength,
+    },
+}
+
+impl From<ImportFormat> for kittycad::types::InputFormat {
+    fn from(format: ImportFormat) -> Self {
+        match format {
+            ImportFormat::Fbx {} => kittycad::types::InputFormat::Fbx {},
+            ImportFormat::Gltf {} => kittycad::types::InputFormat::Gltf {},
+            ImportFormat::Obj { coords, units } => kittycad::types::InputFormat::Obj {
+                coords: coords.unwrap_or(ZOO_COORD_SYSTEM),
+                units,
+            },
+            ImportFormat::Ply { coords, units } => kittycad::types::InputFormat::Ply {
+                coords: coords.unwrap_or(ZOO_COORD_SYSTEM),
+                units,
+            },
+            ImportFormat::Sldprt {} => kittycad::types::InputFormat::Sldprt {},
+            ImportFormat::Step {} => kittycad::types::InputFormat::Step {},
+            ImportFormat::Stl { coords, units } => kittycad::types::InputFormat::Stl {
+                coords: coords.unwrap_or(ZOO_COORD_SYSTEM),
+                units,
+            },
+        }
+    }
+}
+
 /// Import a CAD file.
 /// For formats lacking unit data (STL, OBJ, PLY), the default import unit is millimeters.
 /// Otherwise you can specify the unit by passing in the options parameter.
 /// If you import a gltf file, we will try to find the bin file and import it as well.
 pub async fn import(args: Args) -> Result<MemoryItem, KclError> {
-    let (file_path, options): (String, Option<kittycad::types::InputFormat>) = args.get_import_data()?;
+    let (file_path, options): (String, Option<ImportFormat>) = args.get_import_data()?;
 
     let imported_geometry = inner_import(file_path, options, args).await?;
     Ok(MemoryItem::ImportedGeometry(imported_geometry))
@@ -34,7 +126,7 @@ pub async fn import(args: Args) -> Result<MemoryItem, KclError> {
 }]
 async fn inner_import(
     file_path: String,
-    options: Option<kittycad::types::InputFormat>,
+    options: Option<ImportFormat>,
     args: Args,
 ) -> Result<ImportedGeometry, KclError> {
     if file_path.is_empty() {
@@ -54,8 +146,8 @@ async fn inner_import(
     }
 
     // Get the format type from the extension of the file.
-    let format = if let Some(options) = options {
-        options
+    let format: kittycad::types::InputFormat = if let Some(options) = options {
+        options.into()
     } else {
         get_import_format_from_extension(file_path.split('.').last().ok_or_else(|| {
             KclError::Semantic(KclErrorDetails {
@@ -141,22 +233,21 @@ fn get_import_format_from_extension(ext: &str) -> Result<kittycad::types::InputF
     // * Forward: -Y
     // * Up: +Z
     // * Handedness: Right
-    let coords = kittycad::types::System {
-        forward: kittycad::types::AxisDirectionPair {
-            axis: kittycad::types::Axis::Y,
-            direction: kittycad::types::Direction::Negative,
-        },
-        up: kittycad::types::AxisDirectionPair {
-            axis: kittycad::types::Axis::Z,
-            direction: kittycad::types::Direction::Positive,
-        },
-    };
     match format {
         kittycad::types::FileImportFormat::Step => Ok(kittycad::types::InputFormat::Step {}),
-        kittycad::types::FileImportFormat::Stl => Ok(kittycad::types::InputFormat::Stl { coords, units: ul }),
-        kittycad::types::FileImportFormat::Obj => Ok(kittycad::types::InputFormat::Obj { coords, units: ul }),
+        kittycad::types::FileImportFormat::Stl => Ok(kittycad::types::InputFormat::Stl {
+            coords: ZOO_COORD_SYSTEM,
+            units: ul,
+        }),
+        kittycad::types::FileImportFormat::Obj => Ok(kittycad::types::InputFormat::Obj {
+            coords: ZOO_COORD_SYSTEM,
+            units: ul,
+        }),
         kittycad::types::FileImportFormat::Gltf => Ok(kittycad::types::InputFormat::Gltf {}),
-        kittycad::types::FileImportFormat::Ply => Ok(kittycad::types::InputFormat::Ply { coords, units: ul }),
+        kittycad::types::FileImportFormat::Ply => Ok(kittycad::types::InputFormat::Ply {
+            coords: ZOO_COORD_SYSTEM,
+            units: ul,
+        }),
         kittycad::types::FileImportFormat::Fbx => Ok(kittycad::types::InputFormat::Fbx {}),
         kittycad::types::FileImportFormat::Sldprt => Ok(kittycad::types::InputFormat::Sldprt {}),
     }

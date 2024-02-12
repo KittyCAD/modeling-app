@@ -704,3 +704,19 @@ async fn serial_test_import_file_doesnt_exist() {
         r#"semantic: KclErrorDetails { source_ranges: [SourceRange([14, 33])], message: "File `thing.obj` does not exist." }"#
     );
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_import_obj_with_mtl() {
+    let code = r#"const model = import("tests/executor/inputs/cube.obj")"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/import_obj_with_mtl.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_import_obj_with_mtl_units() {
+    let code = r#"const model = import("tests/executor/inputs/cube.obj", {"type": "obj", "units": "m"})"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/import_obj_with_mtl_units.png", &result, 0.999);
+}

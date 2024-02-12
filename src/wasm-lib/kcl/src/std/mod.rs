@@ -373,7 +373,7 @@ impl Args {
         Ok(data)
     }
 
-    fn get_import_data(&self) -> Result<(String, Option<kittycad::types::InputFormat>), KclError> {
+    fn get_import_data(&self) -> Result<(String, Option<crate::std::import::ImportFormat>), KclError> {
         let first_value = self
             .args
             .first()
@@ -393,7 +393,7 @@ impl Args {
         })?;
 
         if let Some(second_value) = self.args.get(1) {
-            let options: kittycad::types::InputFormat = serde_json::from_value(second_value.get_json_value()?)
+            let options: crate::std::import::ImportFormat = serde_json::from_value(second_value.get_json_value()?)
                 .map_err(|e| {
                     KclError::Type(KclErrorDetails {
                         message: format!("Expected input format data: {}", e),
