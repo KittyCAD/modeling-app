@@ -715,7 +715,7 @@ async fn serial_test_import_obj_with_mtl() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_import_obj_with_mtl_units() {
-    let code = r#"const model = import("tests/executor/inputs/cube.obj", {"type": "obj", "units": "m"})"#;
+    let code = r#"const model = import("tests/executor/inputs/cube.obj", {type: "obj", units: "m"})"#;
 
     let result = execute_and_snapshot(code).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/import_obj_with_mtl_units.png", &result, 0.999);

@@ -1,4 +1,8 @@
-import { readBinaryFile, exists as tauriExists } from '@tauri-apps/api/fs'
+import {
+  readBinaryFile,
+  exists as tauriExists,
+  BaseDirectory,
+} from '@tauri-apps/api/fs'
 import { isTauri } from 'lib/isTauri'
 
 function readFile(path: string): Promise<Uint8Array> {
@@ -7,7 +11,7 @@ function readFile(path: string): Promise<Uint8Array> {
     throw new Error('This function can only be called from a Tauri application')
   }
 
-  return readBinaryFile(path)
+  return readBinaryFile(path, { dir: BaseDirectory.AppConfig })
 }
 
 function exists(path: string): Promise<boolean> {
@@ -16,5 +20,5 @@ function exists(path: string): Promise<boolean> {
     throw new Error('This function can only be called from a Tauri application')
   }
 
-  return tauriExists(path)
+  return tauriExists(path, { dir: BaseDirectory.AppConfig })
 }

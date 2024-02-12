@@ -2706,13 +2706,13 @@ Import a CAD file.
 For formats lacking unit data (STL, OBJ, PLY), the default import unit is millimeters. Otherwise you can specify the unit by passing in the options parameter. If you import a gltf file, we will try to find the bin file and import it as well.
 
 ```
-import(file_path: String, options: kittycad::types::InputFormat) -> ImportedGeometry
+import(file_path: String, options: ImportFormat) -> ImportedGeometry
 ```
 
 #### Arguments
 
 * `file_path`: `String`
-* `options`: `kittycad::types::InputFormat` - Input format specifier.
+* `options`: `ImportFormat` - Import format specifier
 ```
 {
 	type: string,
@@ -2721,11 +2721,7 @@ import(file_path: String, options: kittycad::types::InputFormat) -> ImportedGeom
 	type: string,
 } |
 {
-	// Co-ordinate system of input data.
-
-Defaults to the [KittyCAD co-ordinate system].
-
-[KittyCAD co-ordinate system]: ../coord/constant.KITTYCAD.html
+	// Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system.
 	coords: {
 	// Axis the front face of a model looks along.
 	forward: {
@@ -2747,9 +2743,7 @@ string,
 },
 },
 	type: string,
-	// The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc.
-
-Defaults to meters.
+	// The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters.
 	units: string |
 string |
 string |
@@ -2758,11 +2752,7 @@ string |
 string,
 } |
 {
-	// Co-ordinate system of input data.
-
-Defaults to the [KittyCAD co-ordinate system].
-
-[KittyCAD co-ordinate system]: ../coord/constant.KITTYCAD.html
+	// Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system.
 	coords: {
 	// Axis the front face of a model looks along.
 	forward: {
@@ -2784,7 +2774,7 @@ string,
 },
 },
 	type: string,
-	// The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc.
+	// The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters.
 	units: string |
 string |
 string |
@@ -2799,11 +2789,7 @@ string,
 	type: string,
 } |
 {
-	// Co-ordinate system of input data.
-
-Defaults to the [KittyCAD co-ordinate system].
-
-[KittyCAD co-ordinate system]: ../coord/constant.KITTYCAD.html
+	// Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system.
 	coords: {
 	// Axis the front face of a model looks along.
 	forward: {
@@ -2825,7 +2811,7 @@ string,
 },
 },
 	type: string,
-	// The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc.
+	// The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters.
 	units: string |
 string |
 string |

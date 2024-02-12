@@ -15228,12 +15228,12 @@
       },
       {
         "name": "options",
-        "type": "kittycad::types::InputFormat",
+        "type": "ImportFormat",
         "schema": {
-          "description": "Input format specifier.",
+          "description": "Import format specifier",
           "oneOf": [
             {
-              "description": "Autodesk Filmbox (FBX) format.",
+              "description": "Autodesk Filmbox (FBX) format",
               "type": "object",
               "required": [
                 "type"
@@ -15266,13 +15266,12 @@
               "description": "Wavefront OBJ format.",
               "type": "object",
               "required": [
-                "coords",
                 "type",
                 "units"
               ],
               "properties": {
                 "coords": {
-                  "description": "Co-ordinate system of input data.\n\nDefaults to the [KittyCAD co-ordinate system].\n\n[KittyCAD co-ordinate system]: ../coord/constant.KITTYCAD.html",
+                  "description": "Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system.",
                   "type": "object",
                   "required": [
                     "forward",
@@ -15375,7 +15374,8 @@
                         }
                       }
                     }
-                  }
+                  },
+                  "nullable": true
                 },
                 "type": {
                   "type": "string",
@@ -15384,7 +15384,7 @@
                   ]
                 },
                 "units": {
-                  "description": "The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc.\n\nDefaults to meters.",
+                  "description": "The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters.",
                   "oneOf": [
                     {
                       "description": "Centimeters <https://en.wikipedia.org/wiki/Centimeter>",
@@ -15436,13 +15436,12 @@
               "description": "The PLY Polygon File Format.",
               "type": "object",
               "required": [
-                "coords",
                 "type",
                 "units"
               ],
               "properties": {
                 "coords": {
-                  "description": "Co-ordinate system of input data.\n\nDefaults to the [KittyCAD co-ordinate system].\n\n[KittyCAD co-ordinate system]: ../coord/constant.KITTYCAD.html",
+                  "description": "Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system.",
                   "type": "object",
                   "required": [
                     "forward",
@@ -15545,7 +15544,8 @@
                         }
                       }
                     }
-                  }
+                  },
+                  "nullable": true
                 },
                 "type": {
                   "type": "string",
@@ -15554,7 +15554,7 @@
                   ]
                 },
                 "units": {
-                  "description": "The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc.",
+                  "description": "The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters.",
                   "oneOf": [
                     {
                       "description": "Centimeters <https://en.wikipedia.org/wiki/Centimeter>",
@@ -15636,13 +15636,12 @@
               "description": "ST**ereo**L**ithography format.",
               "type": "object",
               "required": [
-                "coords",
                 "type",
                 "units"
               ],
               "properties": {
                 "coords": {
-                  "description": "Co-ordinate system of input data.\n\nDefaults to the [KittyCAD co-ordinate system].\n\n[KittyCAD co-ordinate system]: ../coord/constant.KITTYCAD.html",
+                  "description": "Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system.",
                   "type": "object",
                   "required": [
                     "forward",
@@ -15745,7 +15744,8 @@
                         }
                       }
                     }
-                  }
+                  },
+                  "nullable": true
                 },
                 "type": {
                   "type": "string",
@@ -15754,7 +15754,7 @@
                   ]
                 },
                 "units": {
-                  "description": "The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc.",
+                  "description": "The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters.",
                   "oneOf": [
                     {
                       "description": "Centimeters <https://en.wikipedia.org/wiki/Centimeter>",
