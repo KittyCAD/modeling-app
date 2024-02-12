@@ -13,10 +13,16 @@ import {
 } from '../lang/std/engineConnection'
 import Tooltip from './Tooltip'
 
-enum State {
+enum NetworkHealthState {
   Ok,
   Issue,
   Disconnected,
+}
+
+export const NETWORK_HEALTH_TEXT: Record<NetworkHealthState, string> = {
+  [NetworkHealthState.Ok]: 'Connected',
+  [NetworkHealthState.Issue]: 'Problem',
+  [NetworkHealthState.Disconnected]: 'Offline',
 }
 
 type IconColorConfig = {
@@ -49,31 +55,31 @@ const hasIssueToIconColors: Record<string | number | symbol, IconColorConfig> =
     },
   }
 
-const overallConnectionStateColor: Record<State, IconColorConfig> = {
-  [State.Ok]: {
+const overallConnectionStateColor: Record<NetworkHealthState, IconColorConfig> = {
+  [NetworkHealthState.Ok]: {
     icon: 'text-energy-80 dark:text-energy-10',
     bg: 'bg-energy-10/30 dark:bg-energy-80/50',
   },
-  [State.Issue]: {
+  [NetworkHealthState.Issue]: {
     icon: 'text-destroy-80 dark:text-destroy-10',
     bg: 'bg-destroy-10 dark:bg-destroy-80/80',
   },
-  [State.Disconnected]: {
+  [NetworkHealthState.Disconnected]: {
     icon: 'text-destroy-80 dark:text-destroy-10',
     bg: 'bg-destroy-10 dark:bg-destroy-80',
   },
 }
 
-const overallConnectionStateIcon: Record<State, ActionIconProps['icon']> = {
-  [State.Ok]: 'network',
-  [State.Issue]: 'networkCrossedOut',
-  [State.Disconnected]: 'networkCrossedOut',
+const overallConnectionStateIcon: Record<NetworkHealthState, ActionIconProps['icon']> = {
+  [NetworkHealthState.Ok]: 'network',
+  [NetworkHealthState.Issue]: 'networkCrossedOut',
+  [NetworkHealthState.Disconnected]: 'networkCrossedOut',
 }
 
 export const NetworkHealthIndicator = () => {
   const [steps, setSteps] = useState(initialConnectingTypeGroupState)
   const [internetConnected, setInternetConnected] = useState<boolean>(true)
-  const [overallState, setOverallState] = useState<State>(State.Ok)
+  const [overallState, setOverallState] = useState<NetworkHealthState>(NetworkHealthState.Ok)
   const [hasCopied, setHasCopied] = useState<boolean>(false)
 
   const [error, setError] = useState<ErrorType | undefined>(undefined)
@@ -98,10 +104,10 @@ export const NetworkHealthIndicator = () => {
   useEffect(() => {
     setOverallState(
       !internetConnected
-        ? State.Disconnected
+        ? NetworkHealthState.Disconnected
         : hasIssues
-        ? State.Issue
-        : State.Ok
+        ? NetworkHealthState.Issue
+        : NetworkHealthState.Ok
     )
   }, [hasIssues, internetConnected])
 
@@ -192,7 +198,7 @@ export const NetworkHealthIndicator = () => {
           }
         />
         <Tooltip position="blockEnd" delay={750} className="ui-open:hidden">
-          Network Health
+          Network Health ({NETWORK_HEALTH_TEXT[overallState]})
         </Tooltip>
       </Popover.Button>
       <Popover.Panel className="absolute right-0 left-auto top-full mt-1 w-64 flex flex-col gap-1 align-stretch bg-chalkboard-10 dark:bg-chalkboard-90 rounded shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50 text-sm">
@@ -204,11 +210,7 @@ export const NetworkHealthIndicator = () => {
             data-testid="network"
             className="font-bold text-xs uppercase px-2 py-1 rounded-sm"
           >
-            {overallState === State.Issue
-              ? 'Problem'
-              : overallState === State.Ok
-              ? 'Connected'
-              : 'Offline'}
+            {NETWORK_HEALTH_TEXT[overallState]}
           </p>
         </div>
         <ul className="divide-y divide-chalkboard-20 dark:divide-chalkboard-80">
