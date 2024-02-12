@@ -13,13 +13,13 @@ extern "C" {
     #[derive(Debug, Clone)]
     pub type EngineCommandManager;
 
-    #[wasm_bindgen(method, js_name = sendModelingCommandFromWasm)]
+    #[wasm_bindgen(method, js_name = sendModelingCommandFromWasm, catch)]
     fn send_modeling_cmd_from_wasm(
         this: &EngineCommandManager,
         id: String,
         rangeStr: String,
         cmdStr: String,
-    ) -> js_sys::Promise;
+    ) -> Result<js_sys::Promise, js_sys::Error>;
 }
 
 #[derive(Debug, Clone)]
@@ -59,7 +59,13 @@ impl crate::engine::EngineManager for EngineConnection {
 
         let promise = self
             .manager
-            .send_modeling_cmd_from_wasm(id.to_string(), source_range_str, cmd_str);
+            .send_modeling_cmd_from_wasm(id.to_string(), source_range_str, cmd_str)
+            .map_err(|e| {
+                KclError::Engine(KclErrorDetails {
+                    message: e.to_string().into(),
+                    source_ranges: vec![source_range],
+                })
+            })?;
 
         let value = wasm_bindgen_futures::JsFuture::from(promise).await.map_err(|e| {
             KclError::Engine(KclErrorDetails {
