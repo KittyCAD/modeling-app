@@ -44,6 +44,15 @@ async fn inner_import(
         }));
     }
 
+    // Make sure the file exists.
+    let fsm = crate::fs::FileManager::new();
+    if !fsm.exists(&file_path, args.source_range).await? {
+        return Err(KclError::Semantic(KclErrorDetails {
+            message: format!("File `{}` does not exist.", file_path),
+            source_ranges: vec![args.source_range],
+        }));
+    }
+
     // Get the format type from the extension of the file.
     let format = if let Some(options) = options {
         options
@@ -63,7 +72,6 @@ async fn inner_import(
     };
 
     // Get the file contents for each file path.
-    let fsm = crate::fs::FileManager::new();
     let file_contents = fsm.read(&file_path, args.source_range).await.map_err(|e| {
         KclError::Semantic(KclErrorDetails {
             message: e.to_string(),

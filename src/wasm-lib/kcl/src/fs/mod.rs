@@ -22,4 +22,11 @@ pub trait FileSystem: Clone {
         path: P,
         source_range: crate::executor::SourceRange,
     ) -> Result<Vec<u8>, crate::errors::KclError>;
+
+    /// Check if a file exists on the local file system.
+    async fn exists<P: AsRef<std::path::Path>>(
+        &self,
+        path: P,
+        source_range: crate::executor::SourceRange,
+    ) -> Result<bool, crate::errors::KclError>;
 }

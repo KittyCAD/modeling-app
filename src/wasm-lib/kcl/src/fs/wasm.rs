@@ -10,8 +10,11 @@ use crate::{
 
 #[wasm_bindgen(module = "/../../lang/std/fileSystemManager.ts")]
 extern "C" {
-    #[wasm_bindgen( js_name = readFile)]
+    #[wasm_bindgen(js_name = readFile)]
     fn read_file(path: String) -> js_sys::Promise;
+
+    #[wasm_bindgen(js_name = exists)]
+    fn exists(path: String) -> js_sys::Promise;
 }
 
 #[derive(Debug, Clone)]
@@ -59,5 +62,39 @@ impl FileSystem for FileManager {
         let bytes: Vec<u8> = array.to_vec();
 
         Ok(bytes)
+    }
+
+    async fn exists<P: AsRef<std::path::Path>>(
+        &self,
+        path: P,
+        source_range: crate::executor::SourceRange,
+    ) -> Result<bool, crate::errors::KclError> {
+        let promise = exists(
+            path.as_ref()
+                .to_str()
+                .ok_or_else(|| {
+                    KclError::Engine(KclErrorDetails {
+                        message: "Failed to convert path to string".to_string(),
+                        source_ranges: vec![source_range],
+                    })
+                })?
+                .to_string(),
+        );
+
+        let value = wasm_bindgen_futures::JsFuture::from(promise).await.map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: format!("Failed to wait for promise from engine: {:?}", e),
+                source_ranges: vec![source_range],
+            })
+        })?;
+
+        let it_exists = value.as_bool().ok_or_else(|| {
+            KclError::Engine(KclErrorDetails {
+                message: "Failed to convert value to bool".to_string(),
+                source_ranges: vec![source_range],
+            })
+        })?;
+
+        Ok(it_exists)
     }
 }

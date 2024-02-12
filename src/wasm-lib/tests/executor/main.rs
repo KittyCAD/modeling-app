@@ -692,3 +692,15 @@ const rectangle = startSketchOn('XY')
     let result = execute_and_snapshot(code).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/patterns_linear_basic_holes.png", &result, 0.999);
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_import_file_doesnt_exist() {
+    let code = r#"const model = import("thing.obj")"#;
+
+    let result = execute_and_snapshot(code).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([14, 33])], message: "File `thing.obj` does not exist." }"#
+    );
+}

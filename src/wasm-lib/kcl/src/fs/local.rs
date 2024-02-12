@@ -36,4 +36,21 @@ impl FileSystem for FileManager {
             })
         })
     }
+
+    async fn exists<P: AsRef<std::path::Path>>(
+        &self,
+        path: P,
+        source_range: crate::executor::SourceRange,
+    ) -> Result<bool, crate::errors::KclError> {
+        tokio::fs::metadata(&path).await.map(|_| true).or_else(|e| {
+            if e.kind() == std::io::ErrorKind::NotFound {
+                Ok(false)
+            } else {
+                Err(KclError::Engine(KclErrorDetails {
+                    message: format!("Failed to check if file `{}` exists: {}", path.as_ref().display(), e),
+                    source_ranges: vec![source_range],
+                }))
+            }
+        })
+    }
 }
