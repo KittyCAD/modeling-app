@@ -2,7 +2,7 @@ import {
   SetVarNameModal,
   createSetVarNameModal,
 } from 'components/SetVarNameModal'
-import { kclManager } from 'lang/KclSinglton'
+import { kclManager } from 'lang/KclSingleton'
 import { moveValueIntoNewVariable } from 'lang/modifyAst'
 import { isNodeSafeToReplace } from 'lang/queryAst'
 import { useEffect, useState } from 'react'
@@ -39,7 +39,7 @@ export function useConvertToVariable() {
         variableName
       )
 
-      void kclManager.updateAst(_modifiedAst, true)
+      kclManager.updateAst(_modifiedAst, true)
     } catch (e) {
       console.log('error', e)
     }

@@ -1,13 +1,9 @@
-use kcl_lib::ast::types::LiteralIdentifier;
-use kcl_lib::ast::types::LiteralValue;
-
-use crate::CompileError;
-use crate::KclFunction;
-
-use super::native_functions;
-use super::Address;
-
 use std::collections::HashMap;
+
+use kcl_lib::ast::types::{LiteralIdentifier, LiteralValue};
+
+use super::{native_functions, Address};
+use crate::{CompileError, KclFunction};
 
 /// KCL values which can be written to KCEP memory.
 /// This is recursive. For example, the bound value might be an array, which itself contains bound values.

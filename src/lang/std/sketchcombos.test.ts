@@ -506,7 +506,7 @@ show(part001)`
     const ast = parse(code)
     const constraintLevels: ReturnType<
       typeof getConstraintLevelFromSourceRange
-    >[] = ['full', 'partial', 'free']
+    >['level'][] = ['full', 'partial', 'free']
     constraintLevels.forEach((constraintLevel) => {
       const recursivelySeachCommentsAndCheckConstraintLevel = (
         str: string,
@@ -520,7 +520,7 @@ show(part001)`
         const expectedConstraintLevel = getConstraintLevelFromSourceRange(
           [offsetIndex, offsetIndex],
           ast
-        )
+        ).level
         expect(expectedConstraintLevel).toBe(constraintLevel)
         return recursivelySeachCommentsAndCheckConstraintLevel(
           str,

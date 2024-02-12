@@ -1,5 +1,6 @@
 import { APP_NAME } from 'lib/constants'
-import { OnboardingButtons, onboardingPaths, useDismiss, useNextClick } from '.'
+import { OnboardingButtons, useDismiss, useNextClick } from '.'
+import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useStore } from '../../useStore'
 
 export default function Export() {

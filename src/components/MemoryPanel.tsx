@@ -3,7 +3,7 @@ import { CollapsiblePanel, CollapsiblePanelProps } from './CollapsiblePanel'
 import { useMemo } from 'react'
 import { ProgramMemory, Path, ExtrudeSurface } from '../lang/wasm'
 import { Themes } from '../lib/theme'
-import { useKclContext } from 'lang/KclSinglton'
+import { useKclContext } from 'lang/KclSingleton'
 
 interface MemoryPanelProps extends CollapsiblePanelProps {
   theme?: Exclude<Themes, Themes.System>

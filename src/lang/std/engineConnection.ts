@@ -1,16 +1,18 @@
-import { SourceRange } from 'lang/wasm'
+import { PathToNode, Program, SourceRange } from 'lang/wasm'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_CONNECTION_TIMEOUT_MS } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
 import { v4 as uuidv4 } from 'uuid'
 import * as Sentry from '@sentry/react'
-import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
+import { getNodePathFromSourceRange } from 'lang/queryAst'
+import { setupSingleton } from 'clientSideScene/setup'
 
 let lastMessage = ''
 
 interface CommandInfo {
   commandType: CommandTypes
   range: SourceRange
+  pathToNode: PathToNode
   parentId?: string
 }
 
@@ -638,9 +640,14 @@ class EngineConnection {
           })
           .join('\n')
         if (message.request_id) {
+          const artifactThatFailed =
+            engineCommandManager.artifactMap[message.request_id] ||
+            engineCommandManager.lastArtifactMap[message.request_id]
           console.error(
-            `Error in response to request ${message.request_id}:\n${errorsString}`
+            `Error in response to request ${message.request_id}:\n${errorsString}
+failed cmd type was ${artifactThatFailed?.commandType}`
           )
+          console.log(artifactThatFailed)
         } else {
           console.error(`Error from server:\n${errorsString}`)
         }
@@ -654,8 +661,6 @@ class EngineConnection {
       if (!resp || !resp.type) {
         return
       }
-
-      console.log('received', resp)
 
       switch (resp.type) {
         case 'ice_server_info':
@@ -910,10 +915,10 @@ export type CommandLog =
 export class EngineCommandManager {
   artifactMap: ArtifactMap = {}
   lastArtifactMap: ArtifactMap = {}
+  private getAst: () => Program = () => ({ start: 0, end: 0, body: [] } as any)
   outSequence = 1
   inSequence = 1
   engineConnection?: EngineConnection
-  defaultPlanes: DefaultPlanes = { xy: '', yz: '', xz: '' }
   _commandLogs: CommandLog[] = []
   _commandLogCallBack: (command: CommandLog[]) => void = () => {}
   // Folks should realize that wait for ready does not get called _everytime_
@@ -940,6 +945,11 @@ export class EngineCommandManager {
 
   constructor() {
     this.engineConnection = undefined
+    ;(async () => {
+      // circular dependency needs one to be lazy loaded
+      const { kclManager } = await import('lang/KclSingleton')
+      this.getAst = () => kclManager.ast
+    })()
   }
 
   start({
@@ -1001,16 +1011,9 @@ export class EngineCommandManager {
             gizmo_mode: true,
           },
         })
+        setupSingleton.onStreamStart()
 
-        // Initialize the planes.
-        void this.initPlanes().then(() => {
-          // We execute the code here to make sure if the stream was to
-          // restart in a session, we want to make sure to execute the code.
-          // We force it to re-execute the code because we want to make sure
-          // the code is executed everytime the stream is restarted.
-          // We pass undefined for the code so it reads from the current state.
-          executeCode(undefined, true)
-        })
+        executeCode(undefined, true)
       },
       onClose: () => {
         setIsStreamReady(false)
@@ -1127,13 +1130,21 @@ export class EngineCommandManager {
 
     if (command && command.type === 'pending') {
       const resolve = command.resolve
-      this.artifactMap[id] = {
+      const artifact = {
         type: 'result',
         range: command.range,
+        pathToNode: command.pathToNode,
         commandType: command.commandType,
         parentId: command.parentId ? command.parentId : undefined,
         data: modelingResponse,
         raw: message,
+      } as const
+      this.artifactMap[id] = artifact
+      if (command.commandType === 'entity_linear_pattern') {
+        const entities = (modelingResponse as any)?.data?.entity_ids
+        entities?.forEach((entity: string) => {
+          this.artifactMap[entity] = artifact
+        })
       }
       resolve({
         id,
@@ -1147,6 +1158,7 @@ export class EngineCommandManager {
         type: 'result',
         commandType: command?.commandType,
         range: command?.range,
+        pathToNode: command?.pathToNode,
         data: modelingResponse,
         raw: message,
       }
@@ -1164,6 +1176,7 @@ export class EngineCommandManager {
       this.artifactMap[id] = {
         type: 'failed',
         range: command.range,
+        pathToNode: command.pathToNode,
         commandType: command.commandType,
         parentId: command.parentId ? command.parentId : undefined,
         errors,
@@ -1178,6 +1191,7 @@ export class EngineCommandManager {
       this.artifactMap[id] = {
         type: 'failed',
         range: command.range,
+        pathToNode: command.pathToNode,
         commandType: command.commandType,
         parentId: command.parentId ? command.parentId : undefined,
         errors,
@@ -1245,12 +1259,14 @@ export class EngineCommandManager {
         // this fact is very opaque in the api and docs (as to what should can be deleted).
         // Using an array is the list is likely to grow.
         'start_path',
+        'entity_linear_pattern',
       ]
-      if (!artifactTypesToDelete.includes(artifact.commandType)) return
-      artifactsToDelete[id] = artifact
+      if (artifactTypesToDelete.includes(artifact.commandType)) {
+        artifactsToDelete[id] = artifact
+      }
     })
     Object.keys(artifactsToDelete).forEach((id) => {
-      const deletCmd: EngineCommand = {
+      const deleteCmd: EngineCommand = {
         type: 'modeling_cmd_req',
         cmd_id: uuidv4(),
         cmd: {
@@ -1258,7 +1274,7 @@ export class EngineCommandManager {
           object_ids: [id],
         },
       }
-      this.engineConnection?.send(deletCmd)
+      this.engineConnection?.send(deleteCmd)
     })
   }
   addCommandLog(message: CommandLog) {
@@ -1276,7 +1292,10 @@ export class EngineCommandManager {
   registerCommandLogCallback(callback: (command: CommandLog[]) => void) {
     this._commandLogCallBack = callback
   }
-  sendSceneCommand(command: EngineCommand): Promise<any> {
+  sendSceneCommand(
+    command: EngineCommand,
+    forceWebsocket = false
+  ): Promise<any> {
     if (this.engineConnection === undefined) {
       return Promise.resolve()
     }
@@ -1290,7 +1309,9 @@ export class EngineCommandManager {
         command.type === 'modeling_cmd_req' &&
         (command.cmd.type === 'highlight_set_entity' ||
           command.cmd.type === 'mouse_move' ||
-          command.cmd.type === 'camera_drag_move')
+          command.cmd.type === 'camera_drag_move' ||
+          command.cmd.type === 'default_camera_look_at' ||
+          command.cmd.type === ('default_camera_perspective_settings' as any))
       )
     ) {
       // highlight_set_entity, mouse_move and camera_drag_move are sent over the unreliable channel and are too noisy
@@ -1307,14 +1328,23 @@ export class EngineCommandManager {
       console.log('sending command', command.cmd.type)
       lastMessage = command.cmd.type
     }
+    if (command.type === 'modeling_cmd_batch_req') {
+      this.engineConnection?.send(command)
+      // TODO - handlePendingCommands does not handle batch commands
+      // return this.handlePendingCommand(command.requests[0].cmd_id, command.cmd)
+      return Promise.resolve()
+    }
     if (command.type !== 'modeling_cmd_req') return Promise.resolve()
     const cmd = command.cmd
     if (
       (cmd.type === 'camera_drag_move' ||
-        cmd.type === 'handle_mouse_drag_move') &&
-      this.engineConnection?.unreliableDataChannel
+        cmd.type === 'handle_mouse_drag_move' ||
+        cmd.type === 'default_camera_look_at' ||
+        cmd.type === ('default_camera_perspective_settings' as any)) &&
+      this.engineConnection?.unreliableDataChannel &&
+      !forceWebsocket
     ) {
-      cmd.sequence = this.outSequence
+      ;(cmd as any).sequence = this.outSequence
       this.outSequence++
       this.engineConnection?.unreliableSend(command)
       return Promise.resolve()
@@ -1335,6 +1365,12 @@ export class EngineCommandManager {
       this.engineConnection?.unreliableSend(command)
       return Promise.resolve()
     }
+    if (
+      command.cmd.type === 'default_camera_look_at' ||
+      command.cmd.type === ('default_camera_perspective_settings' as any)
+    ) {
+      ;(cmd as any).sequence = this.outSequence++
+    }
     // since it's not mouse drag or highlighting send over TCP and keep track of the command
     this.engineConnection?.send(command)
     return this.handlePendingCommand(command.cmd_id, command.cmd)
@@ -1343,10 +1379,12 @@ export class EngineCommandManager {
     id,
     range,
     command,
+    ast,
   }: {
     id: string
     range: SourceRange
     command: EngineCommand | string
+    ast: Program
   }): Promise<any> {
     if (this.engineConnection === undefined) {
       return Promise.resolve()
@@ -1368,17 +1406,18 @@ export class EngineCommandManager {
     }
     this.engineConnection?.send(command)
     if (typeof command !== 'string' && command.type === 'modeling_cmd_req') {
-      return this.handlePendingCommand(id, command?.cmd, range)
+      return this.handlePendingCommand(id, command?.cmd, ast, range)
     } else if (typeof command === 'string') {
       const parseCommand: EngineCommand = JSON.parse(command)
       if (parseCommand.type === 'modeling_cmd_req')
-        return this.handlePendingCommand(id, parseCommand?.cmd, range)
+        return this.handlePendingCommand(id, parseCommand?.cmd, ast, range)
     }
     throw Error('shouldnt reach here')
   }
   handlePendingCommand(
     id: string,
     command: Models['ModelingCmd_type'],
+    ast?: Program,
     range?: SourceRange
   ) {
     let resolve: (val: any) => void = () => {}
@@ -1391,8 +1430,12 @@ export class EngineCommandManager {
       }
       // TODO handle other commands that have a parent
     }
+    const pathToNode = ast
+      ? getNodePathFromSourceRange(ast, range || [0, 0])
+      : []
     this.artifactMap[id] = {
       range: range || [0, 0],
+      pathToNode,
       type: 'pending',
       commandType: command.type,
       parentId: getParentId(),
@@ -1421,9 +1464,12 @@ export class EngineCommandManager {
     const range: SourceRange = JSON.parse(rangeStr)
 
     // We only care about the modeling command response.
-    return this.sendModelingCommand({ id, range, command: commandStr }).then(
-      ({ raw }) => JSON.stringify(raw)
-    )
+    return this.sendModelingCommand({
+      id,
+      range,
+      command: commandStr,
+      ast: this.getAst(),
+    }).then(({ raw }) => JSON.stringify(raw))
   }
   commandResult(id: string): Promise<any> {
     const command = this.artifactMap[id]
@@ -1449,102 +1495,6 @@ export class EngineCommandManager {
     return {
       artifactMap: this.artifactMap,
     }
-  }
-  private async initPlanes() {
-    const [xy, yz, xz] = [
-      await this.createPlane({
-        x_axis: { x: 1, y: 0, z: 0 },
-        y_axis: { x: 0, y: 1, z: 0 },
-        color: { r: 0.7, g: 0.28, b: 0.28, a: 0.4 },
-      }),
-      await this.createPlane({
-        x_axis: { x: 0, y: 1, z: 0 },
-        y_axis: { x: 0, y: 0, z: 1 },
-        color: { r: 0.28, g: 0.7, b: 0.28, a: 0.4 },
-      }),
-      await this.createPlane({
-        x_axis: { x: 1, y: 0, z: 0 },
-        y_axis: { x: 0, y: 0, z: 1 },
-        color: { r: 0.28, g: 0.28, b: 0.7, a: 0.4 },
-      }),
-    ]
-    this.defaultPlanes = { xy, yz, xz }
-
-    this.subscribeTo({
-      event: 'select_with_point',
-      callback: ({ data }) => {
-        if (!data?.entity_id) return
-        if (
-          ![
-            this.defaultPlanes.xy,
-            this.defaultPlanes.yz,
-            this.defaultPlanes.xz,
-          ].includes(data.entity_id)
-        )
-          return
-        this.onPlaneSelectCallback(data.entity_id)
-      },
-    })
-  }
-  planesInitialized(): boolean {
-    return (
-      this.defaultPlanes.xy !== '' &&
-      this.defaultPlanes.yz !== '' &&
-      this.defaultPlanes.xz !== ''
-    )
-  }
-
-  onPlaneSelectCallback = (id: string) => {}
-  onPlaneSelected(callback: (id: string) => void) {
-    this.onPlaneSelectCallback = callback
-  }
-
-  async setPlaneHidden(id: string, hidden: boolean): Promise<string> {
-    return await this.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'object_visible',
-        object_id: id,
-        hidden: hidden,
-      },
-    })
-  }
-
-  private async createPlane({
-    x_axis,
-    y_axis,
-    color,
-  }: {
-    x_axis: Models['Point3d_type']
-    y_axis: Models['Point3d_type']
-    color: Models['Color_type']
-  }): Promise<string> {
-    const planeId = uuidv4()
-    await this.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'make_plane',
-        size: 100,
-        origin: { x: 0, y: 0, z: 0 },
-        x_axis,
-        y_axis,
-        clobber: false,
-        hide: true,
-      },
-      cmd_id: planeId,
-    })
-    await this.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'plane_set_color',
-        plane_id: planeId,
-        color,
-      },
-      cmd_id: uuidv4(),
-    })
-    await this.setPlaneHidden(planeId, true)
-    return planeId
   }
 }
 

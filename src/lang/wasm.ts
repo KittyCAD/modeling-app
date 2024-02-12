@@ -4,6 +4,9 @@ import init, {
   execute_wasm,
   lexer_wasm,
   modify_ast_for_sketch_wasm,
+  is_points_ccw,
+  get_tangential_arc_to_info,
+  program_memory_init,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
@@ -12,7 +15,7 @@ import { ProgramReturn } from '../wasm-lib/kcl/bindings/ProgramReturn'
 import { MemoryItem } from '../wasm-lib/kcl/bindings/MemoryItem'
 import type { Program } from '../wasm-lib/kcl/bindings/Program'
 import type { Token } from '../wasm-lib/kcl/bindings/Token'
-import { DefaultPlanes } from '../wasm-lib/kcl/bindings/DefaultPlanes'
+import { Coords2d } from './std/sketch'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Value } from '../wasm-lib/kcl/bindings/Value'
@@ -118,15 +121,13 @@ export interface ProgramMemory {
 export const executor = async (
   node: Program,
   programMemory: ProgramMemory = { root: {}, return: null },
-  engineCommandManager: EngineCommandManager,
-  planes: DefaultPlanes
+  engineCommandManager: EngineCommandManager
 ): Promise<ProgramMemory> => {
   engineCommandManager.startNewSession()
   const _programMemory = await _executor(
     node,
     programMemory,
-    engineCommandManager,
-    planes
+    engineCommandManager
   )
   await engineCommandManager.waitForAllCommands()
 
@@ -137,18 +138,17 @@ export const executor = async (
 export const _executor = async (
   node: Program,
   programMemory: ProgramMemory = { root: {}, return: null },
-  engineCommandManager: EngineCommandManager,
-  planes: DefaultPlanes
+  engineCommandManager: EngineCommandManager
 ): Promise<ProgramMemory> => {
   try {
     const memory: ProgramMemory = await execute_wasm(
       JSON.stringify(node),
       JSON.stringify(programMemory),
-      engineCommandManager,
-      JSON.stringify(planes)
+      engineCommandManager
     )
     return memory
   } catch (e: any) {
+    console.log(e)
     const parsed: RustKclError = JSON.parse(e.toString())
     const kclError = new KCLError(
       parsed.kind,
@@ -201,6 +201,65 @@ export const modifyAstForSketch = async (
 
     return updatedAst
   } catch (e: any) {
+    const parsed: RustKclError = JSON.parse(e.toString())
+    const kclError = new KCLError(
+      parsed.kind,
+      parsed.msg,
+      rangeTypeFix(parsed.sourceRanges)
+    )
+
+    console.log(kclError)
+    throw kclError
+  }
+}
+
+export function isPointsCCW(points: Coords2d[]): number {
+  return is_points_ccw(new Float64Array(points.flat()))
+}
+
+export function getTangentialArcToInfo({
+  arcStartPoint,
+  arcEndPoint,
+  tanPreviousPoint,
+  obtuse = true,
+}: {
+  arcStartPoint: Coords2d
+  arcEndPoint: Coords2d
+  tanPreviousPoint: Coords2d
+  obtuse?: boolean
+}): {
+  center: Coords2d
+  arcMidPoint: Coords2d
+  radius: number
+  startAngle: number
+  endAngle: number
+  ccw: boolean
+} {
+  const result = get_tangential_arc_to_info(
+    arcStartPoint[0],
+    arcStartPoint[1],
+    arcEndPoint[0],
+    arcEndPoint[1],
+    tanPreviousPoint[0],
+    tanPreviousPoint[1],
+    obtuse
+  )
+  return {
+    center: [result.center_x, result.center_y],
+    arcMidPoint: [result.arc_mid_point_x, result.arc_mid_point_y],
+    radius: result.radius,
+    startAngle: result.start_angle,
+    endAngle: result.end_angle,
+    ccw: result.ccw > 0,
+  }
+}
+
+export function programMemoryInit(): ProgramMemory {
+  try {
+    const memory: ProgramMemory = program_memory_init()
+    return memory
+  } catch (e: any) {
+    console.log(e)
     const parsed: RustKclError = JSON.parse(e.toString())
     const kclError = new KCLError(
       parsed.kind,
