@@ -1,5 +1,5 @@
 import { useModelingContext } from 'hooks/useModelingContext'
-import { kclManager, useKclContext } from 'lang/KclSinglton'
+import { kclManager, useKclContext } from 'lang/KclSingleton'
 import { findAllPreviousVariables } from 'lang/queryAst'
 import { useEffect, useState } from 'react'
 

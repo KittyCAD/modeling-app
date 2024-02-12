@@ -1,5 +1,5 @@
 import { useModelingContext } from 'hooks/useModelingContext'
-import { kclManager, useKclContext } from 'lang/KclSinglton'
+import { kclManager, useKclContext } from 'lang/KclSingleton'
 import { findUniqueName } from 'lang/modifyAst'
 import { PrevVariable, findAllPreviousVariables } from 'lang/queryAst'
 import { engineCommandManager } from '../lang/std/engineConnection'
