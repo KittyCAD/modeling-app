@@ -10,17 +10,18 @@ import { join } from '@tauri-apps/api/path'
 /// It assumes that you are in a project since it is solely used by the std lib
 /// when executing code.
 class FileSystemManager {
-  currentProjectDir: string | null = null
+  private _dir: string | null = null
 
-  setCurrentProjectDir(dir: string) {
-    this.currentProjectDir = dir
+  get dir() {
+    if (this._dir === null) {
+      throw new Error('current project dir is not set')
+    }
+
+    return this._dir
   }
 
-  getCurrentProjectDir() {
-    if (this.currentProjectDir === null) {
-      throw new Error('currentProjectDir is not set')
-    }
-    return this.currentProjectDir
+  set dir(dir: string) {
+    this._dir = dir
   }
 
   readFile(path: string): Promise<Uint8Array | void> {
@@ -31,11 +32,7 @@ class FileSystemManager {
       )
     }
 
-    if (this.currentProjectDir === null) {
-      throw new Error('currentProjectDir is not set')
-    }
-
-    return join(this.currentProjectDir, path)
+    return join(this.dir, path)
       .catch((error) => {
         throw new Error(`Error reading file: ${error}`)
       })
@@ -52,11 +49,7 @@ class FileSystemManager {
       )
     }
 
-    if (this.currentProjectDir === null) {
-      throw new Error('currentProjectDir is not set')
-    }
-
-    return join(this.currentProjectDir, path)
+    return join(this.dir, path)
       .catch((error) => {
         throw new Error(`Error checking file exists: ${error}`)
       })
