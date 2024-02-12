@@ -10,8 +10,8 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
-        BasePath, ExtrudeGroup, Face, GeoMeta, MemoryItem, Path, Plane, PlaneType, Point2d, Point3d, Position,
-        Rotation, SketchGroup, SketchGroupSet, SourceRange,
+        BasePath, ExtrudeGroup, ExtrudeSurface, Face, GeoMeta, MemoryItem, Path, Plane, PlaneType, Point2d, Point3d,
+        Position, Rotation, SketchGroup, SketchGroupSet, SourceRange,
     },
     std::{
         utils::{
@@ -848,17 +848,42 @@ async fn inner_start_sketch_on(data: SketchData, tag: Option<String>, args: Args
 }
 
 async fn start_sketch_on_face(extrude_group: Box<ExtrudeGroup>, tag: &str, args: Args) -> Result<Box<Face>, KclError> {
+    let face_id = extrude_group
+        .value
+        .iter()
+        .find_map(|extrude_plane| match extrude_plane {
+            ExtrudeSurface::ExtrudePlane { name, face_id, .. } if name == tag => Some(face_id),
+            _ => None,
+        })
+        .ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Expected a face with the tag `{}`", tag),
+                source_ranges: vec![args.source_range],
+            })
+        })?;
+
+    println!("\n\nface_id: {:?}", face_id);
+
     // Enter sketch mode on the face.
     args.send_modeling_cmd(
         uuid::Uuid::new_v4(),
         ModelingCmd::EnableSketchMode {
             animated: false,
             ortho: false,
-            entity_id: extrude_group.id, // TODO: this should be the face id , just showing kurt
-                                         // what the command looks like
+            entity_id: *face_id, // TODO: this should be the face id , just showing kurt
+                                 // what the command looks like
         },
     )
     .await?;
+    println!("\n\nafter enable sketch mode: {:?}", face_id);
+
+    let plane = args
+        .send_modeling_cmd(uuid::Uuid::new_v4(), ModelingCmd::GetSketchModePlane {})
+        .await?;
+
+    print!("{:?}", plane);
+
+    // todo use the plane to for it's axis vecs
 
     todo!()
 }
