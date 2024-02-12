@@ -736,8 +736,6 @@ pub struct BasePath {
 pub struct GeoMeta {
     /// The id of the geometry.
     pub id: uuid::Uuid,
-    /// The id of the face after extrusion
-    pub face_id: Option<uuid::Uuid>,
     /// Metadata.
     #[serde(flatten)]
     pub metadata: Metadata,

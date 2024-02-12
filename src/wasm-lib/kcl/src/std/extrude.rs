@@ -109,7 +109,6 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
                 name: path.get_base().name.clone(),
                 geo_meta: GeoMeta {
                     id: path.get_base().geo_meta.id,
-                    face_id: Some(*actual_face_id),
                     metadata: path.get_base().geo_meta.metadata.clone(),
                 },
             });
