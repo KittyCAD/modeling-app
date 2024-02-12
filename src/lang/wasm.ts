@@ -6,6 +6,7 @@ import init, {
   modify_ast_for_sketch_wasm,
   is_points_ccw,
   get_tangential_arc_to_info,
+  program_memory_init,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
@@ -250,5 +251,23 @@ export function getTangentialArcToInfo({
     startAngle: result.start_angle,
     endAngle: result.end_angle,
     ccw: result.ccw > 0,
+  }
+}
+
+export function programMemoryInit(): ProgramMemory {
+  try {
+    const memory: ProgramMemory = program_memory_init()
+    return memory
+  } catch (e: any) {
+    console.log(e)
+    const parsed: RustKclError = JSON.parse(e.toString())
+    const kclError = new KCLError(
+      parsed.kind,
+      parsed.msg,
+      rangeTypeFix(parsed.sourceRanges)
+    )
+
+    console.log(kclError)
+    throw kclError
   }
 }

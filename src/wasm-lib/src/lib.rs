@@ -251,3 +251,14 @@ pub fn get_tangential_arc_to_info(
         ccw: result.ccw,
     }
 }
+
+/// Create the default program memory.
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen]
+pub fn program_memory_init() -> Result<JsValue, String> {
+    let memory = kcl_lib::executor::ProgramMemory::default();
+
+    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
+    // gloo-serialize crate instead.
+    JsValue::from_serde(&memory).map_err(|e| e.to_string())
+}

@@ -30,7 +30,36 @@ pub struct ProgramMemory {
 impl ProgramMemory {
     pub fn new() -> Self {
         Self {
-            root: HashMap::new(),
+            root: HashMap::from([
+                (
+                    "ZERO".to_string(),
+                    MemoryItem::UserVal(UserVal {
+                        value: serde_json::Value::Number(serde_json::value::Number::from(0)),
+                        meta: Default::default(),
+                    }),
+                ),
+                (
+                    "QUARTER_TURN".to_string(),
+                    MemoryItem::UserVal(UserVal {
+                        value: serde_json::Value::Number(serde_json::value::Number::from(90)),
+                        meta: Default::default(),
+                    }),
+                ),
+                (
+                    "HALF_TURN".to_string(),
+                    MemoryItem::UserVal(UserVal {
+                        value: serde_json::Value::Number(serde_json::value::Number::from(180)),
+                        meta: Default::default(),
+                    }),
+                ),
+                (
+                    "THREE_QUARTER_TURN".to_string(),
+                    MemoryItem::UserVal(UserVal {
+                        value: serde_json::Value::Number(serde_json::value::Number::from(270)),
+                        meta: Default::default(),
+                    }),
+                ),
+            ]),
             return_: None,
         }
     }
@@ -1664,6 +1693,13 @@ show(bracket)
                 optional: false,
             }
         }
+        fn additional_program_memory(items: &[(String, MemoryItem)]) -> ProgramMemory {
+            let mut program_memory = ProgramMemory::new();
+            for (name, item) in items {
+                program_memory.root.insert(name.to_string(), item.clone());
+            }
+            program_memory
+        }
         // Declare the test cases.
         for (test_name, params, args, expected) in [
             ("empty", Vec::new(), Vec::new(), Ok(ProgramMemory::new())),
@@ -1671,10 +1707,7 @@ show(bracket)
                 "all params required, and all given, should be OK",
                 vec![req_param("x")],
                 vec![mem(1)],
-                Ok(ProgramMemory {
-                    return_: None,
-                    root: HashMap::from([("x".to_owned(), mem(1))]),
-                }),
+                Ok(additional_program_memory(&[("x".to_owned(), mem(1))])),
             ),
             (
                 "all params required, none given, should error",
@@ -1689,10 +1722,10 @@ show(bracket)
                 "all params optional, none given, should be OK",
                 vec![opt_param("x")],
                 vec![],
-                Ok(ProgramMemory {
-                    return_: None,
-                    root: HashMap::from([("x".to_owned(), MemoryItem::from(&KclNone::default()))]),
-                }),
+                Ok(additional_program_memory(&[(
+                    "x".to_owned(),
+                    MemoryItem::from(&KclNone::default()),
+                )])),
             ),
             (
                 "mixed params, too few given",
@@ -1707,22 +1740,19 @@ show(bracket)
                 "mixed params, minimum given, should be OK",
                 vec![req_param("x"), opt_param("y")],
                 vec![mem(1)],
-                Ok(ProgramMemory {
-                    return_: None,
-                    root: HashMap::from([
-                        ("x".to_owned(), mem(1)),
-                        ("y".to_owned(), MemoryItem::from(&KclNone::default())),
-                    ]),
-                }),
+                Ok(additional_program_memory(&[
+                    ("x".to_owned(), mem(1)),
+                    ("y".to_owned(), MemoryItem::from(&KclNone::default())),
+                ])),
             ),
             (
                 "mixed params, maximum given, should be OK",
                 vec![req_param("x"), opt_param("y")],
                 vec![mem(1), mem(2)],
-                Ok(ProgramMemory {
-                    return_: None,
-                    root: HashMap::from([("x".to_owned(), mem(1)), ("y".to_owned(), mem(2))]),
-                }),
+                Ok(additional_program_memory(&[
+                    ("x".to_owned(), mem(1)),
+                    ("y".to_owned(), mem(2)),
+                ])),
             ),
             (
                 "mixed params, too many given",
