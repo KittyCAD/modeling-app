@@ -13,7 +13,7 @@ import {
 } from '../lang/std/engineConnection'
 import Tooltip from './Tooltip'
 
-enum NetworkHealthState {
+export enum NetworkHealthState {
   Ok,
   Issue,
   Disconnected,
