@@ -887,6 +887,10 @@ pub async fn execute(
                                 }
 
                                 memory.return_ = Some(ProgramReturn::Arguments(call_expr.arguments.clone()));
+                            } else {
+                                let args = crate::std::Args::new(args, call_expr.into(), ctx.clone());
+                                let result = func.std_lib_fn()(args).await?;
+                                memory.return_ = Some(ProgramReturn::Value(result));
                             }
                         }
                         FunctionKind::Std(func) => {

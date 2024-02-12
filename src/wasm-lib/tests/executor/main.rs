@@ -746,6 +746,14 @@ async fn serial_test_import_glb() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn serial_test_import_glb_no_assign() {
+    let code = r#"import("tests/executor/inputs/cube.glb")"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/import_glb_no_assign.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_import_ext_doesnt_match() {
     let code = r#"const model = import("tests/executor/inputs/cube.gltf", {type: "obj", units: "m"})"#;
 
