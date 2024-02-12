@@ -1,4 +1,5 @@
-import { OnboardingButtons, onboardingPaths, useDismiss, useNextClick } from '.'
+import { OnboardingButtons, useDismiss, useNextClick } from '.'
+import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useStore } from '../../useStore'
 import { SettingsSection } from 'routes/Settings'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'

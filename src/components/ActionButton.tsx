@@ -1,6 +1,6 @@
 import { ActionIcon, ActionIconProps } from './ActionIcon'
 import React from 'react'
-import { paths } from '../Router'
+import { paths } from 'lib/paths'
 import { Link } from 'react-router-dom'
 import type { LinkProps } from 'react-router-dom'
 

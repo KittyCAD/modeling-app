@@ -2,7 +2,7 @@ import {
   SetVarNameModal,
   createSetVarNameModal,
 } from 'components/SetVarNameModal'
-import { kclManager } from 'lang/KclSinglton'
+import { kclManager } from 'lang/KclSingleton'
 import { moveValueIntoNewVariable } from 'lang/modifyAst'
 import { isNodeSafeToReplace } from 'lang/queryAst'
 import { useEffect, useState } from 'react'

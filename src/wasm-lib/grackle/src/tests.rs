@@ -1,5 +1,7 @@
+use std::collections::HashMap;
+
 use ep::{Destination, UnaryArithmetic};
-use ept::ListHeader;
+use ept::{ListHeader, ObjectHeader};
 use pretty_assertions::assert_eq;
 
 use super::*;
@@ -158,7 +160,7 @@ fn bind_arrays_with_objects_elements() {
             // List header
             Instruction::SetPrimitive {
                 address: Address::ZERO,
-                value: ListHeader { count: 2, size: 5 }.into()
+                value: ListHeader { count: 2, size: 7 }.into()
             },
             // Array contents
             Instruction::SetPrimitive {
@@ -171,14 +173,26 @@ fn bind_arrays_with_objects_elements() {
             },
             Instruction::SetPrimitive {
                 address: Address::ZERO + 3,
-                value: 2usize.into()
+                value: ObjectHeader {
+                    size: 4,
+                    properties: vec!["a".to_owned(), "b".to_owned(),]
+                }
+                .into(),
             },
             Instruction::SetPrimitive {
                 address: Address::ZERO + 4,
-                value: 55i64.into()
+                value: 1usize.into(),
             },
             Instruction::SetPrimitive {
                 address: Address::ZERO + 5,
+                value: 55i64.into()
+            },
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 6,
+                value: 1usize.into(),
+            },
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 7,
                 value: "sixty-six".to_owned().into()
             },
         ]
@@ -276,6 +290,91 @@ fn use_native_function_id() {
 }
 
 #[tokio::test]
+async fn computed_object_property() {
+    let program = r#"
+    let obj = {a: true, b: false}
+    let prop0 = "a"
+    let val = obj[prop0] // should be `true`
+    "#;
+    let (_plan, scope) = must_plan(program);
+    let Some(EpBinding::Single(address_of_val)) = scope.get("val") else {
+        panic!("Unexpected binding for variable 'val': {:?}", scope.get("val"));
+    };
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+        .ast()
+        .unwrap();
+    let mem = crate::execute(ast, None).await.unwrap();
+    use ept::ReadMemory;
+    // Should be 'true', based on the above KCL program.
+    assert_eq!(mem.get(address_of_val).unwrap(), &ept::Primitive::Bool(true));
+}
+
+#[tokio::test]
+async fn computed_array_in_object() {
+    let program = r#"
+    let complicated = {a: [{b: true}]}
+    let i = 0
+    let prop0 = "a"
+    let prop1 = "b"
+    let val = complicated[prop0][i][prop1] // should be `true`
+    "#;
+    let (_plan, scope) = must_plan(program);
+    let Some(EpBinding::Single(address_of_val)) = scope.get("val") else {
+        panic!("Unexpected binding for variable 'val': {:?}", scope.get("val"));
+    };
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+        .ast()
+        .unwrap();
+    let mem = crate::execute(ast, None).await.unwrap();
+    use ept::ReadMemory;
+    // Should be 'true', based on the above KCL program.
+    assert_eq!(mem.get(address_of_val).unwrap(), &ept::Primitive::Bool(true));
+}
+
+#[tokio::test]
+async fn computed_object_in_array() {
+    let program = r#"
+    let complicated = [{a: {b: true}}]
+    let i = 0
+    let prop0 = "a"
+    let prop1 = "b"
+    let val = complicated[i][prop0][prop1] // should be `true`
+    "#;
+    let (_plan, scope) = must_plan(program);
+    let Some(EpBinding::Single(address_of_val)) = scope.get("val") else {
+        panic!("Unexpected binding for variable 'val': {:?}", scope.get("val"));
+    };
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+        .ast()
+        .unwrap();
+    let mem = crate::execute(ast, None).await.unwrap();
+    use ept::ReadMemory;
+    // Should be 'true', based on the above KCL program.
+    assert_eq!(mem.get(address_of_val).unwrap(), &ept::Primitive::Bool(true));
+}
+
+#[tokio::test]
+async fn computed_nested_object_property() {
+    let program = r#"
+    let obj = {a: {b: true}}
+    let prop0 = "a"
+    let prop1 = "b"
+    let val = obj[prop0][prop1] // should be `true`
+    "#;
+    let (_plan, scope) = must_plan(program);
+    let Some(EpBinding::Single(address_of_val)) = scope.get("val") else {
+        panic!("Unexpected binding for variable 'val': {:?}", scope.get("val"));
+    };
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+        .ast()
+        .unwrap();
+    let mem = crate::execute(ast, None).await.unwrap();
+    use ept::ReadMemory;
+    // Should be 'true', based on the above KCL program.
+    assert_eq!(mem.get(address_of_val).unwrap(), &ept::Primitive::Bool(true));
+}
+
+#[tokio::test]
 async fn computed_array_index() {
     let program = r#"
     let array = ["a", "b", "c"]
@@ -349,13 +448,14 @@ async fn computed_array_index() {
                 destination: Destination::Address(Address::ZERO + 9)
             },
             // Get the element at the index
-            Instruction::GetElement {
-                start: Address::ZERO,
-                index: ep::Operand::Reference(Address::ZERO + 9)
+            Instruction::AddrOfMember {
+                start: ep::Operand::Literal(Address::ZERO.into()),
+                member: ep::Operand::Reference(Address::ZERO + 9)
             },
             // Write it to the next free address.
-            Instruction::StackPop {
-                destination: Some(expected_address_of_prop)
+            Instruction::CopyLen {
+                source_range: ep::Operand::StackPop,
+                destination_range: ep::Operand::Literal(expected_address_of_prop.into()),
             },
         ]
     );
@@ -373,25 +473,6 @@ async fn computed_array_index() {
 }
 
 #[test]
-#[ignore = "haven't done computed properties yet"]
-fn computed_member_expressions() {
-    let program = r#"
-    let obj = {x: 1, y: 2}
-    let index = "x"
-    let prop = obj[index]
-    "#;
-    let (_plan, scope) = must_plan(program);
-    match scope.get("prop").unwrap() {
-        EpBinding::Single(addr) => {
-            assert_eq!(*addr, Address::ZERO + 1);
-        }
-        other => {
-            panic!("expected 'prop' bound to 0x0 but it was bound to {other:?}");
-        }
-    }
-}
-
-#[test]
 fn member_expressions_object() {
     let program = r#"
     let obj = {x: 1, y: 2}
@@ -400,7 +481,7 @@ fn member_expressions_object() {
     let (_plan, scope) = must_plan(program);
     match scope.get("prop").unwrap() {
         EpBinding::Single(addr) => {
-            assert_eq!(*addr, Address::ZERO + 1);
+            assert_eq!(*addr, Address::ZERO + 4);
         }
         other => {
             panic!("expected 'prop' bound to 0x0 but it was bound to {other:?}");
@@ -833,32 +914,69 @@ fn store_object() {
     let expected = vec![
         Instruction::SetPrimitive {
             address: Address::ZERO,
+            value: ObjectHeader {
+                properties: vec!["a".to_owned(), "b".to_owned(), "c".to_owned()],
+                size: 7,
+            }
+            .into(),
+        },
+        // Key a header
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 1,
+            value: 1usize.into(),
+        },
+        // Key a value
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 2,
             value: 1i64.into(),
         },
+        // Key b header
         Instruction::SetPrimitive {
-            address: Address::ZERO.offset(1),
+            address: Address::ZERO + 3,
+            value: 1usize.into(),
+        },
+        // Key b value
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 4,
             value: 2i64.into(),
         },
+        // Inner object (i.e. key c) header
         Instruction::SetPrimitive {
-            address: Address::ZERO.offset(2),
+            address: Address::ZERO + 5,
+            value: ObjectHeader {
+                properties: vec!["d".to_owned()],
+                size: 2,
+            }
+            .into(),
+        },
+        // Key d header
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 6,
+            value: 1usize.into(),
+        },
+        // Key d value
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 7,
             value: 3i64.into(),
         },
     ];
     assert_eq!(actual, expected);
-    assert_eq!(
-        bindings.get("x0").unwrap(),
-        &EpBinding::Map(HashMap::from([
-            ("a".to_owned(), EpBinding::Single(Address::ZERO),),
-            ("b".to_owned(), EpBinding::Single(Address::ZERO.offset(1))),
+    let actual = bindings.get("x0").unwrap();
+    let expected = EpBinding::Map {
+        length_at: Address::ZERO,
+        properties: HashMap::from([
+            ("a".to_owned(), EpBinding::Single(Address::ZERO + 2)),
+            ("b".to_owned(), EpBinding::Single(Address::ZERO + 4)),
             (
                 "c".to_owned(),
-                EpBinding::Map(HashMap::from([(
-                    "d".to_owned(),
-                    EpBinding::Single(Address::ZERO.offset(2))
-                )]))
+                EpBinding::Map {
+                    length_at: Address::ZERO + 5,
+                    properties: HashMap::from([("d".to_owned(), EpBinding::Single(Address::ZERO + 7))]),
+                },
             ),
-        ]))
-    )
+        ]),
+    };
+    assert_eq!(actual, &expected)
 }
 
 #[test]
@@ -868,20 +986,24 @@ fn store_object_with_array_property() {
     let expected = vec![
         Instruction::SetPrimitive {
             address: Address::ZERO,
+            value: ObjectHeader {
+                properties: vec!["a".to_owned(), "b".to_owned()],
+                size: 7,
+            }
+            .into(),
+        },
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 1,
+            value: 1usize.into(),
+        },
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 2,
             value: 1i64.into(),
         },
         // Array header
         Instruction::SetPrimitive {
-            address: Address::ZERO + 1,
-            value: ListHeader { count: 2, size: 4 }.into(),
-        },
-        Instruction::SetPrimitive {
-            address: Address::ZERO + 2,
-            value: 1usize.into(),
-        },
-        Instruction::SetPrimitive {
             address: Address::ZERO + 3,
-            value: 2i64.into(),
+            value: ListHeader { count: 2, size: 4 }.into(),
         },
         Instruction::SetPrimitive {
             address: Address::ZERO + 4,
@@ -889,25 +1011,36 @@ fn store_object_with_array_property() {
         },
         Instruction::SetPrimitive {
             address: Address::ZERO + 5,
+            value: 2i64.into(),
+        },
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 6,
+            value: 1usize.into(),
+        },
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 7,
             value: 3i64.into(),
         },
     ];
     assert_eq!(actual, expected);
     assert_eq!(
         bindings.get("x0").unwrap(),
-        &EpBinding::Map(HashMap::from([
-            ("a".to_owned(), EpBinding::Single(Address::ZERO),),
-            (
-                "b".to_owned(),
-                EpBinding::Sequence {
-                    length_at: Address::ZERO + 1,
-                    elements: vec![
-                        EpBinding::Single(Address::ZERO + 3),
-                        EpBinding::Single(Address::ZERO + 5),
-                    ]
-                }
-            ),
-        ]))
+        &EpBinding::Map {
+            length_at: Address::ZERO,
+            properties: HashMap::from([
+                ("a".to_owned(), EpBinding::Single(Address::ZERO + 2)),
+                (
+                    "b".to_owned(),
+                    EpBinding::Sequence {
+                        length_at: Address::ZERO + 3,
+                        elements: vec![
+                            EpBinding::Single(Address::ZERO + 5),
+                            EpBinding::Single(Address::ZERO + 7),
+                        ]
+                    }
+                ),
+            ])
+        }
     )
 }
 
@@ -934,13 +1067,28 @@ fn objects_as_parameters() {
         // Object contents
         Instruction::SetPrimitive {
             address: Address::ZERO,
+            value: ObjectHeader {
+                properties: vec!["x".to_owned()],
+                size: 2,
+            }
+            .into(),
+        },
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 1,
+            value: 1usize.into(),
+        },
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 2,
             value: 1i64.into(),
         },
     ];
     assert_eq!(plan, expected_plan);
     assert_eq!(
         scope.get("obj").unwrap(),
-        &EpBinding::Map(HashMap::from([("x".to_owned(), EpBinding::Single(Address::ZERO)),]))
+        &EpBinding::Map {
+            length_at: Address::ZERO,
+            properties: HashMap::from([("x".to_owned(), EpBinding::Single(Address::ZERO + 2))])
+        }
     )
 }
 

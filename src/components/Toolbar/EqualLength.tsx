@@ -11,7 +11,7 @@ import {
   getTransformInfos,
   PathToNodeMap,
 } from '../../lang/std/sketchcombos'
-import { kclManager } from 'lang/KclSinglton'
+import { kclManager } from 'lang/KclSingleton'
 
 export function setEqualLengthInfo({
   selectionRanges,

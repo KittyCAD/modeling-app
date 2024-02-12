@@ -20,9 +20,9 @@ import {
 import { useHotkeys } from 'react-hotkeys-hook'
 import { getNormalisedCoordinates } from './lib/utils'
 import { useLoaderData } from 'react-router-dom'
-import { IndexLoaderData } from './Router'
+import { IndexLoaderData } from 'lib/types'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
-import { onboardingPaths } from 'routes/Onboarding'
+import { onboardingPaths } from 'routes/Onboarding/paths'
 import { cameraMouseDragGuards } from 'lib/cameraControls'
 import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
 import { CodeMenu } from 'components/CodeMenu'
@@ -31,6 +31,8 @@ import { Themes, getSystemTheme } from 'lib/theme'
 import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
 import { engineCommandManager } from './lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
+import { ClientSideScene } from 'clientSideScene/setup'
+// import { CamToggle } from 'components/CamToggle'
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData
@@ -84,9 +86,11 @@ export function App() {
 
   const debounceSocketSend = throttle<EngineCommand>((message) => {
     engineCommandManager.sendSceneCommand(message)
-  }, 16)
+  }, 1000 / 15)
   const handleMouseMove: MouseEventHandler<HTMLDivElement> = (e) => {
-    e.nativeEvent.preventDefault()
+    if (state.matches('Sketch')) {
+      return
+    }
 
     const { x, y } = getNormalisedCoordinates({
       clientX: e.clientX,
@@ -97,37 +101,15 @@ export function App() {
 
     const newCmdId = uuidv4()
     if (buttonDownInStream === undefined) {
-      if (state.matches('Sketch.Line Tool')) {
-        debounceSocketSend({
-          type: 'modeling_cmd_req',
-          cmd_id: newCmdId,
-          cmd: {
-            type: 'mouse_move',
-            window: { x, y },
-          },
-        })
-      } else {
-        debounceSocketSend({
-          type: 'modeling_cmd_req',
-          cmd: {
-            type: 'highlight_set_entity',
-            selected_at_window: { x, y },
-          },
-          cmd_id: newCmdId,
-        })
-      }
+      debounceSocketSend({
+        type: 'modeling_cmd_req',
+        cmd: {
+          type: 'highlight_set_entity',
+          selected_at_window: { x, y },
+        },
+        cmd_id: newCmdId,
+      })
     } else {
-      if (state.matches('Sketch.Move Tool')) {
-        debounceSocketSend({
-          type: 'modeling_cmd_req',
-          cmd_id: newCmdId,
-          cmd: {
-            type: 'handle_mouse_drag_move',
-            window: { x, y },
-          },
-        })
-        return
-      }
       const interactionGuards = cameraMouseDragGuards[cameraControls]
       let interaction: CameraDragInteractionType_type
 
@@ -238,6 +220,7 @@ export function App() {
           open={openPanes.includes('debug')}
         />
       )}
+      {/* <CamToggle /> */}
     </div>
   )
 }

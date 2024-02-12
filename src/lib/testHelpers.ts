@@ -66,11 +66,7 @@ export async function enginelessExecutor(
   }) as any as EngineCommandManager
   await mockEngineCommandManager.waitForReady
   mockEngineCommandManager.startNewSession()
-  const programMemory = await _executor(ast, pm, mockEngineCommandManager, {
-    xy: uuidv4(),
-    yz: uuidv4(),
-    xz: uuidv4(),
-  })
+  const programMemory = await _executor(ast, pm, mockEngineCommandManager)
   await mockEngineCommandManager.waitForAllCommands()
   return programMemory
 }
@@ -89,11 +85,7 @@ export async function executor(
   })
   await engineCommandManager.waitForReady
   engineCommandManager.startNewSession()
-  const programMemory = await _executor(ast, pm, engineCommandManager, {
-    xy: uuidv4(),
-    yz: uuidv4(),
-    xz: uuidv4(),
-  })
+  const programMemory = await _executor(ast, pm, engineCommandManager)
   await engineCommandManager.waitForAllCommands()
   return programMemory
 }

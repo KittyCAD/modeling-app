@@ -41,10 +41,8 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
     let program = parser.ast()?;
     let mut mem: kcl_lib::executor::ProgramMemory = Default::default();
     let engine = kcl_lib::engine::EngineConnection::new(ws).await?;
-    let planes = kcl_lib::executor::DefaultPlanes::new(&engine).await?;
     let ctx = ExecutorContext {
         engine,
-        planes,
         stdlib: Arc::new(StdLib::default()),
     };
     let memory = kcl_lib::executor::execute(program.clone(), &mut mem, kcl_lib::executor::BodyType::Root, &ctx).await?;

@@ -1,13 +1,9 @@
-use kcl_lib::ast::types::LiteralIdentifier;
-use kcl_lib::ast::types::LiteralValue;
-
-use crate::CompileError;
-use crate::KclFunction;
-
-use super::native_functions;
-use super::Address;
-
 use std::collections::HashMap;
+
+use kcl_lib::ast::types::{LiteralIdentifier, LiteralValue};
+
+use super::{native_functions, Address};
+use crate::{CompileError, KclFunction};
 
 /// KCL values which can be written to KCEP memory.
 /// This is recursive. For example, the bound value might be an array, which itself contains bound values.
@@ -22,7 +18,10 @@ pub enum EpBinding {
         elements: Vec<EpBinding>,
     },
     /// A sequence of KCL values, indexed by their identifier.
-    Map(HashMap<String, EpBinding>),
+    Map {
+        length_at: Address,
+        properties: HashMap<String, EpBinding>,
+    },
     /// Not associated with a KCEP address.
     Function(KclFunction),
 }
@@ -47,7 +46,7 @@ impl EpBinding {
                             .get(i)
                             .ok_or(CompileError::IndexOutOfBounds { i, len: elements.len() })
                     }
-                    EpBinding::Map(_) => Err(CompileError::CannotIndex),
+                    EpBinding::Map { .. } => Err(CompileError::CannotIndex),
                     EpBinding::Single(_) => Err(CompileError::CannotIndex),
                     EpBinding::Function(_) => Err(CompileError::CannotIndex),
                 },
@@ -56,7 +55,12 @@ impl EpBinding {
                     EpBinding::Single(_) => Err(CompileError::NoProperties),
                     EpBinding::Function(_) => Err(CompileError::NoProperties),
                     EpBinding::Sequence { .. } => Err(CompileError::ArrayDoesNotHaveProperties),
-                    EpBinding::Map(map) => map.get(&property).ok_or(CompileError::UndefinedProperty { property }),
+                    EpBinding::Map {
+                        properties,
+                        length_at: _,
+                    } => properties
+                        .get(&property)
+                        .ok_or(CompileError::UndefinedProperty { property }),
                 },
                 // It's never valid to index by a fractional number.
                 LiteralValue::Fractional(num) => Err(CompileError::InvalidIndex(num.to_string())),
