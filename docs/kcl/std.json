@@ -15215,17 +15215,14 @@
   {
     "name": "import",
     "summary": "Import a CAD file.",
-    "description": "For formats lacking unit data (STL, OBJ, PLY), the default import unit is millimeters. Otherwise you can specify the unit by passing in the options parameter. The file(s) should be of only one format, if multiple files are provided.",
+    "description": "For formats lacking unit data (STL, OBJ, PLY), the default import unit is millimeters. Otherwise you can specify the unit by passing in the options parameter. If you import a gltf file, we will try to find the bin file and import it as well.",
     "tags": [],
     "args": [
       {
-        "name": "file_paths",
-        "type": "[String]",
+        "name": "file_path",
+        "type": "String",
         "schema": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+          "type": "string"
         },
         "required": true
       },
