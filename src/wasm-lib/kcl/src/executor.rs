@@ -15,6 +15,7 @@ use crate::{
     ast::types::{BodyItem, FunctionExpression, KclNone, Value},
     engine::EngineConnection,
     errors::{KclError, KclErrorDetails},
+    fs::FileManager,
     std::{FunctionKind, StdLib},
 };
 
@@ -821,7 +822,30 @@ impl Default for PipeInfo {
 #[derive(Debug, Clone)]
 pub struct ExecutorContext {
     pub engine: EngineConnection,
+    pub fs: FileManager,
     pub stdlib: Arc<StdLib>,
+}
+
+impl ExecutorContext {
+    /// Create a new default executor context.
+    #[cfg(test)]
+    pub async fn new() -> Result<Self> {
+        Ok(Self {
+            engine: EngineConnection::new().await?,
+            fs: FileManager::new(),
+            stdlib: Arc::new(StdLib::new()),
+        })
+    }
+
+    /// Create a new default executor context.
+    #[cfg(not(test))]
+    pub async fn new(ws: reqwest::Upgraded) -> Result<Self> {
+        Ok(Self {
+            engine: EngineConnection::new(ws).await?,
+            fs: FileManager::new(),
+            stdlib: Arc::new(StdLib::new()),
+        })
+    }
 }
 
 /// Execute a AST's program.
@@ -1118,11 +1142,7 @@ mod tests {
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast()?;
         let mut mem: ProgramMemory = Default::default();
-        let engine = EngineConnection::new().await?;
-        let ctx = ExecutorContext {
-            engine,
-            stdlib: Arc::new(StdLib::default()),
-        };
+        let ctx = ExecutorContext::new().await?;
         let memory = execute(program, &mut mem, BodyType::Root, &ctx).await?;
 
         Ok(memory)
