@@ -8,7 +8,6 @@ import { isTauri } from 'lib/isTauri'
 export function readFile(path: string): Promise<Uint8Array> {
   // Using local file system only works from Tauri.
   if (!isTauri()) {
-    console.log('This function can only be called from a Tauri application')
     throw new Error('This function can only be called from a Tauri application')
   }
 
@@ -18,7 +17,6 @@ export function readFile(path: string): Promise<Uint8Array> {
 export function exists(path: string): Promise<boolean> {
   // Using local file system only works from Tauri.
   if (!isTauri()) {
-    console.log('This function can only be called from a Tauri application')
     throw new Error('This function can only be called from a Tauri application')
   }
 
