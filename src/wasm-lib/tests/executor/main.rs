@@ -753,6 +753,6 @@ async fn serial_test_import_ext_doesnt_match() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([14, 82])], message: \"The given format does not match the file extension. Expected: `gltf`, Given: `obj`\" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([14, 82])], message: "The given format does not match the file extension. Expected: `gltf`, Given: `obj`" }"#
     );
 }
