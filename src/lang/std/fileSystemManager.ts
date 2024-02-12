@@ -37,7 +37,7 @@ class FileSystemManager {
         throw new Error(`Error reading file: ${error}`)
       })
       .then((file) => {
-        readBinaryFile(file)
+        return readBinaryFile(file)
       })
   }
 
@@ -54,7 +54,7 @@ class FileSystemManager {
         throw new Error(`Error checking file exists: ${error}`)
       })
       .then((file) => {
-        tauriExists(file)
+        return tauriExists(file)
       })
   }
 }
