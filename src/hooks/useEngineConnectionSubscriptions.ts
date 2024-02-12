@@ -15,6 +15,7 @@ export function useEngineConnectionSubscriptions() {
     if (!engineCommandManager) return
 
     const unSubHover = engineCommandManager.subscribeToUnreliable({
+      // Note this is our hover logic, "highlight_set_entity" is the event that is fired when we hover over an entity
       event: 'highlight_set_entity',
       callback: ({ data }) => {
         if (data?.entity_id) {

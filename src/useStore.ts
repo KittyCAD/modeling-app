@@ -1,7 +1,13 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { addLineHighlight, EditorView } from './editor/highlightextension'
-import { parse, Program, _executor, ProgramMemory } from './lang/wasm'
+import {
+  parse,
+  Program,
+  _executor,
+  ProgramMemory,
+  programMemoryInit,
+} from './lang/wasm'
 import { Selection } from 'lib/selections'
 import { enginelessExecutor } from './lib/testHelpers'
 import { EngineCommandManager } from './lang/std/engineConnection'
@@ -156,34 +162,6 @@ export const useStore = create<StoreState>()(
   )
 )
 
-export const defaultProgramMemory: () => ProgramMemory['root'] = () => ({
-  _0: {
-    type: 'UserVal',
-    value: 0,
-    __meta: [],
-  },
-  _90: {
-    type: 'UserVal',
-    value: 90,
-    __meta: [],
-  },
-  _180: {
-    type: 'UserVal',
-    value: 180,
-    __meta: [],
-  },
-  _270: {
-    type: 'UserVal',
-    value: 270,
-    __meta: [],
-  },
-  PI: {
-    type: 'UserVal',
-    value: Math.PI,
-    __meta: [],
-  },
-})
-
 export async function executeCode({
   engineCommandManager,
   code,
@@ -273,21 +251,8 @@ export async function executeAst({
       engineCommandManager.startNewSession()
     }
     const programMemory = await (useFakeExecutor
-      ? enginelessExecutor(
-          ast,
-          programMemoryOverride || {
-            root: defaultProgramMemory(),
-            return: null,
-          }
-        )
-      : _executor(
-          ast,
-          {
-            root: defaultProgramMemory(),
-            return: null,
-          },
-          engineCommandManager
-        ))
+      ? enginelessExecutor(ast, programMemoryOverride || programMemoryInit())
+      : _executor(ast, programMemoryInit(), engineCommandManager))
 
     await engineCommandManager.waitForAllCommands()
     return {

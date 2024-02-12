@@ -42,6 +42,7 @@ import {
   PipeExpression,
   Program,
   ProgramMemory,
+  programMemoryInit,
   recast,
   SketchGroup,
   VariableDeclaration,
@@ -49,7 +50,7 @@ import {
 } from 'lang/wasm'
 import { kclManager } from 'lang/KclSingleton'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
-import { defaultProgramMemory, executeAst } from 'useStore'
+import { executeAst } from 'useStore'
 import { engineCommandManager } from 'lang/std/engineConnection'
 import {
   createArcGeometry,
@@ -869,10 +870,7 @@ function prepareTruncatedMemoryAndAst(
     ..._ast,
     body: [JSON.parse(JSON.stringify(_ast.body[bodyIndex]))],
   }
-  const programMemoryOverride: ProgramMemory = {
-    root: defaultProgramMemory(),
-    return: null,
-  }
+  const programMemoryOverride: ProgramMemory = programMemoryInit()
   for (let i = 0; i < bodyIndex; i++) {
     const node = _ast.body[i]
     if (node.type !== 'VariableDeclaration') {

@@ -89,12 +89,16 @@ export async function applyConstraintAngleLength({
       isReferencingXAxis && angleOrLength === 'setAngle'
 
     let forceVal = valueUsedInTransform || 0
-    let calcIdentifier = createIdentifier('_0')
+    let calcIdentifier = createIdentifier('ZERO')
     if (isReferencingYAxisAngle) {
-      calcIdentifier = createIdentifier(forceVal < 0 ? '_270' : '_90')
+      calcIdentifier = createIdentifier(
+        forceVal < 0 ? 'THREE_QUARTER_TURN' : 'QUARTER_TURN'
+      )
       forceVal = normaliseAngle(forceVal + (forceVal < 0 ? 90 : -90))
     } else if (isReferencingXAxisAngle) {
-      calcIdentifier = createIdentifier(Math.abs(forceVal) > 90 ? '_180' : '_0')
+      calcIdentifier = createIdentifier(
+        Math.abs(forceVal) > 90 ? 'HALF_TURN' : 'ZERO'
+      )
       forceVal =
         Math.abs(forceVal) > 90 ? normaliseAngle(forceVal - 180) : forceVal
     }
@@ -112,7 +116,7 @@ export async function applyConstraintAngleLength({
     )
     if (
       isReferencingYAxisAngle ||
-      (isReferencingXAxisAngle && calcIdentifier.name !== '_0')
+      (isReferencingXAxisAngle && calcIdentifier.name !== 'ZERO')
     ) {
       finalValue = createBinaryExpressionWithUnary([calcIdentifier, finalValue])
     }
