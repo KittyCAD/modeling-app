@@ -2726,30 +2726,21 @@ import(file_path: String, options: ImportFormat) -> ImportedGeometry
 	// Axis the front face of a model looks along.
 	forward: {
 	// Axis specifier.
-	axis: string |
-string,
+	axis: "y" | "z",
 	// Specifies which direction the axis is pointing.
-	direction: string |
-string,
+	direction: "positive" | "negative",
 },
 	// Axis pointing up and away from a model.
 	up: {
 	// Axis specifier.
-	axis: string |
-string,
+	axis: "y" | "z",
 	// Specifies which direction the axis is pointing.
-	direction: string |
-string,
+	direction: "positive" | "negative",
 },
 },
 	type: string,
 	// The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters.
-	units: string |
-string |
-string |
-string |
-string |
-string,
+	units: "cm" | "ft" | "in" | "m" | "mm" | "yd",
 } |
 {
 	// Co-ordinate system of input data. Defaults to the [KittyCAD co-ordinate system.
@@ -2757,30 +2748,21 @@ string,
 	// Axis the front face of a model looks along.
 	forward: {
 	// Axis specifier.
-	axis: string |
-string,
+	axis: "y" | "z",
 	// Specifies which direction the axis is pointing.
-	direction: string |
-string,
+	direction: "positive" | "negative",
 },
 	// Axis pointing up and away from a model.
 	up: {
 	// Axis specifier.
-	axis: string |
-string,
+	axis: "y" | "z",
 	// Specifies which direction the axis is pointing.
-	direction: string |
-string,
+	direction: "positive" | "negative",
 },
 },
 	type: string,
 	// The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters.
-	units: string |
-string |
-string |
-string |
-string |
-string,
+	units: "cm" | "ft" | "in" | "m" | "mm" | "yd",
 } |
 {
 	type: string,
@@ -2794,30 +2776,21 @@ string,
 	// Axis the front face of a model looks along.
 	forward: {
 	// Axis specifier.
-	axis: string |
-string,
+	axis: "y" | "z",
 	// Specifies which direction the axis is pointing.
-	direction: string |
-string,
+	direction: "positive" | "negative",
 },
 	// Axis pointing up and away from a model.
 	up: {
 	// Axis specifier.
-	axis: string |
-string,
+	axis: "y" | "z",
 	// Specifies which direction the axis is pointing.
-	direction: string |
-string,
+	direction: "positive" | "negative",
 },
 },
 	type: string,
 	// The units of the input data. This is very important for correct scaling and when calculating physics properties like mass, etc. Defaults to millimeters.
-	units: string |
-string |
-string |
-string |
-string |
-string,
+	units: "cm" | "ft" | "in" | "m" | "mm" | "yd",
 }
 ```
 
@@ -4394,8 +4367,7 @@ startProfileAt(data: LineData, plane: Plane) -> SketchGroup
 	z: number,
 },
 	// Type for a plane.
-	value: string |
-string,
+	value: "XY" | "XZ" | "YZ" | "Custom",
 	// What should the plane’s X axis be?
 	xAxis: {
 	x: number,
@@ -4682,8 +4654,7 @@ string |
 	z: number,
 },
 	// Type for a plane.
-	value: string |
-string,
+	value: "XY" | "XZ" | "YZ" | "Custom",
 	// What should the plane’s X axis be?
 	xAxis: {
 	x: number,
