@@ -373,7 +373,7 @@ impl Args {
         Ok(data)
     }
 
-    fn get_import_data(&self) -> Result<(Vec<String>, Option<kittycad::types::InputFormat>), KclError> {
+    fn get_import_data(&self) -> Result<(String, Option<kittycad::types::InputFormat>), KclError> {
         let first_value = self
             .args
             .first()
@@ -385,9 +385,9 @@ impl Args {
             })?
             .get_json_value()?;
 
-        let data: Vec<String> = serde_json::from_value(first_value).map_err(|e| {
+        let data: String = serde_json::from_value(first_value).map_err(|e| {
             KclError::Type(KclErrorDetails {
-                message: format!("Expected an array of file path strings: {}", e),
+                message: format!("Expected a file path string: {}", e),
                 source_ranges: vec![self.source_range],
             })
         })?;

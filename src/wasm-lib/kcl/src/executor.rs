@@ -173,6 +173,8 @@ pub enum SketchGroupSet {
 pub struct ImportedGeometry {
     /// The ID of the imported geometry.
     pub id: uuid::Uuid,
+    /// The original file paths.
+    pub value: Vec<String>,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }

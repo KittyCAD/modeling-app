@@ -2842,6 +2842,8 @@ string,
 {
 	// The ID of the imported geometry.
 	id: uuid,
+	// The original file paths.
+	value: [string],
 }
 ```
 

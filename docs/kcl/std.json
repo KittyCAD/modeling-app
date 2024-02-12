@@ -15819,7 +15819,8 @@
         "type": "object",
         "required": [
           "__meta",
-          "id"
+          "id",
+          "value"
         ],
         "properties": {
           "__meta": {
@@ -15849,6 +15850,13 @@
             "description": "The ID of the imported geometry.",
             "type": "string",
             "format": "uuid"
+          },
+          "value": {
+            "description": "The original file paths.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       },

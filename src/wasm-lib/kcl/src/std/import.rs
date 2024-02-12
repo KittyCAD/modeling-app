@@ -17,38 +17,29 @@ use crate::{
 /// Import a CAD file.
 /// For formats lacking unit data (STL, OBJ, PLY), the default import unit is millimeters.
 /// Otherwise you can specify the unit by passing in the options parameter.
-/// The file(s) should be of only one format, if multiple files are provided.
+/// If you import a gltf file, we will try to find the bin file and import it as well.
 pub async fn import(args: Args) -> Result<MemoryItem, KclError> {
-    let (file_paths, options): (Vec<String>, Option<kittycad::types::InputFormat>) = args.get_import_data()?;
+    let (file_path, options): (String, Option<kittycad::types::InputFormat>) = args.get_import_data()?;
 
-    let imported_geometry = inner_import(file_paths, options, args).await?;
+    let imported_geometry = inner_import(file_path, options, args).await?;
     Ok(MemoryItem::ImportedGeometry(imported_geometry))
 }
 
 /// Import a CAD file.
 /// For formats lacking unit data (STL, OBJ, PLY), the default import unit is millimeters.
 /// Otherwise you can specify the unit by passing in the options parameter.
-/// The file(s) should be of only one format, if multiple files are provided.
+/// If you import a gltf file, we will try to find the bin file and import it as well.
 #[stdlib {
     name = "import",
 }]
 async fn inner_import(
-    file_paths: Vec<String>,
+    file_path: String,
     options: Option<kittycad::types::InputFormat>,
     args: Args,
 ) -> Result<ImportedGeometry, KclError> {
-    if file_paths.is_empty() {
+    if file_path.is_empty() {
         return Err(KclError::Semantic(KclErrorDetails {
-            message: "No file paths were provided.".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
-    }
-
-    // We need to ensure that the file paths are all related to a single mesh and not multiple meshes.
-    // In that if there is more than one file, its like a glTF file with binary data.
-    if file_paths.len() > 1 && options.is_none() {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: "Multiple file paths were provided, but no format options were provided.".to_string(),
+            message: "No file path was provided.".to_string(),
             source_ranges: vec![args.source_range],
         }));
     }
@@ -57,9 +48,9 @@ async fn inner_import(
     let format = if let Some(options) = options {
         options
     } else {
-        get_import_format_from_extension(file_paths[0].split('.').last().ok_or_else(|| {
+        get_import_format_from_extension(file_path.split('.').last().ok_or_else(|| {
             KclError::Semantic(KclErrorDetails {
-                message: format!("No file extension found for `{}`", file_paths[0]),
+                message: format!("No file extension found for `{}`", file_path),
                 source_ranges: vec![args.source_range],
             })
         })?)
@@ -73,34 +64,34 @@ async fn inner_import(
 
     // Get the file contents for each file path.
     let fsm = crate::fs::FileManager::new();
-    let mut import_files: Vec<kittycad::types::ImportFile> = Vec::new();
-    for file_path in &file_paths {
-        let file_contents = fsm.read(file_path, args.source_range).await.map_err(|e| {
-            KclError::Semantic(KclErrorDetails {
-                message: e.to_string(),
-                source_ranges: vec![args.source_range],
-            })
-        })?;
+    let file_contents = fsm.read(&file_path, args.source_range).await.map_err(|e| {
+        KclError::Semantic(KclErrorDetails {
+            message: e.to_string(),
+            source_ranges: vec![args.source_range],
+        })
+    })?;
 
-        import_files.push(kittycad::types::ImportFile {
-            path: file_path.to_string(),
-            data: file_contents,
-        });
-    }
+    let import_files = vec![kittycad::types::ImportFile {
+        path: file_path.to_string(),
+        data: file_contents,
+    }];
+
+    // TODO: In the case of a gltf importing a bin file we need to handle that! and figure out where the
+    // file is relative to our current file.
 
     let id = uuid::Uuid::new_v4();
     let resp = args
         .send_modeling_cmd(
             id,
             ModelingCmd::ImportFiles {
-                files: import_files,
+                files: import_files.clone(),
                 format,
             },
         )
         .await?;
 
     let kittycad::types::OkWebSocketResponseData::Modeling {
-        modeling_response: kittycad::types::OkModelingCmdResponse::ImportFiles { data: import_files },
+        modeling_response: kittycad::types::OkModelingCmdResponse::ImportFiles { data: imported_files },
     } = &resp
     else {
         return Err(KclError::Engine(KclErrorDetails {
@@ -110,7 +101,8 @@ async fn inner_import(
     };
 
     Ok(ImportedGeometry {
-        id: import_files.object_id,
+        id: imported_files.object_id,
+        value: import_files.iter().map(|f| f.path.to_string()).collect(),
         meta: vec![args.source_range.into()],
     })
 }
