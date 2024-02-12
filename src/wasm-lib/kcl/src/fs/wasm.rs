@@ -10,11 +10,11 @@ use crate::{
 
 #[wasm_bindgen(module = "/../../lang/std/fileSystemManager.ts")]
 extern "C" {
-    #[wasm_bindgen(js_name = readFile)]
-    fn read_file(path: String) -> js_sys::Promise;
+    #[wasm_bindgen(js_name = readFile, catch)]
+    fn read_file(path: String) -> Result<js_sys::Promise, js_sys::Error>;
 
-    #[wasm_bindgen(js_name = exists)]
-    fn exists(path: String) -> js_sys::Promise;
+    #[wasm_bindgen(js_name = exists, catch)]
+    fn exists(path: String) -> Result<js_sys::Promise, js_sys::Error>;
 }
 
 #[derive(Debug, Clone)]
@@ -49,7 +49,13 @@ impl FileSystem for FileManager {
                     })
                 })?
                 .to_string(),
-        );
+        )
+        .map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: e.to_string().into(),
+                source_ranges: vec![source_range],
+            })
+        })?;
 
         let value = wasm_bindgen_futures::JsFuture::from(promise).await.map_err(|e| {
             KclError::Engine(KclErrorDetails {
@@ -79,7 +85,13 @@ impl FileSystem for FileManager {
                     })
                 })?
                 .to_string(),
-        );
+        )
+        .map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: e.to_string().into(),
+                source_ranges: vec![source_range],
+            })
+        })?;
 
         let value = wasm_bindgen_futures::JsFuture::from(promise).await.map_err(|e| {
             KclError::Engine(KclErrorDetails {
