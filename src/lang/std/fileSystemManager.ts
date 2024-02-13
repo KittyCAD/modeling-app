@@ -1,8 +1,4 @@
-import {
-  readBinaryFile,
-  exists as tauriExists,
-  BaseDirectory,
-} from '@tauri-apps/api/fs'
+import { readBinaryFile, exists as tauriExists } from '@tauri-apps/api/fs'
 import { isTauri } from 'lib/isTauri'
 import { join } from '@tauri-apps/api/path'
 
