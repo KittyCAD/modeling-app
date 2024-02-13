@@ -192,7 +192,7 @@ export type ReactCameraProperties =
       quaternion: [number, number, number, number]
     }
 
-// This class singleton class is responsible for all of the under the hood setup for the client side scene.
+// This singleton class is responsible for all of the under the hood setup for the client side scene.
 // That is the cameras and switching between them, raycasters for click mouse events and their abstractions (onClick etc), setting up controls.
 // Anything that added the the scene for the user to interact with is probably in SceneEntities.ts
 class SceneInfra {
