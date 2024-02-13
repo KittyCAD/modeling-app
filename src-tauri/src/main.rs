@@ -8,6 +8,7 @@ use std::io::Read;
 use anyhow::Result;
 use oauth2::TokenResponse;
 use tauri::ipc::InvokeError;
+use tauri::Manager;
 use tauri_plugin_shell::ShellExt;
 const DEFAULT_HOST: &str = "https://api.kittycad.io";
 
@@ -86,7 +87,8 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
             .expect("Unable to write /tmp/kittycad_user_code file");
     } else {
         println!("{}", auth_uri.secret().to_string());
-        app.shell().open(auth_uri.secret(), None)
+        app.shell()
+            .open(auth_uri.secret(), None)
             .map_err(|e| InvokeError::from_anyhow(e.into()))?;
     }
 
@@ -149,10 +151,7 @@ fn main() {
         .setup(|_app| {
             #[cfg(debug_assertions)] // only include this code on debug builds
             {
-                let window = _app.get_window("main").unwrap();
-                // comment out the below if you don't devtools to open everytime.
-                // it's useful because otherwise devtools shuts everytime rust code changes.
-                window.open_devtools();
+                _app.get_webview("main").unwrap().open_devtools();
             }
             Ok(())
         })
