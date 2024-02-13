@@ -1,7 +1,4 @@
-import {
-  readFile,
-  exists as tauriExists,
-} from '@tauri-apps/plugin-fs'
+import { readFile, exists as tauriExists } from '@tauri-apps/plugin-fs'
 import { isTauri } from 'lib/isTauri'
 import { join } from '@tauri-apps/api/path'
 
