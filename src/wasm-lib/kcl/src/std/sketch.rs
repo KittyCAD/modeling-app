@@ -887,9 +887,7 @@ async fn start_sketch_on_face(
             .value
             .iter()
             .find_map(|extrude_surface| match extrude_surface {
-                ExtrudeSurface::ExtrudePlane(extrude_plane) if extrude_plane.name == s.to_string() => {
-                    Some(extrude_plane.face_id)
-                }
+                ExtrudeSurface::ExtrudePlane(extrude_plane) if extrude_plane.name == *s => Some(extrude_plane.face_id),
                 ExtrudeSurface::ExtrudePlane(_) => None,
             })
             .ok_or_else(|| {
