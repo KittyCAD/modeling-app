@@ -5149,7 +5149,7 @@ Start a sketch on a specific plane or face.
 
 
 ```
-startSketchOn(data: SketchData, tag: String) -> SketchSurface
+startSketchOn(data: SketchData, tag: SketchOnFaceTag) -> SketchSurface
 ```
 
 #### Arguments
@@ -5239,7 +5239,11 @@ startSketchOn(data: SketchData, tag: String) -> SketchSurface
 },
 }
 ```
-* `tag`: `String`
+* `tag`: `SketchOnFaceTag` - A tag for sketch on face.
+```
+"start" | "end" |
+string
+```
 
 #### Returns
 
