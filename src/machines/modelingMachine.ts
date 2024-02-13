@@ -397,7 +397,7 @@ export const modelingMachine = createMachine(
                 cond: 'is editing existing sketch',
               },
 
-              Cancel: "undo startSketchOn",
+              Cancel: 'undo startSketchOn',
             },
 
             states: {
@@ -447,7 +447,6 @@ export const modelingMachine = createMachine(
           },
 
           'Tangential arc to': {
-
             entry: 'set up draft arc',
 
             on: {
@@ -460,7 +459,7 @@ export const modelingMachine = createMachine(
             },
           },
 
-          "undo startSketchOn": {
+          'undo startSketchOn': {
             invoke: {
               src: 'AST-undo-startSketchOn',
               id: 'AST-undo-startSketchOn',
@@ -750,7 +749,7 @@ export const modelingMachine = createMachine(
       },
       'setup client side sketch segments': ({ sketchPathToNode }, { type }) => {
         if (Object.keys(clientSideScene.activeSegments).length > 0) {
-          clientSideScene.tearDownSketch().then(() => {
+          clientSideScene.tearDownSketch({ removeAxis: false }).then(() => {
             clientSideScene.setupSketch({
               sketchPathToNode: sketchPathToNode || [],
             })
