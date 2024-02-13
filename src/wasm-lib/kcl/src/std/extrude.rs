@@ -84,10 +84,7 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
     {
         data.faces
     } else {
-        return Err(KclError::Type(KclErrorDetails {
-            message: "Invalid solid3dInfo format".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
+        vec![]
     };
 
     // Create a hashmap for quick id lookup
