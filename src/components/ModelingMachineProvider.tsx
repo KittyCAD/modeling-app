@@ -197,7 +197,6 @@ export const ModelingMachineProvider = ({
           // remove body item at varDecIndex
           newAst.body = newAst.body.filter((_, i) => i !== varDecIndex)
           await kclManager.executeAstMock(newAst, { updates: 'code' })
-          console.log('AST undo startSketchOn done', kclManager.ast)
           setupSingleton.setCallbacks({
             onClick: () => {},
           })
