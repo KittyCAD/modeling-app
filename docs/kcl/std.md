@@ -197,11 +197,23 @@ angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup)
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -302,11 +314,23 @@ angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup)
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -417,11 +441,23 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -504,11 +540,23 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -615,11 +663,23 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -702,11 +762,23 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -813,11 +885,23 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -900,11 +984,23 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -1012,11 +1108,23 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -1099,11 +1207,23 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -1210,11 +1330,23 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -1297,11 +1429,23 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -1408,11 +1552,23 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -1495,11 +1651,23 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -1633,11 +1801,23 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -1720,11 +1900,23 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -1880,11 +2072,23 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -1967,11 +2171,23 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -2086,11 +2302,23 @@ close(sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -2173,11 +2401,23 @@ close(sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -2312,11 +2552,23 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -2339,10 +2591,8 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 	startCapId: uuid,
 	// The extrude surfaces.
 	value: [{
-	// The id of the face after extrusion
-	faceId: uuid,
 	// The face id for the extrude plane.
-	face_id: uuid,
+	faceId: uuid,
 	// The id of the geometry.
 	id: uuid,
 	// The name.
@@ -2356,11 +2606,23 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 	type: "extrudePlane",
 }],
 	// The x-axis of the extrude group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the extrude group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the extrude group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -2416,10 +2678,8 @@ getExtrudeWallTransform(surface_name: string, extrude_group: ExtrudeGroup) -> Ex
 	startCapId: uuid,
 	// The extrude surfaces.
 	value: [{
-	// The id of the face after extrusion
-	faceId: uuid,
 	// The face id for the extrude plane.
-	face_id: uuid,
+	faceId: uuid,
 	// The id of the geometry.
 	id: uuid,
 	// The name.
@@ -2433,11 +2693,23 @@ getExtrudeWallTransform(surface_name: string, extrude_group: ExtrudeGroup) -> Ex
 	type: "extrudePlane",
 }],
 	// The x-axis of the extrude group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the extrude group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the extrude group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -2543,11 +2815,23 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 } |
 {
 	type: "sketchGroups",
@@ -2630,11 +2914,23 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -2717,11 +3013,23 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -2925,11 +3233,23 @@ lastSegX(sketch_group: SketchGroup) -> number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -3028,11 +3348,23 @@ lastSegY(sketch_group: SketchGroup) -> number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -3204,11 +3536,23 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -3291,11 +3635,23 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -3400,11 +3756,23 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -3487,11 +3855,23 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -3719,11 +4099,23 @@ patternLinear(data: LinearPatternData, geometry: Geometry) -> Geometries
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 } |
 {
 	// The id of the extrusion end cap
@@ -3741,10 +4133,8 @@ patternLinear(data: LinearPatternData, geometry: Geometry) -> Geometries
 	type: "ExtrudeGroup",
 	// The extrude surfaces.
 	value: [{
-	// The id of the face after extrusion
-	faceId: uuid,
 	// The face id for the extrude plane.
-	face_id: uuid,
+	faceId: uuid,
 	// The id of the geometry.
 	id: uuid,
 	// The name.
@@ -3758,11 +4148,23 @@ patternLinear(data: LinearPatternData, geometry: Geometry) -> Geometries
 	type: "extrudePlane",
 }],
 	// The x-axis of the extrude group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the extrude group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the extrude group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -3910,11 +4312,23 @@ segAng(segment_name: string, sketch_group: SketchGroup) -> number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -4014,11 +4428,23 @@ segEndX(segment_name: string, sketch_group: SketchGroup) -> number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -4118,11 +4544,23 @@ segEndY(segment_name: string, sketch_group: SketchGroup) -> number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -4222,11 +4660,23 @@ segLen(segment_name: string, sketch_group: SketchGroup) -> number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -4325,11 +4775,23 @@ show(sketch: SketchGroup)
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -4534,11 +4996,23 @@ startProfileAt(data: LineData, sketch_surface: SketchSurface) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -4646,11 +5120,23 @@ startSketchAt(data: LineData) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -4719,10 +5205,8 @@ startSketchOn(data: SketchData, tag: String) -> SketchSurface
 	startCapId: uuid,
 	// The extrude surfaces.
 	value: [{
-	// The id of the face after extrusion
-	faceId: uuid,
 	// The face id for the extrude plane.
-	face_id: uuid,
+	faceId: uuid,
 	// The id of the geometry.
 	id: uuid,
 	// The name.
@@ -4736,11 +5220,23 @@ startSketchOn(data: SketchData, tag: String) -> SketchSurface
 	type: "extrudePlane",
 }],
 	// The x-axis of the extrude group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the extrude group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the extrude group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 * `tag`: `String`
@@ -4932,11 +5428,23 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -5019,11 +5527,23 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -5119,11 +5639,23 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchG
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 * `tag`: `String`
@@ -5207,11 +5739,23 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchG
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -5335,11 +5879,23 @@ number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -5422,11 +5978,23 @@ number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -5531,11 +6099,23 @@ number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -5618,11 +6198,23 @@ number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -5727,11 +6319,23 @@ number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -5814,11 +6418,23 @@ number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -5923,11 +6539,23 @@ number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -6010,11 +6638,23 @@ number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
