@@ -25,14 +25,14 @@ import {
   INTERSECTION_PLANE_LAYER,
   isQuaternionVertical,
   RAYCASTABLE_PLANE,
-  setupSingleton,
+  sceneInfra,
   SKETCH_GROUP_SEGMENTS,
   SKETCH_LAYER,
   X_AXIS,
   XZ_PLANE,
   Y_AXIS,
   YZ_PLANE,
-} from './setup'
+} from './sceneInfra'
 import {
   CallExpression,
   getTangentialArcToInfo,
@@ -85,7 +85,10 @@ export const TANGENTIAL_ARC_TO_SEGMENT_BODY = 'tangential-arc-to-segment-body'
 export const TANGENTIAL_ARC_TO__SEGMENT_DASH =
   'tangential-arc-to-segment-body-dashed'
 
-class ClientSideScene {
+// This singleton Class is responsible for all of the things the user sees and interacts with.
+// That mostly mean sketch elements.
+// Cameras, controls, raycasters, etc are handled by sceneInfra
+class SceneEntities {
   scene: Scene
   sceneProgramMemory: ProgramMemory = { root: {}, return: null }
   activeSegments: { [key: string]: Group } = {}
@@ -93,18 +96,18 @@ class ClientSideScene {
   axisGroup: Group | null = null
   currentSketchQuaternion: Quaternion | null = null
   constructor() {
-    this.scene = setupSingleton?.scene
-    setupSingleton?.setOnCamChange(this.onCamChange)
+    this.scene = sceneInfra?.scene
+    sceneInfra?.setOnCamChange(this.onCamChange)
   }
 
   onCamChange = () => {
-    const orthoFactor = orthoScale(setupSingleton.camera)
+    const orthoFactor = orthoScale(sceneInfra.camera)
 
     Object.values(this.activeSegments).forEach((segment) => {
       const factor =
-        setupSingleton.camera instanceof OrthographicCamera
+        sceneInfra.camera instanceof OrthographicCamera
           ? orthoFactor
-          : perspScale(setupSingleton.camera, segment)
+          : perspScale(sceneInfra.camera, segment)
       if (
         segment.userData.from &&
         segment.userData.to &&
@@ -135,9 +138,9 @@ class ClientSideScene {
     })
     if (this.axisGroup) {
       const factor =
-        setupSingleton.camera instanceof OrthographicCamera
+        sceneInfra.camera instanceof OrthographicCamera
           ? orthoFactor
-          : perspScale(setupSingleton.camera, this.axisGroup)
+          : perspScale(sceneInfra.camera, this.axisGroup)
       const x = this.axisGroup.getObjectByName(X_AXIS)
       x?.scale.set(1, factor, 1)
       const y = this.axisGroup.getObjectByName(Y_AXIS)
@@ -259,11 +262,11 @@ class ClientSideScene {
       sketchGroup.position[1],
       sketchGroup.position[2]
     )
-    const orthoFactor = orthoScale(setupSingleton.camera)
+    const orthoFactor = orthoScale(sceneInfra.camera)
     const factor =
-      setupSingleton.camera instanceof OrthographicCamera
+      sceneInfra.camera instanceof OrthographicCamera
         ? orthoFactor
-        : perspScale(setupSingleton.camera, dummy)
+        : perspScale(sceneInfra.camera, dummy)
     sketchGroup.value.forEach((segment, index) => {
       let segPathToNode = getNodePathFromSourceRange(
         draftSegment ? truncatedAst : kclManager.ast,
@@ -310,7 +313,7 @@ class ClientSideScene {
 
     this.scene.add(group)
     if (!draftSegment) {
-      setupSingleton.setCallbacks({
+      sceneInfra.setCallbacks({
         onDrag: (args) => {
           this.onDragSegment({
             ...args,
@@ -320,7 +323,7 @@ class ClientSideScene {
         onMove: () => {},
         onClick: (args) => {
           if (!args || !args.object) {
-            setupSingleton.modelingSend({
+            sceneInfra.modelingSend({
               type: 'Set selection',
               data: {
                 selectionType: 'singleCodeCursor',
@@ -331,7 +334,7 @@ class ClientSideScene {
           const { object } = args
           const event = getEventForSegmentSelection(object)
           if (!event) return
-          setupSingleton.modelingSend(event)
+          sceneInfra.modelingSend(event)
         },
         onMouseEnter: ({ object }) => {
           // TODO change the color of the segment to yellow?
@@ -351,15 +354,15 @@ class ClientSideScene {
               parent.userData.pathToNode,
               'CallExpression'
             ).node
-            setupSingleton.highlightCallback([node.start, node.end])
+            sceneInfra.highlightCallback([node.start, node.end])
             const yellow = 0xffff00
             colorSegment(object, yellow)
             return
           }
-          setupSingleton.highlightCallback([0, 0])
+          sceneInfra.highlightCallback([0, 0])
         },
         onMouseLeave: ({ object }) => {
-          setupSingleton.highlightCallback([0, 0])
+          sceneInfra.highlightCallback([0, 0])
           const parent = getParentGroup(object)
           const isSelected = parent?.userData?.isSelected
           colorSegment(object, isSelected ? 0x0000ff : 0xffffff)
@@ -372,7 +375,7 @@ class ClientSideScene {
         },
       })
     } else {
-      setupSingleton.setCallbacks({
+      sceneInfra.setCallbacks({
         onDrag: () => {},
         onClick: async (args) => {
           if (!args) return
@@ -427,7 +430,7 @@ class ClientSideScene {
         },
       })
     }
-    setupSingleton.controls.enableRotate = false
+    sceneInfra.controls.enableRotate = false
   }
   updateAstAndRejigSketch = async (
     sketchPathToNode: PathToNode,
@@ -530,7 +533,7 @@ class ClientSideScene {
       this.sceneProgramMemory = programMemory
       const sketchGroup = programMemory.root[variableDeclarationName]
         .value as Path[]
-      const orthoFactor = orthoScale(setupSingleton.camera)
+      const orthoFactor = orthoScale(sceneInfra.camera)
       sketchGroup.forEach((segment, index) => {
         const segPathToNode = getNodePathFromSourceRange(
           modifiedAst,
@@ -546,9 +549,9 @@ class ClientSideScene {
         // const prevSegment = sketchGroup.slice(index - 1)[0]
         const type = group?.userData?.type
         const factor =
-          setupSingleton.camera instanceof OrthographicCamera
+          sceneInfra.camera instanceof OrthographicCamera
             ? orthoFactor
-            : perspScale(setupSingleton.camera, group)
+            : perspScale(sceneInfra.camera, group)
         if (type === TANGENTIAL_ARC_TO_SEGMENT) {
           this.updateTangentialArcToSegment({
             prevSegment: sketchGroup[index - 1],
@@ -705,9 +708,9 @@ class ClientSideScene {
   }
   async animateAfterSketch() {
     if (isReducedMotion()) {
-      setupSingleton.usePerspectiveCamera()
+      sceneInfra.usePerspectiveCamera()
     } else {
-      await setupSingleton.animateToPerspective()
+      await sceneInfra.animateToPerspective()
     }
   }
   removeSketchGrid() {
@@ -740,7 +743,7 @@ class ClientSideScene {
         reject()
       }
     }
-    setupSingleton.controls.enableRotate = true
+    sceneInfra.controls.enableRotate = true
     this.activeSegments = {}
     // maybe should reset onMove etc handlers
     if (shouldResolve) resolve(true)
@@ -759,7 +762,7 @@ class ClientSideScene {
     })
   }
   setupDefaultPlaneHover() {
-    setupSingleton.setCallbacks({
+    sceneInfra.setCallbacks({
       onMouseEnter: ({ object }) => {
         if (object.parent.userData.type !== DEFAULT_PLANES) return
         const type: DefaultPlane = object.userData.type
@@ -784,7 +787,7 @@ class ClientSideScene {
           planeString = posNorm ? 'XZ' : '-XZ'
           normal = posNorm ? [0, 1, 0] : [0, -1, 0]
         }
-        setupSingleton.modelingSend({
+        sceneInfra.modelingSend({
           type: 'Select default plane',
           data: {
             plane: planeString,
@@ -798,7 +801,7 @@ class ClientSideScene {
 
 export type DefaultPlaneStr = 'XY' | 'XZ' | 'YZ' | '-XY' | '-XZ' | '-YZ'
 
-export const clientSideScene = new ClientSideScene()
+export const sceneEntitiesManager = new SceneEntities()
 
 // calculations/pure-functions/easy to test so no excuse not to
 
