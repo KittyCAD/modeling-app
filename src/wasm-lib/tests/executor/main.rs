@@ -23,6 +23,8 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
 
     // Create the client.
     let client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
+    // uncomment to use a local server
+    // client.set_base_url("http://your-local-server:8080/");
 
     let ws = client
         .modeling()
@@ -64,6 +66,29 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
     // Read the output file.
     let actual = image::io::Reader::open(output_file).unwrap().decode().unwrap();
     Ok(actual)
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_sketch_on_face() {
+    let code = r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([11.19, 28.35], %)
+  |> line({to: [28.67, -13.25], tag: "here"}, %)
+  |> line([-4.12, -22.81], %)
+  |> line([-33.24, 14.55], %)
+  |> close(%)
+  |> extrude(5, %)
+
+const part002 = startSketchOn(part001, "here")
+  |> startProfileAt([0, 0], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %)
+  |> close(%)
+  |> extrude(5, %)
+"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
