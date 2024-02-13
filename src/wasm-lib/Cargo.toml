@@ -58,11 +58,11 @@ members = [
 ]
 
 [workspace.dependencies]
-kittycad = { version = "0.2.45", default-features = false, features = ["js"] }
-kittycad-execution-plan = { git = "https://github.com/KittyCAD/modeling-api", branch = "serena/mod-pow" }
-kittycad-execution-plan-traits = "0.1.6"
-kittycad-modeling-session = { git = "https://github.com/KittyCAD/modeling-api", branch = "serena/mod-pow" }
-kittycad-execution-plan-macros = { git = "https://github.com/KittyCAD/modeling-api", branch = "serena/mod-pow" }
+kittycad = { version = "0.2.50", default-features = false, features = ["js"] }
+kittycad-execution-plan = { git = "https://github.com/KittyCAD/modeling-api", branch = "main" }
+kittycad-execution-plan-traits = "0.1.10"
+kittycad-modeling-session = { git = "https://github.com/KittyCAD/modeling-api", branch = "main" }
+kittycad-execution-plan-macros = { git = "https://github.com/KittyCAD/modeling-api", branch = "main" }
 
 [[test]]
 name = "executor"
@@ -73,6 +73,6 @@ name = "modify"
 path = "tests/modify/main.rs"
 
 # Example: how to point modeling-api at a different repo (e.g. a branch or a local clone)
-#[patch."https://github.com/KittyCAD/modeling-api"]
-#kittycad-execution-plan = { path = "../../../modeling-api/execution-plan" }
-#kittycad-modeling-session = { path = "../../../modeling-api/modeling-session" }
+# [patch."https://github.com/KittyCAD/modeling-api"]
+# kittycad-execution-plan = { path = "../../../modeling-api/execution-plan" }
+# kittycad-modeling-session = { path = "../../../modeling-api/modeling-session" }
