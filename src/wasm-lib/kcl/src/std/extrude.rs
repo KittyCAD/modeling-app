@@ -123,7 +123,10 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
     }
 
     Ok(Box::new(ExtrudeGroup {
-        id,
+        // Ok so you would think that the id would be the id of the extrude group,
+        // that we passed in to the function, but it's actually the id of the
+        // sketch group.
+        id: sketch_group.id,
         value: new_value,
         height: length,
         position: sketch_group.position,

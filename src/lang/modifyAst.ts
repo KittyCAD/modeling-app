@@ -30,7 +30,7 @@ import {
   createFirstArg,
 } from './std/sketch'
 import { isLiteralArrayOrStatic } from './std/sketchcombos'
-import { DefaultPlaneStr } from 'clientSideScene/clientSideScene'
+import { DefaultPlaneStr } from 'clientSideScene/sceneEntities'
 import { roundOff } from 'lib/utils'
 
 export function startSketchOnDefault(

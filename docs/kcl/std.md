@@ -41,6 +41,7 @@
 	* [`log2`](#log2)
 	* [`max`](#max)
 	* [`min`](#min)
+	* [`patternCircular`](#patternCircular)
 	* [`patternLinear`](#patternLinear)
 	* [`pi`](#pi)
 	* [`pow`](#pow)
@@ -3998,6 +3999,194 @@ min(args: [number]) -> number
 
 
 
+### patternCircular
+
+A Circular pattern.
+
+
+
+```
+patternCircular(data: CircularPatternData, geometry: Geometry) -> Geometries
+```
+
+#### Arguments
+
+* `data`: `CircularPatternData` - Data for a circular pattern.
+```
+{
+	// The arc angle (in degrees) to place the repetitions. Must be greater than 0.
+	arcDegrees: number,
+	// The axis around which to make the pattern. This is a 3D vector.
+	axis: [number, number, number],
+	// The center about which to make th pattern. This is a 3D vector.
+	center: [number, number, number],
+	// The number of repetitions. Must be greater than 0. This excludes the original entity. For example, if `repetitions` is 1, the original entity will be copied once.
+	repetitions: number,
+	// Whether or not to rotate the duplicates as they are copied.
+	rotateDuplicates: string,
+}
+```
+* `geometry`: `Geometry` - A geometry.
+```
+{
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number, number, number],
+	// The rotation of the sketch group base plane.
+	rotation: [number, number, number, number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+},
+	type: "SketchGroup",
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "Horizontal",
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "AngledLineTo",
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "Base",
+}],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+} |
+{
+	// The id of the extrusion end cap
+	endCapId: uuid,
+	// The height of the extrude group.
+	height: number,
+	// The id of the extrude group.
+	id: uuid,
+	// The position of the extrude group.
+	position: [number, number, number],
+	// The rotation of the extrude group.
+	rotation: [number, number, number, number],
+	// The id of the extrusion start cap
+	startCapId: uuid,
+	type: "ExtrudeGroup",
+	// The extrude surfaces.
+	value: [{
+	// The face id for the extrude plane.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The name.
+	name: string,
+	// The position.
+	position: [number, number, number],
+	// The rotation.
+	rotation: [number, number, number, number],
+	// The source range.
+	sourceRange: [number, number],
+	type: "extrudePlane",
+}],
+	// The x-axis of the extrude group base plane in the 3D space
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The y-axis of the extrude group base plane in the 3D space
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The z-axis of the extrude group base plane in the 3D space
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+}
+```
+
+#### Returns
+
+* `Geometries` - A set of geometry.
+```
+{
+	type: "SketchGroups",
+} |
+{
+	type: "ExtrudeGroups",
+}
+```
+
+
+
 ### patternLinear
 
 A linear pattern.
@@ -5149,7 +5338,7 @@ Start a sketch on a specific plane or face.
 
 
 ```
-startSketchOn(data: SketchData, tag: String) -> SketchSurface
+startSketchOn(data: SketchData, tag: SketchOnFaceTag) -> SketchSurface
 ```
 
 #### Arguments
@@ -5239,7 +5428,11 @@ startSketchOn(data: SketchData, tag: String) -> SketchSurface
 },
 }
 ```
-* `tag`: `String`
+* `tag`: `SketchOnFaceTag` - A tag for sketch on face.
+```
+"start" | "end" |
+string
+```
 
 #### Returns
 

@@ -15,7 +15,7 @@ import { Models } from '@kittycad/lib'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useKclContext } from 'lang/KclSingleton'
-import { ClientSideScene } from 'clientSideScene/setup'
+import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
 
 export const Stream = ({ className = '' }: { className?: string }) => {
   const [isLoading, setIsLoading] = useState(true)

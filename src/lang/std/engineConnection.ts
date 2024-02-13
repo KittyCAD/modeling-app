@@ -5,7 +5,7 @@ import { exportSave } from 'lib/exportSave'
 import { v4 as uuidv4 } from 'uuid'
 import * as Sentry from '@sentry/react'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
-import { setupSingleton } from 'clientSideScene/setup'
+import { sceneInfra } from 'clientSideScene/sceneInfra'
 
 let lastMessage = ''
 
@@ -1012,7 +1012,7 @@ export class EngineCommandManager {
             gizmo_mode: true,
           },
         })
-        setupSingleton.onStreamStart()
+        sceneInfra.onStreamStart()
 
         executeCode(undefined, true)
       },
