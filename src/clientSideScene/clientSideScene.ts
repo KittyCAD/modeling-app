@@ -241,12 +241,13 @@ class ClientSideScene {
       engineCommandManager,
       programMemoryOverride,
     })
-    this.sceneProgramMemory = programMemory
     const sketchGroup = sketchGroupFromPathToNode({
       pathToNode: sketchPathToNode,
       ast: kclManager.ast,
       programMemory,
     })
+    if (!Array.isArray(sketchGroup?.value)) return
+    this.sceneProgramMemory = programMemory
     const group = new Group()
     group.userData = {
       type: SKETCH_GROUP_SEGMENTS,
@@ -753,6 +754,7 @@ class ClientSideScene {
     // "setupSketch" correctly capture a promise when it's done
     // so we're effectively waiting for to be finished setting up the scene just to tear it down
     // TODO is to fix that
+    console.trace('tear down')
     return new Promise((resolve, reject) => {
       this._tearDownSketch(0, resolve, reject, { removeAxis })
     })

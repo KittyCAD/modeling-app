@@ -36,6 +36,7 @@ import { modelingMachineConfig } from 'lib/commandBarConfigs/modelingCommandConf
 import { setupSingleton } from 'clientSideScene/setup'
 import { getSketchQuaternion } from 'clientSideScene/clientSideScene'
 import { startSketchOnDefault } from 'lang/modifyAst'
+import { Program } from 'lang/wasm'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -189,6 +190,18 @@ export const ModelingMachineProvider = ({
         },
       },
       services: {
+        'AST-undo-startSketchOn': async ({ sketchPathToNode }) => {
+          if (!sketchPathToNode) return
+          const newAst: Program = JSON.parse(JSON.stringify(kclManager.ast))
+          const varDecIndex = sketchPathToNode[1][0]
+          // remove body item at varDecIndex
+          newAst.body = newAst.body.filter((_, i) => i !== varDecIndex)
+          await kclManager.executeAstMock(newAst, { updates: 'code' })
+          console.log('AST undo startSketchOn done', kclManager.ast)
+          setupSingleton.setCallbacks({
+            onClick: () => {},
+          })
+        },
         'animate-to-face': async (_, { data: { plane, normal } }) => {
           const { modifiedAst, pathToNode } = startSketchOnDefault(
             kclManager.ast,
