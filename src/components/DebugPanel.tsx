@@ -1,7 +1,7 @@
 import { CollapsiblePanel, CollapsiblePanelProps } from './CollapsiblePanel'
 import { AstExplorer } from './AstExplorer'
 import { EngineCommands } from './EngineCommands'
-import { CamDebugSettings } from 'clientSideScene/setup'
+import { CamDebugSettings } from 'clientSideScene/ClientSideSceneComp'
 
 export const DebugPanel = ({ className, ...props }: CollapsiblePanelProps) => {
   return (

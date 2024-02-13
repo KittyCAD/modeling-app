@@ -44,11 +44,11 @@ import { Models } from '@kittycad/lib/dist/types/src'
 import { ModelingCommandSchema } from 'lib/commandBarConfigs/modelingCommandConfig'
 import {
   DefaultPlaneStr,
-  clientSideScene,
+  sceneEntitiesManager,
   quaternionFromSketchGroup,
   sketchGroupFromPathToNode,
-} from 'clientSideScene/clientSideScene'
-import { setupSingleton } from 'clientSideScene/setup'
+} from 'clientSideScene/sceneEntities'
+import { sceneInfra } from 'clientSideScene/sceneInfra'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -605,7 +605,7 @@ export const modelingMachine = createMachine(
         if (!sketchPathToNode) return {}
         return getSketchMetadataFromPathToNode(sketchPathToNode)
       }),
-      'hide default planes': () => setupSingleton.removeDefaultPlanes(),
+      'hide default planes': () => sceneInfra.removeDefaultPlanes(),
       'reset sketch metadata': assign({
         sketchPathToNode: null,
         sketchEnginePathId: '',
@@ -632,7 +632,7 @@ export const modelingMachine = createMachine(
           kclManager.ast,
           kclManager.programMemory
         )
-        clientSideScene.updateAstAndRejigSketch(
+        sceneEntitiesManager.updateAstAndRejigSketch(
           sketchPathToNode || [],
           modifiedAst
         )
@@ -644,7 +644,7 @@ export const modelingMachine = createMachine(
           kclManager.ast,
           kclManager.programMemory
         )
-        clientSideScene.updateAstAndRejigSketch(
+        sceneEntitiesManager.updateAstAndRejigSketch(
           sketchPathToNode || [],
           modifiedAst
         )
@@ -657,7 +657,7 @@ export const modelingMachine = createMachine(
           selectionRanges,
           constraint: 'setVertDistance',
         })
-        clientSideScene.updateAstAndRejigSketch(
+        sceneEntitiesManager.updateAstAndRejigSketch(
           sketchPathToNode || [],
           modifiedAst
         )
@@ -667,7 +667,7 @@ export const modelingMachine = createMachine(
           selectionRanges,
           constraint: 'setHorzDistance',
         })
-        clientSideScene.updateAstAndRejigSketch(
+        sceneEntitiesManager.updateAstAndRejigSketch(
           sketchPathToNode || [],
           modifiedAst
         )
@@ -677,7 +677,7 @@ export const modelingMachine = createMachine(
           selectionRanges,
           constraint: 'snapToXAxis',
         })
-        clientSideScene.updateAstAndRejigSketch(
+        sceneEntitiesManager.updateAstAndRejigSketch(
           sketchPathToNode || [],
           modifiedAst
         )
@@ -687,7 +687,7 @@ export const modelingMachine = createMachine(
           selectionRanges,
           constraint: 'snapToYAxis',
         })
-        clientSideScene.updateAstAndRejigSketch(
+        sceneEntitiesManager.updateAstAndRejigSketch(
           sketchPathToNode || [],
           modifiedAst
         )
@@ -696,7 +696,7 @@ export const modelingMachine = createMachine(
         const { modifiedAst } = applyConstraintEqualLength({
           selectionRanges,
         })
-        clientSideScene.updateAstAndRejigSketch(
+        sceneEntitiesManager.updateAstAndRejigSketch(
           sketchPathToNode || [],
           modifiedAst
         )
@@ -705,7 +705,7 @@ export const modelingMachine = createMachine(
         const { modifiedAst } = applyConstraintEqualAngle({
           selectionRanges,
         })
-        clientSideScene.updateAstAndRejigSketch(
+        sceneEntitiesManager.updateAstAndRejigSketch(
           sketchPathToNode || [],
           modifiedAst
         )
@@ -717,7 +717,7 @@ export const modelingMachine = createMachine(
         const { modifiedAst } = applyRemoveConstrainingValues({
           selectionRanges,
         })
-        clientSideScene.updateAstAndRejigSketch(
+        sceneEntitiesManager.updateAstAndRejigSketch(
           sketchPathToNode || [],
           modifiedAst
         )
@@ -742,59 +742,61 @@ export const modelingMachine = createMachine(
       },
       'conditionally equip line tool': (_, { type }) => {
         if (type === 'done.invoke.animate-to-face') {
-          setupSingleton.modelingSend('Equip Line tool')
+          sceneInfra.modelingSend('Equip Line tool')
         }
       },
       'setup client side sketch segments': ({ sketchPathToNode }, { type }) => {
-        if (Object.keys(clientSideScene.activeSegments).length > 0) {
-          clientSideScene.tearDownSketch({ removeAxis: false }).then(() => {
-            clientSideScene.setupSketch({
-              sketchPathToNode: sketchPathToNode || [],
+        if (Object.keys(sceneEntitiesManager.activeSegments).length > 0) {
+          sceneEntitiesManager
+            .tearDownSketch({ removeAxis: false })
+            .then(() => {
+              sceneEntitiesManager.setupSketch({
+                sketchPathToNode: sketchPathToNode || [],
+              })
             })
-          })
         } else {
-          clientSideScene.setupSketch({
+          sceneEntitiesManager.setupSketch({
             sketchPathToNode: sketchPathToNode || [],
           })
         }
       },
       'animate after sketch': () => {
-        clientSideScene.animateAfterSketch()
+        sceneEntitiesManager.animateAfterSketch()
       },
       'tear down client sketch': () => {
-        if (clientSideScene.activeSegments) {
-          clientSideScene.tearDownSketch({ removeAxis: false })
+        if (sceneEntitiesManager.activeSegments) {
+          sceneEntitiesManager.tearDownSketch({ removeAxis: false })
         }
       },
-      'remove sketch grid': () => clientSideScene.removeSketchGrid(),
+      'remove sketch grid': () => sceneEntitiesManager.removeSketchGrid(),
       'set up draft line': ({ sketchPathToNode }) => {
-        clientSideScene.setUpDraftLine(sketchPathToNode || [])
+        sceneEntitiesManager.setUpDraftLine(sketchPathToNode || [])
       },
       'set up draft arc': ({ sketchPathToNode }) => {
-        clientSideScene.setUpDraftArc(sketchPathToNode || [])
+        sceneEntitiesManager.setUpDraftArc(sketchPathToNode || [])
       },
       'set up draft line without teardown': ({ sketchPathToNode }) =>
-        clientSideScene.setupSketch({
+        sceneEntitiesManager.setupSketch({
           sketchPathToNode: sketchPathToNode || [],
           draftSegment: 'line',
         }),
       'show default planes': () => {
-        setupSingleton.showDefaultPlanes()
-        clientSideScene.setupDefaultPlaneHover()
+        sceneInfra.showDefaultPlanes()
+        sceneEntitiesManager.setupDefaultPlaneHover()
       },
       'setup noPoints onClick listener': ({ sketchPathToNode }) => {
-        clientSideScene.createIntersectionPlane()
+        sceneEntitiesManager.createIntersectionPlane()
         const sketchGroup = sketchGroupFromPathToNode({
           pathToNode: sketchPathToNode || [],
           ast: kclManager.ast,
           programMemory: kclManager.programMemory,
         })
         const quaternion = quaternionFromSketchGroup(sketchGroup)
-        clientSideScene.intersectionPlane &&
-          clientSideScene.intersectionPlane.setRotationFromQuaternion(
+        sceneEntitiesManager.intersectionPlane &&
+          sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
             quaternion
           )
-        setupSingleton.setCallbacks({
+        sceneInfra.setCallbacks({
           onClick: async (args) => {
             if (!args) return
             const { intersection2d } = args
@@ -805,13 +807,13 @@ export const modelingMachine = createMachine(
               [intersection2d.x, intersection2d.y]
             )
             await kclManager.updateAst(modifiedAst, false)
-            clientSideScene.removeIntersectionPlane()
-            setupSingleton.modelingSend('Add start point')
+            sceneEntitiesManager.removeIntersectionPlane()
+            sceneInfra.modelingSend('Add start point')
           },
         })
       },
       'add axis n grid': ({ sketchPathToNode }) =>
-        clientSideScene.createSketchAxis(sketchPathToNode || []),
+        sceneEntitiesManager.createSketchAxis(sketchPathToNode || []),
     },
     // end actions
   }

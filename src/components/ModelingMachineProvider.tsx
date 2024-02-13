@@ -33,8 +33,8 @@ import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
 import useStateMachineCommands from 'hooks/useStateMachineCommands'
 import { modelingMachineConfig } from 'lib/commandBarConfigs/modelingCommandConfig'
-import { setupSingleton } from 'clientSideScene/setup'
-import { getSketchQuaternion } from 'clientSideScene/clientSideScene'
+import { sceneInfra } from 'clientSideScene/sceneInfra'
+import { getSketchQuaternion } from 'clientSideScene/sceneEntities'
 import { startSketchOnDefault } from 'lang/modifyAst'
 import { Program } from 'lang/wasm'
 
@@ -197,7 +197,7 @@ export const ModelingMachineProvider = ({
           // remove body item at varDecIndex
           newAst.body = newAst.body.filter((_, i) => i !== varDecIndex)
           await kclManager.executeAstMock(newAst, { updates: 'code' })
-          setupSingleton.setCallbacks({
+          sceneInfra.setCallbacks({
             onClick: () => {},
           })
         },
@@ -208,7 +208,7 @@ export const ModelingMachineProvider = ({
           )
           await kclManager.updateAst(modifiedAst, false)
           const quaternion = getSketchQuaternion(pathToNode, normal)
-          await setupSingleton.tweenCameraToQuaternion(quaternion)
+          await sceneInfra.tweenCameraToQuaternion(quaternion)
           return {
             sketchPathToNode: pathToNode,
             sketchNormalBackUp: normal,
@@ -222,7 +222,7 @@ export const ModelingMachineProvider = ({
             sketchPathToNode || [],
             sketchNormalBackUp
           )
-          await setupSingleton.tweenCameraToQuaternion(quaternion)
+          await sceneInfra.tweenCameraToQuaternion(quaternion)
         },
         'Get horizontal info': async ({
           selectionRanges,
