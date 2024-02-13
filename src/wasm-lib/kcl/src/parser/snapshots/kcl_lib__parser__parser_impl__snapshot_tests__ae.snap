@@ -49,11 +49,12 @@ expression: actual
                   "start": 32,
                   "end": 43,
                   "argument": {
-                    "type": "Identifier",
-                    "type": "Identifier",
+                    "type": "Literal",
+                    "type": "Literal",
                     "start": 39,
                     "end": 43,
-                    "name": "true"
+                    "value": true,
+                    "raw": "true"
                   }
                 }
               ],
@@ -85,11 +86,12 @@ expression: actual
         },
         "arguments": [
           {
-            "type": "Identifier",
-            "type": "Identifier",
+            "type": "Literal",
+            "type": "Literal",
             "start": 60,
             "end": 65,
-            "name": "false"
+            "value": false,
+            "raw": "false"
           }
         ],
         "optional": false

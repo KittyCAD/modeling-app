@@ -64,6 +64,7 @@ impl EpBinding {
                 },
                 // It's never valid to index by a fractional number.
                 LiteralValue::Fractional(num) => Err(CompileError::InvalidIndex(num.to_string())),
+                LiteralValue::Bool(b) => Err(CompileError::InvalidIndex(b.to_string())),
             },
         }
     }

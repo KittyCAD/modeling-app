@@ -937,29 +937,13 @@ dependencies = [
 
 [[package]]
 name = "derive-docs"
-version = "0.1.5"
+version = "0.1.6"
 dependencies = [
  "convert_case",
  "expectorate",
  "once_cell",
  "openapitor",
  "pretty_assertions",
- "proc-macro2",
- "quote",
- "regex",
- "serde",
- "serde_tokenstream",
- "syn 2.0.48",
-]
-
-[[package]]
-name = "derive-docs"
-version = "0.1.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8511b1486a7ec6820e889c6a2b57b8b699ab5e5eab507ffd1daa0e07871d2305"
-dependencies = [
- "convert_case",
- "once_cell",
  "proc-macro2",
  "quote",
  "regex",
@@ -1432,6 +1416,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "gltf-derive"
+version = "1.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "438ffe1a5540d75403feaf23636b164e816e93f6f03131674722b3886ce32a57"
+dependencies = [
+ "inflections",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.48",
+]
+
+[[package]]
+name = "gltf-json"
+version = "1.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "655951ba557f2bc69ea4b0799446bae281fa78efae6319968bdd2c3e9a06d8e1"
+dependencies = [
+ "gltf-derive",
+ "serde",
+ "serde_derive",
+ "serde_json",
+]
+
+[[package]]
 name = "grackle"
 version = "0.1.0"
 dependencies = [
@@ -1880,9 +1888,10 @@ dependencies = [
  "criterion",
  "dashmap",
  "databake",
- "derive-docs 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive-docs",
  "expectorate",
  "futures",
+ "gltf-json",
  "insta",
  "itertools 0.12.1",
  "js-sys",
@@ -5325,9 +5334,9 @@ checksum = "dff9641d1cd4be8d1a070daf9e3773c5f67e78b4d9d42263020c057706765c04"
 
 [[package]]
 name = "winnow"
-version = "0.5.39"
+version = "0.5.40"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5389a154b01683d28c77f8f68f49dea75f0a4da32557a58f68ee51ebba472d29"
+checksum = "f593a95398737aeed53e489c785df13f3618e41dbcd6718c6addbf1395aa6876"
 dependencies = [
  "memchr",
 ]
