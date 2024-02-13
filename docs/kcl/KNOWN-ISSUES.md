@@ -3,7 +3,7 @@
 The following are bugs that are not in modeling-app or kcl itself. These bugs
 once fixed in engine will just start working here with no language changes.
 
-- **Sketch on Face**: If your sketch is outside the bounds of the face (on which you
+- **Sketch on Face**: If your sketch is outside the edges of the face (on which you
     are sketching) you will get multiple models returned instead of one single
     model for that sketch and its underlying 3D object.
 
