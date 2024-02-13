@@ -123,7 +123,7 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
     }
 
     Ok(Box::new(ExtrudeGroup {
-        id,
+        id: sketch_group.id,
         value: new_value,
         height: length,
         position: sketch_group.position,

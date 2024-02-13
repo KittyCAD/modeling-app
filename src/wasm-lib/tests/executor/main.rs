@@ -727,7 +727,7 @@ async fn serial_test_patterns_circular_basic_2d() {
 }
 
 const part = circle([0,0], 2)
-    |> patternCircular({axis: [0,0,1], center: [2, 2, 2], repetitions: 12, arc_degrees: 210, rotate_duplicates: true}, %)
+    |> patternCircular({axis: [0,0,1], center: [20, 20, 20], repetitions: 12, arcDegrees: 210, rotateDuplicates: true}, %)
 "#;
 
     let result = execute_and_snapshot(code).await.unwrap();
@@ -755,11 +755,41 @@ const part = startSketchOn('XY')
     |> line([0, -1], %)
     |> close(%)
     |> extrude(1, %)
-    |> patternLinear({axis: [1, 0,1], repetitions: 3, distance: 6}, %)
+    |> patternCircular({axis: [0,1,0], center: [-20, -20, -20], repetitions: 40, arcDegrees: 360, rotateDuplicates: false}, %)
 "#;
 
     let result = execute_and_snapshot(code).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/patterns_circular_basic_3d.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_patterns_circular_3d_tilted_axis() {
+    let code = r#"fn circle = (pos, radius) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt([pos[0] + radius, pos[1]], %)
+    |> arc({
+       angle_end: 360,
+       angle_start: 0,
+       radius: radius
+     }, %)
+    |> close(%)
+  return sg
+}
+
+const part = startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line([0,1], %)
+    |> line([1, 0], %)
+    |> line([0, -1], %)
+    |> close(%)
+    |> extrude(1, %)
+    |> patternCircular({axis: [1,1,-1], center: [10, 0, 10], repetitions: 10, arcDegrees: 360, rotateDuplicates: true}, %)
+"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/patterns_circular_3d_tilted_axis.png", &result, 0.999);
+}
+
 async fn serial_test_import_file_doesnt_exist() {
     let code = r#"const model = import("thing.obj")"#;
 
