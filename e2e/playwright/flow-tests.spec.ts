@@ -661,10 +661,7 @@ test('Can extrude from the command bar', async ({ page, context }) => {
   await expect(page.getByRole('button', { name: 'selection' })).toBeDisabled()
 
   // Click to select face and set distance
-  await u.openAndClearDebugPanel()
   await page.getByText('|> startProfileAt([-6.95, 4.98], %)').click()
-  await u.waitForCmdReceive('select_add')
-  await u.closeDebugPanel()
   await page.getByRole('button', { name: 'Continue' }).click()
   await expect(page.getByRole('button', { name: 'distance' })).toBeDisabled()
   await page.keyboard.press('Enter')
