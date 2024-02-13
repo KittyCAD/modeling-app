@@ -46,17 +46,26 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
     )
     .await?;
 
-    // TODO maybe this should loop through until it gets a edge_id
-    let first_segment = &sketch_group.value[0];
-    let edge_id = match first_segment {
-        Path::ToPoint { base } => base.geo_meta.id,
-        // Handle other variants if necessary
-        _ => {
-            return Err(KclError::Type(KclErrorDetails {
-                message: "Expected a Path::ToPoint variant".to_string(),
-                source_ranges: vec![args.source_range],
-            }))
+    if sketch_group.value.is_empty() {
+        return Err(KclError::Type(KclErrorDetails {
+            message: "Expected a non-empty sketch group".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    }
+
+    let mut edge_id = None;
+    for segment in sketch_group.value.iter() {
+        if let Path::ToPoint { base } = segment {
+            edge_id = Some(base.geo_meta.id);
+            break;
         }
+    }
+
+    let Some(edge_id) = edge_id else {
+        return Err(KclError::Type(KclErrorDetails {
+            message: "Expected a Path::ToPoint variant".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
     };
 
     let solid3d_info = args
