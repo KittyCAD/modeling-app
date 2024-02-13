@@ -37,6 +37,7 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
     let tokens = kcl_lib::token::lexer(code);
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
+    println!("{:#?}", program);
     let mut mem: kcl_lib::executor::ProgramMemory = Default::default();
     let engine = kcl_lib::engine::EngineConnection::new(ws).await?;
     let ctx = kcl_lib::executor::ExecutorContext {
@@ -691,4 +692,54 @@ const rectangle = startSketchOn('XY')
 
     let result = execute_and_snapshot(code).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/patterns_linear_basic_holes.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_patterns_circular_basic_2d() {
+    let code = r#"fn circle = (pos, radius) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt([pos[0] + radius, pos[1]], %)
+    |> arc({
+       angle_end: 360,
+       angle_start: 0,
+       radius: radius
+     }, %)
+    |> close(%)
+  return sg
+}
+
+const part = circle([0,0], 2)
+    |> patternCircular({axis: [0,0,1], center: [2, 2, 2], repetitions: 12, arc_degrees: 210, rotate_duplicates: true}, %)
+"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/patterns_circular_basic_2d.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_patterns_circular_basic_3d() {
+    let code = r#"fn circle = (pos, radius) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt([pos[0] + radius, pos[1]], %)
+    |> arc({
+       angle_end: 360,
+       angle_start: 0,
+       radius: radius
+     }, %)
+    |> close(%)
+  return sg
+}
+
+const part = startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line([0,1], %)
+    |> line([1, 0], %)
+    |> line([0, -1], %)
+    |> close(%)
+    |> extrude(1, %)
+    |> patternLinear({axis: [1, 0,1], repetitions: 3, distance: 6}, %)
+"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/patterns_circular_basic_3d.png", &result, 0.999);
 }
