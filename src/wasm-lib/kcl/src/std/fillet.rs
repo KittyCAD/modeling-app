@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, ExtrudeSurface, MemoryItem},
+    executor::{ExtrudeGroup, MemoryItem},
     std::Args,
 };
 
@@ -41,24 +41,22 @@ async fn inner_fillet(
     args: Args,
 ) -> Result<Box<ExtrudeGroup>, KclError> {
     for tag in data.tags {
-        let extrude_plane = extrude_group
-            .value
+        let tagged_path = extrude_group
+            .sketch_group_values
             .iter()
-            .find_map(|extrude_surface| match extrude_surface {
-                ExtrudeSurface::ExtrudePlane(extrude_plane) if extrude_plane.name == tag => Some(extrude_plane),
-                ExtrudeSurface::ExtrudePlane(_) => None,
-            })
+            .find(|p| p.get_name() == tag)
             .ok_or_else(|| {
                 KclError::Type(KclErrorDetails {
-                    message: format!("Expected a face with the tag `{}`", tag),
+                    message: format!("No edge found with tag: `{}`", tag),
                     source_ranges: vec![args.source_range],
                 })
-            })?;
+            })?
+            .get_base();
 
         args.send_modeling_cmd(
             uuid::Uuid::new_v4(),
             ModelingCmd::Solid3DFilletEdge {
-                edge_id: extrude_plane.geo_meta.id,
+                edge_id: tagged_path.geo_meta.id,
                 object_id: extrude_group.id,
                 radius: data.radius,
             },

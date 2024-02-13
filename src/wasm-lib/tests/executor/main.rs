@@ -212,7 +212,7 @@ async fn serial_test_basic_fillet_cube() {
     |> line({to: [0, 10], tag: "thing2"}, %)
     |> close(%)
     |> extrude(10, %)
-    |> fillet({radius: 2, tags: ["thing", "thing2"]}, %)
+    |> fillet({radius: 0.5, tags: ["thing", "thing2"]}, %)
 "#;
 
     let result = execute_and_snapshot(code).await.unwrap();
