@@ -241,12 +241,13 @@ class ClientSideScene {
       engineCommandManager,
       programMemoryOverride,
     })
-    this.sceneProgramMemory = programMemory
     const sketchGroup = sketchGroupFromPathToNode({
       pathToNode: sketchPathToNode,
       ast: kclManager.ast,
       programMemory,
     })
+    if (!Array.isArray(sketchGroup?.value)) return
+    this.sceneProgramMemory = programMemory
     const group = new Group()
     group.userData = {
       type: SKETCH_GROUP_SEGMENTS,
