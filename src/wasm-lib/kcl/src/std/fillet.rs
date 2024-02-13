@@ -40,6 +40,17 @@ async fn inner_fillet(
     extrude_group: Box<ExtrudeGroup>,
     args: Args,
 ) -> Result<Box<ExtrudeGroup>, KclError> {
+    // Check if tags contains any duplicate values.
+    let mut tags = data.tags.clone();
+    tags.sort();
+    tags.dedup();
+    if tags.len() != data.tags.len() {
+        return Err(KclError::Type(KclErrorDetails {
+            message: "Duplicate tags are not allowed.".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    }
+
     for tag in data.tags {
         let tagged_path = extrude_group
             .sketch_group_values

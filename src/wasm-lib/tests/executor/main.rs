@@ -204,15 +204,35 @@ const part002 = startSketchOn(part001, "END")
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_basic_fillet_cube() {
+async fn serial_test_fillet_duplicate_tags() {
     let code = r#"const part001 = startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
-    |> line({to: [10, 0], tag: "thing"}, %)
-    |> line([10, 10], %)
-    |> line({to: [0, 10], tag: "thing2"}, %)
+    |> startProfileAt([0,0], %)
+    |> line({to: [0, 10], tag: "thing"}, %)
+    |> line([10, 0], %)
+    |> line({to: [0, -10], tag: "thing2"}, %)
     |> close(%)
     |> extrude(10, %)
-    |> fillet({radius: 0.5, tags: ["thing", "thing2"]}, %)
+    |> fillet({radius: 0.5, tags: ["thing", "thing"]}, %)
+"#;
+
+    let result = execute_and_snapshot(code).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([227, 277])], message: "Duplicate tags are not allowed." }"#,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_basic_fillet_cube() {
+    let code = r#"const part001 = startSketchOn('XY')
+    |> startProfileAt([0,0], %)
+    |> line({to: [0, 10], tag: "thing"}, %)
+    |> line([10, 0], %)
+    |> line({to: [0, -10], tag: "thing2"}, %)
+    |> close(%)
+    |> extrude(10, %)
+    |> fillet({radius: 2, tags: ["thing", "thing2"]}, %)
 "#;
 
     let result = execute_and_snapshot(code).await.unwrap();
