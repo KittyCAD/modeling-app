@@ -56,16 +56,18 @@ export async function initializeProjectDirectory(directory: string) {
 export async function getProjectsInDir(projectDir: string) {
   const dirs = await readDir(projectDir)
   const projectsWithMetadata = await Promise.all(
-   dirs 
+    dirs
       .filter(async (p) => {
         const files = await readDir(await join(projectDir, p.name))
-        return files.some(d => d.name === PROJECT_ENTRYPOINT)
+        return files.some((d) => d.name === PROJECT_ENTRYPOINT)
       })
       .map(async (p) => ({
-        entrypointMetadata: await stat(await join(projectDir, p.name, PROJECT_ENTRYPOINT)),
+        entrypointMetadata: await stat(
+          await join(projectDir, p.name, PROJECT_ENTRYPOINT)
+        ),
         path: await join(projectDir, p.name),
         ...p,
-    }))
+      }))
   )
 
   return projectsWithMetadata

@@ -42,7 +42,7 @@ function ProjectCard({
     const startOfToday = new Date()
     startOfToday.setHours(0, 0, 0, 0)
     // TODO: fix time
-    return ""
+    return ''
     return date.getTime() < startOfToday.getTime()
       ? date.toLocaleDateString()
       : date.toLocaleTimeString()
