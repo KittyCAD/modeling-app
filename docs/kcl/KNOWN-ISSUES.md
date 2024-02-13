@@ -10,3 +10,7 @@ once fixed in engine will just start working here with no language changes.
 - **Patterns**: If you try and pass a pattern to `hole` currently only the first
     item in the pattern is being subtracted. This is an engine bug that is being
     worked on.
+  
+- **Import**: Right now you can import a file, even if that file has brep data
+    you cannot edit it. You also cannot move or transform the imported objects at
+   all. In the future, after v1, the engine will account for this.
