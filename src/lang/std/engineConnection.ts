@@ -915,6 +915,7 @@ export type CommandLog =
 export class EngineCommandManager {
   artifactMap: ArtifactMap = {}
   lastArtifactMap: ArtifactMap = {}
+  sceneCommandArtifacts: ArtifactMap = {}
   private getAst: () => Program = () => ({ start: 0, end: 0, body: [] } as any)
   outSequence = 1
   inSequence = 1
@@ -1118,6 +1119,7 @@ export class EngineCommandManager {
     }
     const modelingResponse = message.data.modeling_response
     const command = this.artifactMap[id]
+    const sceneCommand = this.sceneCommandArtifacts[id]
     this.addCommandLog({
       type: 'receive-reliable',
       data: message,
@@ -1153,12 +1155,39 @@ export class EngineCommandManager {
         data: modelingResponse,
         raw: message,
       })
-    } else {
+    } else if (sceneCommand && sceneCommand.type === 'pending') {
+      const resolve = sceneCommand.resolve
+      const artifact = {
+        type: 'result',
+        range: sceneCommand.range,
+        pathToNode: sceneCommand.pathToNode,
+        commandType: sceneCommand.commandType,
+        parentId: sceneCommand.parentId ? sceneCommand.parentId : undefined,
+        data: modelingResponse,
+        raw: message,
+      } as const
+      this.sceneCommandArtifacts[id] = artifact
+      resolve({
+        id,
+        commandType: sceneCommand.commandType,
+        range: sceneCommand.range,
+        data: modelingResponse,
+      })
+    } else if (command) {
       this.artifactMap[id] = {
         type: 'result',
         commandType: command?.commandType,
         range: command?.range,
         pathToNode: command?.pathToNode,
+        data: modelingResponse,
+        raw: message,
+      }
+    } else {
+      this.sceneCommandArtifacts[id] = {
+        type: 'result',
+        commandType: sceneCommand?.commandType,
+        range: sceneCommand?.range,
+        pathToNode: sceneCommand?.pathToNode,
         data: modelingResponse,
         raw: message,
       }
@@ -1373,7 +1402,7 @@ export class EngineCommandManager {
     }
     // since it's not mouse drag or highlighting send over TCP and keep track of the command
     this.engineConnection?.send(command)
-    return this.handlePendingCommand(command.cmd_id, command.cmd)
+    return this.handlePendingSceneCommand(command.cmd_id, command.cmd)
   }
   sendModelingCommand({
     id,
@@ -1413,6 +1442,36 @@ export class EngineCommandManager {
         return this.handlePendingCommand(id, parseCommand?.cmd, ast, range)
     }
     throw Error('shouldnt reach here')
+  }
+  handlePendingSceneCommand(
+    id: string,
+    command: Models['ModelingCmd_type'],
+    ast?: Program,
+    range?: SourceRange
+  ) {
+    let resolve: (val: any) => void = () => {}
+    const promise = new Promise((_resolve, reject) => {
+      resolve = _resolve
+    })
+    const getParentId = (): string | undefined => {
+      if (command.type === 'extend_path') {
+        return command.path
+      }
+      // TODO handle other commands that have a parent
+    }
+    const pathToNode = ast
+      ? getNodePathFromSourceRange(ast, range || [0, 0])
+      : []
+    this.sceneCommandArtifacts[id] = {
+      range: range || [0, 0],
+      pathToNode,
+      type: 'pending',
+      commandType: command.type,
+      parentId: getParentId(),
+      promise,
+      resolve,
+    }
+    return promise
   }
   handlePendingCommand(
     id: string,
