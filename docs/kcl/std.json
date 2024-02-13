@@ -27979,9 +27979,33 @@
       },
       {
         "name": "tag",
-        "type": "String",
+        "type": "SketchOnFaceTag",
         "schema": {
-          "type": "string",
+          "description": "A tag for sketch on face.",
+          "anyOf": [
+            {
+              "oneOf": [
+                {
+                  "description": "The start face as in before you extruded. This could also be known as the bottom face. But we do not call it bottom because it would be the top face if you extruded it in the opposite direction or flipped the camera.",
+                  "type": "string",
+                  "enum": [
+                    "start"
+                  ]
+                },
+                {
+                  "description": "The end face after you extruded. This could also be known as the top face. But we do not call it top because it would be the bottom face if you extruded it in the opposite direction or flipped the camera.",
+                  "type": "string",
+                  "enum": [
+                    "end"
+                  ]
+                }
+              ]
+            },
+            {
+              "description": "A string tag for the face you want to sketch on.",
+              "type": "string"
+            }
+          ],
           "nullable": true
         },
         "required": true

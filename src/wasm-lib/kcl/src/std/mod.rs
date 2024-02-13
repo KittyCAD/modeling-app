@@ -20,9 +20,9 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use self::kcl_stdlib::KclStdLibFn;
+use self::{kcl_stdlib::KclStdLibFn, sketch::SketchOnFaceTag};
 use crate::{
-    ast::types::{parse_json_number_as_f64, parse_json_value_as_string},
+    ast::types::parse_json_number_as_f64,
     docs::StdLibFn,
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
@@ -406,7 +406,9 @@ impl Args {
         }
     }
 
-    fn get_data_and_optional_tag<T: serde::de::DeserializeOwned>(&self) -> Result<(T, Option<String>), KclError> {
+    fn get_data_and_optional_tag<T: serde::de::DeserializeOwned>(
+        &self,
+    ) -> Result<(T, Option<SketchOnFaceTag>), KclError> {
         let first_value = self
             .args
             .first()
@@ -426,8 +428,13 @@ impl Args {
         })?;
 
         if let Some(second_value) = self.args.get(1) {
-            let tag = parse_json_value_as_string(&second_value.get_json_value()?);
-            Ok((data, tag))
+            let tag: SketchOnFaceTag = serde_json::from_value(second_value.get_json_value()?).map_err(|e| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Failed to deserialize SketchOnFaceTag from JSON: {}", e),
+                    source_ranges: vec![self.source_range],
+                })
+            })?;
+            Ok((data, Some(tag)))
         } else {
             Ok((data, None))
         }
