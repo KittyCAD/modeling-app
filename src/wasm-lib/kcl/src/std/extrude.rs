@@ -116,7 +116,7 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
         }
     }
 
-    let return_value = Ok(Box::new(ExtrudeGroup {
+    Ok(Box::new(ExtrudeGroup {
         id,
         value: new_value,
         height: length,
@@ -128,9 +128,7 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
         start_cap_id,
         end_cap_id,
         meta: sketch_group.meta,
-    }));
-    println!("\n\nreturn_value\n:{:?}\n\n", return_value);
-    return_value
+    }))
 }
 
 /// Returns the extrude wall transform.
