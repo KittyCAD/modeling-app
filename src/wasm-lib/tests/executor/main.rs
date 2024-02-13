@@ -846,6 +846,7 @@ const part = startSketchOn('XY')
     twenty_twenty::assert_image("tests/executor/outputs/patterns_circular_3d_tilted_axis.png", &result, 0.999);
 }
 
+#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_import_file_doesnt_exist() {
     let code = r#"const model = import("thing.obj")"#;
 
