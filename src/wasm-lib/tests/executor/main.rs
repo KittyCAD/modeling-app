@@ -70,12 +70,19 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_sketch_on_face() {
-    // TODO(kurt) make actually test sketch on face
     let code = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([11.19, 28.35], %)
-  |> line([28.67, -13.25], %)
+  |> line({to: [28.67, -13.25], tag: "here"}, %)
   |> line([-4.12, -22.81], %)
   |> line([-33.24, 14.55], %)
+  |> close(%)
+  |> extrude(5, %)
+
+const part002 = startSketchOn(part001, "here")
+  |> startProfileAt([0, 0], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %)
   |> close(%)
   |> extrude(5, %)
 "#;
