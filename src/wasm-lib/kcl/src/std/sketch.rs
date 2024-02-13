@@ -10,8 +10,8 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
-        BasePath, GeoMeta, MemoryItem, Path, Plane, PlaneType, Point2d, Point3d, Position, Rotation, SketchGroup,
-        SketchGroupSet, SourceRange,
+        BasePath, ExtrudeGroup, ExtrudeSurface, Face, GeoMeta, MemoryItem, Path, Plane, PlaneType, Point2d, Point3d,
+        Position, Rotation, SketchGroup, SketchGroupSet, SourceRange,
     },
     std::{
         utils::{
@@ -646,9 +646,19 @@ pub async fn start_sketch_at(args: Args) -> Result<MemoryItem, KclError> {
 async fn inner_start_sketch_at(data: LineData, args: Args) -> Result<Box<SketchGroup>, KclError> {
     // Let's assume it's the XY plane for now, this is just for backwards compatibility.
     let xy_plane = PlaneData::XY;
-    let plane = inner_start_sketch_on(xy_plane, args.clone()).await?;
-    let sketch_group = inner_start_profile_at(data, plane, args).await?;
+    let sketch_surface = inner_start_sketch_on(SketchData::Plane(xy_plane), None, args.clone()).await?;
+    let sketch_group = inner_start_profile_at(data, sketch_surface, args).await?;
     Ok(sketch_group)
+}
+
+/// Data for start sketch on.
+/// You can start a sketch on a plane or an extrude group.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase", untagged)]
+pub enum SketchData {
+    Plane(PlaneData),
+    ExtrudeGroup(Box<ExtrudeGroup>),
 }
 
 /// Data for a plane.
@@ -763,19 +773,116 @@ impl From<PlaneData> for Plane {
     }
 }
 
-/// Start a sketch on a specific plane.
-pub async fn start_sketch_on(args: Args) -> Result<MemoryItem, KclError> {
-    let data: PlaneData = args.get_data()?;
-
-    let plane = inner_start_sketch_on(data, args).await?;
-    Ok(MemoryItem::Plane(plane))
+/// A plane or a face.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase", untagged)]
+pub enum SketchSurface {
+    /// A plane.
+    Plane(Box<Plane>),
+    /// A face.
+    Face(Box<Face>),
 }
 
-/// Start a sketch at a given point.
+impl SketchSurface {
+    pub fn id(&self) -> uuid::Uuid {
+        match self {
+            SketchSurface::Plane(plane) => plane.id,
+            SketchSurface::Face(face) => face.id,
+        }
+    }
+    pub fn x_axis(&self) -> Point3d {
+        match self {
+            SketchSurface::Plane(plane) => plane.x_axis.clone(),
+            SketchSurface::Face(face) => face.x_axis.clone(),
+        }
+    }
+    pub fn y_axis(&self) -> Point3d {
+        match self {
+            SketchSurface::Plane(plane) => plane.y_axis.clone(),
+            SketchSurface::Face(face) => face.y_axis.clone(),
+        }
+    }
+    pub fn z_axis(&self) -> Point3d {
+        match self {
+            SketchSurface::Plane(plane) => plane.z_axis.clone(),
+            SketchSurface::Face(face) => face.z_axis.clone(),
+        }
+    }
+}
+
+/// Start a sketch on a specific plane or face.
+pub async fn start_sketch_on(args: Args) -> Result<MemoryItem, KclError> {
+    let (data, tag): (SketchData, Option<String>) = args.get_data_and_optional_tag()?;
+
+    match inner_start_sketch_on(data, tag, args).await? {
+        SketchSurface::Plane(plane) => Ok(MemoryItem::Plane(plane)),
+        SketchSurface::Face(face) => Ok(MemoryItem::Face(face)),
+    }
+}
+
+/// Start a sketch on a specific plane or face.
 #[stdlib {
     name = "startSketchOn",
 }]
-async fn inner_start_sketch_on(data: PlaneData, args: Args) -> Result<Box<Plane>, KclError> {
+async fn inner_start_sketch_on(data: SketchData, tag: Option<String>, args: Args) -> Result<SketchSurface, KclError> {
+    match data {
+        SketchData::Plane(plane_data) => {
+            let plane = start_sketch_on_plane(plane_data, args).await?;
+            Ok(SketchSurface::Plane(plane))
+        }
+        SketchData::ExtrudeGroup(extrude_group) => {
+            let Some(tag) = tag else {
+                return Err(KclError::Type(KclErrorDetails {
+                    message: "Expected a tag for the face to sketch on".to_string(),
+                    source_ranges: vec![args.source_range],
+                }));
+            };
+            let face = start_sketch_on_face(extrude_group, &tag, args).await?;
+            Ok(SketchSurface::Face(face))
+        }
+    }
+}
+
+async fn start_sketch_on_face(extrude_group: Box<ExtrudeGroup>, tag: &str, args: Args) -> Result<Box<Face>, KclError> {
+    let extrude_plane = extrude_group
+        .value
+        .iter()
+        .find_map(|extrude_surface| match extrude_surface {
+            ExtrudeSurface::ExtrudePlane(extrude_plane) if extrude_plane.name == tag => Some(extrude_plane),
+            ExtrudeSurface::ExtrudePlane(_) => None,
+        })
+        .ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Expected a face with the tag `{}`", tag),
+                source_ranges: vec![args.source_range],
+            })
+        })?;
+
+    // Enter sketch mode on the face.
+    let id = uuid::Uuid::new_v4();
+    args.send_modeling_cmd(
+        id,
+        ModelingCmd::EnableSketchMode {
+            animated: false,
+            ortho: false,
+            entity_id: extrude_plane.face_id,
+        },
+    )
+    .await?;
+
+    Ok(Box::new(Face {
+        id,
+        value: tag.to_string(),
+        // TODO: get this from the extrude plane data.
+        x_axis: extrude_group.x_axis,
+        y_axis: extrude_group.y_axis,
+        z_axis: extrude_group.z_axis,
+        meta: vec![args.source_range.into()],
+    }))
+}
+
+async fn start_sketch_on_plane(data: PlaneData, args: Args) -> Result<Box<Plane>, KclError> {
     let mut plane: Plane = data.clone().into();
     let id = uuid::Uuid::new_v4();
     let default_origin = Point3D { x: 0.0, y: 0.0, z: 0.0 };
@@ -874,9 +981,9 @@ async fn inner_start_sketch_on(data: PlaneData, args: Args) -> Result<Box<Plane>
 
 /// Start a profile at a given point.
 pub async fn start_profile_at(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, plane): (LineData, Box<Plane>) = args.get_data_and_plane()?;
+    let (data, sketch_surface): (LineData, SketchSurface) = args.get_data_and_sketch_surface()?;
 
-    let sketch_group = inner_start_profile_at(data, plane, args).await?;
+    let sketch_group = inner_start_profile_at(data, sketch_surface, args).await?;
     Ok(MemoryItem::SketchGroup(sketch_group))
 }
 
@@ -884,7 +991,11 @@ pub async fn start_profile_at(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "startProfileAt",
 }]
-async fn inner_start_profile_at(data: LineData, plane: Box<Plane>, args: Args) -> Result<Box<SketchGroup>, KclError> {
+async fn inner_start_profile_at(
+    data: LineData,
+    sketch_surface: SketchSurface,
+    args: Args,
+) -> Result<Box<SketchGroup>, KclError> {
     let to = match &data {
         LineData::PointWithTag { to, .. } => *to,
         LineData::Point(to) => *to,
@@ -925,10 +1036,10 @@ async fn inner_start_profile_at(data: LineData, plane: Box<Plane>, args: Args) -
         id: path_id,
         position: Position([0.0, 0.0, 0.0]),
         rotation: Rotation([0.0, 0.0, 0.0, 1.0]),
-        x_axis: Position([plane.x_axis.x, plane.x_axis.y, plane.x_axis.z]),
-        y_axis: Position([plane.y_axis.x, plane.y_axis.y, plane.y_axis.z]),
-        z_axis: Position([plane.z_axis.x, plane.z_axis.y, plane.z_axis.z]),
-        plane_id: Some(plane.id),
+        x_axis: sketch_surface.x_axis(),
+        y_axis: sketch_surface.y_axis(),
+        z_axis: sketch_surface.z_axis(),
+        entity_id: Some(sketch_surface.id()),
         value: vec![],
         start: current_path,
         meta: vec![args.source_range.into()],
@@ -963,8 +1074,8 @@ async fn inner_close(sketch_group: Box<SketchGroup>, args: Args) -> Result<Box<S
     )
     .await?;
 
-    // Exit sketch mode, since if we were in a plane we'd want to disable the sketch mode after.
-    if sketch_group.plane_id.is_some() {
+    // Exit sketch mode, since if we were in a plane or entity we'd want to disable the sketch mode after.
+    if sketch_group.entity_id.is_some() {
         // We were on a plane, disable the sketch mode.
         args.send_modeling_cmd(uuid::Uuid::new_v4(), ModelingCmd::SketchModeDisable {})
             .await?;
@@ -1461,7 +1572,6 @@ async fn inner_hole(
         }
         SketchGroupSet::SketchGroups(hole_sketch_groups) => {
             for hole_sketch_group in hole_sketch_groups {
-                println!("hole_sketch_group: {:?} {}", hole_sketch_group.id, sketch_group.id);
                 args.send_modeling_cmd(
                     uuid::Uuid::new_v4(),
                     ModelingCmd::Solid2DAddHole {

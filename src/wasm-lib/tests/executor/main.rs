@@ -1,7 +1,5 @@
-use std::sync::Arc;
-
 use anyhow::Result;
-use kcl_lib::{engine::EngineManager, std::StdLib};
+use kcl_lib::engine::EngineManager;
 
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
@@ -25,6 +23,8 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
 
     // Create the client.
     let client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
+    // uncomment to use a local server
+    // client.set_base_url("http://your-local-server:8080/");
 
     let ws = client
         .modeling()
@@ -37,13 +37,8 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
     let tokens = kcl_lib::token::lexer(code);
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
-    println!("{:#?}", program);
     let mut mem: kcl_lib::executor::ProgramMemory = Default::default();
-    let engine = kcl_lib::engine::EngineConnection::new(ws).await?;
-    let ctx = kcl_lib::executor::ExecutorContext {
-        engine,
-        stdlib: Arc::new(StdLib::default()),
-    };
+    let ctx = kcl_lib::executor::ExecutorContext::new(ws).await?;
     let _ = kcl_lib::executor::execute(program, &mut mem, kcl_lib::executor::BodyType::Root, &ctx).await?;
 
     // Send a snapshot request to the engine.
@@ -71,6 +66,29 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
     // Read the output file.
     let actual = image::io::Reader::open(output_file).unwrap().decode().unwrap();
     Ok(actual)
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_sketch_on_face() {
+    let code = r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([11.19, 28.35], %)
+  |> line({to: [28.67, -13.25], tag: "here"}, %)
+  |> line([-4.12, -22.81], %)
+  |> line([-33.24, 14.55], %)
+  |> close(%)
+  |> extrude(5, %)
+
+const part002 = startSketchOn(part001, "here")
+  |> startProfileAt([0, 0], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %)
+  |> close(%)
+  |> extrude(5, %)
+"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -742,4 +760,73 @@ const part = startSketchOn('XY')
 
     let result = execute_and_snapshot(code).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/patterns_circular_basic_3d.png", &result, 0.999);
+async fn serial_test_import_file_doesnt_exist() {
+    let code = r#"const model = import("thing.obj")"#;
+
+    let result = execute_and_snapshot(code).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([14, 33])], message: "File `thing.obj` does not exist." }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_import_obj_with_mtl() {
+    let code = r#"const model = import("tests/executor/inputs/cube.obj")"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/import_obj_with_mtl.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_import_obj_with_mtl_units() {
+    let code = r#"const model = import("tests/executor/inputs/cube.obj", {type: "obj", units: "m"})"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/import_obj_with_mtl_units.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_import_gltf_with_bin() {
+    let code = r#"const model = import("tests/executor/inputs/cube.gltf")"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/import_gltf_with_bin.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_import_gltf_embedded() {
+    let code = r#"const model = import("tests/executor/inputs/cube-embedded.gltf")"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/import_gltf_embedded.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_import_glb() {
+    let code = r#"const model = import("tests/executor/inputs/cube.glb")"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/import_glb.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_import_glb_no_assign() {
+    let code = r#"import("tests/executor/inputs/cube.glb")"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/import_glb_no_assign.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_import_ext_doesnt_match() {
+    let code = r#"const model = import("tests/executor/inputs/cube.gltf", {type: "obj", units: "m"})"#;
+
+    let result = execute_and_snapshot(code).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([14, 82])], message: "The given format does not match the file extension. Expected: `gltf`, Given: `obj`" }"#
+    );
 }

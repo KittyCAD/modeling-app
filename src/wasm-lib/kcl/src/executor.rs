@@ -15,6 +15,7 @@ use crate::{
     ast::types::{BodyItem, FunctionExpression, KclNone, Value},
     engine::EngineConnection,
     errors::{KclError, KclErrorDetails},
+    fs::FileManager,
     std::{FunctionKind, StdLib},
 };
 
@@ -138,6 +139,7 @@ impl ProgramReturn {
 pub enum MemoryItem {
     UserVal(UserVal),
     Plane(Box<Plane>),
+    Face(Box<Face>),
     SketchGroup(Box<SketchGroup>),
     SketchGroups {
         value: Vec<Box<SketchGroup>>,
@@ -146,6 +148,7 @@ pub enum MemoryItem {
     ExtrudeGroups {
         value: Vec<Box<ExtrudeGroup>>,
     },
+    ImportedGeometry(ImportedGeometry),
     #[ts(skip)]
     ExtrudeTransform(Box<ExtrudeTransform>),
     #[ts(skip)]
@@ -194,6 +197,19 @@ pub enum SketchGroupSet {
     SketchGroups(Vec<Box<SketchGroup>>),
 }
 
+/// Data for an imported geometry.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct ImportedGeometry {
+    /// The ID of the imported geometry.
+    pub id: uuid::Uuid,
+    /// The original file paths.
+    pub value: Vec<String>,
+    #[serde(rename = "__meta")]
+    pub meta: Vec<Metadata>,
+}
+
 /// A plane.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -208,6 +224,25 @@ pub struct Plane {
     /// What should the plane’s X axis be?
     pub x_axis: Point3d,
     /// What should the plane’s Y axis be?
+    pub y_axis: Point3d,
+    /// The z-axis (normal).
+    pub z_axis: Point3d,
+    #[serde(rename = "__meta")]
+    pub meta: Vec<Metadata>,
+}
+
+/// A face.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct Face {
+    /// The id of the face.
+    pub id: uuid::Uuid,
+    /// The tag of the face.
+    pub value: String,
+    /// What should the face’s X axis be?
+    pub x_axis: Point3d,
+    /// What should the face’s Y axis be?
     pub y_axis: Point3d,
     /// The z-axis (normal).
     pub z_axis: Point3d,
@@ -293,9 +328,11 @@ impl From<MemoryItem> for Vec<SourceRange> {
                 .iter()
                 .flat_map(|eg| eg.meta.iter().map(|m| m.source_range))
                 .collect(),
+            MemoryItem::ImportedGeometry(i) => i.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::ExtrudeTransform(e) => e.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::Function { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::Plane(p) => p.meta.iter().map(|m| m.source_range).collect(),
+            MemoryItem::Face(f) => f.meta.iter().map(|m| m.source_range).collect(),
         }
     }
 }
@@ -388,13 +425,13 @@ pub struct SketchGroup {
     /// The rotation of the sketch group base plane.
     pub rotation: Rotation,
     /// The x-axis of the sketch group base plane in the 3D space
-    pub x_axis: Position,
+    pub x_axis: Point3d,
     /// The y-axis of the sketch group base plane in the 3D space
-    pub y_axis: Position,
+    pub y_axis: Point3d,
     /// The z-axis of the sketch group base plane in the 3D space
-    pub z_axis: Position,
-    /// The plane id of the sketch group.
-    pub plane_id: Option<uuid::Uuid>,
+    pub z_axis: Point3d,
+    /// The plane id or face id of the sketch group.
+    pub entity_id: Option<uuid::Uuid>,
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
@@ -487,6 +524,16 @@ pub struct ExtrudeGroup {
     pub position: Position,
     /// The rotation of the extrude group.
     pub rotation: Rotation,
+    /// The x-axis of the extrude group base plane in the 3D space
+    pub x_axis: Point3d,
+    /// The y-axis of the extrude group base plane in the 3D space
+    pub y_axis: Point3d,
+    /// The z-axis of the extrude group base plane in the 3D space
+    pub z_axis: Point3d,
+    /// The id of the extrusion start cap
+    pub start_cap_id: Option<uuid::Uuid>,
+    /// The id of the extrusion end cap
+    pub end_cap_id: Option<uuid::Uuid>,
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
@@ -514,6 +561,16 @@ pub enum BodyType {
 #[derive(Debug, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct Position(#[ts(type = "[number, number, number]")] pub [f64; 3]);
+
+impl From<Position> for Point3d {
+    fn from(p: Position) -> Self {
+        Self {
+            x: p.0[0],
+            y: p.0[1],
+            z: p.0[2],
+        }
+    }
+}
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -757,6 +814,16 @@ impl Path {
             Path::TangentialArcTo { base, .. } => base,
         }
     }
+
+    pub fn get_base_mut(&mut self) -> Option<&mut BasePath> {
+        match self {
+            Path::ToPoint { base } => Some(base),
+            Path::Horizontal { base, .. } => Some(base),
+            Path::AngledLineTo { base, .. } => Some(base),
+            Path::Base { base } => Some(base),
+            Path::TangentialArcTo { base, .. } => Some(base),
+        }
+    }
 }
 
 /// An extrude surface.
@@ -765,41 +832,49 @@ impl Path {
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum ExtrudeSurface {
     /// An extrude plane.
-    ExtrudePlane {
-        /// The position.
-        position: Position,
-        /// The rotation.
-        rotation: Rotation,
-        /// The name.
-        name: String,
-        /// Metadata.
-        #[serde(flatten)]
-        geo_meta: GeoMeta,
-    },
+    ExtrudePlane(ExtrudePlane),
+}
+
+/// An extruded plane.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct ExtrudePlane {
+    /// The position.
+    pub position: Position,
+    /// The rotation.
+    pub rotation: Rotation,
+    /// The face id for the extrude plane.
+    pub face_id: uuid::Uuid,
+    /// The name.
+    pub name: String,
+    /// Metadata.
+    #[serde(flatten)]
+    pub geo_meta: GeoMeta,
 }
 
 impl ExtrudeSurface {
     pub fn get_id(&self) -> uuid::Uuid {
         match self {
-            ExtrudeSurface::ExtrudePlane { geo_meta, .. } => geo_meta.id,
+            ExtrudeSurface::ExtrudePlane(ep) => ep.geo_meta.id,
         }
     }
 
     pub fn get_name(&self) -> String {
         match self {
-            ExtrudeSurface::ExtrudePlane { name, .. } => name.clone(),
+            ExtrudeSurface::ExtrudePlane(ep) => ep.name.clone(),
         }
     }
 
     pub fn get_position(&self) -> Position {
         match self {
-            ExtrudeSurface::ExtrudePlane { position, .. } => *position,
+            ExtrudeSurface::ExtrudePlane(ep) => ep.position,
         }
     }
 
     pub fn get_rotation(&self) -> Rotation {
         match self {
-            ExtrudeSurface::ExtrudePlane { rotation, .. } => *rotation,
+            ExtrudeSurface::ExtrudePlane(ep) => ep.rotation,
         }
     }
 }
@@ -835,7 +910,31 @@ impl Default for PipeInfo {
 #[derive(Debug, Clone)]
 pub struct ExecutorContext {
     pub engine: EngineConnection,
+    pub fs: FileManager,
     pub stdlib: Arc<StdLib>,
+}
+
+impl ExecutorContext {
+    /// Create a new default executor context.
+    #[cfg(test)]
+    pub async fn new() -> Result<Self> {
+        Ok(Self {
+            engine: EngineConnection::new().await?,
+            fs: FileManager::new(),
+            stdlib: Arc::new(StdLib::new()),
+        })
+    }
+
+    /// Create a new default executor context.
+    #[cfg(not(test))]
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new(ws: reqwest::Upgraded) -> Result<Self> {
+        Ok(Self {
+            engine: EngineConnection::new(ws).await?,
+            fs: FileManager::new(),
+            stdlib: Arc::new(StdLib::new()),
+        })
+    }
 }
 
 /// Execute a AST's program.
@@ -901,6 +1000,10 @@ pub async fn execute(
                                 }
 
                                 memory.return_ = Some(ProgramReturn::Arguments(call_expr.arguments.clone()));
+                            } else {
+                                let args = crate::std::Args::new(args, call_expr.into(), ctx.clone());
+                                let result = func.std_lib_fn()(args).await?;
+                                memory.return_ = Some(ProgramReturn::Value(result));
                             }
                         }
                         FunctionKind::Std(func) => {
@@ -1128,11 +1231,7 @@ mod tests {
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast()?;
         let mut mem: ProgramMemory = Default::default();
-        let engine = EngineConnection::new().await?;
-        let ctx = ExecutorContext {
-            engine,
-            stdlib: Arc::new(StdLib::default()),
-        };
+        let ctx = ExecutorContext::new().await?;
         let memory = execute(program, &mut mem, BodyType::Root, &ctx).await?;
 
         Ok(memory)

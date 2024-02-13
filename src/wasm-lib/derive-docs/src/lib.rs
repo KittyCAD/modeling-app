@@ -194,41 +194,7 @@ fn do_stdlib_inner(
             syn::FnArg::Typed(pat) => pat.ty.as_ref().into_token_stream(),
         };
 
-        let mut ty_string = ty.to_string().replace('&', "").replace("mut", "").replace(' ', "");
-        if ty_string.starts_with("Args") {
-            ty_string = "Args".to_string();
-        }
-        let ty_string = ty_string.trim().to_string();
-        let ty_ident = if ty_string.starts_with("Vec<") {
-            let ty_string = ty_string.trim_start_matches("Vec<").trim_end_matches('>');
-            let ty_ident = format_ident!("{}", ty_string);
-            quote! {
-               Vec<#ty_ident>
-            }
-        } else if ty_string.starts_with("Option<") {
-            let ty_string = ty_string.trim_start_matches("Option<").trim_end_matches('>');
-            let ty_ident = format_ident!("{}", ty_string);
-            quote! {
-               Option<#ty_ident>
-            }
-        } else if let Some((inner_array_type, num)) = parse_array_type(&ty_string) {
-            let ty_string = inner_array_type.to_owned();
-            let ty_ident = format_ident!("{}", ty_string);
-            quote! {
-               [#ty_ident; #num]
-            }
-        } else if ty_string.starts_with("Box<") {
-            let ty_string = ty_string.trim_start_matches("Box<").trim_end_matches('>');
-            let ty_ident = format_ident!("{}", ty_string);
-            quote! {
-               #ty_ident
-            }
-        } else {
-            let ty_ident = format_ident!("{}", ty_string);
-            quote! {
-               #ty_ident
-            }
-        };
+        let (ty_string, ty_ident) = clean_ty_string(ty.to_string().as_str());
 
         let ty_string = rust_type_to_openapi_type(&ty_string);
 
@@ -499,6 +465,52 @@ impl Parse for ItemFnForSignature {
     }
 }
 
+fn clean_ty_string(t: &str) -> (String, proc_macro2::TokenStream) {
+    let mut ty_string = t.replace('&', "").replace("mut", "").replace(' ', "");
+    if ty_string.starts_with("Args") {
+        ty_string = "Args".to_string();
+    }
+    let ty_string = ty_string.trim().to_string();
+    let ty_ident = if ty_string.starts_with("Vec<") {
+        let ty_string = ty_string.trim_start_matches("Vec<").trim_end_matches('>');
+        let (_, ty_ident) = clean_ty_string(&ty_string);
+        quote! {
+           Vec<#ty_ident>
+        }
+    } else if ty_string.starts_with("kittycad::types::") {
+        let ty_string = ty_string.trim_start_matches("kittycad::types::").trim_end_matches('>');
+        let ty_ident = format_ident!("{}", ty_string);
+        quote! {
+           kittycad::types::#ty_ident
+        }
+    } else if ty_string.starts_with("Option<") {
+        let ty_string = ty_string.trim_start_matches("Option<").trim_end_matches('>');
+        let (_, ty_ident) = clean_ty_string(&ty_string);
+        quote! {
+           Option<#ty_ident>
+        }
+    } else if let Some((inner_array_type, num)) = parse_array_type(&ty_string) {
+        let ty_string = inner_array_type.to_owned();
+        let (_, ty_ident) = clean_ty_string(&ty_string);
+        quote! {
+           [#ty_ident; #num]
+        }
+    } else if ty_string.starts_with("Box<") {
+        let ty_string = ty_string.trim_start_matches("Box<").trim_end_matches('>');
+        let (_, ty_ident) = clean_ty_string(&ty_string);
+        quote! {
+           #ty_ident
+        }
+    } else {
+        let ty_ident = format_ident!("{}", ty_string);
+        quote! {
+           #ty_ident
+        }
+    };
+
+    (ty_string, ty_ident)
+}
+
 fn rust_type_to_openapi_type(t: &str) -> String {
     let mut t = t.to_string();
     // Turn vecs into arrays.
@@ -688,5 +700,29 @@ mod tests {
 
         assert!(errors.is_empty());
         expectorate::assert_contents("tests/array.gen", &openapitor::types::get_text_fmt(&item).unwrap());
+    }
+
+    #[test]
+    fn test_stdlib_option_input_format() {
+        let (item, errors) = do_stdlib(
+            quote! {
+                name = "import",
+            },
+            quote! {
+                fn inner_import(
+                    /// The args to do shit to.
+                    args: Option<kittycad::types::InputFormat>
+                ) -> Box<f64> {
+                    args
+                }
+            },
+        )
+        .unwrap();
+
+        assert!(errors.is_empty());
+        expectorate::assert_contents(
+            "tests/option_input_format.gen",
+            &openapitor::types::get_text_fmt(&item).unwrap(),
+        );
     }
 }

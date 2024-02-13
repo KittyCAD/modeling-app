@@ -78,7 +78,6 @@ let lastCmdTimeoutId: number | null = null
 const sendLastReliableChannel = () => {
   if (lastCmd && Date.now() - lastCmdTime >= 300) {
     engineCommandManager.sendSceneCommand(lastCmd, true)
-    console.log('resending last reliable channel', lastCmd)
     lastCmdTime = Date.now()
   }
 }
@@ -482,6 +481,7 @@ class SetupSingleton {
 
       const targetFov = 4
       const fovAnimationStep = (currentFov - targetFov) / FRAMES_TO_ANIMATE_IN
+      let frameWaitOnFinish = 5
 
       const animateFovChange = () => {
         if (this.camera instanceof PerspectiveCamera) {
@@ -491,14 +491,15 @@ class SetupSingleton {
             this.camera.updateProjectionMatrix()
             this.dollyZoom(currentFov)
             requestAnimationFrame(animateFovChange) // Continue the animation
+          } else if (frameWaitOnFinish > 0) {
+            frameWaitOnFinish--
+            requestAnimationFrame(animateFovChange) // Continue the animation
           } else {
-            setTimeout(() => {
-              // Once the target FOV is reached, switch to the orthographic camera
-              // Needs to wait a couple frames after the FOV animation is complete
-              this.useOrthographicCamera()
-              this.isFovAnimationInProgress = false
-              resolve(true)
-            }, 100)
+            // Once the target FOV is reached, switch to the orthographic camera
+            // Needs to wait a couple frames after the FOV animation is complete
+            this.useOrthographicCamera()
+            this.isFovAnimationInProgress = false
+            resolve(true)
           }
         }
       }

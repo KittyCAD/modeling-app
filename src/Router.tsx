@@ -44,6 +44,7 @@ import FileMachineProvider from 'components/FileMachineProvider'
 import { sep } from '@tauri-apps/api/path'
 import { paths } from 'lib/paths'
 import { IndexLoaderData, HomeLoaderData } from 'lib/types'
+import { fileSystemManager } from 'lang/std/fileSystemManager'
 
 if (VITE_KC_SENTRY_DSN && !TEST) {
   Sentry.init({
@@ -173,6 +174,10 @@ const router = createBrowserRouter(
           )
           const children = await readDir(projectPath, { recursive: true })
           kclManager.setCodeAndExecute(code, false)
+
+          // Set the file system manager to the project path
+          // So that WASM gets an updated path for operations
+          fileSystemManager.dir = projectPath
 
           return {
             code,
