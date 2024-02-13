@@ -99,7 +99,7 @@ class KclManager {
           })
       })
     } else {
-      localStorage?.setItem(PERSIST_CODE_TOKEN, code)
+      safteLSSetItem(PERSIST_CODE_TOKEN, code)
     }
   }
 
@@ -154,22 +154,16 @@ class KclManager {
       this.code = ''
       return
     }
-    const storedCode =
-      typeof window !== 'undefined'
-        ? localStorage?.getItem(PERSIST_CODE_TOKEN)
-        : ''
+    const storedCode = safeLSGetItem(PERSIST_CODE_TOKEN) || ''
     // TODO #819 remove zustand persistence logic in a few months
     // short term migration, shouldn't make a difference for tauri app users
     // anyway since that's filesystem based.
-    const zustandStore = JSON.parse(
-      (typeof window !== 'undefined' ? localStorage?.getItem('store') : '{}') ||
-        '{}'
-    )
+    const zustandStore = JSON.parse(safeLSGetItem('store') || '{}')
     if (storedCode === null && zustandStore?.state?.code) {
       this.code = zustandStore.state.code
-      localStorage?.setItem(PERSIST_CODE_TOKEN, this._code)
+      safteLSSetItem(PERSIST_CODE_TOKEN, this._code)
       zustandStore.state.code = ''
-      localStorage?.setItem('store', JSON.stringify(zustandStore))
+      safteLSSetItem('store', JSON.stringify(zustandStore))
     } else if (storedCode === null) {
       this.code = bracket
     } else {
@@ -462,4 +456,14 @@ export function KclContextProvider({
       {children}
     </KclContext.Provider>
   )
+}
+
+function safeLSGetItem(key: string) {
+  if (typeof window === 'undefined') return null
+  return localStorage?.getItem(key)
+}
+
+function safteLSSetItem(key: string, value: string) {
+  if (typeof window === 'undefined') return
+  localStorage?.setItem(key, value)
 }
