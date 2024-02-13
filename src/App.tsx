@@ -119,31 +119,6 @@ export function App() {
         },
         cmd_id: newCmdId,
       })
-    } else {
-      const interactionGuards = cameraMouseDragGuards[cameraControls]
-      let interaction: CameraDragInteractionType_type
-
-      const eWithButton = { ...e, button: buttonDownInStream }
-
-      if (interactionGuards.pan.callback(eWithButton)) {
-        interaction = 'pan'
-      } else if (interactionGuards.rotate.callback(eWithButton)) {
-        interaction = 'rotate'
-      } else if (interactionGuards.zoom.dragCallback(eWithButton)) {
-        interaction = 'zoom'
-      } else {
-        return
-      }
-
-      debounceSocketSend({
-        type: 'modeling_cmd_req',
-        cmd: {
-          type: 'camera_drag_move',
-          interaction,
-          window: { x, y },
-        },
-        cmd_id: newCmdId,
-      })
     }
   }
 

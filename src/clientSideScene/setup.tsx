@@ -71,12 +71,14 @@ interface ThreeCamValues {
   isPerspective: boolean
 }
 
+const lastCmdDelay = 50
+
 let lastCmd: any = null
 let lastCmdTime: number = Date.now()
 let lastCmdTimeoutId: number | null = null
 
 const sendLastReliableChannel = () => {
-  if (lastCmd && Date.now() - lastCmdTime >= 300) {
+  if (lastCmd && Date.now() - lastCmdTime >= lastCmdDelay) {
     engineCommandManager.sendSceneCommand(lastCmd, true)
     lastCmdTime = Date.now()
   }
@@ -98,8 +100,25 @@ const throttledUpdateEngineCamera = throttle((threeValues: ThreeCamValues) => {
   if (lastCmdTimeoutId !== null) {
     clearTimeout(lastCmdTimeoutId)
   }
-  lastCmdTimeoutId = setTimeout(sendLastReliableChannel, 300) as any as number
+  lastCmdTimeoutId = setTimeout(
+    sendLastReliableChannel,
+    lastCmdDelay
+  ) as any as number
 }, 1000 / 30)
+
+let lastPerspectiveCmd: any = null
+let lastPerspectiveCmdTime: number = Date.now()
+let lastPerspectiveCmdTimeoutId: number | null = null
+
+const sendLastPerspectiveReliableChannel = () => {
+  if (
+    lastPerspectiveCmd &&
+    Date.now() - lastPerspectiveCmdTime >= lastCmdDelay
+  ) {
+    engineCommandManager.sendSceneCommand(lastPerspectiveCmd, true)
+    lastPerspectiveCmdTime = Date.now()
+  }
+}
 
 const throttledUpdateEngineFov = throttle(
   (vals: {
@@ -107,7 +126,31 @@ const throttledUpdateEngineFov = throttle(
     quaternion: Quaternion
     zoom: number
     fov: number
-  }) => updateEngineFov(vals),
+  }) => {
+    const cmd = {
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_perspective_settings',
+        ...convertThreeCamValuesToEngineCam({
+          ...vals,
+          isPerspective: true,
+        }),
+        fov_y: vals.fov,
+        ...calculateNearFarFromFOV(vals.fov),
+      },
+    } as any
+    engineCommandManager.sendSceneCommand(cmd)
+    lastPerspectiveCmd = cmd
+    lastPerspectiveCmdTime = Date.now()
+    if (lastPerspectiveCmdTimeoutId !== null) {
+      clearTimeout(lastPerspectiveCmdTimeoutId)
+    }
+    lastPerspectiveCmdTimeoutId = setTimeout(
+      sendLastPerspectiveReliableChannel,
+      lastCmdDelay
+    ) as any as number
+  },
   1000 / 15
 )
 
@@ -481,7 +524,7 @@ class SetupSingleton {
 
       const targetFov = 4
       const fovAnimationStep = (currentFov - targetFov) / FRAMES_TO_ANIMATE_IN
-      let frameWaitOnFinish = 5
+      let frameWaitOnFinish = 10
 
       const animateFovChange = () => {
         if (this.camera instanceof PerspectiveCamera) {
@@ -1240,29 +1283,6 @@ function calculateNearFarFromFOV(fov: number) {
   // const z_near = 0.1 + nearFarRatio * (5 - 0.1)
   const z_far = 1000 + nearFarRatio * (100000 - 1000)
   return { z_near: 0.1, z_far }
-}
-
-function updateEngineFov(args: {
-  position: Vector3
-  quaternion: Quaternion
-  zoom: number
-  fov: number
-}) {
-  engineCommandManager.sendSceneCommand(
-    {
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_perspective_settings',
-        ...convertThreeCamValuesToEngineCam({
-          ...args,
-          isPerspective: true,
-        }),
-        fov_y: args.fov,
-        ...calculateNearFarFromFOV(args.fov),
-      },
-    } as any /* TODO - this command isn't in the spec yet, remove any when it is */
-  )
 }
 
 export function isQuaternionVertical(q: Quaternion) {
