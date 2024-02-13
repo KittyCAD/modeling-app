@@ -22804,6 +22804,507 @@
     "deprecated": false
   },
   {
+    "name": "fillet",
+    "summary": "Create fillets on tagged paths.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "data",
+        "type": "FilletData",
+        "schema": {
+          "description": "Data for fillets.",
+          "type": "object",
+          "required": [
+            "radius",
+            "tags"
+          ],
+          "properties": {
+            "radius": {
+              "description": "The radius of the fillet.",
+              "type": "number",
+              "format": "double"
+            },
+            "tags": {
+              "description": "The tags of the paths you want to fillet.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "required": true
+      },
+      {
+        "name": "extrude_group",
+        "type": "ExtrudeGroup",
+        "schema": {
+          "description": "An extrude group is a collection of extrude surfaces.",
+          "type": "object",
+          "required": [
+            "__meta",
+            "height",
+            "id",
+            "position",
+            "rotation",
+            "value",
+            "xAxis",
+            "yAxis",
+            "zAxis"
+          ],
+          "properties": {
+            "__meta": {
+              "description": "Metadata.",
+              "type": "array",
+              "items": {
+                "description": "Metadata.",
+                "type": "object",
+                "required": [
+                  "sourceRange"
+                ],
+                "properties": {
+                  "sourceRange": {
+                    "description": "The source range.",
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "format": "uint",
+                      "minimum": 0.0
+                    },
+                    "maxItems": 2,
+                    "minItems": 2
+                  }
+                }
+              }
+            },
+            "endCapId": {
+              "description": "The id of the extrusion end cap",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
+            "height": {
+              "description": "The height of the extrude group.",
+              "type": "number",
+              "format": "double"
+            },
+            "id": {
+              "description": "The id of the extrude group.",
+              "type": "string",
+              "format": "uuid"
+            },
+            "position": {
+              "description": "The position of the extrude group.",
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "rotation": {
+              "description": "The rotation of the extrude group.",
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxItems": 4,
+              "minItems": 4
+            },
+            "startCapId": {
+              "description": "The id of the extrusion start cap",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
+            "value": {
+              "description": "The extrude surfaces.",
+              "type": "array",
+              "items": {
+                "description": "An extrude surface.",
+                "oneOf": [
+                  {
+                    "description": "An extrude plane.",
+                    "type": "object",
+                    "required": [
+                      "faceId",
+                      "id",
+                      "name",
+                      "position",
+                      "rotation",
+                      "sourceRange",
+                      "type"
+                    ],
+                    "properties": {
+                      "faceId": {
+                        "description": "The face id for the extrude plane.",
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "id": {
+                        "description": "The id of the geometry.",
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "name": {
+                        "description": "The name.",
+                        "type": "string"
+                      },
+                      "position": {
+                        "description": "The position.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 3,
+                        "minItems": 3
+                      },
+                      "rotation": {
+                        "description": "The rotation.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 4,
+                        "minItems": 4
+                      },
+                      "sourceRange": {
+                        "description": "The source range.",
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "format": "uint",
+                          "minimum": 0.0
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "extrudePlane"
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "xAxis": {
+              "description": "The x-axis of the extrude group base plane in the 3D space",
+              "type": "object",
+              "required": [
+                "x",
+                "y",
+                "z"
+              ],
+              "properties": {
+                "x": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "y": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "z": {
+                  "type": "number",
+                  "format": "double"
+                }
+              }
+            },
+            "yAxis": {
+              "description": "The y-axis of the extrude group base plane in the 3D space",
+              "type": "object",
+              "required": [
+                "x",
+                "y",
+                "z"
+              ],
+              "properties": {
+                "x": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "y": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "z": {
+                  "type": "number",
+                  "format": "double"
+                }
+              }
+            },
+            "zAxis": {
+              "description": "The z-axis of the extrude group base plane in the 3D space",
+              "type": "object",
+              "required": [
+                "x",
+                "y",
+                "z"
+              ],
+              "properties": {
+                "x": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "y": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "z": {
+                  "type": "number",
+                  "format": "double"
+                }
+              }
+            }
+          }
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "ExtrudeGroup",
+      "schema": {
+        "description": "An extrude group is a collection of extrude surfaces.",
+        "type": "object",
+        "required": [
+          "__meta",
+          "height",
+          "id",
+          "position",
+          "rotation",
+          "value",
+          "xAxis",
+          "yAxis",
+          "zAxis"
+        ],
+        "properties": {
+          "__meta": {
+            "description": "Metadata.",
+            "type": "array",
+            "items": {
+              "description": "Metadata.",
+              "type": "object",
+              "required": [
+                "sourceRange"
+              ],
+              "properties": {
+                "sourceRange": {
+                  "description": "The source range.",
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "format": "uint",
+                    "minimum": 0.0
+                  },
+                  "maxItems": 2,
+                  "minItems": 2
+                }
+              }
+            }
+          },
+          "endCapId": {
+            "description": "The id of the extrusion end cap",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "height": {
+            "description": "The height of the extrude group.",
+            "type": "number",
+            "format": "double"
+          },
+          "id": {
+            "description": "The id of the extrude group.",
+            "type": "string",
+            "format": "uuid"
+          },
+          "position": {
+            "description": "The position of the extrude group.",
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "maxItems": 3,
+            "minItems": 3
+          },
+          "rotation": {
+            "description": "The rotation of the extrude group.",
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "maxItems": 4,
+            "minItems": 4
+          },
+          "startCapId": {
+            "description": "The id of the extrusion start cap",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "value": {
+            "description": "The extrude surfaces.",
+            "type": "array",
+            "items": {
+              "description": "An extrude surface.",
+              "oneOf": [
+                {
+                  "description": "An extrude plane.",
+                  "type": "object",
+                  "required": [
+                    "faceId",
+                    "id",
+                    "name",
+                    "position",
+                    "rotation",
+                    "sourceRange",
+                    "type"
+                  ],
+                  "properties": {
+                    "faceId": {
+                      "description": "The face id for the extrude plane.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "id": {
+                      "description": "The id of the geometry.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "description": "The name.",
+                      "type": "string"
+                    },
+                    "position": {
+                      "description": "The position.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 3,
+                      "minItems": 3
+                    },
+                    "rotation": {
+                      "description": "The rotation.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 4,
+                      "minItems": 4
+                    },
+                    "sourceRange": {
+                      "description": "The source range.",
+                      "type": "array",
+                      "items": {
+                        "type": "integer",
+                        "format": "uint",
+                        "minimum": 0.0
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "extrudePlane"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "xAxis": {
+            "description": "The x-axis of the extrude group base plane in the 3D space",
+            "type": "object",
+            "required": [
+              "x",
+              "y",
+              "z"
+            ],
+            "properties": {
+              "x": {
+                "type": "number",
+                "format": "double"
+              },
+              "y": {
+                "type": "number",
+                "format": "double"
+              },
+              "z": {
+                "type": "number",
+                "format": "double"
+              }
+            }
+          },
+          "yAxis": {
+            "description": "The y-axis of the extrude group base plane in the 3D space",
+            "type": "object",
+            "required": [
+              "x",
+              "y",
+              "z"
+            ],
+            "properties": {
+              "x": {
+                "type": "number",
+                "format": "double"
+              },
+              "y": {
+                "type": "number",
+                "format": "double"
+              },
+              "z": {
+                "type": "number",
+                "format": "double"
+              }
+            }
+          },
+          "zAxis": {
+            "description": "The z-axis of the extrude group base plane in the 3D space",
+            "type": "object",
+            "required": [
+              "x",
+              "y",
+              "z"
+            ],
+            "properties": {
+              "x": {
+                "type": "number",
+                "format": "double"
+              },
+              "y": {
+                "type": "number",
+                "format": "double"
+              },
+              "z": {
+                "type": "number",
+                "format": "double"
+              }
+            }
+          }
+        }
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
     "name": "floor",
     "summary": "Computes the largest integer less than or equal to a number.",
     "description": "",

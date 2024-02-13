@@ -204,6 +204,22 @@ const part002 = startSketchOn(part001, "END")
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn serial_test_basic_fillet_cube() {
+    let code = r#"const part001 = startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line({to: [10, 0], tag: "thing"}, %)
+    |> line([10, 10], %)
+    |> line({to: [0, 10], tag: "thing2"}, %)
+    |> close(%)
+    |> extrude(10, %)
+    |> fillet({radius: 2, tags: ["thing", "thing2"]}, %)
+"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/basic_fillet_cube.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_execute_with_function_sketch() {
     let code = r#"fn box = (h, l, w) => {
  const myBox = startSketchOn('XY')
