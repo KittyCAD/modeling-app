@@ -10,8 +10,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value as JValue};
 use tower_lsp::lsp_types::{CompletionItem, CompletionItemKind, DocumentSymbol, Range as LspRange, SymbolKind};
 
-pub use self::literal_value::LiteralValue;
-pub use self::none::KclNone;
+pub use self::{literal_value::LiteralValue, none::KclNone};
 use crate::{
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
@@ -1423,6 +1422,7 @@ impl Literal {
                 let quote = if self.raw.trim().starts_with('"') { '"' } else { '\'' };
                 format!("{quote}{s}{quote}")
             }
+            LiteralValue::Bool(_) => self.raw.clone(),
         }
     }
 }
@@ -2067,6 +2067,7 @@ impl MemberExpression {
                         }))
                     }
                     LiteralValue::String(s) => s,
+                    LiteralValue::Bool(b) => b.to_string(),
                 }
             }
         };
@@ -3583,5 +3584,48 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
             let actual = function_expr.number_of_args();
             assert_eq!(expected, actual, "failed test #{i} '{test_name}'");
         }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_object_bool() {
+        let some_program_string = r#"some_func({thing: true, other_thing: false})"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        // We want to get the bool and verify it is a bool.
+
+        let BodyItem::ExpressionStatement(ExpressionStatement {
+            expression,
+            start: _,
+            end: _,
+        }) = program.body.first().unwrap()
+        else {
+            panic!("expected a function!");
+        };
+
+        let Value::CallExpression(ce) = expression else {
+            panic!("expected a function!");
+        };
+
+        assert!(!ce.arguments.is_empty());
+
+        let Value::ObjectExpression(oe) = ce.arguments.first().unwrap() else {
+            panic!("expected a object!");
+        };
+
+        assert_eq!(oe.properties.len(), 2);
+
+        let Value::Literal(ref l) = oe.properties.first().unwrap().value else {
+            panic!("expected a literal!");
+        };
+
+        assert_eq!(l.raw, "true");
+
+        let Value::Literal(ref l) = oe.properties.get(1).unwrap().value else {
+            panic!("expected a literal!");
+        };
+
+        assert_eq!(l.raw, "false");
     }
 }

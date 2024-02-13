@@ -6,6 +6,8 @@ import { Router } from './Router'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 
 // uncomment for xstate inspector
+// import { DEV } from 'env'
+// import { inspect } from '@xstate/inspect'
 // if (DEV)
 //   inspect({
 //     iframe: false,

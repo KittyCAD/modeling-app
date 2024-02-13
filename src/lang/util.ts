@@ -26,15 +26,6 @@ export function pathMapToSelections(
   return newSelections
 }
 
-export function isReducedMotion(): boolean {
-  return (
-    typeof window !== 'undefined' &&
-    window.matchMedia &&
-    // TODO/Note I (Kurt) think '(prefers-reduced-motion: reduce)' and '(prefers-reduced-motion)' are equivalent, but not 100% sure
-    window.matchMedia('(prefers-reduced-motion)').matches
-  )
-}
-
 export function isCursorInSketchCommandRange(
   artifactMap: ArtifactMap,
   selectionRanges: Selections

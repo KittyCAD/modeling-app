@@ -16,7 +16,7 @@ tauri-build = { version = "2.0.0-beta", features = [] }
 
 [dependencies]
 anyhow = "1"
-kittycad = "0.2.42"
+kittycad = "0.2.50"
 oauth2 = "4.4.2"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
@@ -26,11 +26,8 @@ tauri-plugin-fs = { version = "2.0.0-beta.0" }
 tauri-plugin-http = { version = "2.0.0-beta.0" }
 tauri-plugin-os = { version = "2.0.0-beta.0" }
 tauri-plugin-shell = { version = "2.0.0-beta.0" }
-tokio = { version = "1.34.0", features = ["time"] }
+tokio = { version = "1.36.0", features = ["time"] }
 toml = "0.8.2"
-
-[target.'cfg(target_os = "linux")'.dependencies]
-tauri-driver = "0.1.3"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

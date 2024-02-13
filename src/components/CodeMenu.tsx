@@ -9,7 +9,7 @@ import styles from './CodeMenu.module.css'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
 import { editorShortcutMeta } from './TextEditor'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { kclManager } from 'lang/KclSinglton'
+import { kclManager } from 'lang/KclSingleton'
 
 export const CodeMenu = ({ children }: PropsWithChildren) => {
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
@@ -67,6 +67,24 @@ export const CodeMenu = ({ children }: PropsWithChildren) => {
               rel="noopener noreferrer"
             >
               <span>Read the KCL docs</span>
+              <small>
+                On GitHub
+                <FontAwesomeIcon
+                  icon={faArrowUpRightFromSquare}
+                  className="ml-1 align-text-top"
+                  width={12}
+                />
+              </small>
+            </a>
+          </Menu.Item>
+          <Menu.Item>
+            <a
+              className={styles.button}
+              href="https://github.com/KittyCAD/kcl-samples"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span>KCL samples</span>
               <small>
                 On GitHub
                 <FontAwesomeIcon

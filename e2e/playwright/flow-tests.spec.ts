@@ -1,7 +1,5 @@
 import { test, expect } from '@playwright/test'
 import { secrets } from './secrets'
-import { EngineCommand } from '../../src/lang/std/engineConnection'
-import { v4 as uuidv4 } from 'uuid'
 import { getUtils } from './test-utils'
 import waitOn from 'wait-on'
 import { Themes } from '../../src/lib/theme'
@@ -53,40 +51,38 @@ test('Basic sketch', async ({ page }) => {
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
-  await u.waitForDefaultPlanesVisibilityChange()
 
   await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
 
   // click on "Start Sketch" button
   await u.clearCommandLogs()
-  await Promise.all([
-    u.doAndWaitForImageDiff(
-      () => page.getByRole('button', { name: 'Start Sketch' }).click(),
-      200
-    ),
-    u.waitForDefaultPlanesVisibilityChange(),
-  ])
+  await u.doAndWaitForImageDiff(
+    () => page.getByRole('button', { name: 'Start Sketch' }).click(),
+    200
+  )
 
   // select a plane
-  await u.doAndWaitForCmd(() => page.mouse.click(700, 200), 'edit_mode_enter')
-  await u.waitForCmdReceive('set_tool')
+  await page.mouse.click(700, 200)
 
-  await u.doAndWaitForCmd(
-    () => page.getByRole('button', { name: 'Line' }).click(),
-    'set_tool'
+  await expect(page.locator('.cm-content')).toHaveText(
+    `const part001 = startSketchOn('-XZ')`
   )
+
+  await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
 
   const startXPx = 600
-  await u.doAndWaitForCmd(
-    () => page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10),
-    'mouse_click',
-    false
-  )
+  await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
+  const startAt = '[23.89, -32.23]'
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt(${startAt}, %)`)
+  await page.waitForTimeout(100)
 
+  await u.closeDebugPanel()
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
+  await page.waitForTimeout(100)
 
-  const startAt = '[18.26, -24.63]'
-  const num = '18.43'
+  const num = 24.11
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
@@ -97,27 +93,22 @@ test('Basic sketch', async ({ page }) => {
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
   |> line([${num}, 0], %)
-  |> line([0, ${num}], %)`)
+  |> line([0, ${num + 0.01}], %)`)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
   |> line([${num}, 0], %)
-  |> line([0, ${num}], %)
-  |> line([-36.69, 0], %)`)
+  |> line([0, ${num + 0.01}], %)
+  |> line([-48, 0], %)`)
 
   // deselect line tool
-  await u.doAndWaitForCmd(
-    () => page.getByRole('button', { name: 'Line' }).click(),
-    'set_tool'
-  )
+  await page.getByRole('button', { name: 'Line' }).click()
+  await page.waitForTimeout(100)
 
   // click between first two clicks to get center of the line
-  await u.doAndWaitForCmd(
-    () => page.mouse.click(startXPx + PUR * 15, 500 - PUR * 10),
-    'select_with_point'
-  )
-  await u.closeDebugPanel()
+  await page.mouse.click(startXPx + PUR * 15, 500 - PUR * 10)
+  await page.waitForTimeout(100)
 
   // hold down shift
   await page.keyboard.down('Shift')
@@ -133,7 +124,7 @@ test('Basic sketch', async ({ page }) => {
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
   |> line({ to: [${num}, 0], tag: 'seg01' }, %)
-  |> line([0, ${num}], %)
+  |> line([0, ${num + 0.01}], %)
   |> angledLine([180, segLen('seg01', %)], %)`)
 })
 
@@ -271,59 +262,41 @@ test('Can create sketches on all planes and their back sides', async ({
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
-  await u.waitForDefaultPlanesVisibilityChange()
 
-  const camCmd: EngineCommand = {
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_look_at',
-      center: { x: 15, y: 0, z: 0 },
-      up: { x: 0, y: 0, z: 1 },
-      vantage: { x: 30, y: 30, z: 30 },
-    },
-  }
+  const camPos: [number, number, number] = [100, 100, 100]
 
   const TestSinglePlane = async ({
     viewCmd,
     expectedCode,
     clickCoords,
   }: {
-    viewCmd: EngineCommand
+    viewCmd: [number, number, number]
     expectedCode: string
     clickCoords: { x: number; y: number }
   }) => {
     await u.openDebugPanel()
-    await u.sendCustomCmd(viewCmd)
+
+    await u.updateCamPosition(viewCmd)
+
     await u.clearCommandLogs()
-    // await page.waitForTimeout(200)
     await page.getByRole('button', { name: 'Start Sketch' }).click()
-    await u.waitForDefaultPlanesVisibilityChange()
 
     await u.closeDebugPanel()
     await page.mouse.click(clickCoords.x, clickCoords.y)
-    await u.openDebugPanel()
+    await page.waitForTimeout(300) // wait for animation
 
     await expect(page.getByRole('button', { name: 'Line' })).toBeVisible()
 
     // draw a line
     const startXPx = 600
-    await u.clearCommandLogs()
-    await page.getByRole('button', { name: 'Line' }).click()
-    await u.waitForCmdReceive('set_tool')
-    await u.clearCommandLogs()
+
     await u.closeDebugPanel()
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-    await u.openDebugPanel()
-    await u.waitForCmdReceive('mouse_click')
-    await u.closeDebugPanel()
-    await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
-    await u.openDebugPanel()
 
     await expect(page.locator('.cm-content')).toHaveText(expectedCode)
 
     await page.getByRole('button', { name: 'Line' }).click()
-    await u.clearCommandLogs()
+    await u.openAndClearDebugPanel()
     await page.getByRole('button', { name: 'Exit Sketch' }).click()
     await u.expectCmdLog('[data-message-type="execution-done"]')
 
@@ -333,51 +306,40 @@ test('Can create sketches on all planes and their back sides', async ({
 
   const codeTemplate = (
     plane = 'XY',
-    sign = ''
+    rounded = false
   ) => `const part001 = startSketchOn('${plane}')
-  |> startProfileAt([${sign}6.88, -9.29], %)
-  |> line([${sign}6.95, 0], %)`
+  |> startProfileAt([28.91, -39${rounded ? '' : '.01'}], %)`
   await TestSinglePlane({
-    viewCmd: camCmd,
+    viewCmd: camPos,
     expectedCode: codeTemplate('XY'),
-    clickCoords: { x: 700, y: 350 }, // red plane
+    clickCoords: { x: 600, y: 388 }, // red plane
+    // clickCoords: { x: 600, y: 400 }, // red plane // clicks grid helper and that causes problems, should fix so that these coords work too.
   })
   await TestSinglePlane({
-    viewCmd: camCmd,
-    expectedCode: codeTemplate('YZ'),
-    clickCoords: { x: 1000, y: 200 }, // green plane
+    viewCmd: camPos,
+    expectedCode: codeTemplate('YZ', true),
+    clickCoords: { x: 700, y: 300 }, // green plane
   })
   await TestSinglePlane({
-    viewCmd: camCmd,
-    expectedCode: codeTemplate('XZ', '-'),
-    clickCoords: { x: 630, y: 130 }, // blue plane
+    viewCmd: camPos,
+    expectedCode: codeTemplate('XZ'),
+    clickCoords: { x: 700, y: 80 }, // blue plane
   })
-
-  // new camera angle to click the back side of all three planes
-  const camCmdBackSide: EngineCommand = {
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_look_at',
-      center: { x: -15, y: 0, z: 0 },
-      up: { x: 0, y: 0, z: 1 },
-      vantage: { x: -30, y: -30, z: -30 },
-    },
-  }
+  const camCmdBackSide: [number, number, number] = [-100, -100, -100]
   await TestSinglePlane({
     viewCmd: camCmdBackSide,
-    expectedCode: codeTemplate('-XY', '-'),
-    clickCoords: { x: 705, y: 136 }, // back of red plane
+    expectedCode: codeTemplate('-XY', true),
+    clickCoords: { x: 601, y: 118 }, // back of red plane
   })
   await TestSinglePlane({
     viewCmd: camCmdBackSide,
-    expectedCode: codeTemplate('-YZ', '-'),
-    clickCoords: { x: 1000, y: 350 }, // back of green plane
+    expectedCode: codeTemplate('-YZ'),
+    clickCoords: { x: 730, y: 219 }, // back of green plane
   })
   await TestSinglePlane({
     viewCmd: camCmdBackSide,
-    expectedCode: codeTemplate('-XZ'),
-    clickCoords: { x: 600, y: 400 }, // back of blue plane
+    expectedCode: codeTemplate('-XZ', true),
+    clickCoords: { x: 680, y: 427 }, // back of blue plane
   })
 })
 
@@ -387,7 +349,6 @@ test('Auto complete works', async ({ page }) => {
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
-  await u.waitForDefaultPlanesVisibilityChange()
 
   // this test might be brittle as we add and remove functions
   // but should also be easy to update.
@@ -478,38 +439,36 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
-  await u.waitForDefaultPlanesVisibilityChange()
 
-  const xAxisClick = () => page.mouse.click(700, 250)
-  const emptySpaceClick = () => page.mouse.click(700, 300)
-  const topHorzSegmentClick = () => page.mouse.click(700, 285)
-  const bottomHorzSegmentClick = () => page.mouse.click(750, 393)
+  const xAxisClick = () =>
+    page.mouse.click(700, 250).then(() => page.waitForTimeout(100))
+  const emptySpaceClick = () =>
+    page.mouse.click(728, 343).then(() => page.waitForTimeout(100))
+  const topHorzSegmentClick = () =>
+    page.mouse.click(709, 289).then(() => page.waitForTimeout(100))
+  const bottomHorzSegmentClick = () =>
+    page.mouse.click(767, 396).then(() => page.waitForTimeout(100))
 
   await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await u.waitForDefaultPlanesVisibilityChange()
 
   // select a plane
-  await u.doAndWaitForCmd(() => page.mouse.click(700, 200), 'edit_mode_enter')
-  await u.waitForCmdReceive('set_tool')
-
-  await u.doAndWaitForCmd(
-    () => page.getByRole('button', { name: 'Line' }).click(),
-    'set_tool'
-  )
+  await page.mouse.click(700, 200)
+  await page.waitForTimeout(700) // wait for animation
 
   const startXPx = 600
-  await u.doAndWaitForCmd(
-    () => page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10),
-    'mouse_click',
-    false
-  )
+  await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
+  const startAt = '[23.89, -32.23]'
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt(${startAt}, %)`)
+
+  await u.closeDebugPanel()
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
 
-  const startAt = '[18.26, -24.63]'
-  const num = '18.43'
-  const num2 = '36.69'
+  const num = 24.11
+  const num2 = '48'
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
@@ -520,20 +479,17 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
   |> line([${num}, 0], %)
-  |> line([0, ${num}], %)`)
+  |> line([0, ${num + 0.01}], %)`)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
   |> line([${num}, 0], %)
-  |> line([0, ${num}], %)
+  |> line([0, ${num + 0.01}], %)
   |> line([-${num2}, 0], %)`)
 
   // deselect line tool
-  await u.doAndWaitForCmd(
-    () => page.getByRole('button', { name: 'Line' }).click(),
-    'set_tool'
-  )
+  await page.getByRole('button', { name: 'Line' }).click()
 
   await u.closeDebugPanel()
   const selectionSequence = async () => {
@@ -555,79 +511,72 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     // now check clicking works including axis
 
     // click a segment hold shift and click an axis, see that a relevant constraint is enabled
-    await u.doAndWaitForCmd(topHorzSegmentClick, 'select_with_point', false)
+    await topHorzSegmentClick()
     await page.keyboard.down('Shift')
     const absYButton = page.getByRole('button', { name: 'ABS Y' })
     await expect(absYButton).toBeDisabled()
-    await u.doAndWaitForCmd(xAxisClick, 'select_with_point', false)
+    await xAxisClick()
     await page.keyboard.up('Shift')
     await absYButton.and(page.locator(':not([disabled])')).waitFor()
     await expect(absYButton).not.toBeDisabled()
 
     // clear selection by clicking on nothing
-    await u.doAndWaitForCmd(emptySpaceClick, 'select_clear', false)
+    await emptySpaceClick()
 
     // same selection but click the axis first
-    await u.doAndWaitForCmd(xAxisClick, 'select_with_point', false)
+    await xAxisClick()
     await expect(absYButton).toBeDisabled()
     await page.keyboard.down('Shift')
-    await u.doAndWaitForCmd(topHorzSegmentClick, 'select_with_point', false)
+    await topHorzSegmentClick()
+
     await page.keyboard.up('Shift')
     await expect(absYButton).not.toBeDisabled()
 
     // clear selection by clicking on nothing
-    await u.doAndWaitForCmd(emptySpaceClick, 'select_clear', false)
+    await emptySpaceClick()
 
     // check the same selection again by putting cursor in code first then selecting axis
-    await u.doAndWaitForCmd(
-      () => page.getByText(`  |> line([-${num2}, 0], %)`).click(),
-      'select_clear',
-      false
-    )
+    await page.getByText(`  |> line([-${num2}, 0], %)`).click()
     await page.keyboard.down('Shift')
     await expect(absYButton).toBeDisabled()
-    await u.doAndWaitForCmd(xAxisClick, 'select_with_point', false)
+    await xAxisClick()
     await page.keyboard.up('Shift')
     await expect(absYButton).not.toBeDisabled()
 
     // clear selection by clicking on nothing
-    await u.doAndWaitForCmd(emptySpaceClick, 'select_clear', false)
+    await emptySpaceClick()
 
     // select segment in editor than another segment in scene and check there are two cursors
-    await u.doAndWaitForCmd(
-      () => page.getByText(`  |> line([-${num2}, 0], %)`).click(),
-      'select_clear',
-      false
-    )
+    await page.getByText(`  |> line([-${num2}, 0], %)`).click()
+    await page.waitForTimeout(300)
     await page.keyboard.down('Shift')
     await expect(page.locator('.cm-cursor')).toHaveCount(1)
-    await u.doAndWaitForCmd(bottomHorzSegmentClick, 'select_with_point', false) // another segment, bottom one
+    await bottomHorzSegmentClick()
     await page.keyboard.up('Shift')
     await expect(page.locator('.cm-cursor')).toHaveCount(2)
 
     // clear selection by clicking on nothing
-    await u.doAndWaitForCmd(emptySpaceClick, 'select_clear', false)
+    await emptySpaceClick()
   }
 
   await selectionSequence()
 
   // hovering in fresh sketch worked, lets try exiting and re-entering
-  await u.doAndWaitForCmd(
-    () => page.getByRole('button', { name: 'Exit Sketch' }).click(),
-    'edit_mode_exit'
-  )
+  await u.openAndClearDebugPanel()
+  await page.getByRole('button', { name: 'Exit Sketch' }).click()
+  await page.waitForTimeout(200)
   // wait for execution done
+
   await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
 
   // select a line
-  await u.doAndWaitForCmd(topHorzSegmentClick, 'select_clear', false)
+  await topHorzSegmentClick()
+  await page.waitForTimeout(200)
 
   // enter sketch again
-  await u.doAndWaitForCmd(
-    () => page.getByRole('button', { name: 'Start Sketch' }).click(),
-    'edit_mode_enter',
-    false
-  )
+  await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await page.waitForTimeout(700) // wait for animation
 
   // hover again and check it works
   await selectionSequence()
@@ -697,6 +646,8 @@ test('Can extrude from the command bar', async ({ page, context }) => {
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
 
   let cmdSearchBar = page.getByPlaceholder('Search commands')
   await page.keyboard.press('Meta+K')
@@ -710,10 +661,7 @@ test('Can extrude from the command bar', async ({ page, context }) => {
   await expect(page.getByRole('button', { name: 'selection' })).toBeDisabled()
 
   // Click to select face and set distance
-  await u.openAndClearDebugPanel()
   await page.getByText('|> startProfileAt([-6.95, 4.98], %)').click()
-  await u.waitForCmdReceive('select_add')
-  await u.closeDebugPanel()
   await page.getByRole('button', { name: 'Continue' }).click()
   await expect(page.getByRole('button', { name: 'distance' })).toBeDisabled()
   await page.keyboard.press('Enter')
@@ -734,4 +682,167 @@ test('Can extrude from the command bar', async ({ page, context }) => {
     |> close(%)
     |> extrude(5, %)`
   )
+})
+
+test('Can add multiple sketches', async ({ page }) => {
+  const u = getUtils(page)
+  await page.setViewportSize({ width: 1200, height: 500 })
+  const PUR = 400 / 37.5 //pixeltoUnitRatio
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await u.openDebugPanel()
+
+  await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
+
+  // click on "Start Sketch" button
+  await u.clearCommandLogs()
+  await u.doAndWaitForImageDiff(
+    () => page.getByRole('button', { name: 'Start Sketch' }).click(),
+    200
+  )
+
+  // select a plane
+  await page.mouse.click(700, 200)
+
+  await expect(page.locator('.cm-content')).toHaveText(
+    `const part001 = startSketchOn('-XZ')`
+  )
+
+  await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
+
+  const startXPx = 600
+  await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
+  const startAt = '[23.89, -32.23]'
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt(${startAt}, %)`)
+  await page.waitForTimeout(100)
+
+  await u.closeDebugPanel()
+  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
+  await page.waitForTimeout(100)
+
+  const num = 24.11
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt(${startAt}, %)
+  |> line([${num}, 0], %)`)
+
+  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt(${startAt}, %)
+  |> line([${num}, 0], %)
+  |> line([0, ${num + 0.01}], %)`)
+  await page.mouse.click(startXPx, 500 - PUR * 20)
+  const finalCodeFirstSketch = `const part001 = startSketchOn('-XZ')
+  |> startProfileAt(${startAt}, %)
+  |> line([${num}, 0], %)
+  |> line([0, ${num + 0.01}], %)
+  |> line([-48, 0], %)`
+  await expect(page.locator('.cm-content')).toHaveText(finalCodeFirstSketch)
+
+  // exit the sketch
+
+  await u.openAndClearDebugPanel()
+  await page.getByRole('button', { name: 'Exit Sketch' }).click()
+
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+
+  await u.updateCamPosition([0, 100, 100])
+
+  // start a new sketch
+  await u.clearCommandLogs()
+  await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await page.waitForTimeout(100)
+  await page.mouse.click(673, 384)
+
+  await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
+  await u.clearAndCloseDebugPanel()
+
+  await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
+  const startAt2 = '[23.61, -31.85]'
+  await expect(
+    (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
+  ).toBe(
+    `${finalCodeFirstSketch}
+const part002 = startSketchOn('XY')
+  |> startProfileAt(${startAt2}, %)`.replace(/\s/g, '')
+  )
+  await page.waitForTimeout(100)
+
+  await u.closeDebugPanel()
+  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
+  await page.waitForTimeout(100)
+
+  const num2 = 23.83
+  await expect(
+    (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
+  ).toBe(
+    `${finalCodeFirstSketch}
+const part002 = startSketchOn('XY')
+  |> startProfileAt(${startAt2}, %)
+  |> line([${num2}, 0], %)`.replace(/\s/g, '')
+  )
+
+  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
+  await expect(
+    (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
+  ).toBe(
+    `${finalCodeFirstSketch}
+const part002 = startSketchOn('XY')
+  |> startProfileAt(${startAt2}, %)
+  |> line([${num2}, 0], %)
+  |> line([0, ${num2}], %)`.replace(/\s/g, '')
+  )
+  await page.mouse.click(startXPx, 500 - PUR * 20)
+  await expect(
+    (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
+  ).toBe(
+    `${finalCodeFirstSketch}
+const part002 = startSketchOn('XY')
+  |> startProfileAt(${startAt2}, %)
+  |> line([${num2}, 0], %)
+  |> line([0, ${num2}], %)
+  |> line([-47.44, 0], %)`.replace(/\s/g, '')
+  )
+})
+
+test('ProgramMemory can be serialised', async ({ page, context }) => {
+  const u = getUtils(page)
+  await context.addInitScript(async (token) => {
+    localStorage.setItem(
+      'persistCode',
+      `const part = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, 1], %)
+  |> line([1, 0], %)
+  |> line([0, -1], %)
+  |> close(%)
+  |> extrude(1, %)
+  |> patternLinear({
+        axis: [1, 0, 1],
+        repetitions: 3,
+        distance: 6
+      }, %)`
+    )
+  })
+  await page.setViewportSize({ width: 1000, height: 500 })
+  await page.goto('/')
+  const messages: string[] = []
+
+  // Listen for all console events and push the message text to an array
+  page.on('console', (message) => messages.push(message.text()))
+  await u.waitForAuthSkipAppStart()
+
+  // wait for execution done
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+
+  const forbiddenMessages = ['cannot serialize tagged newtype variant']
+  forbiddenMessages.forEach((forbiddenMessage) => {
+    messages.forEach((message) => {
+      expect(message).not.toContain(forbiddenMessage)
+    })
+  })
 })

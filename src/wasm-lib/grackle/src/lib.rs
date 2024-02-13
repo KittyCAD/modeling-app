@@ -12,14 +12,16 @@ use kcl_lib::{
     ast::types::{BodyItem, FunctionExpressionParts, KclNone, LiteralValue, Program},
 };
 use kcl_value_group::into_single_value;
-use kittycad_execution_plan::{self as ep, Address, Destination, Instruction};
+use kittycad_execution_plan::{self as ep, Destination, Instruction};
 use kittycad_execution_plan_traits as ept;
-use kittycad_execution_plan_traits::NumericPrimitive;
+use kittycad_execution_plan_traits::{Address, NumericPrimitive};
 use kittycad_modeling_session::Session;
 
-use self::binding_scope::{BindingScope, EpBinding, GetFnResult};
-use self::error::{CompileError, Error};
-use self::kcl_value_group::SingleValue;
+use self::{
+    binding_scope::{BindingScope, EpBinding, GetFnResult},
+    error::{CompileError, Error},
+    kcl_value_group::SingleValue,
+};
 
 /// Execute a KCL program by compiling into an execution plan, then running that.
 pub async fn execute(ast: Program, session: Option<Session>) -> Result<ep::Memory, Error> {
@@ -323,32 +325,27 @@ impl Planner {
                         }
                     }
                 };
-                let (properties, id) = parse();
+                let (mut properties, id) = parse();
                 let name = id.name;
                 let mut binding = self.binding_scope.get(&name).ok_or(CompileError::Undefined { name })?;
                 if properties.iter().any(|(_property, computed)| *computed) {
                     // There's a computed property, so the property/index can only be determined at runtime.
                     let mut instructions: Vec<Instruction> = Vec::new();
-                    // For now we can only handle computed properties of arrays and objects, no other type.
-                    enum ValType {
-                        Array,
-                        Object,
-                    }
-                    // TODO: `val_type` might need to be mutable so we can properly process
-                    // arrays within objects within arrays etc.
-                    let (val_type, mut val_start) = match binding {
-                        EpBinding::Sequence { length_at, elements: _ } => (ValType::Array, *length_at),
+                    let starting_address = match binding {
+                        EpBinding::Sequence { length_at, elements: _ } => *length_at,
                         EpBinding::Map {
                             length_at,
                             properties: _,
-                        } => (ValType::Object, *length_at),
-                        _ => todo!("handle computed properties besides arrays"),
+                        } => *length_at,
+                        _ => return Err(CompileError::CannotIndex),
                     };
+                    let mut structure_start = ep::Operand::Literal(starting_address.into());
+                    properties.reverse();
                     for (property, _computed) in properties {
-                        // Where is the index stored?
-                        let index = match property {
+                        // Where is the member stored?
+                        let addr_of_member = match property {
                             // If it's some identifier, then look up where that identifier will be stored.
-                            // That's the memory address the index should be in.
+                            // That's the memory address the index/property should be in.
                             ast::types::LiteralIdentifier::Identifier(id) => {
                                 let b = self
                                     .binding_scope
@@ -365,27 +362,28 @@ impl Planner {
                                 ep::Operand::Literal(kcl_literal_to_kcep_literal(litval.value))
                             }
                         };
-                        instructions.push(match val_type {
-                            ValType::Array => Instruction::GetElement {
-                                index,
-                                start: val_start,
-                            },
-                            ValType::Object => Instruction::GetProperty {
-                                start: val_start,
-                                property: index,
-                            },
-                        });
 
-                        // Point `start_of_array` to the location we just indexed, so that if there's
-                        // another index expression to a child array, `start_of_array` is in the right place.
-                        val_start = self.next_addr.offset_by(1);
-                        instructions.push(Instruction::StackPop {
-                            destination: Some(val_start),
+                        // Find the address of the member, push to stack.
+                        instructions.push(Instruction::AddrOfMember {
+                            member: addr_of_member,
+                            start: structure_start,
                         });
+                        // If there's another member after this one, its starting object is the
+                        // address we just pushed to the stack.
+                        structure_start = ep::Operand::StackPop;
                     }
+
+                    // The final address is on the stack.
+                    // Move it to addressable memory.
+                    let final_prop_addr = self.next_addr.offset_by(1);
+                    instructions.push(Instruction::CopyLen {
+                        source_range: ep::Operand::StackPop,
+                        destination_range: ep::Operand::Literal(final_prop_addr.into()),
+                    });
+
                     Ok(EvalPlan {
                         instructions,
-                        binding: EpBinding::Single(val_start),
+                        binding: EpBinding::Single(final_prop_addr),
                     })
                 } else {
                     // Compiler optimization:
@@ -590,6 +588,7 @@ fn kcl_literal_to_kcep_literal(expr: LiteralValue) -> ept::Primitive {
         LiteralValue::IInteger(x) => ept::Primitive::NumericValue(NumericPrimitive::Integer(x)),
         LiteralValue::Fractional(x) => ept::Primitive::NumericValue(NumericPrimitive::Float(x)),
         LiteralValue::String(x) => ept::Primitive::String(x),
+        LiteralValue::Bool(b) => ept::Primitive::Bool(b),
     }
 }
 

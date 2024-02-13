@@ -3,8 +3,8 @@
 //! But some other stdlib functions will be written in KCL.
 
 use kcl_lib::std::sketch::PlaneData;
-use kittycad_execution_plan::{Address, BinaryArithmetic, Destination, Instruction};
-use kittycad_execution_plan_traits::Value;
+use kittycad_execution_plan::{BinaryArithmetic, Destination, Instruction};
+use kittycad_execution_plan_traits::{Address, Value};
 
 use crate::{CompileError, EpBinding, EvalPlan};
 

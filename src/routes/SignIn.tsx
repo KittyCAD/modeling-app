@@ -3,7 +3,7 @@ import { isTauri } from '../lib/isTauri'
 import { invoke } from '@tauri-apps/api/core'
 import { VITE_KC_SITE_BASE_URL, VITE_KC_API_BASE_URL } from '../env'
 import { Themes, getSystemTheme } from '../lib/theme'
-import { paths } from '../Router'
+import { paths } from 'lib/paths'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { APP_NAME } from 'lib/constants'
 
@@ -22,6 +22,7 @@ const SignIn = () => {
     },
   } = useGlobalStateContext()
 
+  const appliedTheme = theme === Themes.System ? getSystemTheme() : theme
   const signInTauri = async () => {
     // We want to invoke our command to login via device auth.
     try {

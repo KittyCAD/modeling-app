@@ -284,10 +284,29 @@ pub fn get_description_string_from_schema(schema: &schemars::schema::Schema) -> 
 pub fn get_type_string_from_schema(schema: &schemars::schema::Schema) -> Result<(String, bool)> {
     match schema {
         schemars::schema::Schema::Object(o) => {
+            if let Some(enum_values) = &o.enum_values {
+                let mut parsed_enum_values: Vec<String> = Default::default();
+                let mut had_enum_string = false;
+                for enum_value in enum_values {
+                    if let serde_json::value::Value::String(enum_value) = enum_value {
+                        had_enum_string = true;
+                        parsed_enum_values.push(format!("\"{}\"", enum_value));
+                    } else {
+                        had_enum_string = false;
+                        break;
+                    }
+                }
+
+                if had_enum_string {
+                    return Ok((parsed_enum_values.join(" | "), false));
+                }
+            }
+
+            // Check if there
             if let Some(format) = &o.format {
                 if format == "uuid" {
                     return Ok((Primitive::Uuid.to_string(), false));
-                } else if format == "double" || format == "uint" {
+                } else if format == "double" || format == "uint" || format == "int64" {
                     return Ok((Primitive::Number.to_string(), false));
                 } else {
                     anyhow::bail!("unknown format: {}", format);
@@ -336,12 +355,43 @@ pub fn get_type_string_from_schema(schema: &schemars::schema::Schema) -> Result<
             if let Some(subschemas) = &o.subschemas {
                 let mut fn_docs = String::new();
                 if let Some(items) = &subschemas.one_of {
-                    for (i, item) in items.iter().enumerate() {
-                        // Let's print out the object's properties.
-                        fn_docs.push_str(&get_type_string_from_schema(item)?.0.to_string());
-                        if i < items.len() - 1 {
-                            fn_docs.push_str(" |\n");
+                    let mut had_enum_string = false;
+                    let mut parsed_enum_values: Vec<String> = Vec::new();
+                    for item in items {
+                        if let schemars::schema::Schema::Object(o) = item {
+                            if let Some(enum_values) = &o.enum_values {
+                                for enum_value in enum_values {
+                                    if let serde_json::value::Value::String(enum_value) = enum_value {
+                                        had_enum_string = true;
+                                        parsed_enum_values.push(format!("\"{}\"", enum_value));
+                                    } else {
+                                        had_enum_string = false;
+                                        break;
+                                    }
+                                }
+                                if !had_enum_string {
+                                    break;
+                                }
+                            } else {
+                                had_enum_string = false;
+                                break;
+                            }
+                        } else {
+                            had_enum_string = false;
+                            break;
                         }
+                    }
+
+                    if !had_enum_string {
+                        for (i, item) in items.iter().enumerate() {
+                            // Let's print out the object's properties.
+                            fn_docs.push_str(&get_type_string_from_schema(item)?.0.to_string());
+                            if i < items.len() - 1 {
+                                fn_docs.push_str(" |\n");
+                            }
+                        }
+                    } else {
+                        fn_docs.push_str(&parsed_enum_values.join(" | "));
                     }
                 } else if let Some(items) = &subschemas.any_of {
                     for (i, item) in items.iter().enumerate() {
@@ -374,7 +424,7 @@ pub fn get_autocomplete_string_from_schema(schema: &schemars::schema::Schema) ->
             if let Some(format) = &o.format {
                 if format == "uuid" {
                     return Ok(Primitive::Uuid.to_string());
-                } else if format == "double" || format == "uint" {
+                } else if format == "double" || format == "uint" || format == "int64" {
                     return Ok(Primitive::Number.to_string());
                 } else {
                     anyhow::bail!("unknown format: {}", format);

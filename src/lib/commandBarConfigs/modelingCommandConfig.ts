@@ -36,10 +36,12 @@ export const modelingMachineConfig: CommandSetConfig<
         selectionTypes: ['face'],
         multiple: false, // TODO: multiple selection
         required: true,
+        skip: true,
       },
       // result: {
       //   inputType: 'options',
-      //   payload: 'add',
+      //   defaultValue: 'add',
+      //   skip: true,
       //   required: true,
       //   options: EXTRUSION_RESULTS.map((r) => ({
       //     name: r,

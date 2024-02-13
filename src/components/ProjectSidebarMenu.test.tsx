@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
-import { ProjectWithEntryPointMetadata } from '../Router'
+import { type ProjectWithEntryPointMetadata } from 'lib/types'
 import { GlobalStateProvider } from './GlobalStateProvider'
 import CommandBarProvider from './CommandBar/CommandBar'
 import { APP_NAME } from 'lib/constants'

@@ -171,11 +171,11 @@ fn pipe_expression(i: TokenSlice) -> PResult<PipeExpression> {
     })
 }
 
-fn bool_value(i: TokenSlice) -> PResult<Identifier> {
-    let (name, token) = any
+fn bool_value(i: TokenSlice) -> PResult<Literal> {
+    let (value, token) = any
         .try_map(|token: Token| match token.token_type {
-            TokenType::Keyword if token.value == "true" => Ok(("true", token)),
-            TokenType::Keyword if token.value == "false" => Ok(("false", token)),
+            TokenType::Keyword if token.value == "true" => Ok((true, token)),
+            TokenType::Keyword if token.value == "false" => Ok((false, token)),
             _ => Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: token.as_source_ranges(),
                 message: "invalid boolean literal".to_owned(),
@@ -183,10 +183,11 @@ fn bool_value(i: TokenSlice) -> PResult<Identifier> {
         })
         .context(expected("a boolean literal (either true or false)"))
         .parse_next(i)?;
-    Ok(Identifier {
+    Ok(Literal {
         start: token.start,
         end: token.end,
-        name: name.to_owned(),
+        value: LiteralValue::Bool(value),
+        raw: value.to_string(),
     })
 }
 
@@ -835,7 +836,7 @@ fn unnecessarily_bracketed(i: TokenSlice) -> PResult<Value> {
 fn value_allowed_in_pipe_expr(i: TokenSlice) -> PResult<Value> {
     alt((
         member_expression.map(Box::new).map(Value::MemberExpression),
-        bool_value.map(Box::new).map(Value::Identifier),
+        bool_value.map(Box::new).map(Value::Literal),
         literal.map(Box::new).map(Value::Literal),
         fn_call.map(Box::new).map(Value::CallExpression),
         identifier.map(Box::new).map(Value::Identifier),
@@ -852,7 +853,7 @@ fn value_allowed_in_pipe_expr(i: TokenSlice) -> PResult<Value> {
 fn possible_operands(i: TokenSlice) -> PResult<Value> {
     alt((
         unary_expression.map(Box::new).map(Value::UnaryExpression),
-        bool_value.map(Box::new).map(Value::Identifier),
+        bool_value.map(Box::new).map(Value::Literal),
         member_expression.map(Box::new).map(Value::MemberExpression),
         literal.map(Box::new).map(Value::Literal),
         fn_call.map(Box::new).map(Value::CallExpression),
@@ -2721,7 +2722,7 @@ show(b1)
 show(b2)"#;
         let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
-        dbg!(parser.ast().unwrap());
+        parser.ast().unwrap();
     }
 
     #[test]
