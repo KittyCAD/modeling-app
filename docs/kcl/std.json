@@ -26211,7 +26211,7 @@
               "required": [
                 "__meta",
                 "id",
-                "tag",
+                "value",
                 "xAxis",
                 "yAxis",
                 "zAxis"
@@ -26245,7 +26245,7 @@
                   "type": "string",
                   "format": "uuid"
                 },
-                "tag": {
+                "value": {
                   "description": "The tag of the face.",
                   "type": "string"
                 },
@@ -28154,7 +28154,7 @@
             "required": [
               "__meta",
               "id",
-              "tag",
+              "value",
               "xAxis",
               "yAxis",
               "zAxis"
@@ -28188,7 +28188,7 @@
                 "type": "string",
                 "format": "uuid"
               },
-              "tag": {
+              "value": {
                 "description": "The tag of the face.",
                 "type": "string"
               },

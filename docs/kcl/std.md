@@ -4895,7 +4895,7 @@ startProfileAt(data: LineData, sketch_surface: SketchSurface) -> SketchGroup
 	// The id of the face.
 	id: uuid,
 	// The tag of the face.
-	tag: string,
+	value: string,
 	// What should the face’s X axis be?
 	xAxis: {
 	x: number,
@@ -5279,7 +5279,7 @@ startSketchOn(data: SketchData, tag: String) -> SketchSurface
 	// The id of the face.
 	id: uuid,
 	// The tag of the face.
-	tag: string,
+	value: string,
 	// What should the face’s X axis be?
 	xAxis: {
 	x: number,

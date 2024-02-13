@@ -239,7 +239,7 @@ pub struct Face {
     /// The id of the face.
     pub id: uuid::Uuid,
     /// The tag of the face.
-    pub tag: String,
+    pub value: String,
     /// What should the face’s X axis be?
     pub x_axis: Point3d,
     /// What should the face’s Y axis be?
