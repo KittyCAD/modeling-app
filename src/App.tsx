@@ -24,8 +24,6 @@ import { type IndexLoaderData } from 'lib/types'
 import { paths } from 'lib/paths'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { cameraMouseDragGuards } from 'lib/cameraControls'
-import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
 import { CodeMenu } from 'components/CodeMenu'
 import { TextEditor } from 'components/TextEditor'
 import { Themes, getSystemTheme } from 'lib/theme'
@@ -56,8 +54,7 @@ export function App() {
   }))
 
   const { settings } = useGlobalStateContext()
-  const { showDebugPanel, onboardingStatus, cameraControls, theme } =
-    settings?.context || {}
+  const { showDebugPanel, onboardingStatus, theme } = settings?.context || {}
   const { state, send } = useModelingContext()
 
   const editorTheme = theme === Themes.System ? getSystemTheme() : theme

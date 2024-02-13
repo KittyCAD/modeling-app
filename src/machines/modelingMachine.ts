@@ -1,6 +1,5 @@
 import { PathToNode, VariableDeclarator } from 'lang/wasm'
 import { engineCommandManager } from 'lang/std/engineConnection'
-import { isReducedMotion } from 'lib/utils'
 import {
   Axis,
   Selection,
@@ -8,7 +7,6 @@ import {
   Selections,
 } from 'lib/selections'
 import { assign, createMachine } from 'xstate'
-import { v4 as uuidv4 } from 'uuid'
 import { isCursorInSketchCommandRange } from 'lang/util'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { kclManager } from 'lang/KclSingleton'
