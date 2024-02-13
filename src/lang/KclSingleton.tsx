@@ -154,16 +154,16 @@ class KclManager {
       this.code = ''
       return
     }
-    const storedCode = localStorage.getItem(PERSIST_CODE_TOKEN)
+    const storedCode = localStorage?.getItem(PERSIST_CODE_TOKEN)
     // TODO #819 remove zustand persistence logic in a few months
     // short term migration, shouldn't make a difference for tauri app users
     // anyway since that's filesystem based.
-    const zustandStore = JSON.parse(localStorage.getItem('store') || '{}')
+    const zustandStore = JSON.parse(localStorage?.getItem('store') || '{}')
     if (storedCode === null && zustandStore?.state?.code) {
       this.code = zustandStore.state.code
-      localStorage.setItem(PERSIST_CODE_TOKEN, this._code)
+      localStorage?.setItem(PERSIST_CODE_TOKEN, this._code)
       zustandStore.state.code = ''
-      localStorage.setItem('store', JSON.stringify(zustandStore))
+      localStorage?.setItem('store', JSON.stringify(zustandStore))
     } else if (storedCode === null) {
       this.code = bracket
     } else {
