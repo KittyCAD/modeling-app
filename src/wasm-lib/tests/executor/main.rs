@@ -843,7 +843,11 @@ const part = startSketchOn('XY')
 "#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/patterns_circular_3d_tilted_axis.png", &result, 0.999);
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/patterns_circular_3d_tilted_axis.png",
+        &result,
+        0.999,
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]

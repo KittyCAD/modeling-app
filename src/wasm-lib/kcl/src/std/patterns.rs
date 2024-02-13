@@ -143,7 +143,11 @@ async fn inner_pattern_linear(data: LinearPatternData, geometry: Geometry, args:
 #[stdlib {
     name = "patternCircular",
 }]
-async fn inner_pattern_circular(data: CircularPatternData, geometry: Geometry, args: Args) -> Result<Geometries, KclError> {
+async fn inner_pattern_circular(
+    data: CircularPatternData,
+    geometry: Geometry,
+    args: Args,
+) -> Result<Geometries, KclError> {
     let id = uuid::Uuid::new_v4();
 
     let resp = args
