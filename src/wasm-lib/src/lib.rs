@@ -1,10 +1,7 @@
 //! Wasm bindings for `kcl`.
 
 #[cfg(target_arch = "wasm32")]
-use std::{
-    collections::HashMap,
-    sync::{Arc, RwLock},
-};
+use std::sync::{Arc, RwLock};
 
 #[cfg(target_arch = "wasm32")]
 use futures::stream::TryStreamExt;
