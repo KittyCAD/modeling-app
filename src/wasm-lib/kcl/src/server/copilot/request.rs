@@ -1,7 +1,8 @@
 //! How we build the request to send to the API.
+use std::sync::Arc;
+
 use chrono::Utc;
 use reqwest::{Client, RequestBuilder};
-use std::sync::Arc;
 use uuid::Uuid;
 
 use crate::server::copilot::types::{CopilotCompletionParams, CopilotCompletionRequest};

@@ -1,9 +1,9 @@
 //! The copilot lsp server for ghost text.
 
-mod cache;
-mod debounce;
+pub mod cache;
+pub mod debounce;
 mod request;
-mod types;
+pub mod types;
 
 use std::{
     borrow::Cow,
@@ -15,10 +15,8 @@ use std::{
 use eventsource_stream::Eventsource;
 use futures::StreamExt;
 use reqwest::RequestBuilder;
-
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-
 use tower_lsp::{
     jsonrpc::{Error, Result},
     lsp_types::*,
