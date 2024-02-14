@@ -204,6 +204,14 @@ impl Backend {
 
         Ok(response)
     }
+
+    pub async fn accept_completions(&self, params: Vec<String>) {
+        todo!()
+    }
+
+    pub async fn reject_completions(&self, params: Vec<String>) {
+        todo!()
+    }
 }
 
 #[tower_lsp::async_trait]
