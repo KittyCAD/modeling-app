@@ -1142,7 +1142,10 @@ export class EngineCommandManager {
         raw: message,
       } as const
       this.artifactMap[id] = artifact
-      if (command.commandType === 'entity_linear_pattern') {
+      if (
+        command.commandType === 'entity_linear_pattern' ||
+        command.commandType === 'entity_circular_pattern'
+      ) {
         const entities = (modelingResponse as any)?.data?.entity_ids
         entities?.forEach((entity: string) => {
           this.artifactMap[entity] = artifact
@@ -1289,9 +1292,15 @@ export class EngineCommandManager {
         // Using an array is the list is likely to grow.
         'start_path',
         'entity_linear_pattern',
+        'entity_circular_pattern',
       ]
       if (artifactTypesToDelete.includes(artifact.commandType)) {
         artifactsToDelete[id] = artifact
+      }
+      if (artifact.commandType === 'import_files') {
+        // TODO why is this handled differently from other artifacts, i.e. why does it not use the id from the
+        // modeling command? We're having to do special clean up for this one special object.
+        artifactsToDelete[(artifact as any)?.data?.data?.object_id] = artifact
       }
     })
     Object.keys(artifactsToDelete).forEach((id) => {

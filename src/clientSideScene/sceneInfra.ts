@@ -24,7 +24,7 @@ import {
   Object3DEventMap,
 } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import { engineCommandManager } from 'lang/std/engineConnection'
+import { EngineCommand, engineCommandManager } from 'lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
 import { isReducedMotion, roundOff, throttle } from 'lib/utils'
 import { compareVec2Epsilon2 } from 'lang/std/sketch'
@@ -70,7 +70,7 @@ interface ThreeCamValues {
 
 const lastCmdDelay = 50
 
-let lastCmd: any = null
+let lastCmd: EngineCommand | null = null
 let lastCmdTime: number = Date.now()
 let lastCmdTimeoutId: number | null = null
 
@@ -82,14 +82,14 @@ const sendLastReliableChannel = () => {
 }
 
 const throttledUpdateEngineCamera = throttle((threeValues: ThreeCamValues) => {
-  const cmd = {
+  const cmd: EngineCommand = {
     type: 'modeling_cmd_req',
     cmd_id: uuidv4(),
     cmd: {
       type: 'default_camera_look_at',
       ...convertThreeCamValuesToEngineCam(threeValues),
     },
-  } as any
+  }
   engineCommandManager.sendSceneCommand(cmd)
   lastCmd = cmd
   lastCmdTime = Date.now()
@@ -103,7 +103,7 @@ const throttledUpdateEngineCamera = throttle((threeValues: ThreeCamValues) => {
   ) as any as number
 }, 1000 / 30)
 
-let lastPerspectiveCmd: any = null
+let lastPerspectiveCmd: EngineCommand | null = null
 let lastPerspectiveCmdTime: number = Date.now()
 let lastPerspectiveCmdTimeoutId: number | null = null
 
@@ -124,7 +124,7 @@ const throttledUpdateEngineFov = throttle(
     zoom: number
     fov: number
   }) => {
-    const cmd = {
+    const cmd: EngineCommand = {
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
       cmd: {
@@ -136,7 +136,7 @@ const throttledUpdateEngineFov = throttle(
         fov_y: vals.fov,
         ...calculateNearFarFromFOV(vals.fov),
       },
-    } as any
+    }
     engineCommandManager.sendSceneCommand(cmd)
     lastPerspectiveCmd = cmd
     lastPerspectiveCmdTime = Date.now()
