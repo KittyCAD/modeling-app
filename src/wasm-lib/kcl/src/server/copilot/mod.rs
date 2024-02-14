@@ -9,19 +9,13 @@ use std::{
     borrow::Cow,
     collections::HashMap,
     fmt::Debug,
-    str::FromStr,
     sync::{Arc, Mutex, RwLock},
 };
 
-
 use eventsource_stream::Eventsource;
-use futures::{
-    future::{AbortHandle},
-};
-use futures::{StreamExt};
-use reqwest::{
-    RequestBuilder,
-};
+use futures::future::AbortHandle;
+use futures::StreamExt;
+use reqwest::RequestBuilder;
 
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -32,9 +26,7 @@ use tower_lsp::{
     Client, LanguageServer,
 };
 
-use crate::server::copilot::types::{
-    CopilotCompletionResponse, CopilotEditorInfo, CopilotResponse, DocParams,
-};
+use crate::server::copilot::types::{CopilotCompletionResponse, CopilotEditorInfo, CopilotResponse, DocParams};
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Success {
@@ -83,7 +75,6 @@ pub async fn await_stream(req: RequestBuilder, _line_before: String, _pos: Posit
     let mut stream = resp.bytes_stream().eventsource();
     let mut completion_list = Vec::<String>::with_capacity(4);
     let mut s = "".to_string();
-    let mut cancellation_reason = None;
 
     while let Some(event) = stream.next().await {
         match handle_event(event.unwrap()) {
@@ -99,18 +90,13 @@ pub async fn await_stream(req: RequestBuilder, _line_before: String, _pos: Posit
             CopilotResponse::Done => {
                 return completion_list;
             }
-            CopilotResponse::Error(e) => {
-                cancellation_reason = Some(e);
+            CopilotResponse::Error(_e) => {
+                // TODO: log error to lsp server
             }
         }
     }
-    completion_list
-}
 
-struct CompletionStreamingParams {
-    req: RequestBuilder,
-    line_before: String,
-    position: Position,
+    completion_list
 }
 
 impl Backend {
@@ -159,7 +145,8 @@ impl Backend {
         let doc_params = self.get_doc_params(&params);
         let cached_result = self.cache.get_cached_result(&doc_params.uri, doc_params.pos.line);
         if cached_result.is_some() {
-            return Ok(cached_result.unwrap());
+        if let Some(cached_result) = cached_result {
+            return Ok(cached_result);
         }
 
         let valid = self.runner.increment_and_do_stuff().await;
@@ -182,11 +169,7 @@ impl Backend {
             doc_params.suffix,
         );
 
-        let completion_list = await_stream(
-            req,
-            line_before.to_string(),
-            params.text_document_position.position,
-        );
+        let completion_list = await_stream(req, line_before.to_string(), params.text_document_position.position);
         let response = CopilotCompletionResponse::from_str_vec(completion_list.await, line_before, doc_params.pos);
         self.cache
             .set_cached_result(&doc_params.uri, &doc_params.pos.line, &response);

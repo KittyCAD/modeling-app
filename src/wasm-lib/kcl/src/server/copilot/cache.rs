@@ -6,17 +6,14 @@ use std::{
     sync::{Mutex, RwLock},
 };
 
+use crate::server::copilot::types::CopilotCompletionResponse;
 
-
-use crate::server::copilot::types::{CopilotCompletionResponse};
-
-// if file changes, keep the cache
-// if line number is different for an existing file, clean
+// if file changes, keep the cache.
+// if line number is different for an existing file, clean.
 #[derive(Debug)]
 pub struct CopilotCache {
     inner: RwLock<HashMap<String, Mutex<CopilotCompletionResponse>>>,
     last_line: RwLock<HashMap<String, Mutex<u32>>>,
-    pending: RwLock<Mutex<bool>>,
 }
 
 impl Default for CopilotCache {
@@ -30,7 +27,6 @@ impl CopilotCache {
         Self {
             inner: RwLock::new(HashMap::new()),
             last_line: RwLock::new(HashMap::new()),
-            pending: RwLock::new(Mutex::new(false)),
         }
     }
 
@@ -58,14 +54,14 @@ impl CopilotCache {
         }
     }
 
-    fn set_file_cache(&self, uri: &String, completion_response: CopilotCompletionResponse) {
+    fn set_file_cache(&self, uri: &str, completion_response: CopilotCompletionResponse) {
         let mut inner = self.inner.write().unwrap();
-        inner.insert(uri.clone(), Mutex::new(completion_response));
+        inner.insert(uri.to_string(), Mutex::new(completion_response));
     }
 
-    fn set_last_line(&self, uri: &String, last_line: u32) {
+    fn set_last_line(&self, uri: &str, last_line: u32) {
         let mut inner = self.last_line.write().unwrap();
-        inner.insert(uri.clone(), Mutex::new(last_line));
+        inner.insert(uri.to_string(), Mutex::new(last_line));
     }
 
     pub fn get_cached_result(&self, uri: &String, last_line: u32) -> Option<CopilotCompletionResponse> {

@@ -1,41 +1,30 @@
 //! Debounce a function call.
 
-use std::{
-    sync::{RwLock},
-};
-
-
+use std::sync::RwLock;
 
 #[derive(Debug)]
 pub struct Runner {
     inc: CanIncrement,
-    id: RwLock<i32>,
     delay: tokio::time::Duration,
 }
 
 impl Runner {
     pub fn new(delay: tokio::time::Duration) -> Self {
         Self {
-            id: RwLock::new(0),
             inc: CanIncrement::new(),
             delay,
         }
     }
-    fn set_id(&self, new_id: i32) -> i32 {
-        let mut lock = self.id.write().unwrap();
-        *lock = new_id;
-        *lock
-    }
 
     pub async fn increment_and_do_stuff(&self) -> bool {
-        let id = self.inc.increment();
-        self.foo(id).await
+        let inc = self.inc.increment();
+        self.foo(inc).await
     }
 
-    async fn foo(&self, id: i32) -> bool {
+    async fn foo(&self, inc: i32) -> bool {
         tokio::time::sleep(self.delay).await;
-        let current_id = self.inc.read();
-        id == current_id
+        let current_inc = self.inc.read();
+        inc == current_inc
     }
 }
 
@@ -71,7 +60,6 @@ mod tests {
     async fn test_increment_and_do_stuff() {
         let can_inc = CanIncrement::new();
         let runner = Runner {
-            id: std::sync::RwLock::new(0),
             inc: can_inc,
             delay: time::Duration::from_millis(100),
         };

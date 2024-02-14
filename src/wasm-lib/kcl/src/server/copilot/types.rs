@@ -1,10 +1,8 @@
 //! Types we need for communication with the server.
 
-use eventsource_stream::Eventsource;
-use futures::{FutureExt, StreamExt};
 use ropey::Rope;
 use serde::{Deserialize, Serialize};
-use tower_lsp::lsp_types::*;
+use tower_lsp::lsp_types::{Position, Range};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -25,7 +23,7 @@ pub struct CopilotAnswer {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum CopilotResponse {
-    Answer(CopilotAnswer),
+    Answer(Box<CopilotAnswer>),
     Done,
     Error(String),
 }
@@ -38,13 +36,6 @@ pub struct Choices {
     pub logprobs: Option<String>,
 }
 
-pub async fn on_cancel() -> CopilotCompletionResponse {
-    CopilotCompletionResponse {
-        cancellation_reason: Some("RequestCancelled".to_string()),
-        completions: vec![],
-    }
-}
-
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct CopilotCompletionResponse {
     pub completions: Vec<CopilotCyclingCompletion>,
@@ -55,24 +46,12 @@ impl CopilotCompletionResponse {
     pub fn from_str_vec(str_vec: Vec<String>, line_before: String, pos: Position) -> Self {
         let completions = str_vec
             .iter()
-            .map(|x| {
-                CopilotCyclingCompletion::new(x.to_string(), line_before.to_string(), pos)
-            })
+            .map(|x| CopilotCyclingCompletion::new(x.to_string(), line_before.to_string(), pos))
             .collect();
         Self {
             completions,
             cancellation_reason: None,
         }
-    }
-}
-
-fn handle_event(event: eventsource_stream::Event) -> CopilotResponse {
-    if event.data == "[DONE]" {
-        return CopilotResponse::Done;
-    }
-    match serde_json::from_str(&event.data) {
-        Ok(data) => CopilotResponse::Answer(data),
-        Err(e) => CopilotResponse::Error(e.to_string()),
     }
 }
 
@@ -97,60 +76,6 @@ impl CopilotCyclingCompletion {
             position,
         }
     }
-}
-
-fn create_item(text: String, line_before: &String, position: Position) -> CopilotCyclingCompletion {
-    let display_text = text.clone();
-    let text = format!("{}{}", line_before, text);
-    let end_char = text.find('\n').unwrap_or(text.len()) as u32;
-    CopilotCyclingCompletion {
-        display_text, // partial text
-        text,         // fulltext
-        range: Range {
-            start: Position {
-                character: 0,
-                line: position.line,
-            },
-            end: Position {
-                character: end_char,
-                line: position.line,
-            },
-        }, // start char always 0
-        position,
-    }
-}
-
-pub async fn fetch_completions(
-    resp: reqwest::Response,
-    line_before: String,
-    position: Position,
-) -> Result<CopilotCompletionResponse, String> {
-    let mut stream = resp.bytes_stream().eventsource();
-    let mut completion_list = Vec::<CopilotCyclingCompletion>::with_capacity(4);
-    let mut s = "".to_string();
-    let mut cancellation_reason = None;
-    while let Some(event) = stream.next().await {
-        match handle_event(event.unwrap()) {
-            CopilotResponse::Answer(ans) => {
-                ans.choices.iter().for_each(|x| {
-                    s.push_str(&x.text);
-                    if x.finish_reason.is_some() {
-                        let item = create_item(s.clone(), &line_before, position);
-                        completion_list.push(item);
-                        s = "".to_string();
-                    }
-                });
-            }
-            CopilotResponse::Done => {
-                break;
-            }
-            CopilotResponse::Error(e) => cancellation_reason = Some(e),
-        }
-    }
-    Ok(CopilotCompletionResponse {
-        cancellation_reason,
-        completions: completion_list,
-    })
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
