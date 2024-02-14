@@ -97,7 +97,7 @@ const ProjectSidebarMenu = ({
                       data-testid="createdAt"
                     >
                       Created{' '}
-                      {project.entrypointMetadata.createdAt.toLocaleDateString()}
+                      {project.entrypointMetadata.atime?.toLocaleDateString()}
                     </p>
                   )}
                 </div>

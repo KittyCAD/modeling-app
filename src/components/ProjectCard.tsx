@@ -42,8 +42,6 @@ function ProjectCard({
   function getDisplayedTime(date: Date) {
     const startOfToday = new Date()
     startOfToday.setHours(0, 0, 0, 0)
-    // TODO: fix time
-    return ''
     return date.getTime() < startOfToday.getTime()
       ? date.toLocaleDateString()
       : date.toLocaleTimeString()
@@ -122,7 +120,7 @@ function ProjectCard({
                 }`}
             </span>
             <span className="text-chalkboard-60 text-xs">
-              Edited {getDisplayedTime(project.entrypointMetadata.modifiedAt)}
+              Edited {getDisplayedTime(project.entrypointMetadata.mtime)}
             </span>
             <div className="absolute z-10 bottom-2 right-2 flex gap-1 items-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
               <ActionButton
