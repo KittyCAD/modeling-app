@@ -4,9 +4,12 @@
 use std::env;
 use std::fs;
 use std::io::Read;
+use std::path::Path;
+use std::path::PathBuf;
 
 use anyhow::Result;
 use oauth2::TokenResponse;
+use serde::Serialize;
 use tauri::ipc::InvokeError;
 use tauri::Manager;
 use tauri_plugin_shell::ShellExt;
@@ -24,6 +27,49 @@ fn read_toml(path: &str) -> Result<String, InvokeError> {
     let value = serde_json::to_string(&value).map_err(|e| InvokeError::from_anyhow(e.into()))?;
     Ok(value)
 }
+
+/// From https://github.com/tauri-apps/tauri/blob/1.x/core/tauri/src/api/dir.rs#L51
+#[derive(Debug, Serialize)]
+pub struct DiskEntry {
+    /// The path to the entry.
+    pub path: PathBuf,
+    /// The name of the entry (file name with extension or directory name).
+    pub name: Option<String>,
+    /// The children of this entry if it's a directory.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub children: Option<Vec<DiskEntry>>,
+}
+
+fn is_dir<P: AsRef<Path>>(path: P) -> Result<bool> {
+    std::fs::metadata(path).map(|md| md.is_dir()).map_err(Into::into)
+}
+
+#[tauri::command]
+fn read_dir_recursive(path: &str) -> Result<Vec<DiskEntry>, InvokeError> {
+    let mut files_and_dirs: Vec<DiskEntry> = vec![];
+    // let path = path.as_ref();
+    for entry in fs::read_dir(path).map_err(|e| InvokeError::from_anyhow(e.into()))? {
+      let path = entry.map_err(|e| InvokeError::from_anyhow(e.into()))?.path();
+  
+      if let Ok(flag) = is_dir(&path) {
+        files_and_dirs.push(DiskEntry {
+          path: path.clone(),
+          children: if flag {
+            Some(
+                read_dir_recursive(path.to_str().expect("No path"))?
+            )
+          } else {
+            None
+          },
+          name: path
+            .file_name()
+            .map(|name| name.to_string_lossy())
+            .map(|name| name.to_string()),
+        });
+      }
+    }
+    Ok(files_and_dirs)
+  }
 
 /// This command returns a string that is the contents of a file at the path.
 #[tauri::command]
@@ -159,7 +205,8 @@ fn main() {
             get_user,
             login,
             read_toml,
-            read_txt_file
+            read_txt_file,
+            read_dir_recursive
         ])
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())

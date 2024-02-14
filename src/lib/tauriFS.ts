@@ -5,9 +5,10 @@ import {
   writeTextFile,
   stat,
 } from '@tauri-apps/plugin-fs'
+import { invoke } from '@tauri-apps/api/core'
 import { documentDir, homeDir, join, sep } from '@tauri-apps/api/path'
 import { isTauri } from './isTauri'
-import { type ProjectWithEntryPointMetadata } from 'lib/types'
+import { FileEntry, type ProjectWithEntryPointMetadata } from 'lib/types'
 
 const PROJECT_FOLDER = 'zoo-modeling-app-projects'
 export const FILE_EXT = '.kcl'
@@ -51,38 +52,44 @@ export async function initializeProjectDirectory(directory: string) {
   return INITIAL_DEFAULT_DIR
 }
 
+export function isProjectDirectory(fileOrDir: Partial<FileEntry>) {
+  return (
+    fileOrDir.children?.length &&
+    fileOrDir.children.some((child) => child.name === PROJECT_ENTRYPOINT)
+  )
+}
+
 // Read the contents of a directory
 // and return the valid projects
 export async function getProjectsInDir(projectDir: string) {
-  const dirs = await readDir(projectDir)
+  const readProjects = (
+    await invoke<FileEntry[]>('read_dir_recursive', { path: projectDir })
+  ).filter(isProjectDirectory)
+  console.log('read_dir_recursive + isProjectDirectory', readProjects)
+
   const projectsWithMetadata = await Promise.all(
-    dirs
-      .filter(async (p) => {
-        const files = await readDir(await join(projectDir, p.name))
-        return files.some((d) => d.name === PROJECT_ENTRYPOINT)
-      })
-      .map(async (p) => ({
+    readProjects.map(async (p) => ({
         entrypointMetadata: await stat(
-          await join(projectDir, p.name, PROJECT_ENTRYPOINT)
+          await join(p.path, PROJECT_ENTRYPOINT)
         ),
-        path: await join(projectDir, p.name),
         ...p,
       }))
   )
+  console.log('projectsWithMetadata', projectsWithMetadata)
 
   return projectsWithMetadata
 }
 
-export const isHidden = (fileOrDir: any) => !!fileOrDir.name?.startsWith('.')
+export const isHidden = (fileOrDir: FileEntry) => !!fileOrDir.name?.startsWith('.')
 
-export const isDir = (fileOrDir: any) =>
+export const isDir = (fileOrDir: FileEntry) =>
   'children' in fileOrDir && fileOrDir.children !== undefined
 
 export function deepFileFilter(
-  entries: any[],
-  filterFn: (f: any) => boolean
-): any[] {
-  const filteredEntries: any[] = []
+  entries: FileEntry[],
+  filterFn: (f: FileEntry) => boolean
+): FileEntry[] {
+  const filteredEntries: FileEntry[] = []
   for (const fileOrDir of entries) {
     if ('children' in fileOrDir && fileOrDir.children !== undefined) {
       const filteredChildren = deepFileFilter(fileOrDir.children, filterFn)
@@ -100,10 +107,10 @@ export function deepFileFilter(
 }
 
 export function deepFileFilterFlat(
-  entries: any[],
-  filterFn: (f: any) => boolean
-): any[] {
-  const filteredEntries: any[] = []
+  entries: FileEntry[],
+  filterFn: (f: FileEntry) => boolean
+): FileEntry[] {
+  const filteredEntries: FileEntry[] = []
   for (const fileOrDir of entries) {
     if ('children' in fileOrDir && fileOrDir.children !== undefined) {
       const filteredChildren = deepFileFilterFlat(fileOrDir.children, filterFn)
@@ -124,9 +131,8 @@ export function deepFileFilterFlat(
 // Read the contents of a project directory
 // and return all relevant files and sub-directories recursively
 export async function readProject(projectDir: string) {
-  const readFiles = await readDir(projectDir, {
-    recursive: true,
-  })
+  const readFiles = await invoke<FileEntry[]>('read_dir_recursive', { path: projectDir })
+  console.log('read_dir_recursive', readFiles)
 
   return deepFileFilter(readFiles, isRelevantFileOrDir)
 }
@@ -134,7 +140,7 @@ export async function readProject(projectDir: string) {
 // Given a read project, return the number of .kcl files,
 // both in the root directory and in sub-directories,
 // and folders that contain at least one .kcl file
-export function getPartsCount(project: any[]) {
+export function getPartsCount(project: FileEntry[]) {
   const flatProject = deepFileFilterFlat(project, isRelevantFileOrDir)
 
   const kclFileCount = flatProject.filter((f) =>
@@ -152,7 +158,7 @@ export function getPartsCount(project: any[]) {
 // i.e. not a hidden file or directory, and is a relevant file type
 // or contains at least one relevant file (even if it's nested)
 // or is a completely empty directory
-export function isRelevantFileOrDir(fileOrDir: any) {
+export function isRelevantFileOrDir(fileOrDir: FileEntry) {
   let isRelevantDir = false
   if ('children' in fileOrDir && fileOrDir.children !== undefined) {
     isRelevantDir =
@@ -172,7 +178,7 @@ export function isRelevantFileOrDir(fileOrDir: any) {
 // Deeply sort the files and directories in a project like VS Code does:
 // The main.kcl file is always first, then files, then directories
 // Files and directories are sorted alphabetically
-export function sortProject(project: any[]): any[] {
+export function sortProject(project: FileEntry[]): FileEntry[] {
   const sortedProject = project.sort((a, b) => {
     if (a.name === PROJECT_ENTRYPOINT) {
       return -1
@@ -189,7 +195,7 @@ export function sortProject(project: any[]): any[] {
     }
   })
 
-  return sortedProject.map((fileOrDir: any) => {
+  return sortedProject.map((fileOrDir: FileEntry) => {
     if ('children' in fileOrDir && fileOrDir.children !== undefined) {
       return {
         ...fileOrDir,
@@ -252,7 +258,7 @@ function interpolateProjectName(projectName: string) {
 }
 
 // Returns the next available index for a project name
-export function getNextProjectIndex(projectName: string, files: any[]) {
+export function getNextProjectIndex(projectName: string, files: FileEntry[]) {
   const regex = interpolateProjectName(projectName)
   const matches = files.map((file) => file.name?.match(regex))
   const indices = matches

@@ -1,4 +1,3 @@
-import { FileEntry } from '@tauri-apps/plugin-fs'
 import {
   MAX_PADDING,
   deepFileFilter,
@@ -7,6 +6,7 @@ import {
   interpolateProjectNameWithIndex,
   isRelevantFileOrDir,
 } from './tauriFS'
+import { FileEntry } from './types'
 
 describe('Test project name utility functions', () => {
   it('interpolates a project name without an index', () => {
