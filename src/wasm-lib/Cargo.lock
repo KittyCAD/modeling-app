@@ -1895,7 +1895,6 @@ dependencies = [
  "async-recursion",
  "async-trait",
  "bson",
- "chrono",
  "clap",
  "criterion",
  "dashmap",

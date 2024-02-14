@@ -2,9 +2,7 @@
 use std::sync::Arc;
 
 use anyhow::Result;
-use chrono::Utc;
 use reqwest::{Client, RequestBuilder};
-use uuid::Uuid;
 
 use crate::server::copilot::types::{CopilotCompletionParams, CopilotCompletionRequest};
 
@@ -39,12 +37,5 @@ pub fn build_request(
     let body = serde_json::to_string(&body)?;
     let completions_url = "https://copilot-proxy.githubusercontent.com/v1/engines/copilot-codex/completions";
 
-    Ok(http_client
-        .post(completions_url)
-        .header("X-Request-Id", Uuid::new_v4().to_string())
-        .header(
-            "VScode-SessionId",
-            Uuid::new_v4().to_string() + &Utc::now().timestamp().to_string(),
-        )
-        .body(body))
+    Ok(http_client.post(completions_url).body(body))
 }
