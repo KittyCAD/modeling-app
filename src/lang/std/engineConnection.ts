@@ -1142,7 +1142,10 @@ export class EngineCommandManager {
         raw: message,
       } as const
       this.artifactMap[id] = artifact
-      if (command.commandType === 'entity_linear_pattern') {
+      if (
+        command.commandType === 'entity_linear_pattern' ||
+        command.commandType === 'entity_circular_pattern'
+      ) {
         const entities = (modelingResponse as any)?.data?.entity_ids
         entities?.forEach((entity: string) => {
           this.artifactMap[entity] = artifact
@@ -1289,6 +1292,7 @@ export class EngineCommandManager {
         // Using an array is the list is likely to grow.
         'start_path',
         'entity_linear_pattern',
+        'entity_circular_pattern',
       ]
       if (artifactTypesToDelete.includes(artifact.commandType)) {
         artifactsToDelete[id] = artifact
