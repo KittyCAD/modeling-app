@@ -1297,6 +1297,11 @@ export class EngineCommandManager {
       if (artifactTypesToDelete.includes(artifact.commandType)) {
         artifactsToDelete[id] = artifact
       }
+      if (artifact.commandType === 'import_files') {
+        // TODO why is this handled differently from other artifacts, i.e. why does it not use the id from the
+        // modeling command? We're having to do special clean up for this one special object.
+        artifactsToDelete[(artifact as any)?.data?.data?.object_id] = artifact
+      }
     })
     Object.keys(artifactsToDelete).forEach((id) => {
       const deleteCmd: EngineCommand = {
