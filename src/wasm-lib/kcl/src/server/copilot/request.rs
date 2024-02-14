@@ -1,6 +1,7 @@
 //! How we build the request to send to the API.
 use std::sync::Arc;
 
+use anyhow::Result;
 use chrono::Utc;
 use reqwest::{Client, RequestBuilder};
 use uuid::Uuid;
@@ -10,7 +11,12 @@ use crate::server::copilot::types::{CopilotCompletionParams, CopilotCompletionRe
 /// Build a request to send to the API.
 // TODO: make this the kittycad api.
 // TODO: add auth.
-pub fn build_request(http_client: Arc<Client>, language: String, prompt: String, suffix: String) -> RequestBuilder {
+pub fn build_request(
+    http_client: Arc<Client>,
+    language: String,
+    prompt: String,
+    suffix: String,
+) -> Result<RequestBuilder> {
     let extra = CopilotCompletionParams {
         language: language.to_string(),
         next_indent: 0,
@@ -30,14 +36,15 @@ pub fn build_request(http_client: Arc<Client>, language: String, prompt: String,
         stream: true,
         extra,
     });
-    let body = serde_json::to_string(&body).unwrap();
+    let body = serde_json::to_string(&body)?;
     let completions_url = "https://copilot-proxy.githubusercontent.com/v1/engines/copilot-codex/completions";
-    http_client
+
+    Ok(http_client
         .post(completions_url)
         .header("X-Request-Id", Uuid::new_v4().to_string())
         .header(
             "VScode-SessionId",
             Uuid::new_v4().to_string() + &Utc::now().timestamp().to_string(),
         )
-        .body(body)
+        .body(body))
 }

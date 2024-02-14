@@ -73,14 +73,14 @@ fn handle_event(event: eventsource_stream::Event) -> CopilotResponse {
     }
 }
 
-pub async fn await_stream(req: RequestBuilder, _line_before: String, _pos: Position) -> Vec<String> {
-    let resp = req.send().await.unwrap();
+pub async fn await_stream(req: RequestBuilder, _line_before: String, _pos: Position) -> anyhow::Result<Vec<String>> {
+    let resp = req.send().await?;
     let mut stream = resp.bytes_stream().eventsource();
     let mut completion_list = Vec::<String>::with_capacity(4);
     let mut s = "".to_string();
 
     while let Some(event) = stream.next().await {
-        match handle_event(event.unwrap()) {
+        match handle_event(event?) {
             CopilotResponse::Answer(answer) => {
                 answer.choices.iter().for_each(|x| {
                     s.push_str(&x.text);
@@ -91,7 +91,7 @@ pub async fn await_stream(req: RequestBuilder, _line_before: String, _pos: Posit
                 });
             }
             CopilotResponse::Done => {
-                return completion_list;
+                return Ok(completion_list);
             }
             CopilotResponse::Error(_e) => {
                 // TODO: log error to lsp server
@@ -99,13 +99,17 @@ pub async fn await_stream(req: RequestBuilder, _line_before: String, _pos: Posit
         }
     }
 
-    completion_list
+    Ok(completion_list)
 }
 
 impl Backend {
     fn get_doc_info(&self, uri: &String) -> Result<Box<TextDocumentItem>> {
         let data = Arc::clone(&self.documents);
-        let map = data.read().unwrap();
+        let map = data.read().map_err(|err| Error {
+            code: tower_lsp::jsonrpc::ErrorCode::from(69),
+            data: None,
+            message: Cow::from(format!("Failed to get doc info: {}", err)),
+        })?;
         match map.get(uri) {
             Some(e) => {
                 let element = e.lock().expect("RwLock poisoned");
@@ -122,36 +126,45 @@ impl Backend {
     pub async fn set_editor_info(&self, params: CopilotEditorInfo) -> Result<Success> {
         self.client.log_message(MessageType::INFO, "setEditorInfo").await;
         let copy = Arc::clone(&self.editor_info);
-        let mut lock = copy.write().unwrap();
+        let mut lock = copy.write().map_err(|err| Error {
+            code: tower_lsp::jsonrpc::ErrorCode::from(69),
+            data: None,
+            message: Cow::from(format!("Failed lock: {}", err)),
+        })?;
         *lock = params;
         Ok(Success::new(true))
     }
-    pub fn get_doc_params(&self, params: &CompletionParams) -> DocParams {
+
+    pub fn get_doc_params(&self, params: &CompletionParams) -> Result<DocParams> {
         let pos = params.text_document_position.position;
         let uri = params.text_document_position.text_document.uri.to_string();
-        let doc = self.get_doc_info(&uri).unwrap();
+        let doc = self.get_doc_info(&uri)?;
         let rope = ropey::Rope::from_str(&doc.text);
-        let offset = crate::server::util::position_to_offset(pos, &rope).unwrap();
+        let offset = crate::server::util::position_to_offset(pos, &rope).unwrap_or_default();
 
-        DocParams {
+        Ok(DocParams {
             uri: uri.to_string(),
             pos,
             language: doc.language_id.to_string(),
-            prefix: crate::server::util::get_text_before(offset, &rope).unwrap(),
-            suffix: crate::server::util::get_text_after(offset, &rope).unwrap(),
-            line_before: crate::server::util::get_line_before(pos, &rope).unwrap().to_string(),
+            prefix: crate::server::util::get_text_before(offset, &rope).unwrap_or_default(),
+            suffix: crate::server::util::get_text_after(offset, &rope).unwrap_or_default(),
+            line_before: crate::server::util::get_line_before(pos, &rope).unwrap_or_default(),
             rope,
-        }
+        })
     }
 
     pub async fn get_completions_cycling(&self, params: CompletionParams) -> Result<CopilotCompletionResponse> {
-        let doc_params = self.get_doc_params(&params);
+        let doc_params = self.get_doc_params(&params)?;
         let cached_result = self.cache.get_cached_result(&doc_params.uri, doc_params.pos.line);
         if let Some(cached_result) = cached_result {
             return Ok(cached_result);
         }
 
-        let valid = self.runner.increment_and_do_stuff().await;
+        let valid = self.runner.increment_and_do_stuff().await.map_err(|err| Error {
+            code: tower_lsp::jsonrpc::ErrorCode::from(69),
+            data: None,
+            message: Cow::from(format!("Failed to increment and do stuff: {}", err)),
+        })?;
         if !valid {
             return Ok(CopilotCompletionResponse {
                 cancellation_reason: Some("More Recent".to_string()),
@@ -159,7 +172,7 @@ impl Backend {
             });
         }
 
-        let doc_params = self.get_doc_params(&params);
+        let doc_params = self.get_doc_params(&params)?;
         let line_before = doc_params.line_before.to_string();
         let http_client = Arc::clone(&self.http_client);
         let _prompt = format!("// Path: {}\n{}", doc_params.uri, doc_params.prefix);
@@ -169,10 +182,22 @@ impl Backend {
             doc_params.language,
             doc_params.prefix,
             doc_params.suffix,
-        );
+        )
+        .map_err(|err| Error {
+            code: tower_lsp::jsonrpc::ErrorCode::from(69),
+            data: None,
+            message: Cow::from(format!("Failed to build request: {}", err)),
+        })?;
 
-        let completion_list = await_stream(req, line_before.to_string(), params.text_document_position.position);
-        let response = CopilotCompletionResponse::from_str_vec(completion_list.await, line_before, doc_params.pos);
+        let completion_list = await_stream(req, line_before.to_string(), params.text_document_position.position)
+            .await
+            .map_err(|err| Error {
+                code: tower_lsp::jsonrpc::ErrorCode::from(69),
+                data: None,
+                message: Cow::from(format!("Failed to await stream: {}", err)),
+            })?;
+
+        let response = CopilotCompletionResponse::from_str_vec(completion_list, line_before, doc_params.pos);
         self.cache
             .set_cached_result(&doc_params.uri, &doc_params.pos.line, &response);
         Ok(response)

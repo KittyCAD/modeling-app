@@ -1,6 +1,8 @@
 //! Debounce a function call.
 
-use std::sync::RwLock;
+use std::sync::{PoisonError, RwLock};
+
+use anyhow::Result;
 
 #[derive(Debug)]
 pub struct Runner {
@@ -16,15 +18,15 @@ impl Runner {
         }
     }
 
-    pub async fn increment_and_do_stuff(&self) -> bool {
-        let inc = self.inc.increment();
+    pub async fn increment_and_do_stuff(&self) -> Result<bool, PoisonError<std::sync::RwLockReadGuard<'static, i32>>> {
+        let inc = self.inc.increment().unwrap_or_else(|e| *e.into_inner());
         self.foo(inc).await
     }
 
-    async fn foo(&self, inc: i32) -> bool {
+    async fn foo(&self, inc: i32) -> Result<bool, PoisonError<std::sync::RwLockReadGuard<'static, i32>>> {
         tokio::time::sleep(self.delay).await;
-        let current_inc = self.inc.read();
-        inc == current_inc
+        let current_inc = self.inc.read().unwrap_or_else(|e| *e.into_inner());
+        Ok(inc == current_inc)
     }
 }
 
@@ -38,14 +40,14 @@ impl CanIncrement {
         Self { mutex: RwLock::new(0) }
     }
     // This function is not marked async.
-    fn increment(&self) -> i32 {
-        let mut lock = self.mutex.write().unwrap();
+    fn increment(&self) -> Result<i32, PoisonError<std::sync::RwLockReadGuard<'static, i32>>> {
+        let mut lock = self.mutex.write().unwrap_or_else(|e| e.into_inner());
         *lock += 1;
-        *lock
+        Ok(*lock)
     }
-    fn read(&self) -> i32 {
-        let lock = self.mutex.read().unwrap();
-        *lock
+    fn read(&self) -> Result<i32, PoisonError<std::sync::RwLockReadGuard<'static, i32>>> {
+        let lock = self.mutex.read().unwrap_or_else(|e| e.into_inner());
+        Ok(*lock)
     }
 }
 
@@ -65,8 +67,9 @@ mod tests {
         };
         let a = runner.increment_and_do_stuff();
         let b = runner.increment_and_do_stuff();
-        let res = tokio::join!(a, b);
+        let (a, b) = tokio::join!(a, b);
 
-        assert_eq!(res, (false, true));
+        assert_eq!(a.unwrap(), false);
+        assert_eq!(b.unwrap(), true);
     }
 }
