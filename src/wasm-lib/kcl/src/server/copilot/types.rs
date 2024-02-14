@@ -56,7 +56,7 @@ impl CopilotCompletionResponse {
         let completions = str_vec
             .iter()
             .map(|x| {
-                return CopilotCyclingCompletion::new(x.to_string(), line_before.to_string(), pos.clone());
+                CopilotCyclingCompletion::new(x.to_string(), line_before.to_string(), pos)
             })
             .collect();
         Self {

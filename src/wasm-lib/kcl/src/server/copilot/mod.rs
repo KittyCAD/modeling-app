@@ -10,34 +10,30 @@ use std::{
     collections::HashMap,
     fmt::Debug,
     str::FromStr,
-    sync::{mpsc::channel, Arc, Mutex, RwLock},
-    time::{Duration, Instant},
+    sync::{Arc, Mutex, RwLock},
 };
 
-use dashmap::DashMap;
+
 use eventsource_stream::Eventsource;
 use futures::{
-    future,
-    future::{AbortHandle, Abortable, Aborted},
-    task::Poll,
+    future::{AbortHandle},
 };
-use futures::{stream::PollNext, FutureExt, StreamExt};
+use futures::{StreamExt};
 use reqwest::{
-    header::{HeaderMap, HeaderValue},
     RequestBuilder,
 };
-use ropey::Rope;
+
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use tokio::time;
+
 use tower_lsp::{
     jsonrpc::{Error, Result},
     lsp_types::*,
-    Client, LanguageServer, LspService, Server,
+    Client, LanguageServer,
 };
 
 use crate::server::copilot::types::{
-    CopilotCompletionResponse, CopilotCyclingCompletion, CopilotEditorInfo, CopilotResponse, DocParams,
+    CopilotCompletionResponse, CopilotEditorInfo, CopilotResponse, DocParams,
 };
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -82,7 +78,7 @@ fn handle_event(event: eventsource_stream::Event) -> CopilotResponse {
     }
 }
 
-pub async fn await_stream(req: RequestBuilder, line_before: String, pos: Position) -> Vec<String> {
+pub async fn await_stream(req: RequestBuilder, _line_before: String, _pos: Position) -> Vec<String> {
     let resp = req.send().await.unwrap();
     let mut stream = resp.bytes_stream().eventsource();
     let mut completion_list = Vec::<String>::with_capacity(4);
@@ -108,7 +104,7 @@ pub async fn await_stream(req: RequestBuilder, line_before: String, pos: Positio
             }
         }
     }
-    return completion_list;
+    completion_list
 }
 
 struct CompletionStreamingParams {
@@ -129,7 +125,7 @@ impl Backend {
             None => Err(Error {
                 code: tower_lsp::jsonrpc::ErrorCode::from(69),
                 data: None,
-                message: Cow::from(format!("Failed to get doc info")),
+                message: Cow::from("Failed to get doc info".to_string()),
             }),
         }
     }
@@ -139,10 +135,10 @@ impl Backend {
         let copy = Arc::clone(&self.editor_info);
         let mut lock = copy.write().unwrap();
         *lock = params;
-        return Ok(Success::new(true));
+        Ok(Success::new(true))
     }
     pub fn get_doc_params(&self, params: &CompletionParams) -> DocParams {
-        let pos = params.text_document_position.position.clone();
+        let pos = params.text_document_position.position;
         let uri = params.text_document_position.text_document.uri.to_string();
         let doc = self.get_doc_info(&uri).unwrap();
         let rope = ropey::Rope::from_str(&doc.text);
@@ -150,7 +146,7 @@ impl Backend {
 
         DocParams {
             uri: uri.to_string(),
-            pos: pos.clone(),
+            pos,
             language: doc.language_id.to_string(),
             prefix: crate::server::util::get_text_before(offset, &rope).unwrap(),
             suffix: crate::server::util::get_text_after(offset, &rope).unwrap(),
@@ -177,7 +173,7 @@ impl Backend {
         let doc_params = self.get_doc_params(&params);
         let line_before = doc_params.line_before.to_string();
         let http_client = Arc::clone(&self.http_client);
-        let _prompt = format!("// Path: {}\n{}", doc_params.uri, doc_params.prefix.to_string());
+        let _prompt = format!("// Path: {}\n{}", doc_params.uri, doc_params.prefix);
 
         let req = crate::server::copilot::request::build_request(
             http_client,
@@ -189,7 +185,7 @@ impl Backend {
         let completion_list = await_stream(
             req,
             line_before.to_string(),
-            params.text_document_position.position.clone(),
+            params.text_document_position.position,
         );
         let response = CopilotCompletionResponse::from_str_vec(completion_list.await, line_before, doc_params.pos);
         self.cache
@@ -253,7 +249,7 @@ impl LanguageServer for Backend {
 
     async fn did_change(&self, mut params: DidChangeTextDocumentParams) {
         let data = Arc::clone(&self.documents);
-        let mut map = data.write().expect("RwLock poisoned");
+        let map = data.write().expect("RwLock poisoned");
         if let Some(element) = map.get(&params.text_document.uri.to_string()) {
             let mut element = element.lock().expect("Mutex poisoned");
             let doc = TextDocumentItem {

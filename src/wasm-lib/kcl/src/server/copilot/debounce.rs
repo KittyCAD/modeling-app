@@ -1,11 +1,10 @@
 //! Debounce a function call.
 
 use std::{
-    marker::PhantomData,
-    sync::{Mutex, MutexGuard, RwLock},
+    sync::{RwLock},
 };
 
-use tokio::runtime;
+
 
 #[derive(Debug)]
 pub struct Runner {
@@ -64,7 +63,7 @@ impl CanIncrement {
 #[cfg(test)]
 mod tests {
     use pretty_assertions::assert_eq;
-    use tokio::time::{self, Duration};
+    use tokio::time::{self};
 
     use super::*;
 

@@ -1,17 +1,14 @@
 //! The cache.
 
 use std::{
-    borrow::Cow,
     collections::HashMap,
     fmt::Debug,
-    str::FromStr,
-    sync::{mpsc::channel, Arc, Mutex, RwLock},
-    time::{Duration, Instant},
+    sync::{Mutex, RwLock},
 };
 
-use tower_lsp::lsp_types::TextDocumentItem;
 
-use crate::server::copilot::types::{CopilotCompletionResponse, DocParams};
+
+use crate::server::copilot::types::{CopilotCompletionResponse};
 
 // if file changes, keep the cache
 // if line number is different for an existing file, clean
@@ -20,6 +17,12 @@ pub struct CopilotCache {
     inner: RwLock<HashMap<String, Mutex<CopilotCompletionResponse>>>,
     last_line: RwLock<HashMap<String, Mutex<u32>>>,
     pending: RwLock<Mutex<bool>>,
+}
+
+impl Default for CopilotCache {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl CopilotCache {
@@ -37,19 +40,19 @@ impl CopilotCache {
         match last_line {
             Some(last_line) => {
                 let last_line = last_line.lock().unwrap();
-                return Some(last_line.clone());
+                Some(*last_line)
             }
             None => None,
         }
     }
 
-    fn get_cached_response(&self, uri: &String, lnum: u32) -> Option<CopilotCompletionResponse> {
+    fn get_cached_response(&self, uri: &String, _lnum: u32) -> Option<CopilotCompletionResponse> {
         let inner = self.inner.read().unwrap();
         let cache = inner.get(uri);
         match cache {
             Some(completion_response) => {
                 let completion_response = completion_response.lock().unwrap();
-                return Some(completion_response.clone());
+                Some(completion_response.clone())
             }
             None => None,
         }
@@ -80,13 +83,13 @@ impl CopilotCache {
         completion_response: &CopilotCompletionResponse,
     ) -> Option<CopilotCompletionResponse> {
         self.set_file_cache(uri, completion_response.clone());
-        self.set_last_line(uri, lnum.clone());
+        self.set_last_line(uri, *lnum);
         let inner = self.inner.write().unwrap();
         let cache = inner.get(uri);
         match cache {
             Some(completion_response) => {
                 let completion_response = completion_response.lock().unwrap();
-                return Some(completion_response.clone());
+                Some(completion_response.clone())
             }
             None => None,
         }
