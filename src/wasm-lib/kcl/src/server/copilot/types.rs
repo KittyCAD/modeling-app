@@ -91,46 +91,27 @@ struct EditorConfiguration {
     enable_auto_completions: bool,
 }
 
-impl EditorConfiguration {
-    pub fn default() -> Self {
+impl Default for EditorConfiguration {
+    fn default() -> Self {
         Self {
             disabled_languages: vec![],
             enable_auto_completions: true,
         }
     }
 }
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 struct EditorInfo {
     name: String,
     version: String,
 }
 
-impl EditorInfo {
-    pub fn default() -> Self {
-        Self {
-            name: "".to_string(),
-            version: "".to_string(),
-        }
-    }
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct CopilotEditorInfo {
     editor_configuration: EditorConfiguration,
     editor_info: EditorInfo,
     editor_plugin_info: EditorInfo,
-}
-
-impl CopilotEditorInfo {
-    pub fn default() -> Self {
-        Self {
-            editor_configuration: EditorConfiguration::default(),
-            editor_info: EditorInfo::default(),
-            editor_plugin_info: EditorInfo::default(),
-        }
-    }
 }
 
 pub struct DocParams {
