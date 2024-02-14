@@ -24,7 +24,6 @@ import {
   Object3DEventMap,
 } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import { useRef, useEffect, useState } from 'react'
 import { engineCommandManager } from 'lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
 import { isReducedMotion, roundOff, throttle } from 'lib/utils'
@@ -33,9 +32,7 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { deg2Rad } from 'lib/utils2d'
 import * as TWEEN from '@tweenjs/tween.js'
 import { MouseGuard, cameraMouseDragGuards } from 'lib/cameraControls'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { SourceRange } from 'lang/wasm'
-import { useStore } from 'useStore'
 import { Axis } from 'lib/selections'
 import { createGridHelper } from './helpers'
 
@@ -71,12 +68,14 @@ interface ThreeCamValues {
   isPerspective: boolean
 }
 
+const lastCmdDelay = 50
+
 let lastCmd: any = null
 let lastCmdTime: number = Date.now()
 let lastCmdTimeoutId: number | null = null
 
 const sendLastReliableChannel = () => {
-  if (lastCmd && Date.now() - lastCmdTime >= 300) {
+  if (lastCmd && Date.now() - lastCmdTime >= lastCmdDelay) {
     engineCommandManager.sendSceneCommand(lastCmd, true)
     lastCmdTime = Date.now()
   }
@@ -98,8 +97,25 @@ const throttledUpdateEngineCamera = throttle((threeValues: ThreeCamValues) => {
   if (lastCmdTimeoutId !== null) {
     clearTimeout(lastCmdTimeoutId)
   }
-  lastCmdTimeoutId = setTimeout(sendLastReliableChannel, 300) as any as number
+  lastCmdTimeoutId = setTimeout(
+    sendLastReliableChannel,
+    lastCmdDelay
+  ) as any as number
 }, 1000 / 30)
+
+let lastPerspectiveCmd: any = null
+let lastPerspectiveCmdTime: number = Date.now()
+let lastPerspectiveCmdTimeoutId: number | null = null
+
+const sendLastPerspectiveReliableChannel = () => {
+  if (
+    lastPerspectiveCmd &&
+    Date.now() - lastPerspectiveCmdTime >= lastCmdDelay
+  ) {
+    engineCommandManager.sendSceneCommand(lastPerspectiveCmd, true)
+    lastPerspectiveCmdTime = Date.now()
+  }
+}
 
 const throttledUpdateEngineFov = throttle(
   (vals: {
@@ -107,7 +123,31 @@ const throttledUpdateEngineFov = throttle(
     quaternion: Quaternion
     zoom: number
     fov: number
-  }) => updateEngineFov(vals),
+  }) => {
+    const cmd = {
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_perspective_settings',
+        ...convertThreeCamValuesToEngineCam({
+          ...vals,
+          isPerspective: true,
+        }),
+        fov_y: vals.fov,
+        ...calculateNearFarFromFOV(vals.fov),
+      },
+    } as any
+    engineCommandManager.sendSceneCommand(cmd)
+    lastPerspectiveCmd = cmd
+    lastPerspectiveCmdTime = Date.now()
+    if (lastPerspectiveCmdTimeoutId !== null) {
+      clearTimeout(lastPerspectiveCmdTimeoutId)
+    }
+    lastPerspectiveCmdTimeoutId = setTimeout(
+      sendLastPerspectiveReliableChannel,
+      lastCmdDelay
+    ) as any as number
+  },
   1000 / 15
 )
 
@@ -138,7 +178,7 @@ interface onMoveCallbackArgs {
   intersection: Intersection<Object3D<Object3DEventMap>>
 }
 
-type ReactCameraProperties =
+export type ReactCameraProperties =
   | {
       type: 'perspective'
       fov?: number
@@ -152,8 +192,11 @@ type ReactCameraProperties =
       quaternion: [number, number, number, number]
     }
 
-class SetupSingleton {
-  static instance: SetupSingleton
+// This singleton class is responsible for all of the under the hood setup for the client side scene.
+// That is the cameras and switching between them, raycasters for click mouse events and their abstractions (onClick etc), setting up controls.
+// Anything that added the the scene for the user to interact with is probably in SceneEntities.ts
+class SceneInfra {
+  static instance: SceneInfra
   scene: Scene
   camera: PerspectiveCamera | OrthographicCamera
   renderer: WebGLRenderer
@@ -290,7 +333,7 @@ class SetupSingleton {
     const light = new AmbientLight(0x505050) // soft white light
     this.scene.add(light)
 
-    SetupSingleton.instance = this
+    SceneInfra.instance = this
   }
   private _isCamMovingCallback: (isMoving: boolean, isTween: boolean) => void =
     () => {}
@@ -481,7 +524,7 @@ class SetupSingleton {
 
       const targetFov = 4
       const fovAnimationStep = (currentFov - targetFov) / FRAMES_TO_ANIMATE_IN
-      let frameWaitOnFinish = 5
+      let frameWaitOnFinish = 10
 
       const animateFovChange = () => {
         if (this.camera instanceof PerspectiveCamera) {
@@ -670,7 +713,7 @@ class SetupSingleton {
   } | null => {
     this.planeRaycaster.setFromCamera(
       this.currentMouseVector,
-      setupSingleton.camera
+      sceneInfra.camera
     )
     const planeIntersects = this.planeRaycaster.intersectObjects(
       this.scene.children,
@@ -933,7 +976,7 @@ class SetupSingleton {
     if (planesGroup) this.scene.remove(planesGroup)
   }
   updateOtherSelectionColors = (otherSelections: Axis[]) => {
-    const axisGroup = setupSingleton.scene.children.find(
+    const axisGroup = sceneInfra.scene.children.find(
       ({ userData }) => userData?.type === AXIS_GROUP
     )
     const axisMap: { [key: string]: Axis } = {
@@ -955,247 +998,7 @@ class SetupSingleton {
   }
 }
 
-export const setupSingleton = new SetupSingleton()
-
-function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
-  const [isCamMoving, setIsCamMoving] = useState(false)
-  const [isTween, setIsTween] = useState(false)
-
-  const { state } = useModelingContext()
-
-  useEffect(() => {
-    setupSingleton.setIsCamMovingCallback((isMoving, isTween) => {
-      setIsCamMoving(isMoving)
-      setIsTween(isTween)
-    })
-  }, [])
-
-  if (DEBUG_SHOW_BOTH_SCENES || !isCamMoving)
-    return { hideClient: false, hideServer: false }
-  let hideServer = state.matches('Sketch') || state.matches('Sketch no face')
-  if (isTween) {
-    hideServer = false
-  }
-
-  return { hideClient: !hideServer, hideServer }
-}
-
-export const ClientSideScene = ({
-  cameraControls,
-}: {
-  cameraControls: ReturnType<
-    typeof useGlobalStateContext
-  >['settings']['context']['cameraControls']
-}) => {
-  const canvasRef = useRef<HTMLDivElement>(null)
-  const { state, send } = useModelingContext()
-  const { hideClient, hideServer } = useShouldHideScene()
-  const { setHighlightRange } = useStore((s) => ({
-    setHighlightRange: s.setHighlightRange,
-    highlightRange: s.highlightRange,
-  }))
-
-  // Listen for changes to the camera controls setting
-  // and update the client-side scene's controls accordingly.
-  useEffect(() => {
-    setupSingleton.setInteractionGuards(cameraMouseDragGuards[cameraControls])
-  }, [cameraControls])
-  useEffect(() => {
-    setupSingleton.updateOtherSelectionColors(
-      state?.context?.selectionRanges?.otherSelections || []
-    )
-  }, [state?.context?.selectionRanges?.otherSelections])
-
-  useEffect(() => {
-    if (!canvasRef.current) return
-    const canvas = canvasRef.current
-    canvas.appendChild(setupSingleton.renderer.domElement)
-    setupSingleton.animate()
-    setupSingleton.setHighlightCallback(setHighlightRange)
-    canvas.addEventListener('mousemove', setupSingleton.onMouseMove, false)
-    canvas.addEventListener('mousedown', setupSingleton.onMouseDown, false)
-    canvas.addEventListener('mouseup', setupSingleton.onMouseUp, false)
-    setupSingleton.setSend(send)
-    return () => {
-      canvas?.removeEventListener('mousemove', setupSingleton.onMouseMove)
-      canvas?.removeEventListener('mousedown', setupSingleton.onMouseDown)
-      canvas?.removeEventListener('mouseup', setupSingleton.onMouseUp)
-    }
-  }, [])
-
-  return (
-    <div
-      ref={canvasRef}
-      className={`absolute inset-0 h-full w-full transition-all duration-300 ${
-        hideClient ? 'opacity-0' : 'opacity-100'
-      } ${hideServer ? 'bg-black' : ''} ${
-        !hideClient && !hideServer && state.matches('Sketch')
-          ? 'bg-black/80'
-          : ''
-      }`}
-    ></div>
-  )
-}
-
-const throttled = throttle((a: ReactCameraProperties) => {
-  if (a.type === 'perspective' && a.fov) {
-    setupSingleton.dollyZoom(a.fov)
-  }
-}, 1000 / 15)
-
-export const CamDebugSettings = () => {
-  const [camSettings, setCamSettings] = useState<ReactCameraProperties>({
-    type: 'perspective',
-    fov: 12,
-    position: [0, 0, 0],
-    quaternion: [0, 0, 0, 1],
-  })
-  const [fov, setFov] = useState(12)
-
-  useEffect(() => {
-    setupSingleton.setReactCameraPropertiesCallback(setCamSettings)
-  }, [setupSingleton])
-  useEffect(() => {
-    if (camSettings.type === 'perspective' && camSettings.fov) {
-      setFov(camSettings.fov)
-    }
-  }, [(camSettings as any)?.fov])
-
-  return (
-    <div>
-      <h3>cam settings</h3>
-      perspective cam
-      <input
-        type="checkbox"
-        checked={camSettings.type === 'perspective'}
-        onChange={(e) => {
-          if (camSettings.type === 'perspective') {
-            setupSingleton.useOrthographicCamera()
-          } else {
-            setupSingleton.usePerspectiveCamera()
-          }
-        }}
-      />
-      {camSettings.type === 'perspective' && (
-        <input
-          type="range"
-          min="4"
-          max="90"
-          step={0.5}
-          value={fov}
-          onChange={(e) => {
-            setFov(parseFloat(e.target.value))
-
-            throttled({
-              ...camSettings,
-              fov: parseFloat(e.target.value),
-            })
-          }}
-          className="w-full cursor-pointer pointer-events-auto"
-        />
-      )}
-      {camSettings.type === 'perspective' && (
-        <div>
-          <span>fov</span>
-          <input
-            type="number"
-            value={camSettings.fov}
-            className="text-black w-16"
-            onChange={(e) => {
-              setupSingleton.setCam({
-                ...camSettings,
-                fov: parseFloat(e.target.value),
-              })
-            }}
-          />
-        </div>
-      )}
-      {camSettings.type === 'orthographic' && (
-        <>
-          <div>
-            <span>fov</span>
-            <input
-              type="number"
-              value={camSettings.zoom}
-              className="text-black w-16"
-              onChange={(e) => {
-                setupSingleton.setCam({
-                  ...camSettings,
-                  zoom: parseFloat(e.target.value),
-                })
-              }}
-            />
-          </div>
-        </>
-      )}
-      <div>
-        Position
-        <ul className="flex">
-          <li>
-            <span className="pl-2 pr-1">x:</span>
-            <input
-              type="number"
-              step={5}
-              data-testid="cam-x-position"
-              value={camSettings.position[0]}
-              className="text-black w-16"
-              onChange={(e) => {
-                setupSingleton.setCam({
-                  ...camSettings,
-                  position: [
-                    parseFloat(e.target.value),
-                    camSettings.position[1],
-                    camSettings.position[2],
-                  ],
-                })
-              }}
-            />
-          </li>
-          <li>
-            <span className="pl-2 pr-1">y:</span>
-            <input
-              type="number"
-              step={5}
-              data-testid="cam-y-position"
-              value={camSettings.position[1]}
-              className="text-black w-16"
-              onChange={(e) => {
-                setupSingleton.setCam({
-                  ...camSettings,
-                  position: [
-                    camSettings.position[0],
-                    parseFloat(e.target.value),
-                    camSettings.position[2],
-                  ],
-                })
-              }}
-            />
-          </li>
-          <li>
-            <span className="pl-2 pr-1">z:</span>
-            <input
-              type="number"
-              step={5}
-              data-testid="cam-z-position"
-              value={camSettings.position[2]}
-              className="text-black w-16"
-              onChange={(e) => {
-                setupSingleton.setCam({
-                  ...camSettings,
-                  position: [
-                    camSettings.position[0],
-                    camSettings.position[1],
-                    parseFloat(e.target.value),
-                  ],
-                })
-              }}
-            />
-          </li>
-        </ul>
-      </div>
-    </div>
-  )
-}
+export const sceneInfra = new SceneInfra()
 
 function convertThreeCamValuesToEngineCam({
   position,
@@ -1240,29 +1043,6 @@ function calculateNearFarFromFOV(fov: number) {
   // const z_near = 0.1 + nearFarRatio * (5 - 0.1)
   const z_far = 1000 + nearFarRatio * (100000 - 1000)
   return { z_near: 0.1, z_far }
-}
-
-function updateEngineFov(args: {
-  position: Vector3
-  quaternion: Quaternion
-  zoom: number
-  fov: number
-}) {
-  engineCommandManager.sendSceneCommand(
-    {
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_perspective_settings',
-        ...convertThreeCamValuesToEngineCam({
-          ...args,
-          isPerspective: true,
-        }),
-        fov_y: args.fov,
-        ...calculateNearFarFromFOV(args.fov),
-      },
-    } as any /* TODO - this command isn't in the spec yet, remove any when it is */
-  )
 }
 
 export function isQuaternionVertical(q: Quaternion) {

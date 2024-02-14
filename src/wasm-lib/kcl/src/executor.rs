@@ -862,7 +862,7 @@ impl ExtrudeSurface {
 
     pub fn get_name(&self) -> String {
         match self {
-            ExtrudeSurface::ExtrudePlane(ep) => ep.name.clone(),
+            ExtrudeSurface::ExtrudePlane(ep) => ep.name.to_string(),
         }
     }
 

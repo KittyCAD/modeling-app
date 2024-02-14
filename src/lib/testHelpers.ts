@@ -4,7 +4,6 @@ import {
   EngineCommand,
 } from '../lang/std/engineConnection'
 import { Models } from '@kittycad/lib'
-import { v4 as uuidv4 } from 'uuid'
 
 type WebSocketResponse = Models['OkWebSocketResponseData_type']
 

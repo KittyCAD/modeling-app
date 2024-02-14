@@ -33,9 +33,10 @@ import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
 import useStateMachineCommands from 'hooks/useStateMachineCommands'
 import { modelingMachineConfig } from 'lib/commandBarConfigs/modelingCommandConfig'
-import { setupSingleton } from 'clientSideScene/setup'
-import { getSketchQuaternion } from 'clientSideScene/clientSideScene'
+import { sceneInfra } from 'clientSideScene/sceneInfra'
+import { getSketchQuaternion } from 'clientSideScene/sceneEntities'
 import { startSketchOnDefault } from 'lang/modifyAst'
+import { Program } from 'lang/wasm'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -189,6 +190,17 @@ export const ModelingMachineProvider = ({
         },
       },
       services: {
+        'AST-undo-startSketchOn': async ({ sketchPathToNode }) => {
+          if (!sketchPathToNode) return
+          const newAst: Program = JSON.parse(JSON.stringify(kclManager.ast))
+          const varDecIndex = sketchPathToNode[1][0]
+          // remove body item at varDecIndex
+          newAst.body = newAst.body.filter((_, i) => i !== varDecIndex)
+          await kclManager.executeAstMock(newAst, { updates: 'code' })
+          sceneInfra.setCallbacks({
+            onClick: () => {},
+          })
+        },
         'animate-to-face': async (_, { data: { plane, normal } }) => {
           const { modifiedAst, pathToNode } = startSketchOnDefault(
             kclManager.ast,
@@ -196,7 +208,7 @@ export const ModelingMachineProvider = ({
           )
           await kclManager.updateAst(modifiedAst, false)
           const quaternion = getSketchQuaternion(pathToNode, normal)
-          await setupSingleton.tweenCameraToQuaternion(quaternion)
+          await sceneInfra.tweenCameraToQuaternion(quaternion)
           return {
             sketchPathToNode: pathToNode,
             sketchNormalBackUp: normal,
@@ -210,7 +222,7 @@ export const ModelingMachineProvider = ({
             sketchPathToNode || [],
             sketchNormalBackUp
           )
-          await setupSingleton.tweenCameraToQuaternion(quaternion)
+          await sceneInfra.tweenCameraToQuaternion(quaternion)
         },
         'Get horizontal info': async ({
           selectionRanges,

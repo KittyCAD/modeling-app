@@ -26,7 +26,7 @@ import interact from '@replit/codemirror-interact'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { kclManager, useKclContext } from 'lang/KclSingleton'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
-import { setupSingleton } from 'clientSideScene/setup'
+import { sceneInfra } from 'clientSideScene/sceneInfra'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -119,7 +119,7 @@ export const TextEditor = ({
     if (!editorView) {
       setEditorView(viewUpdate.view)
     }
-    if (setupSingleton.selected) return // mid drag
+    if (sceneInfra.selected) return // mid drag
     const ignoreEvents: ModelingMachineEvent['type'][] = [
       'Equip Line tool',
       'Equip tangential arc to',
