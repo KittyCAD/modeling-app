@@ -467,6 +467,7 @@ const completionRequester = (client: LanguageServerClient) => {
               })
             }
           } catch (error) {
+            console.warn('copilot completion failed', error)
             // Javascript wait for 500ms for some reason is necessary here.
             // TODO - FIGURE OUT WHY THIS RESOLVES THE BUG
 
@@ -489,9 +490,9 @@ export function copilotServer(options: LanguageServerOptions) {
 }
 
 export const copilotBundle = (options: LanguageServerOptions): Extension => [
-  docPath.of(options.documentUri),
-  docPathFacet.of(options.documentUri),
-  relDocPath.of(options.documentUri),
+  docPath.of(options.documentUri.split('/').pop()!),
+  docPathFacet.of(options.documentUri.split('/').pop()!),
+  relDocPath.of(options.documentUri.replace('file://', '')),
   completionDecoration,
   Prec.highest(completionPlugin(options.client)),
   Prec.highest(viewCompletionPlugin(options.client)),

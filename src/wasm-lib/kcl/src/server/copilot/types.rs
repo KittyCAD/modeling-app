@@ -124,6 +124,26 @@ pub struct DocParams {
     pub suffix: String,
 }
 
+#[derive(Debug, Default, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct CopilotLspCompletionParams {
+    pub doc: CopilotDocParams,
+}
+
+#[derive(Debug, Default, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct CopilotDocParams {
+    pub indent_size: u32,
+    pub insert_spaces: bool,
+    pub language_id: String,
+    pub path: String,
+    pub position: Position,
+    pub relative_path: String,
+    pub source: String,
+    pub tab_size: u32,
+    pub uri: String,
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct CopilotCompletionRequest {
     pub prompt: String,

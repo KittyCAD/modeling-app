@@ -1,36 +1,28 @@
 //! The copilot lsp server for ghost text.
 
 pub mod cache;
-pub mod debounce;
 mod request;
 pub mod types;
 
 use std::{
     borrow::Cow,
-    collections::HashMap,
     fmt::Debug,
-    sync::{Arc, Mutex, RwLock},
+    sync::{Arc, RwLock},
 };
 
 use eventsource_stream::Eventsource;
 use futures::StreamExt;
 use reqwest::RequestBuilder;
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
 use tower_lsp::{
     jsonrpc::{Error, Result},
-    lsp_types::{
-        CompletionOptions, CompletionParams, DidChangeConfigurationParams, DidChangeTextDocumentParams,
-        DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams,
-        DidOpenTextDocumentParams, DidSaveTextDocumentParams, ExecuteCommandOptions, ExecuteCommandParams,
-        InitializeParams, InitializeResult, InitializedParams, MessageType, OneOf, Position, ServerCapabilities,
-        TextDocumentSyncCapability, TextDocumentSyncKind, WorkspaceEdit, WorkspaceFoldersServerCapabilities,
-        WorkspaceServerCapabilities,
-    },
+    lsp_types::{InitializeParams, InitializeResult, InitializedParams, MessageType, Position, ServerCapabilities},
     Client, LanguageServer,
 };
 
 use crate::server::copilot::types::{CopilotCompletionResponse, CopilotEditorInfo, CopilotResponse, DocParams};
+
+use self::types::CopilotLspCompletionParams;
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Success {
@@ -42,23 +34,10 @@ impl Success {
     }
 }
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct TextDocumentItem {
-    pub uri: String,
-    pub text: String,
-    pub version: i32,
-    pub language_id: String,
-}
-
-type SafeMap = Arc<RwLock<HashMap<String, Mutex<TextDocumentItem>>>>;
-
 #[derive(Debug)]
 pub struct Backend {
     pub client: Client,
-    pub documents: SafeMap,
     pub http_client: Arc<reqwest::Client>,
-    pub runner: debounce::Runner,
     pub editor_info: Arc<RwLock<CopilotEditorInfo>>,
     pub cache: cache::CopilotCache,
 }
@@ -99,31 +78,15 @@ pub async fn await_stream(req: RequestBuilder, _line_before: String, _pos: Posit
             }
         }
     }*/
+    completion_list.push("more stuff".to_string());
+    completion_list.push("things".to_string());
+    completion_list.push("stuff".to_string());
+    completion_list.push("more things".to_string());
 
     Ok(completion_list)
 }
 
 impl Backend {
-    fn get_doc_info(&self, uri: &String) -> Result<Box<TextDocumentItem>> {
-        let data = Arc::clone(&self.documents);
-        let map = data.read().map_err(|err| Error {
-            code: tower_lsp::jsonrpc::ErrorCode::from(69),
-            data: None,
-            message: Cow::from(format!("Failed to get doc info: {}", err)),
-        })?;
-        match map.get(uri) {
-            Some(e) => {
-                let element = e.lock().expect("RwLock poisoned");
-                Ok(Box::new(element.clone()))
-            }
-            None => Err(Error {
-                code: tower_lsp::jsonrpc::ErrorCode::from(69),
-                data: None,
-                message: Cow::from("Failed to get doc info".to_string()),
-            }),
-        }
-    }
-
     pub async fn set_editor_info(&self, params: CopilotEditorInfo) -> Result<Success> {
         self.client.log_message(MessageType::INFO, "setEditorInfo").await;
         let copy = Arc::clone(&self.editor_info);
@@ -136,17 +99,16 @@ impl Backend {
         Ok(Success::new(true))
     }
 
-    pub fn get_doc_params(&self, params: &CompletionParams) -> Result<DocParams> {
-        let pos = params.text_document_position.position;
-        let uri = params.text_document_position.text_document.uri.to_string();
-        let doc = self.get_doc_info(&uri)?;
-        let rope = ropey::Rope::from_str(&doc.text);
+    pub fn get_doc_params(&self, params: &CopilotLspCompletionParams) -> Result<DocParams> {
+        let pos = params.doc.position;
+        let uri = params.doc.uri.to_string();
+        let rope = ropey::Rope::from_str(&params.doc.source);
         let offset = crate::server::util::position_to_offset(pos, &rope).unwrap_or_default();
 
         Ok(DocParams {
             uri: uri.to_string(),
             pos,
-            language: doc.language_id.to_string(),
+            language: params.doc.language_id.to_string(),
             prefix: crate::server::util::get_text_before(offset, &rope).unwrap_or_default(),
             suffix: crate::server::util::get_text_after(offset, &rope).unwrap_or_default(),
             line_before: crate::server::util::get_line_before(pos, &rope).unwrap_or_default(),
@@ -154,23 +116,14 @@ impl Backend {
         })
     }
 
-    pub async fn get_completions_cycling(&self, params: CompletionParams) -> Result<CopilotCompletionResponse> {
+    pub async fn get_completions_cycling(
+        &self,
+        params: CopilotLspCompletionParams,
+    ) -> Result<CopilotCompletionResponse> {
         let doc_params = self.get_doc_params(&params)?;
         let cached_result = self.cache.get_cached_result(&doc_params.uri, doc_params.pos.line);
         if let Some(cached_result) = cached_result {
             return Ok(cached_result);
-        }
-
-        let valid = self.runner.increment_and_do_stuff().await.map_err(|err| Error {
-            code: tower_lsp::jsonrpc::ErrorCode::from(69),
-            data: None,
-            message: Cow::from(format!("Failed to increment and do stuff: {}", err)),
-        })?;
-        if !valid {
-            return Ok(CopilotCompletionResponse {
-                cancellation_reason: Some("More Recent".to_string()),
-                completions: vec![],
-            });
         }
 
         let doc_params = self.get_doc_params(&params)?;
@@ -190,7 +143,7 @@ impl Backend {
             message: Cow::from(format!("Failed to build request: {}", err)),
         })?;
 
-        let completion_list = await_stream(req, line_before.to_string(), params.text_document_position.position)
+        let completion_list = await_stream(req, line_before.to_string(), params.doc.position)
             .await
             .map_err(|err| Error {
                 code: tower_lsp::jsonrpc::ErrorCode::from(69),
@@ -206,11 +159,19 @@ impl Backend {
     }
 
     pub async fn accept_completions(&self, params: Vec<String>) {
-        todo!()
+        self.client
+            .log_message(MessageType::INFO, format!("Accepted completions: {:?}", params))
+            .await;
+
+        // TODO: send telemetry data back out that we accepted the completions
     }
 
     pub async fn reject_completions(&self, params: Vec<String>) {
-        todo!()
+        self.client
+            .log_message(MessageType::INFO, format!("Rejected completions: {:?}", params))
+            .await;
+
+        // TODO: send telemetry data back out that we rejected the completions
     }
 }
 
@@ -220,25 +181,9 @@ impl LanguageServer for Backend {
         Ok(InitializeResult {
             capabilities: ServerCapabilities {
                 inlay_hint_provider: None,
-                text_document_sync: Some(TextDocumentSyncCapability::Kind(TextDocumentSyncKind::FULL)),
-                completion_provider: Some(CompletionOptions {
-                    resolve_provider: Some(false),
-                    trigger_characters: Some(vec![".".to_string()]),
-                    work_done_progress_options: Default::default(),
-                    all_commit_characters: None,
-                    completion_item: None,
-                }),
-                execute_command_provider: Some(ExecuteCommandOptions {
-                    commands: vec!["dummy.do_something".to_string()],
-                    work_done_progress_options: Default::default(),
-                }),
-                workspace: Some(WorkspaceServerCapabilities {
-                    workspace_folders: Some(WorkspaceFoldersServerCapabilities {
-                        supported: Some(true),
-                        change_notifications: Some(OneOf::Left(true)),
-                    }),
-                    file_operations: None,
-                }),
+                text_document_sync: None,
+                completion_provider: None,
+                workspace: None,
                 semantic_tokens_provider: None,
                 ..ServerCapabilities::default()
             },
@@ -251,70 +196,5 @@ impl LanguageServer for Backend {
 
     async fn shutdown(&self) -> Result<()> {
         Ok(())
-    }
-
-    async fn did_open(&self, params: DidOpenTextDocumentParams) {
-        self.client.log_message(MessageType::INFO, "file opened!").await;
-        let id = params.text_document.uri.to_string();
-        let doc = Mutex::new(TextDocumentItem {
-            uri: params.text_document.uri.to_string(),
-            text: params.text_document.text,
-            version: params.text_document.version,
-            language_id: params.text_document.language_id,
-        });
-        let mut map = self.documents.write().expect("RwLock poisoned");
-        map.entry(id).or_insert_with(|| doc);
-    }
-
-    async fn did_change(&self, mut params: DidChangeTextDocumentParams) {
-        let data = Arc::clone(&self.documents);
-        let map = data.write().expect("RwLock poisoned");
-        if let Some(element) = map.get(&params.text_document.uri.to_string()) {
-            let mut element = element.lock().expect("Mutex poisoned");
-            let doc = TextDocumentItem {
-                uri: element.uri.to_string(),
-                text: std::mem::take(&mut params.content_changes[0].text),
-                version: params.text_document.version,
-                language_id: element.language_id.to_string(),
-            };
-            *element = doc
-        }
-    }
-
-    async fn did_save(&self, _: DidSaveTextDocumentParams) {
-        self.client.log_message(MessageType::ERROR, "file saved!").await;
-    }
-    async fn did_close(&self, _: DidCloseTextDocumentParams) {
-        self.client.log_message(MessageType::ERROR, "file closed!").await;
-    }
-
-    async fn did_change_configuration(&self, _: DidChangeConfigurationParams) {
-        self.client
-            .log_message(MessageType::ERROR, "configuration changed!")
-            .await;
-    }
-
-    async fn did_change_workspace_folders(&self, _: DidChangeWorkspaceFoldersParams) {
-        self.client
-            .log_message(MessageType::ERROR, "workspace folders changed!")
-            .await;
-    }
-
-    async fn did_change_watched_files(&self, _: DidChangeWatchedFilesParams) {
-        self.client
-            .log_message(MessageType::ERROR, "watched files have changed!")
-            .await;
-    }
-
-    async fn execute_command(&self, _: ExecuteCommandParams) -> Result<Option<Value>> {
-        self.client.log_message(MessageType::ERROR, "command executed!").await;
-
-        match self.client.apply_edit(WorkspaceEdit::default()).await {
-            Ok(res) if res.applied => self.client.log_message(MessageType::INFO, "applied").await,
-            Ok(_) => self.client.log_message(MessageType::INFO, "rejected").await,
-            Err(err) => self.client.log_message(MessageType::ERROR, err).await,
-        }
-
-        Ok(None)
     }
 }
