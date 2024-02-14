@@ -31,11 +31,15 @@ impl CopilotCache {
     }
 
     fn get_last_line(&self, uri: &String) -> Option<u32> {
-        let inner = self.last_line.read().unwrap();
+        let Ok(inner) = self.last_line.read() else {
+            return None;
+        };
         let last_line = inner.get(uri);
         match last_line {
             Some(last_line) => {
-                let last_line = last_line.lock().unwrap();
+                let Ok(last_line) = last_line.lock() else {
+                    return None;
+                };
                 Some(*last_line)
             }
             None => None,
@@ -43,11 +47,15 @@ impl CopilotCache {
     }
 
     fn get_cached_response(&self, uri: &String, _lnum: u32) -> Option<CopilotCompletionResponse> {
-        let inner = self.inner.read().unwrap();
+        let Ok(inner) = self.inner.read() else {
+            return None;
+        };
         let cache = inner.get(uri);
         match cache {
             Some(completion_response) => {
-                let completion_response = completion_response.lock().unwrap();
+                let Ok(completion_response) = completion_response.lock() else {
+                    return None;
+                };
                 Some(completion_response.clone())
             }
             None => None,
@@ -55,20 +63,26 @@ impl CopilotCache {
     }
 
     fn set_file_cache(&self, uri: &str, completion_response: CopilotCompletionResponse) {
-        let mut inner = self.inner.write().unwrap();
+        let Ok(mut inner) = self.inner.write() else {
+            return;
+        };
         inner.insert(uri.to_string(), Mutex::new(completion_response));
     }
 
     fn set_last_line(&self, uri: &str, last_line: u32) {
-        let mut inner = self.last_line.write().unwrap();
+        let Ok(mut inner) = self.last_line.write() else {
+            return;
+        };
         inner.insert(uri.to_string(), Mutex::new(last_line));
     }
 
     pub fn get_cached_result(&self, uri: &String, last_line: u32) -> Option<CopilotCompletionResponse> {
-        let cached_line = self.get_last_line(uri);
-        if cached_line.is_none() || cached_line.unwrap() != last_line {
+        let Some(cached_line) = self.get_last_line(uri) else {
             return None;
-        }
+        };
+        if last_line != cached_line {
+            return None;
+        };
         self.get_cached_response(uri, last_line)
     }
 
@@ -80,11 +94,15 @@ impl CopilotCache {
     ) -> Option<CopilotCompletionResponse> {
         self.set_file_cache(uri, completion_response.clone());
         self.set_last_line(uri, *lnum);
-        let inner = self.inner.write().unwrap();
+        let Ok(inner) = self.inner.write() else {
+            return None;
+        };
         let cache = inner.get(uri);
         match cache {
             Some(completion_response) => {
-                let completion_response = completion_response.lock().unwrap();
+                let Ok(completion_response) = completion_response.lock() else {
+                    return None;
+                };
                 Some(completion_response.clone())
             }
             None => None,
