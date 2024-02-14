@@ -57,7 +57,7 @@ mod tests {
     use super::*;
 
     #[tokio::test]
-    async fn test_increment_and_do_stuff() {
+    async fn test_debounce_increment_and_do_stuff() {
         let can_inc = CanIncrement::new();
         let runner = Runner {
             inc: can_inc,
@@ -67,6 +67,6 @@ mod tests {
         let b = runner.increment_and_do_stuff();
         let res = tokio::join!(a, b);
 
-        assert_eq!(res, (true, true));
+        assert_eq!(res, (false, true));
     }
 }

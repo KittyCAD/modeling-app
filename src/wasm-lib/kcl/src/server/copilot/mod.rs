@@ -13,7 +13,6 @@ use std::{
 };
 
 use eventsource_stream::Eventsource;
-use futures::future::AbortHandle;
 use futures::StreamExt;
 use reqwest::RequestBuilder;
 
@@ -54,7 +53,6 @@ pub struct Backend {
     pub client: Client,
     pub documents: SafeMap,
     pub http_client: Arc<reqwest::Client>,
-    pub current_dispatch: Option<AbortHandle>,
     pub runner: debounce::Runner,
     pub editor_info: Arc<RwLock<CopilotEditorInfo>>,
     pub cache: cache::CopilotCache,
@@ -180,8 +178,6 @@ impl Backend {
 impl LanguageServer for Backend {
     async fn initialize(&self, _: InitializeParams) -> Result<InitializeResult> {
         Ok(InitializeResult {
-            server_info: None,
-            offset_encoding: None,
             capabilities: ServerCapabilities {
                 inlay_hint_provider: None,
                 text_document_sync: Some(TextDocumentSyncCapability::Kind(TextDocumentSyncKind::FULL)),
@@ -206,6 +202,7 @@ impl LanguageServer for Backend {
                 semantic_tokens_provider: None,
                 ..ServerCapabilities::default()
             },
+            ..Default::default()
         })
     }
     async fn initialized(&self, _: InitializedParams) {

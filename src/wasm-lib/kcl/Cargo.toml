@@ -21,12 +21,14 @@ databake = { version = "0.1.7", features = ["derive"] }
 #derive-docs = { version = "0.1.6" }
 derive-docs = { path = "../derive-docs" }
 eventsource-stream = "0.2.3"
+futures = { version = "0.3.30" }
 gltf-json = "1.4.0"
 kittycad = { workspace = true }
 kittycad-execution-plan-macros = { workspace = true }
 kittycad-execution-plan-traits = { workspace = true }
 lazy_static = "1.4.0"
 parse-display = "0.9.0"
+reqwest = { version = "0.11.24", default-features = false, features = ["stream", "json", "rustls-tls"] }
 ropey = "1.6.1"
 schemars = { version = "0.8.16", features = ["impl_json_schema", "url", "uuid1"] }
 serde = { version = "1.0.193", features = ["derive"] }
@@ -38,6 +40,7 @@ winnow = "0.5.40"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 js-sys = { version = "0.3.68" }
+tokio = { version = "1.36.0", default-features = false, features = ["time"] }
 tower-lsp = { version = "0.20.0", default-features = false, features = ["runtime-agnostic"] }
 wasm-bindgen = "0.2.91"
 wasm-bindgen-futures = "0.4.41"
@@ -46,8 +49,6 @@ web-sys = { version = "0.3.68", features = ["console"] }
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 approx = "0.5"
 bson = { version = "2.9.0", features = ["uuid-1", "chrono"] }
-futures = { version = "0.3.30" }
-reqwest = { version = "0.11.24", default-features = false, features = ["stream", "json", "rustls-tls"] }
 tokio = { version = "1.36.0", features = ["full"] }
 tokio-tungstenite = { version = "0.21.0", features = ["rustls-tls-native-roots"] }
 tower-lsp = { version = "0.20.0", features = ["proposed"] }
