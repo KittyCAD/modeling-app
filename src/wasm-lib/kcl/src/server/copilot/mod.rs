@@ -200,6 +200,7 @@ impl Backend {
         let response = CopilotCompletionResponse::from_str_vec(completion_list, line_before, doc_params.pos);
         self.cache
             .set_cached_result(&doc_params.uri, &doc_params.pos.line, &response);
+
         Ok(response)
     }
 }
