@@ -81,8 +81,8 @@ pub async fn await_stream(req: RequestBuilder, _line_before: String, _pos: Posit
 
     while let Some(event) = stream.next().await {
         match handle_event(event.unwrap()) {
-            CopilotResponse::Answer(ans) => {
-                ans.choices.iter().for_each(|x| {
+            CopilotResponse::Answer(answer) => {
+                answer.choices.iter().for_each(|x| {
                     s.push_str(&x.text);
                     if x.finish_reason.is_some() {
                         completion_list.push(s.to_string());
