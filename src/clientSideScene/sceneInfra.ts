@@ -626,10 +626,21 @@ class SceneInfra {
     const { x: px, y: py, z: pz } = this.camera.position
     const { x: qx, y: qy, z: qz, w: qw } = this.camera.quaternion
     const { x: tx, y: ty, z: tz } = this.controls.target
+    const zoom = this.camera.zoom
     this.camera = this.createPerspectiveCamera()
 
     this.camera.position.set(px, py, pz)
     this.camera.quaternion.set(qx, qy, qz, qw)
+    const zoomFudgeFactor = 2280
+    const distance = zoomFudgeFactor / (zoom * this.fov)
+    const direction = new Vector3().subVectors(
+      this.camera.position,
+      this.controls.target
+    )
+    direction.normalize()
+    this.camera.position
+      .copy(this.controls.target)
+      .addScaledVector(direction, distance)
 
     this.setupOrbitControls([tx, ty, tz])
 
