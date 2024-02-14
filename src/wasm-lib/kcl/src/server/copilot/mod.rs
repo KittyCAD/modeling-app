@@ -144,7 +144,6 @@ impl Backend {
     pub async fn get_completions_cycling(&self, params: CompletionParams) -> Result<CopilotCompletionResponse> {
         let doc_params = self.get_doc_params(&params);
         let cached_result = self.cache.get_cached_result(&doc_params.uri, doc_params.pos.line);
-        if cached_result.is_some() {
         if let Some(cached_result) = cached_result {
             return Ok(cached_result);
         }
