@@ -226,11 +226,11 @@ pub async fn copilot_lsp_run(config: ServerConfig) -> Result<(), JsValue> {
         )),
         cache: kcl_lib::server::copilot::cache::CopilotCache::new(),
     })
+    .custom_method("setEditorInfo", kcl_lib::server::copilot::Backend::set_editor_info)
     .custom_method(
         "getCompletionsCycling",
         kcl_lib::server::copilot::Backend::get_completions_cycling,
     )
-    .custom_method("setEditorInfo", kcl_lib::server::copilot::Backend::set_editor_info)
     .finish();
 
     let input = wasm_bindgen_futures::stream::JsStream::from(into_server);

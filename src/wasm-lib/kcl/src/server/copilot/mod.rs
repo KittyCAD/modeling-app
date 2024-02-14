@@ -74,10 +74,11 @@ fn handle_event(event: eventsource_stream::Event) -> CopilotResponse {
 }
 
 pub async fn await_stream(req: RequestBuilder, _line_before: String, _pos: Position) -> anyhow::Result<Vec<String>> {
-    let resp = req.send().await?;
-    let mut stream = resp.bytes_stream().eventsource();
+    // TODO: fix this.
+    //let resp = req.send().await?;
+    //let mut stream = resp.bytes_stream().eventsource();
     let mut completion_list = Vec::<String>::with_capacity(4);
-    let mut s = "".to_string();
+    /*let mut s = "".to_string();
 
     while let Some(event) = stream.next().await {
         match handle_event(event?) {
@@ -97,7 +98,7 @@ pub async fn await_stream(req: RequestBuilder, _line_before: String, _pos: Posit
                 // TODO: log error to lsp server
             }
         }
-    }
+    }*/
 
     Ok(completion_list)
 }
