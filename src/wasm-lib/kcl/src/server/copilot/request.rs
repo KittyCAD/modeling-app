@@ -28,9 +28,10 @@ pub fn build_request(
         max_tokens: 500,
         temperature: 1.0,
         top_p: 1.0,
-        n: 3,
+        // We only handle one completion at a time, for now so don't even waste the tokens.
+        n: 1,
         stop: ["unset".to_string()].to_vec(),
-        nwo: "my_org/my_repo".to_string(),
+        nwo: "kittycad/modeling-app".to_string(),
         stream: true,
         extra,
     });
