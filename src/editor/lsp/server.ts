@@ -1,6 +1,7 @@
 import init, {
+  copilot_lsp_run,
   InitOutput,
-  lsp_run,
+  kcl_lsp_run,
   ServerConfig,
 } from '../../wasm-lib/pkg/wasm_lib'
 import { FromServer, IntoServer } from './codec'
@@ -29,8 +30,12 @@ export default class Server {
     return server
   }
 
-  async start(): Promise<void> {
+  async start(type_: 'kcl' | 'copilot'): Promise<void> {
     const config = new ServerConfig(this.#intoServer, this.#fromServer)
-    await lsp_run(config)
+    if (type_ === 'copilot') {
+      await copilot_lsp_run(config)
+    } else if (type_ === 'kcl') {
+      await kcl_lsp_run(config)
+    }
   }
 }

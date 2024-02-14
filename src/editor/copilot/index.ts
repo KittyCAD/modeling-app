@@ -488,18 +488,10 @@ export function copilotServer(options: LanguageServerOptions) {
   )
 }
 
-export const copilotBundle = ({
-  filePath,
-  relativeFilePath,
-  options,
-}: {
-  filePath: string
-  relativeFilePath: string
-  options: LanguageServerOptions
-}): Extension => [
-  docPath.of(filePath),
-  docPathFacet.of(filePath),
-  relDocPath.of(relativeFilePath),
+export const copilotBundle = (options: LanguageServerOptions): Extension => [
+  docPath.of(options.documentUri),
+  docPathFacet.of(options.documentUri),
+  relDocPath.of(options.documentUri),
   completionDecoration,
   Prec.highest(completionPlugin(options.client)),
   Prec.highest(viewCompletionPlugin(options.client)),
