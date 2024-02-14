@@ -19,7 +19,14 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tower_lsp::{
     jsonrpc::{Error, Result},
-    lsp_types::*,
+    lsp_types::{
+        CompletionOptions, CompletionParams, DidChangeConfigurationParams, DidChangeTextDocumentParams,
+        DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams,
+        DidOpenTextDocumentParams, DidSaveTextDocumentParams, ExecuteCommandOptions, ExecuteCommandParams,
+        InitializeParams, InitializeResult, InitializedParams, MessageType, OneOf, Position, ServerCapabilities,
+        TextDocumentSyncCapability, TextDocumentSyncKind, WorkspaceEdit, WorkspaceFoldersServerCapabilities,
+        WorkspaceServerCapabilities,
+    },
     Client, LanguageServer,
 };
 
