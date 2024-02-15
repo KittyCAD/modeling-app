@@ -2406,7 +2406,7 @@ checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 [[package]]
 name = "openapitor"
 version = "0.0.9"
-source = "git+https://github.com/KittyCAD/kittycad.rs?branch=main#88b05a638f594c0bf51faf6f4ab57d3327d4d845"
+source = "git+https://github.com/KittyCAD/kittycad.rs?branch=main#aabead7c6e633115be613a70eab3ebf126efe475"
 dependencies = [
  "Inflector",
  "anyhow",
