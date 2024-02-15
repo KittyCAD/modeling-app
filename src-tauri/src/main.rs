@@ -44,7 +44,9 @@ pub struct DiskEntry {
 /// From https://github.com/tauri-apps/tauri/blob/1.x/core/tauri/src/api/dir.rs#L51
 /// Removed from tauri v2
 fn is_dir<P: AsRef<Path>>(path: P) -> Result<bool> {
-    std::fs::metadata(path).map(|md| md.is_dir()).map_err(Into::into)
+    std::fs::metadata(path)
+        .map(|md| md.is_dir())
+        .map_err(Into::into)
 }
 
 /// From https://github.com/tauri-apps/tauri/blob/1.x/core/tauri/src/api/dir.rs#L51
@@ -54,27 +56,27 @@ fn read_dir_recursive(path: &str) -> Result<Vec<DiskEntry>, InvokeError> {
     let mut files_and_dirs: Vec<DiskEntry> = vec![];
     // let path = path.as_ref();
     for entry in fs::read_dir(path).map_err(|e| InvokeError::from_anyhow(e.into()))? {
-      let path = entry.map_err(|e| InvokeError::from_anyhow(e.into()))?.path();
-  
-      if let Ok(flag) = is_dir(&path) {
-        files_and_dirs.push(DiskEntry {
-          path: path.clone(),
-          children: if flag {
-            Some(
-                read_dir_recursive(path.to_str().expect("No path"))?
-            )
-          } else {
-            None
-          },
-          name: path
-            .file_name()
-            .map(|name| name.to_string_lossy())
-            .map(|name| name.to_string()),
-        });
-      }
+        let path = entry
+            .map_err(|e| InvokeError::from_anyhow(e.into()))?
+            .path();
+
+        if let Ok(flag) = is_dir(&path) {
+            files_and_dirs.push(DiskEntry {
+                path: path.clone(),
+                children: if flag {
+                    Some(read_dir_recursive(path.to_str().expect("No path"))?)
+                } else {
+                    None
+                },
+                name: path
+                    .file_name()
+                    .map(|name| name.to_string_lossy())
+                    .map(|name| name.to_string()),
+            });
+        }
     }
     Ok(files_and_dirs)
-  }
+}
 
 /// This command returns a string that is the contents of a file at the path.
 #[tauri::command]
