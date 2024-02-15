@@ -4,7 +4,7 @@ use winnow::{
     error::{ContextError, ParseError},
     prelude::*,
     stream::{Location, Stream},
-    token::{any, none_of, one_of, take_till1, take_until0},
+    token::{any, none_of, one_of, take_till, take_until},
     Located,
 };
 
@@ -47,13 +47,13 @@ pub fn token(i: &mut Located<&str>) -> PResult<Token> {
 }
 
 fn block_comment(i: &mut Located<&str>) -> PResult<Token> {
-    let inner = ("/*", take_until0("*/"), "*/").recognize();
+    let inner = ("/*", take_until(0.., "*/"), "*/").recognize();
     let (value, range) = inner.with_span().parse_next(i)?;
     Ok(Token::from_range(range, TokenType::BlockComment, value.to_string()))
 }
 
 fn line_comment(i: &mut Located<&str>) -> PResult<Token> {
-    let inner = (r#"//"#, take_till1(['\n', '\r'])).recognize();
+    let inner = (r#"//"#, take_till(1.., ['\n', '\r'])).recognize();
     let (value, range) = inner.with_span().parse_next(i)?;
     Ok(Token::from_range(range, TokenType::LineComment, value.to_string()))
 }

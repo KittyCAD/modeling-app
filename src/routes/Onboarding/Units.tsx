@@ -3,7 +3,8 @@ import { BaseUnit, baseUnits, UnitSystem } from 'lib/settings'
 import { ActionButton } from '../../components/ActionButton'
 import { SettingsSection } from '../Settings'
 import { Toggle } from '../../components/Toggle/Toggle'
-import { onboardingPaths, useDismiss, useNextClick } from '.'
+import { useDismiss, useNextClick } from '.'
+import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 
 export default function Units() {

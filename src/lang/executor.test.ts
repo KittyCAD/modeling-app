@@ -54,7 +54,7 @@ show(mySketch)
     const minusGeo = root.mySketch.value
     expect(minusGeo).toEqual([
       {
-        type: 'toPoint',
+        type: 'ToPoint',
         to: [0, 2],
         from: [0, 0],
         __geoMeta: {
@@ -64,7 +64,7 @@ show(mySketch)
         name: 'myPath',
       },
       {
-        type: 'toPoint',
+        type: 'ToPoint',
         to: [2, 3],
         from: [0, 2],
         name: '',
@@ -74,7 +74,7 @@ show(mySketch)
         },
       },
       {
-        type: 'toPoint',
+        type: 'ToPoint',
         to: [5, -1],
         from: [2, 3],
         __geoMeta: {
@@ -154,7 +154,7 @@ show(mySketch)
       },
       value: [
         {
-          type: 'toPoint',
+          type: 'ToPoint',
           to: [1, 1],
           from: [0, 0],
           name: '',
@@ -164,7 +164,7 @@ show(mySketch)
           },
         },
         {
-          type: 'toPoint',
+          type: 'ToPoint',
           to: [0, 1],
           from: [1, 1],
           __geoMeta: {
@@ -174,7 +174,7 @@ show(mySketch)
           name: 'myPath',
         },
         {
-          type: 'toPoint',
+          type: 'ToPoint',
           to: [1, 1],
           from: [0, 1],
           name: '',
@@ -186,8 +186,11 @@ show(mySketch)
       ],
       position: [0, 0, 0],
       rotation: [0, 0, 0, 1],
+      xAxis: { x: 1, y: 0, z: 0 },
+      yAxis: { x: 0, y: 1, z: 0 },
+      zAxis: { x: 0, y: 0, z: 1 },
       id: expect.any(String),
-      planeId: expect.any(String),
+      entityId: expect.any(String),
       __meta: [{ sourceRange: [39, 63] }],
     })
   })

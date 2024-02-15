@@ -19,21 +19,24 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { getNormalisedCoordinates } from './lib/utils'
-import { useLoaderData } from 'react-router-dom'
-import { IndexLoaderData } from './Router'
+import { useLoaderData, useNavigate } from 'react-router-dom'
+import { type IndexLoaderData } from 'lib/types'
+import { paths } from 'lib/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import { onboardingPaths } from 'routes/Onboarding'
-import { cameraMouseDragGuards } from 'lib/cameraControls'
-import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
+import { onboardingPaths } from 'routes/Onboarding/paths'
 import { CodeMenu } from 'components/CodeMenu'
 import { TextEditor } from 'components/TextEditor'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
 import { engineCommandManager } from './lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
+import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
+import { isTauri } from 'lib/isTauri'
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData
+  const navigate = useNavigate()
+  const filePath = useAbsoluteFilePath()
 
   useHotKeyListener()
   const {
@@ -51,8 +54,7 @@ export function App() {
   }))
 
   const { settings } = useSettingsAuthContext()
-  const { showDebugPanel, onboardingStatus, cameraControls, theme } =
-    settings?.context || {}
+  const { showDebugPanel, onboardingStatus, theme } = settings?.context || {}
   const { state, send } = useModelingContext()
 
   const editorTheme = theme === Themes.System ? getSystemTheme() : theme
@@ -71,6 +73,13 @@ export function App() {
   useHotkeys('shift + e', () => togglePane('kclErrors'))
   useHotkeys('shift + d', () => togglePane('debug'))
   useHotkeys('esc', () => send('Cancel'))
+  useHotkeys(
+    isTauri() ? 'mod + ,' : 'shift + mod + ,',
+    () => navigate(filePath + paths.SETTINGS),
+    {
+      splitKey: '|',
+    }
+  )
 
   const paneOpacity = [onboardingPaths.CAMERA, onboardingPaths.STREAMING].some(
     (p) => p === onboardingStatus
@@ -83,10 +92,12 @@ export function App() {
   useEngineConnectionSubscriptions()
 
   const debounceSocketSend = throttle<EngineCommand>((message) => {
-    void engineCommandManager.sendSceneCommand(message)
-  }, 16)
+    engineCommandManager.sendSceneCommand(message)
+  }, 1000 / 15)
   const handleMouseMove: MouseEventHandler<HTMLDivElement> = (e) => {
-    e.nativeEvent.preventDefault()
+    if (state.matches('Sketch')) {
+      return
+    }
 
     const { x, y } = getNormalisedCoordinates({
       clientX: e.clientX,
@@ -97,58 +108,11 @@ export function App() {
 
     const newCmdId = uuidv4()
     if (buttonDownInStream === undefined) {
-      if (state.matches('Sketch.Line Tool')) {
-        debounceSocketSend({
-          type: 'modeling_cmd_req',
-          cmd_id: newCmdId,
-          cmd: {
-            type: 'mouse_move',
-            window: { x, y },
-          },
-        })
-      } else {
-        debounceSocketSend({
-          type: 'modeling_cmd_req',
-          cmd: {
-            type: 'highlight_set_entity',
-            selected_at_window: { x, y },
-          },
-          cmd_id: newCmdId,
-        })
-      }
-    } else {
-      if (state.matches('Sketch.Move Tool')) {
-        debounceSocketSend({
-          type: 'modeling_cmd_req',
-          cmd_id: newCmdId,
-          cmd: {
-            type: 'handle_mouse_drag_move',
-            window: { x, y },
-          },
-        })
-        return
-      }
-      const interactionGuards = cameraMouseDragGuards[cameraControls]
-      let interaction: CameraDragInteractionType_type
-
-      const eWithButton = { ...e, button: buttonDownInStream }
-
-      if (interactionGuards.pan.callback(eWithButton)) {
-        interaction = 'pan'
-      } else if (interactionGuards.rotate.callback(eWithButton)) {
-        interaction = 'rotate'
-      } else if (interactionGuards.zoom.dragCallback(eWithButton)) {
-        interaction = 'zoom'
-      } else {
-        return
-      }
-
       debounceSocketSend({
         type: 'modeling_cmd_req',
         cmd: {
-          type: 'camera_drag_move',
-          interaction,
-          window: { x, y },
+          type: 'highlight_set_entity',
+          selected_at_window: { x, y },
         },
         cmd_id: newCmdId,
       })
@@ -238,6 +202,7 @@ export function App() {
           open={openPanes.includes('debug')}
         />
       )}
+      {/* <CamToggle /> */}
     </div>
   )
 }

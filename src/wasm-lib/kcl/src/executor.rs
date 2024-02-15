@@ -4,7 +4,6 @@ use std::{collections::HashMap, sync::Arc};
 
 use anyhow::Result;
 use async_recursion::async_recursion;
-use kittycad::types::{Color, ModelingCmd, Point3D};
 use kittycad_execution_plan_macros::ExecutionPlanValue;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
@@ -14,8 +13,9 @@ use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
     ast::types::{BodyItem, FunctionExpression, KclNone, Value},
-    engine::{EngineConnection, EngineManager},
+    engine::EngineConnection,
     errors::{KclError, KclErrorDetails},
+    fs::FileManager,
     std::{FunctionKind, StdLib},
 };
 
@@ -31,7 +31,36 @@ pub struct ProgramMemory {
 impl ProgramMemory {
     pub fn new() -> Self {
         Self {
-            root: HashMap::new(),
+            root: HashMap::from([
+                (
+                    "ZERO".to_string(),
+                    MemoryItem::UserVal(UserVal {
+                        value: serde_json::Value::Number(serde_json::value::Number::from(0)),
+                        meta: Default::default(),
+                    }),
+                ),
+                (
+                    "QUARTER_TURN".to_string(),
+                    MemoryItem::UserVal(UserVal {
+                        value: serde_json::Value::Number(serde_json::value::Number::from(90)),
+                        meta: Default::default(),
+                    }),
+                ),
+                (
+                    "HALF_TURN".to_string(),
+                    MemoryItem::UserVal(UserVal {
+                        value: serde_json::Value::Number(serde_json::value::Number::from(180)),
+                        meta: Default::default(),
+                    }),
+                ),
+                (
+                    "THREE_QUARTER_TURN".to_string(),
+                    MemoryItem::UserVal(UserVal {
+                        value: serde_json::Value::Number(serde_json::value::Number::from(270)),
+                        meta: Default::default(),
+                    }),
+                ),
+            ]),
             return_: None,
         }
     }
@@ -103,14 +132,23 @@ impl ProgramReturn {
     }
 }
 
+/// A memory item.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum MemoryItem {
     UserVal(UserVal),
     Plane(Box<Plane>),
+    Face(Box<Face>),
     SketchGroup(Box<SketchGroup>),
+    SketchGroups {
+        value: Vec<Box<SketchGroup>>,
+    },
     ExtrudeGroup(Box<ExtrudeGroup>),
+    ExtrudeGroups {
+        value: Vec<Box<ExtrudeGroup>>,
+    },
+    ImportedGeometry(ImportedGeometry),
     #[ts(skip)]
     ExtrudeTransform(Box<ExtrudeTransform>),
     #[ts(skip)]
@@ -121,6 +159,55 @@ pub enum MemoryItem {
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
+}
+
+/// A geometry.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum Geometry {
+    SketchGroup(Box<SketchGroup>),
+    ExtrudeGroup(Box<ExtrudeGroup>),
+}
+
+impl Geometry {
+    pub fn id(&self) -> uuid::Uuid {
+        match self {
+            Geometry::SketchGroup(s) => s.id,
+            Geometry::ExtrudeGroup(e) => e.id,
+        }
+    }
+}
+
+/// A set of geometry.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum Geometries {
+    SketchGroups(Vec<Box<SketchGroup>>),
+    ExtrudeGroups(Vec<Box<ExtrudeGroup>>),
+}
+
+/// A sketch group or a group of sketch groups.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
+pub enum SketchGroupSet {
+    SketchGroup(Box<SketchGroup>),
+    SketchGroups(Vec<Box<SketchGroup>>),
+}
+
+/// Data for an imported geometry.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct ImportedGeometry {
+    /// The ID of the imported geometry.
+    pub id: uuid::Uuid,
+    /// The original file paths.
+    pub value: Vec<String>,
+    #[serde(rename = "__meta")]
+    pub meta: Vec<Metadata>,
 }
 
 /// A plane.
@@ -137,6 +224,25 @@ pub struct Plane {
     /// What should the plane’s X axis be?
     pub x_axis: Point3d,
     /// What should the plane’s Y axis be?
+    pub y_axis: Point3d,
+    /// The z-axis (normal).
+    pub z_axis: Point3d,
+    #[serde(rename = "__meta")]
+    pub meta: Vec<Metadata>,
+}
+
+/// A face.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct Face {
+    /// The id of the face.
+    pub id: uuid::Uuid,
+    /// The tag of the face.
+    pub value: String,
+    /// What should the face’s X axis be?
+    pub x_axis: Point3d,
+    /// What should the face’s Y axis be?
     pub y_axis: Point3d,
     /// The z-axis (normal).
     pub z_axis: Point3d,
@@ -163,124 +269,6 @@ pub enum PlaneType {
     #[serde(rename = "Custom")]
     #[display("Custom")]
     Custom,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub struct DefaultPlanes {
-    pub xy: uuid::Uuid,
-    pub xz: uuid::Uuid,
-    pub yz: uuid::Uuid,
-}
-
-impl DefaultPlanes {
-    pub async fn new(engine: &EngineConnection) -> Result<Self, KclError> {
-        // Create new default planes.
-        let default_size = 60.0;
-        let default_origin = Point3D { x: 0.0, y: 0.0, z: 0.0 };
-
-        // Create xy plane.
-        let xy = uuid::Uuid::new_v4();
-        engine
-            .send_modeling_cmd(
-                xy,
-                SourceRange::default(),
-                ModelingCmd::MakePlane {
-                    clobber: false,
-                    origin: default_origin,
-                    size: default_size,
-                    x_axis: Point3D { x: 1.0, y: 0.0, z: 0.0 },
-                    y_axis: Point3D { x: 0.0, y: 1.0, z: 0.0 },
-                    hide: Some(true),
-                },
-            )
-            .await?;
-        // Set the color.
-        engine
-            .send_modeling_cmd(
-                uuid::Uuid::new_v4(),
-                SourceRange::default(),
-                ModelingCmd::PlaneSetColor {
-                    color: Color {
-                        r: 0.7,
-                        g: 0.28,
-                        b: 0.28,
-                        a: 0.4,
-                    },
-                    plane_id: xy,
-                },
-            )
-            .await?;
-
-        // Create yz plane.
-        let yz = uuid::Uuid::new_v4();
-        engine
-            .send_modeling_cmd(
-                yz,
-                SourceRange::default(),
-                ModelingCmd::MakePlane {
-                    clobber: false,
-                    origin: default_origin,
-                    size: default_size,
-                    x_axis: Point3D { x: 0.0, y: 1.0, z: 0.0 },
-                    y_axis: Point3D { x: 0.0, y: 0.0, z: 1.0 },
-                    hide: Some(true),
-                },
-            )
-            .await?;
-        // Set the color.
-        engine
-            .send_modeling_cmd(
-                uuid::Uuid::new_v4(),
-                SourceRange::default(),
-                ModelingCmd::PlaneSetColor {
-                    color: Color {
-                        r: 0.28,
-                        g: 0.7,
-                        b: 0.28,
-                        a: 0.4,
-                    },
-                    plane_id: yz,
-                },
-            )
-            .await?;
-
-        // Create xz plane.
-        let xz = uuid::Uuid::new_v4();
-        engine
-            .send_modeling_cmd(
-                xz,
-                SourceRange::default(),
-                ModelingCmd::MakePlane {
-                    clobber: false,
-                    origin: default_origin,
-                    size: default_size,
-                    x_axis: Point3D { x: 1.0, y: 0.0, z: 0.0 },
-                    y_axis: Point3D { x: 0.0, y: 0.0, z: 1.0 },
-                    hide: Some(true),
-                },
-            )
-            .await?;
-        // Set the color.
-        engine
-            .send_modeling_cmd(
-                uuid::Uuid::new_v4(),
-                SourceRange::default(),
-                ModelingCmd::PlaneSetColor {
-                    color: Color {
-                        r: 0.28,
-                        g: 0.28,
-                        b: 0.7,
-                        a: 0.4,
-                    },
-                    plane_id: xz,
-                },
-            )
-            .await?;
-
-        Ok(Self { xy, xz, yz })
-    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -331,10 +319,20 @@ impl From<MemoryItem> for Vec<SourceRange> {
         match item {
             MemoryItem::UserVal(u) => u.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::SketchGroup(s) => s.meta.iter().map(|m| m.source_range).collect(),
+            MemoryItem::SketchGroups { value } => value
+                .iter()
+                .flat_map(|sg| sg.meta.iter().map(|m| m.source_range))
+                .collect(),
             MemoryItem::ExtrudeGroup(e) => e.meta.iter().map(|m| m.source_range).collect(),
+            MemoryItem::ExtrudeGroups { value } => value
+                .iter()
+                .flat_map(|eg| eg.meta.iter().map(|m| m.source_range))
+                .collect(),
+            MemoryItem::ImportedGeometry(i) => i.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::ExtrudeTransform(e) => e.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::Function { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::Plane(p) => p.meta.iter().map(|m| m.source_range).collect(),
+            MemoryItem::Face(f) => f.meta.iter().map(|m| m.source_range).collect(),
         }
     }
 }
@@ -424,13 +422,25 @@ pub struct SketchGroup {
     pub start: BasePath,
     /// The position of the sketch group.
     pub position: Position,
-    /// The rotation of the sketch group.
+    /// The rotation of the sketch group base plane.
     pub rotation: Rotation,
-    /// The plane id of the sketch group.
-    pub plane_id: Option<uuid::Uuid>,
+    /// The x-axis of the sketch group base plane in the 3D space
+    pub x_axis: Point3d,
+    /// The y-axis of the sketch group base plane in the 3D space
+    pub y_axis: Point3d,
+    /// The z-axis of the sketch group base plane in the 3D space
+    pub z_axis: Point3d,
+    /// The plane id or face id of the sketch group.
+    pub entity_id: Option<uuid::Uuid>,
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
+}
+
+pub struct GetTangentialInfoFromPathsResult {
+    pub center_or_tangent_point: [f64; 2],
+    pub is_center: bool,
+    pub ccw: bool,
 }
 
 impl SketchGroup {
@@ -463,6 +473,40 @@ impl SketchGroup {
             Ok(self.start.to.into())
         }
     }
+
+    pub fn get_tangential_info_from_paths(&self) -> GetTangentialInfoFromPathsResult {
+        if self.value.is_empty() {
+            return GetTangentialInfoFromPathsResult {
+                center_or_tangent_point: self.start.to,
+                is_center: false,
+                ccw: false,
+            };
+        }
+        let index = self.value.len() - 1;
+        if let Some(path) = self.value.get(index) {
+            match path {
+                Path::TangentialArcTo { center, ccw, .. } => GetTangentialInfoFromPathsResult {
+                    center_or_tangent_point: *center,
+                    is_center: true,
+                    ccw: *ccw,
+                },
+                _ => {
+                    let base = path.get_base();
+                    GetTangentialInfoFromPathsResult {
+                        center_or_tangent_point: base.from,
+                        is_center: false,
+                        ccw: false,
+                    }
+                }
+            }
+        } else {
+            GetTangentialInfoFromPathsResult {
+                center_or_tangent_point: self.start.to,
+                is_center: false,
+                ccw: false,
+            }
+        }
+    }
 }
 
 /// An extrude group is a collection of extrude surfaces.
@@ -480,6 +524,16 @@ pub struct ExtrudeGroup {
     pub position: Position,
     /// The rotation of the extrude group.
     pub rotation: Rotation,
+    /// The x-axis of the extrude group base plane in the 3D space
+    pub x_axis: Point3d,
+    /// The y-axis of the extrude group base plane in the 3D space
+    pub y_axis: Point3d,
+    /// The z-axis of the extrude group base plane in the 3D space
+    pub z_axis: Point3d,
+    /// The id of the extrusion start cap
+    pub start_cap_id: Option<uuid::Uuid>,
+    /// The id of the extrusion end cap
+    pub end_cap_id: Option<uuid::Uuid>,
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
@@ -507,6 +561,16 @@ pub enum BodyType {
 #[derive(Debug, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct Position(#[ts(type = "[number, number, number]")] pub [f64; 3]);
+
+impl From<Position> for Point3d {
+    fn from(p: Position) -> Self {
+        Self {
+            x: p.0[0],
+            y: p.0[1],
+            z: p.0[2],
+        }
+    }
+}
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -680,12 +744,22 @@ pub struct GeoMeta {
 /// A path.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type", rename_all = "camelCase")]
+#[serde(tag = "type")]
 pub enum Path {
     /// A path that goes to a point.
     ToPoint {
         #[serde(flatten)]
         base: BasePath,
+    },
+    /// A arc that is tangential to the last path segment that goes to a point
+    TangentialArcTo {
+        #[serde(flatten)]
+        base: BasePath,
+        /// the arc's center
+        #[ts(type = "[number, number]")]
+        center: [f64; 2],
+        /// arc's direction
+        ccw: bool,
     },
     /// A path that is horizontal.
     Horizontal {
@@ -717,6 +791,7 @@ impl Path {
             Path::Horizontal { base, .. } => base.geo_meta.id,
             Path::AngledLineTo { base, .. } => base.geo_meta.id,
             Path::Base { base } => base.geo_meta.id,
+            Path::TangentialArcTo { base, .. } => base.geo_meta.id,
         }
     }
 
@@ -726,6 +801,7 @@ impl Path {
             Path::Horizontal { base, .. } => base.name.clone(),
             Path::AngledLineTo { base, .. } => base.name.clone(),
             Path::Base { base } => base.name.clone(),
+            Path::TangentialArcTo { base, .. } => base.name.clone(),
         }
     }
 
@@ -735,6 +811,17 @@ impl Path {
             Path::Horizontal { base, .. } => base,
             Path::AngledLineTo { base, .. } => base,
             Path::Base { base } => base,
+            Path::TangentialArcTo { base, .. } => base,
+        }
+    }
+
+    pub fn get_base_mut(&mut self) -> Option<&mut BasePath> {
+        match self {
+            Path::ToPoint { base } => Some(base),
+            Path::Horizontal { base, .. } => Some(base),
+            Path::AngledLineTo { base, .. } => Some(base),
+            Path::Base { base } => Some(base),
+            Path::TangentialArcTo { base, .. } => Some(base),
         }
     }
 }
@@ -745,41 +832,49 @@ impl Path {
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum ExtrudeSurface {
     /// An extrude plane.
-    ExtrudePlane {
-        /// The position.
-        position: Position,
-        /// The rotation.
-        rotation: Rotation,
-        /// The name.
-        name: String,
-        /// Metadata.
-        #[serde(flatten)]
-        geo_meta: GeoMeta,
-    },
+    ExtrudePlane(ExtrudePlane),
+}
+
+/// An extruded plane.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct ExtrudePlane {
+    /// The position.
+    pub position: Position,
+    /// The rotation.
+    pub rotation: Rotation,
+    /// The face id for the extrude plane.
+    pub face_id: uuid::Uuid,
+    /// The name.
+    pub name: String,
+    /// Metadata.
+    #[serde(flatten)]
+    pub geo_meta: GeoMeta,
 }
 
 impl ExtrudeSurface {
     pub fn get_id(&self) -> uuid::Uuid {
         match self {
-            ExtrudeSurface::ExtrudePlane { geo_meta, .. } => geo_meta.id,
+            ExtrudeSurface::ExtrudePlane(ep) => ep.geo_meta.id,
         }
     }
 
     pub fn get_name(&self) -> String {
         match self {
-            ExtrudeSurface::ExtrudePlane { name, .. } => name.clone(),
+            ExtrudeSurface::ExtrudePlane(ep) => ep.name.to_string(),
         }
     }
 
     pub fn get_position(&self) -> Position {
         match self {
-            ExtrudeSurface::ExtrudePlane { position, .. } => *position,
+            ExtrudeSurface::ExtrudePlane(ep) => ep.position,
         }
     }
 
     pub fn get_rotation(&self) -> Rotation {
         match self {
-            ExtrudeSurface::ExtrudePlane { rotation, .. } => *rotation,
+            ExtrudeSurface::ExtrudePlane(ep) => ep.rotation,
         }
     }
 }
@@ -815,8 +910,31 @@ impl Default for PipeInfo {
 #[derive(Debug, Clone)]
 pub struct ExecutorContext {
     pub engine: EngineConnection,
-    pub planes: DefaultPlanes,
+    pub fs: FileManager,
     pub stdlib: Arc<StdLib>,
+}
+
+impl ExecutorContext {
+    /// Create a new default executor context.
+    #[cfg(test)]
+    pub async fn new() -> Result<Self> {
+        Ok(Self {
+            engine: EngineConnection::new().await?,
+            fs: FileManager::new(),
+            stdlib: Arc::new(StdLib::new()),
+        })
+    }
+
+    /// Create a new default executor context.
+    #[cfg(not(test))]
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new(ws: reqwest::Upgraded) -> Result<Self> {
+        Ok(Self {
+            engine: EngineConnection::new(ws).await?,
+            fs: FileManager::new(),
+            stdlib: Arc::new(StdLib::new()),
+        })
+    }
 }
 
 /// Execute a AST's program.
@@ -882,6 +1000,10 @@ pub async fn execute(
                                 }
 
                                 memory.return_ = Some(ProgramReturn::Arguments(call_expr.arguments.clone()));
+                            } else {
+                                let args = crate::std::Args::new(args, call_expr.into(), ctx.clone());
+                                let result = func.std_lib_fn()(args).await?;
+                                memory.return_ = Some(ProgramReturn::Value(result));
                             }
                         }
                         FunctionKind::Std(func) => {
@@ -1101,22 +1223,15 @@ fn assign_args_to_params(
 mod tests {
     use pretty_assertions::assert_eq;
 
-    use crate::ast::types::{Identifier, Parameter};
-
     use super::*;
+    use crate::ast::types::{Identifier, Parameter};
 
     pub async fn parse_execute(code: &str) -> Result<ProgramMemory> {
         let tokens = crate::token::lexer(code);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast()?;
         let mut mem: ProgramMemory = Default::default();
-        let engine = EngineConnection::new().await?;
-        let planes = DefaultPlanes::new(&engine).await?;
-        let ctx = ExecutorContext {
-            engine,
-            planes,
-            stdlib: Arc::new(StdLib::default()),
-        };
+        let ctx = ExecutorContext::new().await?;
         let memory = execute(program, &mut mem, BodyType::Root, &ctx).await?;
 
         Ok(memory)
@@ -1677,6 +1792,13 @@ show(bracket)
                 optional: false,
             }
         }
+        fn additional_program_memory(items: &[(String, MemoryItem)]) -> ProgramMemory {
+            let mut program_memory = ProgramMemory::new();
+            for (name, item) in items {
+                program_memory.root.insert(name.to_string(), item.clone());
+            }
+            program_memory
+        }
         // Declare the test cases.
         for (test_name, params, args, expected) in [
             ("empty", Vec::new(), Vec::new(), Ok(ProgramMemory::new())),
@@ -1684,10 +1806,7 @@ show(bracket)
                 "all params required, and all given, should be OK",
                 vec![req_param("x")],
                 vec![mem(1)],
-                Ok(ProgramMemory {
-                    return_: None,
-                    root: HashMap::from([("x".to_owned(), mem(1))]),
-                }),
+                Ok(additional_program_memory(&[("x".to_owned(), mem(1))])),
             ),
             (
                 "all params required, none given, should error",
@@ -1702,10 +1821,10 @@ show(bracket)
                 "all params optional, none given, should be OK",
                 vec![opt_param("x")],
                 vec![],
-                Ok(ProgramMemory {
-                    return_: None,
-                    root: HashMap::from([("x".to_owned(), MemoryItem::from(&KclNone::default()))]),
-                }),
+                Ok(additional_program_memory(&[(
+                    "x".to_owned(),
+                    MemoryItem::from(&KclNone::default()),
+                )])),
             ),
             (
                 "mixed params, too few given",
@@ -1720,22 +1839,19 @@ show(bracket)
                 "mixed params, minimum given, should be OK",
                 vec![req_param("x"), opt_param("y")],
                 vec![mem(1)],
-                Ok(ProgramMemory {
-                    return_: None,
-                    root: HashMap::from([
-                        ("x".to_owned(), mem(1)),
-                        ("y".to_owned(), MemoryItem::from(&KclNone::default())),
-                    ]),
-                }),
+                Ok(additional_program_memory(&[
+                    ("x".to_owned(), mem(1)),
+                    ("y".to_owned(), MemoryItem::from(&KclNone::default())),
+                ])),
             ),
             (
                 "mixed params, maximum given, should be OK",
                 vec![req_param("x"), opt_param("y")],
                 vec![mem(1), mem(2)],
-                Ok(ProgramMemory {
-                    return_: None,
-                    root: HashMap::from([("x".to_owned(), mem(1)), ("y".to_owned(), mem(2))]),
-                }),
+                Ok(additional_program_memory(&[
+                    ("x".to_owned(), mem(1)),
+                    ("y".to_owned(), mem(2)),
+                ])),
             ),
             (
                 "mixed params, too many given",
@@ -1765,5 +1881,14 @@ show(bracket)
                 "failed test '{test_name}':\ngot {actual:?}\nbut expected\n{expected:?}"
             );
         }
+    }
+
+    #[test]
+    fn test_serialize_memory_item() {
+        let mem = MemoryItem::ExtrudeGroups {
+            value: Default::default(),
+        };
+        let json = serde_json::to_string(&mem).unwrap();
+        assert_eq!(json, r#"{"type":"ExtrudeGroups","value":[]}"#);
     }
 }

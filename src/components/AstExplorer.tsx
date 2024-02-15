@@ -1,5 +1,5 @@
 import { useModelingContext } from 'hooks/useModelingContext'
-import { kclManager } from 'lang/KclSinglton'
+import { kclManager } from 'lang/KclSingleton'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 import { useEffect, useRef, useState } from 'react'
 import { useStore } from 'useStore'

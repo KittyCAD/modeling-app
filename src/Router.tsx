@@ -14,10 +14,7 @@ import {
 import { useEffect } from 'react'
 import { ErrorPage } from './components/ErrorPage'
 import { Settings } from './routes/Settings'
-import Onboarding, {
-  onboardingRoutes,
-  onboardingPaths,
-} from './routes/Onboarding'
+import Onboarding, { onboardingRoutes } from './routes/Onboarding'
 import SignIn from './routes/SignIn'
 import { Auth } from './Auth'
 import { isTauri } from './lib/isTauri'
@@ -29,7 +26,7 @@ import {
   isProjectDirectory,
   PROJECT_ENTRYPOINT,
 } from './lib/tauriFS'
-import { metadata, type Metadata } from 'tauri-plugin-fs-extra-api'
+import { metadata } from 'tauri-plugin-fs-extra-api'
 import DownloadAppBanner from './components/DownloadAppBanner'
 import { WasmErrBanner } from './components/WasmErrBanner'
 import { SettingsAuthStateProvider } from './components/SettingsAuthStateProvider'
@@ -40,9 +37,12 @@ import CommandBarProvider from 'components/CommandBar/CommandBar'
 import { TEST, VITE_KC_SENTRY_DSN } from './env'
 import * as Sentry from '@sentry/react'
 import ModelingMachineProvider from 'components/ModelingMachineProvider'
-import { KclContextProvider, kclManager } from 'lang/KclSinglton'
+import { KclContextProvider, kclManager } from 'lang/KclSingleton'
 import FileMachineProvider from 'components/FileMachineProvider'
 import { sep } from '@tauri-apps/api/path'
+import { paths } from 'lib/paths'
+import { IndexLoaderData, HomeLoaderData } from 'lib/types'
+import { fileSystemManager } from 'lang/std/fileSystemManager'
 
 if (VITE_KC_SENTRY_DSN && !TEST) {
   Sentry.init({
@@ -76,43 +76,7 @@ if (VITE_KC_SENTRY_DSN && !TEST) {
   })
 }
 
-const prependRoutes =
-  (routesObject: Record<string, string>) => (prepend: string) => {
-    return Object.fromEntries(
-      Object.entries(routesObject).map(([constName, path]) => [
-        constName,
-        prepend + path,
-      ])
-    )
-  }
-
-export const paths = {
-  INDEX: '/',
-  HOME: '/home',
-  FILE: '/file',
-  SETTINGS: '/settings',
-  SIGN_IN: '/signin',
-  ONBOARDING: prependRoutes(onboardingPaths)(
-    '/onboarding'
-  ) as typeof onboardingPaths,
-}
-
 export const BROWSER_FILE_NAME = 'new'
-
-export type IndexLoaderData = {
-  code: string | null
-  project?: ProjectWithEntryPointMetadata
-  file?: FileEntry
-}
-
-export type ProjectWithEntryPointMetadata = FileEntry & {
-  entrypointMetadata: Metadata
-}
-export type HomeLoaderData = {
-  projects: ProjectWithEntryPointMetadata[]
-  newDefaultDirectory?: string
-  error: Error | null
-}
 
 type CreateBrowserRouterArg = Parameters<typeof createBrowserRouter>[0]
 
@@ -147,18 +111,18 @@ const router = createBrowserRouter(
     {
       path: paths.FILE + '/:id',
       element: (
-        <Auth>
-          <FileMachineProvider>
-            <KclContextProvider>
+        <KclContextProvider>
+          <Auth>
+            <FileMachineProvider>
               <ModelingMachineProvider>
                 <Outlet />
                 <App />
               </ModelingMachineProvider>
               <WasmErrBanner />
-            </KclContextProvider>
-          </FileMachineProvider>
-          {!isTauri() && import.meta.env.PROD && <DownloadAppBanner />}
-        </Auth>
+            </FileMachineProvider>
+            {!isTauri() && import.meta.env.PROD && <DownloadAppBanner />}
+          </Auth>
+        </KclContextProvider>
       ),
       id: paths.FILE,
       loader: async ({
@@ -211,6 +175,10 @@ const router = createBrowserRouter(
           const children = await readDir(projectPath, { recursive: true })
           kclManager.setCodeAndExecute(code, false)
 
+          // Set the file system manager to the project path
+          // So that WASM gets an updated path for operations
+          fileSystemManager.dir = projectPath
+
           return {
             code,
             project: {
@@ -250,7 +218,7 @@ const router = createBrowserRouter(
           <Home />
         </Auth>
       ),
-      loader: async () => {
+      loader: async (): Promise<HomeLoaderData | Response> => {
         if (!isTauri()) {
           return redirect(paths.FILE + '/' + BROWSER_FILE_NAME)
         }

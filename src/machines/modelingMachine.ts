@@ -1,6 +1,5 @@
-import { PathToNode } from 'lang/wasm'
+import { PathToNode, VariableDeclarator } from 'lang/wasm'
 import { engineCommandManager } from 'lang/std/engineConnection'
-import { isReducedMotion } from 'lang/util'
 import {
   Axis,
   Selection,
@@ -8,10 +7,9 @@ import {
   Selections,
 } from 'lib/selections'
 import { assign, createMachine } from 'xstate'
-import { v4 as uuidv4 } from 'uuid'
 import { isCursorInSketchCommandRange } from 'lang/util'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
-import { kclManager } from 'lang/KclSinglton'
+import { kclManager } from 'lang/KclSingleton'
 import {
   horzVertInfo,
   applyConstraintHorzVert,
@@ -26,10 +24,9 @@ import {
   applyConstraintEqualLength,
   setEqualLengthInfo,
 } from 'components/Toolbar/EqualLength'
-import { extrudeSketch } from 'lang/modifyAst'
+import { addStartProfileAt, extrudeSketch } from 'lang/modifyAst'
 import { getNodeFromPath } from '../lang/queryAst'
 import { CallExpression, PipeExpression } from '../lang/wasm'
-import { getConstraintLevelFromSourceRange } from 'lang/std/sketchcombos'
 import {
   applyConstraintEqualAngle,
   equalAngleInfo,
@@ -43,7 +40,15 @@ import {
   absDistanceInfo,
   applyConstraintAxisAlign,
 } from 'components/Toolbar/SetAbsDistance'
+import { Models } from '@kittycad/lib/dist/types/src'
 import { ModelingCommandSchema } from 'lib/commandBarConfigs/modelingCommandConfig'
+import {
+  DefaultPlaneStr,
+  sceneEntitiesManager,
+  quaternionFromSketchGroup,
+  sketchGroupFromPathToNode,
+} from 'clientSideScene/sceneEntities'
+import { sceneInfra } from 'clientSideScene/sceneInfra'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -66,49 +71,17 @@ export type SetSelections =
     }
 
 export type ModelingMachineEvent =
-  | { type: 'Deselect all' }
-  | { type: 'Deselect edge'; data: Selection & { type: 'edge' } }
-  | { type: 'Deselect axis'; data: Axis }
-  | {
-      type: 'Deselect segment'
-      data: Selection & { type: 'line' | 'arc' }
-    }
-  | { type: 'Deselect face'; data: Selection & { type: 'face' } }
-  | {
-      type: 'Deselect point'
-      data: Selection & { type: 'point' | 'line-end' | 'line-mid' }
-    }
   | { type: 'Enter sketch' }
-  | { type: 'Select all'; data: Selection & { type: 'all ' } }
-  | { type: 'Select edge'; data: Selection & { type: 'edge' } }
-  | { type: 'Select axis'; data: Axis }
-  | { type: 'Select segment'; data: Selection & { type: 'line' | 'arc' } }
-  | { type: 'Select face'; data: Selection & { type: 'face' } }
-  | { type: 'Select default plane'; data: { planeId: string } }
-  | { type: 'Set selection'; data: SetSelections }
   | {
-      type: 'Select point'
-      data: Selection & { type: 'point' | 'line-end' | 'line-mid' }
+      type: 'Select default plane'
+      data: { plane: DefaultPlaneStr; normal: [number, number, number] }
     }
+  | { type: 'Set selection'; data: SetSelections }
   | { type: 'Sketch no face' }
   | { type: 'Toggle gui mode' }
   | { type: 'Cancel' }
   | { type: 'CancelSketch' }
-  | {
-      type: 'Add point'
-      data: {
-        coords: { x: number; y: number }[]
-        axis: 'xy' | 'xz' | 'yz' | '-xy' | '-xz' | '-yz' | null
-        segmentId?: string
-      }
-    }
-  | { type: 'Equip tool' }
-  | { type: 'Equip move tool' }
-  | { type: 'Set radius' }
-  | { type: 'Complete line' }
-  | { type: 'Set distance' }
-  | { type: 'Equip new tool' }
-  | { type: 'update_code'; data: string }
+  | { type: 'Add start point' }
   | { type: 'Make segment horizontal' }
   | { type: 'Make segment vertical' }
   | { type: 'Constrain horizontal distance' }
@@ -127,10 +100,21 @@ export type ModelingMachineEvent =
   | { type: 'Constrain remove constraints' }
   | { type: 'Re-execute' }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
+  | { type: 'Equip Line tool' }
+  | { type: 'Equip tangential arc to' }
+  | {
+      type: 'done.invoke.animate-to-face'
+      data: {
+        sketchPathToNode: PathToNode
+        sketchNormalBackUp: [number, number, number] | null
+      }
+    }
+
+export type MoveDesc = { line: number; snippet: string }
 
 export const modelingMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogDMAVgDsAOmEiAjLMGCAHIIAsAJlHKANCACeiaQDZBEsctGrVATmmiaNQQF8H2tBhz4CAZTDsABLCwwck5uWgYkEBY2EJ4IgQRpZWFpcQVLe1V7SwVbYUttPQRBRMtxZUtlGkt0wVVpBTMnF3QsPChxbAhMMC8ff0Dgrlww3iiOId54pIVxe2lVYSNLDUFlgv1VAxSDUWE0wQM0ww0mkFdW-A6unoAROAG-Fjx2EYixmMmhA2FJGlEFP7KJLCZQA4TrBLSRTiTaWAwGZQiNRWVSnc7udqdboEO4BbrBXyQGCvZiscbcT5FeGzf5Q2zKb5mNa6fQ0RKpIyI4RsyxWeZoloYq7Y3EPXwkPjYWAkyJkj5xITmcS7OxVCyib4HAwQo5lMSZRYNESOZxnQVtYU9bz4x6oZ4y94TBUISo-Y7VYrZZaGbUsl2ZMoA0Se1SCNlQgVuC1Yq1iolgB1yp2gKY0GagxFpBSM5mFBHKcT5hTSP5QkHKaSRi6Y669G3iyXS+ijJMU52I1SFqqrBY8mgGfJ+kEzaTWAfCOpJQ4m5pRy4xutBPwAMxIlET0WT-EQlRmBjsagOYcsYekEI1glScOke33h12CirQoXAFFcOwwAAnfwAax85AACw3clYhTfREhSCoEVHCtjFWUQIVDAstmWRY8jyBQpGUJ9o1rN8P2-WA-3YQCqGkcJSU3NswIQadlWLb07FUYtwT9NQaELHJ4IZEtzFRU10VwkV7nrVd12bN5W1A7cilsQtagUdRVj2DRfUKU9xGME8ljURSBxw+da2tJdxUwTBgPlGjYJhTYxAaTIaGEJzEJoAteQMVQM0zZIaH42dq0tHERJMkgzIsrd4kUFIGVBLTfNkNTEGLSQHLmBpEn3GczTnGtsRfPh2E-ABXDBwuomT0s0nJ0kyWxjCkCFEiSGzbGLURDHmLYDPaTxiMA4gyEoTBev-ICJMokDKRsSpZjUbkNFctl1AhCpL12KRkgWKFLDEbrxBGkiAP2vqAIASSMsUnnfMrpPiepqnEaxRHMKQSyMVjClBDiFvqVYGna1y9oOwDjtG87sWMgkAigABbMBrvG2UqNu-Q0lKJ6XuKfskQhFQDELcpNjSJzMjhIGTtBw7wduYKCSul5Ecdcq7sw-GKlkDQFosRD6mVJjNix-t-kfATzUuYGjol6mgrxEzobhhGKKRybnXqUEYWDUcdisawPqS-HmIRawqlkRyRHJ0bKcA6WXwARyK7AmF8dhUFQczGakykw2STTbxLTItgZQRz33cR5gaY2-gBCsLcOq2zrw+3Hd8GHUAANzAZ3XfdpWmZRoo0xSWpNnUVyKwav0doLIEthBewEUU4RY5BqWLr8WXBlCD3kamioJH3Z7jB9Q5EoQDUOPD7kB1qMRZGbyWTul5ASD-fpYfhvwM8-ThyFCm6ppYsOQXepCFDPhC-VkCsyjqb590w4om9FnL4-jpeV8z+WN98ADUE-bAABe3B2B727irGiNhsiSABD2eEBwrB6wSFkQsOx5B1CULeUQ88361iINwWAhUSB4B-n-QBwDQq+AgFKEBFAExgMsjJGwuwuwCxsE5U8PMxCPXvJ5GKGCRb+SFBLHB2I8G4AIZ+IhuBfBbx3hQqhBDBp0Nzp7VWoh0iSChDYEQgd4QuREGUYwu5-hWDPgI7KAVhGt1EfgwhxCACCAAhTwvgAAa+9VYAjZssJQhxkioIUIhdq+MciqkqMUAcOxsHWJ6GIiRUjfBOJcQATQ8RArxqRfJeQOPYRSiFMIcSMDkXYgcGRYOfpYimMTiC2MkcQsgUBuhpMYdmNyQIbyuWyIsP4iFYRh3agCGwHkJxZUEuLKpi9cG1ISd0fA7AxoqJ7p4vYj0FgnhLBOAcwZEKKEKXpCsO1HIGGiZMmx4i7HSKYF+K5uAqHkCKpgEg34FE0PEos8BjCVSzDyJyYunlQyITEPjIwxQ6jBjZO1E5YMpnnLqdI3+-8gHvlCpgHQplsBQGGPQiK+h-ghLDOoZicIiaIPmECMo00TEAiqOUKFVMYXxOIbI7Au8zJotChirF7yGEs3sGUVy8JbDazEI1Y0yor4ohEMkbMdLrYMouf4XAJAnYuzcc0lmxgYRSrhBOSOgTL7PQ4iocw3o9jhPMWMnqEzoVnMZdI2ASqVWoF8Kk7FzNUaatcsWRyzF1HfEHIUeozCdj2EWAyaoZMKlCOtfS21CqwD2wobMqA8z1WoxsIGO+L0tg3i0JfaYkhkgnn7CbOwoyxZWsttUuJCqmBPJRdQN1+d6jckehUA5TV1ABv0PCN0IJ1ELA7KsY5UaLRWNObE6ZxDPxgFThnXw5Ap3vibNynFCRnqdjNZ5RQIgeT6sDU5UoUJMLci6VsZ6sqE7YgAEpgAALRgD4EEIqH400JGKWHew7VnqsxsKoCEWwOI8SzHUbS6jsEABk8CZwACrZwIHbB2Ts52Zxdm7N98gz6SBMU5UcewMrniUJ+qej88jPWwqO8ZlsoO4Fg-B29D6n33NfU2r2i0CZ4ZyJhIVEI8izHSNmPYO1Ikx0o5WuONG6Nu3EAABTtO+RJEAMAQAIPYpTvh6YYYFVVHaD8PJqCBLxtkYcERshyCCLpUhIPQd8HB6T3h14KbU8p1T6nNOsedApbY2Rx7yDsPCfdO5Qw3303feo8xNjWdo7Z7O+0wCOb8M5yANSYZMG6B+Xw7hlEtiWTRPGEgCmD2mLyRBoIRw5HafSKwtKxOv0kzF+z8WFaJaU8lxDydaMAHcs7oY83l0uMJ6gj18nCOEuNeajnZskY9VcotScwOIU6uAOAEDfZ5UcNIpXtTDTeADfL+zcYGR0-sc2GsLaWytsiq73UIFDA9NUYY-oHBBLxzYml0h7F1X8P4I7BFjopvVuzC2AByzq5PPFgK5iAGn5MM2u-ndQA5HrzGejtKwapXsFkSI5dINQbw5GwWgedQPejtweEMDDgq21+YFkkdIF9CgaB+Iifc-Z1lcQo39qjccifzYIAxx9z6WPw69kafp8gBOHHrueXmoJDZ2AnBYSLtXhG87O+INXeBLt9ZkiIDRwYLBbCJWyPNgb+zArhP2cJiRVic4sdGy2augca-TpnLX7BVvkRyx8yKoI3SejMETawvJGrzFKIsVYqwSggisIT136vNfLY91QVQIvPN7BmGkDyxhPL13sKHjRI8WKFy0eWl+wj7GdaIX4BFZDkWYEodQpRvg8DLlQAQCA3AwAdFwGnVAf5xAwHYHe2vSKQGYDva31Aa29KzCFhEzKt4ebJQ1PuMw01liRq5+JkGlfq8kMReQhvLzm9T4IF+T8f9xBpZIOwNvn4YaD58CP0hY-QqT9wG3mfb2dhmDQVmxIHmRER6KQRSLkBoI0bBPfDgGRL8ORY-JvWhFvT-dvTvWjHvPvAfIfO9ZlVlD-L-HXeIZieQQsbIKECwczDQFyZqYWMwLYRQYmKAqvGA3A+RRAygZAtvc-T8S-T8a-R5O-P+R-bA1gifKfGfFQTSeEQuKoDyOoRBByAsKOPSW3cMJ+bfV+aAxLZxNxTg1ArvDA-vbvbAkgAAI1gDvT4HwOn0IMQGIJmGLlqArGDGvCCU8m+QOEqEzHNhVwpi0MSR0NcT0O4N4P4Nv3v2EOfzMIsKsPENsNuyUBmGqHYlwzVG7Vux2BmHUCDXahLEDyYP3ySRdWCLQO7zwEwOMKiPMLvR0GsIkIkDHD+H+HKHWkCwSKsApTBWmGKXKQ0Ir2YO0JSWCIvyvxv0EIfyf2H2iJqLqPiPsOgXUTyCG3MHkEQhK0ekUjPmGVsB2gKJgIaW6BKIMPKKMMmLvQOPvTiLTxonmOzESFnhgQUh2V5iNBeg6iWL2L8AuOGJ4NGIEIiLOIuNmOuJkmYhmk2CBG5FchRxUF6XUVmE2HUTmmGU+My3hhTQAiOPQJOKwOf2TXmWBO9x5TsN8TbWyP3AqDNUQhrkeg1BBChF-yRFRPxMxLPxGL4LGIBOwJZMJMkly1BKUH7jvGpTMQ2mpNcmw1nhUGLHKEsFRKuU-BuTuQeSeUb0USQLP1KMMNxOHwVKVJZRVM-DvRP1oV5ImmJNu2aM0VaUZDDAREBRyBhAaAHBLQnFBF6Pt3+0tn8L1PhmVMeWeXYLdxQJCL+PCKELON9NuQNIDONKDLNOVgtPUAaGtIRFtKt0BVWCdPDVdM8gJ18NGl8FwGdTEljHrAwFXAeUeEeVozfTJXDx2jVlHAaCDghHLmRzZAOEwnDhWKcFNGLIwHgAiEtSJLXWPEkBkDkB3TUCoL9DvUME7EUCBHKB9WDHHD2hjFHJuwZE3VWCFi2UMBUGDkviPDDnRxNjPhtzL0qVGi3ObQHE7Fcl7AWkqBRwhDvWYX7BvFvnsAzH0gLLjhiTvN7mC1DGkKhHkGHQZ0QF5A4gWCkEgraiQlOyB2AudENxMF5D112D+VNzsLDFSFX06mzz2B8L6IBxs2dxuC7zQry3BUkFQWYhLHqER1e0vD3MAzyFMWvIdwk0oti3Byc1awgFotBJqHe2DAq0goRGgoQDdIJhxy2KcmRBQtiwc2a0U2U1Esik2G+h2irgZCMCqExwUowkExjz8k9O5xBkB1iwu3YG0vwpvEkCwrIykCVzwrkt5gsEj0RCBGPF+ysp3yOlsuk1B18EEvYCHPNLXQhPxhZ1HFDHDmzBMtMzyCqDmBUjj2J2zkcqKGMAaIWBkrKQODPErgIqsEjyQhbUrAApBid1i0Tw4DypUAWFWTDVUjXLKrNwRDKAZBNlkHrMCstVfgaukzV06w4F-hfV8BnUYyFzABat2DclzyNyDRGUaitz6rvE2lCUOGyvmxd3nUmvmUJCYxfUWr5J90VEWF+GFiwsRBsFD3UE0m2kqE8kOBLB4q9J53j2d3CpQyWq4SqAwmLUDn-UvnqHTC7I1G2mSNRNHyPzVNeWDLbzyruw4jsChH83kBvF2z9HkILAWEwg+o0HhrqqOn8NEORtPxQPRvCWVEyHkBBEWG1lksyFkEeiMUckD3UFE3Iu9IGICJcSCKn3pvZARBUF2rzIhsKFhHYtsDZCYhsGLGGorU0KFqKOST0PFqUPPikHMGmCeoJsUgkGPVpDX1ww9JGv6P32+LFquqTOcLDhqE1HujejhO+mMD+GvHkEaApvEH8JZJ1sdtiorEgiKWKW4jaLuxmFyDqEMG7L9XlOuT9JjNVJNI4Idpipu1DH+F9mnAyCwgZEBWAJBTTAiTxrlIpqLJLLXEupzvzjhDjt3XdsOQ8jbL+HewaFkNNjqD7IcCAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogC0AdgCsAZgB04gEyjhADnEA2GgoUAWJQBoQAT0QBGGuICckmoZkbTM42YWKAvk91oMOfAQDKYdgAJYLDByTm5aBiQQFjYwniiBBFtpGhlxDRphGg1ZURlhXQMEcRLDSVF5UwV84XEK8Rc3dCw8KElsCEwwHz9A4NCuXAjeGI5B3kTBDOFJYWVlQ2UlY3UrQsQFUQVy0Q00w3FLGVNTBtcQdxb8ds7ugFFcdjAAJ0CAaz9yAAthqNG4iZCdKiWZpcQKEyHTKmTLrYrCGb5DRaGHKBGiYzKRoXZqeNodLoEB5PV6wD7sb5UQyRZisMbcQEIQRLGiSdRmfIqUxLCpw5QqcrQ4SGTTWUx5bGXPE3Ql3PjsZ4AVwwv1psXGCSEMjkkhkNFE-MNBxo4vEcM22wqOQxikMKwUktxrUk3nJ32IZEomFdnx+9BGdIBmoQdoUykkxmEyIhELMsjhobKoYUdsOIq2jo8zp9FK+LrdXwAkrcegEgl0BuF-X9AxrQIlDHspPzRKYbAsttYzfojCYZBYaEs5uCaCZuZmrm0c99877i4TkCQPn0oABbMCPfwANxenHIJEwquitYZwaspiT1U0c00qQKPZDGgOKVHcgk+SUGgn0uned-8+6RdlyCNcNwCL5UGebAAC9uHYA8j3+Ot+CMJFJFUMN9TtfI0RkBNxDtcoNHkSx+WMCoZG-bMC1nXMAOIbhYAVEg8H8CCoNgx4D38CBsCYz0wEQk94nrVDdgsJsTU-C91DhNJuQsCpRFHYiLwOKjrl-WjvnoohGOY1id2ePduN4-iKEE6s1XpESUJDGQlkkcUZE2RYnzUPY5M5cprBFDQEWEBzdg0qcaP-Es9NwJjnhY3B-AAQQAIW8fwAA0hPVU9RPszZJByMRG1Oc80jk8UNCcg1FFfVtajOJos00sKC10-SYtYpKUoATQymzGSsXLrDsZQ5EMA0DTwh9DnUUElMWNQoy-c4pWo31tKLCLWti-wyCgLoeqDbKDhyaQlCveQU2EUw5OUxEtnkdE0ROYQQrWtaWqigy4q6fB2D9Glj0y2yGxKGYVANE0Dn2UQ5IWbY5jbQxLujFRnqWp1GtW8LCUi6KtqYF58dwXjyEVTASFeMz4Is-bkIbbVthsIrrEsTDlDklNyuFKpTARaxkTEF6tKx7occ+tjIJguCD0wPRtpwKAhisgHerPBz+wtLQJGIjJ+QTDFw2OLZ-MCsR+TqnEGtCzHmo2j62rioyTMwGW5ewBWaayuyrEuvLZEccVFjMDEE2GkEth5qolmORxzeWjHcze23cdY2BcBIJh-HYVA0o9oGjAIqQHJHBQeeqMw5OyfttQNeZVC2QLKLRy3XuFhi7a21P08z7PuqVpDPeB59MjIhFxGFbI5MbGZdkcOQLyjZQckFpq5yTsWwAAR0VbjvqgX7c7644pAxY2ef1OQx4TWpWRyExR31ZQDVMZfrdX7HNtYphyel6g++EvrZAzFSEXUapwnxRgTKcIBpQFgnEyGoUQL8E6t1FvbfwzwwCrlQDufw5AP6PFgAfVWWh0JWGIsNTQo0dAPhFARCwixbDZBKGoYaSCZytwAEpgEEGAPgIRFRPCIYdOoUgDiGFOKkdIYhg4PnUP2dIqQ0S1yUAsNhf4bayi3tgDOAAZPAYBu6oEPH-QGfVUSCnqLYMQ1CiiBXDMiAi2o1CKPHE3ScLcNH3C0RnKmMBHjYG4uTcg3chF2SGtscEBoCKP0UCIhMxgyg3jrrE5Ei81GSHigAdxYuBCWnF4KYB4nxKmlB-B4AAGaoAIBAbgYB2i4C3KgD4kgYDsEEOxSWXFMCCAqagUJiQ0jZDyhoReJpahPVqHJJ85hNguX2MoWwlV0lZJyeLDiUtCmUwEmU3AlSCAvGeJBSQTAybsEqc8VcLS-DtLyRsnpuy+kmJVtlQZII7TIlTMRFyPM5Lgn7NkQco46g4UMMs7JHBty7mwPuTZxTtm9OqbU+pjTmmtMEI7aFB57mVP6YgfY-YDi2hMGicR+QvJKDZGIOQdhSiBTBasjFMKinmVKQig5RyTkkDOZBS5aLGVYt6bihA+K2T6jEPPI2Xk9gRkfqoNIcj2T0ohR1NKOy9k1NwHUvAKK6lopIAAI1gIIPg2LHn-X7nnYV0TZjDVfBfLYpVhoRgyE+Reshhq1CVQEFVqU1VVPZc8Y5pzzm8uuQao1JrBVPIOmEgiMwcjgiUK2fUWhSqLGkFsR+BFshRmfm4n8NEVnKuSv4TqfrEWauRU03VYbDWCD0KaoV8yM3yAqLYKBxE4SHDRHlbmyktiHGCvmlaCci3epLWWtlzxDmBs5dyi5Vy2nhvrY26NtM8VxosDhMeDl+Suq7W5CwCz5jV0JY3eq7itJju2vgLo5aNVaoadWxdggdpdFXea-+wZ9ig0sAcPIrYA7XQNE5Qdf6KhhgRF6m9u0DFTpnUGrlIaX1vu4VGz9pjv0EThtkfqVg1Dz2uojCM-6shyHPmiaDu9fr3qRdq59aLqNfA-QGTDLyCIghyPJcBew7ww1yoOWlKhEZWCoxuPeXxy0BsQ-O0NbSmMsZrGx2N6bjAmC2Isa8E0igOWlSelE-l7oGmg-jZ4hNiak3JsykpcGHkVsfTql9pnzPQss88QQWyLKKesjGgZasKpKGsMNBy1RoYPjmSCMejZ5iAYA7HdGVtR3goCM5jcFmyYUzhRZKT06OXBp5U5gmaXXMZY81lyg3nla+bxf58UgWRnaijmFnTAVpDChGY-E4cX0l6M1YYzApY+gVjiE2vU5gnx6hFJkdMJVws8wjHVk01hMLVB6-o-rRJvGZx2mBAJhSgkhLXQPPFCJyqjTMKOdQ3M2YPh5vGkGjgsiuIvQW1avWDFZyMZIQsuAOAEFGxIaQ3aITpn8pfB8JL0Il0uhzfUjhQXDvjjOd7-Xvu-fYP96krHnlhJctsE4NhFDKT9ioOE8MnKNgcHUbkpo1t9c+5gSQuAeUHkG+WEII2juWuW-j1suxhTQ7DGTmEGbSULL-XaPNL2R3I-WwzyQAA5bOAAFVAeB2CwAIPFCAEBAjwWMv4Fg6um3zHKjCMabYXKDg0HyBZvsI5ZEUKddJP2-tCoSfYzYWQVDnxNDbmhYI8pKIcoC3TCPpdI7zK7jHVIMM44bFhNkMIYQjNkKORsCZjiJM2OkBYunThYkR4lmcAAVHb-jAnPGCVnNn-ROdx+q8K4a5gFlKFNEt44menxsjcnqSwxEMxF9emX-Au3K-V6qXcLbKOGcm+RL7TImxxSDm04gNs4ZeZpBItbyjQ+tKKiJtnfixlfwAHlcD2arc0+K3gS+CAPzUwQx-2Bn8Vg39dIYoQVQWhiem+o4RGyzALRhguRkJPhqL+DM7+DlIkCUA9DDY8RgAwGkwpZkyapCqCCFQnTE4YiIzEQERXQQ46htjcjRZHAVCowR5tBkDYCrhcqtDdyG5oHdAPpX51I0F0FPCCBZyCAwGUBCoVCXiL4ArAKwhEERJWDMLfJRjqAvQcH0H4CMGcqaq17DaDBNqBQkbUqtgYQQIPgzwRh1DDRqb8g1ByG-acEMFZz+C8LFIMFki+iX70bNLyFcE8EOG5gCGPykKcgnDahpAIhwhPiRZ5AQiLx2ANaaB04faoBfZK7+Cq7q6a6kAWTGLv7HbCpja9piCHA5CIwmBwinDqziKKATbupVAuDnDM4YDwBRBxxQDY6N6CAg7SByCxIYSaA2JCDiQQjTI8x6gORIyIJD4EhgCNEf7MgkKVQ8zgjETXjmgpjlBTTnaSGWBS4WyXoFjjEZHcgMxe7Eq+5thdr9gLKVCHBRaOD8jpLCzbGWoHAnC6iLwphjyhZ1DxLJAHBjypDVAXi-HQYdL5KmTla2aVK3F9RhgMwZClzCg1CpC-LJDAhQjzBWLh4bGvZJYMpQpMqeasoPJglnhyIyrp4iLN6GBeTKRbpPgcwxYYjQY+p+r4mHQlxSBqCOIF52CjiEE6ZFR5SVSYRzSdh0kToMlKbx5GAlz9ihF5G9Gr7FCDggjVwUGthyLrH1GvTXqoYik+Yf4ijijoRQgJpVB5CnDXRqBsjyoVCqBzBb5iY-SSa9KMlewlw3zqaPwpgF7zAwwCiXTiKXFDFXF76FrJaG5FZEwlZWY4kgmoCOkNibAb7cjKS3jtglByS2izC+mtijSVCF5UGvQz6xGYAxl4r2AWC1SbA2DqBLAAGLGnB3Y1AlC7ColqlaT5lfbR5FnCqjRlCZAlDllVAQl8gfHzDpCp4p4LLRGo7M4XIHgdlijxqjzHDOKyCylZBlDtjiKlAuSmETny7xGJEEKznzCIinCyCNgZDQg3a2IIhsh-IUTuqKDnpoky5R7o4dnkQt7azMzghmAZ40IihJgigpjGjpgOiBmrQj5+KcDj7dyzmAG8yGguSVBcm9h5CPFhg8hZC-7DG5n76H567kwv4Fjn5vkLDxp6gLCEqSEAFbDoSXYqAxa3zYVPmR6QHZx8FjGilNF7BhzpDiKqB1CXTDR8g6hPj2D9paB+zmG0EKFQBKHMEkVSA8zi42DyD4aXmIDDThgmDqBzAzxTSUHMXUEWEyWMG2FMT2FbGcU6mOC6gIiYRjzcg0pdpzCCj2AQhRiBQXiLQuBAA */
     id: 'Modeling',
 
     tsTypes: {} as import('./modelingMachine.typegen').Typegen0,
@@ -139,6 +123,7 @@ export const modelingMachine = createMachine(
 
     context: {
       guiMode: 'default',
+      tool: null as Models['SceneToolType_type'] | null,
       selection: [] as string[],
       selectionRanges: {
         otherSelections: [],
@@ -148,6 +133,8 @@ export const modelingMachine = createMachine(
       sketchPathToNode: null as PathToNode | null, // maybe too specific, and we should have a generic pathToNode, but being specific seems less risky when I'm not sure
       sketchEnginePathId: '' as string,
       sketchPlaneId: '' as string,
+      sketchNormalBackUp: null as null | [number, number, number],
+      moveDescs: [] as MoveDesc[],
     },
 
     schema: {
@@ -163,118 +150,14 @@ export const modelingMachine = createMachine(
             actions: 'Set selection',
           },
 
-          'Deselect point': {
-            target: 'idle',
-            internal: true,
-            actions: [
-              'Remove from code-based selection',
-              'Update code selection cursors',
-              // 'Engine: remove highlight',
-            ],
-            cond: 'Selection contains point',
-          },
-
-          'Deselect edge': {
-            target: 'idle',
-            internal: true,
-            actions: [
-              'Remove from code-based selection',
-              'Update code selection cursors',
-              // 'Engine: remove highlight',
-            ],
-            cond: 'Selection contains edge',
-          },
-
-          'Deselect axis': {
-            target: 'idle',
-            internal: true,
-            actions: [
-              'Remove from other selection',
-              'Update code selection cursors',
-              // 'Engine: remove highlight',
-            ],
-            cond: 'Selection contains axis',
-          },
-
-          'Select point': {
-            target: 'idle',
-            internal: true,
-            actions: [
-              'Add to code-based selection',
-              'Update code selection cursors',
-              // 'Engine: add highlight',
-            ],
-          },
-
-          'Select edge': {
-            target: 'idle',
-            internal: true,
-            actions: [
-              'Add to code-based selection',
-              'Update code selection cursors',
-              // 'Engine: add highlight',
-            ],
-          },
-
-          'Select axis': {
-            target: 'idle',
-            internal: true,
-            actions: [
-              'Add to other selection',
-              // 'Engine: add highlight',
-            ],
-          },
-
-          'Select face': {
-            target: 'idle',
-            internal: true,
-            actions: [
-              'Add to code-based selection',
-              'Update code selection cursors',
-              // 'Engine: add highlight',
-            ],
-          },
-
           'Enter sketch': [
             {
-              target: 'Sketch',
+              target: 'animating to existing sketch',
               cond: 'Selection is one face',
-              actions: [
-                'set sketch metadata',
-                'sketch mode enabled',
-                'edit mode enter',
-              ],
+              actions: ['set sketch metadata'],
             },
             'Sketch no face',
           ],
-
-          'Deselect face': {
-            target: 'idle',
-            internal: true,
-            actions: [
-              'Remove from code-based selection',
-              'Update code selection cursors',
-              // 'Engine: remove highlight',
-            ],
-            cond: 'Selection contains face',
-          },
-
-          'Select all': {
-            target: 'idle',
-            internal: true,
-            actions: 'Add to code-based selection',
-          },
-
-          'Deselect all': {
-            target: 'idle',
-            internal: true,
-            actions: [
-              'Clear selection',
-              'Update code selection cursors',
-              // 'Engine: remove highlight',
-            ],
-            cond: 'Selection is not empty',
-          },
 
           Extrude: {
             target: 'idle',
@@ -289,51 +172,6 @@ export const modelingMachine = createMachine(
         states: {
           SketchIdle: {
             on: {
-              'Select point': {
-                target: 'SketchIdle',
-                internal: true,
-                actions: [
-                  'Update code selection cursors',
-                  'Add to code-based selection',
-                ],
-              },
-
-              'Select segment': {
-                target: 'SketchIdle',
-                internal: true,
-                actions: [
-                  'Update code selection cursors',
-                  'Add to code-based selection',
-                ],
-              },
-
-              'Deselect point': {
-                target: 'SketchIdle',
-                internal: true,
-                cond: 'Selection contains point',
-                actions: [
-                  'Update code selection cursors',
-                  'Add to code-based selection',
-                ],
-              },
-
-              'Deselect segment': {
-                target: 'SketchIdle',
-                internal: true,
-                cond: 'Selection contains line',
-                actions: [
-                  'Update code selection cursors',
-                  'Add to code-based selection',
-                ],
-              },
-
-              'Equip tool': {
-                target: 'Line Tool',
-                actions: 'set tool line',
-              },
-
-              'Equip move tool': 'Move Tool',
-
               'Set selection': {
                 target: 'SketchIdle',
                 internal: true,
@@ -441,134 +279,18 @@ export const modelingMachine = createMachine(
               'Re-execute': {
                 target: 'SketchIdle',
                 internal: true,
-                actions: [
-                  'set sketchMetadata from pathToNode',
-                  'sketch mode enabled',
-                  'edit mode enter',
-                ],
+                actions: ['set sketchMetadata from pathToNode'],
+              },
+
+              'Equip Line tool': 'Line tool',
+
+              'Equip tangential arc to': {
+                target: 'Tangential arc to',
+                cond: 'is editing existing sketch',
               },
             },
 
-            entry: 'equip select',
-          },
-
-          'Line Tool': {
-            states: {
-              Done: {
-                type: 'final',
-              },
-
-              'Point Added': {
-                on: {
-                  'Add point': {
-                    target: 'Segment Added',
-                    actions: ['AST start new sketch'],
-                  },
-                },
-              },
-
-              'Segment Added': {
-                on: {
-                  'Add point': {
-                    target: 'Segment Added',
-                    internal: true,
-                    actions: ['AST add line segment'],
-                  },
-
-                  'Complete line': {
-                    target: 'Done',
-                    actions: ['Modify AST', 'Update code selection cursors'],
-                  },
-
-                  'Equip new tool': {
-                    target: 'Segment Added',
-                    internal: true,
-                    actions: 'set tool',
-                  },
-                },
-              },
-
-              Init: {
-                always: [
-                  {
-                    target: 'Segment Added',
-                    cond: 'is editing existing sketch',
-                  },
-                  'No Points',
-                ],
-              },
-
-              'No Points': {
-                on: {
-                  'Add point': 'Point Added',
-                },
-              },
-            },
-
-            // invoke: [
-            //   {
-            //     src: 'createLine',
-            //     id: 'Create line',
-            //     onDone: 'SketchIdle',
-            //   },
-            // ],
-            initial: 'Init',
-
-            on: {
-              'Equip move tool': 'Move Tool',
-              'Re-execute': {
-                target: 'Line Tool',
-                internal: true,
-                actions: [
-                  'set sketchMetadata from pathToNode',
-                  'sketch mode enabled',
-                  'edit mode enter',
-                ],
-              },
-            },
-          },
-
-          'Move Tool': {
-            entry: 'set tool move',
-
-            on: {
-              'Set selection': {
-                target: 'Move Tool',
-                internal: true,
-                actions: 'Set selection',
-              },
-
-              'Re-execute': {
-                target: 'Move Tool',
-                internal: true,
-                actions: [
-                  'set sketchMetadata from pathToNode',
-                  'sketch mode enabled',
-                  'edit mode enter',
-                ],
-              },
-            },
-
-            states: {
-              'Move init': {
-                always: [
-                  {
-                    target: 'Move without re-execute',
-                    cond: 'can move',
-                  },
-                  {
-                    target: 'Move with execute',
-                    cond: 'can move with execute',
-                  },
-                  'No move',
-                ],
-              },
-              'Move without re-execute': {},
-              'Move with execute': {},
-              'No move': {},
-            },
-
-            initial: 'Move init',
+            entry: 'setup client side sketch segments',
           },
 
           'Await horizontal distance info': {
@@ -654,15 +376,110 @@ export const modelingMachine = createMachine(
               onError: 'SketchIdle',
             },
           },
+
+          'Line tool': {
+            exit: [
+              // 'tear down client sketch',
+              // 'setup client side sketch segments',
+            ],
+
+            on: {
+              'Set selection': {
+                target: 'Line tool',
+                description: `This is just here to stop one of the higher level "Set selections" firing when we are just trying to set the IDE code without triggering a full engine-execute`,
+                internal: true,
+              },
+
+              'Equip tangential arc to': {
+                target: 'Tangential arc to',
+                cond: 'is editing existing sketch',
+              },
+            },
+
+            states: {
+              Init: {
+                always: [
+                  {
+                    target: 'normal',
+                    cond: 'is editing existing sketch',
+                    actions: 'set up draft line',
+                  },
+                  'No Points',
+                ],
+              },
+
+              normal: {
+                on: {
+                  'Set selection': {
+                    target: 'normal',
+                    internal: true,
+                  },
+                },
+              },
+
+              'No Points': {
+                entry: 'setup noPoints onClick listener',
+
+                on: {
+                  'Add start point': {
+                    target: 'normal',
+                    actions: 'set up draft line without teardown',
+                  },
+
+                  Cancel: '#Modeling.Sketch.undo startSketchOn',
+                },
+              },
+            },
+
+            initial: 'Init',
+          },
+
+          Init: {
+            always: [
+              {
+                target: 'SketchIdle',
+                cond: 'is editing existing sketch',
+              },
+              'Line tool',
+            ],
+          },
+
+          'Tangential arc to': {
+            entry: 'set up draft arc',
+
+            on: {
+              'Set selection': {
+                target: 'Tangential arc to',
+                internal: true,
+              },
+
+              'Equip Line tool': 'Line tool',
+            },
+          },
+
+          'undo startSketchOn': {
+            invoke: {
+              src: 'AST-undo-startSketchOn',
+              id: 'AST-undo-startSketchOn',
+              onDone: '#Modeling.idle',
+            },
+          },
         },
 
-        initial: 'SketchIdle',
+        initial: 'Init',
 
         on: {
           CancelSketch: '.SketchIdle',
         },
 
-        exit: 'sketch exit execute',
+        exit: [
+          'sketch exit execute',
+          'animate after sketch',
+          'tear down client sketch',
+          'remove sketch grid',
+        ],
+
+        entry: ['add axis n grid', 'conditionally equip line tool'],
       },
 
       'Sketch no face': {
@@ -671,15 +488,38 @@ export const modelingMachine = createMachine(
         exit: 'hide default planes',
         on: {
           'Select default plane': {
-            target: 'Sketch',
-            actions: [
-              'reset sketch metadata',
-              'set default plane id',
-              'sketch mode enabled',
-              'create path',
-            ],
+            target: 'animating to plane',
+            actions: ['reset sketch metadata'],
           },
         },
+      },
+
+      'animating to plane': {
+        invoke: {
+          src: 'animate-to-face',
+          id: 'animate-to-face',
+          onDone: {
+            target: 'Sketch',
+            actions: 'set new sketch metadata',
+          },
+        },
+
+        on: {
+          'Set selection': {
+            target: 'animating to plane',
+            internal: true,
+          },
+        },
+      },
+
+      'animating to existing sketch': {
+        invoke: [
+          {
+            src: 'animate-to-sketch',
+            id: 'animate-to-sketch',
+            onDone: 'Sketch',
+          },
+        ],
       },
     },
 
@@ -690,11 +530,7 @@ export const modelingMachine = createMachine(
         target: 'idle',
         // TODO what if we're existing extrude equipped, should these actions still be fired?
         // maybe cancel needs to have a guard for if else logic?
-        actions: [
-          'edit_mode_exit',
-          'default_camera_disable_sketch_mode',
-          'reset sketch metadata',
-        ],
+        actions: ['reset sketch metadata'],
       },
 
       'Set selection': {
@@ -706,8 +542,25 @@ export const modelingMachine = createMachine(
   },
   {
     guards: {
-      'is editing existing sketch': ({ sketchPathToNode }) =>
-        !!sketchPathToNode,
+      'is editing existing sketch': ({ sketchPathToNode }) => {
+        // should check that the variable declaration is a pipeExpression
+        // and that the pipeExpression contains a "startProfileAt" callExpression
+        if (!sketchPathToNode) return false
+        const variableDeclaration = getNodeFromPath<VariableDeclarator>(
+          kclManager.ast,
+          sketchPathToNode,
+          'VariableDeclarator'
+        ).node
+        if (variableDeclaration.type !== 'VariableDeclarator') return false
+        const pipeExpression = variableDeclaration.init
+        if (pipeExpression.type !== 'PipeExpression') return false
+        const hasStartProfileAt = pipeExpression.body.some(
+          (item) =>
+            item.type === 'CallExpression' &&
+            item.callee.name === 'startProfileAt'
+        )
+        return hasStartProfileAt && pipeExpression.body.length > 2
+      },
       'Can make selection horizontal': ({ selectionRanges }) =>
         horzVertInfo(selectionRanges, 'horizontal').enabled,
       'Can make selection vertical': ({ selectionRanges }) =>
@@ -745,119 +598,14 @@ export const modelingMachine = createMachine(
         equalAngleInfo({ selectionRanges }).enabled,
       'Can constrain remove constraints': ({ selectionRanges }) =>
         removeConstrainingValuesInfo({ selectionRanges }).enabled,
-      // 'has no selection': ({ selectionRanges }) => {
-      //   if (selectionRanges?.codeBasedSelections?.length < 1) return true
-      //   const selection = selectionRanges?.codeBasedSelections?.[0] || {}
-
-      //   return (
-      //     selectionRanges.codeBasedSelections.length === 1 &&
-      //     !hasExtrudeSketchGroup({
-      //       ast: kclManager.ast,
-      //       programMemory: kclManager.programMemory,
-      //       selection,
-      //     })
-      //   )
-      // },
-      'can move': ({ selectionRanges }) =>
-        // todo check all cursors are also in the right sketch
-        selectionRanges.codeBasedSelections.every(
-          (selection) =>
-            getConstraintLevelFromSourceRange(
-              selection.range,
-              kclManager.ast
-            ) === 'free'
-        ),
-      'can move with execute': ({ selectionRanges }) =>
-        // todo check all cursors are also in the right sketch
-        selectionRanges.codeBasedSelections.every((selection) =>
-          ['partial', 'free'].includes(
-            getConstraintLevelFromSourceRange(selection.range, kclManager.ast)
-          )
-        ),
     },
+    // end guards
     actions: {
-      'Add to code-based selection': assign({
-        selectionRanges: ({ selectionRanges }, event) => ({
-          ...selectionRanges,
-          codeBasedSelections: [
-            ...selectionRanges.codeBasedSelections,
-            event.data,
-          ],
-        }),
-      }),
-      'Add to other selection': assign({
-        selectionRanges: ({ selectionRanges }, event) => ({
-          ...selectionRanges,
-          otherSelections: [...selectionRanges.otherSelections, event.data],
-        }),
-      }),
-      'Remove from code-based selection': assign({
-        selectionRanges: ({ selectionRanges }, event) => ({
-          ...selectionRanges,
-          codeBasedSelections: [
-            ...selectionRanges.codeBasedSelections,
-            event.data,
-          ],
-        }),
-      }),
-      'Remove from other selection': assign({
-        selectionRanges: ({ selectionRanges }, event) => ({
-          ...selectionRanges,
-          otherSelections: [...selectionRanges.otherSelections, event.data],
-        }),
-      }),
-      'Clear selection': assign({
-        selectionRanges: () => ({
-          otherSelections: [],
-          codeBasedSelections: [],
-        }),
-      }),
-      'sketch mode enabled': ({ sketchPlaneId }) => {
-        void engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'sketch_mode_enable',
-            plane_id: sketchPlaneId,
-            ortho: true,
-            animated: !isReducedMotion(),
-          },
-        })
-      },
       'set sketchMetadata from pathToNode': assign(({ sketchPathToNode }) => {
         if (!sketchPathToNode) return {}
         return getSketchMetadataFromPathToNode(sketchPathToNode)
       }),
-      'edit mode enter': ({ selectionRanges }) => {
-        const pathId = isCursorInSketchCommandRange(
-          engineCommandManager.artifactMap,
-          selectionRanges
-        )
-        pathId &&
-          void engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'edit_mode_enter',
-              target: pathId,
-            },
-          })
-      },
-      'hide default planes': () => {
-        void kclManager.hidePlanes()
-      },
-      edit_mode_exit: () =>
-        engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: { type: 'edit_mode_exit' },
-        }),
-      default_camera_disable_sketch_mode: () =>
-        engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: { type: 'default_camera_disable_sketch_mode' },
-        }),
+      'hide default planes': () => sceneInfra.removeDefaultPlanes(),
       'reset sketch metadata': assign({
         sketchPathToNode: null,
         sketchEnginePathId: '',
@@ -874,98 +622,105 @@ export const modelingMachine = createMachine(
           selectionRanges
         )
       }),
-      'set tool line': () =>
-        engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'set_tool',
-            tool: 'sketch_line',
-          },
-        }),
-      'equip select': () =>
-        engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'set_tool',
-            tool: 'select',
-          },
-        }),
-      'set tool move': () =>
-        engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'set_tool',
-            tool: 'move',
-          },
-        }),
+      'set new sketch metadata': assign((_, { data }) => data),
       // TODO implement source ranges for all of these constraints
       // need to make the async like the modal constraints
-      'Make selection horizontal': ({ selectionRanges }) => {
+      'Make selection horizontal': ({ selectionRanges, sketchPathToNode }) => {
         const { modifiedAst } = applyConstraintHorzVert(
           selectionRanges,
           'horizontal',
           kclManager.ast,
           kclManager.programMemory
         )
-        void kclManager.updateAst(modifiedAst, true)
+        sceneEntitiesManager.updateAstAndRejigSketch(
+          sketchPathToNode || [],
+          modifiedAst
+        )
       },
-      'Make selection vertical': ({ selectionRanges }) => {
+      'Make selection vertical': ({ selectionRanges, sketchPathToNode }) => {
         const { modifiedAst } = applyConstraintHorzVert(
           selectionRanges,
           'vertical',
           kclManager.ast,
           kclManager.programMemory
         )
-        void kclManager.updateAst(modifiedAst, true)
+        sceneEntitiesManager.updateAstAndRejigSketch(
+          sketchPathToNode || [],
+          modifiedAst
+        )
       },
-      'Constrain horizontally align': ({ selectionRanges }) => {
+      'Constrain horizontally align': ({
+        selectionRanges,
+        sketchPathToNode,
+      }) => {
         const { modifiedAst } = applyConstraintHorzVertAlign({
           selectionRanges,
           constraint: 'setVertDistance',
         })
-        void kclManager.updateAst(modifiedAst, true)
+        sceneEntitiesManager.updateAstAndRejigSketch(
+          sketchPathToNode || [],
+          modifiedAst
+        )
       },
-      'Constrain vertically align': ({ selectionRanges }) => {
+      'Constrain vertically align': ({ selectionRanges, sketchPathToNode }) => {
         const { modifiedAst } = applyConstraintHorzVertAlign({
           selectionRanges,
           constraint: 'setHorzDistance',
         })
-        void kclManager.updateAst(modifiedAst, true)
+        sceneEntitiesManager.updateAstAndRejigSketch(
+          sketchPathToNode || [],
+          modifiedAst
+        )
       },
-      'Constrain snap to X': ({ selectionRanges }) => {
+      'Constrain snap to X': ({ selectionRanges, sketchPathToNode }) => {
         const { modifiedAst } = applyConstraintAxisAlign({
           selectionRanges,
           constraint: 'snapToXAxis',
         })
-        void kclManager.updateAst(modifiedAst, true)
+        sceneEntitiesManager.updateAstAndRejigSketch(
+          sketchPathToNode || [],
+          modifiedAst
+        )
       },
-      'Constrain snap to Y': ({ selectionRanges }) => {
+      'Constrain snap to Y': ({ selectionRanges, sketchPathToNode }) => {
         const { modifiedAst } = applyConstraintAxisAlign({
           selectionRanges,
           constraint: 'snapToYAxis',
         })
-        void kclManager.updateAst(modifiedAst, true)
+        sceneEntitiesManager.updateAstAndRejigSketch(
+          sketchPathToNode || [],
+          modifiedAst
+        )
       },
-      'Constrain equal length': ({ selectionRanges }) => {
+      'Constrain equal length': ({ selectionRanges, sketchPathToNode }) => {
         const { modifiedAst } = applyConstraintEqualLength({
           selectionRanges,
         })
-        void kclManager.updateAst(modifiedAst, true)
+        sceneEntitiesManager.updateAstAndRejigSketch(
+          sketchPathToNode || [],
+          modifiedAst
+        )
       },
-      'Constrain parallel': ({ selectionRanges }) => {
+      'Constrain parallel': ({ selectionRanges, sketchPathToNode }) => {
         const { modifiedAst } = applyConstraintEqualAngle({
           selectionRanges,
         })
-        void kclManager.updateAst(modifiedAst, true)
+        sceneEntitiesManager.updateAstAndRejigSketch(
+          sketchPathToNode || [],
+          modifiedAst
+        )
       },
-      'Constrain remove constraints': ({ selectionRanges }) => {
+      'Constrain remove constraints': ({
+        selectionRanges,
+        sketchPathToNode,
+      }) => {
         const { modifiedAst } = applyRemoveConstrainingValues({
           selectionRanges,
         })
-        void kclManager.updateAst(modifiedAst, true)
+        sceneEntitiesManager.updateAstAndRejigSketch(
+          sketchPathToNode || [],
+          modifiedAst
+        )
       },
       'AST extrude': (_, event) => {
         if (!event.data) return
@@ -981,14 +736,86 @@ export const modelingMachine = createMachine(
           distance
         )
         // TODO not handling focusPath correctly I think
-        void kclManager.updateAst(modifiedAst, true, {
+        kclManager.updateAst(modifiedAst, true, {
           focusPath: pathToExtrudeArg,
         })
       },
-      'set default plane id': assign({
-        sketchPlaneId: (_, { data }) => data.planeId,
-      }),
+      'conditionally equip line tool': (_, { type }) => {
+        if (type === 'done.invoke.animate-to-face') {
+          sceneInfra.modelingSend('Equip Line tool')
+        }
+      },
+      'setup client side sketch segments': ({ sketchPathToNode }, { type }) => {
+        if (Object.keys(sceneEntitiesManager.activeSegments).length > 0) {
+          sceneEntitiesManager
+            .tearDownSketch({ removeAxis: false })
+            .then(() => {
+              sceneEntitiesManager.setupSketch({
+                sketchPathToNode: sketchPathToNode || [],
+              })
+            })
+        } else {
+          sceneEntitiesManager.setupSketch({
+            sketchPathToNode: sketchPathToNode || [],
+          })
+        }
+      },
+      'animate after sketch': () => {
+        sceneEntitiesManager.animateAfterSketch()
+      },
+      'tear down client sketch': () => {
+        if (sceneEntitiesManager.activeSegments) {
+          sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+        }
+      },
+      'remove sketch grid': () => sceneEntitiesManager.removeSketchGrid(),
+      'set up draft line': ({ sketchPathToNode }) => {
+        sceneEntitiesManager.setUpDraftLine(sketchPathToNode || [])
+      },
+      'set up draft arc': ({ sketchPathToNode }) => {
+        sceneEntitiesManager.setUpDraftArc(sketchPathToNode || [])
+      },
+      'set up draft line without teardown': ({ sketchPathToNode }) =>
+        sceneEntitiesManager.setupSketch({
+          sketchPathToNode: sketchPathToNode || [],
+          draftSegment: 'line',
+        }),
+      'show default planes': () => {
+        sceneInfra.showDefaultPlanes()
+        sceneEntitiesManager.setupDefaultPlaneHover()
+      },
+      'setup noPoints onClick listener': ({ sketchPathToNode }) => {
+        sceneEntitiesManager.createIntersectionPlane()
+        const sketchGroup = sketchGroupFromPathToNode({
+          pathToNode: sketchPathToNode || [],
+          ast: kclManager.ast,
+          programMemory: kclManager.programMemory,
+        })
+        const quaternion = quaternionFromSketchGroup(sketchGroup)
+        sceneEntitiesManager.intersectionPlane &&
+          sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
+            quaternion
+          )
+        sceneInfra.setCallbacks({
+          onClick: async (args) => {
+            if (!args) return
+            const { intersection2d } = args
+            if (!intersection2d || !sketchPathToNode) return
+            const { modifiedAst } = addStartProfileAt(
+              kclManager.ast,
+              sketchPathToNode,
+              [intersection2d.x, intersection2d.y]
+            )
+            await kclManager.updateAst(modifiedAst, false)
+            sceneEntitiesManager.removeIntersectionPlane()
+            sceneInfra.modelingSend('Add start point')
+          },
+        })
+      },
+      'add axis n grid': ({ sketchPathToNode }) =>
+        sceneEntitiesManager.createSketchAxis(sketchPathToNode || []),
     },
+    // end actions
   }
 )
 
@@ -1006,21 +833,6 @@ function getSketchMetadataFromPathToNode(
     (e) => e.type === 'CallExpression' && e.callee.name === 'startSketchOn'
   ) as CallExpression
   if (!sketchCallExpression) return {}
-  const firstArg = sketchCallExpression.arguments[0]
-  let planeId = ''
-  if (firstArg.type === 'Literal' && firstArg.value) {
-    const planeStrCleaned = firstArg.value
-      .toString()
-      .toLowerCase()
-      .replace('-', '')
-    if (
-      planeStrCleaned === 'xy' ||
-      planeStrCleaned === 'xz' ||
-      planeStrCleaned === 'yz'
-    ) {
-      planeId = kclManager.getPlaneId(planeStrCleaned)
-    }
-  }
 
   let sketchEnginePathId: string
   if (selectionRanges) {
@@ -1042,14 +854,8 @@ function getSketchMetadataFromPathToNode(
         _selectionRanges
       ) || ''
   }
-  console.log('returning:', {
-    sketchPathToNode: pathToNode,
-    sketchEnginePathId,
-    sketchPlaneId: planeId,
-  })
   return {
     sketchPathToNode: pathToNode,
     sketchEnginePathId,
-    sketchPlaneId: planeId,
   }
 }

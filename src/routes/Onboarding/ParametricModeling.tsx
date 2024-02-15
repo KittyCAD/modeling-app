@@ -1,4 +1,5 @@
-import { OnboardingButtons, onboardingPaths, useDismiss, useNextClick } from '.'
+import { OnboardingButtons, useDismiss, useNextClick } from '.'
+import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useStore } from '../../useStore'
 import { useBackdropHighlight } from 'hooks/useBackdropHighlight'
 import { Themes, getSystemTheme } from 'lib/theme'

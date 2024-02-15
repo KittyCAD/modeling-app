@@ -33,7 +33,7 @@ show(mySketch001)`
         },
         value: [
           {
-            type: 'toPoint',
+            type: 'ToPoint',
             name: '',
             to: [-1.59, -1.54],
             from: [0, 0],
@@ -43,7 +43,7 @@ show(mySketch001)`
             },
           },
           {
-            type: 'toPoint',
+            type: 'ToPoint',
             to: [0.46, -5.82],
             from: [-1.59, -1.54],
             name: '',
@@ -55,8 +55,11 @@ show(mySketch001)`
         ],
         position: [0, 0, 0],
         rotation: [0, 0, 0, 1],
+        xAxis: { x: 1, y: 0, z: 0 },
+        yAxis: { x: 0, y: 1, z: 0 },
+        zAxis: { x: 0, y: 0, z: 1 },
         id: expect.any(String),
-        planeId: expect.any(String),
+        entityId: expect.any(String),
         __meta: [{ sourceRange: [46, 71] }],
       },
     ])
@@ -85,6 +88,11 @@ show(mySketch001)`
         height: 2,
         position: [0, 0, 0],
         rotation: [0, 0, 0, 1],
+        endCapId: null,
+        startCapId: null,
+        xAxis: { x: 1, y: 0, z: 0 },
+        yAxis: { x: 0, y: 1, z: 0 },
+        zAxis: { x: 0, y: 0, z: 1 },
         __meta: [{ sourceRange: [46, 71] }],
       },
     ])
@@ -127,6 +135,11 @@ show(theExtrude, sk2)`
         height: 2,
         position: [0, 0, 0],
         rotation: [0, 0, 0, 1],
+        endCapId: null,
+        startCapId: null,
+        xAxis: { x: 1, y: 0, z: 0 },
+        yAxis: { x: 0, y: 1, z: 0 },
+        zAxis: { x: 0, y: 0, z: 1 },
         __meta: [{ sourceRange: [38, 63] }],
       },
       {
@@ -136,6 +149,12 @@ show(theExtrude, sk2)`
         height: 2,
         position: [0, 0, 0],
         rotation: [0, 0, 0, 1],
+
+        endCapId: null,
+        startCapId: null,
+        xAxis: { x: 1, y: 0, z: 0 },
+        yAxis: { x: 0, y: 1, z: 0 },
+        zAxis: { x: 0, y: 0, z: 1 },
         __meta: [{ sourceRange: [356, 381] }],
       },
     ])

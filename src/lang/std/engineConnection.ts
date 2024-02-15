@@ -1,16 +1,18 @@
-import { SourceRange } from 'lang/wasm'
+import { PathToNode, Program, SourceRange } from 'lang/wasm'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_CONNECTION_TIMEOUT_MS } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
 import { v4 as uuidv4 } from 'uuid'
 import * as Sentry from '@sentry/react'
-import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
+import { getNodePathFromSourceRange } from 'lang/queryAst'
+import { sceneInfra } from 'clientSideScene/sceneInfra'
 
 let lastMessage = ''
 
 interface CommandInfo {
   commandType: CommandTypes
   range: SourceRange
+  pathToNode: PathToNode
   parentId?: string
 }
 
@@ -56,26 +58,36 @@ type Value<T, U> = U extends undefined
 
 type State<T, U> = Value<T, U>
 
-enum EngineConnectionStateType {
+export enum EngineConnectionStateType {
   Fresh = 'fresh',
   Connecting = 'connecting',
   ConnectionEstablished = 'connection-established',
+  Disconnecting = 'disconnecting',
   Disconnected = 'disconnected',
 }
 
-enum DisconnectedType {
+export enum DisconnectingType {
   Error = 'error',
   Timeout = 'timeout',
   Quit = 'quit',
 }
 
-type DisconnectedValue =
-  | State<DisconnectedType.Error, Error | undefined>
-  | State<DisconnectedType.Timeout, void>
-  | State<DisconnectedType.Quit, void>
+export interface ErrorType {
+  // We may not necessary have an error to assign.
+  error?: Error
+
+  // We assign this in the state setter because we may have not failed at
+  // a Connecting state, which we check for there.
+  lastConnectingValue?: ConnectingValue
+}
+
+export type DisconnectingValue =
+  | State<DisconnectingType.Error, ErrorType>
+  | State<DisconnectingType.Timeout, void>
+  | State<DisconnectingType.Quit, void>
 
 // These are ordered by the expected sequence.
-enum ConnectingType {
+export enum ConnectingType {
   WebSocketConnecting = 'websocket-connecting',
   WebSocketEstablished = 'websocket-established',
   PeerConnectionCreated = 'peer-connection-created',
@@ -92,7 +104,39 @@ enum ConnectingType {
   DataChannelEstablished = 'data-channel-established',
 }
 
-type ConnectingValue =
+export enum ConnectingTypeGroup {
+  WebSocket = 'WebSocket',
+  ICE = 'ICE',
+  WebRTC = 'WebRTC',
+}
+
+export const initialConnectingTypeGroupState: Record<
+  ConnectingTypeGroup,
+  [ConnectingType, boolean | undefined][]
+> = {
+  [ConnectingTypeGroup.WebSocket]: [
+    [ConnectingType.WebSocketConnecting, undefined],
+    [ConnectingType.WebSocketEstablished, undefined],
+  ],
+  [ConnectingTypeGroup.ICE]: [
+    [ConnectingType.PeerConnectionCreated, undefined],
+    [ConnectingType.ICEServersSet, undefined],
+    [ConnectingType.SetLocalDescription, undefined],
+    [ConnectingType.OfferedSdp, undefined],
+    [ConnectingType.ReceivedSdp, undefined],
+    [ConnectingType.SetRemoteDescription, undefined],
+    [ConnectingType.WebRTCConnecting, undefined],
+    [ConnectingType.ICECandidateReceived, undefined],
+  ],
+  [ConnectingTypeGroup.WebRTC]: [
+    [ConnectingType.TrackReceived, undefined],
+    [ConnectingType.DataChannelRequested, undefined],
+    [ConnectingType.DataChannelConnecting, undefined],
+    [ConnectingType.DataChannelEstablished, undefined],
+  ],
+}
+
+export type ConnectingValue =
   | State<ConnectingType.WebSocketConnecting, void>
   | State<ConnectingType.WebSocketEstablished, void>
   | State<ConnectingType.PeerConnectionCreated, void>
@@ -108,11 +152,12 @@ type ConnectingValue =
   | State<ConnectingType.DataChannelConnecting, string>
   | State<ConnectingType.DataChannelEstablished, void>
 
-type EngineConnectionState =
+export type EngineConnectionState =
   | State<EngineConnectionStateType.Fresh, void>
   | State<EngineConnectionStateType.Connecting, ConnectingValue>
   | State<EngineConnectionStateType.ConnectionEstablished, void>
-  | State<EngineConnectionStateType.Disconnected, DisconnectedValue>
+  | State<EngineConnectionStateType.Disconnecting, DisconnectingValue>
+  | State<EngineConnectionStateType.Disconnected, void>
 
 // EngineConnection encapsulates the connection(s) to the Engine
 // for the EngineCommandManager; namely, the underlying WebSocket
@@ -133,22 +178,38 @@ class EngineConnection {
 
   set state(next: EngineConnectionState) {
     console.log(`${JSON.stringify(this.state)} → ${JSON.stringify(next)}`)
-    if (next.type === EngineConnectionStateType.Disconnected) {
+
+    if (next.type === EngineConnectionStateType.Disconnecting) {
       console.trace()
       const sub = next.value
-      if (sub.type === DisconnectedType.Error) {
+      if (sub.type === DisconnectingType.Error) {
+        // Record the last step we failed at.
+        // (Check the current state that we're about to override that
+        // it was a Connecting state.)
+        console.log(sub)
+        if (this._state.type === EngineConnectionStateType.Connecting) {
+          if (!sub.value) sub.value = {}
+          sub.value.lastConnectingValue = this._state.value
+        }
+
         console.error(sub.value)
       }
     }
     this._state = next
+    this.onConnectionStateChange(this._state)
   }
 
   private failedConnTimeout: Timeout | null
 
   readonly url: string
   private readonly token?: string
-  private onWebsocketOpen: (engineConnection: EngineConnection) => void
-  private onDataChannelOpen: (engineConnection: EngineConnection) => void
+
+  // For now, this is only used by the NetworkHealthIndicator.
+  // We can eventually use it for more, but one step at a time.
+  private onConnectionStateChange: (state: EngineConnectionState) => void
+
+  // These are used for the EngineCommandManager and were created
+  // before onConnectionStateChange existed.
   private onEngineConnectionOpen: (engineConnection: EngineConnection) => void
   private onConnectionStarted: (engineConnection: EngineConnection) => void
   private onClose: (engineConnection: EngineConnection) => void
@@ -160,17 +221,15 @@ class EngineConnection {
   constructor({
     url,
     token,
-    onWebsocketOpen = () => {},
+    onConnectionStateChange = () => {},
     onNewTrack = () => {},
     onEngineConnectionOpen = () => {},
     onConnectionStarted = () => {},
     onClose = () => {},
-    onDataChannelOpen = () => {},
   }: {
     url: string
     token?: string
-    onWebsocketOpen?: (engineConnection: EngineConnection) => void
-    onDataChannelOpen?: (engineConnection: EngineConnection) => void
+    onConnectionStateChange?: (state: EngineConnectionState) => void
     onEngineConnectionOpen?: (engineConnection: EngineConnection) => void
     onConnectionStarted?: (engineConnection: EngineConnection) => void
     onClose?: (engineConnection: EngineConnection) => void
@@ -179,8 +238,7 @@ class EngineConnection {
     this.url = url
     this.token = token
     this.failedConnTimeout = null
-    this.onWebsocketOpen = onWebsocketOpen
-    this.onDataChannelOpen = onDataChannelOpen
+    this.onConnectionStateChange = onConnectionStateChange
     this.onEngineConnectionOpen = onEngineConnectionOpen
     this.onConnectionStarted = onConnectionStarted
 
@@ -196,6 +254,7 @@ class EngineConnection {
         case EngineConnectionStateType.ConnectionEstablished:
           this.send({ type: 'ping' })
           break
+        case EngineConnectionStateType.Disconnecting:
         case EngineConnectionStateType.Disconnected:
           clearInterval(pingInterval)
           break
@@ -207,17 +266,11 @@ class EngineConnection {
     const connectionTimeoutMs = VITE_KC_CONNECTION_TIMEOUT_MS
     let connectRetryInterval = setInterval(() => {
       if (this.state.type !== EngineConnectionStateType.Disconnected) return
-      switch (this.state.value.type) {
-        case DisconnectedType.Error:
-          clearInterval(connectRetryInterval)
-          break
-        case DisconnectedType.Timeout:
-          console.log('Trying to reconnect')
-          this.connect()
-          break
-        default:
-          break
-      }
+
+      // Only try reconnecting when completely disconnected.
+      clearInterval(connectRetryInterval)
+      console.log('Trying to reconnect')
+      this.connect()
     }, connectionTimeoutMs)
   }
 
@@ -232,8 +285,8 @@ class EngineConnection {
   tearDown() {
     this.disconnectAll()
     this.state = {
-      type: EngineConnectionStateType.Disconnected,
-      value: { type: DisconnectedType.Quit },
+      type: EngineConnectionStateType.Disconnecting,
+      value: { type: DisconnectingType.Quit },
     }
   }
 
@@ -350,12 +403,14 @@ class EngineConnection {
           case 'failed':
             this.disconnectAll()
             this.state = {
-              type: EngineConnectionStateType.Disconnected,
+              type: EngineConnectionStateType.Disconnecting,
               value: {
-                type: DisconnectedType.Error,
-                value: new Error(
-                  'failed to negotiate ice connection; restarting'
-                ),
+                type: DisconnectingType.Error,
+                value: {
+                  error: new Error(
+                    'failed to negotiate ice connection; restarting'
+                  ),
+                },
               },
             }
             break
@@ -471,8 +526,6 @@ class EngineConnection {
             dataChannelSpan.resolve?.()
           }
 
-          this.onDataChannelOpen(this)
-
           // Everything is now connected.
           this.state = { type: EngineConnectionStateType.ConnectionEstablished }
 
@@ -480,27 +533,20 @@ class EngineConnection {
         })
 
         this.unreliableDataChannel.addEventListener('close', (event) => {
-          console.log(event)
-          console.log('unreliable data channel closed')
           this.disconnectAll()
-          this.unreliableDataChannel = undefined
-
-          if (this.areAllConnectionsClosed()) {
-            this.state = {
-              type: EngineConnectionStateType.Disconnected,
-              value: { type: DisconnectedType.Quit },
-            }
-          }
+          this.finalizeIfAllConnectionsClosed()
         })
 
         this.unreliableDataChannel.addEventListener('error', (event) => {
           this.disconnectAll()
 
           this.state = {
-            type: EngineConnectionStateType.Disconnected,
+            type: EngineConnectionStateType.Disconnecting,
             value: {
-              type: DisconnectedType.Error,
-              value: new Error(event.toString()),
+              type: DisconnectingType.Error,
+              value: {
+                error: new Error(event.toString()),
+              },
             },
           }
         })
@@ -524,8 +570,6 @@ class EngineConnection {
           type: ConnectingType.WebSocketEstablished,
         },
       }
-
-      this.onWebsocketOpen(this)
 
       // This is required for when KCMA is running stand-alone / within Tauri.
       // Otherwise when run in a browser, the token is sent implicitly via
@@ -558,24 +602,19 @@ class EngineConnection {
 
     this.websocket.addEventListener('close', (event) => {
       this.disconnectAll()
-      this.websocket = undefined
-
-      if (this.areAllConnectionsClosed()) {
-        this.state = {
-          type: EngineConnectionStateType.Disconnected,
-          value: { type: DisconnectedType.Quit },
-        }
-      }
+      this.finalizeIfAllConnectionsClosed()
     })
 
     this.websocket.addEventListener('error', (event) => {
       this.disconnectAll()
 
       this.state = {
-        type: EngineConnectionStateType.Disconnected,
+        type: EngineConnectionStateType.Disconnecting,
         value: {
-          type: DisconnectedType.Error,
-          value: new Error(event.toString()),
+          type: DisconnectingType.Error,
+          value: {
+            error: new Error(event.toString()),
+          },
         },
       }
     })
@@ -601,9 +640,14 @@ class EngineConnection {
           })
           .join('\n')
         if (message.request_id) {
+          const artifactThatFailed =
+            engineCommandManager.artifactMap[message.request_id] ||
+            engineCommandManager.lastArtifactMap[message.request_id]
           console.error(
-            `Error in response to request ${message.request_id}:\n${errorsString}`
+            `Error in response to request ${message.request_id}:\n${errorsString}
+failed cmd type was ${artifactThatFailed?.commandType}`
           )
+          console.log(artifactThatFailed)
         } else {
           console.error(`Error from server:\n${errorsString}`)
         }
@@ -617,8 +661,6 @@ class EngineConnection {
       if (!resp || !resp.type) {
         return
       }
-
-      console.log('received', resp)
 
       switch (resp.type) {
         case 'ice_server_info':
@@ -701,10 +743,12 @@ class EngineConnection {
               // The local description is invalid, so there's no point continuing.
               this.disconnectAll()
               this.state = {
-                type: EngineConnectionStateType.Disconnected,
+                type: EngineConnectionStateType.Disconnecting,
                 value: {
-                  type: DisconnectedType.Error,
-                  value: error,
+                  type: DisconnectingType.Error,
+                  value: {
+                    error,
+                  },
                 },
               }
             })
@@ -782,13 +826,14 @@ class EngineConnection {
         return
       }
       this.failedConnTimeout = null
-      this.disconnectAll()
       this.state = {
-        type: EngineConnectionStateType.Disconnected,
+        type: EngineConnectionStateType.Disconnecting,
         value: {
-          type: DisconnectedType.Timeout,
+          type: DisconnectingType.Timeout,
         },
       }
+      this.disconnectAll()
+      this.finalizeIfAllConnectionsClosed()
     }, connectionTimeoutMs)
 
     this.onConnectionStarted(this)
@@ -811,11 +856,18 @@ class EngineConnection {
     this.websocket?.close()
     this.unreliableDataChannel?.close()
     this.pc?.close()
+
     this.webrtcStatsCollector = undefined
   }
-  areAllConnectionsClosed() {
+  finalizeIfAllConnectionsClosed() {
     console.log(this.websocket, this.pc, this.unreliableDataChannel)
-    return !this.websocket && !this.pc && !this.unreliableDataChannel
+    const allClosed =
+      this.websocket?.readyState === 3 &&
+      this.pc?.connectionState === 'closed' &&
+      this.unreliableDataChannel?.readyState === 'closed'
+    if (allClosed) {
+      this.state = { type: EngineConnectionStateType.Disconnected }
+    }
   }
 }
 
@@ -863,10 +915,11 @@ export type CommandLog =
 export class EngineCommandManager {
   artifactMap: ArtifactMap = {}
   lastArtifactMap: ArtifactMap = {}
+  sceneCommandArtifacts: ArtifactMap = {}
+  private getAst: () => Program = () => ({ start: 0, end: 0, body: [] } as any)
   outSequence = 1
   inSequence = 1
   engineConnection?: EngineConnection
-  defaultPlanes: DefaultPlanes = { xy: '', yz: '', xz: '' }
   _commandLogs: CommandLog[] = []
   _commandLogCallBack: (command: CommandLog[]) => void = () => {}
   // Folks should realize that wait for ready does not get called _everytime_
@@ -888,8 +941,16 @@ export class EngineCommandManager {
     }
   } = {} as any
 
+  callbacksEngineStateConnection: ((state: EngineConnectionState) => void)[] =
+    []
+
   constructor() {
     this.engineConnection = undefined
+    ;(async () => {
+      // circular dependency needs one to be lazy loaded
+      const { kclManager } = await import('lang/KclSingleton')
+      this.getAst = () => kclManager.ast
+    })()
   }
 
   start({
@@ -924,6 +985,11 @@ export class EngineCommandManager {
     this.engineConnection = new EngineConnection({
       url,
       token,
+      onConnectionStateChange: (state: EngineConnectionState) => {
+        for (let cb of this.callbacksEngineStateConnection) {
+          cb(state)
+        }
+      },
       onEngineConnectionOpen: () => {
         this.resolveReady()
         setIsStreamReady(true)
@@ -946,16 +1012,9 @@ export class EngineCommandManager {
             gizmo_mode: true,
           },
         })
+        sceneInfra.onStreamStart()
 
-        // Initialize the planes.
-        void this.initPlanes().then(() => {
-          // We execute the code here to make sure if the stream was to
-          // restart in a session, we want to make sure to execute the code.
-          // We force it to re-execute the code because we want to make sure
-          // the code is executed everytime the stream is restarted.
-          // We pass undefined for the code so it reads from the current state.
-          executeCode(undefined, true)
-        })
+        executeCode(undefined, true)
       },
       onClose: () => {
         setIsStreamReady(false)
@@ -1060,6 +1119,7 @@ export class EngineCommandManager {
     }
     const modelingResponse = message.data.modeling_response
     const command = this.artifactMap[id]
+    const sceneCommand = this.sceneCommandArtifacts[id]
     this.addCommandLog({
       type: 'receive-reliable',
       data: message,
@@ -1072,13 +1132,24 @@ export class EngineCommandManager {
 
     if (command && command.type === 'pending') {
       const resolve = command.resolve
-      this.artifactMap[id] = {
+      const artifact = {
         type: 'result',
         range: command.range,
+        pathToNode: command.pathToNode,
         commandType: command.commandType,
         parentId: command.parentId ? command.parentId : undefined,
         data: modelingResponse,
         raw: message,
+      } as const
+      this.artifactMap[id] = artifact
+      if (
+        command.commandType === 'entity_linear_pattern' ||
+        command.commandType === 'entity_circular_pattern'
+      ) {
+        const entities = (modelingResponse as any)?.data?.entity_ids
+        entities?.forEach((entity: string) => {
+          this.artifactMap[entity] = artifact
+        })
       }
       resolve({
         id,
@@ -1087,11 +1158,39 @@ export class EngineCommandManager {
         data: modelingResponse,
         raw: message,
       })
-    } else {
+    } else if (sceneCommand && sceneCommand.type === 'pending') {
+      const resolve = sceneCommand.resolve
+      const artifact = {
+        type: 'result',
+        range: sceneCommand.range,
+        pathToNode: sceneCommand.pathToNode,
+        commandType: sceneCommand.commandType,
+        parentId: sceneCommand.parentId ? sceneCommand.parentId : undefined,
+        data: modelingResponse,
+        raw: message,
+      } as const
+      this.sceneCommandArtifacts[id] = artifact
+      resolve({
+        id,
+        commandType: sceneCommand.commandType,
+        range: sceneCommand.range,
+        data: modelingResponse,
+      })
+    } else if (command) {
       this.artifactMap[id] = {
         type: 'result',
         commandType: command?.commandType,
         range: command?.range,
+        pathToNode: command?.pathToNode,
+        data: modelingResponse,
+        raw: message,
+      }
+    } else {
+      this.sceneCommandArtifacts[id] = {
+        type: 'result',
+        commandType: sceneCommand?.commandType,
+        range: sceneCommand?.range,
+        pathToNode: sceneCommand?.pathToNode,
         data: modelingResponse,
         raw: message,
       }
@@ -1109,6 +1208,7 @@ export class EngineCommandManager {
       this.artifactMap[id] = {
         type: 'failed',
         range: command.range,
+        pathToNode: command.pathToNode,
         commandType: command.commandType,
         parentId: command.parentId ? command.parentId : undefined,
         errors,
@@ -1123,6 +1223,7 @@ export class EngineCommandManager {
       this.artifactMap[id] = {
         type: 'failed',
         range: command.range,
+        pathToNode: command.pathToNode,
         commandType: command.commandType,
         parentId: command.parentId ? command.parentId : undefined,
         errors,
@@ -1175,6 +1276,9 @@ export class EngineCommandManager {
   ) {
     delete this.unreliableSubscriptions[event][id]
   }
+  onConnectionStateChange(callback: (state: EngineConnectionState) => void) {
+    this.callbacksEngineStateConnection.push(callback)
+  }
   endSession() {
     // TODO: instead of sending a single command with `object_ids: Object.keys(this.artifactMap)`
     // we need to loop over them each individually because if the engine doesn't recognise a single
@@ -1187,12 +1291,20 @@ export class EngineCommandManager {
         // this fact is very opaque in the api and docs (as to what should can be deleted).
         // Using an array is the list is likely to grow.
         'start_path',
+        'entity_linear_pattern',
+        'entity_circular_pattern',
       ]
-      if (!artifactTypesToDelete.includes(artifact.commandType)) return
-      artifactsToDelete[id] = artifact
+      if (artifactTypesToDelete.includes(artifact.commandType)) {
+        artifactsToDelete[id] = artifact
+      }
+      if (artifact.commandType === 'import_files') {
+        // TODO why is this handled differently from other artifacts, i.e. why does it not use the id from the
+        // modeling command? We're having to do special clean up for this one special object.
+        artifactsToDelete[(artifact as any)?.data?.data?.object_id] = artifact
+      }
     })
     Object.keys(artifactsToDelete).forEach((id) => {
-      const deletCmd: EngineCommand = {
+      const deleteCmd: EngineCommand = {
         type: 'modeling_cmd_req',
         cmd_id: uuidv4(),
         cmd: {
@@ -1200,7 +1312,7 @@ export class EngineCommandManager {
           object_ids: [id],
         },
       }
-      this.engineConnection?.send(deletCmd)
+      this.engineConnection?.send(deleteCmd)
     })
   }
   addCommandLog(message: CommandLog) {
@@ -1218,7 +1330,10 @@ export class EngineCommandManager {
   registerCommandLogCallback(callback: (command: CommandLog[]) => void) {
     this._commandLogCallBack = callback
   }
-  sendSceneCommand(command: EngineCommand): Promise<any> {
+  sendSceneCommand(
+    command: EngineCommand,
+    forceWebsocket = false
+  ): Promise<any> {
     if (this.engineConnection === undefined) {
       return Promise.resolve()
     }
@@ -1232,7 +1347,9 @@ export class EngineCommandManager {
         command.type === 'modeling_cmd_req' &&
         (command.cmd.type === 'highlight_set_entity' ||
           command.cmd.type === 'mouse_move' ||
-          command.cmd.type === 'camera_drag_move')
+          command.cmd.type === 'camera_drag_move' ||
+          command.cmd.type === 'default_camera_look_at' ||
+          command.cmd.type === ('default_camera_perspective_settings' as any))
       )
     ) {
       // highlight_set_entity, mouse_move and camera_drag_move are sent over the unreliable channel and are too noisy
@@ -1249,14 +1366,23 @@ export class EngineCommandManager {
       console.log('sending command', command.cmd.type)
       lastMessage = command.cmd.type
     }
+    if (command.type === 'modeling_cmd_batch_req') {
+      this.engineConnection?.send(command)
+      // TODO - handlePendingCommands does not handle batch commands
+      // return this.handlePendingCommand(command.requests[0].cmd_id, command.cmd)
+      return Promise.resolve()
+    }
     if (command.type !== 'modeling_cmd_req') return Promise.resolve()
     const cmd = command.cmd
     if (
       (cmd.type === 'camera_drag_move' ||
-        cmd.type === 'handle_mouse_drag_move') &&
-      this.engineConnection?.unreliableDataChannel
+        cmd.type === 'handle_mouse_drag_move' ||
+        cmd.type === 'default_camera_look_at' ||
+        cmd.type === ('default_camera_perspective_settings' as any)) &&
+      this.engineConnection?.unreliableDataChannel &&
+      !forceWebsocket
     ) {
-      cmd.sequence = this.outSequence
+      ;(cmd as any).sequence = this.outSequence
       this.outSequence++
       this.engineConnection?.unreliableSend(command)
       return Promise.resolve()
@@ -1277,18 +1403,26 @@ export class EngineCommandManager {
       this.engineConnection?.unreliableSend(command)
       return Promise.resolve()
     }
+    if (
+      command.cmd.type === 'default_camera_look_at' ||
+      command.cmd.type === ('default_camera_perspective_settings' as any)
+    ) {
+      ;(cmd as any).sequence = this.outSequence++
+    }
     // since it's not mouse drag or highlighting send over TCP and keep track of the command
     this.engineConnection?.send(command)
-    return this.handlePendingCommand(command.cmd_id, command.cmd)
+    return this.handlePendingSceneCommand(command.cmd_id, command.cmd)
   }
   sendModelingCommand({
     id,
     range,
     command,
+    ast,
   }: {
     id: string
     range: SourceRange
     command: EngineCommand | string
+    ast: Program
   }): Promise<any> {
     if (this.engineConnection === undefined) {
       return Promise.resolve()
@@ -1310,17 +1444,18 @@ export class EngineCommandManager {
     }
     this.engineConnection?.send(command)
     if (typeof command !== 'string' && command.type === 'modeling_cmd_req') {
-      return this.handlePendingCommand(id, command?.cmd, range)
+      return this.handlePendingCommand(id, command?.cmd, ast, range)
     } else if (typeof command === 'string') {
       const parseCommand: EngineCommand = JSON.parse(command)
       if (parseCommand.type === 'modeling_cmd_req')
-        return this.handlePendingCommand(id, parseCommand?.cmd, range)
+        return this.handlePendingCommand(id, parseCommand?.cmd, ast, range)
     }
     throw Error('shouldnt reach here')
   }
-  handlePendingCommand(
+  handlePendingSceneCommand(
     id: string,
     command: Models['ModelingCmd_type'],
+    ast?: Program,
     range?: SourceRange
   ) {
     let resolve: (val: any) => void = () => {}
@@ -1333,8 +1468,42 @@ export class EngineCommandManager {
       }
       // TODO handle other commands that have a parent
     }
+    const pathToNode = ast
+      ? getNodePathFromSourceRange(ast, range || [0, 0])
+      : []
+    this.sceneCommandArtifacts[id] = {
+      range: range || [0, 0],
+      pathToNode,
+      type: 'pending',
+      commandType: command.type,
+      parentId: getParentId(),
+      promise,
+      resolve,
+    }
+    return promise
+  }
+  handlePendingCommand(
+    id: string,
+    command: Models['ModelingCmd_type'],
+    ast?: Program,
+    range?: SourceRange
+  ) {
+    let resolve: (val: any) => void = () => {}
+    const promise = new Promise((_resolve, reject) => {
+      resolve = _resolve
+    })
+    const getParentId = (): string | undefined => {
+      if (command.type === 'extend_path') {
+        return command.path
+      }
+      // TODO handle other commands that have a parent
+    }
+    const pathToNode = ast
+      ? getNodePathFromSourceRange(ast, range || [0, 0])
+      : []
     this.artifactMap[id] = {
       range: range || [0, 0],
+      pathToNode,
       type: 'pending',
       commandType: command.type,
       parentId: getParentId(),
@@ -1363,9 +1532,12 @@ export class EngineCommandManager {
     const range: SourceRange = JSON.parse(rangeStr)
 
     // We only care about the modeling command response.
-    return this.sendModelingCommand({ id, range, command: commandStr }).then(
-      ({ raw }) => JSON.stringify(raw)
-    )
+    return this.sendModelingCommand({
+      id,
+      range,
+      command: commandStr,
+      ast: this.getAst(),
+    }).then(({ raw }) => JSON.stringify(raw))
   }
   commandResult(id: string): Promise<any> {
     const command = this.artifactMap[id]
@@ -1391,102 +1563,6 @@ export class EngineCommandManager {
     return {
       artifactMap: this.artifactMap,
     }
-  }
-  private async initPlanes() {
-    const [xy, yz, xz] = [
-      await this.createPlane({
-        x_axis: { x: 1, y: 0, z: 0 },
-        y_axis: { x: 0, y: 1, z: 0 },
-        color: { r: 0.7, g: 0.28, b: 0.28, a: 0.4 },
-      }),
-      await this.createPlane({
-        x_axis: { x: 0, y: 1, z: 0 },
-        y_axis: { x: 0, y: 0, z: 1 },
-        color: { r: 0.28, g: 0.7, b: 0.28, a: 0.4 },
-      }),
-      await this.createPlane({
-        x_axis: { x: 1, y: 0, z: 0 },
-        y_axis: { x: 0, y: 0, z: 1 },
-        color: { r: 0.28, g: 0.28, b: 0.7, a: 0.4 },
-      }),
-    ]
-    this.defaultPlanes = { xy, yz, xz }
-
-    this.subscribeTo({
-      event: 'select_with_point',
-      callback: ({ data }) => {
-        if (!data?.entity_id) return
-        if (
-          ![
-            this.defaultPlanes.xy,
-            this.defaultPlanes.yz,
-            this.defaultPlanes.xz,
-          ].includes(data.entity_id)
-        )
-          return
-        this.onPlaneSelectCallback(data.entity_id)
-      },
-    })
-  }
-  planesInitialized(): boolean {
-    return (
-      this.defaultPlanes.xy !== '' &&
-      this.defaultPlanes.yz !== '' &&
-      this.defaultPlanes.xz !== ''
-    )
-  }
-
-  onPlaneSelectCallback = (id: string) => {}
-  onPlaneSelected(callback: (id: string) => void) {
-    this.onPlaneSelectCallback = callback
-  }
-
-  async setPlaneHidden(id: string, hidden: boolean): Promise<string> {
-    return await this.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'object_visible',
-        object_id: id,
-        hidden: hidden,
-      },
-    })
-  }
-
-  private async createPlane({
-    x_axis,
-    y_axis,
-    color,
-  }: {
-    x_axis: Models['Point3d_type']
-    y_axis: Models['Point3d_type']
-    color: Models['Color_type']
-  }): Promise<string> {
-    const planeId = uuidv4()
-    await this.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'make_plane',
-        size: 100,
-        origin: { x: 0, y: 0, z: 0 },
-        x_axis,
-        y_axis,
-        clobber: false,
-        hide: true,
-      },
-      cmd_id: planeId,
-    })
-    await this.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'plane_set_color',
-        plane_id: planeId,
-        color,
-      },
-      cmd_id: uuidv4(),
-    })
-    await this.setPlaneHidden(planeId, true)
-    return planeId
   }
 }
 

@@ -2,7 +2,7 @@ import ReactJson from 'react-json-view'
 import { useEffect } from 'react'
 import { CollapsiblePanel, CollapsiblePanelProps } from './CollapsiblePanel'
 import { Themes } from '../lib/theme'
-import { useKclContext } from 'lang/KclSinglton'
+import { useKclContext } from 'lang/KclSingleton'
 
 const ReactJsonTypeHack = ReactJson as any
 

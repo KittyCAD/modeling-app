@@ -8,7 +8,7 @@ import {
 } from '@tauri-apps/api/fs'
 import { appConfigDir, documentDir, homeDir, sep } from '@tauri-apps/api/path'
 import { isTauri } from './isTauri'
-import { ProjectWithEntryPointMetadata } from '../Router'
+import { type ProjectWithEntryPointMetadata } from 'lib/types'
 import { metadata } from 'tauri-plugin-fs-extra-api'
 import { settingsMachine } from 'machines/settingsMachine'
 import { ContextFrom } from 'xstate'

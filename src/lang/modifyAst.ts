@@ -30,41 +30,28 @@ import {
   createFirstArg,
 } from './std/sketch'
 import { isLiteralArrayOrStatic } from './std/sketchcombos'
+import { DefaultPlaneStr } from 'clientSideScene/sceneEntities'
+import { roundOff } from 'lib/utils'
 
-export function addStartSketch(
+export function startSketchOnDefault(
   node: Program,
-  axis: 'xy' | 'xz' | 'yz' | '-xy' | '-xz' | '-yz',
-  start: [number, number],
-  end: [number, number]
+  axis: DefaultPlaneStr,
+  name = ''
 ): { modifiedAst: Program; id: string; pathToNode: PathToNode } {
   const _node = { ...node }
-  const _name = findUniqueName(node, 'part')
+  const _name = name || findUniqueName(node, 'part')
 
   const startSketchOn = createCallExpressionStdLib('startSketchOn', [
-    createLiteral(axis.toUpperCase()),
-  ])
-  const startProfileAt = createCallExpressionStdLib('startProfileAt', [
-    createArrayExpression([createLiteral(start[0]), createLiteral(start[1])]),
-    createPipeSubstitution(),
-  ])
-  const initialLineTo = createCallExpression('line', [
-    createArrayExpression([createLiteral(end[0]), createLiteral(end[1])]),
-    createPipeSubstitution(),
+    createLiteral(axis),
   ])
 
-  const pipeBody = [startSketchOn, startProfileAt, initialLineTo]
-
-  const variableDeclaration = createVariableDeclaration(
-    _name,
-    createPipeExpression(pipeBody)
-  )
-
-  const newIndex = node.body.length
+  const variableDeclaration = createVariableDeclaration(_name, startSketchOn)
   _node.body = [...node.body, variableDeclaration]
+  const sketchIndex = _node.body.length - 1
 
   let pathToNode: PathToNode = [
     ['body', ''],
-    [newIndex.toString(10), 'index'],
+    [sketchIndex, 'index'],
     ['declarations', 'VariableDeclaration'],
     ['0', 'index'],
     ['init', 'VariableDeclarator'],
@@ -73,6 +60,43 @@ export function addStartSketch(
   return {
     modifiedAst: _node,
     id: _name,
+    pathToNode,
+  }
+}
+
+export function addStartProfileAt(
+  node: Program,
+  pathToNode: PathToNode,
+  at: [number, number]
+): { modifiedAst: Program; pathToNode: PathToNode } {
+  console.log('addStartProfileAt called')
+  const variableDeclaration = getNodeFromPath<VariableDeclaration>(
+    node,
+    pathToNode,
+    'VariableDeclaration'
+  ).node
+  if (variableDeclaration.type !== 'VariableDeclaration') {
+    throw new Error('variableDeclaration.init.type !== PipeExpression')
+  }
+  const _node = { ...node }
+  const init = variableDeclaration.declarations[0].init
+  const startProfileAt = createCallExpressionStdLib('startProfileAt', [
+    createArrayExpression([
+      createLiteral(roundOff(at[0])),
+      createLiteral(roundOff(at[1])),
+    ]),
+    createPipeSubstitution(),
+  ])
+  if (init.type === 'PipeExpression') {
+    init.body.splice(1, 0, startProfileAt)
+  } else {
+    variableDeclaration.declarations[0].init = createPipeExpression([
+      init,
+      startProfileAt,
+    ])
+  }
+  return {
+    modifiedAst: _node,
     pathToNode,
   }
 }

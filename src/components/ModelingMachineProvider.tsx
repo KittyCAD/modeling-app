@@ -13,23 +13,7 @@ import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { isCursorInSketchCommandRange } from 'lang/util'
 import { engineCommandManager } from 'lang/std/engineConnection'
-import { v4 as uuidv4 } from 'uuid'
-import { addStartSketch } from 'lang/modifyAst'
-import { roundOff } from 'lib/utils'
-import {
-  recast,
-  parse,
-  Program,
-  PipeExpression,
-  CallExpression,
-} from 'lang/wasm'
-import { getNodeFromPath } from 'lang/queryAst'
-import {
-  addCloseToPipe,
-  addNewSketchLn,
-  compareVec2Epsilon,
-} from 'lang/std/sketch'
-import { kclManager, useKclContext } from 'lang/KclSinglton'
+import { kclManager, useKclContext } from 'lang/KclSingleton'
 import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
 import {
   angleBetweenInfo,
@@ -49,6 +33,10 @@ import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
 import useStateMachineCommands from 'hooks/useStateMachineCommands'
 import { modelingMachineConfig } from 'lib/commandBarConfigs/modelingCommandConfig'
+import { sceneInfra } from 'clientSideScene/sceneInfra'
+import { getSketchQuaternion } from 'clientSideScene/sceneEntities'
+import { startSketchOnDefault } from 'lang/modifyAst'
+import { Program } from 'lang/wasm'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -92,181 +80,10 @@ export const ModelingMachineProvider = ({
   const [modelingState, modelingSend, modelingActor] = useMachine(
     modelingMachine,
     {
-      // context: persistedSettings,
       actions: {
-        'Modify AST': () => {},
-        'Update code selection cursors': () => {},
-        'show default planes': () => {
-          void kclManager.showPlanes()
-        },
-        'create path': assign({
-          sketchEnginePathId: () => {
-            const sketchUuid = uuidv4()
-            void engineCommandManager.sendSceneCommand({
-              type: 'modeling_cmd_req',
-              cmd_id: sketchUuid,
-              cmd: {
-                type: 'start_path',
-              },
-            })
-            void engineCommandManager.sendSceneCommand({
-              type: 'modeling_cmd_req',
-              cmd_id: uuidv4(),
-              cmd: {
-                type: 'edit_mode_enter',
-                target: sketchUuid,
-              },
-            })
-            return sketchUuid
-          },
-        }),
-        'AST start new sketch': assign(
-          ({ sketchEnginePathId }, { data: { coords, axis, segmentId } }) => {
-            if (!axis) {
-              // Something really weird must have happened for this to happen.
-              console.error('axis is undefined for starting a new sketch')
-              return {}
-            }
-            if (!segmentId) {
-              // Something really weird must have happened for this to happen.
-              console.error('segmentId is undefined for starting a new sketch')
-              return {}
-            }
-
-            const _addStartSketch = addStartSketch(
-              kclManager.ast,
-              axis,
-              [roundOff(coords[0].x), roundOff(coords[0].y)],
-              [
-                roundOff(coords[1].x - coords[0].x),
-                roundOff(coords[1].y - coords[0].y),
-              ]
-            )
-            const _modifiedAst = _addStartSketch.modifiedAst
-            const _pathToNode = _addStartSketch.pathToNode
-            const newCode = recast(_modifiedAst)
-            const astWithUpdatedSource = parse(newCode)
-            const updatedPipeNode = getNodeFromPath<PipeExpression>(
-              astWithUpdatedSource,
-              _pathToNode
-            ).node
-            const startProfileAtCallExp = updatedPipeNode.body.find(
-              (exp) =>
-                exp.type === 'CallExpression' &&
-                exp.callee.name === 'startProfileAt'
-            )
-            if (startProfileAtCallExp)
-              engineCommandManager.artifactMap[sketchEnginePathId] = {
-                type: 'result',
-                range: [startProfileAtCallExp.start, startProfileAtCallExp.end],
-                commandType: 'start_path',
-                data: null,
-                raw: {} as any,
-              }
-            const lineCallExp = updatedPipeNode.body.find(
-              (exp) =>
-                exp.type === 'CallExpression' && exp.callee.name === 'line'
-            )
-            if (lineCallExp)
-              engineCommandManager.artifactMap[segmentId] = {
-                type: 'result',
-                range: [lineCallExp.start, lineCallExp.end],
-                commandType: 'extend_path',
-                parentId: sketchEnginePathId,
-                data: null,
-                raw: {} as any,
-              }
-
-            void kclManager.executeAstMock(astWithUpdatedSource, true)
-
-            return {
-              sketchPathToNode: _pathToNode,
-            }
-          }
-        ),
-        'AST add line segment': async (
-          { sketchPathToNode, sketchEnginePathId },
-          { data: { coords, segmentId } }
-        ) => {
-          if (!sketchPathToNode) return
-          const lastCoord = coords[coords.length - 1]
-
-          const pathInfo = await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'path_get_info',
-              path_id: sketchEnginePathId,
-            },
-          })
-          const firstSegment = pathInfo?.data?.data?.segments.find(
-            (seg: any) => seg.command === 'line_to'
-          )
-          const firstSegCoords = await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'curve_get_control_points',
-              curve_id: firstSegment.command_id,
-            },
-          })
-          const startPathCoord = firstSegCoords?.data?.data?.control_points[0]
-
-          const isClose = compareVec2Epsilon(
-            [startPathCoord.x, startPathCoord.y],
-            [lastCoord.x, lastCoord.y]
-          )
-
-          let _modifiedAst: Program
-          if (!isClose) {
-            const newSketchLn = addNewSketchLn({
-              node: kclManager.ast,
-              programMemory: kclManager.programMemory,
-              to: [lastCoord.x, lastCoord.y],
-              from: [coords[0].x, coords[0].y],
-              fnName: 'line',
-              pathToNode: sketchPathToNode,
-            })
-            const _modifiedAst = newSketchLn.modifiedAst
-            void kclManager.executeAstMock(_modifiedAst, true).then(() => {
-              const lineCallExp = getNodeFromPath<CallExpression>(
-                kclManager.ast,
-                newSketchLn.pathToNode
-              ).node
-              if (segmentId)
-                engineCommandManager.artifactMap[segmentId] = {
-                  type: 'result',
-                  range: [lineCallExp.start, lineCallExp.end],
-                  commandType: 'extend_path',
-                  parentId: sketchEnginePathId,
-                  data: null,
-                  raw: {} as any,
-                }
-            })
-          } else {
-            _modifiedAst = addCloseToPipe({
-              node: kclManager.ast,
-              programMemory: kclManager.programMemory,
-              pathToNode: sketchPathToNode,
-            })
-            void engineCommandManager.sendSceneCommand({
-              type: 'modeling_cmd_req',
-              cmd_id: uuidv4(),
-              cmd: { type: 'edit_mode_exit' },
-            })
-            void engineCommandManager.sendSceneCommand({
-              type: 'modeling_cmd_req',
-              cmd_id: uuidv4(),
-              cmd: { type: 'default_camera_disable_sketch_mode' },
-            })
-            void kclManager.executeAstMock(_modifiedAst, true)
-            // updateAst(_modifiedAst, true)
-          }
-        },
         'sketch exit execute': () => {
-          void kclManager.executeAst()
+          kclManager.executeAst()
         },
-        'set tool': () => {}, // TODO
         'Set selection': assign(({ selectionRanges }, event) => {
           if (event.type !== 'Set selection') return {} // this was needed for ts after adding 'Set selection' action to on done modal events
           const setSelections = event.data
@@ -274,36 +91,6 @@ export const ModelingMachineProvider = ({
           if (setSelections.selectionType === 'mirrorCodeMirrorSelections')
             return { selectionRanges: setSelections.selection }
           else if (setSelections.selectionType === 'otherSelection') {
-            // TODO KittyCAD/engine/issues/1620: send axis highlight when it's working (if that's what we settle on)
-            // const axisAddCmd: EngineCommand = {
-            //   type: 'modeling_cmd_req',
-            //   cmd: {
-            //     type: 'highlight_set_entities',
-            //     entities: [
-            //       setSelections.selection === 'x-axis'
-            //         ? X_AXIS_UUID
-            //         : Y_AXIS_UUID,
-            //     ],
-            //   },
-            //   cmd_id: uuidv4(),
-            // }
-
-            // if (!isShiftDown) {
-            //   engineCommandManager
-            //     .sendSceneCommand({
-            //       type: 'modeling_cmd_req',
-            //       cmd: {
-            //         type: 'select_clear',
-            //       },
-            //       cmd_id: uuidv4(),
-            //     })
-            //     .then(() => {
-            //       engineCommandManager.sendSceneCommand(axisAddCmd)
-            //     })
-            // } else {
-            //   engineCommandManager.sendSceneCommand(axisAddCmd)
-            // }
-
             const {
               codeMirrorSelection,
               selectionRangeTypeMap,
@@ -384,12 +171,6 @@ export const ModelingMachineProvider = ({
         }),
       },
       guards: {
-        'Selection contains axis': () => true,
-        'Selection contains edge': () => true,
-        'Selection contains face': () => true,
-        'Selection contains line': () => true,
-        'Selection contains point': () => true,
-        'Selection is not empty': () => true,
         'has valid extrude selection': ({ selectionRanges }) => {
           // A user can begin extruding if they either have 1+ faces selected or nothing selected
           // TODO: I believe this guard only allows for extruding a single face at a time
@@ -409,6 +190,40 @@ export const ModelingMachineProvider = ({
         },
       },
       services: {
+        'AST-undo-startSketchOn': async ({ sketchPathToNode }) => {
+          if (!sketchPathToNode) return
+          const newAst: Program = JSON.parse(JSON.stringify(kclManager.ast))
+          const varDecIndex = sketchPathToNode[1][0]
+          // remove body item at varDecIndex
+          newAst.body = newAst.body.filter((_, i) => i !== varDecIndex)
+          await kclManager.executeAstMock(newAst, { updates: 'code' })
+          sceneInfra.setCallbacks({
+            onClick: () => {},
+          })
+        },
+        'animate-to-face': async (_, { data: { plane, normal } }) => {
+          const { modifiedAst, pathToNode } = startSketchOnDefault(
+            kclManager.ast,
+            plane
+          )
+          await kclManager.updateAst(modifiedAst, false)
+          const quaternion = getSketchQuaternion(pathToNode, normal)
+          await sceneInfra.tweenCameraToQuaternion(quaternion)
+          return {
+            sketchPathToNode: pathToNode,
+            sketchNormalBackUp: normal,
+          }
+        },
+        'animate-to-sketch': async ({
+          sketchPathToNode,
+          sketchNormalBackUp,
+        }) => {
+          const quaternion = getSketchQuaternion(
+            sketchPathToNode || [],
+            sketchNormalBackUp
+          )
+          await sceneInfra.tweenCameraToQuaternion(quaternion)
+        },
         'Get horizontal info': async ({
           selectionRanges,
         }): Promise<SetSelections> => {
@@ -543,17 +358,6 @@ export const ModelingMachineProvider = ({
   )
 
   useEffect(() => {
-    engineCommandManager.onPlaneSelected((plane_id: string) => {
-      if (modelingState.nextEvents.includes('Select default plane')) {
-        modelingSend({
-          type: 'Select default plane',
-          data: { planeId: plane_id },
-        })
-      }
-    })
-  }, [modelingSend, modelingState.nextEvents])
-
-  useEffect(() => {
     kclManager.registerExecuteCallback(() => {
       modelingSend({ type: 'Re-execute' })
     })
@@ -565,10 +369,7 @@ export const ModelingMachineProvider = ({
     send: modelingSend,
     actor: modelingActor,
     commandBarConfig: modelingMachineConfig,
-    onCancel: () => {
-      console.log('firing onCancel!!')
-      modelingSend({ type: 'Cancel' })
-    },
+    onCancel: () => modelingSend({ type: 'Cancel' }),
   })
 
   return (

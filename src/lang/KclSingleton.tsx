@@ -7,6 +7,7 @@ import {
 } from './std/engineConnection'
 import { deferExecution } from 'lib/utils'
 import {
+  CallExpression,
   initPromise,
   parse,
   PathToNode,
@@ -17,7 +18,7 @@ import {
 import { bracket } from 'lib/exampleKcl'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { getNodeFromPath } from './queryAst'
-import { IndexLoaderData } from 'Router'
+import { type IndexLoaderData } from 'lib/types'
 import { Params, useLoaderData } from 'react-router-dom'
 import { isTauri } from 'lib/isTauri'
 import { writeTextFile } from '@tauri-apps/api/fs'
@@ -59,7 +60,7 @@ class KclManager {
     } catch (e) {
       console.error(e)
     }
-    void this.executeAst(ast)
+    this.executeAst(ast)
   }, 600)
 
   private _isExecutingCallback: (arg: boolean) => void = () => {}
@@ -98,7 +99,7 @@ class KclManager {
           })
       })
     } else {
-      localStorage.setItem(PERSIST_CODE_TOKEN, code)
+      safteLSSetItem(PERSIST_CODE_TOKEN, code)
     }
   }
 
@@ -108,10 +109,6 @@ class KclManager {
   set programMemory(programMemory) {
     this._programMemory = programMemory
     this._programMemoryCallBack(programMemory)
-  }
-
-  get defaultPlanes() {
-    return this?.engineCommandManager?.defaultPlanes
   }
 
   get logs() {
@@ -157,22 +154,24 @@ class KclManager {
       this.code = ''
       return
     }
-    const storedCode = localStorage.getItem(PERSIST_CODE_TOKEN)
+    const storedCode = safeLSGetItem(PERSIST_CODE_TOKEN) || ''
     // TODO #819 remove zustand persistence logic in a few months
     // short term migration, shouldn't make a difference for tauri app users
     // anyway since that's filesystem based.
-    const zustandStore = JSON.parse(localStorage.getItem('store') || '{}')
+    const zustandStore = JSON.parse(safeLSGetItem('store') || '{}')
     if (storedCode === null && zustandStore?.state?.code) {
       this.code = zustandStore.state.code
-      localStorage.setItem(PERSIST_CODE_TOKEN, this._code)
+      safteLSSetItem(PERSIST_CODE_TOKEN, this._code)
       zustandStore.state.code = ''
-      localStorage.setItem('store', JSON.stringify(zustandStore))
+      safteLSSetItem('store', JSON.stringify(zustandStore))
     } else if (storedCode === null) {
-      console.log('stored brack thing')
       this.code = bracket
     } else {
       this.code = storedCode
     }
+    this.ensureWasmInit().then(() => {
+      this.ast = this.safeParse(this.code) || this.ast
+    })
   }
   registerCallBacks({
     setCode,
@@ -235,7 +234,6 @@ class KclManager {
     const { logs, errors, programMemory } = await executeAst({
       ast,
       engineCommandManager: this.engineCommandManager,
-      defaultPlanes: this.defaultPlanes,
     })
     this.isExecuting = false
     this.logs = logs
@@ -251,13 +249,20 @@ class KclManager {
       data: null,
     })
   }
-  async executeAstMock(ast: Program = this._ast, updateCode = false) {
+  async executeAstMock(
+    ast: Program = this._ast,
+    {
+      updates,
+    }: {
+      updates: 'none' | 'code' | 'codeAndArtifactRanges'
+    } = { updates: 'none' }
+  ) {
     await this.ensureWasmInit()
     const newCode = recast(ast)
     const newAst = this.safeParse(newCode)
     if (!newAst) return
     await this?.engineCommandManager?.waitForReady
-    if (updateCode) {
+    if (updates !== 'none') {
       this.setCode(recast(ast))
     }
     this._ast = { ...newAst }
@@ -265,22 +270,38 @@ class KclManager {
     const { logs, errors, programMemory } = await executeAst({
       ast: newAst,
       engineCommandManager: this.engineCommandManager,
-      defaultPlanes: this.defaultPlanes,
       useFakeExecutor: true,
     })
     this._logs = logs
     this._kclErrors = errors
     this._programMemory = programMemory
+    if (updates !== 'codeAndArtifactRanges') return
+    Object.entries(engineCommandManager.artifactMap).forEach(
+      ([commandId, artifact]) => {
+        if (!artifact.pathToNode) return
+        const node = getNodeFromPath<CallExpression>(
+          kclManager.ast,
+          artifact.pathToNode,
+          'CallExpression'
+        ).node
+        if (node.type !== 'CallExpression') return
+        const [oldStart, oldEnd] = artifact.range
+        if (oldStart === 0 && oldEnd === 0) return
+        if (oldStart === node.start && oldEnd === node.end) return
+        engineCommandManager.artifactMap[commandId].range = [
+          node.start,
+          node.end,
+        ]
+      }
+    )
   }
   async executeCode(code?: string) {
     await this.ensureWasmInit()
     await this?.engineCommandManager?.waitForReady
-    if (!this?.engineCommandManager?.planesInitialized()) return
     const result = await executeCode({
       engineCommandManager,
       code: code || this._code,
       lastAst: this._ast,
-      defaultPlanes: this.defaultPlanes,
       force: false,
     })
     if (!result.isChange) return
@@ -366,25 +387,9 @@ class KclManager {
       // When we don't re-execute, we still want to update the program
       // memory with the new ast. So we will hit the mock executor
       // instead.
-      await this.executeAstMock(astWithUpdatedSource, true)
+      await this.executeAstMock(astWithUpdatedSource, { updates: 'code' })
     }
     return returnVal
-  }
-
-  getPlaneId(axis: 'xy' | 'xz' | 'yz'): string {
-    return this.defaultPlanes[axis]
-  }
-
-  showPlanes() {
-    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, false)
-    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, false)
-    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, false)
-  }
-
-  hidePlanes() {
-    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, true)
-    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, true)
-    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, true)
   }
 }
 
@@ -451,4 +456,14 @@ export function KclContextProvider({
       {children}
     </KclContext.Provider>
   )
+}
+
+function safeLSGetItem(key: string) {
+  if (typeof window === 'undefined') return null
+  return localStorage?.getItem(key)
+}
+
+function safteLSSetItem(key: string, value: string) {
+  if (typeof window === 'undefined') return
+  localStorage?.setItem(key, value)
 }

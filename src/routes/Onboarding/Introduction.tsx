@@ -1,10 +1,10 @@
 import {
   ONBOARDING_PROJECT_NAME,
   OnboardingButtons,
-  onboardingPaths,
   useDismiss,
   useNextClick,
 } from '.'
+import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { bracket } from 'lib/exampleKcl'
@@ -17,9 +17,9 @@ import {
 } from 'lib/tauriFS'
 import { isTauri } from 'lib/isTauri'
 import { useNavigate } from 'react-router-dom'
-import { paths } from 'Router'
+import { paths } from 'lib/paths'
 import { useEffect } from 'react'
-import { kclManager } from 'lang/KclSinglton'
+import { kclManager } from 'lang/KclSingleton'
 import { sep } from '@tauri-apps/api/path'
 import { APP_NAME } from 'lib/constants'
 

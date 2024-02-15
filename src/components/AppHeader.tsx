@@ -1,6 +1,6 @@
 import { Toolbar } from '../Toolbar'
 import UserSidebarMenu from './UserSidebarMenu'
-import { IndexLoaderData } from '../Router'
+import { type IndexLoaderData } from 'lib/types'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import styles from './AppHeader.module.css'
