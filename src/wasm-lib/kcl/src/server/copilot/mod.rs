@@ -74,7 +74,7 @@ impl crate::server::backend::Backend for Backend {
 
 impl Backend {
     /// Get completions from the kittycad api.
-    async fn get_completions(&self, language: String, prompt: String, suffix: String) -> Result<Vec<String>> {
+    pub async fn get_completions(&self, language: String, prompt: String, suffix: String) -> Result<Vec<String>> {
         let body = kittycad::types::KclCodeCompletionRequest {
             prompt: Some(prompt.clone()),
             suffix: Some(suffix.clone()),
@@ -150,16 +150,17 @@ impl Backend {
 
         let doc_params = self.get_doc_params(&params)?;
         let line_before = doc_params.line_before.to_string();
-        let _prompt = format!("// Path: {}\n{}", doc_params.uri, doc_params.prefix);
 
-        let completion_list = self
-            .get_completions(doc_params.language, doc_params.prefix, doc_params.suffix)
-            .await
-            .map_err(|err| Error {
-                code: tower_lsp::jsonrpc::ErrorCode::from(69),
-                data: None,
-                message: Cow::from(format!("Failed to get completions: {}", err)),
-            })?;
+        // Let's not call it yet since it's not our model.
+        /*let completion_list = self
+        .get_completions(doc_params.language, doc_params.prefix, doc_params.suffix)
+        .await
+        .map_err(|err| Error {
+            code: tower_lsp::jsonrpc::ErrorCode::from(69),
+            data: None,
+            message: Cow::from(format!("Failed to get completions: {}", err)),
+        })?;*/
+        let completion_list = vec![];
 
         let response = CopilotCompletionResponse::from_str_vec(completion_list, line_before, doc_params.pos);
         self.cache
