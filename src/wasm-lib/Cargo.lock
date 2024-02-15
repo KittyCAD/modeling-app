@@ -1132,17 +1132,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "eventsource-stream"
-version = "0.2.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "74fef4569247a5f429d9156b9d0a2599914385dd189c539334c625d8099d90ab"
-dependencies = [
- "futures-core",
- "nom",
- "pin-project-lite",
-]
-
-[[package]]
 name = "expectorate"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1900,7 +1889,6 @@ dependencies = [
  "dashmap",
  "databake",
  "derive-docs",
- "eventsource-stream",
  "expectorate",
  "futures",
  "gltf-json",

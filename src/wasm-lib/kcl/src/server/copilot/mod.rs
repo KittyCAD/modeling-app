@@ -74,7 +74,7 @@ impl crate::server::backend::Backend for Backend {
 
 impl Backend {
     /// Get completions from the kittycad api.
-    async fn get_completions(&self, language: String, prompt: String, suffix: String) -> anyhow::Result<Vec<String>> {
+    async fn get_completions(&self, language: String, prompt: String, suffix: String) -> Result<Vec<String>> {
         let body = kittycad::types::KclCodeCompletionRequest {
             prompt: Some(prompt.clone()),
             suffix: Some(suffix.clone()),
@@ -97,7 +97,15 @@ impl Backend {
         };
 
         let kc_client = kittycad::Client::new(&self.token);
-        let resp = kc_client.ai().create_kcl_code_completions(&body).await?;
+        let resp = kc_client
+            .ai()
+            .create_kcl_code_completions(&body)
+            .await
+            .map_err(|err| Error {
+                code: tower_lsp::jsonrpc::ErrorCode::from(69),
+                data: None,
+                message: Cow::from(format!("Failed to get completions from zoo api: {}", err)),
+            })?;
         Ok(resp.completions)
     }
 
