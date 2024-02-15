@@ -66,6 +66,7 @@ interface ThreeCamValues {
   quaternion: Quaternion
   zoom: number
   isPerspective: boolean
+  target: Vector3
 }
 
 const lastCmdDelay = 50
@@ -123,6 +124,7 @@ const throttledUpdateEngineFov = throttle(
     quaternion: Quaternion
     zoom: number
     fov: number
+    target: Vector3
   }) => {
     const cmd: EngineCommand = {
       type: 'modeling_cmd_req',
@@ -408,6 +410,7 @@ class SceneInfra {
       position: this.camera.position,
       zoom: this.camera.zoom,
       isPerspective: this.isPerspective,
+      target: this.controls.target,
     })
     this.deferReactUpdate({
       type:
@@ -733,6 +736,7 @@ class SceneInfra {
       position: newPosition,
       quaternion: this.camera.quaternion,
       zoom: this.camera.zoom,
+      target: this.controls.target,
     })
   }
   getPlaneIntersectPoint = (): {
@@ -1030,6 +1034,7 @@ class SceneInfra {
 export const sceneInfra = new SceneInfra()
 
 function convertThreeCamValuesToEngineCam({
+  target,
   position,
   quaternion,
   zoom,
@@ -1052,7 +1057,7 @@ function convertThreeCamValuesToEngineCam({
   const upVector = new Vector3(0, 1, 0).applyEuler(euler).normalize()
   if (isPerspective) {
     return {
-      center: lookAtVector,
+      center: target,
       up: upVector,
       vantage: position,
     }
