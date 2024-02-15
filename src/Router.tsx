@@ -19,14 +19,7 @@ import SignIn from './routes/SignIn'
 import { Auth } from './Auth'
 import { isTauri } from './lib/isTauri'
 import Home from './routes/Home'
-import {
-  readDir,
-  readTextFile,
-  stat,
-  FileInfo,
-  FileHandle,
-  DirEntry,
-} from '@tauri-apps/plugin-fs'
+import { readTextFile, stat } from '@tauri-apps/plugin-fs'
 import makeUrlPathRelative from './lib/makeUrlPathRelative'
 import {
   getProjectsInDir,
@@ -49,8 +42,9 @@ import { KclContextProvider, kclManager } from 'lang/KclSingleton'
 import FileMachineProvider from 'components/FileMachineProvider'
 import { sep } from '@tauri-apps/api/path'
 import { paths } from 'lib/paths'
-import { IndexLoaderData, HomeLoaderData } from 'lib/types'
+import { IndexLoaderData, HomeLoaderData, FileEntry } from 'lib/types'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
+import { invoke } from '@tauri-apps/api/core'
 
 if (VITE_KC_SENTRY_DSN && !TEST) {
   Sentry.init({
@@ -178,8 +172,9 @@ const router = createBrowserRouter(
           const entrypointMetadata = await stat(
             projectPath + sep() + PROJECT_ENTRYPOINT
           )
-          // TODO: add back recursive?
-          const children = await readDir(projectPath)
+          const children = await invoke<FileEntry[]>('read_dir_recursive', {
+            path: projectPath,
+          })
           kclManager.setCodeAndExecute(code, false)
 
           // Set the file system manager to the project path
@@ -247,6 +242,7 @@ const router = createBrowserRouter(
           )
           newDefaultDirectory = projectDir
         }
+        // TODO: here we're doing recursive instead of non-recursive?
         const projects = await getProjectsInDir(projectDir)
 
         return {

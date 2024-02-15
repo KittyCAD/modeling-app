@@ -1,12 +1,12 @@
-import { type FileHandle, type FileInfo } from '@tauri-apps/plugin-fs'
+import { type FileInfo } from '@tauri-apps/plugin-fs'
 
 export type IndexLoaderData = {
   code: string | null
   project?: ProjectWithEntryPointMetadata
-  file?: FileHandle
+  file?: FileEntry
 }
 
-export type ProjectWithEntryPointMetadata = FileHandle & {
+export type ProjectWithEntryPointMetadata = FileEntry & {
   entrypointMetadata: FileInfo
 }
 export type HomeLoaderData = {
@@ -15,6 +15,7 @@ export type HomeLoaderData = {
 }
 
 // From https://github.com/tauri-apps/tauri/blob/1.x/tooling/api/src/fs.ts#L159
+// Removed from tauri v2
 export interface FileEntry {
   path: string
   /**

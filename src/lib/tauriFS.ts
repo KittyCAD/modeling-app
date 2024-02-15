@@ -69,18 +69,17 @@ export async function getProjectsInDir(projectDir: string) {
 
   const projectsWithMetadata = await Promise.all(
     readProjects.map(async (p) => ({
-        entrypointMetadata: await stat(
-          await join(p.path, PROJECT_ENTRYPOINT)
-        ),
-        ...p,
-      }))
+      entrypointMetadata: await stat(await join(p.path, PROJECT_ENTRYPOINT)),
+      ...p,
+    }))
   )
   console.log('projectsWithMetadata', projectsWithMetadata)
 
   return projectsWithMetadata
 }
 
-export const isHidden = (fileOrDir: FileEntry) => !!fileOrDir.name?.startsWith('.')
+export const isHidden = (fileOrDir: FileEntry) =>
+  !!fileOrDir.name?.startsWith('.')
 
 export const isDir = (fileOrDir: FileEntry) =>
   'children' in fileOrDir && fileOrDir.children !== undefined
@@ -131,7 +130,9 @@ export function deepFileFilterFlat(
 // Read the contents of a project directory
 // and return all relevant files and sub-directories recursively
 export async function readProject(projectDir: string) {
-  const readFiles = await invoke<FileEntry[]>('read_dir_recursive', { path: projectDir })
+  const readFiles = await invoke<FileEntry[]>('read_dir_recursive', {
+    path: projectDir,
+  })
   console.log('read_dir_recursive', readFiles)
 
   return deepFileFilter(readFiles, isRelevantFileOrDir)

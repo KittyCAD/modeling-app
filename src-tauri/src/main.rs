@@ -29,6 +29,7 @@ fn read_toml(path: &str) -> Result<String, InvokeError> {
 }
 
 /// From https://github.com/tauri-apps/tauri/blob/1.x/core/tauri/src/api/dir.rs#L51
+/// Removed from tauri v2
 #[derive(Debug, Serialize)]
 pub struct DiskEntry {
     /// The path to the entry.
@@ -40,10 +41,14 @@ pub struct DiskEntry {
     pub children: Option<Vec<DiskEntry>>,
 }
 
+/// From https://github.com/tauri-apps/tauri/blob/1.x/core/tauri/src/api/dir.rs#L51
+/// Removed from tauri v2
 fn is_dir<P: AsRef<Path>>(path: P) -> Result<bool> {
     std::fs::metadata(path).map(|md| md.is_dir()).map_err(Into::into)
 }
 
+/// From https://github.com/tauri-apps/tauri/blob/1.x/core/tauri/src/api/dir.rs#L51
+/// Removed from tauri v2
 #[tauri::command]
 fn read_dir_recursive(path: &str) -> Result<Vec<DiskEntry>, InvokeError> {
     let mut files_and_dirs: Vec<DiskEntry> = vec![];

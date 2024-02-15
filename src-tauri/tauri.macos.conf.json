@@ -1,6 +1,4 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
-  "package": {
-    "productName": "Zoo Modeling App"
-  }
+  "productName": "Zoo Modeling App"
 }

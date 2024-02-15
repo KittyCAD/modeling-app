@@ -14,9 +14,9 @@ export default function usePlatform() {
       void getPlatform()
     } else {
       if (navigator.userAgent.indexOf('Mac') !== -1) {
-        setPlatformName('darwin')
+        setPlatformName('macos')
       } else if (navigator.userAgent.indexOf('Win') !== -1) {
-        setPlatformName('win32')
+        setPlatformName('windows')
       } else if (navigator.userAgent.indexOf('Linux') !== -1) {
         setPlatformName('linux')
       }
