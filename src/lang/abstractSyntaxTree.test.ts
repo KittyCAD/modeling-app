@@ -1653,7 +1653,7 @@ describe('parsing errors', () => {
 
     let _theError
     try {
-      const result = expect(parse(code))
+      let _ = expect(parse(code))
     } catch (e) {
       _theError = e
     }

@@ -3,6 +3,67 @@ import Client from './client'
 import { LanguageServerPlugin } from './plugin'
 import { SemanticToken, deserializeTokens } from './semantic_tokens'
 
+export interface CopilotGetCompletionsParams {
+  doc: {
+    source: string
+    tabSize: number
+    indentSize: number
+    insertSpaces: boolean
+    path: string
+    uri: string
+    relativePath: string
+    languageId: string
+    position: {
+      line: number
+      character: number
+    }
+  }
+}
+
+interface CopilotGetCompletionsResult {
+  completions: {
+    text: string
+    position: {
+      line: number
+      character: number
+    }
+    uuid: string
+    range: {
+      start: {
+        line: number
+        character: number
+      }
+      end: {
+        line: number
+        character: number
+      }
+    }
+    displayText: string
+    point: {
+      line: number
+      character: number
+    }
+    region: {
+      start: {
+        line: number
+        character: number
+      }
+      end: {
+        line: number
+        character: number
+      }
+    }
+  }[]
+}
+
+interface CopilotAcceptCompletionParams {
+  uuid: string
+}
+
+interface CopilotRejectCompletionParams {
+  uuids: string[]
+}
+
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/
 
 // Client to server then server to client
@@ -17,6 +78,9 @@ interface LSPRequestMap {
     LSP.SemanticTokensParams,
     LSP.SemanticTokens
   ]
+  getCompletions: [CopilotGetCompletionsParams, CopilotGetCompletionsResult]
+  notifyAccepted: [CopilotAcceptCompletionParams, any]
+  notifyRejected: [CopilotRejectCompletionParams, any]
 }
 
 // Client to server
@@ -55,6 +119,7 @@ export class LanguageServerClient {
 
   private isUpdatingSemanticTokens: boolean = false
   private semanticTokens: SemanticToken[] = []
+  private queuedUids: string[] = []
 
   constructor(options: LanguageServerClientOptions) {
     this.plugins = []
@@ -62,6 +127,7 @@ export class LanguageServerClient {
 
     this.ready = false
 
+    this.queuedUids = []
     this.initializePromise = this.initialize()
   }
 
@@ -143,6 +209,33 @@ export class LanguageServerClient {
     params: LSPNotifyMap[K]
   ): void {
     return this.client.notify(method, params)
+  }
+
+  async getCompletion(params: CopilotGetCompletionsParams) {
+    const response = await this.request('getCompletions', params)
+    //
+    this.queuedUids = [...response.completions.map((c) => c.uuid)]
+    return response
+  }
+
+  async accept(uuid: string) {
+    const badUids = this.queuedUids.filter((u) => u !== uuid)
+    this.queuedUids = []
+    await this.acceptCompletion({ uuid })
+    await this.rejectCompletions({ uuids: badUids })
+  }
+
+  async reject() {
+    const badUids = this.queuedUids
+    this.queuedUids = []
+    return await this.rejectCompletions({ uuids: badUids })
+  }
+
+  async acceptCompletion(params: CopilotAcceptCompletionParams) {
+    return await this.request('notifyAccepted', params)
+  }
+  async rejectCompletions(params: CopilotRejectCompletionParams) {
+    return await this.request('notifyRejected', params)
   }
 
   private processNotification(notification: Notification) {

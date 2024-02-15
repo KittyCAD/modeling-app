@@ -22,10 +22,10 @@ import type {
 } from '@codemirror/autocomplete'
 import type { PublishDiagnosticsParams } from 'vscode-languageserver-protocol'
 import type { ViewUpdate, PluginValue } from '@codemirror/view'
-import type { Text } from '@codemirror/state'
 import type * as LSP from 'vscode-languageserver-protocol'
 import { LanguageServerClient, Notification } from '.'
 import { Marked } from '@ts-stack/markdown'
+import { offsetToPos, posToOffset } from 'editor/lsp/util'
 
 const changesDelay = 500
 
@@ -341,24 +341,6 @@ export function kclPlugin(options: LanguageServerOptions) {
       ],
     }),
   ]
-}
-
-export function posToOffset(
-  doc: Text,
-  pos: { line: number; character: number }
-): number | undefined {
-  if (pos.line >= doc.lines) return
-  const offset = doc.line(pos.line + 1).from + pos.character
-  if (offset > doc.length) return
-  return offset
-}
-
-function offsetToPos(doc: Text, offset: number) {
-  const line = doc.lineAt(offset)
-  return {
-    line: line.number - 1,
-    character: offset - line.from,
-  }
 }
 
 function formatContents(
