@@ -52,8 +52,7 @@
   "plugins": {
     "shell": {
       "open": true
-    },
-    "updater": {}
+    }
   },
   "productName": "zoo-modeling-app",
   "version": "0.14.0"

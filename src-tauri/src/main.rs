@@ -11,7 +11,6 @@ use anyhow::Result;
 use oauth2::TokenResponse;
 use serde::Serialize;
 use tauri::ipc::InvokeError;
-use tauri::Manager;
 use tauri_plugin_shell::ShellExt;
 const DEFAULT_HOST: &str = "https://api.kittycad.io";
 
@@ -206,6 +205,7 @@ fn main() {
             {
                 _app.get_webview("main").unwrap().open_devtools();
             }
+            _app.handle().plugin(tauri_plugin_updater::Builder::new().build())?;
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
