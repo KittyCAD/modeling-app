@@ -12,7 +12,6 @@ use std::{
 use dashmap::DashMap;
 use eventsource_stream::Eventsource;
 use futures::StreamExt;
-use reqwest::RequestBuilder;
 use serde::{Deserialize, Serialize};
 use tower_lsp::{
     jsonrpc::{Error, Result},
@@ -23,14 +22,13 @@ use tower_lsp::{
         MessageType, OneOf, RenameFilesParams, ServerCapabilities, TextDocumentItem, TextDocumentSyncCapability,
         TextDocumentSyncKind, TextDocumentSyncOptions, WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities,
     },
-    Client, LanguageServer,
+    LanguageServer,
 };
 
 use crate::server::{
     backend::Backend as _,
     copilot::types::{
-        CopilotCompletionParams, CopilotCompletionRequest, CopilotCompletionResponse, CopilotEditorInfo,
-        CopilotLspCompletionParams, CopilotResponse, DocParams,
+        CopilotCompletionResponse, CopilotEditorInfo, CopilotLspCompletionParams, CopilotResponse, DocParams,
     },
 };
 
@@ -47,11 +45,9 @@ impl Success {
 #[derive(Debug)]
 pub struct Backend {
     /// The client is used to send notifications and requests to the client.
-    pub client: Client,
+    pub client: tower_lsp::Client,
     /// Current code.
     pub current_code_map: DashMap<String, String>,
-    /// The http client is used to make requests to the API server.
-    pub http_client: Arc<reqwest::Client>,
     /// The token is used to authenticate requests to the API server.
     pub token: String,
     /// The editor info is used to store information about the editor.
@@ -63,7 +59,7 @@ pub struct Backend {
 // Implement the shared backend trait for the language server.
 #[async_trait::async_trait]
 impl crate::server::backend::Backend for Backend {
-    fn client(&self) -> Client {
+    fn client(&self) -> tower_lsp::Client {
         self.client.clone()
     }
 
@@ -90,80 +86,33 @@ fn handle_event(event: eventsource_stream::Event) -> CopilotResponse {
     }
 }
 
-pub async fn await_stream(req: RequestBuilder) -> anyhow::Result<Vec<String>> {
-    /*let resp = req.send().await?;
-    let mut stream = resp.bytes_stream().eventsource();
-    let mut completion_list = Vec::<String>::with_capacity(4);
-    let mut s = "".to_string();
-
-    while let Some(event) = stream.next().await {
-        match handle_event(event?) {
-            CopilotResponse::Answer(answer) => {
-                answer.choices.iter().for_each(|x| {
-                    s.push_str(&x.text);
-                    if x.finish_reason.is_some() {
-                        completion_list.push(s.to_string());
-                        s = "".to_string();
-                    }
-                });
-            }
-            CopilotResponse::Done => {
-                return Ok(completion_list);
-            }
-            CopilotResponse::Error(_e) => {
-                // TODO: log error to lsp server
-            }
-        }
-    }*/
-
-    let completion_list = vec![r#"fn box = (h, l, w) => {
- const myBox = startSketchOn('XY')
-    |> startProfileAt([0,0], %)
-    |> line([0, l], %)
-    |> line([w, 0], %)
-    |> line([0, -l], %)
-    |> close(%)
-    |> extrude(h, %)
-
-  return myBox
-}
-
-const fnBox = box(3, 6, 10)
-
-show(fnBox)"#
-        .to_string()];
-
-    Ok(completion_list)
-}
-
 impl Backend {
-    /// Build a request to send to the API.
-    fn build_request(&self, language: String, prompt: String, suffix: String) -> anyhow::Result<RequestBuilder> {
-        let extra = CopilotCompletionParams {
-            language: language.to_string(),
-            next_indent: 0,
-            trim_by_indentation: true,
-            prompt_tokens: prompt.len() as i32,
-            suffix_tokens: suffix.len() as i32,
-        };
-        let body = Some(CopilotCompletionRequest {
-            prompt,
-            suffix,
-            max_tokens: 500,
-            temperature: 1.0,
-            top_p: 1.0,
+    /// Get completions from the kittycad api.
+    async fn get_completions(&self, language: String, prompt: String, suffix: String) -> anyhow::Result<Vec<String>> {
+        let body = kittycad::types::KclCodeCompletionRequest {
+            prompt: Some(prompt.clone()),
+            suffix: Some(suffix.clone()),
+            max_tokens: Some(500),
+            temperature: Some(1.0),
+            top_p: Some(1.0),
             // We only handle one completion at a time, for now so don't even waste the tokens.
-            n: 1,
-            stop: ["unset".to_string()].to_vec(),
-            nwo: "kittycad/modeling-app".to_string(),
+            n: Some(1),
+            stop: Some(["unset".to_string()].to_vec()),
+            nwo: None,
             // We haven't implemented streaming yet.
-            stream: false,
-            extra,
-        });
-        let body = serde_json::to_string(&body)?;
-        let completions_url = "https://copilot-proxy.githubusercontent.com/v1/engines/copilot-codex/completions";
+            stream: None,
+            extra: Some(kittycad::types::KclCodeCompletionParams {
+                language: Some(language.to_string()),
+                next_indent: None,
+                trim_by_indentation: Some(true),
+                prompt_tokens: Some(prompt.len() as u32),
+                suffix_tokens: Some(suffix.len() as u32),
+            }),
+        };
 
-        Ok(self.http_client.post(completions_url).body(body))
+        let kc_client = kittycad::Client::new(&self.token);
+        let resp = kc_client.ai().create_kcl_code_completions(&body).await?;
+        Ok(resp.completions)
     }
 
     pub async fn set_editor_info(&self, params: CopilotEditorInfo) -> Result<Success> {
@@ -209,19 +158,14 @@ impl Backend {
         let line_before = doc_params.line_before.to_string();
         let _prompt = format!("// Path: {}\n{}", doc_params.uri, doc_params.prefix);
 
-        let req = self
-            .build_request(doc_params.language, doc_params.prefix, doc_params.suffix)
+        let completion_list = self
+            .get_completions(doc_params.language, doc_params.prefix, doc_params.suffix)
+            .await
             .map_err(|err| Error {
                 code: tower_lsp::jsonrpc::ErrorCode::from(69),
                 data: None,
-                message: Cow::from(format!("Failed to build request: {}", err)),
+                message: Cow::from(format!("Failed to get completions: {}", err)),
             })?;
-
-        let completion_list = await_stream(req).await.map_err(|err| Error {
-            code: tower_lsp::jsonrpc::ErrorCode::from(69),
-            data: None,
-            message: Cow::from(format!("Failed to await stream: {}", err)),
-        })?;
 
         let response = CopilotCompletionResponse::from_str_vec(completion_list, line_before, doc_params.pos);
         self.cache

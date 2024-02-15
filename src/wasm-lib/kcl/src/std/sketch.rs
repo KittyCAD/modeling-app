@@ -918,6 +918,7 @@ async fn start_sketch_on_face(
             animated: false,
             ortho: false,
             entity_id: extrude_plane_id,
+            adjust_camera: false,
         },
     )
     .await?;

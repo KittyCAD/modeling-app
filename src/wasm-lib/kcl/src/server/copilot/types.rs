@@ -143,26 +143,3 @@ pub struct CopilotDocParams {
     pub tab_size: u32,
     pub uri: String,
 }
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct CopilotCompletionRequest {
-    pub prompt: String,
-    pub suffix: String,
-    pub max_tokens: i32,
-    pub temperature: f32,
-    pub top_p: f32,
-    pub n: i16,
-    pub stop: Vec<String>,
-    pub nwo: String,
-    pub stream: bool,
-    pub extra: CopilotCompletionParams,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct CopilotCompletionParams {
-    pub language: String,
-    pub next_indent: i8,
-    pub trim_by_indentation: bool,
-    pub prompt_tokens: i32,
-    pub suffix_tokens: i32,
-}
