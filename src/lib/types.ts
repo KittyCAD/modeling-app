@@ -13,4 +13,5 @@ export type ProjectWithEntryPointMetadata = FileEntry & {
 export type HomeLoaderData = {
   projects: ProjectWithEntryPointMetadata[]
   newDefaultDirectory?: string
+  error: Error | null
 }
