@@ -8,6 +8,7 @@ use std::io::Read;
 use anyhow::Result;
 use oauth2::TokenResponse;
 use tauri::{InvokeError, Manager};
+use std::process::Command;
 const DEFAULT_HOST: &str = "https://api.kittycad.io";
 
 /// This command returns the a json string parse from a toml file at the path.
@@ -142,6 +143,28 @@ async fn get_user(
     Ok(user_info)
 }
 
+/// Open the selected path in the system file manager.
+/// From this GitHub comment: https://github.com/tauri-apps/tauri/issues/4062#issuecomment-1338048169
+/// But with the Linux support removed since we don't need it for now.
+#[tauri::command]
+fn show_in_folder(path: String) {
+  #[cfg(target_os = "windows")]
+  {
+    Command::new("explorer")
+        .args(["/select,", &path]) // The comma after select is not a typo
+        .spawn()
+        .unwrap();
+  }
+
+  #[cfg(target_os = "macos")]
+  {
+    Command::new("open")
+        .args(["-R", &path])
+        .spawn()
+        .unwrap();
+  }
+}
+
 fn main() {
     tauri::Builder::default()
         .setup(|_app| {
@@ -158,7 +181,8 @@ fn main() {
             get_user,
             login,
             read_toml,
-            read_txt_file
+            read_txt_file,
+            show_in_folder,
         ])
         .plugin(tauri_plugin_fs_extra::init())
         .run(tauri::generate_context!())

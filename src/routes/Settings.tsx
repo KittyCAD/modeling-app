@@ -5,31 +5,38 @@ import { open } from '@tauri-apps/api/dialog'
 import {
   BaseUnit,
   DEFAULT_PROJECT_NAME,
+  SETTINGS_PERSIST_KEY,
   baseUnits,
-} from '../machines/settingsMachine'
+  initialSettings,
+  UnitSystem,
+} from 'lib/settings'
 import { Toggle } from '../components/Toggle/Toggle'
 import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { type IndexLoaderData } from 'lib/types'
 import { paths } from 'lib/paths'
 import { Themes } from '../lib/theme'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import {
   CameraSystem,
   cameraSystems,
   cameraMouseDragGuards,
 } from 'lib/cameraControls'
-import { UnitSystem } from 'machines/settingsMachine'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
 import {
   createNewProject,
   getNextProjectIndex,
   getProjectsInDir,
+  getSettingsFilePath,
+  initializeProjectDirectory,
   interpolateProjectNameWithIndex,
 } from 'lib/tauriFS'
 import { ONBOARDING_PROJECT_NAME } from './Onboarding'
 import { sep } from '@tauri-apps/api/path'
 import { bracket } from 'lib/exampleKcl'
+import { isTauri } from 'lib/isTauri'
+import { invoke } from '@tauri-apps/api'
+import toast from 'react-hot-toast'
 
 export const Settings = () => {
   const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
@@ -55,11 +62,14 @@ export const Settings = () => {
         },
       },
     },
-  } = useGlobalStateContext()
+  } = useSettingsAuthContext()
 
   async function handleDirectorySelection() {
+    // the `recursive` property added following
+    // this advice for permissions: https://github.com/tauri-apps/tauri/issues/4851#issuecomment-1210711455
     const newDirectory = await open({
       directory: true,
+      recursive: true,
       defaultPath: defaultDirectory || paths.INDEX,
       title: 'Choose a new default directory',
     })
@@ -306,6 +316,59 @@ export const Settings = () => {
             Replay Onboarding
           </ActionButton>
         </SettingsSection>
+        <p className="font-mono my-6 leading-loose">
+          Your settings are saved in{' '}
+          {isTauri()
+            ? 'a file in the app data folder for your OS.'
+            : "your browser's local storage."}{' '}
+          {isTauri() ? (
+            <span className="flex gap-4 flex-wrap items-center">
+              <button
+                onClick={async () =>
+                  void invoke('show_in_folder', {
+                    path: await getSettingsFilePath(),
+                  })
+                }
+                className="text-base"
+              >
+                Show settings.json in folder
+              </button>
+              <button
+                onClick={async () => {
+                  // We have to re-call initializeProjectDirectory
+                  // since we can't set that in the settings machine's
+                  // initial context due to it being async
+                  send({
+                    type: 'Set All Settings',
+                    data: {
+                      ...initialSettings,
+                      defaultDirectory:
+                        (await initializeProjectDirectory('')).path ?? '',
+                    },
+                  })
+                  toast.success('Settings restored to default')
+                }}
+                className="text-base"
+              >
+                Restore default settings
+              </button>
+            </span>
+          ) : (
+            <button
+              onClick={() => {
+                localStorage.removeItem(SETTINGS_PERSIST_KEY)
+                send({
+                  type: 'Set All Settings',
+                  data: initialSettings,
+                })
+                toast.success('Settings restored to default')
+              }}
+              className="text-base"
+            >
+              Restore default settings
+            </button>
+          )}
+        </p>
         <p className="mt-24 text-sm font-mono">
           {/* This uses a Vite plugin, set in vite.config.ts
               to inject the version from package.json */}

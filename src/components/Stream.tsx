@@ -10,12 +10,12 @@ import { useStore } from '../useStore'
 import { getNormalisedCoordinates, throttle } from '../lib/utils'
 import Loading from './Loading'
 import { cameraMouseDragGuards } from 'lib/cameraControls'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Models } from '@kittycad/lib'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useKclContext } from 'lang/KclSingleton'
-import { ClientSideScene } from 'clientSideScene/setup'
+import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
 
 export const Stream = ({ className = '' }: { className?: string }) => {
   const [isLoading, setIsLoading] = useState(true)
@@ -34,7 +34,7 @@ export const Stream = ({ className = '' }: { className?: string }) => {
     setDidDragInStream: s.setDidDragInStream,
     streamDimensions: s.streamDimensions,
   }))
-  const { settings } = useGlobalStateContext()
+  const { settings } = useSettingsAuthContext()
   const cameraControls = settings?.context?.cameraControls
   const { state } = useModelingContext()
   const { isExecuting } = useKclContext()

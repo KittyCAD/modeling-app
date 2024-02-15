@@ -25,9 +25,9 @@ import {
   TANGENTIAL_ARC_TO_SEGMENT,
   TANGENTIAL_ARC_TO_SEGMENT_BODY,
   TANGENTIAL_ARC_TO__SEGMENT_DASH,
-} from './clientSideScene'
+} from './sceneEntities'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
-import { ARROWHEAD } from './setup'
+import { ARROWHEAD } from './sceneInfra'
 
 export function straightSegment({
   from,

@@ -22,10 +22,8 @@ import { getNormalisedCoordinates } from './lib/utils'
 import { useLoaderData, useNavigate } from 'react-router-dom'
 import { type IndexLoaderData } from 'lib/types'
 import { paths } from 'lib/paths'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { cameraMouseDragGuards } from 'lib/cameraControls'
-import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
 import { CodeMenu } from 'components/CodeMenu'
 import { TextEditor } from 'components/TextEditor'
 import { Themes, getSystemTheme } from 'lib/theme'
@@ -55,9 +53,8 @@ export function App() {
     streamDimensions: s.streamDimensions,
   }))
 
-  const { settings } = useGlobalStateContext()
-  const { showDebugPanel, onboardingStatus, cameraControls, theme } =
-    settings?.context || {}
+  const { settings } = useSettingsAuthContext()
+  const { showDebugPanel, onboardingStatus, theme } = settings?.context || {}
   const { state, send } = useModelingContext()
 
   const editorTheme = theme === Themes.System ? getSystemTheme() : theme
@@ -76,6 +73,9 @@ export function App() {
   useHotkeys('shift + e', () => togglePane('kclErrors'))
   useHotkeys('shift + d', () => togglePane('debug'))
   useHotkeys('esc', () => send('Cancel'))
+  useHotkeys('backspace', (e) => {
+    e.preventDefault()
+  })
   useHotkeys(
     isTauri() ? 'mod + ,' : 'shift + mod + ,',
     () => navigate(filePath + paths.SETTINGS),
@@ -116,31 +116,6 @@ export function App() {
         cmd: {
           type: 'highlight_set_entity',
           selected_at_window: { x, y },
-        },
-        cmd_id: newCmdId,
-      })
-    } else {
-      const interactionGuards = cameraMouseDragGuards[cameraControls]
-      let interaction: CameraDragInteractionType_type
-
-      const eWithButton = { ...e, button: buttonDownInStream }
-
-      if (interactionGuards.pan.callback(eWithButton)) {
-        interaction = 'pan'
-      } else if (interactionGuards.rotate.callback(eWithButton)) {
-        interaction = 'rotate'
-      } else if (interactionGuards.zoom.dragCallback(eWithButton)) {
-        interaction = 'zoom'
-      } else {
-        return
-      }
-
-      debounceSocketSend({
-        type: 'modeling_cmd_req',
-        cmd: {
-          type: 'camera_drag_move',
-          interaction,
-          window: { x, y },
         },
         cmd_id: newCmdId,
       })

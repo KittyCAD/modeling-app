@@ -8,7 +8,7 @@ import Server from '../editor/lsp/server'
 import Client from '../editor/lsp/client'
 import { TEST } from 'env'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
 import { Themes } from 'lib/theme'
 import { useMemo, useRef } from 'react'
@@ -27,7 +27,7 @@ import { engineCommandManager } from '../lang/std/engineConnection'
 import { kclManager, useKclContext } from 'lang/KclSingleton'
 import { useFileContext } from 'hooks/useFileContext'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
-import { setupSingleton } from 'clientSideScene/setup'
+import { sceneInfra } from 'clientSideScene/sceneInfra'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -68,7 +68,7 @@ export const TextEditor = ({
   } = useModelingContext()
 
   const { settings: { context: { textWrapping } = {} } = {} } =
-    useGlobalStateContext()
+    useSettingsAuthContext()
   const { commandBarSend } = useCommandsContext()
   const {
     context: { project },
@@ -123,7 +123,7 @@ export const TextEditor = ({
     if (!editorView) {
       setEditorView(viewUpdate.view)
     }
-    if (setupSingleton.selected) return // mid drag
+    if (sceneInfra.selected) return // mid drag
     const ignoreEvents: ModelingMachineEvent['type'][] = [
       'Equip Line tool',
       'Equip tangential arc to',

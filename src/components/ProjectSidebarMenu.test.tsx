@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
 import { type ProjectWithEntryPointMetadata } from 'lib/types'
-import { GlobalStateProvider } from './GlobalStateProvider'
+import { SettingsAuthStateProvider } from './SettingsAuthStateProvider'
 import CommandBarProvider from './CommandBar/CommandBar'
 import { APP_NAME } from 'lib/constants'
 
@@ -42,9 +42,9 @@ describe('ProjectSidebarMenu tests', () => {
     render(
       <BrowserRouter>
         <CommandBarProvider>
-          <GlobalStateProvider>
+          <SettingsAuthStateProvider>
             <ProjectSidebarMenu project={projectWellFormed} />
-          </GlobalStateProvider>
+          </SettingsAuthStateProvider>
         </CommandBarProvider>
       </BrowserRouter>
     )
@@ -63,9 +63,9 @@ describe('ProjectSidebarMenu tests', () => {
     render(
       <BrowserRouter>
         <CommandBarProvider>
-          <GlobalStateProvider>
+          <SettingsAuthStateProvider>
             <ProjectSidebarMenu />
-          </GlobalStateProvider>
+          </SettingsAuthStateProvider>
         </CommandBarProvider>
       </BrowserRouter>
     )
@@ -79,12 +79,12 @@ describe('ProjectSidebarMenu tests', () => {
     render(
       <BrowserRouter>
         <CommandBarProvider>
-          <GlobalStateProvider>
+          <SettingsAuthStateProvider>
             <ProjectSidebarMenu
               project={projectWellFormed}
               renderAsLink={true}
             />
-          </GlobalStateProvider>
+          </SettingsAuthStateProvider>
         </CommandBarProvider>
       </BrowserRouter>
     )
