@@ -59,11 +59,11 @@ const Home = () => {
   // in a single-use effect to avoid a potential infinite loop.
   useEffect(() => {
     if (newDefaultDirectory) {
-        sendToSettings({
-          type: 'Set All Settings',
-          data: { defaultDirectory: newDefaultDirectory },
-        })
-      }
+      sendToSettings({
+        type: 'Set All Settings',
+        data: { defaultDirectory: newDefaultDirectory },
+      })
+    }
 
     // Toast any errors that occurred during the loading process
     if (error) {
