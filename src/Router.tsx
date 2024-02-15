@@ -29,11 +29,9 @@ import {
 import { metadata } from 'tauri-plugin-fs-extra-api'
 import DownloadAppBanner from './components/DownloadAppBanner'
 import { WasmErrBanner } from './components/WasmErrBanner'
-import { GlobalStateProvider } from './components/GlobalStateProvider'
-import {
-  SETTINGS_PERSIST_KEY,
-  settingsMachine,
-} from './machines/settingsMachine'
+import { SettingsAuthStateProvider } from './components/SettingsAuthStateProvider'
+import { settingsMachine } from './machines/settingsMachine'
+import { SETTINGS_PERSIST_KEY } from 'lib/settings'
 import { ContextFrom } from 'xstate'
 import CommandBarProvider from 'components/CommandBar/CommandBar'
 import { TEST, VITE_KC_SENTRY_DSN } from './env'
@@ -91,7 +89,9 @@ const addGlobalContextToElements = (
           ...route,
           element: (
             <CommandBarProvider>
-              <GlobalStateProvider>{route.element}</GlobalStateProvider>
+              <SettingsAuthStateProvider>
+                {route.element}
+              </SettingsAuthStateProvider>
             </CommandBarProvider>
           ),
         }
@@ -229,32 +229,42 @@ const router = createBrowserRouter(
         const projectDir = await initializeProjectDirectory(
           persistedSettings.defaultDirectory || ''
         )
-        let newDefaultDirectory: string | undefined = undefined
-        if (projectDir !== persistedSettings.defaultDirectory) {
-          localStorage.setItem(
-            SETTINGS_PERSIST_KEY,
-            JSON.stringify({
-              ...persistedSettings,
-              defaultDirectory: projectDir,
-            })
-          )
-          newDefaultDirectory = projectDir
-        }
-        const projectsNoMeta = (await readDir(projectDir)).filter(
-          isProjectDirectory
-        )
-        const projects = await Promise.all(
-          projectsNoMeta.map(async (p: FileEntry) => ({
-            entrypointMetadata: await metadata(
-              p.path + sep + PROJECT_ENTRYPOINT
-            ),
-            ...p,
-          }))
-        )
 
-        return {
-          projects,
-          newDefaultDirectory,
+        let newDefaultDirectory: string | undefined = undefined
+        if (projectDir.path) {
+          if (projectDir.path !== persistedSettings.defaultDirectory) {
+            localStorage.setItem(
+              SETTINGS_PERSIST_KEY,
+              JSON.stringify({
+                ...persistedSettings,
+                defaultDirectory: projectDir,
+              })
+            )
+            newDefaultDirectory = projectDir.path
+          }
+          const projectsNoMeta = (await readDir(projectDir.path)).filter(
+            isProjectDirectory
+          )
+          const projects = await Promise.all(
+            projectsNoMeta.map(async (p: FileEntry) => ({
+              entrypointMetadata: await metadata(
+                p.path + sep + PROJECT_ENTRYPOINT
+              ),
+              ...p,
+            }))
+          )
+
+          return {
+            projects,
+            newDefaultDirectory,
+            error: projectDir.error,
+          }
+        } else {
+          return {
+            projects: [],
+            newDefaultDirectory,
+            error: projectDir.error,
+          }
         }
       },
       children: [

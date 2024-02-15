@@ -3,6 +3,7 @@ import { secrets } from './secrets'
 import { getUtils } from './test-utils'
 import waitOn from 'wait-on'
 import { Themes } from '../../src/lib/theme'
+import { initialSettings } from '../../src/lib/settings'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -384,6 +385,53 @@ test('Auto complete works', async ({ page }) => {
     .toHaveText(`const part001 = startSketchOn('XY')
   |> startProfileAt([0,0], %)
   |> xLine(5, %)`)
+})
+
+// Stored settings validation test
+test('Stored settings are validated and fall back to defaults', async ({
+  page,
+  context,
+}) => {
+  // Override beforeEach test setup
+  // with corrupted settings
+  await context.addInitScript(async () => {
+    const storedSettings = JSON.parse(
+      localStorage.getItem('SETTINGS_PERSIST_KEY') || '{}'
+    )
+
+    // Corrupt the settings
+    storedSettings.baseUnit = 'invalid'
+    storedSettings.cameraControls = `() => alert('hack the planet')`
+    storedSettings.defaultDirectory = 123
+    storedSettings.defaultProjectName = false
+
+    localStorage.setItem('SETTINGS_PERSIST_KEY', JSON.stringify(storedSettings))
+  })
+
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/', { waitUntil: 'domcontentloaded' })
+
+  // Check the toast appeared
+  await expect(
+    page.getByText(`Error validating persisted settings:`, { exact: false })
+  ).toBeVisible()
+
+  // Check the settings were reset
+  const storedSettings = JSON.parse(
+    await page.evaluate(
+      () => localStorage.getItem('SETTINGS_PERSIST_KEY') || '{}'
+    )
+  )
+  await expect(storedSettings.baseUnit).toBe(initialSettings.baseUnit)
+  await expect(storedSettings.cameraControls).toBe(
+    initialSettings.cameraControls
+  )
+  await expect(storedSettings.defaultDirectory).toBe(
+    initialSettings.defaultDirectory
+  )
+  await expect(storedSettings.defaultProjectName).toBe(
+    initialSettings.defaultProjectName
+  )
 })
 
 // Onboarding tests
