@@ -215,6 +215,7 @@ pub async fn copilot_lsp_run(config: ServerConfig, token: String) -> Result<(), 
 
     let (service, socket) = LspService::build(|client| kcl_lib::server::copilot::Backend {
         client,
+        current_code_map: Default::default(),
         http_client: Arc::new(reqwest::Client::new()),
         editor_info: Arc::new(RwLock::new(
             kcl_lib::server::copilot::types::CopilotEditorInfo::default(),

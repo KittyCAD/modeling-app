@@ -9,22 +9,30 @@ use std::{
     sync::{Arc, RwLock},
 };
 
+use dashmap::DashMap;
 use eventsource_stream::Eventsource;
 use futures::StreamExt;
 use reqwest::RequestBuilder;
 use serde::{Deserialize, Serialize};
 use tower_lsp::{
     jsonrpc::{Error, Result},
-    lsp_types::{InitializeParams, InitializeResult, InitializedParams, MessageType, ServerCapabilities},
+    lsp_types::{
+        DidChangeConfigurationParams, DidChangeTextDocumentParams, DidChangeWatchedFilesParams,
+        DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams,
+        DidSaveTextDocumentParams, InitializeParams, InitializeResult, InitializedParams, MessageType, OneOf,
+        ServerCapabilities, TextDocumentItem, TextDocumentSyncCapability, TextDocumentSyncKind,
+        TextDocumentSyncOptions, WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities,
+    },
     Client, LanguageServer,
 };
 
-use crate::server::copilot::types::{
-    CopilotCompletionParams, CopilotCompletionRequest, CopilotCompletionResponse, CopilotEditorInfo, CopilotResponse,
-    DocParams,
+use crate::server::{
+    backend::Backend as _,
+    copilot::types::{
+        CopilotCompletionParams, CopilotCompletionRequest, CopilotCompletionResponse, CopilotEditorInfo,
+        CopilotLspCompletionParams, CopilotResponse, DocParams,
+    },
 };
-
-use self::types::CopilotLspCompletionParams;
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Success {
@@ -40,6 +48,8 @@ impl Success {
 pub struct Backend {
     /// The client is used to send notifications and requests to the client.
     pub client: Client,
+    /// Current code.
+    pub current_code_map: DashMap<String, String>,
     /// The http client is used to make requests to the API server.
     pub http_client: Arc<reqwest::Client>,
     /// The token is used to authenticate requests to the API server.
@@ -48,6 +58,26 @@ pub struct Backend {
     pub editor_info: Arc<RwLock<CopilotEditorInfo>>,
     /// The cache is used to store the results of previous requests.
     pub cache: cache::CopilotCache,
+}
+
+// Implement the shared backend trait for the language server.
+#[async_trait::async_trait]
+impl crate::server::backend::Backend for Backend {
+    fn client(&self) -> Client {
+        self.client.clone()
+    }
+
+    fn current_code_map(&self) -> DashMap<String, String> {
+        self.current_code_map.clone()
+    }
+
+    fn insert_current_code_map(&self, uri: String, text: String) {
+        self.current_code_map.insert(uri, text);
+    }
+
+    async fn on_change(&self, _params: TextDocumentItem) {
+        // We don't need to do anything here.
+    }
 }
 
 fn handle_event(event: eventsource_stream::Event) -> CopilotResponse {
@@ -222,21 +252,57 @@ impl LanguageServer for Backend {
     async fn initialize(&self, _: InitializeParams) -> Result<InitializeResult> {
         Ok(InitializeResult {
             capabilities: ServerCapabilities {
-                inlay_hint_provider: None,
-                text_document_sync: None,
-                completion_provider: None,
-                workspace: None,
-                semantic_tokens_provider: None,
+                text_document_sync: Some(TextDocumentSyncCapability::Options(TextDocumentSyncOptions {
+                    open_close: Some(true),
+                    change: Some(TextDocumentSyncKind::FULL),
+                    ..Default::default()
+                })),
+                workspace: Some(WorkspaceServerCapabilities {
+                    workspace_folders: Some(WorkspaceFoldersServerCapabilities {
+                        supported: Some(true),
+                        change_notifications: Some(OneOf::Left(true)),
+                    }),
+                    file_operations: None,
+                }),
                 ..ServerCapabilities::default()
             },
             ..Default::default()
         })
     }
-    async fn initialized(&self, _: InitializedParams) {
-        self.client.log_message(MessageType::INFO, "initialized!").await;
+
+    async fn initialized(&self, params: InitializedParams) {
+        self.do_initialized(params).await
     }
 
-    async fn shutdown(&self) -> Result<()> {
-        Ok(())
+    async fn shutdown(&self) -> tower_lsp::jsonrpc::Result<()> {
+        self.do_shutdown().await
+    }
+
+    async fn did_change_workspace_folders(&self, params: DidChangeWorkspaceFoldersParams) {
+        self.do_did_change_workspace_folders(params).await
+    }
+
+    async fn did_change_configuration(&self, params: DidChangeConfigurationParams) {
+        self.do_did_change_configuration(params).await
+    }
+
+    async fn did_change_watched_files(&self, params: DidChangeWatchedFilesParams) {
+        self.do_did_change_watched_files(params).await
+    }
+
+    async fn did_open(&self, params: DidOpenTextDocumentParams) {
+        self.do_did_open(params).await
+    }
+
+    async fn did_change(&self, params: DidChangeTextDocumentParams) {
+        self.do_did_change(params.clone()).await;
+    }
+
+    async fn did_save(&self, params: DidSaveTextDocumentParams) {
+        self.do_did_save(params).await
+    }
+
+    async fn did_close(&self, params: DidCloseTextDocumentParams) {
+        self.do_did_close(params).await
     }
 }
