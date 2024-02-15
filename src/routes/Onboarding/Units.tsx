@@ -1,12 +1,11 @@
 import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
-import { BaseUnit, baseUnits } from '../../machines/settingsMachine'
+import { BaseUnit, baseUnits, UnitSystem } from 'lib/settings'
 import { ActionButton } from '../../components/ActionButton'
 import { SettingsSection } from '../Settings'
 import { Toggle } from '../../components/Toggle/Toggle'
 import { useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
-import { UnitSystem } from 'machines/settingsMachine'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 
 export default function Units() {
   const dismiss = useDismiss()
@@ -16,7 +15,7 @@ export default function Units() {
       send,
       context: { unitSystem, baseUnit },
     },
-  } = useGlobalStateContext()
+  } = useSettingsAuthContext()
 
   return (
     <div className="fixed grid place-content-center inset-0 bg-chalkboard-110/50 z-50">

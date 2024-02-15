@@ -2,7 +2,7 @@ import { Toolbar } from '../Toolbar'
 import UserSidebarMenu from './UserSidebarMenu'
 import { type IndexLoaderData } from 'lib/types'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import styles from './AppHeader.module.css'
 import { NetworkHealthIndicator } from './NetworkHealthIndicator'
 import { useCommandsContext } from 'hooks/useCommandsContext'
@@ -25,7 +25,7 @@ export const AppHeader = ({
 }: AppHeaderProps) => {
   const platform = usePlatform()
   const { commandBarSend } = useCommandsContext()
-  const { auth } = useGlobalStateContext()
+  const { auth } = useSettingsAuthContext()
   const user = auth?.context?.user
 
   return (
