@@ -189,6 +189,11 @@ jobs:
       - name: Fix format
         run: yarn fmt
 
+      - name: Install x86 target for Universal builds (MacOS only)
+        if: matrix.os == 'macos-14'
+        run: |
+          rustup target add x86_64-apple-darwin
+
       - name: Prepare certificate and variables (Windows only)
         if: ${{ matrix.os == 'windows-latest' && env.BUILD_RELEASE == 'true' }}
         run: |
