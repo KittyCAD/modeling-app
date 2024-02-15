@@ -306,9 +306,10 @@ test('Can create sketches on all planes and their back sides', async ({
 
   const codeTemplate = (
     plane = 'XY',
-    rounded = false
+    rounded = false,
+    otherThing = '1'
   ) => `const part001 = startSketchOn('${plane}')
-  |> startProfileAt([28.91, -39${rounded ? '' : '.01'}], %)`
+  |> startProfileAt([28.9${otherThing}, -39${rounded ? '' : '.01'}], %)`
   await TestSinglePlane({
     viewCmd: camPos,
     expectedCode: codeTemplate('XY'),
@@ -328,7 +329,7 @@ test('Can create sketches on all planes and their back sides', async ({
   const camCmdBackSide: [number, number, number] = [-100, -100, -100]
   await TestSinglePlane({
     viewCmd: camCmdBackSide,
-    expectedCode: codeTemplate('-XY', true),
+    expectedCode: codeTemplate('-XY', false, '3'),
     clickCoords: { x: 601, y: 118 }, // back of red plane
   })
   await TestSinglePlane({
