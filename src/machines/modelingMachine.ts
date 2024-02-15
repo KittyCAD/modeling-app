@@ -605,7 +605,10 @@ export const modelingMachine = createMachine(
         if (!sketchPathToNode) return {}
         return getSketchMetadataFromPathToNode(sketchPathToNode)
       }),
-      'hide default planes': () => sceneInfra.removeDefaultPlanes(),
+      'hide default planes': () => {
+        sceneInfra.removeDefaultPlanes()
+        kclManager.hidePlanes()
+      },
       'reset sketch metadata': assign({
         sketchPathToNode: null,
         sketchEnginePathId: '',
@@ -783,6 +786,7 @@ export const modelingMachine = createMachine(
       'show default planes': () => {
         sceneInfra.showDefaultPlanes()
         sceneEntitiesManager.setupDefaultPlaneHover()
+        kclManager.showPlanes()
       },
       'setup noPoints onClick listener': ({ sketchPathToNode }) => {
         sceneEntitiesManager.createIntersectionPlane()

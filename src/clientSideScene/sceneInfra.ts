@@ -404,7 +404,14 @@ class SceneInfra {
   }, 200)
 
   onCameraChange = () => {
-    this.camera.position.distanceTo(this.controls.target)
+    const scale = getSceneScale(this.camera, this.controls.target)
+    const planesGroup = this.scene.getObjectByName(DEFAULT_PLANES)
+    const axisGroup = this.scene
+      .getObjectByName(AXIS_GROUP)
+      ?.getObjectByName('gridHelper')
+    planesGroup && planesGroup.scale.set(scale, scale, scale)
+    axisGroup?.name === 'gridHelper' && axisGroup.scale.set(scale, scale, scale)
+
     throttledUpdateEngineCamera({
       quaternion: this.camera.quaternion,
       position: this.camera.position,
@@ -962,21 +969,14 @@ class SceneInfra {
       type: DefaultPlane
     ): Mesh => {
       const planeGeometry = new PlaneGeometry(100, 100)
-      const planeEdges = new EdgesGeometry(planeGeometry)
-      const lineMaterial = new LineBasicMaterial({
-        color: defaultPlaneColor(type, 0.45, 1),
-        opacity: 0.9,
-      })
       const planeMaterial = new MeshBasicMaterial({
         color: defaultPlaneColor(type),
         transparent: true,
-        opacity: 0.35,
+        opacity: 0.0,
         side: DoubleSide,
         depthTest: false, // needed to avoid transparency issues
       })
       const plane = new Mesh(planeGeometry, planeMaterial)
-      const edges = new LineSegments(planeEdges, lineMaterial)
-      plane.add(edges)
       plane.rotation.x = rotation.x
       plane.rotation.y = rotation.y
       plane.rotation.z = rotation.z
@@ -984,15 +984,14 @@ class SceneInfra {
       plane.name = type
       return plane
     }
-    const gridHelper = createGridHelper({ size: 100, divisions: 10 })
     const planes = [
       addPlane({ x: 0, y: Math.PI / 2, z: 0 }, YZ_PLANE),
       addPlane({ x: 0, y: 0, z: 0 }, XY_PLANE),
       addPlane({ x: -Math.PI / 2, y: 0, z: 0 }, XZ_PLANE),
-      gridHelper,
     ]
     const planesGroup = new Group()
     planesGroup.userData.type = DEFAULT_PLANES
+    planesGroup.name = DEFAULT_PLANES
     planesGroup.add(...planes)
     planesGroup.traverse((child) => {
       if (child instanceof Mesh) {
@@ -1000,6 +999,8 @@ class SceneInfra {
       }
     })
     planesGroup.layers.enable(SKETCH_LAYER)
+    const sceneScale = getSceneScale(this.camera, this.controls.target)
+    planesGroup.scale.set(sceneScale, sceneScale, sceneScale)
     this.scene.add(planesGroup)
   }
   removeDefaultPlanes() {
