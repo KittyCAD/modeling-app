@@ -126,7 +126,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-14, ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
 
@@ -189,11 +189,6 @@ jobs:
       - name: Fix format
         run: yarn fmt
 
-      - name: Install Universal target (MacOS only)
-        if: matrix.os == 'macos-latest'
-        run: |
-          rustup target add aarch64-apple-darwin
-
       - name: Prepare certificate and variables (Windows only)
         if: ${{ matrix.os == 'windows-latest' && env.BUILD_RELEASE == 'true' }}
         run: |
@@ -226,7 +221,7 @@ jobs:
         with:
           includeRelease: false
           includeDebug: true
-          args: ${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }}
+          args: ${{ matrix.os == 'macos-14' && '--target universal-apple-darwin' || '' }}
 
       - name: Build the app (release) and sign
         uses: tauri-apps/tauri-action@v0
@@ -242,12 +237,12 @@ jobs:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           TAURI_CONF_ARGS: "--config ${{ matrix.os == 'windows-latest' && 'src-tauri\\tauri.release.conf.json' || 'src-tauri/tauri.release.conf.json' }}"
         with:
-          args: "${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }} ${{ env.TAURI_CONF_ARGS }}"
+          args: "${{ matrix.os == 'macos-14' && '--target universal-apple-darwin' || '' }} ${{ env.TAURI_CONF_ARGS }}"
 
       - uses: actions/upload-artifact@v3
         if: matrix.os != 'ubuntu-latest'
         env:
-          PREFIX: ${{ matrix.os == 'macos-latest' && 'src-tauri/target/universal-apple-darwin' || 'src-tauri/target' }}
+          PREFIX: ${{ matrix.os == 'macos-14' && 'src-tauri/target/universal-apple-darwin' || 'src-tauri/target' }}
           MODE: ${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}
         with:
           path: "${{ env.PREFIX }}/${{ env.MODE }}/bundle/*/*"
