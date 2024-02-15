@@ -205,7 +205,8 @@ fn main() {
             {
                 _app.get_webview("main").unwrap().open_devtools();
             }
-            _app.handle().plugin(tauri_plugin_updater::Builder::new().build())?;
+            _app.handle()
+                .plugin(tauri_plugin_updater::Builder::new().build())?;
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![

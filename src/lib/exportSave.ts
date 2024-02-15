@@ -25,7 +25,7 @@ export async function exportSave(data: ArrayBuffer) {
         }
 
         // Write the file.
-        await writeFile(filePath, file.contents)
+        await writeFile(filePath, new Uint8Array(file.contents))
       } else {
         // Download the file to the user's computer.
         // Now we need to download the files to the user's downloads folder.

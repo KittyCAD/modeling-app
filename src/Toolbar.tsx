@@ -218,7 +218,7 @@ export const Toolbar = () => {
         onClick={() => commandBarSend({ type: 'Open' })}
         className="rounded-r-full pr-4 self-stretch border-energy-10 hover:border-energy-10 dark:border-chalkboard-80 bg-energy-10/50 hover:bg-energy-10 dark:bg-chalkboard-80 dark:text-energy-10"
       >
-        {platform === 'darwin' ? '⌘K' : 'Ctrl+/'}
+        {platform === 'macos' ? '⌘K' : 'Ctrl+/'}
       </ActionButton>
     </div>
   )

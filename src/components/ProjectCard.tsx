@@ -120,7 +120,10 @@ function ProjectCard({
                 }`}
             </span>
             <span className="text-chalkboard-60 text-xs">
-              Edited {getDisplayedTime(project.entrypointMetadata.mtime)}
+              Edited{' '}
+              {project.entrypointMetadata.mtime
+                ? getDisplayedTime(project.entrypointMetadata.mtime)
+                : 'never'}
             </span>
             <div className="absolute z-10 bottom-2 right-2 flex gap-1 items-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
               <ActionButton
