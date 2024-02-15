@@ -207,7 +207,7 @@ pub async fn kcl_lsp_run(config: ServerConfig) -> Result<(), JsValue> {
 // NOTE: input needs to be an AsyncIterator<Uint8Array, never, void> specifically
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
-pub async fn copilot_lsp_run(config: ServerConfig) -> Result<(), JsValue> {
+pub async fn copilot_lsp_run(config: ServerConfig, token: String) -> Result<(), JsValue> {
     let ServerConfig {
         into_server,
         from_server,
@@ -220,6 +220,7 @@ pub async fn copilot_lsp_run(config: ServerConfig) -> Result<(), JsValue> {
             kcl_lib::server::copilot::types::CopilotEditorInfo::default(),
         )),
         cache: kcl_lib::server::copilot::cache::CopilotCache::new(),
+        token,
     })
     .custom_method("setEditorInfo", kcl_lib::server::copilot::Backend::set_editor_info)
     .custom_method(
