@@ -33,6 +33,9 @@ export default class Server {
   async start(type_: 'kcl' | 'copilot', token?: string): Promise<void> {
     const config = new ServerConfig(this.#intoServer, this.#fromServer)
     if (type_ === 'copilot') {
+      if (!token) {
+        throw new Error('auth token is required for copilot')
+      }
       await copilot_lsp_run(config, token)
     } else if (type_ === 'kcl') {
       await kcl_lsp_run(config)
