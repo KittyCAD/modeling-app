@@ -71,7 +71,7 @@ export const TextEditor = ({
     state,
   } = useModelingContext()
 
-  const { settings: { context: { textWrapping } = {} } = {} } =
+  const { settings: { context: { textWrapping } = {} } = {}, auth } =
     useSettingsAuthContext()
   const { commandBarSend } = useCommandsContext()
   const { enable: convertEnabled, handleClick: convertCallback } =
@@ -121,9 +121,8 @@ export const TextEditor = ({
     const fromServer: FromServer = FromServer.create()
     const client = new Client(fromServer, intoServer)
     if (!TEST) {
-      const { auth } = useGlobalStateContext()
-      const token = auth?.context?.token
       Server.initialize(intoServer, fromServer).then((lspServer) => {
+        const token = auth?.context?.token
         lspServer.start('copilot', token)
         setIsCopilotLspServerReady(true)
       })
