@@ -14,21 +14,6 @@ pub struct CopilotCyclingCompletion {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct CopilotAnswer {
-    pub id: Option<String>,
-    pub model: String,
-    pub created: u128,
-    pub choices: Vec<Choices>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub enum CopilotResponse {
-    Answer(Box<CopilotAnswer>),
-    Done,
-    Error(String),
-}
-
-#[derive(Debug, Serialize, Deserialize)]
 pub struct Choices {
     pub text: String,
     pub index: i16,

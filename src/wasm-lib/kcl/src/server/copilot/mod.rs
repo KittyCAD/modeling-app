@@ -10,8 +10,6 @@ use std::{
 };
 
 use dashmap::DashMap;
-use eventsource_stream::Eventsource;
-use futures::StreamExt;
 use serde::{Deserialize, Serialize};
 use tower_lsp::{
     jsonrpc::{Error, Result},
@@ -27,9 +25,7 @@ use tower_lsp::{
 
 use crate::server::{
     backend::Backend as _,
-    copilot::types::{
-        CopilotCompletionResponse, CopilotEditorInfo, CopilotLspCompletionParams, CopilotResponse, DocParams,
-    },
+    copilot::types::{CopilotCompletionResponse, CopilotEditorInfo, CopilotLspCompletionParams, DocParams},
 };
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -73,16 +69,6 @@ impl crate::server::backend::Backend for Backend {
 
     async fn on_change(&self, _params: TextDocumentItem) {
         // We don't need to do anything here.
-    }
-}
-
-fn handle_event(event: eventsource_stream::Event) -> CopilotResponse {
-    if event.data == "[DONE]" {
-        return CopilotResponse::Done;
-    }
-    match serde_json::from_str(&event.data) {
-        Ok(data) => CopilotResponse::Answer(data),
-        Err(e) => CopilotResponse::Error(e.to_string()),
     }
 }
 
