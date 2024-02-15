@@ -73,6 +73,9 @@ export function App() {
   useHotkeys('shift + e', () => togglePane('kclErrors'))
   useHotkeys('shift + d', () => togglePane('debug'))
   useHotkeys('esc', () => send('Cancel'))
+  useHotkeys('backspace', (e) => {
+    e.preventDefault()
+  })
   useHotkeys(
     isTauri() ? 'mod + ,' : 'shift + mod + ,',
     () => navigate(filePath + paths.SETTINGS),
