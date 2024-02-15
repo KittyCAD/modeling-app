@@ -128,7 +128,7 @@ export const completionDecoration = StateField.define<CompletionState>({
 
           displayText = displayText.slice(numChars)
 
-          if (startPos == endGhostText) {
+          if (startPos === endGhostText) {
             return { ghostText: null }
           } else {
             decorations = Decoration.set([
@@ -220,7 +220,7 @@ const acceptSuggestionCommand = (
     annotations: [copilotEvent.of(null), Transaction.addToHistory.of(true)],
   })
 
-  // copilotClient.accept(ghostText.uuid);
+  copilotClient.accept(ghostText.uuid)
   return true
 }
 export const rejectSuggestionCommand = (
@@ -245,6 +245,8 @@ export const rejectSuggestionCommand = (
     effects: clearSuggestion.of(null),
     annotations: [copilotEvent.of(null), Transaction.addToHistory.of(false)],
   })
+
+  copilotClient.reject()
   return false
 }
 
@@ -261,18 +263,18 @@ const sameKeyCommand = (
   const ghostTextStart = ghostText.displayPos
   const indent = view.state.facet(indentUnit)
 
-  if (key == 'Tab' && ghostText.displayText.startsWith(indent)) {
+  if (key === 'Tab' && ghostText.displayText.startsWith(indent)) {
     view.dispatch({
       selection: { anchor: ghostTextStart + indent.length },
       effects: typeFirst.of(indent.length),
       annotations: [copilotEvent.of(null), Transaction.addToHistory.of(false)],
     })
     return true
-  } else if (key == 'Tab') {
+  } else if (key === 'Tab') {
     return acceptSuggestionCommand(copilotClient, view)
-  } else if (ghostText.weirdInsert || key != ghostText.displayText[0]) {
+  } else if (ghostText.weirdInsert || key !== ghostText.displayText[0]) {
     return rejectSuggestionCommand(copilotClient, view)
-  } else if (ghostText.displayText.length == 1) {
+  } else if (ghostText.displayText.length === 1) {
     return acceptSuggestionCommand(copilotClient, view)
   } else {
     // Use this to delete the first letter of the suggestion
@@ -290,10 +292,10 @@ const completionPlugin = (copilotClient: LanguageServerClient) =>
   EditorView.domEventHandlers({
     keydown(event, view) {
       if (
-        event.key != 'Shift' &&
-        event.key != 'Control' &&
-        event.key != 'Alt' &&
-        event.key != 'Meta'
+        event.key !== 'Shift' &&
+        event.key !== 'Control' &&
+        event.key !== 'Alt' &&
+        event.key !== 'Meta'
       ) {
         return sameKeyCommand(copilotClient, view, event.key)
       } else {
@@ -318,7 +320,7 @@ const completionRequester = (client: LanguageServerClient) => {
 
   const badUpdate = (update: ViewUpdate) => {
     for (const tr of update.transactions) {
-      if (tr.annotation(copilotEvent) != undefined) {
+      if (tr.annotation(copilotEvent) !== undefined) {
         return true
       }
     }
@@ -328,7 +330,7 @@ const completionRequester = (client: LanguageServerClient) => {
     return update.state.field(completionDecoration).ghostText != null
   }
   const autocompleting = (update: ViewUpdate) => {
-    return completionStatus(update.state) == 'active'
+    return completionStatus(update.state) === 'active'
   }
   const notFocused = (update: ViewUpdate) => {
     return !update.view.hasFocus
@@ -383,14 +385,14 @@ const completionRequester = (client: LanguageServerClient) => {
               },
             })
 
-            if (completionResult.completions.length == 0) {
+            if (completionResult.completions.length === 0) {
               return
             }
 
             let {
               text,
               displayText,
-              range: { start, end },
+              range: { start },
               position,
               uuid,
             } = completionResult.completions[0]
@@ -413,13 +415,13 @@ const completionRequester = (client: LanguageServerClient) => {
             // Check if the position is still the same
             if (
               pos === lastPos &&
-              completionStatus(update.view.state) != 'active' &&
+              completionStatus(update.view.state) !== 'active' &&
               update.view.hasFocus
             ) {
               // Dispatch an effect to add the suggestion
               // If the completion starts before the end of the line, check the end of the line with the end of the completion
               const line = update.view.state.doc.lineAt(pos)
-              if (line.to != pos) {
+              if (line.to !== pos) {
                 const ending = update.view.state.doc.sliceString(pos, line.to)
                 if (displayText.endsWith(ending)) {
                   displayText = displayText.slice(

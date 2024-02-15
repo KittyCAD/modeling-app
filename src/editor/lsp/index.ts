@@ -219,7 +219,7 @@ export class LanguageServerClient {
   }
 
   async accept(uuid: string) {
-    const badUids = this.queuedUids.filter((u) => u != uuid)
+    const badUids = this.queuedUids.filter((u) => u !== uuid)
     this.queuedUids = []
     await this.acceptCompletion({ uuid })
     await this.rejectCompletions({ uuids: badUids })

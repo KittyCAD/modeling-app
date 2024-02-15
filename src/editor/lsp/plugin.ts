@@ -22,7 +22,6 @@ import type {
 } from '@codemirror/autocomplete'
 import type { PublishDiagnosticsParams } from 'vscode-languageserver-protocol'
 import type { ViewUpdate, PluginValue } from '@codemirror/view'
-import type { Text } from '@codemirror/state'
 import type * as LSP from 'vscode-languageserver-protocol'
 import { LanguageServerClient, Notification } from '.'
 import { Marked } from '@ts-stack/markdown'
