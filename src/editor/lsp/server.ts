@@ -30,10 +30,10 @@ export default class Server {
     return server
   }
 
-  async start(type_: 'kcl' | 'copilot'): Promise<void> {
+  async start(type_: 'kcl' | 'copilot', token?: string): Promise<void> {
     const config = new ServerConfig(this.#intoServer, this.#fromServer)
     if (type_ === 'copilot') {
-      await copilot_lsp_run(config)
+      await copilot_lsp_run(config, token)
     } else if (type_ === 'kcl') {
       await kcl_lsp_run(config)
     }

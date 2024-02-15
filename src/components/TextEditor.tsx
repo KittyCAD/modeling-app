@@ -121,8 +121,10 @@ export const TextEditor = ({
     const fromServer: FromServer = FromServer.create()
     const client = new Client(fromServer, intoServer)
     if (!TEST) {
+      const { auth } = useGlobalStateContext()
+      const token = auth?.context?.token
       Server.initialize(intoServer, fromServer).then((lspServer) => {
-        lspServer.start('copilot')
+        lspServer.start('copilot', token)
         setIsCopilotLspServerReady(true)
       })
     }
