@@ -41,6 +41,7 @@
 	* [`log2`](#log2)
 	* [`max`](#max)
 	* [`min`](#min)
+	* [`patternCircular`](#patternCircular)
 	* [`patternLinear`](#patternLinear)
 	* [`pi`](#pi)
 	* [`pow`](#pow)
@@ -123,10 +124,10 @@ angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup)
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -197,11 +198,23 @@ angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup)
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -228,10 +241,10 @@ angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup)
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -302,11 +315,23 @@ angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup)
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -343,10 +368,10 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -417,11 +442,23 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -430,10 +467,10 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -504,11 +541,23 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -541,10 +590,10 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -615,11 +664,23 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -628,10 +689,10 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -702,11 +763,23 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -739,10 +812,10 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -813,11 +886,23 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -826,10 +911,10 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -900,11 +985,23 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -938,10 +1035,10 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -1012,11 +1109,23 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -1025,10 +1134,10 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -1099,11 +1208,23 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -1136,10 +1257,10 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -1210,11 +1331,23 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -1223,10 +1356,10 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -1297,11 +1430,23 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -1334,10 +1479,10 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -1408,11 +1553,23 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -1421,10 +1578,10 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -1495,11 +1652,23 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -1559,10 +1728,10 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -1633,11 +1802,23 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -1646,10 +1827,10 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -1720,11 +1901,23 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -1806,10 +1999,10 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -1880,11 +2073,23 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -1893,10 +2098,10 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -1967,11 +2172,23 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -2012,10 +2229,10 @@ close(sketch_group: SketchGroup) -> SketchGroup
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -2086,11 +2303,23 @@ close(sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -2099,10 +2328,10 @@ close(sketch_group: SketchGroup) -> SketchGroup
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -2173,11 +2402,23 @@ close(sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -2238,10 +2479,10 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -2312,11 +2553,23 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -2325,6 +2578,8 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 * `ExtrudeGroup` - An extrude group is a collection of extrude surfaces.
 ```
 {
+	// The id of the extrusion end cap
+	endCapId: uuid,
 	// The height of the extrude group.
 	height: number,
 	// The id of the extrude group.
@@ -2333,8 +2588,12 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 	position: [number, number, number],
 	// The rotation of the extrude group.
 	rotation: [number, number, number, number],
+	// The id of the extrusion start cap
+	startCapId: uuid,
 	// The extrude surfaces.
 	value: [{
+	// The face id for the extrude plane.
+	faceId: uuid,
 	// The id of the geometry.
 	id: uuid,
 	// The name.
@@ -2347,6 +2606,24 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 	sourceRange: [number, number],
 	type: "extrudePlane",
 }],
+	// The x-axis of the extrude group base plane in the 3D space
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The y-axis of the extrude group base plane in the 3D space
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The z-axis of the extrude group base plane in the 3D space
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -2388,6 +2665,8 @@ getExtrudeWallTransform(surface_name: string, extrude_group: ExtrudeGroup) -> Ex
 * `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces.
 ```
 {
+	// The id of the extrusion end cap
+	endCapId: uuid,
 	// The height of the extrude group.
 	height: number,
 	// The id of the extrude group.
@@ -2396,8 +2675,12 @@ getExtrudeWallTransform(surface_name: string, extrude_group: ExtrudeGroup) -> Ex
 	position: [number, number, number],
 	// The rotation of the extrude group.
 	rotation: [number, number, number, number],
+	// The id of the extrusion start cap
+	startCapId: uuid,
 	// The extrude surfaces.
 	value: [{
+	// The face id for the extrude plane.
+	faceId: uuid,
 	// The id of the geometry.
 	id: uuid,
 	// The name.
@@ -2410,6 +2693,24 @@ getExtrudeWallTransform(surface_name: string, extrude_group: ExtrudeGroup) -> Ex
 	sourceRange: [number, number],
 	type: "extrudePlane",
 }],
+	// The x-axis of the extrude group base plane in the 3D space
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The y-axis of the extrude group base plane in the 3D space
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The z-axis of the extrude group base plane in the 3D space
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -2440,10 +2741,10 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 * `hole_sketch_group`: `SketchGroupSet` - A sketch group or a group of sketch groups.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -2515,11 +2816,23 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 } |
 {
 	type: "sketchGroups",
@@ -2528,10 +2841,10 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -2602,11 +2915,23 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -2615,10 +2940,10 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -2689,11 +3014,23 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -2823,10 +3160,10 @@ lastSegX(sketch_group: SketchGroup) -> number
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -2897,11 +3234,23 @@ lastSegX(sketch_group: SketchGroup) -> number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -2926,10 +3275,10 @@ lastSegY(sketch_group: SketchGroup) -> number
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -3000,11 +3349,23 @@ lastSegY(sketch_group: SketchGroup) -> number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -3102,10 +3463,10 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -3176,11 +3537,23 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -3189,10 +3562,10 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -3263,11 +3636,23 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -3298,10 +3683,10 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -3372,11 +3757,23 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -3385,10 +3782,10 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -3459,11 +3856,23 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -3590,36 +3999,40 @@ min(args: [number]) -> number
 
 
 
-### patternLinear
+### patternCircular
 
-A linear pattern.
+A Circular pattern.
 
 
 
 ```
-patternLinear(data: LinearPatternData, geometry: Geometry) -> Geometries
+patternCircular(data: CircularPatternData, geometry: Geometry) -> Geometries
 ```
 
 #### Arguments
 
-* `data`: `LinearPatternData` - Data for a linear pattern.
+* `data`: `CircularPatternData` - Data for a circular pattern.
 ```
 {
-	// The axis of the pattern. This is a 3D vector.
+	// The arc angle (in degrees) to place the repetitions. Must be greater than 0.
+	arcDegrees: number,
+	// The axis around which to make the pattern. This is a 3D vector.
 	axis: [number, number, number],
-	// The distance between each repetition. This can also be referred to as spacing.
-	distance: number,
+	// The center about which to make th pattern. This is a 3D vector.
+	center: [number, number, number],
 	// The number of repetitions. Must be greater than 0. This excludes the original entity. For example, if `repetitions` is 1, the original entity will be copied once.
 	repetitions: number,
+	// Whether or not to rotate the duplicates as they are copied.
+	rotateDuplicates: string,
 }
 ```
 * `geometry`: `Geometry` - A geometry.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -3691,13 +4104,27 @@ patternLinear(data: LinearPatternData, geometry: Geometry) -> Geometries
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 } |
 {
+	// The id of the extrusion end cap
+	endCapId: uuid,
 	// The height of the extrude group.
 	height: number,
 	// The id of the extrude group.
@@ -3706,9 +4133,13 @@ patternLinear(data: LinearPatternData, geometry: Geometry) -> Geometries
 	position: [number, number, number],
 	// The rotation of the extrude group.
 	rotation: [number, number, number, number],
+	// The id of the extrusion start cap
+	startCapId: uuid,
 	type: "ExtrudeGroup",
 	// The extrude surfaces.
 	value: [{
+	// The face id for the extrude plane.
+	faceId: uuid,
 	// The id of the geometry.
 	id: uuid,
 	// The name.
@@ -3721,6 +4152,208 @@ patternLinear(data: LinearPatternData, geometry: Geometry) -> Geometries
 	sourceRange: [number, number],
 	type: "extrudePlane",
 }],
+	// The x-axis of the extrude group base plane in the 3D space
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The y-axis of the extrude group base plane in the 3D space
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The z-axis of the extrude group base plane in the 3D space
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+}
+```
+
+#### Returns
+
+* `Geometries` - A set of geometry.
+```
+{
+	type: "SketchGroups",
+} |
+{
+	type: "ExtrudeGroups",
+}
+```
+
+
+
+### patternLinear
+
+A linear pattern.
+
+
+
+```
+patternLinear(data: LinearPatternData, geometry: Geometry) -> Geometries
+```
+
+#### Arguments
+
+* `data`: `LinearPatternData` - Data for a linear pattern.
+```
+{
+	// The axis of the pattern. This is a 3D vector.
+	axis: [number, number, number],
+	// The distance between each repetition. This can also be referred to as spacing.
+	distance: number,
+	// The number of repetitions. Must be greater than 0. This excludes the original entity. For example, if `repetitions` is 1, the original entity will be copied once.
+	repetitions: number,
+}
+```
+* `geometry`: `Geometry` - A geometry.
+```
+{
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number, number, number],
+	// The rotation of the sketch group base plane.
+	rotation: [number, number, number, number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+},
+	type: "SketchGroup",
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "Horizontal",
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "AngledLineTo",
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "Base",
+}],
+	// The x-axis of the sketch group base plane in the 3D space
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The y-axis of the sketch group base plane in the 3D space
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The z-axis of the sketch group base plane in the 3D space
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+} |
+{
+	// The id of the extrusion end cap
+	endCapId: uuid,
+	// The height of the extrude group.
+	height: number,
+	// The id of the extrude group.
+	id: uuid,
+	// The position of the extrude group.
+	position: [number, number, number],
+	// The rotation of the extrude group.
+	rotation: [number, number, number, number],
+	// The id of the extrusion start cap
+	startCapId: uuid,
+	type: "ExtrudeGroup",
+	// The extrude surfaces.
+	value: [{
+	// The face id for the extrude plane.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The name.
+	name: string,
+	// The position.
+	position: [number, number, number],
+	// The rotation.
+	rotation: [number, number, number, number],
+	// The source range.
+	sourceRange: [number, number],
+	type: "extrudePlane",
+}],
+	// The x-axis of the extrude group base plane in the 3D space
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The y-axis of the extrude group base plane in the 3D space
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The z-axis of the extrude group base plane in the 3D space
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -3794,10 +4427,10 @@ segAng(segment_name: string, sketch_group: SketchGroup) -> number
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -3868,11 +4501,23 @@ segAng(segment_name: string, sketch_group: SketchGroup) -> number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -3898,10 +4543,10 @@ segEndX(segment_name: string, sketch_group: SketchGroup) -> number
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -3972,11 +4617,23 @@ segEndX(segment_name: string, sketch_group: SketchGroup) -> number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -4002,10 +4659,10 @@ segEndY(segment_name: string, sketch_group: SketchGroup) -> number
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -4076,11 +4733,23 @@ segEndY(segment_name: string, sketch_group: SketchGroup) -> number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -4106,10 +4775,10 @@ segLen(segment_name: string, sketch_group: SketchGroup) -> number
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -4180,11 +4849,23 @@ segLen(segment_name: string, sketch_group: SketchGroup) -> number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -4209,10 +4890,10 @@ show(sketch: SketchGroup)
 * `sketch`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -4283,11 +4964,23 @@ show(sketch: SketchGroup)
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -4340,7 +5033,7 @@ Start a profile at a given point.
 
 
 ```
-startProfileAt(data: LineData, plane: Plane) -> SketchGroup
+startProfileAt(data: LineData, sketch_surface: SketchSurface) -> SketchGroup
 ```
 
 #### Arguments
@@ -4355,7 +5048,7 @@ startProfileAt(data: LineData, plane: Plane) -> SketchGroup
 } |
 [number, number]
 ```
-* `plane`: `Plane` - A plane.
+* `sketch_surface`: `SketchSurface` - A plane or a face.
 ```
 {
 	// The id of the plane.
@@ -4386,6 +5079,30 @@ startProfileAt(data: LineData, plane: Plane) -> SketchGroup
 	y: number,
 	z: number,
 },
+} |
+{
+	// The id of the face.
+	id: uuid,
+	// The tag of the face.
+	value: string,
+	// What should the face’s X axis be?
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// What should the face’s Y axis be?
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The z-axis (normal).
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -4394,10 +5111,10 @@ startProfileAt(data: LineData, plane: Plane) -> SketchGroup
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -4468,11 +5185,23 @@ startProfileAt(data: LineData, plane: Plane) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -4506,10 +5235,10 @@ startSketchAt(data: LineData) -> SketchGroup
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -4580,11 +5309,23 @@ startSketchAt(data: LineData) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -4592,17 +5333,17 @@ startSketchAt(data: LineData) -> SketchGroup
 
 ### startSketchOn
 
-Start a sketch at a given point.
+Start a sketch on a specific plane or face.
 
 
 
 ```
-startSketchOn(data: PlaneData) -> Plane
+startSketchOn(data: SketchData, tag: SketchOnFaceTag) -> SketchSurface
 ```
 
 #### Arguments
 
-* `data`: `PlaneData` - Data for a plane.
+* `data`: `SketchData` - Data for start sketch on. You can start a sketch on a plane or an extrude group.
 ```
 "XY" |
 "-XY" |
@@ -4637,12 +5378,65 @@ startSketchOn(data: PlaneData) -> Plane
 	z: number,
 },
 },
+} |
+{
+	// The id of the extrusion end cap
+	endCapId: uuid,
+	// The height of the extrude group.
+	height: number,
+	// The id of the extrude group.
+	id: uuid,
+	// The position of the extrude group.
+	position: [number, number, number],
+	// The rotation of the extrude group.
+	rotation: [number, number, number, number],
+	// The id of the extrusion start cap
+	startCapId: uuid,
+	// The extrude surfaces.
+	value: [{
+	// The face id for the extrude plane.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The name.
+	name: string,
+	// The position.
+	position: [number, number, number],
+	// The rotation.
+	rotation: [number, number, number, number],
+	// The source range.
+	sourceRange: [number, number],
+	type: "extrudePlane",
+}],
+	// The x-axis of the extrude group base plane in the 3D space
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The y-axis of the extrude group base plane in the 3D space
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The z-axis of the extrude group base plane in the 3D space
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
+```
+* `tag`: `SketchOnFaceTag` - A tag for sketch on face.
+```
+"start" | "end" |
+string
 ```
 
 #### Returns
 
-* `Plane` - A plane.
+* `SketchSurface` - A plane or a face.
 ```
 {
 	// The id of the plane.
@@ -4662,6 +5456,30 @@ startSketchOn(data: PlaneData) -> Plane
 	z: number,
 },
 	// What should the plane’s Y axis be?
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The z-axis (normal).
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+} |
+{
+	// The id of the face.
+	id: uuid,
+	// The tag of the face.
+	value: string,
+	// What should the face’s X axis be?
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// What should the face’s Y axis be?
 	yAxis: {
 	x: number,
 	y: number,
@@ -4729,10 +5547,10 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -4803,11 +5621,23 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -4816,10 +5646,10 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -4890,11 +5720,23 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -4916,10 +5758,10 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchG
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -4990,11 +5832,23 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchG
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 * `tag`: `String`
@@ -5004,10 +5858,10 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchG
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -5078,11 +5932,23 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchG
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -5132,10 +5998,10 @@ number
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -5206,11 +6072,23 @@ number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -5219,10 +6097,10 @@ number
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -5293,11 +6171,23 @@ number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -5328,10 +6218,10 @@ number
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -5402,11 +6292,23 @@ number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -5415,10 +6317,10 @@ number
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -5489,11 +6391,23 @@ number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -5524,10 +6438,10 @@ number
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -5598,11 +6512,23 @@ number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -5611,10 +6537,10 @@ number
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -5685,11 +6611,23 @@ number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -5720,10 +6658,10 @@ number
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -5794,11 +6732,23 @@ number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -5807,10 +6757,10 @@ number
 * `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
+	// The plane id or face id of the sketch group.
+	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// The plane id of the sketch group.
-	planeId: uuid,
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -5881,11 +6831,23 @@ number
 	type: "Base",
 }],
 	// The x-axis of the sketch group base plane in the 3D space
-	xAxis: [number, number, number],
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The y-axis of the sketch group base plane in the 3D space
-	yAxis: [number, number, number],
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 	// The z-axis of the sketch group base plane in the 3D space
-	zAxis: [number, number, number],
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 

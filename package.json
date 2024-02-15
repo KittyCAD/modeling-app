@@ -10,7 +10,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@headlessui/react": "^1.7.17",
     "@headlessui/tailwindcss": "^0.2.0",
-    "@kittycad/lib": "^0.0.50",
+    "@kittycad/lib": "^0.0.53",
     "@lezer/javascript": "^1.4.9",
     "@open-rpc/client-js": "^1.8.1",
     "@react-hook/resize-observer": "^1.2.6",

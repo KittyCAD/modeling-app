@@ -14,11 +14,11 @@ import { CommandArgument } from './commandTypes'
 import {
   STRAIGHT_SEGMENT,
   TANGENTIAL_ARC_TO_SEGMENT,
-  clientSideScene,
+  sceneEntitiesManager,
   getParentGroup,
-} from 'clientSideScene/clientSideScene'
+} from 'clientSideScene/sceneEntities'
 import { Mesh } from 'three'
-import { AXIS_GROUP, X_AXIS } from 'clientSideScene/setup'
+import { AXIS_GROUP, X_AXIS } from 'clientSideScene/sceneInfra'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -401,7 +401,7 @@ function updateSceneObjectColors(codeBasedSelections: Selection[]) {
     console.error('error parsing code in processCodeMirrorRanges', e)
     return
   }
-  Object.values(clientSideScene.activeSegments).forEach((segmentGroup) => {
+  Object.values(sceneEntitiesManager.activeSegments).forEach((segmentGroup) => {
     if (
       ![STRAIGHT_SEGMENT, TANGENTIAL_ARC_TO_SEGMENT].includes(
         segmentGroup?.userData?.type

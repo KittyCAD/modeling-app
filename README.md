@@ -182,7 +182,7 @@ For more information on fuzzing you can check out
 First time running plawright locally, you'll need to add the secrets file
 ```bash
 touch ./e2e/playwright/playwright-secrets.env
-echo 'token="your-token"\nsnapshottoken="your-snapshot-token"' > ./e2e/playwright/playwright-secrets2.env
+printf 'token="your-token"\nsnapshottoken="your-snapshot-token"' > ./e2e/playwright/playwright-secrets.env
 ```
 then replace "your-token" with a dev token from dev.zoo.dev/account/api-tokens
 

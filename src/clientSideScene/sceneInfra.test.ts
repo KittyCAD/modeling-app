@@ -1,5 +1,5 @@
 import { Quaternion } from 'three'
-import { isQuaternionVertical } from './setup'
+import { isQuaternionVertical } from './sceneInfra'
 
 describe('isQuaternionVertical', () => {
   it('should identify vertical quaternions', () => {

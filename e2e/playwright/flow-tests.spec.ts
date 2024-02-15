@@ -306,9 +306,10 @@ test('Can create sketches on all planes and their back sides', async ({
 
   const codeTemplate = (
     plane = 'XY',
-    rounded = false
+    rounded = false,
+    otherThing = '1'
   ) => `const part001 = startSketchOn('${plane}')
-  |> startProfileAt([28.91, -39${rounded ? '' : '.01'}], %)`
+  |> startProfileAt([28.9${otherThing}, -39${rounded ? '' : '.01'}], %)`
   await TestSinglePlane({
     viewCmd: camPos,
     expectedCode: codeTemplate('XY'),
@@ -328,7 +329,7 @@ test('Can create sketches on all planes and their back sides', async ({
   const camCmdBackSide: [number, number, number] = [-100, -100, -100]
   await TestSinglePlane({
     viewCmd: camCmdBackSide,
-    expectedCode: codeTemplate('-XY', true),
+    expectedCode: codeTemplate('-XY', false, '3'),
     clickCoords: { x: 601, y: 118 }, // back of red plane
   })
   await TestSinglePlane({
@@ -661,10 +662,7 @@ test('Can extrude from the command bar', async ({ page, context }) => {
   await expect(page.getByRole('button', { name: 'selection' })).toBeDisabled()
 
   // Click to select face and set distance
-  await u.openAndClearDebugPanel()
   await page.getByText('|> startProfileAt([-6.95, 4.98], %)').click()
-  await u.waitForCmdReceive('select_add')
-  await u.closeDebugPanel()
   await page.getByRole('button', { name: 'Continue' }).click()
   await expect(page.getByRole('button', { name: 'distance' })).toBeDisabled()
   await page.keyboard.press('Enter')

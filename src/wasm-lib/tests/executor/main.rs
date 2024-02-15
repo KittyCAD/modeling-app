@@ -23,6 +23,8 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
 
     // Create the client.
     let client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
+    // uncomment to use a local server
+    // client.set_base_url("http://your-local-server:8080/");
 
     let ws = client
         .modeling()
@@ -64,6 +66,85 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
     // Read the output file.
     let actual = image::io::Reader::open(output_file).unwrap().decode().unwrap();
     Ok(actual)
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_sketch_on_face() {
+    let code = r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([11.19, 28.35], %)
+  |> line({to: [28.67, -13.25], tag: "here"}, %)
+  |> line([-4.12, -22.81], %)
+  |> line([-33.24, 14.55], %)
+  |> close(%)
+  |> extrude(5, %)
+
+const part002 = startSketchOn(part001, "here")
+  |> startProfileAt([0, 0], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %)
+  |> close(%)
+  |> extrude(5, %)
+"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_sketch_on_face_start() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+const part001 = cube([0,0], 20)
+    |> close(%)
+    |> extrude(20, %)
+
+const part002 = startSketchOn(part001, "start")
+  |> startProfileAt([0, 0], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %)
+  |> close(%)
+  |> extrude(5, %)
+"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_start.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_sketch_on_face_end() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+const part001 = cube([0,0], 20)
+    |> close(%)
+    |> extrude(20, %)
+
+const part002 = startSketchOn(part001, "END")
+  |> startProfileAt([0, 0], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %)
+  |> close(%)
+  |> extrude(5, %)
+"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_end.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -685,6 +766,88 @@ const rectangle = startSketchOn('XY')
 
     let result = execute_and_snapshot(code).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/patterns_linear_basic_holes.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_patterns_circular_basic_2d() {
+    let code = r#"fn circle = (pos, radius) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt([pos[0] + radius, pos[1]], %)
+    |> arc({
+       angle_end: 360,
+       angle_start: 0,
+       radius: radius
+     }, %)
+    |> close(%)
+  return sg
+}
+
+const part = circle([0,0], 2)
+    |> patternCircular({axis: [0,0,1], center: [20, 20, 20], repetitions: 12, arcDegrees: 210, rotateDuplicates: true}, %)
+"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/patterns_circular_basic_2d.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_patterns_circular_basic_3d() {
+    let code = r#"fn circle = (pos, radius) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt([pos[0] + radius, pos[1]], %)
+    |> arc({
+       angle_end: 360,
+       angle_start: 0,
+       radius: radius
+     }, %)
+    |> close(%)
+  return sg
+}
+
+const part = startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line([0,1], %)
+    |> line([1, 0], %)
+    |> line([0, -1], %)
+    |> close(%)
+    |> extrude(1, %)
+    |> patternCircular({axis: [0,1,0], center: [-20, -20, -20], repetitions: 40, arcDegrees: 360, rotateDuplicates: false}, %)
+"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/patterns_circular_basic_3d.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_patterns_circular_3d_tilted_axis() {
+    let code = r#"fn circle = (pos, radius) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt([pos[0] + radius, pos[1]], %)
+    |> arc({
+       angle_end: 360,
+       angle_start: 0,
+       radius: radius
+     }, %)
+    |> close(%)
+  return sg
+}
+
+const part = startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line([0,1], %)
+    |> line([1, 0], %)
+    |> line([0, -1], %)
+    |> close(%)
+    |> extrude(1, %)
+    |> patternCircular({axis: [1,1,-1], center: [10, 0, 10], repetitions: 10, arcDegrees: 360, rotateDuplicates: true}, %)
+"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/patterns_circular_3d_tilted_axis.png",
+        &result,
+        0.999,
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]
