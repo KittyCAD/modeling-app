@@ -2,9 +2,10 @@
 
 use dashmap::DashMap;
 use tower_lsp::lsp_types::{
-    DidChangeConfigurationParams, DidChangeTextDocumentParams, DidChangeWatchedFilesParams,
-    DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams,
-    InitializedParams, MessageType, TextDocumentItem,
+    CreateFilesParams, DeleteFilesParams, DidChangeConfigurationParams, DidChangeTextDocumentParams,
+    DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams,
+    DidOpenTextDocumentParams, DidSaveTextDocumentParams, InitializedParams, MessageType, RenameFilesParams,
+    TextDocumentItem,
 };
 
 /// A trait for the backend of the language server.
@@ -54,6 +55,24 @@ pub trait Backend {
     async fn do_did_change_watched_files(&self, params: DidChangeWatchedFilesParams) {
         self.client()
             .log_message(MessageType::INFO, format!("watched files changed: {:?}", params))
+            .await;
+    }
+
+    async fn do_did_create_files(&self, params: CreateFilesParams) {
+        self.client()
+            .log_message(MessageType::INFO, format!("files created: {:?}", params))
+            .await;
+    }
+
+    async fn do_did_rename_files(&self, params: RenameFilesParams) {
+        self.client()
+            .log_message(MessageType::INFO, format!("files renamed: {:?}", params))
+            .await;
+    }
+
+    async fn do_did_delete_files(&self, params: DeleteFilesParams) {
+        self.client()
+            .log_message(MessageType::INFO, format!("files deleted: {:?}", params))
             .await;
     }
 

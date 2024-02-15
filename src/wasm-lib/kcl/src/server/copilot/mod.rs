@@ -17,11 +17,11 @@ use serde::{Deserialize, Serialize};
 use tower_lsp::{
     jsonrpc::{Error, Result},
     lsp_types::{
-        DidChangeConfigurationParams, DidChangeTextDocumentParams, DidChangeWatchedFilesParams,
-        DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams,
-        DidSaveTextDocumentParams, InitializeParams, InitializeResult, InitializedParams, MessageType, OneOf,
-        ServerCapabilities, TextDocumentItem, TextDocumentSyncCapability, TextDocumentSyncKind,
-        TextDocumentSyncOptions, WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities,
+        CreateFilesParams, DeleteFilesParams, DidChangeConfigurationParams, DidChangeTextDocumentParams,
+        DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams,
+        DidOpenTextDocumentParams, DidSaveTextDocumentParams, InitializeParams, InitializeResult, InitializedParams,
+        MessageType, OneOf, RenameFilesParams, ServerCapabilities, TextDocumentItem, TextDocumentSyncCapability,
+        TextDocumentSyncKind, TextDocumentSyncOptions, WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities,
     },
     Client, LanguageServer,
 };
@@ -288,6 +288,18 @@ impl LanguageServer for Backend {
 
     async fn did_change_watched_files(&self, params: DidChangeWatchedFilesParams) {
         self.do_did_change_watched_files(params).await
+    }
+
+    async fn did_create_files(&self, params: CreateFilesParams) {
+        self.do_did_create_files(params).await
+    }
+
+    async fn did_rename_files(&self, params: RenameFilesParams) {
+        self.do_did_rename_files(params).await
+    }
+
+    async fn did_delete_files(&self, params: DeleteFilesParams) {
+        self.do_did_delete_files(params).await
     }
 
     async fn did_open(&self, params: DidOpenTextDocumentParams) {

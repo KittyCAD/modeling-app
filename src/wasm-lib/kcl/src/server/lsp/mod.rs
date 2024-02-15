@@ -9,20 +9,21 @@ use dashmap::DashMap;
 use tower_lsp::{
     jsonrpc::Result as RpcResult,
     lsp_types::{
-        CompletionItem, CompletionItemKind, CompletionOptions, CompletionParams, CompletionResponse, DiagnosticOptions,
-        DiagnosticServerCapabilities, DidChangeConfigurationParams, DidChangeTextDocumentParams,
-        DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams,
-        DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentDiagnosticParams, DocumentDiagnosticReport,
-        DocumentDiagnosticReportResult, DocumentFilter, DocumentFormattingParams, DocumentSymbol, DocumentSymbolParams,
-        DocumentSymbolResponse, Documentation, FullDocumentDiagnosticReport, Hover, HoverContents, HoverParams,
-        HoverProviderCapability, InitializeParams, InitializeResult, InitializedParams, InlayHint, InlayHintParams,
-        InsertTextFormat, MarkupContent, MarkupKind, MessageType, OneOf, ParameterInformation, ParameterLabel,
-        Position, RelatedFullDocumentDiagnosticReport, RenameParams, SemanticToken, SemanticTokenType, SemanticTokens,
-        SemanticTokensFullOptions, SemanticTokensLegend, SemanticTokensOptions, SemanticTokensParams,
-        SemanticTokensRegistrationOptions, SemanticTokensResult, SemanticTokensServerCapabilities, ServerCapabilities,
-        SignatureHelp, SignatureHelpOptions, SignatureHelpParams, SignatureInformation, StaticRegistrationOptions,
-        TextDocumentItem, TextDocumentRegistrationOptions, TextDocumentSyncCapability, TextDocumentSyncKind,
-        TextDocumentSyncOptions, TextEdit, WorkDoneProgressOptions, WorkspaceEdit, WorkspaceFoldersServerCapabilities,
+        CompletionItem, CompletionItemKind, CompletionOptions, CompletionParams, CompletionResponse, CreateFilesParams,
+        DeleteFilesParams, DiagnosticOptions, DiagnosticServerCapabilities, DidChangeConfigurationParams,
+        DidChangeTextDocumentParams, DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams,
+        DidCloseTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentDiagnosticParams,
+        DocumentDiagnosticReport, DocumentDiagnosticReportResult, DocumentFilter, DocumentFormattingParams,
+        DocumentSymbol, DocumentSymbolParams, DocumentSymbolResponse, Documentation, FullDocumentDiagnosticReport,
+        Hover, HoverContents, HoverParams, HoverProviderCapability, InitializeParams, InitializeResult,
+        InitializedParams, InlayHint, InlayHintParams, InsertTextFormat, MarkupContent, MarkupKind, MessageType, OneOf,
+        ParameterInformation, ParameterLabel, Position, RelatedFullDocumentDiagnosticReport, RenameFilesParams,
+        RenameParams, SemanticToken, SemanticTokenType, SemanticTokens, SemanticTokensFullOptions,
+        SemanticTokensLegend, SemanticTokensOptions, SemanticTokensParams, SemanticTokensRegistrationOptions,
+        SemanticTokensResult, SemanticTokensServerCapabilities, ServerCapabilities, SignatureHelp,
+        SignatureHelpOptions, SignatureHelpParams, SignatureInformation, StaticRegistrationOptions, TextDocumentItem,
+        TextDocumentRegistrationOptions, TextDocumentSyncCapability, TextDocumentSyncKind, TextDocumentSyncOptions,
+        TextEdit, WorkDoneProgressOptions, WorkspaceEdit, WorkspaceFoldersServerCapabilities,
         WorkspaceServerCapabilities,
     },
     Client, LanguageServer,
@@ -334,6 +335,18 @@ impl LanguageServer for Backend {
 
     async fn did_change_watched_files(&self, params: DidChangeWatchedFilesParams) {
         self.do_did_change_watched_files(params).await
+    }
+
+    async fn did_create_files(&self, params: CreateFilesParams) {
+        self.do_did_create_files(params).await
+    }
+
+    async fn did_rename_files(&self, params: RenameFilesParams) {
+        self.do_did_rename_files(params).await
+    }
+
+    async fn did_delete_files(&self, params: DeleteFilesParams) {
+        self.do_did_delete_files(params).await
     }
 
     async fn did_open(&self, params: DidOpenTextDocumentParams) {
