@@ -453,9 +453,27 @@ class SceneInfra {
     if (!this.isFovAnimationInProgress)
       this.renderer.render(this.scene, this.camera)
   }
-  tweenCameraToQuaternion(
+  async tweenCameraToQuaternion(
     targetQuaternion: Quaternion,
-    duration: number = 500
+    duration = 500,
+    toOrthographic = true
+  ): Promise<void> {
+    const isVertical = isQuaternionVertical(targetQuaternion)
+    let _duration = duration
+    if (isVertical) {
+      _duration = duration * 0.6
+      await this._tweenCameraToQuaternion(new Quaternion(), _duration, false)
+    }
+    await this._tweenCameraToQuaternion(
+      targetQuaternion,
+      _duration,
+      toOrthographic
+    )
+  }
+  _tweenCameraToQuaternion(
+    targetQuaternion: Quaternion,
+    duration = 500,
+    toOrthographic = false
   ): Promise<void> {
     return new Promise((resolve) => {
       const camera = this.camera
@@ -489,10 +507,10 @@ class SceneInfra {
       }
 
       const onComplete = async () => {
-        if (isReducedMotion()) {
+        if (isReducedMotion() && toOrthographic) {
           cameraAtTime(0.99)
           this.useOrthographicCamera()
-        } else {
+        } else if (toOrthographic) {
           await this.animateToOrthographic()
         }
         if (isVertical) cameraAtTime(1)
@@ -1054,6 +1072,24 @@ function calculateNearFarFromFOV(fov: number) {
   // const z_near = 0.1 + nearFarRatio * (5 - 0.1)
   const z_far = 1000 + nearFarRatio * (100000 - 1000)
   return { z_near: 0.1, z_far }
+}
+
+export function getSceneScale(
+  camera: PerspectiveCamera | OrthographicCamera,
+  target: Vector3
+): number {
+  const distance =
+    camera instanceof PerspectiveCamera
+      ? camera.position.distanceTo(target)
+      : 63.7942123 / camera.zoom
+
+  if (distance <= 20) return 0.1
+  else if (distance > 20 && distance <= 200) return 1
+  else if (distance > 200 && distance <= 2000) return 10
+  else if (distance > 2000 && distance <= 20000) return 100
+  else if (distance > 20000) return 1000
+
+  return 1
 }
 
 export function isQuaternionVertical(q: Quaternion) {
