@@ -126,7 +126,8 @@ impl Backend {
             n: 1,
             stop: ["unset".to_string()].to_vec(),
             nwo: "kittycad/modeling-app".to_string(),
-            stream: true,
+            // We haven't implemented streaming yet.
+            stream: false,
             extra,
         });
         let body = serde_json::to_string(&body)?;
