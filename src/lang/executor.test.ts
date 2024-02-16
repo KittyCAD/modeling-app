@@ -143,6 +143,7 @@ show(mySketch)
     const { root } = await exe(code)
     expect(root.mySk1).toEqual({
       type: 'SketchGroup',
+      on: expect.any(Object),
       start: {
         to: [0, 0],
         from: [0, 0],
