@@ -391,6 +391,26 @@ class KclManager {
     }
     return returnVal
   }
+
+  get defaultPlanes() {
+    return this?.engineCommandManager?.defaultPlanes
+  }
+
+  getPlaneId(axis: 'xy' | 'xz' | 'yz'): string {
+    return this.defaultPlanes[axis]
+  }
+
+  showPlanes() {
+    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, false)
+    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, false)
+    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, false)
+  }
+
+  hidePlanes() {
+    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, true)
+    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, true)
+    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, true)
+  }
 }
 
 export const kclManager = new KclManager(engineCommandManager)
