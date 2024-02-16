@@ -128,63 +128,6 @@ angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup)
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -302,63 +245,6 @@ angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup)
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -486,63 +372,6 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -642,63 +471,6 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -822,63 +594,6 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -978,63 +693,6 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -1158,63 +816,6 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -1314,63 +915,6 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -1495,63 +1039,6 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -1651,63 +1138,6 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -1831,63 +1261,6 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -1987,63 +1360,6 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -2167,63 +1483,6 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -2323,63 +1582,6 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -2530,63 +1732,6 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -2686,63 +1831,6 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -2915,63 +2003,6 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -3071,63 +2102,6 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -3259,63 +2233,6 @@ close(sketch_group: SketchGroup) -> SketchGroup
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -3415,63 +2332,6 @@ close(sketch_group: SketchGroup) -> SketchGroup
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -3623,63 +2483,6 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -3942,63 +2745,6 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -4099,63 +2845,6 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -4255,63 +2944,6 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -4532,63 +3164,6 @@ lastSegX(sketch_group: SketchGroup) -> number
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -4704,63 +3279,6 @@ lastSegY(sketch_group: SketchGroup) -> number
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -4949,63 +3467,6 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -5105,63 +3566,6 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -5283,63 +3687,6 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -5439,63 +3786,6 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -5743,63 +4033,6 @@ patternCircular(data: CircularPatternData, geometry: Geometry) -> Geometries
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -5984,63 +4217,6 @@ patternLinear(data: LinearPatternData, geometry: Geometry) -> Geometries
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -6255,63 +4431,6 @@ segAng(segment_name: string, sketch_group: SketchGroup) -> number
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -6428,63 +4547,6 @@ segEndX(segment_name: string, sketch_group: SketchGroup) -> number
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -6601,63 +4663,6 @@ segEndY(segment_name: string, sketch_group: SketchGroup) -> number
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -6774,63 +4779,6 @@ segLen(segment_name: string, sketch_group: SketchGroup) -> number
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -6946,63 +4894,6 @@ show(sketch: SketchGroup)
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -7157,7 +5048,7 @@ startProfileAt(data: LineData, sketch_surface: SketchSurface) -> SketchGroup
 } |
 [number, number]
 ```
-* `sketch_surface`: `SketchSurface` - A sketch group type.
+* `sketch_surface`: `SketchSurface` - A plane or a face.
 ```
 {
 	// The id of the plane.
@@ -7168,7 +5059,6 @@ startProfileAt(data: LineData, sketch_surface: SketchSurface) -> SketchGroup
 	y: number,
 	z: number,
 },
-	type: "plane",
 	// Type for a plane.
 	value: "XY" | "XZ" | "YZ" | "Custom",
 	// What should the plane’s X axis be?
@@ -7193,7 +5083,6 @@ startProfileAt(data: LineData, sketch_surface: SketchSurface) -> SketchGroup
 {
 	// The id of the face.
 	id: uuid,
-	type: "face",
 	// The tag of the face.
 	value: string,
 	// What should the face’s X axis be?
@@ -7226,63 +5115,6 @@ startProfileAt(data: LineData, sketch_surface: SketchSurface) -> SketchGroup
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -7407,63 +5239,6 @@ startSketchAt(data: LineData) -> SketchGroup
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -7661,7 +5436,7 @@ string
 
 #### Returns
 
-* `SketchSurface` - A sketch group type.
+* `SketchSurface` - A plane or a face.
 ```
 {
 	// The id of the plane.
@@ -7672,7 +5447,6 @@ string
 	y: number,
 	z: number,
 },
-	type: "plane",
 	// Type for a plane.
 	value: "XY" | "XZ" | "YZ" | "Custom",
 	// What should the plane’s X axis be?
@@ -7697,7 +5471,6 @@ string
 {
 	// The id of the face.
 	id: uuid,
-	type: "face",
 	// The tag of the face.
 	value: string,
 	// What should the face’s X axis be?
@@ -7778,63 +5551,6 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -7934,63 +5650,6 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -8103,63 +5762,6 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchG
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -8260,63 +5862,6 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchG
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -8457,63 +6002,6 @@ number
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -8613,63 +6101,6 @@ number
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -8791,63 +6222,6 @@ number
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -8947,63 +6321,6 @@ number
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -9125,63 +6442,6 @@ number
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -9281,63 +6541,6 @@ number
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -9459,63 +6662,6 @@ number
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
@@ -9615,63 +6761,6 @@ number
 	entityId: uuid,
 	// The id of the sketch group.
 	id: uuid,
-	// What the sketch is on (can be a plane or a face).
-	on: {
-	// The id of the plane.
-	id: uuid,
-	// Origin of the plane.
-	origin: {
-	x: number,
-	y: number,
-	z: number,
-},
-	type: "plane",
-	// Type for a plane.
-	value: "XY" | "XZ" | "YZ" | "Custom",
-	// What should the plane’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-} |
-{
-	// The id of the face.
-	id: uuid,
-	type: "face",
-	// The tag of the face.
-	value: string,
-	// What should the face’s X axis be?
-	xAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the face’s Y axis be?
-	yAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	zAxis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
 	// The position of the sketch group.
 	position: [number, number, number],
 	// The rotation of the sketch group base plane.
