@@ -6,7 +6,7 @@ import React from 'react'
 import { useFormik } from 'formik'
 import { Models } from '@kittycad/lib'
 import { engineCommandManager } from '../lang/std/engineConnection'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 
 type OutputFormat = Models['OutputFormat_type']
 type OutputTypeKey = OutputFormat['type']
@@ -29,7 +29,7 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
         context: { baseUnit },
       },
     },
-  } = useSettingsAuthContext()
+  } = useGlobalStateContext()
 
   const defaultType = 'gltf'
   const [type, setType] = React.useState<OutputTypeKey>(defaultType)

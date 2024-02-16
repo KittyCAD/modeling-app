@@ -5,7 +5,7 @@ import {
   useNextClick,
 } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { bracket } from 'lib/exampleKcl'
 import {
@@ -31,7 +31,7 @@ function OnboardingWithNewFile() {
     settings: {
       context: { defaultDirectory },
     },
-  } = useSettingsAuthContext()
+  } = useGlobalStateContext()
 
   async function createAndOpenNewProject() {
     const projects = await getProjectsInDir(defaultDirectory)
@@ -111,7 +111,7 @@ export default function Introduction() {
         context: { theme },
       },
     },
-  } = useSettingsAuthContext()
+  } = useGlobalStateContext()
   const getLogoTheme = () =>
     theme === Themes.Light ||
     (theme === Themes.System && getSystemTheme() === Themes.Light)
