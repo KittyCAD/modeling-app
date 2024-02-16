@@ -10,7 +10,7 @@ import { useStore } from '../useStore'
 import { getNormalisedCoordinates, throttle } from '../lib/utils'
 import Loading from './Loading'
 import { cameraMouseDragGuards } from 'lib/cameraControls'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { Models } from '@kittycad/lib'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
@@ -34,7 +34,7 @@ export const Stream = ({ className = '' }: { className?: string }) => {
     setDidDragInStream: s.setDidDragInStream,
     streamDimensions: s.streamDimensions,
   }))
-  const { settings } = useSettingsAuthContext()
+  const { settings } = useGlobalStateContext()
   const cameraControls = settings?.context?.cameraControls
   const { state } = useModelingContext()
   const { isExecuting } = useKclContext()
