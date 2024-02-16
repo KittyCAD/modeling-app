@@ -920,6 +920,11 @@ export class EngineCommandManager {
   outSequence = 1
   inSequence = 1
   engineConnection?: EngineConnection
+  defaultPlanes: { xy: string; yz: string; xz: string } = {
+    xy: '',
+    yz: '',
+    xz: '',
+  }
   _commandLogs: CommandLog[] = []
   _commandLogCallBack: (command: CommandLog[]) => void = () => {}
   // Folks should realize that wait for ready does not get called _everytime_
@@ -1014,7 +1019,9 @@ export class EngineCommandManager {
         })
         sceneInfra.onStreamStart()
 
-        executeCode(undefined, true)
+        this.initPlanes().then(() => {
+          executeCode(undefined, true)
+        })
       },
       onClose: () => {
         setIsStreamReady(false)
@@ -1563,6 +1570,102 @@ export class EngineCommandManager {
     return {
       artifactMap: this.artifactMap,
     }
+  }
+  private async initPlanes() {
+    const [xy, yz, xz] = [
+      await this.createPlane({
+        x_axis: { x: 1, y: 0, z: 0 },
+        y_axis: { x: 0, y: 1, z: 0 },
+        color: { r: 0.7, g: 0.28, b: 0.28, a: 0.4 },
+      }),
+      await this.createPlane({
+        x_axis: { x: 0, y: 1, z: 0 },
+        y_axis: { x: 0, y: 0, z: 1 },
+        color: { r: 0.28, g: 0.7, b: 0.28, a: 0.4 },
+      }),
+      await this.createPlane({
+        x_axis: { x: 1, y: 0, z: 0 },
+        y_axis: { x: 0, y: 0, z: 1 },
+        color: { r: 0.28, g: 0.28, b: 0.7, a: 0.4 },
+      }),
+    ]
+    this.defaultPlanes = { xy, yz, xz }
+
+    this.subscribeTo({
+      event: 'select_with_point',
+      callback: ({ data }) => {
+        if (!data?.entity_id) return
+        if (
+          ![
+            this.defaultPlanes.xy,
+            this.defaultPlanes.yz,
+            this.defaultPlanes.xz,
+          ].includes(data.entity_id)
+        )
+          return
+        this.onPlaneSelectCallback(data.entity_id)
+      },
+    })
+  }
+  planesInitialized(): boolean {
+    return (
+      this.defaultPlanes.xy !== '' &&
+      this.defaultPlanes.yz !== '' &&
+      this.defaultPlanes.xz !== ''
+    )
+  }
+
+  onPlaneSelectCallback = (id: string) => {}
+  onPlaneSelected(callback: (id: string) => void) {
+    this.onPlaneSelectCallback = callback
+  }
+
+  async setPlaneHidden(id: string, hidden: boolean): Promise<string> {
+    return await this.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'object_visible',
+        object_id: id,
+        hidden: hidden,
+      },
+    })
+  }
+
+  private async createPlane({
+    x_axis,
+    y_axis,
+    color,
+  }: {
+    x_axis: Models['Point3d_type']
+    y_axis: Models['Point3d_type']
+    color: Models['Color_type']
+  }): Promise<string> {
+    const planeId = uuidv4()
+    await this.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'make_plane',
+        size: 100,
+        origin: { x: 0, y: 0, z: 0 },
+        x_axis,
+        y_axis,
+        clobber: false,
+        hide: true,
+      },
+      cmd_id: planeId,
+    })
+    await this.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'plane_set_color',
+        plane_id: planeId,
+        color,
+      },
+      cmd_id: uuidv4(),
+    })
+    await this.setPlaneHidden(planeId, true)
+    return planeId
   }
 }
 

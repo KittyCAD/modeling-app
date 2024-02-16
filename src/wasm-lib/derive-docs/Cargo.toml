@@ -19,7 +19,7 @@ quote = "1"
 regex = "1.10"
 serde = { version = "1.0.193", features = ["derive"] }
 serde_tokenstream = "0.2"
-syn = { version = "2.0.39", features = ["full"] }
+syn = { version = "2.0.49", features = ["full"] }
 
 [dev-dependencies]
 expectorate = "1.1.0"

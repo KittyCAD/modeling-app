@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from 'react'
 import { useModelingContext } from 'hooks/useModelingContext'
 
 import { cameraMouseDragGuards } from 'lib/cameraControls'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { useStore } from 'useStore'
 import {
   DEBUG_SHOW_BOTH_SCENES,
@@ -26,7 +26,7 @@ function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
 
   if (DEBUG_SHOW_BOTH_SCENES || !isCamMoving)
     return { hideClient: false, hideServer: false }
-  let hideServer = state.matches('Sketch') || state.matches('Sketch no face')
+  let hideServer = state.matches('Sketch')
   if (isTween) {
     hideServer = false
   }
@@ -38,7 +38,7 @@ export const ClientSideScene = ({
   cameraControls,
 }: {
   cameraControls: ReturnType<
-    typeof useSettingsAuthContext
+    typeof useGlobalStateContext
   >['settings']['context']['cameraControls']
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null)

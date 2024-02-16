@@ -29,9 +29,9 @@ import {
   getSortIcon,
 } from '../lib/sorting'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { DEFAULT_PROJECT_NAME } from 'lib/settings'
+import { DEFAULT_PROJECT_NAME } from 'machines/settingsMachine'
 import { sep } from '@tauri-apps/api/path'
 import { homeCommandBarConfig } from 'lib/commandBarConfigs/homeCommandConfig'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -42,17 +42,14 @@ import { isTauri } from 'lib/isTauri'
 const Home = () => {
   const { commandBarSend } = useCommandsContext()
   const navigate = useNavigate()
-  const {
-    projects: loadedProjects,
-    newDefaultDirectory,
-    error,
-  } = useLoaderData() as HomeLoaderData
+  const { projects: loadedProjects, newDefaultDirectory } =
+    useLoaderData() as HomeLoaderData
   const {
     settings: {
       context: { defaultDirectory, defaultProjectName },
       send: sendToSettings,
     },
-  } = useSettingsAuthContext()
+  } = useGlobalStateContext()
 
   // Set the default directory if it's been updated
   // during the loading of the home page. This is wrapped
@@ -60,17 +57,11 @@ const Home = () => {
   useEffect(() => {
     if (newDefaultDirectory) {
       sendToSettings({
-        type: 'Set All Settings',
+        type: 'Set Default Directory',
         data: { defaultDirectory: newDefaultDirectory },
       })
     }
-
-    // Toast any errors that occurred during the loading process
-    if (error) {
-      toast.error(error.message)
-    }
   }, [])
-
   useHotkeys(
     isTauri() ? 'mod+,' : 'shift+mod+,',
     () => navigate(paths.HOME + paths.SETTINGS),
