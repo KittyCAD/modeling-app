@@ -22,7 +22,7 @@ import { getNormalisedCoordinates } from './lib/utils'
 import { useLoaderData, useNavigate } from 'react-router-dom'
 import { type IndexLoaderData } from 'lib/types'
 import { paths } from 'lib/paths'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { CodeMenu } from 'components/CodeMenu'
 import { TextEditor } from 'components/TextEditor'
@@ -53,7 +53,7 @@ export function App() {
     streamDimensions: s.streamDimensions,
   }))
 
-  const { settings } = useSettingsAuthContext()
+  const { settings } = useGlobalStateContext()
   const { showDebugPanel, onboardingStatus, theme } = settings?.context || {}
   const { state, send } = useModelingContext()
 

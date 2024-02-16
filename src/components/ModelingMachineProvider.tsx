@@ -10,7 +10,7 @@ import {
 } from 'xstate'
 import { SetSelections, modelingMachine } from 'machines/modelingMachine'
 import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { isCursorInSketchCommandRange } from 'lang/util'
 import { engineCommandManager } from 'lang/std/engineConnection'
 import { kclManager, useKclContext } from 'lang/KclSingleton'
@@ -53,7 +53,7 @@ export const ModelingMachineProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const { auth } = useSettingsAuthContext()
+  const { auth } = useGlobalStateContext()
   const { code } = useKclContext()
   const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)

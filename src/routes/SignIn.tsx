@@ -4,7 +4,7 @@ import { invoke } from '@tauri-apps/api/tauri'
 import { VITE_KC_SITE_BASE_URL, VITE_KC_API_BASE_URL } from '../env'
 import { Themes, getSystemTheme } from '../lib/theme'
 import { paths } from 'lib/paths'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { APP_NAME } from 'lib/constants'
 
 const SignIn = () => {
@@ -20,7 +20,7 @@ const SignIn = () => {
         context: { theme },
       },
     },
-  } = useSettingsAuthContext()
+  } = useGlobalStateContext()
 
   const signInTauri = async () => {
     // We want to invoke our command to login via device auth.
