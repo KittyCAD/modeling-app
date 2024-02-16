@@ -1,6 +1,11 @@
 import { CommandSetConfig } from '../commandTypes'
-import { BaseUnit, Toggle, UnitSystem, baseUnitsUnion } from 'lib/settings'
-import { settingsMachine } from 'machines/settingsMachine'
+import {
+  BaseUnit,
+  Toggle,
+  UnitSystem,
+  baseUnitsUnion,
+  settingsMachine,
+} from 'machines/settingsMachine'
 import { CameraSystem, cameraSystems } from '../cameraControls'
 import { Themes } from '../theme'
 

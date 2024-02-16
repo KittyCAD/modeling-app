@@ -5,12 +5,7 @@ import { authMachine, TOKEN_PERSIST_KEY } from '../machines/authMachine'
 import withBaseUrl from '../lib/withBaseURL'
 import React, { createContext, useEffect, useRef } from 'react'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
-import { settingsMachine } from 'machines/settingsMachine'
-import {
-  initialSettings,
-  SETTINGS_PERSIST_KEY,
-  validateSettings,
-} from 'lib/settings'
+import { SETTINGS_PERSIST_KEY, settingsMachine } from 'machines/settingsMachine'
 import { toast } from 'react-hot-toast'
 import { setThemeClass, Themes } from 'lib/theme'
 import {
@@ -23,7 +18,6 @@ import {
 import { isTauri } from 'lib/isTauri'
 import { settingsCommandBarConfig } from 'lib/commandBarConfigs/settingsCommandConfig'
 import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
-import { initializeProjectDirectory, readSettingsFile } from 'lib/tauriFS'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -31,14 +25,14 @@ type MachineContext<T extends AnyStateMachine> = {
   send: Prop<InterpreterFrom<T>, 'send'>
 }
 
-type SettingsAuthContext = {
+type GlobalContext = {
   auth: MachineContext<typeof authMachine>
   settings: MachineContext<typeof settingsMachine>
 }
 
-export const SettingsAuthStateContext = createContext({} as SettingsAuthContext)
+export const GlobalStateContext = createContext({} as GlobalContext)
 
-export const SettingsAuthStateProvider = ({
+export const GlobalStateProvider = ({
   children,
 }: {
   children: React.ReactNode
@@ -46,17 +40,14 @@ export const SettingsAuthStateProvider = ({
   const navigate = useNavigate()
 
   // Settings machine setup
-  // Load settings from local storage
-  // and validate them
   const retrievedSettings = useRef(
-    validateSettings(
-      JSON.parse(localStorage?.getItem(SETTINGS_PERSIST_KEY) || '{}')
-    )
+    localStorage?.getItem(SETTINGS_PERSIST_KEY) || '{}'
   )
   const persistedSettings = Object.assign(
-    {},
-    initialSettings,
-    retrievedSettings.current.settings
+    settingsMachine.initialState.context,
+    JSON.parse(retrievedSettings.current) as Partial<
+      (typeof settingsMachine)['context']
+    >
   )
 
   const [settingsState, settingsSend] = useMachine(settingsMachine, {
@@ -80,75 +71,6 @@ export const SettingsAuthStateProvider = ({
       },
     },
   })
-
-  // If the app is running in the Tauri context,
-  // try to read the settings from a file
-  // after doing some validation on them
-  useEffect(() => {
-    async function getFileBasedSettings() {
-      if (isTauri()) {
-        const newSettings = await readSettingsFile()
-
-        if (newSettings) {
-          if (newSettings.defaultDirectory) {
-            const newDefaultDirectory = await initializeProjectDirectory(
-              newSettings.defaultDirectory || ''
-            )
-            if (newDefaultDirectory.error !== null) {
-              toast.error(newDefaultDirectory.error.message)
-            }
-
-            if (newDefaultDirectory.path !== null) {
-              newSettings.defaultDirectory = newDefaultDirectory.path
-            }
-          }
-          const { settings: validatedSettings, errors: validationErrors } =
-            validateSettings(newSettings)
-
-          retrievedSettings.current = Object.assign(
-            {},
-            initialSettings,
-            retrievedSettings.current,
-            validatedSettings
-          )
-
-          settingsSend({
-            type: 'Set All Settings',
-            data: validatedSettings,
-          })
-
-          return validationErrors
-        }
-      } else {
-        // If the app is not running in the Tauri context,
-        // just use the settings from local storage
-        // after they've been validated to ensure they are correct.
-        settingsSend({
-          type: 'Set All Settings',
-          data: retrievedSettings.current.settings,
-        })
-      }
-      return []
-    }
-
-    // If there were validation errors either from local storage or from the file,
-    // log them to the console and show a toast message to the user.
-    void getFileBasedSettings().then((validationErrors: string[]) => {
-      const combinedErrors = new Set([
-        ...retrievedSettings.current.errors,
-        ...validationErrors,
-      ])
-
-      if (combinedErrors.size > 0) {
-        const errorMessage =
-          'Error validating persisted settings: ' +
-          Array.from(combinedErrors).join(', ') +
-          '. Using defaults.'
-        console.error(errorMessage)
-        toast.error(errorMessage)
-      }
-    })
-  }, [settingsSend])
 
   useStateMachineCommands({
     machineId: 'settings',
@@ -197,7 +119,7 @@ export const SettingsAuthStateProvider = ({
   })
 
   return (
-    <SettingsAuthStateContext.Provider
+    <GlobalStateContext.Provider
       value={{
         auth: {
           state: authState,
@@ -212,11 +134,11 @@ export const SettingsAuthStateProvider = ({
       }}
     >
       {children}
-    </SettingsAuthStateContext.Provider>
+    </GlobalStateContext.Provider>
   )
 }
 
-export default SettingsAuthStateProvider
+export default GlobalStateProvider
 
 export function logout() {
   localStorage.removeItem(TOKEN_PERSIST_KEY)

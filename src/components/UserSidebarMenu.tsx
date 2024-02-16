@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment, useState } from 'react'
 import { paths } from 'lib/paths'
 import { Models } from '@kittycad/lib'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 
 type User = Models['User_type']
@@ -17,7 +17,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   const displayedName = getDisplayName(user)
   const [imageLoadFailed, setImageLoadFailed] = useState(false)
   const navigate = useNavigate()
-  const send = useSettingsAuthContext()?.auth?.send
+  const send = useGlobalStateContext()?.auth?.send
 
   // Fallback logic for displaying user's "name":
   // 1. user.name
