@@ -23,7 +23,7 @@
       "fs": {
         "scope": [
           "$HOME/**/*",
-          "$APPDATA/**/*",
+          "$APPCONFIG/**/*",
           "$DOCUMENT/**/*"
         ],
         "all": true
@@ -61,7 +61,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "io.kittycad.modeling-app",
+      "identifier": "dev.zoo.modeling-app",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
