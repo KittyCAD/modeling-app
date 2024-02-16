@@ -36,6 +36,14 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
     )
     .await?;
 
+    // Exit sketch mode, since if we were in a plane or entity we'd want to disable the sketch mode after.
+    // We need to do this after extrude for sketch on face.
+    if sketch_group.entity_id.is_some() {
+        // We were on a plane, disable the sketch mode.
+        args.send_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
+            .await?;
+    }
+
     // Bring the object to the front of the scene.
     // See: https://github.com/KittyCAD/modeling-app/issues/806
     args.send_modeling_cmd(

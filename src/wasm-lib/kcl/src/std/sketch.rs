@@ -1126,13 +1126,6 @@ async fn inner_close(sketch_group: Box<SketchGroup>, args: Args) -> Result<Box<S
     )
     .await?;
 
-    // Exit sketch mode, since if we were in a plane or entity we'd want to disable the sketch mode after.
-    if sketch_group.entity_id.is_some() {
-        // We were on a plane, disable the sketch mode.
-        args.send_modeling_cmd(uuid::Uuid::new_v4(), ModelingCmd::SketchModeDisable {})
-            .await?;
-    }
-
     let mut new_sketch_group = sketch_group.clone();
     new_sketch_group.value.push(Path::ToPoint {
         base: BasePath {
