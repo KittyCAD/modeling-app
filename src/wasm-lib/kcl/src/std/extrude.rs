@@ -6,7 +6,7 @@ use schemars::JsonSchema;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, ExtrudeSurface, ExtrudeTransform, GeoMeta, MemoryItem, Path, SketchGroup},
+    executor::{ExtrudeGroup, ExtrudeSurface, ExtrudeTransform, GeoMeta, MemoryItem, Path, SketchGroup, SketchSurface},
     std::Args,
 };
 
@@ -36,10 +36,9 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
     )
     .await?;
 
-    // Exit sketch mode, since if we were in a plane or entity we'd want to disable the sketch mode after.
     // We need to do this after extrude for sketch on face.
-    if sketch_group.entity_id.is_some() {
-        // We were on a plane, disable the sketch mode.
+    if let SketchSurface::Face(_) = sketch_group.on {
+        // Disable the sketch mode.
         args.send_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
             .await?;
     }
