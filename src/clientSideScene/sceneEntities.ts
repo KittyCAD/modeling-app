@@ -231,6 +231,15 @@ class SceneEntities {
     draftSegment?: DraftSegment
   }) {
     this.createIntersectionPlane()
+    const distance = sceneInfra.controls.target.distanceTo(
+      sceneInfra.camera.position
+    )
+    // TODO this should probably be distance to the sketch group, more important after sketch on face
+    // since sketches won't always so close to the origin
+    // is this the best place to adjust camera far?
+    if (sceneInfra.camera.far < distance * 1.5) {
+      sceneInfra.camera.far = distance * 2
+    }
 
     const { truncatedAst, programMemoryOverride, variableDeclarationName } =
       this.prepareTruncatedMemoryAndAst(
