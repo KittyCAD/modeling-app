@@ -197,7 +197,7 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
 
 test('executes on load', async ({ page, context }) => {
   const u = getUtils(page)
-  await context.addInitScript(async (token) => {
+  await context.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
       `const part001 = startSketchOn('-XZ')
