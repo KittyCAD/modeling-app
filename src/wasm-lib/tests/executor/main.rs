@@ -24,7 +24,7 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
     // Create the client.
     let client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
     // uncomment to use a local server
-    // client.set_base_url("http://your-local-server:8080/");
+    //client.set_base_url("http://system76-pc:8080/");
 
     let ws = client
         .modeling()
