@@ -418,6 +418,8 @@ pub struct SketchGroup {
     pub id: uuid::Uuid,
     /// The paths in the sketch group.
     pub value: Vec<Path>,
+    /// What the sketch is on (can be a plane or a face).
+    pub on: SketchSurface,
     /// The starting path.
     pub start: BasePath,
     /// The position of the sketch group.
@@ -435,6 +437,42 @@ pub struct SketchGroup {
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
+}
+
+/// A sketch group type.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
+pub enum SketchSurface {
+    Plane(Box<Plane>),
+    Face(Box<Face>),
+}
+
+impl SketchSurface {
+    pub fn id(&self) -> uuid::Uuid {
+        match self {
+            SketchSurface::Plane(plane) => plane.id,
+            SketchSurface::Face(face) => face.id,
+        }
+    }
+    pub fn x_axis(&self) -> Point3d {
+        match self {
+            SketchSurface::Plane(plane) => plane.x_axis.clone(),
+            SketchSurface::Face(face) => face.x_axis.clone(),
+        }
+    }
+    pub fn y_axis(&self) -> Point3d {
+        match self {
+            SketchSurface::Plane(plane) => plane.y_axis.clone(),
+            SketchSurface::Face(face) => face.y_axis.clone(),
+        }
+    }
+    pub fn z_axis(&self) -> Point3d {
+        match self {
+            SketchSurface::Plane(plane) => plane.z_axis.clone(),
+            SketchSurface::Face(face) => face.z_axis.clone(),
+        }
+    }
 }
 
 pub struct GetTangentialInfoFromPathsResult {

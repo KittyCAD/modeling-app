@@ -12,7 +12,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
         BasePath, ExtrudeGroup, ExtrudeSurface, Face, GeoMeta, MemoryItem, Path, Plane, PlaneType, Point2d, Point3d,
-        Position, Rotation, SketchGroup, SketchGroupSet, SourceRange,
+        Position, Rotation, SketchGroup, SketchGroupSet, SketchSurface, SourceRange,
     },
     std::{
         utils::{
@@ -774,44 +774,6 @@ impl From<PlaneData> for Plane {
     }
 }
 
-/// A plane or a face.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase", untagged)]
-pub enum SketchSurface {
-    /// A plane.
-    Plane(Box<Plane>),
-    /// A face.
-    Face(Box<Face>),
-}
-
-impl SketchSurface {
-    pub fn id(&self) -> uuid::Uuid {
-        match self {
-            SketchSurface::Plane(plane) => plane.id,
-            SketchSurface::Face(face) => face.id,
-        }
-    }
-    pub fn x_axis(&self) -> Point3d {
-        match self {
-            SketchSurface::Plane(plane) => plane.x_axis.clone(),
-            SketchSurface::Face(face) => face.x_axis.clone(),
-        }
-    }
-    pub fn y_axis(&self) -> Point3d {
-        match self {
-            SketchSurface::Plane(plane) => plane.y_axis.clone(),
-            SketchSurface::Face(face) => face.y_axis.clone(),
-        }
-    }
-    pub fn z_axis(&self) -> Point3d {
-        match self {
-            SketchSurface::Plane(plane) => plane.z_axis.clone(),
-            SketchSurface::Face(face) => face.z_axis.clone(),
-        }
-    }
-}
-
 /// Start a sketch on a specific plane or face.
 pub async fn start_sketch_on(args: Args) -> Result<MemoryItem, KclError> {
     let (data, tag): (SketchData, Option<SketchOnFaceTag>) = args.get_data_and_optional_tag()?;
@@ -1086,6 +1048,7 @@ async fn inner_start_profile_at(
 
     let sketch_group = SketchGroup {
         id: path_id,
+        on: sketch_surface.clone(),
         position: Position([0.0, 0.0, 0.0]),
         rotation: Rotation([0.0, 0.0, 0.0, 1.0]),
         x_axis: sketch_surface.x_axis(),
@@ -1126,10 +1089,10 @@ async fn inner_close(sketch_group: Box<SketchGroup>, args: Args) -> Result<Box<S
     )
     .await?;
 
-    // Exit sketch mode, since if we were in a plane or entity we'd want to disable the sketch mode after.
-    if sketch_group.entity_id.is_some() {
+    // If we are sketching on a plane we can close the sketch group now.
+    if let SketchSurface::Plane(_) = sketch_group.on {
         // We were on a plane, disable the sketch mode.
-        args.send_modeling_cmd(uuid::Uuid::new_v4(), ModelingCmd::SketchModeDisable {})
+        args.send_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
             .await?;
     }
 

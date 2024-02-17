@@ -6,7 +6,7 @@ use schemars::JsonSchema;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, ExtrudeSurface, ExtrudeTransform, GeoMeta, MemoryItem, Path, SketchGroup},
+    executor::{ExtrudeGroup, ExtrudeSurface, ExtrudeTransform, GeoMeta, MemoryItem, Path, SketchGroup, SketchSurface},
     std::Args,
 };
 
@@ -35,6 +35,13 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
         },
     )
     .await?;
+
+    // We need to do this after extrude for sketch on face.
+    if let SketchSurface::Face(_) = sketch_group.on {
+        // Disable the sketch mode.
+        args.send_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
+            .await?;
+    }
 
     // Bring the object to the front of the scene.
     // See: https://github.com/KittyCAD/modeling-app/issues/806
