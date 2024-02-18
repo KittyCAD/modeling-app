@@ -159,13 +159,13 @@ pub async fn kcl_lsp_run(config: ServerConfig) -> Result<(), JsValue> {
     } = config;
 
     let stdlib = kcl_lib::std::StdLib::new();
-    let stdlib_completions = kcl_lib::server::lsp::get_completions_from_stdlib(&stdlib).map_err(|e| e.to_string())?;
-    let stdlib_signatures = kcl_lib::server::lsp::get_signatures_from_stdlib(&stdlib).map_err(|e| e.to_string())?;
+    let stdlib_completions = kcl_lib::lsp::kcl::get_completions_from_stdlib(&stdlib).map_err(|e| e.to_string())?;
+    let stdlib_signatures = kcl_lib::lsp::kcl::get_signatures_from_stdlib(&stdlib).map_err(|e| e.to_string())?;
     // We can unwrap here because we know the tokeniser is valid, since
     // we have a test for it.
     let token_types = kcl_lib::token::TokenType::all_semantic_token_types().unwrap();
 
-    let (service, socket) = LspService::new(|client| kcl_lib::server::lsp::Backend {
+    let (service, socket) = LspService::new(|client| kcl_lib::lsp::kcl::Backend {
         client,
         stdlib_completions,
         stdlib_signatures,
@@ -213,22 +213,20 @@ pub async fn copilot_lsp_run(config: ServerConfig, token: String) -> Result<(), 
         from_server,
     } = config;
 
-    let (service, socket) = LspService::build(|client| kcl_lib::server::copilot::Backend {
+    let (service, socket) = LspService::build(|client| kcl_lib::lsp::copilot::Backend {
         client,
         current_code_map: Default::default(),
-        editor_info: Arc::new(RwLock::new(
-            kcl_lib::server::copilot::types::CopilotEditorInfo::default(),
-        )),
-        cache: kcl_lib::server::copilot::cache::CopilotCache::new(),
+        editor_info: Arc::new(RwLock::new(kcl_lib::lsp::copilot::types::CopilotEditorInfo::default())),
+        cache: kcl_lib::lsp::copilot::cache::CopilotCache::new(),
         token,
     })
-    .custom_method("setEditorInfo", kcl_lib::server::copilot::Backend::set_editor_info)
+    .custom_method("setEditorInfo", kcl_lib::lsp::copilot::Backend::set_editor_info)
     .custom_method(
         "getCompletions",
-        kcl_lib::server::copilot::Backend::get_completions_cycling,
+        kcl_lib::lsp::copilot::Backend::get_completions_cycling,
     )
-    .custom_method("notifyAccepted", kcl_lib::server::copilot::Backend::accept_completions)
-    .custom_method("notifyRejected", kcl_lib::server::copilot::Backend::reject_completions)
+    .custom_method("notifyAccepted", kcl_lib::lsp::copilot::Backend::accept_completions)
+    .custom_method("notifyRejected", kcl_lib::lsp::copilot::Backend::reject_completions)
     .finish();
 
     let input = wasm_bindgen_futures::stream::JsStream::from(into_server);

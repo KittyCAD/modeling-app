@@ -29,7 +29,7 @@ use tower_lsp::{
     Client, LanguageServer,
 };
 
-use crate::{ast::types::VariableKind, executor::SourceRange, parser::PIPE_OPERATOR, server::backend::Backend as _};
+use crate::{ast::types::VariableKind, executor::SourceRange, lsp::backend::Backend as _, parser::PIPE_OPERATOR};
 
 /// A subcommand for running the server.
 #[derive(Clone, Debug)]
@@ -70,7 +70,7 @@ pub struct Backend {
 
 // Implement the shared backend trait for the language server.
 #[async_trait::async_trait]
-impl crate::server::backend::Backend for Backend {
+impl crate::lsp::backend::Backend for Backend {
     fn client(&self) -> Client {
         self.client.clone()
     }

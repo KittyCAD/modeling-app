@@ -23,7 +23,7 @@ use tower_lsp::{
     LanguageServer,
 };
 
-use crate::server::{
+use crate::lsp::{
     backend::Backend as _,
     copilot::types::{CopilotCompletionResponse, CopilotEditorInfo, CopilotLspCompletionParams, DocParams},
 };
@@ -54,7 +54,7 @@ pub struct Backend {
 
 // Implement the shared backend trait for the language server.
 #[async_trait::async_trait]
-impl crate::server::backend::Backend for Backend {
+impl crate::lsp::backend::Backend for Backend {
     fn client(&self) -> tower_lsp::Client {
         self.client.clone()
     }
@@ -125,15 +125,15 @@ impl Backend {
         let pos = params.doc.position;
         let uri = params.doc.uri.to_string();
         let rope = ropey::Rope::from_str(&params.doc.source);
-        let offset = crate::server::util::position_to_offset(pos, &rope).unwrap_or_default();
+        let offset = crate::lsp::util::position_to_offset(pos, &rope).unwrap_or_default();
 
         Ok(DocParams {
             uri: uri.to_string(),
             pos,
             language: params.doc.language_id.to_string(),
-            prefix: crate::server::util::get_text_before(offset, &rope).unwrap_or_default(),
-            suffix: crate::server::util::get_text_after(offset, &rope).unwrap_or_default(),
-            line_before: crate::server::util::get_line_before(pos, &rope).unwrap_or_default(),
+            prefix: crate::lsp::util::get_text_before(offset, &rope).unwrap_or_default(),
+            suffix: crate::lsp::util::get_text_after(offset, &rope).unwrap_or_default(),
+            line_before: crate::lsp::util::get_line_before(pos, &rope).unwrap_or_default(),
             rope,
         })
     }
