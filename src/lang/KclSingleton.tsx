@@ -228,7 +228,17 @@ class KclManager {
     }
   }
 
-  async executeAst(ast: Program = this._ast, updateCode = false) {
+  private _cancelTokens: Map<number, boolean> = new Map()
+
+  async executeAst(
+    ast: Program = this._ast,
+    updateCode = false,
+    executionId?: number
+  ) {
+    console.trace('executeAst')
+    const currentExecutionId = executionId || Date.now()
+    this._cancelTokens.set(currentExecutionId, false)
+
     await this.ensureWasmInit()
     this.isExecuting = true
     const { logs, errors, programMemory } = await executeAst({
@@ -236,6 +246,11 @@ class KclManager {
       engineCommandManager: this.engineCommandManager,
     })
     this.isExecuting = false
+    // Check the cancellation token for this execution before applying side effects
+    if (this._cancelTokens.get(currentExecutionId)) {
+      this._cancelTokens.delete(currentExecutionId)
+      return
+    }
     this.logs = logs
     this.kclErrors = errors
     this.programMemory = programMemory
@@ -248,6 +263,7 @@ class KclManager {
       type: 'execution-done',
       data: null,
     })
+    this._cancelTokens.delete(currentExecutionId)
   }
   async executeAstMock(
     ast: Program = this._ast,
@@ -295,7 +311,13 @@ class KclManager {
       }
     )
   }
-  async executeCode(code?: string) {
+  async executeCode(code?: string, executionId?: number) {
+    const currentExecutionId = executionId || Date.now()
+    this._cancelTokens.set(currentExecutionId, false)
+    if (this._cancelTokens.get(currentExecutionId)) {
+      this._cancelTokens.delete(currentExecutionId)
+      return
+    }
     await this.ensureWasmInit()
     await this?.engineCommandManager?.waitForReady
     const result = await executeCode({
@@ -304,6 +326,11 @@ class KclManager {
       lastAst: this._ast,
       force: false,
     })
+    // Check the cancellation token for this execution before applying side effects
+    if (this._cancelTokens.get(currentExecutionId)) {
+      this._cancelTokens.delete(currentExecutionId)
+      return
+    }
     if (!result.isChange) return
     const { logs, errors, programMemory, ast } = result
     this.logs = logs
@@ -311,6 +338,12 @@ class KclManager {
     this.programMemory = programMemory
     this.ast = ast
     if (code) this.code = code
+    this._cancelTokens.delete(currentExecutionId)
+  }
+  cancelAllExecutions() {
+    this._cancelTokens.forEach((_, key) => {
+      this._cancelTokens.set(key, true)
+    })
   }
   setCode(code: string, shouldWriteFile = true) {
     if (shouldWriteFile) {
