@@ -1,7 +1,7 @@
 import type * as LSP from 'vscode-languageserver-protocol'
 import Client from './client'
-import { LanguageServerPlugin } from './plugin'
-import { SemanticToken, deserializeTokens } from './semantic_tokens'
+import { SemanticToken, deserializeTokens } from './kcl/semantic_tokens'
+import { LanguageServerPlugin } from 'editor/plugins/lsp/kcl'
 
 export interface CopilotGetCompletionsParams {
   doc: {
@@ -106,6 +106,13 @@ export type Notification = {
 
 export interface LanguageServerClientOptions {
   client: Client
+}
+
+export interface LanguageServerOptions {
+  workspaceFolders: LSP.WorkspaceFolder[] | null
+  documentUri: string
+  allowHTMLContent: boolean
+  client: LanguageServerClient
 }
 
 export class LanguageServerClient {

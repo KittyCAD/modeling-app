@@ -5,8 +5,8 @@ import {
   defineLanguageFacet,
   LanguageSupport,
 } from '@codemirror/language'
-import { LanguageServerClient } from '.'
-import { kclPlugin } from './plugin'
+import { LanguageServerClient } from 'editor/plugins/lsp'
+import { kclPlugin } from '.'
 import type * as LSP from 'vscode-languageserver-protocol'
 import { parser as jsParser } from '@lezer/javascript'
 import { EditorState } from '@uiw/react-codemirror'

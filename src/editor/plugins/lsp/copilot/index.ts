@@ -18,10 +18,10 @@ import {
   Transaction,
 } from '@codemirror/state'
 import { completionStatus } from '@codemirror/autocomplete'
-import { docPathFacet, offsetToPos, posToOffset } from 'editor/lsp/util'
-import { LanguageServerPlugin } from 'editor/lsp/plugin'
-import { LanguageServerOptions } from 'editor/lsp/plugin'
-import { LanguageServerClient } from 'editor/lsp'
+import { docPathFacet, offsetToPos, posToOffset } from 'editor/plugins/lsp/util'
+import { LanguageServerPlugin } from 'editor/plugins/lsp/kcl'
+import { LanguageServerOptions } from 'editor/plugins/lsp'
+import { LanguageServerClient } from 'editor/plugins/lsp'
 
 // Create Facet for the current docPath
 export const docPath = Facet.define<string, string>({

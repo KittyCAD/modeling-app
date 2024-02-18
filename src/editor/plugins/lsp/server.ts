@@ -3,7 +3,7 @@ import init, {
   InitOutput,
   kcl_lsp_run,
   ServerConfig,
-} from '../../wasm-lib/pkg/wasm_lib'
+} from 'wasm-lib/pkg/wasm_lib'
 import { FromServer, IntoServer } from './codec'
 
 export default class Server {

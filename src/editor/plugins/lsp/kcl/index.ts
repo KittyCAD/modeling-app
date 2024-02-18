@@ -23,15 +23,10 @@ import type {
 import type { PublishDiagnosticsParams } from 'vscode-languageserver-protocol'
 import type { ViewUpdate, PluginValue } from '@codemirror/view'
 import type * as LSP from 'vscode-languageserver-protocol'
-import { LanguageServerClient, Notification } from '.'
+import { LanguageServerClient, Notification } from 'editor/plugins/lsp'
 import { Marked } from '@ts-stack/markdown'
-import { offsetToPos, posToOffset } from 'editor/lsp/util'
-
-const changesDelay = 500
-
-const CompletionItemKindMap = Object.fromEntries(
-  Object.entries(CompletionItemKind).map(([key, value]) => [value, key])
-) as Record<CompletionItemKind, string>
+import { offsetToPos, posToOffset } from 'editor/plugins/lsp/util'
+import { LanguageServerOptions } from 'editor/plugins/lsp'
 
 const useLast = (values: readonly any[]) => values.reduce((_, v) => v, '')
 const documentUri = Facet.define<string, string>({ combine: useLast })
@@ -40,12 +35,11 @@ const client = Facet.define<LanguageServerClient, LanguageServerClient>({
   combine: useLast,
 })
 
-export interface LanguageServerOptions {
-  workspaceFolders: LSP.WorkspaceFolder[] | null
-  documentUri: string
-  allowHTMLContent: boolean
-  client: LanguageServerClient
-}
+const changesDelay = 500
+
+const CompletionItemKindMap = Object.fromEntries(
+  Object.entries(CompletionItemKind).map(([key, value]) => [value, key])
+) as Record<CompletionItemKind, string>
 
 export class LanguageServerPlugin implements PluginValue {
   public client: LanguageServerClient
