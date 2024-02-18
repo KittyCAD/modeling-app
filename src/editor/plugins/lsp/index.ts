@@ -93,6 +93,8 @@ interface LSPNotifyMap {
 // Server to client
 interface LSPEventMap {
   'textDocument/publishDiagnostics': LSP.PublishDiagnosticsParams
+  'window/showMessage': LSP.ShowMessageParams
+  'window/logMessage': LSP.LogMessageParams
 }
 
 export type Notification = {
@@ -246,6 +248,7 @@ export class LanguageServerClient {
   }
 
   private processNotification(notification: Notification) {
+    console.log('notification', notification)
     for (const plugin of this.plugins) plugin.processNotification(notification)
   }
 }

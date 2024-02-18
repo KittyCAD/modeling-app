@@ -237,6 +237,13 @@ export class LanguageServerPlugin implements PluginValue {
       switch (notification.method) {
         case 'textDocument/publishDiagnostics':
           this.processDiagnostics(notification.params)
+          break
+        case 'window/logMessage':
+          console.log('[lsp] [window/logMessage]', notification.params)
+          break
+        case 'window/showMessage':
+          console.log('[lsp] [window/showMessage]', notification.params)
+          break
       }
     } catch (error) {
       console.error(error)
