@@ -199,6 +199,7 @@ export const ModelingMachineProvider = ({
           await kclManager.executeAstMock(newAst, { updates: 'code' })
           sceneInfra.setCallbacks({
             onClick: () => {},
+            onDrag: () => {},
           })
         },
         'animate-to-face': async (_, { data: { plane, normal } }) => {

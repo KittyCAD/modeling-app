@@ -68,7 +68,7 @@ test('Basic sketch', async ({ page }) => {
     `const part001 = startSketchOn('-XZ')`
   )
 
-  await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
+  await page.waitForTimeout(300) // TODO detect animation ending, or disable animation
 
   const startXPx = 600
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
@@ -812,7 +812,7 @@ const part002 = startSketchOn('XY')
 
 test('ProgramMemory can be serialised', async ({ page, context }) => {
   const u = getUtils(page)
-  await context.addInitScript(async (token) => {
+  await context.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
       `const part = startSketchOn('XY')
