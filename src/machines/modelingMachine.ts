@@ -123,7 +123,6 @@ export const modelingMachine = createMachine(
     id: 'Modeling',
 
     tsTypes: {} as import('./modelingMachine.typegen').Typegen0,
-    predictableActionArguments: true,
     preserveActionOrder: true,
 
     context: {
@@ -142,7 +141,7 @@ export const modelingMachine = createMachine(
       moveDescs: [] as MoveDesc[],
     },
 
-    schema: {
+    types: {
       events: {} as ModelingMachineEvent,
     },
 
@@ -151,14 +150,14 @@ export const modelingMachine = createMachine(
         on: {
           'Set selection': {
             target: 'idle',
-            internal: true,
+            reenter: false,
             actions: 'Set selection',
           },
 
           'Enter sketch': [
             {
               target: 'animating to existing sketch',
-              cond: 'Selection is on face',
+              guard: 'Selection is on face',
               actions: ['set sketch metadata'],
             },
             'Sketch no face',
@@ -166,9 +165,9 @@ export const modelingMachine = createMachine(
 
           Extrude: {
             target: 'idle',
-            cond: 'has valid extrude selection',
+            guard: 'has valid extrude selection',
             actions: ['AST extrude'],
-            internal: true,
+            reenter: false,
           },
         },
 
@@ -181,111 +180,111 @@ export const modelingMachine = createMachine(
             on: {
               'Set selection': {
                 target: 'SketchIdle',
-                internal: true,
+                reenter: false,
                 actions: 'Set selection',
               },
 
               'Make segment vertical': {
-                cond: 'Can make selection vertical',
+                guard: 'Can make selection vertical',
                 target: 'SketchIdle',
-                internal: true,
+                reenter: false,
                 actions: ['Make selection vertical'],
               },
 
               'Make segment horizontal': {
                 target: 'SketchIdle',
-                internal: true,
-                cond: 'Can make selection horizontal',
+                reenter: false,
+                guard: 'Can make selection horizontal',
                 actions: ['Make selection horizontal'],
               },
 
               'Constrain horizontal distance': {
                 target: 'Await horizontal distance info',
-                cond: 'Can constrain horizontal distance',
+                guard: 'Can constrain horizontal distance',
               },
 
               'Constrain vertical distance': {
                 target: 'Await vertical distance info',
-                cond: 'Can constrain vertical distance',
+                guard: 'Can constrain vertical distance',
               },
 
               'Constrain ABS X': {
                 target: 'Await ABS X info',
-                cond: 'Can constrain ABS X',
+                guard: 'Can constrain ABS X',
               },
 
               'Constrain ABS Y': {
                 target: 'Await ABS Y info',
-                cond: 'Can constrain ABS Y',
+                guard: 'Can constrain ABS Y',
               },
 
               'Constrain angle': {
                 target: 'Await angle info',
-                cond: 'Can constrain angle',
+                guard: 'Can constrain angle',
               },
 
               'Constrain length': {
                 target: 'Await length info',
-                cond: 'Can constrain length',
+                guard: 'Can constrain length',
               },
 
               'Constrain perpendicular distance': {
                 target: 'Await perpendicular distance info',
-                cond: 'Can constrain perpendicular distance',
+                guard: 'Can constrain perpendicular distance',
               },
 
               'Constrain horizontally align': {
-                cond: 'Can constrain horizontally align',
+                guard: 'Can constrain horizontally align',
                 target: 'SketchIdle',
-                internal: true,
+                reenter: false,
                 actions: ['Constrain horizontally align'],
               },
 
               'Constrain vertically align': {
-                cond: 'Can constrain vertically align',
+                guard: 'Can constrain vertically align',
                 target: 'SketchIdle',
-                internal: true,
+                reenter: false,
                 actions: ['Constrain vertically align'],
               },
 
               'Constrain snap to X': {
-                cond: 'Can constrain snap to X',
+                guard: 'Can constrain snap to X',
                 target: 'SketchIdle',
-                internal: true,
+                reenter: false,
                 actions: ['Constrain snap to X'],
               },
 
               'Constrain snap to Y': {
-                cond: 'Can constrain snap to Y',
+                guard: 'Can constrain snap to Y',
                 target: 'SketchIdle',
-                internal: true,
+                reenter: false,
                 actions: ['Constrain snap to Y'],
               },
 
               'Constrain equal length': {
-                cond: 'Can constrain equal length',
+                guard: 'Can constrain equal length',
                 target: 'SketchIdle',
-                internal: true,
+                reenter: false,
                 actions: ['Constrain equal length'],
               },
 
               'Constrain parallel': {
                 target: 'SketchIdle',
-                internal: true,
-                cond: 'Can canstrain parallel',
+                reenter: false,
+                guard: 'Can canstrain parallel',
                 actions: ['Constrain parallel'],
               },
 
               'Constrain remove constraints': {
                 target: 'SketchIdle',
-                internal: true,
-                cond: 'Can constrain remove constraints',
+                reenter: false,
+                guard: 'Can constrain remove constraints',
                 actions: ['Constrain remove constraints'],
               },
 
               'Re-execute': {
                 target: 'SketchIdle',
-                internal: true,
+                reenter: false,
                 actions: ['set sketchMetadata from pathToNode'],
               },
 
@@ -293,7 +292,7 @@ export const modelingMachine = createMachine(
 
               'Equip tangential arc to': {
                 target: 'Tangential arc to',
-                cond: 'is editing existing sketch',
+                guard: 'is editing existing sketch',
               },
             },
 
@@ -394,12 +393,12 @@ export const modelingMachine = createMachine(
               'Set selection': {
                 target: 'Line tool',
                 description: `This is just here to stop one of the higher level "Set selections" firing when we are just trying to set the IDE code without triggering a full engine-execute`,
-                internal: true,
+                reenter: false,
               },
 
               'Equip tangential arc to': {
                 target: 'Tangential arc to',
-                cond: 'is editing existing sketch',
+                guard: 'is editing existing sketch',
               },
             },
 
@@ -408,7 +407,7 @@ export const modelingMachine = createMachine(
                 always: [
                   {
                     target: 'normal',
-                    cond: 'is editing existing sketch',
+                    guard: 'is editing existing sketch',
                     actions: 'set up draft line',
                   },
                   'No Points',
@@ -419,7 +418,7 @@ export const modelingMachine = createMachine(
                 on: {
                   'Set selection': {
                     target: 'normal',
-                    internal: true,
+                    reenter: false,
                   },
                 },
               },
@@ -445,7 +444,7 @@ export const modelingMachine = createMachine(
             always: [
               {
                 target: 'SketchIdle',
-                cond: 'is editing existing sketch',
+                guard: 'is editing existing sketch',
               },
               'Line tool',
             ],
@@ -457,7 +456,7 @@ export const modelingMachine = createMachine(
             on: {
               'Set selection': {
                 target: 'Tangential arc to',
-                internal: true,
+                reenter: false,
               },
 
               'Equip Line tool': 'Line tool',
@@ -514,7 +513,7 @@ export const modelingMachine = createMachine(
         on: {
           'Set selection': {
             target: 'animating to plane',
-            internal: true,
+            reenter: false,
           },
         },
       },
@@ -542,14 +541,14 @@ export const modelingMachine = createMachine(
 
       'Set selection': {
         target: '#Modeling',
-        internal: true,
+        reenter: false,
         actions: 'Set selection',
       },
     },
   },
   {
     guards: {
-      'is editing existing sketch': ({ sketchPathToNode }) => {
+      'is editing existing sketch': ({ context: { sketchPathToNode } }) => {
         // should check that the variable declaration is a pipeExpression
         // and that the pipeExpression contains a "startProfileAt" callExpression
         if (!sketchPathToNode) return false
@@ -568,50 +567,53 @@ export const modelingMachine = createMachine(
         )
         return hasStartProfileAt && pipeExpression.body.length > 2
       },
-      'Can make selection horizontal': ({ selectionRanges }) =>
+      'Can make selection horizontal': ({ context: { selectionRanges } }) =>
         horzVertInfo(selectionRanges, 'horizontal').enabled,
-      'Can make selection vertical': ({ selectionRanges }) =>
+      'Can make selection vertical': ({ context: { selectionRanges } }) =>
         horzVertInfo(selectionRanges, 'vertical').enabled,
-      'Can constrain horizontal distance': ({ selectionRanges }) =>
+      'Can constrain horizontal distance': ({ context: { selectionRanges } }) =>
         horzVertDistanceInfo({ selectionRanges, constraint: 'setHorzDistance' })
           .enabled,
-      'Can constrain vertical distance': ({ selectionRanges }) =>
+      'Can constrain vertical distance': ({ context: { selectionRanges } }) =>
         horzVertDistanceInfo({ selectionRanges, constraint: 'setVertDistance' })
           .enabled,
-      'Can constrain ABS X': ({ selectionRanges }) =>
+      'Can constrain ABS X': ({ context: { selectionRanges } }) =>
         absDistanceInfo({ selectionRanges, constraint: 'xAbs' }).enabled,
-      'Can constrain ABS Y': ({ selectionRanges }) =>
+      'Can constrain ABS Y': ({ context: { selectionRanges } }) =>
         absDistanceInfo({ selectionRanges, constraint: 'yAbs' }).enabled,
-      'Can constrain angle': ({ selectionRanges }) =>
+      'Can constrain angle': ({ context: { selectionRanges } }) =>
         angleBetweenInfo({ selectionRanges }).enabled ||
         angleLengthInfo({ selectionRanges, angleOrLength: 'setAngle' }).enabled,
-      'Can constrain length': ({ selectionRanges }) =>
+      'Can constrain length': ({ context: { selectionRanges } }) =>
         angleLengthInfo({ selectionRanges }).enabled,
-      'Can constrain perpendicular distance': ({ selectionRanges }) =>
-        intersectInfo({ selectionRanges }).enabled,
-      'Can constrain horizontally align': ({ selectionRanges }) =>
+      'Can constrain perpendicular distance': ({
+        context: { selectionRanges },
+      }) => intersectInfo({ selectionRanges }).enabled,
+      'Can constrain horizontally align': ({ context: { selectionRanges } }) =>
         horzVertDistanceInfo({ selectionRanges, constraint: 'setHorzDistance' })
           .enabled,
-      'Can constrain vertically align': ({ selectionRanges }) =>
+      'Can constrain vertically align': ({ context: { selectionRanges } }) =>
         horzVertDistanceInfo({ selectionRanges, constraint: 'setHorzDistance' })
           .enabled,
-      'Can constrain snap to X': ({ selectionRanges }) =>
+      'Can constrain snap to X': ({ context: { selectionRanges } }) =>
         absDistanceInfo({ selectionRanges, constraint: 'snapToXAxis' }).enabled,
-      'Can constrain snap to Y': ({ selectionRanges }) =>
+      'Can constrain snap to Y': ({ context: { selectionRanges } }) =>
         absDistanceInfo({ selectionRanges, constraint: 'snapToYAxis' }).enabled,
-      'Can constrain equal length': ({ selectionRanges }) =>
+      'Can constrain equal length': ({ context: { selectionRanges } }) =>
         setEqualLengthInfo({ selectionRanges }).enabled,
-      'Can canstrain parallel': ({ selectionRanges }) =>
+      'Can canstrain parallel': ({ context: { selectionRanges } }) =>
         equalAngleInfo({ selectionRanges }).enabled,
-      'Can constrain remove constraints': ({ selectionRanges }) =>
+      'Can constrain remove constraints': ({ context: { selectionRanges } }) =>
         removeConstrainingValuesInfo({ selectionRanges }).enabled,
     },
     // end guards
     actions: {
-      'set sketchMetadata from pathToNode': assign(({ sketchPathToNode }) => {
-        if (!sketchPathToNode) return {}
-        return getSketchMetadataFromPathToNode(sketchPathToNode)
-      }),
+      'set sketchMetadata from pathToNode': assign(
+        ({ context: { sketchPathToNode } }) => {
+          if (!sketchPathToNode) return {}
+          return getSketchMetadataFromPathToNode(sketchPathToNode)
+        }
+      ),
       'hide default planes': () => {
         sceneInfra.removeDefaultPlanes()
         kclManager.hidePlanes()
@@ -621,7 +623,7 @@ export const modelingMachine = createMachine(
         sketchEnginePathId: '',
         sketchPlaneId: '',
       }),
-      'set sketch metadata': assign(({ selectionRanges }) => {
+      'set sketch metadata': assign(({ context: { selectionRanges } }) => {
         const sourceRange = selectionRanges.codeBasedSelections[0].range
         const sketchPathToNode = getNodePathFromSourceRange(
           kclManager.ast,
@@ -632,10 +634,12 @@ export const modelingMachine = createMachine(
           selectionRanges
         )
       }),
-      'set new sketch metadata': assign((_, { data }) => data),
+      'set new sketch metadata': assign(({ event: { data } }) => data),
       // TODO implement source ranges for all of these constraints
       // need to make the async like the modal constraints
-      'Make selection horizontal': ({ selectionRanges, sketchPathToNode }) => {
+      'Make selection horizontal': ({
+        context: { selectionRanges, sketchPathToNode },
+      }) => {
         const { modifiedAst } = applyConstraintHorzVert(
           selectionRanges,
           'horizontal',
@@ -647,7 +651,9 @@ export const modelingMachine = createMachine(
           modifiedAst
         )
       },
-      'Make selection vertical': ({ selectionRanges, sketchPathToNode }) => {
+      'Make selection vertical': ({
+        context: { selectionRanges, sketchPathToNode },
+      }) => {
         const { modifiedAst } = applyConstraintHorzVert(
           selectionRanges,
           'vertical',
@@ -660,8 +666,7 @@ export const modelingMachine = createMachine(
         )
       },
       'Constrain horizontally align': ({
-        selectionRanges,
-        sketchPathToNode,
+        context: { selectionRanges, sketchPathToNode },
       }) => {
         const { modifiedAst } = applyConstraintHorzVertAlign({
           selectionRanges,
@@ -672,7 +677,9 @@ export const modelingMachine = createMachine(
           modifiedAst
         )
       },
-      'Constrain vertically align': ({ selectionRanges, sketchPathToNode }) => {
+      'Constrain vertically align': ({
+        context: { selectionRanges, sketchPathToNode },
+      }) => {
         const { modifiedAst } = applyConstraintHorzVertAlign({
           selectionRanges,
           constraint: 'setHorzDistance',
@@ -682,7 +689,9 @@ export const modelingMachine = createMachine(
           modifiedAst
         )
       },
-      'Constrain snap to X': ({ selectionRanges, sketchPathToNode }) => {
+      'Constrain snap to X': ({
+        context: { selectionRanges, sketchPathToNode },
+      }) => {
         const { modifiedAst } = applyConstraintAxisAlign({
           selectionRanges,
           constraint: 'snapToXAxis',
@@ -692,7 +701,9 @@ export const modelingMachine = createMachine(
           modifiedAst
         )
       },
-      'Constrain snap to Y': ({ selectionRanges, sketchPathToNode }) => {
+      'Constrain snap to Y': ({
+        context: { selectionRanges, sketchPathToNode },
+      }) => {
         const { modifiedAst } = applyConstraintAxisAlign({
           selectionRanges,
           constraint: 'snapToYAxis',
@@ -702,7 +713,9 @@ export const modelingMachine = createMachine(
           modifiedAst
         )
       },
-      'Constrain equal length': ({ selectionRanges, sketchPathToNode }) => {
+      'Constrain equal length': ({
+        context: { selectionRanges, sketchPathToNode },
+      }) => {
         const { modifiedAst } = applyConstraintEqualLength({
           selectionRanges,
         })
@@ -711,7 +724,9 @@ export const modelingMachine = createMachine(
           modifiedAst
         )
       },
-      'Constrain parallel': ({ selectionRanges, sketchPathToNode }) => {
+      'Constrain parallel': ({
+        context: { selectionRanges, sketchPathToNode },
+      }) => {
         const { modifiedAst } = applyConstraintEqualAngle({
           selectionRanges,
         })
@@ -721,8 +736,7 @@ export const modelingMachine = createMachine(
         )
       },
       'Constrain remove constraints': ({
-        selectionRanges,
-        sketchPathToNode,
+        context: { selectionRanges, sketchPathToNode },
       }) => {
         const { modifiedAst } = applyRemoveConstrainingValues({
           selectionRanges,
@@ -732,7 +746,7 @@ export const modelingMachine = createMachine(
           modifiedAst
         )
       },
-      'AST extrude': (_, event) => {
+      'AST extrude': ({ event }) => {
         if (!event.data) return
         const { selection, distance } = event.data
         const pathToNode = getNodePathFromSourceRange(
@@ -750,12 +764,15 @@ export const modelingMachine = createMachine(
           focusPath: pathToExtrudeArg,
         })
       },
-      'conditionally equip line tool': (_, { type }) => {
+      'conditionally equip line tool': ({ event: { type } }) => {
         if (type === 'done.invoke.animate-to-face') {
           sceneInfra.modelingSend('Equip Line tool')
         }
       },
-      'setup client side sketch segments': ({ sketchPathToNode }, { type }) => {
+      'setup client side sketch segments': ({
+        context: { sketchPathToNode },
+        event: { type },
+      }) => {
         if (Object.keys(sceneEntitiesManager.activeSegments).length > 0) {
           sceneEntitiesManager
             .tearDownSketch({ removeAxis: false })
@@ -779,13 +796,15 @@ export const modelingMachine = createMachine(
         }
       },
       'remove sketch grid': () => sceneEntitiesManager.removeSketchGrid(),
-      'set up draft line': ({ sketchPathToNode }) => {
+      'set up draft line': ({ context: { sketchPathToNode } }) => {
         sceneEntitiesManager.setUpDraftLine(sketchPathToNode || [])
       },
-      'set up draft arc': ({ sketchPathToNode }) => {
+      'set up draft arc': ({ context: { sketchPathToNode } }) => {
         sceneEntitiesManager.setUpDraftArc(sketchPathToNode || [])
       },
-      'set up draft line without teardown': ({ sketchPathToNode }) =>
+      'set up draft line without teardown': ({
+        context: { sketchPathToNode },
+      }) =>
         sceneEntitiesManager.setupSketch({
           sketchPathToNode: sketchPathToNode || [],
           draftSegment: 'line',
@@ -795,7 +814,9 @@ export const modelingMachine = createMachine(
         sceneEntitiesManager.setupDefaultPlaneHover()
         kclManager.showPlanes()
       },
-      'setup noPoints onClick listener': ({ sketchPathToNode }) => {
+      'setup noPoints onClick listener': ({
+        context: { sketchPathToNode },
+      }) => {
         sceneEntitiesManager.createIntersectionPlane()
         const sketchGroup = sketchGroupFromPathToNode({
           pathToNode: sketchPathToNode || [],
@@ -824,7 +845,7 @@ export const modelingMachine = createMachine(
           },
         })
       },
-      'add axis n grid': ({ sketchPathToNode }) =>
+      'add axis n grid': ({ context: { sketchPathToNode } }) =>
         sceneEntitiesManager.createSketchAxis(sketchPathToNode || []),
       'reset client scene mouse handlers': () => {
         // when not in sketch mode we don't need any mouse listeners

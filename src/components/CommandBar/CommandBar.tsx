@@ -26,22 +26,24 @@ export const CommandBarProvider = ({
   children: React.ReactNode
 }) => {
   const { pathname } = useLocation()
-  const [commandBarState, commandBarSend] = useMachine(commandBarMachine, {
-    guards: {
-      'Arguments are ready': (context, _) => {
-        return context.selectedCommand?.args
-          ? context.argumentsToSubmit.length ===
-              Object.keys(context.selectedCommand.args)?.length
-          : false
+  const [commandBarState, commandBarSend] = useMachine(
+    commandBarMachine.provide({
+      guards: {
+        'Arguments are ready': ({ context }) => {
+          return context.selectedCommand?.args
+            ? context.argumentsToSubmit.length ===
+                Object.keys(context.selectedCommand.args)?.length
+            : false
+        },
+        'Command has no arguments': ({ context }) => {
+          return (
+            !context.selectedCommand?.args ||
+            Object.keys(context.selectedCommand?.args).length === 0
+          )
+        },
       },
-      'Command has no arguments': (context, _event) => {
-        return (
-          !context.selectedCommand?.args ||
-          Object.keys(context.selectedCommand?.args).length === 0
-        )
-      },
-    },
-  })
+    })
+  )
 
   // Close the command bar when navigating
   useEffect(() => {

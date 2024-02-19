@@ -27,7 +27,7 @@
     "@types/react-dom": "^18.0.0",
     "@uiw/react-codemirror": "^4.21.20",
     "@xstate/inspect": "^0.8.0",
-    "@xstate/react": "^3.2.2",
+    "@xstate/react": "^4.1.0",
     "crypto-js": "^4.2.0",
     "debounce-promise": "^3.1.2",
     "formik": "^2.4.3",
@@ -57,7 +57,7 @@
     "wasm-pack": "^0.12.1",
     "web-vitals": "^3.5.0",
     "ws": "^8.13.0",
-    "xstate": "^4.38.2",
+    "xstate": "^5.7.1",
     "zustand": "^4.4.5"
   },
   "scripts": {

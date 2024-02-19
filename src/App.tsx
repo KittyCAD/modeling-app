@@ -72,7 +72,7 @@ export function App() {
   useHotkeys('shift + l', () => togglePane('logs'))
   useHotkeys('shift + e', () => togglePane('kclErrors'))
   useHotkeys('shift + d', () => togglePane('debug'))
-  useHotkeys('esc', () => send('Cancel'))
+  useHotkeys('esc', () => send({ type: 'Cancel' }))
   useHotkeys('backspace', (e) => {
     e.preventDefault()
   })

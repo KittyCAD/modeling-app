@@ -43,14 +43,14 @@ export const commandBarMachine = createMachine(
 
             actions: [
               assign({
-                commands: (context, event) =>
+                commands: ({ context, event }) =>
                   [...context.commands, ...event.data.commands].sort(
                     sortCommands
                   ),
               }),
             ],
 
-            internal: true,
+            reenter: false,
           },
 
           'Remove commands': {
@@ -58,7 +58,7 @@ export const commandBarMachine = createMachine(
 
             actions: [
               assign({
-                commands: (context, event) =>
+                commands: ({ context, event }) =>
                   context.commands.filter(
                     (c) =>
                       !event.data.commands.some(
@@ -70,7 +70,7 @@ export const commandBarMachine = createMachine(
               }),
             ],
 
-            internal: true,
+            reenter: false,
           },
         },
       },
@@ -88,7 +88,7 @@ export const commandBarMachine = createMachine(
         always: [
           {
             target: 'Closed',
-            cond: 'Command has no arguments',
+            guard: 'Command has no arguments',
             actions: ['Execute command'],
           },
           {
@@ -116,7 +116,7 @@ export const commandBarMachine = createMachine(
                 target: '#Command Bar.Checking Arguments',
                 actions: [
                   assign({
-                    argumentsToSubmit: (context, event) => {
+                    argumentsToSubmit: ({ context, event }) => {
                       const [argName, argData] = Object.entries(event.data)[0]
                       const { currentArgument } = context
                       if (!currentArgument) return {}
@@ -142,7 +142,7 @@ export const commandBarMachine = createMachine(
         on: {
           'Change current argument': {
             target: 'Gathering arguments',
-            internal: true,
+            reenter: false,
             actions: ['Set current argument'],
           },
 
@@ -174,7 +174,7 @@ export const commandBarMachine = createMachine(
             target: 'Review',
             actions: [
               assign({
-                argumentsToSubmit: (context, event) => {
+                argumentsToSubmit: ({ context, event }) => {
                   const argName = Object.keys(event.data)[0]
                   const { argumentsToSubmit } = context
                   const newArgumentsToSubmit = { ...argumentsToSubmit }
@@ -199,7 +199,7 @@ export const commandBarMachine = createMachine(
           onDone: [
             {
               target: 'Review',
-              cond: 'Command needs review',
+              guard: 'Command needs review',
             },
             {
               target: 'Closed',
@@ -222,11 +222,11 @@ export const commandBarMachine = createMachine(
 
       Clear: {
         target: '#Command Bar',
-        internal: true,
+        reenter: false,
         actions: ['Clear argument data'],
       },
     },
-    schema: {
+    types: {
       events: {} as
         | { type: 'Open' }
         | { type: 'Close' }
@@ -275,7 +275,6 @@ export const commandBarMachine = createMachine(
             data: { arg: CommandArgumentWithName<unknown> }
           },
     },
-    predictableActionArguments: true,
     preserveActionOrder: true,
   },
   {

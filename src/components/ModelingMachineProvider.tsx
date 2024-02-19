@@ -85,7 +85,7 @@ export const ModelingMachineProvider = ({
         'sketch exit execute': () => {
           kclManager.executeAst()
         },
-        'Set selection': assign(({ selectionRanges }, event) => {
+        'Set selection': assign(({ context: { selectionRanges }, event }) => {
           if (event.type !== 'Set selection') return {} // this was needed for ts after adding 'Set selection' action to on done modal events
           const setSelections = event.data
           if (!editorView) return {}
@@ -172,7 +172,7 @@ export const ModelingMachineProvider = ({
         }),
       },
       guards: {
-        'has valid extrude selection': ({ selectionRanges }) => {
+        'has valid extrude selection': ({ context: { selectionRanges } }) => {
           // A user can begin extruding if they either have 1+ faces selected or nothing selected
           // TODO: I believe this guard only allows for extruding a single face at a time
           if (selectionRanges.codeBasedSelections.length < 1) return false
@@ -183,7 +183,10 @@ export const ModelingMachineProvider = ({
 
           return canExtrudeSelection(selectionRanges)
         },
-        'Selection is on face': ({ selectionRanges }, { data }) => {
+        'Selection is on face': ({
+          context: { selectionRanges },
+          event: { data },
+        }) => {
           if (data?.forceNewSketch) return false
           if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))
             return false
@@ -194,7 +197,7 @@ export const ModelingMachineProvider = ({
         },
       },
       services: {
-        'AST-undo-startSketchOn': async ({ sketchPathToNode }) => {
+        'AST-undo-startSketchOn': async ({ context: { sketchPathToNode } }) => {
           if (!sketchPathToNode) return
           const newAst: Program = JSON.parse(JSON.stringify(kclManager.ast))
           const varDecIndex = sketchPathToNode[1][0]
@@ -206,7 +209,11 @@ export const ModelingMachineProvider = ({
             onDrag: () => {},
           })
         },
-        'animate-to-face': async (_, { data: { plane, normal } }) => {
+        'animate-to-face': async ({
+          event: {
+            data: { plane, normal },
+          },
+        }) => {
           const { modifiedAst, pathToNode } = startSketchOnDefault(
             kclManager.ast,
             plane
@@ -220,8 +227,7 @@ export const ModelingMachineProvider = ({
           }
         },
         'animate-to-sketch': async ({
-          sketchPathToNode,
-          sketchNormalBackUp,
+          context: { sketchPathToNode, sketchNormalBackUp },
         }) => {
           const quaternion = getSketchQuaternion(
             sketchPathToNode || [],
@@ -230,7 +236,7 @@ export const ModelingMachineProvider = ({
           await sceneInfra.tweenCameraToQuaternion(quaternion)
         },
         'Get horizontal info': async ({
-          selectionRanges,
+          context: { selectionRanges },
         }): Promise<SetSelections> => {
           const { modifiedAst, pathToNodeMap } =
             await applyConstraintHorzVertDistance({
@@ -248,7 +254,7 @@ export const ModelingMachineProvider = ({
           }
         },
         'Get vertical info': async ({
-          selectionRanges,
+          context: { selectionRanges },
         }): Promise<SetSelections> => {
           const { modifiedAst, pathToNodeMap } =
             await applyConstraintHorzVertDistance({
@@ -266,7 +272,7 @@ export const ModelingMachineProvider = ({
           }
         },
         'Get angle info': async ({
-          selectionRanges,
+          context: { selectionRanges },
         }): Promise<SetSelections> => {
           const { modifiedAst, pathToNodeMap } = await (angleBetweenInfo({
             selectionRanges,
@@ -289,7 +295,7 @@ export const ModelingMachineProvider = ({
           }
         },
         'Get length info': async ({
-          selectionRanges,
+          context: { selectionRanges },
         }): Promise<SetSelections> => {
           const { modifiedAst, pathToNodeMap } =
             await applyConstraintAngleLength({ selectionRanges })
@@ -304,7 +310,7 @@ export const ModelingMachineProvider = ({
           }
         },
         'Get perpendicular distance info': async ({
-          selectionRanges,
+          context: { selectionRanges },
         }): Promise<SetSelections> => {
           const { modifiedAst, pathToNodeMap } = await applyConstraintIntersect(
             {
@@ -322,7 +328,7 @@ export const ModelingMachineProvider = ({
           }
         },
         'Get ABS X info': async ({
-          selectionRanges,
+          context: { selectionRanges },
         }): Promise<SetSelections> => {
           const { modifiedAst, pathToNodeMap } =
             await applyConstraintAbsDistance({
@@ -340,7 +346,7 @@ export const ModelingMachineProvider = ({
           }
         },
         'Get ABS Y info': async ({
-          selectionRanges,
+          context: { selectionRanges },
         }): Promise<SetSelections> => {
           const { modifiedAst, pathToNodeMap } =
             await applyConstraintAbsDistance({
@@ -358,7 +364,8 @@ export const ModelingMachineProvider = ({
           }
         },
       },
-      devTools: true,
+      // TODO replace with inspect https://stately.ai/docs/inspector
+      // devTools: true,
     }
   )
 

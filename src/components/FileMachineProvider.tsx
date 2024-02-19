@@ -44,104 +44,103 @@ export const FileMachineProvider = ({
   const { commandBarSend } = useCommandsContext()
   const { project } = useRouteLoaderData(paths.FILE) as IndexLoaderData
 
-  const [state, send] = useMachine(fileMachine, {
-    context: {
-      project,
-      selectedDirectory: project,
-    },
-    actions: {
-      navigateToFile: (
-        context: ContextFrom<typeof fileMachine>,
-        event: EventFrom<typeof fileMachine>
-      ) => {
-        if (event.data && 'name' in event.data) {
-          commandBarSend({ type: 'Close' })
-          navigate(
-            `${paths.FILE}/${encodeURIComponent(
-              context.selectedDirectory + sep + event.data.name
-            )}`
-          )
-        }
+  const [state, send] = useMachine(
+    fileMachine.provide({
+      context: {
+        project,
+        selectedDirectory: project,
       },
-      toastSuccess: (_, event) =>
-        event.data && toast.success((event.data || '') + ''),
-      toastError: (_, event) => toast.error((event.data || '') + ''),
-    },
-    services: {
-      readFiles: async (context: ContextFrom<typeof fileMachine>) => {
-        const newFiles = isTauri()
-          ? await readProject(context.project.path)
-          : []
-        return {
-          ...context.project,
-          children: newFiles,
-        }
+      actions: {
+        navigateToFile: ({ context, event }) => {
+          if (event.data && 'name' in event.data) {
+            commandBarSend({ type: 'Close' })
+            navigate(
+              `${paths.FILE}/${encodeURIComponent(
+                context.selectedDirectory + sep + event.data.name
+              )}`
+            )
+          }
+        },
+        toastSuccess: ({ event }) =>
+          event.data && toast.success((event.data || '') + ''),
+        toastError: ({ event }) => toast.error((event.data || '') + ''),
       },
-      createFile: async (
-        context: ContextFrom<typeof fileMachine>,
-        event: EventFrom<typeof fileMachine, 'Create file'>
-      ) => {
-        let name = event.data.name.trim() || DEFAULT_FILE_NAME
+      services: {
+        readFiles: async (context: ContextFrom<typeof fileMachine>) => {
+          const newFiles = isTauri()
+            ? await readProject(context.project.path)
+            : []
+          return {
+            ...context.project,
+            children: newFiles,
+          }
+        },
+        createFile: async (
+          context: ContextFrom<typeof fileMachine>,
+          event: EventFrom<typeof fileMachine, 'Create file'>
+        ) => {
+          let name = event.data.name.trim() || DEFAULT_FILE_NAME
 
-        if (event.data.makeDir) {
-          await createDir(context.selectedDirectory.path + sep + name)
-        } else {
-          await writeFile(
+          if (event.data.makeDir) {
+            await createDir(context.selectedDirectory.path + sep + name)
+          } else {
+            await writeFile(
+              context.selectedDirectory.path +
+                sep +
+                name +
+                (name.endsWith(FILE_EXT) ? '' : FILE_EXT),
+              ''
+            )
+          }
+
+          return `Successfully created "${name}"`
+        },
+        renameFile: async (
+          context: ContextFrom<typeof fileMachine>,
+          event: EventFrom<typeof fileMachine, 'Rename file'>
+        ) => {
+          const { oldName, newName, isDir } = event.data
+          let name = newName ? newName : DEFAULT_FILE_NAME
+
+          await renameFile(
+            context.selectedDirectory.path + sep + oldName,
             context.selectedDirectory.path +
               sep +
               name +
-              (name.endsWith(FILE_EXT) ? '' : FILE_EXT),
-            ''
+              (name.endsWith(FILE_EXT) || isDir ? '' : FILE_EXT)
           )
-        }
-
-        return `Successfully created "${name}"`
-      },
-      renameFile: async (
-        context: ContextFrom<typeof fileMachine>,
-        event: EventFrom<typeof fileMachine, 'Rename file'>
-      ) => {
-        const { oldName, newName, isDir } = event.data
-        let name = newName ? newName : DEFAULT_FILE_NAME
-
-        await renameFile(
-          context.selectedDirectory.path + sep + oldName,
-          context.selectedDirectory.path +
-            sep +
-            name +
-            (name.endsWith(FILE_EXT) || isDir ? '' : FILE_EXT)
-        )
-        return (
-          oldName !== name && `Successfully renamed "${oldName}" to "${name}"`
-        )
-      },
-      deleteFile: async (
-        context: ContextFrom<typeof fileMachine>,
-        event: EventFrom<typeof fileMachine, 'Delete file'>
-      ) => {
-        const isDir = !!event.data.children
-
-        if (isDir) {
-          await removeDir(event.data.path, {
-            recursive: true,
-          }).catch((e) => console.error('Error deleting directory', e))
-        } else {
-          await removeFile(event.data.path).catch((e) =>
-            console.error('Error deleting file', e)
+          return (
+            oldName !== name && `Successfully renamed "${oldName}" to "${name}"`
           )
-        }
-        return `Successfully deleted ${isDir ? 'folder' : 'file'} "${
-          event.data.name
-        }"`
+        },
+        deleteFile: async (
+          context: ContextFrom<typeof fileMachine>,
+          event: EventFrom<typeof fileMachine, 'Delete file'>
+        ) => {
+          const isDir = !!event.data.children
+
+          if (isDir) {
+            await removeDir(event.data.path, {
+              recursive: true,
+            }).catch((e) => console.error('Error deleting directory', e))
+          } else {
+            await removeFile(event.data.path).catch((e) =>
+              console.error('Error deleting file', e)
+            )
+          }
+          return `Successfully deleted ${isDir ? 'folder' : 'file'} "${
+            event.data.name
+          }"`
+        },
       },
-    },
-    guards: {
-      'Has at least 1 file': (_, event: EventFrom<typeof fileMachine>) => {
-        if (event.type !== 'done.invoke.read-files') return false
-        return !!event?.data?.children && event.data.children.length > 0
+      guards: {
+        'Has at least 1 file': ({ event }) => {
+          if (event.type !== 'done.invoke.read-files') return false
+          return !!event?.data?.children && event.data.children.length > 0
+        },
       },
-    },
-  })
+    })
+  )
 
   return (
     <FileContext.Provider
