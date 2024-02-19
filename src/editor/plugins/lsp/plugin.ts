@@ -102,7 +102,6 @@ export class LanguageServerPlugin implements PluginValue {
     try {
       debounce(
         () => {
-          console.log('changed')
           return this.client.textDocumentDidChange({
             textDocument: {
               uri: this.documentUri,
