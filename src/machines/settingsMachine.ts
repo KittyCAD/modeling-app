@@ -27,7 +27,6 @@ export const settingsMachine = createMachine(
   {
     /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlTQAIAVACzAFswBtABgF1FQAHAe1iYsfbNxAAPRAA42+AEwB2KQFYAzGznKAnADZli1QBoQAT2kBGKfm37lOned3nzqgL6vjlLLgJFSFdCoAETAAMwBDAFdiagAFACc+ACswAGNqADlw5nYuJBB+QWFRfMkEABY5fDYa2rra83LjMwQdLWV8BXLyuxlVLU1Ld090bzxCEnJKYLComODMeLS0PniTXLFCoUwRMTK7fC1zNql7NgUjtnKjU0RlBSqpLVUVPVUda60tYZAvHHG-FNAgBVbBCKjIEywNBMDb5LbFPaILqdfRSORsS4qcxXZqIHqyK6qY4XOxsGTKco-P4+Cb+aYAIXCsDAVFBQjhvAE212pWkskUKnUml0+gUNxaqkU+EccnKF1UCnucnMcjcHl+o3+vkmZBofCgUFIMwARpEoFRYuFsGBiJyCtzEXzWrJlGxlKdVFKvfY1XiEBjyvhVOVzBdzu13pYFNStbTAQFqAB5bAmvjheIQf4QtDhNCRWD2hE7EqgfayHTEh7lHQNSxSf1Scz4cpHHFyFVujTKczuDXYPgQOBiGl4TaOktIhAAWg6X3nC4Xp39050sYw2rpYHHRUnztVhPJqmUlIGbEriv9WhrLZ6uibHcqUr7riAA */
     id: 'Settings',
-    predictableActionArguments: true,
     context: {
       baseUnit: 'in' as BaseUnit,
       cameraControls: 'KittyCAD' as CameraSystem,
@@ -47,7 +46,7 @@ export const settingsMachine = createMachine(
           'Set Base Unit': {
             actions: [
               assign({
-                baseUnit: (_, event) => {
+                baseUnit: ({ event }) => {
                   console.log('event', event)
                   return event.data.baseUnit
                 },
@@ -56,92 +55,92 @@ export const settingsMachine = createMachine(
               'toastSuccess',
             ],
             target: 'idle',
-            internal: true,
+            reenter: false,
           },
           'Set Camera Controls': {
             actions: [
               assign({
-                cameraControls: (_, event) => event.data.cameraControls,
+                cameraControls: ({ event }) => event.data.cameraControls,
               }),
               'persistSettings',
               'toastSuccess',
             ],
             target: 'idle',
-            internal: true,
+            reenter: false,
           },
           'Set Default Directory': {
             actions: [
               assign({
-                defaultDirectory: (_, event) => event.data.defaultDirectory,
+                defaultDirectory: ({ event }) => event.data.defaultDirectory,
               }),
               'persistSettings',
               'toastSuccess',
             ],
             target: 'idle',
-            internal: true,
+            reenter: false,
           },
           'Set Default Project Name': {
             actions: [
               assign({
-                defaultProjectName: (_, event) =>
+                defaultProjectName: ({ event }) =>
                   event.data.defaultProjectName.trim() || DEFAULT_PROJECT_NAME,
               }),
               'persistSettings',
               'toastSuccess',
             ],
             target: 'idle',
-            internal: true,
+            reenter: false,
           },
           'Set Onboarding Status': {
             actions: [
               assign({
-                onboardingStatus: (_, event) => event.data.onboardingStatus,
+                onboardingStatus: ({ event }) => event.data.onboardingStatus,
               }),
               'persistSettings',
             ],
             target: 'idle',
-            internal: true,
+            reenter: false,
           },
           'Set Text Wrapping': {
             actions: [
               assign({
-                textWrapping: (_, event) => event.data.textWrapping,
+                textWrapping: ({ event }) => event.data.textWrapping,
               }),
               'persistSettings',
               'toastSuccess',
             ],
             target: 'idle',
-            internal: true,
+            reenter: false,
           },
           'Set Theme': {
             actions: [
               assign({
-                theme: (_, event) => event.data.theme,
+                theme: ({ event }) => event.data.theme,
               }),
               'persistSettings',
               'toastSuccess',
               'setThemeClass',
             ],
             target: 'idle',
-            internal: true,
+            reenter: false,
           },
           'Set Unit System': {
             actions: [
               assign({
-                unitSystem: (_, event) => event.data.unitSystem,
-                baseUnit: (_, event) =>
+                unitSystem: ({ event }) => event.data.unitSystem,
+                baseUnit: ({ event }) =>
                   event.data.unitSystem === 'imperial' ? 'in' : 'mm',
               }),
               'persistSettings',
               'toastSuccess',
             ],
             target: 'idle',
-            internal: true,
+            reenter: false,
           },
           'Toggle Debug Panel': {
             actions: [
               assign({
-                showDebugPanel: (context) => {
+                showDebugPanel: ({ context }) => {
                   return !context.showDebugPanel
                 },
               }),
@@ -149,13 +148,13 @@ export const settingsMachine = createMachine(
               'toastSuccess',
             ],
             target: 'idle',
-            internal: true,
+            reenter: false,
           },
         },
       },
     },
     tsTypes: {} as import('./settingsMachine.typegen').Typegen0,
-    schema: {
+    types: {
       events: {} as
         | { type: 'Set Base Unit'; data: { baseUnit: BaseUnit } }
         | {
@@ -186,7 +185,7 @@ export const settingsMachine = createMachine(
           console.error(e)
         }
       },
-      setThemeClass: (context, event) => {
+      setThemeClass: ({ context, event }) => {
         const currentTheme =
           event.type === 'Set Theme' ? event.data.theme : context.theme
         setThemeClass(

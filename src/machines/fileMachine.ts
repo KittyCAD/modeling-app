@@ -143,7 +143,7 @@ export const fileMachine = createMachine(
       },
     },
 
-    schema: {
+    types: {
       events: {} as
         | { type: 'Open file'; data: { name: string } }
         | {
@@ -161,7 +161,6 @@ export const fileMachine = createMachine(
         | { type: 'assign'; data: { [key: string]: any } },
     },
 
-    predictableActionArguments: true,
     preserveActionOrder: true,
     tsTypes: {} as import('./fileMachine.typegen').Typegen0,
   },

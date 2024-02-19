@@ -81,7 +81,7 @@ export const authMachine = createMachine<UserContext, Events>(
           'Log in': {
             target: 'checkIfLoggedIn',
             actions: assign({
-              token: (_, event) => {
+              token: ({ event }) => {
                 const token = event.token || ''
                 localStorage.setItem(TOKEN_PERSIST_KEY, token)
                 return token
@@ -91,8 +91,7 @@ export const authMachine = createMachine<UserContext, Events>(
         },
       },
     },
-    schema: { events: {} as { type: 'Log out' } | { type: 'Log in' } },
-    predictableActionArguments: true,
+    types: { events: {} as { type: 'Log out' } | { type: 'Log in' } },
     preserveActionOrder: true,
     context: {
       token: persistedToken,

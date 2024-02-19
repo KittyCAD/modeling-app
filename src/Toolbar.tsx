@@ -100,8 +100,8 @@ export const Toolbar = () => {
                 Element="button"
                 onClick={() =>
                   state?.matches('Sketch.Line tool')
-                    ? send('CancelSketch')
-                    : send('Equip Line tool')
+                    ? send({ type: 'CancelSketch' })
+                    : send({ type: 'Equip Line tool' })
                 }
                 aria-pressed={state?.matches('Sketch.Line tool')}
                 className="pressed:bg-energy-10/20 dark:pressed:bg-energy-80"
@@ -118,8 +118,8 @@ export const Toolbar = () => {
                 Element="button"
                 onClick={() =>
                   state.matches('Sketch.Tangential arc to')
-                    ? send('CancelSketch')
-                    : send('Equip tangential arc to')
+                    ? send({ type: 'CancelSketch' })
+                    : send({ type: 'Equip tangential arc to' })
                 }
                 aria-pressed={state.matches('Sketch.Tangential arc to')}
                 className="pressed:bg-energy-10/20 dark:pressed:bg-energy-80"
@@ -128,7 +128,7 @@ export const Toolbar = () => {
                   bgClassName,
                 }}
                 disabled={
-                  !state.can('Equip tangential arc to') &&
+                  !state.can({ type: 'Equip tangential arc to' }) &&
                   !state.matches('Sketch.Tangential arc to')
                 }
               >
@@ -194,9 +194,9 @@ export const Toolbar = () => {
                   data: { name: 'Extrude', ownerMachine: 'modeling' },
                 })
               }
-              disabled={!state.can('Extrude')}
+              disabled={!state.can({ type: 'Extrude' })}
               title={
-                state.can('Extrude')
+                state.can({ type: 'Extrude' })
                   ? 'extrude'
                   : 'sketches need to be closed, or not already extruded'
               }

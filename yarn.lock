@@ -2887,10 +2887,10 @@
     "@babel/types" "^7.21.4"
     recast "^0.23.1"
 
-"@xstate/react@^3.2.2":
-  version "3.2.2"
-  resolved "https://registry.yarnpkg.com/@xstate/react/-/react-3.2.2.tgz#ddf0f9d75e2c19375b1e1b7335e72cb99762aed8"
-  integrity sha512-feghXWLedyq8JeL13yda3XnHPZKwYDN5HPBLykpLeuNpr9178tQd2/3d0NrH6gSd0sG5mLuLeuD+ck830fgzLQ==
+"@xstate/react@^4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@xstate/react/-/react-4.1.0.tgz#369378951e1f7f9326700f65ed02847598aad704"
+  integrity sha512-Fh89luCwuMXIVXIua67d8pNuVgdGpqke2jHfIIL+ZjkfNh6YFtPDSwNSZZDhdNUsOW1zZYSbtUzbC8MIUyTSHQ==
   dependencies:
     use-isomorphic-layout-effect "^1.1.2"
     use-sync-external-store "^1.0.0"
@@ -8992,10 +8992,15 @@ ws@^8.8.0:
   resolved "https://registry.yarnpkg.com/xstate/-/xstate-5.0.0-beta.54.tgz#d80f1a9e43ad883a65fc9b399161bd39633bd9bf"
   integrity sha512-BTnCPBQ2iTKe4uCnHEe1hNx6VTbXU+5mQGybSQHOjTLiBi4Ryi+tL9T6N1tmqagvM8rfl4XRfvndogfWCWcdpw==
 
-xstate@^4.33.4, xstate@^4.38.2:
+xstate@^4.33.4:
   version "4.38.3"
   resolved "https://registry.yarnpkg.com/xstate/-/xstate-4.38.3.tgz#4e15e7ad3aa0ca1eea2010548a5379966d8f1075"
   integrity sha512-SH7nAaaPQx57dx6qvfcIgqKRXIh4L0A1iYEqim4s1u7c9VoCgzZc+63FY90AKU4ZzOC2cfJzTnpO4zK7fCUzzw==
+
+xstate@^5.7.1:
+  version "5.7.1"
+  resolved "https://registry.yarnpkg.com/xstate/-/xstate-5.7.1.tgz#c9d6af13c01e223437b53648be59b55f85f43288"
+  integrity sha512-x1fa1X/K2bCdXrN6Hrll30Q00iprXaaPqB0U3N4nUgjngTNxQbnBvAQ4WSH6ctdU3jbH32+S3GDYctM5K7t8Vw==
 
 y18n@^5.0.5:
   version "5.0.8"

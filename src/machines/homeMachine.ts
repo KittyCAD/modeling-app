@@ -136,7 +136,7 @@ export const homeMachine = createMachine(
       },
     },
 
-    schema: {
+    types: {
       events: {} as
         | { type: 'Open project'; data: HomeCommandSchema['Open project'] }
         | { type: 'Rename project'; data: HomeCommandSchema['Rename project'] }
@@ -150,7 +150,6 @@ export const homeMachine = createMachine(
         | { type: 'assign'; data: { [key: string]: any } },
     },
 
-    predictableActionArguments: true,
     preserveActionOrder: true,
     tsTypes: {} as import('./homeMachine.typegen').Typegen0,
   },
