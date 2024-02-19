@@ -28,6 +28,8 @@ import { kclManager, useKclContext } from 'lang/KclSingleton'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { sceneInfra } from 'clientSideScene/sceneInfra'
 import { copilotPlugin } from 'editor/plugins/lsp/copilot'
+import { isTauri } from 'lib/isTauri'
+import type * as LSP from 'vscode-languageserver-protocol'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -38,6 +40,14 @@ export const editorShortcutMeta = {
     codeMirror: 'Ctrl-Shift-c',
     display: 'Ctrl + Shift + C',
   },
+}
+
+function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
+  // We only use workspace folders in Tauri.
+  if (isTauri()) {
+    return [{ uri: 'file://', name: 'ProjectRoot' }]
+  }
+  return []
 }
 
 export const TextEditor = ({
@@ -107,7 +117,7 @@ export const TextEditor = ({
       const lsp = kclLanguage({
         // When we have more than one file, we'll need to change this.
         documentUri: `file:///we-just-have-one-file-for-now.kcl`,
-        workspaceFolders: [{ uri: 'file://', name: 'ProjectRoot' }],
+        workspaceFolders: getWorkspaceFolders(),
         client: kclLspClient,
       })
 
@@ -144,7 +154,7 @@ export const TextEditor = ({
       const lsp = copilotPlugin({
         // When we have more than one file, we'll need to change this.
         documentUri: `file:///we-just-have-one-file-for-now.kcl`,
-        workspaceFolders: [{ uri: 'file://', name: 'ProjectRoot' }],
+        workspaceFolders: getWorkspaceFolders(),
         client: copilotLspClient,
         allowHTMLContent: true,
       })
