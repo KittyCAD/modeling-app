@@ -250,8 +250,6 @@ export class LanguageServerClient {
   }
 
   private processNotifications(notification: LSP.NotificationMessage) {
-    console.log('[lsp] [processNotification]', notification)
-    console.log('plugins', this.plugins)
     for (const plugin of this.plugins) plugin.processNotification(notification)
   }
 }
