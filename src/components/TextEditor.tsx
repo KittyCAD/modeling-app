@@ -27,7 +27,7 @@ import { engineCommandManager } from '../lang/std/engineConnection'
 import { kclManager, useKclContext } from 'lang/KclSingleton'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { sceneInfra } from 'clientSideScene/sceneInfra'
-import { copilotBundle } from 'editor/plugins/lsp/copilot'
+import { copilotPlugin } from 'editor/plugins/lsp/copilot'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -91,7 +91,7 @@ export const TextEditor = ({
       })
     }
 
-    const lspClient = new LanguageServerClient({ client })
+    const lspClient = new LanguageServerClient({ client, name: 'kcl' })
     return { lspClient }
   }, [setIsKclLspServerReady])
 
@@ -128,7 +128,7 @@ export const TextEditor = ({
       })
     }
 
-    const lspClient = new LanguageServerClient({ client })
+    const lspClient = new LanguageServerClient({ client, name: 'copilot' })
     return { lspClient }
   }, [setIsCopilotLspServerReady])
 
@@ -141,7 +141,7 @@ export const TextEditor = ({
     let plugin = null
     if (isCopilotLspServerReady && !TEST) {
       // Set up the lsp plugin.
-      const lsp = copilotBundle({
+      const lsp = copilotPlugin({
         // When we have more than one file, we'll need to change this.
         documentUri: `file:///we-just-have-one-file-for-now.kcl`,
         workspaceFolders: null,

@@ -18,23 +18,15 @@ import {
   Transaction,
 } from '@codemirror/state'
 import { completionStatus } from '@codemirror/autocomplete'
-import { docPathFacet, offsetToPos, posToOffset } from 'editor/plugins/lsp/util'
-import { LanguageServerPlugin } from 'editor/plugins/lsp/kcl'
-import { LanguageServerOptions } from 'editor/plugins/lsp'
-import { LanguageServerClient } from 'editor/plugins/lsp'
-
-// Create Facet for the current docPath
-export const docPath = Facet.define<string, string>({
-  combine(value: readonly string[]) {
-    return value[value.length - 1]
-  },
-})
-
-export const relDocPath = Facet.define<string, string>({
-  combine(value: readonly string[]) {
-    return value[value.length - 1]
-  },
-})
+import { offsetToPos, posToOffset } from 'editor/plugins/lsp/util'
+import { LanguageServerOptions, LanguageServerClient } from 'editor/plugins/lsp'
+import {
+  LanguageServerPlugin,
+  client,
+  documentUri,
+  languageId,
+} from 'editor/plugins/lsp/plugin'
+import { dir } from 'console'
 
 const ghostMark = Decoration.mark({ class: 'cm-ghostText' })
 
@@ -361,9 +353,9 @@ const completionRequester = (client: LanguageServerClient) => {
       const pos = state.selection.main.head
       const source = state.doc.toString()
 
-      const path = state.facet(docPath)
-      const relativePath = state.facet(relDocPath)
-      const languageId = 'kcl'
+      const dUri = state.facet(documentUri)
+      const path = dUri.split('/').pop()!
+      const relativePath = dUri.replace('file://', '')
 
       // Set a new timeout to request completion
       timeout = setTimeout(async () => {
@@ -378,9 +370,9 @@ const completionRequester = (client: LanguageServerClient) => {
                 indentSize: 1,
                 insertSpaces: true,
                 path,
-                uri: `file://${path}`,
+                uri: dUri,
                 relativePath,
-                languageId,
+                languageId: state.facet(languageId),
                 position: offsetToPos(state.doc, pos),
               },
             })
@@ -483,21 +475,20 @@ const completionRequester = (client: LanguageServerClient) => {
   })
 }
 
-export function copilotServer(options: LanguageServerOptions) {
-  let plugin: LanguageServerPlugin
-  return ViewPlugin.define(
-    (view) =>
-      (plugin = new LanguageServerPlugin(view, options.allowHTMLContent))
-  )
-}
+export const copilotPlugin = (options: LanguageServerOptions): Extension => {
+  let plugin: LanguageServerPlugin | null = null
 
-export const copilotBundle = (options: LanguageServerOptions): Extension => [
-  docPath.of(options.documentUri.split('/').pop()!),
-  docPathFacet.of(options.documentUri.split('/').pop()!),
-  relDocPath.of(options.documentUri.replace('file://', '')),
-  completionDecoration,
-  Prec.highest(completionPlugin(options.client)),
-  Prec.highest(viewCompletionPlugin(options.client)),
-  completionRequester(options.client),
-  copilotServer(options),
-]
+  return [
+    client.of(options.client),
+    documentUri.of(options.documentUri),
+    languageId.of('kcl'),
+    ViewPlugin.define(
+      (view) =>
+        (plugin = new LanguageServerPlugin(view, options.allowHTMLContent))
+    ),
+    completionDecoration,
+    Prec.highest(completionPlugin(options.client)),
+    Prec.highest(viewCompletionPlugin(options.client)),
+    completionRequester(options.client),
+  ]
+}

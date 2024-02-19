@@ -34,6 +34,8 @@ const ServerCapabilitiesProviders: IMethodServerCapabilityProviderDictionary = {
   'textDocument/foldingRange': 'foldingRangeProvider',
   'textDocument/declaration': 'declarationProvider',
   'textDocument/executeCommand': 'executeCommandProvider',
+  'textDocument/semanticTokens/full': 'semanticTokensProvider',
+  'textDocument/publishDiagnostics': 'diagnosticsProvider',
 }
 
 function registerServerCapability(

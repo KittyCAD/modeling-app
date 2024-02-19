@@ -1,7 +1,7 @@
 import type * as LSP from 'vscode-languageserver-protocol'
 import Client from './client'
 import { SemanticToken, deserializeTokens } from './kcl/semantic_tokens'
-import { LanguageServerPlugin } from 'editor/plugins/lsp/kcl'
+import { LanguageServerPlugin } from 'editor/plugins/lsp/plugin'
 
 export interface CopilotGetCompletionsParams {
   doc: {
@@ -90,24 +90,9 @@ interface LSPNotifyMap {
   'textDocument/didOpen': LSP.DidOpenTextDocumentParams
 }
 
-// Server to client
-interface LSPEventMap {
-  'textDocument/publishDiagnostics': LSP.PublishDiagnosticsParams
-  'window/showMessage': LSP.ShowMessageParams
-  'window/logMessage': LSP.LogMessageParams
-}
-
-export type Notification = {
-  [key in keyof LSPEventMap]: {
-    jsonrpc: '2.0'
-    id?: null | undefined
-    method: key
-    params: LSPEventMap[key]
-  }
-}[keyof LSPEventMap]
-
 export interface LanguageServerClientOptions {
   client: Client
+  name: string
 }
 
 export interface LanguageServerOptions {
@@ -119,6 +104,7 @@ export interface LanguageServerOptions {
 
 export class LanguageServerClient {
   private client: Client
+  private name: string
 
   public ready: boolean
 
@@ -133,6 +119,7 @@ export class LanguageServerClient {
   constructor(options: LanguageServerClientOptions) {
     this.plugins = []
     this.client = options.client
+    this.name = options.name
 
     this.ready = false
 
@@ -142,6 +129,7 @@ export class LanguageServerClient {
 
   async initialize() {
     // Start the client in the background.
+    this.client.setNotifyFn(this.processNotifications.bind(this))
     this.client.start()
 
     this.ready = true
@@ -165,6 +153,11 @@ export class LanguageServerClient {
   }
 
   async updateSemanticTokens(uri: string) {
+    const serverCapabilities = this.getServerCapabilities()
+    if (!serverCapabilities.semanticTokensProvider) {
+      return
+    }
+
     // Make sure we can only run, if we aren't already running.
     if (!this.isUpdatingSemanticTokens) {
       this.isUpdatingSemanticTokens = true
@@ -189,10 +182,18 @@ export class LanguageServerClient {
   }
 
   async textDocumentHover(params: LSP.HoverParams) {
+    const serverCapabilities = this.getServerCapabilities()
+    if (!serverCapabilities.hoverProvider) {
+      return
+    }
     return await this.request('textDocument/hover', params)
   }
 
   async textDocumentCompletion(params: LSP.CompletionParams) {
+    const serverCapabilities = this.getServerCapabilities()
+    if (!serverCapabilities.completionProvider) {
+      return
+    }
     return await this.request('textDocument/completion', params)
   }
 
@@ -243,12 +244,14 @@ export class LanguageServerClient {
   async acceptCompletion(params: CopilotAcceptCompletionParams) {
     return await this.request('notifyAccepted', params)
   }
+
   async rejectCompletions(params: CopilotRejectCompletionParams) {
     return await this.request('notifyRejected', params)
   }
 
-  private processNotification(notification: Notification) {
-    console.log('notification', notification)
+  private processNotifications(notification: LSP.NotificationMessage) {
+    console.log('[lsp] [processNotification]', notification)
+    console.log('plugins', this.plugins)
     for (const plugin of this.plugins) plugin.processNotification(notification)
   }
 }
