@@ -1,13 +1,7 @@
-import { autocompletion, completeFromList } from '@codemirror/autocomplete'
+import { completeFromList } from '@codemirror/autocomplete'
 import { setDiagnostics } from '@codemirror/lint'
 import { Facet } from '@codemirror/state'
-import {
-  EditorView,
-  ViewPlugin,
-  Tooltip,
-  hoverTooltip,
-  tooltips,
-} from '@codemirror/view'
+import { EditorView, Tooltip } from '@codemirror/view'
 import {
   DiagnosticSeverity,
   CompletionItemKind,
@@ -23,9 +17,17 @@ import type {
 import type { PublishDiagnosticsParams } from 'vscode-languageserver-protocol'
 import type { ViewUpdate, PluginValue } from '@codemirror/view'
 import type * as LSP from 'vscode-languageserver-protocol'
-import { LanguageServerClient, Notification } from '.'
+import { LanguageServerClient } from 'editor/plugins/lsp'
 import { Marked } from '@ts-stack/markdown'
-import { offsetToPos, posToOffset } from 'editor/lsp/util'
+import { posToOffset } from 'editor/plugins/lsp/util'
+
+const useLast = (values: readonly any[]) => values.reduce((_, v) => v, '')
+export const documentUri = Facet.define<string, string>({ combine: useLast })
+export const languageId = Facet.define<string, string>({ combine: useLast })
+export const workspaceFolders = Facet.define<
+  LSP.WorkspaceFolder[],
+  LSP.WorkspaceFolder[]
+>({ combine: useLast })
 
 const changesDelay = 500
 
@@ -33,31 +35,22 @@ const CompletionItemKindMap = Object.fromEntries(
   Object.entries(CompletionItemKind).map(([key, value]) => [value, key])
 ) as Record<CompletionItemKind, string>
 
-const useLast = (values: readonly any[]) => values.reduce((_, v) => v, '')
-const documentUri = Facet.define<string, string>({ combine: useLast })
-const languageId = Facet.define<string, string>({ combine: useLast })
-const client = Facet.define<LanguageServerClient, LanguageServerClient>({
-  combine: useLast,
-})
-
-export interface LanguageServerOptions {
-  workspaceFolders: LSP.WorkspaceFolder[] | null
-  documentUri: string
-  allowHTMLContent: boolean
-  client: LanguageServerClient
-}
-
 export class LanguageServerPlugin implements PluginValue {
   public client: LanguageServerClient
-
   private documentUri: string
   private languageId: string
+  private workspaceFolders: LSP.WorkspaceFolder[]
   private documentVersion: number
 
-  constructor(private view: EditorView, private allowHTMLContent: boolean) {
-    this.client = this.view.state.facet(client)
+  constructor(
+    client: LanguageServerClient,
+    private view: EditorView,
+    private allowHTMLContent: boolean
+  ) {
+    this.client = client
     this.documentUri = this.view.state.facet(documentUri)
     this.languageId = this.view.state.facet(languageId)
+    this.workspaceFolders = this.view.state.facet(workspaceFolders)
     this.documentVersion = 0
 
     this.client.attachPlugin(this)
@@ -238,11 +231,28 @@ export class LanguageServerPlugin implements PluginValue {
     return completeFromList(options)(context)
   }
 
-  processNotification(notification: Notification) {
+  processNotification(notification: LSP.NotificationMessage) {
     try {
       switch (notification.method) {
         case 'textDocument/publishDiagnostics':
-          this.processDiagnostics(notification.params)
+          this.processDiagnostics(
+            notification.params as PublishDiagnosticsParams
+          )
+          break
+        case 'window/logMessage':
+          console.log(
+            '[lsp] [window/logMessage]',
+            this.client.getName(),
+            notification.params
+          )
+          break
+        case 'window/showMessage':
+          console.log(
+            '[lsp] [window/showMessage]',
+            this.client.getName(),
+            notification.params
+          )
+          break
       }
     } catch (error) {
       console.error(error)
@@ -282,65 +292,6 @@ export class LanguageServerPlugin implements PluginValue {
 
     this.view.dispatch(setDiagnostics(this.view.state, diagnostics))
   }
-}
-
-export function kclPlugin(options: LanguageServerOptions) {
-  let plugin: LanguageServerPlugin | null = null
-
-  return [
-    client.of(options.client),
-    documentUri.of(options.documentUri),
-    languageId.of('kcl'),
-    ViewPlugin.define(
-      (view) =>
-        (plugin = new LanguageServerPlugin(view, options.allowHTMLContent))
-    ),
-    hoverTooltip(
-      (view, pos) =>
-        plugin?.requestHoverTooltip(view, offsetToPos(view.state.doc, pos)) ??
-        null
-    ),
-    tooltips({
-      position: 'absolute',
-    }),
-    autocompletion({
-      override: [
-        async (context) => {
-          if (plugin == null) return null
-
-          const { state, pos, explicit } = context
-          const line = state.doc.lineAt(pos)
-          let trigKind: CompletionTriggerKind = CompletionTriggerKind.Invoked
-          let trigChar: string | undefined
-          if (
-            !explicit &&
-            plugin.client
-              .getServerCapabilities()
-              .completionProvider?.triggerCharacters?.includes(
-                line.text[pos - line.from - 1]
-              )
-          ) {
-            trigKind = CompletionTriggerKind.TriggerCharacter
-            trigChar = line.text[pos - line.from - 1]
-          }
-          if (
-            trigKind === CompletionTriggerKind.Invoked &&
-            !context.matchBefore(/\w+$/)
-          ) {
-            return null
-          }
-          return await plugin.requestCompletion(
-            context,
-            offsetToPos(state.doc, pos),
-            {
-              triggerKind: trigKind,
-              triggerCharacter: trigChar,
-            }
-          )
-        },
-      ],
-    }),
-  ]
 }
 
 function formatContents(

@@ -6,7 +6,7 @@ use std::{
     sync::{Mutex, RwLock},
 };
 
-use crate::server::copilot::types::CopilotCompletionResponse;
+use crate::lsp::copilot::types::CopilotCompletionResponse;
 
 // if file changes, keep the cache.
 // if line number is different for an existing file, clean.

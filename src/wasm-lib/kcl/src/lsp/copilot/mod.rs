@@ -23,7 +23,7 @@ use tower_lsp::{
     LanguageServer,
 };
 
-use crate::server::{
+use crate::lsp::{
     backend::Backend as _,
     copilot::types::{CopilotCompletionResponse, CopilotEditorInfo, CopilotLspCompletionParams, DocParams},
 };
@@ -42,6 +42,8 @@ impl Success {
 pub struct Backend {
     /// The client is used to send notifications and requests to the client.
     pub client: tower_lsp::Client,
+    /// The file system client to use.
+    pub fs: crate::fs::FileManager,
     /// Current code.
     pub current_code_map: DashMap<String, String>,
     /// The token is used to authenticate requests to the API server.
@@ -54,9 +56,13 @@ pub struct Backend {
 
 // Implement the shared backend trait for the language server.
 #[async_trait::async_trait]
-impl crate::server::backend::Backend for Backend {
+impl crate::lsp::backend::Backend for Backend {
     fn client(&self) -> tower_lsp::Client {
         self.client.clone()
+    }
+
+    fn fs(&self) -> crate::fs::FileManager {
+        self.fs.clone()
     }
 
     fn current_code_map(&self) -> DashMap<String, String> {
@@ -125,15 +131,15 @@ impl Backend {
         let pos = params.doc.position;
         let uri = params.doc.uri.to_string();
         let rope = ropey::Rope::from_str(&params.doc.source);
-        let offset = crate::server::util::position_to_offset(pos, &rope).unwrap_or_default();
+        let offset = crate::lsp::util::position_to_offset(pos, &rope).unwrap_or_default();
 
         Ok(DocParams {
             uri: uri.to_string(),
             pos,
             language: params.doc.language_id.to_string(),
-            prefix: crate::server::util::get_text_before(offset, &rope).unwrap_or_default(),
-            suffix: crate::server::util::get_text_after(offset, &rope).unwrap_or_default(),
-            line_before: crate::server::util::get_line_before(pos, &rope).unwrap_or_default(),
+            prefix: crate::lsp::util::get_text_before(offset, &rope).unwrap_or_default(),
+            suffix: crate::lsp::util::get_text_after(offset, &rope).unwrap_or_default(),
+            line_before: crate::lsp::util::get_line_before(pos, &rope).unwrap_or_default(),
             rope,
         })
     }

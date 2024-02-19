@@ -29,7 +29,7 @@ use tower_lsp::{
     Client, LanguageServer,
 };
 
-use crate::{ast::types::VariableKind, executor::SourceRange, parser::PIPE_OPERATOR, server::backend::Backend as _};
+use crate::{ast::types::VariableKind, executor::SourceRange, lsp::backend::Backend as _, parser::PIPE_OPERATOR};
 
 /// A subcommand for running the server.
 #[derive(Clone, Debug)]
@@ -48,6 +48,8 @@ pub struct Server {
 pub struct Backend {
     /// The client for the backend.
     pub client: Client,
+    /// The file system client to use.
+    pub fs: crate::fs::FileManager,
     /// The stdlib completions for the language.
     pub stdlib_completions: HashMap<String, CompletionItem>,
     /// The stdlib signatures for the language.
@@ -70,9 +72,13 @@ pub struct Backend {
 
 // Implement the shared backend trait for the language server.
 #[async_trait::async_trait]
-impl crate::server::backend::Backend for Backend {
+impl crate::lsp::backend::Backend for Backend {
     fn client(&self) -> Client {
         self.client.clone()
+    }
+
+    fn fs(&self) -> crate::fs::FileManager {
+        self.fs.clone()
     }
 
     fn current_code_map(&self) -> DashMap<String, String> {

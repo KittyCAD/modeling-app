@@ -1,7 +1,7 @@
 import type * as LSP from 'vscode-languageserver-protocol'
 import Client from './client'
-import { LanguageServerPlugin } from './plugin'
-import { SemanticToken, deserializeTokens } from './semantic_tokens'
+import { SemanticToken, deserializeTokens } from './kcl/semantic_tokens'
+import { LanguageServerPlugin } from 'editor/plugins/lsp/plugin'
 
 export interface CopilotGetCompletionsParams {
   doc: {
@@ -90,26 +90,22 @@ interface LSPNotifyMap {
   'textDocument/didOpen': LSP.DidOpenTextDocumentParams
 }
 
-// Server to client
-interface LSPEventMap {
-  'textDocument/publishDiagnostics': LSP.PublishDiagnosticsParams
-}
-
-export type Notification = {
-  [key in keyof LSPEventMap]: {
-    jsonrpc: '2.0'
-    id?: null | undefined
-    method: key
-    params: LSPEventMap[key]
-  }
-}[keyof LSPEventMap]
-
 export interface LanguageServerClientOptions {
   client: Client
+  name: string
+}
+
+export interface LanguageServerOptions {
+  // We assume this is the main project directory, we are currently working in.
+  workspaceFolders: LSP.WorkspaceFolder[]
+  documentUri: string
+  allowHTMLContent: boolean
+  client: LanguageServerClient
 }
 
 export class LanguageServerClient {
   private client: Client
+  private name: string
 
   public ready: boolean
 
@@ -124,6 +120,7 @@ export class LanguageServerClient {
   constructor(options: LanguageServerClientOptions) {
     this.plugins = []
     this.client = options.client
+    this.name = options.name
 
     this.ready = false
 
@@ -133,9 +130,14 @@ export class LanguageServerClient {
 
   async initialize() {
     // Start the client in the background.
+    this.client.setNotifyFn(this.processNotifications.bind(this))
     this.client.start()
 
     this.ready = true
+  }
+
+  getName(): string {
+    return this.name
   }
 
   getServerCapabilities(): LSP.ServerCapabilities<any> {
@@ -156,6 +158,11 @@ export class LanguageServerClient {
   }
 
   async updateSemanticTokens(uri: string) {
+    const serverCapabilities = this.getServerCapabilities()
+    if (!serverCapabilities.semanticTokensProvider) {
+      return
+    }
+
     // Make sure we can only run, if we aren't already running.
     if (!this.isUpdatingSemanticTokens) {
       this.isUpdatingSemanticTokens = true
@@ -180,10 +187,18 @@ export class LanguageServerClient {
   }
 
   async textDocumentHover(params: LSP.HoverParams) {
+    const serverCapabilities = this.getServerCapabilities()
+    if (!serverCapabilities.hoverProvider) {
+      return
+    }
     return await this.request('textDocument/hover', params)
   }
 
   async textDocumentCompletion(params: LSP.CompletionParams) {
+    const serverCapabilities = this.getServerCapabilities()
+    if (!serverCapabilities.completionProvider) {
+      return
+    }
     return await this.request('textDocument/completion', params)
   }
 
@@ -234,11 +249,12 @@ export class LanguageServerClient {
   async acceptCompletion(params: CopilotAcceptCompletionParams) {
     return await this.request('notifyAccepted', params)
   }
+
   async rejectCompletions(params: CopilotRejectCompletionParams) {
     return await this.request('notifyRejected', params)
   }
 
-  private processNotification(notification: Notification) {
+  private processNotifications(notification: LSP.NotificationMessage) {
     for (const plugin of this.plugins) plugin.processNotification(notification)
   }
 }

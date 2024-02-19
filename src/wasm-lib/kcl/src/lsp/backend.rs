@@ -13,6 +13,8 @@ use tower_lsp::lsp_types::{
 pub trait Backend {
     fn client(&self) -> tower_lsp::Client;
 
+    fn fs(&self) -> crate::fs::FileManager;
+
     /// Get the current code map.
     fn current_code_map(&self) -> DashMap<String, String>;
 
