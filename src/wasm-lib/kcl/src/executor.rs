@@ -950,27 +950,30 @@ pub struct ExecutorContext {
     pub engine: EngineConnection,
     pub fs: FileManager,
     pub stdlib: Arc<StdLib>,
+    pub units: kittycad::types::UnitLength,
 }
 
 impl ExecutorContext {
     /// Create a new default executor context.
     #[cfg(test)]
-    pub async fn new() -> Result<Self> {
+    pub async fn new(units: kittycad::types::UnitLength) -> Result<Self> {
         Ok(Self {
             engine: EngineConnection::new().await?,
             fs: FileManager::new(),
             stdlib: Arc::new(StdLib::new()),
+            units,
         })
     }
 
     /// Create a new default executor context.
     #[cfg(not(test))]
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new(ws: reqwest::Upgraded) -> Result<Self> {
+    pub async fn new(ws: reqwest::Upgraded, units: kittycad::types::UnitLength) -> Result<Self> {
         Ok(Self {
             engine: EngineConnection::new(ws).await?,
             fs: FileManager::new(),
             stdlib: Arc::new(StdLib::new()),
+            units,
         })
     }
 }
@@ -1269,7 +1272,7 @@ mod tests {
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast()?;
         let mut mem: ProgramMemory = Default::default();
-        let ctx = ExecutorContext::new().await?;
+        let ctx = ExecutorContext::new(kittycad::types::UnitLength::Mm).await?;
         let memory = execute(program, &mut mem, BodyType::Root, &ctx).await?;
 
         Ok(memory)

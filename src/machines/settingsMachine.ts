@@ -29,7 +29,7 @@ export const settingsMachine = createMachine(
     id: 'Settings',
     predictableActionArguments: true,
     context: {
-      baseUnit: 'in' as BaseUnit,
+      baseUnit: 'mm' as BaseUnit,
       cameraControls: 'KittyCAD' as CameraSystem,
       defaultDirectory: '',
       defaultProjectName: DEFAULT_PROJECT_NAME,
@@ -37,7 +37,7 @@ export const settingsMachine = createMachine(
       showDebugPanel: false,
       textWrapping: 'On' as Toggle,
       theme: Themes.System,
-      unitSystem: UnitSystem.Imperial,
+      unitSystem: UnitSystem.Metric,
     },
     initial: 'idle',
     states: {

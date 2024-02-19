@@ -17,6 +17,7 @@ import type { Program } from '../wasm-lib/kcl/bindings/Program'
 import type { Token } from '../wasm-lib/kcl/bindings/Token'
 import { Coords2d } from './std/sketch'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Value } from '../wasm-lib/kcl/bindings/Value'
@@ -141,10 +142,18 @@ export const _executor = async (
   programMemory: ProgramMemory = { root: {}, return: null },
   engineCommandManager: EngineCommandManager
 ): Promise<ProgramMemory> => {
+  const {
+    settings: {
+      state: {
+        context: { baseUnit },
+      },
+    },
+  } = useGlobalStateContext()
   try {
     const memory: ProgramMemory = await execute_wasm(
       JSON.stringify(node),
       JSON.stringify(programMemory),
+      baseUnit,
       engineCommandManager,
       fileSystemManager
     )

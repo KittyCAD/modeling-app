@@ -38,7 +38,8 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
     let mut mem: kcl_lib::executor::ProgramMemory = Default::default();
-    let ctx = kcl_lib::executor::ExecutorContext::new(ws).await?;
+    let ctx = kcl_lib::executor::ExecutorContext::new(ws, kittycad::types::UnitLength::Mm).await?;
+
     let _ = kcl_lib::executor::execute(program, &mut mem, kcl_lib::executor::BodyType::Root, &ctx).await?;
 
     // Send a snapshot request to the engine.
