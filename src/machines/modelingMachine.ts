@@ -71,7 +71,12 @@ export type SetSelections =
     }
 
 export type ModelingMachineEvent =
-  | { type: 'Enter sketch' }
+  | {
+      type: 'Enter sketch'
+      data?: {
+        forceNewSketch?: boolean
+      }
+    }
   | {
       type: 'Select default plane'
       data: { plane: DefaultPlaneStr; normal: [number, number, number] }
@@ -153,7 +158,7 @@ export const modelingMachine = createMachine(
           'Enter sketch': [
             {
               target: 'animating to existing sketch',
-              cond: 'Selection is one face',
+              cond: 'Selection is on face',
               actions: ['set sketch metadata'],
             },
             'Sketch no face',
