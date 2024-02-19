@@ -332,6 +332,7 @@ class SceneEntities {
     if (!draftSegment) {
       sceneInfra.setCallbacks({
         onDrag: (args) => {
+          if (args.event.which !== 1) return
           this.onDragSegment({
             ...args,
             sketchPathToNode,
@@ -339,6 +340,7 @@ class SceneEntities {
         },
         onMove: () => {},
         onClick: (args) => {
+          if (args?.event.which !== 1) return
           if (!args || !args.object) {
             sceneInfra.modelingSend({
               type: 'Set selection',
@@ -396,6 +398,7 @@ class SceneEntities {
         onDrag: () => {},
         onClick: async (args) => {
           if (!args) return
+          if (args.event.which !== 1) return
           const { intersection2d } = args
           if (!intersection2d) return
 
@@ -433,6 +436,7 @@ class SceneEntities {
           this.setupSketch({ sketchPathToNode, draftSegment })
         },
         onMove: (args) => {
+          if (args.event.which !== 1) return
           this.onDragSegment({
             ...args,
             object: Object.values(this.activeSegments).slice(-1)[0],
@@ -792,6 +796,7 @@ class SceneEntities {
       },
       onClick: (args) => {
         if (!args || !args.object) return
+        if (args.event.which !== 1) return
         const { object, intersection } = args
         const type = object?.userData?.type || ''
         const posNorm = Number(intersection.normal?.z) > 0
