@@ -436,7 +436,6 @@ class SceneEntities {
           this.setupSketch({ sketchPathToNode, draftSegment })
         },
         onMove: (args) => {
-          if (args.event.which !== 1) return
           this.onDragSegment({
             ...args,
             object: Object.values(this.activeSegments).slice(-1)[0],
