@@ -97,7 +97,7 @@ export interface LanguageServerClientOptions {
 
 export interface LanguageServerOptions {
   // We assume this is the main project directory, we are currently working in.
-  workspaceFolders: LSP.WorkspaceFolder[] | null
+  workspaceFolders: LSP.WorkspaceFolder[]
   documentUri: string
   allowHTMLContent: boolean
   client: LanguageServerClient

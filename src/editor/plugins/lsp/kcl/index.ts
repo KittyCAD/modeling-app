@@ -9,6 +9,7 @@ import {
   client,
   documentUri,
   languageId,
+  workspaceFolders,
 } from 'editor/plugins/lsp/plugin'
 
 export function kclPlugin(options: LanguageServerOptions): Extension {
@@ -18,6 +19,7 @@ export function kclPlugin(options: LanguageServerOptions): Extension {
     client.of(options.client),
     documentUri.of(options.documentUri),
     languageId.of('kcl'),
+    workspaceFolders.of(options.workspaceFolders),
     ViewPlugin.define(
       (view) =>
         (plugin = new LanguageServerPlugin(view, options.allowHTMLContent))

@@ -24,6 +24,7 @@ import {
   client,
   documentUri,
   languageId,
+  workspaceFolders,
 } from 'editor/plugins/lsp/plugin'
 
 const ghostMark = Decoration.mark({ class: 'cm-ghostText' })
@@ -480,6 +481,7 @@ export const copilotPlugin = (options: LanguageServerOptions): Extension => {
     client.of(options.client),
     documentUri.of(options.documentUri),
     languageId.of('kcl'),
+    workspaceFolders.of(options.workspaceFolders),
     ViewPlugin.define(
       (view) =>
         (plugin = new LanguageServerPlugin(view, options.allowHTMLContent))

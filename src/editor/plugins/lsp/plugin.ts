@@ -27,6 +27,10 @@ export const languageId = Facet.define<string, string>({ combine: useLast })
 export const client = Facet.define<LanguageServerClient, LanguageServerClient>({
   combine: useLast,
 })
+export const workspaceFolders = Facet.define<
+  LSP.WorkspaceFolder[],
+  LSP.WorkspaceFolder[]
+>({ combine: useLast })
 
 const changesDelay = 500
 
@@ -36,15 +40,16 @@ const CompletionItemKindMap = Object.fromEntries(
 
 export class LanguageServerPlugin implements PluginValue {
   public client: LanguageServerClient
-
   private documentUri: string
   private languageId: string
+  private workspaceFolders: LSP.WorkspaceFolder[]
   private documentVersion: number
 
   constructor(private view: EditorView, private allowHTMLContent: boolean) {
     this.client = this.view.state.facet(client)
     this.documentUri = this.view.state.facet(documentUri)
     this.languageId = this.view.state.facet(languageId)
+    this.workspaceFolders = this.view.state.facet(workspaceFolders)
     this.documentVersion = 0
 
     this.client.attachPlugin(this)

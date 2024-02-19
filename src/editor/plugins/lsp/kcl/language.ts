@@ -14,7 +14,7 @@ import { EditorState } from '@uiw/react-codemirror'
 const data = defineLanguageFacet({})
 
 export interface LanguageOptions {
-  workspaceFolders: LSP.WorkspaceFolder[] | null
+  workspaceFolders: LSP.WorkspaceFolder[]
   documentUri: string
   client: LanguageServerClient
 }
