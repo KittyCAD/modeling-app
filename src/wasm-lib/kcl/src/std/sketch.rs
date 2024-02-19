@@ -1043,12 +1043,11 @@ async fn start_sketch_on_plane(data: PlaneData, args: Args) -> Result<Box<Plane>
     // Enter sketch mode on the plane.
     args.send_modeling_cmd(
         uuid::Uuid::new_v4(),
-        ModelingCmd::SketchModeEnable {
+        ModelingCmd::EnableSketchMode {
             animated: false,
             ortho: false,
-            plane_id: plane.id,
-            // We pass in the normal for the plane here.
-            disable_camera_with_plane: Some(plane.z_axis.clone().into()),
+            entity_id: plane.id,
+            adjust_camera: false,
         },
     )
     .await?;

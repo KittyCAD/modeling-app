@@ -74,11 +74,11 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             SourceRange::default(),
-            ModelingCmd::SketchModeEnable {
+            ModelingCmd::EnableSketchMode {
                 animated: false,
-                ortho: true,
-                plane_id,
-                disable_camera_with_plane: Some(Point3D { x: 0.0, y: 0.0, z: 1.0 }),
+                ortho: false,
+                entity_id: plane_id,
+                adjust_camera: false,
             },
         )
         .await?;
