@@ -577,7 +577,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   await page.waitForTimeout(200)
 
   // enter sketch again
-  await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await page.getByRole('button', { name: 'Edit Sketch' }).click()
   await page.waitForTimeout(700) // wait for animation
 
   // hover again and check it works
@@ -847,4 +847,104 @@ test('ProgramMemory can be serialised', async ({ page, context }) => {
       expect(message).not.toContain(forbiddenMessage)
     })
   })
+})
+
+test('edit selections', async ({ page, context }) => {
+  const u = getUtils(page)
+  const selectionsSnippets = {
+    extrudeAndEditBlocked: '|> startProfileAt([10.81, 32.99], %)',
+    extrudeAndEditBlockedInFunction: '|> startProfileAt(pos, %)',
+    extrudeAndEditAllowed: '|> startProfileAt([15.72, 4.7], %)',
+    editOnly: '|> startProfileAt([15.79, -14.6], %)',
+  }
+  await context.addInitScript(
+    async ({
+      extrudeAndEditBlocked,
+      extrudeAndEditBlockedInFunction,
+      extrudeAndEditAllowed,
+      editOnly,
+    }: any) => {
+      localStorage.setItem(
+        'persistCode',
+        `const part001 = startSketchOn('-XZ')
+  ${extrudeAndEditBlocked}
+  |> line([25.96, 2.93], %)
+  |> line([5.25, -5.72], %)
+  |> line([-2.01, -10.35], %)
+  |> line([-27.65, -2.78], %)
+  |> close(%)
+  |> extrude(5, %)
+const part002 = startSketchOn('-XZ')
+  ${extrudeAndEditAllowed}
+  |> line([10.32, 6.47], %)
+  |> line([9.71, -6.16], %)
+  |> line([-3.08, -9.86], %)
+  |> line([-12.02, -1.54], %)
+  |> close(%)
+const part003 = startSketchOn('-XZ')
+  ${editOnly}
+  |> line([27.55, -1.65], %)
+  |> line([4.95, -8], %)
+  |> line([-20.38, -10.12], %)
+  |> line([-15.79, 17.08], %)
+
+fn yohey = (pos) => {
+  const part004 = startSketchOn('-XZ')
+  ${extrudeAndEditBlockedInFunction}
+  |> line([27.55, -1.65], %)
+  |> line([4.95, -10.53], %)
+  |> line([-20.38, -8], %)
+  |> line([-15.79, 17.08], %)
+  return ''
+}
+    
+    yohey([15.79, -34.6])
+`
+      )
+    },
+    selectionsSnippets
+  )
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+
+  // wait for execution done
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
+
+  await page.getByText(selectionsSnippets.extrudeAndEditBlocked).click()
+  await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+  await expect(
+    page.getByRole('button', { name: 'Edit Sketch' })
+  ).not.toBeVisible()
+
+  await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
+  await expect(page.getByRole('button', { name: 'Extrude' })).not.toBeDisabled()
+  await expect(
+    page.getByRole('button', { name: 'Edit Sketch' })
+  ).not.toBeDisabled()
+
+  await page.getByText(selectionsSnippets.editOnly).click()
+  await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+  await expect(
+    page.getByRole('button', { name: 'Edit Sketch' })
+  ).not.toBeDisabled()
+
+  await page
+    .getByText(selectionsSnippets.extrudeAndEditBlockedInFunction)
+    .click()
+  await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+  await expect(
+    page.getByRole('button', { name: 'Edit Sketch' })
+  ).not.toBeVisible()
+
+  // selecting an editable sketch but clicking "start sktech" should start a new sketch and not edit the existing one
+  await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
+  await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await page.mouse.click(700, 200)
+  // expect main content to contain `part005` i.e. started a new sketch
+  await expect(page.locator('.cm-content')).toHaveText(
+    /part005 = startSketchOn\('-XZ'\)/
+  )
 })
