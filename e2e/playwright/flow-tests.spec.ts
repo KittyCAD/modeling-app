@@ -375,6 +375,7 @@ test('Auto complete works', async ({ page }) => {
   await page.keyboard.type('  |> lin')
 
   await expect(page.locator('.cm-tooltip-autocomplete')).toBeVisible()
+  await page.waitForTimeout(100)
   // press arrow down twice then enter to accept xLine
   await page.keyboard.press('ArrowDown')
   await page.keyboard.press('ArrowDown')
