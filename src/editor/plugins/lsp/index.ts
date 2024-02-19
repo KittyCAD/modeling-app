@@ -136,6 +136,10 @@ export class LanguageServerClient {
     this.ready = true
   }
 
+  getName(): string {
+    return this.name
+  }
+
   getServerCapabilities(): LSP.ServerCapabilities<any> {
     return this.client.getServerCapabilities()
   }

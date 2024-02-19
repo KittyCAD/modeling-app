@@ -6,7 +6,6 @@ import { offsetToPos } from 'editor/plugins/lsp/util'
 import { LanguageServerOptions } from 'editor/plugins/lsp'
 import {
   LanguageServerPlugin,
-  client,
   documentUri,
   languageId,
   workspaceFolders,
@@ -16,13 +15,16 @@ export function kclPlugin(options: LanguageServerOptions): Extension {
   let plugin: LanguageServerPlugin | null = null
 
   return [
-    client.of(options.client),
     documentUri.of(options.documentUri),
     languageId.of('kcl'),
     workspaceFolders.of(options.workspaceFolders),
     ViewPlugin.define(
       (view) =>
-        (plugin = new LanguageServerPlugin(view, options.allowHTMLContent))
+        (plugin = new LanguageServerPlugin(
+          options.client,
+          view,
+          options.allowHTMLContent
+        ))
     ),
     hoverTooltip(
       (view, pos) =>

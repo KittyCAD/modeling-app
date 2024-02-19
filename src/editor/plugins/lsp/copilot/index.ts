@@ -21,7 +21,6 @@ import { offsetToPos, posToOffset } from 'editor/plugins/lsp/util'
 import { LanguageServerOptions, LanguageServerClient } from 'editor/plugins/lsp'
 import {
   LanguageServerPlugin,
-  client,
   documentUri,
   languageId,
   workspaceFolders,
@@ -478,13 +477,16 @@ export const copilotPlugin = (options: LanguageServerOptions): Extension => {
   let plugin: LanguageServerPlugin | null = null
 
   return [
-    client.of(options.client),
     documentUri.of(options.documentUri),
     languageId.of('kcl'),
     workspaceFolders.of(options.workspaceFolders),
     ViewPlugin.define(
       (view) =>
-        (plugin = new LanguageServerPlugin(view, options.allowHTMLContent))
+        (plugin = new LanguageServerPlugin(
+          options.client,
+          view,
+          options.allowHTMLContent
+        ))
     ),
     completionDecoration,
     Prec.highest(completionPlugin(options.client)),

@@ -24,9 +24,6 @@ import { posToOffset } from 'editor/plugins/lsp/util'
 const useLast = (values: readonly any[]) => values.reduce((_, v) => v, '')
 export const documentUri = Facet.define<string, string>({ combine: useLast })
 export const languageId = Facet.define<string, string>({ combine: useLast })
-export const client = Facet.define<LanguageServerClient, LanguageServerClient>({
-  combine: useLast,
-})
 export const workspaceFolders = Facet.define<
   LSP.WorkspaceFolder[],
   LSP.WorkspaceFolder[]
@@ -45,8 +42,12 @@ export class LanguageServerPlugin implements PluginValue {
   private workspaceFolders: LSP.WorkspaceFolder[]
   private documentVersion: number
 
-  constructor(private view: EditorView, private allowHTMLContent: boolean) {
-    this.client = this.view.state.facet(client)
+  constructor(
+    client: LanguageServerClient,
+    private view: EditorView,
+    private allowHTMLContent: boolean
+  ) {
+    this.client = client
     this.documentUri = this.view.state.facet(documentUri)
     this.languageId = this.view.state.facet(languageId)
     this.workspaceFolders = this.view.state.facet(workspaceFolders)
@@ -239,10 +240,18 @@ export class LanguageServerPlugin implements PluginValue {
           )
           break
         case 'window/logMessage':
-          console.log('[lsp] [window/logMessage]', notification.params)
+          console.log(
+            '[lsp] [window/logMessage]',
+            this.client.getName(),
+            notification.params
+          )
           break
         case 'window/showMessage':
-          console.log('[lsp] [window/showMessage]', notification.params)
+          console.log(
+            '[lsp] [window/showMessage]',
+            this.client.getName(),
+            notification.params
+          )
           break
       }
     } catch (error) {
