@@ -28,7 +28,6 @@ import { kclManager, useKclContext } from 'lang/KclSingleton'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { sceneInfra } from 'clientSideScene/sceneInfra'
 import { copilotPlugin } from 'editor/plugins/lsp/copilot'
-import { fileSystemManager } from 'lang/std/fileSystemManager'
 
 export const editorShortcutMeta = {
   formatCode: {
