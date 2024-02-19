@@ -11,7 +11,6 @@ import {
   Annotation,
   EditorState,
   Extension,
-  Facet,
   Prec,
   StateEffect,
   StateField,
@@ -26,7 +25,6 @@ import {
   documentUri,
   languageId,
 } from 'editor/plugins/lsp/plugin'
-import { dir } from 'console'
 
 const ghostMark = Decoration.mark({ class: 'cm-ghostText' })
 
