@@ -107,7 +107,7 @@ export const TextEditor = ({
       const lsp = kclLanguage({
         // When we have more than one file, we'll need to change this.
         documentUri: `file:///we-just-have-one-file-for-now.kcl`,
-        workspaceFolders: null,
+        workspaceFolders: [{ uri: 'file://', name: 'ProjectRoot' }],
         client: kclLspClient,
       })
 
@@ -144,7 +144,7 @@ export const TextEditor = ({
       const lsp = copilotPlugin({
         // When we have more than one file, we'll need to change this.
         documentUri: `file:///we-just-have-one-file-for-now.kcl`,
-        workspaceFolders: null,
+        workspaceFolders: [{ uri: 'file://', name: 'ProjectRoot' }],
         client: copilotLspClient,
         allowHTMLContent: true,
       })
