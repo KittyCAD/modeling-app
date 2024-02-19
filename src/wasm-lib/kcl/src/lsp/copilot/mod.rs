@@ -42,6 +42,8 @@ impl Success {
 pub struct Backend {
     /// The client is used to send notifications and requests to the client.
     pub client: tower_lsp::Client,
+    /// The file system client to use.
+    pub fs: crate::fs::FileManager,
     /// Current code.
     pub current_code_map: DashMap<String, String>,
     /// The token is used to authenticate requests to the API server.
@@ -57,6 +59,10 @@ pub struct Backend {
 impl crate::lsp::backend::Backend for Backend {
     fn client(&self) -> tower_lsp::Client {
         self.client.clone()
+    }
+
+    fn fs(&self) -> crate::fs::FileManager {
+        self.fs.clone()
     }
 
     fn current_code_map(&self) -> DashMap<String, String> {

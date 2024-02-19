@@ -129,16 +129,22 @@ pub fn recast_wasm(json_str: &str) -> Result<JsValue, JsError> {
 pub struct ServerConfig {
     into_server: js_sys::AsyncIterator,
     from_server: web_sys::WritableStream,
+    fs: kcl_lib::fs::wasm::FileSystemManager,
 }
 
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 impl ServerConfig {
     #[wasm_bindgen(constructor)]
-    pub fn new(into_server: js_sys::AsyncIterator, from_server: web_sys::WritableStream) -> Self {
+    pub fn new(
+        into_server: js_sys::AsyncIterator,
+        from_server: web_sys::WritableStream,
+        fs: kcl_lib::fs::wasm::FileSystemManager,
+    ) -> Self {
         Self {
             into_server,
             from_server,
+            fs,
         }
     }
 }
@@ -156,6 +162,7 @@ pub async fn kcl_lsp_run(config: ServerConfig) -> Result<(), JsValue> {
     let ServerConfig {
         into_server,
         from_server,
+        fs,
     } = config;
 
     let stdlib = kcl_lib::std::StdLib::new();
@@ -167,6 +174,7 @@ pub async fn kcl_lsp_run(config: ServerConfig) -> Result<(), JsValue> {
 
     let (service, socket) = LspService::new(|client| kcl_lib::lsp::kcl::Backend {
         client,
+        fs: kcl_lib::fs::FileManager::new(fs),
         stdlib_completions,
         stdlib_signatures,
         token_types,
@@ -211,10 +219,12 @@ pub async fn copilot_lsp_run(config: ServerConfig, token: String) -> Result<(), 
     let ServerConfig {
         into_server,
         from_server,
+        fs,
     } = config;
 
     let (service, socket) = LspService::build(|client| kcl_lib::lsp::copilot::Backend {
         client,
+        fs: kcl_lib::fs::FileManager::new(fs),
         current_code_map: Default::default(),
         editor_info: Arc::new(RwLock::new(kcl_lib::lsp::copilot::types::CopilotEditorInfo::default())),
         cache: kcl_lib::lsp::copilot::cache::CopilotCache::new(),

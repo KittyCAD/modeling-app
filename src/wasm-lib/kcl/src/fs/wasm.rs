@@ -31,6 +31,9 @@ impl FileManager {
     }
 }
 
+unsafe impl Send for FileManager {}
+unsafe impl Sync for FileManager {}
+
 #[async_trait::async_trait(?Send)]
 impl FileSystem for FileManager {
     async fn read<P: AsRef<std::path::Path>>(
