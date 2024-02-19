@@ -43,7 +43,8 @@ export const editorShortcutMeta = {
 }
 
 function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
-  // We only use workspace folders in Tauri.
+  // We only use workspace folders in Tauri since that is where we use more than
+  // one file.
   if (isTauri()) {
     return [{ uri: 'file://', name: 'ProjectRoot' }]
   }
