@@ -1,4 +1,4 @@
-import { Facet, Text } from '@codemirror/state'
+import { Text } from '@codemirror/state'
 
 export function posToOffset(
   doc: Text,
@@ -17,7 +17,3 @@ export function offsetToPos(doc: Text, offset: number) {
     character: offset - line.from,
   }
 }
-
-export const docPathFacet = Facet.define<string, string>({
-  combine: (values) => values[values.length - 1],
-})

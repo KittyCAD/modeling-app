@@ -1,4 +1,8 @@
-import { readBinaryFile, exists as tauriExists } from '@tauri-apps/api/fs'
+import {
+  readDir,
+  readBinaryFile,
+  exists as tauriExists,
+} from '@tauri-apps/api/fs'
 import { isTauri } from 'lib/isTauri'
 import { join } from '@tauri-apps/api/path'
 
@@ -51,6 +55,30 @@ class FileSystemManager {
       })
       .then((file) => {
         return tauriExists(file)
+      })
+  }
+
+  getAllFiles(path: string): Promise<string[] | void> {
+    // Using local file system only works from Tauri.
+    if (!isTauri()) {
+      throw new Error(
+        'This function can only be called from a Tauri application'
+      )
+    }
+
+    return join(this.dir, path)
+      .catch((error) => {
+        throw new Error(`Error joining dir: ${error}`)
+      })
+      .then((p) => {
+        readDir(p, { recursive: true })
+          .catch((error) => {
+            throw new Error(`Error reading dir: ${error}`)
+          })
+
+          .then((files) => {
+            return files.map((file) => file.path)
+          })
       })
   }
 }

@@ -2,5 +2,5 @@
 
 mod backend;
 pub mod copilot;
-pub mod lsp;
+pub mod kcl;
 mod util;

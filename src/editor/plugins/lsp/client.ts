@@ -65,6 +65,7 @@ export default class Client extends jsrpc.JSONRPCServerAndClient {
   afterInitializedHooks: (() => Promise<void>)[] = []
   #fromServer: FromServer
   private serverCapabilities: LSP.ServerCapabilities<any> = {}
+  private notifyFn: ((message: LSP.NotificationMessage) => void) | null = null
 
   constructor(fromServer: FromServer, intoServer: IntoServer) {
     super(
@@ -167,9 +168,15 @@ export default class Client extends jsrpc.JSONRPCServerAndClient {
     return this.serverCapabilities
   }
 
+  setNotifyFn(fn: (message: LSP.NotificationMessage) => void): void {
+    this.notifyFn = fn
+  }
+
   async processNotifications(): Promise<void> {
     for await (const notification of this.#fromServer.notifications) {
-      await this.receiveAndSend(notification)
+      if (this.notifyFn) {
+        this.notifyFn(notification)
+      }
     }
   }
 

@@ -3,9 +3,9 @@ import ReactCodeMirror, {
   ViewUpdate,
   keymap,
 } from '@uiw/react-codemirror'
-import { FromServer, IntoServer } from 'editor/lsp/codec'
-import Server from '../editor/lsp/server'
-import Client from '../editor/lsp/client'
+import { FromServer, IntoServer } from 'editor/plugins/lsp/codec'
+import Server from '../editor/plugins/lsp/server'
+import Client from '../editor/plugins/lsp/client'
 import { TEST } from 'env'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
@@ -15,8 +15,8 @@ import { useMemo, useRef } from 'react'
 import { linter, lintGutter } from '@codemirror/lint'
 import { useStore } from 'useStore'
 import { processCodeMirrorRanges } from 'lib/selections'
-import { LanguageServerClient } from 'editor/lsp'
-import kclLanguage from 'editor/lsp/language'
+import { LanguageServerClient } from 'editor/plugins/lsp'
+import kclLanguage from 'editor/plugins/lsp/kcl/language'
 import { EditorView, lineHighlightField } from 'editor/highlightextension'
 import { roundOff } from 'lib/utils'
 import { kclErrToDiagnostic } from 'lang/errors'
@@ -27,7 +27,9 @@ import { engineCommandManager } from '../lang/std/engineConnection'
 import { kclManager, useKclContext } from 'lang/KclSingleton'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { sceneInfra } from 'clientSideScene/sceneInfra'
-import { copilotBundle } from 'editor/copilot'
+import { copilotPlugin } from 'editor/plugins/lsp/copilot'
+import { isTauri } from 'lib/isTauri'
+import type * as LSP from 'vscode-languageserver-protocol'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -38,6 +40,15 @@ export const editorShortcutMeta = {
     codeMirror: 'Ctrl-Shift-c',
     display: 'Ctrl + Shift + C',
   },
+}
+
+function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
+  // We only use workspace folders in Tauri since that is where we use more than
+  // one file.
+  if (isTauri()) {
+    return [{ uri: 'file://', name: 'ProjectRoot' }]
+  }
+  return []
 }
 
 export const TextEditor = ({
@@ -91,7 +102,7 @@ export const TextEditor = ({
       })
     }
 
-    const lspClient = new LanguageServerClient({ client })
+    const lspClient = new LanguageServerClient({ client, name: 'kcl' })
     return { lspClient }
   }, [setIsKclLspServerReady])
 
@@ -107,7 +118,7 @@ export const TextEditor = ({
       const lsp = kclLanguage({
         // When we have more than one file, we'll need to change this.
         documentUri: `file:///we-just-have-one-file-for-now.kcl`,
-        workspaceFolders: null,
+        workspaceFolders: getWorkspaceFolders(),
         client: kclLspClient,
       })
 
@@ -128,7 +139,7 @@ export const TextEditor = ({
       })
     }
 
-    const lspClient = new LanguageServerClient({ client })
+    const lspClient = new LanguageServerClient({ client, name: 'copilot' })
     return { lspClient }
   }, [setIsCopilotLspServerReady])
 
@@ -141,10 +152,10 @@ export const TextEditor = ({
     let plugin = null
     if (isCopilotLspServerReady && !TEST) {
       // Set up the lsp plugin.
-      const lsp = copilotBundle({
+      const lsp = copilotPlugin({
         // When we have more than one file, we'll need to change this.
         documentUri: `file:///we-just-have-one-file-for-now.kcl`,
-        workspaceFolders: null,
+        workspaceFolders: getWorkspaceFolders(),
         client: copilotLspClient,
         allowHTMLContent: true,
       })
