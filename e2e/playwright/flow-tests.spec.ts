@@ -367,6 +367,7 @@ test('Auto complete works', async ({ page }) => {
   await page.keyboard.type('  |> startProfi')
   // expect there be a single auto complete option that we can just hit enter on
   await expect(page.locator('.cm-completionLabel')).toBeVisible()
+  await page.waitForTimeout(100)
   await page.keyboard.press('Enter') // accepting the auto complete, not a new line
 
   await page.keyboard.type('([0,0], %)')
