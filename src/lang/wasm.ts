@@ -17,8 +17,6 @@ import type { Program } from '../wasm-lib/kcl/bindings/Program'
 import type { Token } from '../wasm-lib/kcl/bindings/Token'
 import { Coords2d } from './std/sketch'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
-import { getSettingsState } from 'components/GlobalStateProvider'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Value } from '../wasm-lib/kcl/bindings/Value'
@@ -138,13 +136,15 @@ export const executor = async (
   return _programMemory
 }
 
+const getSettingsState = import('components/GlobalStateProvider').then(module => module.getSettingsState)
+
 export const _executor = async (
   node: Program,
   programMemory: ProgramMemory = { root: {}, return: null },
   engineCommandManager: EngineCommandManager
 ): Promise<ProgramMemory> => {
   try {
-    const baseUnit = getSettingsState()?.baseUnit || 'in'
+    const baseUnit = (await getSettingsState)()?.baseUnit || 'in'
     engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: 'ca019ee3-4f3f-4dda-b0cf-dd9f201e6fbc',
