@@ -3,7 +3,9 @@ import { Themes, getSystemTheme, setThemeClass } from '../lib/theme'
 import { CameraSystem } from 'lib/cameraControls'
 import { Models } from '@kittycad/lib'
 
-const kclManagerPromise = import('lang/KclSingleton').then(module => module.kclManager)
+const kclManagerPromise = import('lang/KclSingleton').then(
+  (module) => module.kclManager
+)
 
 export const DEFAULT_PROJECT_NAME = 'project-$nnn'
 
@@ -54,7 +56,7 @@ export const settingsMachine = createMachine(
               'persistSettings',
               'toastSuccess',
               async () => {
-                (await kclManagerPromise).executeAst()
+                ;(await kclManagerPromise).executeAst()
               },
             ],
             target: 'idle',
@@ -137,7 +139,7 @@ export const settingsMachine = createMachine(
               'persistSettings',
               'toastSuccess',
               async () => {
-                (await kclManagerPromise).executeAst()
+                ;(await kclManagerPromise).executeAst()
               },
             ],
             target: 'idle',
