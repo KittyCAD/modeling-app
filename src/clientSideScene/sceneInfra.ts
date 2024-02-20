@@ -309,7 +309,7 @@ class SceneInfra {
     const camHeightDistanceRatio = 0.5
     const baseUnit: BaseUnit =
       JSON.parse(localStorage?.getItem(SETTINGS_PERSIST_KEY) || ('{}' as any))
-        .baseUnit || 'in'
+        .baseUnit || 'mm'
     const baseRadius = 5.6
     const length = baseUnitTomm(baseUnit) * baseRadius
     const ang = Math.atan(camHeightDistanceRatio)
