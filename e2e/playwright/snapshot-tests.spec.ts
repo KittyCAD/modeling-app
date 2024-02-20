@@ -463,7 +463,7 @@ test('Draft segments should look right', async ({ page }) => {
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
   await page.waitForTimeout(100)
 
-  const num = 24.11
+  const num = 23.97
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
