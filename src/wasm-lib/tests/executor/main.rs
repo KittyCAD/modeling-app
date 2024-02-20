@@ -1004,6 +1004,8 @@ async fn serial_test_cube_mm() {
     |> line([0, scale], %)
     |> line([scale, 0], %)
     |> line([0, -scale], %)
+    |> close(%)
+    |> extrude(scale, %)
 
   return sg
 }
@@ -1025,6 +1027,8 @@ async fn serial_test_cube_cm() {
     |> line([0, scale], %)
     |> line([scale, 0], %)
     |> line([0, -scale], %)
+    |> close(%)
+    |> extrude(scale, %)
 
   return sg
 }
@@ -1046,6 +1050,8 @@ async fn serial_test_cube_m() {
     |> line([0, scale], %)
     |> line([scale, 0], %)
     |> line([0, -scale], %)
+    |> close(%)
+    |> extrude(scale, %)
 
   return sg
 }
@@ -1067,6 +1073,8 @@ async fn serial_test_cube_in() {
     |> line([0, scale], %)
     |> line([scale, 0], %)
     |> line([0, -scale], %)
+    |> close(%)
+    |> extrude(scale, %)
 
   return sg
 }
@@ -1088,6 +1096,8 @@ async fn serial_test_cube_ft() {
     |> line([0, scale], %)
     |> line([scale, 0], %)
     |> line([0, -scale], %)
+    |> close(%)
+    |> extrude(scale, %)
 
   return sg
 }
@@ -1109,6 +1119,8 @@ async fn serial_test_cube_yd() {
     |> line([0, scale], %)
     |> line([scale, 0], %)
     |> line([0, -scale], %)
+    |> close(%)
+    |> extrude(scale, %)
 
   return sg
 }

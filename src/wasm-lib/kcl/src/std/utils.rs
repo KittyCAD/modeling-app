@@ -775,11 +775,11 @@ pub fn get_tangent_point_from_previous_arc(
 
 pub fn get_camera_zoom_magnitude_per_unit_length(unit: kittycad::types::UnitLength) -> f64 {
     match unit {
-        kittycad::types::UnitLength::Mm => 100.0,
+        kittycad::types::UnitLength::Mm => 1000.0,
         kittycad::types::UnitLength::Cm => 1.0,
         kittycad::types::UnitLength::M => 0.001,
-        kittycad::types::UnitLength::In => 0.0393701,
-        kittycad::types::UnitLength::Ft => 0.00328084,
-        kittycad::types::UnitLength::Yd => 0.00109361,
+        kittycad::types::UnitLength::In => 0.00393701,
+        kittycad::types::UnitLength::Ft => 0.000328084,
+        kittycad::types::UnitLength::Yd => 0.000109361,
     }
 }
