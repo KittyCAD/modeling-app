@@ -937,7 +937,7 @@ dependencies = [
 
 [[package]]
 name = "derive-docs"
-version = "0.1.5"
+version = "0.1.6"
 dependencies = [
  "convert_case",
  "expectorate",
@@ -966,22 +966,6 @@ dependencies = [
  "serde",
  "serde_tokenstream",
  "syn 2.0.49",
-]
-
-[[package]]
-name = "derive-docs"
-version = "0.1.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8511b1486a7ec6820e889c6a2b57b8b699ab5e5eab507ffd1daa0e07871d2305"
-dependencies = [
- "convert_case",
- "once_cell",
- "proc-macro2",
- "quote",
- "regex",
- "serde",
- "serde_tokenstream",
- "syn 2.0.48",
 ]
 
 [[package]]
@@ -1923,11 +1907,12 @@ dependencies = [
  "derive-docs 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "expectorate",
  "futures",
+ "gltf-json",
  "insta",
  "itertools 0.12.1",
  "js-sys",
  "kittycad",
- "kittycad-execution-plan-macros 0.1.2",
+ "kittycad-execution-plan-macros 0.1.4 (git+https://github.com/KittyCAD/modeling-api?branch=main)",
  "kittycad-execution-plan-traits",
  "lazy_static",
  "parse-display 0.9.0",
@@ -2001,7 +1986,7 @@ dependencies = [
 [[package]]
 name = "kittycad-execution-plan"
 version = "0.1.0"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=serena/mod-pow#424ce33dfae3b04b8616fa52f3a52f0668598228"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#08f05d91062380fe3a69f4baa1f1301532d31977"
 dependencies = [
  "bytes",
  "insta",
@@ -2015,16 +2000,6 @@ dependencies = [
  "thiserror",
  "tokio",
  "uuid",
-]
-
-[[package]]
-name = "kittycad-execution-plan-macros"
-version = "0.1.2"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=serena/mod-pow#424ce33dfae3b04b8616fa52f3a52f0668598228"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.48",
 ]
 
 [[package]]
@@ -2050,9 +2025,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-execution-plan-traits"
-version = "0.1.6"
+version = "0.1.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d6f893f7837d95bb669781581842511307e42622221c6d241031f1c35c11a2af"
+checksum = "a3ec8efd57b59697eb140b63c0ffe7db44fdfe5a55f14e45513411eba2280ba5"
 dependencies = [
  "serde",
  "thiserror",
@@ -2061,8 +2036,8 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.1.12"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=serena/mod-pow#424ce33dfae3b04b8616fa52f3a52f0668598228"
+version = "0.1.18"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#08f05d91062380fe3a69f4baa1f1301532d31977"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2072,7 +2047,7 @@ dependencies = [
  "enum-iterator-derive",
  "euler",
  "http 0.2.9",
- "kittycad-execution-plan-macros 0.1.4",
+ "kittycad-execution-plan-macros 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "kittycad-execution-plan-traits",
  "kittycad-unit-conversion-derive",
  "measurements",
@@ -2089,7 +2064,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-session"
 version = "0.1.0"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=serena/mod-pow#424ce33dfae3b04b8616fa52f3a52f0668598228"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#08f05d91062380fe3a69f4baa1f1301532d31977"
 dependencies = [
  "futures",
  "kittycad",
@@ -2587,9 +2562,9 @@ dependencies = [
 
 [[package]]
 name = "papergrid"
-version = "0.10.0"
+version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a2ccbe15f2b6db62f9a9871642746427e297b0ceb85f9a7f1ee5ff47d184d0c8"
+checksum = "9ad43c07024ef767f9160710b3a6773976194758c7919b17e63b863db0bdf7fb"
 dependencies = [
  "bytecount",
  "fnv",
@@ -4106,9 +4081,9 @@ dependencies = [
 
 [[package]]
 name = "tabled"
-version = "0.14.0"
+version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dfe9c3632da101aba5131ed63f9eed38665f8b3c68703a6bb18124835c1a5d22"
+checksum = "4c998b0c8b921495196a48aabaf1901ff28be0760136e31604f7967b0792050e"
 dependencies = [
  "papergrid",
  "tabled_derive",
@@ -4117,9 +4092,9 @@ dependencies = [
 
 [[package]]
 name = "tabled_derive"
-version = "0.6.0"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "99f688a08b54f4f02f0a3c382aefdb7884d3d69609f785bd253dc033243e3fe4"
+checksum = "4c138f99377e5d653a371cdad263615634cfc8467685dfe8e73e2b8e98f44b17"
 dependencies = [
  "heck",
  "proc-macro-error",
@@ -5394,9 +5369,9 @@ checksum = "dff9641d1cd4be8d1a070daf9e3773c5f67e78b4d9d42263020c057706765c04"
 
 [[package]]
 name = "winnow"
-version = "0.5.39"
+version = "0.5.40"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5389a154b01683d28c77f8f68f49dea75f0a4da32557a58f68ee51ebba472d29"
+checksum = "f593a95398737aeed53e489c785df13f3618e41dbcd6718c6addbf1395aa6876"
 dependencies = [
  "memchr",
 ]
