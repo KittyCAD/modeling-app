@@ -785,8 +785,8 @@ fn unit_length_to_mm(base_unit: kittycad::types::UnitLength) -> f64 {
 }
 
 pub fn get_camera_zoom_magnitude_per_unit_length(unit: kittycad::types::UnitLength) -> (f64, f64) {
-    let base_radius = 5.6 as f64;
-    let cam_height_distance_ratio = 0.5 as f64;
+    let base_radius = 5.6_f64;
+    let cam_height_distance_ratio = 0.5_f64;
     let length = unit_length_to_mm(unit) * base_radius * 20.0;
     let ang = cam_height_distance_ratio.atan();
     let x = ang.cos() * length;
