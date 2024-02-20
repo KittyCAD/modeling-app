@@ -61,7 +61,7 @@ jobs:
         git fetch origin
         echo ${{ github.head_ref }}
         git checkout ${{ github.head_ref }}
-        # TODO when safari works on ubuntu remove the os part of the commit message
+        # TODO when webkit works on ubuntu remove the os part of the commit message
         git commit -am "A snapshot a day keeps the bugs away! 📷🐛 (OS: ubuntu)" || true
         git push
         git push origin ${{ github.head_ref }}
@@ -102,7 +102,7 @@ jobs:
     - name: build web
       run: yarn build:local
     - name: Run macos/safari flow
-      # safari doesn't work on Ubuntu because of the same reason tauri doesn't (webRTC issues)
+      # webkit doesn't work on Ubuntu because of the same reason tauri doesn't (webRTC issues)
       # TODO remove this and the matrix and run all tests on ubuntu when this is fixed
       run: yarn playwright test --project="webkit" e2e/playwright/flow-tests.spec.ts
       env:

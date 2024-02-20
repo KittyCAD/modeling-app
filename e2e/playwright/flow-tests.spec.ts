@@ -1013,3 +1013,94 @@ test('Deselecting line tool should mean nothing happens on click', async ({
   await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
   previousCodeContent = await page.locator('.cm-content').innerText()
 })
+
+test('multi-sketch file shows multiple Edit Sketch buttons', async ({
+  page,
+  context,
+  }) => {
+    const u = getUtils(page)
+    const selectionsSnippets = {
+      startProfileAt1: '|> startProfileAt([-width / 4 + screwRadius, height / 2], %)',
+      startProfileAt2: '|> startProfileAt([-width / 2, 0], %)',
+      startProfileAt3: '|> startProfileAt([0, thickness], %)',
+    }
+    await context.addInitScript(
+      async ({
+        startProfileAt1,
+        startProfileAt2,
+        startProfileAt3,
+      }: any) => {
+        localStorage.setItem(
+          'persistCode',
+          `
+const width = 20
+const height = 10
+const thickness = 5
+const screwRadius = 3
+const wireRadius = 2
+const wireOffset = 0.5
+
+const screwHole = startSketchOn('XY')
+  ${startProfileAt1}
+  |> arc({
+        radius: screwRadius,
+        angle_start: 0,
+        angle_end: 360
+      }, %)
+
+const part001 = startSketchOn('XY')
+  ${startProfileAt2}
+  |> xLine(width * .5, %)
+  |> yLine(height, %)
+  |> xLine(-width * .5, %)
+  |> close(%)
+  |> hole(screwHole, %)
+  |> extrude(thickness, %)
+
+const part002 = startSketchOn('-XZ')
+  ${startProfileAt3}
+  |> xLine(width / 4, %)
+  |> tangentialArcTo([width / 2, 0], %)
+  |> xLine(-width / 4 + wireRadius, %)
+  |> yLine(wireOffset, %)
+  |> arc({
+        radius: wireRadius,
+        angle_start: 0,
+        angle_end: 180
+      }, %)
+  |> yLine(-wireOffset, %)
+  |> xLine(-width / 4, %)
+  |> close(%)
+  |> extrude(-height, %)
+`
+        )
+      },
+      selectionsSnippets
+    )
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+  
+    // wait for execution done
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+  
+    await page.getByText(selectionsSnippets.startProfileAt1).click()
+    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+    await expect(
+      page.getByRole('button', { name: 'Edit Sketch' })
+    ).toBeVisible()
+  
+    await page.getByText(selectionsSnippets.startProfileAt2).click()
+    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+    await expect(
+      page.getByRole('button', { name: 'Edit Sketch' })
+    ).toBeVisible()
+  
+    await page.getByText(selectionsSnippets.startProfileAt3).click()
+    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+    await expect(
+      page.getByRole('button', { name: 'Edit Sketch' })
+    ).toBeVisible()
+})
