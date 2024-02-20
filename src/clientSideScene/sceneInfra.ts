@@ -24,7 +24,7 @@ import {
   Object3DEventMap,
 } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import { engineCommandManager } from 'lang/std/engineConnection'
+import { EngineCommand, engineCommandManager } from 'lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
 import { isReducedMotion, roundOff, throttle } from 'lib/utils'
 import { compareVec2Epsilon2 } from 'lang/std/sketch'
@@ -66,11 +66,12 @@ interface ThreeCamValues {
   quaternion: Quaternion
   zoom: number
   isPerspective: boolean
+  target: Vector3
 }
 
 const lastCmdDelay = 50
 
-let lastCmd: any = null
+let lastCmd: EngineCommand | null = null
 let lastCmdTime: number = Date.now()
 let lastCmdTimeoutId: number | null = null
 
@@ -82,14 +83,14 @@ const sendLastReliableChannel = () => {
 }
 
 const throttledUpdateEngineCamera = throttle((threeValues: ThreeCamValues) => {
-  const cmd = {
+  const cmd: EngineCommand = {
     type: 'modeling_cmd_req',
     cmd_id: uuidv4(),
     cmd: {
       type: 'default_camera_look_at',
       ...convertThreeCamValuesToEngineCam(threeValues),
     },
-  } as any
+  }
   engineCommandManager.sendSceneCommand(cmd)
   lastCmd = cmd
   lastCmdTime = Date.now()
@@ -103,7 +104,7 @@ const throttledUpdateEngineCamera = throttle((threeValues: ThreeCamValues) => {
   ) as any as number
 }, 1000 / 30)
 
-let lastPerspectiveCmd: any = null
+let lastPerspectiveCmd: EngineCommand | null = null
 let lastPerspectiveCmdTime: number = Date.now()
 let lastPerspectiveCmdTimeoutId: number | null = null
 
@@ -123,8 +124,9 @@ const throttledUpdateEngineFov = throttle(
     quaternion: Quaternion
     zoom: number
     fov: number
+    target: Vector3
   }) => {
-    const cmd = {
+    const cmd: EngineCommand = {
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
       cmd: {
@@ -136,7 +138,7 @@ const throttledUpdateEngineFov = throttle(
         fov_y: vals.fov,
         ...calculateNearFarFromFOV(vals.fov),
       },
-    } as any
+    }
     engineCommandManager.sendSceneCommand(cmd)
     lastPerspectiveCmd = cmd
     lastPerspectiveCmdTime = Date.now()
@@ -224,6 +226,15 @@ class SceneInfra {
     this.onMouseEnter = callbacks.onMouseEnter || this.onMouseEnter
     this.onMouseLeave = callbacks.onMouseLeave || this.onMouseLeave
     this.selected = null // following selections between callbacks being set is too tricky
+  }
+  resetMouseListeners = () => {
+    sceneInfra.setCallbacks({
+      onDrag: () => {},
+      onMove: () => {},
+      onClick: () => {},
+      onMouseEnter: () => {},
+      onMouseLeave: () => {},
+    })
   }
   highlightCallback: (a: SourceRange) => void = () => {}
   setHighlightCallback(cb: (a: SourceRange) => void) {
@@ -402,12 +413,20 @@ class SceneInfra {
   }, 200)
 
   onCameraChange = () => {
-    this.camera.position.distanceTo(this.controls.target)
+    const scale = getSceneScale(this.camera, this.controls.target)
+    const planesGroup = this.scene.getObjectByName(DEFAULT_PLANES)
+    const axisGroup = this.scene
+      .getObjectByName(AXIS_GROUP)
+      ?.getObjectByName('gridHelper')
+    planesGroup && planesGroup.scale.set(scale, scale, scale)
+    axisGroup?.name === 'gridHelper' && axisGroup.scale.set(scale, scale, scale)
+
     throttledUpdateEngineCamera({
       quaternion: this.camera.quaternion,
       position: this.camera.position,
       zoom: this.camera.zoom,
       isPerspective: this.isPerspective,
+      target: this.controls.target,
     })
     this.deferReactUpdate({
       type:
@@ -453,9 +472,27 @@ class SceneInfra {
     if (!this.isFovAnimationInProgress)
       this.renderer.render(this.scene, this.camera)
   }
-  tweenCameraToQuaternion(
+  async tweenCameraToQuaternion(
     targetQuaternion: Quaternion,
-    duration: number = 500
+    duration = 500,
+    toOrthographic = true
+  ): Promise<void> {
+    const isVertical = isQuaternionVertical(targetQuaternion)
+    let _duration = duration
+    if (isVertical) {
+      _duration = duration * 0.6
+      await this._tweenCameraToQuaternion(new Quaternion(), _duration, false)
+    }
+    await this._tweenCameraToQuaternion(
+      targetQuaternion,
+      _duration,
+      toOrthographic
+    )
+  }
+  _tweenCameraToQuaternion(
+    targetQuaternion: Quaternion,
+    duration = 500,
+    toOrthographic = false
   ): Promise<void> {
     return new Promise((resolve) => {
       const camera = this.camera
@@ -489,10 +526,10 @@ class SceneInfra {
       }
 
       const onComplete = async () => {
-        if (isReducedMotion()) {
+        if (isReducedMotion() && toOrthographic) {
           cameraAtTime(0.99)
           this.useOrthographicCamera()
-        } else {
+        } else if (toOrthographic) {
           await this.animateToOrthographic()
         }
         if (isVertical) cameraAtTime(1)
@@ -626,10 +663,21 @@ class SceneInfra {
     const { x: px, y: py, z: pz } = this.camera.position
     const { x: qx, y: qy, z: qz, w: qw } = this.camera.quaternion
     const { x: tx, y: ty, z: tz } = this.controls.target
+    const zoom = this.camera.zoom
     this.camera = this.createPerspectiveCamera()
 
     this.camera.position.set(px, py, pz)
     this.camera.quaternion.set(qx, qy, qz, qw)
+    const zoomFudgeFactor = 2280
+    const distance = zoomFudgeFactor / (zoom * this.fov)
+    const direction = new Vector3().subVectors(
+      this.camera.position,
+      this.controls.target
+    )
+    direction.normalize()
+    this.camera.position
+      .copy(this.controls.target)
+      .addScaledVector(direction, distance)
 
     this.setupOrbitControls([tx, ty, tz])
 
@@ -704,6 +752,7 @@ class SceneInfra {
       position: newPosition,
       quaternion: this.camera.quaternion,
       zoom: this.camera.zoom,
+      target: this.controls.target,
     })
   }
   getPlaneIntersectPoint = (): {
@@ -929,21 +978,14 @@ class SceneInfra {
       type: DefaultPlane
     ): Mesh => {
       const planeGeometry = new PlaneGeometry(100, 100)
-      const planeEdges = new EdgesGeometry(planeGeometry)
-      const lineMaterial = new LineBasicMaterial({
-        color: defaultPlaneColor(type, 0.45, 1),
-        opacity: 0.9,
-      })
       const planeMaterial = new MeshBasicMaterial({
         color: defaultPlaneColor(type),
         transparent: true,
-        opacity: 0.35,
+        opacity: 0.0,
         side: DoubleSide,
         depthTest: false, // needed to avoid transparency issues
       })
       const plane = new Mesh(planeGeometry, planeMaterial)
-      const edges = new LineSegments(planeEdges, lineMaterial)
-      plane.add(edges)
       plane.rotation.x = rotation.x
       plane.rotation.y = rotation.y
       plane.rotation.z = rotation.z
@@ -951,15 +993,14 @@ class SceneInfra {
       plane.name = type
       return plane
     }
-    const gridHelper = createGridHelper({ size: 100, divisions: 10 })
     const planes = [
       addPlane({ x: 0, y: Math.PI / 2, z: 0 }, YZ_PLANE),
       addPlane({ x: 0, y: 0, z: 0 }, XY_PLANE),
       addPlane({ x: -Math.PI / 2, y: 0, z: 0 }, XZ_PLANE),
-      gridHelper,
     ]
     const planesGroup = new Group()
     planesGroup.userData.type = DEFAULT_PLANES
+    planesGroup.name = DEFAULT_PLANES
     planesGroup.add(...planes)
     planesGroup.traverse((child) => {
       if (child instanceof Mesh) {
@@ -967,6 +1008,8 @@ class SceneInfra {
       }
     })
     planesGroup.layers.enable(SKETCH_LAYER)
+    const sceneScale = getSceneScale(this.camera, this.controls.target)
+    planesGroup.scale.set(sceneScale, sceneScale, sceneScale)
     this.scene.add(planesGroup)
   }
   removeDefaultPlanes() {
@@ -1001,6 +1044,7 @@ class SceneInfra {
 export const sceneInfra = new SceneInfra()
 
 function convertThreeCamValuesToEngineCam({
+  target,
   position,
   quaternion,
   zoom,
@@ -1023,7 +1067,7 @@ function convertThreeCamValuesToEngineCam({
   const upVector = new Vector3(0, 1, 0).applyEuler(euler).normalize()
   if (isPerspective) {
     return {
-      center: lookAtVector,
+      center: target,
       up: upVector,
       vantage: position,
     }
@@ -1043,6 +1087,24 @@ function calculateNearFarFromFOV(fov: number) {
   // const z_near = 0.1 + nearFarRatio * (5 - 0.1)
   const z_far = 1000 + nearFarRatio * (100000 - 1000)
   return { z_near: 0.1, z_far }
+}
+
+export function getSceneScale(
+  camera: PerspectiveCamera | OrthographicCamera,
+  target: Vector3
+): number {
+  const distance =
+    camera instanceof PerspectiveCamera
+      ? camera.position.distanceTo(target)
+      : 63.7942123 / camera.zoom
+
+  if (distance <= 20) return 0.1
+  else if (distance > 20 && distance <= 200) return 1
+  else if (distance > 200 && distance <= 2000) return 10
+  else if (distance > 2000 && distance <= 20000) return 100
+  else if (distance > 20000) return 1000
+
+  return 1
 }
 
 export function isQuaternionVertical(q: Quaternion) {

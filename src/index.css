@@ -219,3 +219,8 @@ code {
   word-break: normal;
   word-wrap: break-word;
 }
+
+.cm-ghostText,
+.cm-ghostText * {
+  color: rgb(120, 120, 120, 0.8) !important;
+}

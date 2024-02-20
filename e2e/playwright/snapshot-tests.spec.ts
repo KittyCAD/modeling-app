@@ -1,7 +1,5 @@
 import { test, expect } from '@playwright/test'
 import { secrets } from './secrets'
-import { EngineCommand } from '../../src/lang/std/engineConnection'
-import { v4 as uuidv4 } from 'uuid'
 import { getUtils } from './test-utils'
 import { Models } from '@kittycad/lib'
 import fsp from 'fs/promises'
@@ -363,4 +361,119 @@ const part001 = startSketchOn('-XZ')
       child.stdout.on('data', (data) => console.log(`stdout: ${data}`))
     })
   }
+})
+
+test('extrude on each default plane should be stable', async ({
+  page,
+  context,
+}) => {
+  const u = getUtils(page)
+  const makeCode = (plane = 'XY') => `const part001 = startSketchOn('${plane}')
+  |> startProfileAt([14.06, 8.88], %)
+  |> line([12.98, -0.15], %)
+  |> line([5.56, 9.89], %)
+  |> line([-11.28, 8.96], %)
+  |> line([-10.81, -7.57], %)
+  |> close(%)
+  |> extrude(20, %)
+`
+  await context.addInitScript(async (code) => {
+    localStorage.setItem('persistCode', code)
+  }, makeCode('XY'))
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+
+  // wait for execution done
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.clearAndCloseDebugPanel()
+
+  await page.getByText('Code').click()
+  await expect(page).toHaveScreenshot({
+    maxDiffPixels: 100,
+  })
+  await page.getByText('Code').click()
+
+  const runSnapshotsForOtherPlanes = async (plane = 'XY') => {
+    // clear code
+    await u.removeCurrentCode()
+    // add makeCode('XZ')
+    await page.locator('.cm-content').fill(makeCode(plane))
+    // wait for execution done
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.clearAndCloseDebugPanel()
+
+    await page.getByText('Code').click()
+    await expect(page).toHaveScreenshot({
+      maxDiffPixels: 100,
+    })
+    await page.getByText('Code').click()
+  }
+  await runSnapshotsForOtherPlanes('-XY')
+
+  await runSnapshotsForOtherPlanes('XZ')
+  await runSnapshotsForOtherPlanes('-XZ')
+
+  await runSnapshotsForOtherPlanes('YZ')
+  await runSnapshotsForOtherPlanes('-YZ')
+})
+
+test('Draft segments should look right', async ({ page }) => {
+  const u = getUtils(page)
+  await page.setViewportSize({ width: 1200, height: 500 })
+  const PUR = 400 / 37.5 //pixeltoUnitRatio
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await u.openDebugPanel()
+
+  await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
+
+  // click on "Start Sketch" button
+  await u.clearCommandLogs()
+  await u.doAndWaitForImageDiff(
+    () => page.getByRole('button', { name: 'Start Sketch' }).click(),
+    200
+  )
+
+  // select a plane
+  await page.mouse.click(700, 200)
+
+  await expect(page.locator('.cm-content')).toHaveText(
+    `const part001 = startSketchOn('-XZ')`
+  )
+
+  await page.waitForTimeout(300) // TODO detect animation ending, or disable animation
+
+  const startXPx = 600
+  await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
+  const startAt = '[23.89, -32.23]'
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt(${startAt}, %)`)
+  await page.waitForTimeout(100)
+
+  await u.closeDebugPanel()
+  await page.mouse.move(startXPx + PUR * 20, 500 - PUR * 10)
+  await expect(page).toHaveScreenshot({
+    maxDiffPixels: 100,
+  })
+
+  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
+  await page.waitForTimeout(100)
+
+  const num = 24.11
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt(${startAt}, %)
+  |> line([${num}, 0], %)`)
+
+  await page.getByRole('button', { name: 'Tangential Arc' }).click()
+
+  await page.mouse.move(startXPx + PUR * 30, 500 - PUR * 20, { steps: 10 })
+
+  await expect(page).toHaveScreenshot({
+    maxDiffPixels: 100,
+  })
 })

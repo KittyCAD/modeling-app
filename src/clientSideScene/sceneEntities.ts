@@ -22,6 +22,7 @@ import {
   DEFAULT_PLANES,
   DefaultPlane,
   defaultPlaneColor,
+  getSceneScale,
   INTERSECTION_PLANE_LAYER,
   isQuaternionVertical,
   RAYCASTABLE_PLANE,
@@ -195,11 +196,18 @@ class SceneEntities {
     this.axisGroup = new Group()
     const gridHelper = createGridHelper({ size: 100, divisions: 10 })
     gridHelper.renderOrder = -3 // is this working?
+    gridHelper.name = 'gridHelper'
+    const sceneScale = getSceneScale(
+      sceneInfra.camera,
+      sceneInfra.controls.target
+    )
+    gridHelper.scale.set(sceneScale, sceneScale, sceneScale)
     this.axisGroup.add(xAxisMesh, yAxisMesh, gridHelper)
     this.currentSketchQuaternion &&
       this.axisGroup.setRotationFromQuaternion(this.currentSketchQuaternion)
 
     this.axisGroup.userData = { type: AXIS_GROUP }
+    this.axisGroup.name = AXIS_GROUP
     this.axisGroup.layers.set(SKETCH_LAYER)
     this.axisGroup.traverse((child) => {
       child.layers.set(SKETCH_LAYER)
@@ -230,7 +238,17 @@ class SceneEntities {
     ast?: Program
     draftSegment?: DraftSegment
   }) {
+    sceneInfra.resetMouseListeners()
     this.createIntersectionPlane()
+    const distance = sceneInfra.controls.target.distanceTo(
+      sceneInfra.camera.position
+    )
+    // TODO this should probably be distance to the sketch group, more important after sketch on face
+    // since sketches won't always so close to the origin
+    // is this the best place to adjust camera far?
+    if (sceneInfra.camera.far < distance * 1.5) {
+      sceneInfra.camera.far = distance * 2
+    }
 
     const { truncatedAst, programMemoryOverride, variableDeclarationName } =
       this.prepareTruncatedMemoryAndAst(
@@ -315,6 +333,7 @@ class SceneEntities {
     if (!draftSegment) {
       sceneInfra.setCallbacks({
         onDrag: (args) => {
+          if (args.event.which !== 1) return
           this.onDragSegment({
             ...args,
             sketchPathToNode,
@@ -322,6 +341,7 @@ class SceneEntities {
         },
         onMove: () => {},
         onClick: (args) => {
+          if (args?.event.which !== 1) return
           if (!args || !args.object) {
             sceneInfra.modelingSend({
               type: 'Set selection',
@@ -379,6 +399,7 @@ class SceneEntities {
         onDrag: () => {},
         onClick: async (args) => {
           if (!args) return
+          if (args.event.which !== 1) return
           const { intersection2d } = args
           if (!intersection2d) return
 
@@ -775,8 +796,10 @@ class SceneEntities {
       },
       onClick: (args) => {
         if (!args || !args.object) return
+        if (args.event.which !== 1) return
         const { object, intersection } = args
         const type = object?.userData?.type || ''
+        console.log('intersection.normal?.z', intersection)
         const posNorm = Number(intersection.normal?.z) > 0
         let planeString: DefaultPlaneStr = posNorm ? 'XY' : '-XY'
         let normal: [number, number, number] = posNorm ? [0, 0, 1] : [0, 0, -1]

@@ -7,6 +7,7 @@ use std::io::Read;
 
 use anyhow::Result;
 use oauth2::TokenResponse;
+use std::process::Command;
 use tauri::{InvokeError, Manager};
 const DEFAULT_HOST: &str = "https://api.kittycad.io";
 

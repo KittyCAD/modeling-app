@@ -22,6 +22,7 @@ show(mySketch001)`
     expect(shown).toEqual([
       {
         type: 'SketchGroup',
+        on: expect.any(Object),
         start: {
           to: [0, 0],
           from: [0, 0],
