@@ -36,7 +36,7 @@ export const settingsCommandBarConfig: CommandSetConfig<
   SettingsCommandSchema
 > = {
   'Set Base Unit': {
-    icon: 'gear',
+    icon: 'settings',
     args: {
       baseUnit: {
         inputType: 'options',
@@ -52,7 +52,7 @@ export const settingsCommandBarConfig: CommandSetConfig<
     },
   },
   'Set Camera Controls': {
-    icon: 'gear',
+    icon: 'settings',
     args: {
       cameraControls: {
         inputType: 'options',
@@ -68,7 +68,7 @@ export const settingsCommandBarConfig: CommandSetConfig<
     },
   },
   'Set Default Project Name': {
-    icon: 'gear',
+    icon: 'settings',
     hide: 'web',
     args: {
       defaultProjectName: {
@@ -79,7 +79,7 @@ export const settingsCommandBarConfig: CommandSetConfig<
     },
   },
   'Set Text Wrapping': {
-    icon: 'gear',
+    icon: 'settings',
     args: {
       textWrapping: {
         inputType: 'options',
@@ -101,7 +101,7 @@ export const settingsCommandBarConfig: CommandSetConfig<
     },
   },
   'Set Theme': {
-    icon: 'gear',
+    icon: 'settings',
     args: {
       theme: {
         inputType: 'options',
@@ -117,7 +117,7 @@ export const settingsCommandBarConfig: CommandSetConfig<
     },
   },
   'Set Unit System': {
-    icon: 'gear',
+    icon: 'settings',
     args: {
       unitSystem: {
         inputType: 'options',
