@@ -1017,22 +1017,19 @@ test('Deselecting line tool should mean nothing happens on click', async ({
 test('multi-sketch file shows multiple Edit Sketch buttons', async ({
   page,
   context,
-  }) => {
-    const u = getUtils(page)
-    const selectionsSnippets = {
-      startProfileAt1: '|> startProfileAt([-width / 4 + screwRadius, height / 2], %)',
-      startProfileAt2: '|> startProfileAt([-width / 2, 0], %)',
-      startProfileAt3: '|> startProfileAt([0, thickness], %)',
-    }
-    await context.addInitScript(
-      async ({
-        startProfileAt1,
-        startProfileAt2,
-        startProfileAt3,
-      }: any) => {
-        localStorage.setItem(
-          'persistCode',
-          `
+}) => {
+  const u = getUtils(page)
+  const selectionsSnippets = {
+    startProfileAt1:
+      '|> startProfileAt([-width / 4 + screwRadius, height / 2], %)',
+    startProfileAt2: '|> startProfileAt([-width / 2, 0], %)',
+    startProfileAt3: '|> startProfileAt([0, thickness], %)',
+  }
+  await context.addInitScript(
+    async ({ startProfileAt1, startProfileAt2, startProfileAt3 }: any) => {
+      localStorage.setItem(
+        'persistCode',
+        `
 const width = 20
 const height = 10
 const thickness = 5
@@ -1073,34 +1070,28 @@ const part002 = startSketchOn('-XZ')
   |> close(%)
   |> extrude(-height, %)
 `
-        )
-      },
-      selectionsSnippets
-    )
-    await page.setViewportSize({ width: 1200, height: 500 })
-    await page.goto('/')
-    await u.waitForAuthSkipAppStart()
-  
-    // wait for execution done
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
-  
-    await page.getByText(selectionsSnippets.startProfileAt1).click()
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
-    await expect(
-      page.getByRole('button', { name: 'Edit Sketch' })
-    ).toBeVisible()
-  
-    await page.getByText(selectionsSnippets.startProfileAt2).click()
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
-    await expect(
-      page.getByRole('button', { name: 'Edit Sketch' })
-    ).toBeVisible()
-  
-    await page.getByText(selectionsSnippets.startProfileAt3).click()
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
-    await expect(
-      page.getByRole('button', { name: 'Edit Sketch' })
-    ).toBeVisible()
+      )
+    },
+    selectionsSnippets
+  )
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+
+  // wait for execution done
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
+
+  await page.getByText(selectionsSnippets.startProfileAt1).click()
+  await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+  await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
+
+  await page.getByText(selectionsSnippets.startProfileAt2).click()
+  await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+  await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
+
+  await page.getByText(selectionsSnippets.startProfileAt3).click()
+  await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+  await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
 })
