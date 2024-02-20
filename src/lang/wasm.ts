@@ -154,7 +154,7 @@ export const _executor = async (
         type: 'set_scene_units',
         unit: baseUnit,
       },
-    })
+    } as any) // TODO fix after kittycad.ts update
     const memory: ProgramMemory = await execute_wasm(
       JSON.stringify(node),
       JSON.stringify(programMemory),
