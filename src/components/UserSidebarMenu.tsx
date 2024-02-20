@@ -117,7 +117,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
               <div className="p-4 flex flex-col gap-2">
                 <ActionButton
                   Element="button"
-                  icon={{ icon: 'gear' }}
+                  icon={{ icon: 'settings' }}
                   className="border-transparent dark:border-transparent hover:bg-transparent"
                   onClick={() => {
                     // since /settings is a nested route the sidebar doesn't close
