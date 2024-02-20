@@ -238,6 +238,7 @@ class SceneEntities {
     ast?: Program
     draftSegment?: DraftSegment
   }) {
+    sceneInfra.resetMouseListeners()
     this.createIntersectionPlane()
     const distance = sceneInfra.controls.target.distanceTo(
       sceneInfra.camera.position
@@ -798,6 +799,7 @@ class SceneEntities {
         if (args.event.which !== 1) return
         const { object, intersection } = args
         const type = object?.userData?.type || ''
+        console.log('intersection.normal?.z', intersection)
         const posNorm = Number(intersection.normal?.z) > 0
         let planeString: DefaultPlaneStr = posNorm ? 'XY' : '-XY'
         let normal: [number, number, number] = posNorm ? [0, 0, 1] : [0, 0, -1]

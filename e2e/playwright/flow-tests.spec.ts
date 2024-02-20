@@ -850,7 +850,10 @@ test('ProgramMemory can be serialised', async ({ page, context }) => {
   })
 })
 
-test('edit selections', async ({ page, context }) => {
+test("Various pipe expressions should and shouldn't allow edit and or extrude", async ({
+  page,
+  context,
+}) => {
   const u = getUtils(page)
   const selectionsSnippets = {
     extrudeAndEditBlocked: '|> startProfileAt([10.81, 32.99], %)',
@@ -948,4 +951,65 @@ fn yohey = (pos) => {
   await expect(page.locator('.cm-content')).toHaveText(
     /part005 = startSketchOn\('-XZ'\)/
   )
+})
+
+test('Deselecting line tool should mean nothing happens on click', async ({
+  page,
+}) => {
+  const u = getUtils(page)
+  await page.setViewportSize({ width: 1200, height: 500 })
+  const PUR = 400 / 37.5 //pixeltoUnitRatio
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await u.openDebugPanel()
+
+  await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
+
+  // click on "Start Sketch" button
+  await u.clearCommandLogs()
+  await u.doAndWaitForImageDiff(
+    () => page.getByRole('button', { name: 'Start Sketch' }).click(),
+    200
+  )
+
+  await page.mouse.click(700, 200)
+
+  await expect(page.locator('.cm-content')).toHaveText(
+    `const part001 = startSketchOn('-XZ')`
+  )
+
+  await page.waitForTimeout(300)
+
+  let previousCodeContent = await page.locator('.cm-content').innerText()
+
+  // deselect the line tool by clicking it
+  await page.getByRole('button', { name: 'Line' }).click()
+
+  await page.mouse.click(700, 200)
+  await page.waitForTimeout(100)
+  await page.mouse.click(700, 250)
+  await page.waitForTimeout(100)
+  await page.mouse.click(750, 200)
+  await page.waitForTimeout(100)
+
+  // expect no change
+  await expect(page.locator('.cm-content')).toHaveText(previousCodeContent)
+
+  // select line tool again
+  await page.getByRole('button', { name: 'Line' }).click()
+
+  await u.closeDebugPanel()
+
+  // line tool should work as expected again
+  await page.mouse.click(700, 200)
+  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
+  previousCodeContent = await page.locator('.cm-content').innerText()
+
+  await page.mouse.click(700, 300)
+  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
+  previousCodeContent = await page.locator('.cm-content').innerText()
+
+  await page.mouse.click(750, 300)
+  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
+  previousCodeContent = await page.locator('.cm-content').innerText()
 })

@@ -225,6 +225,15 @@ class SceneInfra {
     this.onMouseLeave = callbacks.onMouseLeave || this.onMouseLeave
     this.selected = null // following selections between callbacks being set is too tricky
   }
+  resetMouseListeners = () => {
+    sceneInfra.setCallbacks({
+      onDrag: () => {},
+      onMove: () => {},
+      onClick: () => {},
+      onMouseEnter: () => {},
+      onMouseLeave: () => {},
+    })
+  }
   highlightCallback: (a: SourceRange) => void = () => {}
   setHighlightCallback(cb: (a: SourceRange) => void) {
     this.highlightCallback = cb
