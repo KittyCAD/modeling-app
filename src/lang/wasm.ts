@@ -142,14 +142,23 @@ export const _executor = async (
   programMemory: ProgramMemory = { root: {}, return: null },
   engineCommandManager: EngineCommandManager
 ): Promise<ProgramMemory> => {
-  const {
-    settings: {
-      state: {
-        context: { baseUnit },
-      },
-    },
-  } = useGlobalStateContext()
   try {
+    /*const {
+      settings: {
+        state: {
+          context: { baseUnit },
+        },
+      },
+    } = useGlobalStateContext()*/
+    const baseUnit = 'in'
+    engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: 'ca019ee3-4f3f-4dda-b0cf-dd9f201e6fbc',
+      cmd: {
+        type: 'set_scene_units',
+        unit: baseUnit,
+      },
+    })
     const memory: ProgramMemory = await execute_wasm(
       JSON.stringify(node),
       JSON.stringify(programMemory),
