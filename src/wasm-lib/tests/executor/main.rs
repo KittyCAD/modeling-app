@@ -169,8 +169,7 @@ async fn serial_test_execute_with_function_sketch() {
 }
 
 const fnBox = box(3, 6, 10)
-
-show(fnBox)"#;
+"#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
         .await
@@ -192,7 +191,7 @@ async fn serial_test_execute_with_function_sketch_with_position() {
   return myBox
 }
 
-show(box([0,0], 3, 6, 10))"#;
+const thing = box([0,0], 3, 6, 10)"#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
         .await
@@ -215,8 +214,7 @@ async fn serial_test_execute_with_angled_line() {
   |> line([-13.02, 10.03], %)
   |> close(%)
   |> extrude(4, %)
-
-show(part001)"#;
+"#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
         .await
@@ -244,8 +242,7 @@ const bracket = startSketchOn('XY')
   |> line([0, -leg1 + thickness], %)
   |> close(%)
   |> extrude(width, %)
-
-show(bracket)"#;
+"#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
         .await
@@ -281,8 +278,7 @@ const bracket = startSketchAt([0, 0])
   |> line([0, -wallMountL], %)
   |> close(%)
   |> extrude(width, %)
-
-show(bracket)"#;
+"#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
         .await
@@ -358,9 +354,7 @@ const b2 = cube([3,3], 4)
 
 const pt1 = b1.value[0]
 const pt2 = b2.value[0]
-
-show(b1)
-show(b2)"#;
+"#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
         .await
@@ -383,8 +377,7 @@ const body = startSketchOn('XY')
       |> arc({angle_end: 360, angle_start: 0, radius: radius}, %)
       |> close(%)
       |> extrude(height, %)
-
-show(body)"#;
+"#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
         .await
@@ -525,7 +518,6 @@ const bracket = startSketchOn('XY')
   |> close(%)
   |> extrude(width, %)
 
-show(bracket)
 const part001 = startSketchOn('XY')
   |> startProfileAt([-15.53, -10.28], %)
   |> line([10.49, -2.08], %)
@@ -579,8 +571,6 @@ const square = startSketchOn('XY')
   |> hole(circle([2, 2], .5), %)
   |> hole(circle([2, 8], .5), %)
   |> extrude(2, %)
-
-show(square)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
@@ -601,7 +591,7 @@ async fn optional_params() {
       return sg
   }
 
-  show(circle([2, 2], 20))
+const thing = circle([2, 2], 20)
 "#;
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
         .await
@@ -651,8 +641,7 @@ const part = roundedRectangle([0, 0], 20, 20, 4)
   |> hole(circle([-holeIndex, -holeIndex], holeRadius), %)
   |> hole(circle([holeIndex, -holeIndex], holeRadius), %)
   |> extrude(2, %)
-
-show(part)"#;
+"#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
         .await
@@ -995,4 +984,130 @@ async fn serial_test_import_ext_doesnt_match() {
         result.err().unwrap().to_string(),
         r#"semantic: KclErrorDetails { source_ranges: [SourceRange([14, 82])], message: "The given format does not match the file extension. Expected: `gltf`, Given: `obj`" }"#
     );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_cube_mm() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+
+const myCube = cube([0,0], 10)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/cube_mm.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_cube_cm() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+
+const myCube = cube([0,0], 10)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Cm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/cube_cm.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_cube_m() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+
+const myCube = cube([0,0], 10)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::M)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/cube_m.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_cube_in() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+
+const myCube = cube([0,0], 10)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::In)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/cube_in.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_cube_ft() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+
+const myCube = cube([0,0], 10)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Ft)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/cube_ft.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_cube_yd() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+
+const myCube = cube([0,0], 10)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Yd)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/cube_yd.png", &result, 1.0);
 }
