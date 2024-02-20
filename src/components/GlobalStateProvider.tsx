@@ -30,6 +30,12 @@ type GlobalContext = {
   settings: MachineContext<typeof settingsMachine>
 }
 
+// a little hacky for sure, open to changing it
+// this implies that we should only even have one instance of this provider mounted at any one time
+// but I think that's a safe assumption
+let settingsStateRef: typeof settingsMachine['context'] | undefined
+export const getSettingsState = () => settingsStateRef
+
 export const GlobalStateContext = createContext({} as GlobalContext)
 
 export const GlobalStateProvider = ({
@@ -71,6 +77,7 @@ export const GlobalStateProvider = ({
       },
     },
   })
+  settingsStateRef = settingsState.context
 
   useStateMachineCommands({
     machineId: 'settings',
