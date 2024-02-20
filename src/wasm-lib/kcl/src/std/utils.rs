@@ -772,3 +772,18 @@ pub fn get_tangent_point_from_previous_arc(
         tangential_angle.to_radians().sin() * 10.0 + last_arc_end[1],
     ]
 }
+
+fn unit_length_to_mm(unit: kittycad::types::UnitLength) -> f64 {
+    match unit {
+        kittycad::types::UnitLength::Mm => 1.0,
+        kittycad::types::UnitLength::Cm => 10.0,
+        kittycad::types::UnitLength::M => 1000.0,
+        kittycad::types::UnitLength::In => 25.4,
+        kittycad::types::UnitLength::Ft => 304.8,
+        kittycad::types::UnitLength::Yd => 914.4,
+    }
+}
+
+pub fn get_camera_zoom_magnitude_per_unit_length(unit: kittycad::types::UnitLength) -> f64 {
+    unit_length_to_mm(unit) * 10.0
+}
