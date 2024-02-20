@@ -987,12 +987,9 @@ pub async fn execute(
     ctx: &ExecutorContext,
 ) -> Result<ProgramMemory, KclError> {
     // Before we even start executing the program, set the units.
-    /*
-     * TODO: uncomment this.
-     * ctx.engine
-         .send_modeling_cmd(kittycad::types::ModelingCmd::SetSceneUnits { units: ctx.units })
-         .await?;
-    */
+    ctx.engine
+        .send_modeling_cmd(kittycad::types::ModelingCmd::SetSceneUnits { unit: ctx.units })
+        .await?;
 
     let mut pipe_info = PipeInfo::default();
 

@@ -146,15 +146,7 @@ export const _executor = async (
   engineCommandManager: EngineCommandManager
 ): Promise<ProgramMemory> => {
   try {
-    const baseUnit = (await getSettingsState)()?.baseUnit || 'in'
-    engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: 'ca019ee3-4f3f-4dda-b0cf-dd9f201e6fbc',
-      cmd: {
-        type: 'set_scene_units',
-        unit: baseUnit,
-      },
-    } as any) // TODO fix after kittycad.ts update
+    const baseUnit = (await getSettingsState)()?.baseUnit || 'mm'
     const memory: ProgramMemory = await execute_wasm(
       JSON.stringify(node),
       JSON.stringify(programMemory),
