@@ -40,6 +40,8 @@ async fn execute_and_snapshot(code: &str, units: kittycad::types::UnitLength) ->
     let mut mem: kcl_lib::executor::ProgramMemory = Default::default();
     let ctx = kcl_lib::executor::ExecutorContext::new(ws, units.clone()).await?;
 
+    let _ = kcl_lib::executor::execute(program, &mut mem, kcl_lib::executor::BodyType::Root, &ctx).await?;
+
     let zoom = kcl_lib::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
 
     ctx.engine
@@ -49,8 +51,6 @@ async fn execute_and_snapshot(code: &str, units: kittycad::types::UnitLength) ->
             kittycad::types::ModelingCmd::DefaultCameraZoom { magnitude: zoom },
         )
         .await?;
-
-    let _ = kcl_lib::executor::execute(program, &mut mem, kcl_lib::executor::BodyType::Root, &ctx).await?;
 
     // Send a snapshot request to the engine.
     let resp = ctx
