@@ -177,6 +177,8 @@ function CommandBarKclInput({
             onKeyDown={(e) => {
               if (e.currentTarget.value === '' && e.key === 'Backspace') {
                 setCreateNewVariable(false)
+              } else if (e.key === 'Enter') {
+                handleSubmit()
               }
             }}
           />
