@@ -80,7 +80,7 @@ const overallConnectionStateIcon: Record<
   [NetworkHealthState.Disconnected]: 'networkCrossedOut',
 }
 
-export const NetworkHealthIndicator = () => {
+export function useNetworkStatus() {
   const [steps, setSteps] = useState(initialConnectingTypeGroupState)
   const [internetConnected, setInternetConnected] = useState<boolean>(true)
   const [overallState, setOverallState] = useState<NetworkHealthState>(
@@ -182,6 +182,30 @@ export const NetworkHealthIndicator = () => {
       }
     )
   }, [])
+
+  return {
+    hasIssues,
+    overallState,
+    internetConnected,
+    steps,
+    issues,
+    error,
+    setHasCopied,
+    hasCopied,
+  }
+}
+
+export const NetworkHealthIndicator = () => {
+  const {
+    hasIssues,
+    overallState,
+    internetConnected,
+    steps,
+    issues,
+    error,
+    setHasCopied,
+    hasCopied,
+  } = useNetworkStatus()
 
   return (
     <Popover className="relative">
