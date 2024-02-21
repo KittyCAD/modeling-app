@@ -370,9 +370,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: 'artifact/*/Zoo*'
-
-          name: Announce Release
-
+          
   announce_release:
     needs: [publish-apps-release]
     runs-on: ubuntu-latest
