@@ -136,6 +136,8 @@ Before you submit a contribution PR to this repo, please ensure that:
 VERSION=x.y.z yarn run bump-jsons
 ```
 
+Alternatively you can try the experimental `make-release.sh` bash script that will create the branch with the updated json files for you.
+
 The PR may serve as a place to discuss the human-readable changelog and extra QA. A quick way of getting PR's merged since the last bump is to [use this PR filter](https://github.com/KittyCAD/modeling-app/pulls?q=is%3Apr+sort%3Aupdated-desc+is%3Amerged+), open up the browser console and past in the following
 
 ```typescript
