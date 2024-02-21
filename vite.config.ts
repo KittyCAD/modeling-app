@@ -1,9 +1,8 @@
-/// <reference types="vitest" />
 import react from '@vitejs/plugin-react'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
 import eslint from 'vite-plugin-eslint'
 import dns from 'dns'
-import { defineConfig, configDefaults, UserConfig } from 'vitest/config'
+import { defineConfig, configDefaults } from 'vitest/config'
 import version from 'vite-plugin-package-version'
 
 // Only needed because we run Node < 17 
@@ -36,7 +35,7 @@ const config = defineConfig({
     viteTsconfigPaths(),
     eslint(),
     version(),
-  ] as UserConfig["plugins"]
+  ],
 })
 
 export default config
