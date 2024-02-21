@@ -1986,7 +1986,7 @@ dependencies = [
 [[package]]
 name = "kittycad-execution-plan"
 version = "0.1.0"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#632b75a0242400fa34373d7973b9149b0e08aa3f"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#08f05d91062380fe3a69f4baa1f1301532d31977"
 dependencies = [
  "bytes",
  "insta",
@@ -2036,8 +2036,8 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.1.17"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#632b75a0242400fa34373d7973b9149b0e08aa3f"
+version = "0.1.18"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#08f05d91062380fe3a69f4baa1f1301532d31977"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2064,7 +2064,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-session"
 version = "0.1.0"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#632b75a0242400fa34373d7973b9149b0e08aa3f"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#08f05d91062380fe3a69f4baa1f1301532d31977"
 dependencies = [
  "futures",
  "kittycad",
