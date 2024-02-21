@@ -24,10 +24,7 @@ import {
   applyConstraintEqualLength,
   setEqualLengthInfo,
 } from 'components/Toolbar/EqualLength'
-import {
-  addStartProfileAt,
-  extrudeSketch,
-} from 'lang/modifyAst'
+import { addStartProfileAt, extrudeSketch } from 'lang/modifyAst'
 import { getNodeFromPath } from '../lang/queryAst'
 import { CallExpression, PipeExpression } from '../lang/wasm'
 import {
