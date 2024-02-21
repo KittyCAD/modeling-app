@@ -3,6 +3,11 @@ import { WebSocket } from 'ws'
 import { vi } from 'vitest'
 import 'vitest-webgl-canvas-mock'
 
+import fetch from 'node-fetch'
+
+// @ts-ignore
+globalThis.fetch = fetch
+
 class MockRTCPeerConnection {
   createDataChannel() {
     return
