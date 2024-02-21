@@ -1,5 +1,5 @@
 import { Completion } from '@codemirror/autocomplete'
-import { EditorState, useCodeMirror } from '@uiw/react-codemirror'
+import { EditorView, useCodeMirror } from '@uiw/react-codemirror'
 import { CustomIcon } from 'components/CustomIcon'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
@@ -77,14 +77,18 @@ function CommandBarKclInput({
         ? getSystemTheme()
         : settings.context.theme,
     extensions: [
-      varMentions(varMentionData),
-      EditorState.transactionFilter.of((tr) => {
-        if (tr.newDoc.lines > 1) {
-          handleSubmit()
-          return []
-        }
-        return tr
+      EditorView.domEventHandlers({
+        keydown: (event, view) => {
+          if (event.key === 'Enter') {
+            event.preventDefault()
+            handleSubmit()
+          } else if (event.key === 'Backspace' && value === '') {
+            event.preventDefault()
+            stepBack()
+          }
+        },
       }),
+      varMentions(varMentionData),
     ],
     onChange: (newValue) => setValue(newValue),
   })
