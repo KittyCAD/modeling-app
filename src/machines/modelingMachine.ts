@@ -26,9 +26,7 @@ import {
 } from 'components/Toolbar/EqualLength'
 import {
   addStartProfileAt,
-  createVariableDeclaration,
   extrudeSketch,
-  moveValueIntoNewVariable,
 } from 'lang/modifyAst'
 import { getNodeFromPath } from '../lang/queryAst'
 import { CallExpression, PipeExpression } from '../lang/wasm'

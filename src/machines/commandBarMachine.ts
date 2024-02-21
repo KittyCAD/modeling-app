@@ -378,7 +378,7 @@ export const commandBarMachine = createMachine(
           if (!command.args) return {}
           const args: { [x: string]: unknown } = {}
           for (const [argName, arg] of Object.entries(command.args)) {
-            args[argName] = arg.skip ? arg.defaultValue : undefined
+            args[argName] = (arg.skip && 'defaultValue' in arg) ? arg.defaultValue : undefined
           }
           return args
         },
@@ -406,7 +406,8 @@ export const commandBarMachine = createMachine(
             let argConfig = context.selectedCommand!.args![argName]
 
             if (
-              (argConfig.defaultValue &&
+              ('defaultValue' in argConfig &&
+                argConfig.defaultValue &&
                 typeof arg !== typeof argConfig.defaultValue &&
                 argConfig.inputType !== 'kcl') ||
               (argConfig.inputType === 'kcl' &&
