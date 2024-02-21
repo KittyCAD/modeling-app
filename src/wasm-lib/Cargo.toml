@@ -59,10 +59,10 @@ members = [
 
 [workspace.dependencies]
 kittycad = { version = "0.2.54", default-features = false, features = ["js", "requests"] }
-kittycad-execution-plan = { git = "https://github.com/KittyCAD/modeling-api", branch = "main" }
+kittycad-execution-plan = { version = "0.1.0" }
 kittycad-execution-plan-traits = "0.1.10"
-kittycad-modeling-session = { git = "https://github.com/KittyCAD/modeling-api", branch = "main" }
-kittycad-execution-plan-macros = { git = "https://github.com/KittyCAD/modeling-api", branch = "main" }
+kittycad-modeling-session = { version = "0.1.0" }
+kittycad-execution-plan-macros = { version = "0.1.0" }
 
 [[test]]
 name = "executor"
