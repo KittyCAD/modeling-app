@@ -6,6 +6,7 @@ import { Selections, getSelectionTypeDisplayText } from 'lib/selections'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { KclCommandValue, KclExpressionWithVariable } from 'lib/commandTypes'
 import Tooltip from 'components/Tooltip'
+import { roundOff } from 'lib/utils'
 
 function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
   const { commandBarState, commandBarSend } = useCommandsContext()
@@ -100,8 +101,13 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                         argumentsToSubmit[argName] as Selections
                       )
                     ) : arg.inputType === 'kcl' ? (
-                      (argumentsToSubmit[argName] as KclCommandValue)
-                        .valueCalculated
+                      roundOff(
+                        Number(
+                          (argumentsToSubmit[argName] as KclCommandValue)
+                            .valueCalculated
+                        ),
+                        4
+                      )
                     ) : typeof argumentsToSubmit[argName] === 'object' ? (
                       JSON.stringify(argumentsToSubmit[argName])
                     ) : (

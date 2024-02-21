@@ -78,7 +78,7 @@ function CommandBarKclInput({
         : settings.context.theme,
     extensions: [
       EditorView.domEventHandlers({
-        keydown: (event, view) => {
+        keydown: (event) => {
           if (event.key === 'Backspace' && value === '') {
             event.preventDefault()
             stepBack()
