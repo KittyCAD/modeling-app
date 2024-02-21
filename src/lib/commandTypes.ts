@@ -12,19 +12,18 @@ import { Identifier, Value, VariableDeclaration } from 'lang/wasm'
 type Icon = CustomIconName
 const PLATFORMS = ['both', 'web', 'desktop'] as const
 const INPUT_TYPES = ['options', 'string', 'kcl', 'selection'] as const
-type KclExpression = {
+export interface KclExpression {
   valueAst: Value
   valueText: string
   valueCalculated: string
 }
-export type KclCommandValue =
-  | KclExpression
-  | (KclExpression & {
-      variableName: string
-      variableDeclarationAst: VariableDeclaration
-      variableIdentifierAst: Identifier
-      insertIndex: number
-    })
+export interface KclExpressionWithVariable extends KclExpression {
+  variableName: string
+  variableDeclarationAst: VariableDeclaration
+  variableIdentifierAst: Identifier
+  insertIndex: number
+}
+export type KclCommandValue = KclExpression | KclExpressionWithVariable
 export type CommandInputType = (typeof INPUT_TYPES)[number]
 
 export type CommandSetSchema<T extends AnyStateMachine> = Partial<{

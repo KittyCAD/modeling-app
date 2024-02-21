@@ -4,7 +4,8 @@ import React, { ReactNode, useState } from 'react'
 import { ActionButton } from '../ActionButton'
 import { Selections, getSelectionTypeDisplayText } from 'lib/selections'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { KclCommandValue } from 'lib/commandTypes'
+import { KclCommandValue, KclExpressionWithVariable } from 'lib/commandTypes'
+import Tooltip from 'components/Tooltip'
 
 function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
   const { commandBarState, commandBarSend } = useCommandsContext()
@@ -92,7 +93,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                       : 'bg-chalkboard-20/50 dark:bg-chalkboard-80/50 border-chalkboard-20 dark:border-chalkboard-80'
                   }`}
                 >
-                  <span className='capitalize'>{argName}</span>
+                  <span className="capitalize">{argName}</span>
                   {argumentsToSubmit[argName] ? (
                     arg.inputType === 'selection' ? (
                       getSelectionTypeDisplayText(
@@ -113,6 +114,24 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                       {i + 1}
                     </small>
                   )}
+                  {arg.inputType === 'kcl' &&
+                    !!argumentsToSubmit[argName] &&
+                    'variableName' in
+                      (argumentsToSubmit[argName] as KclCommandValue) && (
+                      <>
+                        <CustomIcon name="make-variable" className="w-4 h-4" />
+                        <Tooltip position="blockEnd">
+                          New variable:{' '}
+                          {
+                            (
+                              argumentsToSubmit[
+                                argName
+                              ] as KclExpressionWithVariable
+                            ).variableName
+                          }
+                        </Tooltip>
+                      </>
+                    )}
                 </button>
               )
             )}
