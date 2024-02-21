@@ -25,11 +25,18 @@ function CommandBarKclInput({
   stepBack: () => void
   onSubmit: (event: unknown) => void
 }) {
-  const { commandBarSend } = useCommandsContext()
+  const { commandBarSend, commandBarState } = useCommandsContext()
+  const previouslySetValue = commandBarState.context.argumentsToSubmit[
+    arg.name
+  ] as KclCommandValue | undefined
   const { settings } = useGlobalStateContext()
   const defaultValue = (arg.defaultValue as string) || ''
-  const [value, setValue] = useState(defaultValue || '')
-  const [createNewVariable, setCreateNewVariable] = useState(false)
+  const [value, setValue] = useState(
+    previouslySetValue?.valueText || defaultValue || ''
+  )
+  const [createNewVariable, setCreateNewVariable] = useState(
+    previouslySetValue && 'variableName' in previouslySetValue
+  )
   const [canSubmit, setCanSubmit] = useState(true)
   useHotkeys('mod + k, mod + /', () => commandBarSend({ type: 'Close' }))
   const editorRef = useRef<HTMLDivElement>(null)
@@ -44,7 +51,10 @@ function CommandBarKclInput({
     isNewVariableNameUnique,
   } = useCalculateKclExpression({
     value,
-    initialVariableName: arg.name,
+    initialVariableName:
+      previouslySetValue && 'variableName' in previouslySetValue
+        ? previouslySetValue.variableName
+        : arg.name,
   })
   const varMentionData: Completion[] = prevVariables.map((v) => ({
     label: v.key,
@@ -104,7 +114,10 @@ function CommandBarKclInput({
             variableName: newVariableName,
             insertIndex: newVariableInsertIndex,
             variableIdentifierAst: createIdentifier(newVariableName),
-            variableDeclarationAst: createVariableDeclaration(newVariableName, valueNode),
+            variableDeclarationAst: createVariableDeclaration(
+              newVariableName,
+              valueNode
+            ),
           } satisfies KclCommandValue)
         : ({
             valueAst: valueNode,

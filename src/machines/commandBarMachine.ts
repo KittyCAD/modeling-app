@@ -407,8 +407,10 @@ export const commandBarMachine = createMachine(
 
             if (
               (argConfig.defaultValue &&
-                typeof arg !== typeof argConfig.defaultValue && argConfig.inputType !== 'kcl') ||
-                (argConfig.inputType === 'kcl' && !(arg as Partial<KclCommandValue>).valueAst) ||
+                typeof arg !== typeof argConfig.defaultValue &&
+                argConfig.inputType !== 'kcl') ||
+              (argConfig.inputType === 'kcl' &&
+                !(arg as Partial<KclCommandValue>).valueAst) ||
               ('options' in argConfig &&
                 typeof arg !== typeof argConfig.options[0].value)
             ) {

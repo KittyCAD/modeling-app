@@ -168,13 +168,31 @@ export function findUniqueName(
   } else {
     searchStr = JSON.stringify(ast)
   }
-  const indexStr = `${index}`.padStart(pad, '0')
-  const newName = `${name}${indexStr}`
-  const isInString = searchStr.includes(newName)
+  const isInString = searchStr.includes(`"name":"${name}"`)
+
+  // Base case: name is already unique
   if (!isInString) {
-    return newName
+    return name
   }
-  return findUniqueName(searchStr, name, pad, index + 1)
+
+  // Recursive case: name is not unique
+  // First see if there is a number at the end of the name
+  // because we can just index that
+  const trailingNumbersMatch = name.match(/\d+$/)
+
+  if (trailingNumbersMatch) {
+    const trailingNumbers = trailingNumbersMatch[0]
+    const nameWithoutTrailingNumber = name.slice(0, -trailingNumbers.length)
+    return findUniqueName(
+      searchStr,
+      nameWithoutTrailingNumber,
+      trailingNumbers.length,
+      Number(trailingNumbers) + 1
+    )
+  } else {
+    const indexStr = `${index}`.padStart(pad, '0')
+    return findUniqueName(searchStr, `${name}${indexStr}`, pad, index + 1)
+  }
 }
 
 function addToShow(node: Program, name: string): Program {
