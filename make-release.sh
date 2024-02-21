@@ -7,6 +7,7 @@ fi
 
 git checkout main
 git pull
+git fetch --all
 
 # Get the latest semver tag from git
 latest_tag=$(git tag -l 'v*' --sort=-v:refname | head -n 1)
