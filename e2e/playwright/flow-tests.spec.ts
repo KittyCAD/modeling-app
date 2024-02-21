@@ -673,18 +673,24 @@ test('Can extrude from the command bar', async ({ page, context }) => {
 
   // Assert that we're on the distance step
   await expect(page.getByRole('button', { name: 'distance' })).toBeDisabled()
-  
+
   // Assert that the an alternative variable name is chosen,
   // since the default variable name is already in use (distance)
-  await page.getByRole('button', { name: 'Create new variable'}).click()
-  await expect(page.getByPlaceholder('Variable name')).toHaveValue('distance001')
+  await page.getByRole('button', { name: 'Create new variable' }).click()
+  await expect(page.getByPlaceholder('Variable name')).toHaveValue(
+    'distance001'
+  )
   await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled()
   await page.getByRole('button', { name: 'Continue' }).click()
-  
+
   // Review step and argument hotkeys
-  await expect(page.getByRole('button', { name: 'Submit command' })).toBeEnabled()
+  await expect(
+    page.getByRole('button', { name: 'Submit command' })
+  ).toBeEnabled()
   await page.keyboard.press('2')
-  await expect(page.getByRole('button', { name: 'Distance 12', exact: false })).toBeDisabled()
+  await expect(
+    page.getByRole('button', { name: 'Distance 12', exact: false })
+  ).toBeDisabled()
   await page.keyboard.press('Enter')
 
   // Check that the code was updated
@@ -699,7 +705,7 @@ const part001 = startSketchOn('-XZ')
   |> line([0.73, -14.93], %)
   |> line([-23.44, 0.52], %)
   |> close(%)
-  |> extrude(distance001, %)`.replace(/(\r\n|\n|\r)/gm,"") // remove newlines
+  |> extrude(distance001, %)`.replace(/(\r\n|\n|\r)/gm, '') // remove newlines
   )
 })
 

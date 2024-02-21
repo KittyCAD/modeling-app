@@ -123,11 +123,11 @@ export type CommandArgument<
       description?: string
       required: boolean
       skip?: true
-      defaultValue?: OutputType | ((context: ContextFrom<T>) => OutputType)
     } & (
       | {
           inputType: Extract<CommandInputType, 'options'>
           options: CommandArgumentOption<OutputType>[]
+          defaultValue?: OutputType
         }
       | {
           inputType: Extract<CommandInputType, 'selection'>
@@ -135,8 +135,11 @@ export type CommandArgument<
           actor: InterpreterFrom<T>
           multiple: boolean
         }
-      | { inputType: Extract<CommandInputType, 'kcl'> }
-      | { inputType: Extract<CommandInputType, 'string'> }
+      | { inputType: Extract<CommandInputType, 'kcl'>; defaultValue?: string } // KCL expression inputs have simple strings as default values
+      | {
+          inputType: Extract<CommandInputType, 'string'>
+          defaultValue?: OutputType
+        }
     )
 
 export type CommandArgumentWithName<
