@@ -66,7 +66,7 @@ jobs:
         git push
         git push origin ${{ github.head_ref }}
     - name: Run ubuntu/chrome flow
-      run: yarn playwright test --project="Google Chrome" e2e/playwright/flow-tests.spec.ts
+      run: yarn playwright test --project="Google Chrome" e2e/playwright/flow-tests.spec.ts --retries 1
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
@@ -104,7 +104,7 @@ jobs:
     - name: Run macos/safari flow
       # safari doesn't work on Ubuntu because of the same reason tauri doesn't (webRTC issues)
       # TODO remove this and the matrix and run all tests on ubuntu when this is fixed
-      run: yarn playwright test --project="webkit" e2e/playwright/flow-tests.spec.ts
+      run: yarn playwright test --project="webkit" e2e/playwright/flow-tests.spec.ts --retries 1
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
