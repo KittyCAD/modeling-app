@@ -8,11 +8,15 @@ import {
 } from 'xstate'
 import { Selection } from './selections'
 import { PrevVariable } from 'lang/queryAst'
+import { Value } from 'lang/wasm'
 
 type Icon = CustomIconName
 const PLATFORMS = ['both', 'web', 'desktop'] as const
 const INPUT_TYPES = ['options', 'string', 'kcl', 'selection'] as const
-export type KCLCommandValue = PrevVariable<string> // These are kcl expressions
+export type KCLCommandValue = PrevVariable<Value> & {
+  insertIndex: number
+  createNewVariable: boolean
+} // These are kcl expressions
 export type CommandInputType = (typeof INPUT_TYPES)[number]
 
 export type CommandSetSchema<T extends AnyStateMachine> = Partial<{

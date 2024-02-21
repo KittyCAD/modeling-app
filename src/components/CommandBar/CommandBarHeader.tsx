@@ -59,7 +59,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
     selectedCommand &&
     argumentsToSubmit && (
       <>
-        <div className="px-4 text-sm flex gap-4 items-start">
+        <div className="group px-4 text-sm flex gap-4 items-start">
           <div className="flex flex-1 flex-wrap gap-2">
             <p
               data-command-name={selectedCommand?.name}

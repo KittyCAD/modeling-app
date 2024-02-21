@@ -5,6 +5,7 @@ import {
   CommandArgumentWithName,
 } from 'lib/commandTypes'
 import { Selections } from 'lib/selections'
+import { getCommandArgumentKclValuesOnly } from 'lib/commandUtils'
 
 export const commandBarMachine = createMachine(
   {
@@ -283,19 +284,17 @@ export const commandBarMachine = createMachine(
       'Execute command': (context, event) => {
         const { selectedCommand } = context
         if (!selectedCommand) return
-        if (selectedCommand?.args) {
-          selectedCommand?.onSubmit(
-            event.type === 'Submit command' ||
-              event.type === 'done.invoke.validateArguments'
-              ? event.data
-              : undefined
-          )
+        if (
+          (selectedCommand?.args && event.type === 'Submit command') ||
+          event.type === 'done.invoke.validateArguments'
+        ) {
+          selectedCommand?.onSubmit(getCommandArgumentKclValuesOnly(event.data))
         } else {
           selectedCommand?.onSubmit()
         }
       },
       'Set current argument to first non-skippable': assign({
-        currentArgument: (context, event) => {
+        currentArgument: (context) => {
           const { selectedCommand } = context
           if (!(selectedCommand && selectedCommand.args)) return undefined
 

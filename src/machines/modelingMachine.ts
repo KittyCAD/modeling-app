@@ -24,7 +24,7 @@ import {
   applyConstraintEqualLength,
   setEqualLengthInfo,
 } from 'components/Toolbar/EqualLength'
-import { addStartProfileAt, extrudeSketch } from 'lang/modifyAst'
+import { addStartProfileAt, extrudeSketch, moveValueIntoNewVariable } from 'lang/modifyAst'
 import { getNodeFromPath } from '../lang/queryAst'
 import { CallExpression, PipeExpression } from '../lang/wasm'
 import {
@@ -728,6 +728,15 @@ export const modelingMachine = createMachine(
       'AST extrude': (_, event) => {
         if (!event.data) return
         const { selection, distance } = event.data
+        let ast = kclManager.ast
+        if (event.data.createNewVariable) {
+          ast = moveValueIntoNewVariable(
+            kclManager.ast,
+            kclManager.programMemory,
+            selection.codeBasedSelections[0].range,
+            'extrudeDistance'
+          ).modifiedAst
+        }
         const pathToNode = getNodePathFromSourceRange(
           kclManager.ast,
           selection.codeBasedSelections[0].range
