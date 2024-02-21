@@ -211,7 +211,7 @@ class KclManager {
       console.error('error parsing code', e)
       if (e instanceof KCLError) {
         this.kclErrors = [e]
-        if (e.msg === 'file is empty') engineCommandManager.endSession()
+        if (e.msg === 'file is empty') engineCommandManager?.endSession()
       }
       return null
     }

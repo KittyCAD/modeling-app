@@ -369,13 +369,13 @@ test('extrude on each default plane should be stable', async ({
 }) => {
   const u = getUtils(page)
   const makeCode = (plane = 'XY') => `const part001 = startSketchOn('${plane}')
-  |> startProfileAt([14.06, 8.88], %)
-  |> line([12.98, -0.15], %)
-  |> line([5.56, 9.89], %)
-  |> line([-11.28, 8.96], %)
-  |> line([-10.81, -7.57], %)
+  |> startProfileAt([0.70, 0.44], %)
+  |> line([0.66, -0.02], %)
+  |> line([0.28, 0.50], %)
+  |> line([-0.56, 0.44], %)
+  |> line([-0.54, -0.38], %)
   |> close(%)
-  |> extrude(20, %)
+  |> extrude(1.00, %)
 `
   await context.addInitScript(async (code) => {
     localStorage.setItem('persistCode', code)
@@ -448,7 +448,7 @@ test('Draft segments should look right', async ({ page }) => {
 
   const startXPx = 600
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  const startAt = '[23.89, -32.23]'
+  const startAt = '[23.74, -32.03]'
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)`)
@@ -463,7 +463,7 @@ test('Draft segments should look right', async ({ page }) => {
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
   await page.waitForTimeout(100)
 
-  const num = 24.11
+  const num = 23.97
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)

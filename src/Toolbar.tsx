@@ -124,7 +124,7 @@ export const Toolbar = () => {
                 aria-pressed={state.matches('Sketch.Tangential arc to')}
                 className="pressed:bg-energy-10/20 dark:pressed:bg-energy-80"
                 icon={{
-                  icon: 'line',
+                  icon: 'arc',
                   bgClassName,
                 }}
                 disabled={
