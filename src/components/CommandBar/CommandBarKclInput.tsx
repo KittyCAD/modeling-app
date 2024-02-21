@@ -3,7 +3,7 @@ import { EditorState, useCodeMirror } from '@uiw/react-codemirror'
 import { CustomIcon } from 'components/CustomIcon'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
-import { CommandArgument, KCLCommandValue } from 'lib/commandTypes'
+import { CommandArgument, KclCommandValue } from 'lib/commandTypes'
 import { getSystemTheme } from 'lib/theme'
 import { useCalculateKclExpression } from 'lib/useCalculateKclExpression'
 import { roundOff } from 'lib/utils'
@@ -11,6 +11,7 @@ import { varMentions } from 'lib/varCompletionExtension'
 import { useEffect, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import styles from './CommandBarKclInput.module.css'
+import { createIdentifier, createVariableDeclaration } from 'lang/modifyAst'
 
 function CommandBarKclInput({
   arg,
@@ -26,8 +27,8 @@ function CommandBarKclInput({
 }) {
   const { commandBarSend } = useCommandsContext()
   const { settings } = useGlobalStateContext()
-  const defaultValue = (arg.defaultValue as KCLCommandValue) || { value: '' }
-  const [value, setValue] = useState(defaultValue.value || '')
+  const defaultValue = (arg.defaultValue as string) || ''
+  const [value, setValue] = useState(defaultValue || '')
   const [createNewVariable, setCreateNewVariable] = useState(false)
   const [canSubmit, setCanSubmit] = useState(true)
   useHotkeys('mod + k, mod + /', () => commandBarSend({ type: 'Close' }))
@@ -58,7 +59,7 @@ function CommandBarKclInput({
     autoFocus: true,
     selection: {
       anchor: 0,
-      head: defaultValue.value.length,
+      head: defaultValue.length,
     },
     accessKey: 'command-bar',
     theme:
@@ -92,13 +93,25 @@ function CommandBarKclInput({
 
   function handleSubmit(e?: React.FormEvent<HTMLFormElement>) {
     e?.preventDefault()
-    if (!canSubmit) return
-    onSubmit({
-      key: newVariableName, // TODO: Allow user to specify a new variable name
-      value: valueNode,
-      insertIndex: newVariableInsertIndex,
-      createNewVariable,
-    })
+    if (!canSubmit || valueNode === null) return
+
+    onSubmit(
+      createNewVariable
+        ? ({
+            valueAst: valueNode,
+            valueText: value,
+            valueCalculated: calcResult,
+            variableName: newVariableName,
+            insertIndex: newVariableInsertIndex,
+            variableIdentifierAst: createIdentifier(newVariableName),
+            variableDeclarationAst: createVariableDeclaration(newVariableName, valueNode),
+          } satisfies KclCommandValue)
+        : ({
+            valueAst: valueNode,
+            valueText: value,
+            valueCalculated: calcResult,
+          } satisfies KclCommandValue)
+    )
   }
 
   return (
@@ -119,7 +132,9 @@ function CommandBarKclInput({
               : 'text-energy-60 dark:text-energy-20'
           }
         >
-          {calcResult === 'NAN' ? "Can't calculate" : roundOff(Number(calcResult), 4)}
+          {calcResult === 'NAN'
+            ? "Can't calculate"
+            : roundOff(Number(calcResult), 4)}
         </span>
       </label>
       {createNewVariable ? (

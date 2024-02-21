@@ -1,4 +1,4 @@
-import { CommandSetConfig, KCLCommandValue } from 'lib/commandTypes'
+import { CommandSetConfig, KclCommandValue } from 'lib/commandTypes'
 import { Selections } from 'lib/selections'
 import { modelingMachine } from 'machines/modelingMachine'
 
@@ -14,7 +14,7 @@ export type ModelingCommandSchema = {
   Extrude: {
     selection: Selections // & { type: 'face' } would be cool to lock that down
     // result: (typeof EXTRUSION_RESULTS)[number]
-    distance: KCLCommandValue
+    distance: KclCommandValue
   }
 }
 
@@ -51,10 +51,7 @@ export const modelingMachineConfig: CommandSetConfig<
       // },
       distance: {
         inputType: 'kcl',
-        defaultValue: {
-          key: '',
-          value: '5',
-        },
+        defaultValue: '5 + 7',
         required: true,
       },
     },

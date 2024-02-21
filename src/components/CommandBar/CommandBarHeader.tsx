@@ -4,6 +4,7 @@ import React, { ReactNode, useState } from 'react'
 import { ActionButton } from '../ActionButton'
 import { Selections, getSelectionTypeDisplayText } from 'lib/selections'
 import { useHotkeys } from 'react-hotkeys-hook'
+import { KclCommandValue } from 'lib/commandTypes'
 
 function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
   const { commandBarState, commandBarSend } = useCommandsContext()
@@ -91,19 +92,21 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                       : 'bg-chalkboard-20/50 dark:bg-chalkboard-80/50 border-chalkboard-20 dark:border-chalkboard-80'
                   }`}
                 >
+                  <span className='capitalize'>{argName}</span>
                   {argumentsToSubmit[argName] ? (
                     arg.inputType === 'selection' ? (
                       getSelectionTypeDisplayText(
                         argumentsToSubmit[argName] as Selections
                       )
+                    ) : arg.inputType === 'kcl' ? (
+                      (argumentsToSubmit[argName] as KclCommandValue)
+                        .valueCalculated
                     ) : typeof argumentsToSubmit[argName] === 'object' ? (
                       JSON.stringify(argumentsToSubmit[argName])
                     ) : (
                       <em>{argumentsToSubmit[argName] as ReactNode}</em>
                     )
-                  ) : (
-                    <em>{argName}</em>
-                  )}
+                  ) : null}
                   {showShortcuts && (
                     <small className="absolute -top-[1px] right-full translate-x-1/2 px-0.5 rounded-sm bg-chalkboard-80 text-chalkboard-10 dark:bg-energy-10 dark:text-chalkboard-100">
                       <span className="sr-only">Hotkey: </span>

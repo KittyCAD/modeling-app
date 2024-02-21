@@ -3,6 +3,7 @@ import {
   Command,
   CommandArgument,
   CommandArgumentWithName,
+  KclCommandValue,
 } from 'lib/commandTypes'
 import { Selections } from 'lib/selections'
 import { getCommandArgumentKclValuesOnly } from 'lib/commandUtils'
@@ -406,7 +407,8 @@ export const commandBarMachine = createMachine(
 
             if (
               (argConfig.defaultValue &&
-                typeof arg !== typeof argConfig.defaultValue) ||
+                typeof arg !== typeof argConfig.defaultValue && argConfig.inputType !== 'kcl') ||
+                (argConfig.inputType === 'kcl' && !(arg as Partial<KclCommandValue>).valueAst) ||
               ('options' in argConfig &&
                 typeof arg !== typeof argConfig.options[0].value)
             ) {

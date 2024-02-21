@@ -24,7 +24,12 @@ import {
   applyConstraintEqualLength,
   setEqualLengthInfo,
 } from 'components/Toolbar/EqualLength'
-import { addStartProfileAt, extrudeSketch, moveValueIntoNewVariable } from 'lang/modifyAst'
+import {
+  addStartProfileAt,
+  createVariableDeclaration,
+  extrudeSketch,
+  moveValueIntoNewVariable,
+} from 'lang/modifyAst'
 import { getNodeFromPath } from '../lang/queryAst'
 import { CallExpression, PipeExpression } from '../lang/wasm'
 import {
@@ -729,23 +734,31 @@ export const modelingMachine = createMachine(
         if (!event.data) return
         const { selection, distance } = event.data
         let ast = kclManager.ast
-        if (event.data.createNewVariable) {
-          ast = moveValueIntoNewVariable(
-            kclManager.ast,
-            kclManager.programMemory,
-            selection.codeBasedSelections[0].range,
-            'extrudeDistance'
-          ).modifiedAst
+        if (
+          'variableName' in distance &&
+          distance.variableName &&
+          distance.insertIndex !== undefined
+        ) {
+          console.log('adding variable!', distance)
+          const newBody = [...ast.body]
+          newBody.splice(
+            distance.insertIndex,
+            0,
+            distance.variableDeclarationAst
+          )
+          ast.body = newBody
         }
         const pathToNode = getNodePathFromSourceRange(
-          kclManager.ast,
+          ast,
           selection.codeBasedSelections[0].range
         )
         const { modifiedAst, pathToExtrudeArg } = extrudeSketch(
-          kclManager.ast,
+          ast,
           pathToNode,
           true,
-          distance
+          'variableName' in distance
+            ? distance.variableIdentifierAst
+            : distance.valueAst
         )
         // TODO not handling focusPath correctly I think
         kclManager.updateAst(modifiedAst, true, {

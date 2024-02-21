@@ -7,16 +7,24 @@ import {
   InterpreterFrom,
 } from 'xstate'
 import { Selection } from './selections'
-import { PrevVariable } from 'lang/queryAst'
-import { Value } from 'lang/wasm'
+import { Identifier, Value, VariableDeclaration } from 'lang/wasm'
 
 type Icon = CustomIconName
 const PLATFORMS = ['both', 'web', 'desktop'] as const
 const INPUT_TYPES = ['options', 'string', 'kcl', 'selection'] as const
-export type KCLCommandValue = PrevVariable<Value> & {
-  insertIndex: number
-  createNewVariable: boolean
-} // These are kcl expressions
+type KclExpression = {
+  valueAst: Value
+  valueText: string
+  valueCalculated: string
+}
+export type KclCommandValue =
+  | KclExpression
+  | (KclExpression & {
+      variableName: string
+      variableDeclarationAst: VariableDeclaration
+      variableIdentifierAst: Identifier
+      insertIndex: number
+    })
 export type CommandInputType = (typeof INPUT_TYPES)[number]
 
 export type CommandSetSchema<T extends AnyStateMachine> = Partial<{
@@ -88,21 +96,24 @@ export type CommandArgumentConfig<
       description?: string
       required: boolean
       skip?: true
-      defaultValue?: OutputType | ((context: ContextFrom<T>) => OutputType)
     } & (
       | {
           inputType: Extract<CommandInputType, 'options'>
           options:
             | CommandArgumentOption<OutputType>[]
             | ((context: ContextFrom<T>) => CommandArgumentOption<OutputType>[])
+          defaultValue?: OutputType | ((context: ContextFrom<T>) => OutputType)
         }
       | {
           inputType: Extract<CommandInputType, 'selection'>
           selectionTypes: Selection['type'][]
           multiple: boolean
         }
-      | { inputType: Extract<CommandInputType, 'kcl'> }
-      | { inputType: Extract<CommandInputType, 'string'> }
+      | { inputType: Extract<CommandInputType, 'kcl'>; defaultValue?: string } // KCL expression inputs have simple strings as default values
+      | {
+          inputType: Extract<CommandInputType, 'string'>
+          defaultValue?: OutputType | ((context: ContextFrom<T>) => OutputType)
+        }
     )
 
 export type CommandArgument<

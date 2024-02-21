@@ -273,7 +273,7 @@ export function extrudeSketch(
   node: Program,
   pathToNode: PathToNode,
   shouldPipe = true,
-  distance = 4 as number | CallExpression
+  distance = createLiteral(4) as Value
 ): {
   modifiedAst: Program
   pathToNode: PathToNode
@@ -299,7 +299,7 @@ export function extrudeSketch(
     getNodeFromPath<VariableDeclarator>(_node, pathToNode, 'VariableDeclarator')
 
   const extrudeCall = createCallExpressionStdLib('extrude', [
-    typeof distance === 'number' ? createLiteral(distance) : distance,
+    distance,
     shouldPipe
       ? createPipeSubstitution()
       : {
