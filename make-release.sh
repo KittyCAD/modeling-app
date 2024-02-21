@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# if ! git diff-index --quiet HEAD --; then
-#   echo "Please stash uncommitted changes before running release script"
-#   exit 1
-# fi
+if ! git diff-index --quiet HEAD --; then
+  echo "Please stash uncommitted changes before running release script"
+  exit 1
+fi
 
 git checkout main
 git pull
