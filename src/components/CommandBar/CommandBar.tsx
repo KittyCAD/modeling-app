@@ -27,6 +27,7 @@ export const CommandBarProvider = ({
 }) => {
   const { pathname } = useLocation()
   const [commandBarState, commandBarSend] = useMachine(commandBarMachine, {
+    devTools: true,
     guards: {
       'Arguments are ready': (context, _) => {
         return context.selectedCommand?.args

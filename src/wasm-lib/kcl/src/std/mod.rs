@@ -26,12 +26,10 @@ use crate::{
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
     executor::{
-        ExecutorContext, ExtrudeGroup, Geometry, MemoryItem, Metadata, SketchGroup, SketchGroupSet, SourceRange,
+        ExecutorContext, ExtrudeGroup, Geometry, MemoryItem, Metadata, SketchGroup, SketchGroupSet, SketchSurface,
+        SourceRange,
     },
-    std::{
-        kcl_stdlib::KclStdLibFn,
-        sketch::{SketchOnFaceTag, SketchSurface},
-    },
+    std::{kcl_stdlib::KclStdLibFn, sketch::SketchOnFaceTag},
 };
 
 pub type StdFn = fn(Args) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<MemoryItem, KclError>>>>;

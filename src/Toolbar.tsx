@@ -5,6 +5,8 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { ActionButton } from 'components/ActionButton'
 import usePlatform from 'hooks/usePlatform'
+import { isSingleCursorInPipe } from 'lang/queryAst'
+import { kclManager } from 'lang/KclSingleton'
 
 export const Toolbar = () => {
   const platform = usePlatform()
@@ -13,14 +15,15 @@ export const Toolbar = () => {
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
   const bgClassName =
     'group-enabled:group-hover:bg-energy-10 group-pressed:bg-energy-10 dark:group-enabled:group-hover:bg-chalkboard-80 dark:group-pressed:bg-chalkboard-80'
-  const pathId = useMemo(
-    () =>
-      isCursorInSketchCommandRange(
-        engineCommandManager.artifactMap,
-        context.selectionRanges
-      ),
-    [engineCommandManager.artifactMap, context.selectionRanges]
-  )
+  const pathId = useMemo(() => {
+    if (!isSingleCursorInPipe(context.selectionRanges, kclManager.ast)) {
+      return false
+    }
+    return isCursorInSketchCommandRange(
+      engineCommandManager.artifactMap,
+      context.selectionRanges
+    )
+  }, [engineCommandManager.artifactMap, context.selectionRanges])
 
   function handleToolbarButtonsWheelEvent(ev: WheelEvent<HTMLSpanElement>) {
     const span = toolbarButtonsRef.current
@@ -50,7 +53,9 @@ export const Toolbar = () => {
           <li className="contents">
             <ActionButton
               Element="button"
-              onClick={() => send({ type: 'Enter sketch' })}
+              onClick={() =>
+                send({ type: 'Enter sketch', data: { forceNewSketch: true } })
+              }
               icon={{
                 icon: 'sketch',
                 bgClassName,
@@ -119,7 +124,7 @@ export const Toolbar = () => {
                 aria-pressed={state.matches('Sketch.Tangential arc to')}
                 className="pressed:bg-energy-10/20 dark:pressed:bg-energy-80"
                 icon={{
-                  icon: 'line',
+                  icon: 'arc',
                   bgClassName,
                 }}
                 disabled={

@@ -1,5 +1,5 @@
 import { ToolTip } from '../useStore'
-import { Selection } from 'lib/selections'
+import { Selection, Selections } from 'lib/selections'
 import {
   BinaryExpression,
   Program,
@@ -557,4 +557,25 @@ export function hasExtrudeSketchGroup({
   const varName = varDec.declarations[0].id.name
   const varValue = programMemory?.root[varName]
   return varValue?.type === 'ExtrudeGroup' || varValue?.type === 'SketchGroup'
+}
+
+export function isSingleCursorInPipe(
+  selectionRanges: Selections,
+  ast: Program
+) {
+  if (selectionRanges.codeBasedSelections.length !== 1) return false
+  if (
+    doesPipeHaveCallExp({
+      ast,
+      selection: selectionRanges.codeBasedSelections[0],
+      calleeName: 'extrude',
+    })
+  )
+    return false
+  const selection = selectionRanges.codeBasedSelections[0]
+  const pathToNode = getNodePathFromSourceRange(ast, selection.range)
+  const nodeTypes = pathToNode.map(([, type]) => type)
+  if (nodeTypes.includes('FunctionExpression')) return false
+  if (nodeTypes.includes('PipeExpression')) return true
+  return false
 }

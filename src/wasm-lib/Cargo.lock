@@ -953,6 +953,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "derive-docs"
+version = "0.1.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "834580a8bd697658876ed8c9f7727e49f01d34f5b859ca921ac5b99ffc6adf77"
+dependencies = [
+ "convert_case",
+ "once_cell",
+ "proc-macro2",
+ "quote",
+ "regex",
+ "serde",
+ "serde_tokenstream",
+ "syn 2.0.49",
+]
+
+[[package]]
 name = "diesel_derives"
 version = "2.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1877,7 +1893,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.1.40"
+version = "0.1.41"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -1888,7 +1904,7 @@ dependencies = [
  "criterion",
  "dashmap",
  "databake",
- "derive-docs",
+ "derive-docs 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "expectorate",
  "futures",
  "gltf-json",
@@ -1932,9 +1948,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.2.53"
+version = "0.2.54"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a086e1a1bbddb3b38959c0f0ce6de6b3a3b7566e38e0b7d5fb101e91911beed4"
+checksum = "13958174d876353f429ea8230dc92fe86f164819cea2e51bbf22e01a4c2a496e"
 dependencies = [
  "anyhow",
  "async-trait",
