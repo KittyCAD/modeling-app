@@ -441,7 +441,7 @@ test('Draft segments should look right', async ({ page }) => {
   await page.mouse.click(700, 200)
 
   await expect(page.locator('.cm-content')).toHaveText(
-    `const part = startSketchOn('-XZ')`
+    `const part001 = startSketchOn('-XZ')`
   )
 
   await page.waitForTimeout(300) // TODO detect animation ending, or disable animation
@@ -450,7 +450,7 @@ test('Draft segments should look right', async ({ page }) => {
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   const startAt = '[23.74, -32.03]'
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part = startSketchOn('-XZ')
+    .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)`)
   await page.waitForTimeout(100)
 
@@ -465,7 +465,7 @@ test('Draft segments should look right', async ({ page }) => {
 
   const num = 23.97
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part = startSketchOn('-XZ')
+    .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
   |> line([${num}, 0], %)`)
 
