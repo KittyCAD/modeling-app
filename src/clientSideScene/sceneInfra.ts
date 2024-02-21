@@ -14,10 +14,8 @@ import {
   Vector2,
   Group,
   PlaneGeometry,
-  EdgesGeometry,
   MeshBasicMaterial,
   Mesh,
-  LineSegments,
   DoubleSide,
   Intersection,
   Object3D,
@@ -34,7 +32,7 @@ import * as TWEEN from '@tweenjs/tween.js'
 import { MouseGuard, cameraMouseDragGuards } from 'lib/cameraControls'
 import { SourceRange } from 'lang/wasm'
 import { Axis } from 'lib/selections'
-import { createGridHelper } from './helpers'
+import { BaseUnit, SETTINGS_PERSIST_KEY } from 'machines/settingsMachine'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -308,8 +306,17 @@ class SceneInfra {
     this.scene.background = null
 
     // CAMERA
+    const camHeightDistanceRatio = 0.5
+    const baseUnit: BaseUnit =
+      JSON.parse(localStorage?.getItem(SETTINGS_PERSIST_KEY) || ('{}' as any))
+        .baseUnit || 'mm'
+    const baseRadius = 5.6
+    const length = baseUnitTomm(baseUnit) * baseRadius
+    const ang = Math.atan(camHeightDistanceRatio)
+    const x = Math.cos(ang) * length
+    const y = Math.sin(ang) * length
     this.camera = this.createPerspectiveCamera()
-    this.camera.position.set(0, -128, 64)
+    this.camera.position.set(0, -x, y)
     if (DEBUG_SHOW_INTERSECTION_PLANE)
       this.camera.layers.enable(INTERSECTION_PLANE_LAYER)
 
@@ -1105,6 +1112,23 @@ export function getSceneScale(
   else if (distance > 20000) return 1000
 
   return 1
+}
+
+function baseUnitTomm(baseUnit: BaseUnit) {
+  switch (baseUnit) {
+    case 'mm':
+      return 1
+    case 'cm':
+      return 10
+    case 'm':
+      return 1000
+    case 'in':
+      return 25.4
+    case 'ft':
+      return 304.8
+    case 'yd':
+      return 914.4
+  }
 }
 
 export function isQuaternionVertical(q: Quaternion) {
