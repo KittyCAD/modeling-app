@@ -61,7 +61,7 @@ git add package.json src-tauri/tauri.conf.json
 git commit -m "Cut release $new_version"
 
 echo ""
-echo "Versions has been bumped in relavant json files, a branch has been created and commited to."
+echo "Versions has been bumped in relevant json files, a branch has been created and committed to."
 echo ""
 echo "What's left for you to do is, push the branch and make the release PR."
 echo ""
