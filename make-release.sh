@@ -10,7 +10,8 @@ git pull
 git fetch --all
 
 # Get the latest semver tag from git
-latest_tag=$(git tag -l 'v*' --sort=-v:refname | head -n 1)
+latest_tag=$(jq -r '.version' package.json)
+latest_tag="v$latest_tag"
 
 # Print the latest semver tag
 echo "Latest semver tag: $latest_tag"
