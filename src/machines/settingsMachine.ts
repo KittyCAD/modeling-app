@@ -3,6 +3,10 @@ import { Themes, getSystemTheme, setThemeClass } from '../lib/theme'
 import { CameraSystem } from 'lib/cameraControls'
 import { Models } from '@kittycad/lib'
 
+const kclManagerPromise = import('lang/KclSingleton').then(
+  (module) => module.kclManager
+)
+
 export const DEFAULT_PROJECT_NAME = 'project-$nnn'
 
 export enum UnitSystem {
@@ -29,7 +33,7 @@ export const settingsMachine = createMachine(
     id: 'Settings',
     predictableActionArguments: true,
     context: {
-      baseUnit: 'in' as BaseUnit,
+      baseUnit: 'mm' as BaseUnit,
       cameraControls: 'KittyCAD' as CameraSystem,
       defaultDirectory: '',
       defaultProjectName: DEFAULT_PROJECT_NAME,
@@ -37,7 +41,7 @@ export const settingsMachine = createMachine(
       showDebugPanel: false,
       textWrapping: 'On' as Toggle,
       theme: Themes.System,
-      unitSystem: UnitSystem.Imperial,
+      unitSystem: UnitSystem.Metric,
     },
     initial: 'idle',
     states: {
@@ -47,13 +51,13 @@ export const settingsMachine = createMachine(
           'Set Base Unit': {
             actions: [
               assign({
-                baseUnit: (_, event) => {
-                  console.log('event', event)
-                  return event.data.baseUnit
-                },
+                baseUnit: (_, event) => event.data.baseUnit,
               }),
               'persistSettings',
               'toastSuccess',
+              async () => {
+                ;(await kclManagerPromise).executeAst()
+              },
             ],
             target: 'idle',
             internal: true,
@@ -134,6 +138,9 @@ export const settingsMachine = createMachine(
               }),
               'persistSettings',
               'toastSuccess',
+              async () => {
+                ;(await kclManagerPromise).executeAst()
+              },
             ],
             target: 'idle',
             internal: true,

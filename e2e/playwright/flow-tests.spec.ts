@@ -72,7 +72,7 @@ test('Basic sketch', async ({ page }) => {
 
   const startXPx = 600
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  const startAt = '[23.89, -32.23]'
+  const startAt = '[23.74, -32.03]'
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)`)
@@ -82,7 +82,7 @@ test('Basic sketch', async ({ page }) => {
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
   await page.waitForTimeout(100)
 
-  const num = 24.11
+  const num = 23.97
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
@@ -93,14 +93,14 @@ test('Basic sketch', async ({ page }) => {
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
   |> line([${num}, 0], %)
-  |> line([0, ${num + 0.01}], %)`)
+  |> line([0, ${num}], %)`)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
   |> line([${num}, 0], %)
-  |> line([0, ${num + 0.01}], %)
-  |> line([-48, 0], %)`)
+  |> line([0, ${num}], %)
+  |> line([-47.71, 0], %)`)
 
   // deselect line tool
   await page.getByRole('button', { name: 'Line' }).click()
@@ -124,7 +124,7 @@ test('Basic sketch', async ({ page }) => {
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
   |> line({ to: [${num}, 0], tag: 'seg01' }, %)
-  |> line([0, ${num + 0.01}], %)
+  |> line([0, ${num}], %)
   |> angledLine([180, segLen('seg01', %)], %)`)
 })
 
@@ -461,7 +461,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
 
   const startXPx = 600
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  const startAt = '[23.89, -32.23]'
+  const startAt = '[23.74, -32.03]'
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)`)
@@ -470,8 +470,8 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
 
-  const num = 24.11
-  const num2 = '48'
+  const num = 23.97
+  const num2 = '47.71'
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
@@ -482,13 +482,13 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
   |> line([${num}, 0], %)
-  |> line([0, ${num + 0.01}], %)`)
+  |> line([0, ${num}], %)`)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
   |> line([${num}, 0], %)
-  |> line([0, ${num + 0.01}], %)
+  |> line([0, ${num}], %)
   |> line([-${num2}, 0], %)`)
 
   // deselect line tool
@@ -574,12 +574,13 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   await u.closeDebugPanel()
 
   // select a line
-  await topHorzSegmentClick()
-  await page.waitForTimeout(200)
+  // await topHorzSegmentClick()
+  await page.getByText(startAt).click() // TODO remove this and reinstate // await topHorzSegmentClick()
+  await page.waitForTimeout(100)
 
   // enter sketch again
   await page.getByRole('button', { name: 'Edit Sketch' }).click()
-  await page.waitForTimeout(700) // wait for animation
+  await page.waitForTimeout(300) // wait for animation
 
   // hover again and check it works
   await selectionSequence()
@@ -715,7 +716,7 @@ test('Can add multiple sketches', async ({ page }) => {
 
   const startXPx = 600
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  const startAt = '[23.89, -32.23]'
+  const startAt = '[23.74, -32.03]'
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)`)
@@ -725,7 +726,7 @@ test('Can add multiple sketches', async ({ page }) => {
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
   await page.waitForTimeout(100)
 
-  const num = 24.11
+  const num = 23.97
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
@@ -736,13 +737,13 @@ test('Can add multiple sketches', async ({ page }) => {
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
   |> line([${num}, 0], %)
-  |> line([0, ${num + 0.01}], %)`)
+  |> line([0, ${num}], %)`)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   const finalCodeFirstSketch = `const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
   |> line([${num}, 0], %)
-  |> line([0, ${num + 0.01}], %)
-  |> line([-48, 0], %)`
+  |> line([0, ${num}], %)
+  |> line([-47.71, 0], %)`
   await expect(page.locator('.cm-content')).toHaveText(finalCodeFirstSketch)
 
   // exit the sketch

@@ -13,7 +13,7 @@ use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
     ast::types::{BodyItem, FunctionExpression, KclNone, Value},
-    engine::EngineConnection,
+    engine::{EngineConnection, EngineManager},
     errors::{KclError, KclErrorDetails},
     fs::FileManager,
     std::{FunctionKind, StdLib},
@@ -950,27 +950,30 @@ pub struct ExecutorContext {
     pub engine: EngineConnection,
     pub fs: FileManager,
     pub stdlib: Arc<StdLib>,
+    pub units: kittycad::types::UnitLength,
 }
 
 impl ExecutorContext {
     /// Create a new default executor context.
     #[cfg(test)]
-    pub async fn new() -> Result<Self> {
+    pub async fn new(units: kittycad::types::UnitLength) -> Result<Self> {
         Ok(Self {
             engine: EngineConnection::new().await?,
             fs: FileManager::new(),
             stdlib: Arc::new(StdLib::new()),
+            units,
         })
     }
 
     /// Create a new default executor context.
     #[cfg(not(test))]
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new(ws: reqwest::Upgraded) -> Result<Self> {
+    pub async fn new(ws: reqwest::Upgraded, units: kittycad::types::UnitLength) -> Result<Self> {
         Ok(Self {
             engine: EngineConnection::new(ws).await?,
             fs: FileManager::new(),
             stdlib: Arc::new(StdLib::new()),
+            units,
         })
     }
 }
@@ -983,6 +986,17 @@ pub async fn execute(
     options: BodyType,
     ctx: &ExecutorContext,
 ) -> Result<ProgramMemory, KclError> {
+    // Before we even start executing the program, set the units.
+    ctx.engine
+        .send_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            SourceRange::default(),
+            kittycad::types::ModelingCmd::SetSceneUnits {
+                unit: ctx.units.clone(),
+            },
+        )
+        .await?;
+
     let mut pipe_info = PipeInfo::default();
 
     // Iterate over the body of the program.
@@ -1269,7 +1283,7 @@ mod tests {
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast()?;
         let mut mem: ProgramMemory = Default::default();
-        let ctx = ExecutorContext::new().await?;
+        let ctx = ExecutorContext::new(kittycad::types::UnitLength::Mm).await?;
         let memory = execute(program, &mut mem, BodyType::Root, &ctx).await?;
 
         Ok(memory)
