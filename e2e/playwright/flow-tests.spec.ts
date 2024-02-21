@@ -65,7 +65,7 @@ test('Basic sketch', async ({ page }) => {
   await page.mouse.click(700, 200)
 
   await expect(page.locator('.cm-content')).toHaveText(
-    `const part = startSketchOn('-XZ')`
+    `const part001 = startSketchOn('-XZ')`
   )
 
   await page.waitForTimeout(300) // TODO detect animation ending, or disable animation
@@ -74,7 +74,7 @@ test('Basic sketch', async ({ page }) => {
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   const startAt = '[23.74, -32.03]'
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part = startSketchOn('-XZ')
+    .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)`)
   await page.waitForTimeout(100)
 
@@ -84,19 +84,19 @@ test('Basic sketch', async ({ page }) => {
 
   const num = 23.97
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part = startSketchOn('-XZ')
+    .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
   |> line([${num}, 0], %)`)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part = startSketchOn('-XZ')
+    .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
   |> line([${num}, 0], %)
   |> line([0, ${num}], %)`)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part = startSketchOn('-XZ')
+    .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
   |> line([${num}, 0], %)
   |> line([0, ${num}], %)
@@ -121,11 +121,11 @@ test('Basic sketch', async ({ page }) => {
   await page.getByRole('button', { name: 'Equal Length' }).click()
 
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part = startSketchOn('-XZ')
+    .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
-  |> line({ to: [${num}, 0], tag: 'seg' }, %)
+  |> line({ to: [${num}, 0], tag: 'seg01' }, %)
   |> line([0, ${num}], %)
-  |> angledLine([180, segLen('seg', %)], %)`)
+  |> angledLine([180, segLen('seg01', %)], %)`)
 })
 
 test('if you write invalid kcl you get inlined errors', async ({ page }) => {
@@ -200,7 +200,7 @@ test('executes on load', async ({ page, context }) => {
   await context.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
-      `const part = startSketchOn('-XZ')
+      `const part001 = startSketchOn('-XZ')
   |> startProfileAt([-6.95, 4.98], %)
   |> line([25.1, 0.41], %)
   |> line([0.73, -14.93], %)
@@ -214,16 +214,16 @@ test('executes on load', async ({ page, context }) => {
   // expand variables section
   await page.getByText('Variables').click()
 
-  // can find part in the variables summary (pretty-json-container, makes sure we're not looking in the code editor)
-  // part only shows up in the variables summary if it's been executed
+  // can find part001 in the variables summary (pretty-json-container, makes sure we're not looking in the code editor)
+  // part001 only shows up in the variables summary if it's been executed
   await page.waitForFunction(() => {
     const variablesElement = document.querySelector(
       '.pretty-json-container'
     ) as HTMLDivElement
-    return variablesElement.innerHTML.includes('part')
+    return variablesElement.innerHTML.includes('part001')
   })
   await expect(
-    page.locator('.pretty-json-container >> text=part')
+    page.locator('.pretty-json-container >> text=part001')
   ).toBeVisible()
 })
 
@@ -308,7 +308,7 @@ test('Can create sketches on all planes and their back sides', async ({
     plane = 'XY',
     rounded = false,
     otherThing = '1'
-  ) => `const part = startSketchOn('${plane}')
+  ) => `const part001 = startSketchOn('${plane}')
   |> startProfileAt([28.9${otherThing}, -39${rounded ? '' : '.01'}], %)`
   await TestSinglePlane({
     viewCmd: camPos,
@@ -357,7 +357,7 @@ test('Auto complete works', async ({ page }) => {
   // and arrowing down to an option
 
   await page.click('.cm-content')
-  await page.keyboard.type('const part = start')
+  await page.keyboard.type('const part001 = start')
 
   // expect there to be three auto complete options
   await expect(page.locator('.cm-completionLabel')).toHaveCount(3)
@@ -383,7 +383,7 @@ test('Auto complete works', async ({ page }) => {
   await page.keyboard.type('(5, %)')
 
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part = startSketchOn('XY')
+    .toHaveText(`const part001 = startSketchOn('XY')
   |> startProfileAt([0,0], %)
   |> xLine(5, %)`)
 })
@@ -463,7 +463,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   const startAt = '[23.74, -32.03]'
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part = startSketchOn('-XZ')
+    .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)`)
 
   await u.closeDebugPanel()
@@ -473,19 +473,19 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   const num = 23.97
   const num2 = '47.71'
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part = startSketchOn('-XZ')
+    .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
   |> line([${num}, 0], %)`)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part = startSketchOn('-XZ')
+    .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
   |> line([${num}, 0], %)
   |> line([0, ${num}], %)`)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part = startSketchOn('-XZ')
+    .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
   |> line([${num}, 0], %)
   |> line([0, ${num}], %)
@@ -639,7 +639,7 @@ test('Can extrude from the command bar', async ({ page, context }) => {
       'persistCode',
       `
       const distance = sqrt(20)
-      const part = startSketchOn('-XZ')
+      const part001 = startSketchOn('-XZ')
         |> startProfileAt([-6.95, 4.98], %)
         |> line([25.1, 0.41], %)
         |> line([0.73, -14.93], %)
@@ -699,7 +699,7 @@ test('Can extrude from the command bar', async ({ page, context }) => {
   await expect(page.locator('.cm-content')).toHaveText(
     `const distance = sqrt(20)
 const distance001 = 5 + 7
-const part = startSketchOn('-XZ')
+const part001 = startSketchOn('-XZ')
   |> startProfileAt([-6.95, 4.98], %)
   |> line([25.1, 0.41], %)
   |> line([0.73, -14.93], %)
@@ -730,7 +730,7 @@ test('Can add multiple sketches', async ({ page }) => {
   await page.mouse.click(700, 200)
 
   await expect(page.locator('.cm-content')).toHaveText(
-    `const part = startSketchOn('-XZ')`
+    `const part001 = startSketchOn('-XZ')`
   )
 
   await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
@@ -739,7 +739,7 @@ test('Can add multiple sketches', async ({ page }) => {
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   const startAt = '[23.74, -32.03]'
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part = startSketchOn('-XZ')
+    .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)`)
   await page.waitForTimeout(100)
 
@@ -749,18 +749,18 @@ test('Can add multiple sketches', async ({ page }) => {
 
   const num = 23.97
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part = startSketchOn('-XZ')
+    .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
   |> line([${num}, 0], %)`)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part = startSketchOn('-XZ')
+    .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
   |> line([${num}, 0], %)
   |> line([0, ${num}], %)`)
   await page.mouse.click(startXPx, 500 - PUR * 20)
-  const finalCodeFirstSketch = `const part = startSketchOn('-XZ')
+  const finalCodeFirstSketch = `const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
   |> line([${num}, 0], %)
   |> line([0, ${num}], %)
@@ -776,7 +776,7 @@ test('Can add multiple sketches', async ({ page }) => {
 
   await u.updateCamPosition([0, 100, 100])
 
-  // start a second, new sketch
+  // start a new sketch
   await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
   await page.waitForTimeout(100)
@@ -787,14 +787,11 @@ test('Can add multiple sketches', async ({ page }) => {
 
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   const startAt2 = '[23.61, -31.85]'
-
-  // This second part should have "001" added to the
-  // default variable name "part" because it's the second part
   await expect(
     (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
   ).toBe(
     `${finalCodeFirstSketch}
-const part001 = startSketchOn('XY')
+const part002 = startSketchOn('XY')
   |> startProfileAt(${startAt2}, %)`.replace(/\s/g, '')
   )
   await page.waitForTimeout(100)
@@ -808,7 +805,7 @@ const part001 = startSketchOn('XY')
     (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
   ).toBe(
     `${finalCodeFirstSketch}
-const part001 = startSketchOn('XY')
+const part002 = startSketchOn('XY')
   |> startProfileAt(${startAt2}, %)
   |> line([${num2}, 0], %)`.replace(/\s/g, '')
   )
@@ -818,7 +815,7 @@ const part001 = startSketchOn('XY')
     (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
   ).toBe(
     `${finalCodeFirstSketch}
-const part001 = startSketchOn('XY')
+const part002 = startSketchOn('XY')
   |> startProfileAt(${startAt2}, %)
   |> line([${num2}, 0], %)
   |> line([0, ${num2}], %)`.replace(/\s/g, '')
@@ -828,7 +825,7 @@ const part001 = startSketchOn('XY')
     (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
   ).toBe(
     `${finalCodeFirstSketch}
-const part001 = startSketchOn('XY')
+const part002 = startSketchOn('XY')
   |> startProfileAt(${startAt2}, %)
   |> line([${num2}, 0], %)
   |> line([0, ${num2}], %)
@@ -895,7 +892,7 @@ test("Various pipe expressions should and shouldn't allow edit and or extrude", 
     }: any) => {
       localStorage.setItem(
         'persistCode',
-        `const part = startSketchOn('-XZ')
+        `const part001 = startSketchOn('-XZ')
   ${extrudeAndEditBlocked}
   |> line([25.96, 2.93], %)
   |> line([5.25, -5.72], %)
@@ -974,7 +971,7 @@ fn yohey = (pos) => {
   await page.mouse.click(700, 200)
   // expect main content to contain `part005` i.e. started a new sketch
   await expect(page.locator('.cm-content')).toHaveText(
-    /part004 = startSketchOn\('-XZ'\)/
+    /part005 = startSketchOn\('-XZ'\)/
   )
 })
 
@@ -1000,7 +997,7 @@ test('Deselecting line tool should mean nothing happens on click', async ({
   await page.mouse.click(700, 200)
 
   await expect(page.locator('.cm-content')).toHaveText(
-    `const part = startSketchOn('-XZ')`
+    `const part001 = startSketchOn('-XZ')`
   )
 
   await page.waitForTimeout(300)
