@@ -48,6 +48,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
           parseInt(b.keys[0], 10) - 1
         ]
         const arg = selectedCommand?.args[argName]
+        if (!argName || !arg) return
         commandBarSend({
           type: 'Change current argument',
           data: { arg: { ...arg, name: argName } },

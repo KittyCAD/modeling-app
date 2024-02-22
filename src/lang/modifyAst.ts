@@ -177,16 +177,9 @@ export function findUniqueName(
     const newPad = nameEndsInDigits[1].length
     const newIndex = parseInt(nameEndsInDigits[1]) + 1
     const nameWithoutDigits = name.replace(endingDigitsMatcher, '')
-    console.log({
-      nameWithoutDigits,
-      newPad,
-      newIndex,
-    })
 
     return findUniqueName(searchStr, nameWithoutDigits, newPad, newIndex)
   }
-
-  console.log('name doesnt end in digits', nameEndsInDigits)
 
   const newName = `${name}${indexStr}`
   nameIsInString = searchStr.includes(`"name":"${newName}"`)

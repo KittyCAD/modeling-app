@@ -5,3 +5,13 @@
 .editor :global(.cm-editor) {
   @apply bg-transparent;
 }
+
+.editor :global(.cm-line)::selection {
+  @apply px-1;
+  @apply text-chalkboard-100;
+  @apply bg-energy-10/50;
+}
+:global(.dark) .editor :global(.cm-line)::selection {
+  @apply text-energy-10;
+  @apply bg-energy-10/20;
+}

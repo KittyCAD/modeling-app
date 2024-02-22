@@ -69,7 +69,10 @@ function CommandBarKclInput({
     autoFocus: true,
     selection: {
       anchor: 0,
-      head: defaultValue.length,
+      head:
+        previouslySetValue && 'valueText' in previouslySetValue
+          ? previouslySetValue.valueText.length
+          : defaultValue.length,
     },
     accessKey: 'command-bar',
     theme:
@@ -173,11 +176,19 @@ function CommandBarKclInput({
             className="flex-1 border-none bg-transparent"
             placeholder="Variable name"
             value={newVariableName}
+            autoCapitalize="off"
+            autoCorrect="off"
+            autoComplete="off"
+            spellCheck="false"
+            autoFocus
             onChange={(e) => setNewVariableName(e.target.value)}
             onKeyDown={(e) => {
               if (e.currentTarget.value === '' && e.key === 'Backspace') {
                 setCreateNewVariable(false)
-              } else if (e.key === 'Enter') {
+              }
+            }}
+            onKeyUp={(e) => {
+              if (e.key === 'Enter') {
                 handleSubmit()
               }
             }}

@@ -7,6 +7,9 @@ import { Value, parse } from 'lang/wasm'
 import { useEffect, useRef, useState } from 'react'
 import { executeAst } from 'useStore'
 
+const isValidVariableName = (name: string) =>
+  /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)
+
 /**
  * Given a value and a possible variablename,
  * return helpers for calculating the value and inserting it into the code
@@ -55,7 +58,11 @@ export function useCalculateKclExpression({
 
   useEffect(() => {
     const allVarNames = Object.keys(programMemory.root)
-    if (allVarNames.includes(newVariableName)) {
+    if (
+      allVarNames.includes(newVariableName) ||
+      newVariableName === '' ||
+      !isValidVariableName(newVariableName)
+    ) {
       setIsNewVariableNameUnique(false)
     } else {
       setIsNewVariableNameUnique(true)
