@@ -162,18 +162,39 @@ export function findUniqueName(
   pad = 3,
   index = 1
 ): string {
-  let searchStr = ''
-  if (typeof ast === 'string') {
-    searchStr = ast
-  } else {
-    searchStr = JSON.stringify(ast)
-  }
+  let searchStr: string = typeof ast === 'string' ? ast : JSON.stringify(ast)
   const indexStr = `${index}`.padStart(pad, '0')
-  const newName = `${name}${indexStr}`
-  const isInString = searchStr.includes(newName)
-  if (!isInString) {
-    return newName
+
+  const endingDigitsMatcher = /\d+$/
+  const nameEndsInDigits = name.match(endingDigitsMatcher)
+  let nameIsInString = searchStr.includes(`"name":"${name}"`)
+
+  if (nameEndsInDigits !== null) {
+    // base case: name is unique and ends in digits
+    if (!nameIsInString) return name
+
+    // recursive case: name is not unique and ends in digits
+    const newPad = nameEndsInDigits[1].length
+    const newIndex = parseInt(nameEndsInDigits[1]) + 1
+    const nameWithoutDigits = name.replace(endingDigitsMatcher, '')
+    console.log({
+      nameWithoutDigits,
+      newPad,
+      newIndex,
+    })
+
+    return findUniqueName(searchStr, nameWithoutDigits, newPad, newIndex)
   }
+
+  console.log('name doesnt end in digits', nameEndsInDigits)
+
+  const newName = `${name}${indexStr}`
+  nameIsInString = searchStr.includes(`"name":"${newName}"`)
+
+  // base case: name is unique and does not end in digits
+  if (!nameIsInString) return newName
+
+  // recursive case: name is not unique and does not end in digits
   return findUniqueName(searchStr, name, pad, index + 1)
 }
 
