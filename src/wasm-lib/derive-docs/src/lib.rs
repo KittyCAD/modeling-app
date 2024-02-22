@@ -233,6 +233,7 @@ fn do_stdlib_inner(
         let ret_ty_string = if ret_ty_string.starts_with("Box <") {
             ret_ty_string
                 .trim_start_matches("Box <")
+                .trim_end_matches(' ')
                 .trim_end_matches('>')
                 .trim()
                 .to_string()
