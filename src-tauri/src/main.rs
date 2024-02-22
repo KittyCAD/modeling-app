@@ -138,7 +138,6 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
         fs::write("/tmp/kittycad_user_code", details.user_code().secret())
             .expect("Unable to write /tmp/kittycad_user_code file");
     } else {
-        println!("{}", auth_uri.secret().to_string());
         app.shell()
             .open(auth_uri.secret(), None)
             .map_err(|e| InvokeError::from_anyhow(e.into()))?;
@@ -201,10 +200,10 @@ async fn get_user(
 fn main() {
     tauri::Builder::default()
         .setup(|_app| {
-            #[cfg(debug_assertions)] // only include this code on debug builds
-            {
-                _app.get_webview("main").unwrap().open_devtools();
-            }
+            // #[cfg(debug_assertions)] // only include this code on debug builds
+            // {
+            //     _app.get_webview("main").unwrap().open_devtools();
+            // }
             _app.handle()
                 .plugin(tauri_plugin_updater::Builder::new().build())?;
             Ok(())
