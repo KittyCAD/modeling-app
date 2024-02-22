@@ -52,6 +52,9 @@ test('Basic sketch', async ({ page }) => {
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
 
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled()
   await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
 
   // click on "Start Sketch" button
@@ -453,6 +456,9 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     page.mouse.click(767, 396).then(() => page.waitForTimeout(100))
 
   await u.clearCommandLogs()
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
 
   // select a plane
@@ -696,6 +702,9 @@ test('Can add multiple sketches', async ({ page }) => {
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
 
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled()
   await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
 
   // click on "Start Sketch" button
@@ -918,6 +927,11 @@ fn yohey = (pos) => {
   await u.expectCmdLog('[data-message-type="execution-done"]')
   await u.closeDebugPanel()
 
+  // wait for start sketch as a proxy for the stream being ready
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled()
+
   await page.getByText(selectionsSnippets.extrudeAndEditBlocked).click()
   await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
   await expect(
@@ -964,6 +978,9 @@ test('Deselecting line tool should mean nothing happens on click', async ({
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
 
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled()
   await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
 
   // click on "Start Sketch" button

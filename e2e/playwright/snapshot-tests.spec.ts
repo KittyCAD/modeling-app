@@ -428,6 +428,9 @@ test('Draft segments should look right', async ({ page }) => {
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
 
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled()
   await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
 
   // click on "Start Sketch" button
