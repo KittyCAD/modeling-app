@@ -51,7 +51,7 @@ export const ActionButton = (props: ActionButtonProps) => {
       const { Element, icon, children, className: _className, ...rest } = props
       return (
         <button className={classNames} {...rest}>
-          {props.icon && <ActionIcon {...icon} />}
+          {props.icon && <ActionIcon {...icon} disabled={rest.disabled} />}
           {children}
         </button>
       )

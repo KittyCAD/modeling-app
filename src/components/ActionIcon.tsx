@@ -19,6 +19,7 @@ export interface ActionIconProps extends React.PropsWithChildren {
   bgClassName?: string
   iconClassName?: string
   size?: keyof typeof iconSizes
+  disabled?: boolean
 }
 
 export const ActionIcon = ({
@@ -28,6 +29,7 @@ export const ActionIcon = ({
   iconClassName,
   size = 'md',
   children,
+  disabled,
 }: ActionIconProps) => {
   // By default, we reverse the icon color and background color in dark mode
   const computedIconClassName = `h-auto dark:text-energy-10 !group-disabled:text-chalkboard-60 !group-disabled:text-chalkboard-60 ${iconClassName}`
@@ -37,7 +39,7 @@ export const ActionIcon = ({
   return (
     <div
       className={
-        `w-fit inline-grid place-content-center ${className} ` +
+        `w-fit inline-grid place-content-center relative ${className} ` +
         computedBgClassName
       }
     >
@@ -57,6 +59,9 @@ export const ActionIcon = ({
           height={iconSizes[size]}
           className={computedIconClassName}
         />
+      )}
+      {disabled && (
+        <div className="absolute inset-0 filter bg-slate-100 mix-blend-saturation"></div>
       )}
     </div>
   )
