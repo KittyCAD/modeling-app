@@ -1,4 +1,4 @@
-import { parse, recast, initPromise, VariableDeclaration, VariableDeclarator, Identifier } from './wasm'
+import { parse, recast, initPromise, Identifier } from './wasm'
 import {
   createLiteral,
   createIdentifier,
