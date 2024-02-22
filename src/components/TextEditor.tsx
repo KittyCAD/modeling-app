@@ -11,7 +11,7 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
 import { Themes } from 'lib/theme'
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { linter, lintGutter } from '@codemirror/lint'
 import { useStore } from 'useStore'
 import { processCodeMirrorRanges } from 'lib/selections'
@@ -30,6 +30,7 @@ import { sceneInfra } from 'clientSideScene/sceneInfra'
 import { copilotPlugin } from 'editor/plugins/lsp/copilot'
 import { isTauri } from 'lib/isTauri'
 import type * as LSP from 'vscode-languageserver-protocol'
+import { NetworkHealthState, useNetworkStatus } from './NetworkHealthIndicator'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -75,6 +76,17 @@ export const TextEditor = ({
   }))
   const { code, errors } = useKclContext()
   const lastEvent = useRef({ event: '', time: Date.now() })
+  const { overallState } = useNetworkStatus()
+  const isNetworkOkay = overallState === NetworkHealthState.Ok
+
+  useEffect(() => {
+    const onlineCallback = () => {
+      console.log('executing because online', code)
+      kclManager.setCodeAndExecute(kclManager.code)
+    }
+    window.addEventListener('online', onlineCallback)
+    return () => window.removeEventListener('online', onlineCallback)
+  }, [])
 
   const {
     context: { selectionRanges, selectionRangeTypeMap },
@@ -166,8 +178,13 @@ export const TextEditor = ({
   }, [copilotLspClient, isCopilotLspServerReady])
 
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
-  const onChange = (newCode: string) => {
-    kclManager.setCodeAndExecute(newCode)
+  const onChange = async (newCode: string) => {
+    console.log('yo')
+    if (isNetworkOkay) {
+      kclManager.setCodeAndExecute(newCode)
+    } else {
+      kclManager.setCode(newCode)
+    }
   } //, []);
   const onUpdate = (viewUpdate: ViewUpdate) => {
     if (!editorView) {
