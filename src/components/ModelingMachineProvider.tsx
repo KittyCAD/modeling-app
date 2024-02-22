@@ -37,6 +37,7 @@ import { sceneInfra } from 'clientSideScene/sceneInfra'
 import { getSketchQuaternion } from 'clientSideScene/sceneEntities'
 import { startSketchOnDefault } from 'lang/modifyAst'
 import { Program } from 'lang/wasm'
+import { isSingleCursorInPipe } from 'lang/queryAst'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -182,7 +183,10 @@ export const ModelingMachineProvider = ({
 
           return canExtrudeSelection(selectionRanges)
         },
-        'Selection is one face': ({ selectionRanges }) => {
+        'Selection is on face': ({ selectionRanges }, { data }) => {
+          if (data?.forceNewSketch) return false
+          if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))
+            return false
           return !!isCursorInSketchCommandRange(
             engineCommandManager.artifactMap,
             selectionRanges
@@ -199,6 +203,7 @@ export const ModelingMachineProvider = ({
           await kclManager.executeAstMock(newAst, { updates: 'code' })
           sceneInfra.setCallbacks({
             onClick: () => {},
+            onDrag: () => {},
           })
         },
         'animate-to-face': async (_, { data: { plane, normal } }) => {

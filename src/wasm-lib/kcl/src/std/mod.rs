@@ -20,16 +20,16 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use self::{kcl_stdlib::KclStdLibFn, sketch::SketchOnFaceTag};
 use crate::{
     ast::types::parse_json_number_as_f64,
     docs::StdLibFn,
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
     executor::{
-        ExecutorContext, ExtrudeGroup, Geometry, MemoryItem, Metadata, SketchGroup, SketchGroupSet, SourceRange,
+        ExecutorContext, ExtrudeGroup, Geometry, MemoryItem, Metadata, SketchGroup, SketchGroupSet, SketchSurface,
+        SourceRange,
     },
-    std::sketch::SketchSurface,
+    std::{kcl_stdlib::KclStdLibFn, sketch::SketchOnFaceTag},
 };
 
 pub type StdFn = fn(Args) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<MemoryItem, KclError>>>>;

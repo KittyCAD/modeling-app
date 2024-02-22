@@ -13,7 +13,7 @@ use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
     ast::types::{BodyItem, FunctionExpression, KclNone, Value},
-    engine::EngineConnection,
+    engine::{EngineConnection, EngineManager},
     errors::{KclError, KclErrorDetails},
     fs::FileManager,
     std::{FunctionKind, StdLib},
@@ -418,6 +418,8 @@ pub struct SketchGroup {
     pub id: uuid::Uuid,
     /// The paths in the sketch group.
     pub value: Vec<Path>,
+    /// What the sketch is on (can be a plane or a face).
+    pub on: SketchSurface,
     /// The starting path.
     pub start: BasePath,
     /// The position of the sketch group.
@@ -435,6 +437,42 @@ pub struct SketchGroup {
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
+}
+
+/// A sketch group type.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
+pub enum SketchSurface {
+    Plane(Box<Plane>),
+    Face(Box<Face>),
+}
+
+impl SketchSurface {
+    pub fn id(&self) -> uuid::Uuid {
+        match self {
+            SketchSurface::Plane(plane) => plane.id,
+            SketchSurface::Face(face) => face.id,
+        }
+    }
+    pub fn x_axis(&self) -> Point3d {
+        match self {
+            SketchSurface::Plane(plane) => plane.x_axis.clone(),
+            SketchSurface::Face(face) => face.x_axis.clone(),
+        }
+    }
+    pub fn y_axis(&self) -> Point3d {
+        match self {
+            SketchSurface::Plane(plane) => plane.y_axis.clone(),
+            SketchSurface::Face(face) => face.y_axis.clone(),
+        }
+    }
+    pub fn z_axis(&self) -> Point3d {
+        match self {
+            SketchSurface::Plane(plane) => plane.z_axis.clone(),
+            SketchSurface::Face(face) => face.z_axis.clone(),
+        }
+    }
 }
 
 pub struct GetTangentialInfoFromPathsResult {
@@ -912,27 +950,30 @@ pub struct ExecutorContext {
     pub engine: EngineConnection,
     pub fs: FileManager,
     pub stdlib: Arc<StdLib>,
+    pub units: kittycad::types::UnitLength,
 }
 
 impl ExecutorContext {
     /// Create a new default executor context.
     #[cfg(test)]
-    pub async fn new() -> Result<Self> {
+    pub async fn new(units: kittycad::types::UnitLength) -> Result<Self> {
         Ok(Self {
             engine: EngineConnection::new().await?,
             fs: FileManager::new(),
             stdlib: Arc::new(StdLib::new()),
+            units,
         })
     }
 
     /// Create a new default executor context.
     #[cfg(not(test))]
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new(ws: reqwest::Upgraded) -> Result<Self> {
+    pub async fn new(ws: reqwest::Upgraded, units: kittycad::types::UnitLength) -> Result<Self> {
         Ok(Self {
             engine: EngineConnection::new(ws).await?,
             fs: FileManager::new(),
             stdlib: Arc::new(StdLib::new()),
+            units,
         })
     }
 }
@@ -945,6 +986,17 @@ pub async fn execute(
     options: BodyType,
     ctx: &ExecutorContext,
 ) -> Result<ProgramMemory, KclError> {
+    // Before we even start executing the program, set the units.
+    ctx.engine
+        .send_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            SourceRange::default(),
+            kittycad::types::ModelingCmd::SetSceneUnits {
+                unit: ctx.units.clone(),
+            },
+        )
+        .await?;
+
     let mut pipe_info = PipeInfo::default();
 
     // Iterate over the body of the program.
@@ -1231,7 +1283,7 @@ mod tests {
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast()?;
         let mut mem: ProgramMemory = Default::default();
-        let ctx = ExecutorContext::new().await?;
+        let ctx = ExecutorContext::new(kittycad::types::UnitLength::Mm).await?;
         let memory = execute(program, &mut mem, BodyType::Root, &ctx).await?;
 
         Ok(memory)

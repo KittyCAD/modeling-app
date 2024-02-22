@@ -6,9 +6,30 @@ use anyhow::Result;
 #[cfg(feature = "cli")]
 use clap::Parser;
 use dashmap::DashMap;
-use tower_lsp::{jsonrpc::Result as RpcResult, lsp_types::*, Client, LanguageServer};
+use tower_lsp::{
+    jsonrpc::Result as RpcResult,
+    lsp_types::{
+        CompletionItem, CompletionItemKind, CompletionOptions, CompletionParams, CompletionResponse, CreateFilesParams,
+        DeleteFilesParams, DiagnosticOptions, DiagnosticServerCapabilities, DidChangeConfigurationParams,
+        DidChangeTextDocumentParams, DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams,
+        DidCloseTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentDiagnosticParams,
+        DocumentDiagnosticReport, DocumentDiagnosticReportResult, DocumentFilter, DocumentFormattingParams,
+        DocumentSymbol, DocumentSymbolParams, DocumentSymbolResponse, Documentation, FullDocumentDiagnosticReport,
+        Hover, HoverContents, HoverParams, HoverProviderCapability, InitializeParams, InitializeResult,
+        InitializedParams, InlayHint, InlayHintParams, InsertTextFormat, MarkupContent, MarkupKind, MessageType, OneOf,
+        ParameterInformation, ParameterLabel, Position, RelatedFullDocumentDiagnosticReport, RenameFilesParams,
+        RenameParams, SemanticToken, SemanticTokenType, SemanticTokens, SemanticTokensFullOptions,
+        SemanticTokensLegend, SemanticTokensOptions, SemanticTokensParams, SemanticTokensRegistrationOptions,
+        SemanticTokensResult, SemanticTokensServerCapabilities, ServerCapabilities, SignatureHelp,
+        SignatureHelpOptions, SignatureHelpParams, SignatureInformation, StaticRegistrationOptions, TextDocumentItem,
+        TextDocumentRegistrationOptions, TextDocumentSyncCapability, TextDocumentSyncKind, TextDocumentSyncOptions,
+        TextEdit, WorkDoneProgressOptions, WorkspaceEdit, WorkspaceFoldersServerCapabilities,
+        WorkspaceServerCapabilities,
+    },
+    Client, LanguageServer,
+};
 
-use crate::{ast::types::VariableKind, executor::SourceRange, parser::PIPE_OPERATOR};
+use crate::{ast::types::VariableKind, executor::SourceRange, lsp::backend::Backend as _, parser::PIPE_OPERATOR};
 
 /// A subcommand for running the server.
 #[derive(Clone, Debug)]
@@ -27,6 +48,8 @@ pub struct Server {
 pub struct Backend {
     /// The client for the backend.
     pub client: Client,
+    /// The file system client to use.
+    pub fs: crate::fs::FileManager,
     /// The stdlib completions for the language.
     pub stdlib_completions: HashMap<String, CompletionItem>,
     /// The stdlib signatures for the language.
@@ -47,15 +70,29 @@ pub struct Backend {
     pub semantic_tokens_map: DashMap<String, Vec<SemanticToken>>,
 }
 
-impl Backend {
-    fn get_semantic_token_type_index(&self, token_type: SemanticTokenType) -> Option<usize> {
-        self.token_types.iter().position(|x| *x == token_type)
+// Implement the shared backend trait for the language server.
+#[async_trait::async_trait]
+impl crate::lsp::backend::Backend for Backend {
+    fn client(&self) -> Client {
+        self.client.clone()
+    }
+
+    fn fs(&self) -> crate::fs::FileManager {
+        self.fs.clone()
+    }
+
+    fn current_code_map(&self) -> DashMap<String, String> {
+        self.current_code_map.clone()
+    }
+
+    fn insert_current_code_map(&self, uri: String, text: String) {
+        self.current_code_map.insert(uri, text);
     }
 
     async fn on_change(&self, params: TextDocumentItem) {
+        // We already updated the code map in the shared backend.
+
         // Lets update the tokens.
-        self.current_code_map
-            .insert(params.uri.to_string(), params.text.clone());
         let tokens = crate::token::lexer(&params.text);
         self.token_map.insert(params.uri.to_string(), tokens.clone());
 
@@ -159,6 +196,12 @@ impl Backend {
         // Publish the diagnostic, we reset it here so the client knows the code compiles now.
         // If the client supports it.
         self.client.publish_diagnostics(params.uri.clone(), vec![], None).await;
+    }
+}
+
+impl Backend {
+    fn get_semantic_token_type_index(&self, token_type: SemanticTokenType) -> Option<usize> {
+        self.token_types.iter().position(|x| *x == token_type)
     }
 
     async fn completions_get_variables_from_ast(&self, file_name: &str) -> Vec<CompletionItem> {
@@ -281,68 +324,51 @@ impl LanguageServer for Backend {
     }
 
     async fn initialized(&self, params: InitializedParams) {
-        self.client
-            .log_message(MessageType::INFO, format!("initialized: {:?}", params))
-            .await;
+        self.do_initialized(params).await
     }
 
     async fn shutdown(&self) -> RpcResult<()> {
-        self.client.log_message(MessageType::INFO, "shutdown".to_string()).await;
-        Ok(())
+        self.do_shutdown().await
     }
 
-    async fn did_change_workspace_folders(&self, _: DidChangeWorkspaceFoldersParams) {
-        self.client
-            .log_message(MessageType::INFO, "workspace folders changed!")
-            .await;
+    async fn did_change_workspace_folders(&self, params: DidChangeWorkspaceFoldersParams) {
+        self.do_did_change_workspace_folders(params).await
     }
 
-    async fn did_change_configuration(&self, _: DidChangeConfigurationParams) {
-        self.client
-            .log_message(MessageType::INFO, "configuration changed!")
-            .await;
+    async fn did_change_configuration(&self, params: DidChangeConfigurationParams) {
+        self.do_did_change_configuration(params).await
     }
 
-    async fn did_change_watched_files(&self, _: DidChangeWatchedFilesParams) {
-        self.client
-            .log_message(MessageType::INFO, "watched files have changed!")
-            .await;
+    async fn did_change_watched_files(&self, params: DidChangeWatchedFilesParams) {
+        self.do_did_change_watched_files(params).await
+    }
+
+    async fn did_create_files(&self, params: CreateFilesParams) {
+        self.do_did_create_files(params).await
+    }
+
+    async fn did_rename_files(&self, params: RenameFilesParams) {
+        self.do_did_rename_files(params).await
+    }
+
+    async fn did_delete_files(&self, params: DeleteFilesParams) {
+        self.do_did_delete_files(params).await
     }
 
     async fn did_open(&self, params: DidOpenTextDocumentParams) {
-        self.on_change(TextDocumentItem {
-            uri: params.text_document.uri,
-            text: params.text_document.text,
-            version: params.text_document.version,
-            language_id: params.text_document.language_id,
-        })
-        .await
+        self.do_did_open(params).await
     }
 
-    async fn did_change(&self, mut params: DidChangeTextDocumentParams) {
-        self.on_change(TextDocumentItem {
-            uri: params.text_document.uri,
-            text: std::mem::take(&mut params.content_changes[0].text),
-            version: params.text_document.version,
-            language_id: Default::default(),
-        })
-        .await
+    async fn did_change(&self, params: DidChangeTextDocumentParams) {
+        self.do_did_change(params.clone()).await;
     }
 
     async fn did_save(&self, params: DidSaveTextDocumentParams) {
-        if let Some(text) = params.text {
-            self.on_change(TextDocumentItem {
-                uri: params.text_document.uri,
-                text,
-                version: Default::default(),
-                language_id: Default::default(),
-            })
-            .await
-        }
+        self.do_did_save(params).await
     }
 
-    async fn did_close(&self, _: DidCloseTextDocumentParams) {
-        self.client.log_message(MessageType::INFO, "file closed!").await;
+    async fn did_close(&self, params: DidCloseTextDocumentParams) {
+        self.do_did_close(params).await
     }
 
     async fn hover(&self, params: HoverParams) -> RpcResult<Option<Hover>> {

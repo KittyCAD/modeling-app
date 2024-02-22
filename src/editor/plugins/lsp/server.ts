@@ -1,9 +1,11 @@
 import init, {
+  copilot_lsp_run,
   InitOutput,
-  lsp_run,
+  kcl_lsp_run,
   ServerConfig,
-} from '../../wasm-lib/pkg/wasm_lib'
+} from 'wasm-lib/pkg/wasm_lib'
 import { FromServer, IntoServer } from './codec'
+import { fileSystemManager } from 'lang/std/fileSystemManager'
 
 export default class Server {
   readonly initOutput: InitOutput
@@ -29,8 +31,19 @@ export default class Server {
     return server
   }
 
-  async start(): Promise<void> {
-    const config = new ServerConfig(this.#intoServer, this.#fromServer)
-    await lsp_run(config)
+  async start(type_: 'kcl' | 'copilot', token?: string): Promise<void> {
+    const config = new ServerConfig(
+      this.#intoServer,
+      this.#fromServer,
+      fileSystemManager
+    )
+    if (type_ === 'copilot') {
+      if (!token) {
+        throw new Error('auth token is required for copilot')
+      }
+      await copilot_lsp_run(config, token)
+    } else if (type_ === 'kcl') {
+      await kcl_lsp_run(config)
+    }
   }
 }

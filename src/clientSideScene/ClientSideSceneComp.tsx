@@ -26,7 +26,7 @@ function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
 
   if (DEBUG_SHOW_BOTH_SCENES || !isCamMoving)
     return { hideClient: false, hideServer: false }
-  let hideServer = state.matches('Sketch') || state.matches('Sketch no face')
+  let hideServer = state.matches('Sketch')
   if (isTween) {
     hideServer = false
   }

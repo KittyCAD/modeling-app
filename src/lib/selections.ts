@@ -9,7 +9,11 @@ import { SelectionRange } from '@uiw/react-codemirror'
 import { isOverlap } from 'lib/utils'
 import { isCursorInSketchCommandRange } from 'lang/util'
 import { Program } from 'lang/wasm'
-import { doesPipeHaveCallExp, getNodeFromPath } from 'lang/queryAst'
+import {
+  doesPipeHaveCallExp,
+  getNodeFromPath,
+  isSingleCursorInPipe,
+} from 'lang/queryAst'
 import { CommandArgument } from './commandTypes'
 import {
   STRAIGHT_SEGMENT,
@@ -455,6 +459,7 @@ function resetAndSetEngineEntitySelectionCmds(
 }
 
 export function isSketchPipe(selectionRanges: Selections) {
+  if (!isSingleCursorInPipe(selectionRanges, kclManager.ast)) return false
   return isCursorInSketchCommandRange(
     engineCommandManager.artifactMap,
     selectionRanges
