@@ -1145,3 +1145,54 @@ fn arrays_as_parameters() {
         }
     )
 }
+
+#[test]
+fn mod_and_pow() {
+    let program = "
+        let x = 2
+        let y = x^3
+        let z = y % 5
+        ";
+    let (plan, _bindings) = must_plan(program);
+    let addr0 = Address::ZERO;
+    let addr1 = Address::ZERO.offset(1);
+    let addr2 = Address::ZERO.offset(2);
+    let addr3 = Address::ZERO.offset(3);
+    let addr4 = Address::ZERO.offset(4);
+    print!("{:?}", plan);
+    assert_eq!(
+        plan,
+        vec![
+            Instruction::SetPrimitive {
+                address: addr0,
+                value: 2i64.into(),
+            },
+            Instruction::SetPrimitive {
+                address: addr1,
+                value: 3i64.into(),
+            },
+            // x ^ 3, where x = 2
+            Instruction::BinaryArithmetic {
+                arithmetic: ep::BinaryArithmetic {
+                    operation: ep::BinaryOperation::Pow,
+                    operand0: ep::Operand::Reference(addr0),
+                    operand1: ep::Operand::Reference(addr1),
+                },
+                destination: Destination::Address(addr2),
+            },
+            Instruction::SetPrimitive {
+                address: addr3,
+                value: 5i64.into(),
+            },
+            // y % 5, where y is 2^3
+            Instruction::BinaryArithmetic {
+                arithmetic: ep::BinaryArithmetic {
+                    operation: ep::BinaryOperation::Mod,
+                    operand0: ep::Operand::Reference(addr2),
+                    operand1: ep::Operand::Reference(addr3),
+                },
+                destination: Destination::Address(addr4),
+            }
+        ]
+    );
+}
