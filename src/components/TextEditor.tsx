@@ -80,10 +80,7 @@ export const TextEditor = ({
   const isNetworkOkay = overallState === NetworkHealthState.Ok
 
   useEffect(() => {
-    const onlineCallback = () => {
-      console.log('executing because online', code)
-      kclManager.setCodeAndExecute(kclManager.code)
-    }
+    const onlineCallback = () => kclManager.setCodeAndExecute(kclManager.code)
     window.addEventListener('online', onlineCallback)
     return () => window.removeEventListener('online', onlineCallback)
   }, [])
@@ -179,12 +176,8 @@ export const TextEditor = ({
 
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = async (newCode: string) => {
-    console.log('yo')
-    if (isNetworkOkay) {
-      kclManager.setCodeAndExecute(newCode)
-    } else {
-      kclManager.setCode(newCode)
-    }
+    if (isNetworkOkay) kclManager.setCodeAndExecute(newCode)
+    else kclManager.setCode(newCode)
   } //, []);
   const onUpdate = (viewUpdate: ViewUpdate) => {
     if (!editorView) {
