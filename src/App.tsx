@@ -140,7 +140,7 @@ export function App() {
       <Resizable
         className={
           'pointer-events-none h-full flex flex-col flex-1 z-10 my-5 ml-5 pr-1 transition-opacity transition-duration-75 ' +
-          +paneOpacity
+          paneOpacity
         }
         defaultSize={{
           width: '550px',
