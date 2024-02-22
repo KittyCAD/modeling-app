@@ -80,6 +80,7 @@ export const TextEditor = ({
   const isNetworkOkay = overallState === NetworkHealthState.Ok
 
   useEffect(() => {
+    if (typeof window === 'undefined') return
     const onlineCallback = () => kclManager.setCodeAndExecute(kclManager.code)
     window.addEventListener('online', onlineCallback)
     return () => window.removeEventListener('online', onlineCallback)
