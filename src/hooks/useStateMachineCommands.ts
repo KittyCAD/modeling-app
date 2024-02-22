@@ -7,6 +7,10 @@ import { authMachine } from 'machines/authMachine'
 import { settingsMachine } from 'machines/settingsMachine'
 import { homeMachine } from 'machines/homeMachine'
 import { Command, CommandSetConfig, CommandSetSchema } from 'lib/commandTypes'
+import {
+  NetworkHealthState,
+  useNetworkStatus,
+} from 'components/NetworkHealthIndicator'
 
 // This might not be necessary, AnyStateMachine from xstate is working
 export type AllMachines =
@@ -24,6 +28,7 @@ interface UseStateMachineCommandsArgs<
   send: Function
   actor?: InterpreterFrom<T>
   commandBarConfig?: CommandSetConfig<T, S>
+  allCommandsRequireNetwork?: boolean
   onCancel?: () => void
 }
 
@@ -36,12 +41,18 @@ export default function useStateMachineCommands<
   send,
   actor,
   commandBarConfig,
+  allCommandsRequireNetwork = false,
   onCancel,
 }: UseStateMachineCommandsArgs<T, S>) {
   const { commandBarSend } = useCommandsContext()
+  const { overallState: networkStatus } = useNetworkStatus()
 
   useEffect(() => {
     const newCommands = state.nextEvents
+      .filter(
+        (_) =>
+          !allCommandsRequireNetwork || networkStatus === NetworkHealthState.Ok
+      )
       .filter((e) => !['done.', 'error.'].some((n) => e.includes(n)))
       .map((type) =>
         createMachineCommand<T, S>({
@@ -64,5 +75,5 @@ export default function useStateMachineCommands<
         data: { commands: newCommands },
       })
     }
-  }, [state])
+  }, [state, networkStatus])
 }
