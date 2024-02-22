@@ -52,15 +52,12 @@ export default function useStateMachineCommands<
   const { isStreamReady } = useStore((s) => ({
     isStreamReady: s.isStreamReady,
   }))
-  
+
   useEffect(() => {
     const disableAllButtons =
       overallState !== NetworkHealthState.Ok || isExecuting || !isStreamReady
     const newCommands = state.nextEvents
-      .filter(
-        (_) =>
-          !allCommandsRequireNetwork || !disableAllButtons
-      )
+      .filter((_) => !allCommandsRequireNetwork || !disableAllButtons)
       .filter((e) => !['done.', 'error.'].some((n) => e.includes(n)))
       .map((type) =>
         createMachineCommand<T, S>({
