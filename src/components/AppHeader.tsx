@@ -4,16 +4,10 @@ import { type IndexLoaderData } from 'lib/types'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import styles from './AppHeader.module.css'
-import {
-  NetworkHealthIndicator,
-  NetworkHealthState,
-  useNetworkStatus,
-} from './NetworkHealthIndicator'
+import { NetworkHealthIndicator } from './NetworkHealthIndicator'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { ActionButton } from './ActionButton'
 import usePlatform from 'hooks/usePlatform'
-import { useKclContext } from 'lang/KclSingleton'
-import { useStore } from 'useStore'
 
 interface AppHeaderProps extends React.PropsWithChildren {
   showToolbar?: boolean
@@ -33,12 +27,6 @@ export const AppHeader = ({
   const { commandBarSend } = useCommandsContext()
   const { auth } = useGlobalStateContext()
   const user = auth?.context?.user
-  const { overallState } = useNetworkStatus()
-  const { isExecuting } = useKclContext()
-  const { isStreamReady } = useStore((s) => ({
-    isStreamReady: s.isStreamReady,
-  }))
-  const isNetworkOkay = overallState === NetworkHealthState.Ok
 
   return (
     <header
@@ -55,28 +43,20 @@ export const AppHeader = ({
         file={project?.file}
       />
       {/* Toolbar if the context deems it */}
-      <div className="relative">
-        <div className="flex-grow flex justify-center max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-4xl 2xl:max-w-5xl">
-          {showToolbar ? (
-            <Toolbar />
-          ) : (
-            <ActionButton
-              Element="button"
-              onClick={() => commandBarSend({ type: 'Open' })}
-              className="text-sm self-center flex items-center w-fit gap-3"
-            >
-              Command Palette{' '}
-              <kbd className="bg-energy-10/50 dark:bg-chalkboard-100 dark:text-energy-10 inline-block px-1 py-0.5 border-energy-10 dark:border-chalkboard-90">
-                {platform === 'darwin' ? '⌘K' : 'Ctrl+/'}
-              </kbd>
-            </ActionButton>
-          )}
-        </div>
-        {(!isNetworkOkay || isExecuting || !isStreamReady) && (
-          <>
-            <div className="absolute inset-0 filter bg-slate-100 mix-blend-saturation"></div>
-            <div className="absolute inset-0 filter bg-gray-900/50 cursor-not-allowed"></div>
-          </>
+      <div className="flex-grow flex justify-center max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-4xl 2xl:max-w-5xl">
+        {showToolbar ? (
+          <Toolbar />
+        ) : (
+          <ActionButton
+            Element="button"
+            onClick={() => commandBarSend({ type: 'Open' })}
+            className="text-sm self-center flex items-center w-fit gap-3"
+          >
+            Command Palette{' '}
+            <kbd className="bg-energy-10/50 dark:bg-chalkboard-100 dark:text-energy-10 inline-block px-1 py-0.5 border-energy-10 dark:border-chalkboard-90">
+              {platform === 'darwin' ? '⌘K' : 'Ctrl+/'}
+            </kbd>
+          </ActionButton>
         )}
       </div>
       <div className="flex items-center gap-1 ml-auto">
