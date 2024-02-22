@@ -163,11 +163,11 @@ export function findUniqueName(
   index = 1
 ): string {
   let searchStr: string = typeof ast === 'string' ? ast : JSON.stringify(ast)
-  const indexStr = `${index}`.padStart(pad, '0')
+  const indexStr = String(index).padStart(pad, '0')
 
   const endingDigitsMatcher = /\d+$/
   const nameEndsInDigits = name.match(endingDigitsMatcher)
-  let nameIsInString = searchStr.includes(`"name":"${name}"`)
+  let nameIsInString = searchStr.includes(`:"${name}"`)
 
   if (nameEndsInDigits !== null) {
     // base case: name is unique and ends in digits
@@ -182,7 +182,7 @@ export function findUniqueName(
   }
 
   const newName = `${name}${indexStr}`
-  nameIsInString = searchStr.includes(`"name":"${newName}"`)
+  nameIsInString = searchStr.includes(`:"${newName}"`)
 
   // base case: name is unique and does not end in digits
   if (!nameIsInString) return newName

@@ -687,7 +687,7 @@ test('Can extrude from the command bar', async ({ page, context }) => {
   await expect(
     page.getByRole('button', { name: 'Submit command' })
   ).toBeEnabled()
-  await page.keyboard.press('2')
+  await page.keyboard.press('Backspace')
   await expect(
     page.getByRole('button', { name: 'Distance 12', exact: false })
   ).toBeDisabled()
