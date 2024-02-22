@@ -25,6 +25,7 @@ export async function exportSave(data: ArrayBuffer) {
         }
 
         // Write the file.
+        // TODO: check if this is still value with the uint8 instance
         await writeFile(filePath, new Uint8Array(file.contents))
       } else {
         // Download the file to the user's computer.

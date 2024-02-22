@@ -40,9 +40,9 @@ import * as Sentry from '@sentry/react'
 import ModelingMachineProvider from 'components/ModelingMachineProvider'
 import { KclContextProvider, kclManager } from 'lang/KclSingleton'
 import FileMachineProvider from 'components/FileMachineProvider'
-import { sep } from '@tauri-apps/api/path'
+import { join, sep } from '@tauri-apps/api/path'
 import { paths } from 'lib/paths'
-import { IndexLoaderData, HomeLoaderData, FileEntry } from 'lib/types'
+import type { IndexLoaderData, HomeLoaderData, FileEntry } from 'lib/types'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import { invoke } from '@tauri-apps/api/core'
 
@@ -157,20 +157,20 @@ const router = createBrowserRouter(
           const projectAndFile = decodedId.replace(defaultDir + sep(), '')
           const firstSlashIndex = projectAndFile.indexOf(sep())
           const projectName = projectAndFile.slice(0, firstSlashIndex)
-          const projectPath = defaultDir + sep() + projectName
+          const projectPath = await join(defaultDir, projectName)
           const currentFileName = projectAndFile.slice(firstSlashIndex + 1)
 
           if (firstSlashIndex === -1 || !currentFileName)
             return redirect(
               `${paths.FILE}/${encodeURIComponent(
-                `${params.id}${sep()}${PROJECT_ENTRYPOINT}`
+                await join(params.id, PROJECT_ENTRYPOINT)
               )}`
             )
 
           // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
           const code = await readTextFile(decodedId)
           const entrypointMetadata = await stat(
-            projectPath + sep() + PROJECT_ENTRYPOINT
+            await join(projectPath, PROJECT_ENTRYPOINT)
           )
           const children = await invoke<FileEntry[]>('read_dir_recursive', {
             path: projectPath,

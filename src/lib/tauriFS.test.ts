@@ -6,7 +6,7 @@ import {
   interpolateProjectNameWithIndex,
   isRelevantFileOrDir,
 } from './tauriFS'
-import { FileEntry } from './types'
+import type { FileEntry } from './types'
 
 describe('Test project name utility functions', () => {
   it('interpolates a project name without an index', () => {

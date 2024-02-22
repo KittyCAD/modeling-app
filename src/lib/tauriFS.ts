@@ -1,14 +1,8 @@
-import {
-  mkdir,
-  exists,
-  readDir,
-  writeTextFile,
-  stat,
-} from '@tauri-apps/plugin-fs'
+import { mkdir, exists, writeTextFile, stat } from '@tauri-apps/plugin-fs'
 import { invoke } from '@tauri-apps/api/core'
 import { documentDir, homeDir, join, sep } from '@tauri-apps/api/path'
 import { isTauri } from './isTauri'
-import { FileEntry, type ProjectWithEntryPointMetadata } from 'lib/types'
+import type { FileEntry, ProjectWithEntryPointMetadata } from 'lib/types'
 
 const PROJECT_FOLDER = 'zoo-modeling-app-projects'
 export const FILE_EXT = '.kcl'
@@ -38,10 +32,10 @@ export async function initializeProjectDirectory(directory: string) {
     docDirectory = await documentDir()
   } catch (e) {
     console.log('error', e)
-    docDirectory = `${await homeDir()}Documents` // for headless Linux (eg. Github Actions)
+    docDirectory = await join(await homeDir(), 'Documents') // for headless Linux (eg. Github Actions)
   }
 
-  const INITIAL_DEFAULT_DIR = docDirectory + sep() + PROJECT_FOLDER
+  const INITIAL_DEFAULT_DIR = await join(docDirectory, PROJECT_FOLDER)
 
   const defaultDirExists = await exists(INITIAL_DEFAULT_DIR)
 
@@ -65,7 +59,6 @@ export async function getProjectsInDir(projectDir: string) {
   const readProjects = (
     await invoke<FileEntry[]>('read_dir_recursive', { path: projectDir })
   ).filter(isProjectDirectory)
-  console.log('read_dir_recursive + isProjectDirectory', readProjects)
 
   const projectsWithMetadata = await Promise.all(
     readProjects.map(async (p) => ({
@@ -73,7 +66,6 @@ export async function getProjectsInDir(projectDir: string) {
       ...p,
     }))
   )
-  console.log('projectsWithMetadata', projectsWithMetadata)
 
   return projectsWithMetadata
 }
@@ -133,7 +125,6 @@ export async function readProject(projectDir: string) {
   const readFiles = await invoke<FileEntry[]>('read_dir_recursive', {
     path: projectDir,
   })
-  console.log('read_dir_recursive', readFiles)
 
   return deepFileFilter(readFiles, isRelevantFileOrDir)
 }
@@ -226,7 +217,7 @@ export async function createNewProject(
     })
   }
 
-  await writeTextFile(path + sep() + PROJECT_ENTRYPOINT, initCode).catch(
+  await writeTextFile(await join(path, PROJECT_ENTRYPOINT), initCode).catch(
     (err) => {
       console.error('Error creating new file:', err)
       throw err
@@ -242,7 +233,7 @@ export async function createNewProject(
     children: [
       {
         name: PROJECT_ENTRYPOINT,
-        path: path + sep() + PROJECT_ENTRYPOINT,
+        path: await join(path, PROJECT_ENTRYPOINT),
         children: [],
       },
     ],

@@ -1,4 +1,4 @@
-import { FileEntry, type IndexLoaderData } from 'lib/types'
+import type { FileEntry, IndexLoaderData } from 'lib/types'
 import { paths } from 'lib/paths'
 import { ActionButton } from './ActionButton'
 import Tooltip from './Tooltip'

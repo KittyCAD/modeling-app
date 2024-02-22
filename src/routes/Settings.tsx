@@ -28,7 +28,7 @@ import {
   interpolateProjectNameWithIndex,
 } from 'lib/tauriFS'
 import { ONBOARDING_PROJECT_NAME } from './Onboarding'
-import { sep } from '@tauri-apps/api/path'
+import { join, sep } from '@tauri-apps/api/path'
 import { bracket } from 'lib/exampleKcl'
 
 export const Settings = () => {
@@ -96,7 +96,7 @@ export const Settings = () => {
       nextIndex
     )
     const newFile = await createNewProject(
-      defaultDirectory + sep() + name,
+      await join(defaultDirectory, name),
       bracket
     )
     navigate(`${paths.FILE}/${encodeURIComponent(newFile.path)}`)

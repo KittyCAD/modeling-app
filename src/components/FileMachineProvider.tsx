@@ -17,7 +17,7 @@ import { DEFAULT_FILE_NAME, fileMachine } from 'machines/fileMachine'
 import { mkdir, remove, rename, create } from '@tauri-apps/plugin-fs'
 import { FILE_EXT, readProject } from 'lib/tauriFS'
 import { isTauri } from 'lib/isTauri'
-import { sep } from '@tauri-apps/api/path'
+import { join, sep } from '@tauri-apps/api/path'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -78,7 +78,7 @@ export const FileMachineProvider = ({
         let name = event.data.name.trim() || DEFAULT_FILE_NAME
 
         if (event.data.makeDir) {
-          await mkdir(context.selectedDirectory.path + sep() + name)
+          await mkdir(await join(context.selectedDirectory.path, name))
         } else {
           await create(
             context.selectedDirectory.path +
@@ -98,10 +98,8 @@ export const FileMachineProvider = ({
         let name = newName ? newName : DEFAULT_FILE_NAME
 
         await rename(
-          context.selectedDirectory.path + sep() + oldName,
-          context.selectedDirectory.path +
-            sep() +
-            name +
+          await join(context.selectedDirectory.path, oldName),
+          (await join(context.selectedDirectory.path, name)) +
             (name.endsWith(FILE_EXT) || isDir ? '' : FILE_EXT),
           {}
         )
