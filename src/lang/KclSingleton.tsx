@@ -239,8 +239,8 @@ class KclManager {
     const currentExecutionId = executionId || Date.now()
     this._cancelTokens.set(currentExecutionId, false)
 
-    await this.ensureWasmInit()
     this.isExecuting = true
+    await this.ensureWasmInit()
     const { logs, errors, programMemory } = await executeAst({
       ast,
       engineCommandManager: this.engineCommandManager,

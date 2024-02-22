@@ -996,9 +996,6 @@ export class EngineCommandManager {
         }
       },
       onEngineConnectionOpen: () => {
-        this.resolveReady()
-        setIsStreamReady(true)
-
         // Make the axis gizmo.
         // We do this after the connection opened to avoid a race condition.
         // Connected opened is the last thing that happens when the stream
@@ -1020,6 +1017,8 @@ export class EngineCommandManager {
         sceneInfra.onStreamStart()
 
         this.initPlanes().then(() => {
+          this.resolveReady()
+          setIsStreamReady(true)
           executeCode(undefined, true)
         })
       },

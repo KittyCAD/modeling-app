@@ -12,6 +12,8 @@ import {
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { ActionButton } from './ActionButton'
 import usePlatform from 'hooks/usePlatform'
+import { useKclContext } from 'lang/KclSingleton'
+import { useStore } from 'useStore'
 
 interface AppHeaderProps extends React.PropsWithChildren {
   showToolbar?: boolean
@@ -32,6 +34,10 @@ export const AppHeader = ({
   const { auth } = useGlobalStateContext()
   const user = auth?.context?.user
   const { overallState } = useNetworkStatus()
+  const { isExecuting } = useKclContext()
+  const { isStreamReady } = useStore((s) => ({
+    isStreamReady: s.isStreamReady,
+  }))
   const isNetworkOkay = overallState === NetworkHealthState.Ok
 
   return (
@@ -66,7 +72,7 @@ export const AppHeader = ({
             </ActionButton>
           )}
         </div>
-        {!isNetworkOkay && (
+        {(!isNetworkOkay || isExecuting || !isStreamReady) && (
           <>
             <div className="absolute inset-0 filter bg-slate-100 mix-blend-saturation"></div>
             <div className="absolute inset-0 filter bg-gray-900/50 cursor-not-allowed"></div>
