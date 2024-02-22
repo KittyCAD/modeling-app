@@ -137,62 +137,71 @@ export function App() {
         enableMenu={true}
       />
       <ModalContainer />
-      <Resizable
-        className={
-          'pointer-events-none h-full flex flex-col flex-1 z-10 my-5 ml-5 pr-1 transition-opacity transition-duration-75 ' +
-          +paneOpacity
-        }
-        defaultSize={{
-          width: '550px',
-          height: 'auto',
-        }}
-        minWidth={200}
-        maxWidth={800}
-        minHeight={'auto'}
-        maxHeight={'auto'}
-        handleClasses={{
-          right:
-            'hover:bg-chalkboard-10/50 bg-transparent transition-colors duration-75 transition-ease-out delay-100 ' +
-            (buttonDownInStream || onboardingStatus === 'camera'
-              ? 'pointer-events-none '
-              : 'pointer-events-auto'),
-        }}
-      >
-        <div
-          id="code-pane"
-          className="h-full flex flex-col justify-between pointer-events-none"
-        >
-          <CollapsiblePanel
-            title="Code"
-            icon={faCode}
-            className="open:!mb-2"
-            open={openPanes.includes('code')}
-            menu={<CodeMenu />}
-          >
-            <TextEditor theme={editorTheme} />
-          </CollapsiblePanel>
-          <section className="flex flex-col">
-            <MemoryPanel
-              theme={editorTheme}
-              open={openPanes.includes('variables')}
-              title="Variables"
-              icon={faSquareRootVariable}
-            />
-            <Logs
-              theme={editorTheme}
-              open={openPanes.includes('logs')}
-              title="Logs"
-              icon={faCodeCommit}
-            />
-            <KCLErrors
-              theme={editorTheme}
-              open={openPanes.includes('kclErrors')}
-              title="KCL Errors"
-              iconClassNames={{ icon: 'group-open:text-destroy-30' }}
-            />
-          </section>
+      <div className="h-full">
+        <div className="h-full flex">
+          <div className="h-full w-5 z-10 pointer-events-auto"></div>
+          <div className="flex flex-col">
+            <div className="h-5 z-10 pointer-events-auto"></div>
+            <Resizable
+              className={
+                'pointer-events-none h-full flex flex-col flex-1 z-10 pr-1 transition-opacity transition-duration-75 ' +
+                +paneOpacity
+              }
+              defaultSize={{
+                width: '550px',
+                height: 'auto',
+              }}
+              minWidth={200}
+              maxWidth={800}
+              minHeight={'auto'}
+              maxHeight={'auto'}
+              handleClasses={{
+                right:
+                  'hover:bg-chalkboard-10/50 bg-transparent transition-colors duration-75 transition-ease-out delay-100 ' +
+                  (buttonDownInStream || onboardingStatus === 'camera'
+                    ? 'pointer-events-none '
+                    : 'pointer-events-auto'),
+              }}
+            >
+              <div
+                id="code-pane"
+                className="h-full flex flex-col justify-between pointer-events-none"
+              >
+                <CollapsiblePanel
+                  title="Code"
+                  icon={faCode}
+                  className="open:!mb-2"
+                  open={openPanes.includes('code')}
+                  menu={<CodeMenu />}
+                >
+                  <TextEditor theme={editorTheme} />
+                </CollapsiblePanel>
+                <section className="flex flex-col">
+                  <MemoryPanel
+                    theme={editorTheme}
+                    open={openPanes.includes('variables')}
+                    title="Variables"
+                    icon={faSquareRootVariable}
+                  />
+                  <Logs
+                    theme={editorTheme}
+                    open={openPanes.includes('logs')}
+                    title="Logs"
+                    icon={faCodeCommit}
+                  />
+                  <KCLErrors
+                    theme={editorTheme}
+                    open={openPanes.includes('kclErrors')}
+                    title="KCL Errors"
+                    iconClassNames={{ icon: 'group-open:text-destroy-30' }}
+                  />
+                </section>
+              </div>
+            </Resizable>
+            <div className="h-5 z-10 pointer-events-auto"></div>
+          </div>
         </div>
-      </Resizable>
+      </div>
       <Stream className="absolute inset-0 z-0" />
       {showDebugPanel && (
         <DebugPanel
