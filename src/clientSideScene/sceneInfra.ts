@@ -20,6 +20,7 @@ import {
   Intersection,
   Object3D,
   Object3DEventMap,
+  BoxGeometry,
 } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { EngineCommand, engineCommandManager } from 'lang/std/engineConnection'
@@ -33,6 +34,7 @@ import { MouseGuard, cameraMouseDragGuards } from 'lib/cameraControls'
 import { SourceRange } from 'lang/wasm'
 import { Axis } from 'lib/selections'
 import { BaseUnit, SETTINGS_PERSIST_KEY } from 'machines/settingsMachine'
+import { CameraControls } from './CameraControls'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -46,7 +48,7 @@ const ORTHOGRAPHIC_CAMERA_SIZE = 20
 export const INTERSECTION_PLANE_LAYER = 1
 export const SKETCH_LAYER = 2
 const DEBUG_SHOW_INTERSECTION_PLANE = false
-export const DEBUG_SHOW_BOTH_SCENES = false
+export const DEBUG_SHOW_BOTH_SCENES = true
 
 export const RAYCASTABLE_PLANE = 'raycastable-plane'
 export const DEFAULT_PLANES = 'default-planes'
@@ -198,13 +200,15 @@ export type ReactCameraProperties =
 class SceneInfra {
   static instance: SceneInfra
   scene: Scene
-  camera: PerspectiveCamera | OrthographicCamera
+  camera: PerspectiveCamera | OrthographicCamera = new PerspectiveCamera()
   renderer: WebGLRenderer
-  controls: OrbitControls
+  controls: OrbitControls = {} as any
+  cameraControls: CameraControls
   isPerspective = true
   fov = 45
   fovBeforeAnimate = 45
   isFovAnimationInProgress = false
+  cube: Mesh
   interactionGuards: MouseGuard = cameraMouseDragGuards.KittyCAD
   onDragCallback: (arg: OnDragCallbackArgs) => void = () => {}
   onMoveCallback: (arg: onMoveCallbackArgs) => void = () => {}
@@ -305,6 +309,12 @@ class SceneInfra {
     this.scene.background = new Color(0x000000)
     this.scene.background = null
 
+    // RENDERER
+    this.renderer = new WebGLRenderer({ antialias: true, alpha: true }) // Enable transparency
+    this.renderer.setSize(window.innerWidth, window.innerHeight)
+    this.renderer.setClearColor(0x000000, 0) // Set clear color to black with 0 alpha (fully transparent)
+    window.addEventListener('resize', this.onWindowResize)
+
     // CAMERA
     const camHeightDistanceRatio = 0.5
     const baseUnit: BaseUnit =
@@ -315,16 +325,14 @@ class SceneInfra {
     const ang = Math.atan(camHeightDistanceRatio)
     const x = Math.cos(ang) * length
     const y = Math.sin(ang) * length
-    this.camera = this.createPerspectiveCamera()
-    this.camera.position.set(0, -x, y)
-    if (DEBUG_SHOW_INTERSECTION_PLANE)
-      this.camera.layers.enable(INTERSECTION_PLANE_LAYER)
 
-    // RENDERER
-    this.renderer = new WebGLRenderer({ antialias: true, alpha: true }) // Enable transparency
-    this.renderer.setSize(window.innerWidth, window.innerHeight)
-    this.renderer.setClearColor(0x000000, 0) // Set clear color to black with 0 alpha (fully transparent)
-    window.addEventListener('resize', this.onWindowResize)
+    this.cameraControls = new CameraControls(false, this.renderer.domElement, {
+      onCameraChange: () => this.onCameraChange(),
+    })
+    this.cameraControls.camera.layers.enable(SKETCH_LAYER)
+    this.cameraControls.camera.position.set(0, -x, y)
+    if (DEBUG_SHOW_INTERSECTION_PLANE)
+      this.cameraControls.camera.layers.enable(INTERSECTION_PLANE_LAYER)
 
     // RAYCASTERS
     this.raycaster.layers.enable(SKETCH_LAYER)
@@ -332,7 +340,7 @@ class SceneInfra {
     this.planeRaycaster.layers.enable(INTERSECTION_PLANE_LAYER)
 
     // CONTROLS
-    this.controls = this.setupOrbitControls()
+    // this.controls = this.setupOrbitControls()
 
     // GRID
     const size = 100
@@ -342,6 +350,15 @@ class SceneInfra {
       transparent: true,
       opacity: 0.5,
     })
+
+    // add a basic cube to the scene, debug delete soon
+    const geo = new BoxGeometry(1, 1, 1)
+    const mat = new MeshBasicMaterial({ color: 0x00ff00 })
+    this.cube = new Mesh(geo, mat)
+    this.cube.position.set(0, 0, 0)
+    this.cube.layers.enable(SKETCH_LAYER)
+
+    this.scene.add(this.cube)
 
     const gridHelper = new GridHelper(size, divisions, 0x0000ff, 0xffffff)
     gridHelper.material = gridHelperMaterial
@@ -366,7 +383,7 @@ class SceneInfra {
     this.interactionGuards = guard
     // setMouseGuards is oun patch-package patch to orbit controls
     // see patches/three+0.160.0.patch
-    ;(this.controls as any).setMouseGuards(guard)
+    // ;(this.controls as any).setMouseGuards(guard)
   }
   private createPerspectiveCamera = () => {
     const { z_near, z_far } = calculateNearFarFromFOV(this.fov)
@@ -393,7 +410,7 @@ class SceneInfra {
       this.controls.target.set(...target)
     }
     this.controls.update()
-    this.controls.addEventListener('change', this.onCameraChange)
+    // this.controls.addEventListener('change', this.onCameraChange)
     // debounce is needed because the start and end events are fired too often for zoom on scroll
     let debounceTimer = 0
     const handleStart = () => {
@@ -410,7 +427,7 @@ class SceneInfra {
 
     // setMouseGuards is oun patch-package patch to orbit controls
     // see patches/three+0.160.0.patch
-    ;(this.controls as any).setMouseGuards(this.interactionGuards)
+    // ;(this.controls as any).setMouseGuards(this.interactionGuards)
     return this.controls
   }
   onStreamStart = () => this.onCameraChange()
@@ -420,7 +437,10 @@ class SceneInfra {
   }, 200)
 
   onCameraChange = () => {
-    const scale = getSceneScale(this.camera, this.controls.target)
+    const scale = getSceneScale(
+      this.cameraControls.camera,
+      this.cameraControls.target
+    )
     const planesGroup = this.scene.getObjectByName(DEFAULT_PLANES)
     const axisGroup = this.scene
       .getObjectByName(AXIS_GROUP)
@@ -428,66 +448,63 @@ class SceneInfra {
     planesGroup && planesGroup.scale.set(scale, scale, scale)
     axisGroup?.name === 'gridHelper' && axisGroup.scale.set(scale, scale, scale)
 
-    const distance = this.controls.target.distanceTo(this.camera.position)
+    const distance = this.cameraControls.target.distanceTo(
+      this.cameraControls.camera.position
+    )
     if (
-      sceneInfra.camera.far / 2.1 < distance ||
-      sceneInfra.camera.far / 1.9 > distance
+      sceneInfra.cameraControls.camera.far / 2.1 < distance ||
+      sceneInfra.cameraControls.camera.far / 1.9 > distance
     ) {
-      this.camera.far = distance * 2
-      this.camera.near = distance / 10
-      this.camera.updateProjectionMatrix()
+      this.cameraControls.camera.far = distance * 2
+      this.cameraControls.camera.near = distance / 10
+      this.cameraControls.camera.updateProjectionMatrix()
     }
 
     throttledUpdateEngineCamera({
-      quaternion: this.camera.quaternion,
-      position: this.camera.position,
-      zoom: this.camera.zoom,
+      quaternion: this.cameraControls.camera.quaternion,
+      position: this.cameraControls.camera.position,
+      zoom: this.cameraControls.camera.zoom,
       isPerspective: this.isPerspective,
-      target: this.controls.target,
+      target: this.cameraControls.target,
     })
     this.deferReactUpdate({
       type:
-        this.camera instanceof PerspectiveCamera
+        this.cameraControls.camera instanceof PerspectiveCamera
           ? 'perspective'
           : 'orthographic',
-      [this.camera instanceof PerspectiveCamera ? 'fov' : 'zoom']:
-        this.camera instanceof PerspectiveCamera
-          ? this.camera.fov
-          : this.camera.zoom,
+      [this.cameraControls.camera instanceof PerspectiveCamera
+        ? 'fov'
+        : 'zoom']:
+        this.cameraControls.camera instanceof PerspectiveCamera
+          ? this.cameraControls.camera.fov
+          : this.cameraControls.camera.zoom,
       position: [
-        roundOff(this.camera.position.x, 2),
-        roundOff(this.camera.position.y, 2),
-        roundOff(this.camera.position.z, 2),
+        roundOff(this.cameraControls.camera.position.x, 2),
+        roundOff(this.cameraControls.camera.position.y, 2),
+        roundOff(this.cameraControls.camera.position.z, 2),
       ],
       quaternion: [
-        roundOff(this.camera.quaternion.x, 2),
-        roundOff(this.camera.quaternion.y, 2),
-        roundOff(this.camera.quaternion.z, 2),
-        roundOff(this.camera.quaternion.w, 2),
+        roundOff(this.cameraControls.camera.quaternion.x, 2),
+        roundOff(this.cameraControls.camera.quaternion.y, 2),
+        roundOff(this.cameraControls.camera.quaternion.z, 2),
+        roundOff(this.cameraControls.camera.quaternion.w, 2),
       ],
     })
     this._onCamChange()
   }
 
   onWindowResize = () => {
-    if (this.camera instanceof PerspectiveCamera) {
-      this.camera.aspect = window.innerWidth / window.innerHeight
-    } else if (this.camera instanceof OrthographicCamera) {
-      const aspect = window.innerWidth / window.innerHeight
-      this.camera.left = -ORTHOGRAPHIC_CAMERA_SIZE * aspect
-      this.camera.right = ORTHOGRAPHIC_CAMERA_SIZE * aspect
-      this.camera.top = ORTHOGRAPHIC_CAMERA_SIZE
-      this.camera.bottom = -ORTHOGRAPHIC_CAMERA_SIZE
-    }
-    this.camera.updateProjectionMatrix()
     this.renderer.setSize(window.innerWidth, window.innerHeight)
   }
 
   animate = () => {
     requestAnimationFrame(this.animate)
     TWEEN.update() // This will update all tweens during the animation loop
-    if (!this.isFovAnimationInProgress)
-      this.renderer.render(this.scene, this.camera)
+    if (!this.isFovAnimationInProgress) {
+      // console.log('animation frame', this.cameraControls.camera)
+      this.cameraControls.update()
+      this.renderer.render(this.scene, this.cameraControls.camera)
+    }
   }
   async tweenCameraToQuaternion(
     targetQuaternion: Quaternion,
@@ -663,7 +680,7 @@ class SceneInfra {
     const fovFactor = 45 / this.fov
     this.camera.zoom = (ZOOM_MAGIC_NUMBER * fovFactor * 0.8) / distance
 
-    this.setupOrbitControls([tx, ty, tz])
+    // this.setupOrbitControls([tx, ty, tz])
     this.camera.quaternion.set(qx, qy, qz, qw)
     this.camera.updateProjectionMatrix()
     this.controls.update()
@@ -696,7 +713,7 @@ class SceneInfra {
       .copy(this.controls.target)
       .addScaledVector(direction, distance)
 
-    this.setupOrbitControls([tx, ty, tz])
+    // this.setupOrbitControls([tx, ty, tz])
 
     engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
