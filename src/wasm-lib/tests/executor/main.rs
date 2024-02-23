@@ -1168,6 +1168,6 @@ const part002 = startSketchOn(part001, "here")
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"engine: KclErrorDetails { source_ranges: [SourceRange([0, 0])], message: "Modeling command failed: Some([ApiError { error_code: BadRequest, message: \"The path is not closed.  Solid2D construction requires a closed path!\" }])" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([294, 324])], message: "Cannot sketch on a non-planar surface: `here`" }"#
     );
 }

@@ -111,9 +111,6 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
         }
     }
 
-    println!("face_id_map: {:?}", face_id_map);
-    println!("sketch_group: {:#?}", sketch_group);
-
     // Iterate over the sketch_group.value array and add face_id to GeoMeta
     let mut new_value: Vec<ExtrudeSurface> = Vec::new();
     for path in sketch_group.value.iter() {

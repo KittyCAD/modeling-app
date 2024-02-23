@@ -854,7 +854,7 @@ async fn start_sketch_on_face(
                 }
                 ExtrudeSurface::ExtrudeArc(extrude_arc) if extrude_arc.name == *s => {
                     Some(Err(KclError::Type(KclErrorDetails {
-                        message: format!("Cannot sketch on a non-planar surface `{}`", tag),
+                        message: format!("Cannot sketch on a non-planar surface: `{}`", tag),
                         source_ranges: vec![args.source_range],
                     })))
                 }
