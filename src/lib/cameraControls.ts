@@ -39,22 +39,28 @@ export interface MouseGuard {
   rotate: MouseGuardHandler
 }
 
+const butName = (e: React.MouseEvent) => ({
+  middle: !!(e.buttons & 4),
+  right: !!(e.buttons & 2),
+  left: !!(e.buttons & 1),
+})
+
 export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
   KittyCAD: {
     pan: {
       description: 'Right click + Shift + drag or middle click + drag',
       callback: (e) =>
-        (e.button === 1 && noModifiersPressed(e)) ||
-        (e.button === 2 && e.shiftKey),
+        (butName(e).middle && noModifiersPressed(e)) ||
+        (butName(e).right && e.shiftKey),
     },
     zoom: {
       description: 'Scroll wheel or Right click + Ctrl + drag',
-      dragCallback: (e) => e.button === 2 && e.ctrlKey,
+      dragCallback: (e) => !!(e.buttons & 2) && e.ctrlKey,
       scrollCallback: () => true,
     },
     rotate: {
       description: 'Right click + drag',
-      callback: (e) => e.button === 2 && noModifiersPressed(e),
+      callback: (e) => butName(e).right && noModifiersPressed(e),
     },
   },
   OnShape: {

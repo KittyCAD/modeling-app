@@ -381,9 +381,7 @@ class SceneInfra {
   }
   setInteractionGuards = (guard: MouseGuard) => {
     this.interactionGuards = guard
-    // setMouseGuards is oun patch-package patch to orbit controls
-    // see patches/three+0.160.0.patch
-    // ;(this.controls as any).setMouseGuards(guard)
+    this.cameraControls.interactionGuards = guard
   }
   private createPerspectiveCamera = () => {
     const { z_near, z_far } = calculateNearFarFromFOV(this.fov)

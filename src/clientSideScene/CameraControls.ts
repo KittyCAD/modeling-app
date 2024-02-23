@@ -1,3 +1,4 @@
+import { MouseGuard } from 'lib/cameraControls'
 import {
   // EventDispatcher,
   MathUtils,
@@ -23,9 +24,31 @@ export class CameraControls {
   mouseDownPosition: Vector2
   mouseNewPosition: Vector2
   rotationSpeed = 0.3
+  enableRotate = true
+  enablePan = true
+  enableZoom = true
   pendingZoom: number | null = null
   pendingRotation: Vector2 | null = null
+  pendingPan: Vector2 | null = null
   callbacks: Callbacks
+  interactionGuards: MouseGuard = {
+    pan: {
+      description: 'Right click + Shift + drag or middle click + drag',
+      callback: (e) => !!(e.buttons & 4) && !e.ctrlKey,
+    },
+    zoom: {
+      description: 'Scroll wheel or Right click + Ctrl + drag',
+      dragCallback: (e) => e.button === 2 && e.ctrlKey,
+      scrollCallback: () => true,
+    },
+    rotate: {
+      description: 'Right click + drag',
+      callback: (e) => {
+        console.log('event', e)
+        return !!(e.buttons & 2)
+      },
+    },
+  }
 
   constructor(
     isOrtho = false,
@@ -42,9 +65,9 @@ export class CameraControls {
     this.mouseDownPosition = new Vector2()
     this.mouseNewPosition = new Vector2()
 
-    this.domElement.addEventListener('mousedown', this.onMouseDown)
-    this.domElement.addEventListener('mousemove', this.onMouseMove)
-    this.domElement.addEventListener('mouseup', this.onMouseUp)
+    this.domElement.addEventListener('pointerdown', this.onMouseDown)
+    this.domElement.addEventListener('pointermove', this.onMouseMove)
+    this.domElement.addEventListener('pointerup', this.onMouseUp)
     this.domElement.addEventListener('wheel', this.onMouseWheel)
 
     window.addEventListener('resize', this.onWindowResize)
@@ -80,13 +103,42 @@ export class CameraControls {
         .sub(this.mouseDownPosition)
       this.mouseDownPosition.copy(this.mouseNewPosition)
 
+      let state: 'pan' | 'rotate' | 'zoom' = 'pan'
+
+      if (this.interactionGuards.pan.callback(event as any)) {
+        if (this.enablePan === false) return
+        // handleMouseDownPan(event)
+        state = 'pan'
+      } else if (this.interactionGuards.rotate.callback(event as any)) {
+        if (this.enableRotate === false) return
+        // handleMouseDownRotate(event)
+        state = 'rotate'
+      } else if (this.interactionGuards.zoom.dragCallback(event as any)) {
+        if (this.enableZoom === false) return
+        // handleMouseDownDolly(event)
+        state = 'zoom'
+      } else {
+        return
+      }
+
       // Implement camera movement logic here based on deltaMove
       // For example, for rotating the camera around the target:
-      this.pendingRotation = this.pendingRotation
-        ? this.pendingRotation
-        : new Vector2()
-      this.pendingRotation.x += deltaMove.x
-      this.pendingRotation.y += deltaMove.y
+      if (state === 'rotate') {
+        this.pendingRotation = this.pendingRotation
+          ? this.pendingRotation
+          : new Vector2()
+        this.pendingRotation.x += deltaMove.x
+        this.pendingRotation.y += deltaMove.y
+      } else if (state === 'zoom') {
+        this.pendingZoom = this.pendingZoom ? this.pendingZoom : 1
+        this.pendingZoom *= 1 + deltaMove.y * 0.01
+      } else if (state === 'pan') {
+        this.pendingPan = this.pendingPan ? this.pendingPan : new Vector2()
+        const distance = this.camera.position.distanceTo(this.target)
+        const panSpeed = distance / 1000
+        this.pendingPan.x += -deltaMove.x * panSpeed
+        this.pendingPan.y += deltaMove.y * panSpeed
+      }
     }
   }
 
@@ -132,6 +184,24 @@ export class CameraControls {
       } else {
         // TODO change ortho zoom
       }
+      didChange = true
+    }
+
+    if (this.pendingPan) {
+      // move camera left/right and up/down
+      const offset = this.camera.position.clone().sub(this.target)
+      // const distance = offset.length()
+      const direction = offset.clone().normalize()
+      const right = new Vector3().crossVectors(this.camera.up, direction)
+      const up = this.camera.up.clone()
+      right.multiplyScalar(this.pendingPan.x)
+      up.multiplyScalar(this.pendingPan.y)
+      const newPosition = this.camera.position.clone().add(right).add(up)
+      this.target.add(right)
+      this.target.add(up)
+      this.camera.position.copy(newPosition)
+      this.camera.lookAt(this.target)
+      this.pendingPan = null
       didChange = true
     }
 
