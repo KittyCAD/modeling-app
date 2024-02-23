@@ -3,12 +3,14 @@ import {
   Command,
   CommandArgument,
   CommandArgumentWithName,
+  KclCommandValue,
 } from 'lib/commandTypes'
 import { Selections } from 'lib/selections'
+import { getCommandArgumentKclValuesOnly } from 'lib/commandUtils'
 
 export const commandBarMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QGED2BbdBDAdhABAEJYBOAxMgDaqxgDaADALqKgAONAlgC6eo6sQAD0QBaAJwA6AGwAmAKwBmBoukAWafIAcDcSoA0IAJ6JZDaZIDs8hgzV6AjA61a1DWQF8PhtJlwFiciowUkYWJBAOWB4+AQiRBFF5CwdpcVkHS1lpVyU5QxNEh1lFGTUsrUUtOQd5SwZLLx8MbDwiUkkqGkgyAHk2MBwwwSiY-kEEswdJNWcNbPFLNMr5AsRFWUtJcVSdRR2VVMUmkF9WgI6u2ggyADFONv98WkowAGNufDeW-2GI0d443iiHESkktUUG1klTsSi0awQDgYWhmqkWjnUslBWhOZyegU61GuZAAghACN8-HhYH92FxAXFQAlRA5FpJ5FjFPYtNDpIpLOkEW4GNs4eJxJoGvJxOVcT82gSrj0AEpgdCoABuYC+8ogNOYI3psQmYlkGUkU2slhc6mkmUUCIyKLc4i0lkU8iUyjUHLlVIuJEkAGUwK8Pg8oDr-WQQ2HPpTzrTIkagUzEDkLHZkQK1CUtKCHAiNlsdjkVAdFEc-ed2oG8W0Xu9uD0kwDjcCEJDplUPfn+Ut7CUhXJJFo6uYbBOMtJq-jLrrnqGmy2HOE6dEGSbESoRSUHOVqpV99Zh7JR+PXPu1G7zI1vKcFwSAOJYbgACzAJAj+FIUAAruggzcLAFBvrgMBfH+JAkEBP4kP+gE4NwrYpoywiIA4qjyDIyR2LmlTSHY8LGBhyjsrm-L2No0hpHys4Kh0L7vp+36-gBQEgQAInAS4fFGiYGv8qFbjkpSWLmswMNK-LOI6UmSKouZOBo8jOPu9EBpITEfl+OCRmxiHAZIJIAO5YDEen4A8bB-twMZ-gARugPBwQhQEoRu7ZpoiyRbLm1HiJC16bLIQo7FYUrVNkKhZJ4971pp2ksZZBkcZIABqWCUJwECvhGZAQPwYCSA8GqoAA1sVGpZTlr5gCS8HsUhHljGhCTODYVissoxaWPutQInyFhctKSL8jFmwabWWmvjprGNYZsAZTVuW8HpZCfiQqCBmwlCvgAZtt6CSNV2WrfVC3uYJ66tVuqQlNsaTpKkUlCrMClqNeuibHUolTQSqoapwYAmfZTkuQmvzXcmnmpuhCB9eyOieuk1o6C4DokQjZHqKjO66C6-0dIDwOg2SBCpc10NtnDCTiqU0ICjyciyG4+RYwKpQaBmSKpE4dpE4GJMg2QqrqlqrlNch1PCR2vNSLa4rZq4eaDVyo4+jymRqJWDQ4vFj7E2AQMiwAohALmU9La4w7dHaaNhNjaBKnqsqCatqBrdTirMNiQuIgudB+bzld+DVuUhIGFTgxWlRVVUrXV4dS-qNs021iDyO9TslMoTj1LJWN6BYOsyphOhmDkcXNP603IMHoeWcni0FUVJU4GVlUnYnzbNxxdCroasMZwgWKPay0qWNYLhZ+UCIuGeyR6O47o0ZsAcG7XioN2Hl2Rxt0HbZIu0HUd3dnUne-AS1m5y+UWz7DkY7pKpsKDRoMz1MK4olO4G-3jgVAEA4CCASrWIedtvKiAWBaBgmQ6g2g0PaR00xWYSkWB6coHI16ByVBACBt8oHFAtHma0qR6iemlKsLGHppg61cJWDY+wzRqEDrGJs35IZ4AIV5eGswGabG9FJPqdRQo0NUqiBhmESjpFZrghcjYPiQB4bTEEU8NbImyFiaQ1hCw0M2Eja8mEVBmn5KCQOSVdL6SvvAISw87qzDPDKBQ-IdB8npkWH0FoJR8lcOKKeWgHAWNmslaxEcjKmXMmtSM1lbIqJHvuQi2x-KuPMPsQKb1HaBT6roWwqlNDBOYlYyWi1loX2ifEu6lQpDWlUNaHRsxUjSCFBsGY1TdB2i5BkBQgdhYmUqfbTI4JPr9lUHIdIxFCi6M-h6bBWcMz6xrjWbe7xG6Rj7pHAZ3lUgSLcD6NIApFj7jEVMrICkbA0VLjyHWd4vBAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QGED2BbdBDAdhABAEJYBOAxMgDaqxgDaADALqKgAONAlgC6eo6sQAD0QBaAJwA6AGwAmAKwBmBoukAWafIAcDcSoA0IAJ6JZDaZIDs8hgzV6AjA61a1DWQF8PhtJlwFiciowUkYWJBAOWB4+AQiRBFF5CwdpcVkHS1lpVyU5QxNEh1lFGTUsrUUtOQd5SwZLLx8MbDwiUkkqGkgyAHk2MBwwwSiY-kEEswdJNWcNbPFLNMr5AsRFWUtJcVSdRR2VVMUmkF9WgI6u2ggyADFONv98WkowAGNufDeW-2GI0d443iiHESkktUUG1klTsSi0awQDgYWhmqkWjnUslBWhOZyegU61GuZAAghACN8-HhYH92FxAXFQAlRA5FpJ5FjFPYtNDpIpLOkEW4GNs4eJxJoGvJxOVcT82gSrj0AEpgdCoABuYC+8ogNOYI3psQmYlkGUkU2slhc6mkmUUCIyKLc4i0lkU8iUyjUHLlVIuJEkAGUwK8Pg8oDr-WQQ2HPpTzrTIkagUzEDkLHZkQK1CUtKCHAiNlsdjkVAdFEc-ed2oG8W0Xu9uD0kwDjcCEJDplUPfn+Ut7CUhXJJFo6uYbBOMtJq-jLrrnqGmy2HOE6dEGSbESoRSUHOVqpV99Zh7JR+PXPu1G7zI1vKcFwSAOJYbgACzAJAj+FIUAAruggzcLAFBvrgMBfH+JAkEBP4kP+gE4NwrYpoywiIA4qjyDIyR2LmlTSHY8LGBhyjsrm-L2No0hpHys4Kh0L7vp+36-gBQEgQAInAS4fFGiYGv8qFbjkpSWLmswMNK-LOI6UmSKouZOBo8jOPu9EBpITEfl+OCRmxiHAZIJIAO5YDEen4A8bB-twMZ-gARugPBwQhQEoRu7ZpoiyRbLm1HiJC16bLIQo7FYUrVNkKhZJ4971pp2ksZZBkcZIABqWCUJwECvhGZAQPwYCSA8GqoAA1sVGpZTlr5gCS8HsUhHljGhCTODYVissoxaWPutQInyFhctKSL8jFmwabWWmvjprGNYZsAZTVuW8HpZCfiQqCBmwlCvgAZtt6CSNV2WrfVC3uYJ66tVuqQlNsaTpKkUlCrMClqNeuibHUolTQSqoapwYAmfZTkuQmvzXcmnmpuhCB9eyOieuk1o6C4DokQjZHqKjO66C6-0dIDwOg2SBCpc10NtnDCTiqU0ICjyciyG4+RYwKpQaBmSKpE4dpE4GJMg2QqrqlqrlNch1PCR2vNSLa4rZq4eaDVyo4+jymRqJWDQ4vFj7E2AQMiwAohALmU9La4w7dHaaNhNjaBKnqsqCatqBrdTirMNiQuIgudB+bzld+DVuUhIGFTgxWlRVVUrXV4dS-qNs021iDyO9TslMoTj1LJWN6BYOsyphOhmDkcXNP603IMHoeWcni0FUVJU4GVlUnYnzbNxxdCroasMZwgWKPay0qWNYLhZ+UCIuGeyR6O47o0ZsAcG7XioN2Hl2Rxt0HbZIu0HUd3dnUne-AS1m5y+UWz7DkY7pKpsKDRoMz1MK4olO4G-3jgVAEA4CCASrWIedtvKiAWBaBgmQ6g2g0PaR00xWYSjHFPHQNFCIzk3jWRURJIAQNvlA4oFo8zWlSPUT00pVhYw9NMHWrhKwbH2GaNQgdYxNm-JDPAxCvLw1mAzTY3opJ9TqKFehqlUTMMwiUdIrNA5gMbB8IhQlh5bkWFsVwyJshYmkNYQs9DNhI2vJhFQZp+SgkDklXS+kr7wHUZA+G-UzwygUPyLB+xApFh9BaCU6hpSLGqNKDheC5yBlsfNCORlTLmTWpGaytl+G0wwhoEU7ilDWnMN4zGhRPqO0Cn1XQthVKaBsbNZK9iYlLUyhfBJKSR7OH2FYAi1oDGzFSNIIUGwZiVD0BKTCSkFCB2FiZRpIlMjgk+v2VQch0jEUKIYz+HoOSaA0IeJRO8m4OImXLTQjDYRpAFIsfckillZAUjYGipceQ6zvF4IAA */
     context: {
       commands: [] as Command[],
       selectedCommand: undefined as Command | undefined,
@@ -143,7 +145,7 @@ export const commandBarMachine = createMachine(
           'Change current argument': {
             target: 'Gathering arguments',
             internal: true,
-            actions: ['Set current argument'],
+            actions: ['Remove current argument and set a new one'],
           },
 
           'Deselect command': {
@@ -172,17 +174,7 @@ export const commandBarMachine = createMachine(
 
           'Remove argument': {
             target: 'Review',
-            actions: [
-              assign({
-                argumentsToSubmit: (context, event) => {
-                  const argName = Object.keys(event.data)[0]
-                  const { argumentsToSubmit } = context
-                  const newArgumentsToSubmit = { ...argumentsToSubmit }
-                  newArgumentsToSubmit[argName] = undefined
-                  return newArgumentsToSubmit
-                },
-              }),
-            ],
+            actions: ['Remove argument'],
           },
 
           'Edit argument': {
@@ -272,7 +264,7 @@ export const commandBarMachine = createMachine(
           }
         | {
             type: 'Change current argument'
-            data: { arg: CommandArgumentWithName<unknown> }
+            data: { [x: string]: CommandArgumentWithName<unknown> }
           },
     },
     predictableActionArguments: true,
@@ -283,19 +275,17 @@ export const commandBarMachine = createMachine(
       'Execute command': (context, event) => {
         const { selectedCommand } = context
         if (!selectedCommand) return
-        if (selectedCommand?.args) {
-          selectedCommand?.onSubmit(
-            event.type === 'Submit command' ||
-              event.type === 'done.invoke.validateArguments'
-              ? event.data
-              : undefined
-          )
+        if (
+          (selectedCommand?.args && event.type === 'Submit command') ||
+          event.type === 'done.invoke.validateArguments'
+        ) {
+          selectedCommand?.onSubmit(getCommandArgumentKclValuesOnly(event.data))
         } else {
           selectedCommand?.onSubmit()
         }
       },
       'Set current argument to first non-skippable': assign({
-        currentArgument: (context, event) => {
+        currentArgument: (context) => {
           const { selectedCommand } = context
           if (!(selectedCommand && selectedCommand.args)) return undefined
 
@@ -331,6 +321,15 @@ export const commandBarMachine = createMachine(
       'Clear current argument': assign({
         currentArgument: undefined,
       }),
+      'Remove argument': assign({
+        argumentsToSubmit: (context, event) => {
+          if (event.type !== 'Remove argument') return context.argumentsToSubmit
+          const argToRemove = Object.values(event.data)[0]
+          // Extract all but the argument to remove and return it
+          const { [argToRemove.name]: _, ...rest } = context.argumentsToSubmit
+          return rest
+        },
+      }),
       'Set current argument': assign({
         currentArgument: (context, event) => {
           switch (event.type) {
@@ -338,11 +337,32 @@ export const commandBarMachine = createMachine(
               return event.data.arg
             case 'Edit argument':
               return event.data.arg
-            case 'Change current argument':
-              return event.data.arg
             default:
               return context.currentArgument
           }
+        },
+      }),
+      'Remove current argument and set a new one': assign({
+        currentArgument: (context, event) => {
+          if (event.type !== 'Change current argument')
+            return context.currentArgument
+          return Object.values(event.data)[0]
+        },
+        argumentsToSubmit: (context, event) => {
+          if (
+            event.type !== 'Change current argument' ||
+            !context.currentArgument
+          )
+            return context.argumentsToSubmit
+          const { name, required } = context.currentArgument
+          if (required)
+            return {
+              [name]: undefined,
+              ...context.argumentsToSubmit,
+            }
+
+          const { [name]: _, ...rest } = context.argumentsToSubmit
+          return rest
         },
       }),
       'Clear argument data': assign({
@@ -378,7 +398,8 @@ export const commandBarMachine = createMachine(
           if (!command.args) return {}
           const args: { [x: string]: unknown } = {}
           for (const [argName, arg] of Object.entries(command.args)) {
-            args[argName] = arg.skip ? arg.defaultValue : undefined
+            args[argName] =
+              arg.skip && 'defaultValue' in arg ? arg.defaultValue : undefined
           }
           return args
         },
@@ -406,8 +427,12 @@ export const commandBarMachine = createMachine(
             let argConfig = context.selectedCommand!.args![argName]
 
             if (
-              (argConfig.defaultValue &&
-                typeof arg !== typeof argConfig.defaultValue) ||
+              ('defaultValue' in argConfig &&
+                argConfig.defaultValue &&
+                typeof arg !== typeof argConfig.defaultValue &&
+                argConfig.inputType !== 'kcl') ||
+              (argConfig.inputType === 'kcl' &&
+                !(arg as Partial<KclCommandValue>).valueAst) ||
               ('options' in argConfig &&
                 typeof arg !== typeof argConfig.options[0].value)
             ) {

@@ -14,7 +14,18 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
   })
 
   useHotkeys(
-    '1, 2, 3, 4, 5, 6, 7, 8, 9, 0',
+    [
+      'alt+1',
+      'alt+2',
+      'alt+3',
+      'alt+4',
+      'alt+5',
+      'alt+6',
+      'alt+7',
+      'alt+8',
+      'alt+9',
+      'alt+0',
+    ],
     (_, b) => {
       if (b.keys && !Number.isNaN(parseInt(b.keys[0], 10))) {
         if (!selectedCommand?.args) return

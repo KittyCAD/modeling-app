@@ -25,6 +25,7 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import interact from '@replit/codemirror-interact'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { kclManager, useKclContext } from 'lang/KclSingleton'
+import { useFileContext } from 'hooks/useFileContext'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { sceneInfra } from 'clientSideScene/sceneInfra'
 import { copilotPlugin } from 'editor/plugins/lsp/copilot'
@@ -85,6 +86,9 @@ export const TextEditor = ({
   const { settings: { context: { textWrapping } = {} } = {}, auth } =
     useGlobalStateContext()
   const { commandBarSend } = useCommandsContext()
+  const {
+    context: { project },
+  } = useFileContext()
   const { enable: convertEnabled, handleClick: convertCallback } =
     useConvertToVariable()
 
@@ -107,7 +111,7 @@ export const TextEditor = ({
   }, [setIsKclLspServerReady])
 
   // Here we initialize the plugin which will start the client.
-  // When we have multi-file support the name of the file will be a dep of
+  // Now that we have multi-file support the name of the file is a dep of
   // this use memo, as well as the directory structure, which I think is
   // a good setup because it will restart the client but not the server :)
   // We do not want to restart the server, its just wasteful.
@@ -163,7 +167,7 @@ export const TextEditor = ({
       plugin = lsp
     }
     return plugin
-  }, [copilotLspClient, isCopilotLspServerReady])
+  }, [copilotLspClient, isCopilotLspServerReady, project])
 
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (newCode: string) => {
