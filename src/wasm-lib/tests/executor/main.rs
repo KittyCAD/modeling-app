@@ -1138,3 +1138,36 @@ const myCube = cube([0,0], 10)
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/cube_yd.png", &result, 1.0);
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_error_sketch_on_arc_face() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+  |> startProfileAt(pos, %)
+  |> tangentialArc({ to: [0, scale], tag: "here" }, %)
+  |> line([scale, 0], %)
+  |> line([0, -scale], %)
+
+  return sg
+}
+const part001 = cube([0, 0], 20)
+  |> close(%)
+  |> extrude(20, %)
+
+const part002 = startSketchOn(part001, "here")
+  |> startProfileAt([0, 0], %)
+  |> line([5, 0], %)
+  |> line([5, 5], %)
+  |> line([0, 5], %)
+  |> close(%)
+  |> extrude(1, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([0, 0])], message: "Modeling command failed: Some([ApiError { error_code: BadRequest, message: \"The path is not closed.  Solid2D construction requires a closed path!\" }])" }"#
+    );
+}

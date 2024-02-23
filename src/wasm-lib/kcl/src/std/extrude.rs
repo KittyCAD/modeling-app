@@ -111,21 +111,41 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
         }
     }
 
+    println!("face_id_map: {:?}", face_id_map);
+    println!("sketch_group: {:#?}", sketch_group);
+
     // Iterate over the sketch_group.value array and add face_id to GeoMeta
     let mut new_value: Vec<ExtrudeSurface> = Vec::new();
     for path in sketch_group.value.iter() {
         if let Some(Some(actual_face_id)) = face_id_map.get(&path.get_base().geo_meta.id) {
-            let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
-                position: sketch_group.position, // TODO should be for the extrude surface
-                rotation: sketch_group.rotation, // TODO should be for the extrude surface
-                face_id: *actual_face_id,
-                name: path.get_base().name.clone(),
-                geo_meta: GeoMeta {
-                    id: path.get_base().geo_meta.id,
-                    metadata: path.get_base().geo_meta.metadata.clone(),
-                },
-            });
-            new_value.push(extrude_surface);
+            match path {
+                Path::TangentialArc { .. } | Path::TangentialArcTo { .. } => {
+                    let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::executor::ExtrudeArc {
+                        position: sketch_group.position, // TODO should be for the extrude surface
+                        rotation: sketch_group.rotation, // TODO should be for the extrude surface
+                        face_id: *actual_face_id,
+                        name: path.get_base().name.clone(),
+                        geo_meta: GeoMeta {
+                            id: path.get_base().geo_meta.id,
+                            metadata: path.get_base().geo_meta.metadata.clone(),
+                        },
+                    });
+                    new_value.push(extrude_surface);
+                }
+                Path::Base { .. } | Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } => {
+                    let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
+                        position: sketch_group.position, // TODO should be for the extrude surface
+                        rotation: sketch_group.rotation, // TODO should be for the extrude surface
+                        face_id: *actual_face_id,
+                        name: path.get_base().name.clone(),
+                        geo_meta: GeoMeta {
+                            id: path.get_base().geo_meta.id,
+                            metadata: path.get_base().geo_meta.metadata.clone(),
+                        },
+                    });
+                    new_value.push(extrude_surface);
+                }
+            }
         }
     }
 

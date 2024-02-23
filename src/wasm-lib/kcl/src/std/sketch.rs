@@ -849,15 +849,23 @@ async fn start_sketch_on_face(
             .value
             .iter()
             .find_map(|extrude_surface| match extrude_surface {
-                ExtrudeSurface::ExtrudePlane(extrude_plane) if extrude_plane.name == *s => Some(extrude_plane.face_id),
-                ExtrudeSurface::ExtrudePlane(_) => None,
+                ExtrudeSurface::ExtrudePlane(extrude_plane) if extrude_plane.name == *s => {
+                    Some(Ok(extrude_plane.face_id))
+                }
+                ExtrudeSurface::ExtrudeArc(extrude_arc) if extrude_arc.name == *s => {
+                    Some(Err(KclError::Type(KclErrorDetails {
+                        message: format!("Cannot sketch on a non-planar surface `{}`", tag),
+                        source_ranges: vec![args.source_range],
+                    })))
+                }
+                ExtrudeSurface::ExtrudePlane(_) | ExtrudeSurface::ExtrudeArc(_) => None,
             })
             .ok_or_else(|| {
                 KclError::Type(KclErrorDetails {
                     message: format!("Expected a face with the tag `{}`", tag),
                     source_ranges: vec![args.source_range],
                 })
-            })?,
+            })??,
         SketchOnFaceTag::StartOrEnd(StartOrEnd::Start) => extrude_group.start_cap_id.ok_or_else(|| {
             KclError::Type(KclErrorDetails {
                 message: "Expected a start face to sketch on".to_string(),
@@ -1328,11 +1336,14 @@ async fn inner_tangential_arc(
 
     let to = [from.x + to[0], from.y + to[1]];
 
-    let current_path = Path::ToPoint {
+    let current_path = Path::TangentialArc {
         base: BasePath {
             from: from.into(),
             to,
-            name: "".to_string(),
+            name: match data {
+                TangentialArcData::PointWithTag { tag, .. } => tag.to_string(),
+                TangentialArcData::Point(_) | TangentialArcData::RadiusAndOffset { .. } => "".to_string(),
+            },
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
