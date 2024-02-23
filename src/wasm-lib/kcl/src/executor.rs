@@ -799,6 +799,11 @@ pub enum Path {
         /// arc's direction
         ccw: bool,
     },
+    /// A arc that is tangential to the last path segment
+    TangentialArc {
+        #[serde(flatten)]
+        base: BasePath,
+    },
     /// A path that is horizontal.
     Horizontal {
         #[serde(flatten)]
@@ -830,6 +835,7 @@ impl Path {
             Path::AngledLineTo { base, .. } => base.geo_meta.id,
             Path::Base { base } => base.geo_meta.id,
             Path::TangentialArcTo { base, .. } => base.geo_meta.id,
+            Path::TangentialArc { base } => base.geo_meta.id,
         }
     }
 
@@ -840,6 +846,7 @@ impl Path {
             Path::AngledLineTo { base, .. } => base.name.clone(),
             Path::Base { base } => base.name.clone(),
             Path::TangentialArcTo { base, .. } => base.name.clone(),
+            Path::TangentialArc { base } => base.name.clone(),
         }
     }
 
@@ -850,6 +857,7 @@ impl Path {
             Path::AngledLineTo { base, .. } => base,
             Path::Base { base } => base,
             Path::TangentialArcTo { base, .. } => base,
+            Path::TangentialArc { base } => base,
         }
     }
 
@@ -860,6 +868,7 @@ impl Path {
             Path::AngledLineTo { base, .. } => Some(base),
             Path::Base { base } => Some(base),
             Path::TangentialArcTo { base, .. } => Some(base),
+            Path::TangentialArc { base } => Some(base),
         }
     }
 }
@@ -871,6 +880,7 @@ impl Path {
 pub enum ExtrudeSurface {
     /// An extrude plane.
     ExtrudePlane(ExtrudePlane),
+    ExtrudeArc(ExtrudeArc),
 }
 
 /// An extruded plane.
@@ -891,28 +901,50 @@ pub struct ExtrudePlane {
     pub geo_meta: GeoMeta,
 }
 
+/// An extruded arc.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct ExtrudeArc {
+    /// The position.
+    pub position: Position,
+    /// The rotation.
+    pub rotation: Rotation,
+    /// The face id for the extrude plane.
+    pub face_id: uuid::Uuid,
+    /// The name.
+    pub name: String,
+    /// Metadata.
+    #[serde(flatten)]
+    pub geo_meta: GeoMeta,
+}
+
 impl ExtrudeSurface {
     pub fn get_id(&self) -> uuid::Uuid {
         match self {
             ExtrudeSurface::ExtrudePlane(ep) => ep.geo_meta.id,
+            ExtrudeSurface::ExtrudeArc(ea) => ea.geo_meta.id,
         }
     }
 
     pub fn get_name(&self) -> String {
         match self {
             ExtrudeSurface::ExtrudePlane(ep) => ep.name.to_string(),
+            ExtrudeSurface::ExtrudeArc(ea) => ea.name.to_string(),
         }
     }
 
     pub fn get_position(&self) -> Position {
         match self {
             ExtrudeSurface::ExtrudePlane(ep) => ep.position,
+            ExtrudeSurface::ExtrudeArc(ea) => ea.position,
         }
     }
 
     pub fn get_rotation(&self) -> Rotation {
         match self {
             ExtrudeSurface::ExtrudePlane(ep) => ep.rotation,
+            ExtrudeSurface::ExtrudeArc(ea) => ea.rotation,
         }
     }
 }
