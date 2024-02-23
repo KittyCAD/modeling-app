@@ -428,6 +428,16 @@ class SceneInfra {
     planesGroup && planesGroup.scale.set(scale, scale, scale)
     axisGroup?.name === 'gridHelper' && axisGroup.scale.set(scale, scale, scale)
 
+    const distance = this.controls.target.distanceTo(this.camera.position)
+    if (
+      sceneInfra.camera.far / 2.1 < distance ||
+      sceneInfra.camera.far / 1.9 > distance
+    ) {
+      this.camera.far = distance * 2
+      this.camera.near = distance / 10
+      this.camera.updateProjectionMatrix()
+    }
+
     throttledUpdateEngineCamera({
       quaternion: this.camera.quaternion,
       position: this.camera.position,
@@ -1079,7 +1089,8 @@ function convertThreeCamValuesToEngineCam({
       vantage: position,
     }
   }
-  const zoomFactor = -ZOOM_MAGIC_NUMBER / zoom
+  const fudgeFactor2 = zoom * 0.9979224466814468 - 0.03473692325839295
+  const zoomFactor = (-ZOOM_MAGIC_NUMBER + fudgeFactor2) / zoom
   const direction = lookAtVector.clone().sub(position).normalize()
   const newVantage = position.clone().add(direction.multiplyScalar(zoomFactor))
   return {

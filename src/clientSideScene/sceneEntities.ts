@@ -150,7 +150,8 @@ class SceneEntities {
   }
 
   createIntersectionPlane() {
-    const planeGeometry = new PlaneGeometry(100000, 100000)
+    const hundredM = 1000000
+    const planeGeometry = new PlaneGeometry(hundredM, hundredM)
     const planeMaterial = new MeshBasicMaterial({
       color: 0xff0000,
       side: DoubleSide,
@@ -195,6 +196,7 @@ class SceneEntities {
 
     this.axisGroup = new Group()
     const gridHelper = createGridHelper({ size: 100, divisions: 10 })
+    gridHelper.position.z = -0.01
     gridHelper.renderOrder = -3 // is this working?
     gridHelper.name = 'gridHelper'
     const sceneScale = getSceneScale(
@@ -222,6 +224,7 @@ class SceneEntities {
     )
     this.axisGroup.setRotationFromQuaternion(quat)
     this.scene.add(this.axisGroup)
+    sceneInfra.controls.update()
   }
   removeIntersectionPlane() {
     const intersectionPlane = this.scene.getObjectByName(RAYCASTABLE_PLANE)
@@ -240,15 +243,6 @@ class SceneEntities {
   }) {
     sceneInfra.resetMouseListeners()
     this.createIntersectionPlane()
-    const distance = sceneInfra.controls.target.distanceTo(
-      sceneInfra.camera.position
-    )
-    // TODO this should probably be distance to the sketch group, more important after sketch on face
-    // since sketches won't always so close to the origin
-    // is this the best place to adjust camera far?
-    if (sceneInfra.camera.far < distance * 1.5) {
-      sceneInfra.camera.far = distance * 2
-    }
 
     const { truncatedAst, programMemoryOverride, variableDeclarationName } =
       this.prepareTruncatedMemoryAndAst(
