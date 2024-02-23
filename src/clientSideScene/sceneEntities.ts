@@ -102,13 +102,13 @@ class SceneEntities {
   }
 
   onCamChange = () => {
-    const orthoFactor = orthoScale(sceneInfra.camera)
+    const orthoFactor = orthoScale(sceneInfra.cameraControls.camera)
 
     Object.values(this.activeSegments).forEach((segment) => {
       const factor =
-        sceneInfra.camera instanceof OrthographicCamera
+        sceneInfra.cameraControls.camera instanceof OrthographicCamera
           ? orthoFactor
-          : perspScale(sceneInfra.camera, segment)
+          : perspScale(sceneInfra.cameraControls.camera, segment)
       if (
         segment.userData.from &&
         segment.userData.to &&
@@ -139,9 +139,9 @@ class SceneEntities {
     })
     if (this.axisGroup) {
       const factor =
-        sceneInfra.camera instanceof OrthographicCamera
+        sceneInfra.cameraControls.camera instanceof OrthographicCamera
           ? orthoFactor
-          : perspScale(sceneInfra.camera, this.axisGroup)
+          : perspScale(sceneInfra.cameraControls.camera, this.axisGroup)
       const x = this.axisGroup.getObjectByName(X_AXIS)
       x?.scale.set(1, factor, 1)
       const y = this.axisGroup.getObjectByName(Y_AXIS)
@@ -150,6 +150,10 @@ class SceneEntities {
   }
 
   createIntersectionPlane() {
+    if (sceneInfra.scene.getObjectByName(RAYCASTABLE_PLANE)) {
+      console.warn('createIntersectionPlane called when it already exists')
+      return
+    }
     const hundredM = 1000000
     const planeGeometry = new PlaneGeometry(hundredM, hundredM)
     const planeMaterial = new MeshBasicMaterial({
@@ -200,8 +204,8 @@ class SceneEntities {
     gridHelper.renderOrder = -3 // is this working?
     gridHelper.name = 'gridHelper'
     const sceneScale = getSceneScale(
-      sceneInfra.camera,
-      sceneInfra.controls.target
+      sceneInfra.cameraControls.camera,
+      sceneInfra.cameraControls.target
     )
     gridHelper.scale.set(sceneScale, sceneScale, sceneScale)
     this.axisGroup.add(xAxisMesh, yAxisMesh, gridHelper)
@@ -274,11 +278,11 @@ class SceneEntities {
       sketchGroup.position[1],
       sketchGroup.position[2]
     )
-    const orthoFactor = orthoScale(sceneInfra.camera)
+    const orthoFactor = orthoScale(sceneInfra.cameraControls.camera)
     const factor =
-      sceneInfra.camera instanceof OrthographicCamera
+      sceneInfra.cameraControls.camera instanceof OrthographicCamera
         ? orthoFactor
-        : perspScale(sceneInfra.camera, dummy)
+        : perspScale(sceneInfra.cameraControls.camera, dummy)
     sketchGroup.value.forEach((segment, index) => {
       let segPathToNode = getNodePathFromSourceRange(
         draftSegment ? truncatedAst : kclManager.ast,
@@ -548,7 +552,7 @@ class SceneEntities {
       this.sceneProgramMemory = programMemory
       const sketchGroup = programMemory.root[variableDeclarationName]
         .value as Path[]
-      const orthoFactor = orthoScale(sceneInfra.camera)
+      const orthoFactor = orthoScale(sceneInfra.cameraControls.camera)
       sketchGroup.forEach((segment, index) => {
         const segPathToNode = getNodePathFromSourceRange(
           modifiedAst,
@@ -564,9 +568,9 @@ class SceneEntities {
         // const prevSegment = sketchGroup.slice(index - 1)[0]
         const type = group?.userData?.type
         const factor =
-          sceneInfra.camera instanceof OrthographicCamera
+          sceneInfra.cameraControls.camera instanceof OrthographicCamera
             ? orthoFactor
-            : perspScale(sceneInfra.camera, group)
+            : perspScale(sceneInfra.cameraControls.camera, group)
         if (type === TANGENTIAL_ARC_TO_SEGMENT) {
           this.updateTangentialArcToSegment({
             prevSegment: sketchGroup[index - 1],
@@ -723,9 +727,11 @@ class SceneEntities {
   }
   async animateAfterSketch() {
     if (isReducedMotion()) {
-      sceneInfra.usePerspectiveCamera()
+      sceneInfra.cameraControls.usePerspectiveCamera()
     } else {
-      await sceneInfra.animateToPerspective()
+      sceneInfra.cameraControls.usePerspectiveCamera()
+      // todo reimplement animateToPerspective
+      // await sceneInfra.animateToPerspective()
     }
   }
   removeSketchGrid() {
@@ -758,7 +764,7 @@ class SceneEntities {
         reject()
       }
     }
-    sceneInfra.controls.enableRotate = true
+    sceneInfra.cameraControls.enableRotate = true
     this.activeSegments = {}
     // maybe should reset onMove etc handlers
     if (shouldResolve) resolve(true)

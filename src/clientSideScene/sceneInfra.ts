@@ -789,7 +789,7 @@ class SceneInfra {
   } | null => {
     this.planeRaycaster.setFromCamera(
       this.currentMouseVector,
-      sceneInfra.camera
+      sceneInfra.cameraControls.camera
     )
     const planeIntersects = this.planeRaycaster.intersectObjects(
       this.scene.children,
@@ -1035,7 +1035,10 @@ class SceneInfra {
       }
     })
     planesGroup.layers.enable(SKETCH_LAYER)
-    const sceneScale = getSceneScale(this.camera, this.controls.target)
+    const sceneScale = getSceneScale(
+      this.cameraControls.camera,
+      this.cameraControls.target
+    )
     planesGroup.scale.set(sceneScale, sceneScale, sceneScale)
     this.scene.add(planesGroup)
   }

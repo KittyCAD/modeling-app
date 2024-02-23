@@ -213,7 +213,7 @@ export const ModelingMachineProvider = ({
           )
           await kclManager.updateAst(modifiedAst, false)
           const quaternion = getSketchQuaternion(pathToNode, normal)
-          await sceneInfra.tweenCameraToQuaternion(quaternion)
+          await sceneInfra.cameraControls.tweenCameraToQuaternion(quaternion)
           return {
             sketchPathToNode: pathToNode,
             sketchNormalBackUp: normal,
@@ -227,7 +227,7 @@ export const ModelingMachineProvider = ({
             sketchPathToNode || [],
             sketchNormalBackUp
           )
-          await sceneInfra.tweenCameraToQuaternion(quaternion)
+          await sceneInfra.cameraControls.tweenCameraToQuaternion(quaternion)
         },
         'Get horizontal info': async ({
           selectionRanges,

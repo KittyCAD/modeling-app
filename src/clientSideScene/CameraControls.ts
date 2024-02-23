@@ -14,16 +14,21 @@ import {
   INTERSECTION_PLANE_LAYER,
   SKETCH_LAYER,
   ZOOM_MAGIC_NUMBER,
+  isQuaternionVertical,
 } from './sceneInfra'
 import { EngineCommand, engineCommandManager } from 'lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
 import { deg2Rad } from 'lib/utils2d'
-import { throttle } from 'lib/utils'
+import { isReducedMotion, throttle } from 'lib/utils'
+import * as TWEEN from '@tweenjs/tween.js'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 
+const tempQuaternion = new Quaternion() // just used for maths
+
 interface Callbacks {
   onCameraChange?: () => void
+  isCamMoving?: (isMoving: boolean, isTween: boolean) => void
 }
 
 // there two of these now, delete one
@@ -170,7 +175,6 @@ export class CameraControls {
   }
 
   onMouseMove = (event: MouseEvent) => {
-    // console.log('mouse move', event)
     if (this.isDragging) {
       this.mouseNewPosition.set(event.clientX, event.clientY)
       const deltaMove = this.mouseNewPosition
@@ -489,6 +493,90 @@ export class CameraControls {
 
     this.camera.up.set(0, 0, 1)
     this.camera.updateMatrixWorld()
+  }
+
+  async tweenCameraToQuaternion(
+    targetQuaternion: Quaternion,
+    duration = 500,
+    toOrthographic = true
+  ): Promise<void> {
+    const isVertical = isQuaternionVertical(targetQuaternion)
+    let _duration = duration
+    if (isVertical) {
+      _duration = duration * 0.6
+      await this._tweenCameraToQuaternion(new Quaternion(), _duration, false)
+    }
+    await this._tweenCameraToQuaternion(
+      targetQuaternion,
+      _duration,
+      toOrthographic
+    )
+  }
+  _tweenCameraToQuaternion(
+    targetQuaternion: Quaternion,
+    duration = 500,
+    toOrthographic = false
+  ): Promise<void> {
+    return new Promise((resolve) => {
+      const camera = this.camera
+      this.callbacks.isCamMoving?.(true, true)
+      const initialQuaternion = camera.quaternion.clone()
+      const isVertical = isQuaternionVertical(targetQuaternion)
+      let tweenEnd = isVertical ? 0.99 : 1
+      const controlsTarget = this.target.clone()
+      const initialDistance = controlsTarget.distanceTo(camera.position.clone())
+
+      const cameraAtTime = (animationProgress: number /* 0 - 1 */) => {
+        const currentQ = tempQuaternion.slerpQuaternions(
+          initialQuaternion,
+          targetQuaternion,
+          animationProgress
+        )
+        if (this.camera instanceof PerspectiveCamera)
+          // changing the camera position back when it's orthographic doesn't do anything
+          // and it messes up animating back to perspective later
+          this.camera.position
+            .set(0, 0, 1)
+            .applyQuaternion(currentQ)
+            .multiplyScalar(initialDistance)
+            .add(controlsTarget)
+
+        this.camera.up.set(0, 1, 0).applyQuaternion(currentQ).normalize()
+        this.camera.quaternion.copy(currentQ)
+        this.target.copy(controlsTarget)
+        // this.controls.update()
+        this.camera.updateProjectionMatrix()
+        this.update()
+      }
+
+      const onComplete = async () => {
+        if (isReducedMotion() && toOrthographic) {
+          cameraAtTime(0.99)
+          this.useOrthographicCamera()
+        } else if (toOrthographic) {
+          this.useOrthographicCamera()
+          // todo reimplement animate to orthographic
+          // await this.animateToOrthographic()
+        }
+        if (isVertical) cameraAtTime(1)
+        this.camera.up.set(0, 0, 1)
+        this.enableRotate = false
+        this.callbacks.isCamMoving?.(false, true)
+        resolve()
+      }
+
+      if (isReducedMotion()) {
+        onComplete()
+        return
+      }
+
+      new TWEEN.Tween({ t: 0 })
+        .to({ t: tweenEnd }, duration)
+        .easing(TWEEN.Easing.Quadratic.InOut)
+        .onUpdate(({ t }) => cameraAtTime(t))
+        .onComplete(onComplete)
+        .start()
+    })
   }
 }
 
