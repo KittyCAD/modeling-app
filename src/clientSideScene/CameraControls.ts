@@ -419,8 +419,9 @@ export class CameraControls {
       const offset = this.camera.position.clone().sub(this.target)
       // const distance = offset.length()
       const direction = offset.clone().normalize()
-      const right = new Vector3().crossVectors(this.camera.up, direction)
-      const up = this.camera.up.clone()
+      const cameraQuaternion = this.camera.quaternion
+      const up = new Vector3(0, 1, 0).applyQuaternion(cameraQuaternion)
+      const right = new Vector3().crossVectors(up, direction)
       right.multiplyScalar(this.pendingPan.x)
       up.multiplyScalar(this.pendingPan.y)
       const newPosition = this.camera.position.clone().add(right).add(up)
