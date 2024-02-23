@@ -127,7 +127,7 @@ jobs:
         os: [macos-14, ubuntu-latest, windows-latest]
     env:
       TAURI_ARGS_MACOS: ${{ matrix.os == 'macos-14' && '--target universal-apple-darwin' || '' }}
-      TAURI_ARGS_UBUNTU: ${{ matrix.os == 'ubuntu-latest' && '--bundle none' || '' }}
+      TAURI_ARGS_UBUNTU: ${{ matrix.os == 'ubuntu-latest' && '--bundles none' || '' }}
     steps:
       - uses: actions/checkout@v4
 
