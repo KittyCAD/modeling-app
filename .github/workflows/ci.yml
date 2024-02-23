@@ -125,6 +125,9 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-14, ubuntu-latest, windows-latest]
+    env:
+      TAURI_ARGS_MACOS: ${{ matrix.os == 'macos-14' && '--target universal-apple-darwin' || '' }}
+      TAURI_ARGS_UBUNTU: ${{ matrix.os == 'ubuntu-latest' && '--bundle none' || '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -229,7 +232,7 @@ jobs:
         with:
           includeRelease: false
           includeDebug: true
-          args: ${{ matrix.os == 'macos-14' && '--target universal-apple-darwin' || '' }}
+          args: "${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
 
       - name: Build the app (release) and sign
         uses: tauri-apps/tauri-action@v0
@@ -243,9 +246,9 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          TAURI_CONF_ARGS: "--config ${{ matrix.os == 'windows-latest' && 'src-tauri\\tauri.release.conf.json' || 'src-tauri/tauri.release.conf.json' }}"
+          TAURI_ARGS_RELEASE: "--config ${{ matrix.os == 'windows-latest' && 'src-tauri\\tauri.release.conf.json' || 'src-tauri/tauri.release.conf.json' }}"
         with:
-          args: "${{ matrix.os == 'macos-14' && '--target universal-apple-darwin' || '' }} ${{ env.TAURI_CONF_ARGS }}"
+          args: "${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }} ${{ env.TAURI_ARGS_RELEASE }}"
 
       - uses: actions/upload-artifact@v3
         if: matrix.os != 'ubuntu-latest'
