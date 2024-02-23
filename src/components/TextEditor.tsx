@@ -1,3 +1,4 @@
+import { undo, redo } from '@codemirror/commands'
 import ReactCodeMirror, {
   Extension,
   ViewUpdate,
@@ -31,6 +32,7 @@ import { sceneInfra } from 'clientSideScene/sceneInfra'
 import { copilotPlugin } from 'editor/plugins/lsp/copilot'
 import { isTauri } from 'lib/isTauri'
 import type * as LSP from 'vscode-languageserver-protocol'
+import { useHotkeys } from 'react-hotkeys-hook'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -76,6 +78,19 @@ export const TextEditor = ({
   }))
   const { code, errors } = useKclContext()
   const lastEvent = useRef({ event: '', time: Date.now() })
+
+  useHotkeys('mod+z', (e) => {
+    e.preventDefault()
+    if (editorView) {
+      undo(editorView)
+    }
+  })
+  useHotkeys('mod+shift+z', (e) => {
+    e.preventDefault()
+    if (editorView) {
+      redo(editorView)
+    }
+  })
 
   const {
     context: { selectionRanges, selectionRangeTypeMap },
