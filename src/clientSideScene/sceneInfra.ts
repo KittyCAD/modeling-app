@@ -41,13 +41,13 @@ type SendType = ReturnType<typeof useModelingContext>['send']
 // 63.5 is definitely a bit of a magic number, play with it until it looked right
 // if it were 64, that would feel like it's something in the engine where a random
 // power of 2 is used, but it's the 0.5 seems to make things look much more correct
-const ZOOM_MAGIC_NUMBER = 63.5
+export const ZOOM_MAGIC_NUMBER = 63.5
 const FRAMES_TO_ANIMATE_IN = 30
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 
 export const INTERSECTION_PLANE_LAYER = 1
 export const SKETCH_LAYER = 2
-const DEBUG_SHOW_INTERSECTION_PLANE = false
+export const DEBUG_SHOW_INTERSECTION_PLANE = false
 export const DEBUG_SHOW_BOTH_SCENES = true
 
 export const RAYCASTABLE_PLANE = 'raycastable-plane'
@@ -283,7 +283,7 @@ class SceneInfra {
       camProps.type === 'orthographic' &&
       this.camera instanceof PerspectiveCamera
     ) {
-      this.useOrthographicCamera()
+      this.cameraControls.useOrthographicCamera()
     }
     this.camera.position.set(...camProps.position)
     this.camera.quaternion.set(...camProps.quaternion)
@@ -462,17 +462,12 @@ class SceneInfra {
       quaternion: this.cameraControls.camera.quaternion,
       position: this.cameraControls.camera.position,
       zoom: this.cameraControls.camera.zoom,
-      isPerspective: this.isPerspective,
+      isPerspective: this.cameraControls.isPerspective,
       target: this.cameraControls.target,
     })
     this.deferReactUpdate({
-      type:
-        this.cameraControls.camera instanceof PerspectiveCamera
-          ? 'perspective'
-          : 'orthographic',
-      [this.cameraControls.camera instanceof PerspectiveCamera
-        ? 'fov'
-        : 'zoom']:
+      type: this.cameraControls.isPerspective ? 'perspective' : 'orthographic',
+      [this.cameraControls.isPerspective ? 'fov' : 'zoom']:
         this.cameraControls.camera instanceof PerspectiveCamera
           ? this.cameraControls.camera.fov
           : this.cameraControls.camera.zoom,

@@ -1,6 +1,5 @@
 import { MouseGuard } from 'lib/cameraControls'
 import {
-  // EventDispatcher,
   MathUtils,
   OrthographicCamera,
   PerspectiveCamera,
@@ -9,6 +8,14 @@ import {
   Vector2,
   Vector3,
 } from 'three'
+import {
+  DEBUG_SHOW_INTERSECTION_PLANE,
+  INTERSECTION_PLANE_LAYER,
+  SKETCH_LAYER,
+  ZOOM_MAGIC_NUMBER,
+} from './sceneInfra'
+import { engineCommandManager } from 'lang/std/engineConnection'
+import { v4 as uuidv4 } from 'uuid'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 
@@ -48,6 +55,9 @@ export class CameraControls {
         return !!(e.buttons & 2)
       },
     },
+  }
+  get isPerspective() {
+    return this.camera instanceof PerspectiveCamera
   }
 
   constructor(
@@ -152,6 +162,41 @@ export class CameraControls {
     this.pendingZoom *= 1 + (event.deltaY > 0 ? zoomSpeed : -zoomSpeed)
   }
 
+  useOrthographicCamera = () => {
+    if (this.camera instanceof OrthographicCamera) return
+    const { x: px, y: py, z: pz } = this.camera.position
+    const { x: qx, y: qy, z: qz, w: qw } = this.camera.quaternion
+    const aspect = window.innerWidth / window.innerHeight
+    const cameraFov = this.camera.fov
+    const { z_near, z_far } = calculateNearFarFromFOV(cameraFov)
+    this.camera = new OrthographicCamera(
+      -ORTHOGRAPHIC_CAMERA_SIZE * aspect,
+      ORTHOGRAPHIC_CAMERA_SIZE * aspect,
+      ORTHOGRAPHIC_CAMERA_SIZE,
+      -ORTHOGRAPHIC_CAMERA_SIZE,
+      z_near,
+      z_far
+    )
+    this.camera.up.set(0, 0, 1)
+    this.camera.layers.enable(SKETCH_LAYER)
+    if (DEBUG_SHOW_INTERSECTION_PLANE)
+      this.camera.layers.enable(INTERSECTION_PLANE_LAYER)
+    this.camera.position.set(px, py, pz)
+    const distance = this.camera.position.distanceTo(this.target.clone())
+    const fovFactor = 45 / cameraFov
+    this.camera.zoom = (ZOOM_MAGIC_NUMBER * fovFactor * 0.8) / distance
+
+    this.camera.quaternion.set(qx, qy, qz, qw)
+    this.camera.updateProjectionMatrix()
+    engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_set_orthographic',
+      },
+    })
+  }
+
   update = () => {
     // If there are any changes that need to be applied to the camera, apply them here.
     // This could include rotations, panning, zooming, etc.
@@ -183,6 +228,8 @@ export class CameraControls {
         this.pendingZoom = null // Clear the pending zoom after applying it
       } else {
         // TODO change ortho zoom
+        this.camera.zoom = this.camera.zoom / this.pendingZoom
+        this.pendingZoom = null
       }
       didChange = true
     }
@@ -267,4 +314,12 @@ export class CameraControls {
     this.camera.up.set(0, 0, 1)
     this.camera.updateMatrixWorld()
   }
+}
+
+// currently duplicated, delete one
+function calculateNearFarFromFOV(fov: number) {
+  const nearFarRatio = (fov - 3) / (45 - 3)
+  // const z_near = 0.1 + nearFarRatio * (5 - 0.1)
+  const z_far = 1000 + nearFarRatio * (100000 - 1000)
+  return { z_near: 0.1, z_far }
 }
