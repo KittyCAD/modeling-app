@@ -278,7 +278,7 @@ class SceneInfra {
       camProps.type === 'perspective' &&
       this.camera instanceof OrthographicCamera
     ) {
-      this.usePerspectiveCamera()
+      this.cameraControls.usePerspectiveCamera()
     } else if (
       camProps.type === 'orthographic' &&
       this.camera instanceof PerspectiveCamera

@@ -34,6 +34,7 @@ export class CameraControls {
   enableRotate = true
   enablePan = true
   enableZoom = true
+  lastPerspectiveFov: number = 45
   pendingZoom: number | null = null
   pendingRotation: Vector2 | null = null
   pendingPan: Vector2 | null = null
@@ -167,8 +168,8 @@ export class CameraControls {
     const { x: px, y: py, z: pz } = this.camera.position
     const { x: qx, y: qy, z: qz, w: qw } = this.camera.quaternion
     const aspect = window.innerWidth / window.innerHeight
-    const cameraFov = this.camera.fov
-    const { z_near, z_far } = calculateNearFarFromFOV(cameraFov)
+    this.lastPerspectiveFov = this.camera.fov
+    const { z_near, z_far } = calculateNearFarFromFOV(this.lastPerspectiveFov)
     this.camera = new OrthographicCamera(
       -ORTHOGRAPHIC_CAMERA_SIZE * aspect,
       ORTHOGRAPHIC_CAMERA_SIZE * aspect,
@@ -183,7 +184,7 @@ export class CameraControls {
       this.camera.layers.enable(INTERSECTION_PLANE_LAYER)
     this.camera.position.set(px, py, pz)
     const distance = this.camera.position.distanceTo(this.target.clone())
-    const fovFactor = 45 / cameraFov
+    const fovFactor = 45 / this.lastPerspectiveFov
     this.camera.zoom = (ZOOM_MAGIC_NUMBER * fovFactor * 0.8) / distance
 
     this.camera.quaternion.set(qx, qy, qz, qw)
@@ -195,6 +196,53 @@ export class CameraControls {
         type: 'default_camera_set_orthographic',
       },
     })
+    this.callbacks.onCameraChange?.()
+  }
+  private createPerspectiveCamera = () => {
+    const { z_near, z_far } = calculateNearFarFromFOV(this.lastPerspectiveFov)
+    this.camera = new PerspectiveCamera(
+      this.lastPerspectiveFov,
+      window.innerWidth / window.innerHeight,
+      z_near,
+      z_far
+    )
+    this.camera.up.set(0, 0, 1)
+    this.camera.layers.enable(SKETCH_LAYER)
+    if (DEBUG_SHOW_INTERSECTION_PLANE)
+      this.camera.layers.enable(INTERSECTION_PLANE_LAYER)
+
+    return this.camera
+  }
+  usePerspectiveCamera = () => {
+    const { x: px, y: py, z: pz } = this.camera.position
+    const { x: qx, y: qy, z: qz, w: qw } = this.camera.quaternion
+    const zoom = this.camera.zoom
+    this.camera = this.createPerspectiveCamera()
+
+    this.camera.position.set(px, py, pz)
+    this.camera.quaternion.set(qx, qy, qz, qw)
+    const zoomFudgeFactor = 2280
+    const distance = zoomFudgeFactor / (zoom * this.lastPerspectiveFov)
+    const direction = new Vector3().subVectors(
+      this.camera.position,
+      this.target
+    )
+    direction.normalize()
+    this.camera.position.copy(this.target).addScaledVector(direction, distance)
+
+    engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_set_perspective',
+        parameters: {
+          fov_y: this.camera.fov,
+          ...calculateNearFarFromFOV(this.lastPerspectiveFov),
+        },
+      },
+    })
+    this.callbacks.onCameraChange?.()
+    return this.camera
   }
 
   update = () => {
