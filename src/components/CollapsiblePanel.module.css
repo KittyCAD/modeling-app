@@ -49,12 +49,12 @@
   TODO: make this logic flexible for if the panel is on the right side of the screen.
 */
 .panel[open]::before {
-  @apply absolute -inset-4 -top-2 -right-1 z-0;
+  @apply absolute -inset-5 -top-2 -right-1 z-0;
   @apply content-[''];
 }
 
 .panel[open]:first-of-type::before {
-  @apply -top-4;
+  @apply -top-5;
 }
 
 .panel[open] + .panel[open],
