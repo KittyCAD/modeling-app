@@ -228,6 +228,15 @@ angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup)
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -394,6 +403,15 @@ angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup)
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
 } |
 {
 	// The from point.
@@ -586,6 +604,15 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -734,6 +761,15 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
 } |
 {
 	// The from point.
@@ -922,6 +958,15 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -1070,6 +1115,15 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
 } |
 {
 	// The from point.
@@ -1258,6 +1312,15 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -1406,6 +1469,15 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
 } |
 {
 	// The from point.
@@ -1595,6 +1667,15 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -1743,6 +1824,15 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
 } |
 {
 	// The from point.
@@ -1931,6 +2021,15 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -2079,6 +2178,15 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
 } |
 {
 	// The from point.
@@ -2267,6 +2375,15 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -2415,6 +2532,15 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
 } |
 {
 	// The from point.
@@ -2630,6 +2756,15 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -2778,6 +2913,15 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
 } |
 {
 	// The from point.
@@ -3015,6 +3159,15 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -3163,6 +3316,15 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
 } |
 {
 	// The from point.
@@ -3359,6 +3521,15 @@ close(sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -3507,6 +3678,15 @@ close(sketch_group: SketchGroup) -> SketchGroup
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
 } |
 {
 	// The from point.
@@ -3723,6 +3903,15 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -3802,6 +3991,21 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 	// The source range.
 	sourceRange: [number, number],
 	type: "extrudePlane",
+} |
+{
+	// The face id for the extrude plane.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The name.
+	name: string,
+	// The position.
+	position: [number, number, number],
+	// The rotation.
+	rotation: [number, number, number, number],
+	// The source range.
+	sourceRange: [number, number],
+	type: "extrudeArc",
 }],
 	// The x-axis of the extrude group base plane in the 3D space
 	xAxis: {
@@ -3889,6 +4093,21 @@ getExtrudeWallTransform(surface_name: string, extrude_group: ExtrudeGroup) -> Ex
 	// The source range.
 	sourceRange: [number, number],
 	type: "extrudePlane",
+} |
+{
+	// The face id for the extrude plane.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The name.
+	name: string,
+	// The position.
+	position: [number, number, number],
+	// The rotation.
+	rotation: [number, number, number, number],
+	// The source range.
+	sourceRange: [number, number],
+	type: "extrudeArc",
 }],
 	// The x-axis of the extrude group base plane in the 3D space
 	xAxis: {
@@ -4035,6 +4254,15 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
 } |
 {
 	// The from point.
@@ -4199,6 +4427,15 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -4347,6 +4584,15 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
 } |
 {
 	// The from point.
@@ -4632,6 +4878,15 @@ lastSegX(sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -4796,6 +5051,15 @@ lastSegY(sketch_group: SketchGroup) -> number
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
 } |
 {
 	// The from point.
@@ -5049,6 +5313,15 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -5197,6 +5470,15 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
 } |
 {
 	// The from point.
@@ -5383,6 +5665,15 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -5531,6 +5822,15 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
 } |
 {
 	// The from point.
@@ -5844,6 +6144,15 @@ patternCircular(data: CircularPatternData, geometry: Geometry) -> Geometries
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -5918,6 +6227,21 @@ patternCircular(data: CircularPatternData, geometry: Geometry) -> Geometries
 	// The source range.
 	sourceRange: [number, number],
 	type: "extrudePlane",
+} |
+{
+	// The face id for the extrude plane.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The name.
+	name: string,
+	// The position.
+	position: [number, number, number],
+	// The rotation.
+	rotation: [number, number, number, number],
+	// The source range.
+	sourceRange: [number, number],
+	type: "extrudeArc",
 }],
 	// The x-axis of the extrude group base plane in the 3D space
 	xAxis: {
@@ -6085,6 +6409,15 @@ patternLinear(data: LinearPatternData, geometry: Geometry) -> Geometries
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -6159,6 +6492,21 @@ patternLinear(data: LinearPatternData, geometry: Geometry) -> Geometries
 	// The source range.
 	sourceRange: [number, number],
 	type: "extrudePlane",
+} |
+{
+	// The face id for the extrude plane.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The name.
+	name: string,
+	// The position.
+	position: [number, number, number],
+	// The rotation.
+	rotation: [number, number, number, number],
+	// The source range.
+	sourceRange: [number, number],
+	type: "extrudeArc",
 }],
 	// The x-axis of the extrude group base plane in the 3D space
 	xAxis: {
@@ -6355,6 +6703,15 @@ segAng(segment_name: string, sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -6520,6 +6877,15 @@ segEndX(segment_name: string, sketch_group: SketchGroup) -> number
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
 } |
 {
 	// The from point.
@@ -6701,6 +7067,15 @@ segEndY(segment_name: string, sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -6874,6 +7249,15 @@ segLen(segment_name: string, sketch_group: SketchGroup) -> number
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -7038,6 +7422,15 @@ show(sketch: SketchGroup)
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
 } |
 {
 	// The from point.
@@ -7326,6 +7719,15 @@ startProfileAt(data: LineData, sketch_surface: SketchSurface) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -7507,6 +7909,15 @@ startSketchAt(data: LineData) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -7632,6 +8043,21 @@ startSketchOn(data: SketchData, tag: SketchOnFaceTag) -> SketchSurface
 	// The source range.
 	sourceRange: [number, number],
 	type: "extrudePlane",
+} |
+{
+	// The face id for the extrude plane.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The name.
+	name: string,
+	// The position.
+	position: [number, number, number],
+	// The rotation.
+	rotation: [number, number, number, number],
+	// The source range.
+	sourceRange: [number, number],
+	type: "extrudeArc",
 }],
 	// The x-axis of the extrude group base plane in the 3D space
 	xAxis: {
@@ -7878,6 +8304,15 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -8026,6 +8461,15 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
 } |
 {
 	// The from point.
@@ -8203,6 +8647,15 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchG
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -8352,6 +8805,15 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchG
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
 } |
 {
 	// The from point.
@@ -8557,6 +9019,15 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -8705,6 +9176,15 @@ number
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
 } |
 {
 	// The from point.
@@ -8891,6 +9371,15 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -9039,6 +9528,15 @@ number
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
 } |
 {
 	// The from point.
@@ -9225,6 +9723,15 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -9373,6 +9880,15 @@ number
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
 } |
 {
 	// The from point.
@@ -9559,6 +10075,15 @@ number
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -9707,6 +10232,15 @@ number
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
 } |
 {
 	// The from point.
