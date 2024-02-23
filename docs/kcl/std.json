@@ -664,6 +664,75 @@
                     }
                   },
                   {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
+                        ]
+                      }
+                    }
+                  },
+                  {
                     "description": "A path that is horizontal.",
                     "type": "object",
                     "required": [
@@ -1581,6 +1650,75 @@
                         "type": "string",
                         "enum": [
                           "TangentialArcTo"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
                         ]
                       }
                     }
@@ -2536,6 +2674,75 @@
                     }
                   },
                   {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
+                        ]
+                      }
+                    }
+                  },
+                  {
                     "description": "A path that is horizontal.",
                     "type": "object",
                     "required": [
@@ -3418,6 +3625,75 @@
                       "type": "string",
                       "enum": [
                         "TangentialArcTo"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "description": "A arc that is tangential to the last path segment",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "TangentialArc"
                       ]
                     }
                   }
@@ -4363,6 +4639,75 @@
                     }
                   },
                   {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
+                        ]
+                      }
+                    }
+                  },
+                  {
                     "description": "A path that is horizontal.",
                     "type": "object",
                     "required": [
@@ -5245,6 +5590,75 @@
                       "type": "string",
                       "enum": [
                         "TangentialArcTo"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "description": "A arc that is tangential to the last path segment",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "TangentialArc"
                       ]
                     }
                   }
@@ -6190,6 +6604,75 @@
                     }
                   },
                   {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
+                        ]
+                      }
+                    }
+                  },
+                  {
                     "description": "A path that is horizontal.",
                     "type": "object",
                     "required": [
@@ -7072,6 +7555,75 @@
                       "type": "string",
                       "enum": [
                         "TangentialArcTo"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "description": "A arc that is tangential to the last path segment",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "TangentialArc"
                       ]
                     }
                   }
@@ -8007,6 +8559,75 @@
                     }
                   },
                   {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
+                        ]
+                      }
+                    }
+                  },
+                  {
                     "description": "A path that is horizontal.",
                     "type": "object",
                     "required": [
@@ -8889,6 +9510,75 @@
                       "type": "string",
                       "enum": [
                         "TangentialArcTo"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "description": "A arc that is tangential to the last path segment",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "TangentialArc"
                       ]
                     }
                   }
@@ -9834,6 +10524,75 @@
                     }
                   },
                   {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
+                        ]
+                      }
+                    }
+                  },
+                  {
                     "description": "A path that is horizontal.",
                     "type": "object",
                     "required": [
@@ -10716,6 +11475,75 @@
                       "type": "string",
                       "enum": [
                         "TangentialArcTo"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "description": "A arc that is tangential to the last path segment",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "TangentialArc"
                       ]
                     }
                   }
@@ -11661,6 +12489,75 @@
                     }
                   },
                   {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
+                        ]
+                      }
+                    }
+                  },
+                  {
                     "description": "A path that is horizontal.",
                     "type": "object",
                     "required": [
@@ -12543,6 +13440,75 @@
                       "type": "string",
                       "enum": [
                         "TangentialArcTo"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "description": "A arc that is tangential to the last path segment",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "TangentialArc"
                       ]
                     }
                   }
@@ -13587,6 +14553,75 @@
                     }
                   },
                   {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
+                        ]
+                      }
+                    }
+                  },
+                  {
                     "description": "A path that is horizontal.",
                     "type": "object",
                     "required": [
@@ -14469,6 +15504,75 @@
                       "type": "string",
                       "enum": [
                         "TangentialArcTo"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "description": "A arc that is tangential to the last path segment",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "TangentialArc"
                       ]
                     }
                   }
@@ -15522,6 +16626,75 @@
                     }
                   },
                   {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
+                        ]
+                      }
+                    }
+                  },
+                  {
                     "description": "A path that is horizontal.",
                     "type": "object",
                     "required": [
@@ -16404,6 +17577,75 @@
                       "type": "string",
                       "enum": [
                         "TangentialArcTo"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "description": "A arc that is tangential to the last path segment",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "TangentialArc"
                       ]
                     }
                   }
@@ -17332,6 +18574,75 @@
                     }
                   },
                   {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
+                        ]
+                      }
+                    }
+                  },
+                  {
                     "description": "A path that is horizontal.",
                     "type": "object",
                     "required": [
@@ -18214,6 +19525,75 @@
                       "type": "string",
                       "enum": [
                         "TangentialArcTo"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "description": "A arc that is tangential to the last path segment",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "TangentialArc"
                       ]
                     }
                   }
@@ -19169,6 +20549,75 @@
                     }
                   },
                   {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
+                        ]
+                      }
+                    }
+                  },
+                  {
                     "description": "A path that is horizontal.",
                     "type": "object",
                     "required": [
@@ -19625,6 +21074,72 @@
                       ]
                     }
                   }
+                },
+                {
+                  "description": "An extruded arc.",
+                  "type": "object",
+                  "required": [
+                    "faceId",
+                    "id",
+                    "name",
+                    "position",
+                    "rotation",
+                    "sourceRange",
+                    "type"
+                  ],
+                  "properties": {
+                    "faceId": {
+                      "description": "The face id for the extrude plane.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "id": {
+                      "description": "The id of the geometry.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "description": "The name.",
+                      "type": "string"
+                    },
+                    "position": {
+                      "description": "The position.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 3,
+                      "minItems": 3
+                    },
+                    "rotation": {
+                      "description": "The rotation.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 4,
+                      "minItems": 4
+                    },
+                    "sourceRange": {
+                      "description": "The source range.",
+                      "type": "array",
+                      "items": {
+                        "type": "integer",
+                        "format": "uint",
+                        "minimum": 0.0
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "extrudeArc"
+                      ]
+                    }
+                  }
                 }
               ]
             }
@@ -19899,6 +21414,72 @@
                         "type": "string",
                         "enum": [
                           "extrudePlane"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "description": "An extruded arc.",
+                    "type": "object",
+                    "required": [
+                      "faceId",
+                      "id",
+                      "name",
+                      "position",
+                      "rotation",
+                      "sourceRange",
+                      "type"
+                    ],
+                    "properties": {
+                      "faceId": {
+                        "description": "The face id for the extrude plane.",
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "id": {
+                        "description": "The id of the geometry.",
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "name": {
+                        "description": "The name.",
+                        "type": "string"
+                      },
+                      "position": {
+                        "description": "The position.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 3,
+                        "minItems": 3
+                      },
+                      "rotation": {
+                        "description": "The rotation.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 4,
+                        "minItems": 4
+                      },
+                      "sourceRange": {
+                        "description": "The source range.",
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "format": "uint",
+                          "minimum": 0.0
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "extrudeArc"
                         ]
                       }
                     }
@@ -20636,6 +22217,75 @@
                             "type": "string",
                             "enum": [
                               "TangentialArcTo"
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "description": "A arc that is tangential to the last path segment",
+                        "type": "object",
+                        "required": [
+                          "__geoMeta",
+                          "from",
+                          "name",
+                          "to",
+                          "type"
+                        ],
+                        "properties": {
+                          "__geoMeta": {
+                            "description": "Metadata.",
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "sourceRange"
+                            ],
+                            "properties": {
+                              "id": {
+                                "description": "The id of the geometry.",
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "sourceRange": {
+                                "description": "The source range.",
+                                "type": "array",
+                                "items": {
+                                  "type": "integer",
+                                  "format": "uint",
+                                  "minimum": 0.0
+                                },
+                                "maxItems": 2,
+                                "minItems": 2
+                              }
+                            }
+                          },
+                          "from": {
+                            "description": "The from point.",
+                            "type": "array",
+                            "items": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          },
+                          "name": {
+                            "description": "The name of the path.",
+                            "type": "string"
+                          },
+                          "to": {
+                            "description": "The to point.",
+                            "type": "array",
+                            "items": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "TangentialArc"
                             ]
                           }
                         }
@@ -21522,6 +23172,75 @@
                               "type": "string",
                               "enum": [
                                 "TangentialArcTo"
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "description": "A arc that is tangential to the last path segment",
+                          "type": "object",
+                          "required": [
+                            "__geoMeta",
+                            "from",
+                            "name",
+                            "to",
+                            "type"
+                          ],
+                          "properties": {
+                            "__geoMeta": {
+                              "description": "Metadata.",
+                              "type": "object",
+                              "required": [
+                                "id",
+                                "sourceRange"
+                              ],
+                              "properties": {
+                                "id": {
+                                  "description": "The id of the geometry.",
+                                  "type": "string",
+                                  "format": "uuid"
+                                },
+                                "sourceRange": {
+                                  "description": "The source range.",
+                                  "type": "array",
+                                  "items": {
+                                    "type": "integer",
+                                    "format": "uint",
+                                    "minimum": 0.0
+                                  },
+                                  "maxItems": 2,
+                                  "minItems": 2
+                                }
+                              }
+                            },
+                            "from": {
+                              "description": "The from point.",
+                              "type": "array",
+                              "items": {
+                                "type": "number",
+                                "format": "double"
+                              },
+                              "maxItems": 2,
+                              "minItems": 2
+                            },
+                            "name": {
+                              "description": "The name of the path.",
+                              "type": "string"
+                            },
+                            "to": {
+                              "description": "The to point.",
+                              "type": "array",
+                              "items": {
+                                "type": "number",
+                                "format": "double"
+                              },
+                              "maxItems": 2,
+                              "minItems": 2
+                            },
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "TangentialArc"
                               ]
                             }
                           }
@@ -22427,6 +24146,75 @@
                     }
                   },
                   {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
+                        ]
+                      }
+                    }
+                  },
+                  {
                     "description": "A path that is horizontal.",
                     "type": "object",
                     "required": [
@@ -23309,6 +25097,75 @@
                       "type": "string",
                       "enum": [
                         "TangentialArcTo"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "description": "A arc that is tangential to the last path segment",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "TangentialArc"
                       ]
                     }
                   }
@@ -24859,6 +26716,75 @@
                     }
                   },
                   {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
+                        ]
+                      }
+                    }
+                  },
+                  {
                     "description": "A path that is horizontal.",
                     "type": "object",
                     "required": [
@@ -25759,6 +27685,75 @@
                         "type": "string",
                         "enum": [
                           "TangentialArcTo"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
                         ]
                       }
                     }
@@ -26824,6 +28819,75 @@
                     }
                   },
                   {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
+                        ]
+                      }
+                    }
+                  },
+                  {
                     "description": "A path that is horizontal.",
                     "type": "object",
                     "required": [
@@ -27706,6 +29770,75 @@
                       "type": "string",
                       "enum": [
                         "TangentialArcTo"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "description": "A arc that is tangential to the last path segment",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "TangentialArc"
                       ]
                     }
                   }
@@ -28650,6 +30783,75 @@
                     }
                   },
                   {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
+                        ]
+                      }
+                    }
+                  },
+                  {
                     "description": "A path that is horizontal.",
                     "type": "object",
                     "required": [
@@ -29532,6 +31734,75 @@
                       "type": "string",
                       "enum": [
                         "TangentialArcTo"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "description": "A arc that is tangential to the last path segment",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "TangentialArc"
                       ]
                     }
                   }
@@ -30678,6 +32949,75 @@
                         }
                       },
                       {
+                        "description": "A arc that is tangential to the last path segment",
+                        "type": "object",
+                        "required": [
+                          "__geoMeta",
+                          "from",
+                          "name",
+                          "to",
+                          "type"
+                        ],
+                        "properties": {
+                          "__geoMeta": {
+                            "description": "Metadata.",
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "sourceRange"
+                            ],
+                            "properties": {
+                              "id": {
+                                "description": "The id of the geometry.",
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "sourceRange": {
+                                "description": "The source range.",
+                                "type": "array",
+                                "items": {
+                                  "type": "integer",
+                                  "format": "uint",
+                                  "minimum": 0.0
+                                },
+                                "maxItems": 2,
+                                "minItems": 2
+                              }
+                            }
+                          },
+                          "from": {
+                            "description": "The from point.",
+                            "type": "array",
+                            "items": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          },
+                          "name": {
+                            "description": "The name of the path.",
+                            "type": "string"
+                          },
+                          "to": {
+                            "description": "The to point.",
+                            "type": "array",
+                            "items": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "TangentialArc"
+                            ]
+                          }
+                        }
+                      },
+                      {
                         "description": "A path that is horizontal.",
                         "type": "object",
                         "required": [
@@ -31132,6 +33472,72 @@
                             "type": "string",
                             "enum": [
                               "extrudePlane"
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "description": "An extruded arc.",
+                        "type": "object",
+                        "required": [
+                          "faceId",
+                          "id",
+                          "name",
+                          "position",
+                          "rotation",
+                          "sourceRange",
+                          "type"
+                        ],
+                        "properties": {
+                          "faceId": {
+                            "description": "The face id for the extrude plane.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "name": {
+                            "description": "The name.",
+                            "type": "string"
+                          },
+                          "position": {
+                            "description": "The position.",
+                            "type": "array",
+                            "items": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "maxItems": 3,
+                            "minItems": 3
+                          },
+                          "rotation": {
+                            "description": "The rotation.",
+                            "type": "array",
+                            "items": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "maxItems": 4,
+                            "minItems": 4
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "extrudeArc"
                             ]
                           }
                         }
@@ -31809,6 +34215,75 @@
                         }
                       },
                       {
+                        "description": "A arc that is tangential to the last path segment",
+                        "type": "object",
+                        "required": [
+                          "__geoMeta",
+                          "from",
+                          "name",
+                          "to",
+                          "type"
+                        ],
+                        "properties": {
+                          "__geoMeta": {
+                            "description": "Metadata.",
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "sourceRange"
+                            ],
+                            "properties": {
+                              "id": {
+                                "description": "The id of the geometry.",
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "sourceRange": {
+                                "description": "The source range.",
+                                "type": "array",
+                                "items": {
+                                  "type": "integer",
+                                  "format": "uint",
+                                  "minimum": 0.0
+                                },
+                                "maxItems": 2,
+                                "minItems": 2
+                              }
+                            }
+                          },
+                          "from": {
+                            "description": "The from point.",
+                            "type": "array",
+                            "items": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          },
+                          "name": {
+                            "description": "The name of the path.",
+                            "type": "string"
+                          },
+                          "to": {
+                            "description": "The to point.",
+                            "type": "array",
+                            "items": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "TangentialArc"
+                            ]
+                          }
+                        }
+                      },
+                      {
                         "description": "A path that is horizontal.",
                         "type": "object",
                         "required": [
@@ -32273,6 +34748,72 @@
                             "type": "string",
                             "enum": [
                               "extrudePlane"
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "description": "An extruded arc.",
+                        "type": "object",
+                        "required": [
+                          "faceId",
+                          "id",
+                          "name",
+                          "position",
+                          "rotation",
+                          "sourceRange",
+                          "type"
+                        ],
+                        "properties": {
+                          "faceId": {
+                            "description": "The face id for the extrude plane.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "name": {
+                            "description": "The name.",
+                            "type": "string"
+                          },
+                          "position": {
+                            "description": "The position.",
+                            "type": "array",
+                            "items": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "maxItems": 3,
+                            "minItems": 3
+                          },
+                          "rotation": {
+                            "description": "The rotation.",
+                            "type": "array",
+                            "items": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "maxItems": 4,
+                            "minItems": 4
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "extrudeArc"
                             ]
                           }
                         }
@@ -33009,6 +35550,75 @@
                         }
                       },
                       {
+                        "description": "A arc that is tangential to the last path segment",
+                        "type": "object",
+                        "required": [
+                          "__geoMeta",
+                          "from",
+                          "name",
+                          "to",
+                          "type"
+                        ],
+                        "properties": {
+                          "__geoMeta": {
+                            "description": "Metadata.",
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "sourceRange"
+                            ],
+                            "properties": {
+                              "id": {
+                                "description": "The id of the geometry.",
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "sourceRange": {
+                                "description": "The source range.",
+                                "type": "array",
+                                "items": {
+                                  "type": "integer",
+                                  "format": "uint",
+                                  "minimum": 0.0
+                                },
+                                "maxItems": 2,
+                                "minItems": 2
+                              }
+                            }
+                          },
+                          "from": {
+                            "description": "The from point.",
+                            "type": "array",
+                            "items": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          },
+                          "name": {
+                            "description": "The name of the path.",
+                            "type": "string"
+                          },
+                          "to": {
+                            "description": "The to point.",
+                            "type": "array",
+                            "items": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "TangentialArc"
+                            ]
+                          }
+                        }
+                      },
+                      {
                         "description": "A path that is horizontal.",
                         "type": "object",
                         "required": [
@@ -33463,6 +36073,72 @@
                             "type": "string",
                             "enum": [
                               "extrudePlane"
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "description": "An extruded arc.",
+                        "type": "object",
+                        "required": [
+                          "faceId",
+                          "id",
+                          "name",
+                          "position",
+                          "rotation",
+                          "sourceRange",
+                          "type"
+                        ],
+                        "properties": {
+                          "faceId": {
+                            "description": "The face id for the extrude plane.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "name": {
+                            "description": "The name.",
+                            "type": "string"
+                          },
+                          "position": {
+                            "description": "The position.",
+                            "type": "array",
+                            "items": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "maxItems": 3,
+                            "minItems": 3
+                          },
+                          "rotation": {
+                            "description": "The rotation.",
+                            "type": "array",
+                            "items": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "maxItems": 4,
+                            "minItems": 4
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "extrudeArc"
                             ]
                           }
                         }
@@ -34140,6 +36816,75 @@
                         }
                       },
                       {
+                        "description": "A arc that is tangential to the last path segment",
+                        "type": "object",
+                        "required": [
+                          "__geoMeta",
+                          "from",
+                          "name",
+                          "to",
+                          "type"
+                        ],
+                        "properties": {
+                          "__geoMeta": {
+                            "description": "Metadata.",
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "sourceRange"
+                            ],
+                            "properties": {
+                              "id": {
+                                "description": "The id of the geometry.",
+                                "type": "string",
+                                "format": "uuid"
+                              },
+                              "sourceRange": {
+                                "description": "The source range.",
+                                "type": "array",
+                                "items": {
+                                  "type": "integer",
+                                  "format": "uint",
+                                  "minimum": 0.0
+                                },
+                                "maxItems": 2,
+                                "minItems": 2
+                              }
+                            }
+                          },
+                          "from": {
+                            "description": "The from point.",
+                            "type": "array",
+                            "items": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          },
+                          "name": {
+                            "description": "The name of the path.",
+                            "type": "string"
+                          },
+                          "to": {
+                            "description": "The to point.",
+                            "type": "array",
+                            "items": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "TangentialArc"
+                            ]
+                          }
+                        }
+                      },
+                      {
                         "description": "A path that is horizontal.",
                         "type": "object",
                         "required": [
@@ -34604,6 +37349,72 @@
                             "type": "string",
                             "enum": [
                               "extrudePlane"
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "description": "An extruded arc.",
+                        "type": "object",
+                        "required": [
+                          "faceId",
+                          "id",
+                          "name",
+                          "position",
+                          "rotation",
+                          "sourceRange",
+                          "type"
+                        ],
+                        "properties": {
+                          "faceId": {
+                            "description": "The face id for the extrude plane.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "name": {
+                            "description": "The name.",
+                            "type": "string"
+                          },
+                          "position": {
+                            "description": "The position.",
+                            "type": "array",
+                            "items": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "maxItems": 3,
+                            "minItems": 3
+                          },
+                          "rotation": {
+                            "description": "The rotation.",
+                            "type": "array",
+                            "items": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "maxItems": 4,
+                            "minItems": 4
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "extrudeArc"
                             ]
                           }
                         }
@@ -35351,6 +38162,75 @@
                         "type": "string",
                         "enum": [
                           "TangentialArcTo"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
                         ]
                       }
                     }
@@ -36269,6 +39149,75 @@
                     }
                   },
                   {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
+                        ]
+                      }
+                    }
+                  },
+                  {
                     "description": "A path that is horizontal.",
                     "type": "object",
                     "required": [
@@ -37177,6 +40126,75 @@
                         "type": "string",
                         "enum": [
                           "TangentialArcTo"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
                         ]
                       }
                     }
@@ -38095,6 +41113,75 @@
                     }
                   },
                   {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
+                        ]
+                      }
+                    }
+                  },
+                  {
                     "description": "A path that is horizontal.",
                     "type": "object",
                     "required": [
@@ -38995,6 +42082,75 @@
                         "type": "string",
                         "enum": [
                           "TangentialArcTo"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
                         ]
                       }
                     }
@@ -40292,6 +43448,75 @@
                   }
                 },
                 {
+                  "description": "A arc that is tangential to the last path segment",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "TangentialArc"
+                      ]
+                    }
+                  }
+                },
+                {
                   "description": "A path that is horizontal.",
                   "type": "object",
                   "required": [
@@ -41232,6 +44457,75 @@
                   }
                 },
                 {
+                  "description": "A arc that is tangential to the last path segment",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "TangentialArc"
+                      ]
+                    }
+                  }
+                },
+                {
                   "description": "A path that is horizontal.",
                   "type": "object",
                   "required": [
@@ -41856,6 +45150,72 @@
                             "type": "string",
                             "enum": [
                               "extrudePlane"
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "description": "An extruded arc.",
+                        "type": "object",
+                        "required": [
+                          "faceId",
+                          "id",
+                          "name",
+                          "position",
+                          "rotation",
+                          "sourceRange",
+                          "type"
+                        ],
+                        "properties": {
+                          "faceId": {
+                            "description": "The face id for the extrude plane.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "name": {
+                            "description": "The name.",
+                            "type": "string"
+                          },
+                          "position": {
+                            "description": "The position.",
+                            "type": "array",
+                            "items": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "maxItems": 3,
+                            "minItems": 3
+                          },
+                          "rotation": {
+                            "description": "The rotation.",
+                            "type": "array",
+                            "items": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "maxItems": 4,
+                            "minItems": 4
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "extrudeArc"
                             ]
                           }
                         }
@@ -42952,6 +46312,75 @@
                     }
                   },
                   {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
+                        ]
+                      }
+                    }
+                  },
+                  {
                     "description": "A path that is horizontal.",
                     "type": "object",
                     "required": [
@@ -43834,6 +47263,75 @@
                       "type": "string",
                       "enum": [
                         "TangentialArcTo"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "description": "A arc that is tangential to the last path segment",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "TangentialArc"
                       ]
                     }
                   }
@@ -44748,6 +48246,75 @@
                     }
                   },
                   {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
+                        ]
+                      }
+                    }
+                  },
+                  {
                     "description": "A path that is horizontal.",
                     "type": "object",
                     "required": [
@@ -45639,6 +49206,75 @@
                       "type": "string",
                       "enum": [
                         "TangentialArcTo"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "description": "A arc that is tangential to the last path segment",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "TangentialArc"
                       ]
                     }
                   }
@@ -46591,6 +50227,75 @@
                     }
                   },
                   {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
+                        ]
+                      }
+                    }
+                  },
+                  {
                     "description": "A path that is horizontal.",
                     "type": "object",
                     "required": [
@@ -47473,6 +51178,75 @@
                       "type": "string",
                       "enum": [
                         "TangentialArcTo"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "description": "A arc that is tangential to the last path segment",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "TangentialArc"
                       ]
                     }
                   }
@@ -48407,6 +52181,75 @@
                     }
                   },
                   {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
+                        ]
+                      }
+                    }
+                  },
+                  {
                     "description": "A path that is horizontal.",
                     "type": "object",
                     "required": [
@@ -49289,6 +53132,75 @@
                       "type": "string",
                       "enum": [
                         "TangentialArcTo"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "description": "A arc that is tangential to the last path segment",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "TangentialArc"
                       ]
                     }
                   }
@@ -50223,6 +54135,75 @@
                     }
                   },
                   {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
+                        ]
+                      }
+                    }
+                  },
+                  {
                     "description": "A path that is horizontal.",
                     "type": "object",
                     "required": [
@@ -51105,6 +55086,75 @@
                       "type": "string",
                       "enum": [
                         "TangentialArcTo"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "description": "A arc that is tangential to the last path segment",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "TangentialArc"
                       ]
                     }
                   }
@@ -52039,6 +56089,75 @@
                     }
                   },
                   {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
+                        ]
+                      }
+                    }
+                  },
+                  {
                     "description": "A path that is horizontal.",
                     "type": "object",
                     "required": [
@@ -52921,6 +57040,75 @@
                       "type": "string",
                       "enum": [
                         "TangentialArcTo"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "description": "A arc that is tangential to the last path segment",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "TangentialArc"
                       ]
                     }
                   }

@@ -1047,14 +1047,7 @@ fn store_object_with_array_property() {
 #[ignore = "haven't done API calls or stdlib yet"]
 #[test]
 fn stdlib_api_calls() {
-    let program = "const x0 = startSketchAt([0, 0])
-        const x1 = line([0, 10], x0)
-        const x2 = line([10, 0], x1)
-        const x3 = line([0, -10], x2)
-        const x4 = line([0, 0], x3)
-        const x5 = close(x4)
-        const x6 = extrude(20, x5)
-      show(x6)";
+    let program = include_str!("../../tests/executor/inputs/cube.kcl");
     must_plan(program);
 }
 
