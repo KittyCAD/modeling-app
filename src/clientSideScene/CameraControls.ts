@@ -1,5 +1,6 @@
 import { MouseGuard } from 'lib/cameraControls'
 import {
+  Euler,
   MathUtils,
   OrthographicCamera,
   PerspectiveCamera,
@@ -14,14 +15,77 @@ import {
   SKETCH_LAYER,
   ZOOM_MAGIC_NUMBER,
 } from './sceneInfra'
-import { engineCommandManager } from 'lang/std/engineConnection'
+import { EngineCommand, engineCommandManager } from 'lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
+import { deg2Rad } from 'lib/utils2d'
+import { throttle } from 'lib/utils'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 
 interface Callbacks {
   onCameraChange?: () => void
 }
+
+// there two of these now, delete one
+interface ThreeCamValues {
+  position: Vector3
+  quaternion: Quaternion
+  zoom: number
+  isPerspective: boolean
+  target: Vector3
+}
+
+const lastCmdDelay = 50
+
+let lastPerspectiveCmd: EngineCommand | null = null
+let lastPerspectiveCmdTime: number = Date.now()
+let lastPerspectiveCmdTimeoutId: number | null = null
+
+const sendLastPerspectiveReliableChannel = () => {
+  if (
+    lastPerspectiveCmd &&
+    Date.now() - lastPerspectiveCmdTime >= lastCmdDelay
+  ) {
+    engineCommandManager.sendSceneCommand(lastPerspectiveCmd, true)
+    lastPerspectiveCmdTime = Date.now()
+  }
+}
+
+// there two of these now, delete one
+const throttledUpdateEngineFov = throttle(
+  (vals: {
+    position: Vector3
+    quaternion: Quaternion
+    zoom: number
+    fov: number
+    target: Vector3
+  }) => {
+    const cmd: EngineCommand = {
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_perspective_settings',
+        ...convertThreeCamValuesToEngineCam({
+          ...vals,
+          isPerspective: true,
+        }),
+        fov_y: vals.fov,
+        ...calculateNearFarFromFOV(vals.fov),
+      },
+    }
+    engineCommandManager.sendSceneCommand(cmd)
+    lastPerspectiveCmd = cmd
+    lastPerspectiveCmdTime = Date.now()
+    if (lastPerspectiveCmdTimeoutId !== null) {
+      clearTimeout(lastPerspectiveCmdTimeoutId)
+    }
+    lastPerspectiveCmdTimeoutId = setTimeout(
+      sendLastPerspectiveReliableChannel,
+      lastCmdDelay
+    ) as any as number
+  },
+  1000 / 15
+)
 
 export class CameraControls {
   camera: PerspectiveCamera | OrthographicCamera
@@ -245,6 +309,66 @@ export class CameraControls {
     return this.camera
   }
 
+  dollyZoom = (newFov: number) => {
+    if (!(this.camera instanceof PerspectiveCamera)) {
+      console.warn('Dolly zoom is only applicable to perspective cameras.')
+      return
+    }
+    this.lastPerspectiveFov = newFov
+
+    // Calculate the direction vector from the camera towards the controls target
+    const direction = new Vector3()
+      .subVectors(this.target, this.camera.position)
+      .normalize()
+
+    // Calculate the distance to the controls target before changing the FOV
+    const distanceBefore = this.camera.position.distanceTo(this.target)
+
+    // Calculate the scale factor for the new FOV compared to the old one
+    // This needs to be calculated before updating the camera's FOV
+    const oldFov = this.camera.fov
+
+    const viewHeightFactor = (fov: number) => {
+      /*       * 
+              /|
+             / |
+            /  |
+           /   |
+          /    | viewHeight/2
+         /     |
+        /      |
+       /↙️fov/2 |
+      /________|
+      \        |
+       \._._._.|
+      */
+      return Math.tan(deg2Rad(fov / 2))
+    }
+    const scaleFactor = viewHeightFactor(oldFov) / viewHeightFactor(newFov)
+
+    this.camera.fov = newFov
+    this.camera.updateProjectionMatrix()
+
+    const distanceAfter = distanceBefore * scaleFactor
+
+    const newPosition = this.target
+      .clone()
+      .add(direction.multiplyScalar(-distanceAfter))
+    this.camera.position.copy(newPosition)
+
+    const { z_near, z_far } = calculateNearFarFromFOV(this.lastPerspectiveFov)
+    this.camera.near = z_near
+    this.camera.far = z_far
+
+    throttledUpdateEngineFov({
+      fov: newFov,
+      position: newPosition,
+      quaternion: this.camera.quaternion,
+      zoom: this.camera.zoom,
+      target: this.target,
+    })
+  }
+
   update = () => {
     // If there are any changes that need to be applied to the camera, apply them here.
     // This could include rotations, panning, zooming, etc.
@@ -370,4 +494,45 @@ function calculateNearFarFromFOV(fov: number) {
   // const z_near = 0.1 + nearFarRatio * (5 - 0.1)
   const z_far = 1000 + nearFarRatio * (100000 - 1000)
   return { z_near: 0.1, z_far }
+}
+
+// currently duplicated, delete one
+function convertThreeCamValuesToEngineCam({
+  target,
+  position,
+  quaternion,
+  zoom,
+  isPerspective,
+}: ThreeCamValues): {
+  center: Vector3
+  up: Vector3
+  vantage: Vector3
+} {
+  // Something to consider is that the orbit controls have a target,
+  // we're kind of deriving the target/lookAtVector here when it might not be needed
+  // leaving for now since it's working but maybe revisit later
+  const euler = new Euler().setFromQuaternion(quaternion, 'XYZ')
+
+  const lookAtVector = new Vector3(0, 0, -1)
+    .applyEuler(euler)
+    .normalize()
+    .add(position)
+
+  const upVector = new Vector3(0, 1, 0).applyEuler(euler).normalize()
+  if (isPerspective) {
+    return {
+      center: target,
+      up: upVector,
+      vantage: position,
+    }
+  }
+  const fudgeFactor2 = zoom * 0.9979224466814468 - 0.03473692325839295
+  const zoomFactor = (-ZOOM_MAGIC_NUMBER + fudgeFactor2) / zoom
+  const direction = lookAtVector.clone().sub(position).normalize()
+  const newVantage = position.clone().add(direction.multiplyScalar(zoomFactor))
+  return {
+    center: lookAtVector,
+    up: upVector,
+    vantage: newVantage,
+  }
 }

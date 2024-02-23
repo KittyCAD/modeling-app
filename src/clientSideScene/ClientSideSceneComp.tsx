@@ -93,7 +93,7 @@ export const ClientSideScene = ({
 
 const throttled = throttle((a: ReactCameraProperties) => {
   if (a.type === 'perspective' && a.fov) {
-    sceneInfra.dollyZoom(a.fov)
+    sceneInfra.cameraControls.dollyZoom(a.fov)
   }
 }, 1000 / 15)
 
