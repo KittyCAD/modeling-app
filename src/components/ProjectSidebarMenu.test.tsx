@@ -40,6 +40,7 @@ const projectWellFormed = {
 
 const mockExportButton = vi.fn()
 vi.mock('/src/components/ExportButton', () => ({
+// engineCommandManager method call in ExportButton causes vitest to hang
   ExportButton: (props: ExportButtonProps) => {
     mockExportButton(props)
     return <button>Fake export button</button>
