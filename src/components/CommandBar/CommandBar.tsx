@@ -57,12 +57,11 @@ export const CommandBarProvider = ({
       }}
     >
       {children}
-      <CommandBar />
     </CommandsContext.Provider>
   )
 }
 
-const CommandBar = () => {
+export const CommandBar = () => {
   const { commandBarState, commandBarSend } = useCommandsContext()
   const {
     context: { selectedCommand, currentArgument, commands },
@@ -84,17 +83,25 @@ const CommandBar = () => {
       if (commandBarState.matches('Review')) {
         const entries = Object.entries(selectedCommand?.args || {})
 
-        commandBarSend({
-          type: commandBarState.matches('Review')
-            ? 'Edit argument'
-            : 'Change current argument',
-          data: {
-            arg: {
-              name: entries[entries.length - 1][0],
-              ...entries[entries.length - 1][1],
+        const currentArgName = entries[entries.length - 1][0]
+        const currentArg = {
+          name: currentArgName,
+          ...entries[entries.length - 1][1],
+        }
+
+        if (commandBarState.matches('Review')) {
+          commandBarSend({
+            type: 'Edit argument',
+            data: {
+              arg: currentArg,
             },
-          },
-        })
+          })
+        } else {
+          commandBarSend({
+            type: 'Remove argument',
+            data: { [currentArgName]: currentArg },
+          })
+        }
       } else {
         commandBarSend({ type: 'Deselect command' })
       }
@@ -116,6 +123,11 @@ const CommandBar = () => {
       }
     }
   }
+
+  useEffect(
+    () => console.log(commandBarState.context.argumentsToSubmit),
+    [commandBarState.context.argumentsToSubmit]
+  )
 
   return (
     <Transition.Root

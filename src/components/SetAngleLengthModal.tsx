@@ -5,10 +5,10 @@ import { Value } from '../lang/wasm'
 import {
   AvailableVars,
   addToInputHelper,
-  useCalc,
   CalcResult,
   CreateNewVariable,
 } from './AvailableVarsHelpers'
+import { useCalculateKclExpression } from 'lib/useCalculateKclExpression'
 
 type ModalResolve = {
   value: string
@@ -55,7 +55,7 @@ export const SetAngleLengthModal = ({
     setNewVariableName,
     inputRef,
     newVariableInsertIndex,
-  } = useCalc({
+  } = useCalculateKclExpression({
     value,
     initialVariableName: valueName,
   })

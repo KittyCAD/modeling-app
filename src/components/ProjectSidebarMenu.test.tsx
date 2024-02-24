@@ -3,8 +3,9 @@ import { BrowserRouter } from 'react-router-dom'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
 import { type ProjectWithEntryPointMetadata } from 'lib/types'
 import { GlobalStateProvider } from './GlobalStateProvider'
-import CommandBarProvider from './CommandBar/CommandBar'
 import { APP_NAME } from 'lib/constants'
+import { vi } from 'vitest'
+import { ExportButtonProps } from './ExportButton'
 
 const now = new Date()
 const projectWellFormed = {
@@ -38,15 +39,22 @@ const projectWellFormed = {
   },
 } satisfies ProjectWithEntryPointMetadata
 
+const mockExportButton = vi.fn()
+vi.mock('/src/components/ExportButton', () => ({
+  // engineCommandManager method call in ExportButton causes vitest to hang
+  ExportButton: (props: ExportButtonProps) => {
+    mockExportButton(props)
+    return <button>Fake export button</button>
+  },
+}))
+
 describe('ProjectSidebarMenu tests', () => {
   test('Renders the project name', () => {
     render(
       <BrowserRouter>
-        <CommandBarProvider>
-          <GlobalStateProvider>
-            <ProjectSidebarMenu project={projectWellFormed} />
-          </GlobalStateProvider>
-        </CommandBarProvider>
+        <GlobalStateProvider>
+          <ProjectSidebarMenu project={projectWellFormed} />
+        </GlobalStateProvider>
       </BrowserRouter>
     )
 
@@ -63,11 +71,9 @@ describe('ProjectSidebarMenu tests', () => {
   test('Renders app name if given no project', () => {
     render(
       <BrowserRouter>
-        <CommandBarProvider>
-          <GlobalStateProvider>
-            <ProjectSidebarMenu />
-          </GlobalStateProvider>
-        </CommandBarProvider>
+        <GlobalStateProvider>
+          <ProjectSidebarMenu />
+        </GlobalStateProvider>
       </BrowserRouter>
     )
 
@@ -79,14 +85,9 @@ describe('ProjectSidebarMenu tests', () => {
   test('Renders as a link if set to do so', () => {
     render(
       <BrowserRouter>
-        <CommandBarProvider>
-          <GlobalStateProvider>
-            <ProjectSidebarMenu
-              project={projectWellFormed}
-              renderAsLink={true}
-            />
-          </GlobalStateProvider>
-        </CommandBarProvider>
+        <GlobalStateProvider>
+          <ProjectSidebarMenu project={projectWellFormed} renderAsLink={true} />
+        </GlobalStateProvider>
       </BrowserRouter>
     )
 

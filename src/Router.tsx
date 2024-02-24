@@ -34,7 +34,9 @@ import {
   settingsMachine,
 } from './machines/settingsMachine'
 import { ContextFrom } from 'xstate'
-import CommandBarProvider from 'components/CommandBar/CommandBar'
+import CommandBarProvider, {
+  CommandBar,
+} from 'components/CommandBar/CommandBar'
 import { TEST, VITE_KC_SENTRY_DSN } from './env'
 import * as Sentry from '@sentry/react'
 import ModelingMachineProvider from 'components/ModelingMachineProvider'
@@ -117,6 +119,7 @@ const router = createBrowserRouter(
               <ModelingMachineProvider>
                 <Outlet />
                 <App />
+                <CommandBar />
               </ModelingMachineProvider>
               <WasmErrBanner />
             </FileMachineProvider>
@@ -218,6 +221,7 @@ const router = createBrowserRouter(
         <Auth>
           <Outlet />
           <Home />
+          <CommandBar />
         </Auth>
       ),
       loader: async (): Promise<HomeLoaderData | Response> => {

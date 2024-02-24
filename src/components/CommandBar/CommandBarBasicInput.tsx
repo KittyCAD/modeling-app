@@ -9,7 +9,7 @@ function CommandBarBasicInput({
   onSubmit,
 }: {
   arg: CommandArgument<unknown> & {
-    inputType: 'number' | 'string'
+    inputType: 'string'
     name: string
   }
   stepBack: () => void
@@ -18,7 +18,6 @@ function CommandBarBasicInput({
   const { commandBarSend, commandBarState } = useCommandsContext()
   useHotkeys('mod + k, mod + /', () => commandBarSend({ type: 'Close' }))
   const inputRef = useRef<HTMLInputElement>(null)
-  const inputType = arg.inputType === 'number' ? 'number' : 'text'
 
   useEffect(() => {
     if (inputRef.current) {
@@ -40,9 +39,9 @@ function CommandBarBasicInput({
         </span>
         <input
           id="arg-form"
-          name={inputType}
+          name={arg.inputType}
           ref={inputRef}
-          type={inputType}
+          type={arg.inputType}
           required
           className="flex-grow px-2 py-1 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80 !bg-transparent focus:outline-none"
           placeholder="Enter a value"
