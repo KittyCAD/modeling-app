@@ -28,8 +28,9 @@ import {
   interpolateProjectNameWithIndex,
 } from 'lib/tauriFS'
 import { ONBOARDING_PROJECT_NAME } from './Onboarding'
-import { join, sep } from '@tauri-apps/api/path'
+import { join } from '@tauri-apps/api/path'
 import { bracket } from 'lib/exampleKcl'
+import { isTauri } from 'lib/isTauri'
 
 export const Settings = () => {
   const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
@@ -170,7 +171,7 @@ export const Settings = () => {
             </li>
           </ul>
         </SettingsSection>
-        {(window as any).__TAURI__ && (
+        {isTauri() && (
           <>
             <SettingsSection
               title="Default Directory"
