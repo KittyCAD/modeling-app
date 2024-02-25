@@ -276,31 +276,31 @@ class SceneInfra {
   setCam = (camProps: ReactCameraProperties) => {
     if (
       camProps.type === 'perspective' &&
-      this.camera instanceof OrthographicCamera
+      this.cameraControls.camera instanceof OrthographicCamera
     ) {
       this.cameraControls.usePerspectiveCamera()
     } else if (
       camProps.type === 'orthographic' &&
-      this.camera instanceof PerspectiveCamera
+      this.cameraControls.camera instanceof PerspectiveCamera
     ) {
       this.cameraControls.useOrthographicCamera()
     }
-    this.camera.position.set(...camProps.position)
-    this.camera.quaternion.set(...camProps.quaternion)
+    this.cameraControls.camera.position.set(...camProps.position)
+    this.cameraControls.camera.quaternion.set(...camProps.quaternion)
     if (
       camProps.type === 'perspective' &&
-      this.camera instanceof PerspectiveCamera
+      this.cameraControls.camera instanceof PerspectiveCamera
     ) {
       // not sure what to do here, calling dollyZoom here is buggy because it updates the position
       // at the same time
     } else if (
       camProps.type === 'orthographic' &&
-      this.camera instanceof OrthographicCamera
+      this.cameraControls.camera instanceof OrthographicCamera
     ) {
-      this.camera.zoom = camProps.zoom || 1
+      this.cameraControls.camera.zoom = camProps.zoom || 1
     }
-    this.camera.updateProjectionMatrix()
-    this.controls.update()
+    this.cameraControls.camera.updateProjectionMatrix()
+    this.cameraControls.update(true)
   }
 
   constructor() {

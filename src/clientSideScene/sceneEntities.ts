@@ -228,7 +228,6 @@ class SceneEntities {
     )
     this.axisGroup.setRotationFromQuaternion(quat)
     this.scene.add(this.axisGroup)
-    sceneInfra.controls.update()
   }
   removeIntersectionPlane() {
     const intersectionPlane = this.scene.getObjectByName(RAYCASTABLE_PLANE)
@@ -797,9 +796,8 @@ class SceneEntities {
       onClick: (args) => {
         if (!args || !args.object) return
         if (args.event.which !== 1) return
-        const { object, intersection } = args
-        const type = object?.userData?.type || ''
-        console.log('intersection.normal?.z', intersection)
+        const { intersection } = args
+        const type = intersection.object.name || ''
         const posNorm = Number(intersection.normal?.z) > 0
         let planeString: DefaultPlaneStr = posNorm ? 'XY' : '-XY'
         let normal: [number, number, number] = posNorm ? [0, 0, 1] : [0, 0, -1]

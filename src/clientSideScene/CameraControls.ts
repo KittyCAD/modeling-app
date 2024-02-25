@@ -2,6 +2,7 @@ import { MouseGuard } from 'lib/cameraControls'
 import {
   Euler,
   MathUtils,
+  Matrix4,
   OrthographicCamera,
   PerspectiveCamera,
   Quaternion,
@@ -314,6 +315,7 @@ export class CameraControls {
       },
     })
     this.callbacks.onCameraChange?.()
+    this.update()
     return this.camera
   }
 
@@ -377,12 +379,12 @@ export class CameraControls {
     })
   }
 
-  update = () => {
+  update = (forceUpdate = false) => {
     // If there are any changes that need to be applied to the camera, apply them here.
     // This could include rotations, panning, zooming, etc.
 
     // For example, if you have a pending rotation that needs to be applied:
-    let didChange = false
+    let didChange = forceUpdate
     if (this.pendingRotation) {
       this.rotateCamera(this.pendingRotation.x, this.pendingRotation.y)
       this.pendingRotation = null // Clear the pending rotation after applying it
@@ -428,15 +430,11 @@ export class CameraControls {
       this.target.add(right)
       this.target.add(up)
       this.camera.position.copy(newPosition)
-      this.camera.lookAt(this.target)
       this.pendingPan = null
       didChange = true
     }
 
-    // Always look at the target
-    // TODO, we might need to implement this if it doesn't respect z-up
-    // most importantly when it's looking straight up or down as that's gimbal lock situation
-    this.camera.lookAt(this.target)
+    this.safeLookAtTarget()
 
     // Update the camera's matrices
     this.camera.updateMatrixWorld()
@@ -444,8 +442,7 @@ export class CameraControls {
       this.callbacks.onCameraChange?.()
     }
 
-    // If you're using damping or easing, you would apply it here as well
-    // This would typically involve interpolating between the current camera state and the desired state
+    // damping would be implemented here in update if we choose to add it.
   }
 
   // Additional methods for camera manipulation can be added here
@@ -490,10 +487,48 @@ export class CameraControls {
     this.camera.position.copy(this.target).add(offset)
 
     // Look at the target
-    this.camera.lookAt(this.target)
-
-    this.camera.up.set(0, 0, 1)
     this.camera.updateMatrixWorld()
+  }
+
+  safeLookAtTarget(up = new Vector3(0, 0, 1)) {
+    const quaternion = _lookAt(this.camera.position, this.target, up)
+    this.camera.quaternion.copy(quaternion)
+    this.camera.updateMatrixWorld()
+  }
+
+  tweenCamToNegYAxis(
+    // -90 degrees from the x axis puts the camera on the negative y axis
+    targetAngle = -Math.PI / 2,
+    duration = 500
+  ): Promise<void> {
+    // should tween the camera so that it has an xPosition of 0, and forcing it's yPosition to be negative
+    // zPosition should stay the same
+    const xyRadius = Math.sqrt(
+      this.camera.position.x ** 2 + this.camera.position.y ** 2
+    )
+    const xyAngle = Math.atan2(this.camera.position.y, this.camera.position.x)
+    this.callbacks.isCamMoving?.(true, true)
+    return new Promise((resolve) => {
+      new TWEEN.Tween({ angle: xyAngle })
+        .to({ angle: targetAngle }, duration)
+        .onUpdate((obj) => {
+          const x = xyRadius * Math.cos(obj.angle)
+          const y = xyRadius * Math.sin(obj.angle)
+          this.camera.position.set(x, y, this.camera.position.z)
+          this.update()
+          this.callbacks.onCameraChange?.()
+        })
+        .onComplete((obj) => {
+          const x = xyRadius * Math.cos(obj.angle)
+          const y = xyRadius * Math.sin(obj.angle)
+          this.camera.position.set(x, y, this.camera.position.z)
+          this.update()
+          this.callbacks.onCameraChange?.()
+          this.callbacks.isCamMoving?.(false, true)
+          resolve()
+        })
+        .start()
+    })
   }
 
   async tweenCameraToQuaternion(
@@ -502,14 +537,18 @@ export class CameraControls {
     toOrthographic = true
   ): Promise<void> {
     const isVertical = isQuaternionVertical(targetQuaternion)
-    let _duration = duration
+    let remainingDuration = duration
     if (isVertical) {
-      _duration = duration * 0.6
-      await this._tweenCameraToQuaternion(new Quaternion(), _duration, false)
+      remainingDuration = duration * 0.5
+      const orbitRotationDuration = duration * 0.65
+      let targetAngle = -Math.PI / 2
+      const v = new Vector3(0, 0, 1).applyQuaternion(targetQuaternion)
+      if (v.z < 0) targetAngle = Math.PI / 2
+      await this.tweenCamToNegYAxis(targetAngle, orbitRotationDuration)
     }
     await this._tweenCameraToQuaternion(
       targetQuaternion,
-      _duration,
+      remainingDuration,
       toOrthographic
     )
   }
@@ -548,6 +587,7 @@ export class CameraControls {
         // this.controls.update()
         this.camera.updateProjectionMatrix()
         this.update()
+        this.callbacks.onCameraChange?.()
       }
 
       const onComplete = async () => {
@@ -559,8 +599,6 @@ export class CameraControls {
           // todo reimplement animate to orthographic
           // await this.animateToOrthographic()
         }
-        if (isVertical) cameraAtTime(1)
-        this.camera.up.set(0, 0, 1)
         this.enableRotate = false
         this.callbacks.isCamMoving?.(false, true)
         resolve()
@@ -628,4 +666,25 @@ function convertThreeCamValuesToEngineCam({
     up: upVector,
     vantage: newVantage,
   }
+}
+
+// Pure function helpers
+
+function _lookAt(position: Vector3, target: Vector3, up: Vector3): Quaternion {
+  // Direction from position to target, normalized.
+  let direction = new Vector3().subVectors(target, position).normalize()
+
+  // Calculate a new "effective" up vector that is orthogonal to the direction.
+  // This step ensures that the up vector does not affect the direction the camera is looking.
+  let right = new Vector3().crossVectors(direction, up).normalize()
+  let orthogonalUp = new Vector3().crossVectors(right, direction).normalize()
+
+  // Create a lookAt matrix using the position, and the recalculated orthogonal up vector.
+  let lookAtMatrix = new Matrix4()
+  lookAtMatrix.lookAt(position, target, orthogonalUp)
+
+  // Create a quaternion from the lookAt matrix.
+  let quaternion = new Quaternion().setFromRotationMatrix(lookAtMatrix)
+
+  return quaternion
 }
