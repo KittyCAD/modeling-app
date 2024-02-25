@@ -4,7 +4,7 @@ import { engineCommandManager } from 'lang/std/engineConnection'
 import { throttle, isReducedMotion } from 'lib/utils'
 
 const updateDollyZoom = throttle(
-  (newFov: number) => sceneInfra.dollyZoom(newFov),
+  (newFov: number) => sceneInfra.cameraControls.dollyZoom(newFov),
   1000 / 15
 )
 
@@ -15,19 +15,19 @@ export const CamToggle = () => {
 
   useEffect(() => {
     engineCommandManager.waitForReady.then(async () => {
-      sceneInfra.dollyZoom(fov)
+      sceneInfra.cameraControls.dollyZoom(fov)
     })
   }, [])
 
   const toggleCamera = () => {
     if (isPerspective) {
       isReducedMotion()
-        ? sceneInfra.useOrthographicCamera()
-        : sceneInfra.animateToOrthographic()
+        ? sceneInfra.cameraControls.useOrthographicCamera()
+        : sceneInfra.cameraControls.animateToOrthographic()
     } else {
       isReducedMotion()
-        ? sceneInfra.usePerspectiveCamera()
-        : sceneInfra.animateToPerspective()
+        ? sceneInfra.cameraControls.usePerspectiveCamera()
+        : sceneInfra.cameraControls.animateToPerspective()
     }
     setIsPerspective(!isPerspective)
   }
@@ -60,9 +60,9 @@ export const CamToggle = () => {
       <button
         onClick={() => {
           if (enableRotate) {
-            sceneInfra.controls.enableRotate = false
+            sceneInfra.cameraControls.enableRotate = false
           } else {
-            sceneInfra.controls.enableRotate = true
+            sceneInfra.cameraControls.enableRotate = true
           }
           setEnableRotate(!enableRotate)
         }}
