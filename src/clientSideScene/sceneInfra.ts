@@ -927,7 +927,7 @@ class SceneInfra {
     }
 
     // Check the center point
-    this.raycaster.setFromCamera(mouseDownVector, this.camera)
+    this.raycaster.setFromCamera(mouseDownVector, this.cameraControls.camera)
     updateClosestIntersection(
       this.raycaster.intersectObjects(this.scene.children, true)
     )
@@ -942,7 +942,7 @@ class SceneInfra {
         mouseDownVector.x + offsetX,
         mouseDownVector.y - offsetY
       )
-      this.raycaster.setFromCamera(ringVector, this.camera)
+      this.raycaster.setFromCamera(ringVector, this.cameraControls.camera)
       updateClosestIntersection(
         this.raycaster.intersectObjects(this.scene.children, true)
       )
