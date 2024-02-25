@@ -728,9 +728,9 @@ class SceneEntities {
     if (isReducedMotion()) {
       sceneInfra.cameraControls.usePerspectiveCamera()
     } else {
-      sceneInfra.cameraControls.usePerspectiveCamera()
+      // sceneInfra.cameraControls.usePerspectiveCamera()
       // todo reimplement animateToPerspective
-      // await sceneInfra.animateToPerspective()
+      await sceneInfra.cameraControls.animateToPerspective()
     }
   }
   removeSketchGrid() {

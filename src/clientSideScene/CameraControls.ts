@@ -24,6 +24,7 @@ import { isReducedMotion, throttle } from 'lib/utils'
 import * as TWEEN from '@tweenjs/tween.js'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
+const FRAMES_TO_ANIMATE_IN = 30
 
 const tempQuaternion = new Quaternion() // just used for maths
 
@@ -127,6 +128,8 @@ export class CameraControls {
       },
     },
   }
+  isFovAnimationInProgress = false
+  fovBeforeOrtho = 45
   get isPerspective() {
     return this.camera instanceof PerspectiveCamera
   }
@@ -595,9 +598,7 @@ export class CameraControls {
           cameraAtTime(0.99)
           this.useOrthographicCamera()
         } else if (toOrthographic) {
-          this.useOrthographicCamera()
-          // todo reimplement animate to orthographic
-          // await this.animateToOrthographic()
+          await this.animateToOrthographic()
         }
         this.enableRotate = false
         this.callbacks.isCamMoving?.(false, true)
@@ -617,6 +618,69 @@ export class CameraControls {
         .start()
     })
   }
+
+  animateToOrthographic = () =>
+    new Promise((resolve) => {
+      this.isFovAnimationInProgress = true
+      let currentFov = this.lastPerspectiveFov
+      this.fovBeforeOrtho = currentFov
+
+      const targetFov = 4
+      const fovAnimationStep = (currentFov - targetFov) / FRAMES_TO_ANIMATE_IN
+      let frameWaitOnFinish = 10
+
+      const animateFovChange = () => {
+        if (this.camera instanceof PerspectiveCamera) {
+          if (this.camera.fov > targetFov) {
+            // Decrease the FOV
+            currentFov = Math.max(currentFov - fovAnimationStep, targetFov)
+            this.camera.updateProjectionMatrix()
+            this.dollyZoom(currentFov)
+            requestAnimationFrame(animateFovChange) // Continue the animation
+          } else if (frameWaitOnFinish > 0) {
+            frameWaitOnFinish--
+            requestAnimationFrame(animateFovChange) // Continue the animation
+          } else {
+            // Once the target FOV is reached, switch to the orthographic camera
+            // Needs to wait a couple frames after the FOV animation is complete
+            this.useOrthographicCamera()
+            this.isFovAnimationInProgress = false
+            resolve(true)
+          }
+        }
+      }
+
+      animateFovChange() // Start the animation
+    })
+  animateToPerspective = () =>
+    new Promise((resolve) => {
+      this.isFovAnimationInProgress = true
+      // Immediately set the camera to perspective with a very low FOV
+      console.log('the fov', this.lastPerspectiveFov)
+      const targetFov = this.fovBeforeOrtho // Target FOV for perspective
+      this.lastPerspectiveFov = 4
+      let currentFov = 4
+      this.camera.updateProjectionMatrix()
+      const fovAnimationStep = (targetFov - currentFov) / FRAMES_TO_ANIMATE_IN
+      this.usePerspectiveCamera()
+
+      const animateFovChange = () => {
+        if (this.camera instanceof OrthographicCamera) return
+        if (this.camera.fov < targetFov) {
+          // Increase the FOV
+          currentFov = Math.min(currentFov + fovAnimationStep, targetFov)
+          // this.camera.fov = currentFov
+          this.camera.updateProjectionMatrix()
+          this.dollyZoom(currentFov)
+          requestAnimationFrame(animateFovChange) // Continue the animation
+        } else {
+          // Set the flag to false as the FOV animation is complete
+          this.isFovAnimationInProgress = false
+          resolve(true)
+        }
+      }
+      animateFovChange() // Start the animation
+    })
 }
 
 // currently duplicated, delete one
