@@ -75,6 +75,13 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
         }));
     };
 
+    let mut sketch_group = *sketch_group.clone();
+
+    // If we were sketching on a face, we need the original face id.
+    if let SketchSurface::Face(face) = sketch_group.on {
+        sketch_group.id = face.sketch_group_id;
+    }
+
     let solid3d_info = args
         .send_modeling_cmd(
             id,
@@ -85,8 +92,6 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
         )
         .await?;
 
-    println!("solid3d_info: {:?}", solid3d_info);
-
     let face_infos = if let kittycad::types::OkWebSocketResponseData::Modeling {
         modeling_response: kittycad::types::OkModelingCmdResponse::Solid3DGetExtrusionFaceInfo { data },
     } = solid3d_info
@@ -95,8 +100,6 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
     } else {
         vec![]
     };
-
-    println!("face_infos: {:?}", face_infos);
 
     // Create a hashmap for quick id lookup
     let mut face_id_map = std::collections::HashMap::new();
