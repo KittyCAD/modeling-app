@@ -448,7 +448,7 @@ class SceneEntities {
         },
       })
     }
-    sceneInfra.controls.enableRotate = false
+    sceneInfra.cameraControls.enableRotate = false
   }
   updateAstAndRejigSketch = async (
     sketchPathToNode: PathToNode,

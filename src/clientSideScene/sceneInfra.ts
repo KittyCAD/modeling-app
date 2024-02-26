@@ -20,7 +20,6 @@ import {
   Object3DEventMap,
   BoxGeometry,
 } from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { compareVec2Epsilon2 } from 'lang/std/sketch'
 import { useModelingContext } from 'hooks/useModelingContext'
 import * as TWEEN from '@tweenjs/tween.js'
@@ -83,9 +82,7 @@ interface onMoveCallbackArgs {
 class SceneInfra {
   static instance: SceneInfra
   scene: Scene
-  camera: PerspectiveCamera | OrthographicCamera = new PerspectiveCamera()
   renderer: WebGLRenderer
-  controls: OrbitControls = {} as any
   cameraControls: CameraControls
   isPerspective = true
   fov = 45
