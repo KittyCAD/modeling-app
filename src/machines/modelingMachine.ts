@@ -732,15 +732,32 @@ export const modelingMachine = createMachine(
       'AST extrude': (_, event) => {
         if (!event.data) return
         const { selection, distance } = event.data
+        let ast = kclManager.ast
+        if (
+          'variableName' in distance &&
+          distance.variableName &&
+          distance.insertIndex !== undefined
+        ) {
+          console.log('adding variable!', distance)
+          const newBody = [...ast.body]
+          newBody.splice(
+            distance.insertIndex,
+            0,
+            distance.variableDeclarationAst
+          )
+          ast.body = newBody
+        }
         const pathToNode = getNodePathFromSourceRange(
-          kclManager.ast,
+          ast,
           selection.codeBasedSelections[0].range
         )
         const { modifiedAst, pathToExtrudeArg } = extrudeSketch(
-          kclManager.ast,
+          ast,
           pathToNode,
           true,
-          distance
+          'variableName' in distance
+            ? distance.variableIdentifierAst
+            : distance.valueAst
         )
         // TODO not handling focusPath correctly I think
         kclManager.updateAst(modifiedAst, true, {

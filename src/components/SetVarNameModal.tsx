@@ -1,10 +1,11 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
-import { useCalc, CreateNewVariable } from './AvailableVarsHelpers'
+import { CreateNewVariable } from './AvailableVarsHelpers'
 import { ActionButton } from './ActionButton'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { toast } from 'react-hot-toast'
 import { type InstanceProps, create } from 'react-modal-promise'
+import { useCalculateKclExpression } from 'lib/useCalculateKclExpression'
 
 type ModalResolve = { variableName: string }
 type ModalReject = boolean
@@ -25,7 +26,7 @@ export const SetVarNameModal = ({
   valueName,
 }: SetVarNameModalProps) => {
   const { isNewVariableNameUnique, newVariableName, setNewVariableName } =
-    useCalc({ value: '', initialVariableName: valueName })
+    useCalculateKclExpression({ value: '', initialVariableName: valueName })
 
   return (
     <Transition appear show={isOpen} as={Fragment}>

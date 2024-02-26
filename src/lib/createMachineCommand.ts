@@ -97,7 +97,7 @@ function buildCommandArguments<
 
   for (const arg in args) {
     const argConfig = args[arg] as CommandArgumentConfig<S[typeof arg], T>
-    const newArg = buildCommandArgument(argConfig, state, actor)
+    const newArg = buildCommandArgument(argConfig, arg, state, actor)
     newArgs[arg] = newArg
   }
 
@@ -109,6 +109,7 @@ function buildCommandArgument<
   T extends AnyStateMachine
 >(
   arg: CommandArgumentConfig<O, T>,
+  argName: string,
   state: StateFrom<T>,
   actor?: InterpreterFrom<T>
 ): CommandArgument<O, T> & { inputType: typeof arg.inputType } {
@@ -116,10 +117,6 @@ function buildCommandArgument<
     description: arg.description,
     required: arg.required,
     skip: arg.skip,
-    defaultValue:
-      arg.defaultValue instanceof Function
-        ? arg.defaultValue(state.context)
-        : arg.defaultValue,
   } satisfies Omit<CommandArgument<O, T>, 'inputType'>
 
   if (arg.inputType === 'options') {
@@ -136,6 +133,10 @@ function buildCommandArgument<
     return {
       inputType: arg.inputType,
       ...baseCommandArgument,
+      defaultValue:
+        arg.defaultValue instanceof Function
+          ? arg.defaultValue(state.context)
+          : arg.defaultValue,
       options,
     } satisfies CommandArgument<O, T> & { inputType: 'options' }
   } else if (arg.inputType === 'selection') {
@@ -149,9 +150,19 @@ function buildCommandArgument<
       selectionTypes: arg.selectionTypes,
       actor,
     } satisfies CommandArgument<O, T> & { inputType: 'selection' }
+  } else if (arg.inputType === 'kcl') {
+    return {
+      inputType: arg.inputType,
+      defaultValue: arg.defaultValue,
+      ...baseCommandArgument,
+    } satisfies CommandArgument<O, T> & { inputType: 'kcl' }
   } else {
     return {
       inputType: arg.inputType,
+      defaultValue:
+        arg.defaultValue instanceof Function
+          ? arg.defaultValue(state.context)
+          : arg.defaultValue,
       ...baseCommandArgument,
     }
   }

@@ -637,12 +637,15 @@ test('Can extrude from the command bar', async ({ page, context }) => {
   await context.addInitScript(async (token) => {
     localStorage.setItem(
       'persistCode',
-      `const part001 = startSketchOn('-XZ')
-    |> startProfileAt([-6.95, 4.98], %)
-    |> line([25.1, 0.41], %)
-    |> line([0.73, -14.93], %)
-    |> line([-23.44, 0.52], %)
-    |> close(%)`
+      `
+      const distance = sqrt(20)
+      const part001 = startSketchOn('-XZ')
+        |> startProfileAt([-6.95, 4.98], %)
+        |> line([25.1, 0.41], %)
+        |> line([0.73, -14.93], %)
+        |> line([-23.44, 0.52], %)
+        |> close(%)
+      `
     )
   })
 
@@ -667,24 +670,42 @@ test('Can extrude from the command bar', async ({ page, context }) => {
   // Click to select face and set distance
   await page.getByText('|> startProfileAt([-6.95, 4.98], %)').click()
   await page.getByRole('button', { name: 'Continue' }).click()
+
+  // Assert that we're on the distance step
   await expect(page.getByRole('button', { name: 'distance' })).toBeDisabled()
-  await page.keyboard.press('Enter')
+
+  // Assert that the an alternative variable name is chosen,
+  // since the default variable name is already in use (distance)
+  await page.getByRole('button', { name: 'Create new variable' }).click()
+  await expect(page.getByPlaceholder('Variable name')).toHaveValue(
+    'distance001'
+  )
+  await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled()
+  await page.getByRole('button', { name: 'Continue' }).click()
 
   // Review step and argument hotkeys
-  await page.keyboard.press('2')
-  await expect(page.getByRole('button', { name: '5' })).toBeDisabled()
+  await expect(
+    page.getByRole('button', { name: 'Submit command' })
+  ).toBeEnabled()
+  await page.keyboard.press('Backspace')
+  await expect(
+    page.getByRole('button', { name: 'Distance 12', exact: false })
+  ).toBeDisabled()
   await page.keyboard.press('Enter')
 
   // Check that the code was updated
   await page.keyboard.press('Enter')
+  // Unfortunately this indentation seems to matter for the test
   await expect(page.locator('.cm-content')).toHaveText(
-    `const part001 = startSketchOn('-XZ')
-    |> startProfileAt([-6.95, 4.98], %)
-    |> line([25.1, 0.41], %)
-    |> line([0.73, -14.93], %)
-    |> line([-23.44, 0.52], %)
-    |> close(%)
-    |> extrude(5, %)`
+    `const distance = sqrt(20)
+const distance001 = 5 + 7
+const part001 = startSketchOn('-XZ')
+  |> startProfileAt([-6.95, 4.98], %)
+  |> line([25.1, 0.41], %)
+  |> line([0.73, -14.93], %)
+  |> line([-23.44, 0.52], %)
+  |> close(%)
+  |> extrude(distance001, %)`.replace(/(\r\n|\n|\r)/gm, '') // remove newlines
   )
 })
 

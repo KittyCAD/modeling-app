@@ -7,10 +7,23 @@ import {
   InterpreterFrom,
 } from 'xstate'
 import { Selection } from './selections'
+import { Identifier, Value, VariableDeclaration } from 'lang/wasm'
 
 type Icon = CustomIconName
 const PLATFORMS = ['both', 'web', 'desktop'] as const
-const INPUT_TYPES = ['options', 'string', 'number', 'selection'] as const
+const INPUT_TYPES = ['options', 'string', 'kcl', 'selection'] as const
+export interface KclExpression {
+  valueAst: Value
+  valueText: string
+  valueCalculated: string
+}
+export interface KclExpressionWithVariable extends KclExpression {
+  variableName: string
+  variableDeclarationAst: VariableDeclaration
+  variableIdentifierAst: Identifier
+  insertIndex: number
+}
+export type KclCommandValue = KclExpression | KclExpressionWithVariable
 export type CommandInputType = (typeof INPUT_TYPES)[number]
 
 export type CommandSetSchema<T extends AnyStateMachine> = Partial<{
@@ -82,20 +95,24 @@ export type CommandArgumentConfig<
       description?: string
       required: boolean
       skip?: true
-      defaultValue?: OutputType | ((context: ContextFrom<T>) => OutputType)
     } & (
       | {
           inputType: Extract<CommandInputType, 'options'>
           options:
             | CommandArgumentOption<OutputType>[]
             | ((context: ContextFrom<T>) => CommandArgumentOption<OutputType>[])
+          defaultValue?: OutputType | ((context: ContextFrom<T>) => OutputType)
         }
       | {
           inputType: Extract<CommandInputType, 'selection'>
           selectionTypes: Selection['type'][]
           multiple: boolean
         }
-      | { inputType: Exclude<CommandInputType, 'options' | 'selection'> }
+      | { inputType: Extract<CommandInputType, 'kcl'>; defaultValue?: string } // KCL expression inputs have simple strings as default values
+      | {
+          inputType: Extract<CommandInputType, 'string'>
+          defaultValue?: OutputType | ((context: ContextFrom<T>) => OutputType)
+        }
     )
 
 export type CommandArgument<
@@ -106,11 +123,11 @@ export type CommandArgument<
       description?: string
       required: boolean
       skip?: true
-      defaultValue?: OutputType | ((context: ContextFrom<T>) => OutputType)
     } & (
       | {
           inputType: Extract<CommandInputType, 'options'>
           options: CommandArgumentOption<OutputType>[]
+          defaultValue?: OutputType
         }
       | {
           inputType: Extract<CommandInputType, 'selection'>
@@ -118,7 +135,11 @@ export type CommandArgument<
           actor: InterpreterFrom<T>
           multiple: boolean
         }
-      | { inputType: Exclude<CommandInputType, 'options' | 'selection'> }
+      | { inputType: Extract<CommandInputType, 'kcl'>; defaultValue?: string } // KCL expression inputs have simple strings as default values
+      | {
+          inputType: Extract<CommandInputType, 'string'>
+          defaultValue?: OutputType
+        }
     )
 
 export type CommandArgumentWithName<

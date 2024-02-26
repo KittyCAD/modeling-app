@@ -4,6 +4,7 @@ import CommandBarSelectionInput from './CommandBarSelectionInput'
 import { CommandArgument } from 'lib/commandTypes'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import CommandBarHeader from './CommandBarHeader'
+import CommandBarKclInput from './CommandBarKclInput'
 
 function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
   const { commandBarState, commandBarSend } = useCommandsContext()
@@ -17,10 +18,7 @@ function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
     commandBarSend({
       type: 'Submit argument',
       data: {
-        [currentArgument.name]:
-          currentArgument.inputType === 'number'
-            ? parseFloat((data as string) || '0')
-            : data,
+        [currentArgument.name]: data,
       },
     })
   }
@@ -67,6 +65,10 @@ function ArgumentInput({
           stepBack={stepBack}
           onSubmit={onSubmit}
         />
+      )
+    case 'kcl':
+      return (
+        <CommandBarKclInput arg={arg} stepBack={stepBack} onSubmit={onSubmit} />
       )
     default:
       return (
