@@ -311,7 +311,7 @@ export class CameraControls {
           const zoomFudgeFactor = 2280
           distance = zoomFudgeFactor / (this.camera.zoom * 45)
         }
-        const panSpeed = (distance / 1000 / 45) * this.lastPerspectiveFov
+        const panSpeed = (distance / 1000 / 45) * this.fovBeforeOrtho
         this.pendingPan.x += -deltaMove.x * panSpeed
         this.pendingPan.y += deltaMove.y * panSpeed
       }
@@ -511,7 +511,6 @@ export class CameraControls {
     if (this.pendingPan) {
       // move camera left/right and up/down
       const offset = this.camera.position.clone().sub(this.target)
-      // const distance = offset.length()
       const direction = offset.clone().normalize()
       const cameraQuaternion = this.camera.quaternion
       const up = new Vector3(0, 1, 0).applyQuaternion(cameraQuaternion)
@@ -596,9 +595,13 @@ export class CameraControls {
     // should tween the camera so that it has an xPosition of 0, and forcing it's yPosition to be negative
     // zPosition should stay the same
     const xyRadius = Math.sqrt(
-      this.camera.position.x ** 2 + this.camera.position.y ** 2
+      (this.target.x - this.camera.position.x) ** 2 +
+        (this.target.y - this.camera.position.y) ** 2
     )
-    const xyAngle = Math.atan2(this.camera.position.y, this.camera.position.x)
+    const xyAngle = Math.atan2(
+      this.camera.position.y - this.target.y,
+      this.camera.position.x - this.target.x
+    )
     this._isCamMovingCallback(true, true)
     return new Promise((resolve) => {
       new TWEEN.Tween({ angle: xyAngle })
@@ -606,18 +609,25 @@ export class CameraControls {
         .onUpdate((obj) => {
           const x = xyRadius * Math.cos(obj.angle)
           const y = xyRadius * Math.sin(obj.angle)
-          this.camera.position.set(x, y, this.camera.position.z)
+          this.camera.position.set(
+            this.target.x + x,
+            this.target.y + y,
+            this.camera.position.z
+          )
           this.update()
           this.onCameraChange()
         })
         .onComplete((obj) => {
           const x = xyRadius * Math.cos(obj.angle)
           const y = xyRadius * Math.sin(obj.angle)
-          this.camera.position.set(x, y, this.camera.position.z)
+          this.camera.position.set(
+            this.target.x + x,
+            this.target.y + y,
+            this.camera.position.z
+          )
           this.update()
           this.onCameraChange()
           this._isCamMovingCallback(false, true)
-          
           // resolve after a couple of frames
           requestAnimationFrame(() => {
             requestAnimationFrame(() => resolve())
@@ -749,7 +759,6 @@ export class CameraControls {
     new Promise((resolve) => {
       this.isFovAnimationInProgress = true
       // Immediately set the camera to perspective with a very low FOV
-      console.log('the fov', this.lastPerspectiveFov)
       const targetFov = this.fovBeforeOrtho // Target FOV for perspective
       this.lastPerspectiveFov = 4
       let currentFov = 4
