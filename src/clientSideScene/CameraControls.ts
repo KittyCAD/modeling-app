@@ -21,7 +21,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { deg2Rad } from 'lib/utils2d'
 import { isReducedMotion, roundOff, throttle } from 'lib/utils'
 import * as TWEEN from '@tweenjs/tween.js'
-import { compareVec2Epsilon2 } from 'lang/std/sketch'
+import { isQuaternionVertical } from './helpers'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
@@ -894,10 +894,4 @@ function _lookAt(position: Vector3, target: Vector3, up: Vector3): Quaternion {
   let quaternion = new Quaternion().setFromRotationMatrix(lookAtMatrix)
 
   return quaternion
-}
-
-export function isQuaternionVertical(q: Quaternion) {
-  const v = new Vector3(0, 0, 1).applyQuaternion(q)
-  // no x or y components means it's vertical
-  return compareVec2Epsilon2([v.x, v.y], [0, 0])
 }

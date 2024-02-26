@@ -33,7 +33,7 @@ import {
   Y_AXIS,
   YZ_PLANE,
 } from './sceneInfra'
-import { isQuaternionVertical } from './CameraControls'
+import { isQuaternionVertical } from './helpers'
 import {
   CallExpression,
   getTangentialArcToInfo,
