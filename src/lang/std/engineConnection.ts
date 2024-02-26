@@ -1014,7 +1014,7 @@ export class EngineCommandManager {
             gizmo_mode: true,
           },
         })
-        sceneInfra.onStreamStart()
+        sceneInfra.camControls.onCameraChange()
 
         this.initPlanes().then(() => {
           this.resolveReady()

@@ -4,11 +4,8 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { cameraMouseDragGuards } from 'lib/cameraControls'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { useStore } from 'useStore'
-import {
-  DEBUG_SHOW_BOTH_SCENES,
-  ReactCameraProperties,
-  sceneInfra,
-} from './sceneInfra'
+import { DEBUG_SHOW_BOTH_SCENES, sceneInfra } from './sceneInfra'
+import { ReactCameraProperties } from './CameraControls'
 import { throttle } from 'lib/utils'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
@@ -18,7 +15,7 @@ function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const { state } = useModelingContext()
 
   useEffect(() => {
-    sceneInfra.setIsCamMovingCallback((isMoving, isTween) => {
+    sceneInfra.camControls.setIsCamMovingCallback((isMoving, isTween) => {
       setIsCamMoving(isMoving)
       setIsTween(isTween)
     })
@@ -52,7 +49,8 @@ export const ClientSideScene = ({
   // Listen for changes to the camera controls setting
   // and update the client-side scene's controls accordingly.
   useEffect(() => {
-    sceneInfra.setInteractionGuards(cameraMouseDragGuards[cameraControls])
+    sceneInfra.camControls.interactionGuards =
+      cameraMouseDragGuards[cameraControls]
   }, [cameraControls])
   useEffect(() => {
     sceneInfra.updateOtherSelectionColors(
@@ -93,7 +91,7 @@ export const ClientSideScene = ({
 
 const throttled = throttle((a: ReactCameraProperties) => {
   if (a.type === 'perspective' && a.fov) {
-    sceneInfra.dollyZoom(a.fov)
+    sceneInfra.camControls.dollyZoom(a.fov)
   }
 }, 1000 / 15)
 
@@ -107,7 +105,7 @@ export const CamDebugSettings = () => {
   const [fov, setFov] = useState(12)
 
   useEffect(() => {
-    sceneInfra.setReactCameraPropertiesCallback(setCamSettings)
+    sceneInfra.camControls.setReactCameraPropertiesCallback(setCamSettings)
   }, [sceneInfra])
   useEffect(() => {
     if (camSettings.type === 'perspective' && camSettings.fov) {
@@ -124,9 +122,9 @@ export const CamDebugSettings = () => {
         checked={camSettings.type === 'perspective'}
         onChange={(e) => {
           if (camSettings.type === 'perspective') {
-            sceneInfra.useOrthographicCamera()
+            sceneInfra.camControls.useOrthographicCamera()
           } else {
-            sceneInfra.usePerspectiveCamera()
+            sceneInfra.camControls.usePerspectiveCamera()
           }
         }}
       />
@@ -156,7 +154,7 @@ export const CamDebugSettings = () => {
             value={camSettings.fov}
             className="text-black w-16"
             onChange={(e) => {
-              sceneInfra.setCam({
+              sceneInfra.camControls.setCam({
                 ...camSettings,
                 fov: parseFloat(e.target.value),
               })
@@ -173,7 +171,7 @@ export const CamDebugSettings = () => {
               value={camSettings.zoom}
               className="text-black w-16"
               onChange={(e) => {
-                sceneInfra.setCam({
+                sceneInfra.camControls.setCam({
                   ...camSettings,
                   zoom: parseFloat(e.target.value),
                 })
@@ -194,7 +192,7 @@ export const CamDebugSettings = () => {
               value={camSettings.position[0]}
               className="text-black w-16"
               onChange={(e) => {
-                sceneInfra.setCam({
+                sceneInfra.camControls.setCam({
                   ...camSettings,
                   position: [
                     parseFloat(e.target.value),
@@ -214,7 +212,7 @@ export const CamDebugSettings = () => {
               value={camSettings.position[1]}
               className="text-black w-16"
               onChange={(e) => {
-                sceneInfra.setCam({
+                sceneInfra.camControls.setCam({
                   ...camSettings,
                   position: [
                     camSettings.position[0],
@@ -234,7 +232,7 @@ export const CamDebugSettings = () => {
               value={camSettings.position[2]}
               className="text-black w-16"
               onChange={(e) => {
-                sceneInfra.setCam({
+                sceneInfra.camControls.setCam({
                   ...camSettings,
                   position: [
                     camSettings.position[0],

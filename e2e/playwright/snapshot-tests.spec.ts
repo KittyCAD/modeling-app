@@ -31,6 +31,12 @@ test.beforeEach(async ({ context, page }) => {
 
 test.setTimeout(60000)
 
+const commonPoints = {
+  startAt: '[26.38, -35.59]',
+  num1: 26.63,
+  num2: 53.01,
+}
+
 test('change camera, show planes', async ({ page, context }) => {
   const u = getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
@@ -451,10 +457,9 @@ test('Draft segments should look right', async ({ page }) => {
 
   const startXPx = 600
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  const startAt = '[23.74, -32.03]'
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt(${startAt}, %)`)
+  |> startProfileAt(${commonPoints.startAt}, %)`)
   await page.waitForTimeout(100)
 
   await u.closeDebugPanel()
@@ -466,11 +471,10 @@ test('Draft segments should look right', async ({ page }) => {
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
   await page.waitForTimeout(100)
 
-  const num = 23.97
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt(${startAt}, %)
-  |> line([${num}, 0], %)`)
+  |> startProfileAt(${commonPoints.startAt}, %)
+  |> line([${commonPoints.num1}, 0], %)`)
 
   await page.getByRole('button', { name: 'Tangential Arc' }).click()
 

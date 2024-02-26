@@ -13,7 +13,7 @@ type OutputTypeKey = OutputFormat['type']
 type ExtractStorageTypes<T> = T extends { storage: infer U } ? U : never
 type StorageUnion = ExtractStorageTypes<OutputFormat>
 
-interface ExportButtonProps extends React.PropsWithChildren {
+export interface ExportButtonProps extends React.PropsWithChildren {
   className?: {
     button?: string
     icon?: string

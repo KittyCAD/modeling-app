@@ -374,6 +374,7 @@ jobs:
   announce_release:
     needs: [publish-apps-release]
     runs-on: ubuntu-latest
+    if: github.event_name == 'release'
     steps:
       - name: Check out code
         uses: actions/checkout@v4

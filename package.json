@@ -85,7 +85,7 @@
     "wasm-prep": "rm -rf src/wasm-lib/pkg && mkdir src/wasm-lib/pkg && rm -rf src/wasm-lib/kcl/bindings",
     "lint": "eslint --fix src",
     "bump-jsons": "echo \"$(jq --arg v \"$VERSION\" '.version=$v' package.json --indent 2)\" > package.json && echo \"$(jq --arg v \"$VERSION\" '.package.version=$v' src-tauri/tauri.conf.json --indent 2)\" > src-tauri/tauri.conf.json",
-    "postinstall": "patch-package && yarn xstate:typegen",
+    "postinstall": "yarn xstate:typegen",
     "xstate:typegen": "yarn xstate typegen \"src/**/*.ts?(x)\""
   },
   "prettier": {
@@ -134,7 +134,6 @@
     "eslint-plugin-css-modules": "^2.12.0",
     "happy-dom": "^10.8.0",
     "husky": "^8.0.3",
-    "patch-package": "^8.0.0",
     "pixelmatch": "^5.3.0",
     "pngjs": "^7.0.0",
     "postcss": "^8.4.31",
