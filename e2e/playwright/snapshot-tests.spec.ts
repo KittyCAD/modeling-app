@@ -166,7 +166,7 @@ test('change camera, show planes', async ({ page, context }) => {
 //       }, %)
 //   |> angledLineToY([segAng('seg02', %) + 180, -baseHeight], %)
 //   |> xLineTo(ZERO, %)
-//   |> close(%) 
+//   |> close(%)
 //   |> extrude(4, %)`
 //     )
 //   })
