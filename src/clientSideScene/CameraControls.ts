@@ -28,7 +28,6 @@ const FRAMES_TO_ANIMATE_IN = 30
 
 const tempQuaternion = new Quaternion() // just used for maths
 
-// there two of these now, delete one
 interface ThreeCamValues {
   position: Vector3
   quaternion: Quaternion
@@ -100,7 +99,6 @@ const sendLastPerspectiveReliableChannel = () => {
   }
 }
 
-// there two of these now, delete one
 const throttledUpdateEngineFov = throttle(
   (vals: {
     position: Vector3
@@ -473,9 +471,7 @@ export class CameraControls {
 
   update = (forceUpdate = false) => {
     // If there are any changes that need to be applied to the camera, apply them here.
-    // This could include rotations, panning, zooming, etc.
 
-    // For example, if you have a pending rotation that needs to be applied:
     let didChange = forceUpdate
     if (this.pendingRotation) {
       this.rotateCamera(this.pendingRotation.x, this.pendingRotation.y)
@@ -483,7 +479,6 @@ export class CameraControls {
       didChange = true
     }
 
-    // // If you have a zoom level that needs to be applied:
     if (this.pendingZoom) {
       if (this.camera instanceof PerspectiveCamera) {
         // move camera towards or away from the target
@@ -536,8 +531,6 @@ export class CameraControls {
     // damping would be implemented here in update if we choose to add it.
   }
 
-  // Additional methods for camera manipulation can be added here
-  // For example, rotateCamera, zoomCamera, etc.
   rotateCamera = (deltaX: number, deltaY: number) => {
     const quat = new Quaternion().setFromUnitVectors(
       new Vector3(0, 0, 1),
@@ -628,6 +621,7 @@ export class CameraControls {
           this.update()
           this.onCameraChange()
           this._isCamMovingCallback(false, true)
+
           // resolve after a couple of frames
           requestAnimationFrame(() => {
             requestAnimationFrame(() => resolve())

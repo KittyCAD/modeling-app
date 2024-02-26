@@ -38,7 +38,7 @@ export const ZOOM_MAGIC_NUMBER = 63.5
 export const INTERSECTION_PLANE_LAYER = 1
 export const SKETCH_LAYER = 2
 export const DEBUG_SHOW_INTERSECTION_PLANE = false
-export const DEBUG_SHOW_BOTH_SCENES = true
+export const DEBUG_SHOW_BOTH_SCENES = false
 
 export const RAYCASTABLE_PLANE = 'raycastable-plane'
 export const DEFAULT_PLANES = 'default-planes'
@@ -83,7 +83,7 @@ class SceneInfra {
   static instance: SceneInfra
   scene: Scene
   renderer: WebGLRenderer
-  cameraControls: CameraControls
+  camControls: CameraControls
   isPerspective = true
   fov = 45
   fovBeforeAnimate = 45
@@ -162,12 +162,12 @@ class SceneInfra {
     const x = Math.cos(ang) * length
     const y = Math.sin(ang) * length
 
-    this.cameraControls = new CameraControls(false, this.renderer.domElement)
-    this.cameraControls.subscribeToCamChange(() => this.onCameraChange())
-    this.cameraControls.camera.layers.enable(SKETCH_LAYER)
-    this.cameraControls.camera.position.set(0, -x, y)
+    this.camControls = new CameraControls(false, this.renderer.domElement)
+    this.camControls.subscribeToCamChange(() => this.onCameraChange())
+    this.camControls.camera.layers.enable(SKETCH_LAYER)
+    this.camControls.camera.position.set(0, -x, y)
     if (DEBUG_SHOW_INTERSECTION_PLANE)
-      this.cameraControls.camera.layers.enable(INTERSECTION_PLANE_LAYER)
+      this.camControls.camera.layers.enable(INTERSECTION_PLANE_LAYER)
 
     // RAYCASTERS
     this.raycaster.layers.enable(SKETCH_LAYER)
@@ -205,8 +205,8 @@ class SceneInfra {
 
   onCameraChange = () => {
     const scale = getSceneScale(
-      this.cameraControls.camera,
-      this.cameraControls.target
+      this.camControls.camera,
+      this.camControls.target
     )
     const planesGroup = this.scene.getObjectByName(DEFAULT_PLANES)
     const axisGroup = this.scene
@@ -225,8 +225,8 @@ class SceneInfra {
     TWEEN.update() // This will update all tweens during the animation loop
     if (!this.isFovAnimationInProgress) {
       // console.log('animation frame', this.cameraControls.camera)
-      this.cameraControls.update()
-      this.renderer.render(this.scene, this.cameraControls.camera)
+      this.camControls.update()
+      this.renderer.render(this.scene, this.camControls.camera)
     }
   }
 
@@ -243,7 +243,7 @@ class SceneInfra {
   } | null => {
     this.planeRaycaster.setFromCamera(
       this.currentMouseVector,
-      sceneInfra.cameraControls.camera
+      sceneInfra.camControls.camera
     )
     const planeIntersects = this.planeRaycaster.intersectObjects(
       this.scene.children,
@@ -381,7 +381,7 @@ class SceneInfra {
     }
 
     // Check the center point
-    this.raycaster.setFromCamera(mouseDownVector, this.cameraControls.camera)
+    this.raycaster.setFromCamera(mouseDownVector, this.camControls.camera)
     updateClosestIntersection(
       this.raycaster.intersectObjects(this.scene.children, true)
     )
@@ -396,7 +396,7 @@ class SceneInfra {
         mouseDownVector.x + offsetX,
         mouseDownVector.y - offsetY
       )
-      this.raycaster.setFromCamera(ringVector, this.cameraControls.camera)
+      this.raycaster.setFromCamera(ringVector, this.camControls.camera)
       updateClosestIntersection(
         this.raycaster.intersectObjects(this.scene.children, true)
       )
@@ -490,8 +490,8 @@ class SceneInfra {
     })
     planesGroup.layers.enable(SKETCH_LAYER)
     const sceneScale = getSceneScale(
-      this.cameraControls.camera,
-      this.cameraControls.target
+      this.camControls.camera,
+      this.camControls.target
     )
     planesGroup.scale.set(sceneScale, sceneScale, sceneScale)
     this.scene.add(planesGroup)
