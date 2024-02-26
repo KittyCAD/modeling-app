@@ -49,7 +49,8 @@ export const ClientSideScene = ({
   // Listen for changes to the camera controls setting
   // and update the client-side scene's controls accordingly.
   useEffect(() => {
-    sceneInfra.setInteractionGuards(cameraMouseDragGuards[cameraControls])
+    sceneInfra.cameraControls.interactionGuards =
+      cameraMouseDragGuards[cameraControls]
   }, [cameraControls])
   useEffect(() => {
     sceneInfra.updateOtherSelectionColors(

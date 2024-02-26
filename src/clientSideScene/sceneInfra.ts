@@ -24,7 +24,6 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { compareVec2Epsilon2 } from 'lang/std/sketch'
 import { useModelingContext } from 'hooks/useModelingContext'
 import * as TWEEN from '@tweenjs/tween.js'
-import { MouseGuard, cameraMouseDragGuards } from 'lib/cameraControls'
 import { SourceRange } from 'lang/wasm'
 import { Axis } from 'lib/selections'
 import { BaseUnit, SETTINGS_PERSIST_KEY } from 'machines/settingsMachine'
@@ -93,7 +92,6 @@ class SceneInfra {
   fovBeforeAnimate = 45
   isFovAnimationInProgress = false
   cube: Mesh
-  interactionGuards: MouseGuard = cameraMouseDragGuards.KittyCAD
   onDragCallback: (arg: OnDragCallbackArgs) => void = () => {}
   onMoveCallback: (arg: onMoveCallbackArgs) => void = () => {}
   onClickCallback: (arg?: OnClickCallbackArgs) => void = () => {}
@@ -207,10 +205,6 @@ class SceneInfra {
     this.scene.add(light)
 
     SceneInfra.instance = this
-  }
-  setInteractionGuards = (guard: MouseGuard) => {
-    this.interactionGuards = guard
-    this.cameraControls.interactionGuards = guard
   }
 
   onCameraChange = () => {
