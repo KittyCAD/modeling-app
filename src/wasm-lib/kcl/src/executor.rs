@@ -240,6 +240,8 @@ pub struct Face {
     pub id: uuid::Uuid,
     /// The tag of the face.
     pub value: String,
+    /// The original sketch group id of the object we are sketching on.
+    pub sketch_group_id: uuid::Uuid,
     /// What should the face’s X axis be?
     pub x_axis: Point3d,
     /// What should the face’s Y axis be?

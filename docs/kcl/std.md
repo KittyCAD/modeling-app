@@ -163,6 +163,8 @@ angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup)
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -346,6 +348,8 @@ angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup)
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -539,6 +543,8 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -704,6 +710,8 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -893,6 +901,8 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -1058,6 +1068,8 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -1247,6 +1259,8 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -1412,6 +1426,8 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -1602,6 +1618,8 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -1767,6 +1785,8 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -1956,6 +1976,8 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -2121,6 +2143,8 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -2310,6 +2334,8 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -2475,6 +2501,8 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -2691,6 +2719,8 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -2856,6 +2886,8 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -3094,6 +3126,8 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -3259,6 +3293,8 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -3456,6 +3492,8 @@ close(sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -3621,6 +3659,8 @@ close(sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -3838,6 +3878,8 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -4196,6 +4238,8 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -4362,6 +4406,8 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -4527,6 +4573,8 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -4813,6 +4861,8 @@ lastSegX(sketch_group: SketchGroup) -> number
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -4994,6 +5044,8 @@ lastSegY(sketch_group: SketchGroup) -> number
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -5248,6 +5300,8 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -5413,6 +5467,8 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -5600,6 +5656,8 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -5765,6 +5823,8 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -6078,6 +6138,8 @@ patternCircular(data: CircularPatternData, geometry: Geometry) -> Geometries
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -6343,6 +6405,8 @@ patternLinear(data: LinearPatternData, geometry: Geometry) -> Geometries
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -6638,6 +6702,8 @@ segAng(segment_name: string, sketch_group: SketchGroup) -> number
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -6820,6 +6886,8 @@ segEndX(segment_name: string, sketch_group: SketchGroup) -> number
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -7002,6 +7070,8 @@ segEndY(segment_name: string, sketch_group: SketchGroup) -> number
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -7184,6 +7254,8 @@ segLen(segment_name: string, sketch_group: SketchGroup) -> number
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -7365,6 +7437,8 @@ show(sketch: SketchGroup)
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -7586,6 +7660,8 @@ startProfileAt(data: LineData, sketch_surface: SketchSurface) -> SketchGroup
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -7654,6 +7730,8 @@ startProfileAt(data: LineData, sketch_surface: SketchSurface) -> SketchGroup
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -7844,6 +7922,8 @@ startSketchAt(data: LineData) -> SketchGroup
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -8123,6 +8203,8 @@ string
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -8239,6 +8321,8 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -8404,6 +8488,8 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -8582,6 +8668,8 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchG
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -8748,6 +8836,8 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchG
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -8954,6 +9044,8 @@ number
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -9119,6 +9211,8 @@ number
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -9306,6 +9400,8 @@ number
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -9471,6 +9567,8 @@ number
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -9658,6 +9756,8 @@ number
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -9823,6 +9923,8 @@ number
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -10010,6 +10112,8 @@ number
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
@@ -10175,6 +10279,8 @@ number
 {
 	// The id of the face.
 	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
 	type: "face",
 	// The tag of the face.
 	value: string,
