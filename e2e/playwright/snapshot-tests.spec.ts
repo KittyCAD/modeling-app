@@ -348,7 +348,7 @@ const part001 = startSketchOn('-XZ')
   // snapshot exports, good compromise to capture that exports are healthy without getting bogged down in "did the formatting change" changes
   // context: https://github.com/KittyCAD/modeling-app/issues/1222
   for (const { modelPath, imagePath, outputType } of exportLocations) {
-    const cliCommand = `export KITTYCAD_TOKEN=${secrets.snapshottoken} && kittycad file snapshot --output-format=png --src-format=${outputType} ${modelPath} ${imagePath}`
+    const cliCommand = `export ZOO_TOKEN=${secrets.snapshottoken} && zoo file snapshot --output-format=png --src-format=${outputType} ${modelPath} ${imagePath}`
     const child = spawn(cliCommand, { shell: true })
     await new Promise((resolve, reject) => {
       child.on('error', (code: any, msg: any) => {
