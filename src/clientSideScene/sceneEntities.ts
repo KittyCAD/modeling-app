@@ -24,7 +24,6 @@ import {
   defaultPlaneColor,
   getSceneScale,
   INTERSECTION_PLANE_LAYER,
-  isQuaternionVertical,
   RAYCASTABLE_PLANE,
   sceneInfra,
   SKETCH_GROUP_SEGMENTS,
@@ -34,6 +33,7 @@ import {
   Y_AXIS,
   YZ_PLANE,
 } from './sceneInfra'
+import { isQuaternionVertical } from './CameraControls'
 import {
   CallExpression,
   getTangentialArcToInfo,
@@ -98,7 +98,7 @@ class SceneEntities {
   currentSketchQuaternion: Quaternion | null = null
   constructor() {
     this.scene = sceneInfra?.scene
-    sceneInfra?.setOnCamChange(this.onCamChange)
+    sceneInfra?.cameraControls.setOnCamChange(this.onCamChange)
   }
 
   onCamChange = () => {

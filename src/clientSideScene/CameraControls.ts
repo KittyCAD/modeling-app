@@ -15,13 +15,13 @@ import {
   INTERSECTION_PLANE_LAYER,
   SKETCH_LAYER,
   ZOOM_MAGIC_NUMBER,
-  isQuaternionVertical,
 } from './sceneInfra'
 import { EngineCommand, engineCommandManager } from 'lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
 import { deg2Rad } from 'lib/utils2d'
-import { isReducedMotion, throttle } from 'lib/utils'
+import { isReducedMotion, roundOff, throttle } from 'lib/utils'
 import * as TWEEN from '@tweenjs/tween.js'
+import { compareVec2Epsilon2 } from 'lang/std/sketch'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
@@ -30,7 +30,6 @@ const tempQuaternion = new Quaternion() // just used for maths
 
 interface Callbacks {
   onCameraChange?: () => void
-  isCamMoving?: (isMoving: boolean, isTween: boolean) => void
 }
 
 // there two of these now, delete one
@@ -42,7 +41,54 @@ interface ThreeCamValues {
   target: Vector3
 }
 
+export type ReactCameraProperties =
+  | {
+      type: 'perspective'
+      fov?: number
+      position: [number, number, number]
+      quaternion: [number, number, number, number]
+    }
+  | {
+      type: 'orthographic'
+      zoom?: number
+      position: [number, number, number]
+      quaternion: [number, number, number, number]
+    }
+
 const lastCmdDelay = 50
+
+let lastCmd: EngineCommand | null = null
+let lastCmdTime: number = Date.now()
+let lastCmdTimeoutId: number | null = null
+
+const sendLastReliableChannel = () => {
+  if (lastCmd && Date.now() - lastCmdTime >= lastCmdDelay) {
+    engineCommandManager.sendSceneCommand(lastCmd, true)
+    lastCmdTime = Date.now()
+  }
+}
+
+const throttledUpdateEngineCamera = throttle((threeValues: ThreeCamValues) => {
+  const cmd: EngineCommand = {
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_look_at',
+      ...convertThreeCamValuesToEngineCam(threeValues),
+    },
+  }
+  engineCommandManager.sendSceneCommand(cmd)
+  lastCmd = cmd
+  lastCmdTime = Date.now()
+
+  if (lastCmdTimeoutId !== null) {
+    clearTimeout(lastCmdTimeoutId)
+  }
+  lastCmdTimeoutId = setTimeout(
+    sendLastReliableChannel,
+    lastCmdDelay
+  ) as any as number
+}, 1000 / 30)
 
 let lastPerspectiveCmd: EngineCommand | null = null
 let lastPerspectiveCmdTime: number = Date.now()
@@ -134,6 +180,44 @@ export class CameraControls {
     return this.camera instanceof PerspectiveCamera
   }
 
+  // reacts hooks into some of this singleton's properties
+  reactCameraProperties: ReactCameraProperties = {
+    type: 'perspective',
+    fov: 12,
+    position: [0, 0, 0],
+    quaternion: [0, 0, 0, 1],
+  }
+
+  setCam = (camProps: ReactCameraProperties) => {
+    if (
+      camProps.type === 'perspective' &&
+      this.camera instanceof OrthographicCamera
+    ) {
+      this.usePerspectiveCamera()
+    } else if (
+      camProps.type === 'orthographic' &&
+      this.camera instanceof PerspectiveCamera
+    ) {
+      this.useOrthographicCamera()
+    }
+    this.camera.position.set(...camProps.position)
+    this.camera.quaternion.set(...camProps.quaternion)
+    if (
+      camProps.type === 'perspective' &&
+      this.camera instanceof PerspectiveCamera
+    ) {
+      // not sure what to do here, calling dollyZoom here is buggy because it updates the position
+      // at the same time
+    } else if (
+      camProps.type === 'orthographic' &&
+      this.camera instanceof OrthographicCamera
+    ) {
+      this.camera.zoom = camProps.zoom || 1
+    }
+    this.camera.updateProjectionMatrix()
+    this.update(true)
+  }
+
   constructor(
     isOrtho = false,
     domElement: HTMLCanvasElement,
@@ -158,6 +242,16 @@ export class CameraControls {
     this.onWindowResize()
 
     this.update()
+  }
+
+  private _isCamMovingCallback: (isMoving: boolean, isTween: boolean) => void =
+    () => {}
+  setIsCamMovingCallback(cb: (isMoving: boolean, isTween: boolean) => void) {
+    this._isCamMovingCallback = cb
+  }
+  private _onCamChange: () => void = () => {}
+  setOnCamChange(cb: () => void) {
+    this._onCamChange = cb
   }
 
   onWindowResize = () => {
@@ -272,7 +366,7 @@ export class CameraControls {
         type: 'default_camera_set_orthographic',
       },
     })
-    this.callbacks.onCameraChange?.()
+    this.onCameraChange()
   }
   private createPerspectiveCamera = () => {
     const { z_near, z_far } = calculateNearFarFromFOV(this.lastPerspectiveFov)
@@ -317,7 +411,7 @@ export class CameraControls {
         },
       },
     })
-    this.callbacks.onCameraChange?.()
+    this.onCameraChange()
     this.update()
     return this.camera
   }
@@ -442,7 +536,7 @@ export class CameraControls {
     // Update the camera's matrices
     this.camera.updateMatrixWorld()
     if (didChange) {
-      this.callbacks.onCameraChange?.()
+      this.onCameraChange()
     }
 
     // damping would be implemented here in update if we choose to add it.
@@ -510,7 +604,7 @@ export class CameraControls {
       this.camera.position.x ** 2 + this.camera.position.y ** 2
     )
     const xyAngle = Math.atan2(this.camera.position.y, this.camera.position.x)
-    this.callbacks.isCamMoving?.(true, true)
+    this._isCamMovingCallback(true, true)
     return new Promise((resolve) => {
       new TWEEN.Tween({ angle: xyAngle })
         .to({ angle: targetAngle }, duration)
@@ -519,15 +613,15 @@ export class CameraControls {
           const y = xyRadius * Math.sin(obj.angle)
           this.camera.position.set(x, y, this.camera.position.z)
           this.update()
-          this.callbacks.onCameraChange?.()
+          this.onCameraChange()
         })
         .onComplete((obj) => {
           const x = xyRadius * Math.cos(obj.angle)
           const y = xyRadius * Math.sin(obj.angle)
           this.camera.position.set(x, y, this.camera.position.z)
           this.update()
-          this.callbacks.onCameraChange?.()
-          this.callbacks.isCamMoving?.(false, true)
+          this.onCameraChange()
+          this._isCamMovingCallback(false, true)
           resolve()
         })
         .start()
@@ -562,7 +656,7 @@ export class CameraControls {
   ): Promise<void> {
     return new Promise((resolve) => {
       const camera = this.camera
-      this.callbacks.isCamMoving?.(true, true)
+      this._isCamMovingCallback(true, true)
       const initialQuaternion = camera.quaternion.clone()
       const isVertical = isQuaternionVertical(targetQuaternion)
       let tweenEnd = isVertical ? 0.99 : 1
@@ -590,7 +684,7 @@ export class CameraControls {
         // this.controls.update()
         this.camera.updateProjectionMatrix()
         this.update()
-        this.callbacks.onCameraChange?.()
+        this.onCameraChange()
       }
 
       const onComplete = async () => {
@@ -601,7 +695,7 @@ export class CameraControls {
           await this.animateToOrthographic()
         }
         this.enableRotate = false
-        this.callbacks.isCamMoving?.(false, true)
+        this._isCamMovingCallback(false, true)
         resolve()
       }
 
@@ -681,6 +775,54 @@ export class CameraControls {
       }
       animateFovChange() // Start the animation
     })
+
+  reactCameraPropertiesCallback: (a: ReactCameraProperties) => void = () => {}
+  setReactCameraPropertiesCallback = (
+    cb: (a: ReactCameraProperties) => void
+  ) => {
+    this.reactCameraPropertiesCallback = cb
+  }
+
+  deferReactUpdate = throttle((a: ReactCameraProperties) => {
+    this.reactCameraPropertiesCallback(a)
+  }, 200)
+
+  onCameraChange = () => {
+    const distance = this.target.distanceTo(this.camera.position)
+    if (this.camera.far / 2.1 < distance || this.camera.far / 1.9 > distance) {
+      this.camera.far = distance * 2
+      this.camera.near = distance / 10
+      this.camera.updateProjectionMatrix()
+    }
+
+    throttledUpdateEngineCamera({
+      quaternion: this.camera.quaternion,
+      position: this.camera.position,
+      zoom: this.camera.zoom,
+      isPerspective: this.isPerspective,
+      target: this.target,
+    })
+    this.deferReactUpdate({
+      type: this.isPerspective ? 'perspective' : 'orthographic',
+      [this.isPerspective ? 'fov' : 'zoom']:
+        this.camera instanceof PerspectiveCamera
+          ? this.camera.fov
+          : this.camera.zoom,
+      position: [
+        roundOff(this.camera.position.x, 2),
+        roundOff(this.camera.position.y, 2),
+        roundOff(this.camera.position.z, 2),
+      ],
+      quaternion: [
+        roundOff(this.camera.quaternion.x, 2),
+        roundOff(this.camera.quaternion.y, 2),
+        roundOff(this.camera.quaternion.z, 2),
+        roundOff(this.camera.quaternion.w, 2),
+      ],
+    })
+    this._onCamChange()
+    this.callbacks.onCameraChange?.()
+  }
 }
 
 // currently duplicated, delete one
@@ -751,4 +893,10 @@ function _lookAt(position: Vector3, target: Vector3, up: Vector3): Quaternion {
   let quaternion = new Quaternion().setFromRotationMatrix(lookAtMatrix)
 
   return quaternion
+}
+
+export function isQuaternionVertical(q: Quaternion) {
+  const v = new Vector3(0, 0, 1).applyQuaternion(q)
+  // no x or y components means it's vertical
+  return compareVec2Epsilon2([v.x, v.y], [0, 0])
 }

@@ -4,11 +4,8 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { cameraMouseDragGuards } from 'lib/cameraControls'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { useStore } from 'useStore'
-import {
-  DEBUG_SHOW_BOTH_SCENES,
-  ReactCameraProperties,
-  sceneInfra,
-} from './sceneInfra'
+import { DEBUG_SHOW_BOTH_SCENES, sceneInfra } from './sceneInfra'
+import { ReactCameraProperties } from './CameraControls'
 import { throttle } from 'lib/utils'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
@@ -18,7 +15,7 @@ function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const { state } = useModelingContext()
 
   useEffect(() => {
-    sceneInfra.setIsCamMovingCallback((isMoving, isTween) => {
+    sceneInfra.cameraControls.setIsCamMovingCallback((isMoving, isTween) => {
       setIsCamMoving(isMoving)
       setIsTween(isTween)
     })
@@ -107,7 +104,7 @@ export const CamDebugSettings = () => {
   const [fov, setFov] = useState(12)
 
   useEffect(() => {
-    sceneInfra.setReactCameraPropertiesCallback(setCamSettings)
+    sceneInfra.cameraControls.setReactCameraPropertiesCallback(setCamSettings)
   }, [sceneInfra])
   useEffect(() => {
     if (camSettings.type === 'perspective' && camSettings.fov) {
@@ -156,7 +153,7 @@ export const CamDebugSettings = () => {
             value={camSettings.fov}
             className="text-black w-16"
             onChange={(e) => {
-              sceneInfra.setCam({
+              sceneInfra.cameraControls.setCam({
                 ...camSettings,
                 fov: parseFloat(e.target.value),
               })
@@ -173,7 +170,7 @@ export const CamDebugSettings = () => {
               value={camSettings.zoom}
               className="text-black w-16"
               onChange={(e) => {
-                sceneInfra.setCam({
+                sceneInfra.cameraControls.setCam({
                   ...camSettings,
                   zoom: parseFloat(e.target.value),
                 })
@@ -194,7 +191,7 @@ export const CamDebugSettings = () => {
               value={camSettings.position[0]}
               className="text-black w-16"
               onChange={(e) => {
-                sceneInfra.setCam({
+                sceneInfra.cameraControls.setCam({
                   ...camSettings,
                   position: [
                     parseFloat(e.target.value),
@@ -214,7 +211,7 @@ export const CamDebugSettings = () => {
               value={camSettings.position[1]}
               className="text-black w-16"
               onChange={(e) => {
-                sceneInfra.setCam({
+                sceneInfra.cameraControls.setCam({
                   ...camSettings,
                   position: [
                     camSettings.position[0],
@@ -234,7 +231,7 @@ export const CamDebugSettings = () => {
               value={camSettings.position[2]}
               className="text-black w-16"
               onChange={(e) => {
-                sceneInfra.setCam({
+                sceneInfra.cameraControls.setCam({
                   ...camSettings,
                   position: [
                     camSettings.position[0],

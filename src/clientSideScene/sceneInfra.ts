@@ -1,12 +1,10 @@
 import {
   AmbientLight,
   Color,
-  Euler,
   GridHelper,
   LineBasicMaterial,
   OrthographicCamera,
   PerspectiveCamera,
-  Quaternion,
   Scene,
   Vector3,
   WebGLRenderer,
@@ -23,9 +21,6 @@ import {
   BoxGeometry,
 } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import { EngineCommand, engineCommandManager } from 'lang/std/engineConnection'
-import { v4 as uuidv4 } from 'uuid'
-import { roundOff, throttle } from 'lib/utils'
 import { compareVec2Epsilon2 } from 'lang/std/sketch'
 import { useModelingContext } from 'hooks/useModelingContext'
 import * as TWEEN from '@tweenjs/tween.js'
@@ -56,49 +51,6 @@ export const AXIS_GROUP = 'axisGroup'
 export const SKETCH_GROUP_SEGMENTS = 'sketch-group-segments'
 export const ARROWHEAD = 'arrowhead'
 
-interface ThreeCamValues {
-  position: Vector3
-  quaternion: Quaternion
-  zoom: number
-  isPerspective: boolean
-  target: Vector3
-}
-
-const lastCmdDelay = 50
-
-let lastCmd: EngineCommand | null = null
-let lastCmdTime: number = Date.now()
-let lastCmdTimeoutId: number | null = null
-
-const sendLastReliableChannel = () => {
-  if (lastCmd && Date.now() - lastCmdTime >= lastCmdDelay) {
-    engineCommandManager.sendSceneCommand(lastCmd, true)
-    lastCmdTime = Date.now()
-  }
-}
-
-const throttledUpdateEngineCamera = throttle((threeValues: ThreeCamValues) => {
-  const cmd: EngineCommand = {
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_look_at',
-      ...convertThreeCamValuesToEngineCam(threeValues),
-    },
-  }
-  engineCommandManager.sendSceneCommand(cmd)
-  lastCmd = cmd
-  lastCmdTime = Date.now()
-
-  if (lastCmdTimeoutId !== null) {
-    clearTimeout(lastCmdTimeoutId)
-  }
-  lastCmdTimeoutId = setTimeout(
-    sendLastReliableChannel,
-    lastCmdDelay
-  ) as any as number
-}, 1000 / 30)
-
 interface BaseCallbackArgs2 {
   object: any
   event: any
@@ -125,20 +77,6 @@ interface onMoveCallbackArgs {
   intersectPoint: Vector3
   intersection: Intersection<Object3D<Object3DEventMap>>
 }
-
-export type ReactCameraProperties =
-  | {
-      type: 'perspective'
-      fov?: number
-      position: [number, number, number]
-      quaternion: [number, number, number, number]
-    }
-  | {
-      type: 'orthographic'
-      zoom?: number
-      position: [number, number, number]
-      quaternion: [number, number, number, number]
-    }
 
 // This singleton class is responsible for all of the under the hood setup for the client side scene.
 // That is the cameras and switching between them, raycasters for click mouse events and their abstractions (onClick etc), setting up controls.
@@ -206,49 +144,6 @@ class SceneInfra {
   selectedObject: null | any = null
   mouseDownVector: null | Vector2 = null
 
-  // reacts hooks into some of this singleton's properties
-  reactCameraProperties: ReactCameraProperties = {
-    type: 'perspective',
-    fov: 12,
-    position: [0, 0, 0],
-    quaternion: [0, 0, 0, 1],
-  }
-  reactCameraPropertiesCallback: (a: ReactCameraProperties) => void = () => {}
-  setReactCameraPropertiesCallback = (
-    cb: (a: ReactCameraProperties) => void
-  ) => {
-    this.reactCameraPropertiesCallback = cb
-  }
-  setCam = (camProps: ReactCameraProperties) => {
-    if (
-      camProps.type === 'perspective' &&
-      this.cameraControls.camera instanceof OrthographicCamera
-    ) {
-      this.cameraControls.usePerspectiveCamera()
-    } else if (
-      camProps.type === 'orthographic' &&
-      this.cameraControls.camera instanceof PerspectiveCamera
-    ) {
-      this.cameraControls.useOrthographicCamera()
-    }
-    this.cameraControls.camera.position.set(...camProps.position)
-    this.cameraControls.camera.quaternion.set(...camProps.quaternion)
-    if (
-      camProps.type === 'perspective' &&
-      this.cameraControls.camera instanceof PerspectiveCamera
-    ) {
-      // not sure what to do here, calling dollyZoom here is buggy because it updates the position
-      // at the same time
-    } else if (
-      camProps.type === 'orthographic' &&
-      this.cameraControls.camera instanceof OrthographicCamera
-    ) {
-      this.cameraControls.camera.zoom = camProps.zoom || 1
-    }
-    this.cameraControls.camera.updateProjectionMatrix()
-    this.cameraControls.update(true)
-  }
-
   constructor() {
     // SCENE
     this.scene = new Scene()
@@ -313,24 +208,10 @@ class SceneInfra {
 
     SceneInfra.instance = this
   }
-  private _isCamMovingCallback: (isMoving: boolean, isTween: boolean) => void =
-    () => {}
-  setIsCamMovingCallback(cb: (isMoving: boolean, isTween: boolean) => void) {
-    this._isCamMovingCallback = cb
-  }
-  private _onCamChange: () => void = () => {}
-  setOnCamChange(cb: () => void) {
-    this._onCamChange = cb
-  }
   setInteractionGuards = (guard: MouseGuard) => {
     this.interactionGuards = guard
     this.cameraControls.interactionGuards = guard
   }
-  onStreamStart = () => this.onCameraChange()
-
-  deferReactUpdate = throttle((a: ReactCameraProperties) => {
-    this.reactCameraPropertiesCallback(a)
-  }, 200)
 
   onCameraChange = () => {
     const scale = getSceneScale(
@@ -343,45 +224,6 @@ class SceneInfra {
       ?.getObjectByName('gridHelper')
     planesGroup && planesGroup.scale.set(scale, scale, scale)
     axisGroup?.name === 'gridHelper' && axisGroup.scale.set(scale, scale, scale)
-
-    const distance = this.cameraControls.target.distanceTo(
-      this.cameraControls.camera.position
-    )
-    if (
-      sceneInfra.cameraControls.camera.far / 2.1 < distance ||
-      sceneInfra.cameraControls.camera.far / 1.9 > distance
-    ) {
-      this.cameraControls.camera.far = distance * 2
-      this.cameraControls.camera.near = distance / 10
-      this.cameraControls.camera.updateProjectionMatrix()
-    }
-
-    throttledUpdateEngineCamera({
-      quaternion: this.cameraControls.camera.quaternion,
-      position: this.cameraControls.camera.position,
-      zoom: this.cameraControls.camera.zoom,
-      isPerspective: this.cameraControls.isPerspective,
-      target: this.cameraControls.target,
-    })
-    this.deferReactUpdate({
-      type: this.cameraControls.isPerspective ? 'perspective' : 'orthographic',
-      [this.cameraControls.isPerspective ? 'fov' : 'zoom']:
-        this.cameraControls.camera instanceof PerspectiveCamera
-          ? this.cameraControls.camera.fov
-          : this.cameraControls.camera.zoom,
-      position: [
-        roundOff(this.cameraControls.camera.position.x, 2),
-        roundOff(this.cameraControls.camera.position.y, 2),
-        roundOff(this.cameraControls.camera.position.z, 2),
-      ],
-      quaternion: [
-        roundOff(this.cameraControls.camera.quaternion.x, 2),
-        roundOff(this.cameraControls.camera.quaternion.y, 2),
-        roundOff(this.cameraControls.camera.quaternion.z, 2),
-        roundOff(this.cameraControls.camera.quaternion.w, 2),
-      ],
-    })
-    this._onCamChange()
   }
 
   onWindowResize = () => {
@@ -695,46 +537,6 @@ class SceneInfra {
 
 export const sceneInfra = new SceneInfra()
 
-function convertThreeCamValuesToEngineCam({
-  target,
-  position,
-  quaternion,
-  zoom,
-  isPerspective,
-}: ThreeCamValues): {
-  center: Vector3
-  up: Vector3
-  vantage: Vector3
-} {
-  // Something to consider is that the orbit controls have a target,
-  // we're kind of deriving the target/lookAtVector here when it might not be needed
-  // leaving for now since it's working but maybe revisit later
-  const euler = new Euler().setFromQuaternion(quaternion, 'XYZ')
-
-  const lookAtVector = new Vector3(0, 0, -1)
-    .applyEuler(euler)
-    .normalize()
-    .add(position)
-
-  const upVector = new Vector3(0, 1, 0).applyEuler(euler).normalize()
-  if (isPerspective) {
-    return {
-      center: target,
-      up: upVector,
-      vantage: position,
-    }
-  }
-  const fudgeFactor2 = zoom * 0.9979224466814468 - 0.03473692325839295
-  const zoomFactor = (-ZOOM_MAGIC_NUMBER + fudgeFactor2) / zoom
-  const direction = lookAtVector.clone().sub(position).normalize()
-  const newVantage = position.clone().add(direction.multiplyScalar(zoomFactor))
-  return {
-    center: lookAtVector,
-    up: upVector,
-    vantage: newVantage,
-  }
-}
-
 export function getSceneScale(
   camera: PerspectiveCamera | OrthographicCamera,
   target: Vector3
@@ -768,12 +570,6 @@ function baseUnitTomm(baseUnit: BaseUnit) {
     case 'yd':
       return 914.4
   }
-}
-
-export function isQuaternionVertical(q: Quaternion) {
-  const v = new Vector3(0, 0, 1).applyQuaternion(q)
-  // no x or y components means it's vertical
-  return compareVec2Epsilon2([v.x, v.y], [0, 0])
 }
 
 export type DefaultPlane =
