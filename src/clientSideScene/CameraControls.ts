@@ -28,10 +28,6 @@ const FRAMES_TO_ANIMATE_IN = 30
 
 const tempQuaternion = new Quaternion() // just used for maths
 
-interface Callbacks {
-  onCameraChange?: () => void
-}
-
 // there two of these now, delete one
 interface ThreeCamValues {
   position: Vector3
@@ -155,7 +151,6 @@ export class CameraControls {
   pendingZoom: number | null = null
   pendingRotation: Vector2 | null = null
   pendingPan: Vector2 | null = null
-  callbacks: Callbacks
   interactionGuards: MouseGuard = {
     pan: {
       description: 'Right click + Shift + drag or middle click + drag',
@@ -218,12 +213,7 @@ export class CameraControls {
     this.update(true)
   }
 
-  constructor(
-    isOrtho = false,
-    domElement: HTMLCanvasElement,
-    callbacks: Callbacks
-  ) {
-    this.callbacks = callbacks
+  constructor(isOrtho = false, domElement: HTMLCanvasElement) {
     this.camera = isOrtho ? new OrthographicCamera() : new PerspectiveCamera()
     this.camera.up.set(0, 0, 1)
     this.camera.far = 20000
@@ -249,9 +239,14 @@ export class CameraControls {
   setIsCamMovingCallback(cb: (isMoving: boolean, isTween: boolean) => void) {
     this._isCamMovingCallback = cb
   }
-  private _onCamChange: () => void = () => {}
-  setOnCamChange(cb: () => void) {
-    this._onCamChange = cb
+  private _camChangeCallbacks: { [key: string]: () => void } = {}
+  subscribeToCamChange(cb: () => void) {
+    const cbId = uuidv4()
+    this._camChangeCallbacks[cbId] = cb
+    const unsubscribe = () => {
+      delete this._camChangeCallbacks[cbId]
+    }
+    return unsubscribe
   }
 
   onWindowResize = () => {
@@ -820,8 +815,7 @@ export class CameraControls {
         roundOff(this.camera.quaternion.w, 2),
       ],
     })
-    this._onCamChange()
-    this.callbacks.onCameraChange?.()
+    Object.values(this._camChangeCallbacks).forEach((cb) => cb())
   }
 }
 

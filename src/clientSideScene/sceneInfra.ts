@@ -165,9 +165,8 @@ class SceneInfra {
     const x = Math.cos(ang) * length
     const y = Math.sin(ang) * length
 
-    this.cameraControls = new CameraControls(false, this.renderer.domElement, {
-      onCameraChange: () => this.onCameraChange(),
-    })
+    this.cameraControls = new CameraControls(false, this.renderer.domElement)
+    this.cameraControls.subscribeToCamChange(() => this.onCameraChange())
     this.cameraControls.camera.layers.enable(SKETCH_LAYER)
     this.cameraControls.camera.position.set(0, -x, y)
     if (DEBUG_SHOW_INTERSECTION_PLANE)

@@ -98,7 +98,7 @@ class SceneEntities {
   currentSketchQuaternion: Quaternion | null = null
   constructor() {
     this.scene = sceneInfra?.scene
-    sceneInfra?.cameraControls.setOnCamChange(this.onCamChange)
+    sceneInfra?.cameraControls.subscribeToCamChange(this.onCamChange)
   }
 
   onCamChange = () => {
