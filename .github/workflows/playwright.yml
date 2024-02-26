@@ -29,42 +29,42 @@ jobs:
       run: yarn build:wasm
     - name: build web
       run: yarn build:local
-    # - name: Run ubuntu/chrome snapshots
-    #   run: yarn playwright test --project="Google Chrome" --update-snapshots e2e/playwright/snapshot-tests.spec.ts
-    #   env:
-    #     CI: true
-    #     token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-    #     snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
-    # - uses: actions/upload-artifact@v3
-    #   if: always()
-    #   with:
-    #     name: playwright-report
-    #     path: playwright-report/
-    #     retention-days: 30
-    # - name: check for changes
-    #   id: git-check
-    #   run: |
-    #       git add .
-    #       if git status | grep -q "Changes to be committed"
-    #       then
-    #         echo "::set-output name=modified::true"
-    #       else
-    #         echo "::set-output name=modified::false"
-    #       fi
-    # - name: Commit changes, if any
-    #   if: steps.git-check.outputs.modified == 'true'
-    #   run: |
-    #     git add .
-    #     git config --local user.email "github-actions[bot]@users.noreply.github.com"
-    #     git config --local user.name "github-actions[bot]"
-    #     git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-    #     git fetch origin
-    #     echo ${{ github.head_ref }}
-    #     git checkout ${{ github.head_ref }}
-    #     # TODO when safari works on ubuntu remove the os part of the commit message
-    #     git commit -am "A snapshot a day keeps the bugs away! 📷🐛 (OS: ubuntu)" || true
-    #     git push
-    #     git push origin ${{ github.head_ref }}
+    - name: Run ubuntu/chrome snapshots
+      run: yarn playwright test --project="Google Chrome" --update-snapshots e2e/playwright/snapshot-tests.spec.ts
+      env:
+        CI: true
+        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+        snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
+    - uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
+    - name: check for changes
+      id: git-check
+      run: |
+          git add .
+          if git status | grep -q "Changes to be committed"
+          then
+            echo "::set-output name=modified::true"
+          else
+            echo "::set-output name=modified::false"
+          fi
+    - name: Commit changes, if any
+      if: steps.git-check.outputs.modified == 'true'
+      run: |
+        git add .
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+        git fetch origin
+        echo ${{ github.head_ref }}
+        git checkout ${{ github.head_ref }}
+        # TODO when safari works on ubuntu remove the os part of the commit message
+        git commit -am "A snapshot a day keeps the bugs away! 📷🐛 (OS: ubuntu)" || true
+        git push
+        git push origin ${{ github.head_ref }}
     - name: Run ubuntu/chrome flow
       run: yarn playwright test --project="Google Chrome" e2e/playwright/flow-tests.spec.ts
       env:
