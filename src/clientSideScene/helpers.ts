@@ -1,3 +1,4 @@
+import { compareVec2Epsilon2 } from 'lang/std/sketch'
 import {
   GridHelper,
   LineBasicMaterial,
@@ -5,6 +6,8 @@ import {
   PerspectiveCamera,
   Group,
   Mesh,
+  Quaternion,
+  Vector3,
 } from 'three'
 
 export function createGridHelper({
@@ -31,3 +34,9 @@ export const orthoScale = (cam: OrthographicCamera | PerspectiveCamera) =>
 
 export const perspScale = (cam: PerspectiveCamera, group: Group | Mesh) =>
   (group.position.distanceTo(cam.position) * cam.fov) / 4000
+
+export function isQuaternionVertical(q: Quaternion) {
+  const v = new Vector3(0, 0, 1).applyQuaternion(q)
+  // no x or y components means it's vertical
+  return compareVec2Epsilon2([v.x, v.y], [0, 0])
+}
