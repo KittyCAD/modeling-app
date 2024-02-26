@@ -67,8 +67,8 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
     pan: {
       description: 'Right click + Ctrl + drag or middle click + drag',
       callback: (e) =>
-        (e.button === 2 && e.ctrlKey) ||
-        (e.button === 1 && noModifiersPressed(e)),
+        (butName(e).right && e.ctrlKey) ||
+        (butName(e).middle && noModifiersPressed(e)),
     },
     zoom: {
       description: 'Scroll wheel',
@@ -77,77 +77,77 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
     },
     rotate: {
       description: 'Right click + drag',
-      callback: (e) => e.button === 2 && noModifiersPressed(e),
+      callback: (e) => butName(e).right && noModifiersPressed(e),
     },
   },
   'Trackpad Friendly': {
     pan: {
       description: 'Left click + Alt + Shift + drag or middle click + drag',
       callback: (e) =>
-        (e.button === 0 && e.altKey && e.shiftKey && !e.metaKey) ||
-        (e.button === 1 && noModifiersPressed(e)),
+        (butName(e).left && e.altKey && e.shiftKey && !e.metaKey) ||
+        (butName(e).middle && noModifiersPressed(e)),
     },
     zoom: {
       description: 'Scroll wheel or Left click + Alt + OS + drag',
-      dragCallback: (e) => e.button === 0 && e.altKey && e.metaKey,
+      dragCallback: (e) => butName(e).left && e.altKey && e.metaKey,
       scrollCallback: () => true,
     },
     rotate: {
       description: 'Left click + Alt + drag',
-      callback: (e) => e.button === 0 && e.altKey && !e.shiftKey && !e.metaKey,
+      callback: (e) => butName(e).left && e.altKey && !e.shiftKey && !e.metaKey,
       lenientDragStartButton: 0,
     },
   },
   Solidworks: {
     pan: {
       description: 'Right click + Ctrl + drag',
-      callback: (e) => e.button === 2 && e.ctrlKey,
+      callback: (e) => butName(e).right && e.ctrlKey,
       lenientDragStartButton: 2,
     },
     zoom: {
       description: 'Scroll wheel or Middle click + Shift + drag',
-      dragCallback: (e) => e.button === 1 && e.shiftKey,
+      dragCallback: (e) => butName(e).middle && e.shiftKey,
       scrollCallback: () => true,
     },
     rotate: {
       description: 'Middle click + drag',
-      callback: (e) => e.button === 1 && noModifiersPressed(e),
+      callback: (e) => butName(e).middle && noModifiersPressed(e),
     },
   },
   NX: {
     pan: {
       description: 'Middle click + Shift + drag',
-      callback: (e) => e.button === 1 && e.shiftKey,
+      callback: (e) => butName(e).middle && e.shiftKey,
     },
     zoom: {
       description: 'Scroll wheel or Middle click + Ctrl + drag',
-      dragCallback: (e) => e.button === 1 && e.ctrlKey,
+      dragCallback: (e) => butName(e).middle && e.ctrlKey,
       scrollCallback: () => true,
     },
     rotate: {
       description: 'Middle click + drag',
-      callback: (e) => e.button === 1 && noModifiersPressed(e),
+      callback: (e) => butName(e).middle && noModifiersPressed(e),
     },
   },
   Creo: {
     pan: {
       description: 'Middle click + Shift + drag',
-      callback: (e) => e.button === 1 && e.shiftKey,
+      callback: (e) => butName(e).middle && e.shiftKey,
     },
     zoom: {
       description: 'Scroll wheel or Middle click + Ctrl + drag',
-      dragCallback: (e) => e.button === 1 && e.ctrlKey,
+      dragCallback: (e) => butName(e).middle && e.ctrlKey,
       scrollCallback: () => true,
     },
     rotate: {
       description: 'Middle click + drag',
-      callback: (e) => e.button === 1 && noModifiersPressed(e),
+      callback: (e) => butName(e).middle && noModifiersPressed(e),
     },
   },
   AutoCAD: {
     pan: {
       description: 'Middle click + drag',
-      callback: (e) => e.button === 1 && noModifiersPressed(e),
+      callback: (e) => butName(e).middle && noModifiersPressed(e),
     },
     zoom: {
       description: 'Scroll wheel',
@@ -156,7 +156,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
     },
     rotate: {
       description: 'Middle click + Shift + drag',
-      callback: (e) => e.button === 1 && e.shiftKey,
+      callback: (e) => butName(e).middle && e.shiftKey,
     },
   },
 }
