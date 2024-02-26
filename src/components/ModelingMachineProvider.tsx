@@ -374,6 +374,7 @@ export const ModelingMachineProvider = ({
     send: modelingSend,
     actor: modelingActor,
     commandBarConfig: modelingMachineConfig,
+    allCommandsRequireNetwork: true,
     onCancel: () => modelingSend({ type: 'Cancel' }),
   })
 

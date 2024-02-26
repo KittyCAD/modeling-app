@@ -16,6 +16,7 @@ import { engineCommandManager } from '../lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useKclContext } from 'lang/KclSingleton'
 import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
+import { NetworkHealthState, useNetworkStatus } from './NetworkHealthIndicator'
 
 export const Stream = ({ className = '' }: { className?: string }) => {
   const [isLoading, setIsLoading] = useState(true)
@@ -38,6 +39,8 @@ export const Stream = ({ className = '' }: { className?: string }) => {
   const cameraControls = settings?.context?.cameraControls
   const { state } = useModelingContext()
   const { isExecuting } = useKclContext()
+  const { overallState } = useNetworkStatus()
+  const isNetworkOkay = overallState === NetworkHealthState.Ok
 
   useEffect(() => {
     if (
@@ -164,6 +167,13 @@ export const Stream = ({ className = '' }: { className?: string }) => {
         style={{ transitionDuration: '200ms', transitionProperty: 'filter' }}
       />
       <ClientSideScene cameraControls={settings.context.cameraControls} />
+      {!isNetworkOkay && !isLoading && (
+        <div className="text-center absolute inset-0">
+          <Loading>
+            <span data-testid="loading-stream">Stream disconnected</span>
+          </Loading>
+        </div>
+      )}
       {isLoading && (
         <div className="text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
           <Loading>
