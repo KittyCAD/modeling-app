@@ -303,6 +303,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -335,6 +336,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -1294,6 +1300,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -1326,6 +1333,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -2313,6 +2325,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -2345,6 +2358,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -3269,6 +3287,7 @@
                 "required": [
                   "__meta",
                   "id",
+                  "sketchGroupId",
                   "type",
                   "value",
                   "xAxis",
@@ -3301,6 +3320,11 @@
                   },
                   "id": {
                     "description": "The id of the face.",
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "sketchGroupId": {
+                    "description": "The original sketch group id of the object we are sketching on.",
                     "type": "string",
                     "format": "uuid"
                   },
@@ -4278,6 +4302,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -4310,6 +4335,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -5234,6 +5264,7 @@
                 "required": [
                   "__meta",
                   "id",
+                  "sketchGroupId",
                   "type",
                   "value",
                   "xAxis",
@@ -5266,6 +5297,11 @@
                   },
                   "id": {
                     "description": "The id of the face.",
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "sketchGroupId": {
+                    "description": "The original sketch group id of the object we are sketching on.",
                     "type": "string",
                     "format": "uuid"
                   },
@@ -6243,6 +6279,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -6275,6 +6312,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -7199,6 +7241,7 @@
                 "required": [
                   "__meta",
                   "id",
+                  "sketchGroupId",
                   "type",
                   "value",
                   "xAxis",
@@ -7231,6 +7274,11 @@
                   },
                   "id": {
                     "description": "The id of the face.",
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "sketchGroupId": {
+                    "description": "The original sketch group id of the object we are sketching on.",
                     "type": "string",
                     "format": "uuid"
                   },
@@ -8198,6 +8246,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -8230,6 +8279,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -9154,6 +9208,7 @@
                 "required": [
                   "__meta",
                   "id",
+                  "sketchGroupId",
                   "type",
                   "value",
                   "xAxis",
@@ -9186,6 +9241,11 @@
                   },
                   "id": {
                     "description": "The id of the face.",
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "sketchGroupId": {
+                    "description": "The original sketch group id of the object we are sketching on.",
                     "type": "string",
                     "format": "uuid"
                   },
@@ -10163,6 +10223,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -10195,6 +10256,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -11119,6 +11185,7 @@
                 "required": [
                   "__meta",
                   "id",
+                  "sketchGroupId",
                   "type",
                   "value",
                   "xAxis",
@@ -11151,6 +11218,11 @@
                   },
                   "id": {
                     "description": "The id of the face.",
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "sketchGroupId": {
+                    "description": "The original sketch group id of the object we are sketching on.",
                     "type": "string",
                     "format": "uuid"
                   },
@@ -12128,6 +12200,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -12160,6 +12233,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -13084,6 +13162,7 @@
                 "required": [
                   "__meta",
                   "id",
+                  "sketchGroupId",
                   "type",
                   "value",
                   "xAxis",
@@ -13116,6 +13195,11 @@
                   },
                   "id": {
                     "description": "The id of the face.",
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "sketchGroupId": {
+                    "description": "The original sketch group id of the object we are sketching on.",
                     "type": "string",
                     "format": "uuid"
                   },
@@ -14192,6 +14276,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -14224,6 +14309,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -15148,6 +15238,7 @@
                 "required": [
                   "__meta",
                   "id",
+                  "sketchGroupId",
                   "type",
                   "value",
                   "xAxis",
@@ -15180,6 +15271,11 @@
                   },
                   "id": {
                     "description": "The id of the face.",
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "sketchGroupId": {
+                    "description": "The original sketch group id of the object we are sketching on.",
                     "type": "string",
                     "format": "uuid"
                   },
@@ -16265,6 +16361,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -16297,6 +16394,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -17221,6 +17323,7 @@
                 "required": [
                   "__meta",
                   "id",
+                  "sketchGroupId",
                   "type",
                   "value",
                   "xAxis",
@@ -17253,6 +17356,11 @@
                   },
                   "id": {
                     "description": "The id of the face.",
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "sketchGroupId": {
+                    "description": "The original sketch group id of the object we are sketching on.",
                     "type": "string",
                     "format": "uuid"
                   },
@@ -18213,6 +18321,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -18245,6 +18354,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -19169,6 +19283,7 @@
                 "required": [
                   "__meta",
                   "id",
+                  "sketchGroupId",
                   "type",
                   "value",
                   "xAxis",
@@ -19201,6 +19316,11 @@
                   },
                   "id": {
                     "description": "The id of the face.",
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "sketchGroupId": {
+                    "description": "The original sketch group id of the object we are sketching on.",
                     "type": "string",
                     "format": "uuid"
                   },
@@ -20188,6 +20308,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -20220,6 +20341,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -21855,6 +21981,7 @@
                       "required": [
                         "__meta",
                         "id",
+                        "sketchGroupId",
                         "type",
                         "value",
                         "xAxis",
@@ -21887,6 +22014,11 @@
                         },
                         "id": {
                           "description": "The id of the face.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sketchGroupId": {
+                          "description": "The original sketch group id of the object we are sketching on.",
                           "type": "string",
                           "format": "uuid"
                         },
@@ -22816,6 +22948,7 @@
                         "required": [
                           "__meta",
                           "id",
+                          "sketchGroupId",
                           "type",
                           "value",
                           "xAxis",
@@ -22848,6 +22981,11 @@
                           },
                           "id": {
                             "description": "The id of the face.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sketchGroupId": {
+                            "description": "The original sketch group id of the object we are sketching on.",
                             "type": "string",
                             "format": "uuid"
                           },
@@ -23785,6 +23923,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -23817,6 +23956,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -24741,6 +24885,7 @@
                 "required": [
                   "__meta",
                   "id",
+                  "sketchGroupId",
                   "type",
                   "value",
                   "xAxis",
@@ -24773,6 +24918,11 @@
                   },
                   "id": {
                     "description": "The id of the face.",
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "sketchGroupId": {
+                    "description": "The original sketch group id of the object we are sketching on.",
                     "type": "string",
                     "format": "uuid"
                   },
@@ -26355,6 +26505,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -26387,6 +26538,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -27329,6 +27485,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -27361,6 +27518,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -28458,6 +28620,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -28490,6 +28653,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -29414,6 +29582,7 @@
                 "required": [
                   "__meta",
                   "id",
+                  "sketchGroupId",
                   "type",
                   "value",
                   "xAxis",
@@ -29446,6 +29615,11 @@
                   },
                   "id": {
                     "description": "The id of the face.",
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "sketchGroupId": {
+                    "description": "The original sketch group id of the object we are sketching on.",
                     "type": "string",
                     "format": "uuid"
                   },
@@ -30422,6 +30596,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -30454,6 +30629,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -31378,6 +31558,7 @@
                 "required": [
                   "__meta",
                   "id",
+                  "sketchGroupId",
                   "type",
                   "value",
                   "xAxis",
@@ -31410,6 +31591,11 @@
                   },
                   "id": {
                     "description": "The id of the face.",
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "sketchGroupId": {
+                    "description": "The original sketch group id of the object we are sketching on.",
                     "type": "string",
                     "format": "uuid"
                   },
@@ -32582,6 +32768,7 @@
                       "required": [
                         "__meta",
                         "id",
+                        "sketchGroupId",
                         "type",
                         "value",
                         "xAxis",
@@ -32614,6 +32801,11 @@
                         },
                         "id": {
                           "description": "The id of the face.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sketchGroupId": {
+                          "description": "The original sketch group id of the object we are sketching on.",
                           "type": "string",
                           "format": "uuid"
                         },
@@ -33854,6 +34046,7 @@
                       "required": [
                         "__meta",
                         "id",
+                        "sketchGroupId",
                         "type",
                         "value",
                         "xAxis",
@@ -33886,6 +34079,11 @@
                         },
                         "id": {
                           "description": "The id of the face.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sketchGroupId": {
+                          "description": "The original sketch group id of the object we are sketching on.",
                           "type": "string",
                           "format": "uuid"
                         },
@@ -35183,6 +35381,7 @@
                       "required": [
                         "__meta",
                         "id",
+                        "sketchGroupId",
                         "type",
                         "value",
                         "xAxis",
@@ -35215,6 +35414,11 @@
                         },
                         "id": {
                           "description": "The id of the face.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sketchGroupId": {
+                          "description": "The original sketch group id of the object we are sketching on.",
                           "type": "string",
                           "format": "uuid"
                         },
@@ -36455,6 +36659,7 @@
                       "required": [
                         "__meta",
                         "id",
+                        "sketchGroupId",
                         "type",
                         "value",
                         "xAxis",
@@ -36487,6 +36692,11 @@
                         },
                         "id": {
                           "description": "The id of the face.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sketchGroupId": {
+                          "description": "The original sketch group id of the object we are sketching on.",
                           "type": "string",
                           "format": "uuid"
                         },
@@ -37806,6 +38016,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -37838,6 +38049,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -38788,6 +39004,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -38820,6 +39037,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -39770,6 +39992,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -39802,6 +40025,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -40752,6 +40980,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -40784,6 +41013,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -41726,6 +41960,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -41758,6 +41993,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -42741,6 +42981,7 @@
               "required": [
                 "__meta",
                 "id",
+                "sketchGroupId",
                 "type",
                 "value",
                 "xAxis",
@@ -42773,6 +43014,11 @@
                 },
                 "id": {
                   "description": "The id of the face.",
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "sketchGroupId": {
+                  "description": "The original sketch group id of the object we are sketching on.",
                   "type": "string",
                   "format": "uuid"
                 },
@@ -43087,6 +43333,7 @@
                 "required": [
                   "__meta",
                   "id",
+                  "sketchGroupId",
                   "type",
                   "value",
                   "xAxis",
@@ -43119,6 +43366,11 @@
                   },
                   "id": {
                     "description": "The id of the face.",
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "sketchGroupId": {
+                    "description": "The original sketch group id of the object we are sketching on.",
                     "type": "string",
                     "format": "uuid"
                   },
@@ -44096,6 +44348,7 @@
                 "required": [
                   "__meta",
                   "id",
+                  "sketchGroupId",
                   "type",
                   "value",
                   "xAxis",
@@ -44128,6 +44381,11 @@
                   },
                   "id": {
                     "description": "The id of the face.",
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "sketchGroupId": {
+                    "description": "The original sketch group id of the object we are sketching on.",
                     "type": "string",
                     "format": "uuid"
                   },
@@ -45506,6 +45764,7 @@
             "required": [
               "__meta",
               "id",
+              "sketchGroupId",
               "type",
               "value",
               "xAxis",
@@ -45538,6 +45797,11 @@
               },
               "id": {
                 "description": "The id of the face.",
+                "type": "string",
+                "format": "uuid"
+              },
+              "sketchGroupId": {
+                "description": "The original sketch group id of the object we are sketching on.",
                 "type": "string",
                 "format": "uuid"
               },
@@ -45951,6 +46215,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -45983,6 +46248,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -46907,6 +47177,7 @@
                 "required": [
                   "__meta",
                   "id",
+                  "sketchGroupId",
                   "type",
                   "value",
                   "xAxis",
@@ -46939,6 +47210,11 @@
                   },
                   "id": {
                     "description": "The id of the face.",
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "sketchGroupId": {
+                    "description": "The original sketch group id of the object we are sketching on.",
                     "type": "string",
                     "format": "uuid"
                   },
@@ -47885,6 +48161,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -47917,6 +48194,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -48850,6 +49132,7 @@
                 "required": [
                   "__meta",
                   "id",
+                  "sketchGroupId",
                   "type",
                   "value",
                   "xAxis",
@@ -48882,6 +49165,11 @@
                   },
                   "id": {
                     "description": "The id of the face.",
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "sketchGroupId": {
+                    "description": "The original sketch group id of the object we are sketching on.",
                     "type": "string",
                     "format": "uuid"
                   },
@@ -49866,6 +50154,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -49898,6 +50187,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -50822,6 +51116,7 @@
                 "required": [
                   "__meta",
                   "id",
+                  "sketchGroupId",
                   "type",
                   "value",
                   "xAxis",
@@ -50854,6 +51149,11 @@
                   },
                   "id": {
                     "description": "The id of the face.",
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "sketchGroupId": {
+                    "description": "The original sketch group id of the object we are sketching on.",
                     "type": "string",
                     "format": "uuid"
                   },
@@ -51820,6 +52120,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -51852,6 +52153,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -52776,6 +53082,7 @@
                 "required": [
                   "__meta",
                   "id",
+                  "sketchGroupId",
                   "type",
                   "value",
                   "xAxis",
@@ -52808,6 +53115,11 @@
                   },
                   "id": {
                     "description": "The id of the face.",
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "sketchGroupId": {
+                    "description": "The original sketch group id of the object we are sketching on.",
                     "type": "string",
                     "format": "uuid"
                   },
@@ -53774,6 +54086,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -53806,6 +54119,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -54730,6 +55048,7 @@
                 "required": [
                   "__meta",
                   "id",
+                  "sketchGroupId",
                   "type",
                   "value",
                   "xAxis",
@@ -54762,6 +55081,11 @@
                   },
                   "id": {
                     "description": "The id of the face.",
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "sketchGroupId": {
+                    "description": "The original sketch group id of the object we are sketching on.",
                     "type": "string",
                     "format": "uuid"
                   },
@@ -55728,6 +56052,7 @@
                   "required": [
                     "__meta",
                     "id",
+                    "sketchGroupId",
                     "type",
                     "value",
                     "xAxis",
@@ -55760,6 +56085,11 @@
                     },
                     "id": {
                       "description": "The id of the face.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sketchGroupId": {
+                      "description": "The original sketch group id of the object we are sketching on.",
                       "type": "string",
                       "format": "uuid"
                     },
@@ -56684,6 +57014,7 @@
                 "required": [
                   "__meta",
                   "id",
+                  "sketchGroupId",
                   "type",
                   "value",
                   "xAxis",
@@ -56716,6 +57047,11 @@
                   },
                   "id": {
                     "description": "The id of the face.",
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "sketchGroupId": {
+                    "description": "The original sketch group id of the object we are sketching on.",
                     "type": "string",
                     "format": "uuid"
                   },
