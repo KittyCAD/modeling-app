@@ -88,7 +88,6 @@ class SceneInfra {
   fov = 45
   fovBeforeAnimate = 45
   isFovAnimationInProgress = false
-  cube: Mesh
   onDragCallback: (arg: OnDragCallbackArgs) => void = () => {}
   onMoveCallback: (arg: onMoveCallbackArgs) => void = () => {}
   onClickCallback: (arg?: OnClickCallbackArgs) => void = () => {}
@@ -182,15 +181,6 @@ class SceneInfra {
       transparent: true,
       opacity: 0.5,
     })
-
-    // add a basic cube to the scene, debug delete soon
-    const geo = new BoxGeometry(1, 1, 1)
-    const mat = new MeshBasicMaterial({ color: 0x00ff00 })
-    this.cube = new Mesh(geo, mat)
-    this.cube.position.set(0, 0, 0)
-    this.cube.layers.enable(SKETCH_LAYER)
-
-    this.scene.add(this.cube)
 
     const gridHelper = new GridHelper(size, divisions, 0x0000ff, 0xffffff)
     gridHelper.material = gridHelperMaterial
