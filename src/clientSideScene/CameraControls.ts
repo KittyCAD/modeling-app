@@ -617,7 +617,11 @@ export class CameraControls {
           this.update()
           this.onCameraChange()
           this._isCamMovingCallback(false, true)
-          resolve()
+          
+          // resolve after a couple of frames
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => resolve())
+          })
         })
         .start()
     })
