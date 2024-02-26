@@ -253,7 +253,7 @@ jobs:
       - name: Run e2e tests (linux only)
         if: matrix.os == 'ubuntu-latest'
         run: |
-          cargo install tauri-driver@0.1.3
+          cargo install tauri-driver
           source .env.${{ env.BUILD_RELEASE == 'true' && 'production' || 'development' }}
           export VITE_KC_API_BASE_URL
           xvfb-run yarn test:e2e:tauri
