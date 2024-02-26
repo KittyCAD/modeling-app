@@ -321,8 +321,11 @@ export class CameraControls {
   }
 
   onMouseWheel = (event: WheelEvent) => {
+    // Assume trackpad if the deltas are small and integers
+    const isTrackpad = Math.abs(event.deltaY) <= 1 || event.deltaY % 1 === 0
+
+    const zoomSpeed = isTrackpad ? 0.02 : 0.1 // Reduced zoom speed for trackpad
     this.pendingZoom = this.pendingZoom ? this.pendingZoom : 1
-    const zoomSpeed = 0.1
     this.pendingZoom *= 1 + (event.deltaY > 0 ? zoomSpeed : -zoomSpeed)
   }
 
