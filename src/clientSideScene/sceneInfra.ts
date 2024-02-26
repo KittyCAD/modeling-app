@@ -25,10 +25,9 @@ import {
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { EngineCommand, engineCommandManager } from 'lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
-import { isReducedMotion, roundOff, throttle } from 'lib/utils'
+import { roundOff, throttle } from 'lib/utils'
 import { compareVec2Epsilon2 } from 'lang/std/sketch'
 import { useModelingContext } from 'hooks/useModelingContext'
-import { deg2Rad } from 'lib/utils2d'
 import * as TWEEN from '@tweenjs/tween.js'
 import { MouseGuard, cameraMouseDragGuards } from 'lib/cameraControls'
 import { SourceRange } from 'lang/wasm'
@@ -42,8 +41,6 @@ type SendType = ReturnType<typeof useModelingContext>['send']
 // if it were 64, that would feel like it's something in the engine where a random
 // power of 2 is used, but it's the 0.5 seems to make things look much more correct
 export const ZOOM_MAGIC_NUMBER = 63.5
-const FRAMES_TO_ANIMATE_IN = 30
-const ORTHOGRAPHIC_CAMERA_SIZE = 20
 
 export const INTERSECTION_PLANE_LAYER = 1
 export const SKETCH_LAYER = 2
@@ -58,8 +55,6 @@ export const Y_AXIS = 'yAxis'
 export const AXIS_GROUP = 'axisGroup'
 export const SKETCH_GROUP_SEGMENTS = 'sketch-group-segments'
 export const ARROWHEAD = 'arrowhead'
-
-const tempQuaternion = new Quaternion() // just used for maths
 
 interface ThreeCamValues {
   position: Vector3
@@ -103,55 +98,6 @@ const throttledUpdateEngineCamera = throttle((threeValues: ThreeCamValues) => {
     lastCmdDelay
   ) as any as number
 }, 1000 / 30)
-
-let lastPerspectiveCmd: EngineCommand | null = null
-let lastPerspectiveCmdTime: number = Date.now()
-let lastPerspectiveCmdTimeoutId: number | null = null
-
-const sendLastPerspectiveReliableChannel = () => {
-  if (
-    lastPerspectiveCmd &&
-    Date.now() - lastPerspectiveCmdTime >= lastCmdDelay
-  ) {
-    engineCommandManager.sendSceneCommand(lastPerspectiveCmd, true)
-    lastPerspectiveCmdTime = Date.now()
-  }
-}
-
-const throttledUpdateEngineFov = throttle(
-  (vals: {
-    position: Vector3
-    quaternion: Quaternion
-    zoom: number
-    fov: number
-    target: Vector3
-  }) => {
-    const cmd: EngineCommand = {
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_perspective_settings',
-        ...convertThreeCamValuesToEngineCam({
-          ...vals,
-          isPerspective: true,
-        }),
-        fov_y: vals.fov,
-        ...calculateNearFarFromFOV(vals.fov),
-      },
-    }
-    engineCommandManager.sendSceneCommand(cmd)
-    lastPerspectiveCmd = cmd
-    lastPerspectiveCmdTime = Date.now()
-    if (lastPerspectiveCmdTimeoutId !== null) {
-      clearTimeout(lastPerspectiveCmdTimeoutId)
-    }
-    lastPerspectiveCmdTimeoutId = setTimeout(
-      sendLastPerspectiveReliableChannel,
-      lastCmdDelay
-    ) as any as number
-  },
-  1000 / 15
-)
 
 interface BaseCallbackArgs2 {
   object: any
@@ -339,9 +285,6 @@ class SceneInfra {
     this.raycaster.layers.disable(0)
     this.planeRaycaster.layers.enable(INTERSECTION_PLANE_LAYER)
 
-    // CONTROLS
-    // this.controls = this.setupOrbitControls()
-
     // GRID
     const size = 100
     const divisions = 10
@@ -382,51 +325,6 @@ class SceneInfra {
   setInteractionGuards = (guard: MouseGuard) => {
     this.interactionGuards = guard
     this.cameraControls.interactionGuards = guard
-  }
-  private createPerspectiveCamera = () => {
-    const { z_near, z_far } = calculateNearFarFromFOV(this.fov)
-    this.camera = new PerspectiveCamera(
-      this.fov,
-      window.innerWidth / window.innerHeight,
-      z_near,
-      z_far
-    )
-    this.camera.up.set(0, 0, 1)
-    this.camera.layers.enable(SKETCH_LAYER)
-    if (DEBUG_SHOW_INTERSECTION_PLANE)
-      this.camera.layers.enable(INTERSECTION_PLANE_LAYER)
-
-    return this.camera
-  }
-  setupOrbitControls = (target?: [number, number, number]): OrbitControls => {
-    if (this.controls) this.controls.dispose()
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement)
-    if (target) {
-      // if we're swapping from perspective to orthographic,
-      // we'll need to recreate the orbit controls
-      // and most likely want the target to be the same
-      this.controls.target.set(...target)
-    }
-    this.controls.update()
-    // this.controls.addEventListener('change', this.onCameraChange)
-    // debounce is needed because the start and end events are fired too often for zoom on scroll
-    let debounceTimer = 0
-    const handleStart = () => {
-      if (debounceTimer) clearTimeout(debounceTimer)
-      this._isCamMovingCallback(true, false)
-    }
-    const handleEnd = () => {
-      debounceTimer = setTimeout(() => {
-        this._isCamMovingCallback(false, false)
-      }, 400) as any as number
-    }
-    this.controls.addEventListener('start', handleStart)
-    this.controls.addEventListener('end', handleEnd)
-
-    // setMouseGuards is oun patch-package patch to orbit controls
-    // see patches/three+0.160.0.patch
-    // ;(this.controls as any).setMouseGuards(this.interactionGuards)
-    return this.controls
   }
   onStreamStart = () => this.onCameraChange()
 
@@ -499,288 +397,12 @@ class SceneInfra {
       this.renderer.render(this.scene, this.cameraControls.camera)
     }
   }
-  async tweenCameraToQuaternion(
-    targetQuaternion: Quaternion,
-    duration = 500,
-    toOrthographic = true
-  ): Promise<void> {
-    const isVertical = isQuaternionVertical(targetQuaternion)
-    let _duration = duration
-    if (isVertical) {
-      _duration = duration * 0.6
-      await this._tweenCameraToQuaternion(new Quaternion(), _duration, false)
-    }
-    await this._tweenCameraToQuaternion(
-      targetQuaternion,
-      _duration,
-      toOrthographic
-    )
-  }
-  _tweenCameraToQuaternion(
-    targetQuaternion: Quaternion,
-    duration = 500,
-    toOrthographic = false
-  ): Promise<void> {
-    return new Promise((resolve) => {
-      const camera = this.camera
-      this._isCamMovingCallback(true, true)
-      const initialQuaternion = camera.quaternion.clone()
-      const isVertical = isQuaternionVertical(targetQuaternion)
-      let tweenEnd = isVertical ? 0.99 : 1
-      const controlsTarget = this.controls.target.clone()
-      const initialDistance = controlsTarget.distanceTo(camera.position.clone())
 
-      const cameraAtTime = (animationProgress: number /* 0 - 1 */) => {
-        const currentQ = tempQuaternion.slerpQuaternions(
-          initialQuaternion,
-          targetQuaternion,
-          animationProgress
-        )
-        if (this.camera instanceof PerspectiveCamera)
-          // changing the camera position back when it's orthographic doesn't do anything
-          // and it messes up animating back to perspective later
-          this.camera.position
-            .set(0, 0, 1)
-            .applyQuaternion(currentQ)
-            .multiplyScalar(initialDistance)
-            .add(controlsTarget)
-
-        this.camera.up.set(0, 1, 0).applyQuaternion(currentQ).normalize()
-        this.camera.quaternion.copy(currentQ)
-        this.controls.target.copy(controlsTarget)
-        this.controls.update()
-        this.camera.updateProjectionMatrix()
-      }
-
-      const onComplete = async () => {
-        if (isReducedMotion() && toOrthographic) {
-          cameraAtTime(0.99)
-          this.useOrthographicCamera()
-        } else if (toOrthographic) {
-          await this.animateToOrthographic()
-        }
-        if (isVertical) cameraAtTime(1)
-        this.camera.up.set(0, 0, 1)
-        this.controls.enableRotate = false
-        this._isCamMovingCallback(false, true)
-        resolve()
-      }
-
-      if (isReducedMotion()) {
-        onComplete()
-        return
-      }
-
-      new TWEEN.Tween({ t: 0 })
-        .to({ t: tweenEnd }, duration)
-        .easing(TWEEN.Easing.Quadratic.InOut)
-        .onUpdate(({ t }) => cameraAtTime(t))
-        .onComplete(onComplete)
-        .start()
-    })
-  }
-
-  animateToOrthographic = () =>
-    new Promise((resolve) => {
-      this.isFovAnimationInProgress = true
-      let currentFov = this.fov
-      this.fovBeforeAnimate = this.fov
-
-      const targetFov = 4
-      const fovAnimationStep = (currentFov - targetFov) / FRAMES_TO_ANIMATE_IN
-      let frameWaitOnFinish = 10
-
-      const animateFovChange = () => {
-        if (this.camera instanceof PerspectiveCamera) {
-          if (this.camera.fov > targetFov) {
-            // Decrease the FOV
-            currentFov = Math.max(currentFov - fovAnimationStep, targetFov)
-            this.camera.updateProjectionMatrix()
-            this.dollyZoom(currentFov)
-            requestAnimationFrame(animateFovChange) // Continue the animation
-          } else if (frameWaitOnFinish > 0) {
-            frameWaitOnFinish--
-            requestAnimationFrame(animateFovChange) // Continue the animation
-          } else {
-            // Once the target FOV is reached, switch to the orthographic camera
-            // Needs to wait a couple frames after the FOV animation is complete
-            this.useOrthographicCamera()
-            this.isFovAnimationInProgress = false
-            resolve(true)
-          }
-        }
-      }
-
-      animateFovChange() // Start the animation
-    })
-
-  animateToPerspective = () =>
-    new Promise((resolve) => {
-      this.isFovAnimationInProgress = true
-      // Immediately set the camera to perspective with a very low FOV
-      this.fov = 4
-      let currentFov = 4
-      this.camera.updateProjectionMatrix()
-      const targetFov = this.fovBeforeAnimate // Target FOV for perspective
-      const fovAnimationStep = (targetFov - currentFov) / FRAMES_TO_ANIMATE_IN
-      this.usePerspectiveCamera()
-
-      const animateFovChange = () => {
-        if (this.camera instanceof OrthographicCamera) return
-        if (this.camera.fov < targetFov) {
-          // Increase the FOV
-          currentFov = Math.min(currentFov + fovAnimationStep, targetFov)
-          // this.camera.fov = currentFov
-          this.camera.updateProjectionMatrix()
-          this.dollyZoom(currentFov)
-          requestAnimationFrame(animateFovChange) // Continue the animation
-        } else {
-          // Set the flag to false as the FOV animation is complete
-          this.isFovAnimationInProgress = false
-          resolve(true)
-        }
-      }
-      animateFovChange() // Start the animation
-    })
   dispose = () => {
     // Dispose of scene resources, renderer, and controls
     this.renderer.dispose()
     window.removeEventListener('resize', this.onWindowResize)
     // Dispose of any other resources like geometries, materials, textures
-  }
-
-  useOrthographicCamera = () => {
-    this.isPerspective = false
-    const { x: px, y: py, z: pz } = this.camera.position
-    const { x: qx, y: qy, z: qz, w: qw } = this.camera.quaternion
-    const { x: tx, y: ty, z: tz } = this.controls.target
-    const aspect = window.innerWidth / window.innerHeight
-    const { z_near, z_far } = calculateNearFarFromFOV(this.fov)
-    this.camera = new OrthographicCamera(
-      -ORTHOGRAPHIC_CAMERA_SIZE * aspect,
-      ORTHOGRAPHIC_CAMERA_SIZE * aspect,
-      ORTHOGRAPHIC_CAMERA_SIZE,
-      -ORTHOGRAPHIC_CAMERA_SIZE,
-      z_near,
-      z_far
-    )
-    this.camera.up.set(0, 0, 1)
-    this.camera.layers.enable(SKETCH_LAYER)
-    if (DEBUG_SHOW_INTERSECTION_PLANE)
-      this.camera.layers.enable(INTERSECTION_PLANE_LAYER)
-    this.camera.position.set(px, py, pz)
-    const distance = this.camera.position.distanceTo(new Vector3(tx, ty, tz))
-    const fovFactor = 45 / this.fov
-    this.camera.zoom = (ZOOM_MAGIC_NUMBER * fovFactor * 0.8) / distance
-
-    // this.setupOrbitControls([tx, ty, tz])
-    this.camera.quaternion.set(qx, qy, qz, qw)
-    this.camera.updateProjectionMatrix()
-    this.controls.update()
-    engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_set_orthographic',
-      },
-    })
-  }
-  usePerspectiveCamera = () => {
-    this.isPerspective = true
-    const { x: px, y: py, z: pz } = this.camera.position
-    const { x: qx, y: qy, z: qz, w: qw } = this.camera.quaternion
-    const { x: tx, y: ty, z: tz } = this.controls.target
-    const zoom = this.camera.zoom
-    this.camera = this.createPerspectiveCamera()
-
-    this.camera.position.set(px, py, pz)
-    this.camera.quaternion.set(qx, qy, qz, qw)
-    const zoomFudgeFactor = 2280
-    const distance = zoomFudgeFactor / (zoom * this.fov)
-    const direction = new Vector3().subVectors(
-      this.camera.position,
-      this.controls.target
-    )
-    direction.normalize()
-    this.camera.position
-      .copy(this.controls.target)
-      .addScaledVector(direction, distance)
-
-    // this.setupOrbitControls([tx, ty, tz])
-
-    engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_set_perspective',
-        parameters: {
-          fov_y: this.camera.fov,
-          ...calculateNearFarFromFOV(this.fov),
-        },
-      },
-    })
-    this.onCameraChange()
-    return this.camera
-  }
-
-  dollyZoom = (newFov: number) => {
-    if (!(this.camera instanceof PerspectiveCamera)) {
-      console.warn('Dolly zoom is only applicable to perspective cameras.')
-      return
-    }
-    this.fov = newFov
-
-    // Calculate the direction vector from the camera towards the controls target
-    const direction = new Vector3()
-      .subVectors(this.controls.target, this.camera.position)
-      .normalize()
-
-    // Calculate the distance to the controls target before changing the FOV
-    const distanceBefore = this.camera.position.distanceTo(this.controls.target)
-
-    // Calculate the scale factor for the new FOV compared to the old one
-    // This needs to be calculated before updating the camera's FOV
-    const oldFov = this.camera.fov
-
-    const viewHeightFactor = (fov: number) => {
-      /*       * 
-              /|
-             / |
-            /  |
-           /   |
-          /    | viewHeight/2
-         /     |
-        /      |
-       /↙️fov/2 |
-      /________|
-      \        |
-       \._._._.|
-      */
-      return Math.tan(deg2Rad(fov / 2))
-    }
-    const scaleFactor = viewHeightFactor(oldFov) / viewHeightFactor(newFov)
-
-    this.camera.fov = newFov
-    this.camera.updateProjectionMatrix()
-
-    const distanceAfter = distanceBefore * scaleFactor
-
-    const newPosition = this.controls.target
-      .clone()
-      .add(direction.multiplyScalar(-distanceAfter))
-    this.camera.position.copy(newPosition)
-
-    const { z_near, z_far } = calculateNearFarFromFOV(this.fov)
-    this.camera.near = z_near
-    this.camera.far = z_far
-
-    throttledUpdateEngineFov({
-      fov: newFov,
-      position: newPosition,
-      quaternion: this.camera.quaternion,
-      zoom: this.camera.zoom,
-      target: this.controls.target,
-    })
   }
   getPlaneIntersectPoint = (): {
     intersection2d?: Vector2
@@ -1111,13 +733,6 @@ function convertThreeCamValuesToEngineCam({
     up: upVector,
     vantage: newVantage,
   }
-}
-
-function calculateNearFarFromFOV(fov: number) {
-  const nearFarRatio = (fov - 3) / (45 - 3)
-  // const z_near = 0.1 + nearFarRatio * (5 - 0.1)
-  const z_far = 1000 + nearFarRatio * (100000 - 1000)
-  return { z_near: 0.1, z_far }
 }
 
 export function getSceneScale(
