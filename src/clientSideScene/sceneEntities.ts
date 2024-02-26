@@ -24,7 +24,6 @@ import {
   defaultPlaneColor,
   getSceneScale,
   INTERSECTION_PLANE_LAYER,
-  isQuaternionVertical,
   RAYCASTABLE_PLANE,
   sceneInfra,
   SKETCH_GROUP_SEGMENTS,
@@ -34,6 +33,7 @@ import {
   Y_AXIS,
   YZ_PLANE,
 } from './sceneInfra'
+import { isQuaternionVertical } from './helpers'
 import {
   CallExpression,
   getTangentialArcToInfo,
@@ -98,17 +98,17 @@ class SceneEntities {
   currentSketchQuaternion: Quaternion | null = null
   constructor() {
     this.scene = sceneInfra?.scene
-    sceneInfra?.setOnCamChange(this.onCamChange)
+    sceneInfra?.camControls.subscribeToCamChange(this.onCamChange)
   }
 
   onCamChange = () => {
-    const orthoFactor = orthoScale(sceneInfra.camera)
+    const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
     Object.values(this.activeSegments).forEach((segment) => {
       const factor =
-        sceneInfra.camera instanceof OrthographicCamera
+        sceneInfra.camControls.camera instanceof OrthographicCamera
           ? orthoFactor
-          : perspScale(sceneInfra.camera, segment)
+          : perspScale(sceneInfra.camControls.camera, segment)
       if (
         segment.userData.from &&
         segment.userData.to &&
@@ -139,9 +139,9 @@ class SceneEntities {
     })
     if (this.axisGroup) {
       const factor =
-        sceneInfra.camera instanceof OrthographicCamera
+        sceneInfra.camControls.camera instanceof OrthographicCamera
           ? orthoFactor
-          : perspScale(sceneInfra.camera, this.axisGroup)
+          : perspScale(sceneInfra.camControls.camera, this.axisGroup)
       const x = this.axisGroup.getObjectByName(X_AXIS)
       x?.scale.set(1, factor, 1)
       const y = this.axisGroup.getObjectByName(Y_AXIS)
@@ -150,7 +150,12 @@ class SceneEntities {
   }
 
   createIntersectionPlane() {
-    const planeGeometry = new PlaneGeometry(100000, 100000)
+    if (sceneInfra.scene.getObjectByName(RAYCASTABLE_PLANE)) {
+      console.warn('createIntersectionPlane called when it already exists')
+      return
+    }
+    const hundredM = 1000000
+    const planeGeometry = new PlaneGeometry(hundredM, hundredM)
     const planeMaterial = new MeshBasicMaterial({
       color: 0xff0000,
       side: DoubleSide,
@@ -195,11 +200,12 @@ class SceneEntities {
 
     this.axisGroup = new Group()
     const gridHelper = createGridHelper({ size: 100, divisions: 10 })
+    gridHelper.position.z = -0.01
     gridHelper.renderOrder = -3 // is this working?
     gridHelper.name = 'gridHelper'
     const sceneScale = getSceneScale(
-      sceneInfra.camera,
-      sceneInfra.controls.target
+      sceneInfra.camControls.camera,
+      sceneInfra.camControls.target
     )
     gridHelper.scale.set(sceneScale, sceneScale, sceneScale)
     this.axisGroup.add(xAxisMesh, yAxisMesh, gridHelper)
@@ -240,15 +246,6 @@ class SceneEntities {
   }) {
     sceneInfra.resetMouseListeners()
     this.createIntersectionPlane()
-    const distance = sceneInfra.controls.target.distanceTo(
-      sceneInfra.camera.position
-    )
-    // TODO this should probably be distance to the sketch group, more important after sketch on face
-    // since sketches won't always so close to the origin
-    // is this the best place to adjust camera far?
-    if (sceneInfra.camera.far < distance * 1.5) {
-      sceneInfra.camera.far = distance * 2
-    }
 
     const { truncatedAst, programMemoryOverride, variableDeclarationName } =
       this.prepareTruncatedMemoryAndAst(
@@ -280,11 +277,11 @@ class SceneEntities {
       sketchGroup.position[1],
       sketchGroup.position[2]
     )
-    const orthoFactor = orthoScale(sceneInfra.camera)
+    const orthoFactor = orthoScale(sceneInfra.camControls.camera)
     const factor =
-      sceneInfra.camera instanceof OrthographicCamera
+      sceneInfra.camControls.camera instanceof OrthographicCamera
         ? orthoFactor
-        : perspScale(sceneInfra.camera, dummy)
+        : perspScale(sceneInfra.camControls.camera, dummy)
     sketchGroup.value.forEach((segment, index) => {
       let segPathToNode = getNodePathFromSourceRange(
         draftSegment ? truncatedAst : kclManager.ast,
@@ -451,7 +448,7 @@ class SceneEntities {
         },
       })
     }
-    sceneInfra.controls.enableRotate = false
+    sceneInfra.camControls.enableRotate = false
   }
   updateAstAndRejigSketch = async (
     sketchPathToNode: PathToNode,
@@ -554,7 +551,7 @@ class SceneEntities {
       this.sceneProgramMemory = programMemory
       const sketchGroup = programMemory.root[variableDeclarationName]
         .value as Path[]
-      const orthoFactor = orthoScale(sceneInfra.camera)
+      const orthoFactor = orthoScale(sceneInfra.camControls.camera)
       sketchGroup.forEach((segment, index) => {
         const segPathToNode = getNodePathFromSourceRange(
           modifiedAst,
@@ -570,9 +567,9 @@ class SceneEntities {
         // const prevSegment = sketchGroup.slice(index - 1)[0]
         const type = group?.userData?.type
         const factor =
-          sceneInfra.camera instanceof OrthographicCamera
+          sceneInfra.camControls.camera instanceof OrthographicCamera
             ? orthoFactor
-            : perspScale(sceneInfra.camera, group)
+            : perspScale(sceneInfra.camControls.camera, group)
         if (type === TANGENTIAL_ARC_TO_SEGMENT) {
           this.updateTangentialArcToSegment({
             prevSegment: sketchGroup[index - 1],
@@ -729,10 +726,10 @@ class SceneEntities {
   }
   async animateAfterSketch() {
     if (isReducedMotion()) {
-      sceneInfra.usePerspectiveCamera()
-    } else {
-      await sceneInfra.animateToPerspective()
+      sceneInfra.camControls.usePerspectiveCamera()
+      return
     }
+    await sceneInfra.camControls.animateToPerspective()
   }
   removeSketchGrid() {
     if (this.axisGroup) this.scene.remove(this.axisGroup)
@@ -764,7 +761,7 @@ class SceneEntities {
         reject()
       }
     }
-    sceneInfra.controls.enableRotate = true
+    sceneInfra.camControls.enableRotate = true
     this.activeSegments = {}
     // maybe should reset onMove etc handlers
     if (shouldResolve) resolve(true)
@@ -797,9 +794,8 @@ class SceneEntities {
       onClick: (args) => {
         if (!args || !args.object) return
         if (args.event.which !== 1) return
-        const { object, intersection } = args
-        const type = object?.userData?.type || ''
-        console.log('intersection.normal?.z', intersection)
+        const { intersection } = args
+        const type = intersection.object.name || ''
         const posNorm = Number(intersection.normal?.z) > 0
         let planeString: DefaultPlaneStr = posNorm ? 'XY' : '-XY'
         let normal: [number, number, number] = posNorm ? [0, 0, 1] : [0, 0, -1]
