@@ -142,7 +142,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                 </ActionButton>
                 <ActionButton
                   Element="externalLink"
-                  to="https://github.com/KittyCAD/modeling-app/issues/new"
+                  to="https://github.com/KittyCAD/modeling-app/issues/new/choose"
                   icon={{ icon: faBug, className: 'p-1', size: 'sm' }}
                   className="border-transparent dark:border-transparent"
                 >
