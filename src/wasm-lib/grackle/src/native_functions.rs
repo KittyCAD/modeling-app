@@ -97,3 +97,24 @@ impl Callable for Add {
         })
     }
 }
+
+fn single_binding(b: EpBinding, fn_name: &'static str, expected: &'static str) -> Result<Address, CompileError> {
+    match b {
+        EpBinding::Single(a) => Ok(a),
+        EpBinding::Sequence { .. } => Err(CompileError::ArgWrongType {
+            fn_name,
+            expected,
+            actual: "array".to_owned(),
+        }),
+        EpBinding::Map { .. } => Err(CompileError::ArgWrongType {
+            fn_name,
+            expected,
+            actual: "array".to_owned(),
+        }),
+        EpBinding::Function(_) => Err(CompileError::ArgWrongType {
+            fn_name,
+            expected,
+            actual: "function".to_owned(),
+        }),
+    }
+}
