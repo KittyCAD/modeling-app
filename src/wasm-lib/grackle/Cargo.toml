@@ -10,6 +10,7 @@ kcl-lib = { path = "../kcl" }
 kittycad = { workspace = true }
 kittycad-execution-plan = { workspace = true }
 kittycad-execution-plan-traits = { workspace = true }
+kittycad-execution-plan-macros = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
 kittycad-modeling-session = { workspace = true }
 thiserror = "1.0.57"

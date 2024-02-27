@@ -46,7 +46,32 @@ pub fn single_binding(b: EpBinding, fn_name: &'static str, expected: &'static st
         EpBinding::Map { .. } => Err(CompileError::ArgWrongType {
             fn_name,
             expected,
-            actual: "array".to_owned(),
+            actual: "object".to_owned(),
+        }),
+        EpBinding::Function(_) => Err(CompileError::ArgWrongType {
+            fn_name,
+            expected,
+            actual: "function".to_owned(),
+        }),
+    }
+}
+
+pub fn sequence_binding(
+    b: EpBinding,
+    fn_name: &'static str,
+    expected: &'static str,
+) -> Result<Vec<EpBinding>, CompileError> {
+    match b {
+        EpBinding::Sequence { elements, .. } => Ok(elements),
+        EpBinding::Single(_) => Err(CompileError::ArgWrongType {
+            fn_name,
+            expected,
+            actual: "single".to_owned(),
+        }),
+        EpBinding::Map { .. } => Err(CompileError::ArgWrongType {
+            fn_name,
+            expected,
+            actual: "object".to_owned(),
         }),
         EpBinding::Function(_) => Err(CompileError::ArgWrongType {
             fn_name,

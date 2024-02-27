@@ -1462,6 +1462,7 @@ dependencies = [
  "kcl-lib",
  "kittycad",
  "kittycad-execution-plan",
+ "kittycad-execution-plan-macros",
  "kittycad-execution-plan-traits",
  "kittycad-modeling-cmds",
  "kittycad-modeling-session",
@@ -1989,7 +1990,7 @@ dependencies = [
 [[package]]
 name = "kittycad-execution-plan"
 version = "0.1.0"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#be68126f2dbf6c15f44fb72db5b5cb44122aed36"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#9cb86ba54e4a60aa775fa2fd8af6f0ac9d05ebeb"
 dependencies = [
  "bytes",
  "insta",
@@ -2007,8 +2008,8 @@ dependencies = [
 
 [[package]]
 name = "kittycad-execution-plan-macros"
-version = "0.1.5"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#be68126f2dbf6c15f44fb72db5b5cb44122aed36"
+version = "0.1.6"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#9cb86ba54e4a60aa775fa2fd8af6f0ac9d05ebeb"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2017,8 +2018,8 @@ dependencies = [
 
 [[package]]
 name = "kittycad-execution-plan-traits"
-version = "0.1.10"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#be68126f2dbf6c15f44fb72db5b5cb44122aed36"
+version = "0.1.11"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#9cb86ba54e4a60aa775fa2fd8af6f0ac9d05ebeb"
 dependencies = [
  "serde",
  "thiserror",
@@ -2027,8 +2028,8 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.1.24"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#be68126f2dbf6c15f44fb72db5b5cb44122aed36"
+version = "0.1.25"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#9cb86ba54e4a60aa775fa2fd8af6f0ac9d05ebeb"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2056,7 +2057,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.1"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#be68126f2dbf6c15f44fb72db5b5cb44122aed36"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#9cb86ba54e4a60aa775fa2fd8af6f0ac9d05ebeb"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2066,7 +2067,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-session"
 version = "0.1.0"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#be68126f2dbf6c15f44fb72db5b5cb44122aed36"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#9cb86ba54e4a60aa775fa2fd8af6f0ac9d05ebeb"
 dependencies = [
  "futures",
  "kittycad",
