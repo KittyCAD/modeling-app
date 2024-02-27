@@ -15,7 +15,7 @@ databake = "0.1.7"
 kcl-lib = { path = "../kcl" }
 proc-macro2 = "1"
 quote = "1"
-syn = { version = "2.0.49", features = ["full"] }
+syn = { version = "2.0.51", features = ["full"] }
 
 [dev-dependencies]
 pretty_assertions = "1.4.0"
