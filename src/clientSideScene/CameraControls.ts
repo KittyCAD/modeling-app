@@ -62,8 +62,6 @@ const throttledUpdateEngineCamera = throttle((threeValues: ThreeCamValues) => {
     },
   }
   engineCommandManager.sendSceneCommand(cmd)
-  lastCmd = cmd
-  lastCmdTime = Date.now()
 }, 1000 / 15)
 
 let lastPerspectiveCmd: EngineCommand | null = null
