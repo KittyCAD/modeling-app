@@ -103,7 +103,7 @@ impl BindingScope {
                 ("add".into(), EpBinding::from(KclFunction::Add(native_functions::Add))),
                 (
                     "startSketchAt".into(),
-                    EpBinding::from(KclFunction::StartSketchAt(native_functions::StartSketchAt)),
+                    EpBinding::from(KclFunction::StartSketchAt(native_functions::sketch::StartSketchAt)),
                 ),
             ]),
             parent: None,
