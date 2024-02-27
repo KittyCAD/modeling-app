@@ -52,17 +52,6 @@ export type ReactCameraProperties =
 
 const lastCmdDelay = 50
 
-let lastCmd: EngineCommand | null = null
-let lastCmdTime: number = Date.now()
-let lastCmdTimeoutId: number | null = null
-
-const sendLastReliableChannel = () => {
-  if (lastCmd && Date.now() - lastCmdTime >= lastCmdDelay) {
-    engineCommandManager.sendSceneCommand(lastCmd, true)
-    lastCmdTime = Date.now()
-  }
-}
-
 const throttledUpdateEngineCamera = throttle((threeValues: ThreeCamValues) => {
   const cmd: EngineCommand = {
     type: 'modeling_cmd_req',
@@ -73,17 +62,7 @@ const throttledUpdateEngineCamera = throttle((threeValues: ThreeCamValues) => {
     },
   }
   engineCommandManager.sendSceneCommand(cmd)
-  lastCmd = cmd
-  lastCmdTime = Date.now()
-
-  if (lastCmdTimeoutId !== null) {
-    clearTimeout(lastCmdTimeoutId)
-  }
-  lastCmdTimeoutId = setTimeout(
-    sendLastReliableChannel,
-    lastCmdDelay
-  ) as any as number
-}, 1000 / 30)
+}, 1000 / 15)
 
 let lastPerspectiveCmd: EngineCommand | null = null
 let lastPerspectiveCmdTime: number = Date.now()
