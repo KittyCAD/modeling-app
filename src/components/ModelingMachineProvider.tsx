@@ -38,6 +38,8 @@ import { getSketchQuaternion } from 'clientSideScene/sceneEntities'
 import { startSketchOnDefault } from 'lang/modifyAst'
 import { Program } from 'lang/wasm'
 import { isSingleCursorInPipe } from 'lang/queryAst'
+import { TEST } from 'env'
+import { exportFromEngine } from 'lib/exportFromEngine'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -54,7 +56,12 @@ export const ModelingMachineProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const { auth } = useGlobalStateContext()
+  const {
+    auth,
+    settings: {
+      context: { baseUnit },
+    },
+  } = useGlobalStateContext()
   const { code } = useKclContext()
   const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)
@@ -170,6 +177,13 @@ export const ModelingMachineProvider = ({
           }
           return { selectionRangeTypeMap }
         }),
+        'Engine export': (_, event) => {
+          if (event.type !== 'Export' || TEST) return
+          exportFromEngine({
+            source_unit: baseUnit,
+            format: event.data,
+          })
+        },
       },
       guards: {
         'has valid extrude selection': ({ selectionRanges }) => {
@@ -192,6 +206,8 @@ export const ModelingMachineProvider = ({
             selectionRanges
           )
         },
+        'Has exportable geometry': () =>
+          kclManager.kclErrors.length === 0 && kclManager.ast.body.length > 0,
       },
       services: {
         'AST-undo-startSketchOn': async ({ sketchPathToNode }) => {

@@ -1,6 +1,12 @@
+import { Models } from '@kittycad/lib'
 import { CommandSetConfig, KclCommandValue } from 'lib/commandTypes'
 import { Selections } from 'lib/selections'
 import { modelingMachine } from 'machines/modelingMachine'
+
+type OutputFormat = Models['OutputFormat_type']
+type OutputTypeKey = OutputFormat['type']
+type ExtractStorageTypes<T> = T extends { storage: infer U } ? U : never
+type StorageUnion = ExtractStorageTypes<OutputFormat>
 
 export const EXTRUSION_RESULTS = [
   'new',
@@ -11,6 +17,10 @@ export const EXTRUSION_RESULTS = [
 
 export type ModelingCommandSchema = {
   'Enter sketch': {}
+  Export: {
+    type: OutputTypeKey
+    // storage: StorageUnion
+  }
   Extrude: {
     selection: Selections // & { type: 'face' } would be cool to lock that down
     // result: (typeof EXTRUSION_RESULTS)[number]
@@ -25,6 +35,39 @@ export const modelingMachineConfig: CommandSetConfig<
   'Enter sketch': {
     description: 'Enter sketch mode.',
     icon: 'sketch',
+  },
+  Export: {
+    description: 'Export the current model.',
+    icon: 'exportFile',
+    needsReview: true,
+    args: {
+      type: {
+        inputType: 'options',
+        defaultValue: 'gltf',
+        required: true,
+        options: [
+          { name: 'gltf', isCurrent: true, value: 'gltf' },
+          { name: 'obj', isCurrent: false, value: 'obj' },
+          { name: 'stl', isCurrent: false, value: 'stl' },
+          { name: 'step', isCurrent: false, value: 'step' },
+          { name: 'ply', isCurrent: false, value: 'ply' },
+          { name: 'fbx', isCurrent: false, value: 'fbx' },
+        ],
+      },
+      // storage: {
+      //   inputType: 'options',
+      //   defaultValue: 'embedded',
+      //   required: true,
+      //   options: [
+      //     { name: 'embedded', isCurrent: true, value: 'embedded' },
+      //     { name: 'binary', isCurrent: false, value: 'binary' },
+      //     { name: 'ascii', isCurrent: false, value: 'ascii' },
+      //     { name: 'binary_big_endian', isCurrent: false, value: 'binary_big_endian' },
+      //     { name: 'binary_little_endian', isCurrent: false, value: 'binary_little_endian' },
+      //     { name: 'standard', isCurrent: false, value: 'standard' },
+      //   ],
+      // },
+    },
   },
   Extrude: {
     description: 'Pull a sketch into 3D along its normal or perpendicular.',
