@@ -9,37 +9,8 @@ use crate::{CompileError, EpBinding, EvalPlan};
 
 pub mod sketch;
 
-/// The identity function. Always returns its first input.
-#[derive(Debug, Clone)]
-#[cfg_attr(test, derive(Eq, PartialEq))]
-pub struct Id;
-
 pub trait Callable {
     fn call(&self, next_addr: &mut Address, args: Vec<EpBinding>) -> Result<EvalPlan, CompileError>;
-}
-
-impl Callable for Id {
-    fn call(&self, _: &mut Address, args: Vec<EpBinding>) -> Result<EvalPlan, CompileError> {
-        if args.len() > 1 {
-            return Err(CompileError::TooManyArgs {
-                fn_name: "id".into(),
-                maximum: 1,
-                actual: args.len(),
-            });
-        }
-        let arg = args
-            .first()
-            .ok_or(CompileError::NotEnoughArgs {
-                fn_name: "id".into(),
-                required: 1,
-                actual: 0,
-            })?
-            .clone();
-        Ok(EvalPlan {
-            instructions: Vec::new(),
-            binding: arg,
-        })
-    }
 }
 
 /// A test function that adds two numbers.
