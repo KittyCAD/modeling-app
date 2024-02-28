@@ -8,6 +8,7 @@ use kittycad_execution_plan_traits::Address;
 use crate::{CompileError, EpBinding, EvalPlan};
 
 pub mod sketch;
+pub mod id;
 
 pub trait Callable {
     fn call(&self, next_addr: &mut Address, args: Vec<EpBinding>) -> Result<EvalPlan, CompileError>;

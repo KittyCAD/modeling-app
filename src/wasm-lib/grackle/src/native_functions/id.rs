@@ -4,15 +4,13 @@ use crate::{CompileError, EpBinding, EvalPlan};
 
 use super::Callable;
 
-pub mod id;
-
 /// The identity function. Always returns its first input.
 #[derive(Debug, Clone)]
 #[cfg_attr(test, derive(Eq, PartialEq))]
 pub struct Id;
 
 impl Callable for Id {
-    fn call(&self, next_addr: &mut Address, args: Vec<EpBinding>) -> Result<EvalPlan, CompileError> {
+    fn call(&self, _next_addr: &mut Address, args: Vec<EpBinding>) -> Result<EvalPlan, CompileError> {
         if args.len() > 1 {
             return Err(CompileError::TooManyArgs {
                 fn_name: "id".into(),
@@ -27,10 +25,7 @@ impl Callable for Id {
           });
         }
 
-        // We already verify bounds above. Double bounds checking is unnecessary.
-        // If it ever does happen in some event of a cosmic bit flip, we want
-        // it to fail.
-        let arg = args.get_unchecked(0);
+        let arg = args.get(0).unwrap().clone();
 
         Ok(EvalPlan {
             instructions: vec![],
@@ -41,28 +36,32 @@ impl Callable for Id {
 
 #[test]
 fn call_id() {
-    const fn_id = Id {};
+    let fn_id = Id {};
     let mut addr = Address::ZERO;
-    let binding = EpBinding::Single(addr);
     addr = addr.offset_by(1);
-    let ep = fn_id.call(addr, vec![binding]);
+    let args = vec![EpBinding::Single(addr)];
+    let ep = fn_id.call(&mut addr, args.clone());
 
     assert_eq!(
         ep,
         Ok(EvalPlan{
           instructions: vec![],
-          binding
+          binding: args.get(0).unwrap().clone()
         })
     );
 }
 
 #[test]
 fn call_id_too_many_args() {
-    const fn_id = Id {};
+    let fn_id = Id {};
     let mut addr = Address::ZERO;
-    let binding = EpBinding::Single(addr);
+    let b1 = EpBinding::Single(addr);
     addr = addr.offset_by(1);
-    let ep = fn_id.call(addr, vec![binding, binding]);
+    let b2 = EpBinding::Single(addr);
+    addr = addr.offset_by(1);
+
+    let args = vec![b1, b2];
+    let ep = fn_id.call(&mut addr, args.clone());
 
     assert_eq!(
         ep,
@@ -76,11 +75,10 @@ fn call_id_too_many_args() {
 
 #[test]
 fn call_id_not_enough_args() {
-    const fn_id = Id {};
+    let fn_id = Id {};
     let mut addr = Address::ZERO;
-    let binding = EpBinding::Single(addr);
-    addr = addr.offset_by(1);
-    let ep = fn_id.call(addr, vec![binding, binding]);
+    let args = vec![];
+    let ep = fn_id.call(&mut addr, args.clone());
 
     assert_eq!(
         ep,

@@ -2,8 +2,12 @@ use std::collections::HashMap;
 
 use kcl_lib::ast::types::{LiteralIdentifier, LiteralValue};
 
+
 use super::{native_functions, Address};
-use crate::{CompileError, KclFunction};
+use crate::{
+  CompileError,
+  KclFunction
+};
 
 /// KCL values which can be written to KCEP memory.
 /// This is recursive. For example, the bound value might be an array, which itself contains bound values.
@@ -99,11 +103,11 @@ impl BindingScope {
             // TODO: Actually put the stdlib prelude in here,
             // things like `startSketchAt` and `line`.
             ep_bindings: HashMap::from([
-                ("id".into(), EpBinding::from(KclFunction::Id(native_functions::Id))),
+                ("id".into(), EpBinding::from(KclFunction::Id(native_functions::id::Id))),
                 ("add".into(), EpBinding::from(KclFunction::Add(native_functions::Add))),
                 (
                     "startSketchAt".into(),
-                    EpBinding::from(KclFunction::StartSketchAt(native_functions::StartSketchAt)),
+                    EpBinding::from(KclFunction::StartSketchAt(native_functions::sketch::StartSketchAt)),
                 ),
             ]),
             parent: None,

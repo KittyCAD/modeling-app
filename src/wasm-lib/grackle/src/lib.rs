@@ -589,6 +589,8 @@ fn kcl_literal_to_kcep_literal(expr: LiteralValue) -> ept::Primitive {
 }
 
 /// Instructions that can compute some value.
+#[derive(Debug)]
+#[cfg_attr(test, derive(PartialEq))]
 struct EvalPlan {
     /// The instructions which will compute the value.
     instructions: Vec<Instruction>,
@@ -617,8 +619,8 @@ impl Eq for UserDefinedFunction {}
 #[derive(Debug, Clone)]
 #[cfg_attr(test, derive(Eq, PartialEq))]
 enum KclFunction {
-    Id(native_functions::Id),
-    StartSketchAt(native_functions::StartSketchAt),
+    Id(native_functions::id::Id),
+    StartSketchAt(native_functions::sketch::StartSketchAt),
     Add(native_functions::Add),
     UserDefined(UserDefinedFunction),
 }
