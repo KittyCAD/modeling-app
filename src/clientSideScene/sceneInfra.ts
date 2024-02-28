@@ -88,18 +88,25 @@ class SceneInfra {
   fov = 45
   fovBeforeAnimate = 45
   isFovAnimationInProgress = false
+  onDragStartCallback: (arg: OnDragCallbackArgs) => void = () => {}
+  onDragEndCallback: (arg: OnDragCallbackArgs) => void = () => {}
   onDragCallback: (arg: OnDragCallbackArgs) => void = () => {}
   onMoveCallback: (arg: onMoveCallbackArgs) => void = () => {}
   onClickCallback: (arg?: OnClickCallbackArgs) => void = () => {}
   onMouseEnter: (arg: BaseCallbackArgs2) => void = () => {}
   onMouseLeave: (arg: BaseCallbackArgs2) => void = () => {}
   setCallbacks = (callbacks: {
+    onDragStart?: (arg: OnDragCallbackArgs) => void
+    onDragEnd?: (arg: OnDragCallbackArgs) => void
     onDrag?: (arg: OnDragCallbackArgs) => void
     onMove?: (arg: onMoveCallbackArgs) => void
     onClick?: (arg?: OnClickCallbackArgs) => void
     onMouseEnter?: (arg: BaseCallbackArgs2) => void
     onMouseLeave?: (arg: BaseCallbackArgs2) => void
   }) => {
+    console.trace('setting callbacks')
+    this.onDragStartCallback = callbacks.onDragStart || this.onDragStartCallback
+    this.onDragEndCallback = callbacks.onDragEnd || this.onDragEndCallback
     this.onDragCallback = callbacks.onDrag || this.onDragCallback
     this.onMoveCallback = callbacks.onMove || this.onMoveCallback
     this.onClickCallback = callbacks.onClick || this.onClickCallback
@@ -109,6 +116,8 @@ class SceneInfra {
   }
   resetMouseListeners = () => {
     sceneInfra.setCallbacks({
+      onDragStart: () => {},
+      onDragEnd: () => {},
       onDrag: () => {},
       onMove: () => {},
       onClick: () => {},
@@ -420,8 +429,13 @@ class SceneInfra {
 
     if (this.selected) {
       if (this.selected.hasBeenDragged) {
-        // this is where we could fire a onDragEnd event
-        // console.log('onDragEnd', this.selected)
+        // TODO do the types properly here
+        this.onDragEndCallback({
+          object: this.selected.object,
+          event,
+          intersection2d: planeIntersectPoint?.intersection2d,
+          ...planeIntersectPoint,
+        } as any)
       } else if (planeIntersectPoint) {
         // fire onClick event as there was no drags
         this.onClickCallback({

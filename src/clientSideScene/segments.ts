@@ -81,6 +81,7 @@ export function straightSegment({
     pathToNode,
     isSelected: false,
   }
+  group.name = STRAIGHT_SEGMENT
 
   const arrowGroup = createArrowhead(scale)
   arrowGroup.position.set(to[0], to[1], 0)
@@ -169,6 +170,7 @@ export function tangentialArcToSegment({
     pathToNode,
     isSelected: false,
   }
+  group.name = TANGENTIAL_ARC_TO_SEGMENT
 
   const arrowGroup = createArrowhead(scale)
   arrowGroup.position.set(to[0], to[1], 0)

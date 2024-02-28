@@ -181,6 +181,10 @@ export const line: SketchLineHelper = {
       pathToNode,
       'PipeExpression'
     )
+    const { node: callExpression } = getNodeFromPath<
+      PipeExpression | CallExpression
+    >(_node, pathToNode, 'CallExpression')
+
     const { node: varDec } = getNodeFromPath<VariableDeclarator>(
       _node,
       pathToNode,
@@ -189,6 +193,38 @@ export const line: SketchLineHelper = {
 
     const newXVal = createLiteral(roundOff(to[0] - from[0], 2))
     const newYVal = createLiteral(roundOff(to[1] - from[1], 2))
+
+    const isAddingSegmentBetween =
+      callExpression.type === 'CallExpression' &&
+      callExpression.start >= pipe.start &&
+      callExpression.end <= pipe.end
+    if (
+      isAddingSegmentBetween &&
+      !createCallback &&
+      pipe.type === 'PipeExpression'
+    ) {
+      const callExp = createCallExpression('line', [
+        createArrayExpression([newXVal, newYVal]),
+        createPipeSubstitution(),
+      ])
+      const pathToNodeIndex = pathToNode.findIndex(
+        (x) => x[1] === 'PipeExpression'
+      )
+      const pipeIndex = pathToNode[pathToNodeIndex + 1][0]
+      if (typeof pipeIndex === 'undefined' || typeof pipeIndex === 'string') {
+        console.warn('pipeIndex is undefined')
+        return
+      }
+      pipe.body = [
+        ...pipe.body.slice(0, pipeIndex),
+        callExp,
+        ...pipe.body.slice(pipeIndex),
+      ]
+      return {
+        modifiedAst: _node,
+        pathToNode,
+      }
+    }
 
     if (replaceExisting && createCallback && pipe.type !== 'CallExpression') {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
@@ -1011,15 +1047,6 @@ export function changeSketchArguments(
   throw new Error(`not a sketch line helper: ${callExpression?.callee?.name}`)
 }
 
-interface CreateLineFnCallArgs {
-  node: Program
-  programMemory: ProgramMemory
-  to: [number, number]
-  from: [number, number]
-  fnName: ToolTip
-  pathToNode: PathToNode
-}
-
 export function compareVec2Epsilon(
   vec1: [number, number],
   vec2: [number, number],
@@ -1042,6 +1069,15 @@ export function compareVec2Epsilon2(
     xDifference * xDifference + yDifference * yDifference
   )
   return distance < compareEpsilon
+}
+
+interface CreateLineFnCallArgs {
+  node: Program
+  programMemory: ProgramMemory
+  to: [number, number]
+  from: [number, number]
+  fnName: ToolTip
+  pathToNode: PathToNode
 }
 
 export function addNewSketchLn({

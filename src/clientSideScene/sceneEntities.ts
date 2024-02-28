@@ -13,6 +13,7 @@ import {
   Quaternion,
   Scene,
   Shape,
+  SphereGeometry,
   Vector2,
   Vector3,
 } from 'three'
@@ -85,6 +86,7 @@ export const TANGENTIAL_ARC_TO_SEGMENT = 'tangential-arc-to-segment'
 export const TANGENTIAL_ARC_TO_SEGMENT_BODY = 'tangential-arc-to-segment-body'
 export const TANGENTIAL_ARC_TO__SEGMENT_DASH =
   'tangential-arc-to-segment-body-dashed'
+export const EXTRA_SEGMENT_HANDLE = 'extraSegmentHandle'
 
 // This singleton Class is responsible for all of the things the user sees and interacts with.
 // That mostly mean sketch elements.
@@ -239,12 +241,16 @@ class SceneEntities {
     ast,
     // is draft line assumes the last segment is a draft line, and mods it as the user moves the mouse
     draftSegment,
+    skipListeners,
   }: {
     sketchPathToNode: PathToNode
     ast?: Program
     draftSegment?: DraftSegment
+    skipListeners?: boolean
   }) {
-    sceneInfra.resetMouseListeners()
+    if (!skipListeners) {
+      sceneInfra.resetMouseListeners()
+    }
     this.createIntersectionPlane()
 
     const { truncatedAst, programMemoryOverride, variableDeclarationName } =
@@ -326,11 +332,60 @@ class SceneEntities {
         this.currentSketchQuaternion
       )
 
+    let addingNewSegmentStatus: 'nothing' | 'pending' | 'added' = 'nothing'
+
     this.scene.add(group)
-    if (!draftSegment) {
+    if (!draftSegment && !skipListeners) {
       sceneInfra.setCallbacks({
-        onDrag: (args) => {
+        onDragEnd: async () => {
+          if (addingNewSegmentStatus !== 'nothing') {
+            await this.tearDownSketch({ removeAxis: false })
+            this.setupSketch({ sketchPathToNode })
+          }
+        },
+        onDrag: async (args) => {
           if (args.event.which !== 1) return
+          const group = getParentGroup(args.object, [EXTRA_SEGMENT_HANDLE])
+          if (group?.name === EXTRA_SEGMENT_HANDLE) {
+            const segGroup = getParentGroup(args.object)
+            const pathToNode: PathToNode = segGroup?.userData?.pathToNode
+            const pathToNodeIndex = pathToNode.findIndex(
+              (x) => x[1] === 'PipeExpression'
+            )
+            const pipeIndex = pathToNode[pathToNodeIndex + 1][0] as number
+            if (addingNewSegmentStatus === 'nothing') {
+              const prevSegment = sketchGroup.value[pipeIndex - 2]
+              const yo = addNewSketchLn({
+                node: kclManager.ast,
+                programMemory: kclManager.programMemory,
+                to: [args.intersection2d.x, args.intersection2d.y],
+                from: [prevSegment.from[0], prevSegment.from[1]],
+                fnName:
+                  prevSegment.type === 'TangentialArcTo'
+                    ? 'tangentialArcTo'
+                    : 'line',
+                pathToNode: pathToNode,
+              })
+              addingNewSegmentStatus = 'pending'
+              await kclManager.executeAstMock(yo.modifiedAst, {
+                updates: 'code',
+              })
+              await this.tearDownSketch({ removeAxis: false })
+              this.setupSketch({ sketchPathToNode, skipListeners: true })
+              addingNewSegmentStatus = 'added'
+            } else if (addingNewSegmentStatus === 'added') {
+              const pathToNodeForNewSegment = pathToNode.slice(
+                0,
+                pathToNodeIndex
+              )
+              pathToNodeForNewSegment.push([pipeIndex - 2, 'index'])
+              this.onDragSegment({
+                ...args,
+                sketchPathToNode: pathToNodeForNewSegment,
+              })
+            }
+            return
+          }
           this.onDragSegment({
             ...args,
             sketchPathToNode,
@@ -391,7 +446,7 @@ class SceneEntities {
           }
         },
       })
-    } else {
+    } else if (draftSegment && !skipListeners) {
       sceneInfra.setCallbacks({
         onDrag: () => {},
         onClick: async (args) => {
@@ -500,6 +555,7 @@ class SceneEntities {
       variableDeclarationName: string
     }
   }) {
+    if (object.name === STRAIGHT_SEGMENT_BODY) return
     const group = getParentGroup(object)
     if (!group) return
     const pathToNode: PathToNode = JSON.parse(
@@ -606,9 +662,7 @@ class SceneEntities {
     group.userData.from = from
     group.userData.to = to
     group.userData.prevSegment = prevSegment
-    const arrowGroup = group.children.find(
-      (child) => child.userData.type === ARROWHEAD
-    ) as Group
+    const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
 
     arrowGroup.position.set(to[0], to[1], 0)
 
@@ -683,9 +737,7 @@ class SceneEntities {
     const shape = new Shape()
     shape.moveTo(0, -0.08 * scale)
     shape.lineTo(0, 0.08 * scale) // The width of the line
-    const arrowGroup = group.children.find(
-      (child) => child.userData.type === ARROWHEAD
-    ) as Group
+    const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
 
     arrowGroup.position.set(to[0], to[1], 0)
 
@@ -697,6 +749,32 @@ class SceneEntities {
       .normalize()
     arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
     arrowGroup.scale.set(scale, scale, scale)
+
+    // TODO this should be created in setupSketch, not updateStraightSegment
+    // it should only be updated here
+    const extraSegmentHandle = (group.getObjectByName(EXTRA_SEGMENT_HANDLE) ||
+      (() => {
+        const mat = new MeshBasicMaterial({ color: 0xffffff })
+        const sphereMesh = new Mesh(new SphereGeometry(0.6, 12, 12), mat)
+
+        const handleGroup = new Group()
+        handleGroup.userData.type = EXTRA_SEGMENT_HANDLE
+        handleGroup.name = EXTRA_SEGMENT_HANDLE
+        handleGroup.add(sphereMesh)
+        handleGroup.layers.set(SKETCH_LAYER)
+        handleGroup.traverse((child) => {
+          child.layers.set(SKETCH_LAYER)
+        })
+        return handleGroup
+      })()) as Group
+
+    extraSegmentHandle.position.set(
+      from[0] + 0.08 * (to[0] - from[0]),
+      from[1] + 0.08 * (to[1] - from[1]),
+      0
+    )
+    extraSegmentHandle.scale.set(scale, scale, scale)
+    group.add(extraSegmentHandle)
 
     const straightSegmentBody = group.children.find(
       (child) => child.userData.type === STRAIGHT_SEGMENT_BODY
