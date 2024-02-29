@@ -3,6 +3,7 @@ import { secrets } from './secrets'
 import { getUtils } from './test-utils'
 import waitOn from 'wait-on'
 import { Themes } from '../../src/lib/theme'
+import { roundOff } from 'lib/utils'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -15,9 +16,9 @@ document.addEventListener('mousemove', (e) =>
 */
 
 const commonPoints = {
-  startAt: '[26.38, -35.59]',
-  num1: 26.63,
-  num2: 53.01,
+  startAt: '[0.93, -1.26]',
+  num1: 0.95,
+  num2: 1.88,
 }
 
 test.beforeEach(async ({ context, page }) => {
@@ -101,13 +102,13 @@ test('Basic sketch', async ({ page }) => {
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1}], %)`)
+  |> line([0, ${commonPoints.num1 - 0.01}], %)`)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1}], %)
+  |> line([0, ${commonPoints.num1 - 0.01}], %)
   |> line([-${commonPoints.num2}, 0], %)`)
 
   // deselect line tool
@@ -132,7 +133,7 @@ test('Basic sketch', async ({ page }) => {
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line({ to: [${commonPoints.num1}, 0], tag: 'seg01' }, %)
-  |> line([0, ${commonPoints.num1}], %)
+  |> line([0, ${commonPoints.num1 - 0.01}], %)
   |> angledLine([180, segLen('seg01', %)], %)`)
 })
 
@@ -284,10 +285,9 @@ test('Can create sketches on all planes and their back sides', async ({
   }) => {
     await u.openDebugPanel()
 
-    await u.updateCamPosition(viewCmd)
-
     await u.clearCommandLogs()
     await page.getByRole('button', { name: 'Start Sketch' }).click()
+    await u.updateCamPosition(viewCmd)
 
     await u.closeDebugPanel()
     await page.mouse.click(clickCoords.x, clickCoords.y)
@@ -315,7 +315,7 @@ test('Can create sketches on all planes and their back sides', async ({
   const codeTemplate = (
     plane = 'XY'
   ) => `const part001 = startSketchOn('${plane}')
-  |> startProfileAt([32.13, -43.34], %)`
+  |> startProfileAt([1.14, -1.54], %)`
   await TestSinglePlane({
     viewCmd: camPos,
     expectedCode: codeTemplate('XY'),
@@ -325,7 +325,7 @@ test('Can create sketches on all planes and their back sides', async ({
   await TestSinglePlane({
     viewCmd: camPos,
     expectedCode: codeTemplate('YZ'),
-    clickCoords: { x: 700, y: 300 }, // green plane
+    clickCoords: { x: 700, y: 250 }, // green plane
   })
   await TestSinglePlane({
     viewCmd: camPos,
@@ -488,13 +488,13 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1}], %)`)
+  |> line([0, ${commonPoints.num1 - 0.01}], %)`)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1}], %)
+  |> line([0, ${commonPoints.num1 - 0.01}], %)
   |> line([-${commonPoints.num2}, 0], %)`)
 
   // deselect line tool
@@ -765,12 +765,12 @@ test('Can add multiple sketches', async ({ page }) => {
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1}], %)`)
+  |> line([0, ${commonPoints.num1 - 0.01}], %)`)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   const finalCodeFirstSketch = `const part001 = startSketchOn('-XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1}], %)
+  |> line([0, ${commonPoints.num1 - 0.01}], %)
   |> line([-${commonPoints.num2}, 0], %)`
   await expect(page.locator('.cm-content')).toHaveText(finalCodeFirstSketch)
 
@@ -793,7 +793,7 @@ test('Can add multiple sketches', async ({ page }) => {
   await u.clearAndCloseDebugPanel()
 
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  const startAt2 = '[26.23, -35.39]'
+  const startAt2 = '[0.93,-1.25]'
   await expect(
     (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
   ).toBe(
@@ -807,7 +807,7 @@ const part002 = startSketchOn('XY')
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
   await page.waitForTimeout(100)
 
-  const num2 = 26.48
+  const num2 = 0.94
   await expect(
     (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
   ).toBe(
@@ -825,7 +825,7 @@ const part002 = startSketchOn('XY')
 const part002 = startSketchOn('XY')
   |> startProfileAt(${startAt2}, %)
   |> line([${num2}, 0], %)
-  |> line([0, ${num2}], %)`.replace(/\s/g, '')
+  |> line([0, ${roundOff(num2 - 0.01)}], %)`.replace(/\s/g, '')
   )
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(
@@ -835,8 +835,8 @@ const part002 = startSketchOn('XY')
 const part002 = startSketchOn('XY')
   |> startProfileAt(${startAt2}, %)
   |> line([${num2}, 0], %)
-  |> line([0, ${num2}], %)
-  |> line([-52.71, 0], %)`.replace(/\s/g, '')
+  |> line([0, ${roundOff(num2 - 0.01)}], %)
+  |> line([-1.87, 0], %)`.replace(/\s/g, '')
   )
 })
 
