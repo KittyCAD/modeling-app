@@ -475,18 +475,18 @@ impl Value {
     // Get the non code meta for the value.
     pub fn get_non_code_meta(&self) -> Option<&NonCodeMeta> {
         match self {
-            Value::BinaryExpression(bin_exp) => None,
-            Value::ArrayExpression(array_exp) => None,
-            Value::ObjectExpression(obj_exp) => None,
-            Value::MemberExpression(mem_exp) => None,
-            Value::Literal(literal) => None,
-            Value::FunctionExpression(func_exp) => None,
-            Value::CallExpression(call_exp) => None,
-            Value::Identifier(ident) => None,
+            Value::BinaryExpression(_bin_exp) => None,
+            Value::ArrayExpression(_array_exp) => None,
+            Value::ObjectExpression(_obj_exp) => None,
+            Value::MemberExpression(_mem_exp) => None,
+            Value::Literal(_literal) => None,
+            Value::FunctionExpression(_func_exp) => None,
+            Value::CallExpression(_call_exp) => None,
+            Value::Identifier(_ident) => None,
             Value::PipeExpression(pipe_exp) => Some(&pipe_exp.non_code_meta),
-            Value::UnaryExpression(unary_exp) => None,
-            Value::PipeSubstitution(pipe_substitution) => None,
-            Value::None(none) => None,
+            Value::UnaryExpression(_unary_exp) => None,
+            Value::PipeSubstitution(_pipe_substitution) => None,
+            Value::None(_none) => None,
         }
     }
 
