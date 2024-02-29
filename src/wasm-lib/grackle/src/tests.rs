@@ -1,5 +1,4 @@
-use std::collections::HashMap;
-use std::env;
+use std::{collections::HashMap, env};
 
 use ep::{Destination, UnaryArithmetic};
 use ept::{ListHeader, ObjectHeader};

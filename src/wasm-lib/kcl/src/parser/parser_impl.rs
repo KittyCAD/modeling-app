@@ -440,6 +440,7 @@ fn object(i: TokenSlice) -> PResult<ObjectExpression> {
             "a comma-separated list of key-value pairs, e.g. 'height: 4, width: 3'",
         ))
         .parse_next(i)?;
+    ignore_trailing_comma(i);
     ignore_whitespace(i);
     let end = close_brace(i)?.end;
     Ok(ObjectExpression { start, end, properties })
@@ -975,6 +976,11 @@ fn identifier(i: TokenSlice) -> PResult<Identifier> {
 /// Helper function. Matches any number of whitespace tokens and ignores them.
 fn ignore_whitespace(i: TokenSlice) {
     let _: PResult<()> = repeat(0.., whitespace).parse_next(i);
+}
+
+// A helper function to ignore a trailing comma.
+fn ignore_trailing_comma(i: TokenSlice) {
+    let _ = opt(comma).parse_next(i);
 }
 
 /// Matches at least 1 whitespace.
