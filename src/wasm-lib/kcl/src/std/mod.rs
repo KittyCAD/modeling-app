@@ -37,7 +37,6 @@ pub type FnMap = HashMap<String, StdFn>;
 
 lazy_static! {
     static ref CORE_FNS: Vec<Box<dyn StdLibFn>> = vec![
-        Box::new(Show),
         Box::new(LegLen),
         Box::new(LegAngX),
         Box::new(LegAngY),
@@ -713,21 +712,6 @@ impl Args {
         Ok((path_name, extrude_group))
     }
 }
-
-/// Render a model.
-// This never actually gets called so this is fine.
-pub async fn show<'a>(args: Args) -> Result<MemoryItem, KclError> {
-    let sketch_group = args.get_sketch_group()?;
-    inner_show(sketch_group);
-
-    args.make_user_val_from_f64(0.0)
-}
-
-/// Render a model.
-#[stdlib {
-    name = "show",
-}]
-fn inner_show(_sketch: Box<SketchGroup>) {}
 
 /// Returns the length of the given leg.
 pub async fn leg_length(args: Args) -> Result<MemoryItem, KclError> {

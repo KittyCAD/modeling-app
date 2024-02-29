@@ -3091,8 +3091,7 @@ let baz = {a: 1, b: "thing"}
 fn ghi = (x) => {
   return x
 }
-
-show(part001)"#;
+"#;
         let tokens = crate::token::lexer(code);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
@@ -3373,8 +3372,7 @@ const mySk1 = startSketchOn('XY')
        intersectTag: 'seg01'
      }, %)
   |> line([-0.42, -1.72], %)
-
-show(part001)"#;
+"#;
         let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
@@ -3523,8 +3521,7 @@ let baz = {a: 1, part001: "thing"}
 fn ghi = (part001) => {
   return part001
 }
-
-show(part001)"#;
+"#;
         let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let mut program = parser.ast().unwrap();
@@ -3546,8 +3543,6 @@ let baz = { a: 1, part001: "thing" }
 fn ghi = (part001) => {
   return part001
 }
-
-show(mySuperCoolPart)
 "#
         );
     }
@@ -3676,8 +3671,7 @@ const firstExtrude = startSketchOn('XY')
   |> line([0, -l], %)
   |> close(%)
   |> extrude(h, %)
-
-show(firstExtrude)"#;
+"#;
         let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
@@ -3696,8 +3690,6 @@ const firstExtrude = startSketchOn('XY')
   |> line([0, -l], %)
   |> close(%)
   |> extrude(h, %)
-
-show(firstExtrude)
 "#
         );
     }
@@ -3718,8 +3710,7 @@ const firstExtrude = startSketchOn('XY')
   |> line([0, -l], %)
   |> close(%)
   |> extrude(h, %)
-
-show(firstExtrude)"#;
+"#;
         let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
@@ -3741,8 +3732,6 @@ const firstExtrude = startSketchOn('XY')
   |> line([0, -l], %)
   |> close(%)
   |> extrude(h, %)
-
-show(firstExtrude)
 "#
         );
     }

@@ -1909,7 +1909,6 @@ const mySk1 = startSketchAt([0, 0])"#;
         let test_program = r#"startSketchAt([0, 0])
         |> lineTo([0, -0], %) // MoveRelative
 
-        show(svg)
         "#;
         let tokens = crate::token::lexer(test_program);
         let mut slice = &tokens[..];
@@ -2238,8 +2237,6 @@ const firstExtrude = startSketchOn('XY')
   |> line([0, -8], %)
   |> close(%)
   |> extrude(2, %)
-
-show(firstExtrude)
 
 const secondExtrude = startSketchOn('XY')
   |> startProfileAt([0,0], %)
@@ -2724,9 +2721,7 @@ const b2 = cube([3,3], 4)
 
 const pt1 = b1[0]
 const pt2 = b2[0]
-
-show(b1)
-show(b2)"#;
+"#;
         let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         parser.ast().unwrap();
@@ -2755,7 +2750,7 @@ let other_thing = 2 * cos(3)"#;
   return myBox
 }
 let myBox = box([0,0], -3, -16, -10)
-show(myBox)"#;
+"#;
         let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         parser.ast().unwrap();

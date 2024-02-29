@@ -1,2 +1,1 @@
 const cylinder = circle('XY', [0,0], 22) |> extrude(14, %)
-show(cylinder)
