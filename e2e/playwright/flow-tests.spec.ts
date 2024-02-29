@@ -387,7 +387,7 @@ test('Auto complete works', async ({ page }) => {
   await page.keyboard.press('ArrowDown')
   await page.keyboard.press('Enter')
   // finish line with comment
-  await page.keyboard.type('(5, %) // lin', { delay: 100 }) // We add a delay here so its slow like a user and the lsp can catch up
+  await page.keyboard.type('(5, %) // lin', {delay: 1000}) // We add a delay here so its slow like a user and the lsp can catch up
   await page.waitForTimeout(100)
   // there shouldn't be any auto complete options for 'lin' in the comment
   await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
