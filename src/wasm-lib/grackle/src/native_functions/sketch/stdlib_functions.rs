@@ -7,7 +7,7 @@ use kittycad_modeling_cmds::{
 use uuid::Uuid;
 
 use super::{
-    helpers::{no_arg_api_call, sequence_binding, single_binding, stack_api_call},
+    helpers::{arg_point2d, no_arg_api_call, single_binding, stack_api_call},
     types::{Axes, BasePath, Plane, SketchGroup},
 };
 use crate::{binding_scope::EpBinding, error::CompileError, native_functions::Callable, EvalPlan};
@@ -28,42 +28,10 @@ impl Callable for StartSketchAt {
                 actual: 0,
             });
         };
-        let start_point = {
-            let expected = "2D point (array with length 2)";
-            let fn_name = "startSketchAt";
-            let elements = sequence_binding(start, "startSketchAt", "an array of length 2")?;
-            if elements.len() != 2 {
-                return Err(CompileError::ArgWrongType {
-                    fn_name,
-                    expected,
-                    actual: format!("array of length {}", elements.len()),
-                });
-            }
-            // KCL stores points as an array.
-            // KC API stores them as Rust objects laid flat out in memory.
-            let start = next_addr.offset_by(2);
-            let start_x = start;
-            let start_y = start + 1;
-            let start_z = start + 2;
-            instructions.extend([
-                Instruction::Copy {
-                    source: single_binding(elements[0].clone(), "startSketchAt (first parameter, elem 0)", "number")?,
-                    destination: start_x,
-                },
-                Instruction::Copy {
-                    source: single_binding(elements[1].clone(), "startSketchAt (first parameter, elem 1)", "number")?,
-                    destination: start_y,
-                },
-                Instruction::SetPrimitive {
-                    address: start_z,
-                    value: 0.0.into(),
-                },
-            ]);
-            start
-        };
+        let start_point = arg_point2d(start, "startSketchAt", &mut instructions, next_addr, 0)?;
         let tag = match args_iter.next() {
             None => None,
-            Some(b) => Some(single_binding(b, "startSketchAt", "a single string")?),
+            Some(b) => Some(single_binding(b, "startSketchAt", "a single string", 1)?),
         };
 
         // Define some constants:
