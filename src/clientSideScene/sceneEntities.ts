@@ -106,9 +106,10 @@ class SceneEntities {
 
     Object.values(this.activeSegments).forEach((segment) => {
       const factor =
-        sceneInfra.camControls.camera instanceof OrthographicCamera
+        (sceneInfra.camControls.camera instanceof OrthographicCamera
           ? orthoFactor
-          : perspScale(sceneInfra.camControls.camera, segment)
+          : perspScale(sceneInfra.camControls.camera, segment)) /
+        sceneInfra._baseUnitMultiplier
       if (
         segment.userData.from &&
         segment.userData.to &&
@@ -143,9 +144,9 @@ class SceneEntities {
           ? orthoFactor
           : perspScale(sceneInfra.camControls.camera, this.axisGroup)
       const x = this.axisGroup.getObjectByName(X_AXIS)
-      x?.scale.set(1, factor, 1)
+      x?.scale.set(1, factor / sceneInfra._baseUnitMultiplier, 1)
       const y = this.axisGroup.getObjectByName(Y_AXIS)
-      y?.scale.set(factor, 1, 1)
+      y?.scale.set(factor / sceneInfra._baseUnitMultiplier, 1, 1)
     }
   }
 
@@ -169,6 +170,7 @@ class SceneEntities {
     this.scene.add(this.intersectionPlane)
   }
   createSketchAxis(sketchPathToNode: PathToNode) {
+    const orthoFactor = orthoScale(sceneInfra.camControls.camera)
     const baseXColor = 0x000055
     const baseYColor = 0x550000
     const xAxisGeometry = new BoxGeometry(100000, 0.3, 0.01)
@@ -208,6 +210,14 @@ class SceneEntities {
       sceneInfra.camControls.target
     )
     gridHelper.scale.set(sceneScale, sceneScale, sceneScale)
+
+    const factor =
+      sceneInfra.camControls.camera instanceof OrthographicCamera
+        ? orthoFactor
+        : perspScale(sceneInfra.camControls.camera, this.axisGroup)
+    xAxisMesh?.scale.set(1, factor / sceneInfra._baseUnitMultiplier, 1)
+    yAxisMesh?.scale.set(factor / sceneInfra._baseUnitMultiplier, 1, 1)
+
     this.axisGroup.add(xAxisMesh, yAxisMesh, gridHelper)
     this.currentSketchQuaternion &&
       this.axisGroup.setRotationFromQuaternion(this.currentSketchQuaternion)
@@ -279,9 +289,10 @@ class SceneEntities {
     )
     const orthoFactor = orthoScale(sceneInfra.camControls.camera)
     const factor =
-      sceneInfra.camControls.camera instanceof OrthographicCamera
+      (sceneInfra.camControls.camera instanceof OrthographicCamera
         ? orthoFactor
-        : perspScale(sceneInfra.camControls.camera, dummy)
+        : perspScale(sceneInfra.camControls.camera, dummy)) /
+      sceneInfra._baseUnitMultiplier
     sketchGroup.value.forEach((segment, index) => {
       let segPathToNode = getNodePathFromSourceRange(
         draftSegment ? truncatedAst : kclManager.ast,
@@ -567,9 +578,10 @@ class SceneEntities {
         // const prevSegment = sketchGroup.slice(index - 1)[0]
         const type = group?.userData?.type
         const factor =
-          sceneInfra.camControls.camera instanceof OrthographicCamera
+          (sceneInfra.camControls.camera instanceof OrthographicCamera
             ? orthoFactor
-            : perspScale(sceneInfra.camControls.camera, group)
+            : perspScale(sceneInfra.camControls.camera, group)) /
+          sceneInfra._baseUnitMultiplier
         if (type === TANGENTIAL_ARC_TO_SEGMENT) {
           this.updateTangentialArcToSegment({
             prevSegment: sketchGroup[index - 1],

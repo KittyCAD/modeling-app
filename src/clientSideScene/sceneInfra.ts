@@ -18,9 +18,8 @@ import {
   Intersection,
   Object3D,
   Object3DEventMap,
-  BoxGeometry,
 } from 'three'
-import { compareVec2Epsilon2 } from 'lang/std/sketch'
+import { Coords2d, compareVec2Epsilon2 } from 'lang/std/sketch'
 import { useModelingContext } from 'hooks/useModelingContext'
 import * as TWEEN from '@tweenjs/tween.js'
 import { SourceRange } from 'lang/wasm'
@@ -88,6 +87,8 @@ class SceneInfra {
   fov = 45
   fovBeforeAnimate = 45
   isFovAnimationInProgress = false
+  _baseUnit: BaseUnit = 'mm'
+  _baseUnitMultiplier = 1
   onDragCallback: (arg: OnDragCallbackArgs) => void = () => {}
   onMoveCallback: (arg: onMoveCallbackArgs) => void = () => {}
   onClickCallback: (arg?: OnClickCallbackArgs) => void = () => {}
@@ -107,6 +108,17 @@ class SceneInfra {
     this.onMouseLeave = callbacks.onMouseLeave || this.onMouseLeave
     this.selected = null // following selections between callbacks being set is too tricky
   }
+  set baseUnit(unit: BaseUnit) {
+    this._baseUnit = unit
+    this._baseUnitMultiplier = baseUnitTomm(unit)
+    this.scene.scale.set(
+      this._baseUnitMultiplier,
+      this._baseUnitMultiplier,
+      this._baseUnitMultiplier
+    )
+  }
+  scaleCoord = (coord: Coords2d): Coords2d =>
+    scaleCoord(coord, this._baseUnitMultiplier)
   resetMouseListeners = () => {
     sceneInfra.setCallbacks({
       onDrag: () => {},
@@ -270,8 +282,11 @@ class SceneInfra {
     }
 
     return {
-      intersection2d: new Vector2(transformedPoint.x, transformedPoint.y), // z should be 0
-      intersectPoint,
+      intersection2d: new Vector2(
+        transformedPoint.x / this._baseUnitMultiplier,
+        transformedPoint.y / this._baseUnitMultiplier
+      ), // z should be 0
+      intersectPoint: intersectPoint.divideScalar(this._baseUnitMultiplier),
       intersection: planeIntersects[0],
     }
   }
@@ -576,3 +591,8 @@ export function defaultPlaneColor(
   }
   return new Color(lowCh, lowCh, lowCh)
 }
+
+export const scaleCoord = (coord: Coords2d, scale: number): Coords2d => [
+  coord[0] * scale,
+  coord[1] * scale,
+]
