@@ -151,6 +151,17 @@ export class CameraControls {
   get isPerspective() {
     return this.camera instanceof PerspectiveCamera
   }
+  private debounceTimer = 0
+
+  handleStart = () => {
+    if (this.debounceTimer) clearTimeout(this.debounceTimer)
+    this._isCamMovingCallback(true, false)
+  }
+  handleEnd = () => {
+    this.debounceTimer = setTimeout(() => {
+      this._isCamMovingCallback(false, false)
+    }, 400) as any as number
+  }
 
   // reacts hooks into some of this singleton's properties
   reactCameraProperties: ReactCameraProperties = {
@@ -242,6 +253,7 @@ export class CameraControls {
   onMouseDown = (event: MouseEvent) => {
     this.isDragging = true
     this.mouseDownPosition.set(event.clientX, event.clientY)
+    this.handleStart()
   }
 
   onMouseMove = (event: MouseEvent) => {
@@ -297,15 +309,18 @@ export class CameraControls {
 
   onMouseUp = (event: MouseEvent) => {
     this.isDragging = false
+    this.handleEnd()
   }
 
   onMouseWheel = (event: WheelEvent) => {
     // Assume trackpad if the deltas are small and integers
+    this.handleStart()
     const isTrackpad = Math.abs(event.deltaY) <= 1 || event.deltaY % 1 === 0
 
     const zoomSpeed = isTrackpad ? 0.02 : 0.1 // Reduced zoom speed for trackpad
     this.pendingZoom = this.pendingZoom ? this.pendingZoom : 1
     this.pendingZoom *= 1 + (event.deltaY > 0 ? zoomSpeed : -zoomSpeed)
+    this.handleEnd()
   }
 
   useOrthographicCamera = () => {
