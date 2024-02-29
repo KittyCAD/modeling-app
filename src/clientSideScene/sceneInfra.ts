@@ -18,9 +18,8 @@ import {
   Intersection,
   Object3D,
   Object3DEventMap,
-  BoxGeometry,
 } from 'three'
-import { compareVec2Epsilon2 } from 'lang/std/sketch'
+import { Coords2d, compareVec2Epsilon2 } from 'lang/std/sketch'
 import { useModelingContext } from 'hooks/useModelingContext'
 import * as TWEEN from '@tweenjs/tween.js'
 import { SourceRange } from 'lang/wasm'
@@ -88,6 +87,8 @@ class SceneInfra {
   fov = 45
   fovBeforeAnimate = 45
   isFovAnimationInProgress = false
+  _baseUnit: BaseUnit = 'mm'
+  _baseUnitMultiplier = 1
   onDragCallback: (arg: OnDragCallbackArgs) => void = () => {}
   onMoveCallback: (arg: onMoveCallbackArgs) => void = () => {}
   onClickCallback: (arg?: OnClickCallbackArgs) => void = () => {}
@@ -106,6 +107,15 @@ class SceneInfra {
     this.onMouseEnter = callbacks.onMouseEnter || this.onMouseEnter
     this.onMouseLeave = callbacks.onMouseLeave || this.onMouseLeave
     this.selected = null // following selections between callbacks being set is too tricky
+  }
+  set baseUnit(unit: BaseUnit) {
+    this._baseUnit = unit
+    this._baseUnitMultiplier = baseUnitTomm(unit)
+    this.scene.scale.set(
+      this._baseUnitMultiplier,
+      this._baseUnitMultiplier,
+      this._baseUnitMultiplier
+    )
   }
   resetMouseListeners = () => {
     sceneInfra.setCallbacks({
@@ -202,7 +212,12 @@ class SceneInfra {
     const axisGroup = this.scene
       .getObjectByName(AXIS_GROUP)
       ?.getObjectByName('gridHelper')
-    planesGroup && planesGroup.scale.set(scale, scale, scale)
+    planesGroup &&
+      planesGroup.scale.set(
+        scale / sceneInfra._baseUnitMultiplier,
+        scale / sceneInfra._baseUnitMultiplier,
+        scale / sceneInfra._baseUnitMultiplier
+      )
     axisGroup?.name === 'gridHelper' && axisGroup.scale.set(scale, scale, scale)
   }
 
@@ -270,8 +285,11 @@ class SceneInfra {
     }
 
     return {
-      intersection2d: new Vector2(transformedPoint.x, transformedPoint.y), // z should be 0
-      intersectPoint,
+      intersection2d: new Vector2(
+        transformedPoint.x / this._baseUnitMultiplier,
+        transformedPoint.y / this._baseUnitMultiplier
+      ), // z should be 0
+      intersectPoint: intersectPoint.divideScalar(this._baseUnitMultiplier),
       intersection: planeIntersects[0],
     }
   }
@@ -483,7 +501,11 @@ class SceneInfra {
       this.camControls.camera,
       this.camControls.target
     )
-    planesGroup.scale.set(sceneScale, sceneScale, sceneScale)
+    planesGroup.scale.set(
+      sceneScale / sceneInfra._baseUnitMultiplier,
+      sceneScale / sceneInfra._baseUnitMultiplier,
+      sceneScale / sceneInfra._baseUnitMultiplier
+    )
     this.scene.add(planesGroup)
   }
   removeDefaultPlanes() {

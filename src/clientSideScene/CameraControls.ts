@@ -220,6 +220,7 @@ export class CameraControls {
     this.onWindowResize()
 
     this.update()
+    this._usePerspectiveCamera()
   }
 
   private _isCamMovingCallback: (isMoving: boolean, isTween: boolean) => void =
@@ -373,7 +374,7 @@ export class CameraControls {
 
     return this.camera
   }
-  usePerspectiveCamera = () => {
+  _usePerspectiveCamera = () => {
     const { x: px, y: py, z: pz } = this.camera.position
     const { x: qx, y: qy, z: qz, w: qw } = this.camera.quaternion
     const zoom = this.camera.zoom
@@ -389,14 +390,17 @@ export class CameraControls {
     )
     direction.normalize()
     this.camera.position.copy(this.target).addScaledVector(direction, distance)
-
+  }
+  usePerspectiveCamera = () => {
+    this._usePerspectiveCamera()
     engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
       cmd: {
         type: 'default_camera_set_perspective',
         parameters: {
-          fov_y: this.camera.fov,
+          fov_y:
+            this.camera instanceof PerspectiveCamera ? this.camera.fov : 45,
           ...calculateNearFarFromFOV(this.lastPerspectiveFov),
         },
       },
