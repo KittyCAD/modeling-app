@@ -1,21 +1,22 @@
 ---
 source: kcl/src/parser/parser_impl.rs
+assertion_line: 2927
 expression: actual
 ---
 {
   "start": 0,
-  "end": 59,
+  "end": 75,
   "body": [
     {
       "type": "VariableDeclaration",
       "type": "VariableDeclaration",
       "start": 0,
-      "end": 58,
+      "end": 74,
       "declarations": [
         {
           "type": "VariableDeclarator",
           "start": 6,
-          "end": 58,
+          "end": 74,
           "id": {
             "type": "Identifier",
             "start": 6,
@@ -26,47 +27,47 @@ expression: actual
             "type": "PipeExpression",
             "type": "PipeExpression",
             "start": 17,
-            "end": 58,
+            "end": 74,
             "body": [
               {
                 "type": "CallExpression",
                 "type": "CallExpression",
                 "start": 17,
-                "end": 40,
+                "end": 56,
                 "callee": {
                   "type": "Identifier",
                   "start": 17,
-                  "end": 23,
-                  "name": "circle"
+                  "end": 39,
+                  "name": "unstable_stdlib_circle"
                 },
                 "arguments": [
                   {
                     "type": "Literal",
                     "type": "Literal",
-                    "start": 24,
-                    "end": 28,
+                    "start": 40,
+                    "end": 44,
                     "value": "XY",
                     "raw": "'XY'"
                   },
                   {
                     "type": "ArrayExpression",
                     "type": "ArrayExpression",
-                    "start": 30,
-                    "end": 35,
+                    "start": 46,
+                    "end": 51,
                     "elements": [
                       {
                         "type": "Literal",
                         "type": "Literal",
-                        "start": 31,
-                        "end": 32,
+                        "start": 47,
+                        "end": 48,
                         "value": 0,
                         "raw": "0"
                       },
                       {
                         "type": "Literal",
                         "type": "Literal",
-                        "start": 33,
-                        "end": 34,
+                        "start": 49,
+                        "end": 50,
                         "value": 0,
                         "raw": "0"
                       }
@@ -75,8 +76,8 @@ expression: actual
                   {
                     "type": "Literal",
                     "type": "Literal",
-                    "start": 37,
-                    "end": 39,
+                    "start": 53,
+                    "end": 55,
                     "value": 22,
                     "raw": "22"
                   }
@@ -86,28 +87,28 @@ expression: actual
               {
                 "type": "CallExpression",
                 "type": "CallExpression",
-                "start": 44,
-                "end": 58,
+                "start": 60,
+                "end": 74,
                 "callee": {
                   "type": "Identifier",
-                  "start": 44,
-                  "end": 51,
+                  "start": 60,
+                  "end": 67,
                   "name": "extrude"
                 },
                 "arguments": [
                   {
                     "type": "Literal",
                     "type": "Literal",
-                    "start": 52,
-                    "end": 54,
+                    "start": 68,
+                    "end": 70,
                     "value": 14,
                     "raw": "14"
                   },
                   {
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution",
-                    "start": 56,
-                    "end": 57
+                    "start": 72,
+                    "end": 73
                   }
                 ],
                 "optional": false

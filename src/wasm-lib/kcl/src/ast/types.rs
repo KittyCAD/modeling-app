@@ -3371,8 +3371,7 @@ const mySk1 = startSketchOn('XY')
        offset: -1.35,
        intersectTag: 'seg01'
      }, %)
-  |> line([-0.42, -1.72], %)
-"#;
+  |> line([-0.42, -1.72], %)"#;
         let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
