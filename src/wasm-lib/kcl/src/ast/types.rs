@@ -171,6 +171,35 @@ impl Program {
         }
     }
 
+    /// Returns a non code meta that includes the given character position.
+    pub fn get_non_code_meta_for_position(&self, pos: usize) -> Option<&NonCodeMeta> {
+        // Check if its in the body.
+        if self.non_code_meta.contains(pos) {
+            return Some(&self.non_code_meta);
+        }
+        let Some(item) = self.get_body_item_for_position(pos) else {
+            return None;
+        };
+
+        // Recurse over the item.
+        let value = match item {
+            BodyItem::ExpressionStatement(expression_statement) => Some(&expression_statement.expression),
+            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_value_for_position(pos),
+            BodyItem::ReturnStatement(return_statement) => Some(&return_statement.argument),
+        };
+
+        // Check if the value's non code meta contains the position.
+        if let Some(value) = value {
+            if let Some(non_code_meta) = value.get_non_code_meta() {
+                if non_code_meta.contains(pos) {
+                    return Some(non_code_meta);
+                }
+            }
+        }
+
+        None
+    }
+
     /// Returns all the lsp symbols in the program.
     pub fn get_lsp_symbols(&self, code: &str) -> Vec<DocumentSymbol> {
         let mut symbols = vec![];
@@ -440,6 +469,24 @@ impl Value {
             Value::None(_) => {
                 unimplemented!("there is no literal None, see https://github.com/KittyCAD/modeling-app/issues/1115")
             }
+        }
+    }
+
+    // Get the non code meta for the value.
+    pub fn get_non_code_meta(&self) -> Option<&NonCodeMeta> {
+        match self {
+            Value::BinaryExpression(_bin_exp) => None,
+            Value::ArrayExpression(_array_exp) => None,
+            Value::ObjectExpression(_obj_exp) => None,
+            Value::MemberExpression(_mem_exp) => None,
+            Value::Literal(_literal) => None,
+            Value::FunctionExpression(_func_exp) => None,
+            Value::CallExpression(_call_exp) => None,
+            Value::Identifier(_ident) => None,
+            Value::PipeExpression(pipe_exp) => Some(&pipe_exp.non_code_meta),
+            Value::UnaryExpression(_unary_exp) => None,
+            Value::PipeSubstitution(_pipe_substitution) => None,
+            Value::None(_none) => None,
         }
     }
 
@@ -748,6 +795,10 @@ pub struct NonCodeNode {
 }
 
 impl NonCodeNode {
+    pub fn contains(&self, pos: usize) -> bool {
+        self.start <= pos && pos <= self.end
+    }
+
     pub fn value(&self) -> String {
         match &self.value {
             NonCodeValue::InlineComment { value, style: _ } => value.clone(),
@@ -883,6 +934,16 @@ impl<'de> Deserialize<'de> for NonCodeMeta {
 impl NonCodeMeta {
     pub fn insert(&mut self, i: usize, new: NonCodeNode) {
         self.non_code_nodes.entry(i).or_default().push(new);
+    }
+
+    pub fn contains(&self, pos: usize) -> bool {
+        if self.start.iter().any(|node| node.contains(pos)) {
+            return true;
+        }
+
+        self.non_code_nodes
+            .iter()
+            .any(|(_, nodes)| nodes.iter().any(|node| node.contains(pos)))
     }
 }
 
@@ -3536,6 +3597,55 @@ show(mySuperCoolPart)
      }, %)
 "#
         );
+    }
+
+    #[test]
+    fn test_ast_get_non_code_node() {
+        let some_program_string = r#"const r = 20 / pow(pi(), 1 / 3)
+const h = 30
+
+// st
+const cylinder = startSketchOn('-XZ')
+  |> startProfileAt([50, 0], %)
+  |> arc({
+       angle_end: 360,
+       angle_start: 0,
+       radius: r
+     }, %)
+  |> extrude(h, %)
+"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let value = program.get_non_code_meta_for_position(50);
+
+        assert!(value.is_some());
+    }
+
+    #[test]
+    fn test_ast_get_non_code_node_pipe() {
+        let some_program_string = r#"const r = 20 / pow(pi(), 1 / 3)
+const h = 30
+
+// st
+const cylinder = startSketchOn('-XZ')
+  |> startProfileAt([50, 0], %)
+  // comment
+  |> arc({
+       angle_end: 360,
+       angle_start: 0,
+       radius: r
+     }, %)
+  |> extrude(h, %)
+"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let value = program.get_non_code_meta_for_position(124);
+
+        assert!(value.is_some());
     }
 
     #[test]
