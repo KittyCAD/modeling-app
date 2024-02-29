@@ -3143,6 +3143,32 @@ const thing = 'foo'
     }
 
     #[test]
+    fn test_recast_multiline_comment_start_file() {
+        let some_program_string = r#"// hello worl
+// I am a comment
+const key = 'c'
+// this is also a comment
+// hello
+const thing = 'foo'
+"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"// hello worl
+// I am a comment
+const key = 'c'
+// this is also a comment
+// hello
+const thing = 'foo'
+"#
+        );
+    }
+
+    #[test]
     fn test_recast_multiline_comment_under_variable() {
         let some_program_string = r#"const key = 'c'
 // this is also a comment
