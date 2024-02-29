@@ -1,0 +1,14 @@
+[sources.github-actions-file]
+type = "file"
+include = ["/tmp/github-actions.log"]
+
+# Modify the logs to include the action name.
+[transforms.add-action-name]
+type = "add_fields"
+fields = { action = "GITHUB_WORKFLOW", repo = "GITHUB_REPOSITORY", sha = "GITHUB_SHA", ref = "GITHUB_REF_NAME" }
+
+[sinks.axiom]
+type = "axiom"
+inputs = ["github-actions-file"]
+token = "GH_ACTIONS_AXIOM_TOKEN"
+dataset = "github-actions"
