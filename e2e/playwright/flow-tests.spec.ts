@@ -386,12 +386,16 @@ test('Auto complete works', async ({ page }) => {
   await page.keyboard.press('ArrowDown')
   await page.keyboard.press('ArrowDown')
   await page.keyboard.press('Enter')
-  await page.keyboard.type('(5, %)')
+  // finish line with comment
+  await page.keyboard.type('(5, %) // lin')
+  await page.waitForTimeout(100)
+  // there shouldn't be any auto complete options for 'lin' in the comment
+  await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('XY')
   |> startProfileAt([0,0], %)
-  |> xLine(5, %)`)
+  |> xLine(5, %) // lin`)
 })
 
 // Onboarding tests
