@@ -117,8 +117,6 @@ class SceneInfra {
       this._baseUnitMultiplier
     )
   }
-  scaleCoord = (coord: Coords2d): Coords2d =>
-    scaleCoord(coord, this._baseUnitMultiplier)
   resetMouseListeners = () => {
     sceneInfra.setCallbacks({
       onDrag: () => {},
@@ -591,8 +589,3 @@ export function defaultPlaneColor(
   }
   return new Color(lowCh, lowCh, lowCh)
 }
-
-export const scaleCoord = (coord: Coords2d, scale: number): Coords2d => [
-  coord[0] * scale,
-  coord[1] * scale,
-]
