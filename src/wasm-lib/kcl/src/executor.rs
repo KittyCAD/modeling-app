@@ -1075,9 +1075,9 @@ pub async fn execute(
                     }
                     match ctx.stdlib.get_either(&call_expr.callee.name) {
                         FunctionKind::Core(func) => {
-                                let args = crate::std::Args::new(args, call_expr.into(), ctx.clone());
-                                let result = func.std_lib_fn()(args).await?;
-                                memory.return_ = Some(ProgramReturn::Value(result));
+                            let args = crate::std::Args::new(args, call_expr.into(), ctx.clone());
+                            let result = func.std_lib_fn()(args).await?;
+                            memory.return_ = Some(ProgramReturn::Value(result));
                         }
                         FunctionKind::Std(func) => {
                             let mut newmem = memory.clone();
