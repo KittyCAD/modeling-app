@@ -52,7 +52,7 @@ jobs:
           sed -i "s#GITHUB_REF_NAME#${GITHUB_REF_NAME}#g" /tmp/vector.toml
           sed -i "s#GH_ACTIONS_AXIOM_TOKEN#${{secrets.GH_ACTIONS_AXIOM_TOKEN}}#g" /tmp/vector.toml
           cat /tmp/vector.toml
-          vector --config /tmp/vector.toml &
+          ${HOME}/.vector/bin/vector --config /tmp/vector.toml &
       - uses: taiki-e/install-action@cargo-llvm-cov
       - uses: taiki-e/install-action@nextest
       - name: Rust Cache
