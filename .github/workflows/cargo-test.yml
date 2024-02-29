@@ -40,6 +40,20 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+      - name: Install vector
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev > /tmp/vector.sh
+          chmod +x /tmp/vector.sh
+          /tmp/vector.sh -y -no-modify-path
+          mkdir -p /tmp/vector
+          cp .github/workflows/vector.toml /tmp/vector.toml
+          sed -i "s#GITHUB_WORKFLOW#${GITHUB_WORKFLOW}#g" /tmp/vector.toml
+          sed -i "s#GITHUB_REPOSITORY#${GITHUB_REPOSITORY}#g" /tmp/vector.toml
+          sed -i "s#GITHUB_SHA#${GITHUB_SHA}#g" /tmp/vector.toml
+          sed -i "s#GITHUB_REF_NAME#${GITHUB_REF_NAME}#g" /tmp/vector.toml
+          sed -i "s#GH_ACTIONS_AXIOM_TOKEN#${{secrets.GH_ACTIONS_AXIOM_TOKEN}}#g" /tmp/vector.toml
+          cat /tmp/vector.toml
+          ${HOME}/.vector/bin/vector --config /tmp/vector.toml &
       - uses: taiki-e/install-action@cargo-llvm-cov
       - uses: taiki-e/install-action@nextest
       - name: Rust Cache
@@ -48,7 +62,7 @@ jobs:
         shell: bash
         run: |-
           cd "${{ matrix.dir }}"
-          cargo nextest run --workspace --no-fail-fast -P ci
+          cargo nextest run --workspace --no-fail-fast -P ci 2>&1 | tee /tmp/github-actions.log
         env:
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN}}
           RUST_MIN_STACK: 10485760000
