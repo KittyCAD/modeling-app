@@ -45,6 +45,7 @@ jobs:
           curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev > /tmp/vector.sh
           chmod +x /tmp/vector.sh
           /tmp/vector.sh -y -no-modify-path
+          mkdir -p /etc/vector
           cp .github/workflows/vector.toml /etc/vector/vector.toml
           sed -i "s#GITHUB_WORKFLOW#${GITHUB_WORKFLOW}#g" /etc/vector/vector.toml
           sed -i "s#GITHUB_REPOSITORY#${GITHUB_REPOSITORY}#g" /etc/vector/vector.toml
