@@ -96,7 +96,19 @@ impl Program {
                     let custom_white_space_or_comment = match self.non_code_meta.non_code_nodes.get(&index) {
                         Some(noncodes) => noncodes
                             .iter()
-                            .map(|custom_white_space_or_comment| custom_white_space_or_comment.format(&indentation))
+                            .enumerate()
+                            .map(|(i, custom_white_space_or_comment)| {
+                                let formatted = custom_white_space_or_comment.format(&indentation);
+                                if i == 0 && !formatted.trim().is_empty() {
+                                    if let NonCodeValue::BlockComment { .. } = custom_white_space_or_comment.value {
+                                        format!("\n{}", formatted)
+                                    } else {
+                                        formatted
+                                    }
+                                } else {
+                                    formatted
+                                }
+                            })
                             .collect::<String>(),
                         None => String::new(),
                     };
@@ -755,18 +767,27 @@ impl NonCodeNode {
                 value,
                 style: CommentStyle::Block,
             } => format!(" /* {} */", value),
-            NonCodeValue::BlockComment { value, style } => {
-                let add_start_new_line = if self.start == 0 { "" } else { "\n" };
-                match style {
-                    CommentStyle::Block => format!("{}{}/* {} */", add_start_new_line, indentation, value),
-                    CommentStyle::Line => format!("{}{}// {}\n", add_start_new_line, indentation, value),
+            NonCodeValue::BlockComment { value, style } => match style {
+                CommentStyle::Block => format!("{}/* {} */", indentation, value),
+                CommentStyle::Line => {
+                    if value.trim().is_empty() {
+                        format!("{}//\n", indentation)
+                    } else {
+                        format!("{}// {}\n", indentation, value.trim())
+                    }
                 }
-            }
+            },
             NonCodeValue::NewLineBlockComment { value, style } => {
                 let add_start_new_line = if self.start == 0 { "" } else { "\n\n" };
                 match style {
                     CommentStyle::Block => format!("{}{}/* {} */\n", add_start_new_line, indentation, value),
-                    CommentStyle::Line => format!("{}{}// {}\n", add_start_new_line, indentation, value),
+                    CommentStyle::Line => {
+                        if value.trim().is_empty() {
+                            format!("{}{}//\n", add_start_new_line, indentation)
+                        } else {
+                            format!("{}{}// {}\n", add_start_new_line, indentation, value.trim())
+                        }
+                    }
                 }
             }
             NonCodeValue::NewLine => "\n\n".to_string(),
@@ -2533,7 +2554,13 @@ impl PipeExpression {
                 let non_code_meta = self.non_code_meta.clone();
                 if let Some(non_code_meta_value) = non_code_meta.non_code_nodes.get(&index) {
                     for val in non_code_meta_value {
-                        s += val.format(&indentation).trim_end_matches('\n')
+                        let formatted = val.format(&indentation).trim_end_matches('\n').to_string();
+                        if let NonCodeValue::BlockComment { .. } = val.value {
+                            s += "\n";
+                            s += &formatted;
+                        } else {
+                            s += &formatted;
+                        }
                     }
                 }
 
@@ -3106,6 +3133,109 @@ show(part001)"#;
 "#
         );
     }
+
+    #[test]
+    fn test_recast_comment_under_variable() {
+        let some_program_string = r#"const key = 'c'
+// this is also a comment
+const thing = 'foo'
+"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"const key = 'c'
+// this is also a comment
+const thing = 'foo'
+"#
+        );
+    }
+
+    #[test]
+    fn test_recast_multiline_comment_start_file() {
+        let some_program_string = r#"// hello world
+// I am a comment
+const key = 'c'
+// this is also a comment
+// hello
+const thing = 'foo'
+"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"// hello world
+// I am a comment
+const key = 'c'
+// this is also a comment
+// hello
+const thing = 'foo'
+"#
+        );
+    }
+
+    #[test]
+    fn test_recast_empty_comment() {
+        let some_program_string = r#"// hello world
+//
+// I am a comment
+const key = 'c'
+
+//
+// I am a comment
+const thing = 'c'
+
+const foo = 'bar' //
+"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"// hello world
+//
+// I am a comment
+const key = 'c'
+
+//
+// I am a comment
+const thing = 'c'
+
+const foo = 'bar' //
+"#
+        );
+    }
+
+    #[test]
+    fn test_recast_multiline_comment_under_variable() {
+        let some_program_string = r#"const key = 'c'
+// this is also a comment
+// hello
+const thing = 'foo'
+"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"const key = 'c'
+// this is also a comment
+// hello
+const thing = 'foo'
+"#
+        );
+    }
+
     #[test]
     fn test_recast_comment_at_start() {
         let test_program = r#"
@@ -3407,6 +3537,51 @@ show(firstExtrude)"#;
 const l = 8
 const h = 10
 
+const firstExtrude = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, l], %)
+  |> line([w, 0], %)
+  |> line([0, -l], %)
+  |> close(%)
+  |> extrude(h, %)
+
+show(firstExtrude)
+"#
+        );
+    }
+
+    #[test]
+    fn test_recast_multiline_comment() {
+        let some_program_string = r#"const w = 20
+const l = 8
+const h = 10
+
+// This is my comment
+// It has multiple lines
+// And it's really long
+const firstExtrude = startSketchOn('XY')
+  |> startProfileAt([0,0], %)
+  |> line([0, l], %)
+  |> line([w, 0], %)
+  |> line([0, -l], %)
+  |> close(%)
+  |> extrude(h, %)
+
+show(firstExtrude)"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"const w = 20
+const l = 8
+const h = 10
+
+// This is my comment
+// It has multiple lines
+// And it's really long
 const firstExtrude = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, l], %)
