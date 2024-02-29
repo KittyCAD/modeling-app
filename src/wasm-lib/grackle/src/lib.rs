@@ -618,7 +618,7 @@ impl Eq for UserDefinedFunction {}
 #[cfg_attr(test, derive(Eq, PartialEq))]
 enum KclFunction {
     Id(native_functions::Id),
-    StartSketchAt(native_functions::StartSketchAt),
+    StartSketchAt(native_functions::sketch::StartSketchAt),
     Add(native_functions::Add),
     UserDefined(UserDefinedFunction),
 }
