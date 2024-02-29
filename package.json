@@ -15,7 +15,6 @@
     "@open-rpc/client-js": "^1.8.1",
     "@react-hook/resize-observer": "^1.2.6",
     "@replit/codemirror-interact": "^6.3.0",
-    "@sentry/react": "^7.77.0",
     "@tauri-apps/api": "^1.5.1",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^14.0.0",
