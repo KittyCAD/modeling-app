@@ -3,6 +3,7 @@ use std::{collections::HashMap, env};
 use ep::{sketch_types, Destination, UnaryArithmetic};
 use ept::{ListHeader, ObjectHeader};
 use kittycad_modeling_cmds::shared::Point2d;
+use kittycad_execution_plan_traits::ReadMemory;
 use kittycad_modeling_session::SessionBuilder;
 use pretty_assertions::assert_eq;
 
@@ -1326,5 +1327,145 @@ fn mod_and_pow() {
                 destination: Destination::Address(addr4),
             }
         ]
+    );
+}
+
+#[tokio::test]
+async fn import_file_cube_stl() {
+    let program = "let x = import(\"samples/cube.stl\", { type: \"stl\", units: \"mm\", coords: { forward: { axis: \"Y\", direction: \"negative\" }, up: { axis: \"Z\", direction: \"positive\" } } })";
+
+    let (_plan, scope) = must_plan(program);
+
+    let Some(EpBinding::Single(x)) = scope.get("x") else {
+        panic!("Unexpected binding for variable 'x': {:?}", scope.get("x"));
+    };
+
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+        .ast()
+        .unwrap();
+    let mem = crate::execute(ast, Some(test_client().await)).await.unwrap();
+
+    let mut expected_format =
+        kittycad_modeling_cmds::format::InputFormat::Stl(kittycad_modeling_cmds::format::stl::import::Options {
+            coords: kittycad_execution_plan::import_files::ZOO_COORD_SYSTEM,
+            units: kittycad_modeling_cmds::units::UnitLength::Millimeters,
+        });
+
+    let imported_geometry = mem
+        .get_composite::<kittycad_modeling_cmds::ok_response::output::ImportedGeometry>(*x)
+        .unwrap();
+
+    use ept::ReadMemory;
+    assert_eq!(
+        imported_geometry.0,
+        kittycad_modeling_cmds::ok_response::output::ImportedGeometry {
+            id: imported_geometry.0.id,
+            value: vec!["cube.stl".to_string()],
+        }
+    );
+}
+
+#[tokio::test]
+async fn import_file_cube_stl_no_options() {
+    let program = "let x = import(\"samples/cube.stl\")";
+
+    let (_plan, scope) = must_plan(program);
+
+    let Some(EpBinding::Single(x)) = scope.get("x") else {
+        panic!("Unexpected binding for variable 'x': {:?}", scope.get("x"));
+    };
+
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+        .ast()
+        .unwrap();
+    let mem = crate::execute(ast, Some(test_client().await)).await.unwrap();
+
+    let mut expected_format =
+        kittycad_modeling_cmds::format::InputFormat::Stl(kittycad_modeling_cmds::format::stl::import::Options {
+            coords: kittycad_execution_plan::import_files::ZOO_COORD_SYSTEM,
+            units: kittycad_modeling_cmds::units::UnitLength::Millimeters,
+        });
+
+    let imported_geometry = mem
+        .get_composite::<kittycad_modeling_cmds::ok_response::output::ImportedGeometry>(*x)
+        .unwrap();
+
+    use ept::ReadMemory;
+    assert_eq!(
+        imported_geometry.0,
+        kittycad_modeling_cmds::ok_response::output::ImportedGeometry {
+            id: imported_geometry.0.id,
+            value: vec!["cube.stl".to_string()],
+        }
+    );
+}
+
+#[tokio::test]
+async fn import_file_cube_stl_options_missing_param() {
+    let program = "let x = import(\"samples/cube.stl\", { type: \"stx\", coords: { forward: { axis: \"Y\", direction: \"negative\" }, up: { axis: \"Z\", direction: \"positive\" } } })";
+
+    let (_plan, scope) = must_plan(program);
+
+    let Some(EpBinding::Single(x)) = scope.get("x") else {
+        panic!("Unexpected binding for variable 'x': {:?}", scope.get("x"));
+    };
+
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+        .ast()
+        .unwrap();
+    let mem = crate::execute(ast, Some(test_client().await)).await.unwrap();
+
+    let mut expected_format =
+        kittycad_modeling_cmds::format::InputFormat::Stl(kittycad_modeling_cmds::format::stl::import::Options {
+            coords: kittycad_execution_plan::import_files::ZOO_COORD_SYSTEM,
+            units: kittycad_modeling_cmds::units::UnitLength::Millimeters,
+        });
+
+    let imported_geometry = mem
+        .get_composite::<kittycad_modeling_cmds::ok_response::output::ImportedGeometry>(*x)
+        .unwrap();
+
+    use ept::ReadMemory;
+    assert_eq!(
+        imported_geometry.0,
+        kittycad_modeling_cmds::ok_response::output::ImportedGeometry {
+            id: imported_geometry.0.id,
+            value: vec!["cube.stl".to_string()],
+        }
+    );
+}
+
+#[tokio::test]
+async fn import_file_cube_stl_format_mismatch() {
+    let program = "let x = import(\"samples/cube.stl\", { type: \"step\" })";
+
+    let (_plan, scope) = must_plan(program);
+
+    let Some(EpBinding::Single(x)) = scope.get("x") else {
+        panic!("Unexpected binding for variable 'x': {:?}", scope.get("x"));
+    };
+
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+        .ast()
+        .unwrap();
+    let mem = crate::execute(ast, Some(test_client().await)).await.unwrap();
+
+    let mut expected_format =
+        kittycad_modeling_cmds::format::InputFormat::Stl(kittycad_modeling_cmds::format::stl::import::Options {
+            coords: kittycad_execution_plan::import_files::ZOO_COORD_SYSTEM,
+            units: kittycad_modeling_cmds::units::UnitLength::Millimeters,
+        });
+
+    let imported_geometry = mem
+        .get_composite::<kittycad_modeling_cmds::ok_response::output::ImportedGeometry>(*x)
+        .unwrap();
+
+    use ept::ReadMemory;
+    assert_eq!(
+        imported_geometry.0,
+        kittycad_modeling_cmds::ok_response::output::ImportedGeometry {
+            id: imported_geometry.0.id,
+            value: vec!["cube.stl".to_string()],
+        }
     );
 }
