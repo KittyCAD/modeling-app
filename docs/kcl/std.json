@@ -32506,14 +32506,14 @@
               "format": "double"
             },
             "axis": {
-              "description": "The axis around which to make the pattern. This is a 3D vector.",
+              "description": "The axis around which to make the pattern. This is a 2D vector.",
               "type": "array",
               "items": {
                 "type": "number",
                 "format": "double"
               },
-              "maxItems": 3,
-              "minItems": 3
+              "maxItems": 2,
+              "minItems": 2
             },
             "center": {
               "description": "The center about which to make th pattern. This is a 3D vector.",
@@ -35128,14 +35128,14 @@
           ],
           "properties": {
             "axis": {
-              "description": "The axis of the pattern. This is a 3D vector.",
+              "description": "The axis of the pattern. This is a 2D vector.",
               "type": "array",
               "items": {
                 "type": "number",
                 "format": "double"
               },
-              "maxItems": 3,
-              "minItems": 3
+              "maxItems": 2,
+              "minItems": 2
             },
             "distance": {
               "description": "The distance between each repetition. This can also be referred to as spacing.",

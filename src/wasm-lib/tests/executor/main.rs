@@ -735,7 +735,7 @@ async fn serial_test_patterns_linear_basic() {
 }
 
 const part = circle([0,0], 2)
-    |> patternLinear({axis: [0,0,1], repetitions: 12, distance: 2}, %)
+    |> patternLinear({axis: [0,1], repetitions: 12, distance: 2}, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
@@ -765,7 +765,7 @@ const part = startSketchOn('XY')
     |> line([0, -1], %)
     |> close(%)
     |> extrude(1, %)
-    |> patternLinear({axis: [1, 0,1], repetitions: 3, distance: 6}, %)
+    |> patternLinear({axis: [1, 0], repetitions: 3, distance: 6}, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
@@ -789,7 +789,7 @@ async fn serial_test_patterns_linear_basic_negative_distance() {
 }
 
 const part = circle([0,0], 2)
-    |> patternLinear({axis: [0,0,1], repetitions: 12, distance: -2}, %)
+    |> patternLinear({axis: [0,1], repetitions: 12, distance: -2}, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
@@ -817,7 +817,7 @@ async fn serial_test_patterns_linear_basic_negative_axis() {
 }
 
 const part = circle([0,0], 2)
-    |> patternLinear({axis: [0,0,-1], repetitions: 12, distance: 2}, %)
+    |> patternLinear({axis: [0,-1], repetitions: 12, distance: 2}, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
@@ -845,7 +845,7 @@ async fn serial_test_patterns_linear_basic_holes() {
 }
 
 const circles = circle([5, 5], 1)
-    |> patternLinear({axis: [1,1,0], repetitions: 12, distance: 3}, %)
+    |> patternLinear({axis: [1,1], repetitions: 12, distance: 3}, %)
 
 const rectangle = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
@@ -878,7 +878,7 @@ async fn serial_test_patterns_circular_basic_2d() {
 }
 
 const part = circle([0,0], 2)
-    |> patternCircular({axis: [0,0,1], center: [20, 20, 20], repetitions: 12, arcDegrees: 210, rotateDuplicates: true}, %)
+    |> patternCircular({axis: [0,1], center: [20, 20, 20], repetitions: 12, arcDegrees: 210, rotateDuplicates: true}, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
@@ -908,7 +908,7 @@ const part = startSketchOn('XY')
     |> line([0, -1], %)
     |> close(%)
     |> extrude(1, %)
-    |> patternCircular({axis: [0,1,0], center: [-20, -20, -20], repetitions: 40, arcDegrees: 360, rotateDuplicates: false}, %)
+    |> patternCircular({axis: [0,1], center: [-20, -20, -20], repetitions: 40, arcDegrees: 360, rotateDuplicates: false}, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
@@ -938,7 +938,7 @@ const part = startSketchOn('XY')
     |> line([0, -1], %)
     |> close(%)
     |> extrude(1, %)
-    |> patternCircular({axis: [1,1,-1], center: [10, 0, 10], repetitions: 10, arcDegrees: 360, rotateDuplicates: true}, %)
+    |> patternCircular({axis: [1,1], center: [10, 0, 10], repetitions: 10, arcDegrees: 360, rotateDuplicates: true}, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)

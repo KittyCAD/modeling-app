@@ -6086,8 +6086,8 @@ patternCircular(data: CircularPatternData, geometry: Geometry) -> Geometries
 {
 	// The arc angle (in degrees) to place the repetitions. Must be greater than 0.
 	arcDegrees: number,
-	// The axis around which to make the pattern. This is a 3D vector.
-	axis: [number, number, number],
+	// The axis around which to make the pattern. This is a 2D vector.
+	axis: [number, number],
 	// The center about which to make th pattern. This is a 3D vector.
 	center: [number, number, number],
 	// The number of repetitions. Must be greater than 0. This excludes the original entity. For example, if `repetitions` is 1, the original entity will be copied once.
@@ -6355,8 +6355,8 @@ patternLinear(data: LinearPatternData, geometry: Geometry) -> Geometries
 * `data`: `LinearPatternData` - Data for a linear pattern.
 ```
 {
-	// The axis of the pattern. This is a 3D vector.
-	axis: [number, number, number],
+	// The axis of the pattern. This is a 2D vector.
+	axis: [number, number],
 	// The distance between each repetition. This can also be referred to as spacing.
 	distance: number,
 	// The number of repetitions. Must be greater than 0. This excludes the original entity. For example, if `repetitions` is 1, the original entity will be copied once.
