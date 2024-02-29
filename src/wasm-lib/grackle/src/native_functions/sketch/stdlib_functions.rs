@@ -6,12 +6,11 @@ use kittycad_modeling_cmds::{
 };
 use uuid::Uuid;
 
-use crate::{binding_scope::EpBinding, error::CompileError, native_functions::Callable, EvalPlan};
-
 use super::{
     helpers::{no_arg_api_call, sequence_binding, single_binding, stack_api_call},
     types::{Axes, BasePath, Plane, SketchGroup},
 };
+use crate::{binding_scope::EpBinding, error::CompileError, native_functions::Callable, EvalPlan};
 
 #[derive(Debug, Clone)]
 #[cfg_attr(test, derive(Eq, PartialEq))]
