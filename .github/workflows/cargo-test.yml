@@ -45,14 +45,13 @@ jobs:
           curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev > /tmp/vector.sh
           chmod +x /tmp/vector.sh
           /tmp/vector.sh -y -no-modify-path
-          mkdir -p /etc/vector
-          cp .github/workflows/vector.toml /etc/vector/vector.toml
-          sed -i "s#GITHUB_WORKFLOW#${GITHUB_WORKFLOW}#g" /etc/vector/vector.toml
-          sed -i "s#GITHUB_REPOSITORY#${GITHUB_REPOSITORY}#g" /etc/vector/vector.toml
-          sed -i "s#GITHUB_SHA#${GITHUB_SHA}#g" /etc/vector/vector.toml
-          sed -i "s#GITHUB_REF_NAME#${GITHUB_REF_NAME}#g" /etc/vector/vector.toml
-          sed -i "s#GH_ACTIONS_AXIOM_TOKEN#${GH_ACTIONS_AXIOM_TOKEN}#g" /etc/vector/vector.toml
-          vector &
+          cp .github/workflows/vector.toml /tmp/vector.toml
+          sed -i "s#GITHUB_WORKFLOW#${GITHUB_WORKFLOW}#g" /tmp/vector.toml
+          sed -i "s#GITHUB_REPOSITORY#${GITHUB_REPOSITORY}#g" /tmp/vector.toml
+          sed -i "s#GITHUB_SHA#${GITHUB_SHA}#g" /tmp/vector.toml
+          sed -i "s#GITHUB_REF_NAME#${GITHUB_REF_NAME}#g" /tmp/vector.toml
+          sed -i "s#GH_ACTIONS_AXIOM_TOKEN#${GH_ACTIONS_AXIOM_TOKEN}#g" /tmp/vector.toml
+          vector --config /tmp/vector.toml &
       - uses: taiki-e/install-action@cargo-llvm-cov
       - uses: taiki-e/install-action@nextest
       - name: Rust Cache
