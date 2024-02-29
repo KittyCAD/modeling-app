@@ -769,13 +769,25 @@ impl NonCodeNode {
             } => format!(" /* {} */", value),
             NonCodeValue::BlockComment { value, style } => match style {
                 CommentStyle::Block => format!("{}/* {} */", indentation, value),
-                CommentStyle::Line => format!("{}// {}\n", indentation, value.trim()),
+                CommentStyle::Line => {
+                    if value.trim().is_empty() {
+                        format!("{}//\n", indentation)
+                    } else {
+                        format!("{}// {}\n", indentation, value.trim())
+                    }
+                }
             },
             NonCodeValue::NewLineBlockComment { value, style } => {
                 let add_start_new_line = if self.start == 0 { "" } else { "\n\n" };
                 match style {
                     CommentStyle::Block => format!("{}{}/* {} */\n", add_start_new_line, indentation, value),
-                    CommentStyle::Line => format!("{}{}// {}\n", add_start_new_line, indentation, value.trim()),
+                    CommentStyle::Line => {
+                        if value.trim().is_empty() {
+                            format!("{}{}//\n", add_start_new_line, indentation)
+                        } else {
+                            format!("{}{}// {}\n", add_start_new_line, indentation, value.trim())
+                        }
+                    }
                 }
             }
             NonCodeValue::NewLine => "\n\n".to_string(),
@@ -3144,7 +3156,7 @@ const thing = 'foo'
 
     #[test]
     fn test_recast_multiline_comment_start_file() {
-        let some_program_string = r#"// hello worl
+        let some_program_string = r#"// hello world
 // I am a comment
 const key = 'c'
 // this is also a comment
@@ -3158,12 +3170,46 @@ const thing = 'foo'
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"// hello worl
+            r#"// hello world
 // I am a comment
 const key = 'c'
 // this is also a comment
 // hello
 const thing = 'foo'
+"#
+        );
+    }
+
+    #[test]
+    fn test_recast_empty_comment() {
+        let some_program_string = r#"// hello world
+//
+// I am a comment
+const key = 'c'
+
+//
+// I am a comment
+const thing = 'c'
+
+const foo = 'bar' //
+"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"// hello world
+//
+// I am a comment
+const key = 'c'
+
+//
+// I am a comment
+const thing = 'c'
+
+const foo = 'bar' //
 "#
         );
     }
