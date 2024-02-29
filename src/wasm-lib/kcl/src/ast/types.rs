@@ -3649,6 +3649,21 @@ const cylinder = startSketchOn('-XZ')
     }
 
     #[test]
+    fn test_ast_get_non_code_node_inline_comment() {
+        let some_program_string = r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([0,0], %)
+  |> xLine(5, %) // lin
+"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let value = program.get_non_code_meta_for_position(86);
+
+        assert!(value.is_some());
+    }
+
+    #[test]
     fn test_recast_negative_var() {
         let some_program_string = r#"const w = 20
 const l = 8
