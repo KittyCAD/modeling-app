@@ -493,9 +493,26 @@ test('Draft segments should look right', async ({ page }) => {
     maxDiffPixels: 100,
   })
 })
-test('client side scene scale should match engine scale inch', async ({
+test('Client side scene scale should match engine scale inch', async ({
   page,
+  context,
 }) => {
+  await context.addInitScript(async () => {
+    localStorage.setItem(
+      'SETTINGS_PERSIST_KEY',
+      JSON.stringify({
+        baseUnit: 'in',
+        cameraControls: 'KittyCAD',
+        defaultDirectory: '',
+        defaultProjectName: 'project-$nnn',
+        onboardingStatus: 'dismissed',
+        showDebugPanel: true,
+        textWrapping: 'On',
+        theme: 'system',
+        unitSystem: 'imperial',
+      })
+    )
+  }, secrets.token)
   const u = getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -528,7 +545,7 @@ test('client side scene scale should match engine scale inch', async ({
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt(${commonPoints.startAt}, %)`)
+|> startProfileAt([1.04, -1.4], %)`)
   await page.waitForTimeout(100)
 
   await u.closeDebugPanel()
@@ -538,8 +555,8 @@ test('client side scene scale should match engine scale inch', async ({
 
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt(${commonPoints.startAt}, %)
-  |> line([${commonPoints.num1}, 0], %)`)
+|> startProfileAt([1.04, -1.4], %)
+|> line([1.05, 0], %)`)
 
   await page.getByRole('button', { name: 'Tangential Arc' }).click()
   await page.waitForTimeout(100)
@@ -548,9 +565,9 @@ test('client side scene scale should match engine scale inch', async ({
 
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt(${commonPoints.startAt}, %)
-  |> line([${commonPoints.num1}, 0], %)
-  |> tangentialArcTo([79.64, -8.96], %)`)
+|> startProfileAt([1.04, -1.4], %)
+|> line([1.05, 0], %)
+|> tangentialArcTo([3.14, -0.35], %)`)
 
   // screen shot should show the sketch
   await expect(page).toHaveScreenshot({
@@ -572,7 +589,7 @@ test('client side scene scale should match engine scale inch', async ({
   })
 })
 
-test('client side scene scale should match engine scale mm', async ({
+test('Client side scene scale should match engine scale mm', async ({
   page,
   context,
 }) => {
