@@ -435,7 +435,23 @@ test('extrude on each default plane should be stable', async ({
   await runSnapshotsForOtherPlanes('-YZ')
 })
 
-test('Draft segments should look right', async ({ page }) => {
+test('Draft segments should look right', async ({ page, context }) => {
+  await context.addInitScript(async () => {
+    localStorage.setItem(
+      'SETTINGS_PERSIST_KEY',
+      JSON.stringify({
+        baseUnit: 'in',
+        cameraControls: 'KittyCAD',
+        defaultDirectory: '',
+        defaultProjectName: 'project-$nnn',
+        onboardingStatus: 'dismissed',
+        showDebugPanel: true,
+        textWrapping: 'On',
+        theme: 'system',
+        unitSystem: 'imperial',
+      })
+    )
+  })
   const u = getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -468,7 +484,7 @@ test('Draft segments should look right', async ({ page }) => {
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt(${commonPoints.startAt}, %)`)
+  |> startProfileAt([1.04, -1.4], %)`)
   await page.waitForTimeout(100)
 
   await u.closeDebugPanel()
@@ -482,8 +498,8 @@ test('Draft segments should look right', async ({ page }) => {
 
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt(${commonPoints.startAt}, %)
-  |> line([${commonPoints.num1}, 0], %)`)
+  |> startProfileAt([1.04, -1.4], %)
+  |> line([1.05, 0], %)`)
 
   await page.getByRole('button', { name: 'Tangential Arc' }).click()
 
@@ -493,6 +509,7 @@ test('Draft segments should look right', async ({ page }) => {
     maxDiffPixels: 100,
   })
 })
+
 test('Client side scene scale should match engine scale inch', async ({
   page,
   context,
@@ -512,7 +529,7 @@ test('Client side scene scale should match engine scale inch', async ({
         unitSystem: 'imperial',
       })
     )
-  }, secrets.token)
+  })
   const u = getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -608,7 +625,7 @@ test('Client side scene scale should match engine scale mm', async ({
         unitSystem: 'metric',
       })
     )
-  }, secrets.token)
+  })
   const u = getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
