@@ -1,5 +1,6 @@
 [sources.github-actions-file]
 type = "file"
+data_dir = "/tmp/vector"
 include = ["/tmp/github-actions.log"]
 
 # Modify the logs to include the action name.
