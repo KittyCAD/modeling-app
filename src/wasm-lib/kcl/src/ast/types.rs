@@ -3512,6 +3512,33 @@ show(mySuperCoolPart)
     }
 
     #[test]
+    fn test_recast_trailing_comma() {
+        let some_program_string = r#"startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> arc({
+    radius: 1,
+    angle_start: 0,
+    angle_end: 180,
+  }, %)"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> arc({
+       radius: 1,
+       angle_start: 0,
+       angle_end: 180
+     }, %)
+"#
+        );
+    }
+
+    #[test]
     fn test_recast_negative_var() {
         let some_program_string = r#"const w = 20
 const l = 8
