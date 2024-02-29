@@ -484,7 +484,7 @@ test('Draft segments should look right', async ({ page, context }) => {
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt([1.04, -1.4], %)`)
+  |> startProfileAt([0.93, -1.26], %)`)
   await page.waitForTimeout(100)
 
   await u.closeDebugPanel()
@@ -498,8 +498,8 @@ test('Draft segments should look right', async ({ page, context }) => {
 
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt([1.04, -1.4], %)
-  |> line([1.05, 0], %)`)
+  |> startProfileAt([0.93, -1.26], %)
+  |> line([0.95, 0], %)`)
 
   await page.getByRole('button', { name: 'Tangential Arc' }).click()
 
@@ -562,7 +562,7 @@ test('Client side scene scale should match engine scale inch', async ({
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-|> startProfileAt([1.04, -1.4], %)`)
+|> startProfileAt([0.93, -1.26], %)`)
   await page.waitForTimeout(100)
 
   await u.closeDebugPanel()
@@ -572,8 +572,8 @@ test('Client side scene scale should match engine scale inch', async ({
 
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-|> startProfileAt([1.04, -1.4], %)
-|> line([1.05, 0], %)`)
+|> startProfileAt([0.93, -1.26], %)
+|> line([0.95, 0], %)`)
 
   await page.getByRole('button', { name: 'Tangential Arc' }).click()
   await page.waitForTimeout(100)
@@ -582,9 +582,9 @@ test('Client side scene scale should match engine scale inch', async ({
 
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-|> startProfileAt([1.04, -1.4], %)
-|> line([1.05, 0], %)
-|> tangentialArcTo([3.14, -0.35], %)`)
+|> startProfileAt([0.93, -1.26], %)
+|> line([0.95, 0], %)
+|> tangentialArcTo([2.82, -0.32], %)`)
 
   // screen shot should show the sketch
   await expect(page).toHaveScreenshot({
@@ -658,7 +658,7 @@ test('Client side scene scale should match engine scale mm', async ({
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt([1.04, -1.4], %)`)
+  |> startProfileAt([0.93, -1.26], %)`)
   await page.waitForTimeout(100)
 
   await u.closeDebugPanel()
@@ -668,8 +668,8 @@ test('Client side scene scale should match engine scale mm', async ({
 
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt([1.04, -1.4], %)
-  |> line([1.05, 0], %)`)
+  |> startProfileAt([0.93, -1.26], %)
+  |> line([0.95, 0], %)`)
 
   await page.getByRole('button', { name: 'Tangential Arc' }).click()
   await page.waitForTimeout(100)
@@ -678,9 +678,9 @@ test('Client side scene scale should match engine scale mm', async ({
 
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt([1.04, -1.4], %)
-  |> line([1.05, 0], %)
-  |> tangentialArcTo([3.14, -0.35], %)`)
+  |> startProfileAt([0.93, -1.26], %)
+  |> line([0.95, 0], %)
+  |> tangentialArcTo([2.82, -0.32], %)`)
 
   // screen shot should show the sketch
   await expect(page).toHaveScreenshot({

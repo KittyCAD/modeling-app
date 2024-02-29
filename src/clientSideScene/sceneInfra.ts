@@ -212,7 +212,12 @@ class SceneInfra {
     const axisGroup = this.scene
       .getObjectByName(AXIS_GROUP)
       ?.getObjectByName('gridHelper')
-    planesGroup && planesGroup.scale.set(scale, scale, scale)
+    planesGroup &&
+      planesGroup.scale.set(
+        scale / sceneInfra._baseUnitMultiplier,
+        scale / sceneInfra._baseUnitMultiplier,
+        scale / sceneInfra._baseUnitMultiplier
+      )
     axisGroup?.name === 'gridHelper' && axisGroup.scale.set(scale, scale, scale)
   }
 
@@ -496,7 +501,11 @@ class SceneInfra {
       this.camControls.camera,
       this.camControls.target
     )
-    planesGroup.scale.set(sceneScale, sceneScale, sceneScale)
+    planesGroup.scale.set(
+      sceneScale / sceneInfra._baseUnitMultiplier,
+      sceneScale / sceneInfra._baseUnitMultiplier,
+      sceneScale / sceneInfra._baseUnitMultiplier
+    )
     this.scene.add(planesGroup)
   }
   removeDefaultPlanes() {

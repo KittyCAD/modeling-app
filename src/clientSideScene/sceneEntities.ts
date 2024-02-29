@@ -415,7 +415,7 @@ class SceneEntities {
           const isClosingSketch = compareVec2Epsilon2(
             firstSeg.from,
             [intersection2d.x, intersection2d.y],
-            1
+            0.5
           )
           let modifiedAst
           if (isClosingSketch) {
