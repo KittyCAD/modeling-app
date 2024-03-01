@@ -72,7 +72,7 @@ const Home = () => {
     }
   )
 
-  const [state, send] = useMachine(homeMachine, {
+  const [state, send, actor] = useMachine(homeMachine, {
     context: {
       projects: loadedProjects,
       defaultProjectName,
@@ -176,6 +176,7 @@ const Home = () => {
     send,
     state,
     commandBarConfig: homeCommandBarConfig,
+    actor
   })
 
   useEffect(() => {

@@ -621,12 +621,12 @@ test('Command bar works and can change a setting', async ({ page }) => {
   const themeOption = page.getByRole('option', { name: 'Set Theme' })
   await expect(themeOption).toBeVisible()
   await themeOption.click()
-  const themeInput = page.getByPlaceholder('Select an option')
+  const themeInput = page.getByPlaceholder('system')
   await expect(themeInput).toBeVisible()
   await expect(themeInput).toBeFocused()
   // Select dark theme
   await page.keyboard.press('ArrowDown')
-  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowUp')
   await expect(page.getByRole('option', { name: Themes.Dark })).toHaveAttribute(
     'data-headlessui-state',
     'active'
