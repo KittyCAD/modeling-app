@@ -60,6 +60,13 @@ export function kclPlugin(options: LanguageServerOptions): Extension {
           ) {
             return null
           }
+
+          // Get if we are in a comment token.
+          const tokens = state.languageDataAt('commentTokens', pos)
+          if (tokens && tokens.length > 0) {
+            // We are in a comment token, we should not trigger completion.
+            return null
+          }
           return await plugin.requestCompletion(
             context,
             offsetToPos(state.doc, pos),
