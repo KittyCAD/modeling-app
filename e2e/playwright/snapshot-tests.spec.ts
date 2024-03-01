@@ -189,19 +189,19 @@ const part001 = startSketchOn('-XZ')
   const doExport = async (
     output: Models['OutputFormat_type']
   ): Promise<Paths> => {
-    await page.getByRole('button', { name: 'Export Model' }).click()
+    await page.getByRole('button', { name: 'Export Part' }).click()
 
-    const exportSelect = page.getByTestId('export-type')
-    await exportSelect.selectOption({ label: output.type })
-
+    // Go through export via command bar
+    await page.getByRole('option', { name: output.type, exact: false }).click()
     if ('storage' in output) {
-      const storageSelect = page.getByTestId('export-storage')
-      await storageSelect.selectOption({ label: output.storage })
+      await page
+        .getByRole('option', { name: output.storage, exact: false })
+        .click()
     }
+    await page.getByRole('button', { name: 'Submit command' }).click()
 
-    const downloadPromise = page.waitForEvent('download')
-    await page.getByRole('button', { name: 'Export', exact: true }).click()
-    const download = await downloadPromise
+    // Handle download
+    const download = await page.waitForEvent('download')
     const downloadLocationer = (extra = '', isImage = false) =>
       `./e2e/playwright/export-snapshots/${output.type}-${
         'storage' in output ? output.storage : ''

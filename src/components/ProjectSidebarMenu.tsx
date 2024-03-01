@@ -125,7 +125,7 @@ const ProjectSidebarMenu = ({
                     })
                   }
                 >
-                  Export
+                  Export Part
                 </ActionButton>
                 {isTauri() && (
                   <ActionButton
