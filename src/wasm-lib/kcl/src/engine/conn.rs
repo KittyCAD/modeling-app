@@ -206,7 +206,7 @@ impl EngineManager for EngineConnection {
             if let Ok(guard) = self.socket_health.lock() {
                 if *guard == SocketHealth::Inactive {
                     return Err(KclError::Engine(KclErrorDetails {
-                        message: format!("Modeling command failed: websocket closed early"),
+                        message: "Modeling command failed: websocket closed early".to_string(),
                         source_ranges: vec![source_range],
                     }));
                 }
