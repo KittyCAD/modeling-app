@@ -29,12 +29,6 @@ export const CommandBarProvider = ({
   const [commandBarState, commandBarSend] = useMachine(commandBarMachine, {
     devTools: true,
     guards: {
-      'Arguments are ready': (context, _) => {
-        return context.selectedCommand?.args
-          ? context.argumentsToSubmit.length ===
-              Object.keys(context.selectedCommand.args)?.length
-          : false
-      },
       'Command has no arguments': (context, _event) => {
         return (
           !context.selectedCommand?.args ||
@@ -81,7 +75,12 @@ export const CommandBar = () => {
   function stepBack() {
     if (!currentArgument) {
       if (commandBarState.matches('Review')) {
-        const entries = Object.entries(selectedCommand?.args || {})
+        const entries = Object.entries(selectedCommand?.args || {}).filter(
+          ([_, argConfig]) =>
+            typeof argConfig.required === 'function'
+              ? argConfig.required(commandBarState.context)
+              : argConfig.required
+        )
 
         const currentArgName = entries[entries.length - 1][0]
         const currentArg = {
@@ -89,19 +88,12 @@ export const CommandBar = () => {
           ...entries[entries.length - 1][1],
         }
 
-        if (commandBarState.matches('Review')) {
-          commandBarSend({
-            type: 'Edit argument',
-            data: {
-              arg: currentArg,
-            },
-          })
-        } else {
-          commandBarSend({
-            type: 'Remove argument',
-            data: { [currentArgName]: currentArg },
-          })
-        }
+        commandBarSend({
+          type: 'Edit argument',
+          data: {
+            arg: currentArg,
+          },
+        })
       } else {
         commandBarSend({ type: 'Deselect command' })
       }
@@ -123,11 +115,6 @@ export const CommandBar = () => {
       }
     }
   }
-
-  useEffect(
-    () => console.log(commandBarState.context.argumentsToSubmit),
-    [commandBarState.context.argumentsToSubmit]
-  )
 
   return (
     <Transition.Root

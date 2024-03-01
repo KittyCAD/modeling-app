@@ -8,21 +8,29 @@ import {
 import { Selections } from 'lib/selections'
 import { getCommandArgumentKclValuesOnly } from 'lib/commandUtils'
 
+export type CommandBarContext = {
+  commands: Command[]
+  selectedCommand?: Command
+  currentArgument?: CommandArgument<unknown> & { name: string }
+  selectionRanges: Selections
+  argumentsToSubmit: { [x: string]: unknown }
+}
+
 export const commandBarMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QGED2BbdBDAdhABAEJYBOAxMgDaqxgDaADALqKgAONAlgC6eo6sQAD0QBaAJwA6AGwAmAKwBmBoukAWafIAcDcSoA0IAJ6JZDaZIDs8hgzV6AjA61a1DWQF8PhtJlwFiciowUkYWJBAOWB4+AQiRBFF5CwdpcVkHS1lpVyU5QxNEh1lFGTUsrUUtOQd5SwZLLx8MbDwiUkkqGkgyAHk2MBwwwSiY-kEEswdJNWcNbPFLNMr5AsRFWUtJcVSdRR2VVMUmkF9WgI6u2ggyADFONv98WkowAGNufDeW-2GI0d443iiHESkktUUG1klTsSi0awQDgYWhmqkWjnUslBWhOZyegU61GuZAAghACN8-HhYH92FxAXFQAlRA5FpJ5FjFPYtNDpIpLOkEW4GNs4eJxJoGvJxOVcT82gSrj0AEpgdCoABuYC+8ogNOYI3psQmYlkGUkU2slhc6mkmUUCIyKLc4i0lkU8iUyjUHLlVIuJEkAGUwK8Pg8oDr-WQQ2HPpTzrTIkagUzEDkLHZkQK1CUtKCHAiNlsdjkVAdFEc-ed2oG8W0Xu9uD0kwDjcCEJDplUPfn+Ut7CUhXJJFo6uYbBOMtJq-jLrrnqGmy2HOE6dEGSbESoRSUHOVqpV99Zh7JR+PXPu1G7zI1vKcFwSAOJYbgACzAJAj+FIUAAruggzcLAFBvrgMBfH+JAkEBP4kP+gE4NwrYpoywiIA4qjyDIyR2LmlTSHY8LGBhyjsrm-L2No0hpHys4Kh0L7vp+36-gBQEgQAInAS4fFGiYGv8qFbjkpSWLmswMNK-LOI6UmSKouZOBo8jOPu9EBpITEfl+OCRmxiHAZIJIAO5YDEen4A8bB-twMZ-gARugPBwQhQEoRu7ZpoiyRbLm1HiJC16bLIQo7FYUrVNkKhZJ4971pp2ksZZBkcZIABqWCUJwECvhGZAQPwYCSA8GqoAA1sVGpZTlr5gCS8HsUhHljGhCTODYVissoxaWPutQInyFhctKSL8jFmwabWWmvjprGNYZsAZTVuW8HpZCfiQqCBmwlCvgAZtt6CSNV2WrfVC3uYJ66tVuqQlNsaTpKkUlCrMClqNeuibHUolTQSqoapwYAmfZTkuQmvzXcmnmpuhCB9eyOieuk1o6C4DokQjZHqKjO66C6-0dIDwOg2SBCpc10NtnDCTiqU0ICjyciyG4+RYwKpQaBmSKpE4dpE4GJMg2QqrqlqrlNch1PCR2vNSLa4rZq4eaDVyo4+jymRqJWDQ4vFj7E2AQMiwAohALmU9La4w7dHaaNhNjaBKnqsqCatqBrdTirMNiQuIgudB+bzld+DVuUhIGFTgxWlRVVUrXV4dS-qNs021iDyO9TslMoTj1LJWN6BYOsyphOhmDkcXNP603IMHoeWcni0FUVJU4GVlUnYnzbNxxdCroasMZwgWKPay0qWNYLhZ+UCIuGeyR6O47o0ZsAcG7XioN2Hl2Rxt0HbZIu0HUd3dnUne-AS1m5y+UWz7DkY7pKpsKDRoMz1MK4olO4G-3jgVAEA4CCASrWIedtvKiAWBaBgmQ6g2g0PaR00xWYSjHFPHQNFCIzk3jWRURJIAQNvlA4oFo8zWlSPUT00pVhYw9NMHWrhKwbH2GaNQgdYxNm-JDPAxCvLw1mAzTY3opJ9TqKFehqlUTMMwiUdIrNA5gMbB8IhQlh5bkWFsVwyJshYmkNYQs9DNhI2vJhFQZp+SgkDklXS+kr7wHUZA+G-UzwygUPyLB+xApFh9BaCU6hpSLGqNKDheC5yBlsfNCORlTLmTWpGaytl+G0wwhoEU7ilDWnMN4zGhRPqO0Cn1XQthVKaBsbNZK9iYlLUyhfBJKSR7OH2FYAi1oDGzFSNIIUGwZiVD0BKTCSkFCB2FiZRpIlMjgk+v2VQch0jEUKIYz+HoOSaA0IeJRO8m4OImXLTQjDYRpAFIsfckillZAUjYGipceQ6zvF4IAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QGED2BbdBDAdhABAEJYBOAxMgDaqxgDaADALqKgAONAlgC6eo6sQAD0QBaAJwA6AGwAmAKwBmBoukAWafIAcDcSoA0IAJ6JZDaZIDs8hgzV6AjA61a1DWQF8PhtJlwFiciowUkYWJBAOWB4+AQiRBFF5CwdpcVkHS1lpVyU5QxNEh1lFGTUsrUUtOQd5SwZLLx8MbDwiUkkqGkgyAHk2MBwwwSiY-kEEswZJbPltM0U3eXLZAsRFeQcrerUHRbTFvfkmkF9WgI6u2ggyADFONv98WkowAGNufDeW-2GI0d443iiHESkktUUilkskqdiUWjWCAcDC0kjUqnElkc6lkoK0JzOT0CnWo1zIAEEIARvn48LA-uwuIC4qAEqIHJjJPJcYtxFoYdJFFjVsZEG5pqCquJxJoGvJxOUCT82sSrj0AEpgdCoABuYC+yog9OYIyZsQmYmhWzMmTqLnU0kyikRGVRbj5lg2SmUam5StpFxIkgAymBXh8HlADQGyKHw58aecGZEzUDWYgchY7CisWoSlpQQ5EVDLJJxKkdIpyypUop-ed2kHCW0Xu9uD1kwDzcCEJCtlUNgWhZZ1OlnaKEBpZJItHVzDZ5xlpPWiZdDc8w22Ow5wozosyLUiVNMSg5ytVKmfrIipzO564z2otPVpI1vKd18SAOJYbgACzAEhI3wUgoAAV3QQZuFgCg-1wGAvjAkgSCgkCSHAyCcG4TtUxZYRED2TQZGSOw80qaQ7ARCc9mmZYSksextGkNJBRXFUOh-f9AOA0CIKgmCABE4E3D5oyTE1-lww8clKBjZF2Bh5SFZwXUUyRVDzJwNE2LQzzYwNJE4gCgJwKNeMw6DJHJAB3LAYlM-AHjYMDuFjMCACN0B4NCMKgnD927dMkWSUs8yY8RISfWQshvcsrDlapshULJPHfZsDKM7iHPM-jJAANSwShOAgX9IzICB+DASQHh1VAAGsqp1Qrit-MByXQvisP8sY8ISZwbCsDllBLSwz1qRFBQsRZ5WRIVkui-TG0M39jJ4jqLNgfLmpK3hTLIQCSFQIM2EoX8ADMjvQSQmqKna2vWvyJL3HrD1SEoyzSdJUkUm9dnUtQn10aK6hkxbiU1HVODAay3M87zE1+J6UwCtN8IQUauR0OZ0ksFwUUqRFPWmUdouPXR3TBjoIahmHKQIHKuqRrtUYSaVShhLF+TkeTzBFQosVKDRM2RVInEdSmg2p6GyE1bU9R8zrsKZqSexFqQHWlHNXHzCbFhnX1+UydFkVxiXJClmGAFEIG8hmld3ZGXp7TR5C5RSCxdjlQV1tR9bqaVdhsSFxDN5AALeOrgPa3ysJgiqcCqmr6sa7bWujxXjQd5nesQZYthsblIQYJx6hUic9AsdEFT2HQzByVLmgDJaw-eSOHPTjbysq6qcFqhrrtT9sO-4ugd1NFGc4QXEPo5eVLGsFxlnKREXGnZI9HcT1mOikO0s-S5w7bqNh9j-bkKOyQTvOy6B9utOHtj7qD1V8pSyrHJZ3STY4QmjQ0R2Ww0oSjuF3u+HAqAIBwEEOlRs48nZBVENkKQNprC42qBoJ0LothaXMJ9aElRXDLj3k3VUpJIBwOfgg4oMx8y41SPUOY8p5DFk2GiKoxsoRVmhGoM2cY2zAQRngChgU0a7HZtFH0ilRp1D5usVh6JXCKD2CUdI8lQ7rlbB8chkkJ6HkxFsBeulbQZAUCwrYCiqzIhyE+fqZtMomTMg-aCwiWYEV2NOBUCghQ6EFGzYsvpwQUT5MxawFECx2JWllRxMdLI2TsrtKMTkXIuMnmeCiZYwrePMFWCKv1XZKVGroWwmxNARK4g4hWG0tp3wSSk16lQpC41ULjV8uxUjSBvFCNEDTdCOkWCY44xCGzgzAJDaGdTnaZHBADYcqg5DpCovzeRno5izA0BeUOh8o5OPgDo+BaNvqV0xNFaE7gdYTnnvkmUChdKEMyF4LwQA */
+    predictableActionArguments: true,
+    tsTypes: {} as import('./commandBarMachine.typegen').Typegen0,
     context: {
-      commands: [] as Command[],
-      selectedCommand: undefined as Command | undefined,
-      currentArgument: undefined as
-        | (CommandArgument<unknown> & { name: string })
-        | undefined,
+      commands: [],
+      selectedCommand: undefined,
+      currentArgument: undefined,
       selectionRanges: {
         otherSelections: [],
         codeBasedSelections: [],
-      } as Selections,
-      argumentsToSubmit: {} as { [x: string]: unknown },
-    },
+      },
+      argumentsToSubmit: {},
+    } as CommandBarContext,
     id: 'Command Bar',
     initial: 'Closed',
     states: {
@@ -116,19 +124,17 @@ export const commandBarMachine = createMachine(
               id: 'validateArgument',
               onDone: {
                 target: '#Command Bar.Checking Arguments',
-                actions: [
-                  assign({
-                    argumentsToSubmit: (context, event) => {
-                      const [argName, argData] = Object.entries(event.data)[0]
-                      const { currentArgument } = context
-                      if (!currentArgument) return {}
-                      return {
-                        ...context.argumentsToSubmit,
-                        [argName]: argData,
-                      }
-                    },
-                  }),
-                ],
+                actions: [assign({
+                  argumentsToSubmit: (context, event) => {
+                    const [argName, argData] = Object.entries(event.data)[0]
+                    const { currentArgument } = context
+                    if (!currentArgument) return {}
+                    return {
+                      ...context.argumentsToSubmit,
+                      [argName]: argData,
+                    }
+                  },
+                })],
               },
               onError: [
                 {
@@ -204,7 +210,7 @@ export const commandBarMachine = createMachine(
               actions: ['Set current argument to first non-skippable'],
             },
           ],
-        },
+        }
       },
     },
     on: {
@@ -267,7 +273,6 @@ export const commandBarMachine = createMachine(
             data: { [x: string]: CommandArgumentWithName<unknown> }
           },
     },
-    predictableActionArguments: true,
     preserveActionOrder: true,
   },
   {
@@ -279,28 +284,51 @@ export const commandBarMachine = createMachine(
           (selectedCommand?.args && event.type === 'Submit command') ||
           event.type === 'done.invoke.validateArguments'
         ) {
-          selectedCommand?.onSubmit(getCommandArgumentKclValuesOnly(event.data))
+          const resolvedArgs = {} as { [x: string]: unknown }
+          for (const [argName, argValue] of Object.entries(getCommandArgumentKclValuesOnly(event.data))) {
+            resolvedArgs[argName] =
+              typeof argValue === 'function' ? argValue(context) : argValue
+          }
+          selectedCommand?.onSubmit(resolvedArgs)
         } else {
           selectedCommand?.onSubmit()
         }
       },
       'Set current argument to first non-skippable': assign({
-        currentArgument: (context) => {
+        currentArgument: (context, event) => {
           const { selectedCommand } = context
           if (!(selectedCommand && selectedCommand.args)) return undefined
+          const rejectedArg = 'data' in event && event.data.arg
+
 
           // Find the first argument that is not to be skipped:
           // that is, the first argument that is not already in the argumentsToSubmit
           // or that is not undefined, or that is not marked as "skippable".
           // TODO validate the type of the existing arguments
           let argIndex = 0
+
           while (argIndex < Object.keys(selectedCommand.args).length) {
-            const argName = Object.keys(selectedCommand.args)[argIndex]
+            const [argName, argConfig] = Object.entries(selectedCommand.args)[
+              argIndex
+            ]
+            const argIsRequired =
+              typeof argConfig.required === 'function'
+                ? argConfig.required(context)
+                : argConfig.required
             const mustNotSkipArg =
-              !context.argumentsToSubmit.hasOwnProperty(argName) ||
-              context.argumentsToSubmit[argName] === undefined ||
-              !selectedCommand.args[argName].skip
-            if (mustNotSkipArg) {
+              argIsRequired &&
+              ((!context.argumentsToSubmit.hasOwnProperty(argName) ||
+                context.argumentsToSubmit[argName] === undefined) ||
+                (rejectedArg && rejectedArg.name === argName))
+
+            console.log('mustNotSkipArg? ', {
+              mustNotSkipArg,
+              argName,
+              argConfig,
+            })
+
+            if (mustNotSkipArg === true) {
+              console.log('I guess we must not skip this arg', argName)
               return {
                 ...selectedCommand.args[argName],
                 name: argName,
@@ -308,14 +336,10 @@ export const commandBarMachine = createMachine(
             }
             argIndex++
           }
-          // Just show the last argument if all are skippable
+
           // TODO: use an XState service to continue onto review step
           // if all arguments are skippable and contain values.
-          const argName = Object.keys(selectedCommand.args)[argIndex - 1]
-          return {
-            ...selectedCommand.args[argName],
-            name: argName,
-          }
+          return undefined
         },
       }),
       'Clear current argument': assign({
@@ -327,14 +351,17 @@ export const commandBarMachine = createMachine(
           const argToRemove = Object.values(event.data)[0]
           // Extract all but the argument to remove and return it
           const { [argToRemove.name]: _, ...rest } = context.argumentsToSubmit
+          console.log({
+            argToRemove,
+            rest,
+            argumentsToSubmit: context.argumentsToSubmit,
+          })
           return rest
         },
       }),
       'Set current argument': assign({
         currentArgument: (context, event) => {
           switch (event.type) {
-            case 'error.platform.validateArguments':
-              return event.data.arg
             case 'Edit argument':
               return event.data.arg
             default:
@@ -343,26 +370,21 @@ export const commandBarMachine = createMachine(
         },
       }),
       'Remove current argument and set a new one': assign({
-        currentArgument: (context, event) => {
-          if (event.type !== 'Change current argument')
-            return context.currentArgument
-          return Object.values(event.data)[0]
-        },
         argumentsToSubmit: (context, event) => {
           if (
             event.type !== 'Change current argument' ||
             !context.currentArgument
           )
             return context.argumentsToSubmit
-          const { name, required } = context.currentArgument
-          if (required)
-            return {
-              [name]: undefined,
-              ...context.argumentsToSubmit,
-            }
+          const { name } = context.currentArgument
 
           const { [name]: _, ...rest } = context.argumentsToSubmit
           return rest
+        },
+        currentArgument: (context, event) => {
+          if (event.type !== 'Change current argument')
+            return context.currentArgument
+          return Object.values(event.data)[0]
         },
       }),
       'Clear argument data': assign({
@@ -388,11 +410,6 @@ export const commandBarMachine = createMachine(
       }),
       'Initialize arguments to submit': assign({
         argumentsToSubmit: (c, e) => {
-          if (
-            e.type !== 'Select command' &&
-            e.type !== 'Find and select command'
-          )
-            return c.argumentsToSubmit
           const command =
             'command' in e.data ? e.data.command : c.selectedCommand!
           if (!command.args) return {}
@@ -421,38 +438,78 @@ export const commandBarMachine = createMachine(
       },
       'Validate all arguments': (context, _) => {
         return new Promise((resolve, reject) => {
-          for (const [argName, arg] of Object.entries(
-            context.argumentsToSubmit
+          for (const [argName, argConfig] of Object.entries(
+            context.selectedCommand!.args!
           )) {
-            let argConfig = context.selectedCommand!.args![argName]
+            let arg = context.argumentsToSubmit[argName]
+            let argValue = typeof arg === 'function' ? arg(context) : arg
 
-            if (
-              ('defaultValue' in argConfig &&
-                argConfig.defaultValue &&
-                typeof arg !== typeof argConfig.defaultValue &&
-                argConfig.inputType !== 'kcl') ||
-              (argConfig.inputType === 'kcl' &&
-                !(arg as Partial<KclCommandValue>).valueAst) ||
-              ('options' in argConfig &&
-                typeof arg !== typeof argConfig.options[0].value)
-            ) {
-              return reject({
-                message: 'Argument payload is of the wrong type',
-                arg: {
-                  ...argConfig,
-                  name: argName,
-                },
-              })
-            }
+            try {
+              const isRequired =
+                typeof argConfig.required === 'function'
+                  ? argConfig.required(context)
+                  : argConfig.required
 
-            if (!arg && argConfig.required) {
-              return reject({
-                message: 'Argument payload is falsy but is required',
-                arg: {
-                  ...argConfig,
-                  name: argName,
-                },
+              const resolvedDefaultValue =
+                'defaultValue' in argConfig
+                  ? typeof argConfig.defaultValue === 'function'
+                    ? argConfig.defaultValue(context)
+                    : argConfig.defaultValue
+                  : undefined
+
+              console.log({
+                argValue,
+                resolvedDefaultValue,
               })
+
+              const hasMismatchedDefaultValueType =
+                isRequired &&
+                typeof argValue !== typeof resolvedDefaultValue &&
+                !(argConfig.inputType === 'kcl' || argConfig.skip)
+              const hasInvalidKclValue =
+                argConfig.inputType === 'kcl' &&
+                !(argValue as Partial<KclCommandValue> | undefined)?.valueAst
+              const hasInvalidOptionsValue = isRequired &&
+                'options' in argConfig &&
+                  !(typeof argConfig.options === 'function'
+                    ? argConfig.options(context)
+                    : argConfig.options).some(o => o.value === argValue)
+
+              if (
+                hasMismatchedDefaultValueType ||
+                hasInvalidKclValue ||
+                hasInvalidOptionsValue
+              ) {
+                console.error('Argument payload is of the wrong type', {
+                  argValue,
+                  resolvedDefaultValue,
+                  argConfig,
+                })
+                return reject({
+                  message: 'Argument payload is of the wrong type',
+                  arg: {
+                    ...argConfig,
+                    name: argName,
+                  },
+                })
+              }
+
+              if (!argValue && isRequired) {
+                console.error('Argument payload is falsy but is required', {
+                  argValue,
+                  argConfig,
+                })
+                return reject({
+                  message: 'Argument payload is falsy but is required',
+                  arg: {
+                    ...argConfig,
+                    name: argName,
+                  },
+                })
+              }
+            } catch (e) {
+              console.error('Error validating argument', context, e)
+              throw e
             }
           }
 
