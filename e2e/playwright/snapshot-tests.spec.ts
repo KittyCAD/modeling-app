@@ -384,13 +384,13 @@ test('extrude on each default plane should be stable', async ({
 }) => {
   const u = getUtils(page)
   const makeCode = (plane = 'XY') => `const part001 = startSketchOn('${plane}')
-  |> startProfileAt([0.70, 0.44], %)
-  |> line([0.66, -0.02], %)
-  |> line([0.28, 0.50], %)
-  |> line([-0.56, 0.44], %)
-  |> line([-0.54, -0.38], %)
+  |> startProfileAt([7.00, 4.40], %)
+  |> line([6.60, -0.20], %)
+  |> line([2.80, 5.00], %)
+  |> line([-5.60, 4.40], %)
+  |> line([-5.40, -3.80], %)
   |> close(%)
-  |> extrude(1.00, %)
+  |> extrude(10.00, %)
 `
   await context.addInitScript(async (code) => {
     localStorage.setItem('persistCode', code)
@@ -484,7 +484,7 @@ test('Draft segments should look right', async ({ page, context }) => {
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt([0.93, -1.26], %)`)
+  |> startProfileAt([9.06, -12.22], %)`)
   await page.waitForTimeout(100)
 
   await u.closeDebugPanel()
@@ -498,8 +498,8 @@ test('Draft segments should look right', async ({ page, context }) => {
 
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt([0.93, -1.26], %)
-  |> line([0.95, 0], %)`)
+  |> startProfileAt([9.06, -12.22], %)
+  |> line([9.14, 0], %)`)
 
   await page.getByRole('button', { name: 'Tangential Arc' }).click()
 
@@ -562,7 +562,7 @@ test('Client side scene scale should match engine scale inch', async ({
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-|> startProfileAt([0.93, -1.26], %)`)
+|> startProfileAt([9.06, -12.22], %)`)
   await page.waitForTimeout(100)
 
   await u.closeDebugPanel()
@@ -572,8 +572,8 @@ test('Client side scene scale should match engine scale inch', async ({
 
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-|> startProfileAt([0.93, -1.26], %)
-|> line([0.95, 0], %)`)
+|> startProfileAt([9.06, -12.22], %)
+|> line([9.14, 0], %)`)
 
   await page.getByRole('button', { name: 'Tangential Arc' }).click()
   await page.waitForTimeout(100)
@@ -582,9 +582,13 @@ test('Client side scene scale should match engine scale inch', async ({
 
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-|> startProfileAt([0.93, -1.26], %)
-|> line([0.95, 0], %)
-|> tangentialArcTo([2.82, -0.32], %)`)
+|> startProfileAt([9.06, -12.22], %)
+|> line([9.14, 0], %)
+|> tangentialArcTo([27.34, -3.08], %)`)
+
+  // click tangential arc tool again to unequip it
+  await page.getByRole('button', { name: 'Tangential Arc' }).click()
+  await page.waitForTimeout(100)
 
   // screen shot should show the sketch
   await expect(page).toHaveScreenshot({
@@ -658,7 +662,7 @@ test('Client side scene scale should match engine scale mm', async ({
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt([0.93, -1.26], %)`)
+  |> startProfileAt([230.03, -310.33], %)`)
   await page.waitForTimeout(100)
 
   await u.closeDebugPanel()
@@ -668,8 +672,8 @@ test('Client side scene scale should match engine scale mm', async ({
 
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt([0.93, -1.26], %)
-  |> line([0.95, 0], %)`)
+  |> startProfileAt([230.03, -310.33], %)
+  |> line([232.2, 0], %)`)
 
   await page.getByRole('button', { name: 'Tangential Arc' }).click()
   await page.waitForTimeout(100)
@@ -678,9 +682,12 @@ test('Client side scene scale should match engine scale mm', async ({
 
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt([0.93, -1.26], %)
-  |> line([0.95, 0], %)
-  |> tangentialArcTo([2.82, -0.32], %)`)
+  |> startProfileAt([230.03, -310.33], %)
+  |> line([232.2, 0], %)
+  |> tangentialArcTo([694.43, -78.12], %)`)
+
+  await page.getByRole('button', { name: 'Tangential Arc' }).click()
+  await page.waitForTimeout(100)
 
   // screen shot should show the sketch
   await expect(page).toHaveScreenshot({

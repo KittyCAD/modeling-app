@@ -40,9 +40,9 @@ export interface MouseGuard {
 }
 
 const butName = (e: React.MouseEvent) => ({
-  middle: !!(e.buttons & 4),
-  right: !!(e.buttons & 2),
-  left: !!(e.buttons & 1),
+  middle: !!(e.buttons & 4) || e.button === 1,
+  right: !!(e.buttons & 2) || e.button === 2,
+  left: !!(e.buttons & 1) || e.button === 0,
 })
 
 export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
