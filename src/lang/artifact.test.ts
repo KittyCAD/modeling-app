@@ -11,8 +11,7 @@ const mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)
-  // |> rx(45, %)
-show(mySketch001)`
+  // |> rx(45, %)`
     const programMemory = await enginelessExecutor(parse(code))
     // @ts-ignore
     const shown = programMemory?.return?.map(
@@ -73,8 +72,7 @@ const mySketch001 = startSketchOn('XY')
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)
   // |> rx(45, %)
-  |> extrude(2, %)
-show(mySketch001)`
+  |> extrude(2, %)`
     const programMemory = await enginelessExecutor(parse(code))
     // @ts-ignore
     const shown = programMemory?.return?.map(
@@ -120,8 +118,7 @@ const sk2 = startSketchOn('XY')
   // |> transform(theTransf, %)
   |> extrude(2, %)
 
-
-show(theExtrude, sk2)`
+`
     const programMemory = await enginelessExecutor(parse(code))
     // @ts-ignore
     const geos = programMemory?.return?.map(
