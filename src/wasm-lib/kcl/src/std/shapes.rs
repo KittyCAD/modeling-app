@@ -82,7 +82,7 @@ impl StdLibFn for Circle {
                     args.push(crate::docs::StdLibFnArg {
                         name: parameter.identifier.name.to_owned(),
                         type_: "[number, number]".to_string(),
-                        schema: <[f64;2]>::json_schema(&mut generator),
+                        schema: <[f64; 2]>::json_schema(&mut generator),
                         required: true,
                     });
                 }
