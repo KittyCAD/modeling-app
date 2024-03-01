@@ -636,8 +636,9 @@ impl LanguageServer for Backend {
 /// Get completions from our stdlib.
 pub fn get_completions_from_stdlib(stdlib: &crate::std::StdLib) -> Result<HashMap<String, CompletionItem>> {
     let mut completions = HashMap::new();
+    let combined = stdlib.combined();
 
-    for internal_fn in stdlib.fns.values() {
+    for internal_fn in combined.values() {
         completions.insert(internal_fn.name(), internal_fn.to_completion_item());
     }
 
@@ -652,8 +653,9 @@ pub fn get_completions_from_stdlib(stdlib: &crate::std::StdLib) -> Result<HashMa
 /// Get signatures from our stdlib.
 pub fn get_signatures_from_stdlib(stdlib: &crate::std::StdLib) -> Result<HashMap<String, SignatureHelp>> {
     let mut signatures = HashMap::new();
+    let combined = stdlib.combined();
 
-    for internal_fn in stdlib.fns.values() {
+    for internal_fn in combined.values() {
         signatures.insert(internal_fn.name(), internal_fn.to_signature_help());
     }
 
