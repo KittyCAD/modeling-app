@@ -40,6 +40,8 @@ import { Program } from 'lang/wasm'
 import { isSingleCursorInPipe } from 'lang/queryAst'
 import { TEST } from 'env'
 import { exportFromEngine } from 'lib/exportFromEngine'
+import { Models } from '@kittycad/lib/dist/types/src'
+import toast from 'react-hot-toast'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -179,10 +181,53 @@ export const ModelingMachineProvider = ({
         }),
         'Engine export': (_, event) => {
           if (event.type !== 'Export' || TEST) return
+          const format = {
+            ...event.data,
+          } as Partial<Models['OutputFormat_type']>
+
+          // Set all the un-configurable defaults here.
+          if (format.type === 'gltf') {
+            format.presentation = 'pretty'
+          }
+
+          if (
+            format.type === 'obj' ||
+            format.type === 'ply' ||
+            format.type === 'step' ||
+            format.type === 'stl'
+          ) {
+            // Set the default coords.
+            // In the future we can make this configurable.
+            // But for now, its probably best to keep it consistent with the
+            // UI.
+            format.coords = {
+              forward: {
+                axis: 'y',
+                direction: 'negative',
+              },
+              up: {
+                axis: 'z',
+                direction: 'positive',
+              },
+            }
+          }
+
+          if (
+            format.type === 'obj' ||
+            format.type === 'stl' ||
+            format.type === 'ply'
+          ) {
+            format.units = baseUnit
+          }
+
+          if (format.type === 'ply' || format.type === 'stl') {
+            format.selection = { type: 'default_scene' }
+          }
+
           exportFromEngine({
             source_unit: baseUnit,
-            format: event.data,
-          })
+            format: format as Models['OutputFormat_type'],
+          }).catch((e) => toast.error('Error while exporting', e)) // TODO I think we need to throw the error from engineCommandManager
         },
       },
       guards: {

@@ -9,17 +9,9 @@ export function exportFromEngine({
   format,
 }: {
   source_unit: Models['UnitLength_type']
-  format: { type: Models['OutputFormat_type']['type'] }
-}): void {
-  // temporary, mocking the real payload while I figure out
-  // how to get the types from command bar
-  const temp: Models['OutputFormat_type'] = {
-    type: 'gltf',
-    storage: 'embedded',
-    presentation: 'compact',
-  }
-
-  engineCommandManager.sendSceneCommand({
+  format: Models['OutputFormat_type']
+}) {
+  return engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd: {
       type: 'export',
@@ -27,7 +19,7 @@ export function exportFromEngine({
       // In the future we might want to let the user choose which entities
       // in the scene to export. In that case, you'd pass the IDs thru here.
       entity_ids: [],
-      format: temp,
+      format,
       source_unit,
     },
     cmd_id: uuidv4(),
