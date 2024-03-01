@@ -124,17 +124,19 @@ export const commandBarMachine = createMachine(
               id: 'validateArgument',
               onDone: {
                 target: '#Command Bar.Checking Arguments',
-                actions: [assign({
-                  argumentsToSubmit: (context, event) => {
-                    const [argName, argData] = Object.entries(event.data)[0]
-                    const { currentArgument } = context
-                    if (!currentArgument) return {}
-                    return {
-                      ...context.argumentsToSubmit,
-                      [argName]: argData,
-                    }
-                  },
-                })],
+                actions: [
+                  assign({
+                    argumentsToSubmit: (context, event) => {
+                      const [argName, argData] = Object.entries(event.data)[0]
+                      const { currentArgument } = context
+                      if (!currentArgument) return {}
+                      return {
+                        ...context.argumentsToSubmit,
+                        [argName]: argData,
+                      }
+                    },
+                  }),
+                ],
               },
               onError: [
                 {
@@ -210,7 +212,7 @@ export const commandBarMachine = createMachine(
               actions: ['Set current argument to first non-skippable'],
             },
           ],
-        }
+        },
       },
     },
     on: {
@@ -285,7 +287,9 @@ export const commandBarMachine = createMachine(
           event.type === 'done.invoke.validateArguments'
         ) {
           const resolvedArgs = {} as { [x: string]: unknown }
-          for (const [argName, argValue] of Object.entries(getCommandArgumentKclValuesOnly(event.data))) {
+          for (const [argName, argValue] of Object.entries(
+            getCommandArgumentKclValuesOnly(event.data)
+          )) {
             resolvedArgs[argName] =
               typeof argValue === 'function' ? argValue(context) : argValue
           }
@@ -299,7 +303,6 @@ export const commandBarMachine = createMachine(
           const { selectedCommand } = context
           if (!(selectedCommand && selectedCommand.args)) return undefined
           const rejectedArg = 'data' in event && event.data.arg
-
 
           // Find the first argument that is not to be skipped:
           // that is, the first argument that is not already in the argumentsToSubmit
@@ -317,8 +320,8 @@ export const commandBarMachine = createMachine(
                 : argConfig.required
             const mustNotSkipArg =
               argIsRequired &&
-              ((!context.argumentsToSubmit.hasOwnProperty(argName) ||
-                context.argumentsToSubmit[argName] === undefined) ||
+              (!context.argumentsToSubmit.hasOwnProperty(argName) ||
+                context.argumentsToSubmit[argName] === undefined ||
                 (rejectedArg && rejectedArg.name === argName))
 
             console.log('mustNotSkipArg? ', {
@@ -469,11 +472,14 @@ export const commandBarMachine = createMachine(
               const hasInvalidKclValue =
                 argConfig.inputType === 'kcl' &&
                 !(argValue as Partial<KclCommandValue> | undefined)?.valueAst
-              const hasInvalidOptionsValue = isRequired &&
+              const hasInvalidOptionsValue =
+                isRequired &&
                 'options' in argConfig &&
-                  !(typeof argConfig.options === 'function'
+                !(
+                  typeof argConfig.options === 'function'
                     ? argConfig.options(context)
-                    : argConfig.options).some(o => o.value === argValue)
+                    : argConfig.options
+                ).some((o) => o.value === argValue)
 
               if (
                 hasMismatchedDefaultValueType ||

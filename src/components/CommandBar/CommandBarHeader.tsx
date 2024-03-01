@@ -89,7 +89,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                         commandBarState.context
                       )
                     : argumentsToSubmit[argName]) || ''
-                    
+
                 return (
                   <button
                     disabled={!isReviewing && currentArgument?.name === argName}

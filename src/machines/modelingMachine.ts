@@ -173,11 +173,11 @@ export const modelingMachine = createMachine(
           },
 
           Export: {
-            target: "idle",
+            target: 'idle',
             internal: true,
-            cond: "Has exportable geometry",
-            actions: "Engine export"
-          }
+            cond: 'Has exportable geometry',
+            actions: 'Engine export',
+          },
         },
 
         entry: 'reset client scene mouse handlers',
@@ -534,8 +534,8 @@ export const modelingMachine = createMachine(
         ],
       },
 
-      "animating to plane (copy)": {},
-      "animating to plane (copy) (copy)": {}
+      'animating to plane (copy)': {},
+      'animating to plane (copy) (copy)': {},
     },
 
     initial: 'idle',

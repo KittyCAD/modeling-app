@@ -110,7 +110,9 @@ export type CommandArgumentConfig<
                   argumentsToSubmit: Record<string, unknown>
                 } // Should be the commandbarMachine's context, but it creates a circular dependency
               ) => CommandArgumentOption<OutputType>[])
-          optionsFromContext?: (context: ContextFrom<T>) => CommandArgumentOption<OutputType>[]
+          optionsFromContext?: (
+            context: ContextFrom<T>
+          ) => CommandArgumentOption<OutputType>[]
           defaultValue?:
             | OutputType
             | ((

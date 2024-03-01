@@ -128,8 +128,12 @@ function buildCommandArgument<
     return {
       inputType: arg.inputType,
       ...baseCommandArgument,
-      defaultValue: arg.defaultValueFromContext ? arg.defaultValueFromContext(state.context) : arg.defaultValue,
-      options: arg.optionsFromContext ? arg.optionsFromContext(state.context) : arg.options,
+      defaultValue: arg.defaultValueFromContext
+        ? arg.defaultValueFromContext(state.context)
+        : arg.defaultValue,
+      options: arg.optionsFromContext
+        ? arg.optionsFromContext(state.context)
+        : arg.options,
     } satisfies CommandArgument<O, T> & { inputType: 'options' }
   } else if (arg.inputType === 'selection') {
     return {
