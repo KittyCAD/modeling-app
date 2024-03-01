@@ -91,12 +91,6 @@ export function createFirstArg(
   throw new Error('all sketch line types should have been covered')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type LineData = {
-  from: [number, number, number]
-  to: [number, number, number]
-}
-
 export const lineTo: SketchLineHelper = {
   add: ({
     node,
@@ -964,6 +958,30 @@ export const angledLineThatIntersects: SketchLineHelper = {
     }
   },
   addTag: addTagWithTo('angleTo'), // TODO might be wrong
+}
+
+export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
+  node,
+  pathToNode,
+  to,
+}) => {
+  const _node = { ...node }
+  const { node: callExpression } = getNodeFromPath<CallExpression>(
+    _node,
+    pathToNode
+  )
+
+  const toArrExp = createArrayExpression([
+    createLiteral(roundOff(to[0])),
+    createLiteral(roundOff(to[1])),
+  ])
+
+  mutateArrExp(callExpression.arguments?.[0], toArrExp) ||
+    mutateObjExpProp(callExpression.arguments?.[0], toArrExp, 'to')
+  return {
+    modifiedAst: _node,
+    pathToNode,
+  }
 }
 
 export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {

@@ -56,6 +56,7 @@ import { engineCommandManager } from 'lang/std/engineConnection'
 import {
   createArcGeometry,
   dashedStraight,
+  profileStart,
   straightSegment,
   tangentialArcToSegment,
 } from './segments'
@@ -64,6 +65,7 @@ import {
   addNewSketchLn,
   changeSketchArguments,
   compareVec2Epsilon2,
+  updateStartProfileAtArgs,
 } from 'lang/std/sketch'
 import { isReducedMotion, throttle } from 'lib/utils'
 import {
@@ -85,6 +87,7 @@ export const TANGENTIAL_ARC_TO_SEGMENT = 'tangential-arc-to-segment'
 export const TANGENTIAL_ARC_TO_SEGMENT_BODY = 'tangential-arc-to-segment-body'
 export const TANGENTIAL_ARC_TO__SEGMENT_DASH =
   'tangential-arc-to-segment-body-dashed'
+export const PROFILE_START = 'profile-start'
 
 // This singleton Class is responsible for all of the things the user sees and interacts with.
 // That mostly mean sketch elements.
@@ -136,6 +139,9 @@ class SceneEntities {
           group: segment,
           scale: factor,
         })
+      }
+      if (segment.name === PROFILE_START) {
+        segment.scale.set(factor, factor, factor)
       }
     })
     if (this.axisGroup) {
@@ -293,6 +299,24 @@ class SceneEntities {
         ? orthoFactor
         : perspScale(sceneInfra.camControls.camera, dummy)) /
       sceneInfra._baseUnitMultiplier
+
+    let segPathToNode = getNodePathFromSourceRange(
+      draftSegment ? truncatedAst : kclManager.ast,
+      sketchGroup.start.__geoMeta.sourceRange
+    )
+    const _profileStart = profileStart({
+      from: sketchGroup.start.from,
+      id: sketchGroup.start.__geoMeta.id,
+      pathToNode: segPathToNode,
+      scale: factor,
+    })
+    _profileStart.layers.set(SKETCH_LAYER)
+    _profileStart.traverse((child) => {
+      child.layers.set(SKETCH_LAYER)
+    })
+    group.add(_profileStart)
+    this.activeSegments[JSON.stringify(segPathToNode)] = _profileStart
+
     sketchGroup.value.forEach((segment, index) => {
       let segPathToNode = getNodePathFromSourceRange(
         draftSegment ? truncatedAst : kclManager.ast,
@@ -374,7 +398,11 @@ class SceneEntities {
             mat.color.set(obj.userData.baseColor)
             mat.color.offsetHSL(0, 0, 0.5)
           }
-          const parent = getParentGroup(object)
+          const parent = getParentGroup(object, [
+            STRAIGHT_SEGMENT,
+            TANGENTIAL_ARC_TO_SEGMENT,
+            PROFILE_START,
+          ])
           if (parent?.userData?.pathToNode) {
             const updatedAst = parse(recast(kclManager.ast))
             const node = getNodeFromPath<CallExpression>(
@@ -511,7 +539,11 @@ class SceneEntities {
       variableDeclarationName: string
     }
   }) {
-    const group = getParentGroup(object)
+    const group = getParentGroup(object, [
+      STRAIGHT_SEGMENT,
+      TANGENTIAL_ARC_TO_SEGMENT,
+      PROFILE_START,
+    ])
     if (!group) return
     const pathToNode: PathToNode = JSON.parse(
       JSON.stringify(group.userData.pathToNode)
@@ -535,13 +567,28 @@ class SceneEntities {
     ).node
     if (node.type !== 'CallExpression') return
 
-    const modded = changeSketchArguments(
-      modifiedAst,
-      kclManager.programMemory,
-      [node.start, node.end],
-      to,
-      from
-    )
+    let modded: {
+      modifiedAst: Program
+      pathToNode: PathToNode
+    }
+    if (group.name === PROFILE_START) {
+      modded = updateStartProfileAtArgs({
+        node: modifiedAst,
+        pathToNode,
+        to,
+        from,
+        previousProgramMemory: kclManager.programMemory,
+      })
+    } else {
+      modded = changeSketchArguments(
+        modifiedAst,
+        kclManager.programMemory,
+        [node.start, node.end],
+        to,
+        from
+      )
+    }
+
     modifiedAst = modded.modifiedAst
     const { truncatedAst, programMemoryOverride, variableDeclarationName } =
       draftInfo
@@ -560,10 +607,16 @@ class SceneEntities {
         programMemoryOverride,
       })
       this.sceneProgramMemory = programMemory
-      const sketchGroup = programMemory.root[variableDeclarationName]
-        .value as Path[]
+      const sketchGroup = programMemory.root[
+        variableDeclarationName
+      ] as SketchGroup
+      const sgPaths = sketchGroup.value
       const orthoFactor = orthoScale(sceneInfra.camControls.camera)
-      sketchGroup.forEach((segment, index) => {
+
+      const updateSegment = (
+        segment: Path | SketchGroup['start'],
+        index: number
+      ) => {
         const segPathToNode = getNodePathFromSourceRange(
           modifiedAst,
           segment.__geoMeta.sourceRange
@@ -584,7 +637,7 @@ class SceneEntities {
           sceneInfra._baseUnitMultiplier
         if (type === TANGENTIAL_ARC_TO_SEGMENT) {
           this.updateTangentialArcToSegment({
-            prevSegment: sketchGroup[index - 1],
+            prevSegment: sgPaths[index - 1],
             from: segment.from,
             to: segment.to,
             group: group,
@@ -597,8 +650,13 @@ class SceneEntities {
             group: group,
             scale: factor,
           })
+        } else if (type === PROFILE_START) {
+          group.position.set(segment.from[0], segment.from[1], 0)
+          group.scale.set(factor, factor, factor)
         }
-      })
+      }
+      updateSegment(sketchGroup.start, 0)
+      sgPaths.forEach(updateSegment)
     })()
   }
 
@@ -618,9 +676,7 @@ class SceneEntities {
     group.userData.from = from
     group.userData.to = to
     group.userData.prevSegment = prevSegment
-    const arrowGroup = group.children.find(
-      (child) => child.userData.type === ARROWHEAD
-    ) as Group
+    const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
 
     arrowGroup.position.set(to[0], to[1], 0)
 
@@ -695,9 +751,7 @@ class SceneEntities {
     const shape = new Shape()
     shape.moveTo(0, -0.08 * scale)
     shape.lineTo(0, 0.08 * scale) // The width of the line
-    const arrowGroup = group.children.find(
-      (child) => child.userData.type === ARROWHEAD
-    ) as Group
+    const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
 
     arrowGroup.position.set(to[0], to[1], 0)
 
@@ -980,9 +1034,9 @@ export function quaternionFromSketchGroup(
 }
 
 function colorSegment(object: any, color: number) {
-  const arrowHead = getParentGroup(object, [ARROWHEAD])
-  if (arrowHead) {
-    arrowHead.traverse((child) => {
+  const segmentHead = getParentGroup(object, [ARROWHEAD, PROFILE_START])
+  if (segmentHead) {
+    segmentHead.traverse((child) => {
       if (child instanceof Mesh) {
         child.material.color.set(color)
       }
