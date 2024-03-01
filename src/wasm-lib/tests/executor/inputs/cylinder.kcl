@@ -1,2 +1,2 @@
-const cylinder = unstable_stdlib_circle('XY', [0,0], 22) |> extrude(14, %)
+const cylinder = circle('XY', [0,0], 22) |> extrude(14, %)
 show(cylinder)
