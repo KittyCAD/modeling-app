@@ -384,13 +384,13 @@ test('extrude on each default plane should be stable', async ({
 }) => {
   const u = getUtils(page)
   const makeCode = (plane = 'XY') => `const part001 = startSketchOn('${plane}')
-  |> startProfileAt([0.70, 0.44], %)
-  |> line([0.66, -0.02], %)
-  |> line([0.28, 0.50], %)
-  |> line([-0.56, 0.44], %)
-  |> line([-0.54, -0.38], %)
+  |> startProfileAt([7.00, 4.40], %)
+  |> line([6.60, -0.20], %)
+  |> line([2.80, 5.00], %)
+  |> line([-5.60, 4.40], %)
+  |> line([-5.40, -3.80], %)
   |> close(%)
-  |> extrude(1.00, %)
+  |> extrude(10.00, %)
 `
   await context.addInitScript(async (code) => {
     localStorage.setItem('persistCode', code)
