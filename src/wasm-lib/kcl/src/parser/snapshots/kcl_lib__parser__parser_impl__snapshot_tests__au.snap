@@ -37,7 +37,7 @@ expression: actual
                   "type": "Identifier",
                   "start": 17,
                   "end": 39,
-                  "name": "unstable_stdlib_circle"
+                  "name": "circle"
                 },
                 "arguments": [
                   {
