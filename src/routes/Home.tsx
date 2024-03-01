@@ -176,7 +176,7 @@ const Home = () => {
     send,
     state,
     commandBarConfig: homeCommandBarConfig,
-    actor
+    actor,
   })
 
   useEffect(() => {
