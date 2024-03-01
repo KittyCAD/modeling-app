@@ -16,9 +16,9 @@ document.addEventListener('mousemove', (e) =>
 */
 
 const commonPoints = {
-  startAt: '[0.93, -1.26]',
-  num1: 0.95,
-  num2: 1.88,
+  startAt: '[9.06, -12.22]',
+  num1: 9.14,
+  num2: 18.2,
 }
 
 test.beforeEach(async ({ context, page }) => {
@@ -102,13 +102,13 @@ test('Basic sketch', async ({ page }) => {
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1 - 0.01}], %)`)
+  |> line([0, ${commonPoints.num1}], %)`)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1 - 0.01}], %)
+  |> line([0, ${commonPoints.num1}], %)
   |> line([-${commonPoints.num2}, 0], %)`)
 
   // deselect line tool
@@ -133,7 +133,7 @@ test('Basic sketch', async ({ page }) => {
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line({ to: [${commonPoints.num1}, 0], tag: 'seg01' }, %)
-  |> line([0, ${commonPoints.num1 - 0.01}], %)
+  |> line([0, ${commonPoints.num1}], %)
   |> angledLine([180, segLen('seg01', %)], %)`)
 })
 
@@ -386,12 +386,16 @@ test('Auto complete works', async ({ page }) => {
   await page.keyboard.press('ArrowDown')
   await page.keyboard.press('ArrowDown')
   await page.keyboard.press('Enter')
-  await page.keyboard.type('(5, %)')
+  // finish line with comment
+  await page.keyboard.type('(5, %) // lin')
+  await page.waitForTimeout(100)
+  // there shouldn't be any auto complete options for 'lin' in the comment
+  await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('XY')
   |> startProfileAt([0,0], %)
-  |> xLine(5, %)`)
+  |> xLine(5, %) // lin`)
 })
 
 // Onboarding tests
@@ -488,13 +492,13 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1 - 0.01}], %)`)
+  |> line([0, ${commonPoints.num1}], %)`)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1 - 0.01}], %)
+  |> line([0, ${commonPoints.num1}], %)
   |> line([-${commonPoints.num2}, 0], %)`)
 
   // deselect line tool
@@ -699,6 +703,8 @@ test('Can extrude from the command bar', async ({ page, context }) => {
   ).toBeDisabled()
   await page.keyboard.press('Enter')
 
+  await expect(page.getByText('Confirm Extrude')).toBeVisible()
+
   // Check that the code was updated
   await page.keyboard.press('Enter')
   // Unfortunately this indentation seems to matter for the test
@@ -765,12 +771,12 @@ test('Can add multiple sketches', async ({ page }) => {
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1 - 0.01}], %)`)
+  |> line([0, ${commonPoints.num1}], %)`)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   const finalCodeFirstSketch = `const part001 = startSketchOn('-XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1 - 0.01}], %)
+  |> line([0, ${commonPoints.num1}], %)
   |> line([-${commonPoints.num2}, 0], %)`
   await expect(page.locator('.cm-content')).toHaveText(finalCodeFirstSketch)
 
@@ -930,7 +936,7 @@ fn yohey = (pos) => {
   |> line([-15.79, 17.08], %)
   return ''
 }
-    
+
     yohey([15.79, -34.6])
 `
       )

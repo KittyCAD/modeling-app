@@ -796,7 +796,7 @@ interface UnreliableSubscription<T extends UnreliableResponses['type']> {
   callback: (data: Extract<UnreliableResponses, { type: T }>) => void
 }
 
-interface Subscription<T extends ModelTypes> {
+export interface Subscription<T extends ModelTypes> {
   event: T
   callback: (
     data: Extract<Models['OkModelingCmdResponse_type'], { type: T }>
@@ -926,6 +926,15 @@ export class EngineCommandManager {
           },
         })
         sceneInfra.camControls.onCameraChange()
+        this.sendSceneCommand({
+          // CameraControls subscribes to default_camera_get_settings response events
+          // firing this at connection ensure the camera's are synced initially
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'default_camera_get_settings',
+          },
+        })
 
         this.initPlanes().then(() => {
           this.resolveReady()
