@@ -2,7 +2,7 @@ import { Combobox } from '@headlessui/react'
 import Fuse from 'fuse.js'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CommandArgument, CommandArgumentOption } from 'lib/commandTypes'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 function CommandArgOptionInput({
   options,
