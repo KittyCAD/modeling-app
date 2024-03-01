@@ -1,4 +1,4 @@
-use kittycad_execution_plan::{api_request::ApiRequest, Instruction};
+use kittycad_execution_plan::{api_request::ApiRequest, Destination, Instruction};
 use kittycad_execution_plan_traits::{Address, InMemory};
 use kittycad_modeling_cmds::{id::ModelingCmdId, ModelingCmdEndpoint};
 
@@ -120,11 +120,13 @@ pub fn arg_point2d(
     instructions.extend([
         Instruction::Copy {
             source: single_binding(elements[0].clone(), "startSketchAt", "number", arg_number)?,
-            destination: start_x,
+            destination: Destination::Address(start_x),
+            length: 1,
         },
         Instruction::Copy {
             source: single_binding(elements[1].clone(), "startSketchAt", "number", arg_number)?,
-            destination: start_y,
+            destination: Destination::Address(start_y),
+            length: 1,
         },
         Instruction::SetPrimitive {
             address: start_z,
