@@ -18,6 +18,7 @@ import {
 import { isTauri } from 'lib/isTauri'
 import { settingsCommandBarConfig } from 'lib/commandBarConfigs/settingsCommandConfig'
 import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
+import { sceneInfra } from 'clientSideScene/sceneInfra'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -101,6 +102,7 @@ export const GlobalStateProvider = ({
       if (settingsState.context.theme !== 'system') return
       setThemeClass(e.matches ? Themes.Dark : Themes.Light)
     }
+    sceneInfra.baseUnit = settingsState?.context?.baseUnit || 'mm'
 
     matcher.addEventListener('change', listener)
     return () => matcher.removeEventListener('change', listener)

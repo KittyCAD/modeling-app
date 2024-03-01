@@ -54,3 +54,5 @@ e2e/playwright/export-snapshots/*embedded.gltf
 
 ## generated files
 src/**/*.typegen.ts
+
+src/wasm-lib/grackle/stdlib_cube_partial.json
