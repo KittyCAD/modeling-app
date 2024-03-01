@@ -16,9 +16,9 @@ document.addEventListener('mousemove', (e) =>
 */
 
 const commonPoints = {
-  startAt: '[0.93, -1.26]',
-  num1: 0.95,
-  num2: 1.88,
+  startAt: '[9.06, -12.22]',
+  num1: 9.14,
+  num2: 18.2,
 }
 
 test.beforeEach(async ({ context, page }) => {
@@ -102,13 +102,13 @@ test('Basic sketch', async ({ page }) => {
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1 - 0.01}], %)`)
+  |> line([0, ${commonPoints.num1}], %)`)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1 - 0.01}], %)
+  |> line([0, ${commonPoints.num1}], %)
   |> line([-${commonPoints.num2}, 0], %)`)
 
   // deselect line tool
@@ -133,7 +133,7 @@ test('Basic sketch', async ({ page }) => {
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line({ to: [${commonPoints.num1}, 0], tag: 'seg01' }, %)
-  |> line([0, ${commonPoints.num1 - 0.01}], %)
+  |> line([0, ${commonPoints.num1}], %)
   |> angledLine([180, segLen('seg01', %)], %)`)
 })
 
@@ -488,13 +488,13 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1 - 0.01}], %)`)
+  |> line([0, ${commonPoints.num1}], %)`)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1 - 0.01}], %)
+  |> line([0, ${commonPoints.num1}], %)
   |> line([-${commonPoints.num2}, 0], %)`)
 
   // deselect line tool
@@ -765,12 +765,12 @@ test('Can add multiple sketches', async ({ page }) => {
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1 - 0.01}], %)`)
+  |> line([0, ${commonPoints.num1}], %)`)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   const finalCodeFirstSketch = `const part001 = startSketchOn('-XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1 - 0.01}], %)
+  |> line([0, ${commonPoints.num1}], %)
   |> line([-${commonPoints.num2}, 0], %)`
   await expect(page.locator('.cm-content')).toHaveText(finalCodeFirstSketch)
 
