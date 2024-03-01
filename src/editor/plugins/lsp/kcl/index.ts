@@ -4,6 +4,7 @@ import { ViewPlugin, hoverTooltip, tooltips } from '@codemirror/view'
 import { CompletionTriggerKind } from 'vscode-languageserver-protocol'
 import { offsetToPos } from 'editor/plugins/lsp/util'
 import { LanguageServerOptions } from 'editor/plugins/lsp'
+import { syntaxTree } from '@codemirror/language'
 import {
   LanguageServerPlugin,
   documentUri,
@@ -40,6 +41,14 @@ export function kclPlugin(options: LanguageServerOptions): Extension {
           if (plugin == null) return null
 
           const { state, pos, explicit } = context
+
+          let nodeBefore = syntaxTree(state).resolveInner(pos, -1)
+          if (
+            nodeBefore.name === 'BlockComment' ||
+            nodeBefore.name === 'LineComment'
+          )
+            return null
+
           const line = state.doc.lineAt(pos)
           let trigKind: CompletionTriggerKind = CompletionTriggerKind.Invoked
           let trigChar: string | undefined
@@ -61,12 +70,6 @@ export function kclPlugin(options: LanguageServerOptions): Extension {
             return null
           }
 
-          // Get if we are in a comment token.
-          const tokens = state.languageDataAt('commentTokens', pos)
-          if (tokens && tokens.length > 0) {
-            // We are in a comment token, we should not trigger completion.
-            return null
-          }
           return await plugin.requestCompletion(
             context,
             offsetToPos(state.doc, pos),
