@@ -66,10 +66,8 @@ test('Basic sketch', async ({ page }) => {
 
   // click on "Start Sketch" button
   await u.clearCommandLogs()
-  await u.doAndWaitForImageDiff(
-    () => page.getByRole('button', { name: 'Start Sketch' }).click(),
-    200
-  )
+  await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await page.waitForTimeout(100)
 
   // select a plane
   await page.mouse.click(700, 200)
