@@ -53,7 +53,7 @@ fn block_comment(i: &mut Located<&str>) -> PResult<Token> {
 }
 
 fn line_comment(i: &mut Located<&str>) -> PResult<Token> {
-    let inner = (r#"//"#, take_till(1.., ['\n', '\r'])).recognize();
+    let inner = (r#"//"#, take_till(0.., ['\n', '\r'])).recognize();
     let (value, range) = inner.with_span().parse_next(i)?;
     Ok(Token::from_range(range, TokenType::LineComment, value.to_string()))
 }
