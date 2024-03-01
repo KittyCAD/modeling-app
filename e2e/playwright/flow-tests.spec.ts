@@ -703,6 +703,8 @@ test('Can extrude from the command bar', async ({ page, context }) => {
   ).toBeDisabled()
   await page.keyboard.press('Enter')
 
+  await expect(page.getByText('Confirm Extrude')).toBeVisible()
+
   // Check that the code was updated
   await page.keyboard.press('Enter')
   // Unfortunately this indentation seems to matter for the test
