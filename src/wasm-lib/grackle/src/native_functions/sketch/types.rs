@@ -1,4 +1,4 @@
-use kittycad_execution_plan::Instruction;
+use kittycad_execution_plan::{Destination, Instruction};
 use kittycad_execution_plan_macros::ExecutionPlanValue;
 use kittycad_execution_plan_traits::{Address, Value};
 use kittycad_modeling_cmds::shared::{Point2d, Point3d, Point4d};
@@ -39,21 +39,24 @@ impl SketchGroup {
             // Copy over the `from` field.
             Instruction::Copy {
                 source: start_point,
-                destination: base_path_addr,
+                destination: Destination::Address(base_path_addr),
+                length: 1,
             },
             // Copy over the `to` field.
             Instruction::Copy {
                 source: start_point,
-                destination: base_path_addr + self.path_first.from.into_parts().len(),
+                destination: Destination::Address(base_path_addr + self.path_first.from.into_parts().len()),
+                length: 1,
             },
         ];
         if let Some(tag) = tag {
             // Copy over the `name` field.
             out.push(Instruction::Copy {
                 source: tag,
-                destination: base_path_addr
-                    + self.path_first.from.into_parts().len()
-                    + self.path_first.to.into_parts().len(),
+                destination: Destination::Address(
+                    base_path_addr + self.path_first.from.into_parts().len() + self.path_first.to.into_parts().len(),
+                ),
+                length: 1,
             });
         }
         out
