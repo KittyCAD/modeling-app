@@ -93,7 +93,7 @@ class KclManager {
         // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
         this._params.id &&
           writeTextFile(this._params.id, code).catch((err) => {
-            // TODO: add Sentry per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
+            // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
             console.error('error saving file', err)
             toast.error('Error saving file, please check file permissions')
           })

@@ -3,7 +3,6 @@ import { VITE_KC_API_WS_MODELING_URL, VITE_KC_CONNECTION_TIMEOUT_MS } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
 import { v4 as uuidv4 } from 'uuid'
-import * as Sentry from '@sentry/react'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { sceneInfra } from 'clientSideScene/sceneInfra'
 
@@ -290,12 +289,6 @@ class EngineConnection {
     }
   }
 
-  // shouldTrace will return true when Sentry should be used to instrument
-  // the Engine.
-  shouldTrace() {
-    return Sentry.getCurrentHub()?.getClient()?.getOptions()?.sendClientReports
-  }
-
   // connect will attempt to connect to the Engine over a WebSocket, and
   // establish the WebRTC connections.
   //
@@ -307,41 +300,6 @@ class EngineConnection {
     }
 
     // Information on the connect transaction
-
-    class SpanPromise {
-      span: Sentry.Span
-      promise: Promise<void>
-      resolve?: (v: void) => void
-
-      constructor(span: Sentry.Span) {
-        this.span = span
-        this.promise = new Promise((resolve) => {
-          this.resolve = (v: void) => {
-            // here we're going to invoke finish before resolving the
-            // promise so that a `.then()` will order strictly after
-            // all spans have -- for sure -- been resolved, rather than
-            // doing a `then` on this promise.
-            this.span.finish()
-            resolve(v)
-          }
-        })
-      }
-    }
-
-    let webrtcMediaTransaction: Sentry.Transaction
-    let websocketSpan: SpanPromise
-    let mediaTrackSpan: SpanPromise
-    let dataChannelSpan: SpanPromise
-    let handshakeSpan: SpanPromise
-    let iceSpan: SpanPromise
-
-    const spanStart = (op: string) =>
-      new SpanPromise(webrtcMediaTransaction.startChild({ op }))
-
-    if (this.shouldTrace()) {
-      webrtcMediaTransaction = Sentry.startTransaction({ name: 'webrtc-media' })
-      websocketSpan = spanStart('websocket')
-    }
 
     const createPeerConnection = () => {
       this.pc = new RTCPeerConnection()
@@ -393,10 +351,6 @@ class EngineConnection {
           // From what I understand, only after have we done the ICE song and
           // dance is it safest to connect the video tracks / stream
           case 'connected':
-            if (this.shouldTrace()) {
-              iceSpan.resolve?.()
-            }
-
             // Let the browser attach to the video stream now
             this.onNewTrack({ conn: this, mediaStream: this.mediaStream! })
             break
@@ -427,17 +381,6 @@ class EngineConnection {
           value: {
             type: ConnectingType.TrackReceived,
           },
-        }
-
-        if (this.shouldTrace()) {
-          let mediaStreamTrack = mediaStream.getVideoTracks()[0]
-          mediaStreamTrack.addEventListener('unmute', () => {
-            // let settings = mediaStreamTrack.getSettings()
-            // mediaTrackSpan.span.setTag("fps", settings.frameRate)
-            // mediaTrackSpan.span.setTag("width", settings.width)
-            // mediaTrackSpan.span.setTag("height", settings.height)
-            mediaTrackSpan.resolve?.()
-          })
         }
 
         this.webrtcStatsCollector = (): Promise<ClientMetrics> => {
@@ -522,10 +465,6 @@ class EngineConnection {
             },
           }
 
-          if (this.shouldTrace()) {
-            dataChannelSpan.resolve?.()
-          }
-
           // Everything is now connected.
           this.state = { type: EngineConnectionStateType.ConnectionEstablished }
 
@@ -576,27 +515,6 @@ class EngineConnection {
       // the Cookie header.
       if (this.token) {
         this.send({ headers: { Authorization: `Bearer ${this.token}` } })
-      }
-
-      if (this.shouldTrace()) {
-        websocketSpan.resolve?.()
-
-        handshakeSpan = spanStart('handshake')
-        iceSpan = spanStart('ice')
-        dataChannelSpan = spanStart('data-channel')
-        mediaTrackSpan = spanStart('media-track')
-      }
-
-      if (this.shouldTrace()) {
-        void Promise.all([
-          handshakeSpan.promise,
-          iceSpan.promise,
-          dataChannelSpan.promise,
-          mediaTrackSpan.promise,
-        ]).then(() => {
-          console.log('All spans finished, reporting')
-          webrtcMediaTransaction?.finish()
-        })
       }
     })
 
@@ -786,13 +704,6 @@ failed cmd type was ${artifactThatFailed?.commandType}`
               type: ConnectingType.WebRTCConnecting,
             },
           }
-
-          if (this.shouldTrace()) {
-            // When both ends have a local and remote SDP, we've been able to
-            // set up successfully. We'll still need to find the right ICE
-            // servers, but this is hand-shook.
-            handshakeSpan.resolve?.()
-          }
           break
 
         case 'trickle_ice':
@@ -885,7 +796,7 @@ interface UnreliableSubscription<T extends UnreliableResponses['type']> {
   callback: (data: Extract<UnreliableResponses, { type: T }>) => void
 }
 
-interface Subscription<T extends ModelTypes> {
+export interface Subscription<T extends ModelTypes> {
   event: T
   callback: (
     data: Extract<Models['OkModelingCmdResponse_type'], { type: T }>
@@ -1015,6 +926,15 @@ export class EngineCommandManager {
           },
         })
         sceneInfra.camControls.onCameraChange()
+        this.sendSceneCommand({
+          // CameraControls subscribes to default_camera_get_settings response events
+          // firing this at connection ensure the camera's are synced initially
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'default_camera_get_settings',
+          },
+        })
 
         this.initPlanes().then(() => {
           this.resolveReady()

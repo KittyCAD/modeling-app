@@ -4703,6 +4703,7 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 Import a CAD file.
 
 For formats lacking unit data (STL, OBJ, PLY), the default import unit is millimeters. Otherwise you can specify the unit by passing in the options parameter. If you import a gltf file, we will try to find the bin file and import it as well.
+Import paths are relative to the current project directory. This only works in the desktop app not in browser.
 
 ```
 import(file_path: String, options: ImportFormat) -> ImportedGeometry
