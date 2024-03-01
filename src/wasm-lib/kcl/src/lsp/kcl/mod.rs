@@ -434,9 +434,13 @@ impl LanguageServer for Backend {
         // Because if we are in a comment, we don't want to show completions.
         let filename = params.text_document_position.text_document.uri.to_string();
         if let Some(current_code) = self.current_code_map.get(&filename) {
-            let pos = position_to_char_index(params.text_document_position.position, &current_code);
+            let mut pos = position_to_char_index(params.text_document_position.position, &current_code);
             // Let's iterate over the AST and find the node that contains the cursor.
             if let Some(ast) = self.ast_map.get(&filename) {
+                if pos > 0 {
+                    pos -= 1;
+                }
+
                 if ast.get_non_code_meta_for_position(pos).is_some() {
                     // We are in a comment, don't show completions.
                     return Ok(None);
