@@ -7,6 +7,8 @@ use uuid::Uuid;
 /// A sketch group is a collection of paths.
 #[derive(Clone, ExecutionPlanValue)]
 pub struct SketchGroup {
+    // NOTE to developers
+    // Do NOT reorder these fields without updating the  _offset() methods below.
     /// The id of the sketch group.
     pub id: Uuid,
     /// What the sketch is on (can be a plane or a face).
@@ -26,6 +28,10 @@ pub struct SketchGroup {
 }
 
 impl SketchGroup {
+    /// Get the offset for the `id` field.
+    pub fn path_id_offset() -> usize {
+        0
+    }
     pub fn set_base_path(&self, sketch_group: Address, start_point: Address, tag: Option<Address>) -> Vec<Instruction> {
         let base_path_addr = sketch_group
             + self.id.into_parts().len()

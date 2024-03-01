@@ -1,4 +1,4 @@
-use kittycad_execution_plan::{api_request::ApiRequest, Instruction};
+use kittycad_execution_plan::{api_request::ApiRequest, Destination, Instruction};
 use kittycad_execution_plan_traits::{Address, InMemory, Value};
 use kittycad_modeling_cmds::{
     shared::{Point3d, Point4d},
@@ -11,6 +11,82 @@ use super::{
     types::{Axes, BasePath, Plane, SketchGroup},
 };
 use crate::{binding_scope::EpBinding, error::CompileError, native_functions::Callable, EvalPlan};
+
+#[derive(Debug, Clone)]
+#[cfg_attr(test, derive(Eq, PartialEq))]
+pub struct LineTo;
+
+impl Callable for LineTo {
+    fn call(&self, next_addr: &mut Address, args: Vec<EpBinding>) -> Result<EvalPlan, CompileError> {
+        let mut instructions = Vec::new();
+        let fn_name = "lineTo";
+        // Get both required params.
+        let mut args_iter = args.into_iter();
+        let Some(to) = args_iter.next() else {
+            return Err(CompileError::NotEnoughArgs {
+                fn_name: fn_name.into(),
+                required: 2,
+                actual: 0,
+            });
+        };
+        let Some(sketch_group) = args_iter.next() else {
+            return Err(CompileError::NotEnoughArgs {
+                fn_name: fn_name.into(),
+                required: 2,
+                actual: 1,
+            });
+        };
+        // Check the type of both required params.
+        let to = arg_point2d(to, fn_name, &mut instructions, next_addr, 0)?;
+        let sg = single_binding(sketch_group, fn_name, "sketch group", 1)?;
+        let id = Uuid::new_v4();
+        let start_of_line = next_addr.offset(1);
+        let length_of_3d_point = Point3d::<f64>::default().into_parts().len();
+        instructions.extend([
+            // Push the `to` 2D point onto the stack.
+            Instruction::Copy {
+                source: to,
+                length: 2,
+                destination: Destination::StackPush,
+            },
+            // Make it a 3D point.
+            Instruction::StackExtend { data: vec![0.0.into()] },
+            // Append the new path segment to memory.
+            // First comes its tag.
+            Instruction::SetPrimitive {
+                address: start_of_line,
+                value: "Line".to_owned().into(),
+            },
+            // Then its end
+            Instruction::StackPop {
+                destination: Some(start_of_line + 1),
+            },
+            // Then its `relative` field.
+            Instruction::SetPrimitive {
+                address: start_of_line + 1 + length_of_3d_point,
+                value: false.into(),
+            },
+            // Send the ExtendPath request
+            Instruction::ApiRequest(ApiRequest {
+                endpoint: ModelingCmdEndpoint::ExtendPath,
+                store_response: None,
+                arguments: vec![
+                    // Path ID
+                    InMemory::Address(sg + SketchGroup::path_id_offset()),
+                    // Segment
+                    InMemory::Address(start_of_line),
+                ],
+                cmd_id: id.into(),
+            }),
+        ]);
+
+        // TODO: Create a new SketchGroup from the old one + add the new path, then store it.
+        Ok(EvalPlan {
+            instructions,
+            binding: EpBinding::Single(Address::ZERO + 9999),
+        })
+    }
+}
 
 #[derive(Debug, Clone)]
 #[cfg_attr(test, derive(Eq, PartialEq))]
