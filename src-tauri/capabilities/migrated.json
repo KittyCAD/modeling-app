@@ -13,6 +13,7 @@
     "resources:default",
     "menu:default",
     "tray:default",
+    "fs:allow-create",
     "fs:allow-read-file",
     "fs:allow-read-text-file",
     "fs:allow-write-file",
