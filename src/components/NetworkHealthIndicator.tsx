@@ -80,7 +80,7 @@ const overallConnectionStateIcon: Record<
   [NetworkHealthState.Disconnected]: 'networkCrossedOut',
 }
 
-export const NetworkHealthIndicator = () => {
+export function useNetworkStatus() {
   const [steps, setSteps] = useState(initialConnectingTypeGroupState)
   const [internetConnected, setInternetConnected] = useState<boolean>(true)
   const [overallState, setOverallState] = useState<NetworkHealthState>(
@@ -118,18 +118,18 @@ export const NetworkHealthIndicator = () => {
   }, [hasIssues, internetConnected])
 
   useEffect(() => {
-    const cb1 = () => {
+    const onlineCallback = () => {
       setSteps(initialConnectingTypeGroupState)
       setInternetConnected(true)
     }
-    const cb2 = () => {
+    const offlineCallback = () => {
       setInternetConnected(false)
     }
-    window.addEventListener('online', cb1)
-    window.addEventListener('offline', cb2)
+    window.addEventListener('online', onlineCallback)
+    window.addEventListener('offline', offlineCallback)
     return () => {
-      window.removeEventListener('online', cb1)
-      window.removeEventListener('offline', cb2)
+      window.removeEventListener('online', onlineCallback)
+      window.removeEventListener('offline', offlineCallback)
     }
   }, [])
 
@@ -182,6 +182,30 @@ export const NetworkHealthIndicator = () => {
       }
     )
   }, [])
+
+  return {
+    hasIssues,
+    overallState,
+    internetConnected,
+    steps,
+    issues,
+    error,
+    setHasCopied,
+    hasCopied,
+  }
+}
+
+export const NetworkHealthIndicator = () => {
+  const {
+    hasIssues,
+    overallState,
+    internetConnected,
+    steps,
+    issues,
+    error,
+    setHasCopied,
+    hasCopied,
+  } = useNetworkStatus()
 
   return (
     <Popover className="relative">

@@ -1,7 +1,8 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, env};
 
 use ep::{Destination, UnaryArithmetic};
 use ept::{ListHeader, ObjectHeader};
+use kittycad_modeling_session::SessionBuilder;
 use pretty_assertions::assert_eq;
 
 use super::*;
@@ -1042,6 +1043,71 @@ fn store_object_with_array_property() {
             ])
         }
     )
+}
+
+#[tokio::test]
+async fn stdlib_cube_partial() {
+    let program = r#"
+    let cube = startSketchAt([22.0, 33.0])
+    "#;
+    let (plan, _scope) = must_plan(program);
+    std::fs::write("stdlib_cube_partial.json", serde_json::to_string_pretty(&plan).unwrap()).unwrap();
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+        .ast()
+        .unwrap();
+    let mem = crate::execute(ast, Some(test_client().await)).await.unwrap();
+    dbg!(mem);
+}
+
+async fn test_client() -> Session {
+    let kittycad_api_token = env::var("KITTYCAD_API_TOKEN").expect("You must set $KITTYCAD_API_TOKEN");
+    let kittycad_api_client = kittycad::Client::new(kittycad_api_token);
+    let session_builder = SessionBuilder {
+        client: kittycad_api_client,
+        fps: Some(10),
+        unlocked_framerate: Some(false),
+        video_res_height: Some(720),
+        video_res_width: Some(1280),
+        buffer_reqs: None,
+        await_response_timeout: None,
+    };
+    match Session::start(session_builder).await {
+        Err(e) => match e {
+            kittycad::types::error::Error::InvalidRequest(s) => panic!("Request did not meet requirements {s}"),
+            kittycad::types::error::Error::CommunicationError(e) => {
+                panic!(" A server error either due to the data, or with the connection: {e}")
+            }
+            kittycad::types::error::Error::RequestError(e) => panic!("Could not build request: {e}"),
+            kittycad::types::error::Error::SerdeError { error, status } => {
+                panic!("Serde error (HTTP {status}): {error}")
+            }
+            kittycad::types::error::Error::InvalidResponsePayload { error, response } => {
+                panic!("Invalid response payload. Error {error}, response {response:?}")
+            }
+            kittycad::types::error::Error::Server { body, status } => panic!("Server error (HTTP {status}): {body}"),
+            kittycad::types::error::Error::UnexpectedResponse(resp) => {
+                let status = resp.status();
+                let url = resp.url().to_owned();
+                match resp.text().await {
+                    Ok(body) => panic!(
+                        "Unexpected response from KittyCAD API.
+                        URL:{url}
+                        HTTP {status}
+                        ---Body----
+                        {body}"
+                    ),
+                    Err(e) => panic!(
+                        "Unexpected response from KittyCAD API.
+                        URL:{url}
+                        HTTP {status}
+                        ---Body could not be read, the error is----
+                        {e}"
+                    ),
+                }
+            }
+        },
+        Ok(x) => x,
+    }
 }
 
 #[ignore = "haven't done API calls or stdlib yet"]

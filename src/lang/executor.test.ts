@@ -47,9 +47,8 @@ const newVar = myVar + 1`
   |> lineTo([2,3], %)
   |> lineTo({ to: [5,-1], tag: "rightPath" }, %)
   // |> close(%)
-show(mySketch)
 `
-    const { root, return: _return } = await exe(code)
+    const { root } = await exe(code)
     // geo is three js buffer geometry and is very bloated to have in tests
     const minusGeo = root.mySketch.value
     expect(minusGeo).toEqual([
@@ -82,15 +81,6 @@ show(mySketch)
           id: expect.any(String),
         },
         name: 'rightPath',
-      },
-    ])
-    // expect(root.mySketch.sketch[0]).toEqual(root.mySketch.sketch[4].firstPath)
-    expect(_return).toEqual([
-      {
-        type: 'Identifier',
-        start: 203,
-        end: 211,
-        name: 'mySketch',
       },
     ])
   })
@@ -357,7 +347,6 @@ describe('testing math operators', () => {
       `  -legLen(segLen('seg01', %), myVar)`,
       `], %)`,
       ``,
-      `show(part001)`,
     ].join('\n')
     const { root } = await exe(code)
     const sketch = root.part001
@@ -392,8 +381,7 @@ const theExtrude = startSketchOn('XY')
   |> line([-0.76], myVarZ, %)
   |> line([5,5], %)
   |> close(%)
-  |> extrude(4, %)
-show(theExtrude)`
+  |> extrude(4, %)`
     await expect(exe(code)).rejects.toEqual(
       new KCLError(
         'undefined_value',

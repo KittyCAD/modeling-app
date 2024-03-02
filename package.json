@@ -1,6 +1,6 @@
 {
   "name": "untitled-app",
-  "version": "0.15.2",
+  "version": "0.15.4",
   "private": true,
   "dependencies": {
     "@codemirror/autocomplete": "^6.10.2",
@@ -10,7 +10,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@headlessui/react": "^1.7.17",
     "@headlessui/tailwindcss": "^0.2.0",
-    "@kittycad/lib": "^0.0.53",
+    "@kittycad/lib": "^0.0.54",
     "@lezer/javascript": "^1.4.9",
     "@open-rpc/client-js": "^1.8.1",
     "@react-hook/resize-observer": "^1.2.6",
@@ -87,7 +87,7 @@
     "wasm-prep": "rm -rf src/wasm-lib/pkg && mkdir src/wasm-lib/pkg && rm -rf src/wasm-lib/kcl/bindings",
     "lint": "eslint --fix src",
     "bump-jsons": "echo \"$(jq --arg v \"$VERSION\" '.version=$v' package.json --indent 2)\" > package.json && echo \"$(jq --arg v \"$VERSION\" '.version=$v' src-tauri/tauri.conf.json --indent 2)\" > src-tauri/tauri.conf.json",
-    "postinstall": "patch-package && yarn xstate:typegen",
+    "postinstall": "yarn xstate:typegen",
     "xstate:typegen": "yarn xstate typegen \"src/**/*.ts?(x)\""
   },
   "prettier": {
@@ -136,7 +136,6 @@
     "eslint-plugin-css-modules": "^2.12.0",
     "happy-dom": "^10.8.0",
     "husky": "^8.0.3",
-    "patch-package": "^8.0.0",
     "pixelmatch": "^5.3.0",
     "pngjs": "^7.0.0",
     "postcss": "^8.4.31",

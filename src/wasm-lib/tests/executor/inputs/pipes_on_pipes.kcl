@@ -468,4 +468,3 @@ const svg =  startSketchOn('XY')
 |> bezierCurve({ control1: [0, -2], control2: [-2.68, -2.67], to: [-1.36, -2.34] }, %) // CubicBezierAbsolute
 |> bezierCurve({ control1: [0, -0], control2: [0, -1.34], to: [0, -0.68] }, %) // CubicBezierAbsolute
 |> close(%)
-show(svg)

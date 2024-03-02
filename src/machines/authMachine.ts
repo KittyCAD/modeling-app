@@ -20,6 +20,8 @@ const LOCAL_USER: Models['User_type'] = {
   phone: '555-555-5555',
   first_name: 'Test',
   last_name: 'User',
+  can_train_on_data: false,
+  is_service_account: false,
 }
 
 export interface UserContext {

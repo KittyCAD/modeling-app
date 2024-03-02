@@ -240,6 +240,8 @@ pub struct Face {
     pub id: uuid::Uuid,
     /// The tag of the face.
     pub value: String,
+    /// The original sketch group id of the object we are sketching on.
+    pub sketch_group_id: uuid::Uuid,
     /// What should the face’s X axis be?
     pub x_axis: Point3d,
     /// What should the face’s Y axis be?
@@ -1015,7 +1017,7 @@ impl ExecutorContext {
 pub async fn execute(
     program: crate::ast::types::Program,
     memory: &mut ProgramMemory,
-    options: BodyType,
+    _options: BodyType,
     ctx: &ExecutorContext,
 ) -> Result<ProgramMemory, KclError> {
     // Before we even start executing the program, set the units.
@@ -1071,24 +1073,11 @@ pub async fn execute(
                             _ => (),
                         }
                     }
-                    let _show_fn = Box::new(crate::std::Show);
                     match ctx.stdlib.get_either(&call_expr.callee.name) {
                         FunctionKind::Core(func) => {
-                            use crate::docs::StdLibFn;
-                            if func.name() == _show_fn.name() {
-                                if options != BodyType::Root {
-                                    return Err(KclError::Semantic(KclErrorDetails {
-                                        message: "Cannot call show outside of a root".to_string(),
-                                        source_ranges: vec![call_expr.into()],
-                                    }));
-                                }
-
-                                memory.return_ = Some(ProgramReturn::Arguments(call_expr.arguments.clone()));
-                            } else {
-                                let args = crate::std::Args::new(args, call_expr.into(), ctx.clone());
-                                let result = func.std_lib_fn()(args).await?;
-                                memory.return_ = Some(ProgramReturn::Value(result));
-                            }
+                            let args = crate::std::Args::new(args, call_expr.into(), ctx.clone());
+                            let result = func.std_lib_fn()(args).await?;
+                            memory.return_ = Some(ProgramReturn::Value(result));
                         }
                         FunctionKind::Std(func) => {
                             let mut newmem = memory.clone();
@@ -1350,8 +1339,7 @@ const newVar = myVar + 1"#;
   offset: {},
   tag: "yo2"
 }}, %)
-const intersect = segEndX('yo2', part001)
-show(part001)"#,
+const intersect = segEndX('yo2', part001)"#,
                 offset
             )
         };
@@ -1397,8 +1385,7 @@ const part001 = startSketchOn('XY')
 |> angledLine([ghi(2), 3.04], %)
 |> angledLine([jkl(yo) + 2, 3.05], %)
 |> close(%)
-const yo2 = hmm([identifierGuy + 5])
-show(part001)"#;
+const yo2 = hmm([identifierGuy + 5])"#;
 
         parse_execute(ast).await.unwrap();
     }
@@ -1413,8 +1400,7 @@ const part001 = startSketchOn('XY')
   min(segLen('seg01', %), myVar),
   -legLen(segLen('seg01', %), myVar)
 ], %)
-
-show(part001)"#;
+"#;
 
         parse_execute(ast).await.unwrap();
     }
@@ -1429,8 +1415,7 @@ const part001 = startSketchOn('XY')
   min(segLen('seg01', %), myVar),
   legLen(segLen('seg01', %), myVar)
 ], %)
-
-show(part001)"#;
+"#;
 
         parse_execute(ast).await.unwrap();
     }
@@ -1452,8 +1437,7 @@ const part001 = startSketchOn('XY')
   |> xLine(3.84, %) // selection-range-7ish-before-this
 
 const variableBelowShouldNotBeIncluded = 3
-
-show(part001)"#;
+"#;
 
         parse_execute(ast).await.unwrap();
     }
@@ -1474,9 +1458,7 @@ const firstExtrude = startSketchOn('XY')
   |> line([w, 0], %)
   |> line([0, thing()], %)
   |> close(%)
-  |> extrude(h, %)
-
-show(firstExtrude)"#;
+  |> extrude(h, %)"#;
 
         parse_execute(ast).await.unwrap();
     }
@@ -1497,9 +1479,7 @@ const firstExtrude = startSketchOn('XY')
   |> line([w, 0], %)
   |> line([0, thing(8)], %)
   |> close(%)
-  |> extrude(h, %)
-
-show(firstExtrude)"#;
+  |> extrude(h, %)"#;
 
         parse_execute(ast).await.unwrap();
     }
@@ -1520,9 +1500,7 @@ const firstExtrude = startSketchOn('XY')
   |> line([w, 0], %)
   |> line(thing(8), %)
   |> close(%)
-  |> extrude(h, %)
-
-show(firstExtrude)"#;
+  |> extrude(h, %)"#;
 
         parse_execute(ast).await.unwrap();
     }
@@ -1547,9 +1525,7 @@ const firstExtrude = startSketchOn('XY')
   |> line([w, 0], %)
   |> line([0, thing(8)], %)
   |> close(%)
-  |> extrude(h, %)
-
-show(firstExtrude)"#;
+  |> extrude(h, %)"#;
 
         parse_execute(ast).await.unwrap();
     }
@@ -1568,9 +1544,7 @@ show(firstExtrude)"#;
   return myBox
 }
 
-const fnBox = box(3, 6, 10)
-
-show(fnBox)"#;
+const fnBox = box(3, 6, 10)"#;
 
         parse_execute(ast).await.unwrap();
     }
@@ -1590,8 +1564,6 @@ show(fnBox)"#;
 }
 
 const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
-
-show(thisBox)
 "#;
         parse_execute(ast).await.unwrap();
     }
@@ -1611,8 +1583,6 @@ show(thisBox)
 }
 
 const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
-
-show(thisBox)
 "#;
         parse_execute(ast).await.unwrap();
     }
@@ -1632,8 +1602,6 @@ show(thisBox)
 }
 
 const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
-
-show(thisBox)
 "#;
         parse_execute(ast).await.unwrap();
     }
@@ -1655,7 +1623,6 @@ let myBox = startSketchOn('XY')
 
 for var in [{start: [0,0], l: 6, w: 10, h: 3}, {start: [-10,-10], l: 3, w: 5, h: 1.5}] {
   const thisBox = box(var)
-  show(thisBox)
 }"#;
 
         parse_execute(ast).await.unwrap();
@@ -1679,7 +1646,6 @@ for var in [{start: [0,0], l: 6, w: 10, h: 3}, {start: [-10,-10], l: 3, w: 5, h:
 
 for var in [[3, 6, 10, [0,0]], [1.5, 3, 5, [-10,-10]]] {
   const thisBox = box(var[0], var[1], var[2], var[3])
-  show(thisBox)
 }"#;
 
         parse_execute(ast).await.unwrap();
@@ -1701,7 +1667,6 @@ for var in [[3, 6, 10, [0,0]], [1.5, 3, 5, [-10,-10]]] {
 
 const thisBox = box([[0,0], 6, 10, 3])
 
-show(thisBox)
 "#;
         parse_execute(ast).await.unwrap();
     }
@@ -1818,7 +1783,6 @@ const bracket = startSketchOn('XY')
   |> line([0, -1 * leg1 + thickness], %)
   |> close(%)
   |> extrude(width, %)
-show(bracket)
 "#;
         parse_execute(ast).await.unwrap();
     }
@@ -1843,7 +1807,6 @@ const bracket = startSketchOn('XY')
   |> line([0, -1 * leg1 + thickness], %)
   |> close(%)
   |> extrude(width, %)
-show(bracket)
 "#;
         parse_execute(ast).await.unwrap();
     }

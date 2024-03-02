@@ -3,6 +3,7 @@ import { secrets } from './secrets'
 import { getUtils } from './test-utils'
 import waitOn from 'wait-on'
 import { Themes } from '../../src/lib/theme'
+import { roundOff } from 'lib/utils'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -13,6 +14,12 @@ document.addEventListener('mousemove', (e) =>
   console.log(`await page.mouse.click(${e.clientX}, ${e.clientY})`)
 )
 */
+
+const commonPoints = {
+  startAt: '[9.06, -12.22]',
+  num1: 9.14,
+  num2: 18.2,
+}
 
 test.beforeEach(async ({ context, page }) => {
   // wait for Vite preview server to be up
@@ -52,14 +59,15 @@ test('Basic sketch', async ({ page }) => {
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
 
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled()
   await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
 
   // click on "Start Sketch" button
   await u.clearCommandLogs()
-  await u.doAndWaitForImageDiff(
-    () => page.getByRole('button', { name: 'Start Sketch' }).click(),
-    200
-  )
+  await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await page.waitForTimeout(100)
 
   // select a plane
   await page.mouse.click(700, 200)
@@ -72,35 +80,33 @@ test('Basic sketch', async ({ page }) => {
 
   const startXPx = 600
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  const startAt = '[23.74, -32.03]'
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt(${startAt}, %)`)
+  |> startProfileAt(${commonPoints.startAt}, %)`)
   await page.waitForTimeout(100)
 
   await u.closeDebugPanel()
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
   await page.waitForTimeout(100)
 
-  const num = 23.97
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt(${startAt}, %)
-  |> line([${num}, 0], %)`)
+  |> startProfileAt(${commonPoints.startAt}, %)
+  |> line([${commonPoints.num1}, 0], %)`)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt(${startAt}, %)
-  |> line([${num}, 0], %)
-  |> line([0, ${num}], %)`)
+  |> startProfileAt(${commonPoints.startAt}, %)
+  |> line([${commonPoints.num1}, 0], %)
+  |> line([0, ${commonPoints.num1}], %)`)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt(${startAt}, %)
-  |> line([${num}, 0], %)
-  |> line([0, ${num}], %)
-  |> line([-47.71, 0], %)`)
+  |> startProfileAt(${commonPoints.startAt}, %)
+  |> line([${commonPoints.num1}, 0], %)
+  |> line([0, ${commonPoints.num1}], %)
+  |> line([-${commonPoints.num2}, 0], %)`)
 
   // deselect line tool
   await page.getByRole('button', { name: 'Line' }).click()
@@ -122,9 +128,9 @@ test('Basic sketch', async ({ page }) => {
 
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt(${startAt}, %)
-  |> line({ to: [${num}, 0], tag: 'seg01' }, %)
-  |> line([0, ${num}], %)
+  |> startProfileAt(${commonPoints.startAt}, %)
+  |> line({ to: [${commonPoints.num1}, 0], tag: 'seg01' }, %)
+  |> line([0, ${commonPoints.num1}], %)
   |> angledLine([180, segLen('seg01', %)], %)`)
 })
 
@@ -276,10 +282,9 @@ test('Can create sketches on all planes and their back sides', async ({
   }) => {
     await u.openDebugPanel()
 
-    await u.updateCamPosition(viewCmd)
-
     await u.clearCommandLogs()
     await page.getByRole('button', { name: 'Start Sketch' }).click()
+    await u.updateCamPosition(viewCmd)
 
     await u.closeDebugPanel()
     await page.mouse.click(clickCoords.x, clickCoords.y)
@@ -305,11 +310,9 @@ test('Can create sketches on all planes and their back sides', async ({
   }
 
   const codeTemplate = (
-    plane = 'XY',
-    rounded = false,
-    otherThing = '1'
+    plane = 'XY'
   ) => `const part001 = startSketchOn('${plane}')
-  |> startProfileAt([28.9${otherThing}, -39${rounded ? '' : '.01'}], %)`
+  |> startProfileAt([1.14, -1.54], %)`
   await TestSinglePlane({
     viewCmd: camPos,
     expectedCode: codeTemplate('XY'),
@@ -318,8 +321,8 @@ test('Can create sketches on all planes and their back sides', async ({
   })
   await TestSinglePlane({
     viewCmd: camPos,
-    expectedCode: codeTemplate('YZ', true),
-    clickCoords: { x: 700, y: 300 }, // green plane
+    expectedCode: codeTemplate('YZ'),
+    clickCoords: { x: 700, y: 250 }, // green plane
   })
   await TestSinglePlane({
     viewCmd: camPos,
@@ -329,7 +332,7 @@ test('Can create sketches on all planes and their back sides', async ({
   const camCmdBackSide: [number, number, number] = [-100, -100, -100]
   await TestSinglePlane({
     viewCmd: camCmdBackSide,
-    expectedCode: codeTemplate('-XY', false, '3'),
+    expectedCode: codeTemplate('-XY'),
     clickCoords: { x: 601, y: 118 }, // back of red plane
   })
   await TestSinglePlane({
@@ -339,7 +342,7 @@ test('Can create sketches on all planes and their back sides', async ({
   })
   await TestSinglePlane({
     viewCmd: camCmdBackSide,
-    expectedCode: codeTemplate('-XZ', true),
+    expectedCode: codeTemplate('-XZ'),
     clickCoords: { x: 680, y: 427 }, // back of blue plane
   })
 })
@@ -380,12 +383,16 @@ test('Auto complete works', async ({ page }) => {
   await page.keyboard.press('ArrowDown')
   await page.keyboard.press('ArrowDown')
   await page.keyboard.press('Enter')
-  await page.keyboard.type('(5, %)')
+  // finish line with comment
+  await page.keyboard.type('(5, %) // lin')
+  await page.waitForTimeout(100)
+  // there shouldn't be any auto complete options for 'lin' in the comment
+  await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('XY')
   |> startProfileAt([0,0], %)
-  |> xLine(5, %)`)
+  |> xLine(5, %) // lin`)
 })
 
 // Onboarding tests
@@ -453,6 +460,9 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     page.mouse.click(767, 396).then(() => page.waitForTimeout(100))
 
   await u.clearCommandLogs()
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
 
   // select a plane
@@ -461,35 +471,32 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
 
   const startXPx = 600
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  const startAt = '[23.74, -32.03]'
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt(${startAt}, %)`)
+  |> startProfileAt(${commonPoints.startAt}, %)`)
 
   await u.closeDebugPanel()
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
 
-  const num = 23.97
-  const num2 = '47.71'
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt(${startAt}, %)
-  |> line([${num}, 0], %)`)
+  |> startProfileAt(${commonPoints.startAt}, %)
+  |> line([${commonPoints.num1}, 0], %)`)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt(${startAt}, %)
-  |> line([${num}, 0], %)
-  |> line([0, ${num}], %)`)
+  |> startProfileAt(${commonPoints.startAt}, %)
+  |> line([${commonPoints.num1}, 0], %)
+  |> line([0, ${commonPoints.num1}], %)`)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt(${startAt}, %)
-  |> line([${num}, 0], %)
-  |> line([0, ${num}], %)
-  |> line([-${num2}, 0], %)`)
+  |> startProfileAt(${commonPoints.startAt}, %)
+  |> line([${commonPoints.num1}, 0], %)
+  |> line([0, ${commonPoints.num1}], %)
+  |> line([-${commonPoints.num2}, 0], %)`)
 
   // deselect line tool
   await page.getByRole('button', { name: 'Line' }).click()
@@ -539,7 +546,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     await emptySpaceClick()
 
     // check the same selection again by putting cursor in code first then selecting axis
-    await page.getByText(`  |> line([-${num2}, 0], %)`).click()
+    await page.getByText(`  |> line([-${commonPoints.num2}, 0], %)`).click()
     await page.keyboard.down('Shift')
     await expect(absYButton).toBeDisabled()
     await xAxisClick()
@@ -550,7 +557,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     await emptySpaceClick()
 
     // select segment in editor than another segment in scene and check there are two cursors
-    await page.getByText(`  |> line([-${num2}, 0], %)`).click()
+    await page.getByText(`  |> line([-${commonPoints.num2}, 0], %)`).click()
     await page.waitForTimeout(300)
     await page.keyboard.down('Shift')
     await expect(page.locator('.cm-cursor')).toHaveCount(1)
@@ -575,7 +582,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
 
   // select a line
   // await topHorzSegmentClick()
-  await page.getByText(startAt).click() // TODO remove this and reinstate // await topHorzSegmentClick()
+  await page.getByText(commonPoints.startAt).click() // TODO remove this and reinstate // await topHorzSegmentClick()
   await page.waitForTimeout(100)
 
   // enter sketch again
@@ -693,6 +700,8 @@ test('Can extrude from the command bar', async ({ page, context }) => {
   ).toBeDisabled()
   await page.keyboard.press('Enter')
 
+  await expect(page.getByText('Confirm Extrude')).toBeVisible()
+
   // Check that the code was updated
   await page.keyboard.press('Enter')
   // Unfortunately this indentation seems to matter for the test
@@ -717,6 +726,9 @@ test('Can add multiple sketches', async ({ page }) => {
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
 
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled()
   await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
 
   // click on "Start Sketch" button
@@ -737,34 +749,32 @@ test('Can add multiple sketches', async ({ page }) => {
 
   const startXPx = 600
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  const startAt = '[23.74, -32.03]'
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt(${startAt}, %)`)
+  |> startProfileAt(${commonPoints.startAt}, %)`)
   await page.waitForTimeout(100)
 
   await u.closeDebugPanel()
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
   await page.waitForTimeout(100)
 
-  const num = 23.97
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt(${startAt}, %)
-  |> line([${num}, 0], %)`)
+  |> startProfileAt(${commonPoints.startAt}, %)
+  |> line([${commonPoints.num1}, 0], %)`)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt(${startAt}, %)
-  |> line([${num}, 0], %)
-  |> line([0, ${num}], %)`)
+  |> startProfileAt(${commonPoints.startAt}, %)
+  |> line([${commonPoints.num1}, 0], %)
+  |> line([0, ${commonPoints.num1}], %)`)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   const finalCodeFirstSketch = `const part001 = startSketchOn('-XZ')
-  |> startProfileAt(${startAt}, %)
-  |> line([${num}, 0], %)
-  |> line([0, ${num}], %)
-  |> line([-47.71, 0], %)`
+  |> startProfileAt(${commonPoints.startAt}, %)
+  |> line([${commonPoints.num1}, 0], %)
+  |> line([0, ${commonPoints.num1}], %)
+  |> line([-${commonPoints.num2}, 0], %)`
   await expect(page.locator('.cm-content')).toHaveText(finalCodeFirstSketch)
 
   // exit the sketch
@@ -786,7 +796,7 @@ test('Can add multiple sketches', async ({ page }) => {
   await u.clearAndCloseDebugPanel()
 
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  const startAt2 = '[23.61, -31.85]'
+  const startAt2 = '[0.93,-1.25]'
   await expect(
     (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
   ).toBe(
@@ -800,7 +810,7 @@ const part002 = startSketchOn('XY')
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
   await page.waitForTimeout(100)
 
-  const num2 = 23.83
+  const num2 = 0.94
   await expect(
     (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
   ).toBe(
@@ -818,7 +828,7 @@ const part002 = startSketchOn('XY')
 const part002 = startSketchOn('XY')
   |> startProfileAt(${startAt2}, %)
   |> line([${num2}, 0], %)
-  |> line([0, ${num2}], %)`.replace(/\s/g, '')
+  |> line([0, ${roundOff(num2 - 0.01)}], %)`.replace(/\s/g, '')
   )
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(
@@ -828,8 +838,8 @@ const part002 = startSketchOn('XY')
 const part002 = startSketchOn('XY')
   |> startProfileAt(${startAt2}, %)
   |> line([${num2}, 0], %)
-  |> line([0, ${num2}], %)
-  |> line([-47.44, 0], %)`.replace(/\s/g, '')
+  |> line([0, ${roundOff(num2 - 0.01)}], %)
+  |> line([-1.87, 0], %)`.replace(/\s/g, '')
   )
 })
 
@@ -923,7 +933,7 @@ fn yohey = (pos) => {
   |> line([-15.79, 17.08], %)
   return ''
 }
-    
+
     yohey([15.79, -34.6])
 `
       )
@@ -938,6 +948,11 @@ fn yohey = (pos) => {
   await u.openDebugPanel()
   await u.expectCmdLog('[data-message-type="execution-done"]')
   await u.closeDebugPanel()
+
+  // wait for start sketch as a proxy for the stream being ready
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled()
 
   await page.getByText(selectionsSnippets.extrudeAndEditBlocked).click()
   await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
@@ -985,6 +1000,9 @@ test('Deselecting line tool should mean nothing happens on click', async ({
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
 
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled()
   await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
 
   // click on "Start Sketch" button

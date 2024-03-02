@@ -4,6 +4,11 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   playwright-ubuntu:
     timeout-minutes: 60
@@ -14,7 +19,7 @@ jobs:
       with:
         node-version-file: '.nvmrc'
         cache: 'yarn'
-    - uses: KittyCAD/action-install-cli@v0.2.16
+    - uses: KittyCAD/action-install-cli@v0.2.21
     - name: Install dependencies
       run: yarn
     - name: Install Playwright Browsers

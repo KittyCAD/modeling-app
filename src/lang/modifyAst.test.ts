@@ -122,7 +122,6 @@ describe('Testing addSketchTo', () => {
     expect(str).toBe(`const part001 = startSketchOn('YZ')
   |> startProfileAt('default', %)
   |> line('default', %)
-show(part001)
 `)
   })
 })
@@ -147,8 +146,7 @@ describe('Testing giveSketchFnCallTag', () => {
 |> startProfileAt([0, 0], %)
 |> line([-2.57, -0.13], %)
 |> line([0, 0.83], %)
-|> line([0.82, 0.34], %)
-show(part001)`
+|> line([0.82, 0.34], %)`
   it('Should add tag to a sketch function call', () => {
     const { newCode, tag, isTagExisting } = giveSketchFnCallTagTestHelper(
       code,
@@ -204,8 +202,7 @@ const part001 = startSketchOn('XY')
 |> angledLine([def(yo), 3.09], %)
 |> angledLine([ghi(%), 3.09], %)
 |> angledLine([jkl(yo) + 2, 3.09], %)
-const yo2 = hmm([identifierGuy + 5])
-show(part001)`
+const yo2 = hmm([identifierGuy + 5])`
   it('should move a binary expression into a new variable', async () => {
     const ast = parse(code)
     const programMemory = await enginelessExecutor(ast)

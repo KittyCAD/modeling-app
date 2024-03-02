@@ -75,6 +75,13 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
         }));
     };
 
+    let mut sketch_group = *sketch_group.clone();
+
+    // If we were sketching on a face, we need the original face id.
+    if let SketchSurface::Face(face) = sketch_group.on {
+        sketch_group.id = face.sketch_group_id;
+    }
+
     let solid3d_info = args
         .send_modeling_cmd(
             id,

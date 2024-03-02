@@ -37,8 +37,6 @@ import { ContextFrom } from 'xstate'
 import CommandBarProvider, {
   CommandBar,
 } from 'components/CommandBar/CommandBar'
-import { TEST, VITE_KC_SENTRY_DSN } from './env'
-import * as Sentry from '@sentry/react'
 import ModelingMachineProvider from 'components/ModelingMachineProvider'
 import { KclContextProvider, kclManager } from 'lang/KclSingleton'
 import FileMachineProvider from 'components/FileMachineProvider'
@@ -47,38 +45,6 @@ import { paths } from 'lib/paths'
 import type { IndexLoaderData, HomeLoaderData, FileEntry } from 'lib/types'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import { invoke } from '@tauri-apps/api/core'
-
-if (VITE_KC_SENTRY_DSN && !TEST) {
-  Sentry.init({
-    dsn: VITE_KC_SENTRY_DSN,
-    // TODO(paultag): pass in the right env here.
-    // environment: "production",
-    integrations: [
-      new Sentry.BrowserTracing({
-        routingInstrumentation: Sentry.reactRouterV6Instrumentation(
-          useEffect,
-          useLocation,
-          useNavigationType,
-          createRoutesFromChildren,
-          matchRoutes
-        ),
-      }),
-      new Sentry.Replay(),
-    ],
-
-    // Set tracesSampleRate to 1.0 to capture 100%
-    // of transactions for performance monitoring.
-    tracesSampleRate: 1.0,
-
-    // TODO: Add in kittycad.io endpoints
-    tracePropagationTargets: ['localhost'],
-
-    // Capture Replay for 10% of all sessions,
-    // plus for 100% of sessions with an error
-    replaysSessionSampleRate: 0.1,
-    replaysOnErrorSampleRate: 1.0,
-  })
-}
 
 export const BROWSER_FILE_NAME = 'new'
 
