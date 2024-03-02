@@ -48,7 +48,7 @@ const newVar = myVar + 1`
   |> lineTo({ to: [5,-1], tag: "rightPath" }, %)
   // |> close(%)
 `
-    const { root, return: _return } = await exe(code)
+    const { root } = await exe(code)
     // geo is three js buffer geometry and is very bloated to have in tests
     const minusGeo = root.mySketch.value
     expect(minusGeo).toEqual([
@@ -81,15 +81,6 @@ const newVar = myVar + 1`
           id: expect.any(String),
         },
         name: 'rightPath',
-      },
-    ])
-    // expect(root.mySketch.sketch[0]).toEqual(root.mySketch.sketch[4].firstPath)
-    expect(_return).toEqual([
-      {
-        type: 'Identifier',
-        start: 203,
-        end: 211,
-        name: 'mySketch',
       },
     ])
   })

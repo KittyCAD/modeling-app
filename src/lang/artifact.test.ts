@@ -14,55 +14,50 @@ const mySketch001 = startSketchOn('XY')
   // |> rx(45, %)`
     const programMemory = await enginelessExecutor(parse(code))
     // @ts-ignore
-    const shown = programMemory?.return?.map(
-      // @ts-ignore
-      (a) => programMemory?.root?.[a.name]
-    )
-    expect(shown).toEqual([
-      {
-        type: 'SketchGroup',
-        on: expect.any(Object),
-        start: {
-          to: [0, 0],
-          from: [0, 0],
+    const sketch001 = programMemory?.root?.mySketch001
+    expect(sketch001).toEqual({
+      type: 'SketchGroup',
+      on: expect.any(Object),
+      start: {
+        to: [0, 0],
+        from: [0, 0],
+        name: '',
+        __geoMeta: {
+          id: expect.any(String),
+          sourceRange: [46, 71],
+        },
+      },
+      value: [
+        {
+          type: 'ToPoint',
           name: '',
+          to: [-1.59, -1.54],
+          from: [0, 0],
           __geoMeta: {
+            sourceRange: [77, 102],
             id: expect.any(String),
-            sourceRange: [46, 71],
           },
         },
-        value: [
-          {
-            type: 'ToPoint',
-            name: '',
-            to: [-1.59, -1.54],
-            from: [0, 0],
-            __geoMeta: {
-              sourceRange: [77, 102],
-              id: expect.any(String),
-            },
+        {
+          type: 'ToPoint',
+          to: [0.46, -5.82],
+          from: [-1.59, -1.54],
+          name: '',
+          __geoMeta: {
+            sourceRange: [108, 132],
+            id: expect.any(String),
           },
-          {
-            type: 'ToPoint',
-            to: [0.46, -5.82],
-            from: [-1.59, -1.54],
-            name: '',
-            __geoMeta: {
-              sourceRange: [108, 132],
-              id: expect.any(String),
-            },
-          },
-        ],
-        position: [0, 0, 0],
-        rotation: [0, 0, 0, 1],
-        xAxis: { x: 1, y: 0, z: 0 },
-        yAxis: { x: 0, y: 1, z: 0 },
-        zAxis: { x: 0, y: 0, z: 1 },
-        id: expect.any(String),
-        entityId: expect.any(String),
-        __meta: [{ sourceRange: [46, 71] }],
-      },
-    ])
+        },
+      ],
+      position: [0, 0, 0],
+      rotation: [0, 0, 0, 1],
+      xAxis: { x: 1, y: 0, z: 0 },
+      yAxis: { x: 0, y: 1, z: 0 },
+      zAxis: { x: 0, y: 0, z: 1 },
+      id: expect.any(String),
+      entityId: expect.any(String),
+      __meta: [{ sourceRange: [46, 71] }],
+    })
   })
   test('extrude artifacts', async () => {
     // Enable rotations #152
@@ -75,26 +70,21 @@ const mySketch001 = startSketchOn('XY')
   |> extrude(2, %)`
     const programMemory = await enginelessExecutor(parse(code))
     // @ts-ignore
-    const shown = programMemory?.return?.map(
-      // @ts-ignore
-      (a) => programMemory?.root?.[a.name]
-    )
-    expect(shown).toEqual([
-      {
-        type: 'ExtrudeGroup',
-        id: expect.any(String),
-        value: [],
-        height: 2,
-        position: [0, 0, 0],
-        rotation: [0, 0, 0, 1],
-        endCapId: null,
-        startCapId: null,
-        xAxis: { x: 1, y: 0, z: 0 },
-        yAxis: { x: 0, y: 1, z: 0 },
-        zAxis: { x: 0, y: 0, z: 1 },
-        __meta: [{ sourceRange: [46, 71] }],
-      },
-    ])
+    const sketch001 = programMemory?.root?.mySketch001
+    expect(sketch001).toEqual({
+      type: 'ExtrudeGroup',
+      id: expect.any(String),
+      value: [],
+      height: 2,
+      position: [0, 0, 0],
+      rotation: [0, 0, 0, 1],
+      endCapId: null,
+      startCapId: null,
+      xAxis: { x: 1, y: 0, z: 0 },
+      yAxis: { x: 0, y: 1, z: 0 },
+      zAxis: { x: 0, y: 0, z: 1 },
+      __meta: [{ sourceRange: [46, 71] }],
+    })
   })
   test('sketch extrude and sketch on one of the faces', async () => {
     // Enable rotations #152
@@ -121,10 +111,7 @@ const sk2 = startSketchOn('XY')
 `
     const programMemory = await enginelessExecutor(parse(code))
     // @ts-ignore
-    const geos = programMemory?.return?.map(
-      // @ts-ignore
-      ({ name }) => programMemory?.root?.[name]
-    )
+    const geos = [programMemory?.root?.theExtrude, programMemory?.root?.sk2]
     expect(geos).toEqual([
       {
         type: 'ExtrudeGroup',
