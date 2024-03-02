@@ -419,7 +419,11 @@ class SceneEntities {
         },
         onMouseLeave: ({ object }) => {
           sceneInfra.highlightCallback([0, 0])
-          const parent = getParentGroup(object)
+          const parent = getParentGroup(object, [
+            STRAIGHT_SEGMENT,
+            TANGENTIAL_ARC_TO_SEGMENT,
+            PROFILE_START,
+          ])
           const isSelected = parent?.userData?.isSelected
           colorSegment(object, isSelected ? 0x0000ff : 0xffffff)
           if ([X_AXIS, Y_AXIS].includes(object?.userData?.type)) {
