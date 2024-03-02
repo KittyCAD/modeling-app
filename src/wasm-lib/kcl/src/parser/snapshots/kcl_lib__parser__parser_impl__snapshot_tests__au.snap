@@ -4,7 +4,7 @@ expression: actual
 ---
 {
   "start": 0,
-  "end": 74,
+  "end": 59,
   "body": [
     {
       "type": "VariableDeclaration",
@@ -121,34 +121,6 @@ expression: actual
         }
       ],
       "kind": "const"
-    },
-    {
-      "type": "ExpressionStatement",
-      "type": "ExpressionStatement",
-      "start": 59,
-      "end": 73,
-      "expression": {
-        "type": "CallExpression",
-        "type": "CallExpression",
-        "start": 59,
-        "end": 73,
-        "callee": {
-          "type": "Identifier",
-          "start": 59,
-          "end": 63,
-          "name": "show"
-        },
-        "arguments": [
-          {
-            "type": "Identifier",
-            "type": "Identifier",
-            "start": 64,
-            "end": 72,
-            "name": "cylinder"
-          }
-        ],
-        "optional": false
-      }
     }
   ],
   "nonCodeMeta": {
