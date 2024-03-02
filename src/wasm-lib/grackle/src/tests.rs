@@ -1048,15 +1048,35 @@ fn store_object_with_array_property() {
 #[tokio::test]
 async fn stdlib_cube_partial() {
     let program = r#"
-    let cube = startSketchAt([22.0, 33.0])
+    let cube = startSketchAt([0.0, 0.0])
+        |> lineTo([4.0, 0.0], %)
     "#;
     let (plan, _scope) = must_plan(program);
-    std::fs::write("stdlib_cube_partial.json", serde_json::to_string_pretty(&plan).unwrap()).unwrap();
+    std::fs::write(
+        "test_json_output/stdlib_cube_partial.json",
+        serde_json::to_string_pretty(&plan).unwrap(),
+    )
+    .unwrap();
     let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
         .ast()
         .unwrap();
-    let mem = crate::execute(ast, Some(test_client().await)).await.unwrap();
-    dbg!(mem);
+    let client = test_client().await;
+    let _mem = crate::execute(ast, Some(client)).await.unwrap();
+    // use kittycad_modeling_cmds::{each_cmd, ok_response::OkModelingCmdResponse, ImageFormat, ModelingCmd};
+    // let out = client
+    //     .run_command(
+    //         uuid::Uuid::new_v4().into(),
+    //         each_cmd::TakeSnapshot {
+    //             format: ImageFormat::Png,
+    //         },
+    //     )
+    //     .await
+    //     .unwrap();
+    // let out = match out {
+    //     OkModelingCmdResponse::TakeSnapshot(b) => b,
+    //     other => panic!("wrong output: {other:?}"),
+    // };
+    // let out: Vec<u8> = out.contents.into();
 }
 
 async fn test_client() -> Session {

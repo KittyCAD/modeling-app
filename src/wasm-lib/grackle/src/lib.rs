@@ -252,6 +252,7 @@ impl Planner {
                 } = match callee {
                     KclFunction::Id(f) => f.call(&mut self.next_addr, args)?,
                     KclFunction::StartSketchAt(f) => f.call(&mut self.next_addr, args)?,
+                    KclFunction::LineTo(f) => f.call(&mut self.next_addr, args)?,
                     KclFunction::Add(f) => f.call(&mut self.next_addr, args)?,
                     KclFunction::UserDefined(f) => {
                         let UserDefinedFunction {
@@ -619,6 +620,7 @@ impl Eq for UserDefinedFunction {}
 enum KclFunction {
     Id(native_functions::Id),
     StartSketchAt(native_functions::sketch::StartSketchAt),
+    LineTo(native_functions::sketch::LineTo),
     Add(native_functions::Add),
     UserDefined(UserDefinedFunction),
 }
