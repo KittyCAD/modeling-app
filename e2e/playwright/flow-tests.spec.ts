@@ -1053,3 +1053,77 @@ test('Deselecting line tool should mean nothing happens on click', async ({
   await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
   previousCodeContent = await page.locator('.cm-content').innerText()
 })
+
+test('Can edit segments by dragging their handles', async ({
+  page,
+  context,
+}) => {
+  const u = getUtils(page)
+  await context.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const part001 = startSketchOn('-XZ')
+  |> startProfileAt([4.61, -14.01], %)
+  |> line([12.73, -0.09], %)
+  |> tangentialArcTo([24.95, -5.38], %)`
+    )
+  })
+
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled()
+
+  const startPX = [652, 418]
+  const lineEndPX = [794, 416]
+  const arcEndPX = [893, 318]
+
+  const dragPX = 30
+
+  await page.getByText('startProfileAt([4.61, -14.01], %)').click()
+  await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
+  await page.getByRole('button', { name: 'Edit Sketch' }).click()
+  await page.waitForTimeout(100)
+  let prevContent = await page.locator('.cm-content').innerText()
+
+  const step5 = { steps: 5 }
+
+  // drag startProfieAt handle
+  await page.mouse.move(startPX[0], startPX[1])
+  await page.mouse.down()
+  await page.mouse.move(startPX[0] + dragPX, startPX[1] - dragPX, step5)
+  await page.mouse.up()
+  await page.waitForTimeout(100)
+  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+  prevContent = await page.locator('.cm-content').innerText()
+
+  // drag line handle
+  await page.mouse.move(lineEndPX[0] + dragPX, lineEndPX[1] - dragPX)
+  await page.mouse.down()
+  await page.mouse.move(
+    lineEndPX[0] + dragPX * 2,
+    lineEndPX[1] - dragPX * 2,
+    step5
+  )
+  await page.mouse.up()
+  await page.waitForTimeout(100)
+  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+  prevContent = await page.locator('.cm-content').innerText()
+
+  // drag tangentialArcTo handle
+  await page.mouse.move(arcEndPX[0], arcEndPX[1])
+  await page.mouse.down()
+  await page.mouse.move(arcEndPX[0] + dragPX, arcEndPX[1] - dragPX, step5)
+  await page.mouse.up()
+  await page.waitForTimeout(100)
+  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+
+  // expect the code to have changed
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt([7.01, -11.79], %)
+  |> line([14.69, 2.73], %)
+  |> tangentialArcTo([27.6, -3.25], %)`)
+})
