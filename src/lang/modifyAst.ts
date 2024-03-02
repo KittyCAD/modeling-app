@@ -6,7 +6,6 @@ import {
   PipeExpression,
   VariableDeclaration,
   VariableDeclarator,
-  ExpressionStatement,
   Value,
   Literal,
   PipeSubstitution,

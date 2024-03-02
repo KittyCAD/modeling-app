@@ -3,15 +3,8 @@ import {
   createBrowserRouter,
   Outlet,
   redirect,
-  useLocation,
   RouterProvider,
 } from 'react-router-dom'
-import {
-  matchRoutes,
-  createRoutesFromChildren,
-  useNavigationType,
-} from 'react-router'
-import { useEffect } from 'react'
 import { ErrorPage } from './components/ErrorPage'
 import { Settings } from './routes/Settings'
 import Onboarding, { onboardingRoutes } from './routes/Onboarding'

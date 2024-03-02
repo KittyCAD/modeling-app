@@ -19,7 +19,7 @@ import {
   Object3D,
   Object3DEventMap,
 } from 'three'
-import { Coords2d, compareVec2Epsilon2 } from 'lang/std/sketch'
+import { compareVec2Epsilon2 } from 'lang/std/sketch'
 import { useModelingContext } from 'hooks/useModelingContext'
 import * as TWEEN from '@tweenjs/tween.js'
 import { SourceRange } from 'lang/wasm'
