@@ -48,7 +48,7 @@ export const AXIS_GROUP = 'axisGroup'
 export const SKETCH_GROUP_SEGMENTS = 'sketch-group-segments'
 export const ARROWHEAD = 'arrowhead'
 
-interface OnMouseEnterLeaveArgs {
+export interface OnMouseEnterLeaveArgs {
   selected: Object3D<Object3DEventMap>
   mouseEvent: MouseEvent
 }
