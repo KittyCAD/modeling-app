@@ -1127,3 +1127,86 @@ test('Can edit segments by dragging their handles', async ({
   |> line([14.69, 2.73], %)
   |> tangentialArcTo([27.6, -3.25], %)`)
 })
+
+test('Snap to close works (at any scale)', async ({ page }) => {
+  const u = getUtils(page)
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await u.openDebugPanel()
+
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled()
+  await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
+
+  const doSnapAtDifferentScales = async (
+    camPos: [number, number, number],
+    expectedCode: string
+  ) => {
+    await u.clearCommandLogs()
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
+    await page.waitForTimeout(100)
+
+    await u.openAndClearDebugPanel()
+    await u.updateCamPosition(camPos)
+    await u.closeDebugPanel()
+
+    // select a plane
+    await page.mouse.click(700, 200)
+    await expect(page.locator('.cm-content')).toHaveText(
+      `const part001 = startSketchOn('XZ')`
+    )
+
+    let prevContent = await page.locator('.cm-content').innerText()
+
+    const pointA = [700, 200]
+    const pointB = [900, 200]
+    const pointC = [900, 400]
+
+    // draw three lines
+    await page.mouse.click(pointA[0], pointA[1])
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+    prevContent = await page.locator('.cm-content').innerText()
+
+    await page.mouse.click(pointB[0], pointB[1])
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+    prevContent = await page.locator('.cm-content').innerText()
+
+    await page.mouse.click(pointC[0], pointC[1])
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+    prevContent = await page.locator('.cm-content').innerText()
+
+    await page.mouse.move(pointA[0] - 12, pointA[1] + 12)
+    const pointNotQuiteA = [pointA[0] - 7, pointA[1] + 7]
+    await page.mouse.move(pointNotQuiteA[0], pointNotQuiteA[1], { steps: 10 })
+
+    await page.mouse.click(pointNotQuiteA[0], pointNotQuiteA[1])
+    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+    prevContent = await page.locator('.cm-content').innerText()
+
+    await expect(page.locator('.cm-content')).toHaveText(expectedCode)
+
+    // exit sketch
+    await u.openAndClearDebugPanel()
+    await page.getByRole('button', { name: 'Exit Sketch' }).click()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.removeCurrentCode()
+  }
+
+  const codeTemplate = (
+    scale = 1,
+    fudge = 0
+  ) => `const part001 = startSketchOn('XZ')
+|> startProfileAt([${roundOff(scale * 87.68)}, ${roundOff(scale * 43.84)}], %)
+|> line([${roundOff(scale * 175.36)}, 0], %)
+|> line([0, -${roundOff(scale * 175.37) + fudge}], %)
+|> close(%)`
+
+  await doSnapAtDifferentScales([0, 100, 100], codeTemplate(0.01, 0.01))
+
+  await doSnapAtDifferentScales([0, 10000, 10000], codeTemplate())
+})

@@ -3,10 +3,13 @@ import {
   DoubleSide,
   ExtrudeGeometry,
   Group,
+  Intersection,
   LineCurve3,
   Matrix4,
   Mesh,
   MeshBasicMaterial,
+  Object3D,
+  Object3DEventMap,
   OrthographicCamera,
   PerspectiveCamera,
   PlaneGeometry,
@@ -24,6 +27,7 @@ import {
   defaultPlaneColor,
   getSceneScale,
   INTERSECTION_PLANE_LAYER,
+  OnMouseEnterLeaveArgs,
   RAYCASTABLE_PLANE,
   sceneInfra,
   SKETCH_GROUP_SEGMENTS,
@@ -64,7 +68,6 @@ import {
   addCloseToPipe,
   addNewSketchLn,
   changeSketchArguments,
-  compareVec2Epsilon2,
   updateStartProfileAtArgs,
 } from 'lang/std/sketch'
 import { isReducedMotion, throttle } from 'lib/utils'
@@ -300,8 +303,8 @@ class SceneEntities {
         : perspScale(sceneInfra.camControls.camera, dummy)) /
       sceneInfra._baseUnitMultiplier
 
-    let segPathToNode = getNodePathFromSourceRange(
-      draftSegment ? truncatedAst : kclManager.ast,
+    const segPathToNode = getNodePathFromSourceRange(
+      kclManager.ast,
       sketchGroup.start.__geoMeta.sourceRange
     )
     const _profileStart = profileStart({
@@ -319,9 +322,23 @@ class SceneEntities {
 
     sketchGroup.value.forEach((segment, index) => {
       let segPathToNode = getNodePathFromSourceRange(
-        draftSegment ? truncatedAst : kclManager.ast,
+        kclManager.ast,
         segment.__geoMeta.sourceRange
       )
+      if (draftSegment && (sketchGroup.value[index - 1] || sketchGroup.start)) {
+        const previousSegment =
+          sketchGroup.value[index - 1] || sketchGroup.start
+        const previousSegmentPathToNode = getNodePathFromSourceRange(
+          kclManager.ast,
+          previousSegment.__geoMeta.sourceRange
+        )
+        const bodyIndex = previousSegmentPathToNode[1][0]
+        segPathToNode = getNodePathFromSourceRange(
+          truncatedAst,
+          segment.__geoMeta.sourceRange
+        )
+        segPathToNode[1][0] = bodyIndex
+      }
       const isDraftSegment =
         draftSegment && index === sketchGroup.value.length - 1
       let seg
@@ -364,11 +381,12 @@ class SceneEntities {
     this.scene.add(group)
     if (!draftSegment) {
       sceneInfra.setCallbacks({
-        onDrag: ({ selected, intersectionPoint, mouseEvent }) => {
+        onDrag: ({ selected, intersectionPoint, mouseEvent, intersects }) => {
           if (mouseEvent.which !== 1) return
           this.onDragSegment({
             object: selected,
             intersection2d: intersectionPoint.twoD,
+            intersects,
             sketchPathToNode,
           })
         },
@@ -389,81 +407,32 @@ class SceneEntities {
           if (!event) return
           sceneInfra.modelingSend(event)
         },
-        onMouseEnter: ({ selected }) => {
-          // TODO change the color of the segment to yellow?
-          // Give a few pixels grace around each of the segments
-          // for hover.
-          if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
-            const obj = selected as Mesh
-            const mat = obj.material as MeshBasicMaterial
-            mat.color.set(obj.userData.baseColor)
-            mat.color.offsetHSL(0, 0, 0.5)
-          }
-          const parent = getParentGroup(selected, [
-            STRAIGHT_SEGMENT,
-            TANGENTIAL_ARC_TO_SEGMENT,
-            PROFILE_START,
-          ])
-          if (parent?.userData?.pathToNode) {
-            const updatedAst = parse(recast(kclManager.ast))
-            const node = getNodeFromPath<CallExpression>(
-              updatedAst,
-              parent.userData.pathToNode,
-              'CallExpression'
-            ).node
-            sceneInfra.highlightCallback([node.start, node.end])
-            const yellow = 0xffff00
-            colorSegment(selected, yellow)
-            return
-          }
-          sceneInfra.highlightCallback([0, 0])
-        },
-        onMouseLeave: ({ selected }) => {
-          sceneInfra.highlightCallback([0, 0])
-          const parent = getParentGroup(selected, [
-            STRAIGHT_SEGMENT,
-            TANGENTIAL_ARC_TO_SEGMENT,
-            PROFILE_START,
-          ])
-          const isSelected = parent?.userData?.isSelected
-          colorSegment(selected, isSelected ? 0x0000ff : 0xffffff)
-          if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
-            const obj = selected as Mesh
-            const mat = obj.material as MeshBasicMaterial
-            mat.color.set(obj.userData.baseColor)
-            if (obj.userData.isSelected) mat.color.offsetHSL(0, 0, 0.2)
-          }
-        },
+        ...mouseEnterLeaveCallbacks(),
       })
     } else {
       sceneInfra.setCallbacks({
-        onDrag: () => {},
         onClick: async (args) => {
           if (!args) return
           if (args.mouseEvent.which !== 1) return
           const { intersectionPoint } = args
-          if (!intersectionPoint?.twoD) return
+          let intersection2d = intersectionPoint?.twoD
+          const profileStart = args.intersects
+            .map(({ object }) => getParentGroup(object, [PROFILE_START]))
+            .find((a) => a?.name === PROFILE_START)
 
-          const firstSeg = sketchGroup.value[0]
-          const isClosingSketch = compareVec2Epsilon2(
-            firstSeg.from,
-            [intersectionPoint.twoD.x, intersectionPoint.twoD.y],
-            0.5
-          )
           let modifiedAst
-          if (isClosingSketch) {
-            // TODO close needs a better UX
+          if (profileStart) {
             modifiedAst = addCloseToPipe({
               node: kclManager.ast,
               programMemory: kclManager.programMemory,
               pathToNode: sketchPathToNode,
             })
-          } else {
+          } else if (intersection2d) {
             const lastSegment = sketchGroup.value.slice(-1)[0]
             modifiedAst = addNewSketchLn({
               node: kclManager.ast,
               programMemory: kclManager.programMemory,
-              to: [intersectionPoint.twoD.x, intersectionPoint.twoD.y],
+              to: [intersection2d.x, intersection2d.y],
               from: [lastSegment.to[0], lastSegment.to[1]],
               fnName:
                 lastSegment.type === 'TangentialArcTo'
@@ -471,6 +440,9 @@ class SceneEntities {
                   : 'line',
               pathToNode: sketchPathToNode,
             }).modifiedAst
+          } else {
+            // return early as we didn't modify the ast
+            return
           }
 
           kclManager.executeAstMock(modifiedAst, { updates: 'code' })
@@ -481,6 +453,7 @@ class SceneEntities {
           this.onDragSegment({
             intersection2d: args.intersectionPoint.twoD,
             object: Object.values(this.activeSegments).slice(-1)[0],
+            intersects: args.intersects,
             sketchPathToNode,
             draftInfo: {
               draftSegment,
@@ -490,6 +463,7 @@ class SceneEntities {
             },
           })
         },
+        ...mouseEnterLeaveCallbacks(),
       })
     }
     sceneInfra.camControls.enableRotate = false
@@ -526,13 +500,15 @@ class SceneEntities {
     )
   onDragSegment({
     object,
-    intersection2d,
+    intersection2d: _intersection2d,
     sketchPathToNode,
     draftInfo,
+    intersects,
   }: {
     object: any
     intersection2d: Vector2
     sketchPathToNode: PathToNode
+    intersects: Intersection<Object3D<Object3DEventMap>>[]
     draftInfo?: {
       draftSegment: DraftSegment
       truncatedAst: Program
@@ -540,6 +516,15 @@ class SceneEntities {
       variableDeclarationName: string
     }
   }) {
+    const profileStart =
+      draftInfo &&
+      intersects
+        .map(({ object }) => getParentGroup(object, [PROFILE_START]))
+        .find((a) => a?.name === PROFILE_START)
+    const intersection2d = profileStart
+      ? new Vector2(profileStart.position.x, profileStart.position.y)
+      : _intersection2d
+
     const group = getParentGroup(object, [
       STRAIGHT_SEGMENT,
       TANGENTIAL_ARC_TO_SEGMENT,
@@ -1094,4 +1079,51 @@ function massageFormats(a: any): Vector3 {
   return Array.isArray(a)
     ? new Vector3(a[0], a[1], a[2])
     : new Vector3(a.x, a.y, a.z)
+}
+
+function mouseEnterLeaveCallbacks() {
+  return {
+    onMouseEnter: ({ selected }: OnMouseEnterLeaveArgs) => {
+      if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
+        const obj = selected as Mesh
+        const mat = obj.material as MeshBasicMaterial
+        mat.color.set(obj.userData.baseColor)
+        mat.color.offsetHSL(0, 0, 0.5)
+      }
+      const parent = getParentGroup(selected, [
+        STRAIGHT_SEGMENT,
+        TANGENTIAL_ARC_TO_SEGMENT,
+        PROFILE_START,
+      ])
+      if (parent?.userData?.pathToNode) {
+        const updatedAst = parse(recast(kclManager.ast))
+        const node = getNodeFromPath<CallExpression>(
+          updatedAst,
+          parent.userData.pathToNode,
+          'CallExpression'
+        ).node
+        sceneInfra.highlightCallback([node.start, node.end])
+        const yellow = 0xffff00
+        colorSegment(selected, yellow)
+        return
+      }
+      sceneInfra.highlightCallback([0, 0])
+    },
+    onMouseLeave: ({ selected }: OnMouseEnterLeaveArgs) => {
+      sceneInfra.highlightCallback([0, 0])
+      const parent = getParentGroup(selected, [
+        STRAIGHT_SEGMENT,
+        TANGENTIAL_ARC_TO_SEGMENT,
+        PROFILE_START,
+      ])
+      const isSelected = parent?.userData?.isSelected
+      colorSegment(selected, isSelected ? 0x0000ff : 0xffffff)
+      if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
+        const obj = selected as Mesh
+        const mat = obj.material as MeshBasicMaterial
+        mat.color.set(obj.userData.baseColor)
+        if (obj.userData.isSelected) mat.color.offsetHSL(0, 0, 0.2)
+      }
+    },
+  }
 }

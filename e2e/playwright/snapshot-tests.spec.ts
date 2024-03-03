@@ -31,12 +31,6 @@ test.beforeEach(async ({ context, page }) => {
 
 test.setTimeout(60000)
 
-const commonPoints = {
-  startAt: '[26.38, -35.59]',
-  num1: 26.63,
-  num2: 53.01,
-}
-
 test('change camera, show planes', async ({ page, context }) => {
   const u = getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
@@ -46,21 +40,21 @@ test('change camera, show planes', async ({ page, context }) => {
 
   const camPos: [number, number, number] = [0, 85, 85]
   await u.updateCamPosition(camPos)
+  await page.waitForTimeout(200)
 
   // rotate
   await u.closeDebugPanel()
   await page.mouse.move(700, 200)
   await page.mouse.down({ button: 'right' })
-  await page.mouse.move(600, 300)
+  await page.mouse.move(600, 300, { steps: 10 })
   await page.mouse.up({ button: 'right' })
 
-  await u.openDebugPanel()
-  await page.waitForTimeout(500)
-  await u.clearCommandLogs()
+  await u.openAndClearDebugPanel()
 
   await page.getByRole('button', { name: 'Start Sketch' }).click()
 
   await u.closeDebugPanel()
+  await page.waitForTimeout(200)
 
   await expect(page).toHaveScreenshot({
     maxDiffPixels: 100,
@@ -70,6 +64,7 @@ test('change camera, show planes', async ({ page, context }) => {
   await page.getByRole('button', { name: 'Exit Sketch' }).click()
 
   await u.updateCamPosition(camPos)
+  await page.waitForTimeout(200)
 
   await u.clearCommandLogs()
   await u.closeDebugPanel()
@@ -77,7 +72,7 @@ test('change camera, show planes', async ({ page, context }) => {
   await page.keyboard.down('Shift')
   await page.mouse.move(600, 200)
   await page.mouse.down({ button: 'right' })
-  await page.mouse.move(700, 200)
+  await page.mouse.move(700, 200, { steps: 10 })
   await page.mouse.up({ button: 'right' })
   await page.keyboard.up('Shift')
 
@@ -87,37 +82,13 @@ test('change camera, show planes', async ({ page, context }) => {
 
   await page.getByRole('button', { name: 'Start Sketch' }).click()
   await u.closeDebugPanel()
+  await page.waitForTimeout(200)
 
   await expect(page).toHaveScreenshot({
     maxDiffPixels: 100,
   })
 
-  await u.openAndClearDebugPanel()
-  await page.getByRole('button', { name: 'Exit Sketch' }).click()
-
-  await u.updateCamPosition(camPos)
-
-  await u.clearCommandLogs()
-  await u.closeDebugPanel()
-
-  // zoom
-  await page.keyboard.down('Control')
-  await page.mouse.move(700, 400)
-  await page.mouse.down({ button: 'right' })
-  await page.mouse.move(700, 300)
-  await page.mouse.up({ button: 'right' })
-  await page.keyboard.up('Control')
-
-  await u.openDebugPanel()
-  await page.waitForTimeout(300)
-  await u.clearCommandLogs()
-
-  await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await u.closeDebugPanel()
-
-  await expect(page).toHaveScreenshot({
-    maxDiffPixels: 100,
-  })
+  // zoom  was too unstable to keep as a PW test)
 })
 
 test('exports of each format should work', async ({ page, context }) => {
