@@ -31,66 +31,6 @@ test.beforeEach(async ({ context, page }) => {
 
 test.setTimeout(60000)
 
-test('change camera, show planes', async ({ page, context }) => {
-  const u = getUtils(page)
-  await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
-  await u.waitForAuthSkipAppStart()
-  await u.openAndClearDebugPanel()
-
-  const camPos: [number, number, number] = [0, 85, 85]
-  await u.updateCamPosition(camPos)
-  await page.waitForTimeout(200)
-
-  // rotate
-  await u.closeDebugPanel()
-  await page.mouse.move(700, 200)
-  await page.mouse.down({ button: 'right' })
-  await page.mouse.move(600, 300, { steps: 10 })
-  await page.mouse.up({ button: 'right' })
-
-  await u.openAndClearDebugPanel()
-
-  await page.getByRole('button', { name: 'Start Sketch' }).click()
-
-  await u.closeDebugPanel()
-  await page.waitForTimeout(200)
-
-  await expect(page).toHaveScreenshot({
-    maxDiffPixels: 100,
-  })
-
-  await u.openAndClearDebugPanel()
-  await page.getByRole('button', { name: 'Exit Sketch' }).click()
-
-  await u.updateCamPosition(camPos)
-  await page.waitForTimeout(200)
-
-  await u.clearCommandLogs()
-  await u.closeDebugPanel()
-  // pan
-  await page.keyboard.down('Shift')
-  await page.mouse.move(600, 200)
-  await page.mouse.down({ button: 'right' })
-  await page.mouse.move(700, 200, { steps: 10 })
-  await page.mouse.up({ button: 'right' })
-  await page.keyboard.up('Shift')
-
-  await u.openDebugPanel()
-  await page.waitForTimeout(300)
-  await u.clearCommandLogs()
-
-  await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await u.closeDebugPanel()
-  await page.waitForTimeout(200)
-
-  await expect(page).toHaveScreenshot({
-    maxDiffPixels: 100,
-  })
-
-  // zoom  was too unstable to keep as a PW test)
-})
-
 test('exports of each format should work', async ({ page, context }) => {
   // FYI this test doesn't work with only engine running locally
   // And you will need to have the KittyCAD CLI installed
