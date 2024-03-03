@@ -182,7 +182,7 @@ For more information on fuzzing you can check out
 [this guide](https://rust-fuzz.github.io/book/cargo-fuzz.html).
 
 
-### Playwright-badchangeagain
+### Playwright
 
 First time running plawright locally, you'll need to add the secrets file
 ```bash
