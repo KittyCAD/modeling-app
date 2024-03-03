@@ -48,9 +48,9 @@ export const AXIS_GROUP = 'axisGroup'
 export const SKETCH_GROUP_SEGMENTS = 'sketch-group-segments'
 export const ARROWHEAD = 'arrowhead'
 
-interface BaseCallbackArgs2 {
-  object: any
-  event: any
+interface OnMouseEnterLeaveArgs {
+  selected: Object3D<Object3DEventMap>
+  mouseEvent: MouseEvent
 }
 
 interface OnDragCallbackArgs {
@@ -99,14 +99,14 @@ class SceneInfra {
   onDragCallback: (arg: OnDragCallbackArgs) => void = () => {}
   onMoveCallback: (arg: onMoveCallbackArgs) => void = () => {}
   onClickCallback: (arg?: OnClickCallbackArgs) => void = () => {}
-  onMouseEnter: (arg: BaseCallbackArgs2) => void = () => {}
-  onMouseLeave: (arg: BaseCallbackArgs2) => void = () => {}
+  onMouseEnter: (arg: OnMouseEnterLeaveArgs) => void = () => {}
+  onMouseLeave: (arg: OnMouseEnterLeaveArgs) => void = () => {}
   setCallbacks = (callbacks: {
     onDrag?: (arg: OnDragCallbackArgs) => void
     onMove?: (arg: onMoveCallbackArgs) => void
     onClick?: (arg?: OnClickCallbackArgs) => void
-    onMouseEnter?: (arg: BaseCallbackArgs2) => void
-    onMouseLeave?: (arg: BaseCallbackArgs2) => void
+    onMouseEnter?: (arg: OnMouseEnterLeaveArgs) => void
+    onMouseLeave?: (arg: OnMouseEnterLeaveArgs) => void
   }) => {
     this.onDragCallback = callbacks.onDrag || this.onDragCallback
     this.onMoveCallback = callbacks.onMove || this.onMoveCallback
@@ -344,21 +344,21 @@ class SceneInfra {
       if (this.hoveredObject !== firstIntersectObject) {
         if (this.hoveredObject) {
           this.onMouseLeave({
-            object: this.hoveredObject,
-            event: mouseEvent,
+            selected: this.hoveredObject,
+            mouseEvent: mouseEvent,
           })
         }
         this.hoveredObject = firstIntersectObject
         this.onMouseEnter({
-          object: this.hoveredObject,
-          event: mouseEvent,
+          selected: this.hoveredObject,
+          mouseEvent: mouseEvent,
         })
       }
     } else {
       if (this.hoveredObject) {
         this.onMouseLeave({
-          object: this.hoveredObject,
-          event: mouseEvent,
+          selected: this.hoveredObject,
+          mouseEvent: mouseEvent,
         })
         this.hoveredObject = null
       }

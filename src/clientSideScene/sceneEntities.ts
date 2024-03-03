@@ -389,17 +389,17 @@ class SceneEntities {
           if (!event) return
           sceneInfra.modelingSend(event)
         },
-        onMouseEnter: ({ object }) => {
+        onMouseEnter: ({ selected }) => {
           // TODO change the color of the segment to yellow?
           // Give a few pixels grace around each of the segments
           // for hover.
-          if ([X_AXIS, Y_AXIS].includes(object?.userData?.type)) {
-            const obj = object as Mesh
+          if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
+            const obj = selected as Mesh
             const mat = obj.material as MeshBasicMaterial
             mat.color.set(obj.userData.baseColor)
             mat.color.offsetHSL(0, 0, 0.5)
           }
-          const parent = getParentGroup(object, [
+          const parent = getParentGroup(selected, [
             STRAIGHT_SEGMENT,
             TANGENTIAL_ARC_TO_SEGMENT,
             PROFILE_START,
@@ -413,22 +413,22 @@ class SceneEntities {
             ).node
             sceneInfra.highlightCallback([node.start, node.end])
             const yellow = 0xffff00
-            colorSegment(object, yellow)
+            colorSegment(selected, yellow)
             return
           }
           sceneInfra.highlightCallback([0, 0])
         },
-        onMouseLeave: ({ object }) => {
+        onMouseLeave: ({ selected }) => {
           sceneInfra.highlightCallback([0, 0])
-          const parent = getParentGroup(object, [
+          const parent = getParentGroup(selected, [
             STRAIGHT_SEGMENT,
             TANGENTIAL_ARC_TO_SEGMENT,
             PROFILE_START,
           ])
           const isSelected = parent?.userData?.isSelected
-          colorSegment(object, isSelected ? 0x0000ff : 0xffffff)
-          if ([X_AXIS, Y_AXIS].includes(object?.userData?.type)) {
-            const obj = object as Mesh
+          colorSegment(selected, isSelected ? 0x0000ff : 0xffffff)
+          if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
+            const obj = selected as Mesh
             const mat = obj.material as MeshBasicMaterial
             mat.color.set(obj.userData.baseColor)
             if (obj.userData.isSelected) mat.color.offsetHSL(0, 0, 0.2)
@@ -848,15 +848,17 @@ class SceneEntities {
   }
   setupDefaultPlaneHover() {
     sceneInfra.setCallbacks({
-      onMouseEnter: ({ object }) => {
-        if (object.parent.userData.type !== DEFAULT_PLANES) return
-        const type: DefaultPlane = object.userData.type
-        object.material.color = defaultPlaneColor(type, 0.5, 1)
+      onMouseEnter: ({ selected }) => {
+        if (!(selected instanceof Mesh && selected.parent)) return
+        if (selected.parent.userData.type !== DEFAULT_PLANES) return
+        const type: DefaultPlane = selected.userData.type
+        selected.material.color = defaultPlaneColor(type, 0.5, 1)
       },
-      onMouseLeave: ({ object }) => {
-        if (object.parent.userData.type !== DEFAULT_PLANES) return
-        const type: DefaultPlane = object.userData.type
-        object.material.color = defaultPlaneColor(type)
+      onMouseLeave: ({ selected }) => {
+        if (!(selected instanceof Mesh && selected.parent)) return
+        if (selected.parent.userData.type !== DEFAULT_PLANES) return
+        const type: DefaultPlane = selected.userData.type
+        selected.material.color = defaultPlaneColor(type)
       },
       onClick: (args) => {
         if (!args || !args.intersects?.[0]) return
