@@ -364,17 +364,18 @@ class SceneEntities {
     this.scene.add(group)
     if (!draftSegment) {
       sceneInfra.setCallbacks({
-        onDrag: (args) => {
-          if (args.event.which !== 1) return
+        onDrag: ({ selected, intersectionPoint, mouseEvent }) => {
+          if (mouseEvent.which !== 1) return
           this.onDragSegment({
-            ...args,
+            object: selected,
+            intersection2d: intersectionPoint.twoD,
             sketchPathToNode,
           })
         },
         onMove: () => {},
         onClick: (args) => {
-          if (args?.event.which !== 1) return
-          if (!args || !args.object) {
+          if (args?.mouseEvent.which !== 1) return
+          if (!args || !args.selected) {
             sceneInfra.modelingSend({
               type: 'Set selection',
               data: {
@@ -383,8 +384,8 @@ class SceneEntities {
             })
             return
           }
-          const { object } = args
-          const event = getEventForSegmentSelection(object)
+          const { selected } = args
+          const event = getEventForSegmentSelection(selected)
           if (!event) return
           sceneInfra.modelingSend(event)
         },
@@ -439,14 +440,14 @@ class SceneEntities {
         onDrag: () => {},
         onClick: async (args) => {
           if (!args) return
-          if (args.event.which !== 1) return
-          const { intersection2d } = args
-          if (!intersection2d) return
+          if (args.mouseEvent.which !== 1) return
+          const { intersectionPoint } = args
+          if (!intersectionPoint?.twoD) return
 
           const firstSeg = sketchGroup.value[0]
           const isClosingSketch = compareVec2Epsilon2(
             firstSeg.from,
-            [intersection2d.x, intersection2d.y],
+            [intersectionPoint.twoD.x, intersectionPoint.twoD.y],
             0.5
           )
           let modifiedAst
@@ -462,7 +463,7 @@ class SceneEntities {
             modifiedAst = addNewSketchLn({
               node: kclManager.ast,
               programMemory: kclManager.programMemory,
-              to: [intersection2d.x, intersection2d.y],
+              to: [intersectionPoint.twoD.x, intersectionPoint.twoD.y],
               from: [lastSegment.to[0], lastSegment.to[1]],
               fnName:
                 lastSegment.type === 'TangentialArcTo'
@@ -478,7 +479,7 @@ class SceneEntities {
         },
         onMove: (args) => {
           this.onDragSegment({
-            ...args,
+            intersection2d: args.intersectionPoint.twoD,
             object: Object.values(this.activeSegments).slice(-1)[0],
             sketchPathToNode,
             draftInfo: {
@@ -525,15 +526,11 @@ class SceneEntities {
     )
   onDragSegment({
     object,
-    event,
-    intersectPoint,
     intersection2d,
     sketchPathToNode,
     draftInfo,
   }: {
     object: any
-    event: any
-    intersectPoint: Vector3
     intersection2d: Vector2
     sketchPathToNode: PathToNode
     draftInfo?: {
@@ -862,11 +859,11 @@ class SceneEntities {
         object.material.color = defaultPlaneColor(type)
       },
       onClick: (args) => {
-        if (!args || !args.object) return
-        if (args.event.which !== 1) return
-        const { intersection } = args
-        const type = intersection.object.name || ''
-        const posNorm = Number(intersection.normal?.z) > 0
+        if (!args || !args.intersects?.[0]) return
+        if (args.mouseEvent.which !== 1) return
+        const { intersects } = args
+        const type = intersects?.[0].object.name || ''
+        const posNorm = Number(intersects?.[0]?.normal?.z) > 0
         let planeString: DefaultPlaneStr = posNorm ? 'XY' : '-XY'
         let normal: [number, number, number] = posNorm ? [0, 0, 1] : [0, 0, -1]
         if (type === YZ_PLANE) {
