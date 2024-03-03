@@ -53,14 +53,12 @@ interface OnMouseEnterLeaveArgs {
   mouseEvent: MouseEvent
 }
 
-interface OnDragCallbackArgs {
-  mouseEvent: MouseEvent
+interface OnDragCallbackArgs extends OnMouseEnterLeaveArgs {
   intersectionPoint: {
     twoD: Vector2
     threeD: Vector3
   }
   intersects: Intersection<Object3D<Object3DEventMap>>[]
-  selected: Object3D<Object3DEventMap>
 }
 interface OnClickCallbackArgs {
   mouseEvent: MouseEvent
@@ -72,7 +70,7 @@ interface OnClickCallbackArgs {
   selected?: Object3D<Object3DEventMap>
 }
 
-interface onMoveCallbackArgs {
+interface OnMoveCallbackArgs {
   mouseEvent: MouseEvent
   intersectionPoint: {
     twoD: Vector2
@@ -97,13 +95,13 @@ class SceneInfra {
   _baseUnit: BaseUnit = 'mm'
   _baseUnitMultiplier = 1
   onDragCallback: (arg: OnDragCallbackArgs) => void = () => {}
-  onMoveCallback: (arg: onMoveCallbackArgs) => void = () => {}
+  onMoveCallback: (arg: OnMoveCallbackArgs) => void = () => {}
   onClickCallback: (arg?: OnClickCallbackArgs) => void = () => {}
   onMouseEnter: (arg: OnMouseEnterLeaveArgs) => void = () => {}
   onMouseLeave: (arg: OnMouseEnterLeaveArgs) => void = () => {}
   setCallbacks = (callbacks: {
     onDrag?: (arg: OnDragCallbackArgs) => void
-    onMove?: (arg: onMoveCallbackArgs) => void
+    onMove?: (arg: OnMoveCallbackArgs) => void
     onClick?: (arg?: OnClickCallbackArgs) => void
     onMouseEnter?: (arg: OnMouseEnterLeaveArgs) => void
     onMouseLeave?: (arg: OnMouseEnterLeaveArgs) => void
