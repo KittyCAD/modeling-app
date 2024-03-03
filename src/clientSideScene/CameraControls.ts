@@ -209,6 +209,7 @@ export class CameraControls {
       this.camera.zoom = camProps.zoom || 1
     }
     this.camera.updateProjectionMatrix()
+    console.log('doing this thing', camProps)
     this.update(true)
   }
 
@@ -569,7 +570,7 @@ export class CameraControls {
   update = (forceUpdate = false) => {
     // If there are any changes that need to be applied to the camera, apply them here.
 
-    let didChange = forceUpdate
+    let didChange = false
     if (this.pendingRotation) {
       this.rotateCamera(this.pendingRotation.x, this.pendingRotation.y)
       this.pendingRotation = null // Clear the pending rotation after applying it
@@ -621,8 +622,8 @@ export class CameraControls {
 
     // Update the camera's matrices
     this.camera.updateMatrixWorld()
-    if (didChange) {
-      this.onCameraChange()
+    if (didChange || forceUpdate) {
+      this.onCameraChange(forceUpdate)
     }
 
     // damping would be implemented here in update if we choose to add it.
@@ -898,7 +899,7 @@ export class CameraControls {
     this.reactCameraPropertiesCallback(a)
   }, 200)
 
-  onCameraChange = () => {
+  onCameraChange = (forceUpdate = false) => {
     const distance = this.target.distanceTo(this.camera.position)
     if (this.camera.far / 2.1 < distance || this.camera.far / 1.9 > distance) {
       this.camera.far = distance * 2
@@ -906,7 +907,7 @@ export class CameraControls {
       this.camera.updateProjectionMatrix()
     }
 
-    if (this.syncDirection === 'clientToEngine')
+    if (this.syncDirection === 'clientToEngine' || forceUpdate)
       throttledUpdateEngineCamera({
         quaternion: this.camera.quaternion,
         position: this.camera.position,
