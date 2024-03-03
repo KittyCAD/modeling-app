@@ -1051,12 +1051,7 @@ async fn stdlib_cube_partial() {
     let cube = startSketchAt([0.0, 0.0])
         |> lineTo([4.0, 0.0], %)
     "#;
-    let (plan, _scope) = must_plan(program);
-    std::fs::write(
-        "test_json_output/stdlib_cube_partial.json",
-        serde_json::to_string_pretty(&plan).unwrap(),
-    )
-    .unwrap();
+    let (_plan, _scope) = must_plan(program);
     let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
         .ast()
         .unwrap();
