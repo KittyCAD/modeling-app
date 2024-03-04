@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, MemoryItem},
+    executor::{ExtrudeGroup, ExtrudeSurface, MemoryItem},
     std::Args,
 };
 
@@ -84,12 +84,9 @@ async fn inner_fillet(
             FilletEdgeQuery::StartFace => tagged_path.geo_meta.id,
             FilletEdgeQuery::EndFace => {
                 // We need to get the face id for the end.
-                let face_id = extrude_group.end_cap_id.ok_or_else(|| {
-                    KclError::Type(KclErrorDetails {
-                        message: "Expected an end face to sketch on".to_string(),
-                        source_ranges: vec![args.source_range],
-                    })
-                })?;
+                let face_id =get_adjacent_face_to_tag(&extrude_group, &tag, &args)?;
+
+                println!("Getting opposite edge for fillet {}", face_id);
 
                 let resp = args
                     .send_modeling_cmd(
@@ -120,17 +117,36 @@ async fn inner_fillet(
             }
         };
 
+        println!("edge_id: {}", edge_id);
+
         args.send_modeling_cmd(
             uuid::Uuid::new_v4(),
             ModelingCmd::Solid3DFilletEdge {
                 edge_id,
                 object_id: extrude_group.id,
                 radius: data.radius,
-                tolerance: 0.01, // We can let the user set this in the future.
+                tolerance: 0.0000001, // We can let the user set this in the future.
             },
         )
         .await?;
     }
 
     Ok(extrude_group)
+}
+
+fn get_adjacent_face_to_tag(extrude_group: &ExtrudeGroup, tag: &str, args: &Args) -> Result<uuid::Uuid, KclError> {
+    extrude_group
+        .value
+        .iter()
+        .find_map(|extrude_surface| match extrude_surface {
+            ExtrudeSurface::ExtrudePlane(extrude_plane) if extrude_plane.name == tag => Some(Ok(extrude_plane.face_id)),
+            ExtrudeSurface::ExtrudeArc(extrude_arc) if extrude_arc.name == tag => Some(Ok(extrude_arc.face_id)),
+            ExtrudeSurface::ExtrudePlane(_) | ExtrudeSurface::ExtrudeArc(_) => None,
+        })
+        .ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Expected a face with the tag `{}`", tag),
+                source_ranges: vec![args.source_range],
+            })
+        })?
 }
