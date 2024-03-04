@@ -215,9 +215,7 @@ async fn serial_test_fillet_duplicate_tags() {
     |> fillet({radius: 0.5, tags: ["thing", "thing"]}, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
-        .await
-        ;
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
@@ -252,7 +250,8 @@ async fn serial_test_basic_fillet_cube_end() {
     |> line({to: [0, -10], tag: "thing2"}, %)
     |> close(%)
     |> extrude(10, %)
-    |> fillet({radius: 2, tags: ["thing", "thing2"]}, %)
+    |> fillet({radius: 2, tags: ["thing"]}, %)
+    |> fillet({radius: 2, tags: ["thing"], query:"endFace" }, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
