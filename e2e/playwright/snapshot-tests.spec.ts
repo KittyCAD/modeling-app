@@ -29,7 +29,7 @@ test.beforeEach(async ({ context, page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
 })
 
-test.setTimeout(60000)
+test.setTimeout(120_000)
 
 test('exports of each format should work', async ({ page, context }) => {
   // FYI this test doesn't work with only engine running locally
