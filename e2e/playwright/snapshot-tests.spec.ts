@@ -90,7 +90,6 @@ const part001 = startSketchOn('-XZ')
   await page.waitForTimeout(1000)
   await u.clearAndCloseDebugPanel()
 
-  await page.getByRole('button', { name: APP_NAME }).click()
 
   interface Paths {
     modelPath: string
@@ -100,6 +99,7 @@ const part001 = startSketchOn('-XZ')
   const doExport = async (
     output: Models['OutputFormat_type']
   ): Promise<Paths> => {
+    await page.getByRole('button', { name: APP_NAME }).click()
     await page.getByRole('button', { name: 'Export Part' }).click()
 
     // Go through export via command bar
