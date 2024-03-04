@@ -342,6 +342,11 @@ class SceneEntities {
       const isDraftSegment =
         draftSegment && index === sketchGroup.value.length - 1
       let seg
+      const callExpName = getNodeFromPath<CallExpression>(
+        kclManager.ast,
+        segPathToNode,
+        'CallExpression'
+      )?.node?.callee?.name
       if (segment.type === 'TangentialArcTo') {
         seg = tangentialArcToSegment({
           prevSegment: sketchGroup.value[index - 1],
@@ -360,6 +365,7 @@ class SceneEntities {
           pathToNode: segPathToNode,
           isDraftSegment,
           scale: factor,
+          callExpName,
         })
       }
       seg.layers.set(SKETCH_LAYER)
@@ -739,16 +745,18 @@ class SceneEntities {
     shape.lineTo(0, 0.08 * scale) // The width of the line
     const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
 
-    arrowGroup.position.set(to[0], to[1], 0)
+    if (arrowGroup) {
+      arrowGroup.position.set(to[0], to[1], 0)
 
-    const dir = new Vector3()
-      .subVectors(
-        new Vector3(to[0], to[1], 0),
-        new Vector3(from[0], from[1], 0)
-      )
-      .normalize()
-    arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
-    arrowGroup.scale.set(scale, scale, scale)
+      const dir = new Vector3()
+        .subVectors(
+          new Vector3(to[0], to[1], 0),
+          new Vector3(from[0], from[1], 0)
+        )
+        .normalize()
+      arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
+      arrowGroup.scale.set(scale, scale, scale)
+    }
 
     const straightSegmentBody = group.children.find(
       (child) => child.userData.type === STRAIGHT_SEGMENT_BODY
@@ -1117,7 +1125,10 @@ function mouseEnterLeaveCallbacks() {
         PROFILE_START,
       ])
       const isSelected = parent?.userData?.isSelected
-      colorSegment(selected, isSelected ? 0x0000ff : 0xffffff)
+      colorSegment(
+        selected,
+        isSelected ? 0x0000ff : parent?.userData?.baseColor || 0xffffff
+      )
       if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
         const obj = selected as Mesh
         const mat = obj.material as MeshBasicMaterial

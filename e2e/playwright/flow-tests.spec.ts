@@ -135,8 +135,8 @@ test('Basic sketch', async ({ page }) => {
   |> angledLine([180, segLen('seg01', %)], %)`)
 })
 
-test.skip(process.platform === 'darwin', 'Can moving camera')
 test('Can moving camera', async ({ page, context }) => {
+  test.skip(process.platform === 'darwin', 'Can moving camera')
   const u = getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/')

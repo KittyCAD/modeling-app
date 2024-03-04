@@ -70,6 +70,7 @@ export function straightSegment({
   pathToNode,
   isDraftSegment,
   scale = 1,
+  callExpName,
 }: {
   from: Coords2d
   to: Coords2d
@@ -77,6 +78,7 @@ export function straightSegment({
   pathToNode: PathToNode
   isDraftSegment?: boolean
   scale?: number
+  callExpName: string
 }): Group {
   const group = new Group()
 
@@ -100,7 +102,8 @@ export function straightSegment({
     })
   }
 
-  const body = new MeshBasicMaterial({ color: 0xffffff })
+  const baseColor = callExpName === 'close' ? 0x444444 : 0xffffff
+  const body = new MeshBasicMaterial({ color: baseColor })
   const mesh = new Mesh(geometry, body)
   mesh.userData.type = isDraftSegment
     ? STRAIGHT_SEGMENT_DASH
@@ -114,6 +117,8 @@ export function straightSegment({
     to,
     pathToNode,
     isSelected: false,
+    callExpName,
+    baseColor,
   }
   group.name = STRAIGHT_SEGMENT
 
@@ -124,7 +129,8 @@ export function straightSegment({
     .normalize()
   arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
 
-  group.add(mesh, arrowGroup)
+  group.add(mesh)
+  if (callExpName !== 'close') group.add(arrowGroup)
 
   return group
 }
