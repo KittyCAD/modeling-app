@@ -11,6 +11,9 @@ pub trait KclStdLibFn: StdLibFn {
     fn kcl_clone_box(&self) -> Box<dyn KclStdLibFn>;
     fn function(&self) -> &FunctionExpression;
     fn program(&self) -> &Program;
+    fn std_lib(&self) -> Box<dyn StdLibFn> {
+        self.clone_box()
+    }
 }
 
 impl ts_rs::TS for dyn KclStdLibFn {

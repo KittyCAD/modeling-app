@@ -17,14 +17,13 @@ use tower_lsp::{
         DocumentSymbol, DocumentSymbolParams, DocumentSymbolResponse, Documentation, FullDocumentDiagnosticReport,
         Hover, HoverContents, HoverParams, HoverProviderCapability, InitializeParams, InitializeResult,
         InitializedParams, InlayHint, InlayHintParams, InsertTextFormat, MarkupContent, MarkupKind, MessageType, OneOf,
-        ParameterInformation, ParameterLabel, Position, RelatedFullDocumentDiagnosticReport, RenameFilesParams,
-        RenameParams, SemanticToken, SemanticTokenType, SemanticTokens, SemanticTokensFullOptions,
-        SemanticTokensLegend, SemanticTokensOptions, SemanticTokensParams, SemanticTokensRegistrationOptions,
-        SemanticTokensResult, SemanticTokensServerCapabilities, ServerCapabilities, SignatureHelp,
-        SignatureHelpOptions, SignatureHelpParams, SignatureInformation, StaticRegistrationOptions, TextDocumentItem,
-        TextDocumentRegistrationOptions, TextDocumentSyncCapability, TextDocumentSyncKind, TextDocumentSyncOptions,
-        TextEdit, WorkDoneProgressOptions, WorkspaceEdit, WorkspaceFoldersServerCapabilities,
-        WorkspaceServerCapabilities,
+        Position, RelatedFullDocumentDiagnosticReport, RenameFilesParams, RenameParams, SemanticToken,
+        SemanticTokenType, SemanticTokens, SemanticTokensFullOptions, SemanticTokensLegend, SemanticTokensOptions,
+        SemanticTokensParams, SemanticTokensRegistrationOptions, SemanticTokensResult,
+        SemanticTokensServerCapabilities, ServerCapabilities, SignatureHelp, SignatureHelpOptions, SignatureHelpParams,
+        StaticRegistrationOptions, TextDocumentItem, TextDocumentRegistrationOptions, TextDocumentSyncCapability,
+        TextDocumentSyncKind, TextDocumentSyncOptions, TextEdit, WorkDoneProgressOptions, WorkspaceEdit,
+        WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities,
     },
     Client, LanguageServer,
 };
@@ -430,20 +429,6 @@ impl LanguageServer for Backend {
     }
 
     async fn completion(&self, params: CompletionParams) -> RpcResult<Option<CompletionResponse>> {
-        // We want to get the position we are in.
-        // Because if we are in a comment, we don't want to show completions.
-        let filename = params.text_document_position.text_document.uri.to_string();
-        if let Some(current_code) = self.current_code_map.get(&filename) {
-            let pos = position_to_char_index(params.text_document_position.position, &current_code);
-            // Let's iterate over the AST and find the node that contains the cursor.
-            if let Some(ast) = self.ast_map.get(&filename) {
-                if ast.get_non_code_meta_for_position(pos).is_some() {
-                    // We are in a comment, don't show completions.
-                    return Ok(None);
-                }
-            }
-        }
-
         let mut completions = vec![CompletionItem {
             label: PIPE_OPERATOR.to_string(),
             label_details: None,
@@ -650,8 +635,9 @@ impl LanguageServer for Backend {
 /// Get completions from our stdlib.
 pub fn get_completions_from_stdlib(stdlib: &crate::std::StdLib) -> Result<HashMap<String, CompletionItem>> {
     let mut completions = HashMap::new();
+    let combined = stdlib.combined();
 
-    for internal_fn in stdlib.fns.values() {
+    for internal_fn in combined.values() {
         completions.insert(internal_fn.name(), internal_fn.to_completion_item());
     }
 
@@ -666,31 +652,11 @@ pub fn get_completions_from_stdlib(stdlib: &crate::std::StdLib) -> Result<HashMa
 /// Get signatures from our stdlib.
 pub fn get_signatures_from_stdlib(stdlib: &crate::std::StdLib) -> Result<HashMap<String, SignatureHelp>> {
     let mut signatures = HashMap::new();
+    let combined = stdlib.combined();
 
-    for internal_fn in stdlib.fns.values() {
+    for internal_fn in combined.values() {
         signatures.insert(internal_fn.name(), internal_fn.to_signature_help());
     }
-
-    let show = SignatureHelp {
-        signatures: vec![SignatureInformation {
-            label: "show".to_string(),
-            documentation: Some(Documentation::MarkupContent(MarkupContent {
-                kind: MarkupKind::PlainText,
-                value: "Show a model.".to_string(),
-            })),
-            parameters: Some(vec![ParameterInformation {
-                label: ParameterLabel::Simple("sg: SketchGroup".to_string()),
-                documentation: Some(Documentation::MarkupContent(MarkupContent {
-                    kind: MarkupKind::PlainText,
-                    value: "A sketch group.".to_string(),
-                })),
-            }]),
-            active_parameter: None,
-        }],
-        active_signature: Some(0),
-        active_parameter: None,
-    };
-    signatures.insert("show".to_string(), show);
 
     Ok(signatures)
 }

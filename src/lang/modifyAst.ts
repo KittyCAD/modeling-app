@@ -6,7 +6,6 @@ import {
   PipeExpression,
   VariableDeclaration,
   VariableDeclarator,
-  ExpressionStatement,
   Value,
   Literal,
   PipeSubstitution,
@@ -128,16 +127,8 @@ export function addSketchTo(
     createPipeExpression(pipeBody)
   )
 
-  const showCallIndex = getShowIndex(_node)
-  let sketchIndex = showCallIndex
-  if (showCallIndex === -1) {
-    _node.body = [...node.body, variableDeclaration]
-    sketchIndex = _node.body.length - 1
-  } else {
-    const newBody = [...node.body]
-    newBody.splice(showCallIndex, 0, variableDeclaration)
-    _node.body = newBody
-  }
+  _node.body = [...node.body, variableDeclaration]
+  let sketchIndex = _node.body.length - 1
   let pathToNode: PathToNode = [
     ['body', ''],
     [sketchIndex, 'index'],
@@ -150,7 +141,7 @@ export function addSketchTo(
   }
 
   return {
-    modifiedAst: addToShow(_node, _name),
+    modifiedAst: _node,
     id: _name,
     pathToNode,
   }
@@ -189,44 +180,6 @@ export function findUniqueName(
 
   // recursive case: name is not unique and does not end in digits
   return findUniqueName(searchStr, name, pad, index + 1)
-}
-
-function addToShow(node: Program, name: string): Program {
-  const _node = { ...node }
-  const dumbyStartend = { start: 0, end: 0 }
-  const showCallIndex = getShowIndex(_node)
-  if (showCallIndex === -1) {
-    const showCall = createCallExpressionStdLib('show', [
-      createIdentifier(name),
-    ])
-    const showExpressionStatement: ExpressionStatement = {
-      type: 'ExpressionStatement',
-      ...dumbyStartend,
-      expression: showCall,
-    }
-    _node.body = [..._node.body, showExpressionStatement]
-    return _node
-  }
-  const showCall = { ..._node.body[showCallIndex] } as ExpressionStatement
-  const showCallArgs = (showCall.expression as CallExpression).arguments
-  const newShowCallArgs: Value[] = [...showCallArgs, createIdentifier(name)]
-  const newShowExpression = createCallExpressionStdLib('show', newShowCallArgs)
-
-  _node.body[showCallIndex] = {
-    ...showCall,
-    expression: newShowExpression,
-  }
-  return _node
-}
-
-function getShowIndex(node: Program): number {
-  return node.body.findIndex(
-    (statement) =>
-      statement.type === 'ExpressionStatement' &&
-      statement.expression.type === 'CallExpression' &&
-      statement.expression.callee.type === 'Identifier' &&
-      statement.expression.callee.name === 'show'
-  )
 }
 
 export function mutateArrExp(
@@ -348,15 +301,10 @@ export function extrudeSketch(
   }
   const name = findUniqueName(node, 'part')
   const VariableDeclaration = createVariableDeclaration(name, extrudeCall)
-  let showCallIndex = getShowIndex(_node)
-  if (showCallIndex === -1) {
-    // We didn't find a show, so let's just append everything
-    showCallIndex = _node.body.length
-  }
-  _node.body.splice(showCallIndex, 0, VariableDeclaration)
+  _node.body.splice(_node.body.length, 0, VariableDeclaration)
   const pathToExtrudeArg: PathToNode = [
     ['body', ''],
-    [showCallIndex, 'index'],
+    [_node.body.length, 'index'],
     ['declarations', 'VariableDeclaration'],
     [0, 'index'],
     ['init', 'VariableDeclarator'],
@@ -365,7 +313,7 @@ export function extrudeSketch(
   ]
   return {
     modifiedAst: node,
-    pathToNode: [...pathToNode.slice(0, -1), [showCallIndex, 'index']],
+    pathToNode: [...pathToNode.slice(0, -1), [-1, 'index']],
     pathToExtrudeArg,
   }
 }
@@ -425,7 +373,7 @@ export function sketchOnExtrudedFace(
   _node.body.splice(expressionIndex + 1, 0, newSketch)
 
   return {
-    modifiedAst: addToShow(_node, newSketchName),
+    modifiedAst: _node,
     pathToNode: [...pathToNode.slice(0, -1), [expressionIndex, 'index']],
   }
 }

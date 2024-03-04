@@ -16,7 +16,11 @@ import {
   SKETCH_LAYER,
   ZOOM_MAGIC_NUMBER,
 } from './sceneInfra'
-import { EngineCommand, engineCommandManager } from 'lang/std/engineConnection'
+import {
+  EngineCommand,
+  Subscription,
+  engineCommandManager,
+} from 'lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
 import { deg2Rad } from 'lib/utils2d'
 import { isReducedMotion, roundOff, throttle } from 'lib/utils'
@@ -27,6 +31,12 @@ const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
 
 const tempQuaternion = new Quaternion() // just used for maths
+
+type interactionType = 'pan' | 'rotate' | 'zoom'
+
+const throttledEngCmd = throttle((cmd: EngineCommand) => {
+  engineCommandManager.sendSceneCommand(cmd)
+}, 1000 / 15)
 
 interface ThreeCamValues {
   position: Vector3
@@ -110,10 +120,11 @@ const throttledUpdateEngineFov = throttle(
       lastCmdDelay
     ) as any as number
   },
-  1000 / 15
+  1000 / 30
 )
 
 export class CameraControls {
+  syncDirection: 'clientToEngine' | 'engineToClient' = 'engineToClient'
   camera: PerspectiveCamera | OrthographicCamera
   target: Vector3
   domElement: HTMLCanvasElement
@@ -198,6 +209,7 @@ export class CameraControls {
       this.camera.zoom = camProps.zoom || 1
     }
     this.camera.updateProjectionMatrix()
+    console.log('doing this thing', camProps)
     this.update(true)
   }
 
@@ -221,6 +233,45 @@ export class CameraControls {
 
     this.update()
     this._usePerspectiveCamera()
+
+    const cb: Subscription<
+      'default_camera_zoom' | 'camera_drag_end' | 'default_camera_get_settings'
+    >['callback'] = ({ data, type }) => {
+      const camSettings = data.settings
+      this.camera.position.set(
+        camSettings.pos.x,
+        camSettings.pos.y,
+        camSettings.pos.z
+      )
+      this.target.set(
+        camSettings.center.x,
+        camSettings.center.y,
+        camSettings.center.z
+      )
+      if (this.camera instanceof PerspectiveCamera && camSettings.fov_y) {
+        this.camera.fov = camSettings.fov_y
+      } else if (
+        this.camera instanceof OrthographicCamera &&
+        camSettings.ortho_scale
+      ) {
+        this.camera.zoom = camSettings.ortho_scale
+      }
+      this.onCameraChange()
+    }
+    setTimeout(() => {
+      engineCommandManager.subscribeTo({
+        event: 'camera_drag_end',
+        callback: cb,
+      })
+      engineCommandManager.subscribeTo({
+        event: 'default_camera_zoom',
+        callback: cb,
+      })
+      engineCommandManager.subscribeTo({
+        event: 'default_camera_get_settings',
+        callback: cb,
+      })
+    })
   }
 
   private _isCamMovingCallback: (isMoving: boolean, isTween: boolean) => void =
@@ -254,7 +305,21 @@ export class CameraControls {
   onMouseDown = (event: MouseEvent) => {
     this.isDragging = true
     this.mouseDownPosition.set(event.clientX, event.clientY)
+    let interaction = this.getInteractionType(event)
+    if (interaction === 'none') return
     this.handleStart()
+
+    if (this.syncDirection === 'engineToClient') {
+      void engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd: {
+          type: 'camera_drag_start',
+          interaction,
+          window: { x: event.clientX, y: event.clientY },
+        },
+        cmd_id: uuidv4(),
+      })
+    }
   }
 
   onMouseMove = (event: MouseEvent) => {
@@ -265,36 +330,34 @@ export class CameraControls {
         .sub(this.mouseDownPosition)
       this.mouseDownPosition.copy(this.mouseNewPosition)
 
-      let state: 'pan' | 'rotate' | 'zoom' = 'pan'
+      const interaction = this.getInteractionType(event)
+      if (interaction === 'none') return
 
-      if (this.interactionGuards.pan.callback(event as any)) {
-        if (this.enablePan === false) return
-        // handleMouseDownPan(event)
-        state = 'pan'
-      } else if (this.interactionGuards.rotate.callback(event as any)) {
-        if (this.enableRotate === false) return
-        // handleMouseDownRotate(event)
-        state = 'rotate'
-      } else if (this.interactionGuards.zoom.dragCallback(event as any)) {
-        if (this.enableZoom === false) return
-        // handleMouseDownDolly(event)
-        state = 'zoom'
-      } else {
+      if (this.syncDirection === 'engineToClient') {
+        throttledEngCmd({
+          type: 'modeling_cmd_req',
+          cmd: {
+            type: 'camera_drag_move',
+            interaction,
+            window: { x: event.clientX, y: event.clientY },
+          },
+          cmd_id: uuidv4(),
+        })
         return
       }
 
       // Implement camera movement logic here based on deltaMove
       // For example, for rotating the camera around the target:
-      if (state === 'rotate') {
+      if (interaction === 'rotate') {
         this.pendingRotation = this.pendingRotation
           ? this.pendingRotation
           : new Vector2()
         this.pendingRotation.x += deltaMove.x
         this.pendingRotation.y += deltaMove.y
-      } else if (state === 'zoom') {
+      } else if (interaction === 'zoom') {
         this.pendingZoom = this.pendingZoom ? this.pendingZoom : 1
         this.pendingZoom *= 1 + deltaMove.y * 0.01
-      } else if (state === 'pan') {
+      } else if (interaction === 'pan') {
         this.pendingPan = this.pendingPan ? this.pendingPan : new Vector2()
         let distance = this.camera.position.distanceTo(this.target)
         if (this.camera instanceof OrthographicCamera) {
@@ -311,11 +374,45 @@ export class CameraControls {
   onMouseUp = (event: MouseEvent) => {
     this.isDragging = false
     this.handleEnd()
+    if (this.syncDirection === 'engineToClient') {
+      const interaction = this.getInteractionType(event)
+      if (interaction === 'none') return
+      void engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd: {
+          type: 'camera_drag_end',
+          interaction,
+          window: { x: event.clientX, y: event.clientY },
+        },
+        cmd_id: uuidv4(),
+      })
+    }
   }
 
   onMouseWheel = (event: WheelEvent) => {
     // Assume trackpad if the deltas are small and integers
     this.handleStart()
+
+    if (this.syncDirection === 'engineToClient') {
+      const interactions = this.interactionGuards.zoom.scrollCallback(
+        event as any
+      )
+      if (!interactions) {
+        this.handleEnd()
+        return
+      }
+      throttledEngCmd({
+        type: 'modeling_cmd_req',
+        cmd: {
+          type: 'default_camera_zoom',
+          magnitude: -event.deltaY * 0.4,
+        },
+        cmd_id: uuidv4(),
+      })
+      this.handleEnd()
+      return
+    }
+
     const isTrackpad = Math.abs(event.deltaY) <= 1 || event.deltaY % 1 === 0
 
     const zoomSpeed = isTrackpad ? 0.02 : 0.1 // Reduced zoom speed for trackpad
@@ -473,7 +570,7 @@ export class CameraControls {
   update = (forceUpdate = false) => {
     // If there are any changes that need to be applied to the camera, apply them here.
 
-    let didChange = forceUpdate
+    let didChange = false
     if (this.pendingRotation) {
       this.rotateCamera(this.pendingRotation.x, this.pendingRotation.y)
       this.pendingRotation = null // Clear the pending rotation after applying it
@@ -525,8 +622,8 @@ export class CameraControls {
 
     // Update the camera's matrices
     this.camera.updateMatrixWorld()
-    if (didChange) {
-      this.onCameraChange()
+    if (didChange || forceUpdate) {
+      this.onCameraChange(forceUpdate)
     }
 
     // damping would be implemented here in update if we choose to add it.
@@ -637,6 +734,10 @@ export class CameraControls {
     duration = 500,
     toOrthographic = true
   ): Promise<void> {
+    if (this.syncDirection === 'engineToClient')
+      console.warn(
+        'tweenCameraToQuaternion not design to work with engineToClient syncDirection.'
+      )
     const isVertical = isQuaternionVertical(targetQuaternion)
     let remainingDuration = duration
     if (isVertical) {
@@ -719,6 +820,10 @@ export class CameraControls {
 
   animateToOrthographic = () =>
     new Promise((resolve) => {
+      if (this.syncDirection === 'engineToClient')
+        console.warn(
+          'animate To Orthographic not design to work with engineToClient syncDirection.'
+        )
       this.isFovAnimationInProgress = true
       let currentFov = this.lastPerspectiveFov
       this.fovBeforeOrtho = currentFov
@@ -752,6 +857,10 @@ export class CameraControls {
     })
   animateToPerspective = () =>
     new Promise((resolve) => {
+      if (this.syncDirection === 'engineToClient')
+        console.warn(
+          'animate To Perspective not design to work with engineToClient syncDirection.'
+        )
       this.isFovAnimationInProgress = true
       // Immediately set the camera to perspective with a very low FOV
       const targetFov = this.fovBeforeOrtho // Target FOV for perspective
@@ -790,7 +899,7 @@ export class CameraControls {
     this.reactCameraPropertiesCallback(a)
   }, 200)
 
-  onCameraChange = () => {
+  onCameraChange = (forceUpdate = false) => {
     const distance = this.target.distanceTo(this.camera.position)
     if (this.camera.far / 2.1 < distance || this.camera.far / 1.9 > distance) {
       this.camera.far = distance * 2
@@ -798,13 +907,14 @@ export class CameraControls {
       this.camera.updateProjectionMatrix()
     }
 
-    throttledUpdateEngineCamera({
-      quaternion: this.camera.quaternion,
-      position: this.camera.position,
-      zoom: this.camera.zoom,
-      isPerspective: this.isPerspective,
-      target: this.target,
-    })
+    if (this.syncDirection === 'clientToEngine' || forceUpdate)
+      throttledUpdateEngineCamera({
+        quaternion: this.camera.quaternion,
+        position: this.camera.position,
+        zoom: this.camera.zoom,
+        isPerspective: this.isPerspective,
+        target: this.target,
+      })
     this.deferReactUpdate({
       type: this.isPerspective ? 'perspective' : 'orthographic',
       [this.isPerspective ? 'fov' : 'zoom']:
@@ -825,9 +935,18 @@ export class CameraControls {
     })
     Object.values(this._camChangeCallbacks).forEach((cb) => cb())
   }
+  getInteractionType = (event: any) =>
+    _getInteractionType(
+      this.interactionGuards,
+      event,
+      this.enablePan,
+      this.enableRotate,
+      this.enableZoom
+    )
 }
 
-// currently duplicated, delete one
+// Pure function helpers
+
 function calculateNearFarFromFOV(fov: number) {
   const nearFarRatio = (fov - 3) / (45 - 3)
   // const z_near = 0.1 + nearFarRatio * (5 - 0.1)
@@ -835,7 +954,6 @@ function calculateNearFarFromFOV(fov: number) {
   return { z_near: 0.1, z_far }
 }
 
-// currently duplicated, delete one
 function convertThreeCamValuesToEngineCam({
   target,
   position,
@@ -876,8 +994,6 @@ function convertThreeCamValuesToEngineCam({
   }
 }
 
-// Pure function helpers
-
 function _lookAt(position: Vector3, target: Vector3, up: Vector3): Quaternion {
   // Direction from position to target, normalized.
   let direction = new Vector3().subVectors(target, position).normalize()
@@ -895,4 +1011,18 @@ function _lookAt(position: Vector3, target: Vector3, up: Vector3): Quaternion {
   let quaternion = new Quaternion().setFromRotationMatrix(lookAtMatrix)
 
   return quaternion
+}
+
+function _getInteractionType(
+  interactionGuards: MouseGuard,
+  event: any,
+  enablePan: boolean,
+  enableRotate: boolean,
+  enableZoom: boolean
+): interactionType | 'none' {
+  let state: interactionType | 'none' = 'none'
+  if (enablePan && interactionGuards.pan.callback(event)) return 'pan'
+  if (enableRotate && interactionGuards.rotate.callback(event)) return 'rotate'
+  if (enableZoom && interactionGuards.zoom.dragCallback(event)) return 'zoom'
+  return state
 }

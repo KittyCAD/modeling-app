@@ -105,6 +105,10 @@ impl BindingScope {
                     "startSketchAt".into(),
                     EpBinding::from(KclFunction::StartSketchAt(native_functions::sketch::StartSketchAt)),
                 ),
+                (
+                    "lineTo".into(),
+                    EpBinding::from(KclFunction::LineTo(native_functions::sketch::LineTo)),
+                ),
             ]),
             parent: None,
         }

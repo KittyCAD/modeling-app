@@ -18091,6 +18091,1463 @@
     "deprecated": false
   },
   {
+    "name": "circle",
+    "summary": "Sketch a circle on the given plane",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "plane",
+        "type": "SketchData",
+        "schema": {
+          "description": "Data for start sketch on. You can start a sketch on a plane or an extrude group.",
+          "anyOf": [
+            {
+              "description": "Data for a plane.",
+              "oneOf": [
+                {
+                  "description": "The XY plane.",
+                  "type": "string",
+                  "enum": [
+                    "XY"
+                  ]
+                },
+                {
+                  "description": "The opposite side of the XY plane.",
+                  "type": "string",
+                  "enum": [
+                    "-XY"
+                  ]
+                },
+                {
+                  "description": "The XZ plane.",
+                  "type": "string",
+                  "enum": [
+                    "XZ"
+                  ]
+                },
+                {
+                  "description": "The opposite side of the XZ plane.",
+                  "type": "string",
+                  "enum": [
+                    "-XZ"
+                  ]
+                },
+                {
+                  "description": "The YZ plane.",
+                  "type": "string",
+                  "enum": [
+                    "YZ"
+                  ]
+                },
+                {
+                  "description": "The opposite side of the YZ plane.",
+                  "type": "string",
+                  "enum": [
+                    "-YZ"
+                  ]
+                },
+                {
+                  "description": "A defined plane.",
+                  "type": "object",
+                  "required": [
+                    "plane"
+                  ],
+                  "properties": {
+                    "plane": {
+                      "type": "object",
+                      "required": [
+                        "origin",
+                        "x_axis",
+                        "y_axis",
+                        "z_axis"
+                      ],
+                      "properties": {
+                        "origin": {
+                          "description": "Origin of the plane.",
+                          "type": "object",
+                          "required": [
+                            "x",
+                            "y",
+                            "z"
+                          ],
+                          "properties": {
+                            "x": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "y": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "z": {
+                              "type": "number",
+                              "format": "double"
+                            }
+                          }
+                        },
+                        "x_axis": {
+                          "description": "What should the plane’s X axis be?",
+                          "type": "object",
+                          "required": [
+                            "x",
+                            "y",
+                            "z"
+                          ],
+                          "properties": {
+                            "x": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "y": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "z": {
+                              "type": "number",
+                              "format": "double"
+                            }
+                          }
+                        },
+                        "y_axis": {
+                          "description": "What should the plane’s Y axis be?",
+                          "type": "object",
+                          "required": [
+                            "x",
+                            "y",
+                            "z"
+                          ],
+                          "properties": {
+                            "x": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "y": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "z": {
+                              "type": "number",
+                              "format": "double"
+                            }
+                          }
+                        },
+                        "z_axis": {
+                          "description": "The z-axis (normal).",
+                          "type": "object",
+                          "required": [
+                            "x",
+                            "y",
+                            "z"
+                          ],
+                          "properties": {
+                            "x": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "y": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "z": {
+                              "type": "number",
+                              "format": "double"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              ]
+            },
+            {
+              "description": "An extrude group is a collection of extrude surfaces.",
+              "type": "object",
+              "required": [
+                "__meta",
+                "height",
+                "id",
+                "position",
+                "rotation",
+                "value",
+                "xAxis",
+                "yAxis",
+                "zAxis"
+              ],
+              "properties": {
+                "__meta": {
+                  "description": "Metadata.",
+                  "type": "array",
+                  "items": {
+                    "description": "Metadata.",
+                    "type": "object",
+                    "required": [
+                      "sourceRange"
+                    ],
+                    "properties": {
+                      "sourceRange": {
+                        "description": "The source range.",
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "format": "uint",
+                          "minimum": 0.0
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      }
+                    }
+                  }
+                },
+                "endCapId": {
+                  "description": "The id of the extrusion end cap",
+                  "type": "string",
+                  "format": "uuid",
+                  "nullable": true
+                },
+                "height": {
+                  "description": "The height of the extrude group.",
+                  "type": "number",
+                  "format": "double"
+                },
+                "id": {
+                  "description": "The id of the extrude group.",
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "position": {
+                  "description": "The position of the extrude group.",
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "format": "double"
+                  },
+                  "maxItems": 3,
+                  "minItems": 3
+                },
+                "rotation": {
+                  "description": "The rotation of the extrude group.",
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "format": "double"
+                  },
+                  "maxItems": 4,
+                  "minItems": 4
+                },
+                "startCapId": {
+                  "description": "The id of the extrusion start cap",
+                  "type": "string",
+                  "format": "uuid",
+                  "nullable": true
+                },
+                "value": {
+                  "description": "The extrude surfaces.",
+                  "type": "array",
+                  "items": {
+                    "description": "An extrude surface.",
+                    "oneOf": [
+                      {
+                        "description": "An extrude plane.",
+                        "type": "object",
+                        "required": [
+                          "faceId",
+                          "id",
+                          "name",
+                          "position",
+                          "rotation",
+                          "sourceRange",
+                          "type"
+                        ],
+                        "properties": {
+                          "faceId": {
+                            "description": "The face id for the extrude plane.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "name": {
+                            "description": "The name.",
+                            "type": "string"
+                          },
+                          "position": {
+                            "description": "The position.",
+                            "type": "array",
+                            "items": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "maxItems": 3,
+                            "minItems": 3
+                          },
+                          "rotation": {
+                            "description": "The rotation.",
+                            "type": "array",
+                            "items": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "maxItems": 4,
+                            "minItems": 4
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "extrudePlane"
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "description": "An extruded arc.",
+                        "type": "object",
+                        "required": [
+                          "faceId",
+                          "id",
+                          "name",
+                          "position",
+                          "rotation",
+                          "sourceRange",
+                          "type"
+                        ],
+                        "properties": {
+                          "faceId": {
+                            "description": "The face id for the extrude plane.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "name": {
+                            "description": "The name.",
+                            "type": "string"
+                          },
+                          "position": {
+                            "description": "The position.",
+                            "type": "array",
+                            "items": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "maxItems": 3,
+                            "minItems": 3
+                          },
+                          "rotation": {
+                            "description": "The rotation.",
+                            "type": "array",
+                            "items": {
+                              "type": "number",
+                              "format": "double"
+                            },
+                            "maxItems": 4,
+                            "minItems": 4
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "extrudeArc"
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "xAxis": {
+                  "description": "The x-axis of the extrude group base plane in the 3D space",
+                  "type": "object",
+                  "required": [
+                    "x",
+                    "y",
+                    "z"
+                  ],
+                  "properties": {
+                    "x": {
+                      "type": "number",
+                      "format": "double"
+                    },
+                    "y": {
+                      "type": "number",
+                      "format": "double"
+                    },
+                    "z": {
+                      "type": "number",
+                      "format": "double"
+                    }
+                  }
+                },
+                "yAxis": {
+                  "description": "The y-axis of the extrude group base plane in the 3D space",
+                  "type": "object",
+                  "required": [
+                    "x",
+                    "y",
+                    "z"
+                  ],
+                  "properties": {
+                    "x": {
+                      "type": "number",
+                      "format": "double"
+                    },
+                    "y": {
+                      "type": "number",
+                      "format": "double"
+                    },
+                    "z": {
+                      "type": "number",
+                      "format": "double"
+                    }
+                  }
+                },
+                "zAxis": {
+                  "description": "The z-axis of the extrude group base plane in the 3D space",
+                  "type": "object",
+                  "required": [
+                    "x",
+                    "y",
+                    "z"
+                  ],
+                  "properties": {
+                    "x": {
+                      "type": "number",
+                      "format": "double"
+                    },
+                    "y": {
+                      "type": "number",
+                      "format": "double"
+                    },
+                    "z": {
+                      "type": "number",
+                      "format": "double"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "required": true
+      },
+      {
+        "name": "center",
+        "type": "[number, number]",
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxItems": 2,
+          "minItems": 2
+        },
+        "required": true
+      },
+      {
+        "name": "radius",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "SketchGroup",
+      "type": "SketchGroup",
+      "schema": {
+        "description": "A sketch group is a collection of paths.",
+        "type": "object",
+        "required": [
+          "__meta",
+          "id",
+          "on",
+          "position",
+          "rotation",
+          "start",
+          "value",
+          "xAxis",
+          "yAxis",
+          "zAxis"
+        ],
+        "properties": {
+          "__meta": {
+            "description": "Metadata.",
+            "type": "array",
+            "items": {
+              "description": "Metadata.",
+              "type": "object",
+              "required": [
+                "sourceRange"
+              ],
+              "properties": {
+                "sourceRange": {
+                  "description": "The source range.",
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "format": "uint",
+                    "minimum": 0.0
+                  },
+                  "maxItems": 2,
+                  "minItems": 2
+                }
+              }
+            }
+          },
+          "entityId": {
+            "description": "The plane id or face id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "id": {
+            "description": "The id of the sketch group.",
+            "type": "string",
+            "format": "uuid"
+          },
+          "on": {
+            "description": "What the sketch is on (can be a plane or a face).",
+            "oneOf": [
+              {
+                "description": "A plane.",
+                "type": "object",
+                "required": [
+                  "__meta",
+                  "id",
+                  "origin",
+                  "type",
+                  "value",
+                  "xAxis",
+                  "yAxis",
+                  "zAxis"
+                ],
+                "properties": {
+                  "__meta": {
+                    "type": "array",
+                    "items": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    }
+                  },
+                  "id": {
+                    "description": "The id of the plane.",
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "origin": {
+                    "description": "Origin of the plane.",
+                    "type": "object",
+                    "required": [
+                      "x",
+                      "y",
+                      "z"
+                    ],
+                    "properties": {
+                      "x": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "y": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "z": {
+                        "type": "number",
+                        "format": "double"
+                      }
+                    }
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "plane"
+                    ]
+                  },
+                  "value": {
+                    "description": "Type for a plane.",
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "XY",
+                          "XZ",
+                          "YZ"
+                        ]
+                      },
+                      {
+                        "description": "A custom plane.",
+                        "type": "string",
+                        "enum": [
+                          "Custom"
+                        ]
+                      }
+                    ]
+                  },
+                  "xAxis": {
+                    "description": "What should the plane’s X axis be?",
+                    "type": "object",
+                    "required": [
+                      "x",
+                      "y",
+                      "z"
+                    ],
+                    "properties": {
+                      "x": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "y": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "z": {
+                        "type": "number",
+                        "format": "double"
+                      }
+                    }
+                  },
+                  "yAxis": {
+                    "description": "What should the plane’s Y axis be?",
+                    "type": "object",
+                    "required": [
+                      "x",
+                      "y",
+                      "z"
+                    ],
+                    "properties": {
+                      "x": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "y": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "z": {
+                        "type": "number",
+                        "format": "double"
+                      }
+                    }
+                  },
+                  "zAxis": {
+                    "description": "The z-axis (normal).",
+                    "type": "object",
+                    "required": [
+                      "x",
+                      "y",
+                      "z"
+                    ],
+                    "properties": {
+                      "x": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "y": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "z": {
+                        "type": "number",
+                        "format": "double"
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "description": "A face.",
+                "type": "object",
+                "required": [
+                  "__meta",
+                  "id",
+                  "sketchGroupId",
+                  "type",
+                  "value",
+                  "xAxis",
+                  "yAxis",
+                  "zAxis"
+                ],
+                "properties": {
+                  "__meta": {
+                    "type": "array",
+                    "items": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    }
+                  },
+                  "id": {
+                    "description": "The id of the face.",
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "sketchGroupId": {
+                    "description": "The original sketch group id of the object we are sketching on.",
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "face"
+                    ]
+                  },
+                  "value": {
+                    "description": "The tag of the face.",
+                    "type": "string"
+                  },
+                  "xAxis": {
+                    "description": "What should the face’s X axis be?",
+                    "type": "object",
+                    "required": [
+                      "x",
+                      "y",
+                      "z"
+                    ],
+                    "properties": {
+                      "x": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "y": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "z": {
+                        "type": "number",
+                        "format": "double"
+                      }
+                    }
+                  },
+                  "yAxis": {
+                    "description": "What should the face’s Y axis be?",
+                    "type": "object",
+                    "required": [
+                      "x",
+                      "y",
+                      "z"
+                    ],
+                    "properties": {
+                      "x": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "y": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "z": {
+                        "type": "number",
+                        "format": "double"
+                      }
+                    }
+                  },
+                  "zAxis": {
+                    "description": "The z-axis (normal).",
+                    "type": "object",
+                    "required": [
+                      "x",
+                      "y",
+                      "z"
+                    ],
+                    "properties": {
+                      "x": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "y": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "z": {
+                        "type": "number",
+                        "format": "double"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "position": {
+            "description": "The position of the sketch group.",
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "maxItems": 3,
+            "minItems": 3
+          },
+          "rotation": {
+            "description": "The rotation of the sketch group base plane.",
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "maxItems": 4,
+            "minItems": 4
+          },
+          "start": {
+            "description": "The starting path.",
+            "type": "object",
+            "required": [
+              "__geoMeta",
+              "from",
+              "name",
+              "to"
+            ],
+            "properties": {
+              "__geoMeta": {
+                "description": "Metadata.",
+                "type": "object",
+                "required": [
+                  "id",
+                  "sourceRange"
+                ],
+                "properties": {
+                  "id": {
+                    "description": "The id of the geometry.",
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "sourceRange": {
+                    "description": "The source range.",
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "format": "uint",
+                      "minimum": 0.0
+                    },
+                    "maxItems": 2,
+                    "minItems": 2
+                  }
+                }
+              },
+              "from": {
+                "description": "The from point.",
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "maxItems": 2,
+                "minItems": 2
+              },
+              "name": {
+                "description": "The name of the path.",
+                "type": "string"
+              },
+              "to": {
+                "description": "The to point.",
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "maxItems": 2,
+                "minItems": 2
+              }
+            }
+          },
+          "value": {
+            "description": "The paths in the sketch group.",
+            "type": "array",
+            "items": {
+              "description": "A path.",
+              "oneOf": [
+                {
+                  "description": "A path that goes to a point.",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "ToPoint"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "description": "A arc that is tangential to the last path segment that goes to a point",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "ccw",
+                    "center",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "ccw": {
+                      "description": "arc's direction",
+                      "type": "boolean"
+                    },
+                    "center": {
+                      "description": "the arc's center",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "TangentialArcTo"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "description": "A arc that is tangential to the last path segment",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "TangentialArc"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "description": "A path that is horizontal.",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type",
+                    "x"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "Horizontal"
+                      ]
+                    },
+                    "x": {
+                      "description": "The x coordinate.",
+                      "type": "number",
+                      "format": "double"
+                    }
+                  }
+                },
+                {
+                  "description": "An angled line to.",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "AngledLineTo"
+                      ]
+                    },
+                    "x": {
+                      "description": "The x coordinate.",
+                      "type": "number",
+                      "format": "double",
+                      "nullable": true
+                    },
+                    "y": {
+                      "description": "The y coordinate.",
+                      "type": "number",
+                      "format": "double",
+                      "nullable": true
+                    }
+                  }
+                },
+                {
+                  "description": "A base path.",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "Base"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "xAxis": {
+            "description": "The x-axis of the sketch group base plane in the 3D space",
+            "type": "object",
+            "required": [
+              "x",
+              "y",
+              "z"
+            ],
+            "properties": {
+              "x": {
+                "type": "number",
+                "format": "double"
+              },
+              "y": {
+                "type": "number",
+                "format": "double"
+              },
+              "z": {
+                "type": "number",
+                "format": "double"
+              }
+            }
+          },
+          "yAxis": {
+            "description": "The y-axis of the sketch group base plane in the 3D space",
+            "type": "object",
+            "required": [
+              "x",
+              "y",
+              "z"
+            ],
+            "properties": {
+              "x": {
+                "type": "number",
+                "format": "double"
+              },
+              "y": {
+                "type": "number",
+                "format": "double"
+              },
+              "z": {
+                "type": "number",
+                "format": "double"
+              }
+            }
+          },
+          "zAxis": {
+            "description": "The z-axis of the sketch group base plane in the 3D space",
+            "type": "object",
+            "required": [
+              "x",
+              "y",
+              "z"
+            ],
+            "properties": {
+              "x": {
+                "type": "number",
+                "format": "double"
+              },
+              "y": {
+                "type": "number",
+                "format": "double"
+              },
+              "z": {
+                "type": "number",
+                "format": "double"
+              }
+            }
+          }
+        }
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
     "name": "close",
     "summary": "Close the current sketch.",
     "description": "",
@@ -25627,7 +27084,7 @@
   {
     "name": "import",
     "summary": "Import a CAD file.",
-    "description": "For formats lacking unit data (STL, OBJ, PLY), the default import unit is millimeters. Otherwise you can specify the unit by passing in the options parameter. If you import a gltf file, we will try to find the bin file and import it as well.",
+    "description": "For formats lacking unit data (STL, OBJ, PLY), the default import unit is millimeters. Otherwise you can specify the unit by passing in the options parameter. If you import a gltf file, we will try to find the bin file and import it as well.\nImport paths are relative to the current project directory. This only works in the desktop app not in browser.",
     "tags": [],
     "args": [
       {
@@ -41726,978 +43183,6 @@
       },
       "required": true
     },
-    "unpublished": false,
-    "deprecated": false
-  },
-  {
-    "name": "show",
-    "summary": "Render a model.",
-    "description": "",
-    "tags": [],
-    "args": [
-      {
-        "name": "sketch",
-        "type": "SketchGroup",
-        "schema": {
-          "description": "A sketch group is a collection of paths.",
-          "type": "object",
-          "required": [
-            "__meta",
-            "id",
-            "on",
-            "position",
-            "rotation",
-            "start",
-            "value",
-            "xAxis",
-            "yAxis",
-            "zAxis"
-          ],
-          "properties": {
-            "__meta": {
-              "description": "Metadata.",
-              "type": "array",
-              "items": {
-                "description": "Metadata.",
-                "type": "object",
-                "required": [
-                  "sourceRange"
-                ],
-                "properties": {
-                  "sourceRange": {
-                    "description": "The source range.",
-                    "type": "array",
-                    "items": {
-                      "type": "integer",
-                      "format": "uint",
-                      "minimum": 0.0
-                    },
-                    "maxItems": 2,
-                    "minItems": 2
-                  }
-                }
-              }
-            },
-            "entityId": {
-              "description": "The plane id or face id of the sketch group.",
-              "type": "string",
-              "format": "uuid",
-              "nullable": true
-            },
-            "id": {
-              "description": "The id of the sketch group.",
-              "type": "string",
-              "format": "uuid"
-            },
-            "on": {
-              "description": "What the sketch is on (can be a plane or a face).",
-              "oneOf": [
-                {
-                  "description": "A plane.",
-                  "type": "object",
-                  "required": [
-                    "__meta",
-                    "id",
-                    "origin",
-                    "type",
-                    "value",
-                    "xAxis",
-                    "yAxis",
-                    "zAxis"
-                  ],
-                  "properties": {
-                    "__meta": {
-                      "type": "array",
-                      "items": {
-                        "description": "Metadata.",
-                        "type": "object",
-                        "required": [
-                          "sourceRange"
-                        ],
-                        "properties": {
-                          "sourceRange": {
-                            "description": "The source range.",
-                            "type": "array",
-                            "items": {
-                              "type": "integer",
-                              "format": "uint",
-                              "minimum": 0.0
-                            },
-                            "maxItems": 2,
-                            "minItems": 2
-                          }
-                        }
-                      }
-                    },
-                    "id": {
-                      "description": "The id of the plane.",
-                      "type": "string",
-                      "format": "uuid"
-                    },
-                    "origin": {
-                      "description": "Origin of the plane.",
-                      "type": "object",
-                      "required": [
-                        "x",
-                        "y",
-                        "z"
-                      ],
-                      "properties": {
-                        "x": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "y": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "z": {
-                          "type": "number",
-                          "format": "double"
-                        }
-                      }
-                    },
-                    "type": {
-                      "type": "string",
-                      "enum": [
-                        "plane"
-                      ]
-                    },
-                    "value": {
-                      "description": "Type for a plane.",
-                      "oneOf": [
-                        {
-                          "type": "string",
-                          "enum": [
-                            "XY",
-                            "XZ",
-                            "YZ"
-                          ]
-                        },
-                        {
-                          "description": "A custom plane.",
-                          "type": "string",
-                          "enum": [
-                            "Custom"
-                          ]
-                        }
-                      ]
-                    },
-                    "xAxis": {
-                      "description": "What should the plane’s X axis be?",
-                      "type": "object",
-                      "required": [
-                        "x",
-                        "y",
-                        "z"
-                      ],
-                      "properties": {
-                        "x": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "y": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "z": {
-                          "type": "number",
-                          "format": "double"
-                        }
-                      }
-                    },
-                    "yAxis": {
-                      "description": "What should the plane’s Y axis be?",
-                      "type": "object",
-                      "required": [
-                        "x",
-                        "y",
-                        "z"
-                      ],
-                      "properties": {
-                        "x": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "y": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "z": {
-                          "type": "number",
-                          "format": "double"
-                        }
-                      }
-                    },
-                    "zAxis": {
-                      "description": "The z-axis (normal).",
-                      "type": "object",
-                      "required": [
-                        "x",
-                        "y",
-                        "z"
-                      ],
-                      "properties": {
-                        "x": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "y": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "z": {
-                          "type": "number",
-                          "format": "double"
-                        }
-                      }
-                    }
-                  }
-                },
-                {
-                  "description": "A face.",
-                  "type": "object",
-                  "required": [
-                    "__meta",
-                    "id",
-                    "sketchGroupId",
-                    "type",
-                    "value",
-                    "xAxis",
-                    "yAxis",
-                    "zAxis"
-                  ],
-                  "properties": {
-                    "__meta": {
-                      "type": "array",
-                      "items": {
-                        "description": "Metadata.",
-                        "type": "object",
-                        "required": [
-                          "sourceRange"
-                        ],
-                        "properties": {
-                          "sourceRange": {
-                            "description": "The source range.",
-                            "type": "array",
-                            "items": {
-                              "type": "integer",
-                              "format": "uint",
-                              "minimum": 0.0
-                            },
-                            "maxItems": 2,
-                            "minItems": 2
-                          }
-                        }
-                      }
-                    },
-                    "id": {
-                      "description": "The id of the face.",
-                      "type": "string",
-                      "format": "uuid"
-                    },
-                    "sketchGroupId": {
-                      "description": "The original sketch group id of the object we are sketching on.",
-                      "type": "string",
-                      "format": "uuid"
-                    },
-                    "type": {
-                      "type": "string",
-                      "enum": [
-                        "face"
-                      ]
-                    },
-                    "value": {
-                      "description": "The tag of the face.",
-                      "type": "string"
-                    },
-                    "xAxis": {
-                      "description": "What should the face’s X axis be?",
-                      "type": "object",
-                      "required": [
-                        "x",
-                        "y",
-                        "z"
-                      ],
-                      "properties": {
-                        "x": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "y": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "z": {
-                          "type": "number",
-                          "format": "double"
-                        }
-                      }
-                    },
-                    "yAxis": {
-                      "description": "What should the face’s Y axis be?",
-                      "type": "object",
-                      "required": [
-                        "x",
-                        "y",
-                        "z"
-                      ],
-                      "properties": {
-                        "x": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "y": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "z": {
-                          "type": "number",
-                          "format": "double"
-                        }
-                      }
-                    },
-                    "zAxis": {
-                      "description": "The z-axis (normal).",
-                      "type": "object",
-                      "required": [
-                        "x",
-                        "y",
-                        "z"
-                      ],
-                      "properties": {
-                        "x": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "y": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "z": {
-                          "type": "number",
-                          "format": "double"
-                        }
-                      }
-                    }
-                  }
-                }
-              ]
-            },
-            "position": {
-              "description": "The position of the sketch group.",
-              "type": "array",
-              "items": {
-                "type": "number",
-                "format": "double"
-              },
-              "maxItems": 3,
-              "minItems": 3
-            },
-            "rotation": {
-              "description": "The rotation of the sketch group base plane.",
-              "type": "array",
-              "items": {
-                "type": "number",
-                "format": "double"
-              },
-              "maxItems": 4,
-              "minItems": 4
-            },
-            "start": {
-              "description": "The starting path.",
-              "type": "object",
-              "required": [
-                "__geoMeta",
-                "from",
-                "name",
-                "to"
-              ],
-              "properties": {
-                "__geoMeta": {
-                  "description": "Metadata.",
-                  "type": "object",
-                  "required": [
-                    "id",
-                    "sourceRange"
-                  ],
-                  "properties": {
-                    "id": {
-                      "description": "The id of the geometry.",
-                      "type": "string",
-                      "format": "uuid"
-                    },
-                    "sourceRange": {
-                      "description": "The source range.",
-                      "type": "array",
-                      "items": {
-                        "type": "integer",
-                        "format": "uint",
-                        "minimum": 0.0
-                      },
-                      "maxItems": 2,
-                      "minItems": 2
-                    }
-                  }
-                },
-                "from": {
-                  "description": "The from point.",
-                  "type": "array",
-                  "items": {
-                    "type": "number",
-                    "format": "double"
-                  },
-                  "maxItems": 2,
-                  "minItems": 2
-                },
-                "name": {
-                  "description": "The name of the path.",
-                  "type": "string"
-                },
-                "to": {
-                  "description": "The to point.",
-                  "type": "array",
-                  "items": {
-                    "type": "number",
-                    "format": "double"
-                  },
-                  "maxItems": 2,
-                  "minItems": 2
-                }
-              }
-            },
-            "value": {
-              "description": "The paths in the sketch group.",
-              "type": "array",
-              "items": {
-                "description": "A path.",
-                "oneOf": [
-                  {
-                    "description": "A path that goes to a point.",
-                    "type": "object",
-                    "required": [
-                      "__geoMeta",
-                      "from",
-                      "name",
-                      "to",
-                      "type"
-                    ],
-                    "properties": {
-                      "__geoMeta": {
-                        "description": "Metadata.",
-                        "type": "object",
-                        "required": [
-                          "id",
-                          "sourceRange"
-                        ],
-                        "properties": {
-                          "id": {
-                            "description": "The id of the geometry.",
-                            "type": "string",
-                            "format": "uuid"
-                          },
-                          "sourceRange": {
-                            "description": "The source range.",
-                            "type": "array",
-                            "items": {
-                              "type": "integer",
-                              "format": "uint",
-                              "minimum": 0.0
-                            },
-                            "maxItems": 2,
-                            "minItems": 2
-                          }
-                        }
-                      },
-                      "from": {
-                        "description": "The from point.",
-                        "type": "array",
-                        "items": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "maxItems": 2,
-                        "minItems": 2
-                      },
-                      "name": {
-                        "description": "The name of the path.",
-                        "type": "string"
-                      },
-                      "to": {
-                        "description": "The to point.",
-                        "type": "array",
-                        "items": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "maxItems": 2,
-                        "minItems": 2
-                      },
-                      "type": {
-                        "type": "string",
-                        "enum": [
-                          "ToPoint"
-                        ]
-                      }
-                    }
-                  },
-                  {
-                    "description": "A arc that is tangential to the last path segment that goes to a point",
-                    "type": "object",
-                    "required": [
-                      "__geoMeta",
-                      "ccw",
-                      "center",
-                      "from",
-                      "name",
-                      "to",
-                      "type"
-                    ],
-                    "properties": {
-                      "__geoMeta": {
-                        "description": "Metadata.",
-                        "type": "object",
-                        "required": [
-                          "id",
-                          "sourceRange"
-                        ],
-                        "properties": {
-                          "id": {
-                            "description": "The id of the geometry.",
-                            "type": "string",
-                            "format": "uuid"
-                          },
-                          "sourceRange": {
-                            "description": "The source range.",
-                            "type": "array",
-                            "items": {
-                              "type": "integer",
-                              "format": "uint",
-                              "minimum": 0.0
-                            },
-                            "maxItems": 2,
-                            "minItems": 2
-                          }
-                        }
-                      },
-                      "ccw": {
-                        "description": "arc's direction",
-                        "type": "boolean"
-                      },
-                      "center": {
-                        "description": "the arc's center",
-                        "type": "array",
-                        "items": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "maxItems": 2,
-                        "minItems": 2
-                      },
-                      "from": {
-                        "description": "The from point.",
-                        "type": "array",
-                        "items": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "maxItems": 2,
-                        "minItems": 2
-                      },
-                      "name": {
-                        "description": "The name of the path.",
-                        "type": "string"
-                      },
-                      "to": {
-                        "description": "The to point.",
-                        "type": "array",
-                        "items": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "maxItems": 2,
-                        "minItems": 2
-                      },
-                      "type": {
-                        "type": "string",
-                        "enum": [
-                          "TangentialArcTo"
-                        ]
-                      }
-                    }
-                  },
-                  {
-                    "description": "A arc that is tangential to the last path segment",
-                    "type": "object",
-                    "required": [
-                      "__geoMeta",
-                      "from",
-                      "name",
-                      "to",
-                      "type"
-                    ],
-                    "properties": {
-                      "__geoMeta": {
-                        "description": "Metadata.",
-                        "type": "object",
-                        "required": [
-                          "id",
-                          "sourceRange"
-                        ],
-                        "properties": {
-                          "id": {
-                            "description": "The id of the geometry.",
-                            "type": "string",
-                            "format": "uuid"
-                          },
-                          "sourceRange": {
-                            "description": "The source range.",
-                            "type": "array",
-                            "items": {
-                              "type": "integer",
-                              "format": "uint",
-                              "minimum": 0.0
-                            },
-                            "maxItems": 2,
-                            "minItems": 2
-                          }
-                        }
-                      },
-                      "from": {
-                        "description": "The from point.",
-                        "type": "array",
-                        "items": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "maxItems": 2,
-                        "minItems": 2
-                      },
-                      "name": {
-                        "description": "The name of the path.",
-                        "type": "string"
-                      },
-                      "to": {
-                        "description": "The to point.",
-                        "type": "array",
-                        "items": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "maxItems": 2,
-                        "minItems": 2
-                      },
-                      "type": {
-                        "type": "string",
-                        "enum": [
-                          "TangentialArc"
-                        ]
-                      }
-                    }
-                  },
-                  {
-                    "description": "A path that is horizontal.",
-                    "type": "object",
-                    "required": [
-                      "__geoMeta",
-                      "from",
-                      "name",
-                      "to",
-                      "type",
-                      "x"
-                    ],
-                    "properties": {
-                      "__geoMeta": {
-                        "description": "Metadata.",
-                        "type": "object",
-                        "required": [
-                          "id",
-                          "sourceRange"
-                        ],
-                        "properties": {
-                          "id": {
-                            "description": "The id of the geometry.",
-                            "type": "string",
-                            "format": "uuid"
-                          },
-                          "sourceRange": {
-                            "description": "The source range.",
-                            "type": "array",
-                            "items": {
-                              "type": "integer",
-                              "format": "uint",
-                              "minimum": 0.0
-                            },
-                            "maxItems": 2,
-                            "minItems": 2
-                          }
-                        }
-                      },
-                      "from": {
-                        "description": "The from point.",
-                        "type": "array",
-                        "items": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "maxItems": 2,
-                        "minItems": 2
-                      },
-                      "name": {
-                        "description": "The name of the path.",
-                        "type": "string"
-                      },
-                      "to": {
-                        "description": "The to point.",
-                        "type": "array",
-                        "items": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "maxItems": 2,
-                        "minItems": 2
-                      },
-                      "type": {
-                        "type": "string",
-                        "enum": [
-                          "Horizontal"
-                        ]
-                      },
-                      "x": {
-                        "description": "The x coordinate.",
-                        "type": "number",
-                        "format": "double"
-                      }
-                    }
-                  },
-                  {
-                    "description": "An angled line to.",
-                    "type": "object",
-                    "required": [
-                      "__geoMeta",
-                      "from",
-                      "name",
-                      "to",
-                      "type"
-                    ],
-                    "properties": {
-                      "__geoMeta": {
-                        "description": "Metadata.",
-                        "type": "object",
-                        "required": [
-                          "id",
-                          "sourceRange"
-                        ],
-                        "properties": {
-                          "id": {
-                            "description": "The id of the geometry.",
-                            "type": "string",
-                            "format": "uuid"
-                          },
-                          "sourceRange": {
-                            "description": "The source range.",
-                            "type": "array",
-                            "items": {
-                              "type": "integer",
-                              "format": "uint",
-                              "minimum": 0.0
-                            },
-                            "maxItems": 2,
-                            "minItems": 2
-                          }
-                        }
-                      },
-                      "from": {
-                        "description": "The from point.",
-                        "type": "array",
-                        "items": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "maxItems": 2,
-                        "minItems": 2
-                      },
-                      "name": {
-                        "description": "The name of the path.",
-                        "type": "string"
-                      },
-                      "to": {
-                        "description": "The to point.",
-                        "type": "array",
-                        "items": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "maxItems": 2,
-                        "minItems": 2
-                      },
-                      "type": {
-                        "type": "string",
-                        "enum": [
-                          "AngledLineTo"
-                        ]
-                      },
-                      "x": {
-                        "description": "The x coordinate.",
-                        "type": "number",
-                        "format": "double",
-                        "nullable": true
-                      },
-                      "y": {
-                        "description": "The y coordinate.",
-                        "type": "number",
-                        "format": "double",
-                        "nullable": true
-                      }
-                    }
-                  },
-                  {
-                    "description": "A base path.",
-                    "type": "object",
-                    "required": [
-                      "__geoMeta",
-                      "from",
-                      "name",
-                      "to",
-                      "type"
-                    ],
-                    "properties": {
-                      "__geoMeta": {
-                        "description": "Metadata.",
-                        "type": "object",
-                        "required": [
-                          "id",
-                          "sourceRange"
-                        ],
-                        "properties": {
-                          "id": {
-                            "description": "The id of the geometry.",
-                            "type": "string",
-                            "format": "uuid"
-                          },
-                          "sourceRange": {
-                            "description": "The source range.",
-                            "type": "array",
-                            "items": {
-                              "type": "integer",
-                              "format": "uint",
-                              "minimum": 0.0
-                            },
-                            "maxItems": 2,
-                            "minItems": 2
-                          }
-                        }
-                      },
-                      "from": {
-                        "description": "The from point.",
-                        "type": "array",
-                        "items": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "maxItems": 2,
-                        "minItems": 2
-                      },
-                      "name": {
-                        "description": "The name of the path.",
-                        "type": "string"
-                      },
-                      "to": {
-                        "description": "The to point.",
-                        "type": "array",
-                        "items": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "maxItems": 2,
-                        "minItems": 2
-                      },
-                      "type": {
-                        "type": "string",
-                        "enum": [
-                          "Base"
-                        ]
-                      }
-                    }
-                  }
-                ]
-              }
-            },
-            "xAxis": {
-              "description": "The x-axis of the sketch group base plane in the 3D space",
-              "type": "object",
-              "required": [
-                "x",
-                "y",
-                "z"
-              ],
-              "properties": {
-                "x": {
-                  "type": "number",
-                  "format": "double"
-                },
-                "y": {
-                  "type": "number",
-                  "format": "double"
-                },
-                "z": {
-                  "type": "number",
-                  "format": "double"
-                }
-              }
-            },
-            "yAxis": {
-              "description": "The y-axis of the sketch group base plane in the 3D space",
-              "type": "object",
-              "required": [
-                "x",
-                "y",
-                "z"
-              ],
-              "properties": {
-                "x": {
-                  "type": "number",
-                  "format": "double"
-                },
-                "y": {
-                  "type": "number",
-                  "format": "double"
-                },
-                "z": {
-                  "type": "number",
-                  "format": "double"
-                }
-              }
-            },
-            "zAxis": {
-              "description": "The z-axis of the sketch group base plane in the 3D space",
-              "type": "object",
-              "required": [
-                "x",
-                "y",
-                "z"
-              ],
-              "properties": {
-                "x": {
-                  "type": "number",
-                  "format": "double"
-                },
-                "y": {
-                  "type": "number",
-                  "format": "double"
-                },
-                "z": {
-                  "type": "number",
-                  "format": "double"
-                }
-              }
-            }
-          }
-        },
-        "required": true
-      }
-    ],
-    "returnValue": null,
     "unpublished": false,
     "deprecated": false
   },

@@ -6,7 +6,7 @@ fn cube = (length, center) => {
   let p1 = [-l + x,  l + y]
   let p2 = [ l + x,  l + y]
   let p3 = [ l + x, -l + y]
-  
+
   return startSketchAt(p0)
   |> lineTo(p1, %)
   |> lineTo(p2, %)
@@ -17,4 +17,3 @@ fn cube = (length, center) => {
 }
 
 const myCube = cube(40, [0,0])
-show(myCube)

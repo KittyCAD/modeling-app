@@ -1,15 +1,8 @@
-import {
-  MouseEventHandler,
-  WheelEventHandler,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import { MouseEventHandler, useEffect, useRef, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { useStore } from '../useStore'
-import { getNormalisedCoordinates, throttle } from '../lib/utils'
+import { getNormalisedCoordinates } from '../lib/utils'
 import Loading from './Loading'
-import { cameraMouseDragGuards } from 'lib/cameraControls'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { Models } from '@kittycad/lib'
 import { engineCommandManager } from '../lang/std/engineConnection'
@@ -36,7 +29,6 @@ export const Stream = ({ className = '' }: { className?: string }) => {
     streamDimensions: s.streamDimensions,
   }))
   const { settings } = useGlobalStateContext()
-  const cameraControls = settings?.context?.cameraControls
   const { state } = useModelingContext()
   const { isExecuting } = useKclContext()
   const { overallState } = useNetworkStatus()
@@ -67,19 +59,6 @@ export const Stream = ({ className = '' }: { className?: string }) => {
     setButtonDownInStream(e.button)
     setClickCoords({ x, y })
   }
-
-  const fps = 60
-  const handleScroll: WheelEventHandler<HTMLVideoElement> = throttle((e) => {
-    if (!cameraMouseDragGuards[cameraControls].zoom.scrollCallback(e)) return
-    engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'default_camera_zoom',
-        magnitude: e.deltaY * 0.4,
-      },
-      cmd_id: uuidv4(),
-    })
-  }, Math.round(1000 / fps))
 
   const handleMouseUp: MouseEventHandler<HTMLDivElement> = ({
     clientX,
@@ -159,7 +138,6 @@ export const Stream = ({ className = '' }: { className?: string }) => {
         muted
         autoPlay
         controls={false}
-        onWheel={handleScroll}
         onPlay={() => setIsLoading(false)}
         onMouseMoveCapture={handleMouseMove}
         className={`w-full cursor-pointer h-full ${isExecuting && 'blur-md'}`}
