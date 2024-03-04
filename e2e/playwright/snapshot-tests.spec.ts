@@ -104,11 +104,8 @@ const part001 = startSketchOn('-XZ')
 
     // Go through export via command bar
     await page.getByRole('option', { name: output.type, exact: false }).click()
-    if ('storage' in output) {
-      await page
-        .getByRole('option', { name: output.storage, exact: false })
-        .click()
-    }
+    // We don't need to input the storage since it's already selected with defaults we want
+    // (we would need interact here if we wanted to export with non-defaults)
     await page.getByRole('button', { name: 'Submit command' }).click()
 
     // Handle download
