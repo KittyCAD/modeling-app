@@ -252,6 +252,7 @@ async fn serial_test_basic_fillet_cube_end() {
     |> extrude(10, %)
     |> fillet({radius: 2, tags: ["thing"], query:"endFace" }, %)
     |> fillet({radius: 2, tags: ["thing"] }, %)
+
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
