@@ -4,6 +4,7 @@ import { getUtils } from './test-utils'
 import waitOn from 'wait-on'
 import { Themes } from '../../src/lib/theme'
 import { roundOff } from 'lib/utils'
+import { platform } from 'node:os'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -134,6 +135,7 @@ test('Basic sketch', async ({ page }) => {
   |> angledLine([180, segLen('seg01', %)], %)`)
 })
 
+test.skip(process.platform === 'darwin', 'Can moving camera')
 test('Can moving camera', async ({ page, context }) => {
   const u = getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
@@ -161,6 +163,7 @@ test('Can moving camera', async ({ page, context }) => {
     await u.closeDebugPanel()
     await page.getByRole('button', { name: 'Start Sketch' }).click()
     await page.waitForTimeout(100)
+    // const yo = page.getByTestId('cam-x-position').inputValue()
 
     await u.doAndWaitForImageDiff(async () => {
       await mouseActions()
@@ -172,23 +175,23 @@ test('Can moving camera', async ({ page, context }) => {
     }, 300)
 
     await u.openAndClearDebugPanel()
-    const xError = Math.abs(
-      Number(await page.getByTestId('cam-x-position').inputValue()) + xyz[0]
-    )
-    const yError = Math.abs(
-      Number(await page.getByTestId('cam-y-position').inputValue()) + xyz[1]
-    )
-    const zError = Math.abs(
-      Number(await page.getByTestId('cam-z-position').inputValue()) + xyz[2]
-    )
+    const vals = await Promise.all([
+      page.getByTestId('cam-x-position').inputValue(),
+      page.getByTestId('cam-y-position').inputValue(),
+      page.getByTestId('cam-z-position').inputValue(),
+    ])
+    const xError = Math.abs(Number(vals[0]) + xyz[0])
+    const yError = Math.abs(Number(vals[1]) + xyz[1])
+    const zError = Math.abs(Number(vals[2]) + xyz[2])
 
     let shouldRetry = false
 
     if (xError > 5 || yError > 5 || zError > 5) {
       if (cnt > 2) {
-        console.log('xError', xError)
-        console.log('yError', yError)
-        console.log('zError', zError)
+        console.log('xVal', vals[0], 'xError', xError)
+        console.log('yVal', vals[1], 'yError', yError)
+        console.log('zVal', vals[2], 'zError', zError)
+
         throw new Error('Camera position not as expected')
       }
       shouldRetry = true

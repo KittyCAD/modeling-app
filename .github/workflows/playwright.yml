@@ -85,7 +85,6 @@ jobs:
   playwright-macos:
     timeout-minutes: 60
     runs-on: macos-14
-    needs: playwright-ubuntu
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
