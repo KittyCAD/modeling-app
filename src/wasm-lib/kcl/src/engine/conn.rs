@@ -167,7 +167,6 @@ impl EngineManager for EngineConnection {
         cmd: kittycad::types::ModelingCmd,
     ) -> Result<OkWebSocketResponseData, KclError> {
         let (tx, rx) = oneshot::channel();
-        println!("{:?}", cmd);
 
         // Send the request to the engine, via the actor.
         self.engine_req_tx
