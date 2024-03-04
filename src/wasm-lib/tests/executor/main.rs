@@ -215,7 +215,9 @@ async fn serial_test_fillet_duplicate_tags() {
     |> fillet({radius: 0.5, tags: ["thing", "thing"]}, %)
 "#;
 
-    let result = execute_and_snapshot(code).await;
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        ;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
@@ -224,7 +226,7 @@ async fn serial_test_fillet_duplicate_tags() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_basic_fillet_cube() {
+async fn serial_test_basic_fillet_cube_start() {
     let code = r#"const part001 = startSketchOn('XY')
     |> startProfileAt([0,0], %)
     |> line({to: [0, 10], tag: "thing"}, %)
@@ -235,8 +237,28 @@ async fn serial_test_basic_fillet_cube() {
     |> fillet({radius: 2, tags: ["thing", "thing2"]}, %)
 "#;
 
-    let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/basic_fillet_cube.png", &result, 0.999);
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/basic_fillet_cube_start.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_basic_fillet_cube_end() {
+    let code = r#"const part001 = startSketchOn('XY')
+    |> startProfileAt([0,0], %)
+    |> line({to: [0, 10], tag: "thing"}, %)
+    |> line([10, 0], %)
+    |> line({to: [0, -10], tag: "thing2"}, %)
+    |> close(%)
+    |> extrude(10, %)
+    |> fillet({radius: 2, tags: ["thing", "thing2"]}, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/basic_fillet_cube_end.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
