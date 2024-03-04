@@ -41,8 +41,9 @@ export const settingsCommandBarConfig: CommandSetConfig<
       baseUnit: {
         inputType: 'options',
         required: true,
-        defaultValue: (context) => context.baseUnit,
-        options: (context) =>
+        defaultValueFromContext: (context) => context.baseUnit,
+        options: [],
+        optionsFromContext: (context) =>
           Object.values(baseUnitsUnion).map((v) => ({
             name: v,
             value: v,
@@ -57,8 +58,9 @@ export const settingsCommandBarConfig: CommandSetConfig<
       cameraControls: {
         inputType: 'options',
         required: true,
-        defaultValue: (context) => context.cameraControls,
-        options: (context) =>
+        defaultValueFromContext: (context) => context.cameraControls,
+        options: [],
+        optionsFromContext: (context) =>
           Object.values(cameraSystems).map((v) => ({
             name: v,
             value: v,
@@ -74,7 +76,7 @@ export const settingsCommandBarConfig: CommandSetConfig<
       defaultProjectName: {
         inputType: 'string',
         required: true,
-        defaultValue: (context) => context.defaultProjectName,
+        defaultValueFromContext: (context) => context.defaultProjectName,
       },
     },
   },
@@ -84,8 +86,9 @@ export const settingsCommandBarConfig: CommandSetConfig<
       textWrapping: {
         inputType: 'options',
         required: true,
-        defaultValue: (context) => context.textWrapping,
-        options: (context) => [
+        defaultValueFromContext: (context) => context.textWrapping,
+        options: [],
+        optionsFromContext: (context) => [
           {
             name: 'On',
             value: 'On' as Toggle,
@@ -106,8 +109,9 @@ export const settingsCommandBarConfig: CommandSetConfig<
       theme: {
         inputType: 'options',
         required: true,
-        defaultValue: (context) => context.theme,
-        options: (context) =>
+        defaultValueFromContext: (context) => context.theme,
+        options: [],
+        optionsFromContext: (context) =>
           Object.values(Themes).map((v) => ({
             name: v,
             value: v,
@@ -122,8 +126,9 @@ export const settingsCommandBarConfig: CommandSetConfig<
       unitSystem: {
         inputType: 'options',
         required: true,
-        defaultValue: (context) => context.unitSystem,
-        options: (context) => [
+        defaultValueFromContext: (context) => context.unitSystem,
+        options: [],
+        optionsFromContext: (context) => [
           {
             name: 'Imperial',
             value: 'imperial' as UnitSystem,

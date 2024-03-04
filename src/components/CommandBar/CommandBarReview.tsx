@@ -48,7 +48,8 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     if (!arg) return
   })
 
-  function submitCommand() {
+  function submitCommand(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
     commandBarSend({
       type: 'Submit command',
       data: argumentsToSubmit,

@@ -17,7 +17,7 @@ interface CreateMachineCommandProps<
   ownerMachine: T['id']
   state: StateFrom<T>
   send: Function
-  actor?: InterpreterFrom<T>
+  actor: InterpreterFrom<T>
   commandBarConfig?: CommandSetConfig<T, S>
   onCancel?: () => void
 }
@@ -91,13 +91,13 @@ function buildCommandArguments<
 >(
   state: StateFrom<T>,
   args: CommandConfig<T, CommandName, S>['args'],
-  actor?: InterpreterFrom<T>
+  machineActor: InterpreterFrom<T>
 ): NonNullable<Command<T, CommandName, S>['args']> {
   const newArgs = {} as NonNullable<Command<T, CommandName, S>['args']>
 
   for (const arg in args) {
     const argConfig = args[arg] as CommandArgumentConfig<S[typeof arg], T>
-    const newArg = buildCommandArgument(argConfig, arg, state, actor)
+    const newArg = buildCommandArgument(argConfig, arg, state, machineActor)
     newArgs[arg] = newArg
   }
 
@@ -111,44 +111,36 @@ function buildCommandArgument<
   arg: CommandArgumentConfig<O, T>,
   argName: string,
   state: StateFrom<T>,
-  actor?: InterpreterFrom<T>
+  machineActor: InterpreterFrom<T>
 ): CommandArgument<O, T> & { inputType: typeof arg.inputType } {
   const baseCommandArgument = {
     description: arg.description,
     required: arg.required,
     skip: arg.skip,
+    machineActor,
   } satisfies Omit<CommandArgument<O, T>, 'inputType'>
 
   if (arg.inputType === 'options') {
-    const options = arg.options
-      ? arg.options instanceof Function
-        ? arg.options(state.context)
-        : arg.options
-      : undefined
-
-    if (!options) {
+    if (!arg.options) {
       throw new Error('Options must be provided for options input type')
     }
 
     return {
       inputType: arg.inputType,
       ...baseCommandArgument,
-      defaultValue:
-        arg.defaultValue instanceof Function
-          ? arg.defaultValue(state.context)
-          : arg.defaultValue,
-      options,
+      defaultValue: arg.defaultValueFromContext
+        ? arg.defaultValueFromContext(state.context)
+        : arg.defaultValue,
+      options: arg.optionsFromContext
+        ? arg.optionsFromContext(state.context)
+        : arg.options,
     } satisfies CommandArgument<O, T> & { inputType: 'options' }
   } else if (arg.inputType === 'selection') {
-    if (!actor)
-      throw new Error('Actor must be provided for selection input type')
-
     return {
       inputType: arg.inputType,
       ...baseCommandArgument,
       multiple: arg.multiple,
       selectionTypes: arg.selectionTypes,
-      actor,
     } satisfies CommandArgument<O, T> & { inputType: 'selection' }
   } else if (arg.inputType === 'kcl') {
     return {
@@ -159,10 +151,7 @@ function buildCommandArgument<
   } else {
     return {
       inputType: arg.inputType,
-      defaultValue:
-        arg.defaultValue instanceof Function
-          ? arg.defaultValue(state.context)
-          : arg.defaultValue,
+      defaultValue: arg.defaultValue,
       ...baseCommandArgument,
     }
   }
