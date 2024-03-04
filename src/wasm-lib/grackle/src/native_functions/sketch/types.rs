@@ -1,4 +1,4 @@
-use kittycad_execution_plan::Instruction;
+use kittycad_execution_plan::{Destination, Instruction};
 use kittycad_execution_plan_macros::ExecutionPlanValue;
 use kittycad_execution_plan_traits::{Address, Value};
 use kittycad_modeling_cmds::shared::{Point2d, Point3d, Point4d};
@@ -7,6 +7,8 @@ use uuid::Uuid;
 /// A sketch group is a collection of paths.
 #[derive(Clone, ExecutionPlanValue)]
 pub struct SketchGroup {
+    // NOTE to developers
+    // Do NOT reorder these fields without updating the  _offset() methods below.
     /// The id of the sketch group.
     pub id: Uuid,
     /// What the sketch is on (can be a plane or a face).
@@ -26,6 +28,10 @@ pub struct SketchGroup {
 }
 
 impl SketchGroup {
+    /// Get the offset for the `id` field.
+    pub fn path_id_offset() -> usize {
+        0
+    }
     pub fn set_base_path(&self, sketch_group: Address, start_point: Address, tag: Option<Address>) -> Vec<Instruction> {
         let base_path_addr = sketch_group
             + self.id.into_parts().len()
@@ -39,21 +45,24 @@ impl SketchGroup {
             // Copy over the `from` field.
             Instruction::Copy {
                 source: start_point,
-                destination: base_path_addr,
+                destination: Destination::Address(base_path_addr),
+                length: 1,
             },
             // Copy over the `to` field.
             Instruction::Copy {
                 source: start_point,
-                destination: base_path_addr + self.path_first.from.into_parts().len(),
+                destination: Destination::Address(base_path_addr + self.path_first.from.into_parts().len()),
+                length: 1,
             },
         ];
         if let Some(tag) = tag {
             // Copy over the `name` field.
             out.push(Instruction::Copy {
                 source: tag,
-                destination: base_path_addr
-                    + self.path_first.from.into_parts().len()
-                    + self.path_first.to.into_parts().len(),
+                destination: Destination::Address(
+                    base_path_addr + self.path_first.from.into_parts().len() + self.path_first.to.into_parts().len(),
+                ),
+                length: 1,
             });
         }
         out

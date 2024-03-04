@@ -48,31 +48,36 @@ export const AXIS_GROUP = 'axisGroup'
 export const SKETCH_GROUP_SEGMENTS = 'sketch-group-segments'
 export const ARROWHEAD = 'arrowhead'
 
-interface BaseCallbackArgs2 {
-  object: any
-  event: any
-}
-interface BaseCallbackArgs {
-  event: any
-}
-interface OnDragCallbackArgs extends BaseCallbackArgs {
-  object: any
-  intersection2d: Vector2
-  intersectPoint: Vector3
-  intersection: Intersection<Object3D<Object3DEventMap>>
-}
-interface OnClickCallbackArgs extends BaseCallbackArgs {
-  intersection2d?: Vector2
-  intersectPoint: Vector3
-  intersection: Intersection<Object3D<Object3DEventMap>>
-  object?: any
+export interface OnMouseEnterLeaveArgs {
+  selected: Object3D<Object3DEventMap>
+  mouseEvent: MouseEvent
 }
 
-interface onMoveCallbackArgs {
-  event: any
-  intersection2d: Vector2
-  intersectPoint: Vector3
-  intersection: Intersection<Object3D<Object3DEventMap>>
+interface OnDragCallbackArgs extends OnMouseEnterLeaveArgs {
+  intersectionPoint: {
+    twoD: Vector2
+    threeD: Vector3
+  }
+  intersects: Intersection<Object3D<Object3DEventMap>>[]
+}
+interface OnClickCallbackArgs {
+  mouseEvent: MouseEvent
+  intersectionPoint?: {
+    twoD: Vector2
+    threeD: Vector3
+  }
+  intersects: Intersection<Object3D<Object3DEventMap>>[]
+  selected?: Object3D<Object3DEventMap>
+}
+
+interface OnMoveCallbackArgs {
+  mouseEvent: MouseEvent
+  intersectionPoint: {
+    twoD: Vector2
+    threeD: Vector3
+  }
+  intersects: Intersection<Object3D<Object3DEventMap>>[]
+  selected?: Object3D<Object3DEventMap>
 }
 
 // This singleton class is responsible for all of the under the hood setup for the client side scene.
@@ -90,16 +95,16 @@ class SceneInfra {
   _baseUnit: BaseUnit = 'mm'
   _baseUnitMultiplier = 1
   onDragCallback: (arg: OnDragCallbackArgs) => void = () => {}
-  onMoveCallback: (arg: onMoveCallbackArgs) => void = () => {}
+  onMoveCallback: (arg: OnMoveCallbackArgs) => void = () => {}
   onClickCallback: (arg?: OnClickCallbackArgs) => void = () => {}
-  onMouseEnter: (arg: BaseCallbackArgs2) => void = () => {}
-  onMouseLeave: (arg: BaseCallbackArgs2) => void = () => {}
+  onMouseEnter: (arg: OnMouseEnterLeaveArgs) => void = () => {}
+  onMouseLeave: (arg: OnMouseEnterLeaveArgs) => void = () => {}
   setCallbacks = (callbacks: {
     onDrag?: (arg: OnDragCallbackArgs) => void
-    onMove?: (arg: onMoveCallbackArgs) => void
+    onMove?: (arg: OnMoveCallbackArgs) => void
     onClick?: (arg?: OnClickCallbackArgs) => void
-    onMouseEnter?: (arg: BaseCallbackArgs2) => void
-    onMouseLeave?: (arg: BaseCallbackArgs2) => void
+    onMouseEnter?: (arg: OnMouseEnterLeaveArgs) => void
+    onMouseLeave?: (arg: OnMouseEnterLeaveArgs) => void
   }) => {
     this.onDragCallback = callbacks.onDrag || this.onDragCallback
     this.onMoveCallback = callbacks.onMove || this.onMoveCallback
@@ -142,10 +147,9 @@ class SceneInfra {
   currentMouseVector = new Vector2()
   selected: {
     mouseDownVector: Vector2
-    object: any
+    object: Object3D<Object3DEventMap>
     hasBeenDragged: boolean
   } | null = null
-  selectedObject: null | any = null
   mouseDownVector: null | Vector2 = null
 
   constructor() {
@@ -242,8 +246,8 @@ class SceneInfra {
     // Dispose of any other resources like geometries, materials, textures
   }
   getPlaneIntersectPoint = (): {
-    intersection2d?: Vector2
-    intersectPoint: Vector3
+    twoD?: Vector2
+    threeD?: Vector3
     intersection: Intersection<Object3D<Object3DEventMap>>
   } | null => {
     this.planeRaycaster.setFromCamera(
@@ -254,23 +258,11 @@ class SceneInfra {
       this.scene.children,
       true
     )
-    if (
-      planeIntersects.length > 0 &&
-      planeIntersects[0].object.userData.type !== RAYCASTABLE_PLANE
-    ) {
-      const intersect = planeIntersects[0]
-      return {
-        intersectPoint: intersect.point,
-        intersection: intersect,
-      }
-    }
-    if (
-      !(
-        planeIntersects.length > 0 &&
-        planeIntersects[0].object.userData.type === RAYCASTABLE_PLANE
-      )
+    const recastablePlaneIntersect = planeIntersects.find(
+      (intersect) => intersect.object.name === RAYCASTABLE_PLANE
     )
-      return null
+    if (!planeIntersects.length) return null
+    if (!recastablePlaneIntersect) return { intersection: planeIntersects[0] }
     const planePosition = planeIntersects[0].object.position
     const inversePlaneQuaternion = planeIntersects[0].object.quaternion
       .clone()
@@ -285,19 +277,21 @@ class SceneInfra {
     }
 
     return {
-      intersection2d: new Vector2(
+      twoD: new Vector2(
         transformedPoint.x / this._baseUnitMultiplier,
         transformedPoint.y / this._baseUnitMultiplier
       ), // z should be 0
-      intersectPoint: intersectPoint.divideScalar(this._baseUnitMultiplier),
+      threeD: intersectPoint.divideScalar(this._baseUnitMultiplier),
       intersection: planeIntersects[0],
     }
   }
-  onMouseMove = (event: MouseEvent) => {
-    this.currentMouseVector.x = (event.clientX / window.innerWidth) * 2 - 1
-    this.currentMouseVector.y = -(event.clientY / window.innerHeight) * 2 + 1
+  onMouseMove = (mouseEvent: MouseEvent) => {
+    this.currentMouseVector.x = (mouseEvent.clientX / window.innerWidth) * 2 - 1
+    this.currentMouseVector.y =
+      -(mouseEvent.clientY / window.innerHeight) * 2 + 1
 
     const planeIntersectPoint = this.getPlaneIntersectPoint()
+    const intersects = this.raycastRing()
 
     if (this.selected) {
       const hasBeenDragged = !compareVec2Epsilon2(
@@ -313,47 +307,56 @@ class SceneInfra {
       if (
         hasBeenDragged &&
         planeIntersectPoint &&
-        planeIntersectPoint.intersection2d
+        planeIntersectPoint.twoD &&
+        planeIntersectPoint.threeD
       ) {
         // // console.log('onDrag', this.selected)
 
         this.onDragCallback({
-          object: this.selected.object,
-          event,
-          intersection2d: planeIntersectPoint.intersection2d,
-          ...planeIntersectPoint,
+          mouseEvent,
+          intersectionPoint: {
+            twoD: planeIntersectPoint.twoD,
+            threeD: planeIntersectPoint.threeD,
+          },
+          intersects,
+          selected: this.selected.object,
         })
       }
-    } else if (planeIntersectPoint && planeIntersectPoint.intersection2d) {
+    } else if (
+      planeIntersectPoint &&
+      planeIntersectPoint.twoD &&
+      planeIntersectPoint.threeD
+    ) {
       this.onMoveCallback({
-        event,
-        intersection2d: planeIntersectPoint.intersection2d,
-        ...planeIntersectPoint,
+        mouseEvent,
+        intersectionPoint: {
+          twoD: planeIntersectPoint.twoD,
+          threeD: planeIntersectPoint.threeD,
+        },
+        intersects,
       })
     }
 
-    const intersect = this.raycastRing()
-
-    if (intersect) {
-      const firstIntersectObject = intersect.object
+    if (intersects[0]) {
+      const firstIntersectObject = intersects[0].object
       if (this.hoveredObject !== firstIntersectObject) {
         if (this.hoveredObject) {
           this.onMouseLeave({
-            object: this.hoveredObject,
-            event,
+            selected: this.hoveredObject,
+            mouseEvent: mouseEvent,
           })
         }
         this.hoveredObject = firstIntersectObject
         this.onMouseEnter({
-          object: this.hoveredObject,
-          event,
+          selected: this.hoveredObject,
+          mouseEvent: mouseEvent,
         })
       }
     } else {
       if (this.hoveredObject) {
         this.onMouseLeave({
-          object: this.hoveredObject,
-          event,
+          selected: this.hoveredObject,
+          mouseEvent: mouseEvent,
         })
         this.hoveredObject = null
       }
@@ -363,41 +366,38 @@ class SceneInfra {
   raycastRing = (
     pixelRadius = 8,
     rayRingCount = 32
-  ): Intersection<Object3D<Object3DEventMap>> | undefined => {
+  ): Intersection<Object3D<Object3DEventMap>>[] => {
     const mouseDownVector = this.currentMouseVector.clone()
-    let closestIntersection:
-      | Intersection<Object3D<Object3DEventMap>>
-      | undefined = undefined
-    let closestDistance = Infinity
+    const intersectionsMap = new Map<
+      Object3D,
+      Intersection<Object3D<Object3DEventMap>>
+    >()
 
-    const updateClosestIntersection = (
+    const updateIntersectionsMap = (
       intersections: Intersection<Object3D<Object3DEventMap>>[]
     ) => {
-      let intersection = null
-      for (let i = 0; i < intersections.length; i++) {
-        if (intersections[i].object.type !== 'GridHelper') {
-          intersection = intersections[i]
-          break
+      intersections.forEach((intersection) => {
+        if (intersection.object.type !== 'GridHelper') {
+          const existingIntersection = intersectionsMap.get(intersection.object)
+          if (
+            !existingIntersection ||
+            existingIntersection.distance > intersection.distance
+          ) {
+            intersectionsMap.set(intersection.object, intersection)
+          }
         }
-      }
-      if (!intersection) return
-
-      if (intersection.distance < closestDistance) {
-        closestDistance = intersection.distance
-        closestIntersection = intersection
-      }
+      })
     }
 
     // Check the center point
     this.raycaster.setFromCamera(mouseDownVector, this.camControls.camera)
-    updateClosestIntersection(
+    updateIntersectionsMap(
       this.raycaster.intersectObjects(this.scene.children, true)
     )
 
     // Check the ring points
     for (let i = 0; i < rayRingCount; i++) {
       const angle = (i / rayRingCount) * Math.PI * 2
-
       const offsetX = ((pixelRadius * Math.cos(angle)) / window.innerWidth) * 2
       const offsetY = ((pixelRadius * Math.sin(angle)) / window.innerHeight) * 2
       const ringVector = new Vector2(
@@ -405,11 +405,15 @@ class SceneInfra {
         mouseDownVector.y - offsetY
       )
       this.raycaster.setFromCamera(ringVector, this.camControls.camera)
-      updateClosestIntersection(
+      updateIntersectionsMap(
         this.raycaster.intersectObjects(this.scene.children, true)
       )
     }
-    return closestIntersection
+
+    // Convert the map values to an array and sort by distance
+    return Array.from(intersectionsMap.values()).sort(
+      (a, b) => a.distance - b.distance
+    )
   }
 
   onMouseDown = (event: MouseEvent) => {
@@ -417,45 +421,60 @@ class SceneInfra {
     this.currentMouseVector.y = -(event.clientY / window.innerHeight) * 2 + 1
 
     const mouseDownVector = this.currentMouseVector.clone()
-    const intersect = this.raycastRing()
+    const intersect = this.raycastRing()[0]
 
     if (intersect) {
       const intersectParent = intersect?.object?.parent as Group
       this.selected = intersectParent.isGroup
         ? {
             mouseDownVector,
-            object: intersect?.object,
+            object: intersect.object,
             hasBeenDragged: false,
           }
         : null
     }
   }
 
-  onMouseUp = (event: MouseEvent) => {
-    this.currentMouseVector.x = (event.clientX / window.innerWidth) * 2 - 1
-    this.currentMouseVector.y = -(event.clientY / window.innerHeight) * 2 + 1
+  onMouseUp = (mouseEvent: MouseEvent) => {
+    this.currentMouseVector.x = (mouseEvent.clientX / window.innerWidth) * 2 - 1
+    this.currentMouseVector.y =
+      -(mouseEvent.clientY / window.innerHeight) * 2 + 1
     const planeIntersectPoint = this.getPlaneIntersectPoint()
+    const intersects = this.raycastRing()
 
     if (this.selected) {
       if (this.selected.hasBeenDragged) {
         // this is where we could fire a onDragEnd event
         // console.log('onDragEnd', this.selected)
-      } else if (planeIntersectPoint) {
+      } else if (planeIntersectPoint?.twoD && planeIntersectPoint?.threeD) {
         // fire onClick event as there was no drags
         this.onClickCallback({
-          object: this.selected?.object,
-          event,
-          ...planeIntersectPoint,
+          mouseEvent,
+          intersectionPoint: {
+            twoD: planeIntersectPoint.twoD,
+            threeD: planeIntersectPoint.threeD,
+          },
+          intersects,
+          selected: this.selected.object,
+        })
+      } else if (planeIntersectPoint) {
+        this.onClickCallback({
+          mouseEvent,
+          intersects,
         })
       } else {
         this.onClickCallback()
       }
       // Clear the selected state whether it was dragged or not
       this.selected = null
-    } else if (planeIntersectPoint) {
+    } else if (planeIntersectPoint?.twoD && planeIntersectPoint?.threeD) {
       this.onClickCallback({
-        event,
-        ...planeIntersectPoint,
+        mouseEvent,
+        intersectionPoint: {
+          twoD: planeIntersectPoint.twoD,
+          threeD: planeIntersectPoint.threeD,
+        },
+        intersects,
       })
     } else {
       this.onClickCallback()

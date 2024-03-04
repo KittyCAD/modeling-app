@@ -829,13 +829,13 @@ export const modelingMachine = createMachine(
         sceneInfra.setCallbacks({
           onClick: async (args) => {
             if (!args) return
-            if (args.event.which !== 1) return
-            const { intersection2d } = args
-            if (!intersection2d || !sketchPathToNode) return
+            if (args.mouseEvent.which !== 1) return
+            const { intersectionPoint } = args
+            if (!intersectionPoint?.twoD || !sketchPathToNode) return
             const { modifiedAst } = addStartProfileAt(
               kclManager.ast,
               sketchPathToNode,
-              [intersection2d.x, intersection2d.y]
+              [intersectionPoint.twoD.x, intersectionPoint.twoD.y]
             )
             await kclManager.updateAst(modifiedAst, false)
             sceneEntitiesManager.removeIntersectionPlane()
