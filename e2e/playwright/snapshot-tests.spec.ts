@@ -29,9 +29,10 @@ test.beforeEach(async ({ context, page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
 })
 
-test.setTimeout(120_000)
+test.setTimeout(60_000)
 
 test('exports of each format should work', async ({ page, context }) => {
+  test.setTimeout(120_000)
   // FYI this test doesn't work with only engine running locally
   // And you will need to have the KittyCAD CLI installed
   const u = getUtils(page)
