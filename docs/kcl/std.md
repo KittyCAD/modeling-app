@@ -3498,6 +3498,71 @@ circle(plane: SketchData, center: [number, number], radius: number) -> SketchGro
 	position: [number, number, number],
 	// The rotation of the extrude group.
 	rotation: [number, number, number, number],
+	// The sketch group paths.
+	sketchGroupValues: [{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "ToPoint",
+} |
+{
+	// arc's direction
+	ccw: string,
+	// the arc's center
+	center: [number, number],
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "Horizontal",
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "AngledLineTo",
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "Base",
+}],
 	// The id of the extrusion start cap
 	startCapId: uuid,
 	// The extrude surfaces.
@@ -4331,6 +4396,15 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -4428,6 +4502,8 @@ fillet(data: FilletData, extrude_group: ExtrudeGroup) -> ExtrudeGroup
 * `data`: `FilletData` - Data for fillets.
 ```
 {
+	// The query to select the paths you want to fillet, based on the tags.
+	query: "startFace" | "endFace" | "nextEdge" | "previousEdge",
 	// The radius of the fillet.
 	radius: number,
 	// The tags of the paths you want to fillet.
@@ -4469,6 +4545,15 @@ fillet(data: FilletData, extrude_group: ExtrudeGroup) -> ExtrudeGroup
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
 } |
 {
 	// The from point.
@@ -4520,6 +4605,21 @@ fillet(data: FilletData, extrude_group: ExtrudeGroup) -> ExtrudeGroup
 	// The source range.
 	sourceRange: [number, number],
 	type: "extrudePlane",
+} |
+{
+	// The face id for the extrude plane.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The name.
+	name: string,
+	// The position.
+	position: [number, number, number],
+	// The rotation.
+	rotation: [number, number, number, number],
+	// The source range.
+	sourceRange: [number, number],
+	type: "extrudeArc",
 }],
 	// The x-axis of the extrude group base plane in the 3D space
 	xAxis: {
@@ -4587,6 +4687,15 @@ fillet(data: FilletData, extrude_group: ExtrudeGroup) -> ExtrudeGroup
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -4630,6 +4739,21 @@ fillet(data: FilletData, extrude_group: ExtrudeGroup) -> ExtrudeGroup
 	// The source range.
 	sourceRange: [number, number],
 	type: "extrudePlane",
+} |
+{
+	// The face id for the extrude plane.
+	faceId: uuid,
+	// The id of the geometry.
+	id: uuid,
+	// The name.
+	name: string,
+	// The position.
+	position: [number, number, number],
+	// The rotation.
+	rotation: [number, number, number, number],
+	// The source range.
+	sourceRange: [number, number],
+	type: "extrudeArc",
 }],
 	// The x-axis of the extrude group base plane in the 3D space
 	xAxis: {
@@ -4722,6 +4846,15 @@ getExtrudeWallTransform(surface_name: string, extrude_group: ExtrudeGroup) -> Ex
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
 } |
 {
 	// The from point.
@@ -6940,6 +7073,15 @@ patternCircular(data: CircularPatternData, geometry: Geometry) -> Geometries
 	name: string,
 	// The to point.
 	to: [number, number],
+	type: "TangentialArc",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
 	type: "Horizontal",
 	// The x coordinate.
 	x: number,
@@ -7255,6 +7397,15 @@ patternLinear(data: LinearPatternData, geometry: Geometry) -> Geometries
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
 } |
 {
 	// The from point.
@@ -8700,6 +8851,15 @@ startSketchOn(data: SketchData, tag: SketchOnFaceTag) -> SketchSurface
 	// The to point.
 	to: [number, number],
 	type: "TangentialArcTo",
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: "TangentialArc",
 } |
 {
 	// The from point.
