@@ -203,7 +203,7 @@ test('Can moving camera', async ({ page, context }) => {
   await bakeInRetries(async () => {
     await page.mouse.move(700, 200)
     await page.mouse.down({ button: 'right' })
-    await page.mouse.move(600, 303, {steps: 2})
+    await page.mouse.move(600, 303)
     await page.mouse.up({ button: 'right' })
   }, [4, -10.5, -120])
 
