@@ -35,8 +35,10 @@ pub enum FilletEdgeQuery {
     StartFace,
     /// Use the tags to select the paths on the end face.
     EndFace,
-    /// Use the tags to select the path between the two tags.
-    BetweenTags,
+    /// Get the next edge adjacent to the tag.
+    NextEdge,
+    /// Get the previous edge adjacent to the tag.
+    PreviousEdge,
 }
 
 /// Create fillets on tagged paths.
@@ -83,10 +85,7 @@ async fn inner_fillet(
         let edge_id = match &data.query {
             FilletEdgeQuery::StartFace => tagged_path.geo_meta.id,
             FilletEdgeQuery::EndFace => {
-                // We need to get the face id for the end.
-                let face_id =get_adjacent_face_to_tag(&extrude_group, &tag, &args)?;
-
-                println!("Getting opposite edge for fillet {}", face_id);
+                let face_id = get_adjacent_face_to_tag(&extrude_group, &tag, &args)?;
 
                 let resp = args
                     .send_modeling_cmd(
@@ -111,13 +110,69 @@ async fn inner_fillet(
 
                 opposite_edge.edge
             }
-            FilletEdgeQuery::BetweenTags => {
-                // TODO: query for the edge between the two tags.
-                tagged_path.geo_meta.id
+            FilletEdgeQuery::NextEdge => {
+                let face_id = get_adjacent_face_to_tag(&extrude_group, &tag, &args)?;
+
+                let resp = args
+                    .send_modeling_cmd(
+                        uuid::Uuid::new_v4(),
+                        ModelingCmd::Solid3DGetNextAdjacentEdge {
+                            edge_id: tagged_path.geo_meta.id,
+                            object_id: extrude_group.id,
+                            face_id,
+                        },
+                    )
+                    .await?;
+                let kittycad::types::OkWebSocketResponseData::Modeling {
+                    modeling_response:
+                        kittycad::types::OkModelingCmdResponse::Solid3DGetNextAdjacentEdge { data: ajacent_edge },
+                } = &resp
+                else {
+                    return Err(KclError::Engine(KclErrorDetails {
+                        message: format!("Solid3DGetNextAdjacentEdge response was not as expected: {:?}", resp),
+                        source_ranges: vec![args.source_range],
+                    }));
+                };
+
+                ajacent_edge.edge.ok_or_else(|| {
+                    KclError::Type(KclErrorDetails {
+                        message: format!("No edge found next adjacent to tag: `{}`", tag),
+                        source_ranges: vec![args.source_range],
+                    })
+                })?
+            }
+            FilletEdgeQuery::PreviousEdge => {
+                let face_id = get_adjacent_face_to_tag(&extrude_group, &tag, &args)?;
+
+                let resp = args
+                    .send_modeling_cmd(
+                        uuid::Uuid::new_v4(),
+                        ModelingCmd::Solid3DGetPrevAdjacentEdge {
+                            edge_id: tagged_path.geo_meta.id,
+                            object_id: extrude_group.id,
+                            face_id,
+                        },
+                    )
+                    .await?;
+                let kittycad::types::OkWebSocketResponseData::Modeling {
+                    modeling_response:
+                        kittycad::types::OkModelingCmdResponse::Solid3DGetPrevAdjacentEdge { data: ajacent_edge },
+                } = &resp
+                else {
+                    return Err(KclError::Engine(KclErrorDetails {
+                        message: format!("Solid3DGetPrevAdjacentEdge response was not as expected: {:?}", resp),
+                        source_ranges: vec![args.source_range],
+                    }));
+                };
+
+                ajacent_edge.edge.ok_or_else(|| {
+                    KclError::Type(KclErrorDetails {
+                        message: format!("No edge found previous adjacent to tag: `{}`", tag),
+                        source_ranges: vec![args.source_range],
+                    })
+                })?
             }
         };
-
-        println!("edge_id: {}", edge_id);
 
         args.send_modeling_cmd(
             uuid::Uuid::new_v4(),

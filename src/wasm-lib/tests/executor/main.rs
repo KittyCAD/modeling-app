@@ -261,6 +261,50 @@ async fn serial_test_basic_fillet_cube_end() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn serial_test_basic_fillet_cube_next_adjacent() {
+    let code = r#"const part001 = startSketchOn('XY')
+    |> startProfileAt([0,0], %)
+    |> line({to: [0, 10], tag: "thing"}, %)
+    |> line({to: [10, 0], tag: "thing1"}, %)
+    |> line({to: [0, -10], tag: "thing2"}, %)
+    |> close(%)
+    |> extrude(10, %)
+    |> fillet({radius: 2, tags: ["thing"], query:"nextEdge" }, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/basic_fillet_cube_next_adjacent.png",
+        &result,
+        0.999,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_basic_fillet_cube_previous_adjacent() {
+    let code = r#"const part001 = startSketchOn('XY')
+    |> startProfileAt([0,0], %)
+    |> line({to: [0, 10], tag: "thing"}, %)
+    |> line({to: [10, 0], tag: "thing1"}, %)
+    |> line({to: [0, -10], tag: "thing2"}, %)
+    |> close(%)
+    |> extrude(10, %)
+    |> fillet({radius: 2, tags: ["thing2"], query:"previousEdge" }, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/basic_fillet_cube_previous_adjacent.png",
+        &result,
+        0.999,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_execute_with_function_sketch() {
     let code = r#"fn box = (h, l, w) => {
  const myBox = startSketchOn('XY')
