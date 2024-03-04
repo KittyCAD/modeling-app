@@ -324,14 +324,7 @@ export const commandBarMachine = createMachine(
                 context.argumentsToSubmit[argName] === undefined ||
                 (rejectedArg && rejectedArg.name === argName))
 
-            console.log('mustNotSkipArg? ', {
-              mustNotSkipArg,
-              argName,
-              argConfig,
-            })
-
             if (mustNotSkipArg === true) {
-              console.log('I guess we must not skip this arg', argName)
               return {
                 ...selectedCommand.args[argName],
                 name: argName,
@@ -354,11 +347,6 @@ export const commandBarMachine = createMachine(
           const argToRemove = Object.values(event.data)[0]
           // Extract all but the argument to remove and return it
           const { [argToRemove.name]: _, ...rest } = context.argumentsToSubmit
-          console.log({
-            argToRemove,
-            rest,
-            argumentsToSubmit: context.argumentsToSubmit,
-          })
           return rest
         },
       }),
@@ -460,11 +448,6 @@ export const commandBarMachine = createMachine(
                     : argConfig.defaultValue
                   : undefined
 
-              console.log({
-                argValue,
-                resolvedDefaultValue,
-              })
-
               const hasMismatchedDefaultValueType =
                 isRequired &&
                 typeof argValue !== typeof resolvedDefaultValue &&
@@ -486,11 +469,6 @@ export const commandBarMachine = createMachine(
                 hasInvalidKclValue ||
                 hasInvalidOptionsValue
               ) {
-                console.error('Argument payload is of the wrong type', {
-                  argValue,
-                  resolvedDefaultValue,
-                  argConfig,
-                })
                 return reject({
                   message: 'Argument payload is of the wrong type',
                   arg: {
@@ -501,10 +479,6 @@ export const commandBarMachine = createMachine(
               }
 
               if (!argValue && isRequired) {
-                console.error('Argument payload is falsy but is required', {
-                  argValue,
-                  argConfig,
-                })
                 return reject({
                   message: 'Argument payload is falsy but is required',
                   arg: {
