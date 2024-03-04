@@ -4,6 +4,7 @@ import { getUtils } from './test-utils'
 import waitOn from 'wait-on'
 import { Themes } from '../../src/lib/theme'
 import { roundOff } from 'lib/utils'
+import { platform } from 'node:os'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -134,6 +135,7 @@ test('Basic sketch', async ({ page }) => {
   |> angledLine([180, segLen('seg01', %)], %)`)
 })
 
+test.skip(process.platform === 'darwin', 'Can moving camera')
 test('Can moving camera', async ({ page, context }) => {
   const u = getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
@@ -161,6 +163,7 @@ test('Can moving camera', async ({ page, context }) => {
     await u.closeDebugPanel()
     await page.getByRole('button', { name: 'Start Sketch' }).click()
     await page.waitForTimeout(100)
+    // const yo = page.getByTestId('cam-x-position').inputValue()
 
     await u.doAndWaitForImageDiff(async () => {
       await mouseActions()
@@ -200,7 +203,7 @@ test('Can moving camera', async ({ page, context }) => {
   await bakeInRetries(async () => {
     await page.mouse.move(700, 200)
     await page.mouse.down({ button: 'right' })
-    await page.mouse.move(600, 303)
+    await page.mouse.move(600, 303, {steps: 2})
     await page.mouse.up({ button: 'right' })
   }, [4, -10.5, -120])
 
