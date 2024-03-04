@@ -425,7 +425,9 @@ function updateSceneObjectColors(codeBasedSelections: Selection[]) {
     const groupHasCursor = codeBasedSelections.some((selection) => {
       return isOverlap(selection.range, [node.start, node.end])
     })
-    const color = groupHasCursor ? 0x0000ff : 0xffffff
+    const color = groupHasCursor
+      ? 0x0000ff
+      : segmentGroup?.userData?.baseColor || 0xffffff
     segmentGroup.traverse(
       (child) => child instanceof Mesh && child.material.color.set(color)
     )
