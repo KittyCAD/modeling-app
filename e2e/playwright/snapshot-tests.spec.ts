@@ -29,7 +29,7 @@ test.beforeEach(async ({ context, page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
 })
 
-test.setTimeout(120_000)
+test.setTimeout(60_000)
 
 test('exports of each format should work', async ({ page, context }) => {
   // FYI this test doesn't work with only engine running locally
@@ -99,20 +99,34 @@ const part001 = startSketchOn('-XZ')
     output: Models['OutputFormat_type']
   ): Promise<Paths> => {
     await page.getByRole('button', { name: APP_NAME }).click()
+    await expect(
+      page.getByRole('button', { name: 'Export Part' })
+    ).toBeVisible()
     await page.getByRole('button', { name: 'Export Part' }).click()
+    await expect(page.getByTestId('command-bar')).toBeVisible()
 
     // Go through export via command bar
     await page.getByRole('option', { name: output.type, exact: false }).click()
+    await page.locator('#arg-form').waitFor({ state: 'detached' })
     if ('storage' in output) {
+      await page.getByTestId('arg-name-storage').waitFor({ timeout: 1000 })
       await page.getByRole('button', { name: 'storage', exact: false }).click()
       await page
         .getByRole('option', { name: output.storage, exact: false })
         .click()
+      await page.locator('#arg-form').waitFor({ state: 'detached' })
     }
+    await expect(page.getByText('Confirm Export')).toBeVisible()
+
+    // Kick off export promise before triggering the download in case it downloads very quickly
+    // since playwright is puppets the browser, race conditions are much more acute,
+    // and since this export is a simple file the download can happen very quickly
+    const downloadPromise = page.waitForEvent('download')
     await page.getByRole('button', { name: 'Submit command' }).click()
 
     // Handle download
-    const download = await page.waitForEvent('download')
+    const download = await downloadPromise
+    const downloadPromise2 = page.waitForEvent('download')
     const downloadLocationer = (extra = '', isImage = false) =>
       `./e2e/playwright/export-snapshots/${output.type}-${
         'storage' in output ? output.storage : ''
@@ -122,7 +136,7 @@ const part001 = startSketchOn('-XZ')
 
     if (output.type === 'gltf' && output.storage === 'standard') {
       // wait for second download
-      const download2 = await page.waitForEvent('download')
+      const download2 = await downloadPromise2
       await download.saveAs(downloadLocation)
       await download2.saveAs(downloadLocation2)
 
