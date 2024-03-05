@@ -23736,40 +23736,6 @@
             "tags"
           ],
           "properties": {
-            "query": {
-              "description": "The query to select the paths you want to fillet, based on the tags.",
-              "default": "startFace",
-              "oneOf": [
-                {
-                  "description": "Use the tags to select the paths on the start face.",
-                  "type": "string",
-                  "enum": [
-                    "startFace"
-                  ]
-                },
-                {
-                  "description": "Use the tags to select the paths on the end face.",
-                  "type": "string",
-                  "enum": [
-                    "endFace"
-                  ]
-                },
-                {
-                  "description": "Get the next edge adjacent to the tag.",
-                  "type": "string",
-                  "enum": [
-                    "nextEdge"
-                  ]
-                },
-                {
-                  "description": "Get the previous edge adjacent to the tag.",
-                  "type": "string",
-                  "enum": [
-                    "previousEdge"
-                  ]
-                }
-              ]
-            },
             "radius": {
               "description": "The radius of the fillet.",
               "type": "number",
@@ -23779,7 +23745,18 @@
               "description": "The tags of the paths you want to fillet.",
               "type": "array",
               "items": {
-                "type": "string"
+                "description": "A string or a uuid.",
+                "anyOf": [
+                  {
+                    "description": "A uuid.",
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  {
+                    "description": "A string.",
+                    "type": "string"
+                  }
+                ]
               }
             }
           }
@@ -26154,6 +26131,2355 @@
             "minItems": 4
           }
         }
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "getNextAdjacentEdge",
+    "summary": "Get the next adjacent edge to the edge given.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "tag",
+        "type": "String",
+        "schema": {
+          "type": "string"
+        },
+        "required": true
+      },
+      {
+        "name": "extrude_group",
+        "type": "ExtrudeGroup",
+        "schema": {
+          "description": "An extrude group is a collection of extrude surfaces.",
+          "type": "object",
+          "required": [
+            "__meta",
+            "height",
+            "id",
+            "position",
+            "rotation",
+            "sketchGroupValues",
+            "value",
+            "xAxis",
+            "yAxis",
+            "zAxis"
+          ],
+          "properties": {
+            "__meta": {
+              "description": "Metadata.",
+              "type": "array",
+              "items": {
+                "description": "Metadata.",
+                "type": "object",
+                "required": [
+                  "sourceRange"
+                ],
+                "properties": {
+                  "sourceRange": {
+                    "description": "The source range.",
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "format": "uint",
+                      "minimum": 0.0
+                    },
+                    "maxItems": 2,
+                    "minItems": 2
+                  }
+                }
+              }
+            },
+            "endCapId": {
+              "description": "The id of the extrusion end cap",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
+            "height": {
+              "description": "The height of the extrude group.",
+              "type": "number",
+              "format": "double"
+            },
+            "id": {
+              "description": "The id of the extrude group.",
+              "type": "string",
+              "format": "uuid"
+            },
+            "position": {
+              "description": "The position of the extrude group.",
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "rotation": {
+              "description": "The rotation of the extrude group.",
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxItems": 4,
+              "minItems": 4
+            },
+            "sketchGroupValues": {
+              "description": "The sketch group paths.",
+              "type": "array",
+              "items": {
+                "description": "A path.",
+                "oneOf": [
+                  {
+                    "description": "A path that goes to a point.",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "ToPoint"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "description": "A arc that is tangential to the last path segment that goes to a point",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "ccw",
+                      "center",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "ccw": {
+                        "description": "arc's direction",
+                        "type": "boolean"
+                      },
+                      "center": {
+                        "description": "the arc's center",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArcTo"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "description": "A path that is horizontal.",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type",
+                      "x"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "Horizontal"
+                        ]
+                      },
+                      "x": {
+                        "description": "The x coordinate.",
+                        "type": "number",
+                        "format": "double"
+                      }
+                    }
+                  },
+                  {
+                    "description": "An angled line to.",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "AngledLineTo"
+                        ]
+                      },
+                      "x": {
+                        "description": "The x coordinate.",
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                      },
+                      "y": {
+                        "description": "The y coordinate.",
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                      }
+                    }
+                  },
+                  {
+                    "description": "A base path.",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "Base"
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "startCapId": {
+              "description": "The id of the extrusion start cap",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
+            "value": {
+              "description": "The extrude surfaces.",
+              "type": "array",
+              "items": {
+                "description": "An extrude surface.",
+                "oneOf": [
+                  {
+                    "description": "An extrude plane.",
+                    "type": "object",
+                    "required": [
+                      "faceId",
+                      "id",
+                      "name",
+                      "position",
+                      "rotation",
+                      "sourceRange",
+                      "type"
+                    ],
+                    "properties": {
+                      "faceId": {
+                        "description": "The face id for the extrude plane.",
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "id": {
+                        "description": "The id of the geometry.",
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "name": {
+                        "description": "The name.",
+                        "type": "string"
+                      },
+                      "position": {
+                        "description": "The position.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 3,
+                        "minItems": 3
+                      },
+                      "rotation": {
+                        "description": "The rotation.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 4,
+                        "minItems": 4
+                      },
+                      "sourceRange": {
+                        "description": "The source range.",
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "format": "uint",
+                          "minimum": 0.0
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "extrudePlane"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "description": "An extruded arc.",
+                    "type": "object",
+                    "required": [
+                      "faceId",
+                      "id",
+                      "name",
+                      "position",
+                      "rotation",
+                      "sourceRange",
+                      "type"
+                    ],
+                    "properties": {
+                      "faceId": {
+                        "description": "The face id for the extrude plane.",
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "id": {
+                        "description": "The id of the geometry.",
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "name": {
+                        "description": "The name.",
+                        "type": "string"
+                      },
+                      "position": {
+                        "description": "The position.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 3,
+                        "minItems": 3
+                      },
+                      "rotation": {
+                        "description": "The rotation.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 4,
+                        "minItems": 4
+                      },
+                      "sourceRange": {
+                        "description": "The source range.",
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "format": "uint",
+                          "minimum": 0.0
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "extrudeArc"
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "xAxis": {
+              "description": "The x-axis of the extrude group base plane in the 3D space",
+              "type": "object",
+              "required": [
+                "x",
+                "y",
+                "z"
+              ],
+              "properties": {
+                "x": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "y": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "z": {
+                  "type": "number",
+                  "format": "double"
+                }
+              }
+            },
+            "yAxis": {
+              "description": "The y-axis of the extrude group base plane in the 3D space",
+              "type": "object",
+              "required": [
+                "x",
+                "y",
+                "z"
+              ],
+              "properties": {
+                "x": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "y": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "z": {
+                  "type": "number",
+                  "format": "double"
+                }
+              }
+            },
+            "zAxis": {
+              "description": "The z-axis of the extrude group base plane in the 3D space",
+              "type": "object",
+              "required": [
+                "x",
+                "y",
+                "z"
+              ],
+              "properties": {
+                "x": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "y": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "z": {
+                  "type": "number",
+                  "format": "double"
+                }
+              }
+            }
+          }
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "Uuid",
+      "schema": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "getOppositeEdge",
+    "summary": "Get the opposite edge to the edge given.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "tag",
+        "type": "String",
+        "schema": {
+          "type": "string"
+        },
+        "required": true
+      },
+      {
+        "name": "extrude_group",
+        "type": "ExtrudeGroup",
+        "schema": {
+          "description": "An extrude group is a collection of extrude surfaces.",
+          "type": "object",
+          "required": [
+            "__meta",
+            "height",
+            "id",
+            "position",
+            "rotation",
+            "sketchGroupValues",
+            "value",
+            "xAxis",
+            "yAxis",
+            "zAxis"
+          ],
+          "properties": {
+            "__meta": {
+              "description": "Metadata.",
+              "type": "array",
+              "items": {
+                "description": "Metadata.",
+                "type": "object",
+                "required": [
+                  "sourceRange"
+                ],
+                "properties": {
+                  "sourceRange": {
+                    "description": "The source range.",
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "format": "uint",
+                      "minimum": 0.0
+                    },
+                    "maxItems": 2,
+                    "minItems": 2
+                  }
+                }
+              }
+            },
+            "endCapId": {
+              "description": "The id of the extrusion end cap",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
+            "height": {
+              "description": "The height of the extrude group.",
+              "type": "number",
+              "format": "double"
+            },
+            "id": {
+              "description": "The id of the extrude group.",
+              "type": "string",
+              "format": "uuid"
+            },
+            "position": {
+              "description": "The position of the extrude group.",
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "rotation": {
+              "description": "The rotation of the extrude group.",
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxItems": 4,
+              "minItems": 4
+            },
+            "sketchGroupValues": {
+              "description": "The sketch group paths.",
+              "type": "array",
+              "items": {
+                "description": "A path.",
+                "oneOf": [
+                  {
+                    "description": "A path that goes to a point.",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "ToPoint"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "description": "A arc that is tangential to the last path segment that goes to a point",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "ccw",
+                      "center",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "ccw": {
+                        "description": "arc's direction",
+                        "type": "boolean"
+                      },
+                      "center": {
+                        "description": "the arc's center",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArcTo"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "description": "A path that is horizontal.",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type",
+                      "x"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "Horizontal"
+                        ]
+                      },
+                      "x": {
+                        "description": "The x coordinate.",
+                        "type": "number",
+                        "format": "double"
+                      }
+                    }
+                  },
+                  {
+                    "description": "An angled line to.",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "AngledLineTo"
+                        ]
+                      },
+                      "x": {
+                        "description": "The x coordinate.",
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                      },
+                      "y": {
+                        "description": "The y coordinate.",
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                      }
+                    }
+                  },
+                  {
+                    "description": "A base path.",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "Base"
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "startCapId": {
+              "description": "The id of the extrusion start cap",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
+            "value": {
+              "description": "The extrude surfaces.",
+              "type": "array",
+              "items": {
+                "description": "An extrude surface.",
+                "oneOf": [
+                  {
+                    "description": "An extrude plane.",
+                    "type": "object",
+                    "required": [
+                      "faceId",
+                      "id",
+                      "name",
+                      "position",
+                      "rotation",
+                      "sourceRange",
+                      "type"
+                    ],
+                    "properties": {
+                      "faceId": {
+                        "description": "The face id for the extrude plane.",
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "id": {
+                        "description": "The id of the geometry.",
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "name": {
+                        "description": "The name.",
+                        "type": "string"
+                      },
+                      "position": {
+                        "description": "The position.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 3,
+                        "minItems": 3
+                      },
+                      "rotation": {
+                        "description": "The rotation.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 4,
+                        "minItems": 4
+                      },
+                      "sourceRange": {
+                        "description": "The source range.",
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "format": "uint",
+                          "minimum": 0.0
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "extrudePlane"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "description": "An extruded arc.",
+                    "type": "object",
+                    "required": [
+                      "faceId",
+                      "id",
+                      "name",
+                      "position",
+                      "rotation",
+                      "sourceRange",
+                      "type"
+                    ],
+                    "properties": {
+                      "faceId": {
+                        "description": "The face id for the extrude plane.",
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "id": {
+                        "description": "The id of the geometry.",
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "name": {
+                        "description": "The name.",
+                        "type": "string"
+                      },
+                      "position": {
+                        "description": "The position.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 3,
+                        "minItems": 3
+                      },
+                      "rotation": {
+                        "description": "The rotation.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 4,
+                        "minItems": 4
+                      },
+                      "sourceRange": {
+                        "description": "The source range.",
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "format": "uint",
+                          "minimum": 0.0
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "extrudeArc"
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "xAxis": {
+              "description": "The x-axis of the extrude group base plane in the 3D space",
+              "type": "object",
+              "required": [
+                "x",
+                "y",
+                "z"
+              ],
+              "properties": {
+                "x": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "y": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "z": {
+                  "type": "number",
+                  "format": "double"
+                }
+              }
+            },
+            "yAxis": {
+              "description": "The y-axis of the extrude group base plane in the 3D space",
+              "type": "object",
+              "required": [
+                "x",
+                "y",
+                "z"
+              ],
+              "properties": {
+                "x": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "y": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "z": {
+                  "type": "number",
+                  "format": "double"
+                }
+              }
+            },
+            "zAxis": {
+              "description": "The z-axis of the extrude group base plane in the 3D space",
+              "type": "object",
+              "required": [
+                "x",
+                "y",
+                "z"
+              ],
+              "properties": {
+                "x": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "y": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "z": {
+                  "type": "number",
+                  "format": "double"
+                }
+              }
+            }
+          }
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "Uuid",
+      "schema": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "getPreviousAdjacentEdge",
+    "summary": "Get the previous adjacent edge to the edge given.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "tag",
+        "type": "String",
+        "schema": {
+          "type": "string"
+        },
+        "required": true
+      },
+      {
+        "name": "extrude_group",
+        "type": "ExtrudeGroup",
+        "schema": {
+          "description": "An extrude group is a collection of extrude surfaces.",
+          "type": "object",
+          "required": [
+            "__meta",
+            "height",
+            "id",
+            "position",
+            "rotation",
+            "sketchGroupValues",
+            "value",
+            "xAxis",
+            "yAxis",
+            "zAxis"
+          ],
+          "properties": {
+            "__meta": {
+              "description": "Metadata.",
+              "type": "array",
+              "items": {
+                "description": "Metadata.",
+                "type": "object",
+                "required": [
+                  "sourceRange"
+                ],
+                "properties": {
+                  "sourceRange": {
+                    "description": "The source range.",
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "format": "uint",
+                      "minimum": 0.0
+                    },
+                    "maxItems": 2,
+                    "minItems": 2
+                  }
+                }
+              }
+            },
+            "endCapId": {
+              "description": "The id of the extrusion end cap",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
+            "height": {
+              "description": "The height of the extrude group.",
+              "type": "number",
+              "format": "double"
+            },
+            "id": {
+              "description": "The id of the extrude group.",
+              "type": "string",
+              "format": "uuid"
+            },
+            "position": {
+              "description": "The position of the extrude group.",
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "rotation": {
+              "description": "The rotation of the extrude group.",
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxItems": 4,
+              "minItems": 4
+            },
+            "sketchGroupValues": {
+              "description": "The sketch group paths.",
+              "type": "array",
+              "items": {
+                "description": "A path.",
+                "oneOf": [
+                  {
+                    "description": "A path that goes to a point.",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "ToPoint"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "description": "A arc that is tangential to the last path segment that goes to a point",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "ccw",
+                      "center",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "ccw": {
+                        "description": "arc's direction",
+                        "type": "boolean"
+                      },
+                      "center": {
+                        "description": "the arc's center",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArcTo"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "description": "A arc that is tangential to the last path segment",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "TangentialArc"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "description": "A path that is horizontal.",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type",
+                      "x"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "Horizontal"
+                        ]
+                      },
+                      "x": {
+                        "description": "The x coordinate.",
+                        "type": "number",
+                        "format": "double"
+                      }
+                    }
+                  },
+                  {
+                    "description": "An angled line to.",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "AngledLineTo"
+                        ]
+                      },
+                      "x": {
+                        "description": "The x coordinate.",
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                      },
+                      "y": {
+                        "description": "The y coordinate.",
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                      }
+                    }
+                  },
+                  {
+                    "description": "A base path.",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "Base"
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "startCapId": {
+              "description": "The id of the extrusion start cap",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
+            "value": {
+              "description": "The extrude surfaces.",
+              "type": "array",
+              "items": {
+                "description": "An extrude surface.",
+                "oneOf": [
+                  {
+                    "description": "An extrude plane.",
+                    "type": "object",
+                    "required": [
+                      "faceId",
+                      "id",
+                      "name",
+                      "position",
+                      "rotation",
+                      "sourceRange",
+                      "type"
+                    ],
+                    "properties": {
+                      "faceId": {
+                        "description": "The face id for the extrude plane.",
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "id": {
+                        "description": "The id of the geometry.",
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "name": {
+                        "description": "The name.",
+                        "type": "string"
+                      },
+                      "position": {
+                        "description": "The position.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 3,
+                        "minItems": 3
+                      },
+                      "rotation": {
+                        "description": "The rotation.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 4,
+                        "minItems": 4
+                      },
+                      "sourceRange": {
+                        "description": "The source range.",
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "format": "uint",
+                          "minimum": 0.0
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "extrudePlane"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "description": "An extruded arc.",
+                    "type": "object",
+                    "required": [
+                      "faceId",
+                      "id",
+                      "name",
+                      "position",
+                      "rotation",
+                      "sourceRange",
+                      "type"
+                    ],
+                    "properties": {
+                      "faceId": {
+                        "description": "The face id for the extrude plane.",
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "id": {
+                        "description": "The id of the geometry.",
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "name": {
+                        "description": "The name.",
+                        "type": "string"
+                      },
+                      "position": {
+                        "description": "The position.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 3,
+                        "minItems": 3
+                      },
+                      "rotation": {
+                        "description": "The rotation.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 4,
+                        "minItems": 4
+                      },
+                      "sourceRange": {
+                        "description": "The source range.",
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "format": "uint",
+                          "minimum": 0.0
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "extrudeArc"
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "xAxis": {
+              "description": "The x-axis of the extrude group base plane in the 3D space",
+              "type": "object",
+              "required": [
+                "x",
+                "y",
+                "z"
+              ],
+              "properties": {
+                "x": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "y": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "z": {
+                  "type": "number",
+                  "format": "double"
+                }
+              }
+            },
+            "yAxis": {
+              "description": "The y-axis of the extrude group base plane in the 3D space",
+              "type": "object",
+              "required": [
+                "x",
+                "y",
+                "z"
+              ],
+              "properties": {
+                "x": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "y": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "z": {
+                  "type": "number",
+                  "format": "double"
+                }
+              }
+            },
+            "zAxis": {
+              "description": "The z-axis of the extrude group base plane in the 3D space",
+              "type": "object",
+              "required": [
+                "x",
+                "y",
+                "z"
+              ],
+              "properties": {
+                "x": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "y": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "z": {
+                  "type": "number",
+                  "format": "double"
+                }
+              }
+            }
+          }
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "Uuid",
+      "schema": {
+        "type": "string",
+        "format": "uuid"
       },
       "required": true
     },

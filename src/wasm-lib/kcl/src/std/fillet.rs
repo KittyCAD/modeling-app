@@ -5,6 +5,7 @@ use derive_docs::stdlib;
 use kittycad::types::ModelingCmd;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -20,25 +21,17 @@ pub struct FilletData {
     /// The radius of the fillet.
     pub radius: f64,
     /// The tags of the paths you want to fillet.
-    pub tags: Vec<String>,
-    /// The query to select the paths you want to fillet, based on the tags.
-    #[serde(default)]
-    pub query: FilletEdgeQuery,
+    pub tags: Vec<StringOrUuid>,
 }
 
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub enum FilletEdgeQuery {
-    /// Use the tags to select the paths on the start face.
-    #[default]
-    StartFace,
-    /// Use the tags to select the paths on the end face.
-    EndFace,
-    /// Get the next edge adjacent to the tag.
-    NextEdge,
-    /// Get the previous edge adjacent to the tag.
-    PreviousEdge,
+/// A string or a uuid.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Ord, PartialOrd, Eq, Hash)]
+#[serde(untagged)]
+pub enum StringOrUuid {
+    /// A uuid.
+    Uuid(Uuid),
+    /// A string.
+    String(String),
 }
 
 /// Create fillets on tagged paths.
@@ -70,107 +63,22 @@ async fn inner_fillet(
     }
 
     for tag in data.tags {
-        let tagged_path = extrude_group
-            .sketch_group_values
-            .iter()
-            .find(|p| p.get_name() == tag)
-            .ok_or_else(|| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("No edge found with tag: `{}`", tag),
-                    source_ranges: vec![args.source_range],
-                })
-            })?
-            .get_base();
-
-        let edge_id = match &data.query {
-            FilletEdgeQuery::StartFace => tagged_path.geo_meta.id,
-            FilletEdgeQuery::EndFace => {
-                let face_id = get_adjacent_face_to_tag(&extrude_group, &tag, &args)?;
-
-                let resp = args
-                    .send_modeling_cmd(
-                        uuid::Uuid::new_v4(),
-                        ModelingCmd::Solid3DGetOppositeEdge {
-                            edge_id: tagged_path.geo_meta.id,
-                            object_id: extrude_group.id,
-                            face_id,
-                        },
-                    )
-                    .await?;
-                let kittycad::types::OkWebSocketResponseData::Modeling {
-                    modeling_response:
-                        kittycad::types::OkModelingCmdResponse::Solid3DGetOppositeEdge { data: opposite_edge },
-                } = &resp
-                else {
-                    return Err(KclError::Engine(KclErrorDetails {
-                        message: format!("Solid3DGetOppositeEdge response was not as expected: {:?}", resp),
-                        source_ranges: vec![args.source_range],
-                    }));
-                };
-
-                opposite_edge.edge
-            }
-            FilletEdgeQuery::NextEdge => {
-                let face_id = get_adjacent_face_to_tag(&extrude_group, &tag, &args)?;
-
-                let resp = args
-                    .send_modeling_cmd(
-                        uuid::Uuid::new_v4(),
-                        ModelingCmd::Solid3DGetNextAdjacentEdge {
-                            edge_id: tagged_path.geo_meta.id,
-                            object_id: extrude_group.id,
-                            face_id,
-                        },
-                    )
-                    .await?;
-                let kittycad::types::OkWebSocketResponseData::Modeling {
-                    modeling_response:
-                        kittycad::types::OkModelingCmdResponse::Solid3DGetNextAdjacentEdge { data: ajacent_edge },
-                } = &resp
-                else {
-                    return Err(KclError::Engine(KclErrorDetails {
-                        message: format!("Solid3DGetNextAdjacentEdge response was not as expected: {:?}", resp),
-                        source_ranges: vec![args.source_range],
-                    }));
-                };
-
-                ajacent_edge.edge.ok_or_else(|| {
-                    KclError::Type(KclErrorDetails {
-                        message: format!("No edge found next adjacent to tag: `{}`", tag),
-                        source_ranges: vec![args.source_range],
-                    })
-                })?
-            }
-            FilletEdgeQuery::PreviousEdge => {
-                let face_id = get_adjacent_face_to_tag(&extrude_group, &tag, &args)?;
-
-                let resp = args
-                    .send_modeling_cmd(
-                        uuid::Uuid::new_v4(),
-                        ModelingCmd::Solid3DGetPrevAdjacentEdge {
-                            edge_id: tagged_path.geo_meta.id,
-                            object_id: extrude_group.id,
-                            face_id,
-                        },
-                    )
-                    .await?;
-                let kittycad::types::OkWebSocketResponseData::Modeling {
-                    modeling_response:
-                        kittycad::types::OkModelingCmdResponse::Solid3DGetPrevAdjacentEdge { data: ajacent_edge },
-                } = &resp
-                else {
-                    return Err(KclError::Engine(KclErrorDetails {
-                        message: format!("Solid3DGetPrevAdjacentEdge response was not as expected: {:?}", resp),
-                        source_ranges: vec![args.source_range],
-                    }));
-                };
-
-                ajacent_edge.edge.ok_or_else(|| {
-                    KclError::Type(KclErrorDetails {
-                        message: format!("No edge found previous adjacent to tag: `{}`", tag),
-                        source_ranges: vec![args.source_range],
-                    })
-                })?
+        let edge_id = match tag {
+            StringOrUuid::Uuid(uuid) => uuid,
+            StringOrUuid::String(tag) => {
+                extrude_group
+                    .sketch_group_values
+                    .iter()
+                    .find(|p| p.get_name() == tag)
+                    .ok_or_else(|| {
+                        KclError::Type(KclErrorDetails {
+                            message: format!("No edge found with tag: `{}`", tag),
+                            source_ranges: vec![args.source_range],
+                        })
+                    })?
+                    .get_base()
+                    .geo_meta
+                    .id
             }
         };
 
@@ -187,6 +95,183 @@ async fn inner_fillet(
     }
 
     Ok(extrude_group)
+}
+
+/// Get the opposite edge to the edge given.
+pub async fn get_opposite_edge(args: Args) -> Result<MemoryItem, KclError> {
+    let (tag, extrude_group): (String, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+
+    let edge = inner_get_opposite_edge(tag, extrude_group, args.clone()).await?;
+    Ok(MemoryItem::Uuid {
+        value: edge,
+        meta: vec![args.source_range.into()],
+    })
+}
+
+/// Get the opposite edge to the edge given.
+#[stdlib {
+    name = "getOppositeEdge",
+}]
+async fn inner_get_opposite_edge(tag: String, extrude_group: Box<ExtrudeGroup>, args: Args) -> Result<Uuid, KclError> {
+    let tagged_path = extrude_group
+        .sketch_group_values
+        .iter()
+        .find(|p| p.get_name() == tag)
+        .ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!("No edge found with tag: `{}`", tag),
+                source_ranges: vec![args.source_range],
+            })
+        })?
+        .get_base();
+
+    let face_id = get_adjacent_face_to_tag(&extrude_group, &tag, &args)?;
+
+    let resp = args
+        .send_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            ModelingCmd::Solid3DGetOppositeEdge {
+                edge_id: tagged_path.geo_meta.id,
+                object_id: extrude_group.id,
+                face_id,
+            },
+        )
+        .await?;
+    let kittycad::types::OkWebSocketResponseData::Modeling {
+        modeling_response: kittycad::types::OkModelingCmdResponse::Solid3DGetOppositeEdge { data: opposite_edge },
+    } = &resp
+    else {
+        return Err(KclError::Engine(KclErrorDetails {
+            message: format!("Solid3DGetOppositeEdge response was not as expected: {:?}", resp),
+            source_ranges: vec![args.source_range],
+        }));
+    };
+
+    Ok(opposite_edge.edge)
+}
+
+/// Get the next adjacent edge to the edge given.
+pub async fn get_next_adjacent_edge(args: Args) -> Result<MemoryItem, KclError> {
+    let (tag, extrude_group): (String, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+
+    let edge = inner_get_next_adjacent_edge(tag, extrude_group, args.clone()).await?;
+    Ok(MemoryItem::Uuid {
+        value: edge,
+        meta: vec![args.source_range.into()],
+    })
+}
+
+/// Get the next adjacent edge to the edge given.
+#[stdlib {
+    name = "getNextAdjacentEdge",
+}]
+async fn inner_get_next_adjacent_edge(
+    tag: String,
+    extrude_group: Box<ExtrudeGroup>,
+    args: Args,
+) -> Result<Uuid, KclError> {
+    let tagged_path = extrude_group
+        .sketch_group_values
+        .iter()
+        .find(|p| p.get_name() == tag)
+        .ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!("No edge found with tag: `{}`", tag),
+                source_ranges: vec![args.source_range],
+            })
+        })?
+        .get_base();
+
+    let face_id = get_adjacent_face_to_tag(&extrude_group, &tag, &args)?;
+
+    let resp = args
+        .send_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            ModelingCmd::Solid3DGetNextAdjacentEdge {
+                edge_id: tagged_path.geo_meta.id,
+                object_id: extrude_group.id,
+                face_id,
+            },
+        )
+        .await?;
+    let kittycad::types::OkWebSocketResponseData::Modeling {
+        modeling_response: kittycad::types::OkModelingCmdResponse::Solid3DGetNextAdjacentEdge { data: ajacent_edge },
+    } = &resp
+    else {
+        return Err(KclError::Engine(KclErrorDetails {
+            message: format!("Solid3DGetNextAdjacentEdge response was not as expected: {:?}", resp),
+            source_ranges: vec![args.source_range],
+        }));
+    };
+
+    ajacent_edge.edge.ok_or_else(|| {
+        KclError::Type(KclErrorDetails {
+            message: format!("No edge found next adjacent to tag: `{}`", tag),
+            source_ranges: vec![args.source_range],
+        })
+    })
+}
+
+/// Get the previous adjacent edge to the edge given.
+pub async fn get_previous_adjacent_edge(args: Args) -> Result<MemoryItem, KclError> {
+    let (tag, extrude_group): (String, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+
+    let edge = inner_get_previous_adjacent_edge(tag, extrude_group, args.clone()).await?;
+    Ok(MemoryItem::Uuid {
+        value: edge,
+        meta: vec![args.source_range.into()],
+    })
+}
+
+/// Get the previous adjacent edge to the edge given.
+#[stdlib {
+    name = "getPreviousAdjacentEdge",
+}]
+async fn inner_get_previous_adjacent_edge(
+    tag: String,
+    extrude_group: Box<ExtrudeGroup>,
+    args: Args,
+) -> Result<Uuid, KclError> {
+    let tagged_path = extrude_group
+        .sketch_group_values
+        .iter()
+        .find(|p| p.get_name() == tag)
+        .ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!("No edge found with tag: `{}`", tag),
+                source_ranges: vec![args.source_range],
+            })
+        })?
+        .get_base();
+
+    let face_id = get_adjacent_face_to_tag(&extrude_group, &tag, &args)?;
+
+    let resp = args
+        .send_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            ModelingCmd::Solid3DGetPrevAdjacentEdge {
+                edge_id: tagged_path.geo_meta.id,
+                object_id: extrude_group.id,
+                face_id,
+            },
+        )
+        .await?;
+    let kittycad::types::OkWebSocketResponseData::Modeling {
+        modeling_response: kittycad::types::OkModelingCmdResponse::Solid3DGetPrevAdjacentEdge { data: ajacent_edge },
+    } = &resp
+    else {
+        return Err(KclError::Engine(KclErrorDetails {
+            message: format!("Solid3DGetPrevAdjacentEdge response was not as expected: {:?}", resp),
+            source_ranges: vec![args.source_range],
+        }));
+    };
+
+    ajacent_edge.edge.ok_or_else(|| {
+        KclError::Type(KclErrorDetails {
+            message: format!("No edge found previous adjacent to tag: `{}`", tag),
+            source_ranges: vec![args.source_range],
+        })
+    })
 }
 
 fn get_adjacent_face_to_tag(extrude_group: &ExtrudeGroup, tag: &str, args: &Args) -> Result<uuid::Uuid, KclError> {

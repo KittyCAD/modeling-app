@@ -250,8 +250,7 @@ async fn serial_test_basic_fillet_cube_end() {
     |> line({to: [0, -10], tag: "thing2"}, %)
     |> close(%)
     |> extrude(10, %)
-    |> fillet({radius: 2, tags: ["thing"], query:"endFace" }, %)
-    |> fillet({radius: 2, tags: ["thing"] }, %)
+    |> fillet({radius: 2, tags: ["thing", getOppositeEdge("thing", %)]}, %)
 
 "#;
 
@@ -270,7 +269,7 @@ async fn serial_test_basic_fillet_cube_next_adjacent() {
     |> line({to: [0, -10], tag: "thing2"}, %)
     |> close(%)
     |> extrude(10, %)
-    |> fillet({radius: 2, tags: ["thing"], query:"nextEdge" }, %)
+    |> fillet({radius: 2, tags: [getNextAdjacentEdge("thing", %)]}, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
@@ -292,7 +291,7 @@ async fn serial_test_basic_fillet_cube_previous_adjacent() {
     |> line({to: [0, -10], tag: "thing2"}, %)
     |> close(%)
     |> extrude(10, %)
-    |> fillet({radius: 2, tags: ["thing2"], query:"previousEdge" }, %)
+    |> fillet({radius: 2, tags: [getPreviousAdjacentEdge("thing2", %)]}, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)

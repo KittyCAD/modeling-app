@@ -148,6 +148,11 @@ pub enum MemoryItem {
     ExtrudeGroups {
         value: Vec<Box<ExtrudeGroup>>,
     },
+    Uuid {
+        value: uuid::Uuid,
+        #[serde(rename = "__meta")]
+        meta: Vec<Metadata>,
+    },
     ImportedGeometry(ImportedGeometry),
     #[ts(skip)]
     ExtrudeTransform(Box<ExtrudeTransform>),
@@ -330,6 +335,7 @@ impl From<MemoryItem> for Vec<SourceRange> {
                 .iter()
                 .flat_map(|eg| eg.meta.iter().map(|m| m.source_range))
                 .collect(),
+            MemoryItem::Uuid { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::ImportedGeometry(i) => i.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::ExtrudeTransform(e) => e.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::Function { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
