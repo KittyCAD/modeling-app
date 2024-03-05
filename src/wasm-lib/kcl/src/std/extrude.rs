@@ -159,6 +159,7 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
         // sketch group.
         id: sketch_group.id,
         value: new_value,
+        sketch_group_values: sketch_group.value.clone(),
         height: length,
         position: sketch_group.position,
         rotation: sketch_group.rotation,
