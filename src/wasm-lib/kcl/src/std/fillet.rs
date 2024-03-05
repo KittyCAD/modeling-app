@@ -26,6 +26,7 @@ pub struct FilletData {
 
 /// A string or a uuid.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Ord, PartialOrd, Eq, Hash)]
+#[ts(export)]
 #[serde(untagged)]
 pub enum StringOrUuid {
     /// A uuid.
