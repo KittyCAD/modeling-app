@@ -40,6 +40,30 @@ jobs:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
         snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
+    - name: Run ubuntu/chrome snapshots2
+      run: yarn playwright test --project="Google Chrome" --update-snapshots e2e/playwright/snapshot-tests.spec.ts
+      env:
+        CI: true
+        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+        snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
+    - name: Run ubuntu/chrome snapshots3
+      run: yarn playwright test --project="Google Chrome" --update-snapshots e2e/playwright/snapshot-tests.spec.ts
+      env:
+        CI: true
+        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+        snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
+    - name: Run ubuntu/chrome snapshots4
+      run: yarn playwright test --project="Google Chrome" --update-snapshots e2e/playwright/snapshot-tests.spec.ts
+      env:
+        CI: true
+        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+        snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
+    - name: Run ubuntu/chrome snapshots5
+      run: yarn playwright test --project="Google Chrome" --update-snapshots e2e/playwright/snapshot-tests.spec.ts
+      env:
+        CI: true
+        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+        snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
     - uses: actions/upload-artifact@v3
       if: always()
       with:
