@@ -5,12 +5,12 @@ import { type IndexLoaderData } from 'lib/types'
 import { paths } from 'lib/paths'
 import { isTauri } from '../lib/isTauri'
 import { Link } from 'react-router-dom'
-import { ExportButton } from './ExportButton'
 import { Fragment } from 'react'
 import { FileTree } from './FileTree'
 import { sep } from '@tauri-apps/api/path'
 import { Logo } from './Logo'
 import { APP_NAME } from 'lib/constants'
+import { useCommandsContext } from 'hooks/useCommandsContext'
 
 const ProjectSidebarMenu = ({
   project,
@@ -21,6 +21,8 @@ const ProjectSidebarMenu = ({
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
 }) => {
+  const { commandBarSend } = useCommandsContext()
+
   return renderAsLink ? (
     <Link
       to={paths.HOME}
@@ -112,13 +114,19 @@ const ProjectSidebarMenu = ({
                 <div className="flex-1 overflow-hidden" />
               )}
               <div className="flex flex-col gap-2 p-4 dark:bg-chalkboard-90">
-                <ExportButton
-                  className={{
-                    button: 'border-transparent dark:border-transparent',
-                  }}
+                <ActionButton
+                  Element="button"
+                  icon={{ icon: 'exportFile', className: 'p-1' }}
+                  className="border-transparent dark:border-transparent"
+                  onClick={() =>
+                    commandBarSend({
+                      type: 'Find and select command',
+                      data: { name: 'Export', ownerMachine: 'modeling' },
+                    })
+                  }
                 >
-                  Export Model
-                </ExportButton>
+                  Export Part
+                </ActionButton>
                 {isTauri() && (
                   <ActionButton
                     Element="link"

@@ -5,7 +5,6 @@ import { type ProjectWithEntryPointMetadata } from 'lib/types'
 import { GlobalStateProvider } from './GlobalStateProvider'
 import { APP_NAME } from 'lib/constants'
 import { vi } from 'vitest'
-import { ExportButtonProps } from './ExportButton'
 
 const now = new Date()
 const projectWellFormed = {
@@ -37,15 +36,6 @@ const projectWellFormed = {
     uid: 1,
   },
 } satisfies ProjectWithEntryPointMetadata
-
-const mockExportButton = vi.fn()
-vi.mock('/src/components/ExportButton', () => ({
-  // engineCommandManager method call in ExportButton causes vitest to hang
-  ExportButton: (props: ExportButtonProps) => {
-    mockExportButton(props)
-    return <button>Fake export button</button>
-  },
-}))
 
 describe('ProjectSidebarMenu tests', () => {
   test('Renders the project name', () => {

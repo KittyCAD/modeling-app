@@ -28,7 +28,7 @@ interface UseStateMachineCommandsArgs<
   machineId: T['id']
   state: StateFrom<T>
   send: Function
-  actor?: InterpreterFrom<T>
+  actor: InterpreterFrom<T>
   commandBarConfig?: CommandSetConfig<T, S>
   allCommandsRequireNetwork?: boolean
   onCancel?: () => void
