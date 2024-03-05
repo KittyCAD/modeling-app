@@ -13,6 +13,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import styles from './FileTree.module.css'
 import { FILE_EXT, sortProject } from 'lib/tauriFS'
 import { CustomIcon } from './CustomIcon'
+import { kclManager } from 'lang/KclSingleton'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -158,13 +159,23 @@ const FileTreeItem = ({
       // Show the renaming form
       setIsRenaming(true)
     } else if (e.code === 'Space') {
-      openFile()
+      handleDoubleClick()
     }
   }
 
-  function openFile() {
+  function handleDoubleClick() {
     if (fileOrDir.children !== undefined) return // Don't open directories
-    navigate(`${paths.FILE}/${encodeURIComponent(fileOrDir.path)}`)
+
+    if (fileOrDir.name?.endsWith(FILE_EXT) === false && project?.path) {
+      // Import non-kcl files
+      kclManager.setCodeAndExecute(
+        `import("${fileOrDir.path.replace(project.path, '.')}")\n` +
+          kclManager.code
+      )
+    } else {
+      // Open kcl files
+      navigate(`${paths.FILE}/${encodeURIComponent(fileOrDir.path)}`)
+    }
     closePanel()
   }
 
@@ -181,7 +192,7 @@ const FileTreeItem = ({
             <button
               className="flex gap-1 items-center py-0.5 rounded-none border-none p-0 m-0 text-sm w-full hover:!bg-transparent text-left !text-inherit"
               style={{ paddingInlineStart: getIndentationCSS(level) }}
-              onDoubleClick={openFile}
+              onDoubleClick={handleDoubleClick}
               onClick={(e) => e.currentTarget.focus()}
               onKeyUp={handleKeyUp}
             >
