@@ -913,7 +913,10 @@ mod tests {
                 let (format, should_be_indented) = arg.get_type_string().unwrap();
                 let optional_string = if arg.required { " (REQUIRED)" } else { " (OPTIONAL)" }.to_string();
                 if let Some(description) = arg.description() {
-                    fn_docs.push_str(&format!("* `{}`: `{}` - {}{}\n", arg.name, arg.type_, description, optional_string));
+                    fn_docs.push_str(&format!(
+                        "* `{}`: `{}` - {}{}\n",
+                        arg.name, arg.type_, description, optional_string
+                    ));
                 } else {
                     fn_docs.push_str(&format!("* `{}`: `{}`{}\n", arg.name, arg.type_, optional_string));
                 }

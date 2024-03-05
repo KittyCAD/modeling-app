@@ -4503,7 +4503,7 @@ fillet(data: FilletData, extrude_group: ExtrudeGroup) -> ExtrudeGroup
 
 #### Arguments
 
-* `data`: `FilletData` - Data for fillets.
+* `data`: `FilletData` - Data for fillets. (REQUIRED)
 ```
 {
 	// The radius of the fillet.
@@ -4513,7 +4513,7 @@ fillet(data: FilletData, extrude_group: ExtrudeGroup) -> ExtrudeGroup
 string],
 }
 ```
-* `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces.
+* `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces. (REQUIRED)
 ```
 {
 	// The id of the extrusion end cap
@@ -4970,8 +4970,8 @@ getNextAdjacentEdge(tag: String, extrude_group: ExtrudeGroup) -> Uuid
 
 #### Arguments
 
-* `tag`: `String`
-* `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces.
+* `tag`: `String` (REQUIRED)
+* `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces. (REQUIRED)
 ```
 {
 	// The id of the extrusion end cap
@@ -5121,8 +5121,8 @@ getOppositeEdge(tag: String, extrude_group: ExtrudeGroup) -> Uuid
 
 #### Arguments
 
-* `tag`: `String`
-* `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces.
+* `tag`: `String` (REQUIRED)
+* `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces. (REQUIRED)
 ```
 {
 	// The id of the extrusion end cap
@@ -5272,8 +5272,8 @@ getPreviousAdjacentEdge(tag: String, extrude_group: ExtrudeGroup) -> Uuid
 
 #### Arguments
 
-* `tag`: `String`
-* `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces.
+* `tag`: `String` (REQUIRED)
+* `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces. (REQUIRED)
 ```
 {
 	// The id of the extrusion end cap
