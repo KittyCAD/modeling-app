@@ -108,7 +108,12 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                         : 'bg-chalkboard-20/50 dark:bg-chalkboard-80/50 border-chalkboard-20 dark:border-chalkboard-80'
                     }`}
                   >
-                    <span className="capitalize">{argName}</span>
+                    <span
+                      data-testid={`arg-name-${argName.toLowerCase()}`}
+                      className="capitalize"
+                    >
+                      {argName}
+                    </span>
                     {argValue ? (
                       arg.inputType === 'selection' ? (
                         getSelectionTypeDisplayText(argValue as Selections)
