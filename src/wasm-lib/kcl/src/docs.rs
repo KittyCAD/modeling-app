@@ -184,8 +184,11 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
                     // any errors in the `self`'s signature.
                     .map(|(index, item)| {
                         let format = item.get_autocomplete_string().unwrap();
-                        if item.type_ == "SketchGroup" || item.type_ == "ExtrudeGroup" {
+                        if item.type_ == "SketchGroup" || item.type_ == "ExtrudeGroup" || item.type_ == "SketchSurface"
+                        {
                             format!("${{{}:{}}}", index + 1, "%")
+                        } else if format.contains('{') {
+                            format.replace('{', "\\{").replace('}', "\\}").to_string()
                         } else {
                             format!("${{{}:{}}}", index + 1, format)
                         }
@@ -469,7 +472,17 @@ pub fn get_autocomplete_string_from_schema(schema: &schemars::schema::Schema) ->
             if let Some(array_val) = &o.array {
                 if let Some(schemars::schema::SingleOrVec::Single(items)) = &array_val.items {
                     // Let's print out the object's properties.
-                    return Ok(format!("[{}]", get_autocomplete_string_from_schema(items)?));
+                    match array_val.max_items {
+                        Some(val) => {
+                            return Ok(format!(
+                                "[{}]",
+                                (0..val).map(|_| "number").collect::<Vec<_>>().join(", ")
+                            ));
+                        }
+                        None => {
+                            return Ok(format!("[{}]", get_autocomplete_string_from_schema(items)?));
+                        }
+                    };
                 } else if let Some(items) = &array_val.contains {
                     return Ok(format!("[{}]", get_autocomplete_string_from_schema(items)?));
                 }
