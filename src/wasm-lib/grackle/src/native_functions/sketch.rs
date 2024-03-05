@@ -2,6 +2,5 @@
 
 pub mod helpers;
 pub mod stdlib_functions;
-pub mod types;
 
 pub use stdlib_functions::{LineTo, StartSketchAt};

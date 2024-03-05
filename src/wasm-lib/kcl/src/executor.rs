@@ -558,6 +558,8 @@ pub struct ExtrudeGroup {
     pub id: uuid::Uuid,
     /// The extrude surfaces.
     pub value: Vec<ExtrudeSurface>,
+    /// The sketch group paths.
+    pub sketch_group_values: Vec<Path>,
     /// The height of the extrude group.
     pub height: f64,
     /// The position of the extrude group.
