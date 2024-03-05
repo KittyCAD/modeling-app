@@ -45,13 +45,13 @@ pub enum RevolveAxis {
 #[serde(rename_all = "camelCase")]
 pub enum RevolveAxisAndOrigin {
     /// X-axis.
-    #[serde(alias = "X")]
+    #[serde(rename = "X", alias = "x")]
     X,
     /// Y-axis.
-    #[serde(alias = "Y")]
+    #[serde(rename = "Y", alias = "y")]
     Y,
     /// Z-axis.
-    #[serde(alias = "Z")]
+    #[serde(rename = "Z", alias = "z")]
     Z,
     /// Flip the X-axis.
     #[serde(rename = "-X", alias = "-x")]
