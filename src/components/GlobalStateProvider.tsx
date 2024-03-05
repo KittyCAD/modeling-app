@@ -57,27 +57,30 @@ export const GlobalStateProvider = ({
     >
   )
 
-  const [settingsState, settingsSend] = useMachine(settingsMachine, {
-    context: persistedSettings,
-    actions: {
-      toastSuccess: (context, event) => {
-        const truncatedNewValue =
-          'data' in event && event.data instanceof Object
-            ? (context[Object.keys(event.data)[0] as keyof typeof context]
-                .toString()
-                .substring(0, 28) as any)
-            : undefined
-        toast.success(
-          event.type +
-            (truncatedNewValue
-              ? ` to "${truncatedNewValue}${
-                  truncatedNewValue.length === 28 ? '...' : ''
-                }"`
-              : '')
-        )
+  const [settingsState, settingsSend, settingsActor] = useMachine(
+    settingsMachine,
+    {
+      context: persistedSettings,
+      actions: {
+        toastSuccess: (context, event) => {
+          const truncatedNewValue =
+            'data' in event && event.data instanceof Object
+              ? (String(
+                  context[Object.keys(event.data)[0] as keyof typeof context]
+                ).substring(0, 28) as any)
+              : undefined
+          toast.success(
+            event.type +
+              (truncatedNewValue
+                ? ` to "${truncatedNewValue}${
+                    truncatedNewValue.length === 28 ? '...' : ''
+                  }"`
+                : '')
+          )
+        },
       },
-    },
-  })
+    }
+  )
   settingsStateRef = settingsState.context
 
   useStateMachineCommands({
@@ -85,6 +88,7 @@ export const GlobalStateProvider = ({
     state: settingsState,
     send: settingsSend,
     commandBarConfig: settingsCommandBarConfig,
+    actor: settingsActor,
   })
 
   // Listen for changes to the system theme and update the app theme accordingly
@@ -105,7 +109,7 @@ export const GlobalStateProvider = ({
   }, [settingsState.context])
 
   // Auth machine setup
-  const [authState, authSend] = useMachine(authMachine, {
+  const [authState, authSend, authActor] = useMachine(authMachine, {
     actions: {
       goToSignInPage: () => {
         navigate(paths.SIGN_IN)
@@ -125,6 +129,7 @@ export const GlobalStateProvider = ({
     state: authState,
     send: authSend,
     commandBarConfig: authCommandBarConfig,
+    actor: authActor,
   })
 
   return (

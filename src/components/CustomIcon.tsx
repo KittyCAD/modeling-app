@@ -9,6 +9,7 @@ export type CustomIconName =
   | 'clipboardCheckmark'
   | 'close'
   | 'equal'
+  | 'exportFile'
   | 'extrude'
   | 'file'
   | 'filePlus'
@@ -190,6 +191,22 @@ export const CustomIcon = ({
         >
           <path
             d="M5 8.78V7H14.52V8.78H5ZM5 13.02V11.24H14.52V13.02H5Z"
+            fill="currentColor"
+          />
+        </svg>
+      )
+    case 'exportFile':
+      return (
+        <svg
+          {...props}
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M4 3H4.5H11H11.2071L11.3536 3.14645L15.8536 7.64646L16 7.7929V8.00001V11.3773C15.6992 11.1362 15.3628 10.9376 15 10.7908V8.50001H11H10.5V8.00001V4H5V16H9.79076C9.93763 16.3628 10.1362 16.6992 10.3773 17H4.5H4V16.5V3.5V3ZM11.5 4.70711L14.2929 7.50001H11.5V4.70711ZM16.3904 14.1877L14.3904 11.6877L13.6096 12.3124L14.9597 14H11V15H14.9597L13.6096 16.6877L14.3904 17.3124L16.3904 14.8124L16.6403 14.5L16.3904 14.1877Z"
             fill="currentColor"
           />
         </svg>

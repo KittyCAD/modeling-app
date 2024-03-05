@@ -1,4 +1,8 @@
-use kittycad_execution_plan::{api_request::ApiRequest, Destination, Instruction};
+use kittycad_execution_plan::{
+    api_request::ApiRequest,
+    sketch_types::{self, Axes, BasePath, Plane, SketchGroup},
+    Destination, Instruction,
+};
 use kittycad_execution_plan_traits::{Address, InMemory, Value};
 use kittycad_modeling_cmds::{
     shared::{Point3d, Point4d},
@@ -6,10 +10,7 @@ use kittycad_modeling_cmds::{
 };
 use uuid::Uuid;
 
-use super::{
-    helpers::{arg_point2d, no_arg_api_call, single_binding, stack_api_call},
-    types::{Axes, BasePath, Plane, SketchGroup},
-};
+use super::helpers::{arg_point2d, no_arg_api_call, single_binding, stack_api_call};
 use crate::{binding_scope::EpBinding, error::CompileError, native_functions::Callable, EvalPlan};
 
 #[derive(Debug, Clone)]
@@ -184,9 +185,9 @@ impl Callable for StartSketchAt {
                 name: Default::default(),
             },
             path_rest: Vec::new(),
-            on: super::types::SketchSurface::Plane(Plane {
+            on: sketch_types::SketchSurface::Plane(Plane {
                 id: plane_id,
-                value: super::types::PlaneType::XY,
+                value: sketch_types::PlaneType::XY,
                 origin,
                 axes,
             }),
