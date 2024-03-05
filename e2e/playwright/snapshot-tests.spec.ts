@@ -117,12 +117,15 @@ const part001 = startSketchOn('-XZ')
       await page.locator('#arg-form').waitFor({ state: 'detached' })
     }
     await expect(page.getByText('Confirm Export')).toBeVisible()
+
+    // Kick off export promise before triggering the download in case it downloads very quickly
+    // since playwright is puppets the browser, race conditions are much more acute,
+    // and since this export is a simple file the download can happen very quickly
+    const downloadPromise = page.waitForEvent('download')
     await page.getByRole('button', { name: 'Submit command' }).click()
 
-    console.log(JSON.stringify(output, null, 2))
-    console.log(`waiting for download of ${output.type}`)
     // Handle download
-    const download = await page.waitForEvent('download')
+    const download = await downloadPromise
     const downloadLocationer = (extra = '', isImage = false) =>
       `./e2e/playwright/export-snapshots/${output.type}-${
         'storage' in output ? output.storage : ''
