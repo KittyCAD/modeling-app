@@ -126,6 +126,7 @@ const part001 = startSketchOn('-XZ')
 
     // Handle download
     const download = await downloadPromise
+    const downloadPromise2 = page.waitForEvent('download')
     const downloadLocationer = (extra = '', isImage = false) =>
       `./e2e/playwright/export-snapshots/${output.type}-${
         'storage' in output ? output.storage : ''
@@ -135,7 +136,7 @@ const part001 = startSketchOn('-XZ')
 
     if (output.type === 'gltf' && output.storage === 'standard') {
       // wait for second download
-      const download2 = await page.waitForEvent('download')
+      const download2 = await downloadPromise2
       await download.saveAs(downloadLocation)
       await download2.saveAs(downloadLocation2)
 
