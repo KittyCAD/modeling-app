@@ -1091,7 +1091,7 @@ impl CallExpression {
                             function_expression.params.len(),
                             fn_args.len(),
                         ),
-                        source_ranges: vec![(function_expression).into()],
+                        source_ranges: vec![self.into()],
                     }));
                 }
 
