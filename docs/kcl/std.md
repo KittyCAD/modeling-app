@@ -3729,7 +3729,7 @@ Close the current sketch.
 
 
 ```
-close(sketch_group: SketchGroup) -> SketchGroup
+close(sketch_group: SketchGroup, tag?: String) -> SketchGroup
 ```
 
 #### Arguments
@@ -3898,6 +3898,7 @@ close(sketch_group: SketchGroup) -> SketchGroup
 },
 }
 ```
+* `tag`: `String`
 
 #### Returns
 
@@ -4990,7 +4991,7 @@ For formats lacking unit data (STL, OBJ, PLY), the default import unit is millim
 Import paths are relative to the current project directory. This only works in the desktop app not in browser.
 
 ```
-import(file_path: String, options: ImportFormat) -> ImportedGeometry
+import(file_path: String, options?: ImportFormat) -> ImportedGeometry
 ```
 
 #### Arguments
@@ -8160,7 +8161,7 @@ Start a sketch on a specific plane or face.
 
 
 ```
-startSketchOn(data: SketchData, tag: SketchOnFaceTag) -> SketchSurface
+startSketchOn(data: SketchData, tag?: SketchOnFaceTag) -> SketchSurface
 ```
 
 #### Arguments
@@ -8726,7 +8727,7 @@ Draw an arc.
 
 
 ```
-tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchGroup
+tangentialArcTo(to: [number], sketch_group: SketchGroup, tag?: String) -> SketchGroup
 ```
 
 #### Arguments

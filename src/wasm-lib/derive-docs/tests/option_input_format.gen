@@ -44,7 +44,7 @@ impl crate::docs::StdLibFn for Import {
             name: "args".to_string(),
             type_: "kittycad::types::InputFormat".to_string(),
             schema: <Option<kittycad::types::InputFormat>>::json_schema(&mut generator),
-            required: true,
+            required: false,
         }]
     }
 

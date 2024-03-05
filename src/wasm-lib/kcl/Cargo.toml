@@ -17,8 +17,8 @@ async-trait = "0.1.77"
 clap = { version = "4.5.1", features = ["cargo", "derive", "env", "unicode"], optional = true }
 dashmap = "5.5.3"
 databake = { version = "0.1.7", features = ["derive"] }
-derive-docs = { version = "0.1.8" }
-#derive-docs = { path = "../derive-docs" }
+#derive-docs = { version = "0.1.8" }
+derive-docs = { path = "../derive-docs" }
 futures = { version = "0.3.30" }
 gltf-json = "1.4.0"
 kittycad = { workspace = true }

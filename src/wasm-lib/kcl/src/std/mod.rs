@@ -415,6 +415,36 @@ impl Args {
         }
     }
 
+    fn get_sketch_group_and_optional_tag(&self) -> Result<(Box<SketchGroup>, Option<String>), KclError> {
+        let first_value = self.args.first().ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Expected a SketchGroup as the first argument, found `{:?}`", self.args),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let sketch_group = if let MemoryItem::SketchGroup(sg) = first_value {
+            sg.clone()
+        } else {
+            return Err(KclError::Type(KclErrorDetails {
+                message: format!("Expected a SketchGroup as the first argument, found `{:?}`", self.args),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+
+        if let Some(second_value) = self.args.get(1) {
+            let tag: String = serde_json::from_value(second_value.get_json_value()?).map_err(|e| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Failed to deserialize String from JSON: {}", e),
+                    source_ranges: vec![self.source_range],
+                })
+            })?;
+            Ok((sketch_group, Some(tag)))
+        } else {
+            Ok((sketch_group, None))
+        }
+    }
+
     fn get_data_and_optional_tag<T: serde::de::DeserializeOwned>(
         &self,
     ) -> Result<(T, Option<SketchOnFaceTag>), KclError> {

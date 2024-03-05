@@ -20513,6 +20513,15 @@
           }
         },
         "required": true
+      },
+      {
+        "name": "tag",
+        "type": "String",
+        "schema": {
+          "type": "string",
+          "nullable": true
+        },
+        "required": false
       }
     ],
     "returnValue": {
@@ -27674,7 +27683,7 @@
           ],
           "nullable": true
         },
-        "required": true
+        "required": false
       }
     ],
     "returnValue": {
@@ -46072,7 +46081,7 @@
           ],
           "nullable": true
         },
-        "required": true
+        "required": false
       }
     ],
     "returnValue": {
@@ -49389,7 +49398,7 @@
           "type": "string",
           "nullable": true
         },
-        "required": true
+        "required": false
       }
     ],
     "returnValue": {
