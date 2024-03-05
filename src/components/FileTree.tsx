@@ -3,7 +3,7 @@ import { paths } from 'lib/paths'
 import { ActionButton } from './ActionButton'
 import Tooltip from './Tooltip'
 import { FileEntry } from '@tauri-apps/api/fs'
-import { Dispatch, useRef, useState } from 'react'
+import { Dispatch, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Dialog, Disclosure } from '@headlessui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -14,6 +14,7 @@ import styles from './FileTree.module.css'
 import { FILE_EXT, sortProject } from 'lib/tauriFS'
 import { CustomIcon } from './CustomIcon'
 import { kclManager } from 'lang/KclSingleton'
+import { useDocumentHasFocus } from 'hooks/useDocumentHasFocus'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -326,8 +327,14 @@ export const FileTree = ({
   closePanel,
 }: FileTreeProps) => {
   const { send, context } = useFileContext()
+  const docuemntHasFocus = useDocumentHasFocus()
   useHotkeys('meta + n', createFile)
   useHotkeys('meta + shift + n', createFolder)
+
+  // Refresh the file tree when the document gets focus
+  useEffect(() => {
+    send({ type: 'Refresh' })
+  }, [docuemntHasFocus])
 
   async function createFile() {
     send({ type: 'Create file', data: { name: '', makeDir: false } })
