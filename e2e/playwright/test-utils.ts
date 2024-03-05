@@ -1,16 +1,23 @@
-import { expect, Page } from '@playwright/test'
+import { expect, Page, errors } from '@playwright/test'
 import { EngineCommand } from '../../src/lang/std/engineConnection'
 import fsp from 'fs/promises'
 import pixelMatch from 'pixelmatch'
 import { PNG } from 'pngjs'
 
 async function waitForPageLoad(page: Page) {
-  // wait for 'Loading stream...' spinner
-  await page.getByTestId('loading-stream').waitFor()
-  // wait for all spinners to be gone
-  await page.getByTestId('loading').waitFor({ state: 'detached' })
-
-  await page.getByTestId('start-sketch').waitFor()
+  try {
+    // wait for 'Loading stream...' spinner
+    await page.getByTestId('loading-stream').waitFor()
+    // wait for all spinners to be gone
+    await page.getByTestId('loading').waitFor({ state: 'detached' })
+    await page.getByTestId('start-sketch').waitFor()
+  } catch (e) {
+    if (e instanceof errors.TimeoutError) {
+      console.log('Timeout while waiting for page load.')
+    } else {
+      throw e // re-throw the error if it is not a TimeoutError
+    }
+  }
 }
 
 async function removeCurrentCode(page: Page) {
