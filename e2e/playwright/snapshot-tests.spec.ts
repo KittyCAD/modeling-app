@@ -118,10 +118,6 @@ const part001 = startSketchOn('-XZ')
     }
     await expect(page.getByText('Confirm Export')).toBeVisible()
 
-    // Kick off export promise before triggering the download in case it downloads very quickly
-    // since playwright is puppets the browser, race conditions are much more acute,
-    // and since this export is a simple file the download can happen very quickly
-
     const getPromiseAndResolve = () => {
       let resolve: any = () => {}
       const promise = new Promise<Download>((r) => {
@@ -142,12 +138,10 @@ const part001 = startSketchOn('-XZ')
       }
       downloadCnt++
     })
-    // const downloadPromise = await page.waitForEvent('download')
     await page.getByRole('button', { name: 'Submit command' }).click()
 
     // Handle download
     const download = await downloadPromise1
-    // const downloadPromise2 = page.waitForEvent('download')
     const downloadLocationer = (extra = '', isImage = false) =>
       `./e2e/playwright/export-snapshots/${output.type}-${
         'storage' in output ? output.storage : ''
