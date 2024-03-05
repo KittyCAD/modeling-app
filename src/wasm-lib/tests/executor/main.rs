@@ -204,6 +204,107 @@ const part002 = startSketchOn(part001, "END")
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn serial_test_fillet_duplicate_tags() {
+    let code = r#"const part001 = startSketchOn('XY')
+    |> startProfileAt([0,0], %)
+    |> line({to: [0, 10], tag: "thing"}, %)
+    |> line([10, 0], %)
+    |> line({to: [0, -10], tag: "thing2"}, %)
+    |> close(%)
+    |> extrude(10, %)
+    |> fillet({radius: 0.5, tags: ["thing", "thing"]}, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([227, 277])], message: "Duplicate tags are not allowed." }"#,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_basic_fillet_cube_start() {
+    let code = r#"const part001 = startSketchOn('XY')
+    |> startProfileAt([0,0], %)
+    |> line({to: [0, 10], tag: "thing"}, %)
+    |> line([10, 0], %)
+    |> line({to: [0, -10], tag: "thing2"}, %)
+    |> close(%)
+    |> extrude(10, %)
+    |> fillet({radius: 2, tags: ["thing", "thing2"]}, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/basic_fillet_cube_start.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_basic_fillet_cube_end() {
+    let code = r#"const part001 = startSketchOn('XY')
+    |> startProfileAt([0,0], %)
+    |> line({to: [0, 10], tag: "thing"}, %)
+    |> line([10, 0], %)
+    |> line({to: [0, -10], tag: "thing2"}, %)
+    |> close(%)
+    |> extrude(10, %)
+    |> fillet({radius: 2, tags: ["thing", getOppositeEdge("thing", %)]}, %)
+
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/basic_fillet_cube_end.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_basic_fillet_cube_next_adjacent() {
+    let code = r#"const part001 = startSketchOn('XY')
+    |> startProfileAt([0,0], %)
+    |> line({to: [0, 10], tag: "thing"}, %)
+    |> line({to: [10, 0], tag: "thing1"}, %)
+    |> line({to: [0, -10], tag: "thing2"}, %)
+    |> close(%)
+    |> extrude(10, %)
+    |> fillet({radius: 2, tags: [getNextAdjacentEdge("thing", %)]}, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/basic_fillet_cube_next_adjacent.png",
+        &result,
+        0.999,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_basic_fillet_cube_previous_adjacent() {
+    let code = r#"const part001 = startSketchOn('XY')
+    |> startProfileAt([0,0], %)
+    |> line({to: [0, 10], tag: "thing"}, %)
+    |> line({to: [10, 0], tag: "thing1"}, %)
+    |> line({to: [0, -10], tag: "thing2"}, %)
+    |> close(%)
+    |> extrude(10, %)
+    |> fillet({radius: 2, tags: [getPreviousAdjacentEdge("thing2", %)]}, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/basic_fillet_cube_previous_adjacent.png",
+        &result,
+        0.999,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_execute_with_function_sketch() {
     let code = r#"fn box = (h, l, w) => {
  const myBox = startSketchOn('XY')
@@ -1113,4 +1214,25 @@ const part003 = startSketchOn(part002, "end")
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_of_face.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_stdlib_kcl_error_right_code_path() {
+    let code = r#"const square = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %)
+  |> close(%)
+  |> hole(circle([2, 2], .5), %)
+  |> hole(circle('XY', [2, 8], .5), %)
+  |> extrude(2, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([157, 175])], message: "this function expected 3 arguments, got 2" }"#
+    );
 }
