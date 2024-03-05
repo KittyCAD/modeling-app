@@ -99,15 +99,22 @@ const part001 = startSketchOn('-XZ')
     output: Models['OutputFormat_type']
   ): Promise<Paths> => {
     await page.getByRole('button', { name: APP_NAME }).click()
+    await expect(
+      page.getByRole('button', { name: 'Export Part' })
+    ).toBeVisible()
     await page.getByRole('button', { name: 'Export Part' }).click()
+    await expect(page.getByTestId('command-bar')).toBeVisible()
 
     // Go through export via command bar
     await page.getByRole('option', { name: output.type, exact: false }).click()
+    await page.locator('#arg-form').waitFor({ state: 'detached' })
     if ('storage' in output) {
+      await page.getByTestId('arg-name-storage').waitFor({ timeout: 1000 })
       await page.getByRole('button', { name: 'storage', exact: false }).click()
       await page
         .getByRole('option', { name: output.storage, exact: false })
         .click()
+      await page.locator('#arg-form').waitFor({ state: 'detached' })
     }
     await expect(page.getByText('Confirm Export')).toBeVisible()
 
