@@ -80,6 +80,7 @@ const mySketch001 = startSketchOn('XY')
       rotation: [0, 0, 0, 1],
       endCapId: null,
       startCapId: null,
+      sketchGroupValues: expect.any(Array),
       xAxis: { x: 1, y: 0, z: 0 },
       yAxis: { x: 0, y: 1, z: 0 },
       zAxis: { x: 0, y: 0, z: 1 },
@@ -122,6 +123,7 @@ const sk2 = startSketchOn('XY')
         rotation: [0, 0, 0, 1],
         endCapId: null,
         startCapId: null,
+        sketchGroupValues: expect.any(Array),
         xAxis: { x: 1, y: 0, z: 0 },
         yAxis: { x: 0, y: 1, z: 0 },
         zAxis: { x: 0, y: 0, z: 1 },
@@ -137,6 +139,7 @@ const sk2 = startSketchOn('XY')
 
         endCapId: null,
         startCapId: null,
+        sketchGroupValues: expect.any(Array),
         xAxis: { x: 1, y: 0, z: 0 },
         yAxis: { x: 0, y: 1, z: 0 },
         zAxis: { x: 0, y: 0, z: 1 },
