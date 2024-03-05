@@ -1,6 +1,6 @@
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CustomIcon } from '../CustomIcon'
-import React, { useState } from 'react'
+import React, { ReactNode, useState } from 'react'
 import { ActionButton } from '../ActionButton'
 import { Selections, getSelectionTypeDisplayText } from 'lib/selections'
 import { useHotkeys } from 'react-hotkeys-hook'
