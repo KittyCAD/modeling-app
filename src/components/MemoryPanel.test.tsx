@@ -25,8 +25,7 @@ describe('processMemory', () => {
     |> lineTo([-3.35, 0.17], %)
     |> lineTo([0.98, 5.16], %)
     |> lineTo([2.15, 4.32], %)
-    // |> rx(90, %)
-  show(theExtrude, theSketch)`
+    // |> rx(90, %)`
     const ast = parse(code)
     const programMemory = await enginelessExecutor(ast, {
       root: {},
@@ -41,9 +40,9 @@ describe('processMemory', () => {
       otherVar: 3,
       theExtrude: [],
       theSketch: [
-        { type: 'toPoint', to: [-3.35, 0.17], from: [0, 0], name: '' },
-        { type: 'toPoint', to: [0.98, 5.16], from: [-3.35, 0.17], name: '' },
-        { type: 'toPoint', to: [2.15, 4.32], from: [0.98, 5.16], name: '' },
+        { type: 'ToPoint', to: [-3.35, 0.17], from: [0, 0], name: '' },
+        { type: 'ToPoint', to: [0.98, 5.16], from: [-3.35, 0.17], name: '' },
+        { type: 'ToPoint', to: [2.15, 4.32], from: [0.98, 5.16], name: '' },
       ],
     })
   })

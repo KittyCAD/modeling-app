@@ -21,11 +21,11 @@ import {
 } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { normaliseAngle } from '../../lib/utils'
-import { kclManager } from 'lang/KclSinglton'
+import { kclManager } from 'lang/KclSingleton'
 
 const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
 
-export function setAngleLengthInfo({
+export function angleLengthInfo({
   selectionRanges,
   angleOrLength = 'setLength',
 }: {
@@ -50,7 +50,10 @@ export function setAngleLengthInfo({
     kclManager.ast,
     angleOrLength
   )
-  const enabled = isAllTooltips && transforms.every(Boolean)
+  const enabled =
+    selectionRanges.codeBasedSelections.length <= 1 &&
+    isAllTooltips &&
+    transforms.every(Boolean)
   return { enabled, transforms }
 }
 
@@ -64,7 +67,7 @@ export async function applyConstraintAngleLength({
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
 }> {
-  const { transforms } = setAngleLengthInfo({ selectionRanges, angleOrLength })
+  const { transforms } = angleLengthInfo({ selectionRanges, angleOrLength })
   const { valueUsedInTransform } = transformAstSketchLines({
     ast: JSON.parse(JSON.stringify(kclManager.ast)),
     selectionRanges,
@@ -86,12 +89,16 @@ export async function applyConstraintAngleLength({
       isReferencingXAxis && angleOrLength === 'setAngle'
 
     let forceVal = valueUsedInTransform || 0
-    let calcIdentifier = createIdentifier('_0')
+    let calcIdentifier = createIdentifier('ZERO')
     if (isReferencingYAxisAngle) {
-      calcIdentifier = createIdentifier(forceVal < 0 ? '_270' : '_90')
+      calcIdentifier = createIdentifier(
+        forceVal < 0 ? 'THREE_QUARTER_TURN' : 'QUARTER_TURN'
+      )
       forceVal = normaliseAngle(forceVal + (forceVal < 0 ? 90 : -90))
     } else if (isReferencingXAxisAngle) {
-      calcIdentifier = createIdentifier(Math.abs(forceVal) > 90 ? '_180' : '_0')
+      calcIdentifier = createIdentifier(
+        Math.abs(forceVal) > 90 ? 'HALF_TURN' : 'ZERO'
+      )
       forceVal =
         Math.abs(forceVal) > 90 ? normaliseAngle(forceVal - 180) : forceVal
     }
@@ -109,7 +116,7 @@ export async function applyConstraintAngleLength({
     )
     if (
       isReferencingYAxisAngle ||
-      (isReferencingXAxisAngle && calcIdentifier.name !== '_0')
+      (isReferencingXAxisAngle && calcIdentifier.name !== 'ZERO')
     ) {
       finalValue = createBinaryExpressionWithUnary([calcIdentifier, finalValue])
     }

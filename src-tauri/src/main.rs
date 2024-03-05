@@ -1,6 +1,8 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use std::env;
+use std::fs;
 use std::io::Read;
 
 use anyhow::Result;
@@ -70,8 +72,21 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
     // Open the system browser with the auth_uri.
     // We do this in the browser and not a separate window because we want 1password and
     // other crap to work well.
-    tauri::api::shell::open(&app.shell_scope(), auth_uri.secret(), None)
-        .map_err(|e| InvokeError::from_anyhow(e.into()))?;
+    // TODO: find a better way to share this value with tauri e2e tests
+    // Here we're using an env var to enable the /tmp file (windows not supported for now)
+    // and bypass the shell::open call as it fails on GitHub Actions.
+    let e2e_tauri_enabled = env::var("E2E_TAURI_ENABLED").is_ok();
+    if e2e_tauri_enabled {
+        println!(
+            "E2E_TAURI_ENABLED is set, won't open {} externally",
+            auth_uri.secret()
+        );
+        fs::write("/tmp/kittycad_user_code", details.user_code().secret())
+            .expect("Unable to write /tmp/kittycad_user_code file");
+    } else {
+        tauri::api::shell::open(&app.shell_scope(), auth_uri.secret(), None)
+            .map_err(|e| InvokeError::from_anyhow(e.into()))?;
+    }
 
     // Wait for the user to login.
     let token = auth_client

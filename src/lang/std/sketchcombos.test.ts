@@ -123,7 +123,6 @@ const part001 = startSketchOn('XY')
   |> yLine(1.04, %) // ln-yLine-free should sub in segLen
   |> xLineTo(30, %) // ln-xLineTo-free should convert to xLine
   |> yLineTo(20, %) // ln-yLineTo-free should convert to yLine
-show(part001)
 `
   const expectModifiedScript = `const myVar = 3
 const myVar2 = 5
@@ -196,7 +195,6 @@ const part001 = startSketchOn('XY')
   |> yLine(segLen('seg01', %), %) // ln-yLine-free should sub in segLen
   |> xLine(segLen('seg01', %), %) // ln-xLineTo-free should convert to xLine
   |> yLine(segLen('seg01', %), %) // ln-yLineTo-free should convert to yLine
-show(part001)
 `
   it('should transform the ast', async () => {
     const ast = parse(inputScript)
@@ -257,7 +255,6 @@ const part001 = startSketchOn('XY')
   |> angledLineToY([223, 7.68], %) // select for vertical constraint 9
   |> angledLineToX([333, myVar3], %) // select for horizontal constraint 10
   |> angledLineToY([301, myVar], %) // select for vertical constraint 10
-show(part001)
 `
   it('should transform horizontal lines the ast', async () => {
     const expectModifiedScript = `const myVar = 2
@@ -286,7 +283,6 @@ const part001 = startSketchOn('XY')
   |> angledLineToY([223, 7.68], %) // select for vertical constraint 9
   |> xLineTo(myVar3, %) // select for horizontal constraint 10
   |> angledLineToY([301, myVar], %) // select for vertical constraint 10
-show(part001)
 `
     const ast = parse(inputScript)
     const selectionRanges: Selections['codeBasedSelections'] = inputScript
@@ -345,7 +341,6 @@ const part001 = startSketchOn('XY')
   |> yLineTo(7.68, %) // select for vertical constraint 9
   |> angledLineToX([333, myVar3], %) // select for horizontal constraint 10
   |> yLineTo(myVar, %) // select for vertical constraint 10
-show(part001)
 `
     const ast = parse(inputScript)
     const selectionRanges: Selections['codeBasedSelections'] = inputScript
@@ -389,7 +384,6 @@ const part001 = startSketchOn('XY')
   |> line([0.45, 1.46], %) // free
   |> line([myVar, 0.01], %) // xRelative
   |> line([0.7, myVar], %) // yRelative
-show(part001)
 `
     it('testing for free to horizontal and vertical distance', async () => {
       const expectedHorizontalCode = await helperThing(
@@ -501,12 +495,11 @@ const part001 = startSketchOn('XY')
   |> xLine(3.36, %) // partial
   |> line([-1.49, 1.06], %) // free
   |> xLine(-3.43 + 0, %) // full
-  |> angledLineOfXLength([243 + 0, 1.2 + 0], %) // full
-show(part001)`
+  |> angledLineOfXLength([243 + 0, 1.2 + 0], %) // full`
     const ast = parse(code)
     const constraintLevels: ReturnType<
       typeof getConstraintLevelFromSourceRange
-    >[] = ['full', 'partial', 'free']
+    >['level'][] = ['full', 'partial', 'free']
     constraintLevels.forEach((constraintLevel) => {
       const recursivelySeachCommentsAndCheckConstraintLevel = (
         str: string,
@@ -520,7 +513,7 @@ show(part001)`
         const expectedConstraintLevel = getConstraintLevelFromSourceRange(
           [offsetIndex, offsetIndex],
           ast
-        )
+        ).level
         expect(expectedConstraintLevel).toBe(constraintLevel)
         return recursivelySeachCommentsAndCheckConstraintLevel(
           str,

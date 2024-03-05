@@ -1,12 +1,32 @@
 import { Models } from '@kittycad/lib'
 import { engineCommandManager } from 'lang/std/engineConnection'
-import { SourceRange } from 'lang/wasm'
+import { CallExpression, SourceRange, parse, recast } from 'lang/wasm'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { v4 as uuidv4 } from 'uuid'
 import { EditorSelection } from '@codemirror/state'
-import { kclManager } from 'lang/KclSinglton'
+import { kclManager } from 'lang/KclSingleton'
 import { SelectionRange } from '@uiw/react-codemirror'
 import { isOverlap } from 'lib/utils'
+import { isCursorInSketchCommandRange } from 'lang/util'
+import { Program } from 'lang/wasm'
+import {
+  doesPipeHaveCallExp,
+  getNodeFromPath,
+  isSingleCursorInPipe,
+} from 'lang/queryAst'
+import { CommandArgument } from './commandTypes'
+import {
+  STRAIGHT_SEGMENT,
+  TANGENTIAL_ARC_TO_SEGMENT,
+  sceneEntitiesManager,
+  getParentGroup,
+  PROFILE_START,
+} from 'clientSideScene/sceneEntities'
+import { Mesh } from 'three'
+import { AXIS_GROUP, X_AXIS } from 'clientSideScene/sceneInfra'
+
+export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
+export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
 
 /*
 How selections work is complex due to the nature that we rely on the engine
@@ -110,6 +130,15 @@ export async function getEventForSelectWithPoint(
       data: { selectionType: 'singleCodeCursor' },
     }
   }
+  if ([X_AXIS_UUID, Y_AXIS_UUID].includes(data.entity_id)) {
+    return {
+      type: 'Set selection',
+      data: {
+        selectionType: 'otherSelection',
+        selection: X_AXIS_UUID === data.entity_id ? 'x-axis' : 'y-axis',
+      },
+    }
+  }
   const sourceRange = engineCommandManager.artifactMap[data.entity_id]?.range
   if (engineCommandManager.artifactMap[data.entity_id]) {
     return {
@@ -157,6 +186,46 @@ export async function getEventForSelectWithPoint(
   }
 }
 
+export function getEventForSegmentSelection(
+  obj: any
+): ModelingMachineEvent | null {
+  const group = getParentGroup(obj, [
+    STRAIGHT_SEGMENT,
+    TANGENTIAL_ARC_TO_SEGMENT,
+    PROFILE_START,
+  ])
+  const axisGroup = getParentGroup(obj, [AXIS_GROUP])
+  if (!group && !axisGroup) return null
+  if (axisGroup?.userData.type === AXIS_GROUP) {
+    return {
+      type: 'Set selection',
+      data: {
+        selectionType: 'otherSelection',
+        selection: obj?.userData?.type === X_AXIS ? 'x-axis' : 'y-axis',
+      },
+    }
+  }
+  const pathToNode = group?.userData?.pathToNode
+  if (!pathToNode) return null
+  // previous drags don't update ast for efficiency reasons
+  // So we want to make sure we have and updated ast with
+  // accurate source ranges
+  const updatedAst = parse(kclManager.code)
+  const node = getNodeFromPath<CallExpression>(
+    updatedAst,
+    pathToNode,
+    'CallExpression'
+  ).node
+  const range: SourceRange = [node.start, node.end]
+  return {
+    type: 'Set selection',
+    data: {
+      selectionType: 'singleCodeCursor',
+      selection: { range, type: 'default' },
+    },
+  }
+}
+
 export function handleSelectionBatch({
   selections,
 }: {
@@ -164,6 +233,7 @@ export function handleSelectionBatch({
 }): {
   selectionRangeTypeMap: SelectionRangeTypeMap
   codeMirrorSelection?: EditorSelection
+  otherSelections: Axis[]
 } {
   const ranges: ReturnType<typeof EditorSelection.cursor>[] = []
   const selectionRangeTypeMap: SelectionRangeTypeMap = {}
@@ -180,43 +250,73 @@ export function handleSelectionBatch({
         ranges,
         selections.codeBasedSelections.length - 1
       ),
+      otherSelections: selections.otherSelections,
     }
 
   return {
     selectionRangeTypeMap,
+    otherSelections: selections.otherSelections,
   }
 }
 
 export function handleSelectionWithShift({
   codeSelection,
-  currestSelections,
+  otherSelection,
+  currentSelections,
   isShiftDown,
 }: {
   codeSelection?: Selection
-  currestSelections: Selections
+  otherSelection?: Axis
+  currentSelections: Selections
   isShiftDown: boolean
 }): {
   selectionRangeTypeMap: SelectionRangeTypeMap
+  otherSelections: Axis[]
   codeMirrorSelection?: EditorSelection
 } {
   const code = kclManager.code
-  if (!codeSelection)
+  if (codeSelection && otherSelection) {
+    throw new Error('cannot have both code and other selection')
+  }
+  if (!codeSelection && !otherSelection) {
     return handleSelectionBatch({
       selections: {
-        otherSelections: currestSelections.otherSelections,
+        otherSelections: [],
         codeBasedSelections: [
           {
-            range: [0, code.length ? code.length - 1 : 0],
+            range: [0, code.length ? code.length : 0],
             type: 'default',
           },
         ],
       },
     })
+  }
+  if (otherSelection) {
+    return handleSelectionBatch({
+      selections: {
+        codeBasedSelections: isShiftDown
+          ? currentSelections.codeBasedSelections
+          : [
+              {
+                range: [0, code.length ? code.length : 0],
+                type: 'default',
+              },
+            ],
+        otherSelections: [otherSelection],
+      },
+    })
+  }
+  const isEndOfFileDumbySelection =
+    currentSelections.codeBasedSelections.length === 1 &&
+    currentSelections.codeBasedSelections[0].range[0] === kclManager.code.length
+  const newCodeBasedSelections = !isShiftDown
+    ? [codeSelection!]
+    : isEndOfFileDumbySelection
+    ? [codeSelection!]
+    : [...currentSelections.codeBasedSelections, codeSelection!]
   const selections: Selections = {
-    ...currestSelections,
-    codeBasedSelections: isShiftDown
-      ? [...currestSelections.codeBasedSelections, codeSelection]
-      : [codeSelection],
+    otherSelections: isShiftDown ? currentSelections.otherSelections : [],
+    codeBasedSelections: newCodeBasedSelections,
   }
   return handleSelectionBatch({ selections })
 }
@@ -227,10 +327,12 @@ export function processCodeMirrorRanges({
   codeMirrorRanges,
   selectionRanges,
   selectionRangeTypeMap,
+  isShiftDown,
 }: {
   codeMirrorRanges: readonly SelectionRange[]
   selectionRanges: Selections
   selectionRangeTypeMap: SelectionRangeTypeMap
+  isShiftDown: boolean
 }): null | {
   modelingEvent: ModelingMachineEvent
   engineEvents: Models['WebSocketRequest_type'][]
@@ -259,7 +361,7 @@ export function processCodeMirrorRanges({
       }
     })
   const idBasedSelections: SelectionToEngine[] = codeBasedSelections
-    .map(({ type, range }): null | SelectionToEngine => {
+    .flatMap(({ type, range }): null | SelectionToEngine[] => {
       // TODO #868: loops over all artifacts will become inefficient at a large scale
       const entriesWithOverlap = Object.entries(
         engineCommandManager.artifactMap || {}
@@ -269,8 +371,7 @@ export function processCodeMirrorRanges({
           : false
       })
       if (entriesWithOverlap.length) {
-        const [id, artifact] = entriesWithOverlap?.[0]
-        return {
+        return entriesWithOverlap.map(([id, artifact]) => ({
           type,
           id:
             type === 'line-end' &&
@@ -278,20 +379,21 @@ export function processCodeMirrorRanges({
             artifact.headVertexId
               ? artifact.headVertexId
               : id,
-        }
+        }))
       }
       return null
     })
     .filter(Boolean) as any
 
   if (!selectionRanges) return null
+  updateSceneObjectColors(codeBasedSelections)
   return {
     modelingEvent: {
       type: 'Set selection',
       data: {
         selectionType: 'mirrorCodeMirrorSelections',
         selection: {
-          ...selectionRanges,
+          otherSelections: isShiftDown ? selectionRanges.otherSelections : [],
           codeBasedSelections,
         },
       },
@@ -300,7 +402,44 @@ export function processCodeMirrorRanges({
   }
 }
 
-export function resetAndSetEngineEntitySelectionCmds(
+function updateSceneObjectColors(codeBasedSelections: Selection[]) {
+  let updated: Program
+  try {
+    updated = parse(recast(kclManager.ast))
+  } catch (e) {
+    console.error('error parsing code in processCodeMirrorRanges', e)
+    return
+  }
+  Object.values(sceneEntitiesManager.activeSegments).forEach((segmentGroup) => {
+    if (
+      ![STRAIGHT_SEGMENT, TANGENTIAL_ARC_TO_SEGMENT, PROFILE_START].includes(
+        segmentGroup?.name
+      )
+    )
+      return
+    const node = getNodeFromPath<CallExpression>(
+      updated,
+      segmentGroup.userData.pathToNode,
+      'CallExpression'
+    ).node
+    const groupHasCursor = codeBasedSelections.some((selection) => {
+      return isOverlap(selection.range, [node.start, node.end])
+    })
+    const color = groupHasCursor
+      ? 0x0000ff
+      : segmentGroup?.userData?.baseColor || 0xffffff
+    segmentGroup.traverse(
+      (child) => child instanceof Mesh && child.material.color.set(color)
+    )
+    // TODO if we had access to the xstate context and therefore selections
+    // we wouldn't need to set this here,
+    // it would be better to treat xstate context as the source of truth instead of having
+    // extra redundant state floating around
+    segmentGroup.userData.isSelected = groupHasCursor
+  })
+}
+
+function resetAndSetEngineEntitySelectionCmds(
   selections: SelectionToEngine[]
 ): Models['WebSocketRequest_type'][] {
   if (!engineCommandManager.engineConnection?.isReady()) {
@@ -324,4 +463,130 @@ export function resetAndSetEngineEntitySelectionCmds(
       cmd_id: uuidv4(),
     },
   ]
+}
+
+export function isSketchPipe(selectionRanges: Selections) {
+  if (!isSingleCursorInPipe(selectionRanges, kclManager.ast)) return false
+  return isCursorInSketchCommandRange(
+    engineCommandManager.artifactMap,
+    selectionRanges
+  )
+}
+
+export function isSelectionLastLine(
+  selectionRanges: Selections,
+  code: string,
+  i = 0
+) {
+  return selectionRanges.codeBasedSelections[i].range[1] === code.length
+}
+
+export type CommonASTNode = {
+  selection: Selection
+  ast: Program
+}
+
+export function buildCommonNodeFromSelection(
+  selectionRanges: Selections,
+  i: number
+) {
+  return {
+    selection: selectionRanges.codeBasedSelections[i],
+    ast: kclManager.ast,
+  }
+}
+
+export function nodeHasExtrude(node: CommonASTNode) {
+  return doesPipeHaveCallExp({
+    calleeName: 'extrude',
+    ...node,
+  })
+}
+
+export function nodeHasClose(node: CommonASTNode) {
+  return doesPipeHaveCallExp({
+    calleeName: 'close',
+    ...node,
+  })
+}
+
+export function canExtrudeSelection(selection: Selections) {
+  const commonNodes = selection.codeBasedSelections.map((_, i) =>
+    buildCommonNodeFromSelection(selection, i)
+  )
+  return (
+    !!isSketchPipe(selection) &&
+    commonNodes.every((n) => nodeHasClose(n)) &&
+    commonNodes.every((n) => !nodeHasExtrude(n))
+  )
+}
+
+export function canExtrudeSelectionItem(selection: Selections, i: number) {
+  const commonNode = buildCommonNodeFromSelection(selection, i)
+
+  return (
+    !!isSketchPipe(selection) &&
+    nodeHasClose(commonNode) &&
+    !nodeHasExtrude(commonNode)
+  )
+}
+
+// This accounts for non-geometry selections under "other"
+export type ResolvedSelectionType = [Selection['type'] | 'other', number]
+
+/**
+ * In the future, I'd like this function to properly return the type of each selected entity based on
+ * its code source range, so that we can show something like "0 objects" or "1 face" or "1 line, 2 edges",
+ * and then validate the selection in CommandBarSelectionInput.tsx and show the proper label.
+ * @param selection
+ * @returns
+ */
+export function getSelectionType(
+  selection: Selections
+): ResolvedSelectionType[] {
+  return selection.codeBasedSelections
+    .map((s, i) => {
+      if (canExtrudeSelectionItem(selection, i)) {
+        return ['face', 1] as ResolvedSelectionType // This is implicitly determining what a face is, which is bad
+      } else {
+        return ['other', 1] as ResolvedSelectionType
+      }
+    })
+    .reduce((acc, [type, count]) => {
+      const foundIndex = acc.findIndex((item) => item && item[0] === type)
+
+      if (foundIndex === -1) {
+        return [...acc, [type, count]]
+      } else {
+        const temp = [...acc]
+        temp[foundIndex][1] += count
+        return temp
+      }
+    }, [] as ResolvedSelectionType[])
+}
+
+export function getSelectionTypeDisplayText(
+  selection: Selections
+): string | null {
+  const selectionsByType = getSelectionType(selection)
+
+  return (selectionsByType as Exclude<typeof selectionsByType, 'none'>)
+    .map(([type, count]) => `${count} ${type}${count > 1 ? 's' : ''}`)
+    .join(', ')
+}
+
+export function canSubmitSelectionArg(
+  selectionsByType: 'none' | ResolvedSelectionType[],
+  argument: CommandArgument<unknown> & { inputType: 'selection' }
+) {
+  return (
+    selectionsByType !== 'none' &&
+    selectionsByType.every(([type, count]) => {
+      const foundIndex = argument.selectionTypes.findIndex((s) => s === type)
+      return (
+        foundIndex !== -1 &&
+        (!argument.multiple ? count < 2 && count > 0 : count > 0)
+      )
+    })
+  )
 }

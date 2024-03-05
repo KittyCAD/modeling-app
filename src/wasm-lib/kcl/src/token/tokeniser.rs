@@ -4,7 +4,7 @@ use winnow::{
     error::{ContextError, ParseError},
     prelude::*,
     stream::{Location, Stream},
-    token::{any, none_of, one_of, take_till1, take_until0},
+    token::{any, none_of, one_of, take_till, take_until},
     Located,
 };
 
@@ -21,6 +21,7 @@ pub fn token(i: &mut Located<&str>) -> PResult<Token> {
         '{' | '(' | '[' => brace_start,
         '}' | ')' | ']' => brace_end,
         ',' => comma,
+        '?' => question_mark,
         '0'..='9' => number,
         ':' => colon,
         '.' => alt((number, double_period, period)),
@@ -46,13 +47,13 @@ pub fn token(i: &mut Located<&str>) -> PResult<Token> {
 }
 
 fn block_comment(i: &mut Located<&str>) -> PResult<Token> {
-    let inner = ("/*", take_until0("*/"), "*/").recognize();
+    let inner = ("/*", take_until(0.., "*/"), "*/").recognize();
     let (value, range) = inner.with_span().parse_next(i)?;
     Ok(Token::from_range(range, TokenType::BlockComment, value.to_string()))
 }
 
 fn line_comment(i: &mut Located<&str>) -> PResult<Token> {
-    let inner = (r#"//"#, take_till1(['\n', '\r'])).recognize();
+    let inner = (r#"//"#, take_till(0.., ['\n', '\r'])).recognize();
     let (value, range) = inner.with_span().parse_next(i)?;
     Ok(Token::from_range(range, TokenType::LineComment, value.to_string()))
 }
@@ -106,6 +107,11 @@ fn brace_end(i: &mut Located<&str>) -> PResult<Token> {
 fn comma(i: &mut Located<&str>) -> PResult<Token> {
     let (value, range) = ','.with_span().parse_next(i)?;
     Ok(Token::from_range(range, TokenType::Comma, value.to_string()))
+}
+
+fn question_mark(i: &mut Located<&str>) -> PResult<Token> {
+    let (value, range) = '?'.with_span().parse_next(i)?;
+    Ok(Token::from_range(range, TokenType::QuestionMark, value.to_string()))
 }
 
 fn colon(i: &mut Located<&str>) -> PResult<Token> {
@@ -1457,13 +1463,13 @@ const things = "things"
     fn test_kitt() {
         let program = include_str!("../../../tests/executor/inputs/kittycad_svg.kcl");
         let actual = lexer(program).unwrap();
-        assert_eq!(actual.len(), 5098);
+        assert_eq!(actual.len(), 5093);
     }
     #[test]
     fn test_pipes_on_pipes() {
         let program = include_str!("../../../tests/executor/inputs/pipes_on_pipes.kcl");
         let actual = lexer(program).unwrap();
-        assert_eq!(actual.len(), 17846);
+        assert_eq!(actual.len(), 17841);
     }
     #[test]
     fn test_lexer_negative_word() {

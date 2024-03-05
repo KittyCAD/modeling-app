@@ -45,7 +45,7 @@ export function getCoordsFromPaths(skGroup: SketchGroup, index = 0): Coords2d {
   } else if (!currentPath) {
     return [0, 0]
   }
-  if (currentPath.type === 'toPoint') {
+  if (currentPath.type === 'ToPoint') {
     return [currentPath.to[0], currentPath.to[1]]
   }
   return [0, 0]
@@ -89,12 +89,6 @@ export function createFirstArg(
       return createObjectExpression({ to: val, tag })
   }
   throw new Error('all sketch line types should have been covered')
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type LineData = {
-  from: [number, number, number]
-  to: [number, number, number]
 }
 
 export const lineTo: SketchLineHelper = {
@@ -445,6 +439,85 @@ export const yLine: SketchLineHelper = {
   addTag: addTagWithTo('length'),
 }
 
+export const tangentialArcTo: SketchLineHelper = {
+  add: ({
+    node,
+    pathToNode,
+    to,
+    createCallback,
+    replaceExisting,
+    referencedSegment,
+  }) => {
+    const _node = { ...node }
+    const getNode = getNodeFromPathCurry(_node, pathToNode)
+    const { node: pipe } = getNode<PipeExpression | CallExpression>(
+      'PipeExpression'
+    )
+    const { node: varDec } = getNodeFromPath<VariableDeclarator>(
+      _node,
+      pathToNode,
+      'VariableDeclarator'
+    )
+
+    const toX = createLiteral(roundOff(to[0], 2))
+    const toY = createLiteral(roundOff(to[1], 2))
+
+    if (replaceExisting && createCallback && pipe.type !== 'CallExpression') {
+      const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
+      const { callExp, valueUsedInTransform } = createCallback(
+        [toX, toY],
+        referencedSegment
+      )
+      pipe.body[callIndex] = callExp
+      return {
+        modifiedAst: _node,
+        pathToNode,
+        valueUsedInTransform,
+      }
+    }
+    const newLine = createCallExpression('tangentialArcTo', [
+      createArrayExpression([toX, toY]),
+      createPipeSubstitution(),
+    ])
+    if (pipe.type === 'PipeExpression') {
+      pipe.body = [...pipe.body, newLine]
+      return {
+        modifiedAst: _node,
+        pathToNode: [
+          ...pathToNode,
+          ['body', 'PipeExpression'],
+          [pipe.body.length - 1, 'CallExpression'],
+        ],
+      }
+    } else {
+      varDec.init = createPipeExpression([varDec.init, newLine])
+    }
+    return {
+      modifiedAst: _node,
+      pathToNode,
+    }
+  },
+  updateArgs: ({ node, pathToNode, to, from }) => {
+    const _node = { ...node }
+    const { node: callExpression } = getNodeFromPath<CallExpression>(
+      _node,
+      pathToNode
+    )
+    const x = createLiteral(roundOff(to[0], 2))
+    const y = createLiteral(roundOff(to[1], 2))
+
+    const firstArg = callExpression.arguments?.[0]
+    if (!mutateArrExp(firstArg, createArrayExpression([x, y]))) {
+      mutateObjExpProp(firstArg, createArrayExpression([x, y]), 'to')
+    }
+    return {
+      modifiedAst: _node,
+      pathToNode,
+    }
+  },
+  // TODO copy-paste from angledLine
+  addTag: addTagWithTo('angleLength'),
+}
 export const angledLine: SketchLineHelper = {
   add: ({
     node,
@@ -887,6 +960,30 @@ export const angledLineThatIntersects: SketchLineHelper = {
   addTag: addTagWithTo('angleTo'), // TODO might be wrong
 }
 
+export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
+  node,
+  pathToNode,
+  to,
+}) => {
+  const _node = { ...node }
+  const { node: callExpression } = getNodeFromPath<CallExpression>(
+    _node,
+    pathToNode
+  )
+
+  const toArrExp = createArrayExpression([
+    createLiteral(roundOff(to[0])),
+    createLiteral(roundOff(to[1])),
+  ])
+
+  mutateArrExp(callExpression.arguments?.[0], toArrExp) ||
+    mutateObjExpProp(callExpression.arguments?.[0], toArrExp, 'to')
+  return {
+    modifiedAst: _node,
+    pathToNode,
+  }
+}
+
 export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
   line,
   lineTo,
@@ -900,6 +997,7 @@ export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
   angledLineToX,
   angledLineToY,
   angledLineThatIntersects,
+  tangentialArcTo,
 } as const
 
 export function changeSketchArguments(
@@ -942,12 +1040,26 @@ interface CreateLineFnCallArgs {
 
 export function compareVec2Epsilon(
   vec1: [number, number],
-  vec2: [number, number]
+  vec2: [number, number],
+  compareEpsilon = 0.015625 // or 2^-6
 ) {
-  const compareEpsilon = 0.015625 // or 2^-6
   const xDifference = Math.abs(vec1[0] - vec2[0])
   const yDifference = Math.abs(vec1[1] - vec2[1])
   return xDifference < compareEpsilon && yDifference < compareEpsilon
+}
+
+// this version uses this distance of the two points instead of comparing x and y separately
+export function compareVec2Epsilon2(
+  vec1: [number, number],
+  vec2: [number, number],
+  compareEpsilon = 0.015625 // or 2^-6
+) {
+  const xDifference = Math.abs(vec1[0] - vec2[0])
+  const yDifference = Math.abs(vec1[1] - vec2[1])
+  const distance = Math.sqrt(
+    xDifference * xDifference + yDifference * yDifference
+  )
+  return distance < compareEpsilon
 }
 
 export function addNewSketchLn({
@@ -1287,6 +1399,10 @@ export function getFirstArg(callExp: CallExpression): {
   }
   if (['angledLineThatIntersects'].includes(name)) {
     return getAngledLineThatIntersects(callExp)
+  }
+  if (['tangentialArcTo'].includes(name)) {
+    // TODO probably needs it's own implementation
+    return getFirstArgValuesForXYFns(callExp)
   }
   throw new Error('unexpected call expression')
 }

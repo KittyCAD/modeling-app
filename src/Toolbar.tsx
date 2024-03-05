@@ -1,30 +1,41 @@
-import { Fragment, WheelEvent, useRef, useMemo } from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSearch, faX } from '@fortawesome/free-solid-svg-icons'
-import { Popover, Transition } from '@headlessui/react'
-import styles from './Toolbar.module.css'
+import { WheelEvent, useRef, useMemo } from 'react'
 import { isCursorInSketchCommandRange } from 'lang/util'
-import { ActionIcon } from 'components/ActionIcon'
 import { engineCommandManager } from './lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
-
-export const sketchButtonClassnames = {
-  background:
-    'bg-chalkboard-100 group-hover:bg-chalkboard-90 hover:bg-chalkboard-90 dark:bg-fern-20 dark:group-hover:bg-fern-10 dark:hover:bg-fern-10 group-disabled:bg-chalkboard-50 dark:group-disabled:bg-chalkboard-60 group-hover:group-disabled:bg-chalkboard-50 dark:group-hover:group-disabled:bg-chalkboard-50',
-  icon: 'text-fern-20 h-auto group-hover:text-fern-10 hover:text-fern-10 dark:text-chalkboard-100 dark:group-hover:text-chalkboard-100 dark:hover:text-chalkboard-100 group-disabled:bg-chalkboard-60 hover:group-disabled:text-inherit',
-}
+import { useCommandsContext } from 'hooks/useCommandsContext'
+import { ActionButton } from 'components/ActionButton'
+import usePlatform from 'hooks/usePlatform'
+import { isSingleCursorInPipe } from 'lang/queryAst'
+import { kclManager, useKclContext } from 'lang/KclSingleton'
+import {
+  NetworkHealthState,
+  useNetworkStatus,
+} from 'components/NetworkHealthIndicator'
+import { useStore } from 'useStore'
 
 export const Toolbar = () => {
+  const platform = usePlatform()
+  const { commandBarSend } = useCommandsContext()
   const { state, send, context } = useModelingContext()
-  const toolbarButtonsRef = useRef<HTMLSpanElement>(null)
-  const pathId = useMemo(
-    () =>
-      isCursorInSketchCommandRange(
-        engineCommandManager.artifactMap,
-        context.selectionRanges
-      ),
-    [engineCommandManager.artifactMap, context.selectionRanges]
-  )
+  const toolbarButtonsRef = useRef<HTMLUListElement>(null)
+  const bgClassName =
+    'group-enabled:group-hover:bg-energy-10 group-pressed:bg-energy-10 dark:group-enabled:group-hover:bg-chalkboard-80 dark:group-pressed:bg-chalkboard-80'
+  const pathId = useMemo(() => {
+    if (!isSingleCursorInPipe(context.selectionRanges, kclManager.ast)) {
+      return false
+    }
+    return isCursorInSketchCommandRange(
+      engineCommandManager.artifactMap,
+      context.selectionRanges
+    )
+  }, [engineCommandManager.artifactMap, context.selectionRanges])
+  const { overallState } = useNetworkStatus()
+  const { isExecuting } = useKclContext()
+  const { isStreamReady } = useStore((s) => ({
+    isStreamReady: s.isStreamReady,
+  }))
+  const disableAllButtons =
+    overallState !== NetworkHealthState.Ok || isExecuting || !isStreamReady
 
   function handleToolbarButtonsWheelEvent(ev: WheelEvent<HTMLSpanElement>) {
     const span = toolbarButtonsRef.current
@@ -35,72 +46,113 @@ export const Toolbar = () => {
     span.scrollLeft = span.scrollLeft += ev.deltaY
   }
 
-  function ToolbarButtons({ className }: React.HTMLAttributes<HTMLElement>) {
+  function ToolbarButtons({
+    className = '',
+    ...props
+  }: React.HTMLAttributes<HTMLElement>) {
     return (
-      <span
+      <ul
+        {...props}
         ref={toolbarButtonsRef}
         onWheel={handleToolbarButtonsWheelEvent}
-        className={styles.toolbarButtons + ' ' + className}
+        className={
+          'm-0 py-1 rounded-l-sm flex gap-2 items-center overflow-x-auto ' +
+          className
+        }
+        style={{ scrollbarWidth: 'thin' }}
       >
         {state.nextEvents.includes('Enter sketch') && (
-          <button
-            onClick={() => send({ type: 'Enter sketch' })}
-            className="group"
-          >
-            <ActionIcon icon="sketch" className="!p-0.5" size="md" />
-            Start Sketch
-          </button>
+          <li className="contents">
+            <ActionButton
+              Element="button"
+              onClick={() =>
+                send({ type: 'Enter sketch', data: { forceNewSketch: true } })
+              }
+              icon={{
+                icon: 'sketch',
+                bgClassName,
+              }}
+              disabled={disableAllButtons}
+            >
+              <span data-testid="start-sketch">Start Sketch</span>
+            </ActionButton>
+          </li>
         )}
         {state.nextEvents.includes('Enter sketch') && pathId && (
-          <button
-            onClick={() => send({ type: 'Enter sketch' })}
-            className="group"
-          >
-            <ActionIcon icon="sketch" className="!p-0.5" size="md" />
-            Edit Sketch
-          </button>
+          <li className="contents">
+            <ActionButton
+              Element="button"
+              onClick={() => send({ type: 'Enter sketch' })}
+              icon={{
+                icon: 'sketch',
+                bgClassName,
+              }}
+              disabled={disableAllButtons}
+            >
+              Edit Sketch
+            </ActionButton>
+          </li>
         )}
         {state.nextEvents.includes('Cancel') && !state.matches('idle') && (
-          <button onClick={() => send({ type: 'Cancel' })} className="group">
-            <ActionIcon icon="exit" className="!p-0.5" size="md" />
-            Exit Sketch
-          </button>
+          <li className="contents">
+            <ActionButton
+              Element="button"
+              onClick={() => send({ type: 'Cancel' })}
+              icon={{
+                icon: 'arrowLeft',
+                bgClassName,
+              }}
+              disabled={disableAllButtons}
+            >
+              Exit Sketch
+            </ActionButton>
+          </li>
         )}
         {state.matches('Sketch') && !state.matches('idle') && (
-          <button
-            onClick={() =>
-              state.matches('Sketch.Line Tool')
-                ? send('CancelSketch')
-                : send('Equip tool')
-            }
-            className={
-              'group ' +
-              (state.matches('Sketch.Line Tool')
-                ? '!text-fern-70 !bg-fern-10 !dark:text-fern-20 !border-fern-50'
-                : '')
-            }
-          >
-            <ActionIcon icon="line" className="!p-0.5" size="md" />
-            Line
-          </button>
-        )}
-        {state.matches('Sketch') && (
-          <button
-            onClick={() =>
-              state.matches('Sketch.Move Tool')
-                ? send('CancelSketch')
-                : send('Equip move tool')
-            }
-            className={
-              'group ' +
-              (state.matches('Sketch.Move Tool')
-                ? '!text-fern-70 !bg-fern-10 !dark:text-fern-20 !border-fern-50'
-                : '')
-            }
-          >
-            <ActionIcon icon="move" className="!p-0.5" size="md" />
-            Move
-          </button>
+          <>
+            <li className="contents" key="line-button">
+              <ActionButton
+                Element="button"
+                onClick={() =>
+                  state?.matches('Sketch.Line tool')
+                    ? send('CancelSketch')
+                    : send('Equip Line tool')
+                }
+                aria-pressed={state?.matches('Sketch.Line tool')}
+                className="pressed:bg-energy-10/20 dark:pressed:bg-energy-80"
+                icon={{
+                  icon: 'line',
+                  bgClassName,
+                }}
+                disabled={disableAllButtons}
+              >
+                Line
+              </ActionButton>
+            </li>
+            <li className="contents" key="tangential-arc-button">
+              <ActionButton
+                Element="button"
+                onClick={() =>
+                  state.matches('Sketch.Tangential arc to')
+                    ? send('CancelSketch')
+                    : send('Equip tangential arc to')
+                }
+                aria-pressed={state.matches('Sketch.Tangential arc to')}
+                className="pressed:bg-energy-10/20 dark:pressed:bg-energy-80"
+                icon={{
+                  icon: 'arc',
+                  bgClassName,
+                }}
+                disabled={
+                  (!state.can('Equip tangential arc to') &&
+                    !state.matches('Sketch.Tangential arc to')) ||
+                  disableAllButtons
+                }
+              >
+                Tangential Arc
+              </ActionButton>
+            </li>
+          </>
         )}
         {state.matches('Sketch.SketchIdle') &&
           state.nextEvents
@@ -109,103 +161,87 @@ export const Toolbar = () => {
                 eventName.includes('Make segment') ||
                 eventName.includes('Constrain')
             )
+            .sort((a, b) => {
+              const aisEnabled = state.nextEvents
+                .filter((event) => state.can(event as any))
+                .includes(a)
+              const bIsEnabled = state.nextEvents
+                .filter((event) => state.can(event as any))
+                .includes(b)
+              if (aisEnabled && !bIsEnabled) {
+                return -1
+              }
+              if (!aisEnabled && bIsEnabled) {
+                return 1
+              }
+              return 0
+            })
             .map((eventName) => (
-              <button
-                key={eventName}
-                onClick={() => send(eventName)}
-                className="group"
-                disabled={
-                  !state.nextEvents
-                    .filter((event) => state.can(event as any))
-                    .includes(eventName)
-                }
-                title={eventName}
-              >
-                <ActionIcon
-                  icon={'line'} // TODO
-                  bgClassName={sketchButtonClassnames.background}
-                  iconClassName={sketchButtonClassnames.icon}
-                  size="md"
-                />
-                {eventName
-                  .replace('Make segment ', '')
-                  .replace('Constrain ', '')}
-              </button>
+              <li className="contents" key={eventName}>
+                <ActionButton
+                  Element="button"
+                  className="text-sm"
+                  key={eventName}
+                  onClick={() => send(eventName)}
+                  disabled={
+                    !state.nextEvents
+                      .filter((event) => state.can(event as any))
+                      .includes(eventName) || disableAllButtons
+                  }
+                  title={eventName}
+                  icon={{
+                    icon: 'line',
+                    bgClassName,
+                  }}
+                >
+                  {eventName
+                    .replace('Make segment ', '')
+                    .replace('Constrain ', '')}
+                </ActionButton>
+              </li>
             ))}
         {state.matches('idle') && (
-          <button
-            onClick={() => send('extrude intent')}
-            disabled={!state.can('extrude intent')}
-            className="group"
-            title={
-              state.can('extrude intent')
-                ? 'extrude'
-                : 'sketches need to be closed, or not already extruded'
-            }
-          >
-            <ActionIcon icon="extrude" className="!p-0.5" size="md" />
-            Extrude
-          </button>
+          <li className="contents">
+            <ActionButton
+              Element="button"
+              className="text-sm"
+              onClick={() =>
+                commandBarSend({
+                  type: 'Find and select command',
+                  data: { name: 'Extrude', ownerMachine: 'modeling' },
+                })
+              }
+              disabled={!state.can('Extrude') || disableAllButtons}
+              title={
+                state.can('Extrude')
+                  ? 'extrude'
+                  : 'sketches need to be closed, or not already extruded'
+              }
+              icon={{
+                icon: 'extrude',
+                bgClassName,
+              }}
+            >
+              Extrude
+            </ActionButton>
+          </li>
         )}
-      </span>
+      </ul>
     )
   }
 
   return (
-    <Popover
-      className={
-        styles.toolbarWrapper + state.matches('Sketch') ? ' sketch' : ''
-      }
-    >
-      <div className={styles.toolbar}>
-        <span className={styles.toolbarCap + ' ' + styles.label}>
-          {state.matches('Sketch') ? '2D' : '3D'}
-        </span>
-        <menu className="flex-1 gap-2 py-0.5 overflow-hidden whitespace-nowrap">
-          <ToolbarButtons />
-        </menu>
-        <Popover.Button
-          className={styles.toolbarCap + ' ' + styles.popoverToggle}
-        >
-          <FontAwesomeIcon icon={faSearch} />
-        </Popover.Button>
-      </div>
-      <Transition
-        as={Fragment}
-        enter="transition ease-out duration-200"
-        enterFrom="opacity-0"
-        enterTo="opacity-100"
-        leave="transition ease-out duration-100"
-        leaveFrom="opacity-100"
-        leaveTo="opacity-0"
+    <div className="max-w-full flex items-stretch rounded-l-sm rounded-r-full bg-chalkboard-10 dark:bg-chalkboard-100 relative">
+      <menu className="flex-1 pl-1 pr-2 py-0 overflow-hidden rounded-l-sm whitespace-nowrap bg-chalkboard-10 dark:bg-chalkboard-100 border-solid border border-energy-10 dark:border-chalkboard-90 border-r-0">
+        <ToolbarButtons />
+      </menu>
+      <ActionButton
+        Element="button"
+        onClick={() => commandBarSend({ type: 'Open' })}
+        className="rounded-r-full pr-4 self-stretch border-energy-10 hover:border-energy-10 dark:border-chalkboard-80 bg-energy-10/50 hover:bg-energy-10 dark:bg-chalkboard-80 dark:text-energy-10"
       >
-        <Popover.Overlay className="fixed inset-0 bg-chalkboard-110/20 dark:bg-chalkboard-110/50" />
-      </Transition>
-      <Transition
-        as={Fragment}
-        enter="transition ease-out duration-100"
-        enterFrom="opacity-0 translate-y-1 scale-95"
-        enterTo="opacity-100 translate-y-0 scale-100"
-        leave="transition ease-out duration-75"
-        leaveFrom="opacity-100 translate-y-0"
-        leaveTo="opacity-0 translate-y-2"
-      >
-        <Popover.Panel className="absolute top-0 w-screen max-w-xl left-1/2 -translate-x-1/2 flex flex-col gap-8 bg-chalkboard-10 dark:bg-chalkboard-100 p-5 rounded border border-chalkboard-20/30 dark:border-chalkboard-70/50">
-          <section className="flex justify-between items-center">
-            <p
-              className={`${styles.toolbarCap} ${styles.label} !self-center rounded-r-full w-fit`}
-            >
-              You're in {state.matches('Sketch') ? '2D' : '3D'}
-            </p>
-            <Popover.Button className="p-2 flex items-center justify-center rounded-sm bg-chalkboard-20 text-chalkboard-110 dark:bg-chalkboard-70 dark:text-chalkboard-20 border-none hover:bg-chalkboard-30 dark:hover:bg-chalkboard-60">
-              <FontAwesomeIcon icon={faX} className="w-4 h-4" />
-            </Popover.Button>
-          </section>
-          <section>
-            <ToolbarButtons className="flex-wrap" />
-          </section>
-        </Popover.Panel>
-      </Transition>
-    </Popover>
+        {platform === 'darwin' ? '⌘K' : 'Ctrl+/'}
+      </ActionButton>
+    </div>
   )
 }

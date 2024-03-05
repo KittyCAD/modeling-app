@@ -1,8 +1,4 @@
-import {
-  faArrowRotateBack,
-  faFolder,
-  faXmark,
-} from '@fortawesome/free-solid-svg-icons'
+import { faArrowRotateBack, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../components/ActionButton'
 import { AppHeader } from '../components/AppHeader'
 import { open } from '@tauri-apps/api/dialog'
@@ -14,7 +10,8 @@ import {
 import { Toggle } from '../components/Toggle/Toggle'
 import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { IndexLoaderData, paths } from '../Router'
+import { type IndexLoaderData } from 'lib/types'
+import { paths } from 'lib/paths'
 import { Themes } from '../lib/theme'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import {
@@ -35,6 +32,7 @@ import { sep } from '@tauri-apps/api/path'
 import { bracket } from 'lib/exampleKcl'
 
 export const Settings = () => {
+  const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
   const loaderData =
     (useRouteLoaderData(paths.FILE) as IndexLoaderData) || undefined
   const navigate = useNavigate()
@@ -117,11 +115,12 @@ export const Settings = () => {
               'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
           }}
           className="hover:border-destroy-40"
+          data-testid="close-button"
         >
           Close
         </ActionButton>
       </AppHeader>
-      <div className="max-w-5xl mx-5 lg:mx-auto my-24">
+      <div className="max-w-4xl mx-5 lg:mx-auto my-24">
         <h1 className="text-4xl font-bold">User Settings</h1>
         <p className="max-w-2xl mt-6">
           Don't see the feature you want? Check to see if it's on{' '}
@@ -182,17 +181,13 @@ export const Settings = () => {
                   className="flex-1 px-2 bg-transparent"
                   value={defaultDirectory}
                   disabled
+                  data-testid="default-directory-input"
                 />
                 <ActionButton
                   Element="button"
-                  className="bg-chalkboard-100 dark:bg-chalkboard-90 hover:bg-chalkboard-90 dark:hover:bg-chalkboard-80 !text-chalkboard-10 border-chalkboard-100 hover:border-chalkboard-70"
                   onClick={handleDirectorySelection}
                   icon={{
-                    icon: faFolder,
-                    bgClassName:
-                      'bg-liquid-20 group-hover:bg-liquid-10 hover:bg-liquid-10',
-                    iconClassName:
-                      'text-liquid-90 group-hover:text-liquid-90 hover:text-liquid-90',
+                    icon: 'folder',
                   }}
                 >
                   Choose a folder
@@ -218,6 +213,7 @@ export const Settings = () => {
                 }}
                 autoCapitalize="off"
                 autoComplete="off"
+                data-testid="name-input"
               />
             </SettingsSection>
           </>
@@ -305,11 +301,23 @@ export const Settings = () => {
           <ActionButton
             Element="button"
             onClick={restartOnboarding}
-            icon={{ icon: faArrowRotateBack }}
+            icon={{ icon: faArrowRotateBack, size: 'sm', className: 'p-1' }}
           >
             Replay Onboarding
           </ActionButton>
         </SettingsSection>
+        <p className="mt-24 text-sm font-mono">
+          {/* This uses a Vite plugin, set in vite.config.ts
+              to inject the version from package.json */}
+          App version {APP_VERSION}.{' '}
+          <a
+            href={`https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View release on GitHub
+          </a>
+        </p>
       </div>
     </div>
   )
@@ -335,7 +343,7 @@ export function SettingsSection({
       }
     >
       <div className="w-80">
-        <h2 className="text-2xl">{title}</h2>
+        <h2 className="text-2xl font-bold">{title}</h2>
         <p className="mt-2 text-sm">{description}</p>
       </div>
       <div>{children}</div>

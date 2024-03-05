@@ -1,11 +1,11 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import UserSidebarMenu from './UserSidebarMenu'
 import { BrowserRouter } from 'react-router-dom'
 import { GlobalStateProvider } from './GlobalStateProvider'
-import CommandBarProvider from './CommandBar'
+import CommandBarProvider from './CommandBar/CommandBar'
 import {
-  NETWORK_CONTENT,
+  NETWORK_HEALTH_TEXT,
   NetworkHealthIndicator,
+  NetworkHealthState,
 } from './NetworkHealthIndicator'
 
 function TestWrap({ children }: { children: React.ReactNode }) {
@@ -29,8 +29,8 @@ describe('NetworkHealthIndicator tests', () => {
 
     fireEvent.click(screen.getByTestId('network-toggle'))
 
-    expect(screen.getByTestId('network-good')).toHaveTextContent(
-      NETWORK_CONTENT.good
+    expect(screen.getByTestId('network')).toHaveTextContent(
+      NETWORK_HEALTH_TEXT[NetworkHealthState.Ok]
     )
   })
 
@@ -44,8 +44,8 @@ describe('NetworkHealthIndicator tests', () => {
     fireEvent.offline(window)
     fireEvent.click(screen.getByTestId('network-toggle'))
 
-    expect(screen.getByTestId('network-bad')).toHaveTextContent(
-      NETWORK_CONTENT.bad
+    expect(screen.getByTestId('network')).toHaveTextContent(
+      NETWORK_HEALTH_TEXT[NetworkHealthState.Disconnected]
     )
   })
 })

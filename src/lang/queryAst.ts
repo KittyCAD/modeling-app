@@ -1,5 +1,5 @@
 import { ToolTip } from '../useStore'
-import { Selection } from 'lib/selections'
+import { Selection, Selections } from 'lib/selections'
 import {
   BinaryExpression,
   Program,
@@ -65,13 +65,13 @@ export function getNodeFromPath<T>(
         }
       }
     } catch (e) {
-      console.error(
-        `Could not find path ${pathItem} in node ${JSON.stringify(
-          currentNode,
-          null,
-          2
-        )}, successful path was ${successfulPaths}`
-      )
+      // console.error(
+      //   `Could not find path ${pathItem} in node ${JSON.stringify(
+      //     currentNode,
+      //     null,
+      //     2
+      //   )}, successful path was ${successfulPaths}`
+      // )
     }
   }
   return {
@@ -247,10 +247,10 @@ function moreNodePathFromSourceRange(
   if (_node.type === 'FunctionExpression' && isInRange) {
     for (let i = 0; i < _node.params.length; i++) {
       const param = _node.params[i]
-      if (param.start <= start && param.end >= end) {
+      if (param.identifier.start <= start && param.identifier.end >= end) {
         path.push(['params', 'FunctionExpression'])
         path.push([i, 'index'])
-        return moreNodePathFromSourceRange(param, sourceRange, path)
+        return moreNodePathFromSourceRange(param.identifier, sourceRange, path)
       }
     }
     if (_node.body.start <= start && _node.body.end >= end) {
@@ -266,6 +266,7 @@ function moreNodePathFromSourceRange(
       }
     }
   }
+  if (_node.type === 'PipeSubstitution' && isInRange) return path
   console.error('not implemented: ' + node.type)
   return path
 }
@@ -489,7 +490,7 @@ export function isLinesParallelAndConstrained(
     const constraintLevel = getConstraintLevelFromSourceRange(
       secondaryLine.range,
       ast
-    )
+    ).level
     const isConstrained =
       constraintType === 'angle' || constraintLevel === 'full'
 
@@ -556,4 +557,25 @@ export function hasExtrudeSketchGroup({
   const varName = varDec.declarations[0].id.name
   const varValue = programMemory?.root[varName]
   return varValue?.type === 'ExtrudeGroup' || varValue?.type === 'SketchGroup'
+}
+
+export function isSingleCursorInPipe(
+  selectionRanges: Selections,
+  ast: Program
+) {
+  if (selectionRanges.codeBasedSelections.length !== 1) return false
+  if (
+    doesPipeHaveCallExp({
+      ast,
+      selection: selectionRanges.codeBasedSelections[0],
+      calleeName: 'extrude',
+    })
+  )
+    return false
+  const selection = selectionRanges.codeBasedSelections[0]
+  const pathToNode = getNodePathFromSourceRange(ast, selection.range)
+  const nodeTypes = pathToNode.map(([, type]) => type)
+  if (nodeTypes.includes('FunctionExpression')) return false
+  if (nodeTypes.includes('PipeExpression')) return true
+  return false
 }

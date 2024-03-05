@@ -22,7 +22,7 @@ export function getSketchSegmentFromSourceRange(
     startSourceRange[1] >= rangeEnd &&
     sketchGroup.start
   )
-    return { segment: { ...sketchGroup.start, type: 'base' }, index: -1 }
+    return { segment: { ...sketchGroup.start, type: 'Base' }, index: -1 }
 
   const lineIndex = sketchGroup.value.findIndex(
     ({ __geoMeta: { sourceRange } }: Path) =>

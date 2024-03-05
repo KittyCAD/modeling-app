@@ -1,12 +1,17 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { addLineHighlight, EditorView } from './editor/highlightextension'
-import { parse, Program, _executor, ProgramMemory } from './lang/wasm'
+import {
+  parse,
+  Program,
+  _executor,
+  ProgramMemory,
+  programMemoryInit,
+} from './lang/wasm'
 import { Selection } from 'lib/selections'
 import { enginelessExecutor } from './lib/testHelpers'
 import { EngineCommandManager } from './lang/std/engineConnection'
 import { KCLError } from './lang/errors'
-import { DefaultPlanes } from './wasm-lib/kcl/bindings/DefaultPlanes'
 
 export type ToolTip =
   | 'lineTo'
@@ -21,6 +26,7 @@ export type ToolTip =
   | 'xLineTo'
   | 'yLineTo'
   | 'angledLineThatIntersects'
+  | 'tangentialArcTo'
 
 export const toolTips = [
   'sketch_line',
@@ -38,6 +44,7 @@ export const toolTips = [
   'xLineTo',
   'yLineTo',
   'angledLineThatIntersects',
+  'tangentialArcTo',
 ] as any as ToolTip[]
 
 export type PaneType =
@@ -59,8 +66,10 @@ export interface StoreState {
   setMediaStream: (mediaStream: MediaStream) => void
   isStreamReady: boolean
   setIsStreamReady: (isStreamReady: boolean) => void
-  isLSPServerReady: boolean
-  setIsLSPServerReady: (isLSPServerReady: boolean) => void
+  isKclLspServerReady: boolean
+  isCopilotLspServerReady: boolean
+  setIsKclLspServerReady: (isKclLspServerReady: boolean) => void
+  setIsCopilotLspServerReady: (isCopilotLspServerReady: boolean) => void
   buttonDownInStream: number | undefined
   setButtonDownInStream: (buttonDownInStream: number | undefined) => void
   didDragInStream: boolean
@@ -98,8 +107,14 @@ export const useStore = create<StoreState>()(
         setHighlightRange: (selection) => {
           set({ highlightRange: selection })
           const editorView = get().editorView
+          const safeEnd = Math.min(
+            selection[1],
+            editorView?.state.doc.length || selection[1]
+          )
           if (editorView) {
-            editorView.dispatch({ effects: addLineHighlight.of(selection) })
+            editorView.dispatch({
+              effects: addLineHighlight.of([selection[0], safeEnd]),
+            })
           }
         },
         isShiftDown: false,
@@ -107,8 +122,12 @@ export const useStore = create<StoreState>()(
         setMediaStream: (mediaStream) => set({ mediaStream }),
         isStreamReady: false,
         setIsStreamReady: (isStreamReady) => set({ isStreamReady }),
-        isLSPServerReady: false,
-        setIsLSPServerReady: (isLSPServerReady) => set({ isLSPServerReady }),
+        isKclLspServerReady: false,
+        isCopilotLspServerReady: false,
+        setIsKclLspServerReady: (isKclLspServerReady) =>
+          set({ isKclLspServerReady }),
+        setIsCopilotLspServerReady: (isCopilotLspServerReady) =>
+          set({ isCopilotLspServerReady }),
         buttonDownInStream: undefined,
         setButtonDownInStream: (buttonDownInStream) => {
           set({ buttonDownInStream })
@@ -149,45 +168,15 @@ export const useStore = create<StoreState>()(
   )
 )
 
-const defaultProgramMemory: ProgramMemory['root'] = {
-  _0: {
-    type: 'UserVal',
-    value: 0,
-    __meta: [],
-  },
-  _90: {
-    type: 'UserVal',
-    value: 90,
-    __meta: [],
-  },
-  _180: {
-    type: 'UserVal',
-    value: 180,
-    __meta: [],
-  },
-  _270: {
-    type: 'UserVal',
-    value: 270,
-    __meta: [],
-  },
-  PI: {
-    type: 'UserVal',
-    value: Math.PI,
-    __meta: [],
-  },
-}
-
 export async function executeCode({
   engineCommandManager,
   code,
   lastAst,
-  defaultPlanes,
   force,
 }: {
   code: string
   lastAst: Program
   engineCommandManager: EngineCommandManager
-  defaultPlanes: DefaultPlanes
   force?: boolean
 }): Promise<
   | {
@@ -237,7 +226,6 @@ export async function executeCode({
   const { logs, errors, programMemory } = await executeAst({
     ast,
     engineCommandManager,
-    defaultPlanes,
   })
   return {
     ast,
@@ -251,13 +239,11 @@ export async function executeCode({
 export async function executeAst({
   ast,
   engineCommandManager,
-  defaultPlanes,
   useFakeExecutor = false,
   programMemoryOverride,
 }: {
   ast: Program
   engineCommandManager: EngineCommandManager
-  defaultPlanes: DefaultPlanes
   useFakeExecutor?: boolean
   programMemoryOverride?: ProgramMemory
 }): Promise<{
@@ -271,22 +257,8 @@ export async function executeAst({
       engineCommandManager.startNewSession()
     }
     const programMemory = await (useFakeExecutor
-      ? enginelessExecutor(
-          ast,
-          programMemoryOverride || {
-            root: defaultProgramMemory,
-            return: null,
-          }
-        )
-      : _executor(
-          ast,
-          {
-            root: defaultProgramMemory,
-            return: null,
-          },
-          engineCommandManager,
-          defaultPlanes
-        ))
+      ? enginelessExecutor(ast, programMemoryOverride || programMemoryInit())
+      : _executor(ast, programMemoryInit(), engineCommandManager))
 
     await engineCommandManager.waitForAllCommands()
     return {

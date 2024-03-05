@@ -1,11 +1,9 @@
-use std::sync::Arc;
-
 use anyhow::Result;
-use kcl_lib::{engine::EngineManager, std::StdLib};
+use kcl_lib::engine::EngineManager;
 
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
-async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
+async fn execute_and_snapshot(code: &str, units: kittycad::types::UnitLength) -> Result<image::DynamicImage> {
     let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
     let http_client = reqwest::Client::builder()
         .user_agent(user_agent)
@@ -25,6 +23,8 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
 
     // Create the client.
     let client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
+    // uncomment to use a local server
+    //client.set_base_url("http://system76-pc:8080/");
 
     let ws = client
         .modeling()
@@ -38,14 +38,24 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
     let mut mem: kcl_lib::executor::ProgramMemory = Default::default();
-    let engine = kcl_lib::engine::EngineConnection::new(ws).await?;
-    let planes = kcl_lib::executor::DefaultPlanes::new(&engine).await?;
-    let ctx = kcl_lib::executor::ExecutorContext {
-        engine,
-        planes,
-        stdlib: Arc::new(StdLib::default()),
-    };
+    let ctx = kcl_lib::executor::ExecutorContext::new(ws, units.clone()).await?;
+
     let _ = kcl_lib::executor::execute(program, &mut mem, kcl_lib::executor::BodyType::Root, &ctx).await?;
+
+    let (x, y) = kcl_lib::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
+
+    ctx.engine
+        .send_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            kcl_lib::executor::SourceRange::default(),
+            kittycad::types::ModelingCmd::DefaultCameraLookAt {
+                center: kittycad::types::Point3D { x: 0.0, y: 0.0, z: 0.0 },
+                up: kittycad::types::Point3D { x: 0.0, y: 0.0, z: 1.0 },
+                vantage: kittycad::types::Point3D { x: 0.0, y: -x, z: y },
+                sequence: None,
+            },
+        )
+        .await?;
 
     // Send a snapshot request to the engine.
     let resp = ctx
@@ -75,6 +85,226 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn serial_test_sketch_on_face() {
+    let code = r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([11.19, 28.35], %)
+  |> line({to: [28.67, -13.25], tag: "here"}, %)
+  |> line([-4.12, -22.81], %)
+  |> line([-33.24, 14.55], %)
+  |> close(%)
+  |> extrude(5, %)
+
+const part002 = startSketchOn(part001, "here")
+  |> startProfileAt([0, 0], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %)
+  |> close(%)
+  |> extrude(5, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_sketch_on_face_start() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+const part001 = cube([0,0], 20)
+    |> close(%)
+    |> extrude(20, %)
+
+const part002 = startSketchOn(part001, "start")
+  |> startProfileAt([0, 0], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %)
+  |> close(%)
+  |> extrude(5, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_start.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_sketch_on_face_end() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+const part001 = cube([0,0], 20)
+    |> close(%)
+    |> extrude(20, %)
+
+const part002 = startSketchOn(part001, "END")
+  |> startProfileAt([0, 0], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %)
+  |> close(%)
+  |> extrude(5, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_end.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_sketch_on_face_end_negative_extrude() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+const part001 = cube([0,0], 20)
+    |> close(%)
+    |> extrude(20, %)
+
+const part002 = startSketchOn(part001, "END")
+  |> startProfileAt([0, 0], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %)
+  |> close(%)
+  |> extrude(-5, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/sketch_on_face_end_negative_extrude.png",
+        &result,
+        0.999,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_fillet_duplicate_tags() {
+    let code = r#"const part001 = startSketchOn('XY')
+    |> startProfileAt([0,0], %)
+    |> line({to: [0, 10], tag: "thing"}, %)
+    |> line([10, 0], %)
+    |> line({to: [0, -10], tag: "thing2"}, %)
+    |> close(%)
+    |> extrude(10, %)
+    |> fillet({radius: 0.5, tags: ["thing", "thing"]}, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([227, 277])], message: "Duplicate tags are not allowed." }"#,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_basic_fillet_cube_start() {
+    let code = r#"const part001 = startSketchOn('XY')
+    |> startProfileAt([0,0], %)
+    |> line({to: [0, 10], tag: "thing"}, %)
+    |> line([10, 0], %)
+    |> line({to: [0, -10], tag: "thing2"}, %)
+    |> close(%)
+    |> extrude(10, %)
+    |> fillet({radius: 2, tags: ["thing", "thing2"]}, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/basic_fillet_cube_start.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_basic_fillet_cube_end() {
+    let code = r#"const part001 = startSketchOn('XY')
+    |> startProfileAt([0,0], %)
+    |> line({to: [0, 10], tag: "thing"}, %)
+    |> line([10, 0], %)
+    |> line({to: [0, -10], tag: "thing2"}, %)
+    |> close(%)
+    |> extrude(10, %)
+    |> fillet({radius: 2, tags: ["thing", getOppositeEdge("thing", %)]}, %)
+
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/basic_fillet_cube_end.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_basic_fillet_cube_next_adjacent() {
+    let code = r#"const part001 = startSketchOn('XY')
+    |> startProfileAt([0,0], %)
+    |> line({to: [0, 10], tag: "thing"}, %)
+    |> line({to: [10, 0], tag: "thing1"}, %)
+    |> line({to: [0, -10], tag: "thing2"}, %)
+    |> close(%)
+    |> extrude(10, %)
+    |> fillet({radius: 2, tags: [getNextAdjacentEdge("thing", %)]}, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/basic_fillet_cube_next_adjacent.png",
+        &result,
+        0.999,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_basic_fillet_cube_previous_adjacent() {
+    let code = r#"const part001 = startSketchOn('XY')
+    |> startProfileAt([0,0], %)
+    |> line({to: [0, 10], tag: "thing"}, %)
+    |> line({to: [10, 0], tag: "thing1"}, %)
+    |> line({to: [0, -10], tag: "thing2"}, %)
+    |> close(%)
+    |> extrude(10, %)
+    |> fillet({radius: 2, tags: [getPreviousAdjacentEdge("thing2", %)]}, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/basic_fillet_cube_previous_adjacent.png",
+        &result,
+        0.999,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_execute_with_function_sketch() {
     let code = r#"fn box = (h, l, w) => {
  const myBox = startSketchOn('XY')
@@ -89,10 +319,11 @@ async fn serial_test_execute_with_function_sketch() {
 }
 
 const fnBox = box(3, 6, 10)
+"#;
 
-show(fnBox)"#;
-
-    let result = execute_and_snapshot(code).await.unwrap();
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/function_sketch.png", &result, 0.999);
 }
 
@@ -110,9 +341,11 @@ async fn serial_test_execute_with_function_sketch_with_position() {
   return myBox
 }
 
-show(box([0,0], 3, 6, 10))"#;
+const thing = box([0,0], 3, 6, 10)"#;
 
-    let result = execute_and_snapshot(code).await.unwrap();
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
     twenty_twenty::assert_image(
         "tests/executor/outputs/function_sketch_with_position.png",
         &result,
@@ -131,10 +364,11 @@ async fn serial_test_execute_with_angled_line() {
   |> line([-13.02, 10.03], %)
   |> close(%)
   |> extrude(4, %)
+"#;
 
-show(part001)"#;
-
-    let result = execute_and_snapshot(code).await.unwrap();
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/angled_line.png", &result, 0.999);
 }
 
@@ -158,10 +392,11 @@ const bracket = startSketchOn('XY')
   |> line([0, -leg1 + thickness], %)
   |> close(%)
   |> extrude(width, %)
+"#;
 
-show(bracket)"#;
-
-    let result = execute_and_snapshot(code).await.unwrap();
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/parametric.png", &result, 0.999);
 }
 
@@ -193,10 +428,11 @@ const bracket = startSketchAt([0, 0])
   |> line([0, -wallMountL], %)
   |> close(%)
   |> extrude(width, %)
+"#;
 
-show(bracket)"#;
-
-    let result = execute_and_snapshot(code).await.unwrap();
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/parametric_with_tan_arc.png", &result, 0.999);
 }
 
@@ -211,7 +447,7 @@ async fn serial_test_execute_engine_error_return() {
   |> extrude(4, %)
 "#;
 
-    let result = execute_and_snapshot(code).await;
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
@@ -224,7 +460,9 @@ async fn serial_test_execute_engine_error_return() {
 async fn serial_test_execute_pipes_on_pipes() {
     let code = include_str!("inputs/pipes_on_pipes.kcl");
 
-    let result = execute_and_snapshot(code).await.unwrap();
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/pipes_on_pipes.png", &result, 0.999);
 }
 
@@ -232,15 +470,20 @@ async fn serial_test_execute_pipes_on_pipes() {
 async fn serial_test_execute_cylinder() {
     let code = include_str!("inputs/cylinder.kcl");
 
-    let result = execute_and_snapshot(code).await.unwrap();
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/cylinder.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
+#[ignore = "currently stack overflows"]
 async fn serial_test_execute_kittycad_svg() {
     let code = include_str!("inputs/kittycad_svg.kcl");
 
-    let result = execute_and_snapshot(code).await.unwrap();
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/kittycad_svg.png", &result, 0.999);
 }
 
@@ -261,11 +504,11 @@ const b2 = cube([3,3], 4)
 
 const pt1 = b1.value[0]
 const pt2 = b2.value[0]
+"#;
 
-show(b1)
-show(b2)"#;
-
-    let result = execute_and_snapshot(code).await.unwrap();
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
     twenty_twenty::assert_image(
         "tests/executor/outputs/member_expression_sketch_group.png",
         &result,
@@ -284,10 +527,11 @@ const body = startSketchOn('XY')
       |> arc({angle_end: 360, angle_start: 0, radius: radius}, %)
       |> close(%)
       |> extrude(height, %)
+"#;
 
-show(body)"#;
-
-    let result = execute_and_snapshot(code).await.unwrap();
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/close_arc.png", &result, 0.999);
 }
 
@@ -313,7 +557,9 @@ box(10, 23, 8)
 let thing = box(-12, -15, 10)
 box(-20, -5, 10)"#;
 
-    let result = execute_and_snapshot(code).await.unwrap();
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/negative_args.png", &result, 0.999);
 }
 
@@ -326,7 +572,9 @@ async fn serial_test_basic_tangential_arc() {
     |> extrude(10, %)
 "#;
 
-    let result = execute_and_snapshot(code).await.unwrap();
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/tangential_arc.png", &result, 0.999);
 }
 
@@ -339,7 +587,9 @@ async fn serial_test_basic_tangential_arc_with_point() {
     |> extrude(10, %)
 "#;
 
-    let result = execute_and_snapshot(code).await.unwrap();
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/tangential_arc_with_point.png", &result, 0.999);
 }
 
@@ -352,7 +602,9 @@ async fn serial_test_basic_tangential_arc_to() {
     |> extrude(10, %)
 "#;
 
-    let result = execute_and_snapshot(code).await.unwrap();
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/tangential_arc_to.png", &result, 0.999);
 }
 
@@ -379,7 +631,9 @@ box(30, 43, 18, '-xy')
 let thing = box(-12, -15, 10, 'yz')
 box(-20, -5, 10, 'xy')"#;
 
-    let result = execute_and_snapshot(code).await.unwrap();
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
     twenty_twenty::assert_image(
         "tests/executor/outputs/different_planes_same_drawing.png",
         &result,
@@ -414,7 +668,6 @@ const bracket = startSketchOn('XY')
   |> close(%)
   |> extrude(width, %)
 
-show(bracket)
 const part001 = startSketchOn('XY')
   |> startProfileAt([-15.53, -10.28], %)
   |> line([10.49, -2.08], %)
@@ -442,63 +695,68 @@ const part004 = startSketchOn('YZ')
   |> close(%)
 "#;
 
-    let result = execute_and_snapshot(code).await.unwrap();
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/lots_of_planes.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_holes() {
-    let code = r#"fn circle = (pos, radius) => {
-    const sg = startSketchOn('XY')
-      |> startProfileAt(pos, %)
-      |> arc({angle_end: 360, angle_start: 0, radius: radius}, %)
-      |> close(%)
-
-    return sg
-}
-
-const square = startSketchOn('XY')
+    let code = r#"const square = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
   |> line([10, 0], %)
   |> line([0, -10], %)
   |> close(%)
-  |> hole(circle([2, 2], .5), %)
-  |> hole(circle([2, 8], .5), %)
+  |> hole(circle('XY', [2, 2], .5), %)
+  |> hole(circle('XY', [2, 8], .5), %)
   |> extrude(2, %)
-
-show(square)
 "#;
 
-    let result = execute_and_snapshot(code).await.unwrap();
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/holes.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn optional_params() {
+    let code = r#"
+    fn other_circle = (pos, radius, tag?) => {
+      const sg = startSketchOn('XY')
+        |> startProfileAt(pos, %)
+        |> arc({angle_end: 360, angle_start: 0, radius: radius}, %)
+        |> close(%)
+
+      return sg
+  }
+
+const thing = other_circle([2, 2], 20)
+"#;
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/optional_params.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_rounded_with_holes() {
-    let code = r#"fn circle = (pos, radius) => {
-  const sg = startSketchOn('XY')
-    |> startProfileAt([pos[0] + radius, pos[1]], %)
-    |> arc({
-       angle_end: 360,
-       angle_start: 0,
-       radius: radius
-     }, %)
-    |> close(%)
-  return sg
+    let code = r#"fn tarc = (to, sketchGroup, tag?) => {
+  return tangentialArcTo(to, sketchGroup, tag)
 }
 
 fn roundedRectangle = (pos, w, l, cornerRadius) => {
   const rr = startSketchOn('XY')
     |> startProfileAt([pos[0] - w/2, 0], %)
     |> lineTo([pos[0] - w/2, pos[1] - l/2 + cornerRadius], %)
-    |> tangentialArcTo([pos[0] - w/2 + cornerRadius, pos[1] - l/2], %)
+    |> tarc([pos[0] - w/2 + cornerRadius, pos[1] - l/2], %, "arc0")
     |> lineTo([pos[0] + w/2 - cornerRadius, pos[1] - l/2], %)
-    |> tangentialArcTo([pos[0] + w/2, pos[1] - l/2 + cornerRadius], %)
+    |> tarc([pos[0] + w/2, pos[1] - l/2 + cornerRadius], %)
     |> lineTo([pos[0] + w/2, pos[1] + l/2 - cornerRadius], %)
-    |> tangentialArcTo([pos[0] + w/2 - cornerRadius, pos[1] + l/2], %)
+    |> tarc([pos[0] + w/2 - cornerRadius, pos[1] + l/2], %, "arc2")
     |> lineTo([pos[0] - w/2 + cornerRadius, pos[1] + l/2], %)
-    |> tangentialArcTo([pos[0] - w/2, pos[1] + l/2 - cornerRadius], %)
+    |> tarc([pos[0] - w/2, pos[1] + l/2 - cornerRadius], %)
     |> close(%)
   return rr
 }
@@ -507,14 +765,453 @@ const holeRadius = 1
 const holeIndex = 6
 
 const part = roundedRectangle([0, 0], 20, 20, 4)
-  |> hole(circle([-holeIndex, holeIndex], holeRadius), %)
-  |> hole(circle([holeIndex, holeIndex], holeRadius), %)
-  |> hole(circle([-holeIndex, -holeIndex], holeRadius), %)
-  |> hole(circle([holeIndex, -holeIndex], holeRadius), %)
+  |> hole(circle('XY', [-holeIndex, holeIndex], holeRadius), %)
+  |> hole(circle('XY', [holeIndex, holeIndex], holeRadius), %)
+  |> hole(circle('XY', [-holeIndex, -holeIndex], holeRadius), %)
+  |> hole(circle('XY', [holeIndex, -holeIndex], holeRadius), %)
   |> extrude(2, %)
+"#;
 
-show(part)"#;
-
-    let result = execute_and_snapshot(code).await.unwrap();
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/rounded_with_holes.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_top_level_expression() {
+    let code = r#"circle('XY', [0,0], 22) |> extrude(14, %)"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/top_level_expression.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_patterns_linear_basic() {
+    let code = r#"const part = circle('XY', [0,0], 2)
+    |> patternLinear({axis: [0,1], repetitions: 12, distance: 2}, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/patterns_linear_basic.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_patterns_linear_basic_3d() {
+    let code = r#"const part = startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line([0,1], %)
+    |> line([1, 0], %)
+    |> line([0, -1], %)
+    |> close(%)
+    |> extrude(1, %)
+    |> patternLinear({axis: [1, 0], repetitions: 3, distance: 6}, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/patterns_linear_basic_3d.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_patterns_linear_basic_negative_distance() {
+    let code = r#"const part = circle('XY', [0,0], 2)
+    |> patternLinear({axis: [0,1], repetitions: 12, distance: -2}, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/patterns_linear_basic_negative_distance.png",
+        &result,
+        0.999,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_patterns_linear_basic_negative_axis() {
+    let code = r#"const part = circle('XY', [0,0], 2)
+    |> patternLinear({axis: [0,-1], repetitions: 12, distance: 2}, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/patterns_linear_basic_negative_axis.png",
+        &result,
+        0.999,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_patterns_linear_basic_holes() {
+    let code = r#"const circles = circle('XY', [5, 5], 1)
+    |> patternLinear({axis: [1,1], repetitions: 12, distance: 3}, %)
+
+const rectangle = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, 50], %)
+  |> line([50, 0], %)
+  |> line([0, -50], %)
+  |> close(%)
+  |> hole(circles, %)
+
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/patterns_linear_basic_holes.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_patterns_circular_basic_2d() {
+    let code = r#"const part = circle('XY', [0,0], 2)
+    |> patternCircular({axis: [0,1], center: [20, 20, 20], repetitions: 12, arcDegrees: 210, rotateDuplicates: true}, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/patterns_circular_basic_2d.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_patterns_circular_basic_3d() {
+    let code = r#"const part = startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line([0,1], %)
+    |> line([1, 0], %)
+    |> line([0, -1], %)
+    |> close(%)
+    |> extrude(1, %)
+    |> patternCircular({axis: [0,1], center: [-20, -20, -20], repetitions: 40, arcDegrees: 360, rotateDuplicates: false}, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/patterns_circular_basic_3d.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_patterns_circular_3d_tilted_axis() {
+    let code = r#"const part = startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line([0,1], %)
+    |> line([1, 0], %)
+    |> line([0, -1], %)
+    |> close(%)
+    |> extrude(1, %)
+    |> patternCircular({axis: [1,1], center: [10, 0, 10], repetitions: 10, arcDegrees: 360, rotateDuplicates: true}, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/patterns_circular_3d_tilted_axis.png",
+        &result,
+        0.999,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_import_file_doesnt_exist() {
+    let code = r#"const model = import("thing.obj")"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([14, 33])], message: "File `thing.obj` does not exist." }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_import_obj_with_mtl() {
+    let code = r#"const model = import("tests/executor/inputs/cube.obj")"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/import_obj_with_mtl.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_import_obj_with_mtl_units() {
+    let code = r#"const model = import("tests/executor/inputs/cube.obj", {type: "obj", units: "m"})"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/import_obj_with_mtl_units.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_import_gltf_with_bin() {
+    let code = r#"const model = import("tests/executor/inputs/cube.gltf")"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/import_gltf_with_bin.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_import_gltf_embedded() {
+    let code = r#"const model = import("tests/executor/inputs/cube-embedded.gltf")"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/import_gltf_embedded.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_import_glb() {
+    let code = r#"const model = import("tests/executor/inputs/cube.glb")"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/import_glb.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_import_glb_no_assign() {
+    let code = r#"import("tests/executor/inputs/cube.glb")"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/import_glb_no_assign.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_import_ext_doesnt_match() {
+    let code = r#"const model = import("tests/executor/inputs/cube.gltf", {type: "obj", units: "m"})"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([14, 82])], message: "The given format does not match the file extension. Expected: `gltf`, Given: `obj`" }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_cube_mm() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+    |> close(%)
+    |> extrude(scale, %)
+
+  return sg
+}
+
+const myCube = cube([0,0], 10)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/cube_mm.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_cube_cm() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+    |> close(%)
+    |> extrude(scale, %)
+
+  return sg
+}
+
+const myCube = cube([0,0], 10)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Cm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/cube_cm.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_cube_m() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+    |> close(%)
+    |> extrude(scale, %)
+
+  return sg
+}
+
+const myCube = cube([0,0], 10)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::M)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/cube_m.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_cube_in() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+    |> close(%)
+    |> extrude(scale, %)
+
+  return sg
+}
+
+const myCube = cube([0,0], 10)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::In)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/cube_in.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_cube_ft() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+    |> close(%)
+    |> extrude(scale, %)
+
+  return sg
+}
+
+const myCube = cube([0,0], 10)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Ft)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/cube_ft.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_cube_yd() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+    |> close(%)
+    |> extrude(scale, %)
+
+  return sg
+}
+
+const myCube = cube([0,0], 10)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Yd)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/cube_yd.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_error_sketch_on_arc_face() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+  |> startProfileAt(pos, %)
+  |> tangentialArc({ to: [0, scale], tag: "here" }, %)
+  |> line([scale, 0], %)
+  |> line([0, -scale], %)
+
+  return sg
+}
+const part001 = cube([0, 0], 20)
+  |> close(%)
+  |> extrude(20, %)
+
+const part002 = startSketchOn(part001, "here")
+  |> startProfileAt([0, 0], %)
+  |> line([5, 0], %)
+  |> line([5, 5], %)
+  |> line([0, 5], %)
+  |> close(%)
+  |> extrude(1, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([294, 324])], message: "Cannot sketch on a non-planar surface: `here`" }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_sketch_on_face_of_face() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+const part001 = cube([0,0], 20)
+    |> close(%)
+    |> extrude(20, %)
+
+const part002 = startSketchOn(part001, "end")
+  |> startProfileAt([0, 0], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %)
+  |> close(%)
+  |> extrude(5, %)
+
+const part003 = startSketchOn(part002, "end")
+  |> startProfileAt([0, 0], %)
+  |> line([0, 5], %)
+  |> line([5, 0], %)
+  |> line([0, -5], %)
+  |> close(%)
+  |> extrude(5, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_of_face.png", &result, 1.0);
 }

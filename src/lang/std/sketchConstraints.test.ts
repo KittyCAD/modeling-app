@@ -88,7 +88,6 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
     `  |> yLine(-1.07, %)`,
     `  |> xLineTo(3.27, %)`,
     `  |> yLineTo(2.14, %)`,
-    `show(part001)`,
   ]
   const bigExample = bigExampleArr.join('\n')
   it('line with tag converts to xLine', async () => {
@@ -290,7 +289,6 @@ describe('testing swapping out sketch calls with xLine/xLineTo while keeping var
     `  |> angledLineToX([330, angledLineToXx], %)`,
     `  |> angledLineToY([217, angledLineToYy], %)`,
     `  |> line([0.89, -0.1], %)`,
-    `show(part001)`,
   ]
   const varExample = variablesExampleArr.join('\n')
   it('line keeps variable when converted to xLine', async () => {
@@ -378,8 +376,7 @@ const part001 = startSketchOn('XY')
   |> line([0, 0.4], %)
   |> xLine(3.48, %)
   |> line([2.14, 1.35], %) // normal-segment
-  |> xLine(3.54, %)
-show(part001)`
+  |> xLine(3.54, %)`
   it('normal case works', async () => {
     const programMemory = await enginelessExecutor(parse(code))
     const index = code.indexOf('// normal-segment') - 7
@@ -388,7 +385,7 @@ show(part001)`
       [index, index]
     ).segment
     expect(segment).toEqual({
-      type: 'toPoint',
+      type: 'ToPoint',
       to: [5.62, 1.79],
       from: [3.48, 0.44],
       name: '',
@@ -405,7 +402,7 @@ show(part001)`
       to: [0, 0.04],
       from: [0, 0.04],
       name: '',
-      type: 'base',
+      type: 'Base',
     })
   })
 })

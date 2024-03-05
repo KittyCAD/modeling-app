@@ -169,16 +169,24 @@ describe('testing function declaration', () => {
               end: 39,
               params: [
                 {
-                  type: 'Identifier',
-                  start: 12,
-                  end: 13,
-                  name: 'a',
+                  type: 'Parameter',
+                  identifier: {
+                    type: 'Identifier',
+                    start: 12,
+                    end: 13,
+                    name: 'a',
+                  },
+                  optional: false,
                 },
                 {
-                  type: 'Identifier',
-                  start: 15,
-                  end: 16,
-                  name: 'b',
+                  type: 'Parameter',
+                  identifier: {
+                    type: 'Identifier',
+                    start: 15,
+                    end: 16,
+                    name: 'b',
+                  },
+                  optional: false,
                 },
               ],
               body: {
@@ -244,16 +252,24 @@ const myVar = funcN(1, 2)`
               end: 37,
               params: [
                 {
-                  type: 'Identifier',
-                  start: 12,
-                  end: 13,
-                  name: 'a',
+                  type: 'Parameter',
+                  identifier: {
+                    type: 'Identifier',
+                    start: 12,
+                    end: 13,
+                    name: 'a',
+                  },
+                  optional: false,
                 },
                 {
-                  type: 'Identifier',
-                  start: 15,
-                  end: 16,
-                  name: 'b',
+                  type: 'Parameter',
+                  identifier: {
+                    type: 'Identifier',
+                    start: 15,
+                    end: 16,
+                    name: 'b',
+                  },
+                  optional: false,
                 },
               ],
               body: {
@@ -1637,7 +1653,7 @@ describe('parsing errors', () => {
 
     let _theError
     try {
-      const result = expect(parse(code))
+      let _ = expect(parse(code))
     } catch (e) {
       _theError = e
     }

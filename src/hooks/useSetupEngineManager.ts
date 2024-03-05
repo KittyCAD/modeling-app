@@ -3,7 +3,7 @@ import { parse } from '../lang/wasm'
 import { useStore } from '../useStore'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { deferExecution } from 'lib/utils'
-import { kclManager } from 'lang/KclSinglton'
+import { kclManager } from 'lang/KclSingleton'
 
 export function useSetupEngineManager(
   streamRef: React.RefObject<HTMLDivElement>,
@@ -82,9 +82,14 @@ export function useSetupEngineManager(
 }
 
 function getDimensions(streamWidth?: number, streamHeight?: number) {
+  const maxResolution = 2000
   const width = streamWidth ? streamWidth : 0
-  const quadWidth = Math.round(width / 4) * 4
   const height = streamHeight ? streamHeight : 0
-  const quadHeight = Math.round(height / 4) * 4
+  const ratio = Math.min(
+    Math.min(maxResolution / width, maxResolution / height),
+    1.0
+  )
+  const quadWidth = Math.round((width * ratio) / 4) * 4
+  const quadHeight = Math.round((height * ratio) / 4) * 4
   return { width: quadWidth, height: quadHeight }
 }

@@ -15,26 +15,12 @@ import UserMenu from './UserMenu'
 import ProjectMenu from './ProjectMenu'
 import Export from './Export'
 import FutureWork from './FutureWork'
-import { paths } from 'Router'
+import { paths } from 'lib/paths'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
+import { ActionButton } from 'components/ActionButton'
+import { onboardingPaths } from 'routes/Onboarding/paths'
 
 export const ONBOARDING_PROJECT_NAME = 'Tutorial Project $nn'
-
-export const onboardingPaths = {
-  INDEX: '/',
-  CAMERA: '/camera',
-  STREAMING: '/streaming',
-  EDITOR: '/editor',
-  PARAMETRIC_MODELING: '/parametric-modeling',
-  INTERACTIVE_NUMBERS: '/interactive-numbers',
-  COMMAND_K: '/command-k',
-  USER_MENU: '/user-menu',
-  PROJECT_MENU: '/project-menu',
-  EXPORT: '/export',
-  MOVE: '/move',
-  SKETCHING: '/sketching',
-  FUTURE_WORK: '/future-work',
-}
 
 export const onboardingRoutes = [
   {
@@ -120,14 +106,53 @@ export function useDismiss() {
   }, [send, navigate, filePath])
 }
 
+export function OnboardingButtons({
+  next,
+  nextText,
+  dismiss,
+  className,
+  ...props
+}: {
+  next: () => void
+  nextText?: string
+  dismiss: () => void
+  className?: string
+} & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div className={'flex justify-between ' + (className ?? '')} {...props}>
+      <ActionButton
+        Element="button"
+        onClick={dismiss}
+        icon={{
+          icon: 'close',
+          bgClassName: 'bg-destroy-80',
+          iconClassName: 'text-destroy-20 group-hover:text-destroy-10',
+        }}
+        className="hover:border-destroy-40 hover:bg-destroy-10/50 dark:hover:bg-destroy-80/50"
+      >
+        Dismiss
+      </ActionButton>
+      <ActionButton
+        Element="button"
+        onClick={next}
+        icon={{ icon: 'arrowRight', bgClassName: 'dark:bg-chalkboard-80' }}
+        className="dark:hover:bg-chalkboard-80/50"
+        data-testid="onboarding-next"
+      >
+        {nextText ?? 'Next'}
+      </ActionButton>
+    </div>
+  )
+}
+
 const Onboarding = () => {
   const dismiss = useDismiss()
   useHotkeys('esc', dismiss)
 
   return (
-    <>
+    <div className="content" data-testid="onboarding-content">
       <Outlet />
-    </>
+    </div>
   )
 }
 

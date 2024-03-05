@@ -1,7 +1,7 @@
 //! Functions for setting up our WebSocket and WebRTC connections for communications with the
 //! engine.
 
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
 use anyhow::{anyhow, Result};
 use dashmap::DashMap;
@@ -15,6 +15,12 @@ use crate::{
     errors::{KclError, KclErrorDetails},
 };
 
+#[derive(Debug, PartialEq)]
+enum SocketHealth {
+    Active,
+    Inactive,
+}
+
 type WebSocketTcpWrite = futures::stream::SplitSink<tokio_tungstenite::WebSocketStream<reqwest::Upgraded>, WsMsg>;
 #[derive(Debug, Clone)]
 #[allow(dead_code)] // for the TcpReadHandle
@@ -22,6 +28,7 @@ pub struct EngineConnection {
     engine_req_tx: mpsc::Sender<ToEngineReq>,
     responses: Arc<DashMap<uuid::Uuid, WebSocketResponse>>,
     tcp_read_handle: Arc<TcpReadHandle>,
+    socket_health: Arc<Mutex<SocketHealth>>,
 }
 
 pub struct TcpRead {
@@ -69,7 +76,16 @@ impl EngineConnection {
     async fn start_write_actor(mut tcp_write: WebSocketTcpWrite, mut engine_req_rx: mpsc::Receiver<ToEngineReq>) {
         while let Some(req) = engine_req_rx.recv().await {
             let ToEngineReq { req, request_sent } = req;
-            let res = Self::inner_send_to_engine(req, &mut tcp_write).await;
+            let res = if let kittycad::types::WebSocketRequest::ModelingCmdReq {
+                cmd: kittycad::types::ModelingCmd::ImportFiles { .. },
+                cmd_id: _,
+            } = &req
+            {
+                // Send it as binary.
+                Self::inner_send_to_engine_binary(req, &mut tcp_write).await
+            } else {
+                Self::inner_send_to_engine(req, &mut tcp_write).await
+            };
             let _ = request_sent.send(res);
         }
     }
@@ -84,15 +100,21 @@ impl EngineConnection {
         Ok(())
     }
 
+    /// Send the given `request` to the engine via the WebSocket connection `tcp_write` as binary.
+    async fn inner_send_to_engine_binary(request: WebSocketRequest, tcp_write: &mut WebSocketTcpWrite) -> Result<()> {
+        let msg = bson::to_vec(&request).map_err(|e| anyhow!("could not serialize bson: {e}"))?;
+        tcp_write
+            .send(WsMsg::Binary(msg))
+            .await
+            .map_err(|e| anyhow!("could not send json over websocket: {e}"))?;
+        Ok(())
+    }
+
     pub async fn new(ws: reqwest::Upgraded) -> Result<EngineConnection> {
         let ws_stream = tokio_tungstenite::WebSocketStream::from_raw_socket(
             ws,
             tokio_tungstenite::tungstenite::protocol::Role::Client,
-            Some(tokio_tungstenite::tungstenite::protocol::WebSocketConfig {
-                write_buffer_size: 1024 * 128,
-                max_write_buffer_size: 1024 * 256,
-                ..Default::default()
-            }),
+            Some(tokio_tungstenite::tungstenite::protocol::WebSocketConfig { ..Default::default() }),
         )
         .await;
 
@@ -104,7 +126,9 @@ impl EngineConnection {
 
         let responses: Arc<DashMap<uuid::Uuid, WebSocketResponse>> = Arc::new(DashMap::new());
         let responses_clone = responses.clone();
+        let socket_health = Arc::new(Mutex::new(SocketHealth::Active));
 
+        let socket_health_tcp_read = socket_health.clone();
         let tcp_read_handle = tokio::spawn(async move {
             // Get Websocket messages from API server
             loop {
@@ -116,6 +140,7 @@ impl EngineConnection {
                     }
                     Err(e) => {
                         println!("got ws error: {:?}", e);
+                        *socket_health_tcp_read.lock().unwrap() = SocketHealth::Inactive;
                         return Err(e);
                     }
                 }
@@ -128,6 +153,7 @@ impl EngineConnection {
                 handle: Arc::new(tcp_read_handle),
             }),
             responses,
+            socket_health,
         })
     }
 }
@@ -177,6 +203,14 @@ impl EngineManager for EngineConnection {
         // Wait for the response.
         let current_time = std::time::Instant::now();
         while current_time.elapsed().as_secs() < 60 {
+            if let Ok(guard) = self.socket_health.lock() {
+                if *guard == SocketHealth::Inactive {
+                    return Err(KclError::Engine(KclErrorDetails {
+                        message: "Modeling command failed: websocket closed early".to_string(),
+                        source_ranges: vec![source_range],
+                    }));
+                }
+            }
             // We pop off the responses to cleanup our mappings.
             if let Some((_, resp)) = self.responses.remove(&id) {
                 return if let Some(data) = &resp.resp {
@@ -191,7 +225,7 @@ impl EngineManager for EngineConnection {
         }
 
         Err(KclError::Engine(KclErrorDetails {
-            message: format!("Modeling command timed out `{}`: {:?}", id, cmd),
+            message: format!("Modeling command timed out `{}`", id),
             source_ranges: vec![source_range],
         }))
     }

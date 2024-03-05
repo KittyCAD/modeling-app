@@ -3,16 +3,22 @@
 use anyhow::Result;
 use derive_docs::stdlib;
 use kittycad::types::{Angle, ModelingCmd, Point3D};
+use kittycad_execution_plan_macros::ExecutionPlanValue;
+use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
-        BasePath, GeoMeta, MemoryItem, Path, Plane, PlaneType, Point2d, Point3d, Position, Rotation, SketchGroup,
+        BasePath, ExtrudeGroup, ExtrudeSurface, Face, GeoMeta, MemoryItem, Path, Plane, PlaneType, Point2d, Point3d,
+        Position, Rotation, SketchGroup, SketchGroupSet, SketchSurface, SourceRange,
     },
     std::{
-        utils::{arc_angles, arc_center_and_end, get_x_component, get_y_component, intersection_with_parallel_line},
+        utils::{
+            arc_angles, arc_center_and_end, get_tangent_point_from_previous_arc, get_tangential_arc_to_info,
+            get_x_component, get_y_component, intersection_with_parallel_line, TangentialArcInfoInput,
+        },
         Args,
     },
 };
@@ -641,13 +647,23 @@ pub async fn start_sketch_at(args: Args) -> Result<MemoryItem, KclError> {
 async fn inner_start_sketch_at(data: LineData, args: Args) -> Result<Box<SketchGroup>, KclError> {
     // Let's assume it's the XY plane for now, this is just for backwards compatibility.
     let xy_plane = PlaneData::XY;
-    let plane = inner_start_sketch_on(xy_plane, args.clone()).await?;
-    let sketch_group = inner_start_profile_at(data, plane, args).await?;
+    let sketch_surface = inner_start_sketch_on(SketchData::Plane(xy_plane), None, args.clone()).await?;
+    let sketch_group = inner_start_profile_at(data, sketch_surface, args).await?;
     Ok(sketch_group)
 }
 
-/// Data for a plane.
+/// Data for start sketch on.
+/// You can start a sketch on a plane or an extrude group.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase", untagged)]
+pub enum SketchData {
+    Plane(PlaneData),
+    ExtrudeGroup(Box<ExtrudeGroup>),
+}
+
+/// Data for a plane.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, ExecutionPlanValue)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub enum PlaneData {
@@ -758,33 +774,187 @@ impl From<PlaneData> for Plane {
     }
 }
 
-/// Start a sketch on a specific plane.
+/// Start a sketch on a specific plane or face.
 pub async fn start_sketch_on(args: Args) -> Result<MemoryItem, KclError> {
-    let data: PlaneData = args.get_data()?;
+    let (data, tag): (SketchData, Option<SketchOnFaceTag>) = args.get_data_and_optional_tag()?;
 
-    let plane = inner_start_sketch_on(data, args).await?;
-    Ok(MemoryItem::Plane(plane))
+    match inner_start_sketch_on(data, tag, args).await? {
+        SketchSurface::Plane(plane) => Ok(MemoryItem::Plane(plane)),
+        SketchSurface::Face(face) => Ok(MemoryItem::Face(face)),
+    }
 }
 
-/// Start a sketch at a given point.
+/// Start a sketch on a specific plane or face.
 #[stdlib {
     name = "startSketchOn",
 }]
-async fn inner_start_sketch_on(data: PlaneData, args: Args) -> Result<Box<Plane>, KclError> {
+async fn inner_start_sketch_on(
+    data: SketchData,
+    tag: Option<SketchOnFaceTag>,
+    args: Args,
+) -> Result<SketchSurface, KclError> {
+    match data {
+        SketchData::Plane(plane_data) => {
+            let plane = start_sketch_on_plane(plane_data, args).await?;
+            Ok(SketchSurface::Plane(plane))
+        }
+        SketchData::ExtrudeGroup(extrude_group) => {
+            let Some(tag) = tag else {
+                return Err(KclError::Type(KclErrorDetails {
+                    message: "Expected a tag for the face to sketch on".to_string(),
+                    source_ranges: vec![args.source_range],
+                }));
+            };
+            let face = start_sketch_on_face(extrude_group, tag, args).await?;
+            Ok(SketchSurface::Face(face))
+        }
+    }
+}
+
+/// A tag for sketch on face.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[ts(export)]
+#[serde(rename_all = "snake_case", untagged)]
+#[display("{0}")]
+pub enum SketchOnFaceTag {
+    StartOrEnd(StartOrEnd),
+    /// A string tag for the face you want to sketch on.
+    String(String),
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+#[display(style = "snake_case")]
+pub enum StartOrEnd {
+    /// The start face as in before you extruded. This could also be known as the bottom
+    /// face. But we do not call it bottom because it would be the top face if you
+    /// extruded it in the opposite direction or flipped the camera.
+    #[serde(rename = "start", alias = "START")]
+    Start,
+    /// The end face after you extruded. This could also be known as the top
+    /// face. But we do not call it top because it would be the bottom face if you
+    /// extruded it in the opposite direction or flipped the camera.
+    #[serde(rename = "end", alias = "END")]
+    End,
+}
+
+async fn start_sketch_on_face(
+    extrude_group: Box<ExtrudeGroup>,
+    tag: SketchOnFaceTag,
+    args: Args,
+) -> Result<Box<Face>, KclError> {
+    let extrude_plane_id = match tag {
+        SketchOnFaceTag::String(ref s) => extrude_group
+            .value
+            .iter()
+            .find_map(|extrude_surface| match extrude_surface {
+                ExtrudeSurface::ExtrudePlane(extrude_plane) if extrude_plane.name == *s => {
+                    Some(Ok(extrude_plane.face_id))
+                }
+                ExtrudeSurface::ExtrudeArc(extrude_arc) if extrude_arc.name == *s => {
+                    Some(Err(KclError::Type(KclErrorDetails {
+                        message: format!("Cannot sketch on a non-planar surface: `{}`", tag),
+                        source_ranges: vec![args.source_range],
+                    })))
+                }
+                ExtrudeSurface::ExtrudePlane(_) | ExtrudeSurface::ExtrudeArc(_) => None,
+            })
+            .ok_or_else(|| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Expected a face with the tag `{}`", tag),
+                    source_ranges: vec![args.source_range],
+                })
+            })??,
+        SketchOnFaceTag::StartOrEnd(StartOrEnd::Start) => extrude_group.start_cap_id.ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: "Expected a start face to sketch on".to_string(),
+                source_ranges: vec![args.source_range],
+            })
+        })?,
+        SketchOnFaceTag::StartOrEnd(StartOrEnd::End) => extrude_group.end_cap_id.ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: "Expected an end face to sketch on".to_string(),
+                source_ranges: vec![args.source_range],
+            })
+        })?,
+    };
+
+    // Enter sketch mode on the face.
+    let id = uuid::Uuid::new_v4();
+    args.send_modeling_cmd(
+        id,
+        ModelingCmd::EnableSketchMode {
+            animated: false,
+            ortho: false,
+            entity_id: extrude_plane_id,
+            adjust_camera: false,
+        },
+    )
+    .await?;
+
+    Ok(Box::new(Face {
+        id,
+        value: tag.to_string(),
+        sketch_group_id: extrude_group.id,
+        // TODO: get this from the extrude plane data.
+        x_axis: extrude_group.x_axis,
+        y_axis: extrude_group.y_axis,
+        z_axis: extrude_group.z_axis,
+        meta: vec![args.source_range.into()],
+    }))
+}
+
+async fn start_sketch_on_plane(data: PlaneData, args: Args) -> Result<Box<Plane>, KclError> {
     let mut plane: Plane = data.clone().into();
+    let id = uuid::Uuid::new_v4();
+    let default_origin = Point3D { x: 0.0, y: 0.0, z: 0.0 };
+
+    let (x_axis, y_axis) = match data {
+        PlaneData::XY => (Point3D { x: 1.0, y: 0.0, z: 0.0 }, Point3D { x: 0.0, y: 1.0, z: 0.0 }),
+        PlaneData::NegXY => (
+            Point3D {
+                x: -1.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Point3D { x: 0.0, y: 1.0, z: 0.0 },
+        ),
+        PlaneData::XZ => (
+            Point3D {
+                x: -1.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Point3D { x: 0.0, y: 0.0, z: 1.0 },
+        ), // TODO x component for x_axis shouldn't be negative
+        PlaneData::NegXZ => (
+            Point3D {
+                x: 1.0, // TODO this should be -1.0
+                y: 0.0,
+                z: 0.0,
+            },
+            Point3D { x: 0.0, y: 0.0, z: 1.0 },
+        ),
+        PlaneData::YZ => (Point3D { x: 0.0, y: 1.0, z: 0.0 }, Point3D { x: 0.0, y: 0.0, z: 1.0 }),
+        PlaneData::NegYZ => (
+            Point3D {
+                x: 0.0,
+                y: -1.0,
+                z: 0.0,
+            },
+            Point3D { x: 0.0, y: 0.0, z: 1.0 },
+        ),
+        _ => (Point3D { x: 1.0, y: 0.0, z: 0.0 }, Point3D { x: 0.0, y: 1.0, z: 0.0 }),
+    };
 
     plane.id = match data {
-        PlaneData::XY | PlaneData::NegXY => args.ctx.planes.xy,
-        PlaneData::XZ | PlaneData::NegXZ => args.ctx.planes.xz,
-        PlaneData::YZ | PlaneData::NegYZ => args.ctx.planes.yz,
         PlaneData::Plane {
             origin,
             x_axis,
             y_axis,
             z_axis: _,
         } => {
-            let id = uuid::Uuid::new_v4();
-            // Create the plane.
             args.send_modeling_cmd(
                 id,
                 ModelingCmd::MakePlane {
@@ -793,6 +963,21 @@ async fn inner_start_sketch_on(data: PlaneData, args: Args) -> Result<Box<Plane>
                     size: 60.0,
                     x_axis: (*x_axis).into(),
                     y_axis: (*y_axis).into(),
+                    hide: Some(true),
+                },
+            )
+            .await?;
+            id
+        }
+        _ => {
+            args.send_modeling_cmd(
+                id,
+                ModelingCmd::MakePlane {
+                    clobber: false,
+                    origin: default_origin,
+                    size: 60.0,
+                    x_axis,
+                    y_axis,
                     hide: Some(true),
                 },
             )
@@ -819,9 +1004,9 @@ async fn inner_start_sketch_on(data: PlaneData, args: Args) -> Result<Box<Plane>
 
 /// Start a profile at a given point.
 pub async fn start_profile_at(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, plane): (LineData, Box<Plane>) = args.get_data_and_plane()?;
+    let (data, sketch_surface): (LineData, SketchSurface) = args.get_data_and_sketch_surface()?;
 
-    let sketch_group = inner_start_profile_at(data, plane, args).await?;
+    let sketch_group = inner_start_profile_at(data, sketch_surface, args).await?;
     Ok(MemoryItem::SketchGroup(sketch_group))
 }
 
@@ -829,7 +1014,11 @@ pub async fn start_profile_at(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "startProfileAt",
 }]
-async fn inner_start_profile_at(data: LineData, plane: Box<Plane>, args: Args) -> Result<Box<SketchGroup>, KclError> {
+async fn inner_start_profile_at(
+    data: LineData,
+    sketch_surface: SketchSurface,
+    args: Args,
+) -> Result<Box<SketchGroup>, KclError> {
     let to = match &data {
         LineData::PointWithTag { to, .. } => *to,
         LineData::Point(to) => *to,
@@ -868,9 +1057,13 @@ async fn inner_start_profile_at(data: LineData, plane: Box<Plane>, args: Args) -
 
     let sketch_group = SketchGroup {
         id: path_id,
+        on: sketch_surface.clone(),
         position: Position([0.0, 0.0, 0.0]),
         rotation: Rotation([0.0, 0.0, 0.0, 1.0]),
-        plane_id: Some(plane.id),
+        x_axis: sketch_surface.x_axis(),
+        y_axis: sketch_surface.y_axis(),
+        z_axis: sketch_surface.z_axis(),
+        entity_id: Some(sketch_surface.id()),
         value: vec![],
         start: current_path,
         meta: vec![args.source_range.into()],
@@ -905,10 +1098,10 @@ async fn inner_close(sketch_group: Box<SketchGroup>, args: Args) -> Result<Box<S
     )
     .await?;
 
-    // Exit sketch mode, since if we were in a plane we'd want to disable the sketch mode after.
-    if sketch_group.plane_id.is_some() {
+    // If we are sketching on a plane we can close the sketch group now.
+    if let SketchSurface::Plane(_) = sketch_group.on {
         // We were on a plane, disable the sketch mode.
-        args.send_modeling_cmd(uuid::Uuid::new_v4(), ModelingCmd::SketchModeDisable {})
+        args.send_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
             .await?;
     }
 
@@ -1030,10 +1223,8 @@ async fn inner_arc(data: ArcData, sketch_group: Box<SketchGroup>, args: Args) ->
         ModelingCmd::ExtendPath {
             path: sketch_group.id,
             segment: kittycad::types::PathSegment::Arc {
-                angle_start: angle_start.degrees(),
-                angle_end: angle_end.degrees(),
-                start: Some(angle_start),
-                end: Some(angle_end),
+                start: angle_start,
+                end: angle_end,
                 center: center.into(),
                 radius,
                 relative: false,
@@ -1122,7 +1313,7 @@ async fn inner_tangential_arc(
                     path: sketch_group.id,
                     segment: kittycad::types::PathSegment::TangentialArc {
                         radius: *radius,
-                        offset: kittycad::types::Angle {
+                        offset: Angle {
                             unit: kittycad::types::UnitAngle::Degrees,
                             value: *offset,
                         },
@@ -1146,11 +1337,14 @@ async fn inner_tangential_arc(
 
     let to = [from.x + to[0], from.y + to[1]];
 
-    let current_path = Path::ToPoint {
+    let current_path = Path::TangentialArc {
         base: BasePath {
             from: from.into(),
             to,
-            name: "".to_string(),
+            name: match data {
+                TangentialArcData::PointWithTag { tag, .. } => tag.to_string(),
+                TangentialArcData::Point(_) | TangentialArcData::RadiusAndOffset { .. } => "".to_string(),
+            },
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -1178,27 +1372,32 @@ fn tan_arc_to(sketch_group: &SketchGroup, to: &[f64; 2]) -> ModelingCmd {
     }
 }
 
-/// Data to draw a tangential arc to a specific point.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, JsonSchema, ts_rs::TS)]
-#[ts(export)]
-#[serde(rename_all = "camelCase", untagged)]
-pub enum TangentialArcToData {
-    /// A point with a tag.
-    PointWithTag {
-        /// Where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.
-        to: [f64; 2],
-        /// The tag.
-        tag: String,
-    },
-    /// A point where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.
-    Point([f64; 2]),
+fn too_few_args(source_range: SourceRange) -> KclError {
+    KclError::Syntax(KclErrorDetails {
+        source_ranges: vec![source_range],
+        message: "too few arguments".to_owned(),
+    })
+}
+
+fn get_arg<I: Iterator>(it: &mut I, src: SourceRange) -> Result<I::Item, KclError> {
+    it.next().ok_or_else(|| too_few_args(src))
 }
 
 /// Draw a tangential arc to a specific point.
 pub async fn tangential_arc_to(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (TangentialArcToData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
+    let src = args.source_range;
 
-    let new_sketch_group = inner_tangential_arc_to(data, sketch_group, args).await?;
+    // Get arguments to function call
+    let mut it = args.args.iter();
+    let to: [f64; 2] = get_arg(&mut it, src)?.get_json()?;
+    let sketch_group: Box<SketchGroup> = get_arg(&mut it, src)?.get_json()?;
+    let tag = if let Ok(memory_item) = get_arg(&mut it, src) {
+        memory_item.get_json_opt()?
+    } else {
+        None
+    };
+
+    let new_sketch_group = inner_tangential_arc_to(to, sketch_group, tag, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
@@ -1207,34 +1406,42 @@ pub async fn tangential_arc_to(args: Args) -> Result<MemoryItem, KclError> {
     name = "tangentialArcTo",
 }]
 async fn inner_tangential_arc_to(
-    data: TangentialArcToData,
+    to: [f64; 2],
     sketch_group: Box<SketchGroup>,
+    tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from: Point2d = sketch_group.get_coords_from_paths()?;
-    let to = match &data {
-        TangentialArcToData::PointWithTag { to, .. } => to,
-        TangentialArcToData::Point(to) => to,
+    let tangent_info = sketch_group.get_tangential_info_from_paths();
+    let tan_previous_point = if tangent_info.is_center {
+        get_tangent_point_from_previous_arc(tangent_info.center_or_tangent_point, tangent_info.ccw, from.into())
+    } else {
+        tangent_info.center_or_tangent_point
     };
+    let [to_x, to_y] = to;
+    let result = get_tangential_arc_to_info(TangentialArcInfoInput {
+        arc_start_point: [from.x, from.y],
+        arc_end_point: to,
+        tan_previous_point,
+        obtuse: true,
+    });
 
-    let delta = [to[0] - from.x, to[1] - from.y];
+    let delta = [to_x - from.x, to_y - from.y];
     let id = uuid::Uuid::new_v4();
     args.send_modeling_cmd(id, tan_arc_to(&sketch_group, &delta)).await?;
 
-    let current_path = Path::ToPoint {
+    let current_path = Path::TangentialArcTo {
         base: BasePath {
             from: from.into(),
-            to: *to,
-            name: if let TangentialArcToData::PointWithTag { tag, .. } = data {
-                tag.to_string()
-            } else {
-                "".to_string()
-            },
+            to,
+            name: tag.unwrap_or_default(),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
             },
         },
+        center: result.center,
+        ccw: result.ccw > 0,
     };
 
     let mut new_sketch_group = sketch_group.clone();
@@ -1352,7 +1559,7 @@ async fn inner_bezier_curve(
 
 /// Use a sketch to cut a hole in another sketch.
 pub async fn hole(args: Args) -> Result<MemoryItem, KclError> {
-    let (hole_sketch_group, sketch_group): (Box<SketchGroup>, Box<SketchGroup>) = args.get_sketch_groups()?;
+    let (hole_sketch_group, sketch_group): (SketchGroupSet, Box<SketchGroup>) = args.get_sketch_groups()?;
 
     let new_sketch_group = inner_hole(hole_sketch_group, sketch_group, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
@@ -1363,31 +1570,56 @@ pub async fn hole(args: Args) -> Result<MemoryItem, KclError> {
     name = "hole",
 }]
 async fn inner_hole(
-    hole_sketch_group: Box<SketchGroup>,
+    hole_sketch_group: SketchGroupSet,
     sketch_group: Box<SketchGroup>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     //TODO: batch these (once we have batch)
 
-    args.send_modeling_cmd(
-        uuid::Uuid::new_v4(),
-        ModelingCmd::Solid2DAddHole {
-            object_id: sketch_group.id,
-            hole_id: hole_sketch_group.id,
-        },
-    )
-    .await?;
-
-    //suggestion (mike)
-    //we also hide the source hole since its essentially "consumed" by this operation
-    args.send_modeling_cmd(
-        uuid::Uuid::new_v4(),
-        ModelingCmd::ObjectVisible {
-            object_id: hole_sketch_group.id,
-            hidden: true,
-        },
-    )
-    .await?;
+    match hole_sketch_group {
+        SketchGroupSet::SketchGroup(hole_sketch_group) => {
+            args.send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                ModelingCmd::Solid2DAddHole {
+                    object_id: sketch_group.id,
+                    hole_id: hole_sketch_group.id,
+                },
+            )
+            .await?;
+            // suggestion (mike)
+            // we also hide the source hole since its essentially "consumed" by this operation
+            args.send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                ModelingCmd::ObjectVisible {
+                    object_id: hole_sketch_group.id,
+                    hidden: true,
+                },
+            )
+            .await?;
+        }
+        SketchGroupSet::SketchGroups(hole_sketch_groups) => {
+            for hole_sketch_group in hole_sketch_groups {
+                args.send_modeling_cmd(
+                    uuid::Uuid::new_v4(),
+                    ModelingCmd::Solid2DAddHole {
+                        object_id: sketch_group.id,
+                        hole_id: hole_sketch_group.id,
+                    },
+                )
+                .await?;
+                // suggestion (mike)
+                // we also hide the source hole since its essentially "consumed" by this operation
+                args.send_modeling_cmd(
+                    uuid::Uuid::new_v4(),
+                    ModelingCmd::ObjectVisible {
+                        object_id: hole_sketch_group.id,
+                        hidden: true,
+                    },
+                )
+                .await?;
+            }
+        }
+    }
 
     // TODO: should we modify the sketch group to include the hole data, probably?
 
@@ -1439,5 +1671,44 @@ mod tests {
         str_json = "\"-xz\"".to_string();
         let data: PlaneData = serde_json::from_str(&str_json).unwrap();
         assert_eq!(data, PlaneData::NegXZ);
+    }
+
+    #[test]
+    fn test_deserialize_sketch_on_face_tag() {
+        let data = "start";
+        let mut str_json = serde_json::to_string(&data).unwrap();
+        assert_eq!(str_json, "\"start\"");
+
+        str_json = "\"end\"".to_string();
+        let data: crate::std::sketch::SketchOnFaceTag = serde_json::from_str(&str_json).unwrap();
+        assert_eq!(
+            data,
+            crate::std::sketch::SketchOnFaceTag::StartOrEnd(crate::std::sketch::StartOrEnd::End)
+        );
+
+        str_json = "\"thing\"".to_string();
+        let data: crate::std::sketch::SketchOnFaceTag = serde_json::from_str(&str_json).unwrap();
+        assert_eq!(data, crate::std::sketch::SketchOnFaceTag::String("thing".to_string()));
+
+        str_json = "\"END\"".to_string();
+        let data: crate::std::sketch::SketchOnFaceTag = serde_json::from_str(&str_json).unwrap();
+        assert_eq!(
+            data,
+            crate::std::sketch::SketchOnFaceTag::StartOrEnd(crate::std::sketch::StartOrEnd::End)
+        );
+
+        str_json = "\"start\"".to_string();
+        let data: crate::std::sketch::SketchOnFaceTag = serde_json::from_str(&str_json).unwrap();
+        assert_eq!(
+            data,
+            crate::std::sketch::SketchOnFaceTag::StartOrEnd(crate::std::sketch::StartOrEnd::Start)
+        );
+
+        str_json = "\"START\"".to_string();
+        let data: crate::std::sketch::SketchOnFaceTag = serde_json::from_str(&str_json).unwrap();
+        assert_eq!(
+            data,
+            crate::std::sketch::SketchOnFaceTag::StartOrEnd(crate::std::sketch::StartOrEnd::Start)
+        );
     }
 }

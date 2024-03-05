@@ -1,11 +1,10 @@
-import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
-import { ActionButton } from '../../components/ActionButton'
 import {
   ONBOARDING_PROJECT_NAME,
-  onboardingPaths,
+  OnboardingButtons,
   useDismiss,
   useNextClick,
 } from '.'
+import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { bracket } from 'lib/exampleKcl'
@@ -18,10 +17,11 @@ import {
 } from 'lib/tauriFS'
 import { isTauri } from 'lib/isTauri'
 import { useNavigate } from 'react-router-dom'
-import { paths } from 'Router'
+import { paths } from 'lib/paths'
 import { useEffect } from 'react'
-import { kclManager } from 'lang/KclSinglton'
+import { kclManager } from 'lang/KclSingleton'
 import { sep } from '@tauri-apps/api/path'
+import { APP_NAME } from 'lib/constants'
 
 function OnboardingWithNewFile() {
   const navigate = useNavigate()
@@ -65,31 +65,15 @@ function OnboardingWithNewFile() {
               We see you have some of your own code written in this project.
               Please save it somewhere else before continuing the onboarding.
             </p>
-            <div className="flex justify-between mt-6">
-              <ActionButton
-                Element="button"
-                onClick={dismiss}
-                icon={{
-                  icon: faXmark,
-                  bgClassName: 'bg-destroy-80',
-                  iconClassName:
-                    'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
-                }}
-                className="hover:border-destroy-40"
-              >
-                Dismiss
-              </ActionButton>
-              <ActionButton
-                Element="button"
-                onClick={() => {
-                  kclManager.setCodeAndExecute(bracket)
-                  next()
-                }}
-                icon={{ icon: faArrowRight }}
-              >
-                Overwrite code and continue
-              </ActionButton>
-            </div>
+            <OnboardingButtons
+              className="mt-6"
+              dismiss={dismiss}
+              next={() => {
+                kclManager.setCodeAndExecute(bracket)
+                next()
+              }}
+              nextText="Overwrite code and continue"
+            />
           </>
         ) : (
           <>
@@ -103,32 +87,16 @@ function OnboardingWithNewFile() {
                 click the button below.
               </p>
             </section>
-            <div className="flex justify-between mt-6">
-              <ActionButton
-                Element="button"
-                onClick={dismiss}
-                icon={{
-                  icon: faXmark,
-                  bgClassName: 'bg-destroy-80',
-                  iconClassName:
-                    'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
-                }}
-                className="hover:border-destroy-40"
-              >
-                Dismiss
-              </ActionButton>
-              <ActionButton
-                Element="button"
-                onClick={() => {
-                  createAndOpenNewProject()
-                  kclManager.setCode(bracket, false)
-                  dismiss()
-                }}
-                icon={{ icon: faArrowRight }}
-              >
-                Make a new project
-              </ActionButton>
-            </div>
+            <OnboardingButtons
+              className="mt-6"
+              dismiss={dismiss}
+              next={() => {
+                void createAndOpenNewProject()
+                kclManager.setCode(bracket, false)
+                dismiss()
+              }}
+              nextText="Make a new project"
+            />
           </>
         )}
       </div>
@@ -162,8 +130,8 @@ export default function Introduction() {
       <div className="max-w-3xl p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
         <h1 className="flex flex-wrap items-center gap-4 text-2xl font-bold">
           <img
-            src={`/kcma-logomark${getLogoTheme()}.svg`}
-            alt="KittyCAD Modeling App"
+            src={`/zma-logomark${getLogoTheme()}.svg`}
+            alt={APP_NAME}
             className="h-20 max-w-full"
           />
           <span className="px-3 py-1 text-base rounded-full bg-energy-10 text-energy-80">
@@ -172,11 +140,11 @@ export default function Introduction() {
         </h1>
         <section className="my-12">
           <p className="my-4">
-            Welcome to KittyCAD Modeling App! This is a hardware design tool
-            that lets you edit visually, with code, or both. It's powered by the
-            first API created for anyone to build hardware design tools. The 3D
-            view is not running on your computer, but is instead being streamed
-            to you from a remote GPU as video.
+            Welcome to {APP_NAME}! This is a hardware design tool that lets you
+            edit visually, with code, or both. It's powered by the first API
+            created for anyone to build hardware design tools. The 3D view is
+            not running on your computer, but is instead being streamed to you
+            from a remote GPU as video.
           </p>
           <p className="my-4">
             This is an alpha release, so you will encounter bugs and missing
@@ -192,28 +160,12 @@ export default function Introduction() {
             release as early as possible to get feedback from users like you.
           </p>
         </section>
-        <div className="flex justify-between mt-6">
-          <ActionButton
-            Element="button"
-            onClick={dismiss}
-            icon={{
-              icon: faXmark,
-              bgClassName: 'bg-destroy-80',
-              iconClassName:
-                'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
-            }}
-            className="hover:border-destroy-40"
-          >
-            Dismiss
-          </ActionButton>
-          <ActionButton
-            Element="button"
-            onClick={next}
-            icon={{ icon: faArrowRight }}
-          >
-            Get Started
-          </ActionButton>
-        </div>
+        <OnboardingButtons
+          className="mt-6"
+          dismiss={dismiss}
+          next={next}
+          nextText="Camera"
+        />
       </div>
     </div>
   ) : (

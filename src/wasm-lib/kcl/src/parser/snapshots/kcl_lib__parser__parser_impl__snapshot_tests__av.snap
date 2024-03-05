@@ -1,0 +1,98 @@
+---
+source: kcl/src/parser/parser_impl.rs
+expression: actual
+---
+{
+  "start": 0,
+  "end": 49,
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 49,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 3,
+          "end": 49,
+          "id": {
+            "type": "Identifier",
+            "start": 3,
+            "end": 4,
+            "name": "f"
+          },
+          "init": {
+            "type": "FunctionExpression",
+            "type": "FunctionExpression",
+            "start": 7,
+            "end": 49,
+            "params": [
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "type": "Identifier",
+                  "start": 8,
+                  "end": 13,
+                  "name": "angle"
+                },
+                "optional": true
+              }
+            ],
+            "body": {
+              "start": 19,
+              "end": 49,
+              "body": [
+                {
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement",
+                  "start": 21,
+                  "end": 47,
+                  "argument": {
+                    "type": "CallExpression",
+                    "type": "CallExpression",
+                    "start": 28,
+                    "end": 47,
+                    "callee": {
+                      "type": "Identifier",
+                      "start": 28,
+                      "end": 35,
+                      "name": "default"
+                    },
+                    "arguments": [
+                      {
+                        "type": "Identifier",
+                        "type": "Identifier",
+                        "start": 36,
+                        "end": 41,
+                        "name": "angle"
+                      },
+                      {
+                        "type": "Literal",
+                        "type": "Literal",
+                        "start": 43,
+                        "end": 46,
+                        "value": 360,
+                        "raw": "360"
+                      }
+                    ],
+                    "optional": false
+                  }
+                }
+              ],
+              "nonCodeMeta": {
+                "nonCodeNodes": {},
+                "start": []
+              }
+            }
+          }
+        }
+      ],
+      "kind": "fn"
+    }
+  ],
+  "nonCodeMeta": {
+    "nonCodeNodes": {},
+    "start": []
+  }
+}

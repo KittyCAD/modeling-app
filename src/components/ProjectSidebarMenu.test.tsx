@@ -1,9 +1,10 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
-import { ProjectWithEntryPointMetadata } from '../Router'
+import { type ProjectWithEntryPointMetadata } from 'lib/types'
 import { GlobalStateProvider } from './GlobalStateProvider'
-import CommandBarProvider from './CommandBar'
+import { APP_NAME } from 'lib/constants'
+import { vi } from 'vitest'
 
 const now = new Date()
 const projectWellFormed = {
@@ -40,11 +41,9 @@ describe('ProjectSidebarMenu tests', () => {
   test('Renders the project name', () => {
     render(
       <BrowserRouter>
-        <CommandBarProvider>
-          <GlobalStateProvider>
-            <ProjectSidebarMenu project={projectWellFormed} />
-          </GlobalStateProvider>
-        </CommandBarProvider>
+        <GlobalStateProvider>
+          <ProjectSidebarMenu project={projectWellFormed} />
+        </GlobalStateProvider>
       </BrowserRouter>
     )
 
@@ -61,32 +60,23 @@ describe('ProjectSidebarMenu tests', () => {
   test('Renders app name if given no project', () => {
     render(
       <BrowserRouter>
-        <CommandBarProvider>
-          <GlobalStateProvider>
-            <ProjectSidebarMenu />
-          </GlobalStateProvider>
-        </CommandBarProvider>
+        <GlobalStateProvider>
+          <ProjectSidebarMenu />
+        </GlobalStateProvider>
       </BrowserRouter>
     )
 
     fireEvent.click(screen.getByTestId('project-sidebar-toggle'))
 
-    expect(screen.getByTestId('projectName')).toHaveTextContent(
-      'KittyCAD Modeling App'
-    )
+    expect(screen.getByTestId('projectName')).toHaveTextContent(APP_NAME)
   })
 
   test('Renders as a link if set to do so', () => {
     render(
       <BrowserRouter>
-        <CommandBarProvider>
-          <GlobalStateProvider>
-            <ProjectSidebarMenu
-              project={projectWellFormed}
-              renderAsLink={true}
-            />
-          </GlobalStateProvider>
-        </CommandBarProvider>
+        <GlobalStateProvider>
+          <ProjectSidebarMenu project={projectWellFormed} renderAsLink={true} />
+        </GlobalStateProvider>
       </BrowserRouter>
     )
 

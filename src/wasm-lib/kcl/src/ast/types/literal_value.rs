@@ -1,16 +1,19 @@
+use databake::*;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JValue;
 
 use super::{Literal, Value};
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(untagged, rename_all = "snake_case")]
 pub enum LiteralValue {
     IInteger(i64),
     Fractional(f64),
     String(String),
+    Bool(bool),
 }
 
 impl From<Literal> for Value {
@@ -25,6 +28,7 @@ impl From<LiteralValue> for JValue {
             LiteralValue::IInteger(x) => x.into(),
             LiteralValue::Fractional(x) => x.into(),
             LiteralValue::String(x) => x.into(),
+            LiteralValue::Bool(b) => b.into(),
         }
     }
 }
@@ -66,5 +70,11 @@ impl From<&'static str> for LiteralValue {
     fn from(value: &'static str) -> Self {
         // TODO: Make this Cow<str>
         Self::String(value.to_owned())
+    }
+}
+
+impl From<bool> for LiteralValue {
+    fn from(value: bool) -> Self {
+        Self::Bool(value)
     }
 }

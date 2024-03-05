@@ -47,14 +47,13 @@ const newVar = myVar + 1`
   |> lineTo([2,3], %)
   |> lineTo({ to: [5,-1], tag: "rightPath" }, %)
   // |> close(%)
-show(mySketch)
 `
-    const { root, return: _return } = await exe(code)
+    const { root } = await exe(code)
     // geo is three js buffer geometry and is very bloated to have in tests
     const minusGeo = root.mySketch.value
     expect(minusGeo).toEqual([
       {
-        type: 'toPoint',
+        type: 'ToPoint',
         to: [0, 2],
         from: [0, 0],
         __geoMeta: {
@@ -64,7 +63,7 @@ show(mySketch)
         name: 'myPath',
       },
       {
-        type: 'toPoint',
+        type: 'ToPoint',
         to: [2, 3],
         from: [0, 2],
         name: '',
@@ -74,7 +73,7 @@ show(mySketch)
         },
       },
       {
-        type: 'toPoint',
+        type: 'ToPoint',
         to: [5, -1],
         from: [2, 3],
         __geoMeta: {
@@ -82,15 +81,6 @@ show(mySketch)
           id: expect.any(String),
         },
         name: 'rightPath',
-      },
-    ])
-    // expect(root.mySketch.sketch[0]).toEqual(root.mySketch.sketch[4].firstPath)
-    expect(_return).toEqual([
-      {
-        type: 'Identifier',
-        start: 203,
-        end: 211,
-        name: 'mySketch',
       },
     ])
   })
@@ -143,6 +133,7 @@ show(mySketch)
     const { root } = await exe(code)
     expect(root.mySk1).toEqual({
       type: 'SketchGroup',
+      on: expect.any(Object),
       start: {
         to: [0, 0],
         from: [0, 0],
@@ -154,7 +145,7 @@ show(mySketch)
       },
       value: [
         {
-          type: 'toPoint',
+          type: 'ToPoint',
           to: [1, 1],
           from: [0, 0],
           name: '',
@@ -164,7 +155,7 @@ show(mySketch)
           },
         },
         {
-          type: 'toPoint',
+          type: 'ToPoint',
           to: [0, 1],
           from: [1, 1],
           __geoMeta: {
@@ -174,7 +165,7 @@ show(mySketch)
           name: 'myPath',
         },
         {
-          type: 'toPoint',
+          type: 'ToPoint',
           to: [1, 1],
           from: [0, 1],
           name: '',
@@ -186,8 +177,11 @@ show(mySketch)
       ],
       position: [0, 0, 0],
       rotation: [0, 0, 0, 1],
+      xAxis: { x: 1, y: 0, z: 0 },
+      yAxis: { x: 0, y: 1, z: 0 },
+      zAxis: { x: 0, y: 0, z: 1 },
       id: expect.any(String),
-      planeId: expect.any(String),
+      entityId: expect.any(String),
       __meta: [{ sourceRange: [39, 63] }],
     })
   })
@@ -353,7 +347,6 @@ describe('testing math operators', () => {
       `  -legLen(segLen('seg01', %), myVar)`,
       `], %)`,
       ``,
-      `show(part001)`,
     ].join('\n')
     const { root } = await exe(code)
     const sketch = root.part001
@@ -388,8 +381,7 @@ const theExtrude = startSketchOn('XY')
   |> line([-0.76], myVarZ, %)
   |> line([5,5], %)
   |> close(%)
-  |> extrude(4, %)
-show(theExtrude)`
+  |> extrude(4, %)`
     await expect(exe(code)).rejects.toEqual(
       new KCLError(
         'undefined_value',

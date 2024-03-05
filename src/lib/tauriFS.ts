@@ -7,10 +7,10 @@ import {
 } from '@tauri-apps/api/fs'
 import { documentDir, homeDir, sep } from '@tauri-apps/api/path'
 import { isTauri } from './isTauri'
-import { ProjectWithEntryPointMetadata } from '../Router'
+import { type ProjectWithEntryPointMetadata } from 'lib/types'
 import { metadata } from 'tauri-plugin-fs-extra-api'
 
-const PROJECT_FOLDER = 'kittycad-modeling-projects'
+const PROJECT_FOLDER = 'zoo-modeling-app-projects'
 export const FILE_EXT = '.kcl'
 export const PROJECT_ENTRYPOINT = 'main' + FILE_EXT
 const INDEX_IDENTIFIER = '$n' // $nn.. will pad the number with 0s
@@ -38,7 +38,7 @@ export async function initializeProjectDirectory(directory: string) {
     docDirectory = await documentDir()
   } catch (e) {
     console.log('error', e)
-    docDirectory = await homeDir() // seems to work better on Linux
+    docDirectory = `${await homeDir()}Documents/` // for headless Linux (eg. Github Actions)
   }
 
   const INITIAL_DEFAULT_DIR = docDirectory + PROJECT_FOLDER

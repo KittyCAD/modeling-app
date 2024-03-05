@@ -1,4 +1,5 @@
-import { IndexLoaderData, paths } from 'Router'
+import { type IndexLoaderData } from 'lib/types'
+import { paths } from 'lib/paths'
 import { ActionButton } from './ActionButton'
 import Tooltip from './Tooltip'
 import { FileEntry } from '@tauri-apps/api/fs'
@@ -9,7 +10,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronRight, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { useFileContext } from 'hooks/useFileContext'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { kclManager } from 'lang/KclSinglton'
 import styles from './FileTree.module.css'
 import { sortProject } from 'lib/tauriFS'
 
@@ -326,16 +326,17 @@ export const FileTree = ({
 
   return (
     <div className={className}>
-      <div className="flex items-center gap-1 px-4 py-1 bg-chalkboard-30/50 dark:bg-chalkboard-70/50">
+      <div className="flex items-center gap-1 px-4 py-1 bg-chalkboard-20/50 dark:bg-chalkboard-80/50 border-b border-b-chalkboard-30 dark:border-b-chalkboard-80">
         <h2 className="flex-1 m-0 p-0 text-sm mono">Files</h2>
         <ActionButton
           Element="button"
           icon={{
-            icon: 'createFile',
+            icon: 'filePlus',
             iconClassName: '!text-energy-80 dark:!text-energy-20',
-            bgClassName: 'hover:bg-energy-10/50 dark:hover:bg-transparent',
+            bgClassName:
+              'bg-chalkboard-20/50 hover:bg-energy-10/50 dark:hover:bg-transparent',
           }}
-          className="!p-0 border-none bg-transparent !outline-none"
+          className="!p-0 bg-transparent !outline-none"
           onClick={createFile}
         >
           <Tooltip position="inlineStart" delay={750}>
@@ -346,11 +347,12 @@ export const FileTree = ({
         <ActionButton
           Element="button"
           icon={{
-            icon: 'createFolder',
+            icon: 'folderPlus',
             iconClassName: '!text-energy-80 dark:!text-energy-20',
-            bgClassName: 'hover:bg-energy-10/50 dark:hover:bg-transparent',
+            bgClassName:
+              'bg-chalkboard-20/50 hover:bg-energy-10/50 dark:hover:bg-transparent',
           }}
-          className="!p-0 border-none bg-transparent !outline-none"
+          className="!p-0 bg-transparent !outline-none"
           onClick={createFolder}
         >
           <Tooltip position="inlineStart" delay={750}>

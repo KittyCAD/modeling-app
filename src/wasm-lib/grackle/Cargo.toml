@@ -1,0 +1,22 @@
+[package]
+name = "grackle"
+version = "0.1.0"
+edition = "2021"
+description = "A new executor for KCL which compiles to Execution Plans"
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+kcl-lib = { path = "../kcl" }
+kittycad = { workspace = true }
+kittycad-execution-plan = { workspace = true }
+kittycad-execution-plan-traits = { workspace = true }
+kittycad-execution-plan-macros = { workspace = true }
+kittycad-modeling-cmds = { workspace = true }
+kittycad-modeling-session = { workspace = true }
+thiserror = "1.0.57"
+tokio = { version = "1.36.0", features = ["macros", "rt"] }
+uuid = "1.7"
+
+[dev-dependencies]
+pretty_assertions = "1"
+serde_json = "1.0.113"

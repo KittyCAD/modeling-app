@@ -1,6 +1,7 @@
 import { useMachine } from '@xstate/react'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
-import { IndexLoaderData, paths } from '../Router'
+import { type IndexLoaderData } from 'lib/types'
+import { paths } from 'lib/paths'
 import React, { createContext } from 'react'
 import { toast } from 'react-hot-toast'
 import {
@@ -40,7 +41,7 @@ export const FileMachineProvider = ({
   children: React.ReactNode
 }) => {
   const navigate = useNavigate()
-  const { setCommandBarOpen } = useCommandsContext()
+  const { commandBarSend } = useCommandsContext()
   const { project } = useRouteLoaderData(paths.FILE) as IndexLoaderData
 
   const [state, send] = useMachine(fileMachine, {
@@ -54,7 +55,7 @@ export const FileMachineProvider = ({
         event: EventFrom<typeof fileMachine>
       ) => {
         if (event.data && 'name' in event.data) {
-          setCommandBarOpen(false)
+          commandBarSend({ type: 'Close' })
           navigate(
             `${paths.FILE}/${encodeURIComponent(
               context.selectedDirectory + sep + event.data.name

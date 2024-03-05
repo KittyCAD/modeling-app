@@ -14,7 +14,7 @@ import {
 import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
 import { createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
-import { kclManager } from 'lang/KclSinglton'
+import { kclManager } from 'lang/KclSingleton'
 
 const getModalInfo = createInfoModal(GetInfoModal)
 
@@ -59,6 +59,7 @@ export function angleBetweenInfo({
   )
 
   const _enableEqual =
+    selectionRanges.otherSelections.length === 0 &&
     secondaryVarDecs.length === 1 &&
     isAllTooltips &&
     isOthersLinkedToPrimary &&

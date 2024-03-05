@@ -9,6 +9,7 @@ export interface CollapsiblePanelProps
   icon?: IconDefinition
   open?: boolean
   menu?: React.ReactNode
+  detailsTestId?: string
   iconClassNames?: {
     bg?: string
     icon?: string
@@ -23,16 +24,17 @@ export const PanelHeader = ({
 }: CollapsiblePanelProps) => {
   return (
     <summary className={styles.header}>
-      <div className="flex gap-2 align-center flex-1">
+      <div className="flex gap-2 items-center flex-1">
         <ActionIcon
           icon={icon}
+          className="p-1"
+          size="sm"
           bgClassName={
-            'bg-chalkboard-30 dark:bg-chalkboard-90 group-open:bg-chalkboard-80 rounded ' +
+            'dark:!bg-chalkboard-100 group-open:bg-chalkboard-80 dark:group-open:!bg-chalkboard-90 border border-transparent dark:group-open:border-chalkboard-60 rounded-sm ' +
             (iconClassNames?.bg || '')
           }
           iconClassName={
-            'text-chalkboard-90 dark:text-chalkboard-40 group-open:text-liquid-10 ' +
-            (iconClassNames?.icon || '')
+            'group-open:text-energy-10 ' + (iconClassNames?.icon || '')
           }
         />
         {title}
@@ -51,12 +53,16 @@ export const CollapsiblePanel = ({
   className,
   iconClassNames,
   menu,
+  detailsTestId,
   ...props
 }: CollapsiblePanelProps) => {
   return (
     <details
       {...props}
-      className={styles.panel + ' group ' + (className || '')}
+      data-testid={detailsTestId}
+      className={
+        styles.panel + ' pointer-events-auto group ' + (className || '')
+      }
     >
       <PanelHeader
         title={title}

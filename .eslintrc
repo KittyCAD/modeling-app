@@ -1,4 +1,8 @@
 {
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "project": "./tsconfig.json"
+    },
     "plugins": [
       "css-modules"
     ],
@@ -11,6 +15,16 @@
       "semi": [
         "error",
         "never"
-      ]
-    }
+      ],
+      "react-hooks/exhaustive-deps": "off",
+    },
+    "overrides": [
+      {
+        "files": ["e2e/**/*.ts"], // Update the pattern based on your file structure
+        "rules": {
+          "@typescript-eslint/no-floating-promises": "warn",
+          "testing-library/prefer-screen-queries": "off"
+        }
+      }
+    ]
 }

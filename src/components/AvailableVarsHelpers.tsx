@@ -8,7 +8,7 @@ import {
 } from '../lang/modifyAst'
 import { findAllPreviousVariables, PrevVariable } from '../lang/queryAst'
 import { engineCommandManager } from '../lang/std/engineConnection'
-import { kclManager, useKclContext } from 'lang/KclSinglton'
+import { kclManager, useKclContext } from 'lang/KclSingleton'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { executeAst } from 'useStore'
 
@@ -87,7 +87,7 @@ export function useCalc({
   inputRef: React.RefObject<HTMLInputElement>
   valueNode: Value | null
   calcResult: string
-  prevVariables: PrevVariable<any>[]
+  prevVariables: PrevVariable<unknown>[]
   newVariableName: string
   isNewVariableNameUnique: boolean
   newVariableInsertIndex: number
@@ -148,7 +148,6 @@ export function useCalc({
       executeAst({
         ast,
         engineCommandManager,
-        defaultPlanes: kclManager.defaultPlanes,
         useFakeExecutor: true,
         programMemoryOverride: JSON.parse(
           JSON.stringify(kclManager.programMemory)

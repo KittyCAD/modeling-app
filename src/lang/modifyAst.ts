@@ -6,7 +6,6 @@ import {
   PipeExpression,
   VariableDeclaration,
   VariableDeclarator,
-  ExpressionStatement,
   Value,
   Literal,
   PipeSubstitution,
@@ -30,41 +29,28 @@ import {
   createFirstArg,
 } from './std/sketch'
 import { isLiteralArrayOrStatic } from './std/sketchcombos'
+import { DefaultPlaneStr } from 'clientSideScene/sceneEntities'
+import { roundOff } from 'lib/utils'
 
-export function addStartSketch(
+export function startSketchOnDefault(
   node: Program,
-  axis: 'xy' | 'xz' | 'yz' | '-xy' | '-xz' | '-yz',
-  start: [number, number],
-  end: [number, number]
+  axis: DefaultPlaneStr,
+  name = ''
 ): { modifiedAst: Program; id: string; pathToNode: PathToNode } {
   const _node = { ...node }
-  const _name = findUniqueName(node, 'part')
+  const _name = name || findUniqueName(node, 'part')
 
   const startSketchOn = createCallExpressionStdLib('startSketchOn', [
-    createLiteral(axis.toUpperCase()),
-  ])
-  const startProfileAt = createCallExpressionStdLib('startProfileAt', [
-    createArrayExpression([createLiteral(start[0]), createLiteral(start[1])]),
-    createPipeSubstitution(),
-  ])
-  const initialLineTo = createCallExpression('line', [
-    createArrayExpression([createLiteral(end[0]), createLiteral(end[1])]),
-    createPipeSubstitution(),
+    createLiteral(axis),
   ])
 
-  const pipeBody = [startSketchOn, startProfileAt, initialLineTo]
-
-  const variableDeclaration = createVariableDeclaration(
-    _name,
-    createPipeExpression(pipeBody)
-  )
-
-  const newIndex = node.body.length
+  const variableDeclaration = createVariableDeclaration(_name, startSketchOn)
   _node.body = [...node.body, variableDeclaration]
+  const sketchIndex = _node.body.length - 1
 
   let pathToNode: PathToNode = [
     ['body', ''],
-    [newIndex.toString(10), 'index'],
+    [sketchIndex, 'index'],
     ['declarations', 'VariableDeclaration'],
     ['0', 'index'],
     ['init', 'VariableDeclarator'],
@@ -73,6 +59,43 @@ export function addStartSketch(
   return {
     modifiedAst: _node,
     id: _name,
+    pathToNode,
+  }
+}
+
+export function addStartProfileAt(
+  node: Program,
+  pathToNode: PathToNode,
+  at: [number, number]
+): { modifiedAst: Program; pathToNode: PathToNode } {
+  console.log('addStartProfileAt called')
+  const variableDeclaration = getNodeFromPath<VariableDeclaration>(
+    node,
+    pathToNode,
+    'VariableDeclaration'
+  ).node
+  if (variableDeclaration.type !== 'VariableDeclaration') {
+    throw new Error('variableDeclaration.init.type !== PipeExpression')
+  }
+  const _node = { ...node }
+  const init = variableDeclaration.declarations[0].init
+  const startProfileAt = createCallExpressionStdLib('startProfileAt', [
+    createArrayExpression([
+      createLiteral(roundOff(at[0])),
+      createLiteral(roundOff(at[1])),
+    ]),
+    createPipeSubstitution(),
+  ])
+  if (init.type === 'PipeExpression') {
+    init.body.splice(1, 0, startProfileAt)
+  } else {
+    variableDeclaration.declarations[0].init = createPipeExpression([
+      init,
+      startProfileAt,
+    ])
+  }
+  return {
+    modifiedAst: _node,
     pathToNode,
   }
 }
@@ -104,16 +127,8 @@ export function addSketchTo(
     createPipeExpression(pipeBody)
   )
 
-  const showCallIndex = getShowIndex(_node)
-  let sketchIndex = showCallIndex
-  if (showCallIndex === -1) {
-    _node.body = [...node.body, variableDeclaration]
-    sketchIndex = _node.body.length - 1
-  } else {
-    const newBody = [...node.body]
-    newBody.splice(showCallIndex, 0, variableDeclaration)
-    _node.body = newBody
-  }
+  _node.body = [...node.body, variableDeclaration]
+  let sketchIndex = _node.body.length - 1
   let pathToNode: PathToNode = [
     ['body', ''],
     [sketchIndex, 'index'],
@@ -126,7 +141,7 @@ export function addSketchTo(
   }
 
   return {
-    modifiedAst: addToShow(_node, _name),
+    modifiedAst: _node,
     id: _name,
     pathToNode,
   }
@@ -138,57 +153,33 @@ export function findUniqueName(
   pad = 3,
   index = 1
 ): string {
-  let searchStr = ''
-  if (typeof ast === 'string') {
-    searchStr = ast
-  } else {
-    searchStr = JSON.stringify(ast)
+  let searchStr: string = typeof ast === 'string' ? ast : JSON.stringify(ast)
+  const indexStr = String(index).padStart(pad, '0')
+
+  const endingDigitsMatcher = /\d+$/
+  const nameEndsInDigits = name.match(endingDigitsMatcher)
+  let nameIsInString = searchStr.includes(`:"${name}"`)
+
+  if (nameEndsInDigits !== null) {
+    // base case: name is unique and ends in digits
+    if (!nameIsInString) return name
+
+    // recursive case: name is not unique and ends in digits
+    const newPad = nameEndsInDigits[1].length
+    const newIndex = parseInt(nameEndsInDigits[1]) + 1
+    const nameWithoutDigits = name.replace(endingDigitsMatcher, '')
+
+    return findUniqueName(searchStr, nameWithoutDigits, newPad, newIndex)
   }
-  const indexStr = `${index}`.padStart(pad, '0')
+
   const newName = `${name}${indexStr}`
-  const isInString = searchStr.includes(newName)
-  if (!isInString) {
-    return newName
-  }
+  nameIsInString = searchStr.includes(`:"${newName}"`)
+
+  // base case: name is unique and does not end in digits
+  if (!nameIsInString) return newName
+
+  // recursive case: name is not unique and does not end in digits
   return findUniqueName(searchStr, name, pad, index + 1)
-}
-
-function addToShow(node: Program, name: string): Program {
-  const _node = { ...node }
-  const dumbyStartend = { start: 0, end: 0 }
-  const showCallIndex = getShowIndex(_node)
-  if (showCallIndex === -1) {
-    const showCall = createCallExpressionStdLib('show', [
-      createIdentifier(name),
-    ])
-    const showExpressionStatement: ExpressionStatement = {
-      type: 'ExpressionStatement',
-      ...dumbyStartend,
-      expression: showCall,
-    }
-    _node.body = [..._node.body, showExpressionStatement]
-    return _node
-  }
-  const showCall = { ..._node.body[showCallIndex] } as ExpressionStatement
-  const showCallArgs = (showCall.expression as CallExpression).arguments
-  const newShowCallArgs: Value[] = [...showCallArgs, createIdentifier(name)]
-  const newShowExpression = createCallExpressionStdLib('show', newShowCallArgs)
-
-  _node.body[showCallIndex] = {
-    ...showCall,
-    expression: newShowExpression,
-  }
-  return _node
-}
-
-function getShowIndex(node: Program): number {
-  return node.body.findIndex(
-    (statement) =>
-      statement.type === 'ExpressionStatement' &&
-      statement.expression.type === 'CallExpression' &&
-      statement.expression.callee.type === 'Identifier' &&
-      statement.expression.callee.name === 'show'
-  )
 }
 
 export function mutateArrExp(
@@ -248,7 +239,8 @@ export function mutateObjExpProp(
 export function extrudeSketch(
   node: Program,
   pathToNode: PathToNode,
-  shouldPipe = true
+  shouldPipe = true,
+  distance = createLiteral(4) as Value
 ): {
   modifiedAst: Program
   pathToNode: PathToNode
@@ -274,7 +266,7 @@ export function extrudeSketch(
     getNodeFromPath<VariableDeclarator>(_node, pathToNode, 'VariableDeclarator')
 
   const extrudeCall = createCallExpressionStdLib('extrude', [
-    createLiteral(4),
+    distance,
     shouldPipe
       ? createPipeSubstitution()
       : {
@@ -309,15 +301,10 @@ export function extrudeSketch(
   }
   const name = findUniqueName(node, 'part')
   const VariableDeclaration = createVariableDeclaration(name, extrudeCall)
-  let showCallIndex = getShowIndex(_node)
-  if (showCallIndex === -1) {
-    // We didn't find a show, so let's just append everything
-    showCallIndex = _node.body.length
-  }
-  _node.body.splice(showCallIndex, 0, VariableDeclaration)
+  _node.body.splice(_node.body.length, 0, VariableDeclaration)
   const pathToExtrudeArg: PathToNode = [
     ['body', ''],
-    [showCallIndex, 'index'],
+    [_node.body.length, 'index'],
     ['declarations', 'VariableDeclaration'],
     [0, 'index'],
     ['init', 'VariableDeclarator'],
@@ -326,7 +313,7 @@ export function extrudeSketch(
   ]
   return {
     modifiedAst: node,
-    pathToNode: [...pathToNode.slice(0, -1), [showCallIndex, 'index']],
+    pathToNode: [...pathToNode.slice(0, -1), [-1, 'index']],
     pathToExtrudeArg,
   }
 }
@@ -386,7 +373,7 @@ export function sketchOnExtrudedFace(
   _node.body.splice(expressionIndex + 1, 0, newSketch)
 
   return {
-    modifiedAst: addToShow(_node, newSketchName),
+    modifiedAst: _node,
     pathToNode: [...pathToNode.slice(0, -1), [expressionIndex, 'index']],
   }
 }

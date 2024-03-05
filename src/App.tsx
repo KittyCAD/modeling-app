@@ -19,21 +19,24 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { getNormalisedCoordinates } from './lib/utils'
-import { useLoaderData } from 'react-router-dom'
-import { IndexLoaderData } from './Router'
+import { useLoaderData, useNavigate } from 'react-router-dom'
+import { type IndexLoaderData } from 'lib/types'
+import { paths } from 'lib/paths'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
-import { onboardingPaths } from 'routes/Onboarding'
-import { cameraMouseDragGuards } from 'lib/cameraControls'
-import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
+import { onboardingPaths } from 'routes/Onboarding/paths'
 import { CodeMenu } from 'components/CodeMenu'
 import { TextEditor } from 'components/TextEditor'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
 import { engineCommandManager } from './lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
+import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
+import { isTauri } from 'lib/isTauri'
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData
+  const navigate = useNavigate()
+  const filePath = useAbsoluteFilePath()
 
   useHotKeyListener()
   const {
@@ -51,8 +54,7 @@ export function App() {
   }))
 
   const { settings } = useGlobalStateContext()
-  const { showDebugPanel, onboardingStatus, cameraControls, theme } =
-    settings?.context || {}
+  const { showDebugPanel, onboardingStatus, theme } = settings?.context || {}
   const { state, send } = useModelingContext()
 
   const editorTheme = theme === Themes.System ? getSystemTheme() : theme
@@ -71,6 +73,16 @@ export function App() {
   useHotkeys('shift + e', () => togglePane('kclErrors'))
   useHotkeys('shift + d', () => togglePane('debug'))
   useHotkeys('esc', () => send('Cancel'))
+  useHotkeys('backspace', (e) => {
+    e.preventDefault()
+  })
+  useHotkeys(
+    isTauri() ? 'mod + ,' : 'shift + mod + ,',
+    () => navigate(filePath + paths.SETTINGS),
+    {
+      splitKey: '|',
+    }
+  )
 
   const paneOpacity = [onboardingPaths.CAMERA, onboardingPaths.STREAMING].some(
     (p) => p === onboardingStatus
@@ -84,9 +96,11 @@ export function App() {
 
   const debounceSocketSend = throttle<EngineCommand>((message) => {
     engineCommandManager.sendSceneCommand(message)
-  }, 16)
+  }, 1000 / 15)
   const handleMouseMove: MouseEventHandler<HTMLDivElement> = (e) => {
-    e.nativeEvent.preventDefault()
+    if (state.matches('Sketch')) {
+      return
+    }
 
     const { x, y } = getNormalisedCoordinates({
       clientX: e.clientX,
@@ -97,58 +111,11 @@ export function App() {
 
     const newCmdId = uuidv4()
     if (buttonDownInStream === undefined) {
-      if (state.matches('Sketch.Line Tool')) {
-        debounceSocketSend({
-          type: 'modeling_cmd_req',
-          cmd_id: newCmdId,
-          cmd: {
-            type: 'mouse_move',
-            window: { x, y },
-          },
-        })
-      } else {
-        debounceSocketSend({
-          type: 'modeling_cmd_req',
-          cmd: {
-            type: 'highlight_set_entity',
-            selected_at_window: { x, y },
-          },
-          cmd_id: newCmdId,
-        })
-      }
-    } else {
-      if (state.matches('Sketch.Move Tool')) {
-        debounceSocketSend({
-          type: 'modeling_cmd_req',
-          cmd_id: newCmdId,
-          cmd: {
-            type: 'handle_mouse_drag_move',
-            window: { x, y },
-          },
-        })
-        return
-      }
-      const interactionGuards = cameraMouseDragGuards[cameraControls]
-      let interaction: CameraDragInteractionType_type
-
-      const eWithButton = { ...e, button: buttonDownInStream }
-
-      if (interactionGuards.pan.callback(eWithButton)) {
-        interaction = 'pan'
-      } else if (interactionGuards.rotate.callback(eWithButton)) {
-        interaction = 'rotate'
-      } else if (interactionGuards.zoom.dragCallback(eWithButton)) {
-        interaction = 'zoom'
-      } else {
-        return
-      }
-
       debounceSocketSend({
         type: 'modeling_cmd_req',
         cmd: {
-          type: 'camera_drag_move',
-          interaction,
-          window: { x, y },
+          type: 'highlight_set_entity',
+          selected_at_window: { x, y },
         },
         cmd_id: newCmdId,
       })
@@ -172,11 +139,8 @@ export function App() {
       <ModalContainer />
       <Resizable
         className={
-          'h-full flex flex-col flex-1 z-10 my-5 ml-5 pr-1 transition-opacity transition-duration-75 ' +
-          (buttonDownInStream || onboardingStatus === 'camera'
-            ? ' pointer-events-none '
-            : ' ') +
-          paneOpacity
+          'pointer-events-none h-full flex flex-col flex-1 z-10 my-5 ml-5 pr-1 transition-opacity transition-duration-75 ' +
+          +paneOpacity
         }
         defaultSize={{
           width: '550px',
@@ -188,10 +152,16 @@ export function App() {
         maxHeight={'auto'}
         handleClasses={{
           right:
-            'hover:bg-liquid-30/40 dark:hover:bg-liquid-10/40 bg-transparent transition-colors duration-100 transition-ease-out delay-100',
+            'hover:bg-chalkboard-10/50 bg-transparent transition-colors duration-75 transition-ease-out delay-100 ' +
+            (buttonDownInStream || onboardingStatus === 'camera'
+              ? 'pointer-events-none '
+              : 'pointer-events-auto'),
         }}
       >
-        <div id="code-pane" className="h-full flex flex-col justify-between">
+        <div
+          id="code-pane"
+          className="h-full flex flex-col justify-between pointer-events-none"
+        >
           <CollapsiblePanel
             title="Code"
             icon={faCode}
@@ -226,7 +196,7 @@ export function App() {
       <Stream className="absolute inset-0 z-0" />
       {showDebugPanel && (
         <DebugPanel
-          title="Debug (AST Explorer)"
+          title="Debug"
           className={
             'transition-opacity transition-duration-75 ' +
             paneOpacity +
@@ -235,6 +205,7 @@ export function App() {
           open={openPanes.includes('debug')}
         />
       )}
+      {/* <CamToggle /> */}
     </div>
   )
 }

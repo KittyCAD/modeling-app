@@ -1,8 +1,13 @@
 //! Functions implemented for language execution.
 
 pub mod extrude;
+pub mod fillet;
+pub mod import;
+pub mod kcl_stdlib;
 pub mod math;
+pub mod patterns;
 pub mod segment;
+pub mod shapes;
 pub mod sketch;
 pub mod utils;
 
@@ -21,7 +26,11 @@ use crate::{
     docs::StdLibFn,
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
-    executor::{ExecutorContext, ExtrudeGroup, MemoryItem, Metadata, Plane, SketchGroup, SourceRange},
+    executor::{
+        ExecutorContext, ExtrudeGroup, Geometry, MemoryItem, Metadata, SketchGroup, SketchGroupSet, SketchSurface,
+        SourceRange,
+    },
+    std::{kcl_stdlib::KclStdLibFn, sketch::SketchOnFaceTag},
 };
 
 pub type StdFn = fn(Args) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<MemoryItem, KclError>>>>;
@@ -29,7 +38,6 @@ pub type FnMap = HashMap<String, StdFn>;
 
 lazy_static! {
     static ref CORE_FNS: Vec<Box<dyn StdLibFn>> = vec![
-        Box::new(Show),
         Box::new(LegLen),
         Box::new(LegAngX),
         Box::new(LegAngY),
@@ -64,6 +72,13 @@ lazy_static! {
         Box::new(crate::std::sketch::TangentialArcTo),
         Box::new(crate::std::sketch::BezierCurve),
         Box::new(crate::std::sketch::Hole),
+        Box::new(crate::std::patterns::PatternLinear),
+        Box::new(crate::std::patterns::PatternCircular),
+        Box::new(crate::std::fillet::Fillet),
+        Box::new(crate::std::fillet::GetOppositeEdge),
+        Box::new(crate::std::fillet::GetNextAdjacentEdge),
+        Box::new(crate::std::fillet::GetPreviousAdjacentEdge),
+        Box::new(crate::std::import::Import),
         Box::new(crate::std::math::Cos),
         Box::new(crate::std::math::Sin),
         Box::new(crate::std::math::Tan),
@@ -92,12 +107,16 @@ pub fn name_in_stdlib(name: &str) -> bool {
 }
 
 pub struct StdLib {
-    pub fns: HashMap<String, Box<(dyn StdLibFn)>>,
+    pub fns: HashMap<String, Box<dyn StdLibFn>>,
+    pub kcl_fns: HashMap<String, Box<dyn KclStdLibFn>>,
 }
 
 impl std::fmt::Debug for StdLib {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("StdLib").field("fns.len()", &self.fns.len()).finish()
+        f.debug_struct("StdLib")
+            .field("fns.len()", &self.fns.len())
+            .field("kcl_fns.len()", &self.kcl_fns.len())
+            .finish()
     }
 }
 
@@ -109,11 +128,44 @@ impl StdLib {
             .map(|internal_fn| (internal_fn.name(), internal_fn))
             .collect();
 
-        Self { fns }
+        let kcl_internal_fns: [Box<dyn KclStdLibFn>; 1] = [Box::<shapes::Circle>::default()];
+        let kcl_fns = kcl_internal_fns
+            .into_iter()
+            .map(|internal_fn| (internal_fn.name(), internal_fn))
+            .collect();
+
+        Self { fns, kcl_fns }
+    }
+
+    // Get the combined hashmaps.
+    pub fn combined(&self) -> HashMap<String, Box<dyn StdLibFn>> {
+        let mut combined = self.fns.clone();
+        for (k, v) in self.kcl_fns.clone() {
+            combined.insert(k, v.std_lib());
+        }
+        combined
     }
 
     pub fn get(&self, name: &str) -> Option<Box<dyn StdLibFn>> {
         self.fns.get(name).cloned()
+    }
+
+    pub fn get_kcl(&self, name: &str) -> Option<Box<dyn KclStdLibFn>> {
+        self.kcl_fns.get(name).cloned()
+    }
+
+    pub fn get_either(&self, name: &str) -> FunctionKind {
+        if let Some(f) = self.get(name) {
+            FunctionKind::Core(f)
+        } else if let Some(f) = self.get_kcl(name) {
+            FunctionKind::Std(f)
+        } else {
+            FunctionKind::UserDefined
+        }
+    }
+
+    pub fn contains_key(&self, key: &str) -> bool {
+        self.fns.contains_key(key) || self.kcl_fns.contains_key(key)
     }
 }
 
@@ -121,6 +173,13 @@ impl Default for StdLib {
     fn default() -> Self {
         Self::new()
     }
+}
+
+#[derive(Debug)]
+pub enum FunctionKind {
+    Core(Box<dyn StdLibFn>),
+    Std(Box<dyn KclStdLibFn>),
+    UserDefined,
 }
 
 #[derive(Debug, Clone)]
@@ -246,7 +305,7 @@ impl Args {
         Ok((segment_name, sketch_group))
     }
 
-    fn get_sketch_groups(&self) -> Result<(Box<SketchGroup>, Box<SketchGroup>), KclError> {
+    fn get_sketch_groups(&self) -> Result<(SketchGroupSet, Box<SketchGroup>), KclError> {
         let first_value = self.args.first().ok_or_else(|| {
             KclError::Type(KclErrorDetails {
                 message: format!("Expected a SketchGroup as the first argument, found `{:?}`", self.args),
@@ -254,11 +313,16 @@ impl Args {
             })
         })?;
 
-        let sketch_group = if let MemoryItem::SketchGroup(sg) = first_value {
-            sg.clone()
+        let sketch_set = if let MemoryItem::SketchGroup(sg) = first_value {
+            SketchGroupSet::SketchGroup(sg.clone())
+        } else if let MemoryItem::SketchGroups { value } = first_value {
+            SketchGroupSet::SketchGroups(value.clone())
         } else {
             return Err(KclError::Type(KclErrorDetails {
-                message: format!("Expected a SketchGroup as the first argument, found `{:?}`", self.args),
+                message: format!(
+                    "Expected a SketchGroup or Vector of SketchGroups as the first argument, found `{:?}`",
+                    self.args
+                ),
                 source_ranges: vec![self.source_range],
             }));
         };
@@ -270,7 +334,7 @@ impl Args {
             })
         })?;
 
-        let second_sketch_group = if let MemoryItem::SketchGroup(sg) = second_value {
+        let sketch_group = if let MemoryItem::SketchGroup(sg) = second_value {
             sg.clone()
         } else {
             return Err(KclError::Type(KclErrorDetails {
@@ -279,7 +343,7 @@ impl Args {
             }));
         };
 
-        Ok((sketch_group, second_sketch_group))
+        Ok((sketch_set, sketch_group))
     }
 
     fn get_sketch_group(&self) -> Result<Box<SketchGroup>, KclError> {
@@ -324,6 +388,72 @@ impl Args {
         Ok(data)
     }
 
+    fn get_import_data(&self) -> Result<(String, Option<crate::std::import::ImportFormat>), KclError> {
+        let first_value = self
+            .args
+            .first()
+            .ok_or_else(|| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Expected a struct as the first argument, found `{:?}`", self.args),
+                    source_ranges: vec![self.source_range],
+                })
+            })?
+            .get_json_value()?;
+        let data: String = serde_json::from_value(first_value).map_err(|e| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Expected a file path string: {}", e),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        if let Some(second_value) = self.args.get(1) {
+            let options: crate::std::import::ImportFormat = serde_json::from_value(second_value.get_json_value()?)
+                .map_err(|e| {
+                    KclError::Type(KclErrorDetails {
+                        message: format!("Expected input format data: {}", e),
+                        source_ranges: vec![self.source_range],
+                    })
+                })?;
+            Ok((data, Some(options)))
+        } else {
+            Ok((data, None))
+        }
+    }
+
+    fn get_data_and_optional_tag<T: serde::de::DeserializeOwned>(
+        &self,
+    ) -> Result<(T, Option<SketchOnFaceTag>), KclError> {
+        let first_value = self
+            .args
+            .first()
+            .ok_or_else(|| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Expected a struct as the first argument, found `{:?}`", self.args),
+                    source_ranges: vec![self.source_range],
+                })
+            })?
+            .get_json_value()?;
+
+        let data: T = serde_json::from_value(first_value).map_err(|e| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Failed to deserialize struct from JSON: {}", e),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        if let Some(second_value) = self.args.get(1) {
+            let tag: SketchOnFaceTag = serde_json::from_value(second_value.get_json_value()?).map_err(|e| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Failed to deserialize SketchOnFaceTag from JSON: {}", e),
+                    source_ranges: vec![self.source_range],
+                })
+            })?;
+            Ok((data, Some(tag)))
+        } else {
+            Ok((data, None))
+        }
+    }
+
     fn get_data_and_sketch_group<T: serde::de::DeserializeOwned>(&self) -> Result<(T, Box<SketchGroup>), KclError> {
         let first_value = self
             .args
@@ -362,7 +492,50 @@ impl Args {
         Ok((data, sketch_group))
     }
 
-    fn get_data_and_plane<T: serde::de::DeserializeOwned>(&self) -> Result<(T, Box<Plane>), KclError> {
+    fn get_data_and_geometry<T: serde::de::DeserializeOwned>(&self) -> Result<(T, Geometry), KclError> {
+        let first_value = self
+            .args
+            .first()
+            .ok_or_else(|| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Expected a struct as the first argument, found `{:?}`", self.args),
+                    source_ranges: vec![self.source_range],
+                })
+            })?
+            .get_json_value()?;
+
+        let data: T = serde_json::from_value(first_value).map_err(|e| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Failed to deserialize struct from JSON: {}", e),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let second_value = self.args.get(1).ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Expected a SketchGroup as the second argument, found `{:?}`", self.args),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let geometry = if let MemoryItem::SketchGroup(sg) = second_value {
+            Geometry::SketchGroup(sg.clone())
+        } else if let MemoryItem::ExtrudeGroup(eg) = second_value {
+            Geometry::ExtrudeGroup(eg.clone())
+        } else {
+            return Err(KclError::Type(KclErrorDetails {
+                message: format!(
+                    "Expected a SketchGroup or ExtrudeGroup as the second argument, found `{:?}`",
+                    self.args
+                ),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+
+        Ok((data, geometry))
+    }
+
+    fn get_data_and_sketch_surface<T: serde::de::DeserializeOwned>(&self) -> Result<(T, SketchSurface), KclError> {
         let first_value = self
             .args
             .first()
@@ -388,16 +561,65 @@ impl Args {
             })
         })?;
 
-        let plane = if let MemoryItem::Plane(p) = second_value {
-            p.clone()
+        let sketch_surface = if let MemoryItem::Plane(p) = second_value {
+            SketchSurface::Plane(p.clone())
+        } else if let MemoryItem::Face(face) = second_value {
+            SketchSurface::Face(face.clone())
         } else {
             return Err(KclError::Type(KclErrorDetails {
-                message: format!("Expected a Plane as the second argument, found `{:?}`", self.args),
+                message: format!(
+                    "Expected a plane or face (SketchSurface) as the second argument, found `{:?}`",
+                    self.args
+                ),
                 source_ranges: vec![self.source_range],
             }));
         };
 
-        Ok((data, plane))
+        Ok((data, sketch_surface))
+    }
+
+    fn get_data_and_extrude_group<T: serde::de::DeserializeOwned>(&self) -> Result<(T, Box<ExtrudeGroup>), KclError> {
+        let first_value = self
+            .args
+            .first()
+            .ok_or_else(|| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Expected a struct as the first argument, found `{:?}`", self.args),
+                    source_ranges: vec![self.source_range],
+                })
+            })?
+            .get_json_value()?;
+
+        let data: T = serde_json::from_value(first_value).map_err(|e| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Failed to deserialize struct from JSON: {}", e),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let second_value = self.args.get(1).ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!(
+                    "Expected an ExtrudeGroup as the second argument, found `{:?}`",
+                    self.args
+                ),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let extrude_group = if let MemoryItem::ExtrudeGroup(eg) = second_value {
+            eg.clone()
+        } else {
+            return Err(KclError::Type(KclErrorDetails {
+                message: format!(
+                    "Expected an ExtrudeGroup as the second argument, found `{:?}`",
+                    self.args
+                ),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+
+        Ok((data, extrude_group))
     }
 
     fn get_segment_name_to_number_sketch_group(&self) -> Result<(String, f64, Box<SketchGroup>), KclError> {
@@ -540,21 +762,6 @@ impl Args {
     }
 }
 
-/// Render a model.
-// This never actually gets called so this is fine.
-pub async fn show<'a>(args: Args) -> Result<MemoryItem, KclError> {
-    let sketch_group = args.get_sketch_group()?;
-    inner_show(sketch_group);
-
-    args.make_user_val_from_f64(0.0)
-}
-
-/// Render a model.
-#[stdlib {
-    name = "show",
-}]
-fn inner_show(_sketch: Box<SketchGroup>) {}
-
 /// Returns the length of the given leg.
 pub async fn leg_length(args: Args) -> Result<MemoryItem, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
@@ -624,6 +831,7 @@ mod tests {
     #[test]
     fn test_generate_stdlib_markdown_docs() {
         let stdlib = StdLib::new();
+        let combined = stdlib.combined();
         let mut buf = String::new();
 
         buf.push_str("<!--- DO NOT EDIT THIS FILE. IT IS AUTOMATICALLY GENERATED. -->\n\n");
@@ -635,8 +843,8 @@ mod tests {
 
         buf.push_str("* [Functions](#functions)\n");
 
-        for key in stdlib.fns.keys().sorted() {
-            let internal_fn = stdlib.fns.get(key).unwrap();
+        for key in combined.keys().sorted() {
+            let internal_fn = combined.get(key).unwrap();
             if internal_fn.unpublished() || internal_fn.deprecated() {
                 continue;
             }
@@ -648,8 +856,8 @@ mod tests {
 
         buf.push_str("## Functions\n\n");
 
-        for key in stdlib.fns.keys().sorted() {
-            let internal_fn = stdlib.fns.get(key).unwrap();
+        for key in combined.keys().sorted() {
+            let internal_fn = combined.get(key).unwrap();
             if internal_fn.unpublished() {
                 continue;
             }
@@ -709,14 +917,14 @@ mod tests {
     #[test]
     fn test_generate_stdlib_json_schema() {
         let stdlib = StdLib::new();
+        let combined = stdlib.combined();
 
         let mut json_data = vec![];
 
-        for key in stdlib.fns.keys().sorted() {
-            let internal_fn = stdlib.fns.get(key).unwrap();
+        for key in combined.keys().sorted() {
+            let internal_fn = combined.get(key).unwrap();
             json_data.push(internal_fn.to_json().unwrap());
         }
-
         expectorate::assert_contents(
             "../../../docs/kcl/std.json",
             &serde_json::to_string_pretty(&json_data).unwrap(),

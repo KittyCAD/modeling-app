@@ -1,14 +1,1 @@
-fn circle = (plane, center, radius) => {
-  const sg = startSketchOn(plane)
-    |> startProfileAt([center[0] + radius, center[1]], %)
-    |> arc({
-       angle_end: 360,
-       angle_start: 0,
-       radius: radius
-     }, %)
-    |> close(%)
-  return sg
-}
-
 const cylinder = circle('XY', [0,0], 22) |> extrude(14, %)
-show(cylinder)

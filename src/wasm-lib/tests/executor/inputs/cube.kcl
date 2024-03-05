@@ -1,12 +1,19 @@
-fn cube = (pos, scale) => {
-  const sg = startSketchAt(pos)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
+fn cube = (length, center) => {
+  let l = length/2
+  let x = center[0]
+  let y = center[1]
+  let p0 = [-l + x, -l + y]
+  let p1 = [-l + x,  l + y]
+  let p2 = [ l + x,  l + y]
+  let p3 = [ l + x, -l + y]
 
-  return sg
+  return startSketchAt(p0)
+  |> lineTo(p1, %)
+  |> lineTo(p2, %)
+  |> lineTo(p3, %)
+  |> lineTo(p0, %)
+  |> close(%)
+  |> extrude(length, %)
 }
 
-const b1 = cube([0,0], 10)
-const pt1 = b1[0]
-show(b1)
+const myCube = cube(40, [0,0])

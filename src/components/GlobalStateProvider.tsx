@@ -1,19 +1,11 @@
 import { useMachine } from '@xstate/react'
 import { useNavigate } from 'react-router-dom'
-import { paths } from '../Router'
-import {
-  authCommandBarMeta,
-  authMachine,
-  TOKEN_PERSIST_KEY,
-} from '../machines/authMachine'
+import { paths } from 'lib/paths'
+import { authMachine, TOKEN_PERSIST_KEY } from '../machines/authMachine'
 import withBaseUrl from '../lib/withBaseURL'
 import React, { createContext, useEffect, useRef } from 'react'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
-import {
-  SETTINGS_PERSIST_KEY,
-  settingsCommandBarMeta,
-  settingsMachine,
-} from 'machines/settingsMachine'
+import { SETTINGS_PERSIST_KEY, settingsMachine } from 'machines/settingsMachine'
 import { toast } from 'react-hot-toast'
 import { setThemeClass, Themes } from 'lib/theme'
 import {
@@ -23,8 +15,10 @@ import {
   Prop,
   StateFrom,
 } from 'xstate'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { isTauri } from 'lib/isTauri'
+import { settingsCommandBarConfig } from 'lib/commandBarConfigs/settingsCommandConfig'
+import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
+import { sceneInfra } from 'clientSideScene/sceneInfra'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -37,6 +31,12 @@ type GlobalContext = {
   settings: MachineContext<typeof settingsMachine>
 }
 
+// a little hacky for sure, open to changing it
+// this implies that we should only even have one instance of this provider mounted at any one time
+// but I think that's a safe assumption
+let settingsStateRef: (typeof settingsMachine)['context'] | undefined
+export const getSettingsState = () => settingsStateRef
+
 export const GlobalStateContext = createContext({} as GlobalContext)
 
 export const GlobalStateProvider = ({
@@ -45,7 +45,6 @@ export const GlobalStateProvider = ({
   children: React.ReactNode
 }) => {
   const navigate = useNavigate()
-  const { commands } = useCommandsContext()
 
   // Settings machine setup
   const retrievedSettings = useRef(
@@ -58,34 +57,38 @@ export const GlobalStateProvider = ({
     >
   )
 
-  const [settingsState, settingsSend] = useMachine(settingsMachine, {
-    context: persistedSettings,
-    actions: {
-      toastSuccess: (context, event) => {
-        const truncatedNewValue =
-          'data' in event && event.data instanceof Object
-            ? (context[Object.keys(event.data)[0] as keyof typeof context]
-                .toString()
-                .substring(0, 28) as any)
-            : undefined
-        toast.success(
-          event.type +
-            (truncatedNewValue
-              ? ` to "${truncatedNewValue}${
-                  truncatedNewValue.length === 28 ? '...' : ''
-                }"`
-              : '')
-        )
+  const [settingsState, settingsSend, settingsActor] = useMachine(
+    settingsMachine,
+    {
+      context: persistedSettings,
+      actions: {
+        toastSuccess: (context, event) => {
+          const truncatedNewValue =
+            'data' in event && event.data instanceof Object
+              ? (String(
+                  context[Object.keys(event.data)[0] as keyof typeof context]
+                ).substring(0, 28) as any)
+              : undefined
+          toast.success(
+            event.type +
+              (truncatedNewValue
+                ? ` to "${truncatedNewValue}${
+                    truncatedNewValue.length === 28 ? '...' : ''
+                  }"`
+                : '')
+          )
+        },
       },
-    },
-  })
+    }
+  )
+  settingsStateRef = settingsState.context
 
   useStateMachineCommands({
+    machineId: 'settings',
     state: settingsState,
     send: settingsSend,
-    commands,
-    owner: 'settings',
-    commandBarMeta: settingsCommandBarMeta,
+    commandBarConfig: settingsCommandBarConfig,
+    actor: settingsActor,
   })
 
   // Listen for changes to the system theme and update the app theme accordingly
@@ -99,13 +102,14 @@ export const GlobalStateProvider = ({
       if (settingsState.context.theme !== 'system') return
       setThemeClass(e.matches ? Themes.Dark : Themes.Light)
     }
+    sceneInfra.baseUnit = settingsState?.context?.baseUnit || 'mm'
 
     matcher.addEventListener('change', listener)
     return () => matcher.removeEventListener('change', listener)
   }, [settingsState.context])
 
   // Auth machine setup
-  const [authState, authSend] = useMachine(authMachine, {
+  const [authState, authSend, authActor] = useMachine(authMachine, {
     actions: {
       goToSignInPage: () => {
         navigate(paths.SIGN_IN)
@@ -121,11 +125,11 @@ export const GlobalStateProvider = ({
   })
 
   useStateMachineCommands({
+    machineId: 'auth',
     state: authState,
     send: authSend,
-    commands,
-    commandBarMeta: authCommandBarMeta,
-    owner: 'auth',
+    commandBarConfig: authCommandBarConfig,
+    actor: authActor,
   })
 
   return (

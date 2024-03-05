@@ -1,24 +1,29 @@
 //! Data types for the AST.
 
-use std::{collections::HashMap, fmt::Write};
+use std::{collections::HashMap, fmt::Write, ops::RangeInclusive};
 
 use anyhow::Result;
+use databake::*;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value as JValue};
 use tower_lsp::lsp_types::{CompletionItem, CompletionItemKind, DocumentSymbol, Range as LspRange, SymbolKind};
 
-pub use self::literal_value::LiteralValue;
+pub use crate::ast::types::{literal_value::LiteralValue, none::KclNone};
 use crate::{
+    docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
-    executor::{ExecutorContext, MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange, UserVal},
+    executor::{BodyType, ExecutorContext, MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange, UserVal},
     parser::PIPE_OPERATOR,
+    std::{kcl_stdlib::KclStdLibFn, FunctionKind},
 };
 
 mod literal_value;
+mod none;
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Program {
@@ -91,7 +96,19 @@ impl Program {
                     let custom_white_space_or_comment = match self.non_code_meta.non_code_nodes.get(&index) {
                         Some(noncodes) => noncodes
                             .iter()
-                            .map(|custom_white_space_or_comment| custom_white_space_or_comment.format(&indentation))
+                            .enumerate()
+                            .map(|(i, custom_white_space_or_comment)| {
+                                let formatted = custom_white_space_or_comment.format(&indentation);
+                                if i == 0 && !formatted.trim().is_empty() {
+                                    if let NonCodeValue::BlockComment { .. } = custom_white_space_or_comment.value {
+                                        format!("\n{}", formatted)
+                                    } else {
+                                        formatted
+                                    }
+                                } else {
+                                    formatted
+                                }
+                            })
                             .collect::<String>(),
                         None => String::new(),
                     };
@@ -152,6 +169,35 @@ impl Program {
             BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_value_for_position(pos),
             BodyItem::ReturnStatement(return_statement) => Some(&return_statement.argument),
         }
+    }
+
+    /// Returns a non code meta that includes the given character position.
+    pub fn get_non_code_meta_for_position(&self, pos: usize) -> Option<&NonCodeMeta> {
+        // Check if its in the body.
+        if self.non_code_meta.contains(pos) {
+            return Some(&self.non_code_meta);
+        }
+        let Some(item) = self.get_body_item_for_position(pos) else {
+            return None;
+        };
+
+        // Recurse over the item.
+        let value = match item {
+            BodyItem::ExpressionStatement(expression_statement) => Some(&expression_statement.expression),
+            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_value_for_position(pos),
+            BodyItem::ReturnStatement(return_statement) => Some(&return_statement.argument),
+        };
+
+        // Check if the value's non code meta contains the position.
+        if let Some(value) = value {
+            if let Some(non_code_meta) = value.get_non_code_meta() {
+                if non_code_meta.contains(pos) {
+                    return Some(non_code_meta);
+                }
+            }
+        }
+
+        None
     }
 
     /// Returns all the lsp symbols in the program.
@@ -217,11 +263,11 @@ impl Program {
             if let Some(Value::FunctionExpression(ref mut function_expression)) = &mut value {
                 // Check if the params to the function expression contain the position.
                 for param in &mut function_expression.params {
-                    let param_source_range: SourceRange = param.clone().into();
+                    let param_source_range: SourceRange = (&param.identifier).into();
                     if param_source_range.contains(pos) {
-                        let old_name = param.name.clone();
+                        let old_name = param.identifier.name.clone();
                         // Rename the param.
-                        param.rename(&old_name, new_name);
+                        param.identifier.rename(&old_name, new_name);
                         // Now rename all the identifiers in the rest of the program.
                         function_expression.body.rename_identifiers(&old_name, new_name);
                         return;
@@ -347,7 +393,8 @@ macro_rules! impl_value_meta {
 
 pub(crate) use impl_value_meta;
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum BodyItem {
@@ -386,7 +433,8 @@ impl From<&BodyItem> for SourceRange {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Value {
@@ -401,6 +449,7 @@ pub enum Value {
     ObjectExpression(Box<ObjectExpression>),
     MemberExpression(Box<MemberExpression>),
     UnaryExpression(Box<UnaryExpression>),
+    None(KclNone),
 }
 
 impl Value {
@@ -417,6 +466,27 @@ impl Value {
             Value::PipeExpression(pipe_exp) => pipe_exp.recast(options, indentation_level),
             Value::UnaryExpression(unary_exp) => unary_exp.recast(options),
             Value::PipeSubstitution(_) => crate::parser::PIPE_SUBSTITUTION_OPERATOR.to_string(),
+            Value::None(_) => {
+                unimplemented!("there is no literal None, see https://github.com/KittyCAD/modeling-app/issues/1115")
+            }
+        }
+    }
+
+    // Get the non code meta for the value.
+    pub fn get_non_code_meta(&self) -> Option<&NonCodeMeta> {
+        match self {
+            Value::BinaryExpression(_bin_exp) => None,
+            Value::ArrayExpression(_array_exp) => None,
+            Value::ObjectExpression(_obj_exp) => None,
+            Value::MemberExpression(_mem_exp) => None,
+            Value::Literal(_literal) => None,
+            Value::FunctionExpression(_func_exp) => None,
+            Value::CallExpression(_call_exp) => None,
+            Value::Identifier(_ident) => None,
+            Value::PipeExpression(pipe_exp) => Some(&pipe_exp.non_code_meta),
+            Value::UnaryExpression(_unary_exp) => None,
+            Value::PipeSubstitution(_pipe_substitution) => None,
+            Value::None(_none) => None,
         }
     }
 
@@ -438,6 +508,7 @@ impl Value {
             Value::PipeExpression(ref mut pipe_exp) => pipe_exp.replace_value(source_range, new_value),
             Value::UnaryExpression(ref mut unary_exp) => unary_exp.replace_value(source_range, new_value),
             Value::PipeSubstitution(_) => {}
+            Value::None(_) => {}
         }
     }
 
@@ -454,6 +525,7 @@ impl Value {
             Value::ObjectExpression(object_expression) => object_expression.start(),
             Value::MemberExpression(member_expression) => member_expression.start(),
             Value::UnaryExpression(unary_expression) => unary_expression.start(),
+            Value::None(none) => none.start,
         }
     }
 
@@ -470,6 +542,7 @@ impl Value {
             Value::ObjectExpression(object_expression) => object_expression.end(),
             Value::MemberExpression(member_expression) => member_expression.end(),
             Value::UnaryExpression(unary_expression) => unary_expression.end(),
+            Value::None(none) => none.end,
         }
     }
 
@@ -477,19 +550,22 @@ impl Value {
     /// This is really recursive so keep that in mind.
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
         match self {
-            Value::Literal(_literal) => None,
-            Value::Identifier(_identifier) => None,
             Value::BinaryExpression(binary_expression) => binary_expression.get_hover_value_for_position(pos, code),
             Value::FunctionExpression(function_expression) => {
                 function_expression.get_hover_value_for_position(pos, code)
             }
             Value::CallExpression(call_expression) => call_expression.get_hover_value_for_position(pos, code),
             Value::PipeExpression(pipe_expression) => pipe_expression.get_hover_value_for_position(pos, code),
-            Value::PipeSubstitution(_) => None,
             Value::ArrayExpression(array_expression) => array_expression.get_hover_value_for_position(pos, code),
             Value::ObjectExpression(object_expression) => object_expression.get_hover_value_for_position(pos, code),
             Value::MemberExpression(member_expression) => member_expression.get_hover_value_for_position(pos, code),
             Value::UnaryExpression(unary_expression) => unary_expression.get_hover_value_for_position(pos, code),
+            // TODO: LSP hover information for values/types. https://github.com/KittyCAD/modeling-app/issues/1126
+            Value::None(_) => None,
+            Value::Literal(_) => None,
+            Value::Identifier(_) => None,
+            // TODO: LSP hover information for symbols. https://github.com/KittyCAD/modeling-app/issues/1127
+            Value::PipeSubstitution(_) => None,
         }
     }
 
@@ -513,6 +589,7 @@ impl Value {
                 member_expression.rename_identifiers(old_name, new_name)
             }
             Value::UnaryExpression(ref mut unary_expression) => unary_expression.rename_identifiers(old_name, new_name),
+            Value::None(_) => {}
         }
     }
 
@@ -533,6 +610,7 @@ impl Value {
             Value::ObjectExpression(object_expression) => object_expression.get_constraint_level(),
             Value::MemberExpression(member_expression) => member_expression.get_constraint_level(),
             Value::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
+            Value::None(none) => none.get_constraint_level(),
         }
     }
 }
@@ -549,7 +627,8 @@ impl From<&Value> for SourceRange {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum BinaryPart {
@@ -705,7 +784,8 @@ impl BinaryPart {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct NonCodeNode {
@@ -715,6 +795,10 @@ pub struct NonCodeNode {
 }
 
 impl NonCodeNode {
+    pub fn contains(&self, pos: usize) -> bool {
+        self.start <= pos && pos <= self.end
+    }
+
     pub fn value(&self) -> String {
         match &self.value {
             NonCodeValue::InlineComment { value, style: _ } => value.clone(),
@@ -734,18 +818,27 @@ impl NonCodeNode {
                 value,
                 style: CommentStyle::Block,
             } => format!(" /* {} */", value),
-            NonCodeValue::BlockComment { value, style } => {
-                let add_start_new_line = if self.start == 0 { "" } else { "\n" };
-                match style {
-                    CommentStyle::Block => format!("{}{}/* {} */", add_start_new_line, indentation, value),
-                    CommentStyle::Line => format!("{}{}// {}\n", add_start_new_line, indentation, value),
+            NonCodeValue::BlockComment { value, style } => match style {
+                CommentStyle::Block => format!("{}/* {} */", indentation, value),
+                CommentStyle::Line => {
+                    if value.trim().is_empty() {
+                        format!("{}//\n", indentation)
+                    } else {
+                        format!("{}// {}\n", indentation, value.trim())
+                    }
                 }
-            }
+            },
             NonCodeValue::NewLineBlockComment { value, style } => {
                 let add_start_new_line = if self.start == 0 { "" } else { "\n\n" };
                 match style {
                     CommentStyle::Block => format!("{}{}/* {} */\n", add_start_new_line, indentation, value),
-                    CommentStyle::Line => format!("{}{}// {}\n", add_start_new_line, indentation, value),
+                    CommentStyle::Line => {
+                        if value.trim().is_empty() {
+                            format!("{}{}//\n", add_start_new_line, indentation)
+                        } else {
+                            format!("{}{}// {}\n", add_start_new_line, indentation, value.trim())
+                        }
+                    }
                 }
             }
             NonCodeValue::NewLine => "\n\n".to_string(),
@@ -753,7 +846,8 @@ impl NonCodeNode {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub enum CommentStyle {
@@ -763,7 +857,8 @@ pub enum CommentStyle {
     Block,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum NonCodeValue {
@@ -800,7 +895,8 @@ pub enum NonCodeValue {
     NewLine,
 }
 
-#[derive(Debug, Default, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Default, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct NonCodeMeta {
@@ -839,9 +935,20 @@ impl NonCodeMeta {
     pub fn insert(&mut self, i: usize, new: NonCodeNode) {
         self.non_code_nodes.entry(i).or_default().push(new);
     }
+
+    pub fn contains(&self, pos: usize) -> bool {
+        if self.start.iter().any(|node| node.contains(pos)) {
+            return true;
+        }
+
+        self.non_code_nodes
+            .iter()
+            .any(|(_, nodes)| nodes.iter().any(|node| node.contains(pos)))
+    }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ExpressionStatement {
@@ -852,7 +959,8 @@ pub struct ExpressionStatement {
 
 impl_value_meta!(ExpressionStatement);
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct CallExpression {
@@ -913,6 +1021,7 @@ impl CallExpression {
 
         for arg in &self.arguments {
             let result: MemoryItem = match arg {
+                Value::None(none) => none.into(),
                 Value::Literal(literal) => literal.into(),
                 Value::Identifier(identifier) => {
                     let value = memory.get(&identifier.name, identifier.into())?;
@@ -960,8 +1069,8 @@ impl CallExpression {
             fn_args.push(result);
         }
 
-        match ctx.stdlib.get(&self.callee.name) {
-            Some(func) => {
+        match ctx.stdlib.get_either(&self.callee.name) {
+            FunctionKind::Core(func) => {
                 // Attempt to call the function.
                 let args = crate::std::Args::new(fn_args, self.into(), ctx.clone());
                 let result = func.std_lib_fn()(args).await?;
@@ -973,15 +1082,58 @@ impl CallExpression {
                     Ok(result)
                 }
             }
-            // Must be user-defined then
-            None => {
+            FunctionKind::Std(func) => {
+                let function_expression = func.function();
+                if fn_args.len() != function_expression.params.len() {
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        message: format!(
+                            "this function expected {} arguments, got {}",
+                            function_expression.params.len(),
+                            fn_args.len(),
+                        ),
+                        source_ranges: vec![(function_expression).into()],
+                    }));
+                }
+
+                // Add the arguments to the memory.
+                let mut fn_memory = memory.clone();
+                for (index, param) in function_expression.params.iter().enumerate() {
+                    fn_memory.add(
+                        &param.identifier.name,
+                        fn_args.get(index).unwrap().clone(),
+                        param.identifier.clone().into(),
+                    )?;
+                }
+
+                // Call the stdlib function
+                let p = func.function().clone().body;
+                let results = crate::executor::execute(p, &mut fn_memory, BodyType::Block, ctx).await?;
+                let out = results.return_;
+                let result = out.ok_or_else(|| {
+                    KclError::UndefinedValue(KclErrorDetails {
+                        message: format!("Result of stdlib function {} is undefined", fn_name),
+                        source_ranges: vec![self.into()],
+                    })
+                })?;
+                let result = result.get_value()?;
+
+                if pipe_info.is_in_pipe {
+                    pipe_info.index += 1;
+                    pipe_info.previous_results.push(result);
+
+                    execute_pipe_body(memory, &pipe_info.body.clone(), pipe_info, self.into(), ctx).await
+                } else {
+                    Ok(result)
+                }
+            }
+            FunctionKind::UserDefined => {
                 let func = memory.get(&fn_name, self.into())?;
                 let result = func
                     .call_fn(fn_args, memory.clone(), ctx.clone())
                     .await?
                     .ok_or_else(|| {
                         KclError::UndefinedValue(KclErrorDetails {
-                            message: format!("Result of function {} is undefined", fn_name),
+                            message: format!("Result of user-defined function {} is undefined", fn_name),
                             source_ranges: vec![self.into()],
                         })
                     })?;
@@ -1056,10 +1208,15 @@ impl CallExpression {
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Function {
-    /// A stdlib function.
+    /// A stdlib function written in Rust (aka core lib).
     StdLib {
         /// The function.
-        func: Box<dyn crate::docs::StdLibFn>,
+        func: Box<dyn StdLibFn>,
+    },
+    /// A stdlib function written in KCL.
+    StdLibKcl {
+        /// The function.
+        func: Box<dyn KclStdLibFn>,
     },
     /// A function that is defined in memory.
     #[default]
@@ -1076,7 +1233,8 @@ impl PartialEq for Function {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct VariableDeclaration {
@@ -1179,10 +1337,10 @@ impl VariableDeclaration {
                     symbol_kind = SymbolKind::FUNCTION;
                     let mut children = vec![];
                     for param in &function_expression.params {
-                        let param_source_range: SourceRange = param.into();
+                        let param_source_range: SourceRange = (&param.identifier).into();
                         #[allow(deprecated)]
                         children.push(DocumentSymbol {
-                            name: param.name.clone(),
+                            name: param.identifier.name.clone(),
                             detail: None,
                             kind: SymbolKind::VARIABLE,
                             range: param_source_range.to_lsp_range(code),
@@ -1226,7 +1384,8 @@ impl VariableDeclaration {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
@@ -1270,7 +1429,8 @@ impl VariableKind {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct VariableDeclarator {
@@ -1299,7 +1459,8 @@ impl VariableDeclarator {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Literal {
@@ -1343,6 +1504,7 @@ impl Literal {
                 let quote = if self.raw.trim().starts_with('"') { '"' } else { '\'' };
                 format!("{quote}{s}{quote}")
             }
+            LiteralValue::Bool(_) => self.raw.clone(),
         }
     }
 }
@@ -1369,7 +1531,8 @@ impl From<&Box<Literal>> for MemoryItem {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake, Eq)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Identifier {
@@ -1405,7 +1568,8 @@ impl Identifier {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct PipeSubstitution {
@@ -1433,7 +1597,8 @@ impl From<PipeSubstitution> for Value {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ArrayExpression {
@@ -1539,6 +1704,7 @@ impl ArrayExpression {
         for element in &self.elements {
             let result = match element {
                 Value::Literal(literal) => literal.into(),
+                Value::None(none) => none.into(),
                 Value::Identifier(identifier) => {
                     let value = memory.get(&identifier.name, identifier.into())?;
                     value.clone()
@@ -1593,7 +1759,8 @@ impl ArrayExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ObjectExpression {
@@ -1690,6 +1857,7 @@ impl ObjectExpression {
         for property in &self.properties {
             let result = match &property.value {
                 Value::Literal(literal) => literal.into(),
+                Value::None(none) => none.into(),
                 Value::Identifier(identifier) => {
                     let value = memory.get(&identifier.name, identifier.into())?;
                     value.clone()
@@ -1750,7 +1918,8 @@ impl ObjectExpression {
 
 impl_value_meta!(ObjectExpression);
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ObjectProperty {
@@ -1792,7 +1961,8 @@ impl ObjectProperty {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum MemberObject {
@@ -1838,7 +2008,8 @@ impl From<&MemberObject> for SourceRange {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum LiteralIdentifier {
@@ -1874,7 +2045,8 @@ impl From<&LiteralIdentifier> for SourceRange {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct MemberExpression {
@@ -1977,6 +2149,7 @@ impl MemberExpression {
                         }))
                     }
                     LiteralValue::String(s) => s,
+                    LiteralValue::Bool(b) => b.to_string(),
                 }
             }
         };
@@ -2037,7 +2210,8 @@ pub struct ObjectKeyInfo {
     pub computed: bool,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct BinaryExpression {
@@ -2216,7 +2390,8 @@ pub fn parse_json_value_as_string(j: &serde_json::Value) -> Option<String> {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
@@ -2284,7 +2459,8 @@ impl BinaryOperator {
         }
     }
 }
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct UnaryExpression {
@@ -2362,7 +2538,8 @@ impl UnaryExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
@@ -2377,7 +2554,8 @@ pub enum UnaryOperator {
     Not,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct PipeExpression {
@@ -2437,7 +2615,13 @@ impl PipeExpression {
                 let non_code_meta = self.non_code_meta.clone();
                 if let Some(non_code_meta_value) = non_code_meta.non_code_nodes.get(&index) {
                     for val in non_code_meta_value {
-                        s += val.format(&indentation).trim_end_matches('\n')
+                        let formatted = val.format(&indentation).trim_end_matches('\n').to_string();
+                        if let NonCodeValue::BlockComment { .. } = val.value {
+                            s += "\n";
+                            s += &formatted;
+                        } else {
+                            s += &formatted;
+                        }
                     }
                 }
 
@@ -2535,17 +2719,47 @@ async fn execute_pipe_body(
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+/// Parameter of a KCL function.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct Parameter {
+    /// The parameter's label or name.
+    pub identifier: Identifier,
+    /// Is the parameter optional?
+    pub optional: bool,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct FunctionExpression {
     pub start: usize,
     pub end: usize,
-    pub params: Vec<Identifier>,
+    pub params: Vec<Parameter>,
     pub body: Program,
 }
 
 impl_value_meta!(FunctionExpression);
+
+pub struct FunctionExpressionParts {
+    pub start: usize,
+    pub end: usize,
+    pub params_required: Vec<Parameter>,
+    pub params_optional: Vec<Parameter>,
+    pub body: Program,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct RequiredParamAfterOptionalParam(pub Parameter);
+
+impl std::fmt::Display for RequiredParamAfterOptionalParam {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "KCL functions must declare any optional parameters after all the required parameters. But your required parameter {} is _after_ an optional parameter. You must move it to before the optional parameters instead.", self.0.identifier.name)
+    }
+}
 
 impl FunctionExpression {
     /// Function expressions don't really apply.
@@ -2553,6 +2767,53 @@ impl FunctionExpression {
         ConstraintLevel::Ignore {
             source_ranges: vec![self.into()],
         }
+    }
+
+    pub fn into_parts(self) -> Result<FunctionExpressionParts, RequiredParamAfterOptionalParam> {
+        let Self {
+            start,
+            end,
+            params,
+            body,
+        } = self;
+        let mut params_required = Vec::with_capacity(params.len());
+        let mut params_optional = Vec::with_capacity(params.len());
+        for param in params {
+            if param.optional {
+                params_optional.push(param);
+            } else {
+                if !params_optional.is_empty() {
+                    return Err(RequiredParamAfterOptionalParam(param));
+                }
+                params_required.push(param);
+            }
+        }
+        params_required.shrink_to_fit();
+        params_optional.shrink_to_fit();
+        Ok(FunctionExpressionParts {
+            start,
+            end,
+            params_required,
+            params_optional,
+            body,
+        })
+    }
+
+    /// Required parameters must be declared before optional parameters.
+    /// This gets all the required parameters.
+    pub fn required_params(&self) -> &[Parameter] {
+        let end_of_required_params = self
+            .params
+            .iter()
+            .position(|param| param.optional)
+            // If there's no optional params, then all the params are required params.
+            .unwrap_or(self.params.len());
+        &self.params[..end_of_required_params]
+    }
+
+    /// Minimum and maximum number of arguments this function can take.
+    pub fn number_of_args(&self) -> RangeInclusive<usize> {
+        self.required_params().len()..=self.params.len()
     }
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
@@ -2567,7 +2828,7 @@ impl FunctionExpression {
             "({}) => {{\n{}{}\n}}",
             self.params
                 .iter()
-                .map(|param| param.name.clone())
+                .map(|param| param.identifier.name.clone())
                 .collect::<Vec<String>>()
                 .join(", "),
             options.get_indentation(indentation_level + 1),
@@ -2585,7 +2846,8 @@ impl FunctionExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ReturnStatement {
@@ -2829,8 +3091,7 @@ let baz = {a: 1, b: "thing"}
 fn ghi = (x) => {
   return x
 }
-
-show(part001)"#;
+"#;
         let tokens = crate::token::lexer(code);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
@@ -2932,6 +3193,109 @@ show(part001)"#;
 "#
         );
     }
+
+    #[test]
+    fn test_recast_comment_under_variable() {
+        let some_program_string = r#"const key = 'c'
+// this is also a comment
+const thing = 'foo'
+"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"const key = 'c'
+// this is also a comment
+const thing = 'foo'
+"#
+        );
+    }
+
+    #[test]
+    fn test_recast_multiline_comment_start_file() {
+        let some_program_string = r#"// hello world
+// I am a comment
+const key = 'c'
+// this is also a comment
+// hello
+const thing = 'foo'
+"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"// hello world
+// I am a comment
+const key = 'c'
+// this is also a comment
+// hello
+const thing = 'foo'
+"#
+        );
+    }
+
+    #[test]
+    fn test_recast_empty_comment() {
+        let some_program_string = r#"// hello world
+//
+// I am a comment
+const key = 'c'
+
+//
+// I am a comment
+const thing = 'c'
+
+const foo = 'bar' //
+"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"// hello world
+//
+// I am a comment
+const key = 'c'
+
+//
+// I am a comment
+const thing = 'c'
+
+const foo = 'bar' //
+"#
+        );
+    }
+
+    #[test]
+    fn test_recast_multiline_comment_under_variable() {
+        let some_program_string = r#"const key = 'c'
+// this is also a comment
+// hello
+const thing = 'foo'
+"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"const key = 'c'
+// this is also a comment
+// hello
+const thing = 'foo'
+"#
+        );
+    }
+
     #[test]
     fn test_recast_comment_at_start() {
         let test_program = r#"
@@ -3007,9 +3371,7 @@ const mySk1 = startSketchOn('XY')
        offset: -1.35,
        intersectTag: 'seg01'
      }, %)
-  |> line([-0.42, -1.72], %)
-
-show(part001)"#;
+  |> line([-0.42, -1.72], %)"#;
         let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
@@ -3158,8 +3520,7 @@ let baz = {a: 1, part001: "thing"}
 fn ghi = (part001) => {
   return part001
 }
-
-show(part001)"#;
+"#;
         let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let mut program = parser.ast().unwrap();
@@ -3181,8 +3542,6 @@ let baz = { a: 1, part001: "thing" }
 fn ghi = (part001) => {
   return part001
 }
-
-show(mySuperCoolPart)
 "#
         );
     }
@@ -3208,6 +3567,97 @@ show(mySuperCoolPart)
     }
 
     #[test]
+    fn test_recast_trailing_comma() {
+        let some_program_string = r#"startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> arc({
+    radius: 1,
+    angle_start: 0,
+    angle_end: 180,
+  }, %)"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> arc({
+       radius: 1,
+       angle_start: 0,
+       angle_end: 180
+     }, %)
+"#
+        );
+    }
+
+    #[test]
+    fn test_ast_get_non_code_node() {
+        let some_program_string = r#"const r = 20 / pow(pi(), 1 / 3)
+const h = 30
+
+// st
+const cylinder = startSketchOn('-XZ')
+  |> startProfileAt([50, 0], %)
+  |> arc({
+       angle_end: 360,
+       angle_start: 0,
+       radius: r
+     }, %)
+  |> extrude(h, %)
+"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let value = program.get_non_code_meta_for_position(50);
+
+        assert!(value.is_some());
+    }
+
+    #[test]
+    fn test_ast_get_non_code_node_pipe() {
+        let some_program_string = r#"const r = 20 / pow(pi(), 1 / 3)
+const h = 30
+
+// st
+const cylinder = startSketchOn('-XZ')
+  |> startProfileAt([50, 0], %)
+  // comment
+  |> arc({
+       angle_end: 360,
+       angle_start: 0,
+       radius: r
+     }, %)
+  |> extrude(h, %)
+"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let value = program.get_non_code_meta_for_position(124);
+
+        assert!(value.is_some());
+    }
+
+    #[test]
+    fn test_ast_get_non_code_node_inline_comment() {
+        let some_program_string = r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([0,0], %)
+  |> xLine(5, %) // lin
+"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let value = program.get_non_code_meta_for_position(86);
+
+        assert!(value.is_some());
+    }
+
+    #[test]
     fn test_recast_negative_var() {
         let some_program_string = r#"const w = 20
 const l = 8
@@ -3220,8 +3670,7 @@ const firstExtrude = startSketchOn('XY')
   |> line([0, -l], %)
   |> close(%)
   |> extrude(h, %)
-
-show(firstExtrude)"#;
+"#;
         let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
@@ -3240,8 +3689,48 @@ const firstExtrude = startSketchOn('XY')
   |> line([0, -l], %)
   |> close(%)
   |> extrude(h, %)
+"#
+        );
+    }
 
-show(firstExtrude)
+    #[test]
+    fn test_recast_multiline_comment() {
+        let some_program_string = r#"const w = 20
+const l = 8
+const h = 10
+
+// This is my comment
+// It has multiple lines
+// And it's really long
+const firstExtrude = startSketchOn('XY')
+  |> startProfileAt([0,0], %)
+  |> line([0, l], %)
+  |> line([w, 0], %)
+  |> line([0, -l], %)
+  |> close(%)
+  |> extrude(h, %)
+"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"const w = 20
+const l = 8
+const h = 10
+
+// This is my comment
+// It has multiple lines
+// And it's really long
+const firstExtrude = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, l], %)
+  |> line([w, 0], %)
+  |> line([0, -l], %)
+  |> close(%)
+  |> extrude(h, %)
 "#
         );
     }
@@ -3307,5 +3796,151 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                 "failed test {i}, which is testing that {reason}"
             );
         }
+    }
+
+    #[test]
+    fn required_params() {
+        for (i, (test_name, expected, function_expr)) in [
+            (
+                "no params",
+                (0..=0),
+                FunctionExpression {
+                    start: 0,
+                    end: 0,
+                    params: vec![],
+                    body: Program {
+                        start: 0,
+                        end: 0,
+                        body: Vec::new(),
+                        non_code_meta: Default::default(),
+                    },
+                },
+            ),
+            (
+                "all required params",
+                (1..=1),
+                FunctionExpression {
+                    start: 0,
+                    end: 0,
+                    params: vec![Parameter {
+                        identifier: Identifier {
+                            start: 0,
+                            end: 0,
+                            name: "foo".to_owned(),
+                        },
+                        optional: false,
+                    }],
+                    body: Program {
+                        start: 0,
+                        end: 0,
+                        body: Vec::new(),
+                        non_code_meta: Default::default(),
+                    },
+                },
+            ),
+            (
+                "all optional params",
+                (0..=1),
+                FunctionExpression {
+                    start: 0,
+                    end: 0,
+                    params: vec![Parameter {
+                        identifier: Identifier {
+                            start: 0,
+                            end: 0,
+                            name: "foo".to_owned(),
+                        },
+                        optional: true,
+                    }],
+                    body: Program {
+                        start: 0,
+                        end: 0,
+                        body: Vec::new(),
+                        non_code_meta: Default::default(),
+                    },
+                },
+            ),
+            (
+                "mixed params",
+                (1..=2),
+                FunctionExpression {
+                    start: 0,
+                    end: 0,
+                    params: vec![
+                        Parameter {
+                            identifier: Identifier {
+                                start: 0,
+                                end: 0,
+                                name: "foo".to_owned(),
+                            },
+                            optional: false,
+                        },
+                        Parameter {
+                            identifier: Identifier {
+                                start: 0,
+                                end: 0,
+                                name: "bar".to_owned(),
+                            },
+                            optional: true,
+                        },
+                    ],
+                    body: Program {
+                        start: 0,
+                        end: 0,
+                        body: Vec::new(),
+                        non_code_meta: Default::default(),
+                    },
+                },
+            ),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let actual = function_expr.number_of_args();
+            assert_eq!(expected, actual, "failed test #{i} '{test_name}'");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_object_bool() {
+        let some_program_string = r#"some_func({thing: true, other_thing: false})"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        // We want to get the bool and verify it is a bool.
+
+        let BodyItem::ExpressionStatement(ExpressionStatement {
+            expression,
+            start: _,
+            end: _,
+        }) = program.body.first().unwrap()
+        else {
+            panic!("expected a function!");
+        };
+
+        let Value::CallExpression(ce) = expression else {
+            panic!("expected a function!");
+        };
+
+        assert!(!ce.arguments.is_empty());
+
+        let Value::ObjectExpression(oe) = ce.arguments.first().unwrap() else {
+            panic!("expected a object!");
+        };
+
+        assert_eq!(oe.properties.len(), 2);
+
+        let Value::Literal(ref l) = oe.properties.first().unwrap().value else {
+            panic!("expected a literal!");
+        };
+
+        assert_eq!(l.raw, "true");
+
+        let Value::Literal(ref l) = oe.properties.get(1).unwrap().value else {
+            panic!("expected a literal!");
+        };
+
+        assert_eq!(l.raw, "false");
     }
 }
