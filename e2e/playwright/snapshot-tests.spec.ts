@@ -119,6 +119,8 @@ const part001 = startSketchOn('-XZ')
     await expect(page.getByText('Confirm Export')).toBeVisible()
     await page.getByRole('button', { name: 'Submit command' }).click()
 
+    console.log(JSON.stringify(output, null, 2))
+    console.log(`waiting for download of ${output.type}`)
     // Handle download
     const download = await page.waitForEvent('download')
     const downloadLocationer = (extra = '', isImage = false) =>
