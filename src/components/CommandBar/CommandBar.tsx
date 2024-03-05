@@ -146,7 +146,6 @@ export const CommandBar = () => {
           <WrapperComponent.Panel
             className="relative z-50 pointer-events-auto w-full max-w-xl py-2 mx-auto border rounded shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70"
             as="div"
-            data-testid="command-bar"
           >
             {commandBarState.matches('Selecting command') ? (
               <CommandComboBox options={commands} />
