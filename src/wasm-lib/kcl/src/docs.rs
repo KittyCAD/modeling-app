@@ -472,9 +472,6 @@ pub fn get_autocomplete_string_from_schema(schema: &schemars::schema::Schema) ->
                         continue;
                     }
 
-                    if let Some(description) = get_description_string_from_schema(prop) {
-                        fn_docs.push_str(&format!("\t// {}\n", description));
-                    }
                     fn_docs.push_str(&format!(
                         "\t{}: {},\n",
                         prop_name,
