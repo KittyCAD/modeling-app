@@ -9,7 +9,7 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, ExtrudeSurface, MemoryItem},
+    executor::{ExtrudeGroup, ExtrudeSurface, MemoryItem, UserVal},
     std::Args,
 };
 
@@ -102,10 +102,15 @@ pub async fn get_opposite_edge(args: Args) -> Result<MemoryItem, KclError> {
     let (tag, extrude_group): (String, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
 
     let edge = inner_get_opposite_edge(tag, extrude_group, args.clone()).await?;
-    Ok(MemoryItem::Uuid {
-        value: edge,
+    Ok(MemoryItem::UserVal(UserVal {
+        value: serde_json::to_value(edge).map_err(|e| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Failed to convert Uuid to json: {}", e),
+                source_ranges: vec![args.source_range],
+            })
+        })?,
         meta: vec![args.source_range.into()],
-    })
+    }))
 }
 
 /// Get the opposite edge to the edge given.
@@ -155,10 +160,15 @@ pub async fn get_next_adjacent_edge(args: Args) -> Result<MemoryItem, KclError> 
     let (tag, extrude_group): (String, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
 
     let edge = inner_get_next_adjacent_edge(tag, extrude_group, args.clone()).await?;
-    Ok(MemoryItem::Uuid {
-        value: edge,
+    Ok(MemoryItem::UserVal(UserVal {
+        value: serde_json::to_value(edge).map_err(|e| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Failed to convert Uuid to json: {}", e),
+                source_ranges: vec![args.source_range],
+            })
+        })?,
         meta: vec![args.source_range.into()],
-    })
+    }))
 }
 
 /// Get the next adjacent edge to the edge given.
@@ -217,10 +227,15 @@ pub async fn get_previous_adjacent_edge(args: Args) -> Result<MemoryItem, KclErr
     let (tag, extrude_group): (String, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
 
     let edge = inner_get_previous_adjacent_edge(tag, extrude_group, args.clone()).await?;
-    Ok(MemoryItem::Uuid {
-        value: edge,
+    Ok(MemoryItem::UserVal(UserVal {
+        value: serde_json::to_value(edge).map_err(|e| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Failed to convert Uuid to json: {}", e),
+                source_ranges: vec![args.source_range],
+            })
+        })?,
         meta: vec![args.source_range.into()],
-    })
+    }))
 }
 
 /// Get the previous adjacent edge to the edge given.
