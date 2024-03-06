@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, Download } from '@playwright/test'
 import { secrets } from './secrets'
 import { getUtils } from './test-utils'
 import { Models } from '@kittycad/lib'
@@ -29,7 +29,7 @@ test.beforeEach(async ({ context, page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
 })
 
-test.setTimeout(60000)
+test.setTimeout(60_000)
 
 test('exports of each format should work', async ({ page, context }) => {
   // FYI this test doesn't work with only engine running locally
@@ -90,8 +90,6 @@ const part001 = startSketchOn('-XZ')
   await page.waitForTimeout(1000)
   await u.clearAndCloseDebugPanel()
 
-  await page.getByRole('button', { name: APP_NAME }).click()
-
   interface Paths {
     modelPath: string
     imagePath: string
@@ -100,19 +98,50 @@ const part001 = startSketchOn('-XZ')
   const doExport = async (
     output: Models['OutputFormat_type']
   ): Promise<Paths> => {
-    await page.getByRole('button', { name: 'Export Model' }).click()
+    await page.getByRole('button', { name: APP_NAME }).click()
+    await expect(
+      page.getByRole('button', { name: 'Export Part' })
+    ).toBeVisible()
+    await page.getByRole('button', { name: 'Export Part' }).click()
+    await expect(page.getByTestId('command-bar')).toBeVisible()
 
-    const exportSelect = page.getByTestId('export-type')
-    await exportSelect.selectOption({ label: output.type })
-
+    // Go through export via command bar
+    await page.getByRole('option', { name: output.type, exact: false }).click()
+    await page.locator('#arg-form').waitFor({ state: 'detached' })
     if ('storage' in output) {
-      const storageSelect = page.getByTestId('export-storage')
-      await storageSelect.selectOption({ label: output.storage })
+      await page.getByTestId('arg-name-storage').waitFor({ timeout: 1000 })
+      await page.getByRole('button', { name: 'storage', exact: false }).click()
+      await page
+        .getByRole('option', { name: output.storage, exact: false })
+        .click()
+      await page.locator('#arg-form').waitFor({ state: 'detached' })
+    }
+    await expect(page.getByText('Confirm Export')).toBeVisible()
+
+    const getPromiseAndResolve = () => {
+      let resolve: any = () => {}
+      const promise = new Promise<Download>((r) => {
+        resolve = r
+      })
+      return [promise, resolve]
     }
 
-    const downloadPromise = page.waitForEvent('download')
-    await page.getByRole('button', { name: 'Export', exact: true }).click()
-    const download = await downloadPromise
+    const [downloadPromise1, downloadResolve1] = getPromiseAndResolve()
+    const [downloadPromise2, downloadResolve2] = getPromiseAndResolve()
+    let downloadCnt = 0
+
+    page.on('download', async (download) => {
+      if (downloadCnt === 0) {
+        downloadResolve1(download)
+      } else if (downloadCnt === 1) {
+        downloadResolve2(download)
+      }
+      downloadCnt++
+    })
+    await page.getByRole('button', { name: 'Submit command' }).click()
+
+    // Handle download
+    const download = await downloadPromise1
     const downloadLocationer = (extra = '', isImage = false) =>
       `./e2e/playwright/export-snapshots/${output.type}-${
         'storage' in output ? output.storage : ''
@@ -122,7 +151,7 @@ const part001 = startSketchOn('-XZ')
 
     if (output.type === 'gltf' && output.storage === 'standard') {
       // wait for second download
-      const download2 = await page.waitForEvent('download')
+      const download2 = await downloadPromise2
       await download.saveAs(downloadLocation)
       await download2.saveAs(downloadLocation2)
 

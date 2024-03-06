@@ -1877,9 +1877,9 @@ dependencies = [
 
 [[package]]
 name = "js-sys"
-version = "0.3.68"
+version = "0.3.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "406cda4b368d531c842222cf9d2600a9a4acce8d29423695379c6868a143a9ee"
+checksum = "29c15563dc2726973df627357ce0c9ddddbea194836909d655df6a75d2cf296d"
 dependencies = [
  "wasm-bindgen",
 ]
@@ -1952,9 +1952,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.2.58"
+version = "0.2.59"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "049c3881ffbe77bf1c3a968372a246ce906eceb79f61cd0bc5fa229bec3504cb"
+checksum = "4080db4364c103601db486e4a8aa889ea56c011991e4c454373d8050a165d3da"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1990,11 +1990,12 @@ dependencies = [
 [[package]]
 name = "kittycad-execution-plan"
 version = "0.1.0"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#9c96767289139f03036c2ba40f889f974ca3e976"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#03eb9c3763de56d7284c09dba678ddd6120bb523"
 dependencies = [
  "bytes",
  "insta",
  "kittycad",
+ "kittycad-execution-plan-macros",
  "kittycad-execution-plan-traits",
  "kittycad-modeling-cmds",
  "kittycad-modeling-session",
@@ -2008,8 +2009,8 @@ dependencies = [
 
 [[package]]
 name = "kittycad-execution-plan-macros"
-version = "0.1.6"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#9c96767289139f03036c2ba40f889f974ca3e976"
+version = "0.1.8"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#03eb9c3763de56d7284c09dba678ddd6120bb523"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2018,8 +2019,8 @@ dependencies = [
 
 [[package]]
 name = "kittycad-execution-plan-traits"
-version = "0.1.11"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#9c96767289139f03036c2ba40f889f974ca3e976"
+version = "0.1.12"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#03eb9c3763de56d7284c09dba678ddd6120bb523"
 dependencies = [
  "serde",
  "thiserror",
@@ -2028,8 +2029,8 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.1.27"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#9c96767289139f03036c2ba40f889f974ca3e976"
+version = "0.1.28"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#03eb9c3763de56d7284c09dba678ddd6120bb523"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2057,7 +2058,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.2"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#9c96767289139f03036c2ba40f889f974ca3e976"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#03eb9c3763de56d7284c09dba678ddd6120bb523"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2067,7 +2068,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-session"
 version = "0.1.0"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#9c96767289139f03036c2ba40f889f974ca3e976"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#03eb9c3763de56d7284c09dba678ddd6120bb523"
 dependencies = [
  "futures",
  "kittycad",
@@ -2258,9 +2259,9 @@ checksum = "e53debba6bda7a793e5f99b8dacf19e626084f525f7829104ba9898f367d85ff"
 
 [[package]]
 name = "mio"
-version = "0.8.9"
+version = "0.8.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3dce281c5e46beae905d4de1870d8b1509a9142b62eedf18b443b011ca8343d0"
+checksum = "a4a650543ca06a924e8b371db273b2756685faae30f8487da1b56505a8f78b0c"
 dependencies = [
  "libc",
  "wasi",
@@ -2426,7 +2427,7 @@ checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 [[package]]
 name = "openapitor"
 version = "0.0.9"
-source = "git+https://github.com/KittyCAD/kittycad.rs?branch=main#8db292eaa7be0292512a2cdbef09f2d37af7c79c"
+source = "git+https://github.com/KittyCAD/kittycad.rs?branch=main#6f38abe149c74aa9675e9f0d370aa2f78980dc2d"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -3620,9 +3621,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.113"
+version = "1.0.114"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "69801b70b1c3dac963ecb03a364ba0ceda9cf60c71cfe475e99864759c8b8a79"
+checksum = "c5f09b1bd632ef549eaa9f60a1f8de742bdbc698e6cee2095fc84dde5f549ae0"
 dependencies = [
  "indexmap 2.2.2",
  "itoa",
@@ -4797,9 +4798,9 @@ checksum = "9c8d87e72b64a3b4db28d11ce29237c246188f4f51057d65a7eab63b7987e423"
 
 [[package]]
 name = "wasm-bindgen"
-version = "0.2.91"
+version = "0.2.92"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c1e124130aee3fb58c5bdd6b639a0509486b0338acaaae0c84a5124b0f588b7f"
+checksum = "4be2531df63900aeb2bca0daaaddec08491ee64ceecbee5076636a3b026795a8"
 dependencies = [
  "cfg-if",
  "wasm-bindgen-macro",
@@ -4807,9 +4808,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-backend"
-version = "0.2.91"
+version = "0.2.92"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c9e7e1900c352b609c8488ad12639a311045f40a35491fb69ba8c12f758af70b"
+checksum = "614d787b966d3989fa7bb98a654e369c762374fd3213d212cfc0251257e747da"
 dependencies = [
  "bumpalo",
  "log",
@@ -4835,9 +4836,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-macro"
-version = "0.2.91"
+version = "0.2.92"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b30af9e2d358182b5c7449424f017eba305ed32a7010509ede96cdc4696c46ed"
+checksum = "a1f8823de937b71b9460c0c34e25f3da88250760bec0ebac694b49997550d726"
 dependencies = [
  "quote",
  "wasm-bindgen-macro-support",
@@ -4845,9 +4846,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-macro-support"
-version = "0.2.91"
+version = "0.2.92"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "642f325be6301eb8107a83d12a8ac6c1e1c54345a7ef1a9261962dfefda09e66"
+checksum = "e94f17b526d0a461a191c78ea52bbce64071ed5c04c9ffe424dcb38f74171bb7"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -4858,9 +4859,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-shared"
-version = "0.2.91"
+version = "0.2.92"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f186bd2dcf04330886ce82d6f33dd75a7bfcf69ecf5763b89fcde53b6ac9838"
+checksum = "af190c94f2773fdb3729c55b007a722abb5384da03bc0986df4c289bf5567e96"
 
 [[package]]
 name = "wasm-lib"

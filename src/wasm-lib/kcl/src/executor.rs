@@ -101,20 +101,14 @@ impl Default for ProgramMemory {
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum ProgramReturn {
-    Arguments(Vec<Value>),
+    Arguments,
     Value(MemoryItem),
 }
 
 impl From<ProgramReturn> for Vec<SourceRange> {
     fn from(item: ProgramReturn) -> Self {
         match item {
-            ProgramReturn::Arguments(args) => args
-                .iter()
-                .map(|arg| {
-                    let r: SourceRange = arg.into();
-                    r
-                })
-                .collect(),
+            ProgramReturn::Arguments => Default::default(),
             ProgramReturn::Value(v) => v.into(),
         }
     }
@@ -124,8 +118,8 @@ impl ProgramReturn {
     pub fn get_value(&self) -> Result<MemoryItem, KclError> {
         match self {
             ProgramReturn::Value(v) => Ok(v.clone()),
-            ProgramReturn::Arguments(args) => Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Cannot get value from arguments: {:?}", args),
+            ProgramReturn::Arguments => Err(KclError::Semantic(KclErrorDetails {
+                message: "Cannot get value from arguments".to_owned(),
                 source_ranges: self.clone().into(),
             })),
         }
@@ -558,6 +552,8 @@ pub struct ExtrudeGroup {
     pub id: uuid::Uuid,
     /// The extrude surfaces.
     pub value: Vec<ExtrudeSurface>,
+    /// The sketch group paths.
+    pub sketch_group_values: Vec<Path>,
     /// The height of the extrude group.
     pub height: f64,
     /// The position of the extrude group.
