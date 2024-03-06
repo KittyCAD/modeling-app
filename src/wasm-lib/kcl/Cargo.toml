@@ -41,7 +41,7 @@ js-sys = { version = "0.3.69" }
 tower-lsp = { version = "0.20.0", default-features = false, features = ["runtime-agnostic"] }
 wasm-bindgen = "0.2.91"
 wasm-bindgen-futures = "0.4.41"
-web-sys = { version = "0.3.68", features = ["console"] }
+web-sys = { version = "0.3.69", features = ["console"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 approx = "0.5"
