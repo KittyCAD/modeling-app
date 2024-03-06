@@ -2215,7 +2215,7 @@
   resolved "https://registry.yarnpkg.com/@tsconfig/node16/-/node16-1.0.4.tgz#0b92dcc0cc1c81f6f306a381f28e31b1a56536e9"
   integrity sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==
 
-"@tweenjs/tween.js@^23.1.1":
+"@tweenjs/tween.js@^23.1.1", "@tweenjs/tween.js@~23.1.1":
   version "23.1.1"
   resolved "https://registry.yarnpkg.com/@tweenjs/tween.js/-/tween.js-23.1.1.tgz#0ae28ed9c635805557f78c2626464018d5f1b5e2"
   integrity sha512-ZpboH7pCPPeyBWKf8c7TJswtCEQObFo3bOBYalm99NzZarATALYCo5OhbCa/n4RQyJyHfhkdx+hNrdL5ByFYDw==
@@ -2424,11 +2424,12 @@
   dependencies:
     "@types/jest" "*"
 
-"@types/three@^0.160.0":
-  version "0.160.0"
-  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.160.0.tgz#7915a97e0a14ccaa9ccbb9f190c5730b04a23075"
-  integrity sha512-jWlbUBovicUKaOYxzgkLlhkiEQJkhCVvg4W2IYD2trqD2om3VK4DGLpHH5zQHNr7RweZK/5re/4IVhbhvxbV9w==
+"@types/three@^0.162.0":
+  version "0.162.0"
+  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.162.0.tgz#79d170c88f14b2eaee6b76af00fc4016a533e586"
+  integrity sha512-0j5yZcVukVIhrhSIC7+LmBPkkMoMuEJ1AfYBZfgNytdYqYREMuiyXWhYOMeZLBElTEAlJIZn7r2W3vqTIgjWlg==
   dependencies:
+    "@tweenjs/tween.js" "~23.1.1"
     "@types/stats.js" "*"
     "@types/webxr" "*"
     fflate "~0.6.10"
@@ -8134,10 +8135,10 @@ thenify-all@^1.0.0:
   dependencies:
     any-promise "^1.0.0"
 
-three@^0.160.0:
-  version "0.160.0"
-  resolved "https://registry.yarnpkg.com/three/-/three-0.160.0.tgz#cd1e4dbd01aee0719280a9086d75545db52b7a8f"
-  integrity sha512-DLU8lc0zNIPkM7rH5/e1Ks1Z8tWCGRq6g8mPowdDJpw1CFBJMU7UoJjC6PefXW7z//SSl0b2+GCw14LB+uDhng==
+three@^0.162.0:
+  version "0.162.0"
+  resolved "https://registry.yarnpkg.com/three/-/three-0.162.0.tgz#b15a511f1498e0c42d4d00bbb411c7527b06097e"
+  integrity sha512-xfCYj4RnlozReCmUd+XQzj6/5OjDNHBy5nT6rVwrOKGENAvpXe2z1jL+DZYaMu4/9pNsjH/4Os/VvS9IrH7IOQ==
 
 through@^2.3.8:
   version "2.3.8"
