@@ -139,8 +139,19 @@ export async function getEventForSelectWithPoint(
       },
     }
   }
-  const sourceRange = engineCommandManager.artifactMap[data.entity_id]?.range
-  if (engineCommandManager.artifactMap[data.entity_id]) {
+  const _artifact = engineCommandManager.artifactMap[data.entity_id]
+  const sourceRange = _artifact?.range
+  console.log('_artifact', _artifact)
+  if (_artifact) {
+    if (_artifact.commandType === 'solid3d_get_extrusion_face_info') {
+      return {
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+          selection: { range: sourceRange, type: 'face' },
+        },
+      }
+    }
     return {
       type: 'Set selection',
       data: {
@@ -343,6 +354,10 @@ export function processCodeMirrorRanges({
       return (
         from !== selectionRanges.codeBasedSelections[i].range[0] ||
         to !== selectionRanges.codeBasedSelections[i].range[1]
+        // ||
+        // (Object.keys(selectionRangeTypeMap).length &&
+        //   selectionRangeTypeMap[to] !==
+        //     selectionRanges.codeBasedSelections[i].type)
       )
     })
 
@@ -361,25 +376,53 @@ export function processCodeMirrorRanges({
       }
     })
   const idBasedSelections: SelectionToEngine[] = codeBasedSelections
-    .flatMap(({ type, range }): null | SelectionToEngine[] => {
+    .flatMap(({ type, range, ...rest }): null | SelectionToEngine[] => {
       // TODO #868: loops over all artifacts will become inefficient at a large scale
       const entriesWithOverlap = Object.entries(
         engineCommandManager.artifactMap || {}
-      ).filter(([_, artifact]) => {
-        return artifact.range && isOverlap(artifact.range, range)
-          ? artifact
-          : false
+      )
+        .map(([id, artifact]) => {
+          return artifact.range && isOverlap(artifact.range, range)
+            ? {
+                artifact,
+                selection: { type, range, ...rest },
+                id,
+              }
+            : false
+        })
+        .filter(Boolean)
+      let bestCandidate
+      entriesWithOverlap.forEach((entry) => {
+        if (!entry) return
+        if (
+          type === 'default' &&
+          entry.artifact.commandType === 'extend_path'
+        ) {
+          bestCandidate = entry
+          return
+        }
+        if (
+          type === 'face' &&
+          entry.artifact.commandType === 'solid3d_get_extrusion_face_info'
+        ) {
+          bestCandidate = entry
+          return
+        }
       })
-      if (entriesWithOverlap.length) {
-        return entriesWithOverlap.map(([id, artifact]) => ({
-          type,
-          id:
-            type === 'line-end' &&
-            artifact.type === 'result' &&
-            artifact.headVertexId
-              ? artifact.headVertexId
-              : id,
-        }))
+
+      if (bestCandidate) {
+        console.log(bestCandidate)
+        const _bestCandidate = bestCandidate as {
+          artifact: any
+          selection: any
+          id: string
+        }
+        return [
+          {
+            type,
+            id: _bestCandidate.id,
+          },
+        ]
       }
       return null
     })

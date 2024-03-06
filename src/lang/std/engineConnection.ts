@@ -1069,12 +1069,29 @@ export class EngineCommandManager {
       } as const
       this.artifactMap[id] = artifact
       if (
-        command.commandType === 'entity_linear_pattern' ||
-        command.commandType === 'entity_circular_pattern'
+        (command.commandType === 'entity_linear_pattern' &&
+          modelingResponse.type === 'entity_linear_pattern') ||
+        (command.commandType === 'entity_circular_pattern' &&
+          modelingResponse.type === 'entity_circular_pattern')
       ) {
-        const entities = (modelingResponse as any)?.data?.entity_ids
+        const entities = modelingResponse.data.entity_ids
         entities?.forEach((entity: string) => {
           this.artifactMap[entity] = artifact
+        })
+      }
+      if (
+        command?.commandType === 'solid3d_get_extrusion_face_info' &&
+        modelingResponse.type === 'solid3d_get_extrusion_face_info'
+      ) {
+        modelingResponse.data.faces.forEach((face) => {
+          const curveArtifact = this.artifactMap[face?.curve_id || '']
+          if (curveArtifact && face?.face_id) {
+            console.log('curveArtifact', curveArtifact, face?.face_id)
+            this.artifactMap[face.face_id] = {
+              ...curveArtifact,
+              commandType: 'solid3d_get_extrusion_face_info',
+            }
+          }
         })
       }
       resolve({
@@ -1388,12 +1405,6 @@ export class EngineCommandManager {
     const promise = new Promise((_resolve, reject) => {
       resolve = _resolve
     })
-    const getParentId = (): string | undefined => {
-      if (command.type === 'extend_path') {
-        return command.path
-      }
-      // TODO handle other commands that have a parent
-    }
     const pathToNode = ast
       ? getNodePathFromSourceRange(ast, range || [0, 0])
       : []
@@ -1402,7 +1413,6 @@ export class EngineCommandManager {
       pathToNode,
       type: 'pending',
       commandType: command.type,
-      parentId: getParentId(),
       promise,
       resolve,
     }
@@ -1419,9 +1429,9 @@ export class EngineCommandManager {
       resolve = _resolve
     })
     const getParentId = (): string | undefined => {
-      if (command.type === 'extend_path') {
-        return command.path
-      }
+      if (command.type === 'extend_path') return command.path
+      if (command.type === 'solid3d_get_extrusion_face_info')
+        return command.object_id
       // TODO handle other commands that have a parent
     }
     const pathToNode = ast
