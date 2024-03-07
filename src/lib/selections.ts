@@ -28,64 +28,6 @@ import { AXIS_GROUP, X_AXIS } from 'clientSideScene/sceneInfra'
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
 
-/*
-How selections work is complex due to the nature that we rely on the engine
-to tell what has been selected after we send a click command. But than the
-app needs these selections to be based on cursors, therefore the app must
-be in control of selections. On top of that because we need to set cursor
-positions in code-mirror for selections, both from app logic, and still
-allow the user to add multiple cursors like a normal editor, it's best to
-let code mirror control cursor positions and associate those source ranges
-with entity ids from code-mirror events later.
-
-So it's a lot of back and forth. conceptually the back and forth is:
-
-1) we send a click command to the engine
-2) the engine sends back ids of entities that were clicked
-3) we associate that source ranges with those ids
-4) we set the codemirror selection based on those source ranges (taking
-  into account if the user is holding shift to add to current selections
-  or not). we also create and remember a SelectionRangeTypeMap
-5) Code mirror fires a an event that cursors have changed, we loop through
-  these ranges and associate them with entity ids again with the ArtifactMap,
-  but also we can pick up selection types using the SelectionRangeTypeMap
-6) we clear all previous selections in the engine and set the new ones
-
-The above is less likely to get stale but below is some more details,
-because this wonders all over the code-base, I've tried to centeralise it
-by putting relevant utils in this file. All of the functions below are
-pure with the exception of getEventForSelectWithPoint which makes a call
-to the engine, but it's a query call (not mutation) so I'm okay with this.
-Actual side effects that change cursors or tell the engine what's selected
-are still done throughout the in their relevant parts in the codebase.
-
-In detail:
-
-1) Click commands are mostly sent in stream.tsx search for
-  "select_with_point"
-2) The handler for when the engine sends back entity ids calls
-  getEventForSelectWithPoint, it fires an XState event to update our
-  selections is xstate context
-3 and 4) The XState handler for the above uses handleSelectionBatch and
-  handleSelectionWithShift to update the selections in xstate context as
-  well as returning our SelectionRangeTypeMap and a codeMirror specific
-  event to be dispatched.
-5) The codeMirror handler for changes to the cursor uses
-  processCodeMirrorRanges to associate the ranges back with their original
-  types and the entity ids (the id can vary depending on the type, as
-  there's only one source range for a given segment, but depending on if
-  the user selected the segment directly or the vertex, the id will be
-  different)
-6) We take all of the ids and create events for the engine with
-  resetAndSetEngineEntitySelectionCmds
-
-An important note is that if a user changes the cursor directly themselves
-then they skip directly to step 5, And these selections get a type of
-"default".
-
-There are a few more nuances than this, but best to find them in the code.
-*/
-
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
 export type Selection = {
@@ -104,10 +46,6 @@ export type Selection = {
 export type Selections = {
   otherSelections: Axis[]
   codeBasedSelections: Selection[]
-}
-
-export interface SelectionRangeTypeMap {
-  [key: number]: Selection['type']
 }
 
 interface RangeAndId {
@@ -141,7 +79,6 @@ export async function getEventForSelectWithPoint(
   }
   const _artifact = engineCommandManager.artifactMap[data.entity_id]
   const sourceRange = _artifact?.range
-  console.log('_artifact', _artifact)
   if (_artifact) {
     if (_artifact.commandType === 'solid3d_get_extrusion_face_info') {
       return {
@@ -248,7 +185,6 @@ export function handleSelectionBatch({
   updateSceneObjectColors: () => void
 } {
   const ranges: ReturnType<typeof EditorSelection.cursor>[] = []
-  const selectionRangeTypeMap: SelectionRangeTypeMap = {}
   const engineEvents: Models['WebSocketRequest_type'][] =
     resetAndSetEngineEntitySelectionCmds(
       codeToIdSelections(selections.codeBasedSelections)
@@ -256,7 +192,6 @@ export function handleSelectionBatch({
   selections.codeBasedSelections.forEach(({ range, type }) => {
     if (range?.[1]) {
       ranges.push(EditorSelection.cursor(range[1]))
-      selectionRangeTypeMap[range[1]] = type
     }
   })
   if (ranges.length)
@@ -288,12 +223,10 @@ type SelectionToEngine = { type: Selection['type']; id: string }
 export function processCodeMirrorRanges({
   codeMirrorRanges,
   selectionRanges,
-  selectionRangeTypeMap,
   isShiftDown,
 }: {
   codeMirrorRanges: readonly SelectionRange[]
   selectionRanges: Selections
-  selectionRangeTypeMap: SelectionRangeTypeMap
   isShiftDown: boolean
 }): null | {
   modelingEvent: ModelingMachineEvent
@@ -305,22 +238,12 @@ export function processCodeMirrorRanges({
       return (
         from !== selectionRanges.codeBasedSelections[i].range[0] ||
         to !== selectionRanges.codeBasedSelections[i].range[1]
-        // ||
-        // (Object.keys(selectionRangeTypeMap).length &&
-        //   selectionRangeTypeMap[to] !==
-        //     selectionRanges.codeBasedSelections[i].type)
       )
     })
 
   if (!isChange) return null
   const codeBasedSelections: Selections['codeBasedSelections'] =
     codeMirrorRanges.map(({ from, to }) => {
-      if (selectionRangeTypeMap[to]) {
-        return {
-          type: selectionRangeTypeMap[to],
-          range: [from, to],
-        }
-      }
       return {
         type: 'default',
         range: [from, to],
@@ -348,7 +271,6 @@ export function processCodeMirrorRanges({
 
 function updateSceneObjectColors(codeBasedSelections: Selection[]) {
   let updated: Program
-  console.log('event wtf')
   try {
     updated = parse(recast(kclManager.ast))
   } catch (e) {
@@ -431,24 +353,21 @@ export type CommonASTNode = {
   ast: Program
 }
 
-export function buildCommonNodeFromSelection(
-  selectionRanges: Selections,
-  i: number
-) {
+function buildCommonNodeFromSelection(selectionRanges: Selections, i: number) {
   return {
     selection: selectionRanges.codeBasedSelections[i],
     ast: kclManager.ast,
   }
 }
 
-export function nodeHasExtrude(node: CommonASTNode) {
+function nodeHasExtrude(node: CommonASTNode) {
   return doesPipeHaveCallExp({
     calleeName: 'extrude',
     ...node,
   })
 }
 
-export function nodeHasClose(node: CommonASTNode) {
+function nodeHasClose(node: CommonASTNode) {
   return doesPipeHaveCallExp({
     calleeName: 'close',
     ...node,
@@ -466,7 +385,7 @@ export function canExtrudeSelection(selection: Selections) {
   )
 }
 
-export function canExtrudeSelectionItem(selection: Selections, i: number) {
+function canExtrudeSelectionItem(selection: Selections, i: number) {
   const commonNode = buildCommonNodeFromSelection(selection, i)
 
   return (

@@ -1,11 +1,6 @@
 import { PathToNode, VariableDeclarator } from 'lang/wasm'
 import { engineCommandManager } from 'lang/std/engineConnection'
-import {
-  Axis,
-  Selection,
-  SelectionRangeTypeMap,
-  Selections,
-} from 'lib/selections'
+import { Axis, Selection, Selections } from 'lib/selections'
 import { assign, createMachine } from 'xstate'
 import { isCursorInSketchCommandRange } from 'lang/util'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
@@ -135,7 +130,6 @@ export const modelingMachine = createMachine(
         otherSelections: [],
         codeBasedSelections: [],
       } as Selections,
-      selectionRangeTypeMap: {} as SelectionRangeTypeMap,
       sketchPathToNode: null as PathToNode | null, // maybe too specific, and we should have a generic pathToNode, but being specific seems less risky when I'm not sure
       sketchEnginePathId: '' as string,
       sketchPlaneId: '' as string,

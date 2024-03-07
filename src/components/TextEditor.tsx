@@ -104,7 +104,7 @@ export const TextEditor = ({
   })
 
   const {
-    context: { selectionRanges, selectionRangeTypeMap },
+    context: { selectionRanges },
     send,
     state,
   } = useModelingContext()
@@ -230,7 +230,6 @@ export const TextEditor = ({
     const eventInfo = processCodeMirrorRanges({
       codeMirrorRanges: viewUpdate.state.selection.ranges,
       selectionRanges,
-      selectionRangeTypeMap,
       isShiftDown,
     })
     if (!eventInfo) return

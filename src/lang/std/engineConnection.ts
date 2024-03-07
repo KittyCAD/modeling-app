@@ -1086,7 +1086,6 @@ export class EngineCommandManager {
         modelingResponse.data.faces.forEach((face) => {
           const curveArtifact = this.artifactMap[face?.curve_id || '']
           if (curveArtifact && face?.face_id) {
-            console.log('curveArtifact', curveArtifact, face?.face_id)
             this.artifactMap[face.face_id] = {
               ...curveArtifact,
               commandType: 'solid3d_get_extrusion_face_info',

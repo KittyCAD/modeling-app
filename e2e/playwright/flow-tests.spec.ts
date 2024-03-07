@@ -683,13 +683,13 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
 
     await expect(page.locator('.cm-cursor')).toHaveCount(1)
 
-    await page.keyboard.down('Meta')
+    await page.keyboard.down(process.platform === 'linux' ? 'Control' : 'Meta')
     await page.waitForTimeout(100)
     await page.getByText(`  |> line([-${commonPoints.num2}, 0], %)`).click()
 
     await expect(page.locator('.cm-cursor')).toHaveCount(2)
     await page.waitForTimeout(500)
-    await page.keyboard.up('Meta')
+    await page.keyboard.up(process.platform === 'linux' ? 'Control' : 'Meta')
 
     // clear selection by clicking on nothing
     await emptySpaceClick()
