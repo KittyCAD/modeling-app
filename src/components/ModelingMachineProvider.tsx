@@ -110,6 +110,8 @@ export const ModelingMachineProvider = ({
               currentSelections: selectionRanges,
               isShiftDown,
             })
+            ;(window as any).lastCodeMirrorSelectionUpdatedFromScene =
+              Date.now()
             setTimeout(() => {
               editorView.dispatch({
                 selection: codeMirrorSelection,
@@ -141,6 +143,8 @@ export const ModelingMachineProvider = ({
               isShiftDown,
             })
             if (codeMirrorSelection) {
+              ;(window as any).lastCodeMirrorSelectionUpdatedFromScene =
+                Date.now()
               setTimeout(() => {
                 editorView.dispatch({
                   selection: codeMirrorSelection,
@@ -171,6 +175,9 @@ export const ModelingMachineProvider = ({
               selections: setSelections.selection,
             })
           if (codeMirrorSelection) {
+            // TODO: do less of a hack
+            ;(window as any).lastCodeMirrorSelectionUpdatedFromScene =
+              Date.now()
             setTimeout(() => {
               editorView.dispatch({
                 selection: codeMirrorSelection,

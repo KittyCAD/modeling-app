@@ -3,6 +3,7 @@ import ReactCodeMirror, {
   Extension,
   ViewUpdate,
   keymap,
+  SelectionRange,
 } from '@uiw/react-codemirror'
 import { FromServer, IntoServer } from 'editor/plugins/lsp/codec'
 import Server from '../editor/plugins/lsp/server'
@@ -199,10 +200,27 @@ export const TextEditor = ({
     if (isNetworkOkay) kclManager.setCodeAndExecute(newCode)
     else kclManager.setCode(newCode)
   } //, []);
+  const lastSelection = useRef('')
   const onUpdate = (viewUpdate: ViewUpdate) => {
     if (!editorView) {
       setEditorView(viewUpdate.view)
     }
+    const selString = stringifyRanges(
+      viewUpdate?.state?.selection?.ranges || []
+    )
+    if (selString === lastSelection.current) {
+      // onUpdate is noisy and is fired a lot by extensions
+      // since we're only interested in selections changes we can ignore most of these.
+      return
+    }
+    lastSelection.current = selString
+
+    if (
+      // TODO find a less lazy way of getting the last
+      Date.now() - (window as any).lastCodeMirrorSelectionUpdatedFromScene <
+      150
+    )
+      return // update triggered by scene selection
     if (sceneInfra.selected) return // mid drag
     const ignoreEvents: ModelingMachineEvent['type'][] = [
       'Equip Line tool',
@@ -333,4 +351,8 @@ export const TextEditor = ({
       />
     </div>
   )
+}
+
+function stringifyRanges(ranges: readonly SelectionRange[]): string {
+  return ranges.map(({ to, from }) => `${to}->${from}`).join('&')
 }
