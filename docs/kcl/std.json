@@ -18097,8 +18097,31 @@
     "tags": [],
     "args": [
       {
-        "name": "plane",
-        "type": "SketchData",
+        "name": "center",
+        "type": "[number, number]",
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxItems": 2,
+          "minItems": 2
+        },
+        "required": true
+      },
+      {
+        "name": "radius",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      },
+      {
+        "name": "surface",
+        "type": "SketchSurface",
         "schema": {
           "description": "Data for start sketch on. You can start a sketch on a plane or an extrude group.",
           "anyOf": [
@@ -19014,29 +19037,6 @@
               }
             }
           ]
-        },
-        "required": true
-      },
-      {
-        "name": "center",
-        "type": "[number, number]",
-        "schema": {
-          "type": "array",
-          "items": {
-            "type": "number",
-            "format": "double"
-          },
-          "maxItems": 2,
-          "minItems": 2
-        },
-        "required": true
-      },
-      {
-        "name": "radius",
-        "type": "number",
-        "schema": {
-          "type": "number",
-          "format": "double"
         },
         "required": true
       }
