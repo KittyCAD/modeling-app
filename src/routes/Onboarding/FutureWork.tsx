@@ -4,6 +4,7 @@ import { bracket } from 'lib/exampleKcl'
 import { kclManager } from 'lang/KclSingleton'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { APP_NAME } from 'lib/constants'
+import { onboardingPaths } from './paths'
 
 export default function FutureWork() {
   const { send } = useModelingContext()
@@ -38,6 +39,7 @@ export default function FutureWork() {
         </p>
         <p className="my-4">💚 The Zoo Team</p>
         <OnboardingButtons
+          currentSlug={onboardingPaths.FUTURE_WORK}
           className="mt-6"
           dismiss={dismiss}
           next={dismiss}

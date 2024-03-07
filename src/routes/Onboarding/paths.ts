@@ -12,4 +12,4 @@ export const onboardingPaths = {
   MOVE: '/move',
   SKETCHING: '/sketching',
   FUTURE_WORK: '/future-work',
-}
+} as const

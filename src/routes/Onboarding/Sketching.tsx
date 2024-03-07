@@ -39,6 +39,7 @@ export default function Sketching() {
           always just modifying and generating code in Zoo Modeling App.
         </p>
         <OnboardingButtons
+          currentSlug={onboardingPaths.SKETCHING}
           className="mt-6"
           next={next}
           dismiss={dismiss}

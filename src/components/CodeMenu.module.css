@@ -1,6 +1,6 @@
 .button {
   @apply flex justify-between items-center gap-2 px-2 py-1 text-left border-none rounded-sm;
-  @apply font-mono text-xs font-bold select-none text-chalkboard-90;
+  @apply font-mono !no-underline text-xs font-bold select-none text-chalkboard-90;
   @apply ui-active:bg-energy-10/50 ui-active:text-inherit;
   @apply transition-colors ease-out;
 }

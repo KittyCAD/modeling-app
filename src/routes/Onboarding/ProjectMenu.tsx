@@ -28,6 +28,7 @@ export default function ProjectMenu() {
           </p>
         </section>
         <OnboardingButtons
+          currentSlug={onboardingPaths.PROJECT_MENU}
           next={next}
           dismiss={dismiss}
           nextText="Next: Export"

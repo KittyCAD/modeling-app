@@ -106,20 +106,37 @@ export function useDismiss() {
   }, [send, navigate, filePath])
 }
 
+// Get the 1-indexed step number of the current onboarding step
+export function useStepNumber(
+  slug?: (typeof onboardingPaths)[keyof typeof onboardingPaths]
+) {
+  return slug
+    ? onboardingRoutes.findIndex((r) => r.path === makeUrlPathRelative(slug)) +
+        1
+    : undefined
+}
+
 export function OnboardingButtons({
   next,
   nextText,
   dismiss,
+  currentSlug,
   className,
   ...props
 }: {
   next: () => void
   nextText?: string
   dismiss: () => void
+  currentSlug?: (typeof onboardingPaths)[keyof typeof onboardingPaths]
   className?: string
 } & React.HTMLAttributes<HTMLDivElement>) {
+  const stepNumber = useStepNumber(currentSlug)
+
   return (
-    <div className={'flex justify-between ' + (className ?? '')} {...props}>
+    <div
+      className={'flex items-center justify-between ' + (className ?? '')}
+      {...props}
+    >
       <ActionButton
         Element="button"
         onClick={dismiss}
@@ -132,6 +149,11 @@ export function OnboardingButtons({
       >
         Dismiss
       </ActionButton>
+      {stepNumber && (
+        <p className="font-mono text-xs text-center m-0">
+          {stepNumber} / {onboardingRoutes.length}
+        </p>
+      )}
       <ActionButton
         Element="button"
         onClick={next}

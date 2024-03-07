@@ -97,6 +97,7 @@ export default function InteractiveNumbers() {
           </p>
         </section>
         <OnboardingButtons
+          currentSlug={onboardingPaths.INTERACTIVE_NUMBERS}
           dismiss={dismiss}
           next={next}
           nextText="Next: Command Bar"

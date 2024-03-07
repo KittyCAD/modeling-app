@@ -25,6 +25,7 @@ export default function UserMenu() {
           </p>
         </section>
         <OnboardingButtons
+          currentSlug={onboardingPaths.USER_MENU}
           dismiss={dismiss}
           next={next}
           nextText="Next: Project Menu"

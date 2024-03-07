@@ -327,6 +327,7 @@ interface SettingsSectionProps extends React.PropsWithChildren {
   title: string
   description?: string
   className?: string
+  headingClassName?: string
 }
 
 export function SettingsSection({
@@ -334,6 +335,7 @@ export function SettingsSection({
   description,
   className,
   children,
+  headingClassName = 'text-2xl font-bold',
 }: SettingsSectionProps) {
   return (
     <section
@@ -343,7 +345,7 @@ export function SettingsSection({
       }
     >
       <div className="w-80">
-        <h2 className="text-2xl font-bold">{title}</h2>
+        <h2 className={headingClassName}>{title}</h2>
         <p className="mt-2 text-sm">{description}</p>
       </div>
       <div>{children}</div>

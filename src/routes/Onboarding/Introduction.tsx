@@ -58,7 +58,7 @@ function OnboardingWithNewFile() {
       <div className="max-w-3xl p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
         {!isTauri() ? (
           <>
-            <h1 className="text-2xl font-bold text-warn-80 dark:text-warn-10">
+            <h1 className="text-3xl font-bold text-warn-80 dark:text-warn-10">
               Replaying onboarding resets your code
             </h1>
             <p className="my-4">
@@ -77,7 +77,7 @@ function OnboardingWithNewFile() {
           </>
         ) : (
           <>
-            <h1 className="flex flex-wrap items-center gap-4 text-2xl font-bold">
+            <h1 className="flex flex-wrap items-center gap-4 text-3xl font-bold">
               Would you like to create a new project?
             </h1>
             <section className="my-12">
@@ -128,7 +128,7 @@ export default function Introduction() {
   return isStarterCode ? (
     <div className="fixed inset-0 z-50 grid place-content-center bg-chalkboard-110/50">
       <div className="max-w-3xl p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
-        <h1 className="flex flex-wrap items-center gap-4 text-2xl font-bold">
+        <h1 className="flex flex-wrap items-center gap-4 text-3xl font-bold">
           <img
             src={`/zma-logomark${getLogoTheme()}.svg`}
             alt={APP_NAME}
@@ -169,6 +169,7 @@ export default function Introduction() {
           </p>
         </section>
         <OnboardingButtons
+          currentSlug={onboardingPaths.INDEX}
           className="mt-6"
           dismiss={dismiss}
           next={next}

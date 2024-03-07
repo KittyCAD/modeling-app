@@ -25,7 +25,7 @@ export default function ParametricModeling() {
   return (
     <div className="fixed grid justify-end items-center inset-0 z-50 pointer-events-none">
       <div
-        className="fixed inset-0 bg-black opacity-50 pointer-events-none"
+        className="fixed inset-0 bg-black dark:bg-black-80 opacity-50 pointer-events-none"
         style={{ clipPath: useBackdropHighlight('code-pane') }}
       ></div>
       <div
@@ -35,7 +35,7 @@ export default function ParametricModeling() {
         }
       >
         <section className="flex-1 overflow-y-auto mb-6">
-          <h2 className="text-2xl font-bold">
+          <h2 className="text-3xl font-bold">
             Towards true parametric modeling
           </h2>
           <p className="my-4">
@@ -59,6 +59,7 @@ export default function ParametricModeling() {
           </p>
         </section>
         <OnboardingButtons
+          currentSlug={onboardingPaths.PARAMETRIC_MODELING}
           dismiss={dismiss}
           next={next}
           nextText="Next: Interactive Numbers"

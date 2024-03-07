@@ -49,6 +49,7 @@ export default function CmdK() {
           commands with it soon.
         </p>
         <OnboardingButtons
+          currentSlug={onboardingPaths.COMMAND_K}
           dismiss={dismiss}
           next={next}
           nextText="Next: User Menu"

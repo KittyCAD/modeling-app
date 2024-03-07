@@ -1,8 +1,9 @@
-import { OnboardingButtons, useDismiss, useNextClick } from '.'
+import { OnboardingButtons, useDismiss, useNextClick, useStepNumber } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useStore } from '../../useStore'
 
 export default function Streaming() {
+  const stepNumber = useStepNumber(onboardingPaths.STREAMING)
   const { buttonDownInStream } = useStore((s) => ({
     buttonDownInStream: s.buttonDownInStream,
   }))
@@ -18,18 +19,28 @@ export default function Streaming() {
         }
       >
         <section className="flex-1">
-          <h2 className="text-2xl font-bold">Streaming Video</h2>
+          <h2 className="text-3xl font-bold">Streaming Video</h2>
           <p className="my-4">
-            The 3D view is not running on your computer. Instead, our
-            infrastructure spins up our Geometry Engine on a remote GPU,
-            Modeling App sends it a series of commands via Websockets and
-            WebRTC, and the Geometry Engine sends back a video stream of the 3D
-            view.
+            Historically, CAD programs run on your computer, so to run
+            performance-heavy apps you have to have a powerful, expensive
+            desktop. But the 3D scene you see here is not running on your
+            computer.
           </p>
           <p className="my-4">
-            This means that you could run our Modeling App on a Chromebook, a
-            tablet, or even a phone, as long as you have a good internet
-            connection.
+            Instead, our infrastructure spins up our Geometry Engine on a remote
+            GPU, Modeling App sends it a series of commands{' '}
+            <a
+              href="https://zoo.dev/blog/cad-webrtc"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              via Websockets and WebRTC
+            </a>
+            , and the Geometry Engine sends back a video stream of the 3D view.
+          </p>
+          <p className="my-4">
+            This means that you could run our Modeling App on nearly any device
+            with a good internet connection.
           </p>
           <p className="my-4">
             It also means that whatever tools you build on top of our Geometry
@@ -38,6 +49,7 @@ export default function Streaming() {
           </p>
         </section>
         <OnboardingButtons
+          currentSlug={onboardingPaths.STREAMING}
           dismiss={dismiss}
           next={next}
           nextText="Next: Code Editor"

@@ -45,6 +45,7 @@ export default function Export() {
           </p>
         </section>
         <OnboardingButtons
+          currentSlug={onboardingPaths.EXPORT}
           next={next}
           dismiss={dismiss}
           nextText="Next: Sketching"
