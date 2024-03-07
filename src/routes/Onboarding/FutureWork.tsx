@@ -29,13 +29,35 @@ export default function FutureWork() {
         <p className="my-4">
           We have curves, cuts, and many more CAD features coming soon. We want
           your feedback on this user interface, and we want to know what
-          features you want to see next. Please message us in the Discord server
-          and open issues on GitHub.
+          features you want to see next. Please message us in{' '}
+          <a
+            href="https://discord.gg/JQEpHR7Nt2"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            our Discord server
+          </a>
+          and{' '}
+          <a
+            href="https://github.com/KittyCAD/modeling-app/issues/new/choose"
+            rel="noreferrer noopener"
+            target="_blank"
+          >
+            open issues on GitHub
+          </a>
+          .
         </p>
         <p className="my-4">
-          If you make anything with the app we'd love to see it! Thank you for
-          taking time to try out {APP_NAME}, and build the future of hardware
-          design with us.
+          If you make anything with the app we'd love to see it, feel free to{' '}
+          <a
+            href="https://twitter.com/zoodotdev"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            tag us on X
+          </a>
+          ! Thank you for taking time to try out {APP_NAME}, and build the
+          future of hardware design with us.
         </p>
         <p className="my-4">💚 The Zoo Team</p>
         <OnboardingButtons

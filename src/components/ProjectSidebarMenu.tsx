@@ -25,7 +25,7 @@ const ProjectSidebarMenu = ({
   return (
     <div className="rounded-sm !no-underline h-9 mr-auto max-h-min min-w-max border-0 py-1 px-2 flex items-center gap-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-energy-50 dark:hover:bg-chalkboard-90">
       <Link to={paths.HOME} className="group">
-        <Logo className='w-auto h-5 text-chalkboard-120 dark:text-chalkboard-10 group-hover:text-energy-10' />
+        <Logo className="w-auto h-5 text-chalkboard-120 dark:text-chalkboard-10 group-hover:text-energy-10" />
       </Link>
       {renderAsLink ? (
         <>

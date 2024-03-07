@@ -32,7 +32,7 @@ export default function Export() {
             >
               our open-source extension proposal
             </a>{' '}
-            for the GLTF file format.{' '}
+            for the gLTF file format.{' '}
             <a
               href="https://zoo.dev/docs/api/convert-cad-file"
               rel="noopener noreferrer"
@@ -42,6 +42,17 @@ export default function Export() {
             </a>{' '}
             can convert to and from most common CAD file formats, allowing
             export to almost any CAD software.
+          </p>
+          <p className="my-4">
+            Our teammate David is working on the file format, check out{' '}
+            <a
+              href="https://www.youtube.com/watch?v=8SuW0qkYCZo"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              his talk with the Metaverse Standards Forum
+            </a>
+            !
           </p>
         </section>
         <OnboardingButtons

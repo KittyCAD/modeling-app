@@ -113,8 +113,11 @@ export function useStepNumber(
   slug?: (typeof onboardingPaths)[keyof typeof onboardingPaths]
 ) {
   return slug
-    ? onboardingRoutes.findIndex((r) => r.path === makeUrlPathRelative(slug)) +
-        1
+    ? slug === onboardingPaths.INDEX
+      ? 1
+      : onboardingRoutes.findIndex(
+          (r) => r.path === makeUrlPathRelative(slug)
+        ) + 1
     : undefined
 }
 
@@ -151,7 +154,7 @@ export function OnboardingButtons({
       >
         Dismiss
       </ActionButton>
-      {stepNumber && (
+      {stepNumber !== undefined && (
         <p className="font-mono text-xs text-center m-0">
           {stepNumber} / {onboardingRoutes.length}
         </p>
