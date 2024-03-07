@@ -813,7 +813,8 @@ async fn serial_test_top_level_expression() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_patterns_linear_basic() {
-    let code = r#"const part = circle('[0,0], 2, startSketchOn('XY'))
+    let code = r#"const part =  startSketchOn('XY')
+    |> circle([0,0], 2, %)
     |> patternLinear({axis: [0,1], repetitions: 12, distance: 2}, %)
 "#;
 
@@ -861,7 +862,7 @@ async fn serial_test_patterns_linear_basic_negative_distance() {
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_patterns_linear_basic_negative_axis() {
     let code = r#"const part = startSketchOn('XY')
-    |> circle([0,0], 2)
+    |> circle([0,0], 2, %)
     |> patternLinear({axis: [0,-1], repetitions: 12, distance: 2}, %)
 "#;
 
