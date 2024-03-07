@@ -261,6 +261,29 @@ async fn serial_test_basic_fillet_cube_end() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn serial_test_basic_fillet_cube_close_opposite() {
+    let code = r#"const part001 = startSketchOn('XY')
+    |> startProfileAt([0,0], %)
+    |> line({to: [0, 10], tag: "thing"}, %)
+    |> line([10, 0], %)
+    |> line({to: [0, -10], tag: "thing2"}, %)
+    |> close(%, "thing3")
+    |> extrude(10, %)
+    |> fillet({radius: 2, tags: ["thing3", getOppositeEdge("thing3", %)]}, %)
+
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/basic_fillet_cube_close_opposite.png",
+        &result,
+        0.999,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_basic_fillet_cube_next_adjacent() {
     let code = r#"const part001 = startSketchOn('XY')
     |> startProfileAt([0,0], %)

@@ -83,7 +83,7 @@ abs(num: number) -> number
 
 #### Arguments
 
-* `num`: `number`
+* `num`: `number` (REQUIRED)
 
 #### Returns
 
@@ -103,7 +103,7 @@ acos(num: number) -> number
 
 #### Arguments
 
-* `num`: `number`
+* `num`: `number` (REQUIRED)
 
 #### Returns
 
@@ -123,9 +123,9 @@ angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup)
 
 #### Arguments
 
-* `segment_name`: `string`
-* `to`: `number`
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `segment_name`: `string` (REQUIRED)
+* `to`: `number` (REQUIRED)
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -308,9 +308,9 @@ angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup)
 
 #### Arguments
 
-* `segment_name`: `string`
-* `to`: `number`
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `segment_name`: `string` (REQUIRED)
+* `to`: `number` (REQUIRED)
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -493,7 +493,7 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 
 #### Arguments
 
-* `data`: `AngledLineData` - Data to draw an angled line.
+* `data`: `AngledLineData` - Data to draw an angled line. (REQUIRED)
 ```
 {
 	// The angle of the line.
@@ -505,7 +505,7 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 } |
 [number, number]
 ```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -851,7 +851,7 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 
 #### Arguments
 
-* `data`: `AngledLineData` - Data to draw an angled line.
+* `data`: `AngledLineData` - Data to draw an angled line. (REQUIRED)
 ```
 {
 	// The angle of the line.
@@ -863,7 +863,7 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 } |
 [number, number]
 ```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -1209,7 +1209,7 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 
 #### Arguments
 
-* `data`: `AngledLineData` - Data to draw an angled line.
+* `data`: `AngledLineData` - Data to draw an angled line. (REQUIRED)
 ```
 {
 	// The angle of the line.
@@ -1221,7 +1221,7 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 } |
 [number, number]
 ```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -1567,7 +1567,7 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 
 #### Arguments
 
-* `data`: `AngledLineThatIntersectsData` - Data for drawing an angled line that intersects with a given line.
+* `data`: `AngledLineThatIntersectsData` - Data for drawing an angled line that intersects with a given line. (REQUIRED)
 ```
 {
 	// The angle of the line.
@@ -1580,7 +1580,7 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 	tag: string,
 }
 ```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -1926,7 +1926,7 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 
 #### Arguments
 
-* `data`: `AngledLineToData` - Data to draw an angled line to a point.
+* `data`: `AngledLineToData` - Data to draw an angled line to a point. (REQUIRED)
 ```
 {
 	// The angle of the line.
@@ -1938,7 +1938,7 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 } |
 [number, number]
 ```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -2284,7 +2284,7 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 
 #### Arguments
 
-* `data`: `AngledLineToData` - Data to draw an angled line to a point.
+* `data`: `AngledLineToData` - Data to draw an angled line to a point. (REQUIRED)
 ```
 {
 	// The angle of the line.
@@ -2296,7 +2296,7 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 } |
 [number, number]
 ```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -2642,7 +2642,7 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 
 #### Arguments
 
-* `data`: `ArcData` - Data to draw an arc.
+* `data`: `ArcData` - Data to draw an arc. (REQUIRED)
 ```
 {
 	// The end angle.
@@ -2681,7 +2681,7 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 	to: [number, number],
 }
 ```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -3027,7 +3027,7 @@ asin(num: number) -> number
 
 #### Arguments
 
-* `num`: `number`
+* `num`: `number` (REQUIRED)
 
 #### Returns
 
@@ -3047,7 +3047,7 @@ atan(num: number) -> number
 
 #### Arguments
 
-* `num`: `number`
+* `num`: `number` (REQUIRED)
 
 #### Returns
 
@@ -3067,7 +3067,7 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 
 #### Arguments
 
-* `data`: `BezierData` - Data to draw a bezier curve.
+* `data`: `BezierData` - Data to draw a bezier curve. (REQUIRED)
 ```
 {
 	// The first control point.
@@ -3088,7 +3088,7 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 	to: [number, number],
 }
 ```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -3434,7 +3434,7 @@ ceil(num: number) -> number
 
 #### Arguments
 
-* `num`: `number`
+* `num`: `number` (REQUIRED)
 
 #### Returns
 
@@ -3454,7 +3454,7 @@ circle(plane: SketchData, center: [number, number], radius: number) -> SketchGro
 
 #### Arguments
 
-* `plane`: `SketchData` - Data for start sketch on. You can start a sketch on a plane or an extrude group.
+* `plane`: `SketchData` - Data for start sketch on. You can start a sketch on a plane or an extrude group. (REQUIRED)
 ```
 "XY" |
 "-XY" |
@@ -3619,8 +3619,8 @@ circle(plane: SketchData, center: [number, number], radius: number) -> SketchGro
 },
 }
 ```
-* `center`: `[number, number]`
-* `radius`: `number`
+* `center`: `[number, number]` (REQUIRED)
+* `radius`: `number` (REQUIRED)
 
 #### Returns
 
@@ -3798,12 +3798,12 @@ Close the current sketch.
 
 
 ```
-close(sketch_group: SketchGroup) -> SketchGroup
+close(sketch_group: SketchGroup, tag?: String) -> SketchGroup
 ```
 
 #### Arguments
 
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -3967,6 +3967,7 @@ close(sketch_group: SketchGroup) -> SketchGroup
 },
 }
 ```
+* `tag`: `String` (OPTIONAL)
 
 #### Returns
 
@@ -4149,7 +4150,7 @@ cos(num: number) -> number
 
 #### Arguments
 
-* `num`: `number`
+* `num`: `number` (REQUIRED)
 
 #### Returns
 
@@ -4188,8 +4189,8 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 
 #### Arguments
 
-* `length`: `number`
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `length`: `number` (REQUIRED)
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -4502,7 +4503,7 @@ fillet(data: FilletData, extrude_group: ExtrudeGroup) -> ExtrudeGroup
 
 #### Arguments
 
-* `data`: `FilletData` - Data for fillets.
+* `data`: `FilletData` - Data for fillets. (REQUIRED)
 ```
 {
 	// The radius of the fillet.
@@ -4512,7 +4513,7 @@ fillet(data: FilletData, extrude_group: ExtrudeGroup) -> ExtrudeGroup
 string],
 }
 ```
-* `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces.
+* `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces. (REQUIRED)
 ```
 {
 	// The id of the extrusion end cap
@@ -4792,7 +4793,7 @@ floor(num: number) -> number
 
 #### Arguments
 
-* `num`: `number`
+* `num`: `number` (REQUIRED)
 
 #### Returns
 
@@ -4812,8 +4813,8 @@ getExtrudeWallTransform(surface_name: string, extrude_group: ExtrudeGroup) -> Ex
 
 #### Arguments
 
-* `surface_name`: `string`
-* `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces.
+* `surface_name`: `string` (REQUIRED)
+* `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces. (REQUIRED)
 ```
 {
 	// The id of the extrusion end cap
@@ -4969,8 +4970,8 @@ getNextAdjacentEdge(tag: String, extrude_group: ExtrudeGroup) -> Uuid
 
 #### Arguments
 
-* `tag`: `String`
-* `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces.
+* `tag`: `String` (REQUIRED)
+* `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces. (REQUIRED)
 ```
 {
 	// The id of the extrusion end cap
@@ -5120,8 +5121,8 @@ getOppositeEdge(tag: String, extrude_group: ExtrudeGroup) -> Uuid
 
 #### Arguments
 
-* `tag`: `String`
-* `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces.
+* `tag`: `String` (REQUIRED)
+* `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces. (REQUIRED)
 ```
 {
 	// The id of the extrusion end cap
@@ -5271,8 +5272,8 @@ getPreviousAdjacentEdge(tag: String, extrude_group: ExtrudeGroup) -> Uuid
 
 #### Arguments
 
-* `tag`: `String`
-* `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces.
+* `tag`: `String` (REQUIRED)
+* `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces. (REQUIRED)
 ```
 {
 	// The id of the extrusion end cap
@@ -5422,7 +5423,7 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 
 #### Arguments
 
-* `hole_sketch_group`: `SketchGroupSet` - A sketch group or a group of sketch groups.
+* `hole_sketch_group`: `SketchGroupSet` - A sketch group or a group of sketch groups. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -5590,7 +5591,7 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 	type: "sketchGroups",
 }
 ```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -5932,13 +5933,13 @@ For formats lacking unit data (STL, OBJ, PLY), the default import unit is millim
 Import paths are relative to the current project directory. This only works in the desktop app not in browser.
 
 ```
-import(file_path: String, options: ImportFormat) -> ImportedGeometry
+import(file_path: String, options?: ImportFormat) -> ImportedGeometry
 ```
 
 #### Arguments
 
-* `file_path`: `String`
-* `options`: `ImportFormat` - Import format specifier
+* `file_path`: `String` (REQUIRED)
+* `options`: `ImportFormat` - Import format specifier (OPTIONAL)
 ```
 {
 	type: "fbx",
@@ -6046,7 +6047,7 @@ lastSegX(sketch_group: SketchGroup) -> number
 
 #### Arguments
 
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -6229,7 +6230,7 @@ lastSegY(sketch_group: SketchGroup) -> number
 
 #### Arguments
 
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -6412,8 +6413,8 @@ legAngX(hypotenuse: number, leg: number) -> number
 
 #### Arguments
 
-* `hypotenuse`: `number`
-* `leg`: `number`
+* `hypotenuse`: `number` (REQUIRED)
+* `leg`: `number` (REQUIRED)
 
 #### Returns
 
@@ -6433,8 +6434,8 @@ legAngY(hypotenuse: number, leg: number) -> number
 
 #### Arguments
 
-* `hypotenuse`: `number`
-* `leg`: `number`
+* `hypotenuse`: `number` (REQUIRED)
+* `leg`: `number` (REQUIRED)
 
 #### Returns
 
@@ -6454,8 +6455,8 @@ legLen(hypotenuse: number, leg: number) -> number
 
 #### Arguments
 
-* `hypotenuse`: `number`
-* `leg`: `number`
+* `hypotenuse`: `number` (REQUIRED)
+* `leg`: `number` (REQUIRED)
 
 #### Returns
 
@@ -6475,7 +6476,7 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 
 #### Arguments
 
-* `data`: `LineData` - Data to draw a line.
+* `data`: `LineData` - Data to draw a line. (REQUIRED)
 ```
 {
 	// The tag.
@@ -6485,7 +6486,7 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 } |
 [number, number]
 ```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -6831,7 +6832,7 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 
 #### Arguments
 
-* `data`: `LineToData` - Data to draw a line to a point.
+* `data`: `LineToData` - Data to draw a line to a point. (REQUIRED)
 ```
 {
 	// The tag.
@@ -6841,7 +6842,7 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 } |
 [number, number]
 ```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -7187,7 +7188,7 @@ ln(num: number) -> number
 
 #### Arguments
 
-* `num`: `number`
+* `num`: `number` (REQUIRED)
 
 #### Returns
 
@@ -7207,8 +7208,8 @@ log(num: number, base: number) -> number
 
 #### Arguments
 
-* `num`: `number`
-* `base`: `number`
+* `num`: `number` (REQUIRED)
+* `base`: `number` (REQUIRED)
 
 #### Returns
 
@@ -7228,7 +7229,7 @@ log10(num: number) -> number
 
 #### Arguments
 
-* `num`: `number`
+* `num`: `number` (REQUIRED)
 
 #### Returns
 
@@ -7248,7 +7249,7 @@ log2(num: number) -> number
 
 #### Arguments
 
-* `num`: `number`
+* `num`: `number` (REQUIRED)
 
 #### Returns
 
@@ -7268,7 +7269,7 @@ max(args: [number]) -> number
 
 #### Arguments
 
-* `args`: `[number]`
+* `args`: `[number]` (REQUIRED)
 
 #### Returns
 
@@ -7288,7 +7289,7 @@ min(args: [number]) -> number
 
 #### Arguments
 
-* `args`: `[number]`
+* `args`: `[number]` (REQUIRED)
 
 #### Returns
 
@@ -7308,7 +7309,7 @@ patternCircular(data: CircularPatternData, geometry: Geometry) -> Geometries
 
 #### Arguments
 
-* `data`: `CircularPatternData` - Data for a circular pattern.
+* `data`: `CircularPatternData` - Data for a circular pattern. (REQUIRED)
 ```
 {
 	// The arc angle (in degrees) to place the repetitions. Must be greater than 0.
@@ -7323,7 +7324,7 @@ patternCircular(data: CircularPatternData, geometry: Geometry) -> Geometries
 	rotateDuplicates: string,
 }
 ```
-* `geometry`: `Geometry` - A geometry.
+* `geometry`: `Geometry` - A geometry. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -7644,7 +7645,7 @@ patternLinear(data: LinearPatternData, geometry: Geometry) -> Geometries
 
 #### Arguments
 
-* `data`: `LinearPatternData` - Data for a linear pattern.
+* `data`: `LinearPatternData` - Data for a linear pattern. (REQUIRED)
 ```
 {
 	// The axis of the pattern. This is a 2D vector.
@@ -7655,7 +7656,7 @@ patternLinear(data: LinearPatternData, geometry: Geometry) -> Geometries
 	repetitions: number,
 }
 ```
-* `geometry`: `Geometry` - A geometry.
+* `geometry`: `Geometry` - A geometry. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -7995,8 +7996,8 @@ pow(num: number, pow: number) -> number
 
 #### Arguments
 
-* `num`: `number`
-* `pow`: `number`
+* `num`: `number` (REQUIRED)
+* `pow`: `number` (REQUIRED)
 
 #### Returns
 
@@ -8016,8 +8017,8 @@ segAng(segment_name: string, sketch_group: SketchGroup) -> number
 
 #### Arguments
 
-* `segment_name`: `string`
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `segment_name`: `string` (REQUIRED)
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -8200,8 +8201,8 @@ segEndX(segment_name: string, sketch_group: SketchGroup) -> number
 
 #### Arguments
 
-* `segment_name`: `string`
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `segment_name`: `string` (REQUIRED)
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -8384,8 +8385,8 @@ segEndY(segment_name: string, sketch_group: SketchGroup) -> number
 
 #### Arguments
 
-* `segment_name`: `string`
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `segment_name`: `string` (REQUIRED)
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -8568,8 +8569,8 @@ segLen(segment_name: string, sketch_group: SketchGroup) -> number
 
 #### Arguments
 
-* `segment_name`: `string`
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `segment_name`: `string` (REQUIRED)
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -8752,7 +8753,7 @@ sin(num: number) -> number
 
 #### Arguments
 
-* `num`: `number`
+* `num`: `number` (REQUIRED)
 
 #### Returns
 
@@ -8772,7 +8773,7 @@ sqrt(num: number) -> number
 
 #### Arguments
 
-* `num`: `number`
+* `num`: `number` (REQUIRED)
 
 #### Returns
 
@@ -8792,7 +8793,7 @@ startProfileAt(data: LineData, sketch_surface: SketchSurface) -> SketchGroup
 
 #### Arguments
 
-* `data`: `LineData` - Data to draw a line.
+* `data`: `LineData` - Data to draw a line. (REQUIRED)
 ```
 {
 	// The tag.
@@ -8802,7 +8803,7 @@ startProfileAt(data: LineData, sketch_surface: SketchSurface) -> SketchGroup
 } |
 [number, number]
 ```
-* `sketch_surface`: `SketchSurface` - A sketch group type.
+* `sketch_surface`: `SketchSurface` - A sketch group type. (REQUIRED)
 ```
 {
 	// The id of the plane.
@@ -9045,7 +9046,7 @@ startSketchAt(data: LineData) -> SketchGroup
 
 #### Arguments
 
-* `data`: `LineData` - Data to draw a line.
+* `data`: `LineData` - Data to draw a line. (REQUIRED)
 ```
 {
 	// The tag.
@@ -9232,12 +9233,12 @@ Start a sketch on a specific plane or face.
 
 
 ```
-startSketchOn(data: SketchData, tag: SketchOnFaceTag) -> SketchSurface
+startSketchOn(data: SketchData, tag?: SketchOnFaceTag) -> SketchSurface
 ```
 
 #### Arguments
 
-* `data`: `SketchData` - Data for start sketch on. You can start a sketch on a plane or an extrude group.
+* `data`: `SketchData` - Data for start sketch on. You can start a sketch on a plane or an extrude group. (REQUIRED)
 ```
 "XY" |
 "-XY" |
@@ -9402,7 +9403,7 @@ startSketchOn(data: SketchData, tag: SketchOnFaceTag) -> SketchSurface
 },
 }
 ```
-* `tag`: `SketchOnFaceTag` - A tag for sketch on face.
+* `tag`: `SketchOnFaceTag` - A tag for sketch on face. (OPTIONAL)
 ```
 "start" | "end" |
 string
@@ -9486,7 +9487,7 @@ tan(num: number) -> number
 
 #### Arguments
 
-* `num`: `number`
+* `num`: `number` (REQUIRED)
 
 #### Returns
 
@@ -9506,7 +9507,7 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 
 #### Arguments
 
-* `data`: `TangentialArcData` - Data to draw a tangential arc.
+* `data`: `TangentialArcData` - Data to draw a tangential arc. (REQUIRED)
 ```
 {
 	// Offset of the arc, in degrees.
@@ -9522,7 +9523,7 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 } |
 [number, number]
 ```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -9863,13 +9864,13 @@ Draw an arc.
 
 
 ```
-tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchGroup
+tangentialArcTo(to: [number], sketch_group: SketchGroup, tag?: String) -> SketchGroup
 ```
 
 #### Arguments
 
-* `to`: `[number]`
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `to`: `[number]` (REQUIRED)
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -10033,7 +10034,7 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchG
 },
 }
 ```
-* `tag`: `String`
+* `tag`: `String` (OPTIONAL)
 
 #### Returns
 
@@ -10235,7 +10236,7 @@ xLine(data: AxisLineData, sketch_group: SketchGroup) -> SketchGroup
 
 #### Arguments
 
-* `data`: `AxisLineData` - Data to draw a line on an axis.
+* `data`: `AxisLineData` - Data to draw a line on an axis. (REQUIRED)
 ```
 {
 	// The length of the line.
@@ -10245,7 +10246,7 @@ xLine(data: AxisLineData, sketch_group: SketchGroup) -> SketchGroup
 } |
 number
 ```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -10591,7 +10592,7 @@ xLineTo(data: AxisLineToData, sketch_group: SketchGroup) -> SketchGroup
 
 #### Arguments
 
-* `data`: `AxisLineToData` - Data to draw a line to a point on an axis.
+* `data`: `AxisLineToData` - Data to draw a line to a point on an axis. (REQUIRED)
 ```
 {
 	// The tag.
@@ -10601,7 +10602,7 @@ xLineTo(data: AxisLineToData, sketch_group: SketchGroup) -> SketchGroup
 } |
 number
 ```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -10947,7 +10948,7 @@ yLine(data: AxisLineData, sketch_group: SketchGroup) -> SketchGroup
 
 #### Arguments
 
-* `data`: `AxisLineData` - Data to draw a line on an axis.
+* `data`: `AxisLineData` - Data to draw a line on an axis. (REQUIRED)
 ```
 {
 	// The length of the line.
@@ -10957,7 +10958,7 @@ yLine(data: AxisLineData, sketch_group: SketchGroup) -> SketchGroup
 } |
 number
 ```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -11303,7 +11304,7 @@ yLineTo(data: AxisLineToData, sketch_group: SketchGroup) -> SketchGroup
 
 #### Arguments
 
-* `data`: `AxisLineToData` - Data to draw a line to a point on an axis.
+* `data`: `AxisLineToData` - Data to draw a line to a point on an axis. (REQUIRED)
 ```
 {
 	// The tag.
@@ -11313,7 +11314,7 @@ yLineTo(data: AxisLineToData, sketch_group: SketchGroup) -> SketchGroup
 } |
 number
 ```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
