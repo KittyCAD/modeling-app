@@ -9,6 +9,8 @@ export default function InteractiveNumbers() {
   }))
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.COMMAND_K)
+  const kbdClasses =
+    'p-0.5 rounded-sm bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50'
 
   return (
     <div className="fixed grid justify-end items-center inset-0 z-50 pointer-events-none">
@@ -23,52 +25,32 @@ export default function InteractiveNumbers() {
         }
       >
         <section className="flex-1 overflow-y-auto mb-6">
-          <h2 className="text-2xl font-bold">Interactive Numbers</h2>
+          <h2 className="text-3xl font-bold">Hybrid editing</h2>
+
           <p className="my-4">
-            Let's do a little bit of hybrid editing to this part.
-          </p>
-          <p className="my-4">
-            Try changing the value of <code>width</code> on line 3 by holding
-            the <kbd>Alt</kbd> (or <kbd>Option</kbd>) key and dragging the
+            Try changing the value of <code>width</code> on line 2 by holding
+            the <kbd className={kbdClasses}>Alt</kbd> (or{' '}
+            <kbd className={kbdClasses}>Option</kbd>) key and dragging the
             number left and right. You can hold down different modifier keys to
             change the value by different increments:
           </p>
-          <table className="border-collapse text-sm mx-auto my-4">
-            <tbody>
-              <tr>
-                <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70">
-                  <kbd>Alt + Shift + Cmd/Win</kbd>
-                </td>
-                <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70 text-right">
-                  0.01
-                </td>
-              </tr>
-              <tr>
-                <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70">
-                  <kbd>Alt + Cmd/Win</kbd>
-                </td>
-                <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70 text-right">
-                  0.1
-                </td>
-              </tr>
-              <tr>
-                <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70">
-                  <kbd>Alt</kbd>
-                </td>
-                <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70 text-right">
-                  1
-                </td>
-              </tr>
-              <tr>
-                <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70">
-                  <kbd>Alt + Shift</kbd>
-                </td>
-                <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70 text-right">
-                  10
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <ul className="flex flex-col text-sm my-4 mx-12 divide-y divide-chalkboard-20 dark:divide-chalkboard-70">
+            <li className="flex justify-between m-0 px-0 py-2">
+              <kbd className={kbdClasses}>Alt + Shift + Cmd/Win</kbd>
+              ±0.01
+            </li>
+            <li className="flex justify-between m-0 px-0 py-2">
+              <kbd className={kbdClasses}>Alt + Cmd/Win</kbd>
+              ±0.1
+            </li>
+            <li className="flex justify-between m-0 px-0 py-2">
+              <kbd className={kbdClasses}>Alt</kbd>±1
+            </li>
+            <li className="flex justify-between m-0 px-0 py-2">
+              <kbd className={kbdClasses}>Alt + Shift</kbd>
+              ±10
+            </li>
+          </ul>
           <p className="my-4">
             Our code editor is built with{' '}
             <a
@@ -90,8 +72,8 @@ export default function InteractiveNumbers() {
             lets you interact with numbers in your code by dragging them around.
           </p>
           <p className="my-4">
-            Editing code should feel as interactive as point-and-click when you
-            want it to be, so that you can work in the way that feels most
+            We believe editing in Modeling App should feel fluid between code
+            and point-and-click, so that you can work in the way that feels most
             natural to you. We're going to keep extending the text editor, and
             we'd love to hear your ideas for how to make it better.
           </p>
