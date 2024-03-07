@@ -8,9 +8,8 @@ use crate::{
 };
 
 pub const CIRCLE_FN: &str = r#"
-(plane, center, radius) => {
-  const sg = startSketchOn(plane)
-    |> startProfileAt([center[0] + radius, center[1]], %)
+(center, radius, surface) => {
+const sg = startProfileAt([center[0] + radius, center[1]], surface)
     |> arc({
        angle_end: 360,
        angle_start: 0,
@@ -70,14 +69,6 @@ impl StdLibFn for Circle {
         let mut args = Vec::new();
         for parameter in &self.function.params {
             match parameter.identifier.name.as_str() {
-                "plane" => {
-                    args.push(crate::docs::StdLibFnArg {
-                        name: parameter.identifier.name.to_owned(),
-                        type_: "SketchData".to_string(),
-                        schema: <crate::std::sketch::SketchData>::json_schema(&mut generator),
-                        required: true,
-                    });
-                }
                 "center" => {
                     args.push(crate::docs::StdLibFnArg {
                         name: parameter.identifier.name.to_owned(),
@@ -91,6 +82,14 @@ impl StdLibFn for Circle {
                         name: parameter.identifier.name.to_owned(),
                         type_: "number".to_string(),
                         schema: <f64>::json_schema(&mut generator),
+                        required: true,
+                    });
+                }
+                "surface" => {
+                    args.push(crate::docs::StdLibFnArg {
+                        name: parameter.identifier.name.to_owned(),
+                        type_: "SketchSurface".to_string(),
+                        schema: <crate::std::sketch::SketchData>::json_schema(&mut generator),
                         required: true,
                     });
                 }

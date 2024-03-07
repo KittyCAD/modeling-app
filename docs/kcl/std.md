@@ -3449,12 +3449,14 @@ Sketch a circle on the given plane
 
 
 ```
-circle(plane: SketchData, center: [number, number], radius: number) -> SketchGroup
+circle(center: [number, number], radius: number, surface: SketchSurface) -> SketchGroup
 ```
 
 #### Arguments
 
-* `plane`: `SketchData` - Data for start sketch on. You can start a sketch on a plane or an extrude group. (REQUIRED)
+* `center`: `[number, number]` (REQUIRED)
+* `radius`: `number` (REQUIRED)
+* `surface`: `SketchSurface` - Data for start sketch on. You can start a sketch on a plane or an extrude group. (REQUIRED)
 ```
 "XY" |
 "-XY" |
@@ -3619,8 +3621,6 @@ circle(plane: SketchData, center: [number, number], radius: number) -> SketchGro
 },
 }
 ```
-* `center`: `[number, number]` (REQUIRED)
-* `radius`: `number` (REQUIRED)
 
 #### Returns
 

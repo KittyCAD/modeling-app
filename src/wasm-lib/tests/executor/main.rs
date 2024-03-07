@@ -732,8 +732,8 @@ async fn serial_test_holes() {
   |> line([10, 0], %)
   |> line([0, -10], %)
   |> close(%)
-  |> hole(circle('XY', [2, 2], .5), %)
-  |> hole(circle('XY', [2, 8], .5), %)
+  |> hole(circle([2, 2], .5, startSketchOn('XY')), %)
+  |> hole(circle([2, 8], .5, startSketchOn('XY')), %)
   |> extrude(2, %)
 "#;
 
@@ -788,10 +788,10 @@ const holeRadius = 1
 const holeIndex = 6
 
 const part = roundedRectangle([0, 0], 20, 20, 4)
-  |> hole(circle('XY', [-holeIndex, holeIndex], holeRadius), %)
-  |> hole(circle('XY', [holeIndex, holeIndex], holeRadius), %)
-  |> hole(circle('XY', [-holeIndex, -holeIndex], holeRadius), %)
-  |> hole(circle('XY', [holeIndex, -holeIndex], holeRadius), %)
+  |> hole(circle([-holeIndex, holeIndex], holeRadius,  startSketchOn('XY')), %)
+  |> hole(circle([holeIndex, holeIndex], holeRadius,  startSketchOn('XY')), %)
+  |> hole(circle([-holeIndex, -holeIndex], holeRadius,  startSketchOn('XY')), %)
+  |> hole(circle([holeIndex, -holeIndex], holeRadius,  startSketchOn('XY')), %)
   |> extrude(2, %)
 "#;
 
@@ -803,7 +803,7 @@ const part = roundedRectangle([0, 0], 20, 20, 4)
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_top_level_expression() {
-    let code = r#"circle('XY', [0,0], 22) |> extrude(14, %)"#;
+    let code = r#"circle([0,0], 22,  startSketchOn('XY')) |> extrude(14, %)"#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
         .await
@@ -813,7 +813,8 @@ async fn serial_test_top_level_expression() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_patterns_linear_basic() {
-    let code = r#"const part = circle('XY', [0,0], 2)
+    let code = r#"const part =  startSketchOn('XY')
+    |> circle([0,0], 2, %)
     |> patternLinear({axis: [0,1], repetitions: 12, distance: 2}, %)
 "#;
 
@@ -843,7 +844,8 @@ async fn serial_test_patterns_linear_basic_3d() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_patterns_linear_basic_negative_distance() {
-    let code = r#"const part = circle('XY', [0,0], 2)
+    let code = r#"const part = startSketchOn('XY')
+    |> circle([0,0], 2, %)
     |> patternLinear({axis: [0,1], repetitions: 12, distance: -2}, %)
 "#;
 
@@ -859,7 +861,8 @@ async fn serial_test_patterns_linear_basic_negative_distance() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_patterns_linear_basic_negative_axis() {
-    let code = r#"const part = circle('XY', [0,0], 2)
+    let code = r#"const part = startSketchOn('XY')
+    |> circle([0,0], 2, %)
     |> patternLinear({axis: [0,-1], repetitions: 12, distance: 2}, %)
 "#;
 
@@ -875,7 +878,8 @@ async fn serial_test_patterns_linear_basic_negative_axis() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_patterns_linear_basic_holes() {
-    let code = r#"const circles = circle('XY', [5, 5], 1)
+    let code = r#"const circles = startSketchOn('XY')
+    |> circle([5, 5], 1, %)
     |> patternLinear({axis: [1,1], repetitions: 12, distance: 3}, %)
 
 const rectangle = startSketchOn('XY')
@@ -896,7 +900,8 @@ const rectangle = startSketchOn('XY')
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_patterns_circular_basic_2d() {
-    let code = r#"const part = circle('XY', [0,0], 2)
+    let code = r#"const part = startSketchOn('XY')
+    |> circle([0,0], 2, %)
     |> patternCircular({axis: [0,1], center: [20, 20, 20], repetitions: 12, arcDegrees: 210, rotateDuplicates: true}, %)
 "#;
 
@@ -1248,7 +1253,7 @@ async fn serial_test_stdlib_kcl_error_right_code_path() {
   |> line([0, -10], %)
   |> close(%)
   |> hole(circle([2, 2], .5), %)
-  |> hole(circle('XY', [2, 8], .5), %)
+  |> hole(circle([2, 8], .5, startSketchOn('XY')), %)
   |> extrude(2, %)
 "#;
 
@@ -1258,4 +1263,30 @@ async fn serial_test_stdlib_kcl_error_right_code_path() {
         result.err().unwrap().to_string(),
         r#"semantic: KclErrorDetails { source_ranges: [SourceRange([157, 175])], message: "this function expected 3 arguments, got 2" }"#
     );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_sketch_on_face_circle() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+const part001 = cube([0,0], 20)
+    |> close(%)
+    |> extrude(20, %)
+
+const part002 = startSketchOn(part001, "end")
+  |> circle([0, 0], 5, %) 
+  |> extrude(5, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_circle.png", &result, 1.0);
 }
