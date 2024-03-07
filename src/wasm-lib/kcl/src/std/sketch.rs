@@ -1130,18 +1130,7 @@ async fn inner_close(
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum ArcData {
-    /// Angles and radius with a tag.
-    AnglesAndRadiusWithTag {
-        /// The start angle.
-        angle_start: f64,
-        /// The end angle.
-        angle_end: f64,
-        /// The radius.
-        radius: f64,
-        /// The tag.
-        tag: String,
-    },
-    /// Angles and radius.
+    /// Angles and radius with an optional tag.
     AnglesAndRadius {
         /// The start angle.
         angle_start: f64,
@@ -1149,19 +1138,11 @@ pub enum ArcData {
         angle_end: f64,
         /// The radius.
         radius: f64,
-    },
-    /// Center, to and radius with a tag.
-    CenterToRadiusWithTag {
-        /// The center.
-        center: [f64; 2],
-        /// The to point.
-        to: [f64; 2],
-        /// The radius.
-        radius: f64,
         /// The tag.
-        tag: String,
+        #[serde(default)]
+        tag: Option<String>,
     },
-    /// Center, to and radius.
+    /// Center, to and radius with an optional tag.
     CenterToRadius {
         /// The center.
         center: [f64; 2],
@@ -1169,6 +1150,9 @@ pub enum ArcData {
         to: [f64; 2],
         /// The radius.
         radius: f64,
+        /// The tag.
+        #[serde(default)]
+        tag: Option<String>,
     },
 }
 
@@ -1188,7 +1172,7 @@ async fn inner_arc(data: ArcData, sketch_group: Box<SketchGroup>, args: Args) ->
     let from: Point2d = sketch_group.get_coords_from_paths()?;
 
     let (center, angle_start, angle_end, radius, end) = match &data {
-        ArcData::AnglesAndRadiusWithTag {
+        ArcData::AnglesAndRadius {
             angle_start,
             angle_end,
             radius,
@@ -1199,21 +1183,7 @@ async fn inner_arc(data: ArcData, sketch_group: Box<SketchGroup>, args: Args) ->
             let (center, end) = arc_center_and_end(from, a_start, a_end, *radius);
             (center, a_start, a_end, *radius, end)
         }
-        ArcData::AnglesAndRadius {
-            angle_start,
-            angle_end,
-            radius,
-        } => {
-            let a_start = Angle::from_degrees(*angle_start);
-            let a_end = Angle::from_degrees(*angle_end);
-            let (center, end) = arc_center_and_end(from, a_start, a_end, *radius);
-            (center, a_start, a_end, *radius, end)
-        }
-        ArcData::CenterToRadiusWithTag { center, to, radius, .. } => {
-            let (angle_start, angle_end) = arc_angles(from, center.into(), to.into(), *radius, args.source_range)?;
-            (center.into(), angle_start, angle_end, *radius, to.into())
-        }
-        ArcData::CenterToRadius { center, to, radius } => {
+        ArcData::CenterToRadius { center, to, radius, .. } => {
             let (angle_start, angle_end) = arc_angles(from, center.into(), to.into(), *radius, args.source_range)?;
             (center.into(), angle_start, angle_end, *radius, to.into())
         }
@@ -1241,10 +1211,8 @@ async fn inner_arc(data: ArcData, sketch_group: Box<SketchGroup>, args: Args) ->
             from: from.into(),
             to: end.into(),
             name: match data {
-                ArcData::AnglesAndRadiusWithTag { tag, .. } => tag.to_string(),
-                ArcData::AnglesAndRadius { .. } => "".to_string(),
-                ArcData::CenterToRadiusWithTag { tag, .. } => tag.to_string(),
-                ArcData::CenterToRadius { .. } => "".to_string(),
+                ArcData::AnglesAndRadius { tag, .. } => tag.unwrap_or_default().to_string(),
+                ArcData::CenterToRadius { tag, .. } => tag.unwrap_or_default().to_string(),
             },
             geo_meta: GeoMeta {
                 id,
@@ -1456,28 +1424,16 @@ async fn inner_tangential_arc_to(
 /// Data to draw a bezier curve.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(rename_all = "camelCase", untagged)]
-pub enum BezierData {
-    /// Points with a tag.
-    PointsWithTag {
-        /// The to point.
-        to: [f64; 2],
-        /// The first control point.
-        control1: [f64; 2],
-        /// The second control point.
-        control2: [f64; 2],
-        /// The tag.
-        tag: String,
-    },
-    /// Points.
-    Points {
-        /// The to point.
-        to: [f64; 2],
-        /// The first control point.
-        control1: [f64; 2],
-        /// The second control point.
-        control2: [f64; 2],
-    },
+#[serde(rename_all = "camelCase")]
+pub struct BezierData {
+    /// The to point.
+    to: [f64; 2],
+    /// The first control point.
+    control1: [f64; 2],
+    /// The second control point.
+    control2: [f64; 2],
+    /// The tag.
+    tag: Option<String>,
 }
 
 /// Draw a bezier curve.
@@ -1499,16 +1455,9 @@ async fn inner_bezier_curve(
 ) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
 
-    let (to, control1, control2) = match &data {
-        BezierData::PointsWithTag {
-            to, control1, control2, ..
-        } => (to, control1, control2),
-        BezierData::Points { to, control1, control2 } => (to, control1, control2),
-    };
-
     let relative = true;
-    let delta = to;
-    let to = [from.x + to[0], from.y + to[1]];
+    let delta = data.to;
+    let to = [from.x + data.to[0], from.y + data.to[1]];
 
     let id = uuid::Uuid::new_v4();
 
@@ -1518,13 +1467,13 @@ async fn inner_bezier_curve(
             path: sketch_group.id,
             segment: kittycad::types::PathSegment::Bezier {
                 control1: Point3D {
-                    x: control1[0],
-                    y: control1[1],
+                    x: data.control1[0],
+                    y: data.control1[1],
                     z: 0.0,
                 },
                 control2: Point3D {
-                    x: control2[0],
-                    y: control2[1],
+                    x: data.control2[0],
+                    y: data.control2[1],
                     z: 0.0,
                 },
                 end: Point3D {
@@ -1542,11 +1491,7 @@ async fn inner_bezier_curve(
         base: BasePath {
             from: from.into(),
             to,
-            name: if let BezierData::PointsWithTag { tag, .. } = data {
-                tag.to_string()
-            } else {
-                "".to_string()
-            },
+            name: data.tag.unwrap_or_default().to_string(),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),

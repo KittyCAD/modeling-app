@@ -1290,3 +1290,29 @@ const part002 = startSketchOn(part001, "end")
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_circle.png", &result, 1.0);
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_sketch_on_face_circle_tagged() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+const part001 = cube([0,0], 20)
+    |> close(%)
+    |> extrude(20, %)
+
+const part002 = startSketchOn(part001, "end")
+  |> circle([0, 0], 5, %, "myCircle") 
+  |> extrude(5, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_circle_tagged.png", &result, 1.0);
+}

@@ -8,12 +8,13 @@ use crate::{
 };
 
 pub const CIRCLE_FN: &str = r#"
-(center, radius, surface) => {
+(center, radius, surface, tag?) => {
 const sg = startProfileAt([center[0] + radius, center[1]], surface)
     |> arc({
        angle_end: 360,
        angle_start: 0,
-       radius: radius
+       radius: radius,
+       tag: tag
      }, %)
     |> close(%)
   return sg
@@ -89,8 +90,16 @@ impl StdLibFn for Circle {
                     args.push(crate::docs::StdLibFnArg {
                         name: parameter.identifier.name.to_owned(),
                         type_: "SketchSurface".to_string(),
-                        schema: <crate::std::sketch::SketchData>::json_schema(&mut generator),
+                        schema: <crate::executor::SketchSurface>::json_schema(&mut generator),
                         required: true,
+                    });
+                }
+                "tag" => {
+                    args.push(crate::docs::StdLibFnArg {
+                        name: parameter.identifier.name.to_owned(),
+                        type_: "String".to_string(),
+                        schema: <String>::json_schema(&mut generator),
+                        required: false,
                     });
                 }
                 _ => panic!("Unknown parameter: {:?}", parameter.identifier.name),
