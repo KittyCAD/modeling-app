@@ -88,11 +88,11 @@ button:disabled {
 }
 
 a:not(.action-button) {
-  @apply text-energy-70 hover:text-energy-60;
+  @apply text-energy-70 hover:text-energy-60 underline;
 }
 
 .dark a:not(.action-button) {
-  @apply text-chalkboard-20 hover:text-energy-10;
+  @apply text-energy-20 hover:text-energy-10;
 }
 
 input {
