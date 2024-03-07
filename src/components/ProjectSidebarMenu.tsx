@@ -11,6 +11,7 @@ import { sep } from '@tauri-apps/api/path'
 import { Logo } from './Logo'
 import { APP_NAME } from 'lib/constants'
 import { useCommandsContext } from 'hooks/useCommandsContext'
+import { CustomIcon } from './CustomIcon'
 
 const ProjectSidebarMenu = ({
   project,
@@ -21,29 +22,49 @@ const ProjectSidebarMenu = ({
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
 }) => {
+  return (
+    <div className="rounded-sm !no-underline h-9 mr-auto max-h-min min-w-max border-0 py-1 px-2 flex items-center gap-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-energy-50 dark:hover:bg-chalkboard-90">
+      <Link to={paths.HOME} className="group">
+        <Logo className='w-auto h-5 text-chalkboard-120 dark:text-chalkboard-10 group-hover:text-energy-10' />
+      </Link>
+      {renderAsLink ? (
+        <>
+          <Link
+            to={paths.HOME}
+            className="!no-underline"
+            data-testid="project-sidebar-link"
+          >
+            <span
+              className="hidden text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
+              data-testid="project-sidebar-link-name"
+            >
+              {project?.name ? project.name : APP_NAME}
+            </span>
+          </Link>
+        </>
+      ) : (
+        <ProjectMenuPopover project={project} file={file} />
+      )}
+    </div>
+  )
+}
+
+function ProjectMenuPopover({
+  project,
+  file,
+}: {
+  project?: IndexLoaderData['project']
+  file?: IndexLoaderData['file']
+}) {
   const { commandBarSend } = useCommandsContext()
 
-  return renderAsLink ? (
-    <Link
-      to={paths.HOME}
-      className="rounded-sm !no-underline h-9 mr-auto max-h-min min-w-max border-0 py-1 px-2 flex items-center gap-3 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-energy-50 dark:hover:bg-chalkboard-90"
-      data-testid="project-sidebar-link"
-    >
-      <Logo />
-      <span
-        className="hidden text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
-        data-testid="project-sidebar-link-name"
-      >
-        {project?.name ? project.name : APP_NAME}
-      </span>
-    </Link>
-  ) : (
+  return (
     <Popover className="relative">
       <Popover.Button
-        className="rounded-sm h-9 mr-auto max-h-min min-w-max border-0 py-1 px-2 flex items-center gap-3 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-energy-50 dark:hover:bg-chalkboard-90"
+        className="rounded-sm h-9 mr-auto max-h-min min-w-max border-0 py-1 pl-0 pr-2 flex items-center focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-energy-50 dark:hover:bg-chalkboard-90"
         data-testid="project-sidebar-toggle"
       >
-        <Logo />
+        <CustomIcon name="three-dots" className="w-5 h-5 rotate-90" />
         <div className="flex flex-col items-start py-0.5">
           <span className="hidden text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block">
             {isTauri() && file?.name
@@ -85,7 +106,6 @@ const ProjectSidebarMenu = ({
           {({ close }) => (
             <>
               <div className="flex items-center gap-4 px-4 py-3">
-                <Logo />
                 <div>
                   <p
                     className="m-0 text-chalkboard-100 dark:text-energy-10 text-mono"

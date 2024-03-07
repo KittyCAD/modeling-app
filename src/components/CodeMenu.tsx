@@ -29,7 +29,7 @@ export const CodeMenu = ({ children }: PropsWithChildren) => {
       >
         <Menu.Button className="p-0 border-none relative">
           <ActionIcon
-            icon={faEllipsis}
+            icon="three-dots"
             className="p-1"
             size="sm"
             bgClassName={

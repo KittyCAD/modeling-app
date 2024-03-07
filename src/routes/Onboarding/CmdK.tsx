@@ -44,9 +44,8 @@ export default function CmdK() {
           >
             XState
           </a>
-          . You can control settings, authentication, and file
-          management from the command bar, as well as a growing number of modeling
-          commands.
+          . You can control settings, authentication, and file management from
+          the command bar, as well as a growing number of modeling commands.
         </p>
         <OnboardingButtons
           currentSlug={onboardingPaths.COMMAND_K}
