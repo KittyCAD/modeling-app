@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, Download } from '@playwright/test'
 import { secrets } from './secrets'
 import { getUtils } from './test-utils'
 import { Models } from '@kittycad/lib'
@@ -118,15 +118,30 @@ const part001 = startSketchOn('-XZ')
     }
     await expect(page.getByText('Confirm Export')).toBeVisible()
 
-    // Kick off export promise before triggering the download in case it downloads very quickly
-    // since playwright is puppets the browser, race conditions are much more acute,
-    // and since this export is a simple file the download can happen very quickly
-    const downloadPromise = page.waitForEvent('download')
+    const getPromiseAndResolve = () => {
+      let resolve: any = () => {}
+      const promise = new Promise<Download>((r) => {
+        resolve = r
+      })
+      return [promise, resolve]
+    }
+
+    const [downloadPromise1, downloadResolve1] = getPromiseAndResolve()
+    const [downloadPromise2, downloadResolve2] = getPromiseAndResolve()
+    let downloadCnt = 0
+
+    page.on('download', async (download) => {
+      if (downloadCnt === 0) {
+        downloadResolve1(download)
+      } else if (downloadCnt === 1) {
+        downloadResolve2(download)
+      }
+      downloadCnt++
+    })
     await page.getByRole('button', { name: 'Submit command' }).click()
 
     // Handle download
-    const download = await downloadPromise
-    const downloadPromise2 = page.waitForEvent('download')
+    const download = await downloadPromise1
     const downloadLocationer = (extra = '', isImage = false) =>
       `./e2e/playwright/export-snapshots/${output.type}-${
         'storage' in output ? output.storage : ''

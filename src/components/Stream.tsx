@@ -144,7 +144,7 @@ export const Stream = ({ className = '' }: { className?: string }) => {
         disablePictureInPicture
         style={{ transitionDuration: '200ms', transitionProperty: 'filter' }}
       />
-      <ClientSideScene cameraControls={settings.context.cameraControls} />
+      <ClientSideScene cameraControls={settings.context?.cameraControls} />
       {!isNetworkOkay && !isLoading && (
         <div className="text-center absolute inset-0">
           <Loading>

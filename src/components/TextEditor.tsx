@@ -108,8 +108,8 @@ export const TextEditor = ({
     state,
   } = useModelingContext()
 
-  const { settings: { context: { textWrapping } = {} } = {}, auth } =
-    useGlobalStateContext()
+  const { settings, auth } = useGlobalStateContext()
+  const textWrapping = settings.context?.textWrapping ?? 'On'
   const { commandBarSend } = useCommandsContext()
   const {
     context: { project },
