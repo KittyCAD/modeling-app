@@ -4,18 +4,18 @@ expression: actual
 ---
 {
   "start": 0,
-  "end": 59,
+  "end": 87,
   "body": [
     {
       "type": "VariableDeclaration",
       "type": "VariableDeclaration",
       "start": 0,
-      "end": 58,
+      "end": 86,
       "declarations": [
         {
           "type": "VariableDeclarator",
           "start": 6,
-          "end": 58,
+          "end": 86,
           "id": {
             "type": "Identifier",
             "start": 6,
@@ -26,59 +26,27 @@ expression: actual
             "type": "PipeExpression",
             "type": "PipeExpression",
             "start": 17,
-            "end": 58,
+            "end": 86,
             "body": [
               {
                 "type": "CallExpression",
                 "type": "CallExpression",
                 "start": 17,
-                "end": 40,
+                "end": 36,
                 "callee": {
                   "type": "Identifier",
                   "start": 17,
-                  "end": 23,
-                  "name": "circle"
+                  "end": 30,
+                  "name": "startSketchOn"
                 },
                 "arguments": [
                   {
                     "type": "Literal",
                     "type": "Literal",
-                    "start": 24,
-                    "end": 28,
+                    "start": 31,
+                    "end": 35,
                     "value": "XY",
                     "raw": "'XY'"
-                  },
-                  {
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression",
-                    "start": 30,
-                    "end": 35,
-                    "elements": [
-                      {
-                        "type": "Literal",
-                        "type": "Literal",
-                        "start": 31,
-                        "end": 32,
-                        "value": 0,
-                        "raw": "0"
-                      },
-                      {
-                        "type": "Literal",
-                        "type": "Literal",
-                        "start": 33,
-                        "end": 34,
-                        "value": 0,
-                        "raw": "0"
-                      }
-                    ]
-                  },
-                  {
-                    "type": "Literal",
-                    "type": "Literal",
-                    "start": 37,
-                    "end": 39,
-                    "value": 22,
-                    "raw": "22"
                   }
                 ],
                 "optional": false
@@ -87,27 +55,80 @@ expression: actual
                 "type": "CallExpression",
                 "type": "CallExpression",
                 "start": 44,
-                "end": 58,
+                "end": 64,
                 "callee": {
                   "type": "Identifier",
                   "start": 44,
-                  "end": 51,
+                  "end": 50,
+                  "name": "circle"
+                },
+                "arguments": [
+                  {
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression",
+                    "start": 51,
+                    "end": 56,
+                    "elements": [
+                      {
+                        "type": "Literal",
+                        "type": "Literal",
+                        "start": 52,
+                        "end": 53,
+                        "value": 0,
+                        "raw": "0"
+                      },
+                      {
+                        "type": "Literal",
+                        "type": "Literal",
+                        "start": 54,
+                        "end": 55,
+                        "value": 0,
+                        "raw": "0"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Literal",
+                    "type": "Literal",
+                    "start": 58,
+                    "end": 60,
+                    "value": 22,
+                    "raw": "22"
+                  },
+                  {
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution",
+                    "start": 62,
+                    "end": 63
+                  }
+                ],
+                "optional": false
+              },
+              {
+                "type": "CallExpression",
+                "type": "CallExpression",
+                "start": 72,
+                "end": 86,
+                "callee": {
+                  "type": "Identifier",
+                  "start": 72,
+                  "end": 79,
                   "name": "extrude"
                 },
                 "arguments": [
                   {
                     "type": "Literal",
                     "type": "Literal",
-                    "start": 52,
-                    "end": 54,
+                    "start": 80,
+                    "end": 82,
                     "value": 14,
                     "raw": "14"
                   },
                   {
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution",
-                    "start": 56,
-                    "end": 57
+                    "start": 84,
+                    "end": 85
                   }
                 ],
                 "optional": false
