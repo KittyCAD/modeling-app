@@ -1,4 +1,4 @@
-import { OnboardingButtons, useDismiss, useNextClick } from '.'
+import { OnboardingButtons, kbdClasses, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useStore } from '../../useStore'
 import { useBackdropHighlight } from 'hooks/useBackdropHighlight'
@@ -9,8 +9,6 @@ export default function InteractiveNumbers() {
   }))
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.COMMAND_K)
-  const kbdClasses =
-    'p-0.5 rounded-sm bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50'
 
   return (
     <div className="fixed grid justify-end items-center inset-0 z-50 pointer-events-none">

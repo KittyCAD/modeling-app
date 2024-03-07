@@ -1,5 +1,5 @@
 import usePlatform from 'hooks/usePlatform'
-import { OnboardingButtons, useDismiss, useNextClick } from '.'
+import { OnboardingButtons, kbdClasses, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useStore } from '../../useStore'
 
@@ -24,11 +24,11 @@ export default function CmdK() {
           Press{' '}
           {platformName === 'darwin' ? (
             <>
-              <kbd>⌘</kbd> + <kbd>K</kbd>
+              <kbd className={kbdClasses}>⌘K</kbd>
             </>
           ) : (
             <>
-              <kbd>Ctrl</kbd> + <kbd>/</kbd>
+              <kbd className={kbdClasses}>Ctrl + /</kbd>
             </>
           )}{' '}
           to open the command bar. Try changing your theme with it.
@@ -44,9 +44,9 @@ export default function CmdK() {
           >
             XState
           </a>
-          . Currently you can only control settings, authentication, and file
-          management from the command bar, but we will be powering modeling
-          commands with it soon.
+          . You can control settings, authentication, and file
+          management from the command bar, as well as a growing number of modeling
+          commands.
         </p>
         <OnboardingButtons
           currentSlug={onboardingPaths.COMMAND_K}

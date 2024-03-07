@@ -21,6 +21,8 @@ import { ActionButton } from 'components/ActionButton'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 
 export const ONBOARDING_PROJECT_NAME = 'Tutorial Project $nn'
+export const kbdClasses =
+  'p-0.5 text-sm rounded-sm bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50'
 
 export const onboardingRoutes = [
   {

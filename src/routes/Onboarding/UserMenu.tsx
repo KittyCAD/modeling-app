@@ -23,6 +23,18 @@ export default function UserMenu() {
             Click your avatar on the upper right to open the user menu. You can
             change your settings, sign out, or request a feature.
           </p>
+          <p className="my-4">
+            We only support global settings at the moment, but we are working to
+            implement{' '}
+            <a
+              href="https://github.com/KittyCAD/modeling-app/issues/1503"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              per-project settings
+            </a>{' '}
+            now.
+          </p>
         </section>
         <OnboardingButtons
           currentSlug={onboardingPaths.USER_MENU}
