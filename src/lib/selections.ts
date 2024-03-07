@@ -455,7 +455,7 @@ export function canSubmitSelectionArg(
   )
 }
 
-function codeToIdSelections(
+export function codeToIdSelections(
   codeBasedSelections: Selection[]
 ): SelectionToEngine[] {
   return codeBasedSelections
