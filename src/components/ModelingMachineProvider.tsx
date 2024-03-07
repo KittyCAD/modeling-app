@@ -42,6 +42,7 @@ import { TEST } from 'env'
 import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
+import { EditorSelection } from '@uiw/react-codemirror'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -98,6 +99,12 @@ export const ModelingMachineProvider = ({
           if (event.type !== 'Set selection') return {} // this was needed for ts after adding 'Set selection' action to on done modal events
           const setSelections = event.data
           if (!editorView) return {}
+          const dispatchSelection = (selection?: EditorSelection) => {
+            if (!selection) return // TODO less of hack for the below please
+            ;(window as any).lastCodeMirrorSelectionUpdatedFromScene =
+              Date.now()
+            setTimeout(() => editorView.dispatch({ selection }))
+          }
           if (setSelections.selectionType === 'mirrorCodeMirrorSelections')
             return { selectionRanges: setSelections.selection }
           else if (setSelections.selectionType === 'otherSelection') {
@@ -110,13 +117,7 @@ export const ModelingMachineProvider = ({
               currentSelections: selectionRanges,
               isShiftDown,
             })
-            ;(window as any).lastCodeMirrorSelectionUpdatedFromScene =
-              Date.now()
-            setTimeout(() => {
-              editorView.dispatch({
-                selection: codeMirrorSelection,
-              })
-            })
+            dispatchSelection(codeMirrorSelection)
             return {
               selectionRangeTypeMap,
               selectionRanges: {
@@ -142,15 +143,7 @@ export const ModelingMachineProvider = ({
               currentSelections: selectionRanges,
               isShiftDown,
             })
-            if (codeMirrorSelection) {
-              ;(window as any).lastCodeMirrorSelectionUpdatedFromScene =
-                Date.now()
-              setTimeout(() => {
-                editorView.dispatch({
-                  selection: codeMirrorSelection,
-                })
-              })
-            }
+            dispatchSelection(codeMirrorSelection)
             if (!setSelections.selection) {
               return {
                 selectionRangeTypeMap,
@@ -174,16 +167,7 @@ export const ModelingMachineProvider = ({
             handleSelectionBatch({
               selections: setSelections.selection,
             })
-          if (codeMirrorSelection) {
-            // TODO: do less of a hack
-            ;(window as any).lastCodeMirrorSelectionUpdatedFromScene =
-              Date.now()
-            setTimeout(() => {
-              editorView.dispatch({
-                selection: codeMirrorSelection,
-              })
-            })
-          }
+          dispatchSelection(codeMirrorSelection)
           return { selectionRangeTypeMap }
         }),
         'Engine export': (_, event) => {
