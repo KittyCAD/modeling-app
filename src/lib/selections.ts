@@ -22,7 +22,7 @@ import {
   getParentGroup,
   PROFILE_START,
 } from 'clientSideScene/sceneEntities'
-import { Mesh } from 'three'
+import { Group, Mesh, Object3D, Object3DEventMap } from 'three'
 import { AXIS_GROUP, X_AXIS } from 'clientSideScene/sceneInfra'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
@@ -198,7 +198,7 @@ export async function getEventForSelectWithPoint(
 }
 
 export function getEventForSegmentSelection(
-  obj: any
+  obj: Object3D<Object3DEventMap>
 ): ModelingMachineEvent | null {
   const group = getParentGroup(obj, [
     STRAIGHT_SEGMENT,
@@ -242,12 +242,17 @@ export function handleSelectionBatch({
 }: {
   selections: Selections
 }): {
-  selectionRangeTypeMap: SelectionRangeTypeMap
-  codeMirrorSelection?: EditorSelection
+  engineEvents: Models['WebSocketRequest_type'][]
+  codeMirrorSelection: EditorSelection
   otherSelections: Axis[]
+  updateSceneObjectColors: () => void
 } {
   const ranges: ReturnType<typeof EditorSelection.cursor>[] = []
   const selectionRangeTypeMap: SelectionRangeTypeMap = {}
+  const engineEvents: Models['WebSocketRequest_type'][] =
+    resetAndSetEngineEntitySelectionCmds(
+      codeToIdSelections(selections.codeBasedSelections)
+    )
   selections.codeBasedSelections.forEach(({ range, type }) => {
     if (range?.[1]) {
       ranges.push(EditorSelection.cursor(range[1]))
@@ -256,80 +261,26 @@ export function handleSelectionBatch({
   })
   if (ranges.length)
     return {
-      selectionRangeTypeMap,
+      engineEvents,
       codeMirrorSelection: EditorSelection.create(
         ranges,
         selections.codeBasedSelections.length - 1
       ),
       otherSelections: selections.otherSelections,
+      updateSceneObjectColors: () =>
+        updateSceneObjectColors(selections.codeBasedSelections),
     }
 
   return {
-    selectionRangeTypeMap,
+    codeMirrorSelection: EditorSelection.create(
+      [EditorSelection.cursor(kclManager.code.length)],
+      0
+    ),
+    engineEvents,
     otherSelections: selections.otherSelections,
+    updateSceneObjectColors: () =>
+      updateSceneObjectColors(selections.codeBasedSelections),
   }
-}
-
-export function handleSelectionWithShift({
-  codeSelection,
-  otherSelection,
-  currentSelections,
-  isShiftDown,
-}: {
-  codeSelection?: Selection
-  otherSelection?: Axis
-  currentSelections: Selections
-  isShiftDown: boolean
-}): {
-  selectionRangeTypeMap: SelectionRangeTypeMap
-  otherSelections: Axis[]
-  codeMirrorSelection?: EditorSelection
-} {
-  const code = kclManager.code
-  if (codeSelection && otherSelection) {
-    throw new Error('cannot have both code and other selection')
-  }
-  if (!codeSelection && !otherSelection) {
-    return handleSelectionBatch({
-      selections: {
-        otherSelections: [],
-        codeBasedSelections: [
-          {
-            range: [0, code.length ? code.length : 0],
-            type: 'default',
-          },
-        ],
-      },
-    })
-  }
-  if (otherSelection) {
-    return handleSelectionBatch({
-      selections: {
-        codeBasedSelections: isShiftDown
-          ? currentSelections.codeBasedSelections
-          : [
-              {
-                range: [0, code.length ? code.length : 0],
-                type: 'default',
-              },
-            ],
-        otherSelections: [otherSelection],
-      },
-    })
-  }
-  const isEndOfFileDumbySelection =
-    currentSelections.codeBasedSelections.length === 1 &&
-    currentSelections.codeBasedSelections[0].range[0] === kclManager.code.length
-  const newCodeBasedSelections = !isShiftDown
-    ? [codeSelection!]
-    : isEndOfFileDumbySelection
-    ? [codeSelection!]
-    : [...currentSelections.codeBasedSelections, codeSelection!]
-  const selections: Selections = {
-    otherSelections: isShiftDown ? currentSelections.otherSelections : [],
-    codeBasedSelections: newCodeBasedSelections,
-  }
-  return handleSelectionBatch({ selections })
 }
 
 type SelectionToEngine = { type: Selection['type']; id: string }
@@ -375,58 +326,8 @@ export function processCodeMirrorRanges({
         range: [from, to],
       }
     })
-  const idBasedSelections: SelectionToEngine[] = codeBasedSelections
-    .flatMap(({ type, range, ...rest }): null | SelectionToEngine[] => {
-      // TODO #868: loops over all artifacts will become inefficient at a large scale
-      const entriesWithOverlap = Object.entries(
-        engineCommandManager.artifactMap || {}
-      )
-        .map(([id, artifact]) => {
-          return artifact.range && isOverlap(artifact.range, range)
-            ? {
-                artifact,
-                selection: { type, range, ...rest },
-                id,
-              }
-            : false
-        })
-        .filter(Boolean)
-      let bestCandidate
-      entriesWithOverlap.forEach((entry) => {
-        if (!entry) return
-        if (
-          type === 'default' &&
-          entry.artifact.commandType === 'extend_path'
-        ) {
-          bestCandidate = entry
-          return
-        }
-        if (
-          type === 'face' &&
-          entry.artifact.commandType === 'solid3d_get_extrusion_face_info'
-        ) {
-          bestCandidate = entry
-          return
-        }
-      })
-
-      if (bestCandidate) {
-        console.log(bestCandidate)
-        const _bestCandidate = bestCandidate as {
-          artifact: any
-          selection: any
-          id: string
-        }
-        return [
-          {
-            type,
-            id: _bestCandidate.id,
-          },
-        ]
-      }
-      return null
-    })
-    .filter(Boolean) as any
+  const idBasedSelections: SelectionToEngine[] =
+    codeToIdSelections(codeBasedSelections)
 
   if (!selectionRanges) return null
   updateSceneObjectColors(codeBasedSelections)
@@ -447,6 +348,7 @@ export function processCodeMirrorRanges({
 
 function updateSceneObjectColors(codeBasedSelections: Selection[]) {
   let updated: Program
+  console.log('event wtf')
   try {
     updated = parse(recast(kclManager.ast))
   } catch (e) {
@@ -632,4 +534,60 @@ export function canSubmitSelectionArg(
       )
     })
   )
+}
+
+function codeToIdSelections(
+  codeBasedSelections: Selection[]
+): SelectionToEngine[] {
+  return codeBasedSelections
+    .flatMap(({ type, range, ...rest }): null | SelectionToEngine[] => {
+      // TODO #868: loops over all artifacts will become inefficient at a large scale
+      const entriesWithOverlap = Object.entries(
+        engineCommandManager.artifactMap || {}
+      )
+        .map(([id, artifact]) => {
+          return artifact.range && isOverlap(artifact.range, range)
+            ? {
+                artifact,
+                selection: { type, range, ...rest },
+                id,
+              }
+            : false
+        })
+        .filter(Boolean)
+      let bestCandidate
+      entriesWithOverlap.forEach((entry) => {
+        if (!entry) return
+        if (
+          type === 'default' &&
+          entry.artifact.commandType === 'extend_path'
+        ) {
+          bestCandidate = entry
+          return
+        }
+        if (
+          type === 'face' &&
+          entry.artifact.commandType === 'solid3d_get_extrusion_face_info'
+        ) {
+          bestCandidate = entry
+          return
+        }
+      })
+
+      if (bestCandidate) {
+        const _bestCandidate = bestCandidate as {
+          artifact: any
+          selection: any
+          id: string
+        }
+        return [
+          {
+            type,
+            id: _bestCandidate.id,
+          },
+        ]
+      }
+      return null
+    })
+    .filter(Boolean) as any
 }

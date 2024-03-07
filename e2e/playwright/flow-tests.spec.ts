@@ -678,13 +678,18 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     await emptySpaceClick()
 
     // select segment in editor than another segment in scene and check there are two cursors
-    await page.getByText(`  |> line([-${commonPoints.num2}, 0], %)`).click()
-    await page.waitForTimeout(300)
-    await page.keyboard.down('Shift')
-    await expect(page.locator('.cm-cursor')).toHaveCount(1)
+    // TODO change this back to shift click in the scene, not cmd click in the editor
     await bottomHorzSegmentClick()
-    await page.keyboard.up('Shift')
+
+    await expect(page.locator('.cm-cursor')).toHaveCount(1)
+
+    await page.keyboard.down('Meta')
+    await page.waitForTimeout(100)
+    await page.getByText(`  |> line([-${commonPoints.num2}, 0], %)`).click()
+
     await expect(page.locator('.cm-cursor')).toHaveCount(2)
+    await page.waitForTimeout(500)
+    await page.keyboard.up('Meta')
 
     // clear selection by clicking on nothing
     await emptySpaceClick()

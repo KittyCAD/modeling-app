@@ -23,9 +23,9 @@ import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
 import { pathMapToSelections } from 'lang/util'
 import { useStore } from 'useStore'
 import {
+  Selections,
   canExtrudeSelection,
   handleSelectionBatch,
-  handleSelectionWithShift,
   isSelectionLastLine,
   isSketchPipe,
 } from 'lib/selections'
@@ -105,70 +105,83 @@ export const ModelingMachineProvider = ({
               Date.now()
             setTimeout(() => editorView.dispatch({ selection }))
           }
-          if (setSelections.selectionType === 'mirrorCodeMirrorSelections')
-            return { selectionRanges: setSelections.selection }
-          else if (setSelections.selectionType === 'otherSelection') {
-            const {
-              codeMirrorSelection,
-              selectionRangeTypeMap,
-              otherSelections,
-            } = handleSelectionWithShift({
-              otherSelection: setSelections.selection,
-              currentSelections: selectionRanges,
-              isShiftDown,
-            })
-            dispatchSelection(codeMirrorSelection)
-            return {
-              selectionRangeTypeMap,
-              selectionRanges: {
-                codeBasedSelections: selectionRanges.codeBasedSelections,
-                otherSelections,
-              },
-            }
-          } else if (setSelections.selectionType === 'singleCodeCursor') {
-            // This DOES NOT set the `selectionRanges` in xstate context
-            // instead it updates/dispatches to the editor, which in turn updates the xstate context
-            // I've found this the best way to deal with the editor without causing an infinite loop
-            // and really we want the editor to be in charge of cursor positions and for `selectionRanges` mirror it
-            // because we want to respect the user manually placing the cursor too.
-
-            // for more details on how selections see `src/lib/selections.ts`.
-
-            const {
-              codeMirrorSelection,
-              selectionRangeTypeMap,
-              otherSelections,
-            } = handleSelectionWithShift({
-              codeSelection: setSelections.selection,
-              currentSelections: selectionRanges,
-              isShiftDown,
-            })
-            dispatchSelection(codeMirrorSelection)
-            if (!setSelections.selection) {
-              return {
-                selectionRangeTypeMap,
-                selectionRanges: {
-                  codeBasedSelections: selectionRanges.codeBasedSelections,
-                  otherSelections,
-                },
+          let selections: Selections = {
+            codeBasedSelections: [],
+            otherSelections: [],
+          }
+          if (setSelections.selectionType === 'singleCodeCursor') {
+            if (!setSelections.selection && isShiftDown) {
+            } else if (!setSelections.selection && !isShiftDown) {
+              selections = {
+                codeBasedSelections: [],
+                otherSelections: [],
+              }
+            } else if (setSelections.selection && !isShiftDown) {
+              selections = {
+                codeBasedSelections: [setSelections.selection],
+                otherSelections: [],
+              }
+            } else if (setSelections.selection && isShiftDown) {
+              selections = {
+                codeBasedSelections: [
+                  ...selectionRanges.codeBasedSelections,
+                  setSelections.selection,
+                ],
+                otherSelections: selectionRanges.otherSelections,
               }
             }
+
+            const {
+              engineEvents,
+              codeMirrorSelection,
+              updateSceneObjectColors,
+            } = handleSelectionBatch({
+              selections,
+            })
+            codeMirrorSelection && dispatchSelection(codeMirrorSelection)
+            engineEvents &&
+              engineEvents.forEach((event) =>
+                engineCommandManager.sendSceneCommand(event)
+              )
+            updateSceneObjectColors()
             return {
-              selectionRangeTypeMap,
-              selectionRanges: {
-                codeBasedSelections: selectionRanges.codeBasedSelections,
-                otherSelections,
-              },
+              selectionRanges: selections,
             }
           }
-          // This DOES NOT set the `selectionRanges` in xstate context
-          // same as comment above
-          const { codeMirrorSelection, selectionRangeTypeMap } =
-            handleSelectionBatch({
-              selections: setSelections.selection,
-            })
-          dispatchSelection(codeMirrorSelection)
-          return { selectionRangeTypeMap }
+
+          if (setSelections.selectionType === 'mirrorCodeMirrorSelections') {
+            return {
+              selectionRanges: setSelections.selection,
+            }
+          }
+
+          if (setSelections.selectionType === 'otherSelection') {
+            if (isShiftDown) {
+              selections = {
+                codeBasedSelections: selectionRanges.codeBasedSelections,
+                otherSelections: [setSelections.selection],
+              }
+            } else {
+              selections = {
+                codeBasedSelections: [],
+                otherSelections: [setSelections.selection],
+              }
+            }
+            const { engineEvents, updateSceneObjectColors } =
+              handleSelectionBatch({
+                selections,
+              })
+            engineEvents &&
+              engineEvents.forEach((event) =>
+                engineCommandManager.sendSceneCommand(event)
+              )
+            updateSceneObjectColors()
+            return {
+              selectionRanges: selections,
+            }
+          }
+
+          return {}
         }),
         'Engine export': (_, event) => {
           if (event.type !== 'Export' || TEST) return
