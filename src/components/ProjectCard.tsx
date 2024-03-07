@@ -106,7 +106,7 @@ function ProjectCard({
         <>
           <div className="p-1 flex flex-col h-full gap-2">
             <Link
-              className="flex-1 text-liquid-100 after:content-[''] after:absolute after:inset-0"
+              className="flex-1 !no-underline text-liquid-100 after:content-[''] after:absolute after:inset-0"
               to={`${paths.FILE}/${encodeURIComponent(project.path)}`}
               data-testid="project-link"
             >
