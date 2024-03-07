@@ -937,7 +937,7 @@ dependencies = [
 
 [[package]]
 name = "derive-docs"
-version = "0.1.8"
+version = "0.1.9"
 dependencies = [
  "convert_case",
  "expectorate",
@@ -954,9 +954,9 @@ dependencies = [
 
 [[package]]
 name = "derive-docs"
-version = "0.1.8"
+version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5d58c9464a20d3ece3260838ad7c2f504c925a852cfdad13f0ea2e9e4bb8a859"
+checksum = "b81bc4c6288273218d0bb4f2ee7cda229264f2e8381e53aae250c840946171f9"
 dependencies = [
  "convert_case",
  "once_cell",
@@ -1782,9 +1782,9 @@ dependencies = [
 
 [[package]]
 name = "insta"
-version = "1.34.0"
+version = "1.36.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5d64600be34b2fcfc267740a243fa7744441bb4947a619ac4e5bb6507f35fbfc"
+checksum = "0a7c22c4d34ef4788c351e971c52bfdfe7ea2766f8c5466bc175dd46e52ac22e"
 dependencies = [
  "console",
  "lazy_static",
@@ -1897,7 +1897,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.1.42"
+version = "0.1.43"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -1908,7 +1908,7 @@ dependencies = [
  "criterion",
  "dashmap",
  "databake",
- "derive-docs 0.1.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive-docs 0.1.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "expectorate",
  "futures",
  "gltf-json",
@@ -1990,7 +1990,7 @@ dependencies = [
 [[package]]
 name = "kittycad-execution-plan"
 version = "0.1.0"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#03eb9c3763de56d7284c09dba678ddd6120bb523"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#c554cbeda3f217c1baab8a33ffad50e2ecdc8ab9"
 dependencies = [
  "bytes",
  "insta",
@@ -2010,7 +2010,7 @@ dependencies = [
 [[package]]
 name = "kittycad-execution-plan-macros"
 version = "0.1.8"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#03eb9c3763de56d7284c09dba678ddd6120bb523"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#c554cbeda3f217c1baab8a33ffad50e2ecdc8ab9"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2020,7 +2020,7 @@ dependencies = [
 [[package]]
 name = "kittycad-execution-plan-traits"
 version = "0.1.12"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#03eb9c3763de56d7284c09dba678ddd6120bb523"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#c554cbeda3f217c1baab8a33ffad50e2ecdc8ab9"
 dependencies = [
  "serde",
  "thiserror",
@@ -2030,7 +2030,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds"
 version = "0.1.28"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#03eb9c3763de56d7284c09dba678ddd6120bb523"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#c554cbeda3f217c1baab8a33ffad50e2ecdc8ab9"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2058,7 +2058,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.2"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#03eb9c3763de56d7284c09dba678ddd6120bb523"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#c554cbeda3f217c1baab8a33ffad50e2ecdc8ab9"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2068,7 +2068,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-session"
 version = "0.1.0"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#03eb9c3763de56d7284c09dba678ddd6120bb523"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#c554cbeda3f217c1baab8a33ffad50e2ecdc8ab9"
 dependencies = [
  "futures",
  "kittycad",
@@ -4918,9 +4918,9 @@ dependencies = [
 
 [[package]]
 name = "web-sys"
-version = "0.3.68"
+version = "0.3.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "96565907687f7aceb35bc5fc03770a8a0471d82e479f25832f54a0e3f4b28446"
+checksum = "77afa9a11836342370f4817622a2f0f418b134426d91a82dfb48f532d2ec13ef"
 dependencies = [
  "js-sys",
  "wasm-bindgen",

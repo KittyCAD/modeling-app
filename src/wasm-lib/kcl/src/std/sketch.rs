@@ -1073,9 +1073,9 @@ async fn inner_start_profile_at(
 
 /// Close the current sketch.
 pub async fn close(args: Args) -> Result<MemoryItem, KclError> {
-    let sketch_group = args.get_sketch_group()?;
+    let (sketch_group, tag): (Box<SketchGroup>, Option<String>) = args.get_sketch_group_and_optional_tag()?;
 
-    let new_sketch_group = inner_close(sketch_group, args).await?;
+    let new_sketch_group = inner_close(sketch_group, tag, args).await?;
 
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
@@ -1084,7 +1084,11 @@ pub async fn close(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "close",
 }]
-async fn inner_close(sketch_group: Box<SketchGroup>, args: Args) -> Result<Box<SketchGroup>, KclError> {
+async fn inner_close(
+    sketch_group: Box<SketchGroup>,
+    tag: Option<String>,
+    args: Args,
+) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
     let to: Point2d = sketch_group.start.from.into();
 
@@ -1110,8 +1114,7 @@ async fn inner_close(sketch_group: Box<SketchGroup>, args: Args) -> Result<Box<S
         base: BasePath {
             from: from.into(),
             to: to.into(),
-            // TODO: should we use a different name?
-            name: "".into(),
+            name: tag.unwrap_or_default(),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
