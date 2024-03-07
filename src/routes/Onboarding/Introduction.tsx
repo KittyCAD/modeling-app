@@ -156,8 +156,16 @@ export default function Introduction() {
             >
               expectations for alpha users here
             </a>
-            . Please give us feedback on your experience! We are trying to
-            release as early as possible to get feedback from users like you.
+            , and please give us feedback on your experience{' '}
+            <a
+              href="https://discord.com/invite/JQEpHR7Nt2"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              our Discord
+            </a>
+            ! We are trying to release as early as possible to get feedback from
+            users like you.
           </p>
         </section>
         <OnboardingButtons
