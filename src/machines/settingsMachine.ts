@@ -29,16 +29,15 @@ export const SETTINGS_PERSIST_KEY = 'SETTINGS_PERSIST_KEY'
 
 type SettingsMachineContext = {
   baseUnit: BaseUnit
-      cameraControls: CameraSystem
-      defaultDirectory: string
-      defaultProjectName: string
-      onboardingStatus: string
-      showDebugPanel: boolean
-      textWrapping: Toggle
-      theme: Themes
-      unitSystem: UnitSystem
+  cameraControls: CameraSystem
+  defaultDirectory: string
+  defaultProjectName: string
+  onboardingStatus: string
+  showDebugPanel: boolean
+  textWrapping: Toggle
+  theme: Themes
+  unitSystem: UnitSystem
 }
-
 
 export const settingsMachine = createMachine(
   {
