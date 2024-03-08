@@ -2655,28 +2655,12 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 	tag: string,
 } |
 {
-	// The end angle.
-	angle_end: number,
-	// The start angle.
-	angle_start: number,
-	// The radius.
-	radius: number,
-} |
-{
 	// The center.
 	center: [number, number],
 	// The radius.
 	radius: number,
 	// The tag.
 	tag: string,
-	// The to point.
-	to: [number, number],
-} |
-{
-	// The center.
-	center: [number, number],
-	// The radius.
-	radius: number,
 	// The to point.
 	to: [number, number],
 }
@@ -3078,14 +3062,6 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 	tag: string,
 	// The to point.
 	to: [number, number],
-} |
-{
-	// The first control point.
-	control1: [number, number],
-	// The second control point.
-	control2: [number, number],
-	// The to point.
-	to: [number, number],
 }
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
@@ -3449,169 +3425,67 @@ Sketch a circle on the given plane
 
 
 ```
-circle(plane: SketchData, center: [number, number], radius: number) -> SketchGroup
+circle(center: [number, number], radius: number, surface: SketchSurface, tag?: String) -> SketchGroup
 ```
 
 #### Arguments
 
-* `plane`: `SketchData` - Data for start sketch on. You can start a sketch on a plane or an extrude group. (REQUIRED)
+* `center`: `[number, number]` (REQUIRED)
+* `radius`: `number` (REQUIRED)
+* `surface`: `SketchSurface` - A sketch group type. (REQUIRED)
 ```
-"XY" |
-"-XY" |
-"XZ" |
-"-XZ" |
-"YZ" |
-"-YZ" |
 {
-	plane: {
+	// The id of the plane.
+	id: uuid,
 	// Origin of the plane.
 	origin: {
 	x: number,
 	y: number,
 	z: number,
 },
+	type: "plane",
+	// Type for a plane.
+	value: "XY" | "XZ" | "YZ" | "Custom",
 	// What should the plane’s X axis be?
-	x_axis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// What should the plane’s Y axis be?
-	y_axis: {
-	x: number,
-	y: number,
-	z: number,
-},
-	// The z-axis (normal).
-	z_axis: {
-	x: number,
-	y: number,
-	z: number,
-},
-},
-} |
-{
-	// The id of the extrusion end cap
-	endCapId: uuid,
-	// The height of the extrude group.
-	height: number,
-	// The id of the extrude group.
-	id: uuid,
-	// The position of the extrude group.
-	position: [number, number, number],
-	// The rotation of the extrude group.
-	rotation: [number, number, number, number],
-	// The sketch group paths.
-	sketchGroupValues: [{
-	// The from point.
-	from: [number, number],
-	// The name of the path.
-	name: string,
-	// The to point.
-	to: [number, number],
-	type: "ToPoint",
-} |
-{
-	// arc's direction
-	ccw: string,
-	// the arc's center
-	center: [number, number],
-	// The from point.
-	from: [number, number],
-	// The name of the path.
-	name: string,
-	// The to point.
-	to: [number, number],
-	type: "TangentialArcTo",
-} |
-{
-	// The from point.
-	from: [number, number],
-	// The name of the path.
-	name: string,
-	// The to point.
-	to: [number, number],
-	type: "TangentialArc",
-} |
-{
-	// The from point.
-	from: [number, number],
-	// The name of the path.
-	name: string,
-	// The to point.
-	to: [number, number],
-	type: "Horizontal",
-	// The x coordinate.
-	x: number,
-} |
-{
-	// The from point.
-	from: [number, number],
-	// The name of the path.
-	name: string,
-	// The to point.
-	to: [number, number],
-	type: "AngledLineTo",
-	// The x coordinate.
-	x: number,
-	// The y coordinate.
-	y: number,
-} |
-{
-	// The from point.
-	from: [number, number],
-	// The name of the path.
-	name: string,
-	// The to point.
-	to: [number, number],
-	type: "Base",
-}],
-	// The id of the extrusion start cap
-	startCapId: uuid,
-	// The extrude surfaces.
-	value: [{
-	// The face id for the extrude plane.
-	faceId: uuid,
-	// The id of the geometry.
-	id: uuid,
-	// The name.
-	name: string,
-	// The position.
-	position: [number, number, number],
-	// The rotation.
-	rotation: [number, number, number, number],
-	// The source range.
-	sourceRange: [number, number],
-	type: "extrudePlane",
-} |
-{
-	// The face id for the extrude plane.
-	faceId: uuid,
-	// The id of the geometry.
-	id: uuid,
-	// The name.
-	name: string,
-	// The position.
-	position: [number, number, number],
-	// The rotation.
-	rotation: [number, number, number, number],
-	// The source range.
-	sourceRange: [number, number],
-	type: "extrudeArc",
-}],
-	// The x-axis of the extrude group base plane in the 3D space
 	xAxis: {
 	x: number,
 	y: number,
 	z: number,
 },
-	// The y-axis of the extrude group base plane in the 3D space
+	// What should the plane’s Y axis be?
 	yAxis: {
 	x: number,
 	y: number,
 	z: number,
 },
-	// The z-axis of the extrude group base plane in the 3D space
+	// The z-axis (normal).
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+} |
+{
+	// The id of the face.
+	id: uuid,
+	// The original sketch group id of the object we are sketching on.
+	sketchGroupId: uuid,
+	type: "face",
+	// The tag of the face.
+	value: string,
+	// What should the face’s X axis be?
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// What should the face’s Y axis be?
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The z-axis (normal).
 	zAxis: {
 	x: number,
 	y: number,
@@ -3619,8 +3493,7 @@ circle(plane: SketchData, center: [number, number], radius: number) -> SketchGro
 },
 }
 ```
-* `center`: `[number, number]` (REQUIRED)
-* `radius`: `number` (REQUIRED)
+* `tag`: `String` (OPTIONAL)
 
 #### Returns
 
