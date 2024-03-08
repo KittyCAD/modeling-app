@@ -21,6 +21,14 @@ function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
 }
 
+// an OS-agnostic way to get the basename of the path.
+export function basename(path: string): string {
+  // Regular expression to match the last portion of the path, taking into account both POSIX and Windows delimiters
+  const re = /[^\\/]+$/
+  const match = path.match(re)
+  return match ? match[0] : ''
+}
+
 function RenameForm({
   fileOrDir,
   setIsRenaming,
@@ -177,8 +185,7 @@ const FileTreeItem = ({
       )
     } else {
       // Let the lsp servers know we closed a file.
-      let currentFilePath = currentFile?.path || 'main.kcl'
-      console.log('currentFilePath', currentFilePath)
+      const currentFilePath = basename(currentFile?.path || 'main.kcl')
       lspClients.forEach((lspClient) => {
         lspClient.textDocumentDidClose({
           textDocument: {
@@ -186,13 +193,12 @@ const FileTreeItem = ({
           },
         })
       })
-      let newFilePath = fileOrDir.path
-      console.log('newFilePath', newFilePath)
+      const newFilePath = basename(fileOrDir.path)
       // Then let the clients know we opened a file.
       lspClients.forEach((lspClient) => {
         lspClient.textDocumentDidOpen({
           textDocument: {
-            uri: `uri:///${fileOrDir.path}`,
+            uri: `file:///${newFilePath}`,
             languageId: 'kcl',
             version: 1,
             text: '',

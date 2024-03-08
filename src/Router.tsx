@@ -78,12 +78,14 @@ const router = createBrowserRouter(
         <KclContextProvider>
           <Auth>
             <FileMachineProvider>
-              <ModelingMachineProvider>
-                <Outlet />
-                <App />
-                <CommandBar />
-              </ModelingMachineProvider>
-              <WasmErrBanner />
+              <LspProvider>
+                <ModelingMachineProvider>
+                  <Outlet />
+                  <App />
+                  <CommandBar />
+                </ModelingMachineProvider>
+                <WasmErrBanner />
+              </LspProvider>
             </FileMachineProvider>
             {!isTauri() && import.meta.env.PROD && <DownloadAppBanner />}
           </Auth>
