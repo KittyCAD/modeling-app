@@ -1,9 +1,8 @@
-import { OnboardingButtons, useDismiss, useNextClick, useStepNumber } from '.'
+import { OnboardingButtons, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useStore } from '../../useStore'
 
 export default function Streaming() {
-  const stepNumber = useStepNumber(onboardingPaths.STREAMING)
   const { buttonDownInStream } = useStore((s) => ({
     buttonDownInStream: s.buttonDownInStream,
   }))
