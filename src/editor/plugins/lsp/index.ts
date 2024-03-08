@@ -88,6 +88,7 @@ interface LSPNotifyMap {
   initialized: LSP.InitializedParams
   'textDocument/didChange': LSP.DidChangeTextDocumentParams
   'textDocument/didOpen': LSP.DidOpenTextDocumentParams
+  'textDocument/didClose': LSP.DidCloseTextDocumentParams
 }
 
 export interface LanguageServerClientOptions {
@@ -155,6 +156,10 @@ export class LanguageServerClient {
   textDocumentDidChange(params: LSP.DidChangeTextDocumentParams) {
     this.notify('textDocument/didChange', params)
     this.updateSemanticTokens(params.textDocument.uri)
+  }
+
+  textDocumentDidClose(params: LSP.DidCloseTextDocumentParams) {
+    this.notify('textDocument/didClose', params)
   }
 
   async updateSemanticTokens(uri: string) {

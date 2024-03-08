@@ -34,6 +34,7 @@ import { isTauri } from 'lib/isTauri'
 import type * as LSP from 'vscode-languageserver-protocol'
 import { NetworkHealthState, useNetworkStatus } from './NetworkHealthIndicator'
 import { useHotkeys } from 'react-hotkeys-hook'
+import { type ProjectWithEntryPointMetadata } from 'lib/types'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -46,11 +47,14 @@ export const editorShortcutMeta = {
   },
 }
 
-function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
+function getWorkspaceFolders(
+  project: ProjectWithEntryPointMetadata
+): LSP.WorkspaceFolder[] {
+  const name = project.name || 'ProjectRoot'
   // We only use workspace folders in Tauri since that is where we use more than
   // one file.
   if (isTauri()) {
-    return [{ uri: 'file://', name: 'ProjectRoot' }]
+    return [{ uri: 'file://', name }]
   }
   return []
 }
@@ -145,9 +149,8 @@ export const TextEditor = ({
     if (isKclLspServerReady && !TEST) {
       // Set up the lsp plugin.
       const lsp = kclLanguage({
-        // When we have more than one file, we'll need to change this.
-        documentUri: `file:///we-just-have-one-file-for-now.kcl`,
-        workspaceFolders: getWorkspaceFolders(),
+        documentUri: `file:///main.kcl`,
+        workspaceFolders: getWorkspaceFolders(project),
         client: kclLspClient,
       })
 
@@ -182,9 +185,8 @@ export const TextEditor = ({
     if (isCopilotLspServerReady && !TEST) {
       // Set up the lsp plugin.
       const lsp = copilotPlugin({
-        // When we have more than one file, we'll need to change this.
-        documentUri: `file:///we-just-have-one-file-for-now.kcl`,
-        workspaceFolders: getWorkspaceFolders(),
+        documentUri: `file:///main.kcl`,
+        workspaceFolders: getWorkspaceFolders(project),
         client: copilotLspClient,
         allowHTMLContent: true,
       })
