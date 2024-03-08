@@ -15,6 +15,7 @@ import { FILE_EXT, sortProject } from 'lib/tauriFS'
 import { CustomIcon } from './CustomIcon'
 import { kclManager } from 'lang/KclSingleton'
 import { useDocumentHasFocus } from 'hooks/useDocumentHasFocus'
+import { useLspContext } from './LspProvider'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -147,6 +148,7 @@ const FileTreeItem = ({
   level?: number
 }) => {
   const { send, context } = useFileContext()
+  const { copilotLSP, kclLSP } = useLspContext()
   const navigate = useNavigate()
   const [isRenaming, setIsRenaming] = useState(false)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
