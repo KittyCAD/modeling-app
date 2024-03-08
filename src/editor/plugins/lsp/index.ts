@@ -1,7 +1,7 @@
 import type * as LSP from 'vscode-languageserver-protocol'
 import Client from './client'
 import { SemanticToken, deserializeTokens } from './kcl/semantic_tokens'
-import { LanguageServerPlugin } from 'editor/plugins/lsp/plugin'
+import { LanguageServerPlugin, documentUri } from 'editor/plugins/lsp/plugin'
 
 export interface CopilotGetCompletionsParams {
   doc: {
@@ -149,6 +149,12 @@ export class LanguageServerClient {
 
   textDocumentDidOpen(params: LSP.DidOpenTextDocumentParams) {
     this.notify('textDocument/didOpen', params)
+
+    // Update the facet of the plugins to the correct value.
+    for (const plugin of this.plugins) {
+      plugin.documentUri = params.textDocument.uri
+      plugin.languageId = params.textDocument.languageId
+    }
 
     this.updateSemanticTokens(params.textDocument.uri)
   }
