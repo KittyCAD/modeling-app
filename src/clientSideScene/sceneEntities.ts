@@ -1063,10 +1063,13 @@ export function getSketchQuaternion(
     programMemory: kclManager.programMemory,
   })
   const zAxis = sketchGroup?.zAxis || sketchNormalBackUp
+  return getQuaternionFromZAxis(massageFormats(zAxis))
+}
+
+export function getQuaternionFromZAxis(zAxis: Vector3): Quaternion {
   const dummyCam = new PerspectiveCamera()
   dummyCam.up.set(0, 0, 1)
-  const _zAxis = massageFormats(zAxis)
-  dummyCam.position.copy(_zAxis)
+  dummyCam.position.copy(zAxis)
   dummyCam.lookAt(0, 0, 0)
   dummyCam.updateMatrix()
   const quaternion = dummyCam.quaternion.clone()
@@ -1075,7 +1078,7 @@ export function getSketchQuaternion(
 
   // because vertical quaternions are a gimbal lock, for the orbit controls
   // it's best to set them explicitly to the vertical position with a known good camera up
-  if (isVert && _zAxis.z < 0) {
+  if (isVert && zAxis.z < 0) {
     quaternion.set(0, 1, 0, 0)
   } else if (isVert) {
     quaternion.set(0, 0, 0, 1)

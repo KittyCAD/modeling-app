@@ -25,6 +25,7 @@ import { useStore } from 'useStore'
 import {
   Selections,
   canExtrudeSelection,
+  codeToIdSelections,
   handleSelectionBatch,
   isSelectionLastLine,
   isSketchPipe,
@@ -34,7 +35,10 @@ import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
 import useStateMachineCommands from 'hooks/useStateMachineCommands'
 import { modelingMachineConfig } from 'lib/commandBarConfigs/modelingCommandConfig'
 import { sceneInfra } from 'clientSideScene/sceneInfra'
-import { getSketchQuaternion } from 'clientSideScene/sceneEntities'
+import {
+  getQuaternionFromZAxis,
+  getSketchQuaternion,
+} from 'clientSideScene/sceneEntities'
 import { startSketchOnDefault } from 'lang/modifyAst'
 import { Program } from 'lang/wasm'
 import { isSingleCursorInPipe } from 'lang/queryAst'
@@ -43,6 +47,8 @@ import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
 import { EditorSelection } from '@uiw/react-codemirror'
+import { v4 as uuidv4 } from 'uuid'
+import { Vector3 } from 'three'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -270,6 +276,35 @@ export const ModelingMachineProvider = ({
             onClick: () => {},
             onDrag: () => {},
           })
+        },
+
+        'animate-to-face2': async ({ selectionRanges }) => {
+          const selectionToEngine = codeToIdSelections(
+            selectionRanges.codeBasedSelections
+          )
+          const faceId = selectionToEngine?.[0].id
+          if (!faceId) return
+
+          const faceInfo: Models['FaceIsPlanar_type'] = (
+            await engineCommandManager.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: {
+                type: 'face_is_planar',
+                object_id: faceId,
+              },
+            })
+          )?.data?.data
+          if (!faceInfo?.origin || !faceInfo?.z_axis) return
+          const { z_axis, origin } = faceInfo
+          const quaternion = getQuaternionFromZAxis(
+            new Vector3(z_axis.x, z_axis.y, z_axis.z)
+          )
+          const target = new Vector3(origin.x, origin.y, origin.z)
+          await sceneInfra.camControls.tweenCameraToQuaternion(
+            quaternion,
+            target
+          )
         },
         'animate-to-face': async (_, { data: { plane, normal } }) => {
           const { modifiedAst, pathToNode } = startSketchOnDefault(

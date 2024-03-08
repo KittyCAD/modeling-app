@@ -7,11 +7,17 @@ import { ActionButton } from 'components/ActionButton'
 import usePlatform from 'hooks/usePlatform'
 import { isSingleCursorInPipe } from 'lang/queryAst'
 import { kclManager, useKclContext } from 'lang/KclSingleton'
+import { v4 as uuidv4 } from 'uuid'
 import {
   NetworkHealthState,
   useNetworkStatus,
 } from 'components/NetworkHealthIndicator'
 import { useStore } from 'useStore'
+import { codeToIdSelections } from 'lib/selections'
+import { Models } from '@kittycad/lib/dist/types/src'
+import { getQuaternionFromZAxis } from 'clientSideScene/sceneEntities'
+import { Vector3 } from 'three'
+import { sceneInfra } from 'clientSideScene/sceneInfra'
 
 export const Toolbar = () => {
   const platform = usePlatform()
@@ -226,6 +232,21 @@ export const Toolbar = () => {
             </ActionButton>
           </li>
         )}
+        <li className="contents">
+          <ActionButton
+            Element="button"
+            className="text-sm"
+            onClick={async () => {
+              send({ type: 'Sketch On Face' })
+            }}
+            icon={{
+              icon: 'sketch',
+              bgClassName,
+            }}
+          >
+            sketchOnFace
+          </ActionButton>
+        </li>
       </ul>
     )
   }
