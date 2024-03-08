@@ -81,12 +81,9 @@ export const TextEditor = ({
     state,
   } = useModelingContext()
 
-  const { settings, auth } = useSettingsAuthContext()
+  const { settings } = useSettingsAuthContext()
   const textWrapping = settings.context?.textWrapping ?? 'On'
   const { commandBarSend } = useCommandsContext()
-  const {
-    context: { project },
-  } = useFileContext()
   const { enable: convertEnabled, handleClick: convertCallback } =
     useConvertToVariable()
 

@@ -1,7 +1,7 @@
 import type * as LSP from 'vscode-languageserver-protocol'
 import Client from './client'
 import { SemanticToken, deserializeTokens } from './kcl/semantic_tokens'
-import { LanguageServerPlugin, documentUri } from 'editor/plugins/lsp/plugin'
+import { LanguageServerPlugin } from 'editor/plugins/lsp/plugin'
 
 export interface CopilotGetCompletionsParams {
   doc: {
