@@ -46,7 +46,7 @@ const butName = (e: React.MouseEvent) => ({
 })
 
 export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
-  Zoo: {
+  KittyCAD: {
     pan: {
       description: 'Right click + Shift + drag or middle click + drag',
       callback: (e) =>
