@@ -2,7 +2,7 @@ const noModifiersPressed = (e: React.MouseEvent) =>
   !e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey
 
 export type CameraSystem =
-  | 'Zoo'
+  | 'KittyCAD'
   | 'OnShape'
   | 'Trackpad Friendly'
   | 'Solidworks'
@@ -11,7 +11,7 @@ export type CameraSystem =
   | 'AutoCAD'
 
 export const cameraSystems: CameraSystem[] = [
-  'Zoo',
+  'KittyCAD',
   'OnShape',
   'Trackpad Friendly',
   'Solidworks',
