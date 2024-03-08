@@ -148,7 +148,7 @@ const FileTreeItem = ({
   level?: number
 }) => {
   const { send, context } = useFileContext()
-  const { copilotLSP, kclLSP } = useLspContext()
+  const { lspClients } = useLspContext()
   const navigate = useNavigate()
   const [isRenaming, setIsRenaming] = useState(false)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
@@ -176,6 +176,30 @@ const FileTreeItem = ({
           kclManager.code
       )
     } else {
+      // Let the lsp servers know we closed a file.
+      let currentFilePath = currentFile?.path || 'main.kcl'
+      console.log('currentFilePath', currentFilePath)
+      lspClients.forEach((lspClient) => {
+        lspClient.textDocumentDidClose({
+          textDocument: {
+            uri: `file:///${currentFilePath}`,
+          },
+        })
+      })
+      let newFilePath = fileOrDir.path
+      console.log('newFilePath', newFilePath)
+      // Then let the clients know we opened a file.
+      lspClients.forEach((lspClient) => {
+        lspClient.textDocumentDidOpen({
+          textDocument: {
+            uri: `uri:///${fileOrDir.path}`,
+            languageId: 'kcl',
+            version: 1,
+            text: '',
+          },
+        })
+      })
+
       // Open kcl files
       navigate(`${paths.FILE}/${encodeURIComponent(fileOrDir.path)}`)
     }

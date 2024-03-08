@@ -28,6 +28,7 @@ function getWorkspaceFolders(
 }
 
 type LspContext = {
+  lspClients: LanguageServerClient[]
   copilotLSP: Extension | null
   kclLSP: LanguageSupport | null
 }
@@ -129,6 +130,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <LspStateContext.Provider
       value={{
+        lspClients: [kclLspClient, copilotLspClient],
         copilotLSP,
         kclLSP,
       }}
