@@ -89,6 +89,7 @@ interface LSPNotifyMap {
   'textDocument/didChange': LSP.DidChangeTextDocumentParams
   'textDocument/didOpen': LSP.DidOpenTextDocumentParams
   'textDocument/didClose': LSP.DidCloseTextDocumentParams
+  'workspace/didChangeWorkspaceFolders': LSP.DidChangeWorkspaceFoldersParams
 }
 
 export interface LanguageServerClientOptions {
@@ -166,6 +167,24 @@ export class LanguageServerClient {
 
   textDocumentDidClose(params: LSP.DidCloseTextDocumentParams) {
     this.notify('textDocument/didClose', params)
+  }
+
+  workspaceDidChangeWorkspaceFolders(
+    added: LSP.WorkspaceFolder[],
+    removed: LSP.WorkspaceFolder[]
+  ) {
+    // Add all the current workspace folders in the plugin to removed.
+    for (const plugin of this.plugins) {
+      removed.push(...plugin.workspaceFolders)
+    }
+    this.notify('workspace/didChangeWorkspaceFolders', {
+      event: { added, removed },
+    })
+
+    // Add all the new workspace folders to the plugins.
+    for (const plugin of this.plugins) {
+      plugin.workspaceFolders = added
+    }
   }
 
   async updateSemanticTokens(uri: string) {

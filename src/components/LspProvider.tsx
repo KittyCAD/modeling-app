@@ -6,28 +6,18 @@ import Server from '../editor/plugins/lsp/server'
 import Client from '../editor/plugins/lsp/client'
 import { TEST } from 'env'
 import kclLanguage from 'editor/plugins/lsp/kcl/language'
-import { type ProjectWithEntryPointMetadata } from 'lib/types'
 import { copilotPlugin } from 'editor/plugins/lsp/copilot'
-import { isTauri } from 'lib/isTauri'
 import { useStore } from 'useStore'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
-import { useFileContext } from 'hooks/useFileContext'
 import { Extension } from '@codemirror/state'
 import { LanguageSupport } from '@codemirror/language'
 import { useNavigate } from 'react-router-dom'
 import { basename } from './FileTree'
 import { paths } from 'lib/paths'
 import { FileEntry } from '@tauri-apps/api/fs'
+import { ProjectWithEntryPointMetadata } from 'lib/types'
 
-function getWorkspaceFolders(
-  project: ProjectWithEntryPointMetadata
-): LSP.WorkspaceFolder[] {
-  const name = project.name || 'ProjectRoot'
-  // We only use workspace folders in Tauri since that is where we use more than
-  // one file.
-  if (isTauri()) {
-    return [{ uri: 'file://', name }]
-  }
+function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
   return []
 }
 
@@ -36,6 +26,10 @@ type LspContext = {
   copilotLSP: Extension | null
   kclLSP: LanguageSupport | null
   onProjectClose: (file: FileEntry | null, redirect: boolean) => void
+  onProjectOpen: (
+    project: ProjectWithEntryPointMetadata | null,
+    file: FileEntry | null
+  ) => void
 }
 
 export const LspStateContext = createContext({} as LspContext)
@@ -53,9 +47,6 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   }))
 
   const { auth } = useGlobalStateContext()
-  const {
-    context: { project },
-  } = useFileContext()
   const navigate = useNavigate()
 
   // So this is a bit weird, we need to initialize the lsp server and client.
@@ -87,7 +78,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       // Set up the lsp plugin.
       const lsp = kclLanguage({
         documentUri: `file:///main.kcl`,
-        workspaceFolders: getWorkspaceFolders(project),
+        workspaceFolders: getWorkspaceFolders(),
         client: kclLspClient,
       })
 
@@ -123,7 +114,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       // Set up the lsp plugin.
       const lsp = copilotPlugin({
         documentUri: `file:///main.kcl`,
-        workspaceFolders: getWorkspaceFolders(project),
+        workspaceFolders: getWorkspaceFolders(),
         client: copilotLspClient,
         allowHTMLContent: true,
       })
@@ -131,7 +122,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       plugin = lsp
     }
     return plugin
-  }, [copilotLspClient, isCopilotLspServerReady, project])
+  }, [copilotLspClient, isCopilotLspServerReady])
 
   const lspClients = [kclLspClient, copilotLspClient]
 
@@ -150,6 +141,34 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
+  const onProjectOpen = (
+    project: ProjectWithEntryPointMetadata | null,
+    file: FileEntry | null
+  ) => {
+    const projectName = project?.name || 'ProjectRoot'
+    // Send that the workspace folders changed.
+    lspClients.forEach((lspClient) => {
+      lspClient.workspaceDidChangeWorkspaceFolders(
+        [{ uri: 'file://', name: projectName }],
+        []
+      )
+    })
+    if (file) {
+      // Send that the file was opened.
+      const filename = basename(file?.name || 'main.kcl')
+      lspClients.forEach((lspClient) => {
+        lspClient.textDocumentDidOpen({
+          textDocument: {
+            uri: `file:///${filename}`,
+            languageId: 'kcl',
+            version: 1,
+            text: '',
+          },
+        })
+      })
+    }
+  }
+
   return (
     <LspStateContext.Provider
       value={{
@@ -157,6 +176,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
         copilotLSP,
         kclLSP,
         onProjectClose,
+        onProjectOpen,
       }}
     >
       {children}

@@ -39,7 +39,7 @@ export class LanguageServerPlugin implements PluginValue {
   public client: LanguageServerClient
   public documentUri: string
   public languageId: string
-  private workspaceFolders: LSP.WorkspaceFolder[]
+  public workspaceFolders: LSP.WorkspaceFolder[]
   private documentVersion: number
 
   constructor(
