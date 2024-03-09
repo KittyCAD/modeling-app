@@ -9,13 +9,18 @@ import { SelectionRange } from '@uiw/react-codemirror'
 import { isOverlap } from 'lib/utils'
 import { isCursorInSketchCommandRange } from 'lang/util'
 import { Program } from 'lang/wasm'
-import { doesPipeHaveCallExp, getNodeFromPath } from 'lang/queryAst'
+import {
+  doesPipeHaveCallExp,
+  getNodeFromPath,
+  isSingleCursorInPipe,
+} from 'lang/queryAst'
 import { CommandArgument } from './commandTypes'
 import {
   STRAIGHT_SEGMENT,
   TANGENTIAL_ARC_TO_SEGMENT,
   sceneEntitiesManager,
   getParentGroup,
+  PROFILE_START,
 } from 'clientSideScene/sceneEntities'
 import { Mesh } from 'three'
 import { AXIS_GROUP, X_AXIS } from 'clientSideScene/sceneInfra'
@@ -184,7 +189,11 @@ export async function getEventForSelectWithPoint(
 export function getEventForSegmentSelection(
   obj: any
 ): ModelingMachineEvent | null {
-  const group = getParentGroup(obj)
+  const group = getParentGroup(obj, [
+    STRAIGHT_SEGMENT,
+    TANGENTIAL_ARC_TO_SEGMENT,
+    PROFILE_START,
+  ])
   const axisGroup = getParentGroup(obj, [AXIS_GROUP])
   if (!group && !axisGroup) return null
   if (axisGroup?.userData.type === AXIS_GROUP) {
@@ -403,8 +412,8 @@ function updateSceneObjectColors(codeBasedSelections: Selection[]) {
   }
   Object.values(sceneEntitiesManager.activeSegments).forEach((segmentGroup) => {
     if (
-      ![STRAIGHT_SEGMENT, TANGENTIAL_ARC_TO_SEGMENT].includes(
-        segmentGroup?.userData?.type
+      ![STRAIGHT_SEGMENT, TANGENTIAL_ARC_TO_SEGMENT, PROFILE_START].includes(
+        segmentGroup?.name
       )
     )
       return
@@ -416,7 +425,9 @@ function updateSceneObjectColors(codeBasedSelections: Selection[]) {
     const groupHasCursor = codeBasedSelections.some((selection) => {
       return isOverlap(selection.range, [node.start, node.end])
     })
-    const color = groupHasCursor ? 0x0000ff : 0xffffff
+    const color = groupHasCursor
+      ? 0x0000ff
+      : segmentGroup?.userData?.baseColor || 0xffffff
     segmentGroup.traverse(
       (child) => child instanceof Mesh && child.material.color.set(color)
     )
@@ -455,6 +466,7 @@ function resetAndSetEngineEntitySelectionCmds(
 }
 
 export function isSketchPipe(selectionRanges: Selections) {
+  if (!isSingleCursorInPipe(selectionRanges, kclManager.ast)) return false
   return isCursorInSketchCommandRange(
     engineCommandManager.artifactMap,
     selectionRanges

@@ -12,7 +12,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
         BasePath, ExtrudeGroup, ExtrudeSurface, Face, GeoMeta, MemoryItem, Path, Plane, PlaneType, Point2d, Point3d,
-        Position, Rotation, SketchGroup, SketchGroupSet, SourceRange,
+        Position, Rotation, SketchGroup, SketchGroupSet, SketchSurface, SourceRange,
     },
     std::{
         utils::{
@@ -774,44 +774,6 @@ impl From<PlaneData> for Plane {
     }
 }
 
-/// A plane or a face.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase", untagged)]
-pub enum SketchSurface {
-    /// A plane.
-    Plane(Box<Plane>),
-    /// A face.
-    Face(Box<Face>),
-}
-
-impl SketchSurface {
-    pub fn id(&self) -> uuid::Uuid {
-        match self {
-            SketchSurface::Plane(plane) => plane.id,
-            SketchSurface::Face(face) => face.id,
-        }
-    }
-    pub fn x_axis(&self) -> Point3d {
-        match self {
-            SketchSurface::Plane(plane) => plane.x_axis.clone(),
-            SketchSurface::Face(face) => face.x_axis.clone(),
-        }
-    }
-    pub fn y_axis(&self) -> Point3d {
-        match self {
-            SketchSurface::Plane(plane) => plane.y_axis.clone(),
-            SketchSurface::Face(face) => face.y_axis.clone(),
-        }
-    }
-    pub fn z_axis(&self) -> Point3d {
-        match self {
-            SketchSurface::Plane(plane) => plane.z_axis.clone(),
-            SketchSurface::Face(face) => face.z_axis.clone(),
-        }
-    }
-}
-
 /// Start a sketch on a specific plane or face.
 pub async fn start_sketch_on(args: Args) -> Result<MemoryItem, KclError> {
     let (data, tag): (SketchData, Option<SketchOnFaceTag>) = args.get_data_and_optional_tag()?;
@@ -887,15 +849,23 @@ async fn start_sketch_on_face(
             .value
             .iter()
             .find_map(|extrude_surface| match extrude_surface {
-                ExtrudeSurface::ExtrudePlane(extrude_plane) if extrude_plane.name == *s => Some(extrude_plane.face_id),
-                ExtrudeSurface::ExtrudePlane(_) => None,
+                ExtrudeSurface::ExtrudePlane(extrude_plane) if extrude_plane.name == *s => {
+                    Some(Ok(extrude_plane.face_id))
+                }
+                ExtrudeSurface::ExtrudeArc(extrude_arc) if extrude_arc.name == *s => {
+                    Some(Err(KclError::Type(KclErrorDetails {
+                        message: format!("Cannot sketch on a non-planar surface: `{}`", tag),
+                        source_ranges: vec![args.source_range],
+                    })))
+                }
+                ExtrudeSurface::ExtrudePlane(_) | ExtrudeSurface::ExtrudeArc(_) => None,
             })
             .ok_or_else(|| {
                 KclError::Type(KclErrorDetails {
                     message: format!("Expected a face with the tag `{}`", tag),
                     source_ranges: vec![args.source_range],
                 })
-            })?,
+            })??,
         SketchOnFaceTag::StartOrEnd(StartOrEnd::Start) => extrude_group.start_cap_id.ok_or_else(|| {
             KclError::Type(KclErrorDetails {
                 message: "Expected a start face to sketch on".to_string(),
@@ -918,6 +888,7 @@ async fn start_sketch_on_face(
             animated: false,
             ortho: false,
             entity_id: extrude_plane_id,
+            adjust_camera: false,
         },
     )
     .await?;
@@ -925,6 +896,7 @@ async fn start_sketch_on_face(
     Ok(Box::new(Face {
         id,
         value: tag.to_string(),
+        sketch_group_id: extrude_group.id,
         // TODO: get this from the extrude plane data.
         x_axis: extrude_group.x_axis,
         y_axis: extrude_group.y_axis,
@@ -1085,6 +1057,7 @@ async fn inner_start_profile_at(
 
     let sketch_group = SketchGroup {
         id: path_id,
+        on: sketch_surface.clone(),
         position: Position([0.0, 0.0, 0.0]),
         rotation: Rotation([0.0, 0.0, 0.0, 1.0]),
         x_axis: sketch_surface.x_axis(),
@@ -1100,9 +1073,9 @@ async fn inner_start_profile_at(
 
 /// Close the current sketch.
 pub async fn close(args: Args) -> Result<MemoryItem, KclError> {
-    let sketch_group = args.get_sketch_group()?;
+    let (sketch_group, tag): (Box<SketchGroup>, Option<String>) = args.get_sketch_group_and_optional_tag()?;
 
-    let new_sketch_group = inner_close(sketch_group, args).await?;
+    let new_sketch_group = inner_close(sketch_group, tag, args).await?;
 
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
@@ -1111,7 +1084,11 @@ pub async fn close(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "close",
 }]
-async fn inner_close(sketch_group: Box<SketchGroup>, args: Args) -> Result<Box<SketchGroup>, KclError> {
+async fn inner_close(
+    sketch_group: Box<SketchGroup>,
+    tag: Option<String>,
+    args: Args,
+) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
     let to: Point2d = sketch_group.start.from.into();
 
@@ -1125,10 +1102,10 @@ async fn inner_close(sketch_group: Box<SketchGroup>, args: Args) -> Result<Box<S
     )
     .await?;
 
-    // Exit sketch mode, since if we were in a plane or entity we'd want to disable the sketch mode after.
-    if sketch_group.entity_id.is_some() {
+    // If we are sketching on a plane we can close the sketch group now.
+    if let SketchSurface::Plane(_) = sketch_group.on {
         // We were on a plane, disable the sketch mode.
-        args.send_modeling_cmd(uuid::Uuid::new_v4(), ModelingCmd::SketchModeDisable {})
+        args.send_modeling_cmd(uuid::Uuid::new_v4(), kittycad::types::ModelingCmd::SketchModeDisable {})
             .await?;
     }
 
@@ -1137,8 +1114,7 @@ async fn inner_close(sketch_group: Box<SketchGroup>, args: Args) -> Result<Box<S
         base: BasePath {
             from: from.into(),
             to: to.into(),
-            // TODO: should we use a different name?
-            name: "".into(),
+            name: tag.unwrap_or_default(),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -1154,18 +1130,7 @@ async fn inner_close(sketch_group: Box<SketchGroup>, args: Args) -> Result<Box<S
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum ArcData {
-    /// Angles and radius with a tag.
-    AnglesAndRadiusWithTag {
-        /// The start angle.
-        angle_start: f64,
-        /// The end angle.
-        angle_end: f64,
-        /// The radius.
-        radius: f64,
-        /// The tag.
-        tag: String,
-    },
-    /// Angles and radius.
+    /// Angles and radius with an optional tag.
     AnglesAndRadius {
         /// The start angle.
         angle_start: f64,
@@ -1173,19 +1138,11 @@ pub enum ArcData {
         angle_end: f64,
         /// The radius.
         radius: f64,
-    },
-    /// Center, to and radius with a tag.
-    CenterToRadiusWithTag {
-        /// The center.
-        center: [f64; 2],
-        /// The to point.
-        to: [f64; 2],
-        /// The radius.
-        radius: f64,
         /// The tag.
-        tag: String,
+        #[serde(default)]
+        tag: Option<String>,
     },
-    /// Center, to and radius.
+    /// Center, to and radius with an optional tag.
     CenterToRadius {
         /// The center.
         center: [f64; 2],
@@ -1193,6 +1150,9 @@ pub enum ArcData {
         to: [f64; 2],
         /// The radius.
         radius: f64,
+        /// The tag.
+        #[serde(default)]
+        tag: Option<String>,
     },
 }
 
@@ -1212,7 +1172,7 @@ async fn inner_arc(data: ArcData, sketch_group: Box<SketchGroup>, args: Args) ->
     let from: Point2d = sketch_group.get_coords_from_paths()?;
 
     let (center, angle_start, angle_end, radius, end) = match &data {
-        ArcData::AnglesAndRadiusWithTag {
+        ArcData::AnglesAndRadius {
             angle_start,
             angle_end,
             radius,
@@ -1223,21 +1183,7 @@ async fn inner_arc(data: ArcData, sketch_group: Box<SketchGroup>, args: Args) ->
             let (center, end) = arc_center_and_end(from, a_start, a_end, *radius);
             (center, a_start, a_end, *radius, end)
         }
-        ArcData::AnglesAndRadius {
-            angle_start,
-            angle_end,
-            radius,
-        } => {
-            let a_start = Angle::from_degrees(*angle_start);
-            let a_end = Angle::from_degrees(*angle_end);
-            let (center, end) = arc_center_and_end(from, a_start, a_end, *radius);
-            (center, a_start, a_end, *radius, end)
-        }
-        ArcData::CenterToRadiusWithTag { center, to, radius, .. } => {
-            let (angle_start, angle_end) = arc_angles(from, center.into(), to.into(), *radius, args.source_range)?;
-            (center.into(), angle_start, angle_end, *radius, to.into())
-        }
-        ArcData::CenterToRadius { center, to, radius } => {
+        ArcData::CenterToRadius { center, to, radius, .. } => {
             let (angle_start, angle_end) = arc_angles(from, center.into(), to.into(), *radius, args.source_range)?;
             (center.into(), angle_start, angle_end, *radius, to.into())
         }
@@ -1265,10 +1211,8 @@ async fn inner_arc(data: ArcData, sketch_group: Box<SketchGroup>, args: Args) ->
             from: from.into(),
             to: end.into(),
             name: match data {
-                ArcData::AnglesAndRadiusWithTag { tag, .. } => tag.to_string(),
-                ArcData::AnglesAndRadius { .. } => "".to_string(),
-                ArcData::CenterToRadiusWithTag { tag, .. } => tag.to_string(),
-                ArcData::CenterToRadius { .. } => "".to_string(),
+                ArcData::AnglesAndRadius { tag, .. } => tag.unwrap_or_default().to_string(),
+                ArcData::CenterToRadius { tag, .. } => tag.unwrap_or_default().to_string(),
             },
             geo_meta: GeoMeta {
                 id,
@@ -1364,11 +1308,14 @@ async fn inner_tangential_arc(
 
     let to = [from.x + to[0], from.y + to[1]];
 
-    let current_path = Path::ToPoint {
+    let current_path = Path::TangentialArc {
         base: BasePath {
             from: from.into(),
             to,
-            name: "".to_string(),
+            name: match data {
+                TangentialArcData::PointWithTag { tag, .. } => tag.to_string(),
+                TangentialArcData::Point(_) | TangentialArcData::RadiusAndOffset { .. } => "".to_string(),
+            },
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -1477,28 +1424,16 @@ async fn inner_tangential_arc_to(
 /// Data to draw a bezier curve.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(rename_all = "camelCase", untagged)]
-pub enum BezierData {
-    /// Points with a tag.
-    PointsWithTag {
-        /// The to point.
-        to: [f64; 2],
-        /// The first control point.
-        control1: [f64; 2],
-        /// The second control point.
-        control2: [f64; 2],
-        /// The tag.
-        tag: String,
-    },
-    /// Points.
-    Points {
-        /// The to point.
-        to: [f64; 2],
-        /// The first control point.
-        control1: [f64; 2],
-        /// The second control point.
-        control2: [f64; 2],
-    },
+#[serde(rename_all = "camelCase")]
+pub struct BezierData {
+    /// The to point.
+    to: [f64; 2],
+    /// The first control point.
+    control1: [f64; 2],
+    /// The second control point.
+    control2: [f64; 2],
+    /// The tag.
+    tag: Option<String>,
 }
 
 /// Draw a bezier curve.
@@ -1520,16 +1455,9 @@ async fn inner_bezier_curve(
 ) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
 
-    let (to, control1, control2) = match &data {
-        BezierData::PointsWithTag {
-            to, control1, control2, ..
-        } => (to, control1, control2),
-        BezierData::Points { to, control1, control2 } => (to, control1, control2),
-    };
-
     let relative = true;
-    let delta = to;
-    let to = [from.x + to[0], from.y + to[1]];
+    let delta = data.to;
+    let to = [from.x + data.to[0], from.y + data.to[1]];
 
     let id = uuid::Uuid::new_v4();
 
@@ -1539,13 +1467,13 @@ async fn inner_bezier_curve(
             path: sketch_group.id,
             segment: kittycad::types::PathSegment::Bezier {
                 control1: Point3D {
-                    x: control1[0],
-                    y: control1[1],
+                    x: data.control1[0],
+                    y: data.control1[1],
                     z: 0.0,
                 },
                 control2: Point3D {
-                    x: control2[0],
-                    y: control2[1],
+                    x: data.control2[0],
+                    y: data.control2[1],
                     z: 0.0,
                 },
                 end: Point3D {
@@ -1563,11 +1491,7 @@ async fn inner_bezier_curve(
         base: BasePath {
             from: from.into(),
             to,
-            name: if let BezierData::PointsWithTag { tag, .. } = data {
-                tag.to_string()
-            } else {
-                "".to_string()
-            },
+            name: data.tag.unwrap_or_default().to_string(),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),

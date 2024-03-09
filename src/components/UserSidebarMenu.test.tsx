@@ -27,6 +27,8 @@ describe('UserSidebarMenu tests', () => {
       phone: '555-555-5555',
       first_name: 'Test',
       last_name: 'User',
+      can_train_on_data: false,
+      is_service_account: false,
     }
 
     render(
@@ -57,6 +59,8 @@ describe('UserSidebarMenu tests', () => {
       first_name: '',
       last_name: '',
       name: '',
+      can_train_on_data: false,
+      is_service_account: false,
     }
 
     render(
@@ -84,6 +88,8 @@ describe('UserSidebarMenu tests', () => {
       first_name: 'Test',
       last_name: 'User',
       image: '',
+      can_train_on_data: false,
+      is_service_account: false,
     }
 
     render(

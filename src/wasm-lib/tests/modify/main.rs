@@ -37,7 +37,7 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
     let mut mem: kcl_lib::executor::ProgramMemory = Default::default();
-    let ctx = kcl_lib::executor::ExecutorContext::new(ws).await?;
+    let ctx = kcl_lib::executor::ExecutorContext::new(ws, kittycad::types::UnitLength::Mm).await?;
     let memory = kcl_lib::executor::execute(program.clone(), &mut mem, kcl_lib::executor::BodyType::Root, &ctx).await?;
 
     // We need to get the sketch ID.

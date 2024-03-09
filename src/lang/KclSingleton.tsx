@@ -93,7 +93,7 @@ class KclManager {
         // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
         this._params.id &&
           writeTextFile(this._params.id, code).catch((err) => {
-            // TODO: add Sentry per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
+            // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
             console.error('error saving file', err)
             toast.error('Error saving file, please check file permissions')
           })
@@ -211,7 +211,7 @@ class KclManager {
       console.error('error parsing code', e)
       if (e instanceof KCLError) {
         this.kclErrors = [e]
-        if (e.msg === 'file is empty') engineCommandManager.endSession()
+        if (e.msg === 'file is empty') engineCommandManager?.endSession()
       }
       return null
     }
@@ -228,14 +228,29 @@ class KclManager {
     }
   }
 
-  async executeAst(ast: Program = this._ast, updateCode = false) {
-    await this.ensureWasmInit()
+  private _cancelTokens: Map<number, boolean> = new Map()
+
+  async executeAst(
+    ast: Program = this._ast,
+    updateCode = false,
+    executionId?: number
+  ) {
+    console.trace('executeAst')
+    const currentExecutionId = executionId || Date.now()
+    this._cancelTokens.set(currentExecutionId, false)
+
     this.isExecuting = true
+    await this.ensureWasmInit()
     const { logs, errors, programMemory } = await executeAst({
       ast,
       engineCommandManager: this.engineCommandManager,
     })
     this.isExecuting = false
+    // Check the cancellation token for this execution before applying side effects
+    if (this._cancelTokens.get(currentExecutionId)) {
+      this._cancelTokens.delete(currentExecutionId)
+      return
+    }
     this.logs = logs
     this.kclErrors = errors
     this.programMemory = programMemory
@@ -248,6 +263,7 @@ class KclManager {
       type: 'execution-done',
       data: null,
     })
+    this._cancelTokens.delete(currentExecutionId)
   }
   async executeAstMock(
     ast: Program = this._ast,
@@ -295,7 +311,13 @@ class KclManager {
       }
     )
   }
-  async executeCode(code?: string) {
+  async executeCode(code?: string, executionId?: number) {
+    const currentExecutionId = executionId || Date.now()
+    this._cancelTokens.set(currentExecutionId, false)
+    if (this._cancelTokens.get(currentExecutionId)) {
+      this._cancelTokens.delete(currentExecutionId)
+      return
+    }
     await this.ensureWasmInit()
     await this?.engineCommandManager?.waitForReady
     const result = await executeCode({
@@ -304,6 +326,11 @@ class KclManager {
       lastAst: this._ast,
       force: false,
     })
+    // Check the cancellation token for this execution before applying side effects
+    if (this._cancelTokens.get(currentExecutionId)) {
+      this._cancelTokens.delete(currentExecutionId)
+      return
+    }
     if (!result.isChange) return
     const { logs, errors, programMemory, ast } = result
     this.logs = logs
@@ -311,6 +338,12 @@ class KclManager {
     this.programMemory = programMemory
     this.ast = ast
     if (code) this.code = code
+    this._cancelTokens.delete(currentExecutionId)
+  }
+  cancelAllExecutions() {
+    this._cancelTokens.forEach((_, key) => {
+      this._cancelTokens.set(key, true)
+    })
   }
   setCode(code: string, shouldWriteFile = true) {
     if (shouldWriteFile) {
@@ -390,6 +423,26 @@ class KclManager {
       await this.executeAstMock(astWithUpdatedSource, { updates: 'code' })
     }
     return returnVal
+  }
+
+  get defaultPlanes() {
+    return this?.engineCommandManager?.defaultPlanes
+  }
+
+  getPlaneId(axis: 'xy' | 'xz' | 'yz'): string {
+    return this.defaultPlanes[axis]
+  }
+
+  showPlanes() {
+    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, false)
+    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, false)
+    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, false)
+  }
+
+  hidePlanes() {
+    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, true)
+    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, true)
+    void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, true)
   }
 }
 

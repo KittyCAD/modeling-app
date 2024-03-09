@@ -1,7 +1,8 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, env};
 
 use ep::{Destination, UnaryArithmetic};
 use ept::{ListHeader, ObjectHeader};
+use kittycad_modeling_session::SessionBuilder;
 use pretty_assertions::assert_eq;
 
 use super::*;
@@ -1044,17 +1045,90 @@ fn store_object_with_array_property() {
     )
 }
 
+#[tokio::test]
+async fn stdlib_cube_partial() {
+    let program = r#"
+    let cube = startSketchAt([0.0, 0.0])
+        |> lineTo([4.0, 0.0], %)
+    "#;
+    let (_plan, _scope) = must_plan(program);
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+        .ast()
+        .unwrap();
+    let client = test_client().await;
+    let _mem = crate::execute(ast, Some(client)).await.unwrap();
+    // use kittycad_modeling_cmds::{each_cmd, ok_response::OkModelingCmdResponse, ImageFormat, ModelingCmd};
+    // let out = client
+    //     .run_command(
+    //         uuid::Uuid::new_v4().into(),
+    //         each_cmd::TakeSnapshot {
+    //             format: ImageFormat::Png,
+    //         },
+    //     )
+    //     .await
+    //     .unwrap();
+    // let out = match out {
+    //     OkModelingCmdResponse::TakeSnapshot(b) => b,
+    //     other => panic!("wrong output: {other:?}"),
+    // };
+    // let out: Vec<u8> = out.contents.into();
+}
+
+async fn test_client() -> Session {
+    let kittycad_api_token = env::var("KITTYCAD_API_TOKEN").expect("You must set $KITTYCAD_API_TOKEN");
+    let kittycad_api_client = kittycad::Client::new(kittycad_api_token);
+    let session_builder = SessionBuilder {
+        client: kittycad_api_client,
+        fps: Some(10),
+        unlocked_framerate: Some(false),
+        video_res_height: Some(720),
+        video_res_width: Some(1280),
+        buffer_reqs: None,
+        await_response_timeout: None,
+    };
+    match Session::start(session_builder).await {
+        Err(e) => match e {
+            kittycad::types::error::Error::InvalidRequest(s) => panic!("Request did not meet requirements {s}"),
+            kittycad::types::error::Error::CommunicationError(e) => {
+                panic!(" A server error either due to the data, or with the connection: {e}")
+            }
+            kittycad::types::error::Error::RequestError(e) => panic!("Could not build request: {e}"),
+            kittycad::types::error::Error::SerdeError { error, status } => {
+                panic!("Serde error (HTTP {status}): {error}")
+            }
+            kittycad::types::error::Error::InvalidResponsePayload { error, response } => {
+                panic!("Invalid response payload. Error {error}, response {response:?}")
+            }
+            kittycad::types::error::Error::Server { body, status } => panic!("Server error (HTTP {status}): {body}"),
+            kittycad::types::error::Error::UnexpectedResponse(resp) => {
+                let status = resp.status();
+                let url = resp.url().to_owned();
+                match resp.text().await {
+                    Ok(body) => panic!(
+                        "Unexpected response from KittyCAD API.
+                        URL:{url}
+                        HTTP {status}
+                        ---Body----
+                        {body}"
+                    ),
+                    Err(e) => panic!(
+                        "Unexpected response from KittyCAD API.
+                        URL:{url}
+                        HTTP {status}
+                        ---Body could not be read, the error is----
+                        {e}"
+                    ),
+                }
+            }
+        },
+        Ok(x) => x,
+    }
+}
+
 #[ignore = "haven't done API calls or stdlib yet"]
 #[test]
 fn stdlib_api_calls() {
-    let program = "const x0 = startSketchAt([0, 0])
-        const x1 = line([0, 10], x0)
-        const x2 = line([10, 0], x1)
-        const x3 = line([0, -10], x2)
-        const x4 = line([0, 0], x3)
-        const x5 = close(x4)
-        const x6 = extrude(20, x5)
-      show(x6)";
+    let program = include_str!("../../tests/executor/inputs/cube.kcl");
     must_plan(program);
 }
 
@@ -1144,4 +1218,55 @@ fn arrays_as_parameters() {
             ]
         }
     )
+}
+
+#[test]
+fn mod_and_pow() {
+    let program = "
+        let x = 2
+        let y = x^3
+        let z = y % 5
+        ";
+    let (plan, _bindings) = must_plan(program);
+    let addr0 = Address::ZERO;
+    let addr1 = Address::ZERO.offset(1);
+    let addr2 = Address::ZERO.offset(2);
+    let addr3 = Address::ZERO.offset(3);
+    let addr4 = Address::ZERO.offset(4);
+    print!("{:?}", plan);
+    assert_eq!(
+        plan,
+        vec![
+            Instruction::SetPrimitive {
+                address: addr0,
+                value: 2i64.into(),
+            },
+            Instruction::SetPrimitive {
+                address: addr1,
+                value: 3i64.into(),
+            },
+            // x ^ 3, where x = 2
+            Instruction::BinaryArithmetic {
+                arithmetic: ep::BinaryArithmetic {
+                    operation: ep::BinaryOperation::Pow,
+                    operand0: ep::Operand::Reference(addr0),
+                    operand1: ep::Operand::Reference(addr1),
+                },
+                destination: Destination::Address(addr2),
+            },
+            Instruction::SetPrimitive {
+                address: addr3,
+                value: 5i64.into(),
+            },
+            // y % 5, where y is 2^3
+            Instruction::BinaryArithmetic {
+                arithmetic: ep::BinaryArithmetic {
+                    operation: ep::BinaryOperation::Mod,
+                    operand0: ep::Operand::Reference(addr2),
+                    operand1: ep::Operand::Reference(addr3),
+                },
+                destination: Destination::Address(addr4),
+            }
+        ]
+    );
 }

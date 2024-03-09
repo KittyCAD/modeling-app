@@ -68,8 +68,6 @@ log(5, myVar)
   |> lineTo([1, 1], %)
   |> lineTo({ to: [1, 0], tag: "rightPath" }, %)
   |> close(%)
-
-show(mySketch)
 `
     const { ast } = code2ast(code)
     const recasted = recast(ast)
@@ -331,7 +329,6 @@ describe('it recasts wrapped object expressions in pipe bodies with correct inde
        intersectTag: 'seg01'
      }, %)
   |> line([-0.42, -1.72], %)
-show(part001)
 `
     const { ast } = code2ast(code)
     const recasted = recast(ast)

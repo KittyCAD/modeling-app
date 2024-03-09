@@ -48,6 +48,7 @@ function CommandComboBox({
               (event.metaKey && event.key === 'k') ||
               (event.key === 'Backspace' && !event.currentTarget.value)
             ) {
+              event.preventDefault()
               commandBarSend({ type: 'Close' })
             }
           }}

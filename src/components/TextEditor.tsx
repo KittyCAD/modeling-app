@@ -1,22 +1,23 @@
+import { undo, redo } from '@codemirror/commands'
 import ReactCodeMirror, {
   Extension,
   ViewUpdate,
   keymap,
 } from '@uiw/react-codemirror'
-import { FromServer, IntoServer } from 'editor/lsp/codec'
-import Server from '../editor/lsp/server'
-import Client from '../editor/lsp/client'
+import { FromServer, IntoServer } from 'editor/plugins/lsp/codec'
+import Server from '../editor/plugins/lsp/server'
+import Client from '../editor/plugins/lsp/client'
 import { TEST } from 'env'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
 import { Themes } from 'lib/theme'
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { linter, lintGutter } from '@codemirror/lint'
 import { useStore } from 'useStore'
 import { processCodeMirrorRanges } from 'lib/selections'
-import { LanguageServerClient } from 'editor/lsp'
-import kclLanguage from 'editor/lsp/language'
+import { LanguageServerClient } from 'editor/plugins/lsp'
+import kclLanguage from 'editor/plugins/lsp/kcl/language'
 import { EditorView, lineHighlightField } from 'editor/highlightextension'
 import { roundOff } from 'lib/utils'
 import { kclErrToDiagnostic } from 'lang/errors'
@@ -25,8 +26,14 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import interact from '@replit/codemirror-interact'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { kclManager, useKclContext } from 'lang/KclSingleton'
+import { useFileContext } from 'hooks/useFileContext'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { sceneInfra } from 'clientSideScene/sceneInfra'
+import { copilotPlugin } from 'editor/plugins/lsp/copilot'
+import { isTauri } from 'lib/isTauri'
+import type * as LSP from 'vscode-languageserver-protocol'
+import { NetworkHealthState, useNetworkStatus } from './NetworkHealthIndicator'
+import { useHotkeys } from 'react-hotkeys-hook'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -39,6 +46,15 @@ export const editorShortcutMeta = {
   },
 }
 
+function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
+  // We only use workspace folders in Tauri since that is where we use more than
+  // one file.
+  if (isTauri()) {
+    return [{ uri: 'file://', name: 'ProjectRoot' }]
+  }
+  return []
+}
+
 export const TextEditor = ({
   theme,
 }: {
@@ -46,19 +62,45 @@ export const TextEditor = ({
 }) => {
   const {
     editorView,
-    isLSPServerReady,
+    isKclLspServerReady,
+    isCopilotLspServerReady,
     setEditorView,
-    setIsLSPServerReady,
+    setIsKclLspServerReady,
+    setIsCopilotLspServerReady,
     isShiftDown,
   } = useStore((s) => ({
     editorView: s.editorView,
-    isLSPServerReady: s.isLSPServerReady,
+    isKclLspServerReady: s.isKclLspServerReady,
+    isCopilotLspServerReady: s.isCopilotLspServerReady,
     setEditorView: s.setEditorView,
-    setIsLSPServerReady: s.setIsLSPServerReady,
+    setIsKclLspServerReady: s.setIsKclLspServerReady,
+    setIsCopilotLspServerReady: s.setIsCopilotLspServerReady,
     isShiftDown: s.isShiftDown,
   }))
   const { code, errors } = useKclContext()
   const lastEvent = useRef({ event: '', time: Date.now() })
+  const { overallState } = useNetworkStatus()
+  const isNetworkOkay = overallState === NetworkHealthState.Ok
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const onlineCallback = () => kclManager.setCodeAndExecute(kclManager.code)
+    window.addEventListener('online', onlineCallback)
+    return () => window.removeEventListener('online', onlineCallback)
+  }, [])
+
+  useHotkeys('mod+z', (e) => {
+    e.preventDefault()
+    if (editorView) {
+      undo(editorView)
+    }
+  })
+  useHotkeys('mod+shift+z', (e) => {
+    e.preventDefault()
+    if (editorView) {
+      redo(editorView)
+    }
+  })
 
   const {
     context: { selectionRanges, selectionRangeTypeMap },
@@ -66,54 +108,96 @@ export const TextEditor = ({
     state,
   } = useModelingContext()
 
-  const { settings: { context: { textWrapping } = {} } = {} } =
-    useSettingsAuthContext()
+  const { settings, auth } = useSettingsAuthContext()
+  const textWrapping = settings.context?.textWrapping ?? 'On'
   const { commandBarSend } = useCommandsContext()
+  const {
+    context: { project },
+  } = useFileContext()
   const { enable: convertEnabled, handleClick: convertCallback } =
     useConvertToVariable()
 
   // So this is a bit weird, we need to initialize the lsp server and client.
   // But the server happens async so we break this into two parts.
   // Below is the client and server promise.
-  const { lspClient } = useMemo(() => {
+  const { lspClient: kclLspClient } = useMemo(() => {
     const intoServer: IntoServer = new IntoServer()
     const fromServer: FromServer = FromServer.create()
     const client = new Client(fromServer, intoServer)
     if (!TEST) {
       Server.initialize(intoServer, fromServer).then((lspServer) => {
-        lspServer.start()
-        setIsLSPServerReady(true)
+        lspServer.start('kcl')
+        setIsKclLspServerReady(true)
       })
     }
 
-    const lspClient = new LanguageServerClient({ client })
+    const lspClient = new LanguageServerClient({ client, name: 'kcl' })
     return { lspClient }
-  }, [setIsLSPServerReady])
+  }, [setIsKclLspServerReady])
+
+  // Here we initialize the plugin which will start the client.
+  // Now that we have multi-file support the name of the file is a dep of
+  // this use memo, as well as the directory structure, which I think is
+  // a good setup because it will restart the client but not the server :)
+  // We do not want to restart the server, its just wasteful.
+  const kclLSP = useMemo(() => {
+    let plugin = null
+    if (isKclLspServerReady && !TEST) {
+      // Set up the lsp plugin.
+      const lsp = kclLanguage({
+        // When we have more than one file, we'll need to change this.
+        documentUri: `file:///we-just-have-one-file-for-now.kcl`,
+        workspaceFolders: getWorkspaceFolders(),
+        client: kclLspClient,
+      })
+
+      plugin = lsp
+    }
+    return plugin
+  }, [kclLspClient, isKclLspServerReady])
+
+  const { lspClient: copilotLspClient } = useMemo(() => {
+    const intoServer: IntoServer = new IntoServer()
+    const fromServer: FromServer = FromServer.create()
+    const client = new Client(fromServer, intoServer)
+    if (!TEST) {
+      Server.initialize(intoServer, fromServer).then((lspServer) => {
+        const token = auth?.context?.token
+        lspServer.start('copilot', token)
+        setIsCopilotLspServerReady(true)
+      })
+    }
+
+    const lspClient = new LanguageServerClient({ client, name: 'copilot' })
+    return { lspClient }
+  }, [setIsCopilotLspServerReady])
 
   // Here we initialize the plugin which will start the client.
   // When we have multi-file support the name of the file will be a dep of
   // this use memo, as well as the directory structure, which I think is
   // a good setup because it will restart the client but not the server :)
   // We do not want to restart the server, its just wasteful.
-  const kclLSP = useMemo(() => {
+  const copilotLSP = useMemo(() => {
     let plugin = null
-    if (isLSPServerReady && !TEST) {
+    if (isCopilotLspServerReady && !TEST) {
       // Set up the lsp plugin.
-      const lsp = kclLanguage({
+      const lsp = copilotPlugin({
         // When we have more than one file, we'll need to change this.
         documentUri: `file:///we-just-have-one-file-for-now.kcl`,
-        workspaceFolders: null,
-        client: lspClient,
+        workspaceFolders: getWorkspaceFolders(),
+        client: copilotLspClient,
+        allowHTMLContent: true,
       })
 
       plugin = lsp
     }
     return plugin
-  }, [lspClient, isLSPServerReady])
+  }, [copilotLspClient, isCopilotLspServerReady, project])
 
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
-  const onChange = (newCode: string) => {
-    kclManager.setCodeAndExecute(newCode)
+  const onChange = async (newCode: string) => {
+    if (isNetworkOkay) kclManager.setCodeAndExecute(newCode)
+    else kclManager.setCode(newCode)
   } //, []);
   const onUpdate = (viewUpdate: ViewUpdate) => {
     if (!editorView) {
@@ -184,6 +268,7 @@ export const TextEditor = ({
     ] as Extension[]
 
     if (kclLSP) extensions.push(kclLSP)
+    if (copilotLSP) extensions.push(copilotLSP)
 
     // These extensions have proven to mess with vitest
     if (!TEST) {

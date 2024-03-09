@@ -197,6 +197,7 @@ fn do_stdlib_inner(
         let (ty_string, ty_ident) = clean_ty_string(ty.to_string().as_str());
 
         let ty_string = rust_type_to_openapi_type(&ty_string);
+        let required = !ty_ident.to_string().starts_with("Option <");
 
         if ty_string != "Args" {
             let schema = if ty_ident.to_string().starts_with("Vec < ")
@@ -216,7 +217,7 @@ fn do_stdlib_inner(
                     name: #arg_name.to_string(),
                     type_: #ty_string.to_string(),
                     schema: #schema,
-                    required: true,
+                    required: #required,
                 }
             });
         }
@@ -233,6 +234,7 @@ fn do_stdlib_inner(
         let ret_ty_string = if ret_ty_string.starts_with("Box <") {
             ret_ty_string
                 .trim_start_matches("Box <")
+                .trim_end_matches(' ')
                 .trim_end_matches('>')
                 .trim()
                 .to_string()

@@ -36,6 +36,7 @@ import { sep } from '@tauri-apps/api/path'
 import { homeCommandBarConfig } from 'lib/commandBarConfigs/homeCommandConfig'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { isTauri } from 'lib/isTauri'
+import { kclManager } from 'lang/KclSingleton'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
@@ -58,6 +59,7 @@ const Home = () => {
   // during the loading of the home page. This is wrapped
   // in a single-use effect to avoid a potential infinite loop.
   useEffect(() => {
+    kclManager.cancelAllExecutions()
     if (newDefaultDirectory) {
       sendToSettings({
         type: 'Set All Settings',
@@ -79,7 +81,7 @@ const Home = () => {
     }
   )
 
-  const [state, send] = useMachine(homeMachine, {
+  const [state, send, actor] = useMachine(homeMachine, {
     context: {
       projects: loadedProjects,
       defaultProjectName,
@@ -183,6 +185,7 @@ const Home = () => {
     send,
     state,
     commandBarConfig: homeCommandBarConfig,
+    actor,
   })
 
   useEffect(() => {

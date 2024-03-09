@@ -10,7 +10,7 @@ pub mod engine;
 pub mod errors;
 pub mod executor;
 pub mod fs;
+pub mod lsp;
 pub mod parser;
-pub mod server;
 pub mod std;
 pub mod token;

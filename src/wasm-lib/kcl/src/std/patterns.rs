@@ -23,8 +23,8 @@ pub struct LinearPatternData {
     pub repetitions: usize,
     /// The distance between each repetition. This can also be referred to as spacing.
     pub distance: f64,
-    /// The axis of the pattern. This is a 3D vector.
-    pub axis: [f64; 3],
+    /// The axis of the pattern. This is a 2D vector.
+    pub axis: [f64; 2],
 }
 
 /// Data for a circular pattern.
@@ -36,8 +36,8 @@ pub struct CircularPatternData {
     /// This excludes the original entity. For example, if `repetitions` is 1,
     /// the original entity will be copied once.
     pub repetitions: usize,
-    /// The axis around which to make the pattern. This is a 3D vector.
-    pub axis: [f64; 3],
+    /// The axis around which to make the pattern. This is a 2D vector.
+    pub axis: [f64; 2],
     /// The center about which to make th pattern. This is a 3D vector.
     pub center: [f64; 3],
     /// The arc angle (in degrees) to place the repetitions. Must be greater than 0.
@@ -50,7 +50,7 @@ pub struct CircularPatternData {
 pub async fn pattern_linear(args: Args) -> Result<MemoryItem, KclError> {
     let (data, geometry): (LinearPatternData, Geometry) = args.get_data_and_geometry()?;
 
-    if data.axis == [0.0, 0.0, 0.0] {
+    if data.axis == [0.0, 0.0] {
         return Err(KclError::Semantic(KclErrorDetails {
             message:
                 "The axis of the linear pattern cannot be the zero vector. Otherwise they will just duplicate in place."
@@ -70,7 +70,7 @@ pub async fn pattern_linear(args: Args) -> Result<MemoryItem, KclError> {
 pub async fn pattern_circular(args: Args) -> Result<MemoryItem, KclError> {
     let (data, geometry): (CircularPatternData, Geometry) = args.get_data_and_geometry()?;
 
-    if data.axis == [0.0, 0.0, 0.0] {
+    if data.axis == [0.0, 0.0] {
         return Err(KclError::Semantic(KclErrorDetails {
             message:
                 "The axis of the circular pattern cannot be the zero vector. Otherwise they will just duplicate in place."
@@ -97,7 +97,11 @@ async fn inner_pattern_linear(data: LinearPatternData, geometry: Geometry, args:
         .send_modeling_cmd(
             id,
             ModelingCmd::EntityLinearPattern {
-                axis: data.axis.into(),
+                axis: kittycad::types::Point3D {
+                    x: data.axis[0],
+                    y: data.axis[1],
+                    z: 0.0,
+                },
                 entity_id: geometry.id(),
                 num_repetitions: data.repetitions as u32,
                 spacing: data.distance,
@@ -154,7 +158,11 @@ async fn inner_pattern_circular(
         .send_modeling_cmd(
             id,
             ModelingCmd::EntityCircularPattern {
-                axis: data.axis.into(),
+                axis: kittycad::types::Point3D {
+                    x: data.axis[0],
+                    y: data.axis[1],
+                    z: 0.0,
+                },
                 entity_id: geometry.id(),
                 center: data.center.into(),
                 num_repetitions: data.repetitions as u32,

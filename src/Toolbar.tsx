@@ -5,6 +5,13 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { ActionButton } from 'components/ActionButton'
 import usePlatform from 'hooks/usePlatform'
+import { isSingleCursorInPipe } from 'lang/queryAst'
+import { kclManager, useKclContext } from 'lang/KclSingleton'
+import {
+  NetworkHealthState,
+  useNetworkStatus,
+} from 'components/NetworkHealthIndicator'
+import { useStore } from 'useStore'
 
 export const Toolbar = () => {
   const platform = usePlatform()
@@ -13,14 +20,22 @@ export const Toolbar = () => {
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
   const bgClassName =
     'group-enabled:group-hover:bg-energy-10 group-pressed:bg-energy-10 dark:group-enabled:group-hover:bg-chalkboard-80 dark:group-pressed:bg-chalkboard-80'
-  const pathId = useMemo(
-    () =>
-      isCursorInSketchCommandRange(
-        engineCommandManager.artifactMap,
-        context.selectionRanges
-      ),
-    [engineCommandManager.artifactMap, context.selectionRanges]
-  )
+  const pathId = useMemo(() => {
+    if (!isSingleCursorInPipe(context.selectionRanges, kclManager.ast)) {
+      return false
+    }
+    return isCursorInSketchCommandRange(
+      engineCommandManager.artifactMap,
+      context.selectionRanges
+    )
+  }, [engineCommandManager.artifactMap, context.selectionRanges])
+  const { overallState } = useNetworkStatus()
+  const { isExecuting } = useKclContext()
+  const { isStreamReady } = useStore((s) => ({
+    isStreamReady: s.isStreamReady,
+  }))
+  const disableAllButtons =
+    overallState !== NetworkHealthState.Ok || isExecuting || !isStreamReady
 
   function handleToolbarButtonsWheelEvent(ev: WheelEvent<HTMLSpanElement>) {
     const span = toolbarButtonsRef.current
@@ -50,11 +65,14 @@ export const Toolbar = () => {
           <li className="contents">
             <ActionButton
               Element="button"
-              onClick={() => send({ type: 'Enter sketch' })}
+              onClick={() =>
+                send({ type: 'Enter sketch', data: { forceNewSketch: true } })
+              }
               icon={{
                 icon: 'sketch',
                 bgClassName,
               }}
+              disabled={disableAllButtons}
             >
               <span data-testid="start-sketch">Start Sketch</span>
             </ActionButton>
@@ -69,6 +87,7 @@ export const Toolbar = () => {
                 icon: 'sketch',
                 bgClassName,
               }}
+              disabled={disableAllButtons}
             >
               Edit Sketch
             </ActionButton>
@@ -83,6 +102,7 @@ export const Toolbar = () => {
                 icon: 'arrowLeft',
                 bgClassName,
               }}
+              disabled={disableAllButtons}
             >
               Exit Sketch
             </ActionButton>
@@ -104,6 +124,7 @@ export const Toolbar = () => {
                   icon: 'line',
                   bgClassName,
                 }}
+                disabled={disableAllButtons}
               >
                 Line
               </ActionButton>
@@ -119,12 +140,13 @@ export const Toolbar = () => {
                 aria-pressed={state.matches('Sketch.Tangential arc to')}
                 className="pressed:bg-energy-10/20 dark:pressed:bg-energy-80"
                 icon={{
-                  icon: 'line',
+                  icon: 'arc',
                   bgClassName,
                 }}
                 disabled={
-                  !state.can('Equip tangential arc to') &&
-                  !state.matches('Sketch.Tangential arc to')
+                  (!state.can('Equip tangential arc to') &&
+                    !state.matches('Sketch.Tangential arc to')) ||
+                  disableAllButtons
                 }
               >
                 Tangential Arc
@@ -164,7 +186,7 @@ export const Toolbar = () => {
                   disabled={
                     !state.nextEvents
                       .filter((event) => state.can(event as any))
-                      .includes(eventName)
+                      .includes(eventName) || disableAllButtons
                   }
                   title={eventName}
                   icon={{
@@ -189,7 +211,7 @@ export const Toolbar = () => {
                   data: { name: 'Extrude', ownerMachine: 'modeling' },
                 })
               }
-              disabled={!state.can('Extrude')}
+              disabled={!state.can('Extrude') || disableAllButtons}
               title={
                 state.can('Extrude')
                   ? 'extrude'

@@ -29,7 +29,7 @@ function CommandBarSelectionInput({
   const inputRef = useRef<HTMLInputElement>(null)
   const { commandBarState, commandBarSend } = useCommandsContext()
   const [hasSubmitted, setHasSubmitted] = useState(false)
-  const selection = useSelector(arg.actor, selectionSelector)
+  const selection = useSelector(arg.machineActor, selectionSelector)
   const [selectionsByType, setSelectionsByType] = useState<
     'none' | ResolvedSelectionType[]
   >(

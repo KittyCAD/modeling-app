@@ -13,6 +13,10 @@ import {
   initialSettings,
 } from 'lib/settings'
 
+const kclManagerPromise = import('lang/KclSingleton').then(
+  (module) => module.kclManager
+)
+
 export const settingsMachine = createMachine(
   {
     /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlTQAIAVACzAFswBtABgF1FQAHAe1iYsfbNxAAPRAA42+AEwB2KQFYAzGznKAnADZli1QBoQAT2kBGKfm37lOned3nzqgL6vjlLLgJFSFdCoAETAAMwBDAFdiagAFACc+ACswAGNqADlw5nYuJBB+QWFRfMkEABY5fDYa2rra83LjMwQdLWV8BXLyuxlVLU1Ld090bzxCEnJKYLComODMeLS0PniTXLFCoUwRMTK7fC1zNql7NgUjtnKjU0RlBSqpLVUVPVUda60tYZAvHHG-FNAgBVbBCKjIEywNBMDb5LbFPaILqdfRSORsS4qcxXZqIHqyK6qY4XOxsGTKco-P4+Cb+aYAIXCsDAVFBQjhvAE212pWkskUKnUml0+gUNxaqkU+EccnKF1UCnucnMcjcHl+o3+vkmZBofCgUFIMwARpEoFRYuFsGBiJyCtzEXzWrJlGxlKdVFKvfY1XiEBjyvhVOVzBdzu13pYFNStbTAQFqAB5bAmvjheIQf4QtDhNCRWD2hE7EqgfayHTEh7lHQNSxSf1Scz4cpHHFyFVujTKczuDXYPgQOBiGl4TaOktIhAAWg6X3nC4Xp39050sYw2rpYHHRUnztVhPJqmUlIGbEriv9WhrLZ6uibHcqUr7riAA */
@@ -41,13 +45,13 @@ export const settingsMachine = createMachine(
           'Set Base Unit': {
             actions: [
               assign({
-                baseUnit: (_, event) => {
-                  console.log('event', event)
-                  return event.data.baseUnit
-                },
+                baseUnit: (_, event) => event.data.baseUnit,
               }),
               'persistSettings',
               'toastSuccess',
+              async () => {
+                ;(await kclManagerPromise).executeAst()
+              },
             ],
             target: 'idle',
             internal: true,
@@ -128,6 +132,9 @@ export const settingsMachine = createMachine(
               }),
               'persistSettings',
               'toastSuccess',
+              async () => {
+                ;(await kclManagerPromise).executeAst()
+              },
             ],
             target: 'idle',
             internal: true,

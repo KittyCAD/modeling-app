@@ -1,5 +1,6 @@
 import { Coords2d } from 'lang/std/sketch'
 import {
+  BoxGeometry,
   BufferGeometry,
   CatmullRomCurve3,
   ConeGeometry,
@@ -19,6 +20,7 @@ import {
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { PathToNode, SketchGroup, getTangentialArcToInfo } from 'lang/wasm'
 import {
+  PROFILE_START,
   STRAIGHT_SEGMENT,
   STRAIGHT_SEGMENT_BODY,
   STRAIGHT_SEGMENT_DASH,
@@ -29,6 +31,38 @@ import {
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import { ARROWHEAD } from './sceneInfra'
 
+export function profileStart({
+  from,
+  id,
+  pathToNode,
+  scale = 1,
+}: {
+  from: Coords2d
+  id: string
+  pathToNode: PathToNode
+  scale?: number
+}) {
+  const group = new Group()
+
+  const geometry = new BoxGeometry(0.8, 0.8, 0.8)
+  const body = new MeshBasicMaterial({ color: 0xffffff })
+  const mesh = new Mesh(geometry, body)
+
+  group.add(mesh)
+
+  group.userData = {
+    type: PROFILE_START,
+    id,
+    from,
+    pathToNode,
+    isSelected: false,
+  }
+  group.name = PROFILE_START
+  group.position.set(from[0], from[1], 0)
+  group.scale.set(scale, scale, scale)
+  return group
+}
+
 export function straightSegment({
   from,
   to,
@@ -36,6 +70,7 @@ export function straightSegment({
   pathToNode,
   isDraftSegment,
   scale = 1,
+  callExpName,
 }: {
   from: Coords2d
   to: Coords2d
@@ -43,6 +78,7 @@ export function straightSegment({
   pathToNode: PathToNode
   isDraftSegment?: boolean
   scale?: number
+  callExpName: string
 }): Group {
   const group = new Group()
 
@@ -66,7 +102,8 @@ export function straightSegment({
     })
   }
 
-  const body = new MeshBasicMaterial({ color: 0xffffff })
+  const baseColor = callExpName === 'close' ? 0x444444 : 0xffffff
+  const body = new MeshBasicMaterial({ color: baseColor })
   const mesh = new Mesh(geometry, body)
   mesh.userData.type = isDraftSegment
     ? STRAIGHT_SEGMENT_DASH
@@ -80,7 +117,10 @@ export function straightSegment({
     to,
     pathToNode,
     isSelected: false,
+    callExpName,
+    baseColor,
   }
+  group.name = STRAIGHT_SEGMENT
 
   const arrowGroup = createArrowhead(scale)
   arrowGroup.position.set(to[0], to[1], 0)
@@ -89,7 +129,8 @@ export function straightSegment({
     .normalize()
   arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
 
-  group.add(mesh, arrowGroup)
+  group.add(mesh)
+  if (callExpName !== 'close') group.add(arrowGroup)
 
   return group
 }
@@ -169,6 +210,7 @@ export function tangentialArcToSegment({
     pathToNode,
     isSelected: false,
   }
+  group.name = TANGENTIAL_ARC_TO_SEGMENT
 
   const arrowGroup = createArrowhead(scale)
   arrowGroup.position.set(to[0], to[1], 0)

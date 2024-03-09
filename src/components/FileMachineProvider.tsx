@@ -50,10 +50,7 @@ export const FileMachineProvider = ({
       selectedDirectory: project,
     },
     actions: {
-      navigateToFile: (
-        context: ContextFrom<typeof fileMachine>,
-        event: EventFrom<typeof fileMachine>
-      ) => {
+      navigateToFile: (context, event) => {
         if (event.data && 'name' in event.data) {
           commandBarSend({ type: 'Close' })
           navigate(
@@ -77,10 +74,7 @@ export const FileMachineProvider = ({
           children: newFiles,
         }
       },
-      createFile: async (
-        context: ContextFrom<typeof fileMachine>,
-        event: EventFrom<typeof fileMachine, 'Create file'>
-      ) => {
+      createFile: async (context, event) => {
         let name = event.data.name.trim() || DEFAULT_FILE_NAME
 
         if (event.data.makeDir) {

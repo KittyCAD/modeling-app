@@ -3,8 +3,8 @@ import { BrowserRouter } from 'react-router-dom'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
 import { type ProjectWithEntryPointMetadata } from 'lib/types'
 import { SettingsAuthStateProvider } from './SettingsAuthStateProvider'
-import CommandBarProvider from './CommandBar/CommandBar'
 import { APP_NAME } from 'lib/constants'
+import { vi } from 'vitest'
 
 const now = new Date()
 const projectWellFormed = {

@@ -87,7 +87,7 @@ export function useCalc({
   inputRef: React.RefObject<HTMLInputElement>
   valueNode: Value | null
   calcResult: string
-  prevVariables: PrevVariable<any>[]
+  prevVariables: PrevVariable<unknown>[]
   newVariableName: string
   isNewVariableNameUnique: boolean
   newVariableInsertIndex: number

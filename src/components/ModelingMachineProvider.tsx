@@ -37,6 +37,11 @@ import { sceneInfra } from 'clientSideScene/sceneInfra'
 import { getSketchQuaternion } from 'clientSideScene/sceneEntities'
 import { startSketchOnDefault } from 'lang/modifyAst'
 import { Program } from 'lang/wasm'
+import { isSingleCursorInPipe } from 'lang/queryAst'
+import { TEST } from 'env'
+import { exportFromEngine } from 'lib/exportFromEngine'
+import { Models } from '@kittycad/lib/dist/types/src'
+import toast from 'react-hot-toast'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -53,7 +58,12 @@ export const ModelingMachineProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const { auth } = useSettingsAuthContext()
+  const {
+    auth,
+    settings: {
+      context: { baseUnit },
+    },
+  } = useSettingsAuthContext()
   const { code } = useKclContext()
   const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)
@@ -169,6 +179,56 @@ export const ModelingMachineProvider = ({
           }
           return { selectionRangeTypeMap }
         }),
+        'Engine export': (_, event) => {
+          if (event.type !== 'Export' || TEST) return
+          const format = {
+            ...event.data,
+          } as Partial<Models['OutputFormat_type']>
+
+          // Set all the un-configurable defaults here.
+          if (format.type === 'gltf') {
+            format.presentation = 'pretty'
+          }
+
+          if (
+            format.type === 'obj' ||
+            format.type === 'ply' ||
+            format.type === 'step' ||
+            format.type === 'stl'
+          ) {
+            // Set the default coords.
+            // In the future we can make this configurable.
+            // But for now, its probably best to keep it consistent with the
+            // UI.
+            format.coords = {
+              forward: {
+                axis: 'y',
+                direction: 'negative',
+              },
+              up: {
+                axis: 'z',
+                direction: 'positive',
+              },
+            }
+          }
+
+          if (
+            format.type === 'obj' ||
+            format.type === 'stl' ||
+            format.type === 'ply'
+          ) {
+            format.units = baseUnit
+          }
+
+          if (format.type === 'ply' || format.type === 'stl') {
+            format.selection = { type: 'default_scene' }
+          }
+
+          exportFromEngine({
+            source_unit: baseUnit,
+            format: format as Models['OutputFormat_type'],
+          }).catch((e) => toast.error('Error while exporting', e)) // TODO I think we need to throw the error from engineCommandManager
+        },
       },
       guards: {
         'has valid extrude selection': ({ selectionRanges }) => {
@@ -182,12 +242,17 @@ export const ModelingMachineProvider = ({
 
           return canExtrudeSelection(selectionRanges)
         },
-        'Selection is one face': ({ selectionRanges }) => {
+        'Selection is on face': ({ selectionRanges }, { data }) => {
+          if (data?.forceNewSketch) return false
+          if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))
+            return false
           return !!isCursorInSketchCommandRange(
             engineCommandManager.artifactMap,
             selectionRanges
           )
         },
+        'Has exportable geometry': () =>
+          kclManager.kclErrors.length === 0 && kclManager.ast.body.length > 0,
       },
       services: {
         'AST-undo-startSketchOn': async ({ sketchPathToNode }) => {
@@ -199,6 +264,7 @@ export const ModelingMachineProvider = ({
           await kclManager.executeAstMock(newAst, { updates: 'code' })
           sceneInfra.setCallbacks({
             onClick: () => {},
+            onDrag: () => {},
           })
         },
         'animate-to-face': async (_, { data: { plane, normal } }) => {
@@ -208,7 +274,7 @@ export const ModelingMachineProvider = ({
           )
           await kclManager.updateAst(modifiedAst, false)
           const quaternion = getSketchQuaternion(pathToNode, normal)
-          await sceneInfra.tweenCameraToQuaternion(quaternion)
+          await sceneInfra.camControls.tweenCameraToQuaternion(quaternion)
           return {
             sketchPathToNode: pathToNode,
             sketchNormalBackUp: normal,
@@ -222,7 +288,7 @@ export const ModelingMachineProvider = ({
             sketchPathToNode || [],
             sketchNormalBackUp
           )
-          await sceneInfra.tweenCameraToQuaternion(quaternion)
+          await sceneInfra.camControls.tweenCameraToQuaternion(quaternion)
         },
         'Get horizontal info': async ({
           selectionRanges,
@@ -369,6 +435,7 @@ export const ModelingMachineProvider = ({
     send: modelingSend,
     actor: modelingActor,
     commandBarConfig: modelingMachineConfig,
+    allCommandsRequireNetwork: true,
     onCancel: () => modelingSend({ type: 'Cancel' }),
   })
 

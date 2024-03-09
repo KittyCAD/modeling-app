@@ -132,7 +132,11 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
             if i > 0 {
                 signature.push_str(", ");
             }
-            signature.push_str(&format!("{}: {}", arg.name, arg.type_));
+            if arg.required {
+                signature.push_str(&format!("{}: {}", arg.name, arg.type_));
+            } else {
+                signature.push_str(&format!("{}?: {}", arg.name, arg.type_));
+            }
         }
         signature.push(')');
         if let Some(return_value) = self.return_value() {
@@ -563,19 +567,6 @@ mod tests {
             some_function,
             crate::ast::types::Function::StdLib {
                 func: Box::new(crate::std::sketch::Line),
-            }
-        );
-    }
-
-    #[test]
-    fn test_deserialize_function_show() {
-        let some_function_string = r#"{"type":"StdLib","func":{"name":"show","summary":"","description":"","tags":[],"returnValue":{"type":"","required":false,"name":"","schema":{}},"args":[],"unpublished":false,"deprecated":false}}"#;
-        let some_function: crate::ast::types::Function = serde_json::from_str(some_function_string).unwrap();
-
-        assert_eq!(
-            some_function,
-            crate::ast::types::Function::StdLib {
-                func: Box::new(crate::std::Show),
             }
         );
     }

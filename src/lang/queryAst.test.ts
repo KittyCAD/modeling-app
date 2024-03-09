@@ -34,8 +34,7 @@ const part001 = startSketchOn('XY')
   |> xLine(3.84, %) // selection-range-7ish-before-this
 
 const variableBelowShouldNotBeIncluded = 3
-
-show(part001)`
+`
     const rangeStart = code.indexOf('// selection-range-7ish-before-this') - 7
     const ast = parse(code)
     const programMemory = await enginelessExecutor(ast)
@@ -69,8 +68,7 @@ describe('testing argIsNotIdentifier', () => {
 |> angledLine([ghi(%), 3.09], %)
 |> angledLine([jkl('yo') + 2, 3.09], %)
 const yo = 5 + 6
-const yo2 = hmm([identifierGuy + 5])
-show(part001)`
+const yo2 = hmm([identifierGuy + 5])`
   it('find a safe binaryExpression', () => {
     const ast = parse(code)
     const rangeStart = code.indexOf('100 + 100') + 2
@@ -201,8 +199,7 @@ describe('testing getNodePathFromSourceRange', () => {
   const code = `const part001 = startSketchOn('XY')
   |> startProfileAt([0.39, -0.05], %)
   |> line([0.94, 2.61], %)
-  |> line([-0.21, -1.4], %)
-show(part001)`
+  |> line([-0.21, -1.4], %)`
   it('finds the second line when cursor is put at the end', () => {
     const searchLn = `line([0.94, 2.61], %)`
     const sourceIndex = code.indexOf(searchLn) + searchLn.length

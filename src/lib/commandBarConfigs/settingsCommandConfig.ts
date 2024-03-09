@@ -31,13 +31,14 @@ export const settingsCommandBarConfig: CommandSetConfig<
   SettingsCommandSchema
 > = {
   'Set Base Unit': {
-    icon: 'gear',
+    icon: 'settings',
     args: {
       baseUnit: {
         inputType: 'options',
         required: true,
-        defaultValue: (context) => context.baseUnit,
-        options: (context) =>
+        defaultValueFromContext: (context) => context.baseUnit,
+        options: [],
+        optionsFromContext: (context) =>
           Object.values(baseUnitsUnion).map((v) => ({
             name: v,
             value: v,
@@ -47,13 +48,14 @@ export const settingsCommandBarConfig: CommandSetConfig<
     },
   },
   'Set Camera Controls': {
-    icon: 'gear',
+    icon: 'settings',
     args: {
       cameraControls: {
         inputType: 'options',
         required: true,
-        defaultValue: (context) => context.cameraControls,
-        options: (context) =>
+        defaultValueFromContext: (context) => context.cameraControls,
+        options: [],
+        optionsFromContext: (context) =>
           Object.values(cameraSystems).map((v) => ({
             name: v,
             value: v,
@@ -63,24 +65,25 @@ export const settingsCommandBarConfig: CommandSetConfig<
     },
   },
   'Set Default Project Name': {
-    icon: 'gear',
+    icon: 'settings',
     hide: 'web',
     args: {
       defaultProjectName: {
         inputType: 'string',
         required: true,
-        defaultValue: (context) => context.defaultProjectName,
+        defaultValueFromContext: (context) => context.defaultProjectName,
       },
     },
   },
   'Set Text Wrapping': {
-    icon: 'gear',
+    icon: 'settings',
     args: {
       textWrapping: {
         inputType: 'options',
         required: true,
-        defaultValue: (context) => context.textWrapping,
-        options: (context) => [
+        defaultValueFromContext: (context) => context.textWrapping,
+        options: [],
+        optionsFromContext: (context) => [
           {
             name: 'On',
             value: 'On' as Toggle,
@@ -96,13 +99,14 @@ export const settingsCommandBarConfig: CommandSetConfig<
     },
   },
   'Set Theme': {
-    icon: 'gear',
+    icon: 'settings',
     args: {
       theme: {
         inputType: 'options',
         required: true,
-        defaultValue: (context) => context.theme,
-        options: (context) =>
+        defaultValueFromContext: (context) => context.theme,
+        options: [],
+        optionsFromContext: (context) =>
           Object.values(Themes).map((v) => ({
             name: v,
             value: v,
@@ -112,13 +116,14 @@ export const settingsCommandBarConfig: CommandSetConfig<
     },
   },
   'Set Unit System': {
-    icon: 'gear',
+    icon: 'settings',
     args: {
       unitSystem: {
         inputType: 'options',
         required: true,
-        defaultValue: (context) => context.unitSystem,
-        options: (context) => [
+        defaultValueFromContext: (context) => context.unitSystem,
+        options: [],
+        optionsFromContext: (context) => [
           {
             name: 'Imperial',
             value: 'imperial' as UnitSystem,

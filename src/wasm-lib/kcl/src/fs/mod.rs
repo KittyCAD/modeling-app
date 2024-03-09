@@ -28,4 +28,11 @@ pub trait FileSystem: Clone {
         path: P,
         source_range: crate::executor::SourceRange,
     ) -> Result<bool, crate::errors::KclError>;
+
+    /// Get all the files in a directory recursively.
+    async fn get_all_files<P: AsRef<std::path::Path>>(
+        &self,
+        path: P,
+        source_range: crate::executor::SourceRange,
+    ) -> Result<Vec<std::path::PathBuf>, crate::errors::KclError>;
 }

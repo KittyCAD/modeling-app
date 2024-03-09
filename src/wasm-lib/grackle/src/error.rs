@@ -45,6 +45,13 @@ pub enum CompileError {
     NoReturnStmt,
     #[error("You used the %, which means \"substitute this argument for the value to the left in this |> pipeline\". But there is no such value, because you're not calling a pipeline.")]
     NotInPipeline,
+    #[error("The function '{fn_name}' expects a parameter of type {expected} as argument number {arg_number} but you supplied {actual}")]
+    ArgWrongType {
+        fn_name: &'static str,
+        expected: &'static str,
+        actual: String,
+        arg_number: usize,
+    },
 }
 
 #[derive(Debug, thiserror::Error)]

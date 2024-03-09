@@ -21,7 +21,7 @@ export default function Export() {
         <section className="flex-1">
           <h2 className="text-2xl font-bold">Export</h2>
           <p className="my-4">
-            Try opening the project menu and clicking "Export Model".
+            Try opening the project menu and clicking "Export Part".
           </p>
           <p className="my-4">
             {APP_NAME} uses{' '}
@@ -32,7 +32,7 @@ export default function Export() {
             >
               our open-source extension proposal
             </a>{' '}
-            for the GLTF file format.{' '}
+            for the gLTF file format.{' '}
             <a
               href="https://zoo.dev/docs/api/convert-cad-file"
               rel="noopener noreferrer"
@@ -43,8 +43,20 @@ export default function Export() {
             can convert to and from most common CAD file formats, allowing
             export to almost any CAD software.
           </p>
+          <p className="my-4">
+            Our teammate David is working on the file format, check out{' '}
+            <a
+              href="https://www.youtube.com/watch?v=8SuW0qkYCZo"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              his talk with the Metaverse Standards Forum
+            </a>
+            !
+          </p>
         </section>
         <OnboardingButtons
+          currentSlug={onboardingPaths.EXPORT}
           next={next}
           dismiss={dismiss}
           nextText="Next: Sketching"

@@ -5,10 +5,10 @@ import { Value } from '../lang/wasm'
 import {
   AvailableVars,
   addToInputHelper,
-  useCalc,
   CalcResult,
   CreateNewVariable,
 } from './AvailableVarsHelpers'
+import { useCalculateKclExpression } from 'lib/useCalculateKclExpression'
 
 type ModalResolve = {
   value: string
@@ -59,7 +59,7 @@ export const GetInfoModal = ({
     newVariableName,
     isNewVariableNameUnique,
     newVariableInsertIndex,
-  } = useCalc({ value: value, initialVariableName })
+  } = useCalculateKclExpression({ value: value, initialVariableName })
 
   return (
     <Transition appear show={isOpen} as={Fragment}>

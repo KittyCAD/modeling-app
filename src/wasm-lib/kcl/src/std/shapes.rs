@@ -8,13 +8,13 @@ use crate::{
 };
 
 pub const CIRCLE_FN: &str = r#"
-(plane, center, radius) => {
-  const sg = startSketchOn(plane)
-    |> startProfileAt([center[0] + radius, center[1]], %)
+(center, radius, surface, tag?) => {
+const sg = startProfileAt([center[0] + radius, center[1]], surface)
     |> arc({
        angle_end: 360,
        angle_start: 0,
-       radius: radius
+       radius: radius,
+       tag: tag
      }, %)
     |> close(%)
   return sg
@@ -48,7 +48,7 @@ impl std::fmt::Debug for Circle {
 /// TODO: Parse the KCL in a macro and generate these
 impl StdLibFn for Circle {
     fn name(&self) -> String {
-        "unstable_stdlib_circle".to_owned()
+        "circle".to_owned()
     }
 
     fn summary(&self) -> String {
@@ -64,15 +64,64 @@ impl StdLibFn for Circle {
     }
 
     fn args(&self) -> Vec<crate::docs::StdLibFnArg> {
-        Vec::new() // TODO
+        let mut settings = schemars::gen::SchemaSettings::openapi3();
+        settings.inline_subschemas = true;
+        let mut generator = schemars::gen::SchemaGenerator::new(settings);
+        let mut args = Vec::new();
+        for parameter in &self.function.params {
+            match parameter.identifier.name.as_str() {
+                "center" => {
+                    args.push(crate::docs::StdLibFnArg {
+                        name: parameter.identifier.name.to_owned(),
+                        type_: "[number, number]".to_string(),
+                        schema: <[f64; 2]>::json_schema(&mut generator),
+                        required: true,
+                    });
+                }
+                "radius" => {
+                    args.push(crate::docs::StdLibFnArg {
+                        name: parameter.identifier.name.to_owned(),
+                        type_: "number".to_string(),
+                        schema: <f64>::json_schema(&mut generator),
+                        required: true,
+                    });
+                }
+                "surface" => {
+                    args.push(crate::docs::StdLibFnArg {
+                        name: parameter.identifier.name.to_owned(),
+                        type_: "SketchSurface".to_string(),
+                        schema: <crate::executor::SketchSurface>::json_schema(&mut generator),
+                        required: true,
+                    });
+                }
+                "tag" => {
+                    args.push(crate::docs::StdLibFnArg {
+                        name: parameter.identifier.name.to_owned(),
+                        type_: "String".to_string(),
+                        schema: <String>::json_schema(&mut generator),
+                        required: false,
+                    });
+                }
+                _ => panic!("Unknown parameter: {:?}", parameter.identifier.name),
+            }
+        }
+        args
     }
 
     fn return_value(&self) -> Option<crate::docs::StdLibFnArg> {
-        None
+        let mut settings = schemars::gen::SchemaSettings::openapi3();
+        settings.inline_subschemas = true;
+        let mut generator = schemars::gen::SchemaGenerator::new(settings);
+        Some(crate::docs::StdLibFnArg {
+            name: "SketchGroup".to_owned(),
+            type_: "SketchGroup".to_string(),
+            schema: <crate::executor::SketchGroup>::json_schema(&mut generator),
+            required: true,
+        })
     }
 
     fn unpublished(&self) -> bool {
-        true
+        false
     }
 
     fn deprecated(&self) -> bool {

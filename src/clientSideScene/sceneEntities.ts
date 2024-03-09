@@ -3,10 +3,13 @@ import {
   DoubleSide,
   ExtrudeGeometry,
   Group,
+  Intersection,
   LineCurve3,
   Matrix4,
   Mesh,
   MeshBasicMaterial,
+  Object3D,
+  Object3DEventMap,
   OrthographicCamera,
   PerspectiveCamera,
   PlaneGeometry,
@@ -22,8 +25,9 @@ import {
   DEFAULT_PLANES,
   DefaultPlane,
   defaultPlaneColor,
+  getSceneScale,
   INTERSECTION_PLANE_LAYER,
-  isQuaternionVertical,
+  OnMouseEnterLeaveArgs,
   RAYCASTABLE_PLANE,
   sceneInfra,
   SKETCH_GROUP_SEGMENTS,
@@ -33,6 +37,7 @@ import {
   Y_AXIS,
   YZ_PLANE,
 } from './sceneInfra'
+import { isQuaternionVertical } from './helpers'
 import {
   CallExpression,
   getTangentialArcToInfo,
@@ -55,6 +60,7 @@ import { engineCommandManager } from 'lang/std/engineConnection'
 import {
   createArcGeometry,
   dashedStraight,
+  profileStart,
   straightSegment,
   tangentialArcToSegment,
 } from './segments'
@@ -62,7 +68,7 @@ import {
   addCloseToPipe,
   addNewSketchLn,
   changeSketchArguments,
-  compareVec2Epsilon2,
+  updateStartProfileAtArgs,
 } from 'lang/std/sketch'
 import { isReducedMotion, throttle } from 'lib/utils'
 import {
@@ -84,6 +90,7 @@ export const TANGENTIAL_ARC_TO_SEGMENT = 'tangential-arc-to-segment'
 export const TANGENTIAL_ARC_TO_SEGMENT_BODY = 'tangential-arc-to-segment-body'
 export const TANGENTIAL_ARC_TO__SEGMENT_DASH =
   'tangential-arc-to-segment-body-dashed'
+export const PROFILE_START = 'profile-start'
 
 // This singleton Class is responsible for all of the things the user sees and interacts with.
 // That mostly mean sketch elements.
@@ -97,17 +104,18 @@ class SceneEntities {
   currentSketchQuaternion: Quaternion | null = null
   constructor() {
     this.scene = sceneInfra?.scene
-    sceneInfra?.setOnCamChange(this.onCamChange)
+    sceneInfra?.camControls.subscribeToCamChange(this.onCamChange)
   }
 
   onCamChange = () => {
-    const orthoFactor = orthoScale(sceneInfra.camera)
+    const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
     Object.values(this.activeSegments).forEach((segment) => {
       const factor =
-        sceneInfra.camera instanceof OrthographicCamera
+        (sceneInfra.camControls.camera instanceof OrthographicCamera
           ? orthoFactor
-          : perspScale(sceneInfra.camera, segment)
+          : perspScale(sceneInfra.camControls.camera, segment)) /
+        sceneInfra._baseUnitMultiplier
       if (
         segment.userData.from &&
         segment.userData.to &&
@@ -135,21 +143,29 @@ class SceneEntities {
           scale: factor,
         })
       }
+      if (segment.name === PROFILE_START) {
+        segment.scale.set(factor, factor, factor)
+      }
     })
     if (this.axisGroup) {
       const factor =
-        sceneInfra.camera instanceof OrthographicCamera
+        sceneInfra.camControls.camera instanceof OrthographicCamera
           ? orthoFactor
-          : perspScale(sceneInfra.camera, this.axisGroup)
+          : perspScale(sceneInfra.camControls.camera, this.axisGroup)
       const x = this.axisGroup.getObjectByName(X_AXIS)
-      x?.scale.set(1, factor, 1)
+      x?.scale.set(1, factor / sceneInfra._baseUnitMultiplier, 1)
       const y = this.axisGroup.getObjectByName(Y_AXIS)
-      y?.scale.set(factor, 1, 1)
+      y?.scale.set(factor / sceneInfra._baseUnitMultiplier, 1, 1)
     }
   }
 
   createIntersectionPlane() {
-    const planeGeometry = new PlaneGeometry(100000, 100000)
+    if (sceneInfra.scene.getObjectByName(RAYCASTABLE_PLANE)) {
+      console.warn('createIntersectionPlane called when it already exists')
+      return
+    }
+    const hundredM = 1000000
+    const planeGeometry = new PlaneGeometry(hundredM, hundredM)
     const planeMaterial = new MeshBasicMaterial({
       color: 0xff0000,
       side: DoubleSide,
@@ -163,6 +179,7 @@ class SceneEntities {
     this.scene.add(this.intersectionPlane)
   }
   createSketchAxis(sketchPathToNode: PathToNode) {
+    const orthoFactor = orthoScale(sceneInfra.camControls.camera)
     const baseXColor = 0x000055
     const baseYColor = 0x550000
     const xAxisGeometry = new BoxGeometry(100000, 0.3, 0.01)
@@ -194,12 +211,28 @@ class SceneEntities {
 
     this.axisGroup = new Group()
     const gridHelper = createGridHelper({ size: 100, divisions: 10 })
+    gridHelper.position.z = -0.01
     gridHelper.renderOrder = -3 // is this working?
+    gridHelper.name = 'gridHelper'
+    const sceneScale = getSceneScale(
+      sceneInfra.camControls.camera,
+      sceneInfra.camControls.target
+    )
+    gridHelper.scale.set(sceneScale, sceneScale, sceneScale)
+
+    const factor =
+      sceneInfra.camControls.camera instanceof OrthographicCamera
+        ? orthoFactor
+        : perspScale(sceneInfra.camControls.camera, this.axisGroup)
+    xAxisMesh?.scale.set(1, factor / sceneInfra._baseUnitMultiplier, 1)
+    yAxisMesh?.scale.set(factor / sceneInfra._baseUnitMultiplier, 1, 1)
+
     this.axisGroup.add(xAxisMesh, yAxisMesh, gridHelper)
     this.currentSketchQuaternion &&
       this.axisGroup.setRotationFromQuaternion(this.currentSketchQuaternion)
 
     this.axisGroup.userData = { type: AXIS_GROUP }
+    this.axisGroup.name = AXIS_GROUP
     this.axisGroup.layers.set(SKETCH_LAYER)
     this.axisGroup.traverse((child) => {
       child.layers.set(SKETCH_LAYER)
@@ -230,6 +263,7 @@ class SceneEntities {
     ast?: Program
     draftSegment?: DraftSegment
   }) {
+    sceneInfra.resetMouseListeners()
     this.createIntersectionPlane()
 
     const { truncatedAst, programMemoryOverride, variableDeclarationName } =
@@ -262,19 +296,57 @@ class SceneEntities {
       sketchGroup.position[1],
       sketchGroup.position[2]
     )
-    const orthoFactor = orthoScale(sceneInfra.camera)
+    const orthoFactor = orthoScale(sceneInfra.camControls.camera)
     const factor =
-      sceneInfra.camera instanceof OrthographicCamera
+      (sceneInfra.camControls.camera instanceof OrthographicCamera
         ? orthoFactor
-        : perspScale(sceneInfra.camera, dummy)
+        : perspScale(sceneInfra.camControls.camera, dummy)) /
+      sceneInfra._baseUnitMultiplier
+
+    const segPathToNode = getNodePathFromSourceRange(
+      kclManager.ast,
+      sketchGroup.start.__geoMeta.sourceRange
+    )
+    const _profileStart = profileStart({
+      from: sketchGroup.start.from,
+      id: sketchGroup.start.__geoMeta.id,
+      pathToNode: segPathToNode,
+      scale: factor,
+    })
+    _profileStart.layers.set(SKETCH_LAYER)
+    _profileStart.traverse((child) => {
+      child.layers.set(SKETCH_LAYER)
+    })
+    group.add(_profileStart)
+    this.activeSegments[JSON.stringify(segPathToNode)] = _profileStart
+
     sketchGroup.value.forEach((segment, index) => {
       let segPathToNode = getNodePathFromSourceRange(
-        draftSegment ? truncatedAst : kclManager.ast,
+        kclManager.ast,
         segment.__geoMeta.sourceRange
       )
+      if (draftSegment && (sketchGroup.value[index - 1] || sketchGroup.start)) {
+        const previousSegment =
+          sketchGroup.value[index - 1] || sketchGroup.start
+        const previousSegmentPathToNode = getNodePathFromSourceRange(
+          kclManager.ast,
+          previousSegment.__geoMeta.sourceRange
+        )
+        const bodyIndex = previousSegmentPathToNode[1][0]
+        segPathToNode = getNodePathFromSourceRange(
+          truncatedAst,
+          segment.__geoMeta.sourceRange
+        )
+        segPathToNode[1][0] = bodyIndex
+      }
       const isDraftSegment =
         draftSegment && index === sketchGroup.value.length - 1
       let seg
+      const callExpName = getNodeFromPath<CallExpression>(
+        kclManager.ast,
+        segPathToNode,
+        'CallExpression'
+      )?.node?.callee?.name
       if (segment.type === 'TangentialArcTo') {
         seg = tangentialArcToSegment({
           prevSegment: sketchGroup.value[index - 1],
@@ -293,6 +365,7 @@ class SceneEntities {
           pathToNode: segPathToNode,
           isDraftSegment,
           scale: factor,
+          callExpName,
         })
       }
       seg.layers.set(SKETCH_LAYER)
@@ -314,15 +387,19 @@ class SceneEntities {
     this.scene.add(group)
     if (!draftSegment) {
       sceneInfra.setCallbacks({
-        onDrag: (args) => {
+        onDrag: ({ selected, intersectionPoint, mouseEvent, intersects }) => {
+          if (mouseEvent.which !== 1) return
           this.onDragSegment({
-            ...args,
+            object: selected,
+            intersection2d: intersectionPoint.twoD,
+            intersects,
             sketchPathToNode,
           })
         },
         onMove: () => {},
         onClick: (args) => {
-          if (!args || !args.object) {
+          if (args?.mouseEvent.which !== 1) return
+          if (!args || !args.selected) {
             sceneInfra.modelingSend({
               type: 'Set selection',
               data: {
@@ -331,72 +408,32 @@ class SceneEntities {
             })
             return
           }
-          const { object } = args
-          const event = getEventForSegmentSelection(object)
+          const { selected } = args
+          const event = getEventForSegmentSelection(selected)
           if (!event) return
           sceneInfra.modelingSend(event)
         },
-        onMouseEnter: ({ object }) => {
-          // TODO change the color of the segment to yellow?
-          // Give a few pixels grace around each of the segments
-          // for hover.
-          if ([X_AXIS, Y_AXIS].includes(object?.userData?.type)) {
-            const obj = object as Mesh
-            const mat = obj.material as MeshBasicMaterial
-            mat.color.set(obj.userData.baseColor)
-            mat.color.offsetHSL(0, 0, 0.5)
-          }
-          const parent = getParentGroup(object)
-          if (parent?.userData?.pathToNode) {
-            const updatedAst = parse(recast(kclManager.ast))
-            const node = getNodeFromPath<CallExpression>(
-              updatedAst,
-              parent.userData.pathToNode,
-              'CallExpression'
-            ).node
-            sceneInfra.highlightCallback([node.start, node.end])
-            const yellow = 0xffff00
-            colorSegment(object, yellow)
-            return
-          }
-          sceneInfra.highlightCallback([0, 0])
-        },
-        onMouseLeave: ({ object }) => {
-          sceneInfra.highlightCallback([0, 0])
-          const parent = getParentGroup(object)
-          const isSelected = parent?.userData?.isSelected
-          colorSegment(object, isSelected ? 0x0000ff : 0xffffff)
-          if ([X_AXIS, Y_AXIS].includes(object?.userData?.type)) {
-            const obj = object as Mesh
-            const mat = obj.material as MeshBasicMaterial
-            mat.color.set(obj.userData.baseColor)
-            if (obj.userData.isSelected) mat.color.offsetHSL(0, 0, 0.2)
-          }
-        },
+        ...mouseEnterLeaveCallbacks(),
       })
     } else {
       sceneInfra.setCallbacks({
-        onDrag: () => {},
         onClick: async (args) => {
           if (!args) return
-          const { intersection2d } = args
-          if (!intersection2d) return
+          if (args.mouseEvent.which !== 1) return
+          const { intersectionPoint } = args
+          let intersection2d = intersectionPoint?.twoD
+          const profileStart = args.intersects
+            .map(({ object }) => getParentGroup(object, [PROFILE_START]))
+            .find((a) => a?.name === PROFILE_START)
 
-          const firstSeg = sketchGroup.value[0]
-          const isClosingSketch = compareVec2Epsilon2(
-            firstSeg.from,
-            [intersection2d.x, intersection2d.y],
-            1
-          )
           let modifiedAst
-          if (isClosingSketch) {
-            // TODO close needs a better UX
+          if (profileStart) {
             modifiedAst = addCloseToPipe({
               node: kclManager.ast,
               programMemory: kclManager.programMemory,
               pathToNode: sketchPathToNode,
             })
-          } else {
+          } else if (intersection2d) {
             const lastSegment = sketchGroup.value.slice(-1)[0]
             modifiedAst = addNewSketchLn({
               node: kclManager.ast,
@@ -409,6 +446,9 @@ class SceneEntities {
                   : 'line',
               pathToNode: sketchPathToNode,
             }).modifiedAst
+          } else {
+            // return early as we didn't modify the ast
+            return
           }
 
           kclManager.executeAstMock(modifiedAst, { updates: 'code' })
@@ -417,8 +457,9 @@ class SceneEntities {
         },
         onMove: (args) => {
           this.onDragSegment({
-            ...args,
+            intersection2d: args.intersectionPoint.twoD,
             object: Object.values(this.activeSegments).slice(-1)[0],
+            intersects: args.intersects,
             sketchPathToNode,
             draftInfo: {
               draftSegment,
@@ -428,9 +469,10 @@ class SceneEntities {
             },
           })
         },
+        ...mouseEnterLeaveCallbacks(),
       })
     }
-    sceneInfra.controls.enableRotate = false
+    sceneInfra.camControls.enableRotate = false
   }
   updateAstAndRejigSketch = async (
     sketchPathToNode: PathToNode,
@@ -464,17 +506,15 @@ class SceneEntities {
     )
   onDragSegment({
     object,
-    event,
-    intersectPoint,
-    intersection2d,
+    intersection2d: _intersection2d,
     sketchPathToNode,
     draftInfo,
+    intersects,
   }: {
     object: any
-    event: any
-    intersectPoint: Vector3
     intersection2d: Vector2
     sketchPathToNode: PathToNode
+    intersects: Intersection<Object3D<Object3DEventMap>>[]
     draftInfo?: {
       draftSegment: DraftSegment
       truncatedAst: Program
@@ -482,7 +522,20 @@ class SceneEntities {
       variableDeclarationName: string
     }
   }) {
-    const group = getParentGroup(object)
+    const profileStart =
+      draftInfo &&
+      intersects
+        .map(({ object }) => getParentGroup(object, [PROFILE_START]))
+        .find((a) => a?.name === PROFILE_START)
+    const intersection2d = profileStart
+      ? new Vector2(profileStart.position.x, profileStart.position.y)
+      : _intersection2d
+
+    const group = getParentGroup(object, [
+      STRAIGHT_SEGMENT,
+      TANGENTIAL_ARC_TO_SEGMENT,
+      PROFILE_START,
+    ])
     if (!group) return
     const pathToNode: PathToNode = JSON.parse(
       JSON.stringify(group.userData.pathToNode)
@@ -506,13 +559,28 @@ class SceneEntities {
     ).node
     if (node.type !== 'CallExpression') return
 
-    const modded = changeSketchArguments(
-      modifiedAst,
-      kclManager.programMemory,
-      [node.start, node.end],
-      to,
-      from
-    )
+    let modded: {
+      modifiedAst: Program
+      pathToNode: PathToNode
+    }
+    if (group.name === PROFILE_START) {
+      modded = updateStartProfileAtArgs({
+        node: modifiedAst,
+        pathToNode,
+        to,
+        from,
+        previousProgramMemory: kclManager.programMemory,
+      })
+    } else {
+      modded = changeSketchArguments(
+        modifiedAst,
+        kclManager.programMemory,
+        [node.start, node.end],
+        to,
+        from
+      )
+    }
+
     modifiedAst = modded.modifiedAst
     const { truncatedAst, programMemoryOverride, variableDeclarationName } =
       draftInfo
@@ -531,10 +599,16 @@ class SceneEntities {
         programMemoryOverride,
       })
       this.sceneProgramMemory = programMemory
-      const sketchGroup = programMemory.root[variableDeclarationName]
-        .value as Path[]
-      const orthoFactor = orthoScale(sceneInfra.camera)
-      sketchGroup.forEach((segment, index) => {
+      const sketchGroup = programMemory.root[
+        variableDeclarationName
+      ] as SketchGroup
+      const sgPaths = sketchGroup.value
+      const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+
+      const updateSegment = (
+        segment: Path | SketchGroup['start'],
+        index: number
+      ) => {
         const segPathToNode = getNodePathFromSourceRange(
           modifiedAst,
           segment.__geoMeta.sourceRange
@@ -549,12 +623,13 @@ class SceneEntities {
         // const prevSegment = sketchGroup.slice(index - 1)[0]
         const type = group?.userData?.type
         const factor =
-          sceneInfra.camera instanceof OrthographicCamera
+          (sceneInfra.camControls.camera instanceof OrthographicCamera
             ? orthoFactor
-            : perspScale(sceneInfra.camera, group)
+            : perspScale(sceneInfra.camControls.camera, group)) /
+          sceneInfra._baseUnitMultiplier
         if (type === TANGENTIAL_ARC_TO_SEGMENT) {
           this.updateTangentialArcToSegment({
-            prevSegment: sketchGroup[index - 1],
+            prevSegment: sgPaths[index - 1],
             from: segment.from,
             to: segment.to,
             group: group,
@@ -567,8 +642,13 @@ class SceneEntities {
             group: group,
             scale: factor,
           })
+        } else if (type === PROFILE_START) {
+          group.position.set(segment.from[0], segment.from[1], 0)
+          group.scale.set(factor, factor, factor)
         }
-      })
+      }
+      updateSegment(sketchGroup.start, 0)
+      sgPaths.forEach(updateSegment)
     })()
   }
 
@@ -588,9 +668,7 @@ class SceneEntities {
     group.userData.from = from
     group.userData.to = to
     group.userData.prevSegment = prevSegment
-    const arrowGroup = group.children.find(
-      (child) => child.userData.type === ARROWHEAD
-    ) as Group
+    const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
 
     arrowGroup.position.set(to[0], to[1], 0)
 
@@ -665,20 +743,20 @@ class SceneEntities {
     const shape = new Shape()
     shape.moveTo(0, -0.08 * scale)
     shape.lineTo(0, 0.08 * scale) // The width of the line
-    const arrowGroup = group.children.find(
-      (child) => child.userData.type === ARROWHEAD
-    ) as Group
+    const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
 
-    arrowGroup.position.set(to[0], to[1], 0)
+    if (arrowGroup) {
+      arrowGroup.position.set(to[0], to[1], 0)
 
-    const dir = new Vector3()
-      .subVectors(
-        new Vector3(to[0], to[1], 0),
-        new Vector3(from[0], from[1], 0)
-      )
-      .normalize()
-    arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
-    arrowGroup.scale.set(scale, scale, scale)
+      const dir = new Vector3()
+        .subVectors(
+          new Vector3(to[0], to[1], 0),
+          new Vector3(from[0], from[1], 0)
+        )
+        .normalize()
+      arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
+      arrowGroup.scale.set(scale, scale, scale)
+    }
 
     const straightSegmentBody = group.children.find(
       (child) => child.userData.type === STRAIGHT_SEGMENT_BODY
@@ -708,10 +786,10 @@ class SceneEntities {
   }
   async animateAfterSketch() {
     if (isReducedMotion()) {
-      sceneInfra.usePerspectiveCamera()
-    } else {
-      await sceneInfra.animateToPerspective()
+      sceneInfra.camControls.usePerspectiveCamera()
+      return
     }
+    await sceneInfra.camControls.animateToPerspective()
   }
   removeSketchGrid() {
     if (this.axisGroup) this.scene.remove(this.axisGroup)
@@ -743,7 +821,7 @@ class SceneEntities {
         reject()
       }
     }
-    sceneInfra.controls.enableRotate = true
+    sceneInfra.camControls.enableRotate = true
     this.activeSegments = {}
     // maybe should reset onMove etc handlers
     if (shouldResolve) resolve(true)
@@ -763,21 +841,24 @@ class SceneEntities {
   }
   setupDefaultPlaneHover() {
     sceneInfra.setCallbacks({
-      onMouseEnter: ({ object }) => {
-        if (object.parent.userData.type !== DEFAULT_PLANES) return
-        const type: DefaultPlane = object.userData.type
-        object.material.color = defaultPlaneColor(type, 0.5, 1)
+      onMouseEnter: ({ selected }) => {
+        if (!(selected instanceof Mesh && selected.parent)) return
+        if (selected.parent.userData.type !== DEFAULT_PLANES) return
+        const type: DefaultPlane = selected.userData.type
+        selected.material.color = defaultPlaneColor(type, 0.5, 1)
       },
-      onMouseLeave: ({ object }) => {
-        if (object.parent.userData.type !== DEFAULT_PLANES) return
-        const type: DefaultPlane = object.userData.type
-        object.material.color = defaultPlaneColor(type)
+      onMouseLeave: ({ selected }) => {
+        if (!(selected instanceof Mesh && selected.parent)) return
+        if (selected.parent.userData.type !== DEFAULT_PLANES) return
+        const type: DefaultPlane = selected.userData.type
+        selected.material.color = defaultPlaneColor(type)
       },
       onClick: (args) => {
-        if (!args || !args.object) return
-        const { object, intersection } = args
-        const type = object?.userData?.type || ''
-        const posNorm = Number(intersection.normal?.z) > 0
+        if (!args || !args.intersects?.[0]) return
+        if (args.mouseEvent.which !== 1) return
+        const { intersects } = args
+        const type = intersects?.[0].object.name || ''
+        const posNorm = Number(intersects?.[0]?.normal?.z) > 0
         let planeString: DefaultPlaneStr = posNorm ? 'XY' : '-XY'
         let normal: [number, number, number] = posNorm ? [0, 0, 1] : [0, 0, -1]
         if (type === YZ_PLANE) {
@@ -949,9 +1030,9 @@ export function quaternionFromSketchGroup(
 }
 
 function colorSegment(object: any, color: number) {
-  const arrowHead = getParentGroup(object, [ARROWHEAD])
-  if (arrowHead) {
-    arrowHead.traverse((child) => {
+  const segmentHead = getParentGroup(object, [ARROWHEAD, PROFILE_START])
+  if (segmentHead) {
+    segmentHead.traverse((child) => {
       if (child instanceof Mesh) {
         child.material.color.set(color)
       }
@@ -1006,4 +1087,54 @@ function massageFormats(a: any): Vector3 {
   return Array.isArray(a)
     ? new Vector3(a[0], a[1], a[2])
     : new Vector3(a.x, a.y, a.z)
+}
+
+function mouseEnterLeaveCallbacks() {
+  return {
+    onMouseEnter: ({ selected }: OnMouseEnterLeaveArgs) => {
+      if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
+        const obj = selected as Mesh
+        const mat = obj.material as MeshBasicMaterial
+        mat.color.set(obj.userData.baseColor)
+        mat.color.offsetHSL(0, 0, 0.5)
+      }
+      const parent = getParentGroup(selected, [
+        STRAIGHT_SEGMENT,
+        TANGENTIAL_ARC_TO_SEGMENT,
+        PROFILE_START,
+      ])
+      if (parent?.userData?.pathToNode) {
+        const updatedAst = parse(recast(kclManager.ast))
+        const node = getNodeFromPath<CallExpression>(
+          updatedAst,
+          parent.userData.pathToNode,
+          'CallExpression'
+        ).node
+        sceneInfra.highlightCallback([node.start, node.end])
+        const yellow = 0xffff00
+        colorSegment(selected, yellow)
+        return
+      }
+      sceneInfra.highlightCallback([0, 0])
+    },
+    onMouseLeave: ({ selected }: OnMouseEnterLeaveArgs) => {
+      sceneInfra.highlightCallback([0, 0])
+      const parent = getParentGroup(selected, [
+        STRAIGHT_SEGMENT,
+        TANGENTIAL_ARC_TO_SEGMENT,
+        PROFILE_START,
+      ])
+      const isSelected = parent?.userData?.isSelected
+      colorSegment(
+        selected,
+        isSelected ? 0x0000ff : parent?.userData?.baseColor || 0xffffff
+      )
+      if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
+        const obj = selected as Mesh
+        const mat = obj.material as MeshBasicMaterial
+        mat.color.set(obj.userData.baseColor)
+        if (obj.userData.isSelected) mat.color.offsetHSL(0, 0, 0.2)
+      }
+    },
+  }
 }

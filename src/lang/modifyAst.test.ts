@@ -1,4 +1,4 @@
-import { parse, recast, initPromise } from './wasm'
+import { parse, recast, initPromise, Identifier } from './wasm'
 import {
   createLiteral,
   createIdentifier,
@@ -90,7 +90,17 @@ describe('Testing createPipeExpression', () => {
 describe('Testing findUniqueName', () => {
   it('should find a unique name', () => {
     const result = findUniqueName(
-      'yo01 yo02 yo03 yo04 yo05 yo06 yo07 yo08 yo09',
+      JSON.stringify([
+        { type: 'Identifier', name: 'yo01', start: 0, end: 0 },
+        { type: 'Identifier', name: 'yo02', start: 0, end: 0 },
+        { type: 'Identifier', name: 'yo03', start: 0, end: 0 },
+        { type: 'Identifier', name: 'yo04', start: 0, end: 0 },
+        { type: 'Identifier', name: 'yo05', start: 0, end: 0 },
+        { type: 'Identifier', name: 'yo06', start: 0, end: 0 },
+        { type: 'Identifier', name: 'yo07', start: 0, end: 0 },
+        { type: 'Identifier', name: 'yo08', start: 0, end: 0 },
+        { type: 'Identifier', name: 'yo09', start: 0, end: 0 },
+      ] satisfies Identifier[]),
       'yo',
       2
     )
@@ -112,7 +122,6 @@ describe('Testing addSketchTo', () => {
     expect(str).toBe(`const part001 = startSketchOn('YZ')
   |> startProfileAt('default', %)
   |> line('default', %)
-show(part001)
 `)
   })
 })
@@ -137,8 +146,7 @@ describe('Testing giveSketchFnCallTag', () => {
 |> startProfileAt([0, 0], %)
 |> line([-2.57, -0.13], %)
 |> line([0, 0.83], %)
-|> line([0.82, 0.34], %)
-show(part001)`
+|> line([0.82, 0.34], %)`
   it('Should add tag to a sketch function call', () => {
     const { newCode, tag, isTagExisting } = giveSketchFnCallTagTestHelper(
       code,
@@ -194,8 +202,7 @@ const part001 = startSketchOn('XY')
 |> angledLine([def(yo), 3.09], %)
 |> angledLine([ghi(%), 3.09], %)
 |> angledLine([jkl(yo) + 2, 3.09], %)
-const yo2 = hmm([identifierGuy + 5])
-show(part001)`
+const yo2 = hmm([identifierGuy + 5])`
   it('should move a binary expression into a new variable', async () => {
     const ast = parse(code)
     const programMemory = await enginelessExecutor(ast)
