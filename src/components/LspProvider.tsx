@@ -35,7 +35,7 @@ type LspContext = {
   lspClients: LanguageServerClient[]
   copilotLSP: Extension | null
   kclLSP: LanguageSupport | null
-  onProjectClose: (file: FileEntry | null) => void
+  onProjectClose: (file: FileEntry | null, redirect: boolean) => void
 }
 
 export const LspStateContext = createContext({} as LspContext)
@@ -135,7 +135,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
 
   const lspClients = [kclLspClient, copilotLspClient]
 
-  const onProjectClose = (file: FileEntry | null) => {
+  const onProjectClose = (file: FileEntry | null, redirect: boolean) => {
     const currentFilePath = basename(file?.name || 'main.kcl')
     lspClients.forEach((lspClient) => {
       lspClient.textDocumentDidClose({
@@ -145,7 +145,9 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       })
     })
 
-    navigate(paths.HOME)
+    if (redirect) {
+      navigate(paths.HOME)
+    }
   }
 
   return (
