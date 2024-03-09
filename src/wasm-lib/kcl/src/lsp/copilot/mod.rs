@@ -18,7 +18,8 @@ use tower_lsp::{
         DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams,
         DidOpenTextDocumentParams, DidSaveTextDocumentParams, InitializeParams, InitializeResult, InitializedParams,
         MessageType, OneOf, RenameFilesParams, ServerCapabilities, TextDocumentItem, TextDocumentSyncCapability,
-        TextDocumentSyncKind, TextDocumentSyncOptions, WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities,
+        TextDocumentSyncKind, TextDocumentSyncOptions, WorkspaceFolder, WorkspaceFoldersServerCapabilities,
+        WorkspaceServerCapabilities,
     },
     LanguageServer,
 };
@@ -44,6 +45,8 @@ pub struct Backend {
     pub client: tower_lsp::Client,
     /// The file system client to use.
     pub fs: crate::fs::FileManager,
+    /// The workspace folders.
+    pub workspace_folders: DashMap<String, WorkspaceFolder>,
     /// Current code.
     pub current_code_map: DashMap<String, String>,
     /// The token is used to authenticate requests to the API server.
@@ -63,6 +66,22 @@ impl crate::lsp::backend::Backend for Backend {
 
     fn fs(&self) -> crate::fs::FileManager {
         self.fs.clone()
+    }
+
+    fn workspace_folders(&self) -> Vec<WorkspaceFolder> {
+        self.workspace_folders.iter().map(|v| v.value().clone()).collect()
+    }
+
+    fn add_workspace_folders(&self, folders: Vec<WorkspaceFolder>) {
+        for folder in folders {
+            self.workspace_folders.insert(folder.name.to_string(), folder);
+        }
+    }
+
+    fn remove_workspace_folders(&self, folders: Vec<WorkspaceFolder>) {
+        for folder in folders {
+            self.workspace_folders.remove(&folder.name);
+        }
     }
 
     fn current_code_map(&self) -> DashMap<String, String> {

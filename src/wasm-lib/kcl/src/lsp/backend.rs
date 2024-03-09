@@ -5,7 +5,7 @@ use tower_lsp::lsp_types::{
     CreateFilesParams, DeleteFilesParams, DidChangeConfigurationParams, DidChangeTextDocumentParams,
     DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams,
     DidOpenTextDocumentParams, DidSaveTextDocumentParams, InitializedParams, MessageType, RenameFilesParams,
-    TextDocumentItem,
+    TextDocumentItem, WorkspaceFolder,
 };
 
 /// A trait for the backend of the language server.
@@ -14,6 +14,12 @@ pub trait Backend {
     fn client(&self) -> tower_lsp::Client;
 
     fn fs(&self) -> crate::fs::FileManager;
+
+    fn workspace_folders(&self) -> Vec<WorkspaceFolder>;
+
+    fn add_workspace_folders(&self, folders: Vec<WorkspaceFolder>);
+
+    fn remove_workspace_folders(&self, folders: Vec<WorkspaceFolder>);
 
     /// Get the current code map.
     fn current_code_map(&self) -> DashMap<String, String>;
@@ -43,9 +49,8 @@ pub trait Backend {
     }
 
     async fn do_did_change_workspace_folders(&self, params: DidChangeWorkspaceFoldersParams) {
-        self.client()
-            .log_message(MessageType::INFO, format!("workspace folders changed: {:?}", params))
-            .await;
+        self.add_workspace_folders(params.event.added);
+        self.remove_workspace_folders(params.event.removed);
     }
 
     async fn do_did_change_configuration(&self, params: DidChangeConfigurationParams) {
@@ -116,6 +121,14 @@ pub trait Backend {
     async fn do_did_close(&self, params: DidCloseTextDocumentParams) {
         self.client()
             .log_message(MessageType::INFO, format!("document closed: {:?}", params))
+            .await;
+        self.client()
+            .log_message(MessageType::INFO, format!("uri: {:?}", params.text_document.uri))
+            .await;
+        // Get the workspace folders.
+        let workspace_folders = self.workspace_folders();
+        self.client()
+            .log_message(MessageType::INFO, format!("workspace: {:?}", workspace_folders))
             .await;
     }
 }

@@ -23,7 +23,7 @@ use tower_lsp::{
         SemanticTokensServerCapabilities, ServerCapabilities, SignatureHelp, SignatureHelpOptions, SignatureHelpParams,
         StaticRegistrationOptions, TextDocumentItem, TextDocumentRegistrationOptions, TextDocumentSyncCapability,
         TextDocumentSyncKind, TextDocumentSyncOptions, TextEdit, WorkDoneProgressOptions, WorkspaceEdit,
-        WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities,
+        WorkspaceFolder, WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities,
     },
     Client, LanguageServer,
 };
@@ -49,6 +49,8 @@ pub struct Backend {
     pub client: Client,
     /// The file system client to use.
     pub fs: crate::fs::FileManager,
+    /// The workspace folders.
+    pub workspace_folders: DashMap<String, WorkspaceFolder>,
     /// The stdlib completions for the language.
     pub stdlib_completions: HashMap<String, CompletionItem>,
     /// The stdlib signatures for the language.
@@ -78,6 +80,22 @@ impl crate::lsp::backend::Backend for Backend {
 
     fn fs(&self) -> crate::fs::FileManager {
         self.fs.clone()
+    }
+
+    fn workspace_folders(&self) -> Vec<WorkspaceFolder> {
+        self.workspace_folders.iter().map(|v| v.value().clone()).collect()
+    }
+
+    fn add_workspace_folders(&self, folders: Vec<WorkspaceFolder>) {
+        for folder in folders {
+            self.workspace_folders.insert(folder.name.to_string(), folder);
+        }
+    }
+
+    fn remove_workspace_folders(&self, folders: Vec<WorkspaceFolder>) {
+        for folder in folders {
+            self.workspace_folders.remove(&folder.name);
+        }
     }
 
     fn current_code_map(&self) -> DashMap<String, String> {

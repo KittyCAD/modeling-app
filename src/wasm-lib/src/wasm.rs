@@ -173,6 +173,7 @@ pub async fn kcl_lsp_run(config: ServerConfig) -> Result<(), JsValue> {
     let (service, socket) = LspService::new(|client| kcl_lib::lsp::kcl::Backend {
         client,
         fs: kcl_lib::fs::FileManager::new(fs),
+        workspace_folders: Default::default(),
         stdlib_completions,
         stdlib_signatures,
         token_types,
@@ -222,6 +223,7 @@ pub async fn copilot_lsp_run(config: ServerConfig, token: String) -> Result<(), 
     let (service, socket) = LspService::build(|client| kcl_lib::lsp::copilot::Backend {
         client,
         fs: kcl_lib::fs::FileManager::new(fs),
+        workspace_folders: Default::default(),
         current_code_map: Default::default(),
         editor_info: Arc::new(RwLock::new(kcl_lib::lsp::copilot::types::CopilotEditorInfo::default())),
         cache: kcl_lib::lsp::copilot::cache::CopilotCache::new(),
