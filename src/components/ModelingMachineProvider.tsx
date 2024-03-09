@@ -38,10 +38,11 @@ import { sceneInfra } from 'clientSideScene/sceneInfra'
 import {
   getQuaternionFromZAxis,
   getSketchQuaternion,
+  getSketchQuaternion2,
 } from 'clientSideScene/sceneEntities'
-import { startSketchOnDefault } from 'lang/modifyAst'
+import { sketchOnExtrudedFace, startSketchOnDefault } from 'lang/modifyAst'
 import { Program } from 'lang/wasm'
-import { isSingleCursorInPipe } from 'lang/queryAst'
+import { getNodePathFromSourceRange, isSingleCursorInPipe } from 'lang/queryAst'
 import { TEST } from 'env'
 import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
@@ -279,11 +280,24 @@ export const ModelingMachineProvider = ({
         },
 
         'animate-to-face2': async ({ selectionRanges }) => {
+          const pathToNode = getNodePathFromSourceRange(
+            kclManager.ast,
+            selectionRanges.codeBasedSelections[0].range
+          )
+          const { modifiedAst, pathToNode: pathToNewSketchNode } =
+            sketchOnExtrudedFace(
+              kclManager.ast,
+              pathToNode,
+              kclManager.programMemory
+            )
+
+          await kclManager.executeAstMock(modifiedAst, { updates: 'code' })
+
           const selectionToEngine = codeToIdSelections(
             selectionRanges.codeBasedSelections
           )
           const faceId = selectionToEngine?.[0].id
-          if (!faceId) return
+          if (!faceId) throw new Error('faceId')
 
           const faceInfo: Models['FaceIsPlanar_type'] = (
             await engineCommandManager.sendSceneCommand({
@@ -295,16 +309,23 @@ export const ModelingMachineProvider = ({
               },
             })
           )?.data?.data
-          if (!faceInfo?.origin || !faceInfo?.z_axis) return
+          if (!faceInfo?.origin || !faceInfo?.z_axis)
+            throw new Error('faceInfo')
           const { z_axis, origin } = faceInfo
-          const quaternion = getQuaternionFromZAxis(
-            new Vector3(z_axis.x, z_axis.y, z_axis.z)
-          )
+          const normal = new Vector3(z_axis.x, z_axis.y, z_axis.z)
+          const quaternion = getQuaternionFromZAxis(normal)
           const target = new Vector3(origin.x, origin.y, origin.z)
           await sceneInfra.camControls.tweenCameraToQuaternion(
             quaternion,
             target
           )
+          return {
+            sketchPathToNode: pathToNewSketchNode,
+            sketchNormalBackUp: [normal.x, normal.y, normal.z],
+            sketchPosition: [origin.x, origin.y, origin.z].map(
+              (num) => num / sceneInfra._baseUnitMultiplier
+            ) as [number, number, number],
+          }
         },
         'animate-to-face': async (_, { data: { plane, normal } }) => {
           const { modifiedAst, pathToNode } = startSketchOnDefault(
@@ -312,22 +333,26 @@ export const ModelingMachineProvider = ({
             plane
           )
           await kclManager.updateAst(modifiedAst, false)
-          const quaternion = getSketchQuaternion(pathToNode, normal)
-          await sceneInfra.camControls.tweenCameraToQuaternion(quaternion)
+          const quat = await getSketchQuaternion(pathToNode, normal)
+          await sceneInfra.camControls.tweenCameraToQuaternion(quat)
           return {
             sketchPathToNode: pathToNode,
             sketchNormalBackUp: normal,
+            sketchPosition: [0, 0, 0],
           }
         },
         'animate-to-sketch': async ({
           sketchPathToNode,
           sketchNormalBackUp,
         }) => {
-          const quaternion = getSketchQuaternion(
+          const info = await getSketchQuaternion2(
             sketchPathToNode || [],
             sketchNormalBackUp
           )
-          await sceneInfra.camControls.tweenCameraToQuaternion(quaternion)
+          await sceneInfra.camControls.tweenCameraToQuaternion(
+            info.quat,
+            new Vector3(...info.position)
+          )
         },
         'Get horizontal info': async ({
           selectionRanges,

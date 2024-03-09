@@ -4,7 +4,6 @@ import { getUtils } from './test-utils'
 import waitOn from 'wait-on'
 import { Themes } from '../../src/lib/theme'
 import { roundOff } from 'lib/utils'
-import { platform } from 'node:os'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places

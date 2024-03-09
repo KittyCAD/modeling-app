@@ -325,13 +325,12 @@ export function sketchOnExtrudedFace(
 ): { modifiedAst: Program; pathToNode: PathToNode } {
   let _node = { ...node }
   const newSketchName = findUniqueName(node, 'part')
-  const { node: oldSketchNode, shallowPath: pathToOldSketch } =
-    getNodeFromPath<VariableDeclarator>(
-      _node,
-      pathToNode,
-      'VariableDeclarator',
-      true
-    )
+  const { node: oldSketchNode } = getNodeFromPath<VariableDeclarator>(
+    _node,
+    pathToNode,
+    'VariableDeclarator',
+    true
+  )
   const oldSketchName = oldSketchNode.id.name
   const { node: expression } = getNodeFromPath<CallExpression>(
     _node,
@@ -351,30 +350,26 @@ export function sketchOnExtrudedFace(
 
   const newSketch = createVariableDeclaration(
     newSketchName,
-    createPipeExpression([
-      createCallExpressionStdLib('startSketchAt', [
-        createArrayExpression([createLiteral(0), createLiteral(0)]),
-      ]),
-      createCallExpressionStdLib('lineTo', [
-        createArrayExpression([createLiteral(1), createLiteral(1)]),
-        createPipeSubstitution(),
-      ]),
-      createCallExpression('transform', [
-        createCallExpressionStdLib('getExtrudeWallTransform', [
-          createLiteral(tag),
-          createIdentifier(oldSketchName),
-        ]),
-        createPipeSubstitution(),
-      ]),
+    createCallExpressionStdLib('startSketchOn', [
+      createIdentifier(oldSketchName),
+      createLiteral(tag),
     ]),
     'const'
   )
-  const expressionIndex = getLastIndex(pathToOldSketch)
+
+  const expressionIndex = pathToNode[1][0] as number
   _node.body.splice(expressionIndex + 1, 0, newSketch)
+  const newpathToNode: PathToNode = [
+    ['body', ''],
+    [expressionIndex + 1, 'index'],
+    ['declarations', 'VariableDeclaration'],
+    [0, 'index'],
+    ['init', 'VariableDeclarator'],
+  ]
 
   return {
     modifiedAst: _node,
-    pathToNode: [...pathToNode.slice(0, -1), [expressionIndex, 'index']],
+    pathToNode: newpathToNode,
   }
 }
 

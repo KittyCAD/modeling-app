@@ -3,6 +3,7 @@
 use anyhow::Result;
 use derive_docs::stdlib;
 use schemars::JsonSchema;
+use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -82,6 +83,7 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
         sketch_group.id = face.sketch_group_id;
     }
 
+    //
     let solid3d_info = args
         .send_modeling_cmd(
             id,
@@ -150,6 +152,17 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
                     new_value.push(extrude_surface);
                 }
             }
+        } else {
+            new_value.push(ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
+                position: sketch_group.position, // TODO should be for the extrude surface
+                rotation: sketch_group.rotation, // TODO should be for the extrude surface
+                face_id: Uuid::new_v4(),
+                name: path.get_base().name.clone(),
+                geo_meta: GeoMeta {
+                    id: path.get_base().geo_meta.id,
+                    metadata: path.get_base().geo_meta.metadata.clone(),
+                },
+            }));
         }
     }
 
