@@ -33,9 +33,10 @@ export default function Units() {
         }
       >
         <SettingsSection
-          title="Camera Controls"
-          description="How you want to control the camera in the 3D view. Try them out above and choose the one that feels most comfortable to you."
+          title="Mouse Controls"
+          description="Choose what buttons you want to use on your mouse or trackpad to move around the 3D view. Try them out above and choose the one that feels most comfortable to you."
           className="my-4 last-of-type:mb-12"
+          headingClassName="text-3xl font-bold"
         >
           <select
             id="camera-controls"
@@ -70,6 +71,7 @@ export default function Units() {
           </ul>
         </SettingsSection>
         <OnboardingButtons
+          currentSlug={onboardingPaths.CAMERA}
           dismiss={dismiss}
           next={next}
           nextText="Next: Streaming"
