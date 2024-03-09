@@ -12,6 +12,7 @@ import { Logo } from './Logo'
 import { APP_NAME } from 'lib/constants'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CustomIcon } from './CustomIcon'
+import { useLspContext } from './LspProvider'
 
 const ProjectSidebarMenu = ({
   project,
@@ -57,6 +58,7 @@ function ProjectMenuPopover({
   file?: IndexLoaderData['file']
 }) {
   const { commandBarSend } = useCommandsContext()
+  const { onProjectClose } = useLspContext()
 
   return (
     <Popover className="relative">
@@ -149,8 +151,10 @@ function ProjectMenuPopover({
                 </ActionButton>
                 {isTauri() && (
                   <ActionButton
-                    Element="link"
-                    to={paths.HOME}
+                    Element="button"
+                    onClick={() => {
+                      onProjectClose(file || null)
+                    }}
                     icon={{
                       icon: faHome,
                       className: 'p-1',

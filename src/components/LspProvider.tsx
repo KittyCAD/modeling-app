@@ -14,6 +14,10 @@ import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { useFileContext } from 'hooks/useFileContext'
 import { Extension } from '@codemirror/state'
 import { LanguageSupport } from '@codemirror/language'
+import { useNavigate } from 'react-router-dom'
+import { basename } from './FileTree'
+import { paths } from 'lib/paths'
+import { FileEntry } from '@tauri-apps/api/fs'
 
 function getWorkspaceFolders(
   project: ProjectWithEntryPointMetadata
@@ -31,6 +35,7 @@ type LspContext = {
   lspClients: LanguageServerClient[]
   copilotLSP: Extension | null
   kclLSP: LanguageSupport | null
+  onProjectClose: (file: FileEntry | null) => void
 }
 
 export const LspStateContext = createContext({} as LspContext)
@@ -51,6 +56,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   const {
     context: { project },
   } = useFileContext()
+  const navigate = useNavigate()
 
   // So this is a bit weird, we need to initialize the lsp server and client.
   // But the server happens async so we break this into two parts.
@@ -127,12 +133,28 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     return plugin
   }, [copilotLspClient, isCopilotLspServerReady, project])
 
+  const lspClients = [kclLspClient, copilotLspClient]
+
+  const onProjectClose = (file: FileEntry | null) => {
+    const currentFilePath = basename(file?.name || 'main.kcl')
+    lspClients.forEach((lspClient) => {
+      lspClient.textDocumentDidClose({
+        textDocument: {
+          uri: `file:///${currentFilePath}`,
+        },
+      })
+    })
+
+    navigate(paths.HOME)
+  }
+
   return (
     <LspStateContext.Provider
       value={{
-        lspClients: [kclLspClient, copilotLspClient],
+        lspClients,
         copilotLSP,
         kclLSP,
+        onProjectClose,
       }}
     >
       {children}
