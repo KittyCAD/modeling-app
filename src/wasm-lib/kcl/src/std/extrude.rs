@@ -83,7 +83,6 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
         sketch_group.id = face.sketch_group_id;
     }
 
-    //
     let solid3d_info = args
         .send_modeling_cmd(
             id,
