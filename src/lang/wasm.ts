@@ -290,7 +290,9 @@ export async function copilotLspRun(config: ServerConfig, token: string) {
     await copilot_lsp_run(config, token)
   } catch (e: any) {
     console.log('copilot lsp failed', e)
-    await copilot_lsp_run(config, token)
+    // We make it restart recursively so that if it ever dies after like
+    // 8 hours or something it will come back to life.
+    await copilotLspRun(config, token)
   }
 }
 
@@ -301,7 +303,8 @@ export async function kclLspRun(config: ServerConfig) {
     await kcl_lsp_run(config)
   } catch (e: any) {
     console.log('kcl lsp failed', e)
-    // Restart on failure.
-    await kcl_lsp_run(config)
+    // We make it restart recursively so that if it ever dies after like
+    // 8 hours or something it will come back to life.
+    await kclLspRun(config)
   }
 }
