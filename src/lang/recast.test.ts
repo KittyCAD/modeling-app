@@ -150,7 +150,7 @@ log(5, myVar)
     const recasted = recast(ast)
     expect(recasted.trim()).toBe(code.trim())
   })
-  it('recast long object exectution', () => {
+  it('recast long object execution', () => {
     const code = `const three = 3
 const yo = {
   aStr: 'str',
@@ -163,7 +163,7 @@ const yo = {
     const recasted = recast(ast)
     expect(recasted).toBe(code)
   })
-  it('recast short object exectution', () => {
+  it('recast short object execution', () => {
     const code = `const yo = { key: 'val' }
 `
     const { ast } = code2ast(code)

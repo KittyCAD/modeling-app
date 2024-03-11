@@ -75,6 +75,7 @@ test('Basic sketch', async ({ page }) => {
   await expect(page.locator('.cm-content')).toHaveText(
     `const part001 = startSketchOn('-XZ')`
   )
+  await u.closeDebugPanel()
 
   await page.waitForTimeout(300) // TODO detect animation ending, or disable animation
 
@@ -85,7 +86,6 @@ test('Basic sketch', async ({ page }) => {
   |> startProfileAt(${commonPoints.startAt}, %)`)
   await page.waitForTimeout(100)
 
-  await u.closeDebugPanel()
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
   await page.waitForTimeout(100)
 
@@ -590,12 +590,11 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   await page.waitForTimeout(700) // wait for animation
 
   const startXPx = 600
+  await u.closeDebugPanel()
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${commonPoints.startAt}, %)`)
-
-  await u.closeDebugPanel()
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
 
@@ -873,13 +872,13 @@ test('Can add multiple sketches', async ({ page }) => {
   await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
 
   const startXPx = 600
+  await u.closeDebugPanel()
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${commonPoints.startAt}, %)`)
   await page.waitForTimeout(100)
 
-  await u.closeDebugPanel()
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
   await page.waitForTimeout(100)
 
@@ -1333,4 +1332,123 @@ test('Snap to close works (at any scale)', async ({ page }) => {
   await doSnapAtDifferentScales([0, 100, 100], codeTemplate(0.01, 0.01))
 
   await doSnapAtDifferentScales([0, 10000, 10000], codeTemplate())
+})
+
+test('Sketch on face', async ({ page, context }) => {
+  const u = getUtils(page)
+  await context.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const part001 = startSketchOn('-XZ')
+  |> startProfileAt([3.29, 7.86], %)
+  |> line([2.48, 2.44], %)
+  |> line([2.66, 1.17], %)
+  |> line([3.75, 0.46], %)
+  |> line([4.99, -0.46], %)
+  |> line([3.3, -2.12], %)
+  |> line([2.16, -3.33], %)
+  |> line([0.85, -3.08], %)
+  |> line([-0.18, -3.36], %)
+  |> line([-3.86, -2.73], %)
+  |> line([-17.67, 0.85], %)
+  |> close(%)
+  |> extrude(5 + 7, %)`
+    )
+  })
+
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled()
+
+  await page.getByRole('button', { name: 'Start Sketch' }).click()
+
+  let previousCodeContent = await page.locator('.cm-content').innerText()
+
+  await page.mouse.click(793, 133)
+
+  const firstClickPosition = [612, 238]
+  const secondClickPosition = [661, 242]
+  const thirdClickPosition = [609, 267]
+
+  await page.waitForTimeout(300)
+
+  await page.mouse.click(firstClickPosition[0], firstClickPosition[1])
+  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
+  previousCodeContent = await page.locator('.cm-content').innerText()
+
+  await page.mouse.click(secondClickPosition[0], secondClickPosition[1])
+  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
+  previousCodeContent = await page.locator('.cm-content').innerText()
+
+  await page.mouse.click(thirdClickPosition[0], thirdClickPosition[1])
+  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
+  previousCodeContent = await page.locator('.cm-content').innerText()
+
+  await page.mouse.click(firstClickPosition[0], firstClickPosition[1])
+  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
+  previousCodeContent = await page.locator('.cm-content').innerText()
+
+  await expect(page.locator('.cm-content'))
+    .toContainText(`const part002 = startSketchOn(part001, 'seg01')
+  |> startProfileAt([1.03, 1.03], %)
+  |> line([4.18, -0.35], %)
+  |> line([-4.44, -2.13], %)
+  |> close(%)`)
+
+  await u.openAndClearDebugPanel()
+  await page.getByRole('button', { name: 'Exit Sketch' }).click()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+
+  await u.updateCamPosition([1049, 239, 686])
+  await u.closeDebugPanel()
+
+  await page.getByText('startProfileAt([1.03, 1.03], %)').click()
+  await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
+  await page.getByRole('button', { name: 'Edit Sketch' }).click()
+  await page.waitForTimeout(300)
+
+  const pointToDragFirst = [691, 237]
+  await page.mouse.move(pointToDragFirst[0], pointToDragFirst[1])
+  await page.mouse.down()
+  await page.mouse.move(pointToDragFirst[0] - 20, pointToDragFirst[1], {
+    steps: 5,
+  })
+  await page.mouse.up()
+  await page.waitForTimeout(100)
+  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
+  previousCodeContent = await page.locator('.cm-content').innerText()
+
+  await expect(page.locator('.cm-content'))
+    .toContainText(`const part002 = startSketchOn(part001, 'seg01')
+|> startProfileAt([1.03, 1.03], %)
+|> line([2.81, -0.33], %)
+|> line([-4.44, -2.13], %)
+|> close(%)`)
+
+  // exit sketch
+  await u.openAndClearDebugPanel()
+  await page.getByRole('button', { name: 'Exit Sketch' }).click()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+
+  await page.getByText('startProfileAt([1.03, 1.03], %)').click()
+
+  await expect(page.getByRole('button', { name: 'Extrude' })).not.toBeDisabled()
+  await page.getByRole('button', { name: 'Extrude' }).click()
+
+  await expect(page.getByTestId('command-bar')).toBeVisible()
+
+  await page.keyboard.press('Enter')
+  await expect(page.getByText('Confirm Extrude')).toBeVisible()
+  await page.keyboard.press('Enter')
+
+  await expect(page.locator('.cm-content'))
+    .toContainText(`const part002 = startSketchOn(part001, 'seg01')
+|> startProfileAt([1.03, 1.03], %)
+|> line([2.81, -0.33], %)
+|> line([-4.44, -2.13], %)
+|> close(%)
+|> extrude(5 + 7, %)`)
 })

@@ -68,7 +68,6 @@ export function addStartProfileAt(
   pathToNode: PathToNode,
   at: [number, number]
 ): { modifiedAst: Program; pathToNode: PathToNode } {
-  console.log('addStartProfileAt called')
   const variableDeclaration = getNodeFromPath<VariableDeclaration>(
     node,
     pathToNode,
