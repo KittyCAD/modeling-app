@@ -22,7 +22,7 @@ import {
 import { metadata } from 'tauri-plugin-fs-extra-api'
 import DownloadAppBanner from './components/DownloadAppBanner'
 import { WasmErrBanner } from './components/WasmErrBanner'
-import { GlobalStateProvider } from './components/GlobalStateProvider'
+import { SettingsAuthProvider } from './components/SettingsAuthProvider'
 import {
   SETTINGS_PERSIST_KEY,
   settingsMachine,
@@ -52,7 +52,7 @@ const addGlobalContextToElements = (
           ...route,
           element: (
             <CommandBarProvider>
-              <GlobalStateProvider>{route.element}</GlobalStateProvider>
+              <SettingsAuthProvider>{route.element}</SettingsAuthProvider>
             </CommandBarProvider>
           ),
         }
