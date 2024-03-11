@@ -56,7 +56,7 @@ import {
 } from 'lang/wasm'
 import { kclManager } from 'lang/KclSingleton'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
-import { executeAst } from 'useStore'
+import { executeAst, useStore } from 'useStore'
 import { engineCommandManager } from 'lang/std/engineConnection'
 import {
   createArcGeometry,
@@ -78,7 +78,10 @@ import {
   createLiteral,
   createPipeSubstitution,
 } from 'lang/modifyAst'
-import { getEventForSegmentSelection } from 'lib/selections'
+import {
+  getEventForSegmentSelection,
+  sendSelectEventToEngine,
+} from 'lib/selections'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import { createGridHelper, orthoScale, perspScale } from './helpers'
 import { Models } from '@kittycad/lib'
@@ -251,10 +254,9 @@ class SceneEntities {
       programMemory: kclManager.programMemory,
     })
 
-    const quat =
-      sg.type === 'SketchGroup' || !sketchNormalBackUp
-        ? quaternionFromSketchGroup(sg)
-        : getQuaternionFromZAxis(new Vector3(...sketchNormalBackUp))
+    const quat = sketchNormalBackUp
+      ? getQuaternionFromZAxis(new Vector3(...sketchNormalBackUp))
+      : quaternionFromSketchGroup(sg)
     this.axisGroup.setRotationFromQuaternion(quat)
     sketchPosition && this.axisGroup.position.set(...sketchPosition)
     this.scene.add(this.axisGroup)
@@ -884,26 +886,77 @@ class SceneEntities {
         const type: DefaultPlane = selected.userData.type
         selected.material.color = defaultPlaneColor(type)
       },
-      onClick: (args) => {
+      onClick: async (args) => {
+        const checkExtrudeFaceClick = async (): Promise<boolean> => {
+          const { streamDimensions } = useStore.getState()
+          const { entity_id } = await sendSelectEventToEngine(
+            args?.mouseEvent,
+            document.getElementById('video-stream') as HTMLVideoElement,
+            streamDimensions
+          )
+          if (!entity_id) return false
+          const artifact = engineCommandManager.artifactMap[entity_id]
+          if (artifact?.commandType !== 'solid3d_get_extrusion_face_info')
+            return false
+          const faceInfo: Models['FaceIsPlanar_type'] = (
+            await engineCommandManager.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: {
+                type: 'face_is_planar',
+                object_id: entity_id,
+              },
+            })
+          )?.data?.data
+          if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
+            return false
+          const { z_axis, origin, y_axis } = faceInfo
+          const pathToNode = getNodePathFromSourceRange(
+            kclManager.ast,
+            artifact.range
+          )
+
+          sceneInfra.modelingSend({
+            type: 'Select default plane',
+            data: {
+              type: 'extrudeFace',
+              zAxis: [z_axis.x, z_axis.y, z_axis.z],
+              yAxis: [y_axis.x, y_axis.y, y_axis.z],
+              position: [origin.x, origin.y, origin.z].map(
+                (num) => num / sceneInfra._baseUnitMultiplier
+              ) as [number, number, number],
+              extrudeSegmentPathToNode: pathToNode,
+            },
+          })
+          return true
+        }
+
+        if (await checkExtrudeFaceClick()) return
+
         if (!args || !args.intersects?.[0]) return
         if (args.mouseEvent.which !== 1) return
         const { intersects } = args
         const type = intersects?.[0].object.name || ''
         const posNorm = Number(intersects?.[0]?.normal?.z) > 0
         let planeString: DefaultPlaneStr = posNorm ? 'XY' : '-XY'
-        let normal: [number, number, number] = posNorm ? [0, 0, 1] : [0, 0, -1]
+        let zAxis: [number, number, number] = posNorm ? [0, 0, 1] : [0, 0, -1]
+        let yAxis: [number, number, number] = [0, 1, 0]
         if (type === YZ_PLANE) {
           planeString = posNorm ? 'YZ' : '-YZ'
-          normal = posNorm ? [1, 0, 0] : [-1, 0, 0]
+          zAxis = posNorm ? [1, 0, 0] : [-1, 0, 0]
+          yAxis = [0, 0, 1]
         } else if (type === XZ_PLANE) {
           planeString = posNorm ? 'XZ' : '-XZ'
-          normal = posNorm ? [0, 1, 0] : [0, -1, 0]
+          zAxis = posNorm ? [0, 1, 0] : [0, -1, 0]
+          yAxis = [0, 0, 1]
         }
         sceneInfra.modelingSend({
           type: 'Select default plane',
           data: {
+            type: 'defaultPlane',
             plane: planeString,
-            normal,
+            zAxis,
+            yAxis,
           },
         })
       },
@@ -1103,6 +1156,7 @@ export async function getSketchQuaternion2(
 ): Promise<{
   quat: Quaternion
   position: [number, number, number]
+  zAxis: [number, number, number]
 }> {
   const sketchGroup = sketchGroupFromPathToNode({
     pathToNode: sketchPathToNode,
@@ -1114,6 +1168,7 @@ export async function getSketchQuaternion2(
     return {
       quat: getQuaternionFromZAxis(massageFormats(zAxis)),
       position: [0, 0, 0],
+      zAxis: [zAxis.x, zAxis.y, zAxis.z],
     }
   }
   if (sketchGroup.on.type === 'face') {
@@ -1153,6 +1208,7 @@ export async function getSketchQuaternion2(
     return {
       quat: quaternion,
       position: [origin.x, origin.y, origin.z],
+      zAxis: [z_axis.x, z_axis.y, z_axis.z],
     }
   }
   throw new Error(

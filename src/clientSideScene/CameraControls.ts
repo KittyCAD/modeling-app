@@ -802,7 +802,7 @@ export class CameraControls {
 
       const onComplete = async () => {
         if (isReducedMotion() && toOrthographic) {
-          cameraAtTime(0.99)
+          cameraAtTime(0.9999)
           this.useOrthographicCamera()
         } else if (toOrthographic) {
           await this.animateToOrthographic()

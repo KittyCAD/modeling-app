@@ -1326,7 +1326,7 @@ test('Snap to close works (at any scale)', async ({ page }) => {
   ) => `const part001 = startSketchOn('XZ')
 |> startProfileAt([${roundOff(scale * 87.68)}, ${roundOff(scale * 43.84)}], %)
 |> line([${roundOff(scale * 175.36)}, 0], %)
-|> line([0, -${roundOff(scale * 175.37) + fudge}], %)
+|> line([0, -${roundOff(scale * 175.36) + fudge}], %)
 |> close(%)`
 
   await doSnapAtDifferentScales([0, 100, 100], codeTemplate(0.01, 0.01))

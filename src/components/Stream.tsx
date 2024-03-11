@@ -1,15 +1,14 @@
 import { MouseEventHandler, useEffect, useRef, useState } from 'react'
-import { v4 as uuidv4 } from 'uuid'
 import { useStore } from '../useStore'
 import { getNormalisedCoordinates } from '../lib/utils'
 import Loading from './Loading'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
-import { engineCommandManager } from '../lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useKclContext } from 'lang/KclSingleton'
 import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
 import { NetworkHealthState, useNetworkStatus } from './NetworkHealthIndicator'
 import { butName } from 'lib/cameraControls'
+import { sendSelectEventToEngine } from 'lib/selections'
 
 export const Stream = ({ className = '' }: { className?: string }) => {
   const [isLoading, setIsLoading] = useState(true)
@@ -65,23 +64,9 @@ export const Stream = ({ className = '' }: { className?: string }) => {
     setButtonDownInStream(undefined)
     if (state.matches('Sketch')) return
     if (state.matches('Sketch no face')) return
-    const { x, y } = getNormalisedCoordinates({
-      clientX: e.clientX,
-      clientY: e.clientY,
-      el: videoRef.current,
-      ...streamDimensions,
-    })
 
     if (!didDragInStream && butName(e).left) {
-      engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd: {
-          type: 'select_with_point',
-          selected_at_window: { x, y },
-          selection_type: 'add',
-        },
-        cmd_id: uuidv4(),
-      })
+      sendSelectEventToEngine(e, videoRef.current, streamDimensions)
     }
 
     setDidDragInStream(false)
@@ -121,6 +106,7 @@ export const Stream = ({ className = '' }: { className?: string }) => {
         className={`w-full cursor-pointer h-full ${isExecuting && 'blur-md'}`}
         disablePictureInPicture
         style={{ transitionDuration: '200ms', transitionProperty: 'filter' }}
+        id="video-stream"
       />
       <ClientSideScene cameraControls={settings.context?.cameraControls} />
       {!isNetworkOkay && !isLoading && (

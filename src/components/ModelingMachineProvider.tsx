@@ -41,7 +41,7 @@ import {
   getSketchQuaternion2,
 } from 'clientSideScene/sceneEntities'
 import { sketchOnExtrudedFace, startSketchOnDefault } from 'lang/modifyAst'
-import { Program } from 'lang/wasm'
+import { Program, parse } from 'lang/wasm'
 import { getNodePathFromSourceRange, isSingleCursorInPipe } from 'lang/queryAst'
 import { TEST } from 'env'
 import { exportFromEngine } from 'lib/exportFromEngine'
@@ -100,7 +100,11 @@ export const ModelingMachineProvider = ({
     {
       actions: {
         'sketch exit execute': () => {
-          kclManager.executeAst()
+          try {
+            kclManager.executeAst(parse(kclManager.code))
+          } catch (e) {
+            kclManager.executeAst()
+          }
         },
         'Set selection': assign(({ selectionRanges }, event) => {
           if (event.type !== 'Set selection') return {} // this was needed for ts after adding 'Set selection' action to on done modal events
@@ -327,17 +331,42 @@ export const ModelingMachineProvider = ({
             ) as [number, number, number],
           }
         },
-        'animate-to-face': async (_, { data: { plane, normal } }) => {
+        'animate-to-face': async (_, { data }) => {
+          if (data.type === 'extrudeFace') {
+            const { modifiedAst, pathToNode: pathToNewSketchNode } =
+              sketchOnExtrudedFace(
+                kclManager.ast,
+                data.extrudeSegmentPathToNode,
+                kclManager.programMemory
+              )
+            await kclManager.executeAstMock(modifiedAst, { updates: 'code' })
+
+            const normal = new Vector3(...data.zAxis)
+            const quaternion = getQuaternionFromZAxis(normal) // todo use y axis
+            const target = new Vector3(...data.position).multiplyScalar(
+              sceneInfra._baseUnitMultiplier
+            )
+            await sceneInfra.camControls.tweenCameraToQuaternion(
+              quaternion,
+              target
+            )
+
+            return {
+              sketchPathToNode: pathToNewSketchNode,
+              sketchNormalBackUp: data.zAxis,
+              sketchPosition: data.position,
+            }
+          }
           const { modifiedAst, pathToNode } = startSketchOnDefault(
             kclManager.ast,
-            plane
+            data.plane
           )
           await kclManager.updateAst(modifiedAst, false)
-          const quat = await getSketchQuaternion(pathToNode, normal)
+          const quat = await getSketchQuaternion(pathToNode, data.zAxis)
           await sceneInfra.camControls.tweenCameraToQuaternion(quat)
           return {
             sketchPathToNode: pathToNode,
-            sketchNormalBackUp: normal,
+            sketchNormalBackUp: data.zAxis,
             sketchPosition: [0, 0, 0],
           }
         },
@@ -353,6 +382,13 @@ export const ModelingMachineProvider = ({
             info.quat,
             new Vector3(...info.position)
           )
+          return {
+            sketchPathToNode: sketchPathToNode || [],
+            sketchNormalBackUp: info.zAxis || sketchNormalBackUp || null,
+            sketchPosition: info.position.map(
+              (a) => a / sceneInfra._baseUnitMultiplier
+            ) as [number, number, number],
+          }
         },
         'Get horizontal info': async ({
           selectionRanges,

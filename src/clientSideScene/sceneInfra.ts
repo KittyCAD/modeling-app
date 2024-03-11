@@ -96,13 +96,13 @@ class SceneInfra {
   _baseUnitMultiplier = 1
   onDragCallback: (arg: OnDragCallbackArgs) => void = () => {}
   onMoveCallback: (arg: OnMoveCallbackArgs) => void = () => {}
-  onClickCallback: (arg?: OnClickCallbackArgs) => void = () => {}
+  onClickCallback: (arg: OnClickCallbackArgs) => void = () => {}
   onMouseEnter: (arg: OnMouseEnterLeaveArgs) => void = () => {}
   onMouseLeave: (arg: OnMouseEnterLeaveArgs) => void = () => {}
   setCallbacks = (callbacks: {
     onDrag?: (arg: OnDragCallbackArgs) => void
     onMove?: (arg: OnMoveCallbackArgs) => void
-    onClick?: (arg?: OnClickCallbackArgs) => void
+    onClick?: (arg: OnClickCallbackArgs) => void
     onMouseEnter?: (arg: OnMouseEnterLeaveArgs) => void
     onMouseLeave?: (arg: OnMouseEnterLeaveArgs) => void
   }) => {
@@ -264,7 +264,6 @@ class SceneInfra {
     if (!planeIntersects.length) return null
     if (!recastablePlaneIntersect) return { intersection: planeIntersects[0] }
     const planePosition = planeIntersects[0].object.position
-    console.log('planePosition', planePosition)
     const inversePlaneQuaternion = planeIntersects[0].object.quaternion
       .clone()
       .invert()
@@ -467,7 +466,7 @@ class SceneInfra {
           intersects,
         })
       } else {
-        this.onClickCallback()
+        this.onClickCallback({ mouseEvent, intersects })
       }
       // Clear the selected state whether it was dragged or not
       this.selected = null
@@ -481,7 +480,7 @@ class SceneInfra {
         intersects,
       })
     } else {
-      this.onClickCallback()
+      this.onClickCallback({ mouseEvent, intersects })
     }
   }
   showDefaultPlanes() {

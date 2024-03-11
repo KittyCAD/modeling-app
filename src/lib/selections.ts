@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { EditorSelection } from '@codemirror/state'
 import { kclManager } from 'lang/KclSingleton'
 import { SelectionRange } from '@uiw/react-codemirror'
-import { isOverlap } from 'lib/utils'
+import { getNormalisedCoordinates, isOverlap } from 'lib/utils'
 import { isCursorInSketchCommandRange } from 'lang/util'
 import { Program } from 'lang/wasm'
 import {
@@ -22,7 +22,7 @@ import {
   getParentGroup,
   PROFILE_START,
 } from 'clientSideScene/sceneEntities'
-import { Group, Mesh, Object3D, Object3DEventMap } from 'three'
+import { Mesh, Object3D, Object3DEventMap } from 'three'
 import { AXIS_GROUP, X_AXIS } from 'clientSideScene/sceneInfra'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
@@ -509,4 +509,32 @@ export function codeToIdSelections(
       return null
     })
     .filter(Boolean) as any
+}
+
+export function sendSelectEventToEngine(
+  e: MouseEvent | React.MouseEvent<HTMLDivElement, MouseEvent>,
+  el: HTMLVideoElement,
+  streamDimensions: { streamWidth: number; streamHeight: number }
+) {
+  const { x, y } = getNormalisedCoordinates({
+    clientX: e.clientX,
+    clientY: e.clientY,
+    el,
+    ...streamDimensions,
+  })
+  const yo: Promise<Models['SelectWithPoint_type']> = engineCommandManager
+    .sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'select_with_point',
+        selected_at_window: { x, y },
+        selection_type: 'add',
+      },
+      cmd_id: uuidv4(),
+    })
+    .then((res) => {
+      console.log('res', res)
+      return res.data.data
+    })
+  return yo
 }
