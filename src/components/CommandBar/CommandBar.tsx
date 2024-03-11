@@ -29,12 +29,6 @@ export const CommandBarProvider = ({
   const [commandBarState, commandBarSend] = useMachine(commandBarMachine, {
     devTools: true,
     guards: {
-      'Arguments are ready': (context, _) => {
-        return context.selectedCommand?.args
-          ? context.argumentsToSubmit.length ===
-              Object.keys(context.selectedCommand.args)?.length
-          : false
-      },
       'Command has no arguments': (context, _event) => {
         return (
           !context.selectedCommand?.args ||
@@ -57,12 +51,11 @@ export const CommandBarProvider = ({
       }}
     >
       {children}
-      <CommandBar />
     </CommandsContext.Provider>
   )
 }
 
-const CommandBar = () => {
+export const CommandBar = () => {
   const { commandBarState, commandBarSend } = useCommandsContext()
   const {
     context: { selectedCommand, currentArgument, commands },
@@ -82,17 +75,23 @@ const CommandBar = () => {
   function stepBack() {
     if (!currentArgument) {
       if (commandBarState.matches('Review')) {
-        const entries = Object.entries(selectedCommand?.args || {})
+        const entries = Object.entries(selectedCommand?.args || {}).filter(
+          ([_, argConfig]) =>
+            typeof argConfig.required === 'function'
+              ? argConfig.required(commandBarState.context)
+              : argConfig.required
+        )
+
+        const currentArgName = entries[entries.length - 1][0]
+        const currentArg = {
+          name: currentArgName,
+          ...entries[entries.length - 1][1],
+        }
 
         commandBarSend({
-          type: commandBarState.matches('Review')
-            ? 'Edit argument'
-            : 'Change current argument',
+          type: 'Edit argument',
           data: {
-            arg: {
-              name: entries[entries.length - 1][0],
-              ...entries[entries.length - 1][1],
-            },
+            arg: currentArg,
           },
         })
       } else {
@@ -147,6 +146,7 @@ const CommandBar = () => {
           <WrapperComponent.Panel
             className="relative z-50 pointer-events-auto w-full max-w-xl py-2 mx-auto border rounded shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70"
             as="div"
+            data-testid="command-bar"
           >
             {commandBarState.matches('Selecting command') ? (
               <CommandComboBox options={commands} />

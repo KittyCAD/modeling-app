@@ -3,6 +3,10 @@ import { Themes, getSystemTheme, setThemeClass } from '../lib/theme'
 import { CameraSystem } from 'lib/cameraControls'
 import { Models } from '@kittycad/lib'
 
+const kclManagerPromise = import('lang/KclSingleton').then(
+  (module) => module.kclManager
+)
+
 export const DEFAULT_PROJECT_NAME = 'project-$nnn'
 
 export enum UnitSystem {
@@ -23,22 +27,34 @@ export type Toggle = 'On' | 'Off'
 
 export const SETTINGS_PERSIST_KEY = 'SETTINGS_PERSIST_KEY'
 
+type SettingsMachineContext = {
+  baseUnit: BaseUnit
+  cameraControls: CameraSystem
+  defaultDirectory: string
+  defaultProjectName: string
+  onboardingStatus: string
+  showDebugPanel: boolean
+  textWrapping: Toggle
+  theme: Themes
+  unitSystem: UnitSystem
+}
+
 export const settingsMachine = createMachine(
   {
     /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlTQAIAVACzAFswBtABgF1FQAHAe1iYsfbNxAAPRAA42+AEwB2KQFYAzGznKAnADZli1QBoQAT2kBGKfm37lOned3nzqgL6vjlLLgJFSFdCoAETAAMwBDAFdiagAFACc+ACswAGNqADlw5nYuJBB+QWFRfMkEABY5fDYa2rra83LjMwQdLWV8BXLyuxlVLU1Ld090bzxCEnJKYLComODMeLS0PniTXLFCoUwRMTK7fC1zNql7NgUjtnKjU0RlBSqpLVUVPVUda60tYZAvHHG-FNAgBVbBCKjIEywNBMDb5LbFPaILqdfRSORsS4qcxXZqIHqyK6qY4XOxsGTKco-P4+Cb+aYAIXCsDAVFBQjhvAE212pWkskUKnUml0+gUNxaqkU+EccnKF1UCnucnMcjcHl+o3+vkmZBofCgUFIMwARpEoFRYuFsGBiJyCtzEXzWrJlGxlKdVFKvfY1XiEBjyvhVOVzBdzu13pYFNStbTAQFqAB5bAmvjheIQf4QtDhNCRWD2hE7EqgfayHTEh7lHQNSxSf1Scz4cpHHFyFVujTKczuDXYPgQOBiGl4TaOktIhAAWg6X3nC4Xp39050sYw2rpYHHRUnztVhPJqmUlIGbEriv9WhrLZ6uibHcqUr7riAA */
     id: 'Settings',
     predictableActionArguments: true,
     context: {
-      baseUnit: 'in' as BaseUnit,
-      cameraControls: 'KittyCAD' as CameraSystem,
+      baseUnit: 'mm',
+      cameraControls: 'KittyCAD',
       defaultDirectory: '',
       defaultProjectName: DEFAULT_PROJECT_NAME,
       onboardingStatus: '',
       showDebugPanel: false,
-      textWrapping: 'On' as Toggle,
+      textWrapping: 'On',
       theme: Themes.System,
-      unitSystem: UnitSystem.Imperial,
-    },
+      unitSystem: UnitSystem.Metric,
+    } as SettingsMachineContext,
     initial: 'idle',
     states: {
       idle: {
@@ -47,13 +63,13 @@ export const settingsMachine = createMachine(
           'Set Base Unit': {
             actions: [
               assign({
-                baseUnit: (_, event) => {
-                  console.log('event', event)
-                  return event.data.baseUnit
-                },
+                baseUnit: (_, event) => event.data.baseUnit,
               }),
               'persistSettings',
               'toastSuccess',
+              async () => {
+                ;(await kclManagerPromise).executeAst()
+              },
             ],
             target: 'idle',
             internal: true,
@@ -134,6 +150,9 @@ export const settingsMachine = createMachine(
               }),
               'persistSettings',
               'toastSuccess',
+              async () => {
+                ;(await kclManagerPromise).executeAst()
+              },
             ],
             target: 'idle',
             internal: true,

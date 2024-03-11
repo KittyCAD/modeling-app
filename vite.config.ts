@@ -35,7 +35,7 @@ const config = defineConfig({
     viteTsconfigPaths(),
     eslint(),
     version(),
-  ]
+  ],
 })
 
 export default config

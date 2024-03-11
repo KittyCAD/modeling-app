@@ -33,6 +33,7 @@ src/wasm-lib/bindings
 src/wasm-lib/kcl/bindings
 public/wasm_lib_bg.wasm
 src/wasm-lib/lcov.info
+src/wasm-lib/grackle/test_json_output
 
 e2e/playwright/playwright-secrets.env
 e2e/playwright/temp1.png
@@ -54,3 +55,5 @@ e2e/playwright/export-snapshots/*embedded.gltf
 
 ## generated files
 src/**/*.typegen.ts
+
+src/wasm-lib/grackle/stdlib_cube_partial.json

@@ -1,2 +1,3 @@
-const cylinder = unstable_stdlib_circle('XY', [0,0], 22) |> extrude(14, %)
-show(cylinder)
+const cylinder = startSketchOn('XY')
+    |> circle([0,0], 22, %)
+    |> extrude(14, %)

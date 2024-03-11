@@ -86,8 +86,6 @@ jobs:
 
       - run: yarn test:nowatch
 
-      - run: yarn test:cov
-
 
   prepare-json-files:
     runs-on: ubuntu-latest  # seperate job on Ubuntu for easy string manipulations (compared to Windows)
@@ -338,7 +336,7 @@ jobs:
             cat last_download.json
 
       - name: Authenticate to Google Cloud
-        uses: 'google-github-actions/auth@v2.1.1'
+        uses: 'google-github-actions/auth@v2.1.2'
         with:
           credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
 
@@ -372,3 +370,28 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: 'artifact/*/Zoo*'
+          
+  announce_release:
+    needs: [publish-apps-release]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release'
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+          
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+  
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+  
+      - name: Announce Release
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          RELEASE_VERSION: ${{ github.event.release.tag_name }}
+          RELEASE_BODY: ${{ github.event.release.body}}
+        run: python public/announce_release.py

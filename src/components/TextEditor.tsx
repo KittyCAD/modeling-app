@@ -1,3 +1,4 @@
+import { undo, redo } from '@codemirror/commands'
 import ReactCodeMirror, {
   Extension,
   ViewUpdate,
@@ -11,7 +12,7 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
 import { Themes } from 'lib/theme'
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { linter, lintGutter } from '@codemirror/lint'
 import { useStore } from 'useStore'
 import { processCodeMirrorRanges } from 'lib/selections'
@@ -25,11 +26,14 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import interact from '@replit/codemirror-interact'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { kclManager, useKclContext } from 'lang/KclSingleton'
+import { useFileContext } from 'hooks/useFileContext'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { sceneInfra } from 'clientSideScene/sceneInfra'
 import { copilotPlugin } from 'editor/plugins/lsp/copilot'
 import { isTauri } from 'lib/isTauri'
 import type * as LSP from 'vscode-languageserver-protocol'
+import { NetworkHealthState, useNetworkStatus } from './NetworkHealthIndicator'
+import { useHotkeys } from 'react-hotkeys-hook'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -75,6 +79,28 @@ export const TextEditor = ({
   }))
   const { code, errors } = useKclContext()
   const lastEvent = useRef({ event: '', time: Date.now() })
+  const { overallState } = useNetworkStatus()
+  const isNetworkOkay = overallState === NetworkHealthState.Ok
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const onlineCallback = () => kclManager.setCodeAndExecute(kclManager.code)
+    window.addEventListener('online', onlineCallback)
+    return () => window.removeEventListener('online', onlineCallback)
+  }, [])
+
+  useHotkeys('mod+z', (e) => {
+    e.preventDefault()
+    if (editorView) {
+      undo(editorView)
+    }
+  })
+  useHotkeys('mod+shift+z', (e) => {
+    e.preventDefault()
+    if (editorView) {
+      redo(editorView)
+    }
+  })
 
   const {
     context: { selectionRanges, selectionRangeTypeMap },
@@ -82,9 +108,12 @@ export const TextEditor = ({
     state,
   } = useModelingContext()
 
-  const { settings: { context: { textWrapping } = {} } = {}, auth } =
-    useGlobalStateContext()
+  const { settings, auth } = useGlobalStateContext()
+  const textWrapping = settings.context?.textWrapping ?? 'On'
   const { commandBarSend } = useCommandsContext()
+  const {
+    context: { project },
+  } = useFileContext()
   const { enable: convertEnabled, handleClick: convertCallback } =
     useConvertToVariable()
 
@@ -107,7 +136,7 @@ export const TextEditor = ({
   }, [setIsKclLspServerReady])
 
   // Here we initialize the plugin which will start the client.
-  // When we have multi-file support the name of the file will be a dep of
+  // Now that we have multi-file support the name of the file is a dep of
   // this use memo, as well as the directory structure, which I think is
   // a good setup because it will restart the client but not the server :)
   // We do not want to restart the server, its just wasteful.
@@ -163,11 +192,12 @@ export const TextEditor = ({
       plugin = lsp
     }
     return plugin
-  }, [copilotLspClient, isCopilotLspServerReady])
+  }, [copilotLspClient, isCopilotLspServerReady, project])
 
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
-  const onChange = (newCode: string) => {
-    kclManager.setCodeAndExecute(newCode)
+  const onChange = async (newCode: string) => {
+    if (isNetworkOkay) kclManager.setCodeAndExecute(newCode)
+    else kclManager.setCode(newCode)
   } //, []);
   const onUpdate = (viewUpdate: ViewUpdate) => {
     if (!editorView) {

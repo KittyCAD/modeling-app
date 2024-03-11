@@ -136,15 +136,21 @@ export const executor = async (
   return _programMemory
 }
 
+const getSettingsState = import('components/GlobalStateProvider').then(
+  (module) => module.getSettingsState
+)
+
 export const _executor = async (
   node: Program,
   programMemory: ProgramMemory = { root: {}, return: null },
   engineCommandManager: EngineCommandManager
 ): Promise<ProgramMemory> => {
   try {
+    const baseUnit = (await getSettingsState)()?.baseUnit || 'mm'
     const memory: ProgramMemory = await execute_wasm(
       JSON.stringify(node),
       JSON.stringify(programMemory),
+      baseUnit,
       engineCommandManager,
       fileSystemManager
     )

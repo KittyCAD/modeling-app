@@ -44,7 +44,7 @@ impl crate::docs::StdLibFn for Show {
             name: "args".to_string(),
             type_: "number".to_string(),
             schema: <Option<f64>>::json_schema(&mut generator),
-            required: true,
+            required: false,
         }]
     }
 

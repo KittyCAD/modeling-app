@@ -21,6 +21,8 @@ import { ActionButton } from 'components/ActionButton'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 
 export const ONBOARDING_PROJECT_NAME = 'Tutorial Project $nn'
+export const kbdClasses =
+  'p-0.5 text-sm rounded-sm bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50'
 
 export const onboardingRoutes = [
   {
@@ -106,20 +108,40 @@ export function useDismiss() {
   }, [send, navigate, filePath])
 }
 
+// Get the 1-indexed step number of the current onboarding step
+export function useStepNumber(
+  slug?: (typeof onboardingPaths)[keyof typeof onboardingPaths]
+) {
+  return slug
+    ? slug === onboardingPaths.INDEX
+      ? 1
+      : onboardingRoutes.findIndex(
+          (r) => r.path === makeUrlPathRelative(slug)
+        ) + 1
+    : undefined
+}
+
 export function OnboardingButtons({
   next,
   nextText,
   dismiss,
+  currentSlug,
   className,
   ...props
 }: {
   next: () => void
   nextText?: string
   dismiss: () => void
+  currentSlug?: (typeof onboardingPaths)[keyof typeof onboardingPaths]
   className?: string
 } & React.HTMLAttributes<HTMLDivElement>) {
+  const stepNumber = useStepNumber(currentSlug)
+
   return (
-    <div className={'flex justify-between ' + (className ?? '')} {...props}>
+    <div
+      className={'flex items-center justify-between ' + (className ?? '')}
+      {...props}
+    >
       <ActionButton
         Element="button"
         onClick={dismiss}
@@ -132,6 +154,11 @@ export function OnboardingButtons({
       >
         Dismiss
       </ActionButton>
+      {stepNumber !== undefined && (
+        <p className="font-mono text-xs text-center m-0">
+          {stepNumber} / {onboardingRoutes.length}
+        </p>
+      )}
       <ActionButton
         Element="button"
         onClick={next}

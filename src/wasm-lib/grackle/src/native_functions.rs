@@ -2,11 +2,12 @@
 //! This includes some of the stdlib, e.g. `startSketchAt`.
 //! But some other stdlib functions will be written in KCL.
 
-use kcl_lib::std::sketch::PlaneData;
 use kittycad_execution_plan::{BinaryArithmetic, Destination, Instruction};
-use kittycad_execution_plan_traits::{Address, Value};
+use kittycad_execution_plan_traits::Address;
 
 use crate::{CompileError, EpBinding, EvalPlan};
+
+pub mod sketch;
 
 /// The identity function. Always returns its first input.
 #[derive(Debug, Clone)]
@@ -38,34 +39,6 @@ impl Callable for Id {
             instructions: Vec::new(),
             binding: arg,
         })
-    }
-}
-
-#[derive(Debug, Clone)]
-#[cfg_attr(test, derive(Eq, PartialEq))]
-pub struct StartSketchAt;
-
-impl Callable for StartSketchAt {
-    fn call(&self, next_addr: &mut Address, _args: Vec<EpBinding>) -> Result<EvalPlan, CompileError> {
-        let mut instructions = Vec::new();
-        // Store the plane.
-        let plane = PlaneData::XY.into_parts();
-        instructions.push(Instruction::SetValue {
-            address: next_addr.offset_by(plane.len()),
-            value_parts: plane,
-        });
-        // TODO: Get the plane ID from global context.
-        // TODO: Send this command:
-        // ModelingCmd::SketchModeEnable {
-        //     animated: false,
-        //     ortho: false,
-        //     plane_id: plane.id,
-        //     // We pass in the normal for the plane here.
-        //     disable_camera_with_plane: Some(plane.z_axis.clone().into()),
-        // },
-        // TODO: Send ModelingCmd::StartPath at the given point.
-        // TODO (maybe): Store the SketchGroup in KCEP memory.
-        todo!()
     }
 }
 

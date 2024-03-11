@@ -7,10 +7,24 @@ import {
   InterpreterFrom,
 } from 'xstate'
 import { Selection } from './selections'
+import { Identifier, Value, VariableDeclaration } from 'lang/wasm'
+import { commandBarMachine } from 'machines/commandBarMachine'
 
 type Icon = CustomIconName
 const PLATFORMS = ['both', 'web', 'desktop'] as const
-const INPUT_TYPES = ['options', 'string', 'number', 'selection'] as const
+const INPUT_TYPES = ['options', 'string', 'kcl', 'selection'] as const
+export interface KclExpression {
+  valueAst: Value
+  valueText: string
+  valueCalculated: string
+}
+export interface KclExpressionWithVariable extends KclExpression {
+  variableName: string
+  variableDeclarationAst: VariableDeclaration
+  variableIdentifierAst: Identifier
+  insertIndex: number
+}
+export type KclCommandValue = KclExpression | KclExpressionWithVariable
 export type CommandInputType = (typeof INPUT_TYPES)[number]
 
 export type CommandSetSchema<T extends AnyStateMachine> = Partial<{
@@ -80,22 +94,47 @@ export type CommandArgumentConfig<
 > =
   | {
       description?: string
-      required: boolean
-      skip?: true
-      defaultValue?: OutputType | ((context: ContextFrom<T>) => OutputType)
+      required:
+        | boolean
+        | ((
+            commandBarContext: { argumentsToSubmit: Record<string, unknown> } // Should be the commandbarMachine's context, but it creates a circular dependency
+          ) => boolean)
+      skip?: boolean
     } & (
       | {
           inputType: Extract<CommandInputType, 'options'>
           options:
             | CommandArgumentOption<OutputType>[]
-            | ((context: ContextFrom<T>) => CommandArgumentOption<OutputType>[])
+            | ((
+                commandBarContext: {
+                  argumentsToSubmit: Record<string, unknown>
+                } // Should be the commandbarMachine's context, but it creates a circular dependency
+              ) => CommandArgumentOption<OutputType>[])
+          optionsFromContext?: (
+            context: ContextFrom<T>
+          ) => CommandArgumentOption<OutputType>[]
+          defaultValue?:
+            | OutputType
+            | ((
+                commandBarContext: ContextFrom<typeof commandBarMachine>
+              ) => OutputType)
+          defaultValueFromContext?: (context: ContextFrom<T>) => OutputType
         }
       | {
           inputType: Extract<CommandInputType, 'selection'>
           selectionTypes: Selection['type'][]
           multiple: boolean
         }
-      | { inputType: Exclude<CommandInputType, 'options' | 'selection'> }
+      | { inputType: Extract<CommandInputType, 'kcl'>; defaultValue?: string } // KCL expression inputs have simple strings as default values
+      | {
+          inputType: Extract<CommandInputType, 'string'>
+          defaultValue?:
+            | OutputType
+            | ((
+                commandBarContext: ContextFrom<typeof commandBarMachine>
+              ) => OutputType)
+          defaultValueFromContext?: (context: ContextFrom<T>) => OutputType
+        }
     )
 
 export type CommandArgument<
@@ -104,21 +143,43 @@ export type CommandArgument<
 > =
   | {
       description?: string
-      required: boolean
-      skip?: true
-      defaultValue?: OutputType | ((context: ContextFrom<T>) => OutputType)
+      required:
+        | boolean
+        | ((
+            commandBarContext: { argumentsToSubmit: Record<string, unknown> } // Should be the commandbarMachine's context, but it creates a circular dependency
+          ) => boolean)
+      skip?: boolean
+      machineActor: InterpreterFrom<T>
     } & (
       | {
           inputType: Extract<CommandInputType, 'options'>
-          options: CommandArgumentOption<OutputType>[]
+          options:
+            | CommandArgumentOption<OutputType>[]
+            | ((
+                commandBarContext: {
+                  argumentsToSubmit: Record<string, unknown>
+                } // Should be the commandbarMachine's context, but it creates a circular dependency
+              ) => CommandArgumentOption<OutputType>[])
+          defaultValue?:
+            | OutputType
+            | ((
+                commandBarContext: ContextFrom<typeof commandBarMachine>
+              ) => OutputType)
         }
       | {
           inputType: Extract<CommandInputType, 'selection'>
           selectionTypes: Selection['type'][]
-          actor: InterpreterFrom<T>
           multiple: boolean
         }
-      | { inputType: Exclude<CommandInputType, 'options' | 'selection'> }
+      | { inputType: Extract<CommandInputType, 'kcl'>; defaultValue?: string } // KCL expression inputs have simple strings as default values
+      | {
+          inputType: Extract<CommandInputType, 'string'>
+          defaultValue?:
+            | OutputType
+            | ((
+                commandBarContext: ContextFrom<typeof commandBarMachine>
+              ) => OutputType)
+        }
     )
 
 export type CommandArgumentWithName<

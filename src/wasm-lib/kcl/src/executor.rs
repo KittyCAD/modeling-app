@@ -13,7 +13,7 @@ use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
     ast::types::{BodyItem, FunctionExpression, KclNone, Value},
-    engine::EngineConnection,
+    engine::{EngineConnection, EngineManager},
     errors::{KclError, KclErrorDetails},
     fs::FileManager,
     std::{FunctionKind, StdLib},
@@ -101,20 +101,14 @@ impl Default for ProgramMemory {
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum ProgramReturn {
-    Arguments(Vec<Value>),
+    Arguments,
     Value(MemoryItem),
 }
 
 impl From<ProgramReturn> for Vec<SourceRange> {
     fn from(item: ProgramReturn) -> Self {
         match item {
-            ProgramReturn::Arguments(args) => args
-                .iter()
-                .map(|arg| {
-                    let r: SourceRange = arg.into();
-                    r
-                })
-                .collect(),
+            ProgramReturn::Arguments => Default::default(),
             ProgramReturn::Value(v) => v.into(),
         }
     }
@@ -124,8 +118,8 @@ impl ProgramReturn {
     pub fn get_value(&self) -> Result<MemoryItem, KclError> {
         match self {
             ProgramReturn::Value(v) => Ok(v.clone()),
-            ProgramReturn::Arguments(args) => Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Cannot get value from arguments: {:?}", args),
+            ProgramReturn::Arguments => Err(KclError::Semantic(KclErrorDetails {
+                message: "Cannot get value from arguments".to_owned(),
                 source_ranges: self.clone().into(),
             })),
         }
@@ -240,6 +234,8 @@ pub struct Face {
     pub id: uuid::Uuid,
     /// The tag of the face.
     pub value: String,
+    /// The original sketch group id of the object we are sketching on.
+    pub sketch_group_id: uuid::Uuid,
     /// What should the face’s X axis be?
     pub x_axis: Point3d,
     /// What should the face’s Y axis be?
@@ -556,6 +552,8 @@ pub struct ExtrudeGroup {
     pub id: uuid::Uuid,
     /// The extrude surfaces.
     pub value: Vec<ExtrudeSurface>,
+    /// The sketch group paths.
+    pub sketch_group_values: Vec<Path>,
     /// The height of the extrude group.
     pub height: f64,
     /// The position of the extrude group.
@@ -799,6 +797,11 @@ pub enum Path {
         /// arc's direction
         ccw: bool,
     },
+    /// A arc that is tangential to the last path segment
+    TangentialArc {
+        #[serde(flatten)]
+        base: BasePath,
+    },
     /// A path that is horizontal.
     Horizontal {
         #[serde(flatten)]
@@ -830,6 +833,7 @@ impl Path {
             Path::AngledLineTo { base, .. } => base.geo_meta.id,
             Path::Base { base } => base.geo_meta.id,
             Path::TangentialArcTo { base, .. } => base.geo_meta.id,
+            Path::TangentialArc { base } => base.geo_meta.id,
         }
     }
 
@@ -840,6 +844,7 @@ impl Path {
             Path::AngledLineTo { base, .. } => base.name.clone(),
             Path::Base { base } => base.name.clone(),
             Path::TangentialArcTo { base, .. } => base.name.clone(),
+            Path::TangentialArc { base } => base.name.clone(),
         }
     }
 
@@ -850,6 +855,7 @@ impl Path {
             Path::AngledLineTo { base, .. } => base,
             Path::Base { base } => base,
             Path::TangentialArcTo { base, .. } => base,
+            Path::TangentialArc { base } => base,
         }
     }
 
@@ -860,6 +866,7 @@ impl Path {
             Path::AngledLineTo { base, .. } => Some(base),
             Path::Base { base } => Some(base),
             Path::TangentialArcTo { base, .. } => Some(base),
+            Path::TangentialArc { base } => Some(base),
         }
     }
 }
@@ -871,6 +878,7 @@ impl Path {
 pub enum ExtrudeSurface {
     /// An extrude plane.
     ExtrudePlane(ExtrudePlane),
+    ExtrudeArc(ExtrudeArc),
 }
 
 /// An extruded plane.
@@ -891,28 +899,50 @@ pub struct ExtrudePlane {
     pub geo_meta: GeoMeta,
 }
 
+/// An extruded arc.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct ExtrudeArc {
+    /// The position.
+    pub position: Position,
+    /// The rotation.
+    pub rotation: Rotation,
+    /// The face id for the extrude plane.
+    pub face_id: uuid::Uuid,
+    /// The name.
+    pub name: String,
+    /// Metadata.
+    #[serde(flatten)]
+    pub geo_meta: GeoMeta,
+}
+
 impl ExtrudeSurface {
     pub fn get_id(&self) -> uuid::Uuid {
         match self {
             ExtrudeSurface::ExtrudePlane(ep) => ep.geo_meta.id,
+            ExtrudeSurface::ExtrudeArc(ea) => ea.geo_meta.id,
         }
     }
 
     pub fn get_name(&self) -> String {
         match self {
             ExtrudeSurface::ExtrudePlane(ep) => ep.name.to_string(),
+            ExtrudeSurface::ExtrudeArc(ea) => ea.name.to_string(),
         }
     }
 
     pub fn get_position(&self) -> Position {
         match self {
             ExtrudeSurface::ExtrudePlane(ep) => ep.position,
+            ExtrudeSurface::ExtrudeArc(ea) => ea.position,
         }
     }
 
     pub fn get_rotation(&self) -> Rotation {
         match self {
             ExtrudeSurface::ExtrudePlane(ep) => ep.rotation,
+            ExtrudeSurface::ExtrudeArc(ea) => ea.rotation,
         }
     }
 }
@@ -950,27 +980,30 @@ pub struct ExecutorContext {
     pub engine: EngineConnection,
     pub fs: FileManager,
     pub stdlib: Arc<StdLib>,
+    pub units: kittycad::types::UnitLength,
 }
 
 impl ExecutorContext {
     /// Create a new default executor context.
     #[cfg(test)]
-    pub async fn new() -> Result<Self> {
+    pub async fn new(units: kittycad::types::UnitLength) -> Result<Self> {
         Ok(Self {
             engine: EngineConnection::new().await?,
             fs: FileManager::new(),
             stdlib: Arc::new(StdLib::new()),
+            units,
         })
     }
 
     /// Create a new default executor context.
     #[cfg(not(test))]
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new(ws: reqwest::Upgraded) -> Result<Self> {
+    pub async fn new(ws: reqwest::Upgraded, units: kittycad::types::UnitLength) -> Result<Self> {
         Ok(Self {
             engine: EngineConnection::new(ws).await?,
             fs: FileManager::new(),
             stdlib: Arc::new(StdLib::new()),
+            units,
         })
     }
 }
@@ -980,9 +1013,20 @@ impl ExecutorContext {
 pub async fn execute(
     program: crate::ast::types::Program,
     memory: &mut ProgramMemory,
-    options: BodyType,
+    _options: BodyType,
     ctx: &ExecutorContext,
 ) -> Result<ProgramMemory, KclError> {
+    // Before we even start executing the program, set the units.
+    ctx.engine
+        .send_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            SourceRange::default(),
+            kittycad::types::ModelingCmd::SetSceneUnits {
+                unit: ctx.units.clone(),
+            },
+        )
+        .await?;
+
     let mut pipe_info = PipeInfo::default();
 
     // Iterate over the body of the program.
@@ -1025,24 +1069,11 @@ pub async fn execute(
                             _ => (),
                         }
                     }
-                    let _show_fn = Box::new(crate::std::Show);
                     match ctx.stdlib.get_either(&call_expr.callee.name) {
                         FunctionKind::Core(func) => {
-                            use crate::docs::StdLibFn;
-                            if func.name() == _show_fn.name() {
-                                if options != BodyType::Root {
-                                    return Err(KclError::Semantic(KclErrorDetails {
-                                        message: "Cannot call show outside of a root".to_string(),
-                                        source_ranges: vec![call_expr.into()],
-                                    }));
-                                }
-
-                                memory.return_ = Some(ProgramReturn::Arguments(call_expr.arguments.clone()));
-                            } else {
-                                let args = crate::std::Args::new(args, call_expr.into(), ctx.clone());
-                                let result = func.std_lib_fn()(args).await?;
-                                memory.return_ = Some(ProgramReturn::Value(result));
-                            }
+                            let args = crate::std::Args::new(args, call_expr.into(), ctx.clone());
+                            let result = func.std_lib_fn()(args).await?;
+                            memory.return_ = Some(ProgramReturn::Value(result));
                         }
                         FunctionKind::Std(func) => {
                             let mut newmem = memory.clone();
@@ -1269,7 +1300,7 @@ mod tests {
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast()?;
         let mut mem: ProgramMemory = Default::default();
-        let ctx = ExecutorContext::new().await?;
+        let ctx = ExecutorContext::new(kittycad::types::UnitLength::Mm).await?;
         let memory = execute(program, &mut mem, BodyType::Root, &ctx).await?;
 
         Ok(memory)
@@ -1304,8 +1335,7 @@ const newVar = myVar + 1"#;
   offset: {},
   tag: "yo2"
 }}, %)
-const intersect = segEndX('yo2', part001)
-show(part001)"#,
+const intersect = segEndX('yo2', part001)"#,
                 offset
             )
         };
@@ -1351,8 +1381,7 @@ const part001 = startSketchOn('XY')
 |> angledLine([ghi(2), 3.04], %)
 |> angledLine([jkl(yo) + 2, 3.05], %)
 |> close(%)
-const yo2 = hmm([identifierGuy + 5])
-show(part001)"#;
+const yo2 = hmm([identifierGuy + 5])"#;
 
         parse_execute(ast).await.unwrap();
     }
@@ -1367,8 +1396,7 @@ const part001 = startSketchOn('XY')
   min(segLen('seg01', %), myVar),
   -legLen(segLen('seg01', %), myVar)
 ], %)
-
-show(part001)"#;
+"#;
 
         parse_execute(ast).await.unwrap();
     }
@@ -1383,8 +1411,7 @@ const part001 = startSketchOn('XY')
   min(segLen('seg01', %), myVar),
   legLen(segLen('seg01', %), myVar)
 ], %)
-
-show(part001)"#;
+"#;
 
         parse_execute(ast).await.unwrap();
     }
@@ -1406,8 +1433,7 @@ const part001 = startSketchOn('XY')
   |> xLine(3.84, %) // selection-range-7ish-before-this
 
 const variableBelowShouldNotBeIncluded = 3
-
-show(part001)"#;
+"#;
 
         parse_execute(ast).await.unwrap();
     }
@@ -1428,9 +1454,7 @@ const firstExtrude = startSketchOn('XY')
   |> line([w, 0], %)
   |> line([0, thing()], %)
   |> close(%)
-  |> extrude(h, %)
-
-show(firstExtrude)"#;
+  |> extrude(h, %)"#;
 
         parse_execute(ast).await.unwrap();
     }
@@ -1451,9 +1475,7 @@ const firstExtrude = startSketchOn('XY')
   |> line([w, 0], %)
   |> line([0, thing(8)], %)
   |> close(%)
-  |> extrude(h, %)
-
-show(firstExtrude)"#;
+  |> extrude(h, %)"#;
 
         parse_execute(ast).await.unwrap();
     }
@@ -1474,9 +1496,7 @@ const firstExtrude = startSketchOn('XY')
   |> line([w, 0], %)
   |> line(thing(8), %)
   |> close(%)
-  |> extrude(h, %)
-
-show(firstExtrude)"#;
+  |> extrude(h, %)"#;
 
         parse_execute(ast).await.unwrap();
     }
@@ -1501,9 +1521,7 @@ const firstExtrude = startSketchOn('XY')
   |> line([w, 0], %)
   |> line([0, thing(8)], %)
   |> close(%)
-  |> extrude(h, %)
-
-show(firstExtrude)"#;
+  |> extrude(h, %)"#;
 
         parse_execute(ast).await.unwrap();
     }
@@ -1522,9 +1540,7 @@ show(firstExtrude)"#;
   return myBox
 }
 
-const fnBox = box(3, 6, 10)
-
-show(fnBox)"#;
+const fnBox = box(3, 6, 10)"#;
 
         parse_execute(ast).await.unwrap();
     }
@@ -1544,8 +1560,6 @@ show(fnBox)"#;
 }
 
 const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
-
-show(thisBox)
 "#;
         parse_execute(ast).await.unwrap();
     }
@@ -1565,8 +1579,6 @@ show(thisBox)
 }
 
 const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
-
-show(thisBox)
 "#;
         parse_execute(ast).await.unwrap();
     }
@@ -1586,8 +1598,6 @@ show(thisBox)
 }
 
 const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
-
-show(thisBox)
 "#;
         parse_execute(ast).await.unwrap();
     }
@@ -1609,7 +1619,6 @@ let myBox = startSketchOn('XY')
 
 for var in [{start: [0,0], l: 6, w: 10, h: 3}, {start: [-10,-10], l: 3, w: 5, h: 1.5}] {
   const thisBox = box(var)
-  show(thisBox)
 }"#;
 
         parse_execute(ast).await.unwrap();
@@ -1633,7 +1642,6 @@ for var in [{start: [0,0], l: 6, w: 10, h: 3}, {start: [-10,-10], l: 3, w: 5, h:
 
 for var in [[3, 6, 10, [0,0]], [1.5, 3, 5, [-10,-10]]] {
   const thisBox = box(var[0], var[1], var[2], var[3])
-  show(thisBox)
 }"#;
 
         parse_execute(ast).await.unwrap();
@@ -1655,7 +1663,6 @@ for var in [[3, 6, 10, [0,0]], [1.5, 3, 5, [-10,-10]]] {
 
 const thisBox = box([[0,0], 6, 10, 3])
 
-show(thisBox)
 "#;
         parse_execute(ast).await.unwrap();
     }
@@ -1772,7 +1779,6 @@ const bracket = startSketchOn('XY')
   |> line([0, -1 * leg1 + thickness], %)
   |> close(%)
   |> extrude(width, %)
-show(bracket)
 "#;
         parse_execute(ast).await.unwrap();
     }
@@ -1797,7 +1803,6 @@ const bracket = startSketchOn('XY')
   |> line([0, -1 * leg1 + thickness], %)
   |> close(%)
   |> extrude(width, %)
-show(bracket)
 "#;
         parse_execute(ast).await.unwrap();
     }

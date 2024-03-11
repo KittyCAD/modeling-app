@@ -110,6 +110,9 @@ impl From<ImportFormat> for kittycad::types::InputFormat {
 /// For formats lacking unit data (STL, OBJ, PLY), the default import unit is millimeters.
 /// Otherwise you can specify the unit by passing in the options parameter.
 /// If you import a gltf file, we will try to find the bin file and import it as well.
+///
+/// Import paths are relative to the current project directory. This only works in the desktop app
+/// not in browser.
 pub async fn import(args: Args) -> Result<MemoryItem, KclError> {
     let (file_path, options): (String, Option<ImportFormat>) = args.get_import_data()?;
 
@@ -121,6 +124,9 @@ pub async fn import(args: Args) -> Result<MemoryItem, KclError> {
 /// For formats lacking unit data (STL, OBJ, PLY), the default import unit is millimeters.
 /// Otherwise you can specify the unit by passing in the options parameter.
 /// If you import a gltf file, we will try to find the bin file and import it as well.
+///
+/// Import paths are relative to the current project directory. This only works in the desktop app
+/// not in browser.
 #[stdlib {
     name = "import",
 }]

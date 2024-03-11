@@ -75,6 +75,13 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
         }));
     };
 
+    let mut sketch_group = *sketch_group.clone();
+
+    // If we were sketching on a face, we need the original face id.
+    if let SketchSurface::Face(face) = sketch_group.on {
+        sketch_group.id = face.sketch_group_id;
+    }
+
     let solid3d_info = args
         .send_modeling_cmd(
             id,
@@ -115,17 +122,34 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
     let mut new_value: Vec<ExtrudeSurface> = Vec::new();
     for path in sketch_group.value.iter() {
         if let Some(Some(actual_face_id)) = face_id_map.get(&path.get_base().geo_meta.id) {
-            let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
-                position: sketch_group.position, // TODO should be for the extrude surface
-                rotation: sketch_group.rotation, // TODO should be for the extrude surface
-                face_id: *actual_face_id,
-                name: path.get_base().name.clone(),
-                geo_meta: GeoMeta {
-                    id: path.get_base().geo_meta.id,
-                    metadata: path.get_base().geo_meta.metadata.clone(),
-                },
-            });
-            new_value.push(extrude_surface);
+            match path {
+                Path::TangentialArc { .. } | Path::TangentialArcTo { .. } => {
+                    let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::executor::ExtrudeArc {
+                        position: sketch_group.position, // TODO should be for the extrude surface
+                        rotation: sketch_group.rotation, // TODO should be for the extrude surface
+                        face_id: *actual_face_id,
+                        name: path.get_base().name.clone(),
+                        geo_meta: GeoMeta {
+                            id: path.get_base().geo_meta.id,
+                            metadata: path.get_base().geo_meta.metadata.clone(),
+                        },
+                    });
+                    new_value.push(extrude_surface);
+                }
+                Path::Base { .. } | Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } => {
+                    let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
+                        position: sketch_group.position, // TODO should be for the extrude surface
+                        rotation: sketch_group.rotation, // TODO should be for the extrude surface
+                        face_id: *actual_face_id,
+                        name: path.get_base().name.clone(),
+                        geo_meta: GeoMeta {
+                            id: path.get_base().geo_meta.id,
+                            metadata: path.get_base().geo_meta.metadata.clone(),
+                        },
+                    });
+                    new_value.push(extrude_surface);
+                }
+            }
         }
     }
 
@@ -135,6 +159,7 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
         // sketch group.
         id: sketch_group.id,
         value: new_value,
+        sketch_group_values: sketch_group.value.clone(),
         height: length,
         position: sketch_group.position,
         rotation: sketch_group.rotation,

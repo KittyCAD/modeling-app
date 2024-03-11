@@ -28,7 +28,8 @@ export const homeCommandBarConfig: CommandSetConfig<
       name: {
         inputType: 'options',
         required: true,
-        options: (context) =>
+        options: [],
+        optionsFromContext: (context) =>
           context.projects.map((p) => ({
             name: p.name!,
             value: p.name!,
@@ -43,7 +44,7 @@ export const homeCommandBarConfig: CommandSetConfig<
       name: {
         inputType: 'string',
         required: true,
-        defaultValue: (context) => context.defaultProjectName,
+        defaultValueFromContext: (context) => context.defaultProjectName,
       },
     },
   },
@@ -55,7 +56,8 @@ export const homeCommandBarConfig: CommandSetConfig<
       name: {
         inputType: 'options',
         required: true,
-        options: (context) =>
+        options: [],
+        optionsFromContext: (context) =>
           context.projects.map((p) => ({
             name: p.name!,
             value: p.name!,
@@ -71,7 +73,8 @@ export const homeCommandBarConfig: CommandSetConfig<
       oldName: {
         inputType: 'options',
         required: true,
-        options: (context) =>
+        options: [],
+        optionsFromContext: (context) =>
           context.projects.map((p) => ({
             name: p.name!,
             value: p.name!,
@@ -80,7 +83,7 @@ export const homeCommandBarConfig: CommandSetConfig<
       newName: {
         inputType: 'string',
         required: true,
-        defaultValue: (context) => context.defaultProjectName,
+        defaultValueFromContext: (context) => context.defaultProjectName,
       },
     },
   },
