@@ -136,7 +136,7 @@ export const executor = async (
   return _programMemory
 }
 
-const getSettingsState = import('components/GlobalStateProvider').then(
+const getSettingsState = import('components/SettingsAuthStateProvider').then(
   (module) => module.getSettingsState
 )
 

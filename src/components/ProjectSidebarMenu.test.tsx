@@ -4,7 +4,7 @@ import ProjectSidebarMenu from './ProjectSidebarMenu'
 import { type ProjectWithEntryPointMetadata } from 'lib/types'
 import { SettingsAuthStateProvider } from './SettingsAuthStateProvider'
 import { APP_NAME } from 'lib/constants'
-import { vi } from 'vitest'
+import CommandBarProvider from './CommandBar/CommandBar'
 
 const now = new Date()
 const projectWellFormed = {

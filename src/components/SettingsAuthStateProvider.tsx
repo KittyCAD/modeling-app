@@ -36,6 +36,12 @@ type SettingsAuthContext = {
   settings: MachineContext<typeof settingsMachine>
 }
 
+// a little hacky for sure, open to changing it
+// this implies that we should only even have one instance of this provider mounted at any one time
+// but I think that's a safe assumption
+let settingsStateRef: (typeof settingsMachine)['context'] | undefined
+export const getSettingsState = () => settingsStateRef
+
 export const SettingsAuthStateContext = createContext({} as SettingsAuthContext)
 
 export const SettingsAuthStateProvider = ({
@@ -59,27 +65,31 @@ export const SettingsAuthStateProvider = ({
     retrievedSettings.current.settings
   )
 
-  const [settingsState, settingsSend] = useMachine(settingsMachine, {
-    context: persistedSettings,
-    actions: {
-      toastSuccess: (context, event) => {
-        const truncatedNewValue =
-          'data' in event && event.data instanceof Object
-            ? (context[Object.keys(event.data)[0] as keyof typeof context]
-                .toString()
-                .substring(0, 28) as any)
-            : undefined
-        toast.success(
-          event.type +
-            (truncatedNewValue
-              ? ` to "${truncatedNewValue}${
-                  truncatedNewValue.length === 28 ? '...' : ''
-                }"`
-              : '')
-        )
+  const [settingsState, settingsSend, settingsActor] = useMachine(
+    settingsMachine,
+    {
+      context: persistedSettings,
+      actions: {
+        toastSuccess: (context, event) => {
+          const truncatedNewValue =
+            'data' in event && event.data instanceof Object
+              ? (context[Object.keys(event.data)[0] as keyof typeof context]
+                  .toString()
+                  .substring(0, 28) as any)
+              : undefined
+          toast.success(
+            event.type +
+              (truncatedNewValue
+                ? ` to "${truncatedNewValue}${
+                    truncatedNewValue.length === 28 ? '...' : ''
+                  }"`
+                : '')
+          )
+        },
       },
-    },
-  })
+    }
+  )
+  settingsStateRef = settingsState.context
 
   // If the app is running in the Tauri context,
   // try to read the settings from a file
@@ -155,6 +165,7 @@ export const SettingsAuthStateProvider = ({
     state: settingsState,
     send: settingsSend,
     commandBarConfig: settingsCommandBarConfig,
+    actor: settingsActor,
   })
 
   // Listen for changes to the system theme and update the app theme accordingly
@@ -174,7 +185,7 @@ export const SettingsAuthStateProvider = ({
   }, [settingsState.context])
 
   // Auth machine setup
-  const [authState, authSend] = useMachine(authMachine, {
+  const [authState, authSend, authActor] = useMachine(authMachine, {
     actions: {
       goToSignInPage: () => {
         navigate(paths.SIGN_IN)
@@ -194,6 +205,7 @@ export const SettingsAuthStateProvider = ({
     state: authState,
     send: authSend,
     commandBarConfig: authCommandBarConfig,
+    actor: authActor,
   })
 
   return (
