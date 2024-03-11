@@ -683,48 +683,48 @@ export class CameraControls {
     targetAngle = -Math.PI / 2,
     duration = 500
   ): Promise<void> {
-    // should tween the camera so that it has an xPosition of 0, and forcing it's yPosition to be negative
-    // zPosition should stay the same
-    const xyRadius = Math.sqrt(
-      (this.target.x - this.camera.position.x) ** 2 +
-        (this.target.y - this.camera.position.y) ** 2
-    )
-    const xyAngle = Math.atan2(
-      this.camera.position.y - this.target.y,
-      this.camera.position.x - this.target.x
-    )
-    this._isCamMovingCallback(true, true)
     return new Promise((resolve) => {
+      // should tween the camera so that it has an xPosition of 0, and forcing it's yPosition to be negative
+      // zPosition should stay the same
+      const xyRadius = Math.sqrt(
+        (this.target.x - this.camera.position.x) ** 2 +
+          (this.target.y - this.camera.position.y) ** 2
+      )
+      const xyAngle = Math.atan2(
+        this.camera.position.y - this.target.y,
+        this.camera.position.x - this.target.x
+      )
+      const camAtTime = (obj: { angle: number }) => {
+        const x = xyRadius * Math.cos(obj.angle)
+        const y = xyRadius * Math.sin(obj.angle)
+        this.camera.position.set(
+          this.target.x + x,
+          this.target.y + y,
+          this.camera.position.z
+        )
+        this.update()
+        this.onCameraChange()
+      }
+      const onComplete = (obj: { angle: number }) => {
+        camAtTime(obj)
+        this._isCamMovingCallback(false, true)
+
+        // resolve after a couple of frames
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => resolve())
+        })
+      }
+      this._isCamMovingCallback(true, true)
+
+      if (isReducedMotion()) {
+        onComplete({ angle: targetAngle })
+        return
+      }
+
       new TWEEN.Tween({ angle: xyAngle })
         .to({ angle: targetAngle }, duration)
-        .onUpdate((obj) => {
-          const x = xyRadius * Math.cos(obj.angle)
-          const y = xyRadius * Math.sin(obj.angle)
-          this.camera.position.set(
-            this.target.x + x,
-            this.target.y + y,
-            this.camera.position.z
-          )
-          this.update()
-          this.onCameraChange()
-        })
-        .onComplete((obj) => {
-          const x = xyRadius * Math.cos(obj.angle)
-          const y = xyRadius * Math.sin(obj.angle)
-          this.camera.position.set(
-            this.target.x + x,
-            this.target.y + y,
-            this.camera.position.z
-          )
-          this.update()
-          this.onCameraChange()
-          this._isCamMovingCallback(false, true)
-
-          // resolve after a couple of frames
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => resolve())
-          })
-        })
+        .onUpdate(camAtTime)
+        .onComplete(onComplete)
         .start()
     })
   }
