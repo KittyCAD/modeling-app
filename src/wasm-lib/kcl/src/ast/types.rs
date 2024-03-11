@@ -1128,7 +1128,14 @@ impl CallExpression {
 
                 // Call the stdlib function
                 let p = func.function().clone().body;
-                let results = crate::executor::execute(p, &mut fn_memory, BodyType::Block, ctx).await?;
+                let results = match crate::executor::execute(p, &mut fn_memory, BodyType::Block, ctx).await {
+                    Ok(results) => results,
+                    Err(err) => {
+                        // We need to override the source ranges so we don't get the embedded kcl
+                        // function from the stdlib.
+                        return Err(err.override_source_ranges(vec![self.into()]));
+                    }
+                };
                 let out = results.return_;
                 let result = out.ok_or_else(|| {
                     KclError::UndefinedValue(KclErrorDetails {
