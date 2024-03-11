@@ -1316,3 +1316,58 @@ const part002 = startSketchOn(part001, "end")
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_circle_tagged.png", &result, 1.0);
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_stdlib_kcl_error_circle() {
+    let code = r#"// Mounting Plate
+// A flat piece of material, often metal or plastic, that serves as a support or base for attaching, securing, or mounting various types of equipment, devices, or components. 
+
+// Create a function that defines the body width and length of the mounting plate. Tag the corners so they can be passed through the fillet function.
+fn rectShape = (pos, w, l) => {
+  const rr = startSketchOn('XY')
+  |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
+  |> lineTo({
+       to: [pos[0] + w / 2, pos[1] - (l / 2)],
+       tag: "edge1"
+     }, %)
+  |> lineTo({
+       to: [pos[0] + w / 2, pos[1] + l / 2],
+       tag: "edge2"
+     }, %)
+  |> lineTo({
+       to: [pos[0] - (w / 2), pos[1] + l / 2],
+       tag: "edge3"
+     }, %)
+  |> close(%, "edge4")
+  return rr
+}
+
+// Define the hole radius and x, y location constants
+const holeRadius = 1
+const holeIndex = 6
+
+// Create the mounting plate extrusion, holes, and fillets
+const part = rectShape([0, 0], 20, 20)
+  |> hole(circle('XY', [-holeIndex, holeIndex], holeRadius), %)
+  |> hole(circle('XY', [holeIndex, holeIndex], holeRadius), %)
+  |> hole(circle('XY', [-holeIndex, -holeIndex], holeRadius), %)
+  |> hole(circle('XY', [holeIndex, -holeIndex], holeRadius), %)
+  |> extrude(2, %)
+  |> fillet({
+       radius: 4,
+       tags: [
+          getNextAdjacentEdge("edge1", %),
+          getNextAdjacentEdge("edge2", %),
+          getNextAdjacentEdge("edge3", %),
+          getNextAdjacentEdge("edge4", %)
+       ]
+     }, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([987, 1036])], message: "MemberExpression array is not an array: UserVal(UserVal { value: String(\"XY\"), meta: [Metadata { source_range: SourceRange([994, 998]) }] })" }"#
+    );
+}
