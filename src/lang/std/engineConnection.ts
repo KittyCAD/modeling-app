@@ -1446,6 +1446,9 @@ export class EngineCommandManager {
     if (this.engineConnection === undefined) {
       return Promise.resolve()
     }
+    if (!this.engineConnection?.isReady()) {
+      return Promise.resolve()
+    }
     if (id === undefined) {
       throw new Error('id is undefined')
     }

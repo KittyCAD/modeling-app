@@ -34,7 +34,7 @@ export default class Server {
       fileSystemManager
     )
     if (type_ === 'copilot') {
-      if (!token) {
+      if (!token || token === '') {
         throw new Error('auth token is required for copilot')
       }
       await copilotLspRun(config, token)
