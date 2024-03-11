@@ -6,6 +6,7 @@ import init, {
 } from 'wasm-lib/pkg/wasm_lib'
 import { FromServer, IntoServer } from './codec'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
+import { initPromise as _ } from 'lang/wasm'
 
 export default class Server {
   readonly initOutput: InitOutput
