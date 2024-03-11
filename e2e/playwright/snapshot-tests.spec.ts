@@ -153,6 +153,7 @@ const part001 = startSketchOn('-XZ')
       const isJson = fileContents.includes('buffers')
       let contents = fileContents
       let reWriteLocation = downloadLocation
+      let uri = downloadLocation.split('/').pop()
       if (!isJson) {
         uri = downloadLocation.split('/').pop()
       }
