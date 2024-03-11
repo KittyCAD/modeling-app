@@ -25,7 +25,6 @@ import { useStore } from 'useStore'
 import {
   Selections,
   canExtrudeSelection,
-  codeToIdSelections,
   handleSelectionBatch,
   isSelectionLastLine,
   isSketchPipe,
@@ -42,13 +41,12 @@ import {
 } from 'clientSideScene/sceneEntities'
 import { sketchOnExtrudedFace, startSketchOnDefault } from 'lang/modifyAst'
 import { Program, parse } from 'lang/wasm'
-import { getNodePathFromSourceRange, isSingleCursorInPipe } from 'lang/queryAst'
+import { isSingleCursorInPipe } from 'lang/queryAst'
 import { TEST } from 'env'
 import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
 import { EditorSelection } from '@uiw/react-codemirror'
-import { v4 as uuidv4 } from 'uuid'
 import { Vector3 } from 'three'
 
 type MachineContext<T extends AnyStateMachine> = {
