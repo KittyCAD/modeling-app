@@ -232,21 +232,6 @@ export const Toolbar = () => {
             </ActionButton>
           </li>
         )}
-        <li className="contents">
-          <ActionButton
-            Element="button"
-            className="text-sm"
-            onClick={async () => {
-              send({ type: 'Sketch On Face' })
-            }}
-            icon={{
-              icon: 'sketch',
-              bgClassName,
-            }}
-          >
-            sketchOnFace
-          </ActionButton>
-        </li>
       </ul>
     )
   }

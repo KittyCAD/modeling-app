@@ -282,55 +282,6 @@ export const ModelingMachineProvider = ({
             onDrag: () => {},
           })
         },
-
-        'animate-to-face2': async ({ selectionRanges }) => {
-          const pathToNode = getNodePathFromSourceRange(
-            kclManager.ast,
-            selectionRanges.codeBasedSelections[0].range
-          )
-          const { modifiedAst, pathToNode: pathToNewSketchNode } =
-            sketchOnExtrudedFace(
-              kclManager.ast,
-              pathToNode,
-              kclManager.programMemory
-            )
-
-          await kclManager.executeAstMock(modifiedAst, { updates: 'code' })
-
-          const selectionToEngine = codeToIdSelections(
-            selectionRanges.codeBasedSelections
-          )
-          const faceId = selectionToEngine?.[0].id
-          if (!faceId) throw new Error('faceId')
-
-          const faceInfo: Models['FaceIsPlanar_type'] = (
-            await engineCommandManager.sendSceneCommand({
-              type: 'modeling_cmd_req',
-              cmd_id: uuidv4(),
-              cmd: {
-                type: 'face_is_planar',
-                object_id: faceId,
-              },
-            })
-          )?.data?.data
-          if (!faceInfo?.origin || !faceInfo?.z_axis)
-            throw new Error('faceInfo')
-          const { z_axis, origin } = faceInfo
-          const normal = new Vector3(z_axis.x, z_axis.y, z_axis.z)
-          const quaternion = getQuaternionFromZAxis(normal)
-          const target = new Vector3(origin.x, origin.y, origin.z)
-          await sceneInfra.camControls.tweenCameraToQuaternion(
-            quaternion,
-            target
-          )
-          return {
-            sketchPathToNode: pathToNewSketchNode,
-            sketchNormalBackUp: [normal.x, normal.y, normal.z],
-            sketchPosition: [origin.x, origin.y, origin.z].map(
-              (num) => num / sceneInfra._baseUnitMultiplier
-            ) as [number, number, number],
-          }
-        },
         'animate-to-face': async (_, { data }) => {
           if (data.type === 'extrudeFace') {
             const { modifiedAst, pathToNode: pathToNewSketchNode } =
