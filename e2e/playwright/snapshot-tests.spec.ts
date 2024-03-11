@@ -127,14 +127,11 @@ const part001 = startSketchOn('-XZ')
     }
 
     const [downloadPromise1, downloadResolve1] = getPromiseAndResolve()
-    const [downloadPromise2, downloadResolve2] = getPromiseAndResolve()
     let downloadCnt = 0
 
     page.on('download', async (download) => {
       if (downloadCnt === 0) {
         downloadResolve1(download)
-      } else if (downloadCnt === 1) {
-        downloadResolve2(download)
       }
       downloadCnt++
     })
@@ -147,23 +144,16 @@ const part001 = startSketchOn('-XZ')
         'storage' in output ? output.storage : ''
       }${extra}.${isImage ? 'png' : output.type}`
     const downloadLocation = downloadLocationer()
-    const downloadLocation2 = downloadLocationer('-2')
 
     if (output.type === 'gltf' && output.storage === 'standard') {
-      // wait for second download
-      const download2 = await downloadPromise2
       await download.saveAs(downloadLocation)
-      await download2.saveAs(downloadLocation2)
 
       // rewrite uri to reference our file name
       const fileContents = await fsp.readFile(downloadLocation, 'utf-8')
       const isJson = fileContents.includes('buffers')
       let contents = fileContents
       let reWriteLocation = downloadLocation
-      let uri = downloadLocation2.split('/').pop()
       if (!isJson) {
-        contents = await fsp.readFile(downloadLocation2, 'utf-8')
-        reWriteLocation = downloadLocation2
         uri = downloadLocation.split('/').pop()
       }
       contents = contents.replace(/"uri": ".*"/g, `"uri": "${uri}"`)
