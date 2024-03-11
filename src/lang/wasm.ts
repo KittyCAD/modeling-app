@@ -284,9 +284,11 @@ export function programMemoryInit(): ProgramMemory {
 }
 
 export async function copilotLspRun(config: ServerConfig, token: string) {
+  await initPromise
   await copilot_lsp_run(config, token)
 }
 
 export async function kclLspRun(config: ServerConfig) {
+  await initPromise
   await kcl_lsp_run(config)
 }
