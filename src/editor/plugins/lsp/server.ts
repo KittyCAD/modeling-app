@@ -1,12 +1,7 @@
-import init, {
-  copilot_lsp_run,
-  InitOutput,
-  kcl_lsp_run,
-  ServerConfig,
-} from 'wasm-lib/pkg/wasm_lib'
+import init, { InitOutput, ServerConfig } from 'wasm-lib/pkg/wasm_lib'
 import { FromServer, IntoServer } from './codec'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
-import { initPromise as _ } from 'lang/wasm'
+import { copilotLspRun, kclLspRun } from 'lang/wasm'
 
 export default class Server {
   readonly initOutput: InitOutput
@@ -42,9 +37,9 @@ export default class Server {
       if (!token) {
         throw new Error('auth token is required for copilot')
       }
-      await copilot_lsp_run(config, token)
+      await copilotLspRun(config, token)
     } else if (type_ === 'kcl') {
-      await kcl_lsp_run(config)
+      await kclLspRun(config)
     }
   }
 }

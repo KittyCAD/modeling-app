@@ -7,6 +7,9 @@ import init, {
   is_points_ccw,
   get_tangential_arc_to_info,
   program_memory_init,
+  ServerConfig,
+  copilot_lsp_run,
+  kcl_lsp_run,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
@@ -278,4 +281,12 @@ export function programMemoryInit(): ProgramMemory {
     console.log(kclError)
     throw kclError
   }
+}
+
+export async function copilotLspRun(config: ServerConfig, token: string) {
+  await copilot_lsp_run(config, token)
+}
+
+export async function kclLspRun(config: ServerConfig) {
+  await kcl_lsp_run(config)
 }
