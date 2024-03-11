@@ -1084,11 +1084,17 @@ impl CallExpression {
             }
             FunctionKind::Std(func) => {
                 let function_expression = func.function();
-                if fn_args.len() != function_expression.params.len() {
+                let parts = function_expression.clone().into_parts().map_err(|e| {
+                    KclError::Semantic(KclErrorDetails {
+                        message: format!("Error getting parts of function: {}", e),
+                        source_ranges: vec![self.into()],
+                    })
+                })?;
+                if fn_args.len() < parts.params_required.len() || fn_args.len() > function_expression.params.len() {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: format!(
                             "this function expected {} arguments, got {}",
-                            function_expression.params.len(),
+                            parts.params_required.len(),
                             fn_args.len(),
                         ),
                         source_ranges: vec![self.into()],
@@ -1097,12 +1103,27 @@ impl CallExpression {
 
                 // Add the arguments to the memory.
                 let mut fn_memory = memory.clone();
-                for (index, param) in function_expression.params.iter().enumerate() {
+                for (index, param) in parts.params_required.iter().enumerate() {
                     fn_memory.add(
                         &param.identifier.name,
                         fn_args.get(index).unwrap().clone(),
                         param.identifier.clone().into(),
                     )?;
+                }
+                // Add the optional arguments to the memory.
+                for (index, param) in parts.params_optional.iter().enumerate() {
+                    if let Some(arg) = fn_args.get(index + parts.params_required.len()) {
+                        fn_memory.add(&param.identifier.name, arg.clone(), param.identifier.clone().into())?;
+                    } else {
+                        fn_memory.add(
+                            &param.identifier.name,
+                            MemoryItem::UserVal(UserVal {
+                                value: serde_json::value::Value::Null,
+                                meta: Default::default(),
+                            }),
+                            param.identifier.clone().into(),
+                        )?;
+                    }
                 }
 
                 // Call the stdlib function

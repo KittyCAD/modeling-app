@@ -132,7 +132,11 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
             if i > 0 {
                 signature.push_str(", ");
             }
-            signature.push_str(&format!("{}: {}", arg.name, arg.type_));
+            if arg.required {
+                signature.push_str(&format!("{}: {}", arg.name, arg.type_));
+            } else {
+                signature.push_str(&format!("{}?: {}", arg.name, arg.type_));
+            }
         }
         signature.push(')');
         if let Some(return_value) = self.return_value() {
