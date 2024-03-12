@@ -486,7 +486,7 @@ impl LanguageServer for Backend {
             return;
         }
 
-        // In wasm this needs to be unsafe since fucking reqwests doesn't implement Send for wasm.
+        // In wasm this needs to be spawn_local since fucking reqwests doesn't implement Send for wasm.
         #[cfg(target_arch = "wasm32")]
         {
             let be = self.clone();
