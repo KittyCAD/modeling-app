@@ -167,7 +167,7 @@ impl ServerConfig {
 
 // NOTE: input needs to be an AsyncIterator<Uint8Array, never, void> specifically
 #[wasm_bindgen]
-pub async fn kcl_lsp_run(config: ServerConfig, token: String) -> Result<(), JsValue> {
+pub async fn kcl_lsp_run(config: ServerConfig, token: String, is_dev: bool) -> Result<(), JsValue> {
     console_error_panic_hook::set_once();
 
     let ServerConfig {
@@ -183,13 +183,27 @@ pub async fn kcl_lsp_run(config: ServerConfig, token: String) -> Result<(), JsVa
     // we have a test for it.
     let token_types = kcl_lib::token::TokenType::all_semantic_token_types().unwrap();
 
-    let zoo_client = kittycad::Client::new(token);
+    let mut zoo_client = kittycad::Client::new(token);
+    if is_dev {
+        zoo_client.set_base_url("https://api.dev.zoo.dev");
+    }
     // Check if we can send telememtry for this user.
-    let privacy_settings = zoo_client
-        .users()
-        .get_privacy_settings()
-        .await
-        .map_err(|e| e.to_string())?;
+    let privacy_settings = match zoo_client.users().get_privacy_settings().await {
+        Ok(privacy_settings) => privacy_settings,
+        Err(err) => {
+            // In the case of dev we don't always have a sub set, but prod we should.
+            if err
+                .to_string()
+                .contains("The modeling app subscription type is missing.")
+            {
+                kittycad::types::PrivacySettings {
+                    can_train_on_data: true,
+                }
+            } else {
+                return Err(err.to_string().into());
+            }
+        }
+    };
 
     let (service, socket) = LspService::new(|client| kcl_lib::lsp::kcl::Backend {
         client,
@@ -236,7 +250,7 @@ pub async fn kcl_lsp_run(config: ServerConfig, token: String) -> Result<(), JsVa
 
 // NOTE: input needs to be an AsyncIterator<Uint8Array, never, void> specifically
 #[wasm_bindgen]
-pub async fn copilot_lsp_run(config: ServerConfig, token: String) -> Result<(), JsValue> {
+pub async fn copilot_lsp_run(config: ServerConfig, token: String, is_dev: bool) -> Result<(), JsValue> {
     console_error_panic_hook::set_once();
 
     let ServerConfig {
@@ -245,6 +259,11 @@ pub async fn copilot_lsp_run(config: ServerConfig, token: String) -> Result<(), 
         fs,
     } = config;
 
+    let mut zoo_client = kittycad::Client::new(token);
+    if is_dev {
+        zoo_client.set_base_url("https://api.dev.zoo.dev");
+    }
+
     let (service, socket) = LspService::build(|client| kcl_lib::lsp::copilot::Backend {
         client,
         fs: kcl_lib::fs::FileManager::new(fs),
@@ -252,7 +271,7 @@ pub async fn copilot_lsp_run(config: ServerConfig, token: String) -> Result<(), 
         current_code_map: Default::default(),
         editor_info: Arc::new(RwLock::new(kcl_lib::lsp::copilot::types::CopilotEditorInfo::default())),
         cache: kcl_lib::lsp::copilot::cache::CopilotCache::new(),
-        zoo_client: kittycad::Client::new(token),
+        zoo_client,
     })
     .custom_method("setEditorInfo", kcl_lib::lsp::copilot::Backend::set_editor_info)
     .custom_method(
