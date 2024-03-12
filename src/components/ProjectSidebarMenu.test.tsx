@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
 import { type ProjectWithEntryPointMetadata } from 'lib/types'
-import { GlobalStateProvider } from './GlobalStateProvider'
+import { SettingsAuthProvider } from './SettingsAuthProvider'
 import { APP_NAME } from 'lib/constants'
 import { vi } from 'vitest'
 
@@ -41,9 +41,9 @@ describe('ProjectSidebarMenu tests', () => {
   test('Renders the project name', () => {
     render(
       <BrowserRouter>
-        <GlobalStateProvider>
+        <SettingsAuthProvider>
           <ProjectSidebarMenu project={projectWellFormed} />
-        </GlobalStateProvider>
+        </SettingsAuthProvider>
       </BrowserRouter>
     )
 
@@ -60,9 +60,9 @@ describe('ProjectSidebarMenu tests', () => {
   test('Renders app name if given no project', () => {
     render(
       <BrowserRouter>
-        <GlobalStateProvider>
+        <SettingsAuthProvider>
           <ProjectSidebarMenu />
-        </GlobalStateProvider>
+        </SettingsAuthProvider>
       </BrowserRouter>
     )
 
@@ -74,9 +74,9 @@ describe('ProjectSidebarMenu tests', () => {
   test('Renders as a link if set to do so', () => {
     render(
       <BrowserRouter>
-        <GlobalStateProvider>
+        <SettingsAuthProvider>
           <ProjectSidebarMenu project={projectWellFormed} renderAsLink={true} />
-        </GlobalStateProvider>
+        </SettingsAuthProvider>
       </BrowserRouter>
     )
 

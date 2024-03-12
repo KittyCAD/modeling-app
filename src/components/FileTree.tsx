@@ -15,9 +15,18 @@ import { FILE_EXT, sortProject } from 'lib/tauriFS'
 import { CustomIcon } from './CustomIcon'
 import { kclManager } from 'lang/KclSingleton'
 import { useDocumentHasFocus } from 'hooks/useDocumentHasFocus'
+import { useLspContext } from './LspProvider'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
+}
+
+// an OS-agnostic way to get the basename of the path.
+export function basename(path: string): string {
+  // Regular expression to match the last portion of the path, taking into account both POSIX and Windows delimiters
+  const re = /[^\\/]+$/
+  const match = path.match(re)
+  return match ? match[0] : ''
 }
 
 function RenameForm({
@@ -147,6 +156,7 @@ const FileTreeItem = ({
   level?: number
 }) => {
   const { send, context } = useFileContext()
+  const { lspClients } = useLspContext()
   const navigate = useNavigate()
   const [isRenaming, setIsRenaming] = useState(false)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
@@ -174,6 +184,28 @@ const FileTreeItem = ({
           kclManager.code
       )
     } else {
+      // Let the lsp servers know we closed a file.
+      const currentFilePath = basename(currentFile?.path || 'main.kcl')
+      lspClients.forEach((lspClient) => {
+        lspClient.textDocumentDidClose({
+          textDocument: {
+            uri: `file:///${currentFilePath}`,
+          },
+        })
+      })
+      const newFilePath = basename(fileOrDir.path)
+      // Then let the clients know we opened a file.
+      lspClients.forEach((lspClient) => {
+        lspClient.textDocumentDidOpen({
+          textDocument: {
+            uri: `file:///${newFilePath}`,
+            languageId: 'kcl',
+            version: 1,
+            text: '',
+          },
+        })
+      })
+
       // Open kcl files
       navigate(`${paths.FILE}/${encodeURIComponent(fileOrDir.path)}`)
     }

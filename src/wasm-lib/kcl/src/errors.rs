@@ -123,6 +123,25 @@ impl KclError {
             data: None,
         }
     }
+
+    pub fn override_source_ranges(&self, source_ranges: Vec<SourceRange>) -> Self {
+        let mut new = self.clone();
+        match &mut new {
+            KclError::Lexical(e) => e.source_ranges = source_ranges,
+            KclError::Syntax(e) => e.source_ranges = source_ranges,
+            KclError::Semantic(e) => e.source_ranges = source_ranges,
+            KclError::Type(e) => e.source_ranges = source_ranges,
+            KclError::Unimplemented(e) => e.source_ranges = source_ranges,
+            KclError::Unexpected(e) => e.source_ranges = source_ranges,
+            KclError::ValueAlreadyDefined(e) => e.source_ranges = source_ranges,
+            KclError::UndefinedValue(e) => e.source_ranges = source_ranges,
+            KclError::InvalidExpression(e) => e.source_ranges = source_ranges,
+            KclError::Engine(e) => e.source_ranges = source_ranges,
+            KclError::Internal(e) => e.source_ranges = source_ranges,
+        }
+
+        new
+    }
 }
 
 /// This is different than to_string() in that it will serialize the Error

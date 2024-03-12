@@ -22,7 +22,7 @@ import {
 import { metadata } from 'tauri-plugin-fs-extra-api'
 import DownloadAppBanner from './components/DownloadAppBanner'
 import { WasmErrBanner } from './components/WasmErrBanner'
-import { GlobalStateProvider } from './components/GlobalStateProvider'
+import { SettingsAuthProvider } from './components/SettingsAuthProvider'
 import {
   SETTINGS_PERSIST_KEY,
   settingsMachine,
@@ -38,6 +38,7 @@ import { sep } from '@tauri-apps/api/path'
 import { paths } from 'lib/paths'
 import { IndexLoaderData, HomeLoaderData } from 'lib/types'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
+import LspProvider from 'components/LspProvider'
 
 export const BROWSER_FILE_NAME = 'new'
 
@@ -52,7 +53,9 @@ const addGlobalContextToElements = (
           ...route,
           element: (
             <CommandBarProvider>
-              <GlobalStateProvider>{route.element}</GlobalStateProvider>
+              <SettingsAuthProvider>
+                <LspProvider>{route.element}</LspProvider>
+              </SettingsAuthProvider>
             </CommandBarProvider>
           ),
         }

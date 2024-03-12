@@ -29,7 +29,7 @@ import {
   getSortIcon,
 } from '../lib/sorting'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { DEFAULT_PROJECT_NAME } from 'machines/settingsMachine'
 import { sep } from '@tauri-apps/api/path'
@@ -50,7 +50,7 @@ const Home = () => {
       context: { defaultDirectory, defaultProjectName },
       send: sendToSettings,
     },
-  } = useGlobalStateContext()
+  } = useSettingsAuthContext()
 
   // Set the default directory if it's been updated
   // during the loading of the home page. This is wrapped

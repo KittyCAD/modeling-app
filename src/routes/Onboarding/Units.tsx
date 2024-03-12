@@ -5,7 +5,7 @@ import { SettingsSection } from '../Settings'
 import { Toggle } from '../../components/Toggle/Toggle'
 import { useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { UnitSystem } from 'machines/settingsMachine'
 
 export default function Units() {
@@ -16,7 +16,7 @@ export default function Units() {
       send,
       context: { unitSystem, baseUnit },
     },
-  } = useGlobalStateContext()
+  } = useSettingsAuthContext()
 
   return (
     <div className="fixed grid place-content-center inset-0 bg-chalkboard-110/50 z-50">

@@ -7,6 +7,9 @@ import init, {
   is_points_ccw,
   get_tangential_arc_to_info,
   program_memory_init,
+  ServerConfig,
+  copilot_lsp_run,
+  kcl_lsp_run,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
@@ -137,7 +140,7 @@ export const executor = async (
   return _programMemory
 }
 
-const getSettingsState = import('components/GlobalStateProvider').then(
+const getSettingsState = import('components/SettingsAuthProvider').then(
   (module) => module.getSettingsState
 )
 
@@ -278,5 +281,29 @@ export function programMemoryInit(): ProgramMemory {
 
     console.log(kclError)
     throw kclError
+  }
+}
+
+export async function copilotLspRun(config: ServerConfig, token: string) {
+  try {
+    console.log('starting copilot lsp')
+    await copilot_lsp_run(config, token)
+  } catch (e: any) {
+    console.log('copilot lsp failed', e)
+    // We make it restart recursively so that if it ever dies after like
+    // 8 hours or something it will come back to life.
+    await copilotLspRun(config, token)
+  }
+}
+
+export async function kclLspRun(config: ServerConfig) {
+  try {
+    console.log('start kcl lsp')
+    await kcl_lsp_run(config)
+  } catch (e: any) {
+    console.log('kcl lsp failed', e)
+    // We make it restart recursively so that if it ever dies after like
+    // 8 hours or something it will come back to life.
+    await kclLspRun(config)
   }
 }

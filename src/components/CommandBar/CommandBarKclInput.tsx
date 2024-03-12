@@ -2,7 +2,7 @@ import { Completion } from '@codemirror/autocomplete'
 import { EditorState, EditorView, useCodeMirror } from '@uiw/react-codemirror'
 import { CustomIcon } from 'components/CustomIcon'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { CommandArgument, KclCommandValue } from 'lib/commandTypes'
 import { getSystemTheme } from 'lib/theme'
 import { useCalculateKclExpression } from 'lib/useCalculateKclExpression'
@@ -29,7 +29,7 @@ function CommandBarKclInput({
   const previouslySetValue = commandBarState.context.argumentsToSubmit[
     arg.name
   ] as KclCommandValue | undefined
-  const { settings } = useGlobalStateContext()
+  const { settings } = useSettingsAuthContext()
   const defaultValue = (arg.defaultValue as string) || ''
   const [value, setValue] = useState(
     previouslySetValue?.valueText || defaultValue || ''

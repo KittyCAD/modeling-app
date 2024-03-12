@@ -1,4 +1,4 @@
-import { useCallback, MouseEventHandler } from 'react'
+import { useCallback, MouseEventHandler, useEffect } from 'react'
 import { DebugPanel } from './components/DebugPanel'
 import { v4 as uuidv4 } from 'uuid'
 import { PaneType, useStore } from './useStore'
@@ -22,7 +22,7 @@ import { getNormalisedCoordinates } from './lib/utils'
 import { useLoaderData, useNavigate } from 'react-router-dom'
 import { type IndexLoaderData } from 'lib/types'
 import { paths } from 'lib/paths'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { CodeMenu } from 'components/CodeMenu'
 import { TextEditor } from 'components/TextEditor'
@@ -32,11 +32,17 @@ import { engineCommandManager } from './lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { isTauri } from 'lib/isTauri'
+import { useLspContext } from 'components/LspProvider'
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
+  const { onProjectOpen } = useLspContext()
+
+  useEffect(() => {
+    onProjectOpen(project || null, file || null)
+  }, [])
 
   useHotKeyListener()
   const {
@@ -53,7 +59,7 @@ export function App() {
     streamDimensions: s.streamDimensions,
   }))
 
-  const { settings } = useGlobalStateContext()
+  const { settings } = useSettingsAuthContext()
   const { showDebugPanel, onboardingStatus, theme } = settings?.context || {}
   const { state, send } = useModelingContext()
 

@@ -2,7 +2,7 @@ import { MouseEventHandler, useEffect, useRef, useState } from 'react'
 import { useStore } from '../useStore'
 import { getNormalisedCoordinates } from '../lib/utils'
 import Loading from './Loading'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useKclContext } from 'lang/KclSingleton'
 import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
@@ -27,7 +27,7 @@ export const Stream = ({ className = '' }: { className?: string }) => {
     setDidDragInStream: s.setDidDragInStream,
     streamDimensions: s.streamDimensions,
   }))
-  const { settings } = useGlobalStateContext()
+  const { settings } = useSettingsAuthContext()
   const { state } = useModelingContext()
   const { isExecuting } = useKclContext()
   const { overallState } = useNetworkStatus()
