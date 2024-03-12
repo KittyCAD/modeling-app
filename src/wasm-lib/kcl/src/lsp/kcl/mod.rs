@@ -1,11 +1,13 @@
 //! Functions for the `kcl` lsp server.
 
 use std::collections::HashMap;
+use std::str::FromStr;
 
 use anyhow::Result;
 #[cfg(feature = "cli")]
 use clap::Parser;
 use dashmap::DashMap;
+use sha2::Digest;
 use tower_lsp::{
     jsonrpc::Result as RpcResult,
     lsp_types::{
@@ -295,6 +297,16 @@ impl Backend {
             .await
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
+        // Hash the user's id.
+        // Create a SHA-256 object
+        let mut hasher = sha2::Sha256::new();
+        // Write input message
+        hasher.update(user.id);
+        // Read hash digest and consume hasher
+        let result = hasher.finalize();
+        // Get the hash as a string.
+        let user_id_hash = format!("{:x}", result);
+
         // Get the workspace folders.
         // The key of the workspace folder is the project name.
         let workspace_folders = self.workspace_folders();
@@ -328,18 +340,19 @@ impl Backend {
             .create_event(
                 attachments,
                 &kittycad::types::Event {
-                    // TODO: what is this.
-                    attachment_uri: Some("some-string".to_string()),
+                    // This gets generated server side so leave empty for now.
+                    attachment_uri: None,
                     created_at: chrono::Utc::now(),
                     event_type: kittycad::types::ModelingAppEventType::SuccessfulCompileBeforeClose,
                     last_compiled_at: Some(chrono::Utc::now()),
                     // We do not have project descriptions yet.
                     project_description: None,
                     project_name,
-                    // TODO: what is this.
-                    source_id: uuid::Uuid::new_v4(),
+                    // The UUID for the modeling app.
+                    // We can unwrap here because we know it will not panic.
+                    source_id: uuid::Uuid::from_str("70178592-dfca-47b3-bd2d-6fce2bcaee04").unwrap(),
                     type_: kittycad::types::Type::ModelingAppEvent,
-                    user_id: user.id.to_string(),
+                    user_id: user_id_hash,
                 },
             )
             .await
@@ -473,6 +486,11 @@ impl LanguageServer for Backend {
         }
 
         // TODO: Send telemetry.
+        /* if let Err(err) = self.send_telemetry().await {
+            self.client
+                .log_message(MessageType::WARNING, format!("failed to send telemetry: {}", err))
+                .await;
+        }*/
     }
 
     async fn hover(&self, params: HoverParams) -> RpcResult<Option<Hover>> {
