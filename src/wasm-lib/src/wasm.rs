@@ -19,6 +19,7 @@ pub async fn execute_wasm(
     engine_manager: kcl_lib::engine::conn_wasm::EngineCommandManager,
     fs_manager: kcl_lib::fs::wasm::FileSystemManager,
 ) -> Result<JsValue, String> {
+    console_error_panic_hook::set_once();
     // deserialize the ast from a stringified json
 
     use kcl_lib::executor::ExecutorContext;
@@ -54,6 +55,8 @@ pub async fn modify_ast_for_sketch_wasm(
     plane_type: &str,
     sketch_id: &str,
 ) -> Result<JsValue, String> {
+    console_error_panic_hook::set_once();
+
     // deserialize the ast from a stringified json
     let mut program: kcl_lib::ast::types::Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
 
@@ -80,6 +83,8 @@ pub async fn modify_ast_for_sketch_wasm(
 
 #[wasm_bindgen]
 pub fn deserialize_files(data: &[u8]) -> Result<JsValue, JsError> {
+    console_error_panic_hook::set_once();
+
     let ws_resp: kittycad::types::WebSocketResponse = bson::from_slice(data)?;
 
     if let Some(success) = ws_resp.success {
@@ -99,12 +104,16 @@ pub fn deserialize_files(data: &[u8]) -> Result<JsValue, JsError> {
 // test for this function and by extension lexer are done in javascript land src/lang/tokeniser.test.ts
 #[wasm_bindgen]
 pub fn lexer_wasm(js: &str) -> Result<JsValue, JsError> {
+    console_error_panic_hook::set_once();
+
     let tokens = kcl_lib::token::lexer(js);
     Ok(JsValue::from_serde(&tokens)?)
 }
 
 #[wasm_bindgen]
 pub fn parse_wasm(js: &str) -> Result<JsValue, String> {
+    console_error_panic_hook::set_once();
+
     let tokens = kcl_lib::token::lexer(js);
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast().map_err(String::from)?;
@@ -117,6 +126,8 @@ pub fn parse_wasm(js: &str) -> Result<JsValue, String> {
 // test for this function and by extension the recaster are done in javascript land src/lang/recast.test.ts
 #[wasm_bindgen]
 pub fn recast_wasm(json_str: &str) -> Result<JsValue, JsError> {
+    console_error_panic_hook::set_once();
+
     // deserialize the ast from a stringified json
     let program: kcl_lib::ast::types::Program = serde_json::from_str(json_str).map_err(JsError::from)?;
 
@@ -157,6 +168,8 @@ impl ServerConfig {
 // NOTE: input needs to be an AsyncIterator<Uint8Array, never, void> specifically
 #[wasm_bindgen]
 pub async fn kcl_lsp_run(config: ServerConfig) -> Result<(), JsValue> {
+    console_error_panic_hook::set_once();
+
     let ServerConfig {
         into_server,
         from_server,
@@ -214,6 +227,8 @@ pub async fn kcl_lsp_run(config: ServerConfig) -> Result<(), JsValue> {
 // NOTE: input needs to be an AsyncIterator<Uint8Array, never, void> specifically
 #[wasm_bindgen]
 pub async fn copilot_lsp_run(config: ServerConfig, token: String) -> Result<(), JsValue> {
+    console_error_panic_hook::set_once();
+
     let ServerConfig {
         into_server,
         from_server,
@@ -260,6 +275,8 @@ pub async fn copilot_lsp_run(config: ServerConfig, token: String) -> Result<(), 
 
 #[wasm_bindgen]
 pub fn is_points_ccw(points: &[f64]) -> i32 {
+    console_error_panic_hook::set_once();
+
     kcl_lib::std::utils::is_points_ccw_wasm(points)
 }
 
@@ -293,11 +310,13 @@ pub fn get_tangential_arc_to_info(
     tan_previous_point_y: f64,
     obtuse: bool,
 ) -> TangentialArcInfoOutputWasm {
+    console_error_panic_hook::set_once();
+
     let result = kcl_lib::std::utils::get_tangential_arc_to_info(kcl_lib::std::utils::TangentialArcInfoInput {
         arc_start_point: [arc_start_point_x, arc_start_point_y],
         arc_end_point: [arc_end_point_x, arc_end_point_y],
         tan_previous_point: [tan_previous_point_x, tan_previous_point_y],
-        obtuse: obtuse,
+        obtuse,
     });
     TangentialArcInfoOutputWasm {
         center_x: result.center[0],
@@ -314,6 +333,8 @@ pub fn get_tangential_arc_to_info(
 /// Create the default program memory.
 #[wasm_bindgen]
 pub fn program_memory_init() -> Result<JsValue, String> {
+    console_error_panic_hook::set_once();
+
     let memory = kcl_lib::executor::ProgramMemory::default();
 
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
