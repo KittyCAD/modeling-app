@@ -20,6 +20,7 @@ import type { Program } from '../wasm-lib/kcl/bindings/Program'
 import type { Token } from '../wasm-lib/kcl/bindings/Token'
 import { Coords2d } from './std/sketch'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
+import { DEV } from 'env'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Value } from '../wasm-lib/kcl/bindings/Value'
@@ -287,23 +288,19 @@ export function programMemoryInit(): ProgramMemory {
 export async function copilotLspRun(config: ServerConfig, token: string) {
   try {
     console.log('starting copilot lsp')
-    await copilot_lsp_run(config, token)
+    await copilot_lsp_run(config, token, DEV)
   } catch (e: any) {
     console.log('copilot lsp failed', e)
-    // We make it restart recursively so that if it ever dies after like
-    // 8 hours or something it will come back to life.
-    await copilotLspRun(config, token)
+    // We can't restart here because a moved value, we should do this another way.
   }
 }
 
-export async function kclLspRun(config: ServerConfig) {
+export async function kclLspRun(config: ServerConfig, token: string) {
   try {
     console.log('start kcl lsp')
-    await kcl_lsp_run(config)
+    await kcl_lsp_run(config, token, DEV)
   } catch (e: any) {
     console.log('kcl lsp failed', e)
-    // We make it restart recursively so that if it ever dies after like
-    // 8 hours or something it will come back to life.
-    await kclLspRun(config)
+    // We can't restart here because a moved value, we should do this another way.
   }
 }

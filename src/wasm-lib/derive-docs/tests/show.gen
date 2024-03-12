@@ -52,7 +52,12 @@ impl crate::docs::StdLibFn for Show {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = true;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
-        None
+        Some(crate::docs::StdLibFnArg {
+            name: "".to_string(),
+            type_: "()".to_string(),
+            schema: <()>::json_schema(&mut generator),
+            required: true,
+        })
     }
 
     fn unpublished(&self) -> bool {

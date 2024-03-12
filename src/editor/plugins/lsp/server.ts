@@ -39,7 +39,7 @@ export default class Server {
       }
       await copilotLspRun(config, token)
     } else if (type_ === 'kcl') {
-      await kclLspRun(config)
+      await kclLspRun(config, token || '')
     }
   }
 }
