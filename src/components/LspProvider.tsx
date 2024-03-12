@@ -12,13 +12,22 @@ import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Extension } from '@codemirror/state'
 import { LanguageSupport } from '@codemirror/language'
 import { useNavigate } from 'react-router-dom'
-import { basename } from './FileTree'
 import { paths } from 'lib/paths'
 import { FileEntry } from '@tauri-apps/api/fs'
 import { ProjectWithEntryPointMetadata } from 'lib/types'
 
+const DEFAULT_FILE_NAME: string = 'main.kcl'
+
 function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
   return []
+}
+
+// an OS-agnostic way to get the basename of the path.
+export function basename(path: string): string {
+  // Regular expression to match the last portion of the path, taking into account both POSIX and Windows delimiters
+  const re = /[^\\/]+$/
+  const match = path.match(re)
+  return match ? match[0] : ''
 }
 
 type LspContext = {
@@ -30,6 +39,11 @@ type LspContext = {
     project: ProjectWithEntryPointMetadata | null,
     file: FileEntry | null
   ) => void
+  onFileOpen: (filePath: string | null) => void
+  onFileClose: (filePath: string | null) => void
+  onFileCreate: (file: FileEntry) => void
+  onFileRename: (oldFile: FileEntry, newFile: FileEntry) => void
+  onFileDelete: (file: FileEntry) => void
 }
 
 export const LspStateContext = createContext({} as LspContext)
@@ -77,7 +91,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     if (isKclLspServerReady && !TEST) {
       // Set up the lsp plugin.
       const lsp = kclLanguage({
-        documentUri: `file:///main.kcl`,
+        documentUri: `file:///${DEFAULT_FILE_NAME}`,
         workspaceFolders: getWorkspaceFolders(),
         client: kclLspClient,
       })
@@ -113,7 +127,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     if (isCopilotLspServerReady && !TEST) {
       // Set up the lsp plugin.
       const lsp = copilotPlugin({
-        documentUri: `file:///main.kcl`,
+        documentUri: `file:///${DEFAULT_FILE_NAME}`,
         workspaceFolders: getWorkspaceFolders(),
         client: copilotLspClient,
         allowHTMLContent: true,
@@ -127,7 +141,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   const lspClients = [kclLspClient, copilotLspClient]
 
   const onProjectClose = (file: FileEntry | null, redirect: boolean) => {
-    const currentFilePath = basename(file?.name || 'main.kcl')
+    const currentFilePath = basename(file?.name || DEFAULT_FILE_NAME)
     lspClients.forEach((lspClient) => {
       lspClient.textDocumentDidClose({
         textDocument: {
@@ -155,7 +169,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     })
     if (file) {
       // Send that the file was opened.
-      const filename = basename(file?.name || 'main.kcl')
+      const filename = basename(file?.name || DEFAULT_FILE_NAME)
       lspClients.forEach((lspClient) => {
         lspClient.textDocumentDidOpen({
           textDocument: {
@@ -169,6 +183,70 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
+  const onFileOpen = (filePath: string | null) => {
+    const newFilePath = basename(filePath || DEFAULT_FILE_NAME)
+    // Then let the clients know we opened a file.
+    lspClients.forEach((lspClient) => {
+      lspClient.textDocumentDidOpen({
+        textDocument: {
+          uri: `file:///${newFilePath}`,
+          languageId: 'kcl',
+          version: 1,
+          text: '',
+        },
+      })
+    })
+  }
+
+  const onFileClose = (filePath: string | null) => {
+    // Let the lsp servers know we closed a file.
+    const currentFilePath = basename(filePath || DEFAULT_FILE_NAME)
+    lspClients.forEach((lspClient) => {
+      lspClient.textDocumentDidClose({
+        textDocument: {
+          uri: `file:///${currentFilePath}`,
+        },
+      })
+    })
+  }
+
+  const onFileCreate = (file: FileEntry) => {
+    lspClients.forEach((lspClient) => {
+      lspClient.workspaceDidCreateFiles({
+        files: [
+          {
+            uri: `file:///${file.path}`,
+          },
+        ],
+      })
+    })
+  }
+
+  const onFileRename = (oldFile: FileEntry, newFile: FileEntry) => {
+    lspClients.forEach((lspClient) => {
+      lspClient.workspaceDidRenameFiles({
+        files: [
+          {
+            oldUri: `file:///${oldFile.path}`,
+            newUri: `file:///${newFile.path}`,
+          },
+        ],
+      })
+    })
+  }
+
+  const onFileDelete = (file: FileEntry) => {
+    lspClients.forEach((lspClient) => {
+      lspClient.workspaceDidDeleteFiles({
+        files: [
+          {
+            uri: `file:///${file.path}`,
+          },
+        ],
+      })
+    })
+  }
+
   return (
     <LspStateContext.Provider
       value={{
@@ -177,6 +255,11 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
         kclLSP,
         onProjectClose,
         onProjectOpen,
+        onFileOpen,
+        onFileClose,
+        onFileCreate,
+        onFileRename,
+        onFileDelete,
       }}
     >
       {children}
