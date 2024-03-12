@@ -80,7 +80,8 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     const client = new Client(fromServer, intoServer)
     if (!TEST) {
       Server.initialize(intoServer, fromServer).then((lspServer) => {
-        lspServer.start('kcl')
+        const token = auth?.context?.token
+        lspServer.start('kcl', token)
         setIsKclLspServerReady(true)
       })
     }
