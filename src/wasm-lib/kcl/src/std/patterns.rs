@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{Geometries, Geometry, MemoryItem, SketchGroup},
+    executor::{ExtrudeGroup, Geometries, Geometry, MemoryItem, SketchGroup},
     std::Args,
 };
 
@@ -70,7 +70,7 @@ impl LinearPattern {
     }
 }
 
-/// A linear pattern.
+/// A linear pattern on a 2D sketch.
 pub async fn pattern_linear_2d(args: Args) -> Result<MemoryItem, KclError> {
     let (data, sketch_group): (LinearPattern2dData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
 
@@ -111,6 +111,49 @@ async fn inner_pattern_linear_2d(
     };
 
     Ok(sketch_groups)
+}
+
+/// A linear pattern on a 3D model.
+pub async fn pattern_linear_3d(args: Args) -> Result<MemoryItem, KclError> {
+    let (data, extrude_group): (LinearPattern2dData, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+
+    if data.axis == [0.0, 0.0] {
+        return Err(KclError::Semantic(KclErrorDetails {
+            message:
+                "The axis of the linear pattern cannot be the zero vector. Otherwise they will just duplicate in place."
+                    .to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    }
+
+    let extrude_groups = inner_pattern_linear_3d(data, extrude_group, args).await?;
+    Ok(MemoryItem::ExtrudeGroups { value: extrude_groups })
+}
+
+/// A linear pattern on a 3D model.
+#[stdlib {
+    name = "patternLinear3d",
+}]
+async fn inner_pattern_linear_3d(
+    data: LinearPattern2dData,
+    extrude_group: Box<ExtrudeGroup>,
+    args: Args,
+) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
+    let geometries = pattern_linear(
+        LinearPattern::TwoD(data),
+        Geometry::ExtrudeGroup(extrude_group),
+        args.clone(),
+    )
+    .await?;
+
+    let Geometries::ExtrudeGroups(extrude_groups) = geometries else {
+        return Err(KclError::Semantic(KclErrorDetails {
+            message: "Expected a vec of extrude groups".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    };
+
+    Ok(extrude_groups)
 }
 
 async fn pattern_linear(data: LinearPattern, geometry: Geometry, args: Args) -> Result<Geometries, KclError> {
@@ -210,7 +253,7 @@ pub enum CircularPattern {
 impl CircularPattern {
     pub fn axis(&self) -> [f64; 3] {
         match self {
-            CircularPattern::TwoD(lp) => [0.0, 0.0, 0.0],
+            CircularPattern::TwoD(_lp) => [0.0, 0.0, 0.0],
             CircularPattern::ThreeD(lp) => lp.axis,
         }
     }
@@ -252,7 +295,7 @@ pub async fn pattern_circular_2d(args: Args) -> Result<MemoryItem, KclError> {
     Ok(MemoryItem::SketchGroups { value: sketch_groups })
 }
 
-/// A Circular pattern.
+/// A circular pattern on a 2D sketch.
 #[stdlib {
     name = "patternCircular2d",
 }]
@@ -276,6 +319,40 @@ async fn inner_pattern_circular_2d(
     };
 
     Ok(sketch_groups)
+}
+
+/// A circular pattern on a 3D model.
+pub async fn pattern_circular_3d(args: Args) -> Result<MemoryItem, KclError> {
+    let (data, extrude_group): (CircularPattern2dData, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+
+    let extrude_groups = inner_pattern_circular_3d(data, extrude_group, args).await?;
+    Ok(MemoryItem::ExtrudeGroups { value: extrude_groups })
+}
+
+/// A circular pattern on a 3D model.
+#[stdlib {
+    name = "patternCircular3d",
+}]
+async fn inner_pattern_circular_3d(
+    data: CircularPattern2dData,
+    extrude_group: Box<ExtrudeGroup>,
+    args: Args,
+) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
+    let geometries = pattern_circular(
+        CircularPattern::TwoD(data),
+        Geometry::ExtrudeGroup(extrude_group),
+        args.clone(),
+    )
+    .await?;
+
+    let Geometries::ExtrudeGroups(extrude_groups) = geometries else {
+        return Err(KclError::Semantic(KclErrorDetails {
+            message: "Expected a vec of extrude groups".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    };
+
+    Ok(extrude_groups)
 }
 
 async fn pattern_circular(data: CircularPattern, geometry: Geometry, args: Args) -> Result<Geometries, KclError> {
