@@ -49,13 +49,13 @@ pub trait Backend {
         for file in files {
             // Read the file.
             let contents = self.fs().read(&file, Default::default()).await?;
-            self.insert_current_code_map(
+            let file_path = format!(
+                "file://{}",
                 file.as_path()
                     .to_str()
                     .ok_or_else(|| anyhow::anyhow!("could not get name of file: {:?}", file))?
-                    .to_string(),
-                contents,
             );
+            self.insert_current_code_map(file_path, contents);
         }
 
         Ok(())
@@ -75,11 +75,23 @@ pub trait Backend {
     }
 
     async fn do_did_change_workspace_folders(&self, params: DidChangeWorkspaceFoldersParams) {
-        self.add_workspace_folders(params.event.added);
+        self.add_workspace_folders(params.event.added.clone());
         self.remove_workspace_folders(params.event.removed);
         // Remove the code from the current code map.
         // We do this since it means the user is changing projects so let's refresh the state.
         self.clear_code_state();
+        for added in params.event.added {
+            // Try to read all the files in the project.
+            let project_dir = added.uri.to_string().replace("file://", "");
+            if let Err(err) = self.update_from_disk(&project_dir).await {
+                self.client()
+                    .log_message(
+                        MessageType::WARNING,
+                        format!("updating from disk `{}` failed: {:?}", project_dir, err),
+                    )
+                    .await;
+            }
+        }
     }
 
     async fn do_did_change_configuration(&self, params: DidChangeConfigurationParams) {
