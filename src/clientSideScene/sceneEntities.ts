@@ -86,6 +86,7 @@ import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import { createGridHelper, orthoScale, perspScale } from './helpers'
 import { Models } from '@kittycad/lib'
 import { v4 as uuidv4 } from 'uuid'
+import { SketchDetails } from 'machines/modelingMachine'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -1151,12 +1152,10 @@ export function getSketchQuaternion(
   return getQuaternionFromZAxis(massageFormats(zAxis))
 }
 export async function getSketchQuaternion2(
-  sketchPathToNode: PathToNode,
-  sketchNormalBackUp: [number, number, number] | null
+  sketchPathToNode: PathToNode
 ): Promise<{
   quat: Quaternion
-  position: [number, number, number]
-  zAxis: [number, number, number]
+  sketchDetails: SketchDetails
 }> {
   const sketchGroup = sketchGroupFromPathToNode({
     pathToNode: sketchPathToNode,
@@ -1164,11 +1163,15 @@ export async function getSketchQuaternion2(
     programMemory: kclManager.programMemory,
   })
   if (sketchGroup.on.type === 'plane') {
-    const zAxis = sketchGroup?.zAxis || sketchNormalBackUp
+    const zAxis = sketchGroup?.zAxis
     return {
       quat: getQuaternionFromZAxis(massageFormats(zAxis)),
-      position: [0, 0, 0],
-      zAxis: [zAxis.x, zAxis.y, zAxis.z],
+      sketchDetails: {
+        sketchPathToNode,
+        zAxis: [zAxis.x, zAxis.y, zAxis.z],
+        yAxis: [sketchGroup.yAxis.x, sketchGroup.yAxis.y, sketchGroup.yAxis.z],
+        origin: [0, 0, 0],
+      },
     }
   }
   if (sketchGroup.on.type === 'face') {
@@ -1207,8 +1210,12 @@ export async function getSketchQuaternion2(
     const quaternion = getQuaternionFromZAxis(normal)
     return {
       quat: quaternion,
-      position: [origin.x, origin.y, origin.z],
-      zAxis: [z_axis.x, z_axis.y, z_axis.z],
+      sketchDetails: {
+        sketchPathToNode,
+        zAxis: [z_axis.x, z_axis.y, z_axis.z],
+        yAxis: [sketchGroup.yAxis.x, sketchGroup.yAxis.y, sketchGroup.yAxis.z],
+        origin: [origin.x, origin.y, origin.z],
+      },
     }
   }
   throw new Error(

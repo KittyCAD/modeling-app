@@ -522,7 +522,7 @@ export function sendSelectEventToEngine(
     el,
     ...streamDimensions,
   })
-  const yo: Promise<Models['SelectWithPoint_type']> = engineCommandManager
+  const result: Promise<Models['SelectWithPoint_type']> = engineCommandManager
     .sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd: {
@@ -532,9 +532,6 @@ export function sendSelectEventToEngine(
       },
       cmd_id: uuidv4(),
     })
-    .then((res) => {
-      console.log('res', res)
-      return res.data.data
-    })
-  return yo
+    .then((res) => res.data.data)
+  return result
 }

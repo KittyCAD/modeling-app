@@ -41,7 +41,7 @@ import {
 } from 'clientSideScene/sceneEntities'
 import { sketchOnExtrudedFace, startSketchOnDefault } from 'lang/modifyAst'
 import { Program, parse } from 'lang/wasm'
-import { isSingleCursorInPipe } from 'lang/queryAst'
+import { getNodePathFromSourceRange, isSingleCursorInPipe } from 'lang/queryAst'
 import { TEST } from 'env'
 import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
@@ -268,10 +268,10 @@ export const ModelingMachineProvider = ({
           kclManager.kclErrors.length === 0 && kclManager.ast.body.length > 0,
       },
       services: {
-        'AST-undo-startSketchOn': async ({ sketchPathToNode }) => {
-          if (!sketchPathToNode) return
+        'AST-undo-startSketchOn': async ({ sketchDetails }) => {
+          if (!sketchDetails) return
           const newAst: Program = JSON.parse(JSON.stringify(kclManager.ast))
-          const varDecIndex = sketchPathToNode[1][0]
+          const varDecIndex = sketchDetails.sketchPathToNode[1][0]
           // remove body item at varDecIndex
           newAst.body = newAst.body.filter((_, i) => i !== varDecIndex)
           await kclManager.executeAstMock(newAst, { updates: 'code' })
@@ -302,8 +302,9 @@ export const ModelingMachineProvider = ({
 
             return {
               sketchPathToNode: pathToNewSketchNode,
-              sketchNormalBackUp: data.zAxis,
-              sketchPosition: data.position,
+              zAxis: data.zAxis,
+              yAxis: data.yAxis,
+              origin: data.position,
             }
           }
           const { modifiedAst, pathToNode } = startSketchOnDefault(
@@ -315,26 +316,27 @@ export const ModelingMachineProvider = ({
           await sceneInfra.camControls.tweenCameraToQuaternion(quat)
           return {
             sketchPathToNode: pathToNode,
-            sketchNormalBackUp: data.zAxis,
-            sketchPosition: [0, 0, 0],
+            zAxis: data.zAxis,
+            yAxis: data.yAxis,
+            origin: [0, 0, 0],
           }
         },
-        'animate-to-sketch': async ({
-          sketchPathToNode,
-          sketchNormalBackUp,
-        }) => {
-          const info = await getSketchQuaternion2(
-            sketchPathToNode || [],
-            sketchNormalBackUp
+        'animate-to-sketch': async ({ selectionRanges }) => {
+          const sourceRange = selectionRanges.codeBasedSelections[0].range
+          const sketchPathToNode = getNodePathFromSourceRange(
+            kclManager.ast,
+            sourceRange
           )
+          const info = await getSketchQuaternion2(sketchPathToNode || [])
           await sceneInfra.camControls.tweenCameraToQuaternion(
             info.quat,
-            new Vector3(...info.position)
+            new Vector3(...info.sketchDetails.origin)
           )
           return {
             sketchPathToNode: sketchPathToNode || [],
-            sketchNormalBackUp: info.zAxis || sketchNormalBackUp || null,
-            sketchPosition: info.position.map(
+            zAxis: info.sketchDetails.zAxis || null,
+            yAxis: info.sketchDetails.yAxis || null,
+            origin: info.sketchDetails.origin.map(
               (a) => a / sceneInfra._baseUnitMultiplier
             ) as [number, number, number],
           }
