@@ -411,7 +411,7 @@ impl LanguageServer for Backend {
             return Ok(None);
         };
 
-        let pos = position_to_char_index(params.text_document_position_params.position, &current_code);
+        let pos = position_to_char_index(params.text_document_position_params.position, current_code);
 
         // Let's iterate over the AST and find the node that contains the cursor.
         let Some(ast) = self.ast_map.get(&filename) else {
@@ -422,7 +422,7 @@ impl LanguageServer for Backend {
             return Ok(None);
         };
 
-        let Some(hover) = value.get_hover_value_for_position(pos, &current_code) else {
+        let Some(hover) = value.get_hover_value_for_position(pos, current_code) else {
             return Ok(None);
         };
 
@@ -528,7 +528,7 @@ impl LanguageServer for Backend {
             return Ok(None);
         };
 
-        let pos = position_to_char_index(params.text_document_position_params.position, &current_code);
+        let pos = position_to_char_index(params.text_document_position_params.position, current_code);
 
         // Let's iterate over the AST and find the node that contains the cursor.
         let Some(ast) = self.ast_map.get(&filename) else {
@@ -539,7 +539,7 @@ impl LanguageServer for Backend {
             return Ok(None);
         };
 
-        let Some(hover) = value.get_hover_value_for_position(pos, &current_code) else {
+        let Some(hover) = value.get_hover_value_for_position(pos, current_code) else {
             return Ok(None);
         };
 
@@ -612,7 +612,7 @@ impl LanguageServer for Backend {
         // Parse the ast.
         // I don't know if we need to do this again since it should be updated in the context.
         // But I figure better safe than sorry since this will write back out to the file.
-        let tokens = crate::token::lexer(&current_code);
+        let tokens = crate::token::lexer(current_code);
         let parser = crate::parser::Parser::new(tokens);
         let Ok(ast) = parser.ast() else {
             return Ok(None);
@@ -627,7 +627,7 @@ impl LanguageServer for Backend {
             0,
         );
         let source_range = SourceRange([0, current_code.len() - 1]);
-        let range = source_range.to_lsp_range(&current_code);
+        let range = source_range.to_lsp_range(current_code);
         Ok(Some(vec![TextEdit {
             new_text: recast,
             range,
@@ -647,20 +647,20 @@ impl LanguageServer for Backend {
         // Parse the ast.
         // I don't know if we need to do this again since it should be updated in the context.
         // But I figure better safe than sorry since this will write back out to the file.
-        let tokens = crate::token::lexer(&current_code);
+        let tokens = crate::token::lexer(current_code);
         let parser = crate::parser::Parser::new(tokens);
         let Ok(mut ast) = parser.ast() else {
             return Ok(None);
         };
 
         // Let's convert the position to a character index.
-        let pos = position_to_char_index(params.text_document_position.position, &current_code);
+        let pos = position_to_char_index(params.text_document_position.position, current_code);
         // Now let's perform the rename on the ast.
         ast.rename_symbol(&params.new_name, pos);
         // Now recast it.
         let recast = ast.recast(&Default::default(), 0);
         let source_range = SourceRange([0, current_code.len() - 1]);
-        let range = source_range.to_lsp_range(&current_code);
+        let range = source_range.to_lsp_range(current_code);
         Ok(Some(WorkspaceEdit {
             changes: Some(HashMap::from([(
                 params.text_document_position.text_document.uri,
