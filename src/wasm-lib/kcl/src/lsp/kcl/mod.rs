@@ -288,7 +288,12 @@ impl Backend {
 
     pub async fn send_telemetry(&self) -> Result<()> {
         // Get information about the user.
-        let user = self.zoo_client.users().get_self().await?;
+        let user = self
+            .zoo_client
+            .users()
+            .get_self()
+            .await
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         // Get the workspace folders.
         // The key of the workspace folder is the project name.
@@ -337,7 +342,8 @@ impl Backend {
                     user_id: user.id.to_string(),
                 },
             )
-            .await?;
+            .await
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         Ok(())
     }
