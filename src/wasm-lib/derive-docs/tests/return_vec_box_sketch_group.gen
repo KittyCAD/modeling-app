@@ -79,6 +79,6 @@ impl crate::docs::StdLibFn for Import {
 
 fn inner_import(
     #[doc = r" The args to do shit to."] args: Option<kittycad::types::InputFormat>,
-) -> Result<Vec<SketchGroup>> {
+) -> Result<Vec<Box<SketchGroup>>> {
     args
 }

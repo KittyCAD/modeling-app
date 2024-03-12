@@ -242,7 +242,7 @@ fn do_stdlib_inner(
                                     let mut args = args.iter();
                                     let ok = args.next().unwrap();
                                     if let syn::GenericArgument::Type(ty) = ok {
-                                        let ty = unbox(ty.clone());
+                                        let ty = unbox(unbox_vec(ty.clone()));
                                         quote! { #ty }
                                     } else {
                                         quote! { () }
@@ -254,7 +254,7 @@ fn do_stdlib_inner(
                                 quote! { () }
                             }
                         } else {
-                            let ty = unbox(*ty.clone());
+                            let ty = unbox(unbox_vec(*ty.clone()));
                             quote! { #ty }
                         }
                     } else {
@@ -268,7 +268,7 @@ fn do_stdlib_inner(
         }
     };
 
-    let ret_ty_string = return_type_inner.to_string();
+    let ret_ty_string = return_type_inner.to_string().replace(' ', "");
     let return_type = if !ret_ty_string.is_empty() || ret_ty_string != "()" {
         let ret_ty_string = rust_type_to_openapi_type(&ret_ty_string);
         quote! {
@@ -604,6 +604,64 @@ fn unbox(t: syn::Type) -> syn::Type {
     t
 }
 
+// For a Vec<Box<T>> return Vec<T>.
+// For a Vec<T> return Vec<T>.
+// For a Box<T> return T.
+fn unbox_vec(t: syn::Type) -> syn::Type {
+    match t {
+        syn::Type::Path(syn::TypePath { ref path, .. }) => {
+            let path = &path.segments;
+            if path.len() == 1 {
+                let seg = &path[0];
+                if seg.ident == "Vec" {
+                    if let syn::PathArguments::AngleBracketed(syn::AngleBracketedGenericArguments { args, .. }) =
+                        &seg.arguments
+                    {
+                        if args.len() == 1 {
+                            let mut args = args.iter();
+                            let ok = args.next().unwrap();
+                            if let syn::GenericArgument::Type(ty) = ok {
+                                let unboxed = unbox(ty.clone());
+                                // Wrap it back in a vec.
+                                let wrapped = syn::Type::Path(syn::TypePath {
+                                    qself: None,
+                                    path: syn::Path {
+                                        leading_colon: None,
+                                        segments: {
+                                            let mut segments = syn::punctuated::Punctuated::new();
+                                            segments.push_value(syn::PathSegment {
+                                                ident: syn::Ident::new("Vec", proc_macro2::Span::call_site()),
+                                                arguments: syn::PathArguments::AngleBracketed(
+                                                    syn::AngleBracketedGenericArguments {
+                                                        colon2_token: None,
+                                                        lt_token: syn::token::Lt::default(),
+                                                        args: {
+                                                            let mut args = syn::punctuated::Punctuated::new();
+                                                            args.push_value(syn::GenericArgument::Type(unboxed));
+                                                            args
+                                                        },
+                                                        gt_token: syn::token::Gt::default(),
+                                                    },
+                                                ),
+                                            });
+                                            segments
+                                        },
+                                    },
+                                });
+                                return wrapped;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        _ => {
+            return t;
+        }
+    }
+    t
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -805,6 +863,30 @@ mod tests {
         assert!(errors.is_empty());
         expectorate::assert_contents(
             "tests/return_vec_sketch_group.gen",
+            &openapitor::types::get_text_fmt(&item).unwrap(),
+        );
+    }
+
+    #[test]
+    fn test_stdlib_return_vec_box_sketch_group() {
+        let (item, errors) = do_stdlib(
+            quote! {
+                name = "import",
+            },
+            quote! {
+                fn inner_import(
+                    /// The args to do shit to.
+                    args: Option<kittycad::types::InputFormat>
+                ) -> Result<Vec<Box<SketchGroup>>> {
+                    args
+                }
+            },
+        )
+        .unwrap();
+
+        assert!(errors.is_empty());
+        expectorate::assert_contents(
+            "tests/return_vec_box_sketch_group.gen",
             &openapitor::types::get_text_fmt(&item).unwrap(),
         );
     }
