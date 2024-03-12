@@ -1,43 +1,18 @@
 import { assign, createMachine } from 'xstate'
 import { Themes, getSystemTheme, setThemeClass } from '../lib/theme'
 import { CameraSystem } from 'lib/cameraControls'
-import { Models } from '@kittycad/lib'
+import {
+  BaseUnit,
+  DEFAULT_PROJECT_NAME,
+  SETTINGS_PERSIST_KEY,
+  SettingsMachineContext,
+  Toggle,
+  UnitSystem,
+} from 'lib/settings'
 
 const kclManagerPromise = import('lang/KclSingleton').then(
   (module) => module.kclManager
 )
-
-export const DEFAULT_PROJECT_NAME = 'project-$nnn'
-
-export enum UnitSystem {
-  Imperial = 'imperial',
-  Metric = 'metric',
-}
-
-export const baseUnits = {
-  imperial: ['in', 'ft', 'yd'],
-  metric: ['mm', 'cm', 'm'],
-} as const
-
-export type BaseUnit = Models['UnitLength_type']
-
-export const baseUnitsUnion = Object.values(baseUnits).flatMap((v) => v)
-
-export type Toggle = 'On' | 'Off'
-
-export const SETTINGS_PERSIST_KEY = 'SETTINGS_PERSIST_KEY'
-
-type SettingsMachineContext = {
-  baseUnit: BaseUnit
-  cameraControls: CameraSystem
-  defaultDirectory: string
-  defaultProjectName: string
-  onboardingStatus: string
-  showDebugPanel: boolean
-  textWrapping: Toggle
-  theme: Themes
-  unitSystem: UnitSystem
-}
 
 export const settingsMachine = createMachine(
   {
