@@ -8,7 +8,7 @@ import { TEST } from 'env'
 import kclLanguage from 'editor/plugins/lsp/kcl/language'
 import { copilotPlugin } from 'editor/plugins/lsp/copilot'
 import { useStore } from 'useStore'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Extension } from '@codemirror/state'
 import { LanguageSupport } from '@codemirror/language'
 import { useNavigate } from 'react-router-dom'
@@ -46,7 +46,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     setIsCopilotLspServerReady: s.setIsCopilotLspServerReady,
   }))
 
-  const { auth } = useGlobalStateContext()
+  const { auth } = useSettingsAuthContext()
   const navigate = useNavigate()
 
   // So this is a bit weird, we need to initialize the lsp server and client.
