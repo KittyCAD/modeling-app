@@ -185,6 +185,7 @@ impl Backend {
         let line_before = doc_params.line_before.to_string();
 
         // Let's not call it yet since it's not our model.
+        // We will need to wrap in spawn_local like we do in kcl/mod.rs for wasm only.
         /*let completion_list = self
         .get_completions(doc_params.language, doc_params.prefix, doc_params.suffix)
         .await
