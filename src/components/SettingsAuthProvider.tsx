@@ -24,6 +24,7 @@ import { isTauri } from 'lib/isTauri'
 import { settingsCommandBarConfig } from 'lib/commandBarConfigs/settingsCommandConfig'
 import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
 import { initializeProjectDirectory, readSettingsFile } from 'lib/tauriFS'
+import { sceneInfra } from 'clientSideScene/sceneInfra'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -70,6 +71,15 @@ export const SettingsAuthProvider = ({
     {
       context: persistedSettings,
       actions: {
+        setClientSideSceneUnits: (context, event) => {
+          const newBaseUnit = event.type === 'Set Base Unit' ? event.data.baseUnit : context.baseUnit
+          console.log(
+            'setting the base unit on the scene infra',
+            sceneInfra.baseUnit,
+            newBaseUnit
+          )
+          sceneInfra.baseUnit = newBaseUnit
+        },
         toastSuccess: (context, event) => {
           const truncatedNewValue =
             'data' in event && event.data instanceof Object

@@ -36,13 +36,13 @@ export type SettingsMachineContext = {
 }
 
 export const initialSettings: SettingsMachineContext = {
-  baseUnit: 'mm' as BaseUnit,
-  cameraControls: 'KittyCAD' as CameraSystem,
+  baseUnit: 'mm',
+  cameraControls: 'KittyCAD',
   defaultDirectory: '',
   defaultProjectName: DEFAULT_PROJECT_NAME,
   onboardingStatus: '',
   showDebugPanel: false,
-  textWrapping: 'On' as Toggle,
+  textWrapping: 'On',
   theme: Themes.System,
   unitSystem: UnitSystem.Metric,
 }
