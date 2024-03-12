@@ -285,6 +285,62 @@ impl Backend {
 
         completions
     }
+
+    pub async fn send_telemetry(&self) -> Result<()> {
+        // Get information about the user.
+        let user = self.zoo_client.users().get_self().await?;
+
+        // Get the workspace folders.
+        // The key of the workspace folder is the project name.
+        let workspace_folders = self.workspace_folders();
+        let project_names: Vec<String> = workspace_folders.iter().map(|v| v.name.clone()).collect::<Vec<_>>();
+        // Get the first name.
+        let project_name = project_names
+            .first()
+            .ok_or_else(|| anyhow::anyhow!("no project names"))?
+            .to_string();
+
+        // Collect all the file data we know.
+        let mut attachments = vec![];
+        for entry in self.current_code_map.iter() {
+            let file_name = entry.key().replace("file://", "").to_string();
+
+            let content_type = Some(mime_guess::from_path(&file_name).first_or_octet_stream().to_string());
+
+            // Try to get the content type from the file name.
+            attachments.push(kittycad::types::multipart::Attachment {
+                // Clean the URI part.
+                name: file_name.clone(),
+                filename: Some(file_name),
+                content_type,
+                data: entry.value().clone(),
+            });
+        }
+
+        // Send the telemetry data.
+        self.zoo_client
+            .meta()
+            .create_event(
+                attachments,
+                &kittycad::types::Event {
+                    // TODO: what is this.
+                    attachment_uri: Some("some-string".to_string()),
+                    created_at: chrono::Utc::now(),
+                    event_type: kittycad::types::ModelingAppEventType::SuccessfulCompileBeforeClose,
+                    last_compiled_at: Some(chrono::Utc::now()),
+                    // We do not have project descriptions yet.
+                    project_description: None,
+                    project_name,
+                    // TODO: what is this.
+                    source_id: uuid::Uuid::new_v4(),
+                    type_: kittycad::types::Type::ModelingAppEvent,
+                    user_id: user.id.to_string(),
+                },
+            )
+            .await?;
+
+        Ok(())
+    }
 }
 
 #[tower_lsp::async_trait]
@@ -402,7 +458,15 @@ impl LanguageServer for Backend {
     }
 
     async fn did_close(&self, params: DidCloseTextDocumentParams) {
-        self.do_did_close(params).await
+        self.do_did_close(params).await;
+
+        // Inject telemetry if we can train on the user's code.
+        // Return early if we cannot.
+        if self.can_send_telemetry {
+            return;
+        }
+
+        // TODO: Send telemetry.
     }
 
     async fn hover(&self, params: HoverParams) -> RpcResult<Option<Hover>> {

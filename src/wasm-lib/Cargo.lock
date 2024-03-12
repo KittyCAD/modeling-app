@@ -522,9 +522,9 @@ dependencies = [
 
 [[package]]
 name = "chrono"
-version = "0.4.34"
+version = "0.4.35"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5bc015644b92d5890fab7489e49d21f879d5c990186827d42ec511919404f38b"
+checksum = "8eaf5903dcbc0a39312feb77df2ff4c76387d591b9fc7b04a238dcf8bb62639a"
 dependencies = [
  "android-tzdata",
  "iana-time-zone",
@@ -1914,6 +1914,7 @@ dependencies = [
  "async-recursion",
  "async-trait",
  "bson",
+ "chrono",
  "clap",
  "criterion",
  "dashmap",
@@ -1929,6 +1930,7 @@ dependencies = [
  "kittycad-execution-plan-macros",
  "kittycad-execution-plan-traits",
  "lazy_static",
+ "mime_guess",
  "parse-display 0.9.0",
  "pretty_assertions",
  "reqwest",
@@ -1962,9 +1964,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.2.59"
+version = "0.2.60"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4080db4364c103601db486e4a8aa889ea56c011991e4c454373d8050a165d3da"
+checksum = "f8aa5906d0730bd90f6b3331fe57c04951d00743169a29ee96408767b4060605"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1978,6 +1980,7 @@ dependencies = [
  "http 0.2.9",
  "itertools 0.10.5",
  "log",
+ "mime_guess",
  "parse-display 0.8.2",
  "phonenumber",
  "rand 0.8.5",
@@ -2000,7 +2003,7 @@ dependencies = [
 [[package]]
 name = "kittycad-execution-plan"
 version = "0.1.0"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#c554cbeda3f217c1baab8a33ffad50e2ecdc8ab9"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#c7722adf9744b9e4eead0a7a88662ad5e7e3adbf"
 dependencies = [
  "bytes",
  "insta",
@@ -2020,7 +2023,7 @@ dependencies = [
 [[package]]
 name = "kittycad-execution-plan-macros"
 version = "0.1.8"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#c554cbeda3f217c1baab8a33ffad50e2ecdc8ab9"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#c7722adf9744b9e4eead0a7a88662ad5e7e3adbf"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2030,7 +2033,7 @@ dependencies = [
 [[package]]
 name = "kittycad-execution-plan-traits"
 version = "0.1.12"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#c554cbeda3f217c1baab8a33ffad50e2ecdc8ab9"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#c7722adf9744b9e4eead0a7a88662ad5e7e3adbf"
 dependencies = [
  "serde",
  "thiserror",
@@ -2040,7 +2043,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds"
 version = "0.1.28"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#c554cbeda3f217c1baab8a33ffad50e2ecdc8ab9"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#c7722adf9744b9e4eead0a7a88662ad5e7e3adbf"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2068,7 +2071,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.2"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#c554cbeda3f217c1baab8a33ffad50e2ecdc8ab9"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#c7722adf9744b9e4eead0a7a88662ad5e7e3adbf"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2077,8 +2080,8 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-session"
-version = "0.1.0"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#c554cbeda3f217c1baab8a33ffad50e2ecdc8ab9"
+version = "0.1.1"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#c7722adf9744b9e4eead0a7a88662ad5e7e3adbf"
 dependencies = [
  "futures",
  "kittycad",
