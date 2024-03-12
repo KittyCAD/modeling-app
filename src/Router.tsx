@@ -36,6 +36,7 @@ import { sep } from '@tauri-apps/api/path'
 import { paths } from 'lib/paths'
 import { IndexLoaderData, HomeLoaderData } from 'lib/types'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
+import LspProvider from 'components/LspProvider'
 
 export const BROWSER_FILE_NAME = 'new'
 
@@ -50,7 +51,9 @@ const addGlobalContextToElements = (
           ...route,
           element: (
             <CommandBarProvider>
-              <SettingsAuthProvider>{route.element}</SettingsAuthProvider>
+              <SettingsAuthProvider>
+                <LspProvider>{route.element}</LspProvider>
+              </SettingsAuthProvider>
             </CommandBarProvider>
           ),
         }

@@ -10,7 +10,7 @@ import {
   initialSettings,
   UnitSystem,
 } from 'lib/settings'
-import { Toggle } from '../components/Toggle/Toggle'
+import { Toggle } from 'components/Toggle/Toggle'
 import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { type IndexLoaderData } from 'lib/types'
