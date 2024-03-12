@@ -23,10 +23,8 @@ import { metadata } from 'tauri-plugin-fs-extra-api'
 import DownloadAppBanner from './components/DownloadAppBanner'
 import { WasmErrBanner } from './components/WasmErrBanner'
 import { SettingsAuthProvider } from './components/SettingsAuthProvider'
-import {
-  SETTINGS_PERSIST_KEY,
-  settingsMachine,
-} from './machines/settingsMachine'
+import { settingsMachine } from './machines/settingsMachine'
+import { SETTINGS_PERSIST_KEY } from './lib/settings'
 import { ContextFrom } from 'xstate'
 import CommandBarProvider, {
   CommandBar,

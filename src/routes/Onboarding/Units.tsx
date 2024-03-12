@@ -1,12 +1,11 @@
 import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
-import { BaseUnit, baseUnits } from '../../machines/settingsMachine'
-import { ActionButton } from '../../components/ActionButton'
+import { BaseUnit, baseUnits, UnitSystem } from 'lib/settings'
+import { ActionButton } from 'components/ActionButton'
 import { SettingsSection } from '../Settings'
-import { Toggle } from '../../components/Toggle/Toggle'
+import { Toggle } from 'components/Toggle/Toggle'
 import { useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import { UnitSystem } from 'machines/settingsMachine'
 
 export default function Units() {
   const dismiss = useDismiss()
