@@ -69,6 +69,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   }))
 
   const { auth } = useSettingsAuthContext()
+  const token = auth?.context?.token
   const navigate = useNavigate()
 
   // So this is a bit weird, we need to initialize the lsp server and client.
@@ -80,7 +81,6 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     const client = new Client(fromServer, intoServer)
     if (!TEST) {
       Server.initialize(intoServer, fromServer).then((lspServer) => {
-        const token = auth?.context?.token
         lspServer.start('kcl', token)
         setIsKclLspServerReady(true)
       })
@@ -88,7 +88,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
 
     const lspClient = new LanguageServerClient({ client, name: 'kcl' })
     return { lspClient }
-  }, [setIsKclLspServerReady, auth])
+  }, [setIsKclLspServerReady, token])
 
   // Here we initialize the plugin which will start the client.
   // Now that we have multi-file support the name of the file is a dep of
@@ -116,7 +116,6 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     const client = new Client(fromServer, intoServer)
     if (!TEST) {
       Server.initialize(intoServer, fromServer).then((lspServer) => {
-        const token = auth?.context?.token
         lspServer.start('copilot', token)
         setIsCopilotLspServerReady(true)
       })
@@ -124,7 +123,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
 
     const lspClient = new LanguageServerClient({ client, name: 'copilot' })
     return { lspClient }
-  }, [setIsCopilotLspServerReady, auth])
+  }, [setIsCopilotLspServerReady, token])
 
   // Here we initialize the plugin which will start the client.
   // When we have multi-file support the name of the file will be a dep of
