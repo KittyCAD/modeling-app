@@ -223,31 +223,59 @@ fn do_stdlib_inner(
         }
     }
 
-    let ret_ty = ast.sig.output.clone();
-    let ret_ty_string = ret_ty
-        .into_token_stream()
-        .to_string()
-        .replace("-> ", "")
-        .replace("Result < ", "")
-        .replace(", KclError >", "");
-    let return_type = if !ret_ty_string.is_empty() {
-        let ret_ty_string = if ret_ty_string.starts_with("Box <") {
-            ret_ty_string
-                .trim_start_matches("Box <")
-                .trim_end_matches(' ')
-                .trim_end_matches('>')
-                .trim()
-                .to_string()
-        } else {
-            ret_ty_string.trim().to_string()
-        };
-        let ret_ty_ident = format_ident!("{}", ret_ty_string);
+    let return_type_inner = match &ast.sig.output {
+        syn::ReturnType::Default => quote! { () },
+        syn::ReturnType::Type(_, ty) => {
+            // Get the inside of the result.
+            match &**ty {
+                syn::Type::Path(syn::TypePath { path, .. }) => {
+                    let path = &path.segments;
+                    if path.len() == 1 {
+                        let seg = &path[0];
+                        if seg.ident == "Result" {
+                            if let syn::PathArguments::AngleBracketed(syn::AngleBracketedGenericArguments {
+                                args,
+                                ..
+                            }) = &seg.arguments
+                            {
+                                if args.len() == 2 || args.len() == 1 {
+                                    let mut args = args.iter();
+                                    let ok = args.next().unwrap();
+                                    if let syn::GenericArgument::Type(ty) = ok {
+                                        let ty = unbox(ty.clone());
+                                        quote! { #ty }
+                                    } else {
+                                        quote! { () }
+                                    }
+                                } else {
+                                    quote! { () }
+                                }
+                            } else {
+                                quote! { () }
+                            }
+                        } else {
+                            let ty = unbox(*ty.clone());
+                            quote! { #ty }
+                        }
+                    } else {
+                        quote! { () }
+                    }
+                }
+                _ => {
+                    quote! { () }
+                }
+            }
+        }
+    };
+
+    let ret_ty_string = return_type_inner.to_string();
+    let return_type = if !ret_ty_string.is_empty() || ret_ty_string != "()" {
         let ret_ty_string = rust_type_to_openapi_type(&ret_ty_string);
         quote! {
             Some(#docs_crate::StdLibFnArg {
                 name: "".to_string(),
                 type_: #ret_ty_string.to_string(),
-                schema: #ret_ty_ident::json_schema(&mut generator),
+                schema: <#return_type_inner>::json_schema(&mut generator),
                 required: true,
             })
         }
@@ -547,6 +575,35 @@ fn parse_array_type(type_name: &str) -> Option<(&str, usize)> {
     Some((inner_type.as_str(), length))
 }
 
+// Unbox a syn::Type that is boxed to the inner object.
+fn unbox(t: syn::Type) -> syn::Type {
+    match t {
+        syn::Type::Path(syn::TypePath { ref path, .. }) => {
+            let path = &path.segments;
+            if path.len() == 1 {
+                let seg = &path[0];
+                if seg.ident == "Box" {
+                    if let syn::PathArguments::AngleBracketed(syn::AngleBracketedGenericArguments { args, .. }) =
+                        &seg.arguments
+                    {
+                        if args.len() == 1 {
+                            let mut args = args.iter();
+                            let ok = args.next().unwrap();
+                            if let syn::GenericArgument::Type(ty) = ok {
+                                return ty.clone();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        _ => {
+            return t;
+        }
+    }
+    t
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -672,7 +729,7 @@ mod tests {
                 fn inner_show(
                     /// The args to do shit to.
                     args: Option<f64>
-                ) -> Box<f64> {
+                ) -> Result<Box<f64>> {
                     args
                 }
             },
@@ -693,7 +750,7 @@ mod tests {
                 fn inner_show(
                     /// The args to do shit to.
                     args: [f64; 2]
-                ) -> Box<f64> {
+                ) -> Result<Box<f64>> {
                     args
                 }
             },
@@ -714,7 +771,7 @@ mod tests {
                 fn inner_import(
                     /// The args to do shit to.
                     args: Option<kittycad::types::InputFormat>
-                ) -> Box<f64> {
+                ) -> Result<Box<f64>> {
                     args
                 }
             },
@@ -724,6 +781,30 @@ mod tests {
         assert!(errors.is_empty());
         expectorate::assert_contents(
             "tests/option_input_format.gen",
+            &openapitor::types::get_text_fmt(&item).unwrap(),
+        );
+    }
+
+    #[test]
+    fn test_stdlib_return_vec_sketch_group() {
+        let (item, errors) = do_stdlib(
+            quote! {
+                name = "import",
+            },
+            quote! {
+                fn inner_import(
+                    /// The args to do shit to.
+                    args: Option<kittycad::types::InputFormat>
+                ) -> Result<Vec<SketchGroup>> {
+                    args
+                }
+            },
+        )
+        .unwrap();
+
+        assert!(errors.is_empty());
+        expectorate::assert_contents(
+            "tests/return_vec_sketch_group.gen",
             &openapitor::types::get_text_fmt(&item).unwrap(),
         );
     }

@@ -8,47 +8,71 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{Geometries, Geometry, MemoryItem},
+    executor::{Geometries, Geometry, MemoryItem, SketchGroup},
     std::Args,
 };
 
-/// Data for a linear pattern.
+/// Data for a linear pattern on a 2D sketch.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
-pub struct LinearPatternData {
+pub struct LinearPattern2dData {
     /// The number of repetitions. Must be greater than 0.
     /// This excludes the original entity. For example, if `repetitions` is 1,
     /// the original entity will be copied once.
-    pub repetitions: usize,
+    pub repetitions: u32,
     /// The distance between each repetition. This can also be referred to as spacing.
     pub distance: f64,
     /// The axis of the pattern. This is a 2D vector.
     pub axis: [f64; 2],
 }
 
-/// Data for a circular pattern.
+/// Data for a linear pattern on a 3D model.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
-pub struct CircularPatternData {
+pub struct LinearPattern3dData {
     /// The number of repetitions. Must be greater than 0.
     /// This excludes the original entity. For example, if `repetitions` is 1,
     /// the original entity will be copied once.
-    pub repetitions: usize,
-    /// The axis around which to make the pattern. This is a 2D vector.
-    pub axis: [f64; 2],
-    /// The center about which to make th pattern. This is a 3D vector.
-    pub center: [f64; 3],
-    /// The arc angle (in degrees) to place the repetitions. Must be greater than 0.
-    pub arc_degrees: f64,
-    /// Whether or not to rotate the duplicates as they are copied.
-    pub rotate_duplicates: bool,
+    pub repetitions: u32,
+    /// The distance between each repetition. This can also be referred to as spacing.
+    pub distance: f64,
+    /// The axis of the pattern.
+    pub axis: [f64; 3],
+}
+
+pub enum LinearPattern {
+    ThreeD(LinearPattern3dData),
+    TwoD(LinearPattern2dData),
+}
+
+impl LinearPattern {
+    pub fn axis(&self) -> [f64; 3] {
+        match self {
+            LinearPattern::TwoD(lp) => [lp.axis[0], lp.axis[1], 0.0],
+            LinearPattern::ThreeD(lp) => lp.axis,
+        }
+    }
+
+    pub fn repetitions(&self) -> u32 {
+        match self {
+            LinearPattern::TwoD(lp) => lp.repetitions,
+            LinearPattern::ThreeD(lp) => lp.repetitions,
+        }
+    }
+
+    pub fn distance(&self) -> f64 {
+        match self {
+            LinearPattern::TwoD(lp) => lp.distance,
+            LinearPattern::ThreeD(lp) => lp.distance,
+        }
+    }
 }
 
 /// A linear pattern.
-pub async fn pattern_linear(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, geometry): (LinearPatternData, Geometry) = args.get_data_and_geometry()?;
+pub async fn pattern_linear_2d(args: Args) -> Result<MemoryItem, KclError> {
+    let (data, sketch_group): (LinearPattern2dData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
 
     if data.axis == [0.0, 0.0] {
         return Err(KclError::Semantic(KclErrorDetails {
@@ -59,38 +83,37 @@ pub async fn pattern_linear(args: Args) -> Result<MemoryItem, KclError> {
         }));
     }
 
-    let new_geometries = inner_pattern_linear(data, geometry, args).await?;
-    match new_geometries {
-        Geometries::SketchGroups(sketch_groups) => Ok(MemoryItem::SketchGroups { value: sketch_groups }),
-        Geometries::ExtrudeGroups(extrude_groups) => Ok(MemoryItem::ExtrudeGroups { value: extrude_groups }),
-    }
+    let sketch_groups = inner_pattern_linear_2d(data, sketch_group, args).await?;
+    Ok(MemoryItem::SketchGroups { value: sketch_groups })
 }
 
-/// A circular pattern.
-pub async fn pattern_circular(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, geometry): (CircularPatternData, Geometry) = args.get_data_and_geometry()?;
+/// A linear pattern on a 2D sketch.
+#[stdlib {
+    name = "patternLinear2d",
+}]
+async fn inner_pattern_linear_2d(
+    data: LinearPattern2dData,
+    sketch_group: Box<SketchGroup>,
+    args: Args,
+) -> Result<Vec<Box<SketchGroup>>, KclError> {
+    let geometries = pattern_linear(
+        LinearPattern::TwoD(data),
+        Geometry::SketchGroup(sketch_group),
+        args.clone(),
+    )
+    .await?;
 
-    if data.axis == [0.0, 0.0] {
+    let Geometries::SketchGroups(sketch_groups) = geometries else {
         return Err(KclError::Semantic(KclErrorDetails {
-            message:
-                "The axis of the circular pattern cannot be the zero vector. Otherwise they will just duplicate in place."
-                    .to_string(),
+            message: "Expected a vec of sketch groups".to_string(),
             source_ranges: vec![args.source_range],
         }));
-    }
+    };
 
-    let new_geometries = inner_pattern_circular(data, geometry, args).await?;
-    match new_geometries {
-        Geometries::SketchGroups(sketch_groups) => Ok(MemoryItem::SketchGroups { value: sketch_groups }),
-        Geometries::ExtrudeGroups(extrude_groups) => Ok(MemoryItem::ExtrudeGroups { value: extrude_groups }),
-    }
+    Ok(sketch_groups)
 }
 
-/// A linear pattern.
-#[stdlib {
-    name = "patternLinear",
-}]
-async fn inner_pattern_linear(data: LinearPatternData, geometry: Geometry, args: Args) -> Result<Geometries, KclError> {
+async fn pattern_linear(data: LinearPattern, geometry: Geometry, args: Args) -> Result<Geometries, KclError> {
     let id = uuid::Uuid::new_v4();
 
     let resp = args
@@ -98,13 +121,13 @@ async fn inner_pattern_linear(data: LinearPatternData, geometry: Geometry, args:
             id,
             ModelingCmd::EntityLinearPattern {
                 axis: kittycad::types::Point3D {
-                    x: data.axis[0],
-                    y: data.axis[1],
-                    z: 0.0,
+                    x: data.axis()[0],
+                    y: data.axis()[1],
+                    z: data.axis()[2],
                 },
                 entity_id: geometry.id(),
-                num_repetitions: data.repetitions as u32,
-                spacing: data.distance,
+                num_repetitions: data.repetitions(),
+                spacing: data.distance(),
             },
         )
         .await?;
@@ -143,15 +166,119 @@ async fn inner_pattern_linear(data: LinearPatternData, geometry: Geometry, args:
     Ok(geometries)
 }
 
+/// Data for a circular pattern on a 2D sketch.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct CircularPattern2dData {
+    /// The number of repetitions. Must be greater than 0.
+    /// This excludes the original entity. For example, if `repetitions` is 1,
+    /// the original entity will be copied once.
+    pub repetitions: u32,
+    /// The center about which to make th pattern. This is a 2D vector.
+    pub center: [f64; 2],
+    /// The arc angle (in degrees) to place the repetitions. Must be greater than 0.
+    pub arc_degrees: f64,
+    /// Whether or not to rotate the duplicates as they are copied.
+    pub rotate_duplicates: bool,
+}
+
+/// Data for a circular pattern on a 3D model.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct CircularPattern3dData {
+    /// The number of repetitions. Must be greater than 0.
+    /// This excludes the original entity. For example, if `repetitions` is 1,
+    /// the original entity will be copied once.
+    pub repetitions: u32,
+    /// The axis around which to make the pattern. This is a 3D vector.
+    pub axis: [f64; 3],
+    /// The center about which to make th pattern. This is a 3D vector.
+    pub center: [f64; 3],
+    /// The arc angle (in degrees) to place the repetitions. Must be greater than 0.
+    pub arc_degrees: f64,
+    /// Whether or not to rotate the duplicates as they are copied.
+    pub rotate_duplicates: bool,
+}
+
+pub enum CircularPattern {
+    ThreeD(CircularPattern3dData),
+    TwoD(CircularPattern2dData),
+}
+
+impl CircularPattern {
+    pub fn axis(&self) -> [f64; 3] {
+        match self {
+            CircularPattern::TwoD(lp) => [0.0, 0.0, 0.0],
+            CircularPattern::ThreeD(lp) => lp.axis,
+        }
+    }
+
+    pub fn center(&self) -> [f64; 3] {
+        match self {
+            CircularPattern::TwoD(lp) => [lp.center[0], lp.center[1], 0.0],
+            CircularPattern::ThreeD(lp) => lp.center,
+        }
+    }
+
+    pub fn repetitions(&self) -> u32 {
+        match self {
+            CircularPattern::TwoD(lp) => lp.repetitions,
+            CircularPattern::ThreeD(lp) => lp.repetitions,
+        }
+    }
+
+    pub fn arc_degrees(&self) -> f64 {
+        match self {
+            CircularPattern::TwoD(lp) => lp.arc_degrees,
+            CircularPattern::ThreeD(lp) => lp.arc_degrees,
+        }
+    }
+
+    pub fn rotate_duplicates(&self) -> bool {
+        match self {
+            CircularPattern::TwoD(lp) => lp.rotate_duplicates,
+            CircularPattern::ThreeD(lp) => lp.rotate_duplicates,
+        }
+    }
+}
+
+/// A circular pattern on a 2D sketch.
+pub async fn pattern_circular_2d(args: Args) -> Result<MemoryItem, KclError> {
+    let (data, sketch_group): (CircularPattern2dData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
+
+    let sketch_groups = inner_pattern_circular_2d(data, sketch_group, args).await?;
+    Ok(MemoryItem::SketchGroups { value: sketch_groups })
+}
+
 /// A Circular pattern.
 #[stdlib {
-    name = "patternCircular",
+    name = "patternCircular2d",
 }]
-async fn inner_pattern_circular(
-    data: CircularPatternData,
-    geometry: Geometry,
+async fn inner_pattern_circular_2d(
+    data: CircularPattern2dData,
+    sketch_group: Box<SketchGroup>,
     args: Args,
-) -> Result<Geometries, KclError> {
+) -> Result<Vec<Box<SketchGroup>>, KclError> {
+    let geometries = pattern_circular(
+        CircularPattern::TwoD(data),
+        Geometry::SketchGroup(sketch_group),
+        args.clone(),
+    )
+    .await?;
+
+    let Geometries::SketchGroups(sketch_groups) = geometries else {
+        return Err(KclError::Semantic(KclErrorDetails {
+            message: "Expected a vec of sketch groups".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    };
+
+    Ok(sketch_groups)
+}
+
+async fn pattern_circular(data: CircularPattern, geometry: Geometry, args: Args) -> Result<Geometries, KclError> {
     let id = uuid::Uuid::new_v4();
 
     let resp = args
@@ -159,15 +286,15 @@ async fn inner_pattern_circular(
             id,
             ModelingCmd::EntityCircularPattern {
                 axis: kittycad::types::Point3D {
-                    x: data.axis[0],
-                    y: data.axis[1],
-                    z: 0.0,
+                    x: data.axis()[0],
+                    y: data.axis()[1],
+                    z: data.axis()[2],
                 },
                 entity_id: geometry.id(),
-                center: data.center.into(),
-                num_repetitions: data.repetitions as u32,
-                arc_degrees: data.arc_degrees,
-                rotate_duplicates: data.rotate_duplicates,
+                center: data.center().into(),
+                num_repetitions: data.repetitions(),
+                arc_degrees: data.arc_degrees(),
+                rotate_duplicates: data.rotate_duplicates(),
             },
         )
         .await?;

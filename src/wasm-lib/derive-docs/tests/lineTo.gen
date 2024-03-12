@@ -63,7 +63,7 @@ impl crate::docs::StdLibFn for LineTo {
         Some(crate::docs::StdLibFnArg {
             name: "".to_string(),
             type_: "SketchGroup".to_string(),
-            schema: SketchGroup::json_schema(&mut generator),
+            schema: <SketchGroup>::json_schema(&mut generator),
             required: true,
         })
     }

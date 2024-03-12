@@ -1,13 +1,13 @@
 #[allow(non_camel_case_types, missing_docs)]
-#[doc = "Std lib function: min"]
+#[doc = "Std lib function: import"]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, schemars :: JsonSchema, ts_rs :: TS)]
 #[ts(export)]
-pub(crate) struct Min {}
+pub(crate) struct Import {}
 
 #[allow(non_upper_case_globals, missing_docs)]
-#[doc = "Std lib function: min"]
-pub(crate) const Min: Min = Min {};
-fn boxed_min(
+#[doc = "Std lib function: import"]
+pub(crate) const Import: Import = Import {};
+fn boxed_import(
     args: crate::std::Args,
 ) -> std::pin::Pin<
     Box<
@@ -16,12 +16,12 @@ fn boxed_min(
         >,
     >,
 > {
-    Box::pin(min(args))
+    Box::pin(import(args))
 }
 
-impl crate::docs::StdLibFn for Min {
+impl crate::docs::StdLibFn for Import {
     fn name(&self) -> String {
-        "min".to_string()
+        "import".to_string()
     }
 
     fn summary(&self) -> String {
@@ -42,9 +42,9 @@ impl crate::docs::StdLibFn for Min {
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
         vec![crate::docs::StdLibFnArg {
             name: "args".to_string(),
-            type_: "[number]".to_string(),
-            schema: <Vec<f64>>::json_schema(&mut generator),
-            required: true,
+            type_: "kittycad::types::InputFormat".to_string(),
+            schema: <Option<kittycad::types::InputFormat>>::json_schema(&mut generator),
+            required: false,
         }]
     }
 
@@ -54,8 +54,8 @@ impl crate::docs::StdLibFn for Min {
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
         Some(crate::docs::StdLibFnArg {
             name: "".to_string(),
-            type_: "number".to_string(),
-            schema: <f64>::json_schema(&mut generator),
+            type_: "Vec < SketchGroup >".to_string(),
+            schema: <Vec<SketchGroup>>::json_schema(&mut generator),
             required: true,
         })
     }
@@ -69,7 +69,7 @@ impl crate::docs::StdLibFn for Min {
     }
 
     fn std_lib_fn(&self) -> crate::std::StdFn {
-        boxed_min
+        boxed_import
     }
 
     fn clone_box(&self) -> Box<dyn crate::docs::StdLibFn> {
@@ -77,13 +77,8 @@ impl crate::docs::StdLibFn for Min {
     }
 }
 
-fn inner_min(#[doc = r" The args to do shit to."] args: Vec<f64>) -> f64 {
-    let mut min = std::f64::MAX;
-    for arg in args.iter() {
-        if *arg < min {
-            min = *arg;
-        }
-    }
-
-    min
+fn inner_import(
+    #[doc = r" The args to do shit to."] args: Option<kittycad::types::InputFormat>,
+) -> Result<Vec<SketchGroup>> {
+    args
 }

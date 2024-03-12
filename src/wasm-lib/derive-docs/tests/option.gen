@@ -55,7 +55,7 @@ impl crate::docs::StdLibFn for Show {
         Some(crate::docs::StdLibFnArg {
             name: "".to_string(),
             type_: "number".to_string(),
-            schema: f64::json_schema(&mut generator),
+            schema: <f64>::json_schema(&mut generator),
             required: true,
         })
     }
@@ -77,6 +77,6 @@ impl crate::docs::StdLibFn for Show {
     }
 }
 
-fn inner_show(#[doc = r" The args to do shit to."] args: Option<f64>) -> Box<f64> {
+fn inner_show(#[doc = r" The args to do shit to."] args: Option<f64>) -> Result<Box<f64>> {
     args
 }
