@@ -1,5 +1,6 @@
 //! A shared backend trait for lsp servers memory and behavior.
 
+use anyhow::Result;
 use dashmap::DashMap;
 use tower_lsp::lsp_types::{
     CreateFilesParams, DeleteFilesParams, DidChangeConfigurationParams, DidChangeTextDocumentParams,
@@ -7,6 +8,8 @@ use tower_lsp::lsp_types::{
     DidOpenTextDocumentParams, DidSaveTextDocumentParams, InitializedParams, MessageType, RenameFilesParams,
     TextDocumentItem, WorkspaceFolder,
 };
+
+use crate::fs::FileSystem;
 
 /// A trait for the backend of the language server.
 #[async_trait::async_trait]
@@ -22,13 +25,13 @@ pub trait Backend {
     fn remove_workspace_folders(&self, folders: Vec<WorkspaceFolder>);
 
     /// Get the current code map.
-    fn current_code_map(&self) -> DashMap<String, String>;
+    fn current_code_map(&self) -> DashMap<String, Vec<u8>>;
 
     /// Insert a new code map.
-    fn insert_current_code_map(&self, uri: String, text: String);
+    fn insert_current_code_map(&self, uri: String, text: Vec<u8>);
 
     // Remove from code map.
-    fn remove_from_code_map(&self, uri: String) -> Option<(String, String)>;
+    fn remove_from_code_map(&self, uri: String) -> Option<(String, Vec<u8>)>;
 
     /// Clear the current code state.
     fn clear_code_state(&self);
@@ -37,7 +40,25 @@ pub trait Backend {
     async fn on_change(&self, params: TextDocumentItem);
 
     async fn update_memory(&self, params: TextDocumentItem) {
-        self.insert_current_code_map(params.uri.to_string(), params.text.clone());
+        self.insert_current_code_map(params.uri.to_string(), params.text.as_bytes().to_vec());
+    }
+
+    async fn update_from_disk<P: AsRef<std::path::Path> + std::marker::Send>(&self, path: P) -> Result<()> {
+        // Read over all the files in the directory and add them to our current code map.
+        let files = self.fs().get_all_files(path.as_ref(), Default::default()).await?;
+        for file in files {
+            // Read the file.
+            let contents = self.fs().read(&file, Default::default()).await?;
+            self.insert_current_code_map(
+                file.as_path()
+                    .to_str()
+                    .ok_or_else(|| anyhow::anyhow!("could not get name of file: {:?}", file))?
+                    .to_string(),
+                contents,
+            );
+        }
+
+        Ok(())
     }
 
     async fn do_initialized(&self, params: InitializedParams) {
@@ -79,7 +100,7 @@ pub trait Backend {
             .await;
         // Create each file in the code map.
         for file in params.files {
-            self.insert_current_code_map(file.uri.to_string(), String::new());
+            self.insert_current_code_map(file.uri.to_string(), Default::default());
         }
     }
 
@@ -94,7 +115,7 @@ pub trait Backend {
                 self.insert_current_code_map(file.new_uri.to_string(), value);
             } else {
                 // Otherwise create it.
-                self.insert_current_code_map(file.new_uri.to_string(), "".to_string());
+                self.insert_current_code_map(file.new_uri.to_string(), Default::default());
             }
         }
     }

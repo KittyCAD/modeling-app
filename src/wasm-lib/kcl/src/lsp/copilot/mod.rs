@@ -48,7 +48,7 @@ pub struct Backend {
     /// The workspace folders.
     pub workspace_folders: DashMap<String, WorkspaceFolder>,
     /// Current code.
-    pub current_code_map: DashMap<String, String>,
+    pub current_code_map: DashMap<String, Vec<u8>>,
     /// The token is used to authenticate requests to the API server.
     pub token: String,
     /// The editor info is used to store information about the editor.
@@ -84,15 +84,15 @@ impl crate::lsp::backend::Backend for Backend {
         }
     }
 
-    fn current_code_map(&self) -> DashMap<String, String> {
+    fn current_code_map(&self) -> DashMap<String, Vec<u8>> {
         self.current_code_map.clone()
     }
 
-    fn insert_current_code_map(&self, uri: String, text: String) {
+    fn insert_current_code_map(&self, uri: String, text: Vec<u8>) {
         self.current_code_map.insert(uri, text);
     }
 
-    fn remove_from_code_map(&self, uri: String) -> Option<(String, String)> {
+    fn remove_from_code_map(&self, uri: String) -> Option<(String, Vec<u8>)> {
         self.current_code_map.remove(&uri)
     }
 

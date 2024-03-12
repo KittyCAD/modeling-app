@@ -62,7 +62,7 @@ pub struct Backend {
     /// AST maps.
     pub ast_map: DashMap<String, crate::ast::types::Program>,
     /// Current code.
-    pub current_code_map: DashMap<String, String>,
+    pub current_code_map: DashMap<String, Vec<u8>>,
     /// Diagnostics.
     pub diagnostics_map: DashMap<String, DocumentDiagnosticReport>,
     /// Symbols map.
@@ -98,15 +98,15 @@ impl crate::lsp::backend::Backend for Backend {
         }
     }
 
-    fn current_code_map(&self) -> DashMap<String, String> {
+    fn current_code_map(&self) -> DashMap<String, Vec<u8>> {
         self.current_code_map.clone()
     }
 
-    fn insert_current_code_map(&self, uri: String, text: String) {
+    fn insert_current_code_map(&self, uri: String, text: Vec<u8>) {
         self.current_code_map.insert(uri, text);
     }
 
-    fn remove_from_code_map(&self, uri: String) -> Option<(String, String)> {
+    fn remove_from_code_map(&self, uri: String) -> Option<(String, Vec<u8>)> {
         self.current_code_map.remove(&uri)
     }
 
@@ -407,6 +407,9 @@ impl LanguageServer for Backend {
         let Some(current_code) = self.current_code_map.get(&filename) else {
             return Ok(None);
         };
+        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+            return Ok(None);
+        };
 
         let pos = position_to_char_index(params.text_document_position_params.position, &current_code);
 
@@ -521,6 +524,9 @@ impl LanguageServer for Backend {
         let Some(current_code) = self.current_code_map.get(&filename) else {
             return Ok(None);
         };
+        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+            return Ok(None);
+        };
 
         let pos = position_to_char_index(params.text_document_position_params.position, &current_code);
 
@@ -599,6 +605,9 @@ impl LanguageServer for Backend {
         let Some(current_code) = self.current_code_map.get(&filename) else {
             return Ok(None);
         };
+        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+            return Ok(None);
+        };
 
         // Parse the ast.
         // I don't know if we need to do this again since it should be updated in the context.
@@ -629,6 +638,9 @@ impl LanguageServer for Backend {
         let filename = params.text_document_position.text_document.uri.to_string();
 
         let Some(current_code) = self.current_code_map.get(&filename) else {
+            return Ok(None);
+        };
+        let Ok(current_code) = std::str::from_utf8(&current_code) else {
             return Ok(None);
         };
 
