@@ -1,7 +1,7 @@
-import init, { InitOutput, ServerConfig } from 'wasm-lib/pkg/wasm_lib'
+import { InitOutput, ServerConfig } from 'wasm-lib/pkg/wasm_lib'
 import { FromServer, IntoServer } from './codec'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
-import { copilotLspRun, kclLspRun } from 'lang/wasm'
+import { copilotLspRun, initPromise, kclLspRun } from 'lang/wasm'
 
 export default class Server {
   readonly initOutput: InitOutput
@@ -22,7 +22,7 @@ export default class Server {
     intoServer: IntoServer,
     fromServer: FromServer
   ): Promise<Server> {
-    const initOutput = await init()
+    const initOutput = await initPromise
     const server = new Server(initOutput, intoServer, fromServer)
     return server
   }
