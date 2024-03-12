@@ -88,7 +88,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
 
     const lspClient = new LanguageServerClient({ client, name: 'kcl' })
     return { lspClient }
-  }, [setIsKclLspServerReady])
+  }, [setIsKclLspServerReady, auth])
 
   // Here we initialize the plugin which will start the client.
   // Now that we have multi-file support the name of the file is a dep of
@@ -124,7 +124,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
 
     const lspClient = new LanguageServerClient({ client, name: 'copilot' })
     return { lspClient }
-  }, [setIsCopilotLspServerReady])
+  }, [setIsCopilotLspServerReady, auth])
 
   // Here we initialize the plugin which will start the client.
   // When we have multi-file support the name of the file will be a dep of

@@ -75,6 +75,8 @@ pub trait Backend {
     }
 
     async fn do_did_change_workspace_folders(&self, params: DidChangeWorkspaceFoldersParams) {
+        // TODO: If we are adding a folder that we were previously on, we should not clear the
+        // state.
         self.add_workspace_folders(params.event.added.clone());
         self.remove_workspace_folders(params.event.removed);
         // Remove the code from the current code map.
