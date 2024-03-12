@@ -106,6 +106,10 @@ impl crate::lsp::backend::Backend for Backend {
         self.current_code_map.insert(uri, text);
     }
 
+    fn remove_from_code_map(&self, uri: String) -> Option<(String, String)> {
+        self.current_code_map.remove(&uri)
+    }
+
     fn clear_code_state(&self) {
         self.current_code_map.clear();
         self.token_map.clear();

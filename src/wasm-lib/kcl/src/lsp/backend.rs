@@ -27,6 +27,9 @@ pub trait Backend {
     /// Insert a new code map.
     fn insert_current_code_map(&self, uri: String, text: String);
 
+    // Remove from code map.
+    fn remove_from_code_map(&self, uri: String) -> Option<(String, String)>;
+
     /// Clear the current code state.
     fn clear_code_state(&self);
 
@@ -34,7 +37,6 @@ pub trait Backend {
     async fn on_change(&self, params: TextDocumentItem);
 
     async fn update_memory(&self, params: TextDocumentItem) {
-        // Lets update the tokens.
         self.insert_current_code_map(params.uri.to_string(), params.text.clone());
     }
 
@@ -75,18 +77,36 @@ pub trait Backend {
         self.client()
             .log_message(MessageType::INFO, format!("files created: {:?}", params))
             .await;
+        // Create each file in the code map.
+        for file in params.files {
+            self.insert_current_code_map(file.uri.to_string(), String::new());
+        }
     }
 
     async fn do_did_rename_files(&self, params: RenameFilesParams) {
         self.client()
             .log_message(MessageType::INFO, format!("files renamed: {:?}", params))
             .await;
+        // Rename each file in the code map.
+        for file in params.files {
+            if let Some((_, value)) = self.remove_from_code_map(file.old_uri) {
+                // Rename the file if it exists.
+                self.insert_current_code_map(file.new_uri.to_string(), value);
+            } else {
+                // Otherwise create it.
+                self.insert_current_code_map(file.new_uri.to_string(), "".to_string());
+            }
+        }
     }
 
     async fn do_did_delete_files(&self, params: DeleteFilesParams) {
         self.client()
             .log_message(MessageType::INFO, format!("files deleted: {:?}", params))
             .await;
+        // Delete each file in the map.
+        for file in params.files {
+            self.remove_from_code_map(file.uri.to_string());
+        }
     }
 
     async fn do_did_open(&self, params: DidOpenTextDocumentParams) {
