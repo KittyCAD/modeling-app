@@ -167,7 +167,7 @@ impl ServerConfig {
 
 // NOTE: input needs to be an AsyncIterator<Uint8Array, never, void> specifically
 #[wasm_bindgen]
-pub async fn kcl_lsp_run(config: ServerConfig) -> Result<(), JsValue> {
+pub async fn kcl_lsp_run(config: ServerConfig, token: String) -> Result<(), JsValue> {
     console_error_panic_hook::set_once();
 
     let ServerConfig {
@@ -196,6 +196,7 @@ pub async fn kcl_lsp_run(config: ServerConfig) -> Result<(), JsValue> {
         diagnostics_map: Default::default(),
         symbols_map: Default::default(),
         semantic_tokens_map: Default::default(),
+        zoo_client: kittycad::Client::new(token),
     });
 
     let input = wasm_bindgen_futures::stream::JsStream::from(into_server);
@@ -242,7 +243,7 @@ pub async fn copilot_lsp_run(config: ServerConfig, token: String) -> Result<(), 
         current_code_map: Default::default(),
         editor_info: Arc::new(RwLock::new(kcl_lib::lsp::copilot::types::CopilotEditorInfo::default())),
         cache: kcl_lib::lsp::copilot::cache::CopilotCache::new(),
-        token,
+        zoo_client: kittycad::Client::new(token),
     })
     .custom_method("setEditorInfo", kcl_lib::lsp::copilot::Backend::set_editor_info)
     .custom_method(

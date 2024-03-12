@@ -49,8 +49,8 @@ pub struct Backend {
     pub workspace_folders: DashMap<String, WorkspaceFolder>,
     /// Current code.
     pub current_code_map: DashMap<String, Vec<u8>>,
-    /// The token is used to authenticate requests to the API server.
-    pub token: String,
+    /// The Zoo API client.
+    pub zoo_client: kittycad::Client,
     /// The editor info is used to store information about the editor.
     pub editor_info: Arc<RwLock<CopilotEditorInfo>>,
     /// The cache is used to store the results of previous requests.
@@ -129,8 +129,8 @@ impl Backend {
             }),
         };
 
-        let kc_client = kittycad::Client::new(&self.token);
-        let resp = kc_client
+        let resp = self
+            .zoo_client
             .ai()
             .create_kcl_code_completions(&body)
             .await

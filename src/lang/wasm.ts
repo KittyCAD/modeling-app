@@ -295,14 +295,14 @@ export async function copilotLspRun(config: ServerConfig, token: string) {
   }
 }
 
-export async function kclLspRun(config: ServerConfig) {
+export async function kclLspRun(config: ServerConfig, token: string) {
   try {
     console.log('start kcl lsp')
-    await kcl_lsp_run(config)
+    await kcl_lsp_run(config, token)
   } catch (e: any) {
     console.log('kcl lsp failed', e)
     // We make it restart recursively so that if it ever dies after like
     // 8 hours or something it will come back to life.
-    await kclLspRun(config)
+    await kclLspRun(config, token)
   }
 }

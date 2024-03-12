@@ -69,6 +69,8 @@ pub struct Backend {
     pub symbols_map: DashMap<String, Vec<DocumentSymbol>>,
     /// Semantic tokens map.
     pub semantic_tokens_map: DashMap<String, Vec<SemanticToken>>,
+    /// The Zoo API client.
+    pub zoo_client: kittycad::Client,
 }
 
 // Implement the shared backend trait for the language server.
