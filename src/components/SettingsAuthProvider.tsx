@@ -31,7 +31,7 @@ type MachineContext<T extends AnyStateMachine> = {
   send: Prop<InterpreterFrom<T>, 'send'>
 }
 
-type SettingsAuthContext = {
+type SettingsAuthContextType = {
   auth: MachineContext<typeof authMachine>
   settings: MachineContext<typeof settingsMachine>
 }
@@ -42,9 +42,9 @@ type SettingsAuthContext = {
 let settingsStateRef: (typeof settingsMachine)['context'] | undefined
 export const getSettingsState = () => settingsStateRef
 
-export const SettingsAuthStateContext = createContext({} as SettingsAuthContext)
+export const SettingsAuthContext = createContext({} as SettingsAuthContextType)
 
-export const SettingsAuthStateProvider = ({
+export const SettingsAuthProvider = ({
   children,
 }: {
   children: React.ReactNode
@@ -209,7 +209,7 @@ export const SettingsAuthStateProvider = ({
   })
 
   return (
-    <SettingsAuthStateContext.Provider
+    <SettingsAuthContext.Provider
       value={{
         auth: {
           state: authState,
@@ -224,11 +224,11 @@ export const SettingsAuthStateProvider = ({
       }}
     >
       {children}
-    </SettingsAuthStateContext.Provider>
+    </SettingsAuthContext.Provider>
   )
 }
 
-export default SettingsAuthStateProvider
+export default SettingsAuthProvider
 
 export function logout() {
   localStorage.removeItem(TOKEN_PERSIST_KEY)

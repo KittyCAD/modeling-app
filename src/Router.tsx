@@ -20,9 +20,9 @@ import {
   PROJECT_ENTRYPOINT,
 } from './lib/tauriFS'
 import { metadata } from 'tauri-plugin-fs-extra-api'
-import DownloadAppBanner from './components/DownloadAppBanner'
-import { WasmErrBanner } from './components/WasmErrBanner'
-import { SettingsAuthStateProvider } from './components/SettingsAuthStateProvider'
+import DownloadAppBanner from 'components/DownloadAppBanner'
+import { WasmErrBanner } from 'components/WasmErrBanner'
+import { SettingsAuthProvider } from 'components/SettingsAuthProvider'
 import { settingsMachine } from './machines/settingsMachine'
 import { SETTINGS_PERSIST_KEY } from 'lib/settings'
 import { ContextFrom } from 'xstate'
@@ -50,9 +50,7 @@ const addGlobalContextToElements = (
           ...route,
           element: (
             <CommandBarProvider>
-              <SettingsAuthStateProvider>
-                {route.element}
-              </SettingsAuthStateProvider>
+              <SettingsAuthProvider>{route.element}</SettingsAuthProvider>
             </CommandBarProvider>
           ),
         }

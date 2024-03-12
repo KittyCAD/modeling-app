@@ -1,6 +1,6 @@
-import { SettingsAuthStateContext } from 'components/SettingsAuthStateProvider'
+import { SettingsAuthContext } from 'components/SettingsAuthProvider'
 import { useContext } from 'react'
 
 export const useSettingsAuthContext = () => {
-  return useContext(SettingsAuthStateContext)
+  return useContext(SettingsAuthContext)
 }
