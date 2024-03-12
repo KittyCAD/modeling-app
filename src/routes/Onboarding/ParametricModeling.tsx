@@ -3,7 +3,7 @@ import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useStore } from '../../useStore'
 import { useBackdropHighlight } from 'hooks/useBackdropHighlight'
 import { Themes, getSystemTheme } from 'lib/theme'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 
 export default function ParametricModeling() {
   const { buttonDownInStream } = useStore((s) => ({
@@ -13,7 +13,7 @@ export default function ParametricModeling() {
     settings: {
       context: { theme },
     },
-  } = useGlobalStateContext()
+  } = useSettingsAuthContext()
   const getImageTheme = () =>
     theme === Themes.Light ||
     (theme === Themes.System && getSystemTheme() === Themes.Light)

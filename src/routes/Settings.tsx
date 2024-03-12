@@ -13,7 +13,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { type IndexLoaderData } from 'lib/types'
 import { paths } from 'lib/paths'
 import { Themes } from '../lib/theme'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import {
   CameraSystem,
   cameraSystems,
@@ -55,7 +55,7 @@ export const Settings = () => {
         },
       },
     },
-  } = useGlobalStateContext()
+  } = useSettingsAuthContext()
 
   async function handleDirectorySelection() {
     const newDirectory = await open({
