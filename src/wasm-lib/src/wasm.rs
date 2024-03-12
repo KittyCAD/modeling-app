@@ -183,6 +183,14 @@ pub async fn kcl_lsp_run(config: ServerConfig, token: String) -> Result<(), JsVa
     // we have a test for it.
     let token_types = kcl_lib::token::TokenType::all_semantic_token_types().unwrap();
 
+    let zoo_client = kittycad::Client::new(token);
+    // Check if we can send telememtry for this user.
+    let privacy_settings = zoo_client
+        .users()
+        .get_privacy_settings()
+        .await
+        .map_err(|e| e.to_string())?;
+
     let (service, socket) = LspService::new(|client| kcl_lib::lsp::kcl::Backend {
         client,
         fs: kcl_lib::fs::FileManager::new(fs),
@@ -196,7 +204,8 @@ pub async fn kcl_lsp_run(config: ServerConfig, token: String) -> Result<(), JsVa
         diagnostics_map: Default::default(),
         symbols_map: Default::default(),
         semantic_tokens_map: Default::default(),
-        zoo_client: kittycad::Client::new(token),
+        zoo_client,
+        can_send_telemetry: privacy_settings.can_train_on_data,
     });
 
     let input = wasm_bindgen_futures::stream::JsStream::from(into_server);

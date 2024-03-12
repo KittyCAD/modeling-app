@@ -71,6 +71,8 @@ pub struct Backend {
     pub semantic_tokens_map: DashMap<String, Vec<SemanticToken>>,
     /// The Zoo API client.
     pub zoo_client: kittycad::Client,
+    /// If we can send telemetry for this user.
+    pub can_send_telemetry: bool,
 }
 
 // Implement the shared backend trait for the language server.
