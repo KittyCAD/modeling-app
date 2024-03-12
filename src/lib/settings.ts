@@ -36,7 +36,7 @@ export type SettingsMachineContext = {
 }
 
 export const initialSettings: SettingsMachineContext = {
-  baseUnit: 'in' as BaseUnit,
+  baseUnit: 'mm' as BaseUnit,
   cameraControls: 'KittyCAD' as CameraSystem,
   defaultDirectory: '',
   defaultProjectName: DEFAULT_PROJECT_NAME,
@@ -44,7 +44,7 @@ export const initialSettings: SettingsMachineContext = {
   showDebugPanel: false,
   textWrapping: 'On' as Toggle,
   theme: Themes.System,
-  unitSystem: UnitSystem.Imperial,
+  unitSystem: UnitSystem.Metric,
 }
 
 function isEnumMember<T extends Record<string, unknown>>(v: unknown, e: T) {
