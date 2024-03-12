@@ -106,6 +106,15 @@ impl crate::lsp::backend::Backend for Backend {
         self.current_code_map.insert(uri, text);
     }
 
+    fn clear_code_state(&self) {
+        self.current_code_map.clear();
+        self.token_map.clear();
+        self.ast_map.clear();
+        self.diagnostics_map.clear();
+        self.symbols_map.clear();
+        self.semantic_tokens_map.clear();
+    }
+
     async fn on_change(&self, params: TextDocumentItem) {
         // We already updated the code map in the shared backend.
 

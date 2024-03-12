@@ -92,6 +92,10 @@ impl crate::lsp::backend::Backend for Backend {
         self.current_code_map.insert(uri, text);
     }
 
+    fn clear_code_state(&self) {
+        self.current_code_map.clear();
+    }
+
     async fn on_change(&self, _params: TextDocumentItem) {
         // We don't need to do anything here.
     }

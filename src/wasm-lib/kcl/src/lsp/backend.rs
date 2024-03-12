@@ -27,6 +27,9 @@ pub trait Backend {
     /// Insert a new code map.
     fn insert_current_code_map(&self, uri: String, text: String);
 
+    /// Clear the current code state.
+    fn clear_code_state(&self);
+
     /// On change event.
     async fn on_change(&self, params: TextDocumentItem);
 
@@ -51,6 +54,9 @@ pub trait Backend {
     async fn do_did_change_workspace_folders(&self, params: DidChangeWorkspaceFoldersParams) {
         self.add_workspace_folders(params.event.added);
         self.remove_workspace_folders(params.event.removed);
+        // Remove the code from the current code map.
+        // We do this since it means the user is changing projects so let's refresh the state.
+        self.clear_code_state();
     }
 
     async fn do_did_change_configuration(&self, params: DidChangeConfigurationParams) {
@@ -126,6 +132,7 @@ pub trait Backend {
             .log_message(MessageType::INFO, format!("uri: {:?}", params.text_document.uri))
             .await;
         // Get the workspace folders.
+        // The key of the workspace folder is the project name.
         let workspace_folders = self.workspace_folders();
         self.client()
             .log_message(MessageType::INFO, format!("workspace: {:?}", workspace_folders))
