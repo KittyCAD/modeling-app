@@ -115,9 +115,9 @@ async fn inner_pattern_linear_2d(
 
 /// A linear pattern on a 3D model.
 pub async fn pattern_linear_3d(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, extrude_group): (LinearPattern2dData, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+    let (data, extrude_group): (LinearPattern3dData, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
 
-    if data.axis == [0.0, 0.0] {
+    if data.axis == [0.0, 0.0, 0.0] {
         return Err(KclError::Semantic(KclErrorDetails {
             message:
                 "The axis of the linear pattern cannot be the zero vector. Otherwise they will just duplicate in place."
@@ -135,12 +135,12 @@ pub async fn pattern_linear_3d(args: Args) -> Result<MemoryItem, KclError> {
     name = "patternLinear3d",
 }]
 async fn inner_pattern_linear_3d(
-    data: LinearPattern2dData,
+    data: LinearPattern3dData,
     extrude_group: Box<ExtrudeGroup>,
     args: Args,
 ) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
     let geometries = pattern_linear(
-        LinearPattern::TwoD(data),
+        LinearPattern::ThreeD(data),
         Geometry::ExtrudeGroup(extrude_group),
         args.clone(),
     )
@@ -323,7 +323,7 @@ async fn inner_pattern_circular_2d(
 
 /// A circular pattern on a 3D model.
 pub async fn pattern_circular_3d(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, extrude_group): (CircularPattern2dData, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+    let (data, extrude_group): (CircularPattern3dData, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
 
     let extrude_groups = inner_pattern_circular_3d(data, extrude_group, args).await?;
     Ok(MemoryItem::ExtrudeGroups { value: extrude_groups })
@@ -334,12 +334,12 @@ pub async fn pattern_circular_3d(args: Args) -> Result<MemoryItem, KclError> {
     name = "patternCircular3d",
 }]
 async fn inner_pattern_circular_3d(
-    data: CircularPattern2dData,
+    data: CircularPattern3dData,
     extrude_group: Box<ExtrudeGroup>,
     args: Args,
 ) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
     let geometries = pattern_circular(
-        CircularPattern::TwoD(data),
+        CircularPattern::ThreeD(data),
         Geometry::ExtrudeGroup(extrude_group),
         args.clone(),
     )
