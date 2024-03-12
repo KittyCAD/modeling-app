@@ -2,12 +2,8 @@ import { faArrowRotateBack, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../components/ActionButton'
 import { AppHeader } from '../components/AppHeader'
 import { open } from '@tauri-apps/api/dialog'
-import {
-  BaseUnit,
-  DEFAULT_PROJECT_NAME,
-  baseUnits,
-} from '../machines/settingsMachine'
-import { Toggle } from '../components/Toggle/Toggle'
+import { BaseUnit, DEFAULT_PROJECT_NAME, baseUnits } from 'lib/settings'
+import { Toggle } from 'components/Toggle/Toggle'
 import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { type IndexLoaderData } from 'lib/types'
@@ -19,7 +15,7 @@ import {
   cameraSystems,
   cameraMouseDragGuards,
 } from 'lib/cameraControls'
-import { UnitSystem } from 'machines/settingsMachine'
+import { UnitSystem } from 'lib/settings'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
 import {
   createNewProject,
