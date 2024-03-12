@@ -1,4 +1,4 @@
-import { useCallback, MouseEventHandler } from 'react'
+import { useCallback, MouseEventHandler, useEffect } from 'react'
 import { DebugPanel } from './components/DebugPanel'
 import { v4 as uuidv4 } from 'uuid'
 import { PaneType, useStore } from './useStore'
@@ -32,11 +32,17 @@ import { engineCommandManager } from './lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { isTauri } from 'lib/isTauri'
+import { useLspContext } from 'components/LspProvider'
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
+  const { onProjectOpen } = useLspContext()
+
+  useEffect(() => {
+    onProjectOpen(project || null, file || null)
+  }, [])
 
   useHotKeyListener()
   const {

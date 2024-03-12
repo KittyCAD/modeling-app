@@ -88,6 +88,8 @@ interface LSPNotifyMap {
   initialized: LSP.InitializedParams
   'textDocument/didChange': LSP.DidChangeTextDocumentParams
   'textDocument/didOpen': LSP.DidOpenTextDocumentParams
+  'textDocument/didClose': LSP.DidCloseTextDocumentParams
+  'workspace/didChangeWorkspaceFolders': LSP.DidChangeWorkspaceFoldersParams
 }
 
 export interface LanguageServerClientOptions {
@@ -149,12 +151,40 @@ export class LanguageServerClient {
   textDocumentDidOpen(params: LSP.DidOpenTextDocumentParams) {
     this.notify('textDocument/didOpen', params)
 
+    // Update the facet of the plugins to the correct value.
+    for (const plugin of this.plugins) {
+      plugin.documentUri = params.textDocument.uri
+      plugin.languageId = params.textDocument.languageId
+    }
+
     this.updateSemanticTokens(params.textDocument.uri)
   }
 
   textDocumentDidChange(params: LSP.DidChangeTextDocumentParams) {
     this.notify('textDocument/didChange', params)
     this.updateSemanticTokens(params.textDocument.uri)
+  }
+
+  textDocumentDidClose(params: LSP.DidCloseTextDocumentParams) {
+    this.notify('textDocument/didClose', params)
+  }
+
+  workspaceDidChangeWorkspaceFolders(
+    added: LSP.WorkspaceFolder[],
+    removed: LSP.WorkspaceFolder[]
+  ) {
+    // Add all the current workspace folders in the plugin to removed.
+    for (const plugin of this.plugins) {
+      removed.push(...plugin.workspaceFolders)
+    }
+    this.notify('workspace/didChangeWorkspaceFolders', {
+      event: { added, removed },
+    })
+
+    // Add all the new workspace folders to the plugins.
+    for (const plugin of this.plugins) {
+      plugin.workspaceFolders = added
+    }
   }
 
   async updateSemanticTokens(uri: string) {
