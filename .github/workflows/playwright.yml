@@ -19,7 +19,7 @@ jobs:
       with:
         node-version-file: '.nvmrc'
         cache: 'yarn'
-    - uses: KittyCAD/action-install-cli@v0.2.21
+    - uses: KittyCAD/action-install-cli@main
     - name: Install dependencies
       run: yarn
     - name: Install Playwright Browsers
