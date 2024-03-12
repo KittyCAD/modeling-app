@@ -15,7 +15,7 @@ impl EngineConnection {
     }
 }
 
-#[async_trait::async_trait(?Send)]
+#[async_trait::async_trait]
 impl crate::engine::EngineManager for EngineConnection {
     async fn send_modeling_cmd(
         &self,

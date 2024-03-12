@@ -90,6 +90,9 @@ interface LSPNotifyMap {
   'textDocument/didOpen': LSP.DidOpenTextDocumentParams
   'textDocument/didClose': LSP.DidCloseTextDocumentParams
   'workspace/didChangeWorkspaceFolders': LSP.DidChangeWorkspaceFoldersParams
+  'workspace/didCreateFiles': LSP.CreateFilesParams
+  'workspace/didRenameFiles': LSP.RenameFilesParams
+  'workspace/didDeleteFiles': LSP.DeleteFilesParams
 }
 
 export interface LanguageServerClientOptions {
@@ -185,6 +188,18 @@ export class LanguageServerClient {
     for (const plugin of this.plugins) {
       plugin.workspaceFolders = added
     }
+  }
+
+  workspaceDidCreateFiles(params: LSP.CreateFilesParams) {
+    this.notify('workspace/didCreateFiles', params)
+  }
+
+  workspaceDidRenameFiles(params: LSP.RenameFilesParams) {
+    this.notify('workspace/didRenameFiles', params)
+  }
+
+  workspaceDidDeleteFiles(params: LSP.DeleteFilesParams) {
+    this.notify('workspace/didDeleteFiles', params)
   }
 
   async updateSemanticTokens(uri: string) {

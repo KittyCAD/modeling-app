@@ -28,7 +28,7 @@ const ProjectSidebarMenu = ({
     <div className="rounded-sm !no-underline h-9 mr-auto max-h-min min-w-max border-0 py-1 px-2 flex items-center gap-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-energy-50 dark:hover:bg-chalkboard-90">
       <Link
         onClick={() => {
-          onProjectClose(file || null, false)
+          onProjectClose(file || null, project?.path || null, false)
         }}
         to={paths.HOME}
         className="group"
@@ -39,7 +39,7 @@ const ProjectSidebarMenu = ({
         <>
           <Link
             onClick={() => {
-              onProjectClose(file || null, false)
+              onProjectClose(file || null, project?.path || null, false)
             }}
             to={paths.HOME}
             className="!no-underline"
@@ -163,7 +163,7 @@ function ProjectMenuPopover({
                   <ActionButton
                     Element="button"
                     onClick={() => {
-                      onProjectClose(file || null, true)
+                      onProjectClose(file || null, project?.path || null, true)
                     }}
                     icon={{
                       icon: faHome,
