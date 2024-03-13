@@ -1,0 +1,61 @@
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/generate-website-docs.yml
+      - 'docs/**'
+  pull_request:
+    paths:
+      - .github/workflows/generate-website-docs.yml
+  workflow_dispatch:
+name: generate-website-docs
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  generate-website-docs:
+    name: generate-website-docs 
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          # required
+          app-id: ${{ secrets.GH_ORG_APP_ID }}
+          private-key: ${{ secrets.GH_ORG_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+      # Checkout the docs repo since we will want to update the files there.
+      - uses: actions/checkout@v4
+        with:
+          repository: 'kittycad/documentation'
+          path: 'documentation'
+          token: ${{ steps.app-token.outputs.token }}
+      - name: move docs to docs
+        shell: bash
+        run: |
+          # cleanup old
+          rm -rf documentation/content/pages/docs/kcl/*.md
+          # move new
+          mv -f docs/kcl/*.md documentation/content/pages/docs/kcl/
+      - name: commit the changes in the docs repo
+        shell: bash
+        run: |
+          cd documentation
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add .
+          git commit -am "YOYO NEW KCL DOCS!!" || exit 0
+          git fetch origin
+          git rebase origin/main || exit 0
+          export NEW_BRANCH="update-kcl-docs"
+          git checkout -b "$NEW_BRANCH"
+          git push -f origin "$NEW_BRANCH"
+          gh pr create --title "Update KCL docs" \
+              --body "Updating the generated kcl docs" \
+              --head "$NEW_BRANCH" \
+              --base main || true
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
