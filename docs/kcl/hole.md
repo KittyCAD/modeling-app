@@ -21,8 +21,8 @@ const square = startSketchOn('XY')
   |> line([10, 0], %)
   |> line([0, -10], %)
   |> close(%)
-  |> hole(circle([2, 2], .5, startSketchOn('XY')), %)
-  |> hole(circle([2, 8], .5, startSketchOn('XY')), %)
+  |> hole(circle([2, 2], .5, %), %)
+  |> hole(circle([2, 8], .5, %), %)
   |> extrude(2, %)
 ```
 
