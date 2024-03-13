@@ -39,7 +39,7 @@ impl Success {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Backend {
     /// The client is used to send notifications and requests to the client.
     pub client: tower_lsp::Client,
@@ -54,7 +54,7 @@ pub struct Backend {
     /// The editor info is used to store information about the editor.
     pub editor_info: Arc<RwLock<CopilotEditorInfo>>,
     /// The cache is used to store the results of previous requests.
-    pub cache: cache::CopilotCache,
+    pub cache: Arc<cache::CopilotCache>,
 }
 
 // Implement the shared backend trait for the language server.

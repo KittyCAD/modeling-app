@@ -1,14 +1,12 @@
 //! Functions for the `kcl` lsp server.
 
-use std::collections::HashMap;
-use std::str::FromStr;
+use std::{collections::HashMap, io::Write, str::FromStr};
 
 use anyhow::Result;
 #[cfg(feature = "cli")]
 use clap::Parser;
 use dashmap::DashMap;
 use sha2::Digest;
-use std::io::Write;
 use tower_lsp::{
     jsonrpc::Result as RpcResult,
     lsp_types::{

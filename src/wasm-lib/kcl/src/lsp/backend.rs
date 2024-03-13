@@ -75,13 +75,33 @@ pub trait Backend {
     }
 
     async fn do_did_change_workspace_folders(&self, params: DidChangeWorkspaceFoldersParams) {
-        // TODO: If we are adding a folder that we were previously on, we should not clear the
+        // If we are adding a folder that we were previously on, we should not clear the
         // state.
+        let should_clear = if !params.event.added.is_empty() {
+            let mut should_clear = false;
+            for folder in params.event.added.iter() {
+                if !self
+                    .workspace_folders()
+                    .iter()
+                    .any(|f| f.uri == folder.uri && f.name == folder.name)
+                {
+                    should_clear = true;
+                    break;
+                }
+            }
+
+            should_clear
+        } else if params.event.removed.is_empty() && params.event.added.is_empty() {
+            false
+        } else {
+            true
+        };
+
         self.add_workspace_folders(params.event.added.clone());
         self.remove_workspace_folders(params.event.removed);
         // Remove the code from the current code map.
         // We do this since it means the user is changing projects so let's refresh the state.
-        if !self.current_code_map().is_empty() {
+        if !self.current_code_map().is_empty() && should_clear {
             self.clear_code_state();
         }
         for added in params.event.added {
