@@ -57253,6 +57253,62 @@
     "deprecated": false
   },
   {
+    "name": "to_degrees",
+    "summary": "Converts a number from radians to degrees.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "to_radians",
+    "summary": "Converts a number from degrees to radians.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
     "name": "xLine",
     "summary": "Draw a line on the x-axis.",
     "description": "",

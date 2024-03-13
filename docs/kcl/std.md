@@ -65,6 +65,8 @@
 	* [`tangentialArc`](#tangentialArc)
 	* [`tangentialArcTo`](#tangentialArcTo)
 	* [`tau`](#tau)
+	* [`to_degrees`](#to_degrees)
+	* [`to_radians`](#to_radians)
 	* [`xLine`](#xLine)
 	* [`xLineTo`](#xLineTo)
 	* [`yLine`](#yLine)
@@ -10140,6 +10142,46 @@ tau() -> number
 
 #### Arguments
 
+
+#### Returns
+
+* `number`
+
+
+
+### to_degrees
+
+Converts a number from radians to degrees.
+
+
+
+```
+to_degrees(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number` (REQUIRED)
+
+#### Returns
+
+* `number`
+
+
+
+### to_radians
+
+Converts a number from degrees to radians.
+
+
+
+```
+to_radians(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number` (REQUIRED)
 
 #### Returns
 
