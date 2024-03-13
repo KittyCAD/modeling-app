@@ -51,7 +51,7 @@ pub async fn line_to(args: Args) -> Result<MemoryItem, KclError> {
 ///
 /// ```no_run
 /// fn rectShape = (pos, w, l) => {
-///     const rr = startSketchOn('XY')
+///     const rr = startSketchOn('YZ')
 ///         |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
 ///         |> lineTo({
 ///             to: [pos[0] + w / 2, pos[1] - (l / 2)],
@@ -194,7 +194,7 @@ pub async fn y_line_to(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw a line to a point on the y-axis.
 ///
 /// ```no_run
-/// startSketchOn('XY')
+/// startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> yLineTo({
 ///    to: 10,
@@ -251,7 +251,7 @@ pub async fn line(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw a line.
 ///
 /// ```no_run
-/// startSketchOn('XY')
+/// startSketchOn('-XY')
 ///  |> startProfileAt([0, 0], %)
 ///  |> line([10, 10], %)
 ///  |> line({to: [20, 10], tag: "edge1"}, %)
@@ -338,7 +338,7 @@ pub async fn x_line(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw a line on the x-axis.
 ///
 /// ```no_run
-/// startSketchOn('XY')
+/// startSketchOn('YZ')
 ///  |> startProfileAt([0, 0], %)
 ///  |> xLine(10, %)
 ///  |> line([10, 10], %)
@@ -521,7 +521,7 @@ pub async fn angled_line_of_x_length(args: Args) -> Result<MemoryItem, KclError>
 /// Draw an angled line of a given x length.
 ///
 /// ```no_run
-/// startSketchOn('XY')
+/// startSketchOn('XZ')
 /// |> startProfileAt([0, 0], %)
 /// |> angledLineOfXLength({
 ///     angle: 45,
@@ -639,7 +639,7 @@ pub async fn angled_line_of_y_length(args: Args) -> Result<MemoryItem, KclError>
 /// Draw an angled line of a given y length.
 ///
 /// ```no_run
-/// startSketchOn('XY')
+/// startSketchOn('YZ')
 /// |> startProfileAt([0, 0], %)
 /// |> angledLineOfYLength({
 ///   angle: 45,
@@ -681,6 +681,20 @@ pub async fn angled_line_to_y(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Draw an angled line to a given y coordinate.
+///
+/// ```no_run
+/// startSketchOn('XY')
+/// |> startProfileAt([0, 0], %)
+/// |> angledLineToY({
+///  angle: 45,
+///  to: 10,
+///  tag: "edge1"
+///  }, %)
+///  |> line([10, 10], %)
+///  |> line([0, 10], %)
+///  |> close(%, "edge2")
+///  |> extrude(10, %)
+/// ```
 #[stdlib {
     name = "angledLineToY",
 }]
@@ -727,6 +741,22 @@ pub async fn angled_line_that_intersects(args: Args) -> Result<MemoryItem, KclEr
 }
 
 /// Draw an angled line that intersects with a given line.
+///
+/// ```no_run
+/// const part001 = startSketchOn('XY')
+///     |> startProfileAt([0, 0], %)
+///     |> lineTo({to:[2, 2], tag: "yo"}, %)
+///     |> lineTo([3, 1], %)
+///     |> angledLineThatIntersects({
+///         angle: 180,
+///         intersectTag: 'yo',
+///         offset: 12,
+///         tag: "yo2"
+///         }, %)
+///    |> line([4, 0], %)
+///    |> close(%, "yo3")
+///    |> extrude(10, %)
+/// ```
 #[stdlib {
     name = "angledLineThatIntersects",
 }]
@@ -775,6 +805,11 @@ pub async fn start_sketch_at(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Start a sketch at a given point on the 'XY' plane.
+///
+/// ```no_run
+/// startSketchAt([0, 0], %)
+///    |> line([10, 10], %)
+/// ```
 #[stdlib {
     name = "startSketchAt",
 }]
@@ -919,6 +954,32 @@ pub async fn start_sketch_on(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Start a sketch on a specific plane or face.
+///
+/// ```no_run
+/// startSketchOn('XY')
+///  |> startProfileAt([0, 0], %)
+///  |> line([10, 10], %)
+///  |> line({to: [20, 10], tag: "edge1"}, %)
+///  |> close(%, "edge2")
+/// ```
+///
+/// ```no_run
+/// fn cube = (pos, scale) => {
+///     const sg = startSketchOn('XY')
+///         |> startProfileAt(pos, %)
+///         |> line([0, scale], %)
+///         |> line([scale, 0], %)
+///         |> line([0, -scale], %)
+///
+///     return sg
+/// }
+///
+/// const box = cube([0,0], 20)
+///
+/// const part001 = startSketchOn(box, "start")
+/// |> close(%)
+/// |> extrude(20, %)
+/// ```
 #[stdlib {
     name = "startSketchOn",
 }]
@@ -1145,6 +1206,12 @@ pub async fn start_profile_at(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Start a profile at a given point.
+///
+/// ```no_run
+/// startSketchOn('XY')
+///     |> startProfileAt([0, 0], %)
+///     |> line([10, 10], %)
+/// ```
 #[stdlib {
     name = "startProfileAt",
 }]
@@ -1215,6 +1282,22 @@ pub async fn close(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Close the current sketch.
+///
+/// ```no_run
+/// startSketchOn('XZ')
+///    |> startProfileAt([0, 0], %)
+///    |> line([10, 10], %)
+///    |> line([10, 0], %)
+///    |> close(%)
+/// ```
+///
+/// ```no_run
+/// startSketchOn('YZ')
+///    |> startProfileAt([0, 0], %)
+///    |> line([10, 10], %)
+///    |> line([10, 0], %)
+///    |> close(%, "edge1")
+/// ```
 #[stdlib {
     name = "close",
 }]
@@ -1299,6 +1382,18 @@ pub async fn arc(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Draw an arc.
+///
+/// ```no_run
+/// startSketchOn('-YZ')
+///   |> startProfileAt([0, 0], %)
+///   |> arc({
+///   angleStart: 0,
+///   angleEnd: 360,
+///   radius: 10,
+///   tag: "edge1"
+///   }, %)
+///   |> extrude(10, %)
+/// ```
 #[stdlib {
     name = "arc",
 }]
@@ -1393,6 +1488,19 @@ pub async fn tangential_arc(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Draw an arc.
+///
+/// ```no_run
+/// startSketchOn('-YZ')
+///  |> startProfileAt([0, 0], %)
+///  |> line({to: [10, 10], tag: "edge0"}, %)
+///  |> tangentialArc({
+///   radius: 10,
+///   offset: 90,
+///   tag: "edge1"
+///   }, %)
+///   |> close(%)
+///   |> extrude(10, %)
+/// ```
 #[stdlib {
     name = "tangentialArc",
 }]
@@ -1507,6 +1615,14 @@ pub async fn tangential_arc_to(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Draw an arc.
+///
+/// ```no_run
+/// startSketchOn('-YZ')
+/// |> startProfileAt([0, 0], %)
+/// |> line({to: [10, 10], tag: "edge0"}, %)
+/// |> tangentialArcTo([10, 0], %)
+/// |> close(%)
+/// ```
 #[stdlib {
     name = "tangentialArcTo",
 }]
@@ -1579,6 +1695,19 @@ pub async fn bezier_curve(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Draw a bezier curve.
+///
+/// ```no_run
+/// startSketchOn('XY')
+///  |> startProfileAt([0, 0], %)
+///  |> bezierCurve({
+///  to: [10, 10],
+///  control1: [5, 0],
+///  control2: [5, 10],
+///  tag: "edge1"
+///  }, %)
+///  |> close(%)
+///  |> extrude(10, %)
+/// ```
 #[stdlib {
     name = "bezierCurve",
 }]
@@ -1648,6 +1777,18 @@ pub async fn hole(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Use a sketch to cut a hole in another sketch.
+///
+/// ```no_run
+/// const square = startSketchOn('XY')
+///     |> startProfileAt([0, 0], %)
+///     |> line([0, 10], %)
+///     |> line([10, 0], %)
+///     |> line([0, -10], %)
+///     |> close(%)
+///     |> hole(circle([2, 2], .5, startSketchOn('XY')), %)
+///     |> hole(circle([2, 8], .5, startSketchOn('XY')), %)
+///     |> extrude(2, %)
+/// ```
 #[stdlib {
     name = "hole",
 }]

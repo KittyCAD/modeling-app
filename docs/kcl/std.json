@@ -6014,7 +6014,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> angledLineOfXLength({ angle: 45, length: 10, tag: \"edge1\" }, %)\n  |> line([10, 10], %)\n  |> line([0, 10], %)\n  |> close(%, \"edge2\")\n  |> extrude(10, %)"
+      "startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> angledLineOfXLength({ angle: 45, length: 10, tag: \"edge1\" }, %)\n  |> line([10, 10], %)\n  |> line([0, 10], %)\n  |> close(%, \"edge2\")\n  |> extrude(10, %)"
     ]
   },
   {
@@ -7994,7 +7994,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> angledLineOfYLength({ angle: 45, length: 10, tag: \"edge1\" }, %)\n  |> line([10, 10], %)\n  |> line([0, 10], %)\n  |> close(%, \"edge2\")\n  |> extrude(10, %)\n  |> fillet({ radius: 2, tags: [\"edge1\"] }, %)"
+      "startSketchOn('YZ')\n  |> startProfileAt([0, 0], %)\n  |> angledLineOfYLength({ angle: 45, length: 10, tag: \"edge1\" }, %)\n  |> line([10, 10], %)\n  |> line([0, 10], %)\n  |> close(%, \"edge2\")\n  |> extrude(10, %)\n  |> fillet({ radius: 2, tags: [\"edge1\"] }, %)"
     ]
   },
   {
@@ -9963,7 +9963,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const part001 = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> lineTo({ to: [2, 2], tag: \"yo\" }, %)\n  |> lineTo([3, 1], %)\n  |> angledLineThatIntersects({\n       angle: 180,\n       intersectTag: 'yo',\n       offset: 12,\n       tag: \"yo2\"\n     }, %)\n  |> line([4, 0], %)\n  |> close(%, \"yo3\")\n  |> extrude(10, %)"
+    ]
   },
   {
     "name": "angledLineToX",
@@ -13921,7 +13923,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> angledLineToY({ angle: 45, to: 10, tag: \"edge1\" }, %)\n  |> line([10, 10], %)\n  |> line([0, 10], %)\n  |> close(%, \"edge2\")\n  |> extrude(10, %)"
+    ]
   },
   {
     "name": "arc",
@@ -15938,7 +15942,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "startSketchOn('-YZ')\n  |> startProfileAt([0, 0], %)\n  |> arc({\n       angleStart: 0,\n       angleEnd: 360,\n       radius: 10,\n       tag: \"edge1\"\n     }, %)\n  |> extrude(10, %)"
+    ]
   },
   {
     "name": "asin",
@@ -17984,7 +17990,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> bezierCurve({\n       to: [10, 10],\n       control1: [5, 0],\n       control2: [5, 10],\n       tag: \"edge1\"\n     }, %)\n  |> close(%)\n  |> extrude(10, %)"
+    ]
   },
   {
     "name": "ceil",
@@ -21260,7 +21268,10 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 10], %)\n  |> line([10, 0], %)\n  |> close(%)",
+      "startSketchOn('YZ')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 10], %)\n  |> line([10, 0], %)\n  |> close(%, \"edge1\")"
+    ]
   },
   {
     "name": "cos",
@@ -31715,7 +31726,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const square = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([0, 10], %)\n  |> line([10, 0], %)\n  |> line([0, -10], %)\n  |> close(%)\n  |> hole(circle([2, 2], .5, startSketchOn('XY')), %)\n  |> hole(circle([2, 8], .5, startSketchOn('XY')), %)\n  |> extrude(2, %)"
+    ]
   },
   {
     "name": "import",
@@ -36426,7 +36439,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 10], %)\n  |> line({ to: [20, 10], tag: \"edge1\" }, %)\n  |> close(%, \"edge2\")\n  |> extrude(10, %)"
+      "startSketchOn('-XY')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 10], %)\n  |> line({ to: [20, 10], tag: \"edge1\" }, %)\n  |> close(%, \"edge2\")\n  |> extrude(10, %)"
     ]
   },
   {
@@ -38405,7 +38418,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "fn rectShape = (pos, w, l) => {\n  const rr = startSketchOn('XY')\n  |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)\n  |> lineTo({\n       to: [pos[0] + w / 2, pos[1] - (l / 2)],\n       tag: \"edge1\"\n     }, %)\n  |> lineTo({\n       to: [pos[0] + w / 2, pos[1] + l / 2],\n       tag: \"edge2\"\n     }, %)\n  |> lineTo({\n       to: [pos[0] - (w / 2), pos[1] + l / 2],\n       tag: \"edge3\"\n     }, %)\n  |> close(%, \"edge4\")\n  return rr\n}\n\n// Create the mounting plate extrusion, holes, and fillets\nconst part = rectShape([0, 0], 20, 20)"
+      "fn rectShape = (pos, w, l) => {\n  const rr = startSketchOn('YZ')\n  |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)\n  |> lineTo({\n       to: [pos[0] + w / 2, pos[1] - (l / 2)],\n       tag: \"edge1\"\n     }, %)\n  |> lineTo({\n       to: [pos[0] + w / 2, pos[1] + l / 2],\n       tag: \"edge2\"\n     }, %)\n  |> lineTo({\n       to: [pos[0] - (w / 2), pos[1] + l / 2],\n       tag: \"edge3\"\n     }, %)\n  |> close(%, \"edge4\")\n  return rr\n}\n\n// Create the mounting plate extrusion, holes, and fillets\nconst part = rectShape([0, 0], 20, 20)"
     ]
   },
   {
@@ -51103,7 +51116,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 10], %)"
+    ]
   },
   {
     "name": "startSketchAt",
@@ -52119,7 +52134,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "startSketchAt([0, 0], %)\n  |> line([10, 10], %)"
+    ]
   },
   {
     "name": "startSketchOn",
@@ -53384,7 +53401,10 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 10], %)\n  |> line({ to: [20, 10], tag: \"edge1\" }, %)\n  |> close(%, \"edge2\")",
+      "fn cube = (pos, scale) => {\n  const sg = startSketchOn('XY')\n  |> startProfileAt(pos, %)\n  |> line([0, scale], %)\n  |> line([scale, 0], %)\n  |> line([0, -scale], %)\n\n  return sg\n}\n\nconst box = cube([0, 0], 20)\n\nconst part001 = startSketchOn(box, \"start\")\n  |> close(%)\n  |> extrude(20, %)"
+    ]
   },
   {
     "name": "tan",
@@ -55411,7 +55431,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "startSketchOn('-YZ')\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [10, 10], tag: \"edge0\" }, %)\n  |> tangentialArc({ radius: 10, offset: 90, tag: \"edge1\" }, %)\n  |> close(%)\n  |> extrude(10, %)"
+    ]
   },
   {
     "name": "tangentialArcTo",
@@ -57367,7 +57389,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "startSketchOn('-YZ')\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [10, 10], tag: \"edge0\" }, %)\n  |> tangentialArcTo([10, 0], %)\n  |> close(%)"
+    ]
   },
   {
     "name": "tau",
@@ -59418,7 +59442,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> xLine(10, %)\n  |> line([10, 10], %)\n  |> close(%, \"edge1\")\n  |> extrude(10, %)"
+      "startSketchOn('YZ')\n  |> startProfileAt([0, 0], %)\n  |> xLine(10, %)\n  |> line([10, 10], %)\n  |> close(%, \"edge1\")\n  |> extrude(10, %)"
     ]
   },
   {
@@ -65325,7 +65349,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> yLineTo({ to: 10, tag: \"edge1\" }, %)\n  |> line([10, 10], %)\n  |> close(%, \"edge2\")\n  |> extrude(10, %)\n  |> fillet({ radius: 2, tags: [\"edge2\"] }, %)"
+      "startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> yLineTo({ to: 10, tag: \"edge1\" }, %)\n  |> line([10, 10], %)\n  |> close(%, \"edge2\")\n  |> extrude(10, %)\n  |> fillet({ radius: 2, tags: [\"edge2\"] }, %)"
     ]
   }
 ]
