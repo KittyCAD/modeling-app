@@ -177,7 +177,7 @@ pub async fn segment_length(args: Args) -> Result<MemoryItem, KclError> {
 ///     |> startProfileAt([0, 0], %)
 ///     |> line({ to: [5, 0], tag: "thing" }, %)
 ///     |> line([5, 5], %)
-///     |> line([0, segLen(%)], %)
+///     |> line([0, segLen("thing", %)], %)
 ///     |> close(%)
 ///     |> extrude(5, %)
 /// ```
