@@ -308,7 +308,7 @@ pub async fn atan(args: Args) -> Result<MemoryItem, KclError> {
 /// Computes the arctangent of a number (in radians).
 ///
 /// ```no_run
-/// const myVar = atan(0.5)
+/// const myVar = atan(1.0)
 /// ```
 #[stdlib {
     name = "atan",
