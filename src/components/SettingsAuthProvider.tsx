@@ -5,7 +5,8 @@ import { authMachine, TOKEN_PERSIST_KEY } from '../machines/authMachine'
 import withBaseUrl from '../lib/withBaseURL'
 import React, { createContext, useEffect, useRef } from 'react'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
-import { SETTINGS_PERSIST_KEY, settingsMachine } from 'machines/settingsMachine'
+import { settingsMachine } from 'machines/settingsMachine'
+import { SETTINGS_PERSIST_KEY } from 'lib/settings'
 import { toast } from 'react-hot-toast'
 import { setThemeClass, Themes } from 'lib/theme'
 import {
@@ -37,9 +38,9 @@ type GlobalContext = {
 let settingsStateRef: (typeof settingsMachine)['context'] | undefined
 export const getSettingsState = () => settingsStateRef
 
-export const GlobalStateContext = createContext({} as GlobalContext)
+export const SettingsAuthContext = createContext({} as GlobalContext)
 
-export const GlobalStateProvider = ({
+export const SettingsAuthProvider = ({
   children,
 }: {
   children: React.ReactNode
@@ -133,7 +134,7 @@ export const GlobalStateProvider = ({
   })
 
   return (
-    <GlobalStateContext.Provider
+    <SettingsAuthContext.Provider
       value={{
         auth: {
           state: authState,
@@ -148,11 +149,11 @@ export const GlobalStateProvider = ({
       }}
     >
       {children}
-    </GlobalStateContext.Provider>
+    </SettingsAuthContext.Provider>
   )
 }
 
-export default GlobalStateProvider
+export default SettingsAuthProvider
 
 export function logout() {
   localStorage.removeItem(TOKEN_PERSIST_KEY)

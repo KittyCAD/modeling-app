@@ -815,7 +815,7 @@ async fn serial_test_top_level_expression() {
 async fn serial_test_patterns_linear_basic() {
     let code = r#"const part =  startSketchOn('XY')
     |> circle([0,0], 2, %)
-    |> patternLinear({axis: [0,1], repetitions: 12, distance: 2}, %)
+    |> patternLinear2d({axis: [0,1], repetitions: 12, distance: 2}, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
@@ -833,7 +833,7 @@ async fn serial_test_patterns_linear_basic_3d() {
     |> line([0, -1], %)
     |> close(%)
     |> extrude(1, %)
-    |> patternLinear({axis: [1, 0], repetitions: 3, distance: 6}, %)
+    |> patternLinear3d({axis: [1, 0, 1], repetitions: 3, distance: 6}, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
@@ -846,7 +846,7 @@ async fn serial_test_patterns_linear_basic_3d() {
 async fn serial_test_patterns_linear_basic_negative_distance() {
     let code = r#"const part = startSketchOn('XY')
     |> circle([0,0], 2, %)
-    |> patternLinear({axis: [0,1], repetitions: 12, distance: -2}, %)
+    |> patternLinear2d({axis: [0,1], repetitions: 12, distance: -2}, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
@@ -863,7 +863,7 @@ async fn serial_test_patterns_linear_basic_negative_distance() {
 async fn serial_test_patterns_linear_basic_negative_axis() {
     let code = r#"const part = startSketchOn('XY')
     |> circle([0,0], 2, %)
-    |> patternLinear({axis: [0,-1], repetitions: 12, distance: 2}, %)
+    |> patternLinear2d({axis: [0,-1], repetitions: 12, distance: 2}, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
@@ -880,7 +880,7 @@ async fn serial_test_patterns_linear_basic_negative_axis() {
 async fn serial_test_patterns_linear_basic_holes() {
     let code = r#"const circles = startSketchOn('XY')
     |> circle([5, 5], 1, %)
-    |> patternLinear({axis: [1,1], repetitions: 12, distance: 3}, %)
+    |> patternLinear2d({axis: [1,1], repetitions: 12, distance: 3}, %)
 
 const rectangle = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
@@ -902,7 +902,7 @@ const rectangle = startSketchOn('XY')
 async fn serial_test_patterns_circular_basic_2d() {
     let code = r#"const part = startSketchOn('XY')
     |> circle([0,0], 2, %)
-    |> patternCircular({axis: [0,1], center: [20, 20, 20], repetitions: 12, arcDegrees: 210, rotateDuplicates: true}, %)
+    |> patternCircular2d({center: [20, 20], repetitions: 12, arcDegrees: 210, rotateDuplicates: true}, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
@@ -920,7 +920,7 @@ async fn serial_test_patterns_circular_basic_3d() {
     |> line([0, -1], %)
     |> close(%)
     |> extrude(1, %)
-    |> patternCircular({axis: [0,1], center: [-20, -20, -20], repetitions: 40, arcDegrees: 360, rotateDuplicates: false}, %)
+    |> patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repetitions: 40, arcDegrees: 360, rotateDuplicates: false}, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
@@ -938,7 +938,7 @@ async fn serial_test_patterns_circular_3d_tilted_axis() {
     |> line([0, -1], %)
     |> close(%)
     |> extrude(1, %)
-    |> patternCircular({axis: [1,1], center: [10, 0, 10], repetitions: 10, arcDegrees: 360, rotateDuplicates: true}, %)
+    |> patternCircular3d({axis: [1,1,0], center: [10, 0, 10], repetitions: 10, arcDegrees: 360, rotateDuplicates: true}, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
@@ -1315,4 +1315,59 @@ const part002 = startSketchOn(part001, "end")
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_circle_tagged.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_stdlib_kcl_error_circle() {
+    let code = r#"// Mounting Plate
+// A flat piece of material, often metal or plastic, that serves as a support or base for attaching, securing, or mounting various types of equipment, devices, or components. 
+
+// Create a function that defines the body width and length of the mounting plate. Tag the corners so they can be passed through the fillet function.
+fn rectShape = (pos, w, l) => {
+  const rr = startSketchOn('XY')
+  |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
+  |> lineTo({
+       to: [pos[0] + w / 2, pos[1] - (l / 2)],
+       tag: "edge1"
+     }, %)
+  |> lineTo({
+       to: [pos[0] + w / 2, pos[1] + l / 2],
+       tag: "edge2"
+     }, %)
+  |> lineTo({
+       to: [pos[0] - (w / 2), pos[1] + l / 2],
+       tag: "edge3"
+     }, %)
+  |> close(%, "edge4")
+  return rr
+}
+
+// Define the hole radius and x, y location constants
+const holeRadius = 1
+const holeIndex = 6
+
+// Create the mounting plate extrusion, holes, and fillets
+const part = rectShape([0, 0], 20, 20)
+  |> hole(circle('XY', [-holeIndex, holeIndex], holeRadius), %)
+  |> hole(circle('XY', [holeIndex, holeIndex], holeRadius), %)
+  |> hole(circle('XY', [-holeIndex, -holeIndex], holeRadius), %)
+  |> hole(circle('XY', [holeIndex, -holeIndex], holeRadius), %)
+  |> extrude(2, %)
+  |> fillet({
+       radius: 4,
+       tags: [
+          getNextAdjacentEdge("edge1", %),
+          getNextAdjacentEdge("edge2", %),
+          getNextAdjacentEdge("edge3", %),
+          getNextAdjacentEdge("edge4", %)
+       ]
+     }, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([987, 1036])], message: "MemberExpression array is not an array: UserVal(UserVal { value: String(\"XY\"), meta: [Metadata { source_range: SourceRange([994, 998]) }] })" }"#
+    );
 }

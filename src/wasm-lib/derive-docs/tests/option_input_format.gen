@@ -55,7 +55,7 @@ impl crate::docs::StdLibFn for Import {
         Some(crate::docs::StdLibFnArg {
             name: "".to_string(),
             type_: "number".to_string(),
-            schema: f64::json_schema(&mut generator),
+            schema: <f64>::json_schema(&mut generator),
             required: true,
         })
     }
@@ -79,6 +79,6 @@ impl crate::docs::StdLibFn for Import {
 
 fn inner_import(
     #[doc = r" The args to do shit to."] args: Option<kittycad::types::InputFormat>,
-) -> Box<f64> {
+) -> Result<Box<f64>> {
     args
 }

@@ -37,9 +37,9 @@ const CompletionItemKindMap = Object.fromEntries(
 
 export class LanguageServerPlugin implements PluginValue {
   public client: LanguageServerClient
-  private documentUri: string
-  private languageId: string
-  private workspaceFolders: LSP.WorkspaceFolder[]
+  public documentUri: string
+  public languageId: string
+  public workspaceFolders: LSP.WorkspaceFolder[]
   private documentVersion: number
 
   constructor(

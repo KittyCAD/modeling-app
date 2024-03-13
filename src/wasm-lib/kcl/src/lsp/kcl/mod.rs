@@ -23,7 +23,7 @@ use tower_lsp::{
         SemanticTokensServerCapabilities, ServerCapabilities, SignatureHelp, SignatureHelpOptions, SignatureHelpParams,
         StaticRegistrationOptions, TextDocumentItem, TextDocumentRegistrationOptions, TextDocumentSyncCapability,
         TextDocumentSyncKind, TextDocumentSyncOptions, TextEdit, WorkDoneProgressOptions, WorkspaceEdit,
-        WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities,
+        WorkspaceFolder, WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities,
     },
     Client, LanguageServer,
 };
@@ -49,6 +49,8 @@ pub struct Backend {
     pub client: Client,
     /// The file system client to use.
     pub fs: crate::fs::FileManager,
+    /// The workspace folders.
+    pub workspace_folders: DashMap<String, WorkspaceFolder>,
     /// The stdlib completions for the language.
     pub stdlib_completions: HashMap<String, CompletionItem>,
     /// The stdlib signatures for the language.
@@ -60,13 +62,17 @@ pub struct Backend {
     /// AST maps.
     pub ast_map: DashMap<String, crate::ast::types::Program>,
     /// Current code.
-    pub current_code_map: DashMap<String, String>,
+    pub current_code_map: DashMap<String, Vec<u8>>,
     /// Diagnostics.
     pub diagnostics_map: DashMap<String, DocumentDiagnosticReport>,
     /// Symbols map.
     pub symbols_map: DashMap<String, Vec<DocumentSymbol>>,
     /// Semantic tokens map.
     pub semantic_tokens_map: DashMap<String, Vec<SemanticToken>>,
+    /// The Zoo API client.
+    pub zoo_client: kittycad::Client,
+    /// If we can send telemetry for this user.
+    pub can_send_telemetry: bool,
 }
 
 // Implement the shared backend trait for the language server.
@@ -80,12 +86,41 @@ impl crate::lsp::backend::Backend for Backend {
         self.fs.clone()
     }
 
-    fn current_code_map(&self) -> DashMap<String, String> {
+    fn workspace_folders(&self) -> Vec<WorkspaceFolder> {
+        self.workspace_folders.iter().map(|v| v.value().clone()).collect()
+    }
+
+    fn add_workspace_folders(&self, folders: Vec<WorkspaceFolder>) {
+        for folder in folders {
+            self.workspace_folders.insert(folder.name.to_string(), folder);
+        }
+    }
+
+    fn remove_workspace_folders(&self, folders: Vec<WorkspaceFolder>) {
+        for folder in folders {
+            self.workspace_folders.remove(&folder.name);
+        }
+    }
+
+    fn current_code_map(&self) -> DashMap<String, Vec<u8>> {
         self.current_code_map.clone()
     }
 
-    fn insert_current_code_map(&self, uri: String, text: String) {
+    fn insert_current_code_map(&self, uri: String, text: Vec<u8>) {
         self.current_code_map.insert(uri, text);
+    }
+
+    fn remove_from_code_map(&self, uri: String) -> Option<(String, Vec<u8>)> {
+        self.current_code_map.remove(&uri)
+    }
+
+    fn clear_code_state(&self) {
+        self.current_code_map.clear();
+        self.token_map.clear();
+        self.ast_map.clear();
+        self.diagnostics_map.clear();
+        self.symbols_map.clear();
+        self.semantic_tokens_map.clear();
     }
 
     async fn on_change(&self, params: TextDocumentItem) {
@@ -376,8 +411,11 @@ impl LanguageServer for Backend {
         let Some(current_code) = self.current_code_map.get(&filename) else {
             return Ok(None);
         };
+        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+            return Ok(None);
+        };
 
-        let pos = position_to_char_index(params.text_document_position_params.position, &current_code);
+        let pos = position_to_char_index(params.text_document_position_params.position, current_code);
 
         // Let's iterate over the AST and find the node that contains the cursor.
         let Some(ast) = self.ast_map.get(&filename) else {
@@ -388,7 +426,7 @@ impl LanguageServer for Backend {
             return Ok(None);
         };
 
-        let Some(hover) = value.get_hover_value_for_position(pos, &current_code) else {
+        let Some(hover) = value.get_hover_value_for_position(pos, current_code) else {
             return Ok(None);
         };
 
@@ -490,8 +528,11 @@ impl LanguageServer for Backend {
         let Some(current_code) = self.current_code_map.get(&filename) else {
             return Ok(None);
         };
+        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+            return Ok(None);
+        };
 
-        let pos = position_to_char_index(params.text_document_position_params.position, &current_code);
+        let pos = position_to_char_index(params.text_document_position_params.position, current_code);
 
         // Let's iterate over the AST and find the node that contains the cursor.
         let Some(ast) = self.ast_map.get(&filename) else {
@@ -502,7 +543,7 @@ impl LanguageServer for Backend {
             return Ok(None);
         };
 
-        let Some(hover) = value.get_hover_value_for_position(pos, &current_code) else {
+        let Some(hover) = value.get_hover_value_for_position(pos, current_code) else {
             return Ok(None);
         };
 
@@ -568,11 +609,14 @@ impl LanguageServer for Backend {
         let Some(current_code) = self.current_code_map.get(&filename) else {
             return Ok(None);
         };
+        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+            return Ok(None);
+        };
 
         // Parse the ast.
         // I don't know if we need to do this again since it should be updated in the context.
         // But I figure better safe than sorry since this will write back out to the file.
-        let tokens = crate::token::lexer(&current_code);
+        let tokens = crate::token::lexer(current_code);
         let parser = crate::parser::Parser::new(tokens);
         let Ok(ast) = parser.ast() else {
             return Ok(None);
@@ -587,7 +631,7 @@ impl LanguageServer for Backend {
             0,
         );
         let source_range = SourceRange([0, current_code.len() - 1]);
-        let range = source_range.to_lsp_range(&current_code);
+        let range = source_range.to_lsp_range(current_code);
         Ok(Some(vec![TextEdit {
             new_text: recast,
             range,
@@ -600,24 +644,27 @@ impl LanguageServer for Backend {
         let Some(current_code) = self.current_code_map.get(&filename) else {
             return Ok(None);
         };
+        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+            return Ok(None);
+        };
 
         // Parse the ast.
         // I don't know if we need to do this again since it should be updated in the context.
         // But I figure better safe than sorry since this will write back out to the file.
-        let tokens = crate::token::lexer(&current_code);
+        let tokens = crate::token::lexer(current_code);
         let parser = crate::parser::Parser::new(tokens);
         let Ok(mut ast) = parser.ast() else {
             return Ok(None);
         };
 
         // Let's convert the position to a character index.
-        let pos = position_to_char_index(params.text_document_position.position, &current_code);
+        let pos = position_to_char_index(params.text_document_position.position, current_code);
         // Now let's perform the rename on the ast.
         ast.rename_symbol(&params.new_name, pos);
         // Now recast it.
         let recast = ast.recast(&Default::default(), 0);
         let source_range = SourceRange([0, current_code.len() - 1]);
-        let range = source_range.to_lsp_range(&current_code);
+        let range = source_range.to_lsp_range(current_code);
         Ok(Some(WorkspaceEdit {
             changes: Some(HashMap::from([(
                 params.text_document_position.text_document.uri,

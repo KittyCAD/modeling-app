@@ -27,6 +27,10 @@ pub struct EngineConnection {
     manager: Arc<EngineCommandManager>,
 }
 
+// Safety: WebAssembly will only ever run in a single-threaded context.
+unsafe impl Send for EngineConnection {}
+unsafe impl Sync for EngineConnection {}
+
 impl EngineConnection {
     pub async fn new(manager: EngineCommandManager) -> Result<EngineConnection, JsValue> {
         Ok(EngineConnection {
@@ -35,7 +39,7 @@ impl EngineConnection {
     }
 }
 
-#[async_trait::async_trait(?Send)]
+#[async_trait::async_trait]
 impl crate::engine::EngineManager for EngineConnection {
     async fn send_modeling_cmd(
         &self,
@@ -67,7 +71,7 @@ impl crate::engine::EngineManager for EngineConnection {
                 })
             })?;
 
-        let value = wasm_bindgen_futures::JsFuture::from(promise).await.map_err(|e| {
+        let value = crate::wasm::JsFuture::from(promise).await.map_err(|e| {
             KclError::Engine(KclErrorDetails {
                 message: format!("Failed to wait for promise from engine: {:?}", e),
                 source_ranges: vec![source_range],

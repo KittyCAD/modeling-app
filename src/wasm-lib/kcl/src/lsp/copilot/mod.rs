@@ -18,7 +18,8 @@ use tower_lsp::{
         DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams,
         DidOpenTextDocumentParams, DidSaveTextDocumentParams, InitializeParams, InitializeResult, InitializedParams,
         MessageType, OneOf, RenameFilesParams, ServerCapabilities, TextDocumentItem, TextDocumentSyncCapability,
-        TextDocumentSyncKind, TextDocumentSyncOptions, WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities,
+        TextDocumentSyncKind, TextDocumentSyncOptions, WorkspaceFolder, WorkspaceFoldersServerCapabilities,
+        WorkspaceServerCapabilities,
     },
     LanguageServer,
 };
@@ -44,10 +45,12 @@ pub struct Backend {
     pub client: tower_lsp::Client,
     /// The file system client to use.
     pub fs: crate::fs::FileManager,
+    /// The workspace folders.
+    pub workspace_folders: DashMap<String, WorkspaceFolder>,
     /// Current code.
-    pub current_code_map: DashMap<String, String>,
-    /// The token is used to authenticate requests to the API server.
-    pub token: String,
+    pub current_code_map: DashMap<String, Vec<u8>>,
+    /// The Zoo API client.
+    pub zoo_client: kittycad::Client,
     /// The editor info is used to store information about the editor.
     pub editor_info: Arc<RwLock<CopilotEditorInfo>>,
     /// The cache is used to store the results of previous requests.
@@ -65,12 +68,36 @@ impl crate::lsp::backend::Backend for Backend {
         self.fs.clone()
     }
 
-    fn current_code_map(&self) -> DashMap<String, String> {
+    fn workspace_folders(&self) -> Vec<WorkspaceFolder> {
+        self.workspace_folders.iter().map(|v| v.value().clone()).collect()
+    }
+
+    fn add_workspace_folders(&self, folders: Vec<WorkspaceFolder>) {
+        for folder in folders {
+            self.workspace_folders.insert(folder.name.to_string(), folder);
+        }
+    }
+
+    fn remove_workspace_folders(&self, folders: Vec<WorkspaceFolder>) {
+        for folder in folders {
+            self.workspace_folders.remove(&folder.name);
+        }
+    }
+
+    fn current_code_map(&self) -> DashMap<String, Vec<u8>> {
         self.current_code_map.clone()
     }
 
-    fn insert_current_code_map(&self, uri: String, text: String) {
+    fn insert_current_code_map(&self, uri: String, text: Vec<u8>) {
         self.current_code_map.insert(uri, text);
+    }
+
+    fn remove_from_code_map(&self, uri: String) -> Option<(String, Vec<u8>)> {
+        self.current_code_map.remove(&uri)
+    }
+
+    fn clear_code_state(&self) {
+        self.current_code_map.clear();
     }
 
     async fn on_change(&self, _params: TextDocumentItem) {
@@ -102,8 +129,8 @@ impl Backend {
             }),
         };
 
-        let kc_client = kittycad::Client::new(&self.token);
-        let resp = kc_client
+        let resp = self
+            .zoo_client
             .ai()
             .create_kcl_code_completions(&body)
             .await

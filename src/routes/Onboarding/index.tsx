@@ -5,7 +5,7 @@ import Camera from './Camera'
 import Sketching from './Sketching'
 import { useCallback } from 'react'
 import makeUrlPathRelative from '../../lib/makeUrlPathRelative'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import Streaming from './Streaming'
 import CodeEditor from './CodeEditor'
 import ParametricModeling from './ParametricModeling'
@@ -80,7 +80,7 @@ export function useNextClick(newStatus: string) {
   const filePath = useAbsoluteFilePath()
   const {
     settings: { send },
-  } = useGlobalStateContext()
+  } = useSettingsAuthContext()
   const navigate = useNavigate()
 
   return useCallback(() => {
@@ -96,7 +96,7 @@ export function useDismiss() {
   const filePath = useAbsoluteFilePath()
   const {
     settings: { send },
-  } = useGlobalStateContext()
+  } = useSettingsAuthContext()
   const navigate = useNavigate()
 
   return useCallback(() => {
