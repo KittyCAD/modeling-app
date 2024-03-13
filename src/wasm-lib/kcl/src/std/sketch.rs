@@ -970,6 +970,8 @@ pub async fn start_sketch_on(args: Args) -> Result<MemoryItem, KclError> {
 ///         |> line([0, scale], %)
 ///         |> line([scale, 0], %)
 ///         |> line([0, -scale], %)
+///         |> close(%)
+///         |> extrude(scale, %)
 ///
 ///     return sg
 /// }
@@ -977,6 +979,9 @@ pub async fn start_sketch_on(args: Args) -> Result<MemoryItem, KclError> {
 /// const box = cube([0,0], 20)
 ///
 /// const part001 = startSketchOn(box, "start")
+/// |> startProfileAt([0, 0], %)
+/// |> line([10, 10], %)
+/// |> line({to: [20, 10], tag: "edge1"}, %)
 /// |> close(%)
 /// |> extrude(20, %)
 /// ```
