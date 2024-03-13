@@ -49759,7 +49759,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "startSketchOn(\"YZ\")\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [5, 0], tag: \"thing\" }, %)\n  |> line([5, 5], %)\n  |> line([0, segLen(%)], %)\n  |> close(%)\n  |> extrude(5, %)"
+      "startSketchOn(\"YZ\")\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [5, 0], tag: \"thing\" }, %)\n  |> line([5, 5], %)\n  |> line([0, segLen(\"thing\", %)], %)\n  |> close(%)\n  |> extrude(5, %)"
     ]
   },
   {
