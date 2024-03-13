@@ -29,6 +29,8 @@ use crate::lsp::{
     copilot::types::{CopilotCompletionResponse, CopilotEditorInfo, CopilotLspCompletionParams, DocParams},
 };
 
+use self::types::{CopilotAcceptCompletionParams, CopilotRejectCompletionParams};
+
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Success {
     success: bool,
@@ -158,7 +160,7 @@ impl Backend {
         let pos = params.doc.position;
         let uri = params.doc.uri.to_string();
         let rope = ropey::Rope::from_str(&params.doc.source);
-        let offset = crate::lsp::util::position_to_offset(pos, &rope).unwrap_or_default();
+        let offset = crate::lsp::util::position_to_offset(pos.into(), &rope).unwrap_or_default();
 
         Ok(DocParams {
             uri: uri.to_string(),
@@ -166,7 +168,7 @@ impl Backend {
             language: params.doc.language_id.to_string(),
             prefix: crate::lsp::util::get_text_before(offset, &rope).unwrap_or_default(),
             suffix: crate::lsp::util::get_text_after(offset, &rope).unwrap_or_default(),
-            line_before: crate::lsp::util::get_line_before(pos, &rope).unwrap_or_default(),
+            line_before: crate::lsp::util::get_line_before(pos.into(), &rope).unwrap_or_default(),
             rope,
         })
     }
@@ -186,14 +188,16 @@ impl Backend {
 
         // Let's not call it yet since it's not our model.
         // We will need to wrap in spawn_local like we do in kcl/mod.rs for wasm only.
-        /*let completion_list = self
-        .get_completions(doc_params.language, doc_params.prefix, doc_params.suffix)
-        .await
-        .map_err(|err| Error {
-            code: tower_lsp::jsonrpc::ErrorCode::from(69),
-            data: None,
-            message: Cow::from(format!("Failed to get completions: {}", err)),
-        })?;*/
+        #[cfg(test)]
+        let completion_list = self
+            .get_completions(doc_params.language, doc_params.prefix, doc_params.suffix)
+            .await
+            .map_err(|err| Error {
+                code: tower_lsp::jsonrpc::ErrorCode::from(69),
+                data: None,
+                message: Cow::from(format!("Failed to get completions: {}", err)),
+            })?;
+        #[cfg(not(test))]
         let completion_list = vec![];
 
         let response = CopilotCompletionResponse::from_str_vec(completion_list, line_before, doc_params.pos);
@@ -203,7 +207,7 @@ impl Backend {
         Ok(response)
     }
 
-    pub async fn accept_completions(&self, params: Vec<String>) {
+    pub async fn accept_completions(&self, params: CopilotAcceptCompletionParams) {
         self.client
             .log_message(MessageType::INFO, format!("Accepted completions: {:?}", params))
             .await;
@@ -211,7 +215,7 @@ impl Backend {
         // TODO: send telemetry data back out that we accepted the completions
     }
 
-    pub async fn reject_completions(&self, params: Vec<String>) {
+    pub async fn reject_completions(&self, params: CopilotRejectCompletionParams) {
         self.client
             .log_message(MessageType::INFO, format!("Rejected completions: {:?}", params))
             .await;

@@ -1200,7 +1200,7 @@ async fn test_copilot_lsp_completions() {
                 insert_spaces: true,
                 language_id: "kcl".to_string(),
                 path: "file:///test.copilot".to_string(),
-                position: tower_lsp::lsp_types::Position { line: 0, character: 1 },
+                position: crate::lsp::copilot::types::CopilotPosition { line: 0, character: 1 },
                 relative_path: "test.copilot".to_string(),
                 source: r#"// Create a cube.
 fn cube = (pos, scale) => {
@@ -1227,7 +1227,43 @@ const part001 = cube([0,0], 20)
         .unwrap();
 
     // Check the completions.
-    assert_eq!(completions.completions.len(), 0);
+    assert_eq!(completions.completions.len(), 1);
+
+    // Test the cache.
+    let completions_hit_cache = server
+        .get_completions_cycling(crate::lsp::copilot::types::CopilotLspCompletionParams {
+            doc: crate::lsp::copilot::types::CopilotDocParams {
+                indent_size: 4,
+                insert_spaces: true,
+                language_id: "kcl".to_string(),
+                path: "file:///test.copilot".to_string(),
+                position: crate::lsp::copilot::types::CopilotPosition { line: 0, character: 1 },
+                relative_path: "test.copilot".to_string(),
+                source: r#"// Create a cube.
+fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+
+const part001 = cube([0,0], 20)
+    |> close(%)
+    |> extrude(20, %)
+
+"#
+                .to_string(),
+                tab_size: 4,
+                uri: "file:///test.copilot".into(),
+            },
+        })
+        .await
+        .unwrap();
+
+    assert_eq!(completions.completions, completions_hit_cache.completions);
 }
 
 #[tokio::test]
