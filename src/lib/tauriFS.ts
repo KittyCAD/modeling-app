@@ -36,6 +36,7 @@ type PathWithPossibleError = {
 }
 
 export async function getInitialDefaultDir() {
+  if (!isTauri()) return ''
   let dir
   try {
     dir = await documentDir()
@@ -51,16 +52,12 @@ export async function getInitialDefaultDir() {
 export async function initializeProjectDirectory(
   directory: string
 ): Promise<PathWithPossibleError> {
-  if (!isTauri()) {
-    throw new Error(
-      'initializeProjectDirectory() can only be called from a Tauri app'
-    )
-  }
-
   let returnValue: PathWithPossibleError = {
     path: null,
     error: null,
   }
+
+  if (!isTauri()) return returnValue
 
   if (directory) {
     returnValue = await testAndCreateDir(directory, returnValue)
