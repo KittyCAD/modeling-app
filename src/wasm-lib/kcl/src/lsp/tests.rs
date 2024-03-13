@@ -674,3 +674,136 @@ async fn test_kcl_lsp_create_zip() {
     assert!(files.get(&util_path).is_some());
     assert_eq!(files.get("/test.kcl"), Some(&4));
 }
+
+#[tokio::test]
+async fn test_kcl_lsp_completions() {
+    let server = kcl_lsp_server().unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: "st".to_string(),
+            },
+        })
+        .await;
+
+    // Send completion request.
+    let completions = server
+        .completion(tower_lsp::lsp_types::CompletionParams {
+            text_document_position: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 0, character: 1 },
+            },
+            context: None,
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    // Check the completions.
+    if let tower_lsp::lsp_types::CompletionResponse::Array(completions) = completions {
+        assert!(completions.len() > 10);
+    } else {
+        panic!("Expected array of completions");
+    }
+}
+
+#[tokio::test]
+async fn test_kcl_lsp_on_hover() {
+    let server = kcl_lsp_server().unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: "startSketchOn()".to_string(),
+            },
+        })
+        .await;
+
+    // Send hover request.
+    let hover = server
+        .hover(tower_lsp::lsp_types::HoverParams {
+            text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 0, character: 2 },
+            },
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    // Check the hover.
+    if let Some(hover) = hover {
+        assert_eq!(
+            hover.contents,
+            tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent {
+                kind: tower_lsp::lsp_types::MarkupKind::Markdown,
+                value: "```startSketchOn(data: SketchData, tag?: SketchOnFaceTag) -> SketchSurface```\nStart a sketch on a specific plane or face.".to_string()
+            })
+        );
+    } else {
+        panic!("Expected hover");
+    }
+}
+
+#[tokio::test]
+async fn test_kcl_lsp_signature_help() {
+    let server = kcl_lsp_server().unwrap();
+
+    // Send open file.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 1,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: "startSketchOn('XY')".to_string(),
+            }],
+        })
+        .await;
+
+    // Send signature help request.
+    let signature_help = server
+        .signature_help(tower_lsp::lsp_types::SignatureHelpParams {
+            text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 0, character: 2 },
+            },
+            context: None,
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    // Check the signature help.
+    if let Some(signature_help) = signature_help {
+        assert_eq!(
+            signature_help.signatures.len(),
+            1,
+            "Expected one signature, got {:?}",
+            signature_help.signatures
+        );
+        assert_eq!(signature_help.signatures[0].label, "startSketchOn");
+    } else {
+        panic!("Expected signature help");
+    }
+}
