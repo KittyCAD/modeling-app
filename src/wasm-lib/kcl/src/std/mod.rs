@@ -845,6 +845,7 @@ mod tests {
         buf.push_str("## Table of Contents\n\n");
 
         buf.push_str("* [Types](types.md)\n");
+        buf.push_str("* [Known Issues](KNOWN-ISSUES.md)\n");
 
         for key in combined.keys().sorted() {
             let internal_fn = combined.get(key).unwrap();
