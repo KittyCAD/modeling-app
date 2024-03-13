@@ -26,7 +26,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const myVar = abs(-4)"
+    ]
   },
   {
     "name": "acos",
@@ -55,7 +57,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const myVar = acos(0.5)"
+    ]
   },
   {
     "name": "angleToMatchLengthX",
@@ -15955,7 +15959,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const myVar = asin(0.5)"
+    ]
   },
   {
     "name": "atan",
@@ -15984,7 +15990,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const myVar = atan(0.5)"
+    ]
   },
   {
     "name": "bezierCurve",
@@ -17997,7 +18005,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const myVar = ceil(4.5)"
+    ]
   },
   {
     "name": "circle",
@@ -21272,7 +21282,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const angle = cos(2 * pi())\n"
+      "const anotherVar = cos(2 * pi())"
     ]
   },
   {
@@ -21292,7 +21302,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const myVar = e()"
+    ]
   },
   {
     "name": "extrude",
@@ -24619,7 +24631,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const myVar = floor(4.5)"
+    ]
   },
   {
     "name": "getExtrudeWallTransform",
@@ -38391,7 +38405,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const myVar = ln(4)"
+    ]
   },
   {
     "name": "log",
@@ -38429,7 +38445,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const myVar = log(4, 2)"
+    ]
   },
   {
     "name": "log10",
@@ -38458,7 +38476,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const myVar = log10(4)"
+    ]
   },
   {
     "name": "log2",
@@ -38487,7 +38507,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const myVar = log2(4)"
+    ]
   },
   {
     "name": "max",
@@ -38519,7 +38541,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const myVar = max(4, 5, 6)"
+    ]
   },
   {
     "name": "min",
@@ -38551,7 +38575,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const myVar = min(4, 5, 6)"
+    ]
   },
   {
     "name": "patternCircular2d",
@@ -45663,7 +45689,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const myVar = pi() * 3.0"
+    ]
   },
   {
     "name": "pow",
@@ -45701,7 +45729,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const myVar = pow(4, 2)"
+    ]
   },
   {
     "name": "segAng",
@@ -49686,7 +49716,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const myVar = sin(2 * pi())"
+    ]
   },
   {
     "name": "sqrt",
@@ -49715,7 +49747,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const myVar = sqrt(4)"
+    ]
   },
   {
     "name": "startProfileAt",
@@ -53341,7 +53375,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const myVar = tan(2 * pi())"
+    ]
   },
   {
     "name": "tangentialArc",
@@ -57312,7 +57348,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const myVar = tau()"
+    ]
   },
   {
     "name": "to_degrees",
@@ -57341,7 +57379,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const myVar = rad_to_deg(2 * pi())"
+    ]
   },
   {
     "name": "to_radians",
@@ -57370,7 +57410,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const myVar = deg_to_rad(180)"
+    ]
   },
   {
     "name": "xLine",

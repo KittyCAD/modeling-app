@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod test_Import {}
+mod test_examples_Import {}
 
 #[allow(non_camel_case_types, missing_docs)]
 #[doc = "Std lib function: import"]

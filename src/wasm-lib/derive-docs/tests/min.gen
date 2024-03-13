@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod test_Min {}
+mod test_examples_Min {}
 
 #[allow(non_camel_case_types, missing_docs)]
 #[doc = "Std lib function: min"]

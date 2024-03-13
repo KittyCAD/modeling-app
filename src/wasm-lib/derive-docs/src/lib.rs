@@ -155,7 +155,9 @@ fn do_stdlib_inner(
                 let parser = crate::parser::Parser::new(tokens);
                 let program = parser.ast().unwrap();
 
-                program.recast(&Default::default(), 0)
+                let mut options: crate::ast::types::FormatOptions = Default::default();
+                options.insert_final_newline = false;
+                program.recast(&options, 0)
             }).collect::<Vec<String>>()
         }
     } else {
@@ -323,7 +325,7 @@ fn do_stdlib_inner(
         pub(crate) const #name_ident: #name_ident = #name_ident {};
     };
 
-    let test_mod_name = format_ident!("test_{}", name_ident);
+    let test_mod_name = format_ident!("test_examples_{}", name_ident);
 
     // The final TokenStream returned will have a few components that reference
     // `#name_ident`, the name of the function to which this macro was applied...
@@ -696,7 +698,7 @@ fn parse_array_type(type_name: &str) -> Option<(&str, usize)> {
 // For each kcl code block, we want to generate a test that checks that the
 // code block is valid kcl code and compiles and executes.
 fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> proc_macro2::TokenStream {
-    let test_name = format_ident!("test_{}{}", fn_name, index);
+    let test_name = format_ident!("test_example_{}{}", fn_name, index);
     quote! {
         #[tokio::test]
         async fn #test_name() {

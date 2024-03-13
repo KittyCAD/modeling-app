@@ -1,7 +1,7 @@
 #[cfg(test)]
-mod test_Import {
+mod test_examples_Import {
     #[tokio::test]
-    async fn test_import0() {
+    async fn test_example_import0() {
         let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
         let http_client = reqwest::Client::builder()
             .user_agent(user_agent)
@@ -34,7 +34,7 @@ mod test_Import {
     }
 
     #[tokio::test]
-    async fn test_import1() {
+    async fn test_example_import1() {
         let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
         let http_client = reqwest::Client::builder()
             .user_agent(user_agent)
@@ -148,7 +148,9 @@ impl crate::docs::StdLibFn for Import {
                 let tokens = crate::token::lexer(cb);
                 let parser = crate::parser::Parser::new(tokens);
                 let program = parser.ast().unwrap();
-                program.recast(&Default::default(), 0)
+                let mut options: crate::ast::types::FormatOptions = Default::default();
+                options.insert_final_newline = false;
+                program.recast(&options, 0)
             })
             .collect::<Vec<String>>()
     }

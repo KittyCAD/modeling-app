@@ -85,6 +85,12 @@ Computes the absolute value of a number.
 abs(num: number) -> number
 ```
 
+#### Examples
+
+```kcl
+const myVar = abs(-4)
+```
+
 #### Arguments
 
 * `num`: `number` (REQUIRED)
@@ -103,6 +109,12 @@ Computes the arccosine of a number (in radians).
 
 ```
 acos(num: number) -> number
+```
+
+#### Examples
+
+```kcl
+const myVar = acos(0.5)
 ```
 
 #### Arguments
@@ -3013,6 +3025,12 @@ Computes the arcsine of a number (in radians).
 asin(num: number) -> number
 ```
 
+#### Examples
+
+```kcl
+const myVar = asin(0.5)
+```
+
 #### Arguments
 
 * `num`: `number` (REQUIRED)
@@ -3031,6 +3049,12 @@ Computes the arctangent of a number (in radians).
 
 ```
 atan(num: number) -> number
+```
+
+#### Examples
+
+```kcl
+const myVar = atan(0.5)
 ```
 
 #### Arguments
@@ -3410,6 +3434,12 @@ Computes the smallest integer greater than or equal to a number.
 
 ```
 ceil(num: number) -> number
+```
+
+#### Examples
+
+```kcl
+const myVar = ceil(4.5)
 ```
 
 #### Arguments
@@ -4028,8 +4058,7 @@ cos(num: number) -> number
 #### Examples
 
 ```kcl
-const angle = cos(2 * pi())
-
+const anotherVar = cos(2 * pi())
 ```
 
 #### Arguments
@@ -4050,6 +4079,12 @@ Return the value of Euler’s number `e`.
 
 ```
 e() -> number
+```
+
+#### Examples
+
+```kcl
+const myVar = e()
 ```
 
 #### Arguments
@@ -4673,6 +4708,12 @@ Computes the largest integer less than or equal to a number.
 
 ```
 floor(num: number) -> number
+```
+
+#### Examples
+
+```kcl
+const myVar = floor(4.5)
 ```
 
 #### Arguments
@@ -7070,6 +7111,12 @@ Computes the natural logarithm of the number.
 ln(num: number) -> number
 ```
 
+#### Examples
+
+```kcl
+const myVar = ln(4)
+```
+
 #### Arguments
 
 * `num`: `number` (REQUIRED)
@@ -7088,6 +7135,12 @@ The result might not be correctly rounded owing to implementation details; `log2
 
 ```
 log(num: number, base: number) -> number
+```
+
+#### Examples
+
+```kcl
+const myVar = log(4, 2)
 ```
 
 #### Arguments
@@ -7111,6 +7164,12 @@ Computes the base 10 logarithm of the number.
 log10(num: number) -> number
 ```
 
+#### Examples
+
+```kcl
+const myVar = log10(4)
+```
+
 #### Arguments
 
 * `num`: `number` (REQUIRED)
@@ -7129,6 +7188,12 @@ Computes the base 2 logarithm of the number.
 
 ```
 log2(num: number) -> number
+```
+
+#### Examples
+
+```kcl
+const myVar = log2(4)
 ```
 
 #### Arguments
@@ -7151,6 +7216,12 @@ Computes the maximum of the given arguments.
 max(args: [number]) -> number
 ```
 
+#### Examples
+
+```kcl
+const myVar = max(4, 5, 6)
+```
+
 #### Arguments
 
 * `args`: `[number]` (REQUIRED)
@@ -7169,6 +7240,12 @@ Computes the minimum of the given arguments.
 
 ```
 min(args: [number]) -> number
+```
+
+#### Examples
+
+```kcl
+const myVar = min(4, 5, 6)
 ```
 
 #### Arguments
@@ -7907,6 +7984,12 @@ Return the value of `pi`. Archimedes’ constant (π).
 pi() -> number
 ```
 
+#### Examples
+
+```kcl
+const myVar = pi() * 3.0
+```
+
 #### Arguments
 
 
@@ -7924,6 +8007,12 @@ Computes the number to a power.
 
 ```
 pow(num: number, pow: number) -> number
+```
+
+#### Examples
+
+```kcl
+const myVar = pow(4, 2)
 ```
 
 #### Arguments
@@ -8683,6 +8772,12 @@ Computes the sine of a number (in radians).
 sin(num: number) -> number
 ```
 
+#### Examples
+
+```kcl
+const myVar = sin(2 * pi())
+```
+
 #### Arguments
 
 * `num`: `number` (REQUIRED)
@@ -8701,6 +8796,12 @@ Computes the square root of a number.
 
 ```
 sqrt(num: number) -> number
+```
+
+#### Examples
+
+```kcl
+const myVar = sqrt(4)
 ```
 
 #### Arguments
@@ -9415,6 +9516,12 @@ Computes the tangent of a number (in radians).
 
 ```
 tan(num: number) -> number
+```
+
+#### Examples
+
+```kcl
+const myVar = tan(2 * pi())
 ```
 
 #### Arguments
@@ -10147,6 +10254,12 @@ Return the value of `tau`. The full circle constant (τ). Equal to 2π.
 tau() -> number
 ```
 
+#### Examples
+
+```kcl
+const myVar = tau()
+```
+
 #### Arguments
 
 
@@ -10164,6 +10277,12 @@ Converts a number from radians to degrees.
 
 ```
 to_degrees(num: number) -> number
+```
+
+#### Examples
+
+```kcl
+const myVar = rad_to_deg(2 * pi())
 ```
 
 #### Arguments
@@ -10184,6 +10303,12 @@ Converts a number from degrees to radians.
 
 ```
 to_radians(num: number) -> number
+```
+
+#### Examples
+
+```kcl
+const myVar = deg_to_rad(180)
 ```
 
 #### Arguments
