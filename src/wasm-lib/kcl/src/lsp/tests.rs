@@ -685,7 +685,9 @@ async fn test_kcl_lsp_completions() {
                 uri: "file:///test.kcl".try_into().unwrap(),
                 language_id: "kcl".to_string(),
                 version: 1,
-                text: "st".to_string(),
+                text: r#"const thing= 1
+st"#
+                .to_string(),
             },
         })
         .await;
@@ -697,7 +699,7 @@ async fn test_kcl_lsp_completions() {
                 text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
                     uri: "file:///test.kcl".try_into().unwrap(),
                 },
-                position: tower_lsp::lsp_types::Position { line: 0, character: 1 },
+                position: tower_lsp::lsp_types::Position { line: 0, character: 16 },
             },
             context: None,
             partial_result_params: Default::default(),
@@ -1336,6 +1338,12 @@ async fn test_copilot_rename_not_exists() {
 async fn test_lsp_initialized() {
     let copilot_server = copilot_lsp_server().unwrap();
 
+    // Send initialize request.
+    copilot_server
+        .initialize(tower_lsp::lsp_types::InitializeParams::default())
+        .await
+        .unwrap();
+
     // Send initialized request.
     copilot_server
         .initialized(tower_lsp::lsp_types::InitializedParams {})
@@ -1346,6 +1354,12 @@ async fn test_lsp_initialized() {
 
     // Now do the same for kcl.
     let kcl_server = kcl_lsp_server().unwrap();
+
+    // Send initialize request.
+    kcl_server
+        .initialize(tower_lsp::lsp_types::InitializeParams::default())
+        .await
+        .unwrap();
 
     // Send initialized request.
     kcl_server.initialized(tower_lsp::lsp_types::InitializedParams {}).await;
