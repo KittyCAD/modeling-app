@@ -845,15 +845,11 @@ layout: manual
 "#,
         );
 
-        buf.push_str("# KCL Standard Library\n\n");
-
-        buf.push_str("## Types\n\n");
-
         // Generate a table of contents.
         buf.push_str("## Table of Contents\n\n");
 
-        buf.push_str("* [Types](types.md)\n");
-        buf.push_str("* [Known Issues](KNOWN-ISSUES.md)\n");
+        buf.push_str("* [Types](kcl/types)\n");
+        buf.push_str("* [Known Issues](kcl/KNOWN-ISSUES)\n");
 
         for key in combined.keys().sorted() {
             let internal_fn = combined.get(key).unwrap();
@@ -861,7 +857,7 @@ layout: manual
                 continue;
             }
 
-            buf.push_str(&format!("* [`{}`]({}.md)\n", internal_fn.name(), internal_fn.name()));
+            buf.push_str(&format!("* [`{}`](kcl/{})\n", internal_fn.name(), internal_fn.name()));
         }
 
         // Write the index.
