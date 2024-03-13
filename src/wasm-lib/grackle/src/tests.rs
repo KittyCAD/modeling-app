@@ -1,19 +1,20 @@
 use std::{collections::HashMap, env};
 
-use ep::{Destination, UnaryArithmetic};
+use ep::{sketch_types, Destination, UnaryArithmetic};
 use ept::{ListHeader, ObjectHeader};
+use kittycad_modeling_cmds::shared::Point2d;
 use kittycad_modeling_session::SessionBuilder;
 use pretty_assertions::assert_eq;
 
 use super::*;
 
-fn must_plan(program: &str) -> (Vec<Instruction>, BindingScope) {
+fn must_plan(program: &str) -> (Vec<Instruction>, BindingScope, Address) {
     let tokens = kcl_lib::token::lexer(program);
     let parser = kcl_lib::parser::Parser::new(tokens);
     let ast = parser.ast().unwrap();
     let mut p = Planner::new();
     let (instrs, _) = p.build_plan(ast).unwrap();
-    (instrs, p.binding_scope)
+    (instrs, p.binding_scope, p.next_addr)
 }
 
 fn should_not_compile(program: &str) -> CompileError {
@@ -29,7 +30,7 @@ fn assignments() {
     let program = "
         let x = 1
         let y = 2";
-    let (plan, _scope) = must_plan(program);
+    let (plan, _scope, _) = must_plan(program);
     assert_eq!(
         plan,
         vec![
@@ -48,7 +49,7 @@ fn assignments() {
 #[test]
 fn bind_array_simple() {
     let program = r#"let x = [44, 55, "sixty-six"]"#;
-    let (plan, _scope) = must_plan(program);
+    let (plan, _scope, _) = must_plan(program);
     assert_eq!(
         plan,
         vec![
@@ -98,7 +99,7 @@ fn bind_array_simple() {
 #[test]
 fn bind_nested_array() {
     let program = r#"let x = [44, [55, "sixty-six"]]"#;
-    let (plan, _scope) = must_plan(program);
+    let (plan, _scope, _) = must_plan(program);
     assert_eq!(
         plan,
         vec![
@@ -154,7 +155,7 @@ fn bind_nested_array() {
 #[test]
 fn bind_arrays_with_objects_elements() {
     let program = r#"let x = [44, {a: 55, b: "sixty-six"}]"#;
-    let (plan, _scope) = must_plan(program);
+    let (plan, _scope, _) = must_plan(program);
     assert_eq!(
         plan,
         vec![
@@ -223,7 +224,7 @@ fn assign_bool() {
     // Check that Grackle properly compiles KCL bools to EP bools.
     for (str, val) in [("true", true), ("false", false)] {
         let program = format!("let x = {str}");
-        let (plan, scope) = must_plan(&program);
+        let (plan, scope, _) = must_plan(&program);
         assert_eq!(
             plan,
             vec![Instruction::SetPrimitive {
@@ -240,7 +241,7 @@ fn aliases() {
     let program = "
         let x = 1
         let y = x";
-    let (plan, _scope) = must_plan(program);
+    let (plan, _scope, _) = must_plan(program);
     assert_eq!(
         plan,
         vec![Instruction::SetPrimitive {
@@ -253,7 +254,7 @@ fn aliases() {
 #[test]
 fn use_native_function_add() {
     let program = "let x = add(1,2)";
-    let (plan, _scope) = must_plan(program);
+    let (plan, _scope, _) = must_plan(program);
     assert_eq!(
         plan,
         vec![
@@ -280,7 +281,7 @@ fn use_native_function_add() {
 #[test]
 fn use_native_function_id() {
     let program = "let x = id(2)";
-    let (plan, _scope) = must_plan(program);
+    let (plan, _scope, _) = must_plan(program);
     assert_eq!(
         plan,
         vec![Instruction::SetPrimitive {
@@ -297,7 +298,7 @@ async fn computed_object_property() {
     let prop0 = "a"
     let val = obj[prop0] // should be `true`
     "#;
-    let (_plan, scope) = must_plan(program);
+    let (_plan, scope, _) = must_plan(program);
     let Some(EpBinding::Single(address_of_val)) = scope.get("val") else {
         panic!("Unexpected binding for variable 'val': {:?}", scope.get("val"));
     };
@@ -319,7 +320,7 @@ async fn computed_array_in_object() {
     let prop1 = "b"
     let val = complicated[prop0][i][prop1] // should be `true`
     "#;
-    let (_plan, scope) = must_plan(program);
+    let (_plan, scope, _) = must_plan(program);
     let Some(EpBinding::Single(address_of_val)) = scope.get("val") else {
         panic!("Unexpected binding for variable 'val': {:?}", scope.get("val"));
     };
@@ -341,7 +342,7 @@ async fn computed_object_in_array() {
     let prop1 = "b"
     let val = complicated[i][prop0][prop1] // should be `true`
     "#;
-    let (_plan, scope) = must_plan(program);
+    let (_plan, scope, _) = must_plan(program);
     let Some(EpBinding::Single(address_of_val)) = scope.get("val") else {
         panic!("Unexpected binding for variable 'val': {:?}", scope.get("val"));
     };
@@ -362,7 +363,7 @@ async fn computed_nested_object_property() {
     let prop1 = "b"
     let val = obj[prop0][prop1] // should be `true`
     "#;
-    let (_plan, scope) = must_plan(program);
+    let (_plan, scope, _) = must_plan(program);
     let Some(EpBinding::Single(address_of_val)) = scope.get("val") else {
         panic!("Unexpected binding for variable 'val': {:?}", scope.get("val"));
     };
@@ -382,7 +383,7 @@ async fn computed_array_index() {
     let index = 1+1 // should be "c"
     let prop = array[index]
     "#;
-    let (plan, scope) = must_plan(program);
+    let (plan, scope, _) = must_plan(program);
     let expected_address_of_prop = Address::ZERO + 10;
     if let Some(EpBinding::Single(addr)) = scope.get("prop") {
         assert_eq!(*addr, expected_address_of_prop);
@@ -479,7 +480,7 @@ fn member_expressions_object() {
     let obj = {x: 1, y: 2}
     let prop = obj["y"]
     "#;
-    let (_plan, scope) = must_plan(program);
+    let (_plan, scope, _) = must_plan(program);
     match scope.get("prop").unwrap() {
         EpBinding::Single(addr) => {
             assert_eq!(*addr, Address::ZERO + 4);
@@ -511,7 +512,7 @@ fn member_expressions_array() {
     1
     d
      */
-    let (_plan, scope) = must_plan(program);
+    let (_plan, scope, _) = must_plan(program);
     match scope.get("first").unwrap() {
         EpBinding::Single(addr) => {
             assert_eq!(*addr, Address::ZERO + 3);
@@ -534,7 +535,7 @@ fn member_expressions_array() {
 fn compile_flipped_sign() {
     let program = "let x = 3
     let y = -x";
-    let (plan, _scope) = must_plan(program);
+    let (plan, _scope, _) = must_plan(program);
     let expected = vec![
         Instruction::SetPrimitive {
             address: Address::ZERO,
@@ -554,7 +555,7 @@ fn compile_flipped_sign() {
 #[test]
 fn add_literals() {
     let program = "let x = 1 + 2";
-    let (plan, _scope) = must_plan(program);
+    let (plan, _scope, _) = must_plan(program);
     assert_eq!(
         plan,
         vec![
@@ -584,7 +585,7 @@ fn add_vars() {
         let one = 1
         let two = 2
         let x = one + two";
-    let (plan, _bindings) = must_plan(program);
+    let (plan, _bindings, _) = must_plan(program);
     let addr0 = Address::ZERO;
     let addr1 = Address::ZERO.offset(1);
     assert_eq!(
@@ -618,7 +619,7 @@ fn composite_binary_exprs() {
         let z = 3
         let six = x + y + z
         ";
-    let (plan, _bindings) = must_plan(program);
+    let (plan, _bindings, _) = must_plan(program);
     let addr0 = Address::ZERO;
     let addr1 = Address::ZERO.offset(1);
     let addr2 = Address::ZERO.offset(2);
@@ -662,7 +663,7 @@ fn composite_binary_exprs() {
 
 #[test]
 fn use_kcl_functions_zero_params() {
-    let (plan, scope) = must_plan(
+    let (plan, scope, _) = must_plan(
         "fn triple = () => { return 123 }
     let x = triple()",
     );
@@ -690,7 +691,7 @@ fn use_kcl_functions_with_optional_params() {
     .into_iter()
     .enumerate()
     {
-        let (plan, scope) = must_plan(program);
+        let (plan, scope, _) = must_plan(program);
         let destination = Address::ZERO + 3;
         assert_eq!(
             plan,
@@ -751,7 +752,7 @@ fn use_kcl_function_as_return_value() {
         }
         let f = twotwotwo()
         let x = f()";
-    let (plan, scope) = must_plan(program);
+    let (plan, scope, _) = must_plan(program);
     match scope.get("x").unwrap() {
         EpBinding::Single(addr) => {
             assert_eq!(addr, &Address::ZERO);
@@ -774,7 +775,7 @@ fn define_recursive_function() {
     let program = "fn add_infinitely = (i) => {
             return add_infinitely(i+1)
         }";
-    let (plan, _scope) = must_plan(program);
+    let (plan, _scope, _) = must_plan(program);
     assert_eq!(plan, Vec::new())
 }
 #[test]
@@ -786,7 +787,7 @@ fn use_kcl_function_as_param() {
             return 222
         }
         let x = wrapper(twotwotwo)";
-    let (plan, scope) = must_plan(program);
+    let (plan, scope, _) = must_plan(program);
     match scope.get("x").unwrap() {
         EpBinding::Single(addr) => {
             assert_eq!(addr, &Address::ZERO);
@@ -815,7 +816,7 @@ fn use_kcl_functions_with_params() {
     .into_iter()
     .enumerate()
     {
-        let (plan, scope) = must_plan(program);
+        let (plan, scope, _) = must_plan(program);
         let destination = Address::ZERO + 2;
         assert_eq!(
             plan,
@@ -872,14 +873,14 @@ fn unsugar_pipe_expressions() {
     let x = triple(double(1)) // should be 6
     ";
     // So, check that they are.
-    let (plan1, _) = must_plan(program1);
-    let (plan2, _) = must_plan(program2);
+    let (plan1, _, _) = must_plan(program1);
+    let (plan2, _, _) = must_plan(program2);
     assert_eq!(plan1, plan2);
 }
 
 #[test]
 fn define_kcl_functions() {
-    let (plan, scope) = must_plan("fn triple = (x) => { return x * 3 }");
+    let (plan, scope, _) = must_plan("fn triple = (x) => { return x * 3 }");
     assert!(plan.is_empty());
     match scope.get("triple").unwrap() {
         EpBinding::Function(KclFunction::UserDefined(expr)) => {
@@ -894,12 +895,12 @@ fn define_kcl_functions() {
 
 #[test]
 fn aliases_dont_affect_plans() {
-    let (plan1, _) = must_plan(
+    let (plan1, _scope, _) = must_plan(
         "let one = 1
             let two = 2
             let x = one + two",
     );
-    let (plan2, _) = must_plan(
+    let (plan2, _scope, _) = must_plan(
         "let one = 1
             let two = 2
             let y = two
@@ -911,7 +912,7 @@ fn aliases_dont_affect_plans() {
 #[test]
 fn store_object() {
     let program = "const x0 = {a: 1, b: 2, c: {d: 3}}";
-    let (actual, bindings) = must_plan(program);
+    let (actual, bindings, _) = must_plan(program);
     let expected = vec![
         Instruction::SetPrimitive {
             address: Address::ZERO,
@@ -983,7 +984,7 @@ fn store_object() {
 #[test]
 fn store_object_with_array_property() {
     let program = "const x0 = {a: 1, b: [2, 3]}";
-    let (actual, bindings) = must_plan(program);
+    let (actual, bindings, _) = must_plan(program);
     let expected = vec![
         Instruction::SetPrimitive {
             address: Address::ZERO,
@@ -1045,18 +1046,71 @@ fn store_object_with_array_property() {
     )
 }
 
+/// Write the program's plan to the KCVM debugger's normal input file.
+#[allow(unused)]
+fn kcvm_dbg(kcl_program: &str) {
+    let (plan, _scope, _) = must_plan(kcl_program);
+    let plan_json = serde_json::to_string_pretty(&plan).unwrap();
+    std::fs::write(
+        "/Users/adamchalmers/kc-repos/modeling-api/execution-plan-debugger/test_input.json",
+        plan_json,
+    )
+    .unwrap();
+}
+
 #[tokio::test]
 async fn stdlib_cube_partial() {
     let program = r#"
-    let cube = startSketchAt([0.0, 0.0])
-        |> lineTo([4.0, 0.0], %)
+    let cube = startSketchAt([1.0, 1.0], "adam")
+        |> lineTo([21.0 ,  1.0], %, "side0")
+        |> lineTo([21.0 , 21.0], %, "side1")
+        |> lineTo([ 1.0 , 21.0], %, "side2")
+        |> lineTo([ 1.0 ,  1.0], %, "side3")
     "#;
-    let (_plan, _scope) = must_plan(program);
+    let (_plan, _scope, last_address) = must_plan(program);
+    assert_eq!(last_address, Address::ZERO + 65);
     let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
         .ast()
         .unwrap();
     let client = test_client().await;
-    let _mem = crate::execute(ast, Some(client)).await.unwrap();
+    let mem = match crate::execute(ast, Some(client)).await {
+        Ok(mem) => mem,
+        Err(e) => panic!("{e}"),
+    };
+    let sg = &mem.sketch_groups.last().unwrap();
+    assert_eq!(
+        sg.path_rest,
+        vec![
+            sketch_types::PathSegment::ToPoint {
+                base: sketch_types::BasePath {
+                    from: Point2d { x: 1.0, y: 1.0 },
+                    to: Point2d { x: 21.0, y: 1.0 },
+                    name: "side0".into(),
+                }
+            },
+            sketch_types::PathSegment::ToPoint {
+                base: sketch_types::BasePath {
+                    from: Point2d { x: 21.0, y: 1.0 },
+                    to: Point2d { x: 21.0, y: 21.0 },
+                    name: "side1".into(),
+                }
+            },
+            sketch_types::PathSegment::ToPoint {
+                base: sketch_types::BasePath {
+                    from: Point2d { x: 21.0, y: 21.0 },
+                    to: Point2d { x: 1.0, y: 21.0 },
+                    name: "side2".into(),
+                }
+            },
+            sketch_types::PathSegment::ToPoint {
+                base: sketch_types::BasePath {
+                    from: Point2d { x: 1.0, y: 21.0 },
+                    to: Point2d { x: 1.0, y: 1.0 },
+                    name: "side3".into(),
+                }
+            },
+        ]
+    );
     // use kittycad_modeling_cmds::{each_cmd, ok_response::OkModelingCmdResponse, ImageFormat, ModelingCmd};
     // let out = client
     //     .run_command(
@@ -1136,7 +1190,7 @@ fn stdlib_api_calls() {
 fn objects_as_parameters() {
     let program = "fn identity = (x) => { return x }
     let obj = identity({x: 1})";
-    let (plan, scope) = must_plan(program);
+    let (plan, scope, _) = must_plan(program);
     let expected_plan = vec![
         // Object contents
         Instruction::SetPrimitive {
@@ -1170,7 +1224,7 @@ fn objects_as_parameters() {
 fn arrays_as_parameters() {
     let program = r#"fn identity = (x) => { return x }
     let array = identity(["a","b","c"])"#;
-    let (plan, scope) = must_plan(program);
+    let (plan, scope, _) = must_plan(program);
     const INDEX_OF_A: usize = 2;
     const INDEX_OF_B: usize = 4;
     const INDEX_OF_C: usize = 6;
@@ -1227,7 +1281,7 @@ fn mod_and_pow() {
         let y = x^3
         let z = y % 5
         ";
-    let (plan, _bindings) = must_plan(program);
+    let (plan, _bindings, _) = must_plan(program);
     let addr0 = Address::ZERO;
     let addr1 = Address::ZERO.offset(1);
     let addr2 = Address::ZERO.offset(2);

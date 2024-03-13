@@ -3,14 +3,14 @@ use kittycad_execution_plan::{
     sketch_types::{self, Axes, BasePath, Plane, SketchGroup},
     Destination, Instruction,
 };
-use kittycad_execution_plan_traits::{Address, InMemory, Value};
+use kittycad_execution_plan_traits::{InMemory, Primitive, Value};
 use kittycad_modeling_cmds::{
     shared::{Point3d, Point4d},
     ModelingCmdEndpoint,
 };
 use uuid::Uuid;
 
-use super::helpers::{arg_point2d, no_arg_api_call, single_binding, stack_api_call};
+use super::helpers::{arg_point2d, no_arg_api_call, sg_binding, single_binding, stack_api_call};
 use crate::{binding_scope::EpBinding, error::CompileError, native_functions::Callable, EvalPlan};
 
 #[derive(Debug, Clone)]
@@ -18,7 +18,11 @@ use crate::{binding_scope::EpBinding, error::CompileError, native_functions::Cal
 pub struct LineTo;
 
 impl Callable for LineTo {
-    fn call(&self, next_addr: &mut Address, args: Vec<EpBinding>) -> Result<EvalPlan, CompileError> {
+    fn call(
+        &self,
+        ctx: &mut crate::native_functions::Context<'_>,
+        args: Vec<EpBinding>,
+    ) -> Result<EvalPlan, CompileError> {
         let mut instructions = Vec::new();
         let fn_name = "lineTo";
         // Get both required params.
@@ -37,12 +41,29 @@ impl Callable for LineTo {
                 actual: 1,
             });
         };
-        // Check the type of both required params.
-        let to = arg_point2d(to, fn_name, &mut instructions, next_addr, 0)?;
-        let sg = single_binding(sketch_group, fn_name, "sketch group", 1)?;
+        let tag = match args_iter.next() {
+            Some(a) => a,
+            None => {
+                // Write an empty string and use that.
+                let empty_string_addr = ctx.next_address.offset_by(1);
+                instructions.push(Instruction::SetPrimitive {
+                    address: empty_string_addr,
+                    value: String::new().into(),
+                });
+                EpBinding::Single(empty_string_addr)
+            }
+        };
+        // Check the type of required params.
+        let to = arg_point2d(to, fn_name, &mut instructions, ctx, 0)?;
+        let sg = sg_binding(sketch_group, fn_name, "sketch group", 1)?;
+        let tag = single_binding(tag, fn_name, "string tag", 2)?;
         let id = Uuid::new_v4();
-        let start_of_line = next_addr.offset(1);
+        // Start of the path segment (which is a straight line).
         let length_of_3d_point = Point3d::<f64>::default().into_parts().len();
+        let start_of_line = ctx.next_address.offset_by(1);
+        // Reserve space for the line's end, and the `relative: bool` field.
+        ctx.next_address.offset_by(length_of_3d_point + 1);
+        let new_sg_index = ctx.assign_sketch_group();
         instructions.extend([
             // Push the `to` 2D point onto the stack.
             Instruction::Copy {
@@ -60,12 +81,19 @@ impl Callable for LineTo {
             },
             // Then its end
             Instruction::StackPop {
-                destination: Some(start_of_line + 1),
+                destination: Some(Destination::Address(start_of_line + 1)),
             },
             // Then its `relative` field.
             Instruction::SetPrimitive {
                 address: start_of_line + 1 + length_of_3d_point,
                 value: false.into(),
+            },
+            // Push the path ID onto the stack.
+            Instruction::SketchGroupCopyFrom {
+                destination: Destination::StackPush,
+                length: 1,
+                source: sg,
+                offset: SketchGroup::path_id_offset(),
             },
             // Send the ExtendPath request
             Instruction::ApiRequest(ApiRequest {
@@ -73,18 +101,45 @@ impl Callable for LineTo {
                 store_response: None,
                 arguments: vec![
                     // Path ID
-                    InMemory::Address(sg + SketchGroup::path_id_offset()),
+                    InMemory::StackPop,
                     // Segment
                     InMemory::Address(start_of_line),
                 ],
                 cmd_id: id.into(),
             }),
+            // Push the new segment in SketchGroup format.
+            //      Path tag.
+            Instruction::StackPush {
+                data: vec![Primitive::from("ToPoint".to_owned())],
+            },
+            //      `BasePath::from` point.
+            Instruction::SketchGroupGetLastPoint {
+                source: sg,
+                destination: Destination::StackExtend,
+            },
+            //      `BasePath::to` point.
+            Instruction::Copy {
+                source: start_of_line + 1,
+                length: 2,
+                destination: Destination::StackExtend,
+            },
+            //      `BasePath::name` string.
+            Instruction::Copy {
+                source: tag,
+                length: 1,
+                destination: Destination::StackExtend,
+            },
+            // Update the SketchGroup with its new segment.
+            Instruction::SketchGroupAddSegment {
+                destination: new_sg_index,
+                segment: InMemory::StackPop,
+                source: sg,
+            },
         ]);
 
-        // TODO: Create a new SketchGroup from the old one + add the new path, then store it.
         Ok(EvalPlan {
             instructions,
-            binding: EpBinding::Single(Address::ZERO + 9999),
+            binding: EpBinding::SketchGroup { index: new_sg_index },
         })
     }
 }
@@ -94,7 +149,11 @@ impl Callable for LineTo {
 pub struct StartSketchAt;
 
 impl Callable for StartSketchAt {
-    fn call(&self, next_addr: &mut Address, args: Vec<EpBinding>) -> Result<EvalPlan, CompileError> {
+    fn call(
+        &self,
+        ctx: &mut crate::native_functions::Context<'_>,
+        args: Vec<EpBinding>,
+    ) -> Result<EvalPlan, CompileError> {
         let mut instructions = Vec::new();
         // First, before we send any API calls, let's validate the arguments to this function.
         let mut args_iter = args.into_iter();
@@ -105,7 +164,7 @@ impl Callable for StartSketchAt {
                 actual: 0,
             });
         };
-        let start_point = arg_point2d(start, "startSketchAt", &mut instructions, next_addr, 0)?;
+        let start_point = arg_point2d(start, "startSketchAt", &mut instructions, ctx, 0)?;
         let tag = match args_iter.next() {
             None => None,
             Some(b) => Some(single_binding(b, "startSketchAt", "a single string", 1)?),
@@ -177,7 +236,7 @@ impl Callable for StartSketchAt {
                 z: 0.0,
                 w: 1.0,
             },
-            // TODO: Must copy the existing data (from the arguments to this KCL function)
+            // Below: Must copy the existing data (from the arguments to this KCL function)
             // over these values after writing to memory.
             path_first: BasePath {
                 from: Default::default(),
@@ -194,18 +253,26 @@ impl Callable for StartSketchAt {
             axes,
             entity_id: Some(plane_id),
         };
-        let sketch_group_primitives = sketch_group.clone().into_parts();
-
-        let sketch_group_addr = next_addr.offset_by(sketch_group_primitives.len());
-        instructions.push(Instruction::SetValue {
-            address: sketch_group_addr,
-            value_parts: sketch_group_primitives,
-        });
-        instructions.extend(sketch_group.set_base_path(sketch_group_addr, start_point, tag));
+        let sketch_group_index = ctx.assign_sketch_group();
+        instructions.extend([
+            Instruction::SketchGroupSet {
+                sketch_group,
+                destination: sketch_group_index,
+            },
+            // As mentioned above: Copy the existing data over the `path_first`.
+            Instruction::SketchGroupSetBasePath {
+                source: sketch_group_index,
+                from: InMemory::Address(start_point),
+                to: InMemory::Address(start_point),
+                name: tag.map(InMemory::Address),
+            },
+        ]);
 
         Ok(EvalPlan {
             instructions,
-            binding: EpBinding::Single(sketch_group_addr),
+            binding: EpBinding::SketchGroup {
+                index: sketch_group_index,
+            },
         })
     }
 }
