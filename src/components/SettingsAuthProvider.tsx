@@ -49,8 +49,37 @@ export const SettingsAuthProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const { settings: initialLoadedContext, errors: settingsLoadErrors } =
-    useLoaderData() as ReturnType<typeof validateSettings>
+  const loadedSettings = useLoaderData() as ReturnType<typeof validateSettings>
+  return (
+    <SettingsAuthProviderBase loadedSettings={loadedSettings}>
+      {children}
+    </SettingsAuthProviderBase>
+  )
+}
+
+// For use in jest tests we don't want to use the loader data
+// and mock the whole Router
+export const SettingsAuthProviderJest = ({
+  children,
+}: {
+  children: React.ReactNode
+}) => {
+  const loadedSettings = fallbackLoadedSettings
+  return (
+    <SettingsAuthProviderBase loadedSettings={loadedSettings}>
+      {children}
+    </SettingsAuthProviderBase>
+  )
+}
+
+export const SettingsAuthProviderBase = ({
+  children,
+  loadedSettings,
+}: {
+  children: React.ReactNode
+  loadedSettings: ReturnType<typeof validateSettings>
+}) => {
+  const { settings: initialLoadedContext } = loadedSettings
   const navigate = useNavigate()
 
   const [settingsState, settingsSend, settingsActor] = useMachine(
@@ -86,19 +115,6 @@ export const SettingsAuthProvider = ({
     }
   )
   settingsStateRef = settingsState.context
-
-  // If there were validation errors either from local storage or from the file,
-  // log them to the console and show a toast message to the user.
-  useEffect(() => {
-    if (settingsLoadErrors.length > 0) {
-      const errorMessage =
-        'Error validating persisted settings: ' +
-        settingsLoadErrors.join(', ') +
-        '. Using defaults.'
-      console.error(errorMessage)
-      toast.error(errorMessage)
-    }
-  }, [settingsLoadErrors])
 
   useStateMachineCommands({
     machineId: 'settings',

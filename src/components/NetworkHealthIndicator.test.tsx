@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
-import { SettingsAuthProvider } from './SettingsAuthProvider'
-import CommandBarProvider from './CommandBar/CommandBar'
+import { SettingsAuthProviderJest } from './SettingsAuthProvider'
+import { CommandBarProvider } from './CommandBar/CommandBarProvider'
 import {
   NETWORK_HEALTH_TEXT,
   NetworkHealthIndicator,
@@ -13,7 +13,7 @@ function TestWrap({ children }: { children: React.ReactNode }) {
   return (
     <BrowserRouter>
       <CommandBarProvider>
-        <SettingsAuthProvider>{children}</SettingsAuthProvider>
+        <SettingsAuthProviderJest>{children}</SettingsAuthProviderJest>
       </CommandBarProvider>
     </BrowserRouter>
   )

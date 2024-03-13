@@ -2,9 +2,9 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
 import { type ProjectWithEntryPointMetadata } from 'lib/types'
-import { SettingsAuthProvider } from './SettingsAuthProvider'
+import { SettingsAuthProviderJest } from './SettingsAuthProvider'
 import { APP_NAME } from 'lib/constants'
-import CommandBarProvider from './CommandBar/CommandBar'
+import { CommandBarProvider } from './CommandBar/CommandBarProvider'
 
 const now = new Date()
 const projectWellFormed = {
@@ -42,9 +42,9 @@ describe('ProjectSidebarMenu tests', () => {
     render(
       <BrowserRouter>
         <CommandBarProvider>
-          <SettingsAuthProvider>
+          <SettingsAuthProviderJest>
             <ProjectSidebarMenu project={projectWellFormed} />
-          </SettingsAuthProvider>
+          </SettingsAuthProviderJest>
         </CommandBarProvider>
       </BrowserRouter>
     )
@@ -63,9 +63,9 @@ describe('ProjectSidebarMenu tests', () => {
     render(
       <BrowserRouter>
         <CommandBarProvider>
-          <SettingsAuthProvider>
+          <SettingsAuthProviderJest>
             <ProjectSidebarMenu />
-          </SettingsAuthProvider>
+          </SettingsAuthProviderJest>
         </CommandBarProvider>
       </BrowserRouter>
     )
@@ -79,12 +79,12 @@ describe('ProjectSidebarMenu tests', () => {
     render(
       <BrowserRouter>
         <CommandBarProvider>
-          <SettingsAuthProvider>
+          <SettingsAuthProviderJest>
             <ProjectSidebarMenu
               project={projectWellFormed}
               renderAsLink={true}
             />
-          </SettingsAuthProvider>
+          </SettingsAuthProviderJest>
         </CommandBarProvider>
       </BrowserRouter>
     )
