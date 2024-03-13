@@ -8,7 +8,7 @@ Computes the sine of a number (in radians).
 
 
 
-```
+```js
 sin(num: number) -> number
 ```
 

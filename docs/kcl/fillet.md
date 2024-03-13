@@ -8,7 +8,7 @@ Create fillets on tagged paths.
 
 
 
-```
+```js
 fillet(data: FilletData, extrude_group: ExtrudeGroup) -> ExtrudeGroup
 ```
 
@@ -28,7 +28,7 @@ const part001 = startSketchOn('XY')
 ### Arguments
 
 * `data`: `FilletData` - Data for fillets. (REQUIRED)
-```
+```js
 {
 	// The radius of the fillet.
 	radius: number,
@@ -38,7 +38,7 @@ string],
 }
 ```
 * `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces. (REQUIRED)
-```
+```js
 {
 	// The id of the extrusion end cap
 	endCapId: uuid,
@@ -172,7 +172,7 @@ string],
 ### Returns
 
 `ExtrudeGroup` - An extrude group is a collection of extrude surfaces.
-```
+```js
 {
 	// The id of the extrusion end cap
 	endCapId: uuid,

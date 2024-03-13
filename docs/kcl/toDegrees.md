@@ -8,7 +8,7 @@ Converts a number from radians to degrees.
 
 
 
-```
+```js
 toDegrees(num: number) -> number
 ```
 

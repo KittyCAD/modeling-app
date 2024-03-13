@@ -8,7 +8,7 @@ A circular pattern on a 2D sketch.
 
 
 
-```
+```js
 patternCircular2d(data: CircularPattern2dData, sketch_group: SketchGroup) -> [SketchGroup]
 ```
 
@@ -28,7 +28,7 @@ const part = startSketchOn('XY')
 ### Arguments
 
 * `data`: `CircularPattern2dData` - Data for a circular pattern on a 2D sketch. (REQUIRED)
-```
+```js
 {
 	// The arc angle (in degrees) to place the repetitions. Must be greater than 0.
 	arcDegrees: number,
@@ -41,7 +41,7 @@ const part = startSketchOn('XY')
 }
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,

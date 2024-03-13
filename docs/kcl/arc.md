@@ -8,7 +8,7 @@ Draw an arc.
 
 
 
-```
+```js
 arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
@@ -29,7 +29,7 @@ startSketchOn('-YZ')
 ### Arguments
 
 * `data`: `ArcData` - Data to draw an arc. (REQUIRED)
-```
+```js
 {
 	// The end angle.
 	angle_end: number,
@@ -52,7 +52,7 @@ startSketchOn('-YZ')
 }
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,
@@ -219,7 +219,7 @@ startSketchOn('-YZ')
 ### Returns
 
 `SketchGroup` - A sketch group is a collection of paths.
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,

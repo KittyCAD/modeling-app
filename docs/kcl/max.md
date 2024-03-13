@@ -8,7 +8,7 @@ Computes the maximum of the given arguments.
 
 
 
-```
+```js
 max(args: [number]) -> number
 ```
 

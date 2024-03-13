@@ -8,7 +8,7 @@ Computes the absolute value of a number.
 
 
 
-```
+```js
 abs(num: number) -> number
 ```
 

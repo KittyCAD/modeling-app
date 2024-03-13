@@ -8,7 +8,7 @@ Computes the natural logarithm of the number.
 
 
 
-```
+```js
 ln(num: number) -> number
 ```
 

@@ -8,7 +8,7 @@ Computes the tangent of a number (in radians).
 
 
 
-```
+```js
 tan(num: number) -> number
 ```
 

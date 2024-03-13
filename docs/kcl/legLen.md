@@ -8,7 +8,7 @@ Returns the length of the given leg.
 
 
 
-```
+```js
 legLen(hypotenuse: number, leg: number) -> number
 ```
 

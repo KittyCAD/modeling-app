@@ -8,7 +8,7 @@ Return the value of `tau`. The full circle constant (τ). Equal to 2π.
 
 
 
-```
+```js
 tau() -> number
 ```
 

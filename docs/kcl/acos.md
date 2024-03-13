@@ -8,7 +8,7 @@ Computes the arccosine of a number (in radians).
 
 
 
-```
+```js
 acos(num: number) -> number
 ```
 

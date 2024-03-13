@@ -8,7 +8,7 @@ Get the previous adjacent edge to the edge given.
 
 
 
-```
+```js
 getPreviousAdjacentEdge(tag: String, extrude_group: ExtrudeGroup) -> Uuid
 ```
 
@@ -32,7 +32,7 @@ const part001 = startSketchOn('XY')
 
 * `tag`: `String` (REQUIRED)
 * `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces. (REQUIRED)
-```
+```js
 {
 	// The id of the extrusion end cap
 	endCapId: uuid,

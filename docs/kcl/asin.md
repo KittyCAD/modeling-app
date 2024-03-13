@@ -8,7 +8,7 @@ Computes the arcsine of a number (in radians).
 
 
 
-```
+```js
 asin(num: number) -> number
 ```
 

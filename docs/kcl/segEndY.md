@@ -8,7 +8,7 @@ Returns the segment end of y.
 
 
 
-```
+```js
 segEndY(segment_name: string, sketch_group: SketchGroup) -> number
 ```
 
@@ -28,7 +28,7 @@ startSketchOn("YZ")
 
 * `segment_name`: `string` (REQUIRED)
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,

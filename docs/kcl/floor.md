@@ -8,7 +8,7 @@ Computes the largest integer less than or equal to a number.
 
 
 
-```
+```js
 floor(num: number) -> number
 ```
 

@@ -8,7 +8,7 @@ Return the value of `pi`. Archimedes’ constant (π).
 
 
 
-```
+```js
 pi() -> number
 ```
 

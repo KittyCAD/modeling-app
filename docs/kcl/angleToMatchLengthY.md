@@ -8,7 +8,7 @@ Returns the angle to match the given length for y.
 
 
 
-```
+```js
 angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup) -> number
 ```
 
@@ -30,7 +30,7 @@ const part001 = startSketchOn('XY')
 * `segment_name`: `string` (REQUIRED)
 * `to`: `number` (REQUIRED)
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,

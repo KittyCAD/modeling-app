@@ -8,7 +8,7 @@ Returns the angle of the given leg for y.
 
 
 
-```
+```js
 legAngY(hypotenuse: number, leg: number) -> number
 ```
 

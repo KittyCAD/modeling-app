@@ -8,7 +8,7 @@ Return the value of Euler’s number `e`.
 
 
 
-```
+```js
 e() -> number
 ```
 

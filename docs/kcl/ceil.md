@@ -8,7 +8,7 @@ Computes the smallest integer greater than or equal to a number.
 
 
 
-```
+```js
 ceil(num: number) -> number
 ```
 

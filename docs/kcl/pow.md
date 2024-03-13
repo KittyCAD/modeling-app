@@ -8,7 +8,7 @@ Computes the number to a power.
 
 
 
-```
+```js
 pow(num: number, pow: number) -> number
 ```
 

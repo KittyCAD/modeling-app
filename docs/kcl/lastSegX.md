@@ -8,7 +8,7 @@ Returns the last segment of x.
 
 
 
-```
+```js
 lastSegX(sketch_group: SketchGroup) -> number
 ```
 
@@ -27,7 +27,7 @@ startSketchOn("YZ")
 ### Arguments
 
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,

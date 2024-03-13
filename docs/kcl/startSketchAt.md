@@ -8,7 +8,7 @@ Start a sketch at a given point on the 'XY' plane.
 
 
 
-```
+```js
 startSketchAt(data: LineData) -> SketchGroup
 ```
 
@@ -22,7 +22,7 @@ startSketchAt([0, 0])
 ### Arguments
 
 * `data`: `LineData` - Data to draw a line. (REQUIRED)
-```
+```js
 {
 	// The tag.
 	tag: string,
@@ -35,7 +35,7 @@ startSketchAt([0, 0])
 ### Returns
 
 `SketchGroup` - A sketch group is a collection of paths.
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,

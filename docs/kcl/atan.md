@@ -8,7 +8,7 @@ Computes the arctangent of a number (in radians).
 
 
 
-```
+```js
 atan(num: number) -> number
 ```
 
