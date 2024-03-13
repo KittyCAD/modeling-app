@@ -457,9 +457,9 @@ fn inner_tau() -> Result<f64, KclError> {
 }
 
 /// Converts a number from degrees to radians.
-pub async fn deg_to_rad(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn to_radians(args: Args) -> Result<MemoryItem, KclError> {
     let num = args.get_number()?;
-    let result = inner_deg_to_rad(num)?;
+    let result = inner_to_radians(num)?;
 
     args.make_user_val_from_f64(result)
 }
@@ -467,19 +467,19 @@ pub async fn deg_to_rad(args: Args) -> Result<MemoryItem, KclError> {
 /// Converts a number from degrees to radians.
 ///
 /// ```no_run
-/// const myVar = deg_to_rad(180)
+/// const myVar = to_radians(180)
 /// ```
 #[stdlib {
     name = "to_radians",
 }]
-fn inner_deg_to_rad(num: f64) -> Result<f64, KclError> {
+fn inner_to_radians(num: f64) -> Result<f64, KclError> {
     Ok(num.to_radians())
 }
 
 /// Converts a number from radians to degrees.
-pub async fn rad_to_deg(args: Args) -> Result<MemoryItem, KclError> {
+pub async fn to_degrees(args: Args) -> Result<MemoryItem, KclError> {
     let num = args.get_number()?;
-    let result = inner_rad_to_deg(num)?;
+    let result = inner_to_degrees(num)?;
 
     args.make_user_val_from_f64(result)
 }
@@ -487,11 +487,11 @@ pub async fn rad_to_deg(args: Args) -> Result<MemoryItem, KclError> {
 /// Converts a number from radians to degrees.
 ///
 /// ```no_run
-/// const myVar = rad_to_deg(2 * pi())
+/// const myVar = to_degrees(2 * pi())
 /// ```
 #[stdlib {
     name = "to_degrees",
 }]
-fn inner_rad_to_deg(num: f64) -> Result<f64, KclError> {
+fn inner_to_degrees(num: f64) -> Result<f64, KclError> {
     Ok(num.to_degrees())
 }
