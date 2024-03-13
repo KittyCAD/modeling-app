@@ -593,3 +593,61 @@ async fn test_updating_copilot_lsp_files() {
     );
     assert_eq!(server.current_code_map.len(), 8);
 }
+
+#[tokio::test]
+async fn test_kcl_lsp_create_zip() {
+    let server = kcl_lsp_server().unwrap();
+
+    assert_eq!(server.current_code_map.len(), 0);
+
+    // Get the path to the current file.
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("src").join("lsp");
+    let string_path = format!("file://{}", path.display());
+
+    // Run workspace folders change.
+    server
+        .did_change_workspace_folders(tower_lsp::lsp_types::DidChangeWorkspaceFoldersParams {
+            event: tower_lsp::lsp_types::WorkspaceFoldersChangeEvent {
+                added: vec![tower_lsp::lsp_types::WorkspaceFolder {
+                    uri: string_path.as_str().try_into().unwrap(),
+                    name: "my-project".to_string(),
+                }],
+                removed: vec![],
+            },
+        })
+        .await;
+
+    // Get the workspace folders.
+    assert_eq!(server.workspace_folders.len(), 1);
+    assert_eq!(
+        server.workspace_folders.get("my-project").unwrap().value().clone(),
+        tower_lsp::lsp_types::WorkspaceFolder {
+            uri: string_path.as_str().try_into().unwrap(),
+            name: "my-project".to_string(),
+        }
+    );
+
+    assert_eq!(server.current_code_map.len(), 8);
+
+    // Run open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: "test".to_string(),
+            },
+        })
+        .await;
+
+    // Check the code map.
+    assert_eq!(server.current_code_map.len(), 9);
+    assert_eq!(
+        server.current_code_map.get("file:///test.kcl").unwrap().value(),
+        "test".as_bytes()
+    );
+
+    // Create a zip.
+    let bytes = server.create_zip().unwrap();
+}

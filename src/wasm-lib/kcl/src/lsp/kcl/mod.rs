@@ -288,6 +288,25 @@ impl Backend {
         completions
     }
 
+    pub fn create_zip(&self) -> Result<Vec<u8>> {
+        // Collect all the file data we know.
+        let mut buf = vec![];
+        let mut zip = zip::ZipWriter::new(std::io::Cursor::new(&mut buf));
+        for entry in self.current_code_map.iter() {
+            let file_name = entry.key().replace("file://", "").to_string();
+
+            let options = zip::write::FileOptions::default().compression_method(zip::CompressionMethod::Stored);
+            zip.start_file(file_name, options)?;
+            zip.write_all(entry.value())?;
+        }
+        // Apply the changes you've made.
+        // Dropping the `ZipWriter` will have the same effect, but may silently fail
+        zip.finish()?;
+        drop(zip);
+
+        Ok(buf)
+    }
+
     pub async fn send_telemetry(&self) -> Result<()> {
         // Get information about the user.
         let user = self
@@ -317,21 +336,6 @@ impl Backend {
             .ok_or_else(|| anyhow::anyhow!("no project names"))?
             .to_string();
 
-        // Collect all the file data we know.
-        let mut buf = vec![];
-        let mut zip = zip::ZipWriter::new(std::io::Cursor::new(&mut buf));
-        for entry in self.current_code_map.iter() {
-            let file_name = entry.key().replace("file://", "").to_string();
-
-            let options = zip::write::FileOptions::default().compression_method(zip::CompressionMethod::Stored);
-            zip.start_file(file_name, options)?;
-            zip.write_all(entry.value())?;
-        }
-        // Apply the changes you've made.
-        // Dropping the `ZipWriter` will have the same effect, but may silently fail
-        zip.finish()?;
-        drop(zip);
-
         // Send the telemetry data.
         self.zoo_client
             .meta()
@@ -341,7 +345,7 @@ impl Backend {
                     name: "attachment".to_string(),
                     filename: None,
                     content_type: Some("application/x-zip".to_string()),
-                    data: buf.clone(),
+                    data: self.create_zip()?,
                 }],
                 &kittycad::types::Event {
                     // This gets generated server side so leave empty for now.
