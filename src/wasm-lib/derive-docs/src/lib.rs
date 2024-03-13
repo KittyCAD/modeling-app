@@ -6,7 +6,7 @@
 mod tests;
 mod unbox;
 
-use convert_case::Casing;
+use inflector::Inflector;
 use once_cell::sync::Lazy;
 use quote::{format_ident, quote, quote_spanned, ToTokens};
 use regex::Regex;
@@ -106,7 +106,16 @@ fn do_stdlib_inner(
     }
 
     let name = metadata.name;
-    let name_ident = format_ident!("{}", name.to_case(convert_case::Case::UpperCamel));
+
+    // Fail if the name is not camel case.
+    if !name.is_camel_case() {
+        errors.push(Error::new_spanned(
+            &ast.sig.ident,
+            "stdlib function names must be in camel case",
+        ));
+    }
+
+    let name_ident = format_ident!("{}", name.to_class_case());
     let name_str = name.to_string();
 
     let fn_name = &ast.sig.ident;

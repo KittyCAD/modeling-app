@@ -291,3 +291,24 @@ fn test_stdlib_doc_comment_with_code_on_ignored_function() {
         &openapitor::types::get_text_fmt(&item).unwrap(),
     );
 }
+
+#[test]
+fn test_stdlib_fail_non_camel_case() {
+    let (_, errors) = do_stdlib(
+        quote! {
+            name = "import_thing",
+        },
+        quote! {
+            fn inner_import_thing(
+                /// The args to do shit to.
+                args: Option<kittycad::types::InputFormat>
+            ) -> Result<Vec<Box<SketchGroup>>> {
+                args
+            }
+        },
+    )
+    .unwrap();
+
+    assert!(!errors.is_empty());
+    assert_eq!(errors[1].to_string(), "stdlib function names must be in camel case");
+}
