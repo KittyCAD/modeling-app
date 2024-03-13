@@ -3,4 +3,6 @@
 mod backend;
 pub mod copilot;
 pub mod kcl;
+#[cfg(test)]
+mod tests;
 mod util;
