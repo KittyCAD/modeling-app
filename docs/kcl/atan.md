@@ -14,7 +14,7 @@ atan(num: number) -> number
 
 ### Examples
 
-```kcl
+```js
 const myVar = atan(1.0)
 ```
 

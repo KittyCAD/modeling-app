@@ -14,7 +14,7 @@ legLen(hypotenuse: number, leg: number) -> number
 
 ### Examples
 
-```kcl
+```js
 legLen(5, 3)
 ```
 

@@ -14,7 +14,7 @@ startSketchOn(data: SketchData, tag?: SketchOnFaceTag) -> SketchSurface
 
 ### Examples
 
-```kcl
+```js
 startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([10, 10], %)
@@ -22,7 +22,7 @@ startSketchOn('XY')
   |> close(%, "edge2")
 ```
 
-```kcl
+```js
 fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
   |> startProfileAt(pos, %)

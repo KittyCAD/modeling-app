@@ -900,7 +900,7 @@ layout: manual
                 fn_docs.push_str("### Examples\n\n");
 
                 for example in internal_fn.examples() {
-                    fn_docs.push_str("```kcl\n");
+                    fn_docs.push_str("```js\n");
                     fn_docs.push_str(&example);
                     fn_docs.push_str("\n```\n\n");
                 }

@@ -14,7 +14,7 @@ patternCircular2d(data: CircularPattern2dData, sketch_group: SketchGroup) -> [Sk
 
 ### Examples
 
-```kcl
+```js
 const part = startSketchOn('XY')
   |> circle([0, 0], 2, %)
   |> patternCircular2d({

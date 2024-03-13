@@ -14,7 +14,7 @@ startProfileAt(data: LineData, sketch_surface: SketchSurface) -> SketchGroup
 
 ### Examples
 
-```kcl
+```js
 startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([10, 10], %)

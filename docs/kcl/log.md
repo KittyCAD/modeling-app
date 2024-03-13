@@ -14,7 +14,7 @@ log(num: number, base: number) -> number
 
 ### Examples
 
-```kcl
+```js
 const myVar = log(4, 2)
 ```
 

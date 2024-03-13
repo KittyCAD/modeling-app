@@ -14,7 +14,7 @@ min(args: [number]) -> number
 
 ### Examples
 
-```kcl
+```js
 const myVar = min(4, 5, 6)
 ```
 

@@ -14,7 +14,7 @@ ln(num: number) -> number
 
 ### Examples
 
-```kcl
+```js
 const myVar = ln(4)
 ```
 

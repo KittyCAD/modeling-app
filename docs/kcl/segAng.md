@@ -14,7 +14,7 @@ segAng(segment_name: string, sketch_group: SketchGroup) -> number
 
 ### Examples
 
-```kcl
+```js
 const part001 = startSketchOn('XY')
   |> startProfileAt([4.83, 12.56], %)
   |> line([15.1, 2.48], %)

@@ -14,7 +14,7 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 
 ### Examples
 
-```kcl
+```js
 startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> angledLineToX({ angle: 45, to: 10, tag: "edge1" }, %)

@@ -14,7 +14,7 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 
 ### Examples
 
-```kcl
+```js
 startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)

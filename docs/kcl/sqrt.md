@@ -14,7 +14,7 @@ sqrt(num: number) -> number
 
 ### Examples
 
-```kcl
+```js
 const myVar = sqrt(4)
 ```
 

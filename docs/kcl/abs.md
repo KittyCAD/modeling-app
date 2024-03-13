@@ -14,7 +14,7 @@ abs(num: number) -> number
 
 ### Examples
 
-```kcl
+```js
 const myVar = abs(-4)
 ```
 

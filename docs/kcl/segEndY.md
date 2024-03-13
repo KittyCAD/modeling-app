@@ -14,7 +14,7 @@ segEndY(segment_name: string, sketch_group: SketchGroup) -> number
 
 ### Examples
 
-```kcl
+```js
 startSketchOn("YZ")
   |> startProfileAt([0, 0], %)
   |> line({ to: [5, 0], tag: "thing" }, %)

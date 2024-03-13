@@ -14,7 +14,7 @@ tau() -> number
 
 ### Examples
 
-```kcl
+```js
 const myVar = tau()
 ```
 

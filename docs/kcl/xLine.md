@@ -14,7 +14,7 @@ xLine(data: AxisLineData, sketch_group: SketchGroup) -> SketchGroup
 
 ### Examples
 
-```kcl
+```js
 startSketchOn('YZ')
   |> startProfileAt([0, 0], %)
   |> xLine(10, %)

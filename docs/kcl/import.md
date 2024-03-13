@@ -15,23 +15,23 @@ import(file_path: String, options?: ImportFormat) -> ImportedGeometry
 
 ### Examples
 
-```kcl
+```js
 const model = import("thing.obj")
 ```
 
-```kcl
+```js
 const model = import("cube.obj", { type: "obj", units: "m" })
 ```
 
-```kcl
+```js
 const model = import("my_model.gltf")
 ```
 
-```kcl
+```js
 const model = import("my_model.sldprt")
 ```
 
-```kcl
+```js
 const model = import("my_model.step")
 ```
 

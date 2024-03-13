@@ -14,7 +14,7 @@ toRadians(num: number) -> number
 
 ### Examples
 
-```kcl
+```js
 const myVar = toRadians(180)
 ```
 

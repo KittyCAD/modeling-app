@@ -14,7 +14,7 @@ startSketchAt(data: LineData) -> SketchGroup
 
 ### Examples
 
-```kcl
+```js
 startSketchAt([0, 0])
   |> line([10, 10], %)
 ```

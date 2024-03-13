@@ -14,7 +14,7 @@ e() -> number
 
 ### Examples
 
-```kcl
+```js
 const myVar = e()
 ```
 

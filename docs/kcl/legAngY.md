@@ -14,7 +14,7 @@ legAngY(hypotenuse: number, leg: number) -> number
 
 ### Examples
 
-```kcl
+```js
 legAngY(5, 3)
 ```
 

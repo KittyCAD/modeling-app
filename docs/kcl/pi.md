@@ -14,7 +14,7 @@ pi() -> number
 
 ### Examples
 
-```kcl
+```js
 const myVar = pi() * 3.0
 ```
 

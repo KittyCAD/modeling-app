@@ -14,7 +14,7 @@ asin(num: number) -> number
 
 ### Examples
 
-```kcl
+```js
 const myVar = asin(0.5)
 ```
 

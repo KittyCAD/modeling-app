@@ -14,7 +14,7 @@ toDegrees(num: number) -> number
 
 ### Examples
 
-```kcl
+```js
 const myVar = toDegrees(2 * pi())
 ```
 

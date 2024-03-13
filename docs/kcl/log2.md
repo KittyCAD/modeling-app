@@ -14,7 +14,7 @@ log2(num: number) -> number
 
 ### Examples
 
-```kcl
+```js
 const myVar = log2(4)
 ```
 

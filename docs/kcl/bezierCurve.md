@@ -14,7 +14,7 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 
 ### Examples
 
-```kcl
+```js
 startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> bezierCurve({

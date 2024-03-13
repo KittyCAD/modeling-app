@@ -14,7 +14,7 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 
 ### Examples
 
-```kcl
+```js
 startSketchOn('YZ')
   |> startProfileAt([0, 0], %)
   |> angledLineOfYLength({ angle: 45, length: 10, tag: "edge1" }, %)

@@ -14,7 +14,7 @@ close(sketch_group: SketchGroup, tag?: String) -> SketchGroup
 
 ### Examples
 
-```kcl
+```js
 startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([10, 10], %)
@@ -22,7 +22,7 @@ startSketchOn('XZ')
   |> close(%)
 ```
 
-```kcl
+```js
 startSketchOn('YZ')
   |> startProfileAt([0, 0], %)
   |> line([10, 10], %)

@@ -14,7 +14,7 @@ getExtrudeWallTransform(surface_name: string, extrude_group: ExtrudeGroup) -> Ex
 
 ### Examples
 
-```kcl
+```js
 const box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)

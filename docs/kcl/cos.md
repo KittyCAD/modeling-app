@@ -14,7 +14,7 @@ cos(num: number) -> number
 
 ### Examples
 
-```kcl
+```js
 const anotherVar = cos(2 * pi())
 ```
 

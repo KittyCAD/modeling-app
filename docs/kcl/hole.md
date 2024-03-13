@@ -14,7 +14,7 @@ hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGrou
 
 ### Examples
 
-```kcl
+```js
 const square = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)

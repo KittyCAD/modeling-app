@@ -14,7 +14,7 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 
 ### Examples
 
-```kcl
+```js
 startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> angledLine({ angle: 45, length: 10, tag: "edge1" }, %)

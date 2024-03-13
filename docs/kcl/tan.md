@@ -14,7 +14,7 @@ tan(num: number) -> number
 
 ### Examples
 
-```kcl
+```js
 const myVar = tan(2 * pi())
 ```
 

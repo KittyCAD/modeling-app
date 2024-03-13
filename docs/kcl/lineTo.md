@@ -14,7 +14,7 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 
 ### Examples
 
-```kcl
+```js
 fn rectShape = (pos, w, l) => {
   const rr = startSketchOn('YZ')
   |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)

@@ -14,7 +14,7 @@ getPreviousAdjacentEdge(tag: String, extrude_group: ExtrudeGroup) -> Uuid
 
 ### Examples
 
-```kcl
+```js
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line({ to: [0, 10], tag: "thing" }, %)

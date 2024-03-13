@@ -14,7 +14,7 @@ fillet(data: FilletData, extrude_group: ExtrudeGroup) -> ExtrudeGroup
 
 ### Examples
 
-```kcl
+```js
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line({ to: [0, 10], tag: "thing" }, %)

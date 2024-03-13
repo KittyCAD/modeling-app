@@ -14,7 +14,7 @@ floor(num: number) -> number
 
 ### Examples
 
-```kcl
+```js
 const myVar = floor(4.5)
 ```
 

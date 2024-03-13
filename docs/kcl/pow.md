@@ -14,7 +14,7 @@ pow(num: number, pow: number) -> number
 
 ### Examples
 
-```kcl
+```js
 const myVar = pow(4, 2)
 ```
 

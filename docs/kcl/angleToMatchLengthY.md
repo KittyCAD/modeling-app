@@ -14,7 +14,7 @@ angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup)
 
 ### Examples
 
-```kcl
+```js
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line({ to: [1, 3.82], tag: 'seg01' }, %)

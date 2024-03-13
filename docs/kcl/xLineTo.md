@@ -14,7 +14,7 @@ xLineTo(data: AxisLineToData, sketch_group: SketchGroup) -> SketchGroup
 
 ### Examples
 
-```kcl
+```js
 startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> xLineTo({ to: 10, tag: "edge1" }, %)

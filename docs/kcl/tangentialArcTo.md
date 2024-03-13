@@ -14,7 +14,7 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag?: String) -> Sketch
 
 ### Examples
 
-```kcl
+```js
 startSketchOn('-YZ')
   |> startProfileAt([0, 0], %)
   |> line({ to: [10, 10], tag: "edge0" }, %)

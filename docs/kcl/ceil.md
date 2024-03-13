@@ -14,7 +14,7 @@ ceil(num: number) -> number
 
 ### Examples
 
-```kcl
+```js
 const myVar = ceil(4.5)
 ```
 
