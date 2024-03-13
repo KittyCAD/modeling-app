@@ -1093,7 +1093,7 @@ async fn test_copilot_lsp_set_editor_info() {
         .unwrap();
 
     // Check the editor info.
-    // Aquire the lock.
+    // Acquire the lock.
     let editor_info = server.editor_info.read().unwrap();
     assert_eq!(editor_info.editor_info.name, "vscode");
     assert_eq!(editor_info.editor_info.version, "1.0.0");
