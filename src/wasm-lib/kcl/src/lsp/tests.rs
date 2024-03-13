@@ -1146,4 +1146,32 @@ const part001 = cube([0,0], 20)
     // Check the completions.
     assert_eq!(completions.len(), 1);
     println!("got completion:\n```\n{}\n```", completions[0]);
+
+    // Test the cache.
+    let completions_hit_cache = server
+        .get_completions(
+            "kcl".to_string(),
+            r#"// Create a cube.
+fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+
+const part001 = cube([0,0], 20)
+    |> close(%)
+    |> extrude(20, %)
+
+"#
+            .to_string(),
+            r#""#.to_string(),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(completions, completions_hit_cache);
 }
