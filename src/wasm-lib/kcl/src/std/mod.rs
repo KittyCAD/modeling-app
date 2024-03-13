@@ -844,7 +844,7 @@ mod tests {
         // Generate a table of contents.
         buf.push_str("## Table of Contents\n\n");
 
-        buf.push_str("\t* [Types](types.md)\n");
+        buf.push_str("* [Types](types.md)\n");
 
         for key in combined.keys().sorted() {
             let internal_fn = combined.get(key).unwrap();
@@ -852,7 +852,7 @@ mod tests {
                 continue;
             }
 
-            buf.push_str(&format!("\t* [`{}`]({}.md)\n", internal_fn.name(), internal_fn.name()));
+            buf.push_str(&format!("* [`{}`]({}.md)\n", internal_fn.name(), internal_fn.name()));
         }
 
         // Write the index.
