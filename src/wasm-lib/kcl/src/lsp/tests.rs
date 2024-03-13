@@ -531,6 +531,37 @@ async fn test_updating_copilot_lsp_files() {
         "changed".as_bytes()
     );
 
+    // If we change nothing it should not change the current code map.
+    server
+        .did_change_workspace_folders(tower_lsp::lsp_types::DidChangeWorkspaceFoldersParams {
+            event: tower_lsp::lsp_types::WorkspaceFoldersChangeEvent {
+                added: vec![],
+                removed: vec![],
+            },
+        })
+        .await;
+
+    // Get the workspace folders.
+    assert_eq!(server.workspace_folders.len(), 1);
+    assert_eq!(
+        server.workspace_folders.get("my-project").unwrap().value().clone(),
+        tower_lsp::lsp_types::WorkspaceFolder {
+            uri: string_path.as_str().try_into().unwrap(),
+            name: "my-project".to_string(),
+        }
+    );
+
+    // Check the code map.
+    assert_eq!(server.current_code_map.len(), 2);
+    assert_eq!(
+        server.current_code_map.get("file:///test.kcl").unwrap().value(),
+        "test".as_bytes()
+    );
+    assert_eq!(
+        server.current_code_map.get("file:///test3.kcl").unwrap().value(),
+        "changed".as_bytes()
+    );
+
     // Remove folders.
     // Run workspace folders change.
     server
