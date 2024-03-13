@@ -487,7 +487,7 @@ impl LanguageServer for Backend {
 
         // Inject telemetry if we can train on the user's code.
         // Return early if we cannot.
-        if self.can_send_telemetry {
+        if !self.can_send_telemetry {
             return;
         }
 
