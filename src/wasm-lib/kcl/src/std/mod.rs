@@ -49,6 +49,7 @@ lazy_static! {
         Box::new(crate::std::segment::SegAng),
         Box::new(crate::std::segment::AngleToMatchLengthX),
         Box::new(crate::std::segment::AngleToMatchLengthY),
+        Box::new(crate::std::shapes::Circle),
         Box::new(crate::std::sketch::LineTo),
         Box::new(crate::std::sketch::Line),
         Box::new(crate::std::sketch::XLineTo),
@@ -130,7 +131,7 @@ impl StdLib {
             .map(|internal_fn| (internal_fn.name(), internal_fn))
             .collect();
 
-        let kcl_internal_fns: [Box<dyn KclStdLibFn>; 1] = [Box::<shapes::Circle>::default()];
+        let kcl_internal_fns: [Box<dyn KclStdLibFn>; 0] = [];
         let kcl_fns = kcl_internal_fns
             .into_iter()
             .map(|internal_fn| (internal_fn.name(), internal_fn))
@@ -263,6 +264,103 @@ impl Args {
         }
 
         Ok((numbers[0], numbers[1]))
+    }
+
+    fn get_circle_args(
+        &self,
+    ) -> Result<([f64; 2], f64, crate::std::shapes::SketchSurfaceOrGroup, Option<String>), KclError> {
+        let first_value = self
+            .args
+            .first()
+            .ok_or_else(|| {
+                KclError::Type(KclErrorDetails {
+                    message: format!(
+                        "Expected a [number, number] as the first argument, found `{:?}`",
+                        self.args
+                    ),
+                    source_ranges: vec![self.source_range],
+                })
+            })?
+            .get_json_value()?;
+
+        let center: [f64; 2] = if let serde_json::Value::Array(arr) = first_value {
+            if arr.len() != 2 {
+                return Err(KclError::Type(KclErrorDetails {
+                    message: format!(
+                        "Expected a [number, number] as the first argument, found `{:?}`",
+                        self.args
+                    ),
+                    source_ranges: vec![self.source_range],
+                }));
+            }
+            let x = parse_json_number_as_f64(&arr[0], self.source_range)?;
+            let y = parse_json_number_as_f64(&arr[1], self.source_range)?;
+            [x, y]
+        } else {
+            return Err(KclError::Type(KclErrorDetails {
+                message: format!(
+                    "Expected a [number, number] as the first argument, found `{:?}`",
+                    self.args
+                ),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+
+        let second_value = self
+            .args
+            .get(1)
+            .ok_or_else(|| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Expected a number as the second argument, found `{:?}`", self.args),
+                    source_ranges: vec![self.source_range],
+                })
+            })?
+            .get_json_value()?;
+
+        let radius: f64 = serde_json::from_value(second_value).map_err(|e| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Failed to deserialize number from JSON: {}", e),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let third_value = self.args.get(1).ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!(
+                    "Expected a SketchGroup or SketchSurface as the third argument, found `{:?}`",
+                    self.args
+                ),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let sketch_group_or_surface = if let MemoryItem::SketchGroup(sg) = third_value {
+            crate::std::shapes::SketchSurfaceOrGroup::SketchGroup(sg.clone())
+        } else if let MemoryItem::Plane(sg) = third_value {
+            crate::std::shapes::SketchSurfaceOrGroup::SketchSurface(SketchSurface::Plane(sg.clone()))
+        } else if let MemoryItem::Face(sg) = third_value {
+            crate::std::shapes::SketchSurfaceOrGroup::SketchSurface(SketchSurface::Face(sg.clone()))
+        } else {
+            return Err(KclError::Type(KclErrorDetails {
+                message: format!(
+                    "Expected a SketchGroup or SketchSurface as the third argument, found `{:?}`",
+                    self.args
+                ),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+
+        if let Some(fourth_value) = self.args.get(1) {
+            let tag: String = serde_json::from_value(fourth_value.get_json_value()?).map_err(|e| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Failed to deserialize String from JSON: {}", e),
+                    source_ranges: vec![self.source_range],
+                })
+            })?;
+            Ok((center, radius, sketch_group_or_surface, Some(tag)))
+        } else {
+            Ok((center, radius, sketch_group_or_surface, None))
+        }
     }
 
     fn get_segment_name_sketch_group(&self) -> Result<(String, Box<SketchGroup>), KclError> {
