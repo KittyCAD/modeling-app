@@ -265,13 +265,13 @@ const part001 = startSketchOn('-XZ')
       presentation: 'pretty',
     })
   )
-
-  // TODO: gltfs don't seem to work with snap shots. push onto exportLocations once it's figured out
-  await doExport({
-    type: 'gltf',
-    storage: 'standard',
-    presentation: 'pretty',
-  })
+  exportLocations.push(
+    await doExport({
+      type: 'gltf',
+      storage: 'standard',
+      presentation: 'pretty',
+    })
+  )
 
   // close page to disconnect websocket since we can only have one open atm
   await page.close()
