@@ -14,3 +14,5 @@ pub mod lsp;
 pub mod parser;
 pub mod std;
 pub mod token;
+#[cfg(target_arch = "wasm32")]
+pub mod wasm;

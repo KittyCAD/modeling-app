@@ -37,6 +37,7 @@ import { homeCommandBarConfig } from 'lib/commandBarConfigs/homeCommandConfig'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { isTauri } from 'lib/isTauri'
 import { kclManager } from 'lang/KclSingleton'
+import { useLspContext } from 'components/LspProvider'
 import { useValidateSettings } from 'hooks/useValidateSettings'
 
 // This route only opens in the Tauri desktop context for now,
@@ -52,6 +53,7 @@ const Home = () => {
       send: sendToSettings,
     },
   } = useSettingsAuthContext()
+  const { onProjectOpen } = useLspContext()
 
   // Cancel all KCL executions while on the home page
   useEffect(() => {
@@ -78,12 +80,16 @@ const Home = () => {
         event: EventFrom<typeof homeMachine>
       ) => {
         if (event.data && 'name' in event.data) {
-          commandBarSend({ type: 'Close' })
-          navigate(
-            `${paths.FILE}/${encodeURIComponent(
-              context.defaultDirectory + sep + event.data.name
-            )}`
+          let projectPath = context.defaultDirectory + sep + event.data.name
+          onProjectOpen(
+            {
+              name: event.data.name,
+              path: projectPath,
+            },
+            null
           )
+          commandBarSend({ type: 'Close' })
+          navigate(`${paths.FILE}/${encodeURIComponent(projectPath)}`)
         }
       },
       toastSuccess: (_, event) => toast.success((event.data || '') + ''),

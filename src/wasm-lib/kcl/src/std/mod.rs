@@ -27,8 +27,7 @@ use crate::{
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
     executor::{
-        ExecutorContext, ExtrudeGroup, Geometry, MemoryItem, Metadata, SketchGroup, SketchGroupSet, SketchSurface,
-        SourceRange,
+        ExecutorContext, ExtrudeGroup, MemoryItem, Metadata, SketchGroup, SketchGroupSet, SketchSurface, SourceRange,
     },
     std::{kcl_stdlib::KclStdLibFn, sketch::SketchOnFaceTag},
 };
@@ -72,8 +71,10 @@ lazy_static! {
         Box::new(crate::std::sketch::TangentialArcTo),
         Box::new(crate::std::sketch::BezierCurve),
         Box::new(crate::std::sketch::Hole),
-        Box::new(crate::std::patterns::PatternLinear),
-        Box::new(crate::std::patterns::PatternCircular),
+        Box::new(crate::std::patterns::PatternLinear2D),
+        Box::new(crate::std::patterns::PatternLinear3D),
+        Box::new(crate::std::patterns::PatternCircular2D),
+        Box::new(crate::std::patterns::PatternCircular3D),
         Box::new(crate::std::fillet::Fillet),
         Box::new(crate::std::fillet::GetOppositeEdge),
         Box::new(crate::std::fillet::GetNextAdjacentEdge),
@@ -99,6 +100,8 @@ lazy_static! {
         Box::new(crate::std::math::Log2),
         Box::new(crate::std::math::Log10),
         Box::new(crate::std::math::Ln),
+        Box::new(crate::std::math::ToDegrees),
+        Box::new(crate::std::math::ToRadians),
     ];
 }
 
@@ -520,49 +523,6 @@ impl Args {
         };
 
         Ok((data, sketch_group))
-    }
-
-    fn get_data_and_geometry<T: serde::de::DeserializeOwned>(&self) -> Result<(T, Geometry), KclError> {
-        let first_value = self
-            .args
-            .first()
-            .ok_or_else(|| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Expected a struct as the first argument, found `{:?}`", self.args),
-                    source_ranges: vec![self.source_range],
-                })
-            })?
-            .get_json_value()?;
-
-        let data: T = serde_json::from_value(first_value).map_err(|e| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Failed to deserialize struct from JSON: {}", e),
-                source_ranges: vec![self.source_range],
-            })
-        })?;
-
-        let second_value = self.args.get(1).ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Expected a SketchGroup as the second argument, found `{:?}`", self.args),
-                source_ranges: vec![self.source_range],
-            })
-        })?;
-
-        let geometry = if let MemoryItem::SketchGroup(sg) = second_value {
-            Geometry::SketchGroup(sg.clone())
-        } else if let MemoryItem::ExtrudeGroup(eg) = second_value {
-            Geometry::ExtrudeGroup(eg.clone())
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup or ExtrudeGroup as the second argument, found `{:?}`",
-                    self.args
-                ),
-                source_ranges: vec![self.source_range],
-            }));
-        };
-
-        Ok((data, geometry))
     }
 
     fn get_data_and_sketch_surface<T: serde::de::DeserializeOwned>(&self) -> Result<(T, SketchSurface), KclError> {

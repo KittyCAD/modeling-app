@@ -46,8 +46,10 @@
 	* [`log2`](#log2)
 	* [`max`](#max)
 	* [`min`](#min)
-	* [`patternCircular`](#patternCircular)
-	* [`patternLinear`](#patternLinear)
+	* [`patternCircular2d`](#patternCircular2d)
+	* [`patternCircular3d`](#patternCircular3d)
+	* [`patternLinear2d`](#patternLinear2d)
+	* [`patternLinear3d`](#patternLinear3d)
 	* [`pi`](#pi)
 	* [`pow`](#pow)
 	* [`segAng`](#segAng)
@@ -63,6 +65,8 @@
 	* [`tangentialArc`](#tangentialArc)
 	* [`tangentialArcTo`](#tangentialArcTo)
 	* [`tau`](#tau)
+	* [`to_degrees`](#to_degrees)
+	* [`to_radians`](#to_radians)
 	* [`xLine`](#xLine)
 	* [`xLineTo`](#xLineTo)
 	* [`yLine`](#yLine)
@@ -7170,34 +7174,32 @@ min(args: [number]) -> number
 
 
 
-### patternCircular
+### patternCircular2d
 
-A Circular pattern.
+A circular pattern on a 2D sketch.
 
 
 
 ```
-patternCircular(data: CircularPatternData, geometry: Geometry) -> Geometries
+patternCircular2d(data: CircularPattern2dData, sketch_group: SketchGroup) -> [SketchGroup]
 ```
 
 #### Arguments
 
-* `data`: `CircularPatternData` - Data for a circular pattern. (REQUIRED)
+* `data`: `CircularPattern2dData` - Data for a circular pattern on a 2D sketch. (REQUIRED)
 ```
 {
 	// The arc angle (in degrees) to place the repetitions. Must be greater than 0.
 	arcDegrees: number,
-	// The axis around which to make the pattern. This is a 2D vector.
-	axis: [number, number],
-	// The center about which to make th pattern. This is a 3D vector.
-	center: [number, number, number],
+	// The center about which to make th pattern. This is a 2D vector.
+	center: [number, number],
 	// The number of repetitions. Must be greater than 0. This excludes the original entity. For example, if `repetitions` is 1, the original entity will be copied once.
 	repetitions: number,
 	// Whether or not to rotate the duplicates as they are copied.
 	rotateDuplicates: string,
 }
 ```
-* `geometry`: `Geometry` - A geometry. (REQUIRED)
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -7276,7 +7278,6 @@ patternCircular(data: CircularPatternData, geometry: Geometry) -> Geometries
 	// The to point.
 	to: [number, number],
 },
-	type: "SketchGroup",
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
@@ -7360,7 +7361,44 @@ patternCircular(data: CircularPatternData, geometry: Geometry) -> Geometries
 	y: number,
 	z: number,
 },
-} |
+}
+```
+
+#### Returns
+
+* `[SketchGroup]`
+
+
+
+### patternCircular3d
+
+A circular pattern on a 3D model.
+
+
+
+```
+patternCircular3d(data: CircularPattern3dData, extrude_group: ExtrudeGroup) -> [ExtrudeGroup]
+```
+
+#### Arguments
+
+* `data`: `CircularPattern3dData` - Data for a circular pattern on a 3D model. (REQUIRED)
+```
+{
+	// The arc angle (in degrees) to place the repetitions. Must be greater than 0.
+	arcDegrees: number,
+	// The axis around which to make the pattern. This is a 3D vector.
+	axis: [number, number, number],
+	// The center about which to make th pattern. This is a 3D vector.
+	center: [number, number, number],
+	// The number of repetitions. Must be greater than 0. This excludes the original entity. For example, if `repetitions` is 1, the original entity will be copied once.
+	repetitions: number,
+	// Whether or not to rotate the duplicates as they are copied.
+	rotateDuplicates: string,
+}
+```
+* `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces. (REQUIRED)
+```
 {
 	// The id of the extrusion end cap
 	endCapId: uuid,
@@ -7439,7 +7477,6 @@ patternCircular(data: CircularPatternData, geometry: Geometry) -> Geometries
 }],
 	// The id of the extrusion start cap
 	startCapId: uuid,
-	type: "ExtrudeGroup",
 	// The extrude surfaces.
 	value: [{
 	// The face id for the extrude plane.
@@ -7494,31 +7531,23 @@ patternCircular(data: CircularPatternData, geometry: Geometry) -> Geometries
 
 #### Returns
 
-* `Geometries` - A set of geometry.
-```
-{
-	type: "SketchGroups",
-} |
-{
-	type: "ExtrudeGroups",
-}
-```
+* `[ExtrudeGroup]`
 
 
 
-### patternLinear
+### patternLinear2d
 
-A linear pattern.
+A linear pattern on a 2D sketch.
 
 
 
 ```
-patternLinear(data: LinearPatternData, geometry: Geometry) -> Geometries
+patternLinear2d(data: LinearPattern2dData, sketch_group: SketchGroup) -> [SketchGroup]
 ```
 
 #### Arguments
 
-* `data`: `LinearPatternData` - Data for a linear pattern. (REQUIRED)
+* `data`: `LinearPattern2dData` - Data for a linear pattern on a 2D sketch. (REQUIRED)
 ```
 {
 	// The axis of the pattern. This is a 2D vector.
@@ -7529,7 +7558,7 @@ patternLinear(data: LinearPatternData, geometry: Geometry) -> Geometries
 	repetitions: number,
 }
 ```
-* `geometry`: `Geometry` - A geometry. (REQUIRED)
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```
 {
 	// The plane id or face id of the sketch group.
@@ -7608,7 +7637,6 @@ patternLinear(data: LinearPatternData, geometry: Geometry) -> Geometries
 	// The to point.
 	to: [number, number],
 },
-	type: "SketchGroup",
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
@@ -7692,7 +7720,40 @@ patternLinear(data: LinearPatternData, geometry: Geometry) -> Geometries
 	y: number,
 	z: number,
 },
-} |
+}
+```
+
+#### Returns
+
+* `[SketchGroup]`
+
+
+
+### patternLinear3d
+
+A linear pattern on a 3D model.
+
+
+
+```
+patternLinear3d(data: LinearPattern3dData, extrude_group: ExtrudeGroup) -> [ExtrudeGroup]
+```
+
+#### Arguments
+
+* `data`: `LinearPattern3dData` - Data for a linear pattern on a 3D model. (REQUIRED)
+```
+{
+	// The axis of the pattern.
+	axis: [number, number, number],
+	// The distance between each repetition. This can also be referred to as spacing.
+	distance: number,
+	// The number of repetitions. Must be greater than 0. This excludes the original entity. For example, if `repetitions` is 1, the original entity will be copied once.
+	repetitions: number,
+}
+```
+* `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces. (REQUIRED)
+```
 {
 	// The id of the extrusion end cap
 	endCapId: uuid,
@@ -7771,7 +7832,6 @@ patternLinear(data: LinearPatternData, geometry: Geometry) -> Geometries
 }],
 	// The id of the extrusion start cap
 	startCapId: uuid,
-	type: "ExtrudeGroup",
 	// The extrude surfaces.
 	value: [{
 	// The face id for the extrude plane.
@@ -7826,15 +7886,7 @@ patternLinear(data: LinearPatternData, geometry: Geometry) -> Geometries
 
 #### Returns
 
-* `Geometries` - A set of geometry.
-```
-{
-	type: "SketchGroups",
-} |
-{
-	type: "ExtrudeGroups",
-}
-```
+* `[ExtrudeGroup]`
 
 
 
@@ -10090,6 +10142,46 @@ tau() -> number
 
 #### Arguments
 
+
+#### Returns
+
+* `number`
+
+
+
+### to_degrees
+
+Converts a number from radians to degrees.
+
+
+
+```
+to_degrees(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number` (REQUIRED)
+
+#### Returns
+
+* `number`
+
+
+
+### to_radians
+
+Converts a number from degrees to radians.
+
+
+
+```
+to_radians(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number` (REQUIRED)
 
 #### Returns
 

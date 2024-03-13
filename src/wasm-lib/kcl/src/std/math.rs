@@ -375,3 +375,35 @@ pub async fn tau(args: Args) -> Result<MemoryItem, KclError> {
 fn inner_tau() -> Result<f64, KclError> {
     Ok(std::f64::consts::TAU)
 }
+
+/// Converts a number from degrees to radians.
+pub async fn deg_to_rad(args: Args) -> Result<MemoryItem, KclError> {
+    let num = args.get_number()?;
+    let result = inner_deg_to_rad(num)?;
+
+    args.make_user_val_from_f64(result)
+}
+
+/// Converts a number from degrees to radians.
+#[stdlib {
+    name = "to_radians",
+}]
+fn inner_deg_to_rad(num: f64) -> Result<f64, KclError> {
+    Ok(num.to_radians())
+}
+
+/// Converts a number from radians to degrees.
+pub async fn rad_to_deg(args: Args) -> Result<MemoryItem, KclError> {
+    let num = args.get_number()?;
+    let result = inner_rad_to_deg(num)?;
+
+    args.make_user_val_from_f64(result)
+}
+
+/// Converts a number from radians to degrees.
+#[stdlib {
+    name = "to_degrees",
+}]
+fn inner_rad_to_deg(num: f64) -> Result<f64, KclError> {
+    Ok(num.to_degrees())
+}
