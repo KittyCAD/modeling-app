@@ -3,14 +3,13 @@ import { Themes, getSystemTheme, setThemeClass } from 'lib/theme'
 import { CameraSystem } from 'lib/cameraControls'
 import { isTauri } from 'lib/isTauri'
 import { writeToSettingsFile } from 'lib/tauriFS'
+import { DEFAULT_PROJECT_NAME, SETTINGS_PERSIST_KEY } from 'lib/constants'
 import {
-  BaseUnit,
-  DEFAULT_PROJECT_NAME,
-  SETTINGS_PERSIST_KEY,
-  SettingsMachineContext,
-  Toggle,
   UnitSystem,
-} from 'lib/settings'
+  type BaseUnit,
+  type SettingsMachineContext,
+  type Toggle,
+} from 'lib/settings/settingsTypes'
 
 export const settingsMachine = createMachine(
   {

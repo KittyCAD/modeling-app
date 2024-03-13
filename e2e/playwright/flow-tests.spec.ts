@@ -3,7 +3,7 @@ import { secrets } from './secrets'
 import { getUtils } from './test-utils'
 import waitOn from 'wait-on'
 import { Themes } from '../../src/lib/theme'
-import { initialSettings } from '../../src/lib/settings'
+import { initialSettings } from '../../src/lib/settings/initialSettings'
 import { roundOff } from 'lib/utils'
 
 /*
@@ -542,7 +542,9 @@ test('Stored settings are validated and fall back to defaults', async ({
 
   // Check the toast appeared
   await expect(
-    page.getByText(`Error validating persisted settings:`, { exact: false })
+    page.getByText(`Error validating persisted settings:`, {
+      exact: false,
+    })
   ).toBeVisible()
 
   // Check the settings were reset

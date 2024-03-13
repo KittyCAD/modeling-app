@@ -1,13 +1,10 @@
-import {
-  ActionFunction,
-  LoaderFunction,
-  redirect,
-} from 'react-router-dom'
+import { ActionFunction, LoaderFunction, redirect } from 'react-router-dom'
 import { HomeLoaderData, IndexLoaderData } from './types'
 import { isTauri } from './isTauri'
 import { paths } from './paths'
 import { BROWSER_FILE_NAME } from 'Router'
-import { SETTINGS_PERSIST_KEY, loadAndValidateSettings } from './settings'
+import { SETTINGS_PERSIST_KEY } from 'lib/constants'
+import { loadAndValidateSettings } from './settings/settingsUtils'
 import {
   getInitialDefaultDir,
   getProjectsInDir,
@@ -30,7 +27,7 @@ export const indexLoader: LoaderFunction = async (): ReturnType<
 }
 
 // Redirect users to the appropriate onboarding page if they haven't completed it
-export const fileAction: ActionFunction = async ({ request }) => {
+export const onboardingRedirectLoader: ActionFunction = async ({ request }) => {
   const { settings } = await loadAndValidateSettings()
   const onboardingStatus = settings.onboardingStatus || ''
   const notEnRouteToOnboarding = !request.url.includes(paths.ONBOARDING.INDEX)
@@ -46,6 +43,8 @@ export const fileAction: ActionFunction = async ({ request }) => {
       makeUrlPathRelative(paths.ONBOARDING.INDEX) + onboardingStatus.slice(1)
     )
   }
+
+  return null
 }
 
 export const fileLoader: LoaderFunction = async ({

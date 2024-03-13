@@ -6,7 +6,10 @@ import withBaseUrl from '../lib/withBaseURL'
 import React, { createContext, useEffect } from 'react'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
 import { settingsMachine } from 'machines/settingsMachine'
-import { validateSettings } from 'lib/settings'
+import {
+  fallbackLoadedSettings,
+  validateSettings,
+} from 'lib/settings/settingsUtils'
 import { toast } from 'react-hot-toast'
 import { setThemeClass, Themes } from 'lib/theme'
 import {

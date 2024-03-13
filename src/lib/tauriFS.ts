@@ -12,7 +12,7 @@ import { type ProjectWithEntryPointMetadata } from 'lib/types'
 import { metadata } from 'tauri-plugin-fs-extra-api'
 import { settingsMachine } from 'machines/settingsMachine'
 import { ContextFrom } from 'xstate'
-import { SETTINGS_FILE_NAME } from 'lib/settings'
+import { SETTINGS_FILE_NAME } from 'lib/constants'
 
 const PROJECT_FOLDER = 'zoo-modeling-app-projects'
 export const FILE_EXT = '.kcl'

@@ -2,14 +2,12 @@ import { faArrowRotateBack, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../components/ActionButton'
 import { AppHeader } from '../components/AppHeader'
 import { open } from '@tauri-apps/api/dialog'
+import { DEFAULT_PROJECT_NAME, SETTINGS_PERSIST_KEY } from 'lib/constants'
 import {
-  BaseUnit,
-  DEFAULT_PROJECT_NAME,
-  SETTINGS_PERSIST_KEY,
-  baseUnits,
+  type BaseUnit,
   UnitSystem,
-} from 'lib/settings'
-import { initialSettings } from 'lib/settings'
+  baseUnits,
+} from 'lib/settings/settingsTypes'
 import { Toggle } from 'components/Toggle/Toggle'
 import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -31,6 +29,7 @@ import {
   initializeProjectDirectory,
   interpolateProjectNameWithIndex,
 } from 'lib/tauriFS'
+import { initialSettings } from 'lib/settings/initialSettings'
 import { ONBOARDING_PROJECT_NAME } from './Onboarding'
 import { sep } from '@tauri-apps/api/path'
 import { bracket } from 'lib/exampleKcl'
