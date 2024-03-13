@@ -324,7 +324,7 @@ impl Args {
             })
         })?;
 
-        let third_value = self.args.get(1).ok_or_else(|| {
+        let third_value = self.args.get(2).ok_or_else(|| {
             KclError::Type(KclErrorDetails {
                 message: format!(
                     "Expected a SketchGroup or SketchSurface as the third argument, found `{:?}`",
@@ -350,7 +350,7 @@ impl Args {
             }));
         };
 
-        if let Some(fourth_value) = self.args.get(1) {
+        if let Some(fourth_value) = self.args.get(3) {
             let tag: String = serde_json::from_value(fourth_value.get_json_value()?).map_err(|e| {
                 KclError::Type(KclErrorDetails {
                     message: format!("Failed to deserialize String from JSON: {}", e),
