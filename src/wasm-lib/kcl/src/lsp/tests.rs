@@ -67,10 +67,7 @@ async fn test_updating_kcl_lsp_files() {
     assert_eq!(server.current_code_map.len(), 0);
 
     // Get the path to the current file.
-    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("kcl")
-        .join("src")
-        .join("lsp");
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("src").join("lsp");
     let string_path = format!("file://{}", path.display());
 
     // Run workspace folders change.
@@ -96,7 +93,7 @@ async fn test_updating_kcl_lsp_files() {
         }
     );
 
-    assert_eq!(server.current_code_map.len(), 0);
+    assert_eq!(server.current_code_map.len(), 8);
 
     // Run open file.
     server
@@ -111,7 +108,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 1);
+    assert_eq!(server.current_code_map.len(), 9);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -127,7 +124,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 1);
+    assert_eq!(server.current_code_map.len(), 9);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -146,7 +143,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 2);
+    assert_eq!(server.current_code_map.len(), 10);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -172,7 +169,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 2);
+    assert_eq!(server.current_code_map.len(), 10);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -193,7 +190,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 2);
+    assert_eq!(server.current_code_map.len(), 10);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -213,7 +210,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 3);
+    assert_eq!(server.current_code_map.len(), 11);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -237,7 +234,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 2);
+    assert_eq!(server.current_code_map.len(), 10);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -271,7 +268,7 @@ async fn test_updating_kcl_lsp_files() {
     );
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 2);
+    assert_eq!(server.current_code_map.len(), 10);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -307,7 +304,16 @@ async fn test_updating_kcl_lsp_files() {
             name: "my-project2".to_string(),
         }
     );
-    assert_eq!(server.current_code_map.len(), 0);
+    assert_eq!(server.current_code_map.len(), 8);
+    // Just make sure that one of the current files read from disk is accurate.
+    assert_eq!(
+        server
+            .current_code_map
+            .get(&format!("{}/util.rs", string_path))
+            .unwrap()
+            .value(),
+        include_str!("util.rs").as_bytes()
+    );
 }
 
 #[tokio::test]
@@ -317,10 +323,7 @@ async fn test_updating_copilot_lsp_files() {
     assert_eq!(server.current_code_map.len(), 0);
 
     // Get the path to the current file.
-    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("kcl")
-        .join("src")
-        .join("lsp");
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("src").join("lsp");
     let string_path = format!("file://{}", path.display());
 
     // Run workspace folders change.
@@ -346,7 +349,7 @@ async fn test_updating_copilot_lsp_files() {
         }
     );
 
-    assert_eq!(server.current_code_map.len(), 0);
+    assert_eq!(server.current_code_map.len(), 8);
 
     // Run open file.
     server
@@ -361,7 +364,7 @@ async fn test_updating_copilot_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 1);
+    assert_eq!(server.current_code_map.len(), 9);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -377,7 +380,7 @@ async fn test_updating_copilot_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 1);
+    assert_eq!(server.current_code_map.len(), 9);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -396,7 +399,7 @@ async fn test_updating_copilot_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 2);
+    assert_eq!(server.current_code_map.len(), 10);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -422,7 +425,7 @@ async fn test_updating_copilot_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 2);
+    assert_eq!(server.current_code_map.len(), 10);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -443,7 +446,7 @@ async fn test_updating_copilot_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 2);
+    assert_eq!(server.current_code_map.len(), 10);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -463,7 +466,7 @@ async fn test_updating_copilot_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 3);
+    assert_eq!(server.current_code_map.len(), 11);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -487,7 +490,7 @@ async fn test_updating_copilot_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 2);
+    assert_eq!(server.current_code_map.len(), 10);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -521,7 +524,7 @@ async fn test_updating_copilot_lsp_files() {
     );
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 2);
+    assert_eq!(server.current_code_map.len(), 10);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -552,7 +555,7 @@ async fn test_updating_copilot_lsp_files() {
     );
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 2);
+    assert_eq!(server.current_code_map.len(), 10);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -588,5 +591,5 @@ async fn test_updating_copilot_lsp_files() {
             name: "my-project2".to_string(),
         }
     );
-    assert_eq!(server.current_code_map.len(), 0);
+    assert_eq!(server.current_code_map.len(), 8);
 }
