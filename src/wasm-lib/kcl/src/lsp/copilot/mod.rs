@@ -222,7 +222,16 @@ impl Backend {
             .log_message(MessageType::INFO, format!("Accepted completions: {:?}", params))
             .await;
 
-        // TODO: send telemetry data back out that we accepted the completions
+        // Get the original telemetry data.
+        let Some((_, original)) = self.telemetry.remove(&params.uuid) else {
+            return;
+        };
+
+        self.client
+            .log_message(MessageType::INFO, format!("Original telemetry: {:?}", original))
+            .await;
+
+        // TODO: Send the telemetry data to the zoo api.
     }
 
     pub async fn reject_completions(&self, params: CopilotRejectCompletionParams) {
@@ -230,7 +239,19 @@ impl Backend {
             .log_message(MessageType::INFO, format!("Rejected completions: {:?}", params))
             .await;
 
-        // TODO: send telemetry data back out that we rejected the completions
+        // Get the original telemetry data.
+        let mut originals: Vec<CopilotCompletionTelemetry> = Default::default();
+        for uuid in params.uuids {
+            if let Some((_, original)) = self.telemetry.remove(&uuid) {
+                originals.push(original);
+            }
+        }
+
+        self.client
+            .log_message(MessageType::INFO, format!("Original telemetry: {:?}", originals))
+            .await;
+
+        // TODO: Send the telemetry data to the zoo api.
     }
 }
 
