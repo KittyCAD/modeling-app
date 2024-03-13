@@ -138,6 +138,13 @@ impl crate::docs::StdLibFn for Import {
         false
     }
 
+    fn examples(&self) -> Vec<&str> {
+        vec![
+            "This is another code block.\nyes sirrr.",
+            "This is code.\nIt does other shit.",
+        ]
+    }
+
     fn std_lib_fn(&self) -> crate::std::StdFn {
         boxed_import
     }

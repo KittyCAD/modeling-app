@@ -76,6 +76,10 @@ impl crate::docs::StdLibFn for LineTo {
         false
     }
 
+    fn examples(&self) -> Vec<&str> {
+        vec![]
+    }
+
     fn std_lib_fn(&self) -> crate::std::StdFn {
         boxed_line_to
     }
