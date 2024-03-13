@@ -7,9 +7,9 @@ import {
   DEFAULT_PROJECT_NAME,
   SETTINGS_PERSIST_KEY,
   baseUnits,
-  initialSettings,
   UnitSystem,
 } from 'lib/settings'
+import { initialSettings } from 'lib/settings'
 import { Toggle } from 'components/Toggle/Toggle'
 import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
