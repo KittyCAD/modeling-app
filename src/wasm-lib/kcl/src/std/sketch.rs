@@ -807,7 +807,7 @@ pub async fn start_sketch_at(args: Args) -> Result<MemoryItem, KclError> {
 /// Start a sketch at a given point on the 'XY' plane.
 ///
 /// ```no_run
-/// startSketchAt([0, 0], %)
+/// startSketchAt([0, 0])
 ///    |> line([10, 10], %)
 /// ```
 #[stdlib {
@@ -1392,8 +1392,8 @@ pub async fn arc(args: Args) -> Result<MemoryItem, KclError> {
 /// startSketchOn('-YZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> arc({
-///   angleStart: 0,
-///   angleEnd: 360,
+///   angle_start: 0,
+///   angle_end: 360,
 ///   radius: 10,
 ///   tag: "edge1"
 ///   }, %)
