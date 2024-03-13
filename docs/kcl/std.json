@@ -15943,7 +15943,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "startSketchOn('-YZ')\n  |> startProfileAt([0, 0], %)\n  |> arc({\n       angleStart: 0,\n       angleEnd: 360,\n       radius: 10,\n       tag: \"edge1\"\n     }, %)\n  |> extrude(10, %)"
+      "startSketchOn('-YZ')\n  |> startProfileAt([0, 0], %)\n  |> arc({\n       angle_start: 0,\n       angle_end: 360,\n       radius: 10,\n       tag: \"edge1\"\n     }, %)\n  |> extrude(10, %)"
     ]
   },
   {
@@ -16005,7 +16005,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const myVar = atan(0.5)"
+      "const myVar = atan(1.0)"
     ]
   },
   {
@@ -52135,7 +52135,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "startSketchAt([0, 0], %)\n  |> line([10, 10], %)"
+      "startSketchAt([0, 0])\n  |> line([10, 10], %)"
     ]
   },
   {

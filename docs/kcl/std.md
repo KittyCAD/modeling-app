@@ -2742,8 +2742,8 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 startSketchOn('-YZ')
   |> startProfileAt([0, 0], %)
   |> arc({
-       angleStart: 0,
-       angleEnd: 360,
+       angle_start: 0,
+       angle_end: 360,
        radius: 10,
        tag: "edge1"
      }, %)
@@ -3148,7 +3148,7 @@ atan(num: number) -> number
 #### Examples
 
 ```kcl
-const myVar = atan(0.5)
+const myVar = atan(1.0)
 ```
 
 #### Arguments
@@ -9436,7 +9436,7 @@ startSketchAt(data: LineData) -> SketchGroup
 #### Examples
 
 ```kcl
-startSketchAt([0, 0], %)
+startSketchAt([0, 0])
   |> line([10, 10], %)
 ```
 
