@@ -6,6 +6,7 @@ import fsp from 'fs/promises'
 import { spawn } from 'child_process'
 import { APP_NAME } from 'lib/constants'
 import JSZip from 'jszip'
+import path from 'path'
 
 test.beforeEach(async ({ context, page }) => {
   await context.addInitScript(async (token) => {
@@ -267,6 +268,8 @@ const part001 = startSketchOn('-XZ')
     // May change depending on the file being dealt with
     let cliCommand = `export ZOO_TOKEN=${secrets.snapshottoken} && zoo file snapshot --output-format=png --src-format=${outputType} ${modelPath} ${imagePath}`
 
+    const parentPath = path.dirname(modelPath)
+
     // This is actually a zip file.
     if (modelPath.includes('gltf-standard.gltf')) {
       console.log('Extracting files from archive')
@@ -281,7 +284,9 @@ const part001 = startSketchOn('-XZ')
           files.map((file: any) =>
             file.promise.then((data: any) => {
               console.log(`Writing ${file.name}`)
-              return fsp.writeFile(file.name, data).then(() => file.name)
+              return fsp
+                .writeFile(`${parentPath}/${file.name}`, data)
+                .then(() => file.name)
             })
           )
         )
@@ -294,7 +299,7 @@ const part001 = startSketchOn('-XZ')
         t.includes('.gltf')
       )[0]
       if (!gltfFilename) throw new Error('No output.gltf in this archive')
-      cliCommand = `export ZOO_TOKEN=${secrets.snapshottoken} && zoo file snapshot --output-format=png --src-format=${outputType} ${gltfFilename} ${imagePath}`
+      cliCommand = `export ZOO_TOKEN=${secrets.snapshottoken} && zoo file snapshot --output-format=png --src-format=${outputType} ${parentPath}/${gltfFilename} ${imagePath}`
     }
 
     console.log(cliCommand)
