@@ -731,8 +731,8 @@ async fn serial_test_holes() {
   |> line([10, 0], %)
   |> line([0, -10], %)
   |> close(%)
-  |> hole(circle([2, 2], .5, startSketchOn('XY')), %)
-  |> hole(circle([2, 8], .5, startSketchOn('XY')), %)
+  |> hole(circle([2, 2], .5, %), %)
+  |> hole(circle([2, 8], .5, %), %)
   |> extrude(2, %)
 "#;
 
@@ -787,10 +787,10 @@ const holeRadius = 1
 const holeIndex = 6
 
 const part = roundedRectangle([0, 0], 20, 20, 4)
-  |> hole(circle([-holeIndex, holeIndex], holeRadius,  startSketchOn('XY')), %)
-  |> hole(circle([holeIndex, holeIndex], holeRadius,  startSketchOn('XY')), %)
-  |> hole(circle([-holeIndex, -holeIndex], holeRadius,  startSketchOn('XY')), %)
-  |> hole(circle([holeIndex, -holeIndex], holeRadius,  startSketchOn('XY')), %)
+  |> hole(circle([-holeIndex, holeIndex], holeRadius, %), %)
+  |> hole(circle([holeIndex, holeIndex], holeRadius, %), %)
+  |> hole(circle([-holeIndex, -holeIndex], holeRadius, %), %)
+  |> hole(circle([holeIndex, -holeIndex], holeRadius, %), %)
   |> extrude(2, %)
 "#;
 
@@ -802,7 +802,7 @@ const part = roundedRectangle([0, 0], 20, 20, 4)
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_top_level_expression() {
-    let code = r#"circle([0,0], 22,  startSketchOn('XY')) |> extrude(14, %)"#;
+    let code = r#"startSketchOn('YZ') |> circle([0,0], 22, %) |> extrude(14, %)"#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
         .await
@@ -1252,7 +1252,7 @@ async fn serial_test_stdlib_kcl_error_right_code_path() {
   |> line([0, -10], %)
   |> close(%)
   |> hole(circle([2, 2], .5), %)
-  |> hole(circle([2, 8], .5, startSketchOn('XY')), %)
+  |> hole(circle([2, 8], .5, %), %)
   |> extrude(2, %)
 "#;
 
