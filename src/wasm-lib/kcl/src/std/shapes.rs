@@ -128,6 +128,10 @@ impl StdLibFn for Circle {
         false
     }
 
+    fn examples(&self) -> Vec<&str> {
+        vec![]
+    }
+
     fn std_lib_fn(&self) -> crate::std::StdFn {
         todo!()
     }
