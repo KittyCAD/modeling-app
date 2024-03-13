@@ -2,7 +2,12 @@
 // automated enforcement.
 #![allow(clippy::style)]
 
+#[cfg(test)]
+mod tests;
+mod unbox;
+
 use convert_case::Casing;
+use inflector::Inflector;
 use once_cell::sync::Lazy;
 use quote::{format_ident, quote, quote_spanned, ToTokens};
 use regex::Regex;
@@ -12,6 +17,7 @@ use syn::{
     parse::{Parse, ParseStream},
     Attribute, Signature, Visibility,
 };
+use unbox::unbox;
 
 #[derive(Deserialize, Debug)]
 struct StdlibMetadata {
@@ -101,6 +107,21 @@ fn do_stdlib_inner(
     }
 
     let name = metadata.name;
+
+    // Fail if the name is not camel case.
+    let whitelist = [
+        "patternLinear3d",
+        "patternLinear2d",
+        "patternCircular3d",
+        "patternCircular2d",
+    ];
+    if !name.is_camel_case() && !whitelist.contains(&name.as_str()) {
+        errors.push(Error::new_spanned(
+            &ast.sig.ident,
+            format!("stdlib function names must be in camel case: `{}`", name),
+        ));
+    }
+
     let name_ident = format_ident!("{}", name.to_case(convert_case::Case::UpperCamel));
     let name_str = name.to_string();
 
@@ -110,16 +131,16 @@ fn do_stdlib_inner(
     let boxed_fn_name_ident = format_ident!("boxed_{}", fn_name_str);
     let _visibility = &ast.vis;
 
-    let (summary_text, description_text) = extract_doc_from_attrs(&ast.attrs);
+    let doc_info = extract_doc_from_attrs(&ast.attrs);
     let comment_text = {
         let mut buf = String::new();
         buf.push_str("Std lib function: ");
         buf.push_str(&name_str);
-        if let Some(s) = &summary_text {
+        if let Some(s) = &doc_info.summary {
             buf.push_str("\n");
             buf.push_str(&s);
         }
-        if let Some(s) = &description_text {
+        if let Some(s) = &doc_info.description {
             buf.push_str("\n");
             buf.push_str(&s);
         }
@@ -129,16 +150,59 @@ fn do_stdlib_inner(
         #[doc = #comment_text]
     };
 
-    let summary = if let Some(summary) = summary_text {
+    let summary = if let Some(summary) = doc_info.summary {
         quote! { #summary }
     } else {
         quote! { "" }
     };
-    let description = if let Some(description) = description_text {
+    let description = if let Some(description) = doc_info.description {
         quote! { #description }
     } else {
         quote! { "" }
     };
+
+    let cb = doc_info.code_blocks.clone();
+    let code_blocks = if !cb.is_empty() {
+        quote! {
+            let code_blocks = vec![#(#cb),*];
+            code_blocks.iter().map(|cb| {
+                let tokens = crate::token::lexer(cb);
+                let parser = crate::parser::Parser::new(tokens);
+                let program = parser.ast().unwrap();
+
+                let mut options: crate::ast::types::FormatOptions = Default::default();
+                options.insert_final_newline = false;
+                program.recast(&options, 0)
+            }).collect::<Vec<String>>()
+        }
+    } else {
+        errors.push(Error::new_spanned(
+            &ast.sig,
+            "stdlib functions must have at least one code block",
+        ));
+
+        quote! { vec![] }
+    };
+
+    // Make sure the function name is in all the code blocks.
+    for code_block in doc_info.code_blocks.iter() {
+        if !code_block.contains(&name) {
+            errors.push(Error::new_spanned(
+                &ast.sig,
+                format!(
+                    "stdlib functions must have the function name `{}` in the code block",
+                    name
+                ),
+            ));
+        }
+    }
+
+    let test_code_blocks = doc_info
+        .code_blocks
+        .iter()
+        .enumerate()
+        .map(|(index, code_block)| generate_code_block_test(&fn_name_str, code_block, index))
+        .collect::<Vec<_>>();
 
     let tags = metadata
         .tags
@@ -242,7 +306,7 @@ fn do_stdlib_inner(
                                     let mut args = args.iter();
                                     let ok = args.next().unwrap();
                                     if let syn::GenericArgument::Type(ty) = ok {
-                                        let ty = unbox(unbox_vec(ty.clone()));
+                                        let ty = unbox(ty.clone());
                                         quote! { #ty }
                                     } else {
                                         quote! { () }
@@ -254,7 +318,7 @@ fn do_stdlib_inner(
                                 quote! { () }
                             }
                         } else {
-                            let ty = unbox(unbox_vec(*ty.clone()));
+                            let ty = unbox(*ty.clone());
                             quote! { #ty }
                         }
                     } else {
@@ -295,9 +359,16 @@ fn do_stdlib_inner(
         pub(crate) const #name_ident: #name_ident = #name_ident {};
     };
 
+    let test_mod_name = format_ident!("test_examples_{}", fn_name_str);
+
     // The final TokenStream returned will have a few components that reference
     // `#name_ident`, the name of the function to which this macro was applied...
     let stream = quote! {
+        #[cfg(test)]
+        mod #test_mod_name {
+            #(#test_code_blocks)*
+        }
+
         // ... a struct type called `#name_ident` that has no members
         #[allow(non_camel_case_types, missing_docs)]
         #description_doc_comment
@@ -359,6 +430,10 @@ fn do_stdlib_inner(
                 #deprecated
             }
 
+            fn examples(&self) -> Vec<String> {
+                #code_blocks
+            }
+
             fn std_lib_fn(&self) -> crate::std::StdFn {
                 #boxed_fn_name_ident
             }
@@ -394,10 +469,18 @@ fn get_crate(var: Option<String>) -> proc_macro2::TokenStream {
     quote!(crate::docs)
 }
 
-fn extract_doc_from_attrs(attrs: &[syn::Attribute]) -> (Option<String>, Option<String>) {
-    let doc = syn::Ident::new("doc", proc_macro2::Span::call_site());
+#[derive(Debug)]
+struct DocInfo {
+    pub summary: Option<String>,
+    pub description: Option<String>,
+    pub code_blocks: Vec<String>,
+}
 
-    let mut lines = attrs.iter().flat_map(|attr| {
+fn extract_doc_from_attrs(attrs: &[syn::Attribute]) -> DocInfo {
+    let doc = syn::Ident::new("doc", proc_macro2::Span::call_site());
+    let mut code_blocks: Vec<String> = Vec::new();
+
+    let raw_lines = attrs.iter().flat_map(|attr| {
         if let syn::Meta::NameValue(nv) = &attr.meta {
             if nv.path.is_ident(&doc) {
                 if let syn::Expr::Lit(syn::ExprLit {
@@ -410,6 +493,53 @@ fn extract_doc_from_attrs(attrs: &[syn::Attribute]) -> (Option<String>, Option<S
         }
         Vec::new()
     });
+
+    // Parse any code blocks from the doc string.
+    let mut code_block: Option<String> = None;
+    let mut parsed_lines = Vec::new();
+    for line in raw_lines {
+        if line.starts_with("```") {
+            if let Some(ref inner_code_block) = code_block {
+                code_blocks.push(inner_code_block.trim().to_string());
+                code_block = None;
+            } else {
+                code_block = Some(String::new());
+            }
+
+            continue;
+        }
+        if let Some(ref mut code_block) = code_block {
+            code_block.push_str(&line);
+            code_block.push('\n');
+        } else {
+            parsed_lines.push(line);
+        }
+    }
+
+    // Parse code blocks that start with a tab or a space.
+    let mut lines = Vec::new();
+    for line in parsed_lines {
+        if line.starts_with("    ") || line.starts_with('\t') {
+            if let Some(ref mut code_block) = code_block {
+                code_block.push_str(&line.trim_start_matches("    ").trim_start_matches('\t'));
+                code_block.push('\n');
+            } else {
+                code_block = Some(format!("{}\n", line));
+            }
+        } else {
+            if let Some(ref inner_code_block) = code_block {
+                code_blocks.push(inner_code_block.trim().to_string());
+                code_block = None;
+            }
+            lines.push(line);
+        }
+    }
+
+    let mut lines = lines.into_iter();
+
+    if let Some(code_block) = code_block {
+        code_blocks.push(code_block.trim().to_string());
+    }
 
     // Skip initial blank lines; they make for excessively terse summaries.
     let summary = loop {
@@ -426,7 +556,7 @@ fn extract_doc_from_attrs(attrs: &[syn::Attribute]) -> (Option<String>, Option<S
         }
     };
 
-    match (summary, first) {
+    let (summary, description) = match (summary, first) {
         (None, _) => (None, None),
         (summary, None) => (summary, None),
         (Some(summary), Some(first)) => (
@@ -449,6 +579,12 @@ fn extract_doc_from_attrs(attrs: &[syn::Attribute]) -> (Option<String>, Option<S
                     .to_string(),
             ),
         ),
+    };
+
+    DocInfo {
+        summary,
+        description,
+        code_blocks,
     }
 }
 
@@ -458,16 +594,34 @@ fn normalize_comment_string(s: String) -> Vec<String> {
         .map(|(idx, s)| {
             // Rust-style comments are intrinsically single-line. We don't want
             // to trim away formatting such as an initial '*'.
+            // We also don't want to trim away a tab character, which is
+            // used to denote a code block. Code blocks can also be denoted
+            // by four spaces, but we don't want to trim those away either.
+            // We only want to trim a single space character from the start of
+            // a line, and only if it's the first character.
+            let new = s
+                .chars()
+                .enumerate()
+                .flat_map(|(idx, c)| {
+                    if idx == 0 {
+                        if c == ' ' {
+                            return None;
+                        }
+                    }
+                    Some(c)
+                })
+                .collect::<String>()
+                .trim_end()
+                .to_string();
+            let s = new.as_str();
+
             if idx == 0 {
-                s.trim_start().trim_end()
+                s
             } else {
-                let trimmed = s.trim_start().trim_end();
-                trimmed
-                    .strip_prefix("* ")
-                    .unwrap_or_else(|| trimmed.strip_prefix('*').unwrap_or(trimmed))
+                s.strip_prefix("* ").unwrap_or_else(|| s.strip_prefix('*').unwrap_or(s))
             }
+            .to_string()
         })
-        .map(ToString::to_string)
         .collect()
 }
 
@@ -575,319 +729,59 @@ fn parse_array_type(type_name: &str) -> Option<(&str, usize)> {
     Some((inner_type.as_str(), length))
 }
 
-// Unbox a syn::Type that is boxed to the inner object.
-fn unbox(t: syn::Type) -> syn::Type {
-    match t {
-        syn::Type::Path(syn::TypePath { ref path, .. }) => {
-            let path = &path.segments;
-            if path.len() == 1 {
-                let seg = &path[0];
-                if seg.ident == "Box" {
-                    if let syn::PathArguments::AngleBracketed(syn::AngleBracketedGenericArguments { args, .. }) =
-                        &seg.arguments
-                    {
-                        if args.len() == 1 {
-                            let mut args = args.iter();
-                            let ok = args.next().unwrap();
-                            if let syn::GenericArgument::Type(ty) = ok {
-                                return ty.clone();
-                            }
-                        }
-                    }
-                }
-            }
+// For each kcl code block, we want to generate a test that checks that the
+// code block is valid kcl code and compiles and executes.
+fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> proc_macro2::TokenStream {
+    let test_name = format_ident!("serial_test_example_{}{}", fn_name, index);
+
+    // TODO: We ignore import for now, because the files don't exist and we just want
+    // to show easy imports.
+    let ignored = if fn_name == "import" {
+        quote! { #[ignore] }
+    } else {
+        quote! {}
+    };
+
+    quote! {
+        #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
+        #ignored
+        async fn #test_name() {
+            let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
+            let http_client = reqwest::Client::builder()
+                .user_agent(user_agent)
+                // For file conversions we need this to be long.
+                .timeout(std::time::Duration::from_secs(600))
+                .connect_timeout(std::time::Duration::from_secs(60));
+            let ws_client = reqwest::Client::builder()
+                .user_agent(user_agent)
+                // For file conversions we need this to be long.
+                .timeout(std::time::Duration::from_secs(600))
+                .connect_timeout(std::time::Duration::from_secs(60))
+                .connection_verbose(true)
+                .tcp_keepalive(std::time::Duration::from_secs(600))
+                .http1_only();
+
+            let token = std::env::var("KITTYCAD_API_TOKEN").expect("KITTYCAD_API_TOKEN not set");
+
+            // Create the client.
+            let client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
+            let ws = client
+                .modeling()
+                .commands_ws(None, None, None, None, None, Some(false))
+                .await.unwrap();
+
+            let tokens = crate::token::lexer(#code_block);
+            let parser = crate::parser::Parser::new(tokens);
+            let program = parser.ast().unwrap();
+            let mut mem: crate::executor::ProgramMemory = Default::default();
+            let ctx = crate::executor::ExecutorContext {
+                engine: std::sync::Arc::new(Box::new(crate::engine::conn::EngineConnection::new(ws).await.unwrap())),
+                fs: crate::fs::FileManager::new(),
+                stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
+                units: kittycad::types::UnitLength::Mm,
+            };
+
+            crate::executor::execute(program, &mut mem, crate::executor::BodyType::Root, &ctx).await.unwrap();
         }
-        _ => {
-            return t;
-        }
-    }
-    t
-}
-
-// For a Vec<Box<T>> return Vec<T>.
-// For a Vec<T> return Vec<T>.
-// For a Box<T> return T.
-fn unbox_vec(t: syn::Type) -> syn::Type {
-    match t {
-        syn::Type::Path(syn::TypePath { ref path, .. }) => {
-            let path = &path.segments;
-            if path.len() == 1 {
-                let seg = &path[0];
-                if seg.ident == "Vec" {
-                    if let syn::PathArguments::AngleBracketed(syn::AngleBracketedGenericArguments { args, .. }) =
-                        &seg.arguments
-                    {
-                        if args.len() == 1 {
-                            let mut args = args.iter();
-                            let ok = args.next().unwrap();
-                            if let syn::GenericArgument::Type(ty) = ok {
-                                let unboxed = unbox(ty.clone());
-                                // Wrap it back in a vec.
-                                let wrapped = syn::Type::Path(syn::TypePath {
-                                    qself: None,
-                                    path: syn::Path {
-                                        leading_colon: None,
-                                        segments: {
-                                            let mut segments = syn::punctuated::Punctuated::new();
-                                            segments.push_value(syn::PathSegment {
-                                                ident: syn::Ident::new("Vec", proc_macro2::Span::call_site()),
-                                                arguments: syn::PathArguments::AngleBracketed(
-                                                    syn::AngleBracketedGenericArguments {
-                                                        colon2_token: None,
-                                                        lt_token: syn::token::Lt::default(),
-                                                        args: {
-                                                            let mut args = syn::punctuated::Punctuated::new();
-                                                            args.push_value(syn::GenericArgument::Type(unboxed));
-                                                            args
-                                                        },
-                                                        gt_token: syn::token::Gt::default(),
-                                                    },
-                                                ),
-                                            });
-                                            segments
-                                        },
-                                    },
-                                });
-                                return wrapped;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        _ => {
-            return t;
-        }
-    }
-    t
-}
-
-#[cfg(test)]
-mod tests {
-
-    use quote::quote;
-
-    use super::*;
-
-    #[test]
-    fn test_get_inner_array_type() {
-        for (expected, input) in [
-            (Some(("f64", 2)), "[f64;2]"),
-            (Some(("String", 2)), "[String; 2]"),
-            (Some(("Option<String>", 12)), "[Option<String>;12]"),
-            (Some(("Option<String>", 12)), "[Option<String>; 12]"),
-        ] {
-            let actual = parse_array_type(input);
-            assert_eq!(actual, expected);
-        }
-    }
-
-    #[test]
-    fn test_stdlib_line_to() {
-        let (item, errors) = do_stdlib(
-            quote! {
-                name = "lineTo",
-            },
-            quote! {
-                fn inner_line_to(
-                    data: LineToData,
-                    sketch_group: SketchGroup,
-                    args: &Args,
-                ) -> Result<SketchGroup, KclError> {
-                    Ok(())
-                }
-            },
-        )
-        .unwrap();
-        let _expected = quote! {};
-
-        assert!(errors.is_empty());
-        expectorate::assert_contents("tests/lineTo.gen", &openapitor::types::get_text_fmt(&item).unwrap());
-    }
-
-    #[test]
-    fn test_stdlib_min() {
-        let (item, errors) = do_stdlib(
-            quote! {
-                name = "min",
-            },
-            quote! {
-                fn inner_min(
-                    /// The args to do shit to.
-                    args: Vec<f64>
-                ) -> f64 {
-                    let mut min = std::f64::MAX;
-                    for arg in args.iter() {
-                        if *arg < min {
-                            min = *arg;
-                        }
-                    }
-
-                     min
-                }
-            },
-        )
-        .unwrap();
-        let _expected = quote! {};
-
-        assert!(errors.is_empty());
-        expectorate::assert_contents("tests/min.gen", &openapitor::types::get_text_fmt(&item).unwrap());
-    }
-
-    #[test]
-    fn test_stdlib_show() {
-        let (item, errors) = do_stdlib(
-            quote! {
-                name = "show",
-            },
-            quote! {
-                fn inner_show(
-                    /// The args to do shit to.
-                    _args: Vec<f64>
-                ) {
-                }
-            },
-        )
-        .unwrap();
-        let _expected = quote! {};
-
-        assert!(errors.is_empty());
-        expectorate::assert_contents("tests/show.gen", &openapitor::types::get_text_fmt(&item).unwrap());
-    }
-
-    #[test]
-    fn test_stdlib_box() {
-        let (item, errors) = do_stdlib(
-            quote! {
-                name = "show",
-            },
-            quote! {
-                fn inner_show(
-                    /// The args to do shit to.
-                    args: Box<f64>
-                ) -> Box<f64> {
-                    args
-                }
-            },
-        )
-        .unwrap();
-        let _expected = quote! {};
-
-        assert!(errors.is_empty());
-        expectorate::assert_contents("tests/box.gen", &openapitor::types::get_text_fmt(&item).unwrap());
-    }
-
-    #[test]
-    fn test_stdlib_option() {
-        let (item, errors) = do_stdlib(
-            quote! {
-                name = "show",
-            },
-            quote! {
-                fn inner_show(
-                    /// The args to do shit to.
-                    args: Option<f64>
-                ) -> Result<Box<f64>> {
-                    args
-                }
-            },
-        )
-        .unwrap();
-
-        assert!(errors.is_empty());
-        expectorate::assert_contents("tests/option.gen", &openapitor::types::get_text_fmt(&item).unwrap());
-    }
-
-    #[test]
-    fn test_stdlib_array() {
-        let (item, errors) = do_stdlib(
-            quote! {
-                name = "show",
-            },
-            quote! {
-                fn inner_show(
-                    /// The args to do shit to.
-                    args: [f64; 2]
-                ) -> Result<Box<f64>> {
-                    args
-                }
-            },
-        )
-        .unwrap();
-
-        assert!(errors.is_empty());
-        expectorate::assert_contents("tests/array.gen", &openapitor::types::get_text_fmt(&item).unwrap());
-    }
-
-    #[test]
-    fn test_stdlib_option_input_format() {
-        let (item, errors) = do_stdlib(
-            quote! {
-                name = "import",
-            },
-            quote! {
-                fn inner_import(
-                    /// The args to do shit to.
-                    args: Option<kittycad::types::InputFormat>
-                ) -> Result<Box<f64>> {
-                    args
-                }
-            },
-        )
-        .unwrap();
-
-        assert!(errors.is_empty());
-        expectorate::assert_contents(
-            "tests/option_input_format.gen",
-            &openapitor::types::get_text_fmt(&item).unwrap(),
-        );
-    }
-
-    #[test]
-    fn test_stdlib_return_vec_sketch_group() {
-        let (item, errors) = do_stdlib(
-            quote! {
-                name = "import",
-            },
-            quote! {
-                fn inner_import(
-                    /// The args to do shit to.
-                    args: Option<kittycad::types::InputFormat>
-                ) -> Result<Vec<SketchGroup>> {
-                    args
-                }
-            },
-        )
-        .unwrap();
-
-        assert!(errors.is_empty());
-        expectorate::assert_contents(
-            "tests/return_vec_sketch_group.gen",
-            &openapitor::types::get_text_fmt(&item).unwrap(),
-        );
-    }
-
-    #[test]
-    fn test_stdlib_return_vec_box_sketch_group() {
-        let (item, errors) = do_stdlib(
-            quote! {
-                name = "import",
-            },
-            quote! {
-                fn inner_import(
-                    /// The args to do shit to.
-                    args: Option<kittycad::types::InputFormat>
-                ) -> Result<Vec<Box<SketchGroup>>> {
-                    args
-                }
-            },
-        )
-        .unwrap();
-
-        assert!(errors.is_empty());
-        expectorate::assert_contents(
-            "tests/return_vec_box_sketch_group.gen",
-            &openapitor::types::get_text_fmt(&item).unwrap(),
-        );
     }
 }

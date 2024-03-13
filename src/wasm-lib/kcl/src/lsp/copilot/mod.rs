@@ -24,12 +24,11 @@ use tower_lsp::{
     LanguageServer,
 };
 
+use self::types::{CopilotAcceptCompletionParams, CopilotCompletionTelemetry, CopilotRejectCompletionParams};
 use crate::lsp::{
     backend::Backend as _,
     copilot::types::{CopilotCompletionResponse, CopilotEditorInfo, CopilotLspCompletionParams, DocParams},
 };
-
-use self::types::{CopilotAcceptCompletionParams, CopilotCompletionTelemetry, CopilotRejectCompletionParams};
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Success {

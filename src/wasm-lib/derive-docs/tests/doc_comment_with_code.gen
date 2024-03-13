@@ -1,7 +1,7 @@
 #[cfg(test)]
-mod test_examples_show {
+mod test_examples_my_func {
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
-    async fn serial_test_example_show0() {
+    async fn serial_test_example_my_func0() {
         let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
         let http_client = reqwest::Client::builder()
             .user_agent(user_agent)
@@ -21,7 +21,7 @@ mod test_examples_show {
             .commands_ws(None, None, None, None, None, Some(false))
             .await
             .unwrap();
-        let tokens = crate::token::lexer("This is another code block.\nyes sirrr.\nshow");
+        let tokens = crate::token::lexer("This is another code block.\nyes sirrr.\nmyFunc");
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
         let mut mem: crate::executor::ProgramMemory = Default::default();
@@ -41,7 +41,7 @@ mod test_examples_show {
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
-    async fn serial_test_example_show1() {
+    async fn serial_test_example_my_func1() {
         let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
         let http_client = reqwest::Client::builder()
             .user_agent(user_agent)
@@ -61,7 +61,7 @@ mod test_examples_show {
             .commands_ws(None, None, None, None, None, Some(false))
             .await
             .unwrap();
-        let tokens = crate::token::lexer("This is code.\nIt does other shit.\nshow");
+        let tokens = crate::token::lexer("This is code.\nIt does other shit.\nmyFunc");
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
         let mut mem: crate::executor::ProgramMemory = Default::default();
@@ -82,15 +82,15 @@ mod test_examples_show {
 }
 
 #[allow(non_camel_case_types, missing_docs)]
-#[doc = "Std lib function: show\nThis is some function.\nIt does shit."]
+#[doc = "Std lib function: myFunc\nThis is some function.\nIt does shit."]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, schemars :: JsonSchema, ts_rs :: TS)]
 #[ts(export)]
-pub(crate) struct Show {}
+pub(crate) struct MyFunc {}
 
 #[allow(non_upper_case_globals, missing_docs)]
-#[doc = "Std lib function: show\nThis is some function.\nIt does shit."]
-pub(crate) const Show: Show = Show {};
-fn boxed_show(
+#[doc = "Std lib function: myFunc\nThis is some function.\nIt does shit."]
+pub(crate) const MyFunc: MyFunc = MyFunc {};
+fn boxed_my_func(
     args: crate::std::Args,
 ) -> std::pin::Pin<
     Box<
@@ -99,12 +99,12 @@ fn boxed_show(
         >,
     >,
 > {
-    Box::pin(show(args))
+    Box::pin(my_func(args))
 }
 
-impl crate::docs::StdLibFn for Show {
+impl crate::docs::StdLibFn for MyFunc {
     fn name(&self) -> String {
-        "show".to_string()
+        "myFunc".to_string()
     }
 
     fn summary(&self) -> String {
@@ -125,9 +125,9 @@ impl crate::docs::StdLibFn for Show {
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
         vec![crate::docs::StdLibFnArg {
             name: "args".to_string(),
-            type_: "[number]".to_string(),
-            schema: <[f64; 2usize]>::json_schema(&mut generator),
-            required: true,
+            type_: "kittycad::types::InputFormat".to_string(),
+            schema: <Option<kittycad::types::InputFormat>>::json_schema(&mut generator),
+            required: false,
         }]
     }
 
@@ -137,8 +137,8 @@ impl crate::docs::StdLibFn for Show {
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
         Some(crate::docs::StdLibFnArg {
             name: "".to_string(),
-            type_: "number".to_string(),
-            schema: <f64>::json_schema(&mut generator),
+            type_: "[SketchGroup]".to_string(),
+            schema: <Vec<SketchGroup>>::json_schema(&mut generator),
             required: true,
         })
     }
@@ -153,8 +153,8 @@ impl crate::docs::StdLibFn for Show {
 
     fn examples(&self) -> Vec<String> {
         let code_blocks = vec![
-            "This is another code block.\nyes sirrr.\nshow",
-            "This is code.\nIt does other shit.\nshow",
+            "This is another code block.\nyes sirrr.\nmyFunc",
+            "This is code.\nIt does other shit.\nmyFunc",
         ];
         code_blocks
             .iter()
@@ -170,7 +170,7 @@ impl crate::docs::StdLibFn for Show {
     }
 
     fn std_lib_fn(&self) -> crate::std::StdFn {
-        boxed_show
+        boxed_my_func
     }
 
     fn clone_box(&self) -> Box<dyn crate::docs::StdLibFn> {
@@ -183,13 +183,15 @@ impl crate::docs::StdLibFn for Show {
 #[doc = r""]
 #[doc = r"     This is code."]
 #[doc = r"     It does other shit."]
-#[doc = r"     show"]
+#[doc = r"     myFunc"]
 #[doc = r""]
 #[doc = r" ```"]
 #[doc = r" This is another code block."]
 #[doc = r" yes sirrr."]
-#[doc = r" show"]
+#[doc = r" myFunc"]
 #[doc = r" ```"]
-fn inner_show(#[doc = r" The args to do shit to."] args: [f64; 2]) -> Result<Box<f64>> {
+fn inner_my_func(
+    #[doc = r" The args to do shit to."] args: Option<kittycad::types::InputFormat>,
+) -> Result<Vec<Box<SketchGroup>>> {
     args
 }
