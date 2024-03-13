@@ -5,6 +5,7 @@ import { Models } from '@kittycad/lib'
 import fsp from 'fs/promises'
 import { spawn } from 'child_process'
 import { APP_NAME } from 'lib/constants'
+import JSZip from 'jszip'
 
 test.beforeEach(async ({ context, page }) => {
   await context.addInitScript(async (token) => {
@@ -145,23 +146,7 @@ const part001 = startSketchOn('-XZ')
       }${extra}.${isImage ? 'png' : output.type}`
     const downloadLocation = downloadLocationer()
 
-    if (output.type === 'gltf' && output.storage === 'standard') {
-      await download.saveAs(downloadLocation)
-
-      // rewrite uri to reference our file name
-      const fileContents = await fsp.readFile(downloadLocation, 'utf-8')
-      const isJson = fileContents.includes('buffers')
-      let contents = fileContents
-      let reWriteLocation = downloadLocation
-      let uri = downloadLocation.split('/').pop()
-      if (!isJson) {
-        uri = downloadLocation.split('/').pop()
-      }
-      contents = contents.replace(/"uri": ".*"/g, `"uri": "${uri}"`)
-      await fsp.writeFile(reWriteLocation, contents)
-    } else {
-      await download.saveAs(downloadLocation)
-    }
+    await download.saveAs(downloadLocation)
 
     if (output.type === 'step') {
       // stable timestamps for step files
@@ -278,11 +263,42 @@ const part001 = startSketchOn('-XZ')
 
   // snapshot exports, good compromise to capture that exports are healthy without getting bogged down in "did the formatting change" changes
   // context: https://github.com/KittyCAD/modeling-app/issues/1222
-  for (const { modelPath, imagePath, outputType } of exportLocations) {
-    console.log(
-      `taking snapshot of using: "zoo file snapshot --output-format=png --src-format=${outputType} ${modelPath} ${imagePath}"`
-    )
-    const cliCommand = `export ZOO_TOKEN=${secrets.snapshottoken} && zoo file snapshot --output-format=png --src-format=${outputType} ${modelPath} ${imagePath}`
+  for (let { modelPath, imagePath, outputType } of exportLocations) {
+    // May change depending on the file being dealt with
+    let cliCommand = `export ZOO_TOKEN=${secrets.snapshottoken} && zoo file snapshot --output-format=png --src-format=${outputType} ${modelPath} ${imagePath}`
+
+    // This is actually a zip file.
+    if (modelPath.includes('gltf-standard.gltf')) {
+      console.log('Extracting files from archive')
+      const readZipFile = fsp.readFile(modelPath)
+      const unzip = (archive: any) =>
+        Object.values(archive.files).map((file: any) => ({
+          name: file.name,
+          promise: file.async('nodebuffer'),
+        }))
+      const writeFiles = (files: any) =>
+        Promise.all(
+          files.map((file: any) =>
+            file.promise.then((data: any) => {
+              console.log(`Writing ${file.name}`)
+              return fsp.writeFile(file.name, data).then(() => file.name)
+            })
+          )
+        )
+
+      const filenames = await readZipFile
+        .then(JSZip.loadAsync)
+        .then(unzip)
+        .then(writeFiles)
+      const gltfFilename = filenames.filter((t: string) =>
+        t.includes('.gltf')
+      )[0]
+      if (!gltfFilename) throw new Error('No output.gltf in this archive')
+      cliCommand = `export ZOO_TOKEN=${secrets.snapshottoken} && zoo file snapshot --output-format=png --src-format=${outputType} ${gltfFilename} ${imagePath}`
+    }
+
+    console.log(cliCommand)
+
     const child = spawn(cliCommand, { shell: true })
     const result = await new Promise<string>((resolve, reject) => {
       child.on('error', (code: any, msg: any) => {
