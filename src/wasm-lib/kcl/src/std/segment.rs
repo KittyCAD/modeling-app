@@ -20,6 +20,16 @@ pub async fn segment_end_x(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Returns the segment end of x.
+///
+/// ```no_run
+/// startSketchOn("YZ")
+///     |> startProfileAt([0, 0], %)
+///     |> line({ to: [5, 0], tag: "thing" }, %)
+///     |> line([5, 5], %)
+///     |> line([segEndX("thing", %), 5], %)
+///     |> close(%)
+///     |> extrude(5, %)
+/// ```
 #[stdlib {
     name = "segEndX",
 }]
@@ -46,6 +56,16 @@ pub async fn segment_end_y(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Returns the segment end of y.
+///
+/// ```no_run
+/// startSketchOn("YZ")
+///     |> startProfileAt([0, 0], %)
+///     |> line({ to: [5, 0], tag: "thing" }, %)
+///     |> line([5, 5], %)
+///     |> line([segEndY("thing", %), 5], %)
+///     |> close(%)
+///     |> extrude(5, %)
+/// ```
 #[stdlib {
     name = "segEndY",
 }]
@@ -72,6 +92,16 @@ pub async fn last_segment_x(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Returns the last segment of x.
+///
+/// ```no_run
+/// startSketchOn("YZ")
+///     |> startProfileAt([0, 0], %)
+///     |> line({ to: [5, 0], tag: "thing" }, %)
+///     |> line([5, 5], %)
+///     |> line([0, lastSegX(%)], %)
+///     |> close(%)
+///     |> extrude(5, %)
+/// ```
 #[stdlib {
     name = "lastSegX",
 }]
@@ -102,6 +132,16 @@ pub async fn last_segment_y(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Returns the last segment of y.
+///
+/// ```no_run
+/// startSketchOn("YZ")
+///     |> startProfileAt([0, 0], %)
+///     |> line({ to: [5, 0], tag: "thing" }, %)
+///     |> line([5, 5], %)
+///     |> line([0, lastSegY(%)], %)
+///     |> close(%)
+///     |> extrude(5, %)
+/// ```
 #[stdlib {
     name = "lastSegY",
 }]
@@ -131,6 +171,16 @@ pub async fn segment_length(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Returns the length of the segment.
+///
+/// ```no_run
+/// startSketchOn("YZ")
+///     |> startProfileAt([0, 0], %)
+///     |> line({ to: [5, 0], tag: "thing" }, %)
+///     |> line([5, 5], %)
+///     |> line([0, segLen("thing", %)], %)
+///     |> close(%)
+///     |> extrude(5, %)
+/// ```
 #[stdlib {
     name = "segLen",
 }]
@@ -160,6 +210,18 @@ pub async fn segment_angle(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Returns the angle of the segment.
+///
+/// ```no_run
+/// const part001 = startSketchOn('XY')
+///     |> startProfileAt([4.83, 12.56], %)
+///     |> line([15.1, 2.48], %)
+///     |> line({ to: [3.15, -9.85], tag: 'seg01' }, %)
+///     |> line([-15.17, -4.1], %)
+///     |> angledLine([segAng('seg01', %), 12.35], %)
+///     |> line([-13.02, 10.03], %)
+///     |> close(%)
+///     |> extrude(4, %)
+/// ```
 #[stdlib {
     name = "segAng",
 }]
@@ -188,6 +250,17 @@ pub async fn angle_to_match_length_x(args: Args) -> Result<MemoryItem, KclError>
 }
 
 /// Returns the angle to match the given length for x.
+///
+/// ```no_run
+/// const part001 = startSketchOn('XY')
+///     |> startProfileAt([0, 0], %)
+///     |> line({ to: [1, 3.82], tag: 'seg01' }, %)
+///     |> angledLineToX([
+///         -angleToMatchLengthX('seg01', 10, %),
+///         5
+///         ], %)
+///     |> close(%)
+/// ```
 #[stdlib {
     name = "angleToMatchLengthX",
 }]
@@ -243,6 +316,17 @@ pub async fn angle_to_match_length_y(args: Args) -> Result<MemoryItem, KclError>
 }
 
 /// Returns the angle to match the given length for y.
+///
+/// ```no_run
+/// const part001 = startSketchOn('XY')
+///     |> startProfileAt([0, 0], %)
+///     |> line({ to: [1, 3.82], tag: 'seg01' }, %)
+///     |> angledLineToX([
+///         -angleToMatchLengthY('seg01', 10, %),
+///         5
+///         ], %)
+///     |> close(%)
+/// ```
 #[stdlib {
     name = "angleToMatchLengthY",
 }]

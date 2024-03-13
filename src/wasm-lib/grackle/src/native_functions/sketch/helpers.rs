@@ -35,6 +35,40 @@ pub fn stack_api_call<const N: usize>(
     }))
 }
 
+pub fn sg_binding(
+    b: EpBinding,
+    fn_name: &'static str,
+    expected: &'static str,
+    arg_number: usize,
+) -> Result<usize, CompileError> {
+    match b {
+        EpBinding::SketchGroup { index } => Ok(index),
+        EpBinding::Single(_) => Err(CompileError::ArgWrongType {
+            fn_name,
+            expected,
+            actual: "single".to_owned(),
+            arg_number,
+        }),
+        EpBinding::Sequence { .. } => Err(CompileError::ArgWrongType {
+            fn_name,
+            expected,
+            actual: "array".to_owned(),
+            arg_number,
+        }),
+        EpBinding::Map { .. } => Err(CompileError::ArgWrongType {
+            fn_name,
+            expected,
+            actual: "object".to_owned(),
+            arg_number,
+        }),
+        EpBinding::Function(_) => Err(CompileError::ArgWrongType {
+            fn_name,
+            expected,
+            actual: "function".to_owned(),
+            arg_number,
+        }),
+    }
+}
 pub fn single_binding(
     b: EpBinding,
     fn_name: &'static str,
@@ -43,6 +77,12 @@ pub fn single_binding(
 ) -> Result<Address, CompileError> {
     match b {
         EpBinding::Single(a) => Ok(a),
+        EpBinding::SketchGroup { .. } => Err(CompileError::ArgWrongType {
+            fn_name,
+            expected,
+            actual: "SketchGroup".to_owned(),
+            arg_number,
+        }),
         EpBinding::Sequence { .. } => Err(CompileError::ArgWrongType {
             fn_name,
             expected,
@@ -78,6 +118,12 @@ pub fn sequence_binding(
             actual: "single".to_owned(),
             arg_number,
         }),
+        EpBinding::SketchGroup { .. } => Err(CompileError::ArgWrongType {
+            fn_name,
+            expected,
+            actual: "SketchGroup".to_owned(),
+            arg_number,
+        }),
         EpBinding::Map { .. } => Err(CompileError::ArgWrongType {
             fn_name,
             expected,
@@ -98,7 +144,7 @@ pub fn arg_point2d(
     arg: EpBinding,
     fn_name: &'static str,
     instructions: &mut Vec<Instruction>,
-    next_addr: &mut Address,
+    ctx: &mut crate::native_functions::Context<'_>,
     arg_number: usize,
 ) -> Result<Address, CompileError> {
     let expected = "2D point (array with length 2)";
@@ -113,7 +159,7 @@ pub fn arg_point2d(
     }
     // KCL stores points as an array.
     // KC API stores them as Rust objects laid flat out in memory.
-    let start = next_addr.offset_by(2);
+    let start = ctx.next_address.offset_by(2);
     let start_x = start;
     let start_y = start + 1;
     let start_z = start + 2;
@@ -133,5 +179,6 @@ pub fn arg_point2d(
             value: 0.0.into(),
         },
     ]);
+    ctx.next_address.offset_by(1); // After we pushed 0.0 here, just above.
     Ok(start)
 }

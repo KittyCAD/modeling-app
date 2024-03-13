@@ -15,11 +15,25 @@ pub mod sketch;
 pub struct Id;
 
 pub trait Callable {
-    fn call(&self, next_addr: &mut Address, args: Vec<EpBinding>) -> Result<EvalPlan, CompileError>;
+    fn call(&self, ctx: &mut Context<'_>, args: Vec<EpBinding>) -> Result<EvalPlan, CompileError>;
+}
+
+#[derive(Debug)]
+pub struct Context<'a> {
+    pub next_address: &'a mut Address,
+    pub next_sketch_group: &'a mut usize,
+}
+
+impl<'a> Context<'a> {
+    pub fn assign_sketch_group(&mut self) -> usize {
+        let out = *self.next_sketch_group;
+        *self.next_sketch_group += 1;
+        out
+    }
 }
 
 impl Callable for Id {
-    fn call(&self, _: &mut Address, args: Vec<EpBinding>) -> Result<EvalPlan, CompileError> {
+    fn call(&self, _: &mut Context<'_>, args: Vec<EpBinding>) -> Result<EvalPlan, CompileError> {
         if args.len() > 1 {
             return Err(CompileError::TooManyArgs {
                 fn_name: "id".into(),
@@ -48,7 +62,7 @@ impl Callable for Id {
 pub struct Add;
 
 impl Callable for Add {
-    fn call(&self, next_address: &mut Address, mut args: Vec<EpBinding>) -> Result<EvalPlan, CompileError> {
+    fn call(&self, ctx: &mut Context<'_>, mut args: Vec<EpBinding>) -> Result<EvalPlan, CompileError> {
         let len = args.len();
         if len > 2 {
             return Err(CompileError::TooManyArgs {
@@ -69,7 +83,7 @@ impl Callable for Add {
         let EpBinding::Single(arg0) = args.pop().ok_or(not_enough_args)? else {
             return Err(CompileError::InvalidOperand(ERR));
         };
-        let destination = next_address.offset_by(1);
+        let destination = ctx.next_address.offset_by(1);
         Ok(EvalPlan {
             instructions: vec![Instruction::BinaryArithmetic {
                 arithmetic: BinaryArithmetic {

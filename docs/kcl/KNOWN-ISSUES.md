@@ -1,4 +1,8 @@
-# Known Issues
+---
+title: "KCL Known Issues"
+excerpt: "Known issues with the KCL standard library for the Zoo Modeling App."
+layout: manual
+---
 
 The following are bugs that are not in modeling-app or kcl itself. These bugs
 once fixed in engine will just start working here with no language changes.
