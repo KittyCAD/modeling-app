@@ -1102,7 +1102,7 @@ async fn test_copilot_lsp_set_editor_info() {
 }
 
 #[tokio::test]
-async fn test_copilot_lsp_completions() {
+async fn test_copilot_lsp_completions_raw() {
     let server = copilot_lsp_server().unwrap();
 
     // Send open file.
@@ -1174,4 +1174,150 @@ const part001 = cube([0,0], 20)
         .unwrap();
 
     assert_eq!(completions, completions_hit_cache);
+}
+
+#[tokio::test]
+async fn test_copilot_lsp_completions() {
+    let server = copilot_lsp_server().unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.copilot".try_into().unwrap(),
+                language_id: "copilot".to_string(),
+                version: 1,
+                text: "st".to_string(),
+            },
+        })
+        .await;
+
+    // Send completion request.
+    let completions = server
+        .get_completions_cycling(crate::lsp::copilot::types::CopilotLspCompletionParams {
+            doc: crate::lsp::copilot::types::CopilotDocParams {
+                indent_size: 4,
+                insert_spaces: true,
+                language_id: "kcl".to_string(),
+                path: "file:///test.copilot".to_string(),
+                position: tower_lsp::lsp_types::Position { line: 0, character: 1 },
+                relative_path: "test.copilot".to_string(),
+                source: r#"// Create a cube.
+fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+
+const part001 = cube([0,0], 20)
+    |> close(%)
+    |> extrude(20, %)
+
+"#
+                .to_string(),
+                tab_size: 4,
+                uri: "file:///test.copilot".try_into().unwrap(),
+            },
+        })
+        .await
+        .unwrap();
+
+    // Check the completions.
+    assert_eq!(completions.completions.len(), 0);
+}
+
+#[tokio::test]
+async fn test_copilot_on_save() {
+    let server = copilot_lsp_server().unwrap();
+
+    // Send save file.
+    server
+        .did_save(tower_lsp::lsp_types::DidSaveTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.copilot".try_into().unwrap(),
+            },
+            text: Some("my file".to_string()),
+        })
+        .await;
+
+    // Check the code map.
+    assert_eq!(server.current_code_map.len(), 1);
+    assert_eq!(
+        server.current_code_map.get("file:///test.copilot").unwrap().value(),
+        "my file".as_bytes()
+    );
+}
+
+#[tokio::test]
+async fn test_kcl_on_save() {
+    let server = kcl_lsp_server().unwrap();
+
+    // Send save file.
+    server
+        .did_save(tower_lsp::lsp_types::DidSaveTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            text: Some("my file".to_string()),
+        })
+        .await;
+
+    // Check the code map.
+    assert_eq!(server.current_code_map.len(), 1);
+    assert_eq!(
+        server.current_code_map.get("file:///test.kcl").unwrap().value(),
+        "my file".as_bytes()
+    );
+}
+
+#[tokio::test]
+async fn test_copilot_rename_not_exists() {
+    let server = copilot_lsp_server().unwrap();
+
+    // Send rename request.
+    server
+        .did_rename_files(tower_lsp::lsp_types::RenameFilesParams {
+            files: vec![tower_lsp::lsp_types::FileRename {
+                old_uri: "file:///test.copilot".into(),
+                new_uri: "file:///test2.copilot".into(),
+            }],
+        })
+        .await;
+
+    // Check the code map.
+    assert_eq!(server.current_code_map.len(), 1);
+    assert_eq!(
+        server.current_code_map.get("file:///test2.copilot").unwrap().value(),
+        "".as_bytes()
+    );
+}
+
+#[tokio::test]
+async fn test_lsp_initialized() {
+    let copilot_server = copilot_lsp_server().unwrap();
+
+    // Send initialized request.
+    copilot_server
+        .initialized(tower_lsp::lsp_types::InitializedParams {})
+        .await;
+
+    // Check the code map.
+    assert_eq!(copilot_server.current_code_map.len(), 0);
+
+    // Now do the same for kcl.
+    let kcl_server = kcl_lsp_server().unwrap();
+
+    // Send initialized request.
+    kcl_server.initialized(tower_lsp::lsp_types::InitializedParams {}).await;
+
+    // Check the code map.
+    assert_eq!(kcl_server.current_code_map.len(), 0);
+
+    // Now shut them down.
+    copilot_server.shutdown().await.unwrap();
+    kcl_server.shutdown().await.unwrap();
 }
