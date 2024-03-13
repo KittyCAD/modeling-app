@@ -1069,3 +1069,33 @@ async fn test_kcl_lsp_diagnostic_has_errors() {
         panic!("Expected diagnostics");
     }
 }
+
+#[tokio::test]
+async fn test_copilot_lsp_set_editor_info() {
+    let server = copilot_lsp_server().unwrap();
+
+    // Send set editor info request.
+    server
+        .set_editor_info(crate::lsp::copilot::types::CopilotEditorInfo {
+            editor_info: crate::lsp::copilot::types::EditorInfo {
+                name: "vscode".to_string(),
+                version: "1.0.0".to_string(),
+            },
+            editor_configuration: crate::lsp::copilot::types::EditorConfiguration {
+                disabled_languages: vec![],
+                enable_auto_completions: true,
+            },
+            editor_plugin_info: crate::lsp::copilot::types::EditorInfo {
+                name: "copilot".to_string(),
+                version: "1.0.0".to_string(),
+            },
+        })
+        .await
+        .unwrap();
+
+    // Check the editor info.
+    // Aquire the lock.
+    let editor_info = server.editor_info.read().unwrap();
+    assert_eq!(editor_info.editor_info.name, "vscode");
+    assert_eq!(editor_info.editor_info.version, "1.0.0");
+}

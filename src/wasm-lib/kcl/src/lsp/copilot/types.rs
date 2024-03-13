@@ -65,15 +65,15 @@ impl CopilotCyclingCompletion {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
-struct LanguageEntry {
-    language_id: String,
+pub struct LanguageEntry {
+    pub language_id: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
-struct EditorConfiguration {
-    disabled_languages: Vec<LanguageEntry>,
-    enable_auto_completions: bool,
+pub struct EditorConfiguration {
+    pub disabled_languages: Vec<LanguageEntry>,
+    pub enable_auto_completions: bool,
 }
 
 impl Default for EditorConfiguration {
@@ -86,17 +86,17 @@ impl Default for EditorConfiguration {
 }
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
-struct EditorInfo {
-    name: String,
-    version: String,
+pub struct EditorInfo {
+    pub name: String,
+    pub version: String,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct CopilotEditorInfo {
-    editor_configuration: EditorConfiguration,
-    editor_info: EditorInfo,
-    editor_plugin_info: EditorInfo,
+    pub editor_configuration: EditorConfiguration,
+    pub editor_info: EditorInfo,
+    pub editor_plugin_info: EditorInfo,
 }
 
 pub struct DocParams {
