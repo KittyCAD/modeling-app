@@ -1220,7 +1220,7 @@ const part001 = cube([0,0], 20)
 "#
                 .to_string(),
                 tab_size: 4,
-                uri: "file:///test.copilot".try_into().unwrap(),
+                uri: "file:///test.copilot".into(),
             },
         })
         .await
