@@ -1,16 +1,12 @@
 import { useMachine } from '@xstate/react'
-import { useNavigate } from 'react-router-dom'
+import { useLoaderData, useNavigate } from 'react-router-dom'
 import { paths } from 'lib/paths'
 import { authMachine, TOKEN_PERSIST_KEY } from '../machines/authMachine'
 import withBaseUrl from '../lib/withBaseURL'
-import React, { createContext, useEffect, useRef } from 'react'
+import React, { createContext, useEffect } from 'react'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
 import { settingsMachine } from 'machines/settingsMachine'
-import {
-  initialSettings,
-  SETTINGS_PERSIST_KEY,
-  validateSettings,
-} from 'lib/settings'
+import { validateSettings } from 'lib/settings'
 import { toast } from 'react-hot-toast'
 import { setThemeClass, Themes } from 'lib/theme'
 import {
@@ -23,8 +19,8 @@ import {
 import { isTauri } from 'lib/isTauri'
 import { settingsCommandBarConfig } from 'lib/commandBarConfigs/settingsCommandConfig'
 import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
-import { initializeProjectDirectory, readSettingsFile } from 'lib/tauriFS'
 import { sceneInfra } from 'clientSideScene/sceneInfra'
+import { kclManager } from 'lang/KclSingleton'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -50,34 +46,20 @@ export const SettingsAuthProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  const { settings: initialLoadedContext, errors: settingsLoadErrors } =
+    useLoaderData() as ReturnType<typeof validateSettings>
   const navigate = useNavigate()
-
-  // Settings machine setup
-  // Load settings from local storage
-  // and validate them
-  const retrievedSettings = useRef(
-    validateSettings(
-      JSON.parse(localStorage?.getItem(SETTINGS_PERSIST_KEY) || '{}')
-    )
-  )
-  const persistedSettings = Object.assign(
-    {},
-    initialSettings,
-    retrievedSettings.current.settings
-  )
 
   const [settingsState, settingsSend, settingsActor] = useMachine(
     settingsMachine,
     {
-      context: persistedSettings,
+      context: initialLoadedContext,
       actions: {
         setClientSideSceneUnits: (context, event) => {
-          const newBaseUnit = event.type === 'Set Base Unit' ? event.data.baseUnit : context.baseUnit
-          console.log(
-            'setting the base unit on the scene infra',
-            sceneInfra.baseUnit,
-            newBaseUnit
-          )
+          const newBaseUnit =
+            event.type === 'Set Base Unit'
+              ? event.data.baseUnit
+              : context.baseUnit
           sceneInfra.baseUnit = newBaseUnit
         },
         toastSuccess: (context, event) => {
@@ -96,79 +78,24 @@ export const SettingsAuthProvider = ({
                 : '')
           )
         },
+        'Execute AST': () => kclManager.executeAst(),
       },
     }
   )
   settingsStateRef = settingsState.context
 
-  // If the app is running in the Tauri context,
-  // try to read the settings from a file
-  // after doing some validation on them
+  // If there were validation errors either from local storage or from the file,
+  // log them to the console and show a toast message to the user.
   useEffect(() => {
-    async function getFileBasedSettings() {
-      if (isTauri()) {
-        const newSettings = await readSettingsFile()
-
-        if (newSettings) {
-          if (newSettings.defaultDirectory) {
-            const newDefaultDirectory = await initializeProjectDirectory(
-              newSettings.defaultDirectory || ''
-            )
-            if (newDefaultDirectory.error !== null) {
-              toast.error(newDefaultDirectory.error.message)
-            }
-
-            if (newDefaultDirectory.path !== null) {
-              newSettings.defaultDirectory = newDefaultDirectory.path
-            }
-          }
-          const { settings: validatedSettings, errors: validationErrors } =
-            validateSettings(newSettings)
-
-          retrievedSettings.current = Object.assign(
-            {},
-            initialSettings,
-            retrievedSettings.current,
-            validatedSettings
-          )
-
-          settingsSend({
-            type: 'Set All Settings',
-            data: validatedSettings,
-          })
-
-          return validationErrors
-        }
-      } else {
-        // If the app is not running in the Tauri context,
-        // just use the settings from local storage
-        // after they've been validated to ensure they are correct.
-        settingsSend({
-          type: 'Set All Settings',
-          data: retrievedSettings.current.settings,
-        })
-      }
-      return []
+    if (settingsLoadErrors.length > 0) {
+      const errorMessage =
+        'Error validating persisted settings: ' +
+        settingsLoadErrors.join(', ') +
+        '. Using defaults.'
+      console.error(errorMessage)
+      toast.error(errorMessage)
     }
-
-    // If there were validation errors either from local storage or from the file,
-    // log them to the console and show a toast message to the user.
-    void getFileBasedSettings().then((validationErrors: string[]) => {
-      const combinedErrors = new Set([
-        ...retrievedSettings.current.errors,
-        ...validationErrors,
-      ])
-
-      if (combinedErrors.size > 0) {
-        const errorMessage =
-          'Error validating persisted settings: ' +
-          Array.from(combinedErrors).join(', ') +
-          '. Using defaults.'
-        console.error(errorMessage)
-        toast.error(errorMessage)
-      }
-    })
-  }, [settingsSend])
+  }, [settingsLoadErrors])
 
   useStateMachineCommands({
     machineId: 'settings',
