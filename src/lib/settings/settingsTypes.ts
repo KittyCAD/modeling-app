@@ -1,6 +1,6 @@
-import { type Models } from "@kittycad/lib"
-import { type CameraSystem } from "../cameraControls"
-import { Themes } from "lib/theme"
+import { type Models } from '@kittycad/lib'
+import { type CameraSystem } from '../cameraControls'
+import { Themes } from 'lib/theme'
 
 export enum UnitSystem {
   Imperial = 'imperial',
