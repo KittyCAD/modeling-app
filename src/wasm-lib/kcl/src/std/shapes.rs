@@ -2,14 +2,12 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kittycad::types::ModelingCmd;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 
 use crate::{
-    errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, ExtrudeSurface, MemoryItem, UserVal},
+    errors::KclError,
+    executor::MemoryItem,
     std::{Args, SketchGroup, SketchSurface},
 };
 
@@ -34,6 +32,17 @@ pub async fn circle(args: Args) -> Result<MemoryItem, KclError> {
 /// Sketch a circle.
 ///
 /// ```no_run
+/// const circles = startSketchOn('XY')
+///     |> circle([5, 5], 1, %)
+///     |> patternLinear2d({axis: [1,1], repetitions: 12, distance: 3}, %)
+///
+/// const rectangle = startSketchOn('XY')
+///     |> startProfileAt([0, 0], %)
+///     |> line([0, 50], %)
+///     |> line([50, 0], %)
+///     |> line([0, -50], %)
+///     |> close(%)
+///     |> hole(circles, %)
 /// ```
 #[stdlib {
     name = "circle",
