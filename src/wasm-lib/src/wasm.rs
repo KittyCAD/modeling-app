@@ -7,6 +7,7 @@ use std::{
 
 use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
+use kcl_lib::engine::EngineManager;
 use tower_lsp::{LspService, Server};
 use wasm_bindgen::prelude::*;
 
@@ -27,12 +28,12 @@ pub async fn execute_wasm(
     let mut mem: kcl_lib::executor::ProgramMemory = serde_json::from_str(memory_str).map_err(|e| e.to_string())?;
     let units = kittycad::types::UnitLength::from_str(units).map_err(|e| e.to_string())?;
 
-    let engine = kcl_lib::engine::EngineConnection::new(engine_manager)
+    let engine = kcl_lib::engine::conn_wasm::EngineConnection::new(engine_manager)
         .await
         .map_err(|e| format!("{:?}", e))?;
     let fs = kcl_lib::fs::FileManager::new(fs_manager);
     let ctx = ExecutorContext {
-        engine,
+        engine: Arc::new(Box::new(engine)),
         fs,
         stdlib: std::sync::Arc::new(kcl_lib::std::StdLib::new()),
         units,
@@ -62,12 +63,14 @@ pub async fn modify_ast_for_sketch_wasm(
 
     let plane: kcl_lib::executor::PlaneType = serde_json::from_str(plane_type).map_err(|e| e.to_string())?;
 
-    let mut engine = kcl_lib::engine::EngineConnection::new(manager)
-        .await
-        .map_err(|e| format!("{:?}", e))?;
+    let engine: Arc<Box<dyn EngineManager>> = Arc::new(Box::new(
+        kcl_lib::engine::conn_wasm::EngineConnection::new(manager)
+            .await
+            .map_err(|e| format!("{:?}", e))?,
+    ));
 
     let _ = kcl_lib::ast::modify::modify_ast_for_sketch(
-        &mut engine,
+        &engine,
         &mut program,
         sketch_name,
         plane,
