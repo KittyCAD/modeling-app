@@ -19,12 +19,6 @@ pub struct CopilotPosition {
     pub character: u32,
 }
 
-impl CopilotPosition {
-    pub fn new(line: u32, character: u32) -> CopilotPosition {
-        CopilotPosition { line, character }
-    }
-}
-
 impl From<CopilotPosition> for tower_lsp::lsp_types::Position {
     fn from(position: CopilotPosition) -> Self {
         tower_lsp::lsp_types::Position {
@@ -44,21 +38,6 @@ pub struct CopilotRange {
     pub start: CopilotPosition,
     /// The range's end position.
     pub end: CopilotPosition,
-}
-
-impl CopilotRange {
-    pub fn new(start: CopilotPosition, end: CopilotPosition) -> CopilotRange {
-        CopilotRange { start, end }
-    }
-}
-
-impl From<CopilotRange> for tower_lsp::lsp_types::Range {
-    fn from(range: CopilotRange) -> Self {
-        tower_lsp::lsp_types::Range {
-            start: tower_lsp::lsp_types::Position::from(range.start),
-            end: tower_lsp::lsp_types::Position::from(range.end),
-        }
-    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS, PartialEq)]
