@@ -183,8 +183,8 @@ async fn test_updating_kcl_lsp_files() {
     server
         .did_rename_files(tower_lsp::lsp_types::RenameFilesParams {
             files: vec![tower_lsp::lsp_types::FileRename {
-                old_uri: "file:///test2.kcl".try_into().unwrap(),
-                new_uri: "file:///test3.kcl".try_into().unwrap(),
+                old_uri: "file:///test2.kcl".into(),
+                new_uri: "file:///test3.kcl".into(),
             }],
         })
         .await;
@@ -204,7 +204,7 @@ async fn test_updating_kcl_lsp_files() {
     server
         .did_create_files(tower_lsp::lsp_types::CreateFilesParams {
             files: vec![tower_lsp::lsp_types::FileCreate {
-                uri: "file:///test4.kcl".try_into().unwrap(),
+                uri: "file:///test4.kcl".into(),
             }],
         })
         .await;
@@ -228,7 +228,7 @@ async fn test_updating_kcl_lsp_files() {
     server
         .did_delete_files(tower_lsp::lsp_types::DeleteFilesParams {
             files: vec![tower_lsp::lsp_types::FileDelete {
-                uri: "file:///test4.kcl".try_into().unwrap(),
+                uri: "file:///test4.kcl".into(),
             }],
         })
         .await;
@@ -439,8 +439,8 @@ async fn test_updating_copilot_lsp_files() {
     server
         .did_rename_files(tower_lsp::lsp_types::RenameFilesParams {
             files: vec![tower_lsp::lsp_types::FileRename {
-                old_uri: "file:///test2.kcl".try_into().unwrap(),
-                new_uri: "file:///test3.kcl".try_into().unwrap(),
+                old_uri: "file:///test2.kcl".into(),
+                new_uri: "file:///test3.kcl".into(),
             }],
         })
         .await;
@@ -460,7 +460,7 @@ async fn test_updating_copilot_lsp_files() {
     server
         .did_create_files(tower_lsp::lsp_types::CreateFilesParams {
             files: vec![tower_lsp::lsp_types::FileCreate {
-                uri: "file:///test4.kcl".try_into().unwrap(),
+                uri: "file:///test4.kcl".into(),
             }],
         })
         .await;
@@ -484,7 +484,7 @@ async fn test_updating_copilot_lsp_files() {
     server
         .did_delete_files(tower_lsp::lsp_types::DeleteFilesParams {
             files: vec![tower_lsp::lsp_types::FileDelete {
-                uri: "file:///test4.kcl".try_into().unwrap(),
+                uri: "file:///test4.kcl".into(),
             }],
         })
         .await;
@@ -649,5 +649,5 @@ async fn test_kcl_lsp_create_zip() {
     );
 
     // Create a zip.
-    let bytes = server.create_zip().unwrap();
+    let _bytes = server.create_zip().unwrap();
 }

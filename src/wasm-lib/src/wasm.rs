@@ -270,7 +270,7 @@ pub async fn copilot_lsp_run(config: ServerConfig, token: String, is_dev: bool) 
         workspace_folders: Default::default(),
         current_code_map: Default::default(),
         editor_info: Arc::new(RwLock::new(kcl_lib::lsp::copilot::types::CopilotEditorInfo::default())),
-        cache: Arc::new(crate::lsp::copilot::cache::CopilotCache::new()),
+        cache: Arc::new(kcl_lib::lsp::copilot::cache::CopilotCache::new()),
         zoo_client,
     })
     .custom_method("setEditorInfo", kcl_lib::lsp::copilot::Backend::set_editor_info)

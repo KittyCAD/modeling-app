@@ -91,11 +91,7 @@ pub trait Backend {
             }
 
             should_clear
-        } else if params.event.removed.is_empty() && params.event.added.is_empty() {
-            false
-        } else {
-            true
-        };
+        } else { !(params.event.removed.is_empty() && params.event.added.is_empty()) };
 
         self.add_workspace_folders(params.event.added.clone());
         self.remove_workspace_folders(params.event.removed);
