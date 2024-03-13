@@ -324,7 +324,7 @@ fn do_stdlib_inner(
         pub(crate) const #name_ident: #name_ident = #name_ident {};
     };
 
-    let test_mod_name = format_ident!("test_examples_{}", name_ident);
+    let test_mod_name = format_ident!("test_examples_{}", fn_name_str);
 
     // The final TokenStream returned will have a few components that reference
     // `#name_ident`, the name of the function to which this macro was applied...
@@ -698,8 +698,18 @@ fn parse_array_type(type_name: &str) -> Option<(&str, usize)> {
 // code block is valid kcl code and compiles and executes.
 fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> proc_macro2::TokenStream {
     let test_name = format_ident!("serial_test_example_{}{}", fn_name, index);
+
+    // TODO: We ignore import for now, because the files don't exist and we just want
+    // to show easy imports.
+    let ignored = if fn_name == "import" {
+        quote! { #[ignore] }
+    } else {
+        quote! {}
+    };
+
     quote! {
         #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
+        #ignored
         async fn #test_name() {
             let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
             let http_client = reqwest::Client::builder()

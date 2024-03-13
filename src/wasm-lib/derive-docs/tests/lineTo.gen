@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod test_examples_LineTo {}
+mod test_examples_line_to {}
 
 #[allow(non_camel_case_types, missing_docs)]
 #[doc = "Std lib function: lineTo"]

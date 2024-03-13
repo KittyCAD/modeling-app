@@ -228,6 +228,40 @@ fn test_stdlib_return_vec_box_sketch_group() {
 fn test_stdlib_doc_comment_with_code() {
     let (item, errors) = do_stdlib(
         quote! {
+            name = "myFunc",
+        },
+        quote! {
+            /// This is some function.
+            /// It does shit.
+            ///
+            ///     This is code.
+            ///     It does other shit.
+            ///
+            /// ```
+            /// This is another code block.
+            /// yes sirrr.
+            /// ```
+            fn inner_my_func(
+                /// The args to do shit to.
+                args: Option<kittycad::types::InputFormat>
+            ) -> Result<Vec<Box<SketchGroup>>> {
+                args
+            }
+        },
+    )
+    .unwrap();
+
+    assert!(errors.is_empty());
+    expectorate::assert_contents(
+        "tests/doc_comment_with_code.gen",
+        &openapitor::types::get_text_fmt(&item).unwrap(),
+    );
+}
+
+#[test]
+fn test_stdlib_doc_comment_with_code_on_ignored_function() {
+    let (item, errors) = do_stdlib(
+        quote! {
             name = "import",
         },
         quote! {
@@ -253,7 +287,7 @@ fn test_stdlib_doc_comment_with_code() {
 
     assert!(errors.is_empty());
     expectorate::assert_contents(
-        "tests/doc_comment_with_code.gen",
+        "tests/doc_comment_with_code_on_ignored_function.gen",
         &openapitor::types::get_text_fmt(&item).unwrap(),
     );
 }

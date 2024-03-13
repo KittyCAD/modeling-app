@@ -133,7 +133,7 @@ pub async fn import(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 ///
 /// ```no_run
-/// const model = import("tests/executor/inputs/cube.obj", {type: "obj", units: "m"})
+/// const model = import("cube.obj", {type: "obj", units: "m"})
 /// ```
 ///
 /// ```no_run

@@ -1,7 +1,8 @@
 #[cfg(test)]
-mod test_examples_my_func {
+mod test_examples_import {
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
-    async fn serial_test_example_my_func0() {
+    #[ignore]
+    async fn serial_test_example_import0() {
         let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
         let http_client = reqwest::Client::builder()
             .user_agent(user_agent)
@@ -41,7 +42,8 @@ mod test_examples_my_func {
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
-    async fn serial_test_example_my_func1() {
+    #[ignore]
+    async fn serial_test_example_import1() {
         let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
         let http_client = reqwest::Client::builder()
             .user_agent(user_agent)
@@ -82,15 +84,15 @@ mod test_examples_my_func {
 }
 
 #[allow(non_camel_case_types, missing_docs)]
-#[doc = "Std lib function: myFunc\nThis is some function.\nIt does shit."]
+#[doc = "Std lib function: import\nThis is some function.\nIt does shit."]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, schemars :: JsonSchema, ts_rs :: TS)]
 #[ts(export)]
-pub(crate) struct MyFunc {}
+pub(crate) struct Import {}
 
 #[allow(non_upper_case_globals, missing_docs)]
-#[doc = "Std lib function: myFunc\nThis is some function.\nIt does shit."]
-pub(crate) const MyFunc: MyFunc = MyFunc {};
-fn boxed_my_func(
+#[doc = "Std lib function: import\nThis is some function.\nIt does shit."]
+pub(crate) const Import: Import = Import {};
+fn boxed_import(
     args: crate::std::Args,
 ) -> std::pin::Pin<
     Box<
@@ -99,12 +101,12 @@ fn boxed_my_func(
         >,
     >,
 > {
-    Box::pin(my_func(args))
+    Box::pin(import(args))
 }
 
-impl crate::docs::StdLibFn for MyFunc {
+impl crate::docs::StdLibFn for Import {
     fn name(&self) -> String {
-        "myFunc".to_string()
+        "import".to_string()
     }
 
     fn summary(&self) -> String {
@@ -170,7 +172,7 @@ impl crate::docs::StdLibFn for MyFunc {
     }
 
     fn std_lib_fn(&self) -> crate::std::StdFn {
-        boxed_my_func
+        boxed_import
     }
 
     fn clone_box(&self) -> Box<dyn crate::docs::StdLibFn> {
@@ -188,7 +190,7 @@ impl crate::docs::StdLibFn for MyFunc {
 #[doc = r" This is another code block."]
 #[doc = r" yes sirrr."]
 #[doc = r" ```"]
-fn inner_my_func(
+fn inner_import(
     #[doc = r" The args to do shit to."] args: Option<kittycad::types::InputFormat>,
 ) -> Result<Vec<Box<SketchGroup>>> {
     args
