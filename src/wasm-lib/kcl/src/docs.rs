@@ -30,6 +30,9 @@ pub struct StdLibFnData {
     pub unpublished: bool,
     /// If the function is deprecated.
     pub deprecated: bool,
+    /// Code examples.
+    /// These are tested and we know they compile and execute.
+    pub examples: Vec<String>,
 }
 
 /// This struct defines a single argument to a stdlib function.
@@ -125,6 +128,7 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
             return_value: self.return_value(),
             unpublished: self.unpublished(),
             deprecated: self.deprecated(),
+            examples: self.examples(),
         })
     }
 

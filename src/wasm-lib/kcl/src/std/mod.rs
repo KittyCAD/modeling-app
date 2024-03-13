@@ -868,6 +868,16 @@ mod tests {
             fn_docs.push_str(&signature);
             fn_docs.push_str("\n```\n\n");
 
+            if !internal_fn.examples().is_empty() {
+                fn_docs.push_str("#### Examples\n\n");
+
+                for example in internal_fn.examples() {
+                    fn_docs.push_str("```kcl\n");
+                    fn_docs.push_str(&example);
+                    fn_docs.push_str("\n```\n\n");
+                }
+            }
+
             fn_docs.push_str("#### Arguments\n\n");
             for arg in internal_fn.args() {
                 let (format, should_be_indented) = arg.get_type_string().unwrap();

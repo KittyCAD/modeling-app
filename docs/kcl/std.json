@@ -25,7 +25,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "acos",
@@ -53,7 +54,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "angleToMatchLengthX",
@@ -1050,7 +1052,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "angleToMatchLengthY",
@@ -2047,7 +2050,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "angledLine",
@@ -4024,7 +4028,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "angledLineOfXLength",
@@ -6001,7 +6006,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "angledLineOfYLength",
@@ -7978,7 +7984,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "angledLineThatIntersects",
@@ -9945,7 +9952,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "angledLineToX",
@@ -11922,7 +11930,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "angledLineToY",
@@ -13899,7 +13908,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "arc",
@@ -15915,7 +15925,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "asin",
@@ -15943,7 +15954,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "atan",
@@ -15971,7 +15983,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "bezierCurve",
@@ -17954,7 +17967,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "ceil",
@@ -17982,7 +17996,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "circle",
@@ -19284,7 +19299,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "close",
@@ -21225,7 +21241,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "cos",
@@ -21253,7 +21270,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const angle = cos(2 * pi())\n"
+    ]
   },
   {
     "name": "e",
@@ -21271,7 +21291,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "extrude",
@@ -23007,7 +23028,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "fillet",
@@ -24567,7 +24589,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "floor",
@@ -24595,7 +24618,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "getExtrudeWallTransform",
@@ -25425,7 +25449,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "getNextAdjacentEdge",
@@ -26208,7 +26233,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "getOppositeEdge",
@@ -26991,7 +27017,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "getPreviousAdjacentEdge",
@@ -27774,7 +27801,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "hole",
@@ -31652,7 +31680,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "import",
@@ -32302,7 +32331,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "lastSegX",
@@ -33282,7 +33312,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "lastSegY",
@@ -34262,7 +34293,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "legAngX",
@@ -34299,7 +34331,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "legAngY",
@@ -34336,7 +34369,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "legLen",
@@ -34373,7 +34407,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "line",
@@ -36349,7 +36384,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "lineTo",
@@ -38325,7 +38361,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "ln",
@@ -38353,7 +38390,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "log",
@@ -38390,7 +38428,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "log10",
@@ -38418,7 +38457,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "log2",
@@ -38446,7 +38486,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "max",
@@ -38477,7 +38518,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "min",
@@ -38508,7 +38550,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "patternCircular2d",
@@ -40485,7 +40528,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "patternCircular3d",
@@ -42063,7 +42107,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "patternLinear2d",
@@ -44035,7 +44080,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "patternLinear3d",
@@ -45597,7 +45643,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "pi",
@@ -45615,7 +45662,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "pow",
@@ -45652,7 +45700,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "segAng",
@@ -46640,7 +46689,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "segEndX",
@@ -47628,7 +47678,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "segEndY",
@@ -48616,7 +48667,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "segLen",
@@ -49604,7 +49656,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "sin",
@@ -49632,7 +49685,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "sqrt",
@@ -49660,7 +49714,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "startProfileAt",
@@ -50975,7 +51030,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "startSketchAt",
@@ -51990,7 +52046,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "startSketchOn",
@@ -53254,7 +53311,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "tan",
@@ -53282,7 +53340,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "tangentialArc",
@@ -55277,7 +55336,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "tangentialArcTo",
@@ -57232,7 +57292,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "tau",
@@ -57250,7 +57311,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "to_degrees",
@@ -57278,7 +57340,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "to_radians",
@@ -57306,7 +57369,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "xLine",
@@ -59272,7 +59336,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "xLineTo",
@@ -61238,7 +61303,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "yLine",
@@ -63204,7 +63270,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "yLineTo",
@@ -65170,6 +65237,7 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   }
 ]

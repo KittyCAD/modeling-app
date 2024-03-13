@@ -4025,6 +4025,13 @@ Computes the sine of a number (in radians).
 cos(num: number) -> number
 ```
 
+#### Examples
+
+```kcl
+const angle = cos(2 * pi())
+
+```
+
 #### Arguments
 
 * `num`: `number` (REQUIRED)
