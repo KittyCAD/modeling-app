@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod test_examples_Import {
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
     async fn serial_test_example_import0() {
         let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
         let http_client = reqwest::Client::builder()
@@ -40,7 +40,7 @@ mod test_examples_Import {
             .unwrap();
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
     async fn serial_test_example_import1() {
         let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
         let http_client = reqwest::Client::builder()

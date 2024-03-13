@@ -699,7 +699,7 @@ fn parse_array_type(type_name: &str) -> Option<(&str, usize)> {
 fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> proc_macro2::TokenStream {
     let test_name = format_ident!("serial_test_example_{}{}", fn_name, index);
     quote! {
-        #[tokio::test]
+        #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
         async fn #test_name() {
             let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
             let http_client = reqwest::Client::builder()
