@@ -20,10 +20,10 @@ import ModelingMachineProvider from 'components/ModelingMachineProvider'
 import FileMachineProvider from 'components/FileMachineProvider'
 import { paths } from 'lib/paths'
 import {
-  fileAction,
   fileLoader,
   homeLoader,
   indexLoader,
+  onboardingRedirectLoader,
 } from 'lib/routeLoaders'
 import { CommandBarProvider } from 'components/CommandBar/CommandBarProvider'
 import SettingsAuthProvider from 'components/SettingsAuthProvider'
@@ -35,6 +35,7 @@ export const BROWSER_FILE_NAME = 'new'
 const router = createBrowserRouter([
   {
     loader: indexLoader,
+    id: paths.INDEX,
     element: (
       <CommandBarProvider>
         <KclContextProvider>
@@ -49,7 +50,6 @@ const router = createBrowserRouter([
     children: [
       {
         path: paths.INDEX,
-        id: paths.INDEX,
         loader: () =>
           isTauri()
             ? redirect(paths.HOME)
@@ -57,7 +57,8 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
       },
       {
-        path: paths.FILE + '/:id',
+        loader: fileLoader,
+        id: paths.FILE,
         element: (
           <Auth>
             <FileMachineProvider>
@@ -71,20 +72,23 @@ const router = createBrowserRouter([
             {!isTauri() && import.meta.env.PROD && <DownloadAppBanner />}
           </Auth>
         ),
-        id: paths.FILE,
-        action: fileAction,
-        loader: fileLoader,
         children: [
           {
-            path: makeUrlPathRelative(paths.SETTINGS),
-            loader: indexLoader, // very rare someone will load into settings first, but it's possible in the browser
-            element: <Settings />,
-          },
-          {
-            path: makeUrlPathRelative(paths.ONBOARDING.INDEX),
-            element: <Onboarding />,
-            loader: indexLoader, // very rare someone will load into settings first, but it's possible in the browser
-            children: onboardingRoutes,
+            path: paths.FILE + '/:id',
+            loader: onboardingRedirectLoader,
+            children: [
+              {
+                path: makeUrlPathRelative(paths.SETTINGS),
+                loader: indexLoader, // very rare someone will load into settings first, but it's possible in the browser
+                element: <Settings />,
+              },
+              {
+                path: makeUrlPathRelative(paths.ONBOARDING.INDEX),
+                element: <Onboarding />,
+                loader: indexLoader, // very rare someone will load into settings first, but it's possible in the browser
+                children: onboardingRoutes,
+              },
+            ],
           },
         ],
       },
