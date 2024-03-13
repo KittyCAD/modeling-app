@@ -37,7 +37,7 @@ import { sceneInfra } from 'clientSideScene/sceneInfra'
 import {
   getQuaternionFromZAxis,
   getSketchQuaternion,
-  getSketchQuaternion2,
+  getSketchOrientationDetails,
 } from 'clientSideScene/sceneEntities'
 import { sketchOnExtrudedFace, startSketchOnDefault } from 'lang/modifyAst'
 import { Program, parse } from 'lang/wasm'
@@ -327,7 +327,7 @@ export const ModelingMachineProvider = ({
             kclManager.ast,
             sourceRange
           )
-          const info = await getSketchQuaternion2(sketchPathToNode || [])
+          const info = await getSketchOrientationDetails(sketchPathToNode || [])
           await sceneInfra.camControls.tweenCameraToQuaternion(
             info.quat,
             new Vector3(...info.sketchDetails.origin)

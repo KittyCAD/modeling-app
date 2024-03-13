@@ -1151,7 +1151,7 @@ export function getSketchQuaternion(
   const zAxis = sketchGroup?.zAxis || sketchNormalBackUp
   return getQuaternionFromZAxis(massageFormats(zAxis))
 }
-export async function getSketchQuaternion2(
+export async function getSketchOrientationDetails(
   sketchPathToNode: PathToNode
 ): Promise<{
   quat: Quaternion
