@@ -40,9 +40,11 @@ export function App() {
   const filePath = useAbsoluteFilePath()
   const { onProjectOpen } = useLspContext()
 
+  const projectName = project?.name || null
+  const projectPath = project?.path || null
   useEffect(() => {
-    onProjectOpen(project || null, file || null)
-  }, [])
+    onProjectOpen({ name: projectName, path: projectPath }, file || null)
+  }, [projectName, projectPath])
 
   useHotKeyListener()
   const {

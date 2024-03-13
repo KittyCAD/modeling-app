@@ -495,12 +495,13 @@ impl LanguageServer for Backend {
         #[cfg(target_arch = "wasm32")]
         {
             let be = self.clone();
-            let handle = tokio::task::spawn_local(async move { be.send_telemetry().await });
-            if let Err(err) = handle.await {
-                self.client
-                    .log_message(MessageType::WARNING, format!("failed to send telemetry: {}", err))
-                    .await;
-            }
+            wasm_bindgen_futures::spawn_local(async move {
+                if let Err(err) = be.send_telemetry().await {
+                    be.client
+                        .log_message(MessageType::WARNING, format!("failed to send telemetry: {}", err))
+                        .await;
+                }
+            });
         }
         #[cfg(not(target_arch = "wasm32"))]
         if let Err(err) = self.send_telemetry().await {

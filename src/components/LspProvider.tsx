@@ -14,7 +14,6 @@ import { LanguageSupport } from '@codemirror/language'
 import { useNavigate } from 'react-router-dom'
 import { paths } from 'lib/paths'
 import { FileEntry } from '@tauri-apps/api/fs'
-import { ProjectWithEntryPointMetadata } from 'lib/types'
 
 const DEFAULT_FILE_NAME: string = 'main.kcl'
 
@@ -40,7 +39,7 @@ type LspContext = {
     redirect: boolean
   ) => void
   onProjectOpen: (
-    project: ProjectWithEntryPointMetadata | null,
+    project: { name: string | null; path: string | null } | null,
     file: FileEntry | null
   ) => void
   onFileOpen: (filePath: string | null, projectPath: string | null) => void
@@ -171,7 +170,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const onProjectOpen = (
-    project: ProjectWithEntryPointMetadata | null,
+    project: { name: string | null; path: string | null } | null,
     file: FileEntry | null
   ) => {
     const projectName = project?.name || 'ProjectRoot'
