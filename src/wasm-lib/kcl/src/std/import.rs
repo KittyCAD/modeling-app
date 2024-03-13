@@ -127,6 +127,26 @@ pub async fn import(args: Args) -> Result<MemoryItem, KclError> {
 ///
 /// Import paths are relative to the current project directory. This only works in the desktop app
 /// not in browser.
+///
+/// ```no_run
+/// const model = import("thing.obj")
+/// ```
+///
+/// ```no_run
+/// const model = import("tests/executor/inputs/cube.obj", {type: "obj", units: "m"})
+/// ```
+///
+/// ```no_run
+/// const model = import("my_model.gltf")
+/// ```
+///
+/// ```no_run
+/// const model = import("my_model.sldprt")
+/// ```
+///
+/// ```no_run
+/// const model = import("my_model.step")
+/// ```
 #[stdlib {
     name = "import",
 }]

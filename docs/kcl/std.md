@@ -5951,6 +5951,28 @@ Import paths are relative to the current project directory. This only works in t
 import(file_path: String, options?: ImportFormat) -> ImportedGeometry
 ```
 
+#### Examples
+
+```kcl
+const model = import("thing.obj")
+```
+
+```kcl
+const model = import("tests/executor/inputs/cube.obj", { type: "obj", units: "m" })
+```
+
+```kcl
+const model = import("my_model.gltf")
+```
+
+```kcl
+const model = import("my_model.sldprt")
+```
+
+```kcl
+const model = import("my_model.step")
+```
+
 #### Arguments
 
 * `file_path`: `String` (REQUIRED)
