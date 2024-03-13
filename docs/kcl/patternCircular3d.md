@@ -182,7 +182,7 @@ const part = startSketchOn('XY')
 
 ### Returns
 
-* `[ExtrudeGroup]`
+`[ExtrudeGroup]`
 
 
 

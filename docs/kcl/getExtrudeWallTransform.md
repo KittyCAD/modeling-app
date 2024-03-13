@@ -163,7 +163,7 @@ const transform = getExtrudeWallTransform('surface', box)
 
 ### Returns
 
-* `ExtrudeTransform`
+`ExtrudeTransform`
 ```
 {
 	position: [number, number, number],

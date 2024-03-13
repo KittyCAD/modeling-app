@@ -24,7 +24,7 @@ const myVar = sqrt(4)
 
 ### Returns
 
-* `number`
+`number`
 
 
 

@@ -24,7 +24,7 @@ const myVar = asin(0.5)
 
 ### Returns
 
-* `number`
+`number`
 
 
 

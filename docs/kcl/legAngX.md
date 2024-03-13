@@ -25,7 +25,7 @@ legAngX(5, 3)
 
 ### Returns
 
-* `number`
+`number`
 
 
 

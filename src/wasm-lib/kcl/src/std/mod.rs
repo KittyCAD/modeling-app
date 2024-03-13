@@ -922,9 +922,9 @@ layout: manual
             if let Some(return_type) = internal_fn.return_value() {
                 fn_docs.push_str("\n### Returns\n\n");
                 if let Some(description) = return_type.description() {
-                    fn_docs.push_str(&format!("* `{}` - {}\n", return_type.type_, description));
+                    fn_docs.push_str(&format!("`{}` - {}\n", return_type.type_, description));
                 } else {
-                    fn_docs.push_str(&format!("* `{}`\n", return_type.type_));
+                    fn_docs.push_str(&format!("`{}`\n", return_type.type_));
                 }
 
                 let (format, should_be_indented) = return_type.get_type_string().unwrap();

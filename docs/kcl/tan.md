@@ -24,7 +24,7 @@ const myVar = tan(2 * pi())
 
 ### Returns
 
-* `number`
+`number`
 
 
 

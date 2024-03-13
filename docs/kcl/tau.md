@@ -23,7 +23,7 @@ const myVar = tau()
 
 ### Returns
 
-* `number`
+`number`
 
 
 

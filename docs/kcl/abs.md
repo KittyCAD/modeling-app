@@ -24,7 +24,7 @@ const myVar = abs(-4)
 
 ### Returns
 
-* `number`
+`number`
 
 
 

@@ -24,7 +24,7 @@ const myVar = toDegrees(2 * pi())
 
 ### Returns
 
-* `number`
+`number`
 
 
 

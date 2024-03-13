@@ -24,7 +24,7 @@ const myVar = acos(0.5)
 
 ### Returns
 
-* `number`
+`number`
 
 
 

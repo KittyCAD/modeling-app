@@ -25,7 +25,7 @@ const myVar = pow(4, 2)
 
 ### Returns
 
-* `number`
+`number`
 
 
 

@@ -194,7 +194,7 @@ startSketchOn("YZ")
 
 ### Returns
 
-* `number`
+`number`
 
 
 

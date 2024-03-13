@@ -122,7 +122,7 @@ const model = import("my_model.step")
 
 ### Returns
 
-* `ImportedGeometry` - Data for an imported geometry.
+`ImportedGeometry` - Data for an imported geometry.
 ```
 {
 	// The ID of the imported geometry.

@@ -24,7 +24,7 @@ const myVar = max(4, 5, 6)
 
 ### Returns
 
-* `number`
+`number`
 
 
 

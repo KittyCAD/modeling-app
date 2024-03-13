@@ -23,7 +23,7 @@ const myVar = pi() * 3.0
 
 ### Returns
 
-* `number`
+`number`
 
 
 

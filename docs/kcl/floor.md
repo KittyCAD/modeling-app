@@ -24,7 +24,7 @@ const myVar = floor(4.5)
 
 ### Returns
 
-* `number`
+`number`
 
 
 

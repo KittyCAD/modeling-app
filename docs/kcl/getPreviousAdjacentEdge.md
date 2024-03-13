@@ -165,7 +165,7 @@ const part001 = startSketchOn('XY')
 
 ### Returns
 
-* `Uuid`
+`Uuid`
 
 
 

@@ -24,7 +24,7 @@ const myVar = sin(2 * pi())
 
 ### Returns
 
-* `number`
+`number`
 
 
 

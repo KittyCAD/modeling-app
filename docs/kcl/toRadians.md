@@ -24,7 +24,7 @@ const myVar = toRadians(180)
 
 ### Returns
 
-* `number`
+`number`
 
 
 

@@ -24,7 +24,7 @@ const myVar = log2(4)
 
 ### Returns
 
-* `number`
+`number`
 
 
 

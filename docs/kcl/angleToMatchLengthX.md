@@ -196,7 +196,7 @@ const part001 = startSketchOn('XY')
 
 ### Returns
 
-* `number`
+`number`
 
 
 

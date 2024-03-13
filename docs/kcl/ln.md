@@ -24,7 +24,7 @@ const myVar = ln(4)
 
 ### Returns
 
-* `number`
+`number`
 
 
 

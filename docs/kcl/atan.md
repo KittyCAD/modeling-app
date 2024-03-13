@@ -24,7 +24,7 @@ const myVar = atan(1.0)
 
 ### Returns
 
-* `number`
+`number`
 
 
 

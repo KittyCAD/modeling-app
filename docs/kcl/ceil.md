@@ -24,7 +24,7 @@ const myVar = ceil(4.5)
 
 ### Returns
 
-* `number`
+`number`
 
 
 

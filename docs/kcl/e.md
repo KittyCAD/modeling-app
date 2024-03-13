@@ -23,7 +23,7 @@ const myVar = e()
 
 ### Returns
 
-* `number`
+`number`
 
 
 

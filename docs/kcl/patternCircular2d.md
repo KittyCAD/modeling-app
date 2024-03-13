@@ -207,7 +207,7 @@ const part = startSketchOn('XY')
 
 ### Returns
 
-* `[SketchGroup]`
+`[SketchGroup]`
 
 
 

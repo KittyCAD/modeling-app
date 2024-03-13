@@ -24,7 +24,7 @@ const anotherVar = cos(2 * pi())
 
 ### Returns
 
-* `number`
+`number`
 
 
 

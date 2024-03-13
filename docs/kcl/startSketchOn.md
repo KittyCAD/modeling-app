@@ -220,7 +220,7 @@ string
 
 ### Returns
 
-* `SketchSurface` - A sketch group type.
+`SketchSurface` - A sketch group type.
 ```
 {
 	// The id of the plane.

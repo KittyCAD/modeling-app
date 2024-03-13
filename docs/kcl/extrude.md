@@ -194,7 +194,7 @@ startSketchOn('XY')
 
 ### Returns
 
-* `ExtrudeGroup` - An extrude group is a collection of extrude surfaces.
+`ExtrudeGroup` - An extrude group is a collection of extrude surfaces.
 ```
 {
 	// The id of the extrusion end cap

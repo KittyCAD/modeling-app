@@ -212,7 +212,7 @@ const part001 = startSketchOn('XY')
 
 ### Returns
 
-* `SketchGroup` - A sketch group is a collection of paths.
+`SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	// The plane id or face id of the sketch group.
