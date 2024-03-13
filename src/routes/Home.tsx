@@ -43,11 +43,7 @@ import { kclManager } from 'lang/KclSingleton'
 const Home = () => {
   const { commandBarSend } = useCommandsContext()
   const navigate = useNavigate()
-  const {
-    projects: loadedProjects,
-    newDefaultDirectory,
-    error,
-  } = useLoaderData() as HomeLoaderData
+  const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
   const {
     settings: {
       context: { defaultDirectory, defaultProjectName },
@@ -55,22 +51,9 @@ const Home = () => {
     },
   } = useSettingsAuthContext()
 
-  // Set the default directory if it's been updated
-  // during the loading of the home page. This is wrapped
-  // in a single-use effect to avoid a potential infinite loop.
+  // Cancel all KCL executions while on the home page
   useEffect(() => {
     kclManager.cancelAllExecutions()
-    if (newDefaultDirectory) {
-      sendToSettings({
-        type: 'Set All Settings',
-        data: { defaultDirectory: newDefaultDirectory },
-      })
-    }
-
-    // Toast any errors that occurred during the loading process
-    if (error) {
-      toast.error(error.message)
-    }
   }, [])
 
   useHotkeys(

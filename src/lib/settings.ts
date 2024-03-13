@@ -1,6 +1,8 @@
 import { type Models } from '@kittycad/lib'
 import { CameraSystem, cameraSystems } from './cameraControls'
 import { Themes } from './theme'
+import { isTauri } from './isTauri'
+import { readSettingsFile } from './tauriFS'
 
 export const DEFAULT_PROJECT_NAME = 'project-$nnn'
 export const SETTINGS_PERSIST_KEY = 'SETTINGS_PERSIST_KEY'
@@ -49,6 +51,22 @@ export const initialSettings: SettingsMachineContext = {
 
 function isEnumMember<T extends Record<string, unknown>>(v: unknown, e: T) {
   return Object.values(e).includes(v)
+}
+
+export async function loadAndValidateSettings(): Promise<
+  ReturnType<typeof validateSettings>
+> {
+  const fsSettings = isTauri() ? await readSettingsFile() : {}
+  const localStorageSettings = JSON.parse(
+    localStorage?.getItem(SETTINGS_PERSIST_KEY) || '{}'
+  )
+  const mergedSettings = Object.assign(
+    {},
+    initialSettings,
+    localStorageSettings,
+    fsSettings
+  )
+  return validateSettings(mergedSettings)
 }
 
 const settingsValidators: Record<
