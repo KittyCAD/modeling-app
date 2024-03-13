@@ -35,6 +35,7 @@ jobs:
       - name: move docs to docs
         shell: bash
         run: |
+          mkdir -p documentation/content/pages/docs/kcl/
           # cleanup old
           rm -rf documentation/content/pages/docs/kcl/*.md
           # move new
