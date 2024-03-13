@@ -16,7 +16,6 @@ use syn::{
     parse::{Parse, ParseStream},
     Attribute, Signature, Visibility,
 };
-
 use unbox::unbox;
 
 #[derive(Deserialize, Debug)]
@@ -730,7 +729,12 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
             let parser = crate::parser::Parser::new(tokens);
             let program = parser.ast().unwrap();
             let mut mem: crate::executor::ProgramMemory = Default::default();
-            let ctx = crate::executor::ExecutorContext::new(kittycad::types::UnitLength::Mm).await.unwrap();
+            let ctx = crate::executor::ExecutorContext {
+                engine: std::sync::Arc::new(Box::new(crate::engine::conn::EngineConnection::new(ws).await.unwrap())),
+                fs: crate::fs::FileManager::new(),
+                stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
+                units: kittycad::types::UnitLength::Mm,
+            };
 
             crate::executor::execute(program, &mut mem, crate::executor::BodyType::Root, &ctx).await.unwrap();
         }
