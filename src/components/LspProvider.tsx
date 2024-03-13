@@ -14,7 +14,6 @@ import { LanguageSupport } from '@codemirror/language'
 import { useNavigate } from 'react-router-dom'
 import { paths } from 'lib/paths'
 import { FileEntry } from '@tauri-apps/api/fs'
-import { ProjectWithEntryPointMetadata } from 'lib/types'
 
 const DEFAULT_FILE_NAME: string = 'main.kcl'
 
@@ -40,7 +39,7 @@ type LspContext = {
     redirect: boolean
   ) => void
   onProjectOpen: (
-    project: ProjectWithEntryPointMetadata | null,
+    project: { name: string | null; path: string | null } | null,
     file: FileEntry | null
   ) => void
   onFileOpen: (filePath: string | null, projectPath: string | null) => void
@@ -69,6 +68,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   }))
 
   const { auth } = useSettingsAuthContext()
+  const token = auth?.context?.token
   const navigate = useNavigate()
 
   // So this is a bit weird, we need to initialize the lsp server and client.
@@ -80,7 +80,6 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     const client = new Client(fromServer, intoServer)
     if (!TEST) {
       Server.initialize(intoServer, fromServer).then((lspServer) => {
-        const token = auth?.context?.token
         lspServer.start('kcl', token)
         setIsKclLspServerReady(true)
       })
@@ -88,7 +87,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
 
     const lspClient = new LanguageServerClient({ client, name: 'kcl' })
     return { lspClient }
-  }, [setIsKclLspServerReady])
+  }, [setIsKclLspServerReady, token])
 
   // Here we initialize the plugin which will start the client.
   // Now that we have multi-file support the name of the file is a dep of
@@ -116,7 +115,6 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     const client = new Client(fromServer, intoServer)
     if (!TEST) {
       Server.initialize(intoServer, fromServer).then((lspServer) => {
-        const token = auth?.context?.token
         lspServer.start('copilot', token)
         setIsCopilotLspServerReady(true)
       })
@@ -124,7 +122,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
 
     const lspClient = new LanguageServerClient({ client, name: 'copilot' })
     return { lspClient }
-  }, [setIsCopilotLspServerReady])
+  }, [setIsCopilotLspServerReady, token])
 
   // Here we initialize the plugin which will start the client.
   // When we have multi-file support the name of the file will be a dep of
@@ -172,7 +170,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const onProjectOpen = (
-    project: ProjectWithEntryPointMetadata | null,
+    project: { name: string | null; path: string | null } | null,
     file: FileEntry | null
   ) => {
     const projectName = project?.name || 'ProjectRoot'

@@ -1,11 +1,12 @@
 //! Functions for the `kcl` lsp server.
 
-use std::collections::HashMap;
+use std::{collections::HashMap, io::Write, str::FromStr};
 
 use anyhow::Result;
 #[cfg(feature = "cli")]
 use clap::Parser;
 use dashmap::DashMap;
+use sha2::Digest;
 use tower_lsp::{
     jsonrpc::Result as RpcResult,
     lsp_types::{
@@ -44,6 +45,7 @@ pub struct Server {
 }
 
 /// The lsp server backend.
+#[derive(Clone)]
 pub struct Backend {
     /// The client for the backend.
     pub client: Client,
@@ -285,6 +287,87 @@ impl Backend {
 
         completions
     }
+
+    pub fn create_zip(&self) -> Result<Vec<u8>> {
+        // Collect all the file data we know.
+        let mut buf = vec![];
+        let mut zip = zip::ZipWriter::new(std::io::Cursor::new(&mut buf));
+        for entry in self.current_code_map.iter() {
+            let file_name = entry.key().replace("file://", "").to_string();
+
+            let options = zip::write::FileOptions::default().compression_method(zip::CompressionMethod::Stored);
+            zip.start_file(file_name, options)?;
+            zip.write_all(entry.value())?;
+        }
+        // Apply the changes you've made.
+        // Dropping the `ZipWriter` will have the same effect, but may silently fail
+        zip.finish()?;
+        drop(zip);
+
+        Ok(buf)
+    }
+
+    pub async fn send_telemetry(&self) -> Result<()> {
+        // Get information about the user.
+        let user = self
+            .zoo_client
+            .users()
+            .get_self()
+            .await
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+
+        // Hash the user's id.
+        // Create a SHA-256 object
+        let mut hasher = sha2::Sha256::new();
+        // Write input message
+        hasher.update(user.id);
+        // Read hash digest and consume hasher
+        let result = hasher.finalize();
+        // Get the hash as a string.
+        let user_id_hash = format!("{:x}", result);
+
+        // Get the workspace folders.
+        // The key of the workspace folder is the project name.
+        let workspace_folders = self.workspace_folders();
+        let project_names: Vec<String> = workspace_folders.iter().map(|v| v.name.clone()).collect::<Vec<_>>();
+        // Get the first name.
+        let project_name = project_names
+            .first()
+            .ok_or_else(|| anyhow::anyhow!("no project names"))?
+            .to_string();
+
+        // Send the telemetry data.
+        self.zoo_client
+            .meta()
+            .create_event(
+                vec![kittycad::types::multipart::Attachment {
+                    // Clean the URI part.
+                    name: "attachment".to_string(),
+                    filename: Some("attachment.zip".to_string()),
+                    content_type: Some("application/x-zip".to_string()),
+                    data: self.create_zip()?,
+                }],
+                &kittycad::types::Event {
+                    // This gets generated server side so leave empty for now.
+                    attachment_uri: None,
+                    created_at: chrono::Utc::now(),
+                    event_type: kittycad::types::ModelingAppEventType::SuccessfulCompileBeforeClose,
+                    last_compiled_at: Some(chrono::Utc::now()),
+                    // We do not have project descriptions yet.
+                    project_description: None,
+                    project_name,
+                    // The UUID for the modeling app.
+                    // We can unwrap here because we know it will not panic.
+                    source_id: uuid::Uuid::from_str("70178592-dfca-47b3-bd2d-6fce2bcaee04").unwrap(),
+                    type_: kittycad::types::Type::ModelingAppEvent,
+                    user_id: user_id_hash,
+                },
+            )
+            .await
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+
+        Ok(())
+    }
 }
 
 #[tower_lsp::async_trait]
@@ -402,7 +485,32 @@ impl LanguageServer for Backend {
     }
 
     async fn did_close(&self, params: DidCloseTextDocumentParams) {
-        self.do_did_close(params).await
+        self.do_did_close(params).await;
+
+        // Inject telemetry if we can train on the user's code.
+        // Return early if we cannot.
+        if !self.can_send_telemetry {
+            return;
+        }
+
+        // In wasm this needs to be spawn_local since fucking reqwests doesn't implement Send for wasm.
+        #[cfg(target_arch = "wasm32")]
+        {
+            let be = self.clone();
+            wasm_bindgen_futures::spawn_local(async move {
+                if let Err(err) = be.send_telemetry().await {
+                    be.client
+                        .log_message(MessageType::WARNING, format!("failed to send telemetry: {}", err))
+                        .await;
+                }
+            });
+        }
+        #[cfg(not(target_arch = "wasm32"))]
+        if let Err(err) = self.send_telemetry().await {
+            self.client
+                .log_message(MessageType::WARNING, format!("failed to send telemetry: {}", err))
+                .await;
+        }
     }
 
     async fn hover(&self, params: HoverParams) -> RpcResult<Option<Hover>> {

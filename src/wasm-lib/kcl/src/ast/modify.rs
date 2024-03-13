@@ -1,12 +1,13 @@
+use std::sync::Arc;
+
 use kittycad::types::{ModelingCmd, Point3D};
 
-use super::types::ConstraintLevel;
 use crate::{
     ast::types::{
-        ArrayExpression, CallExpression, FormatOptions, Literal, PipeExpression, PipeSubstitution, Program,
-        VariableDeclarator,
+        ArrayExpression, CallExpression, ConstraintLevel, FormatOptions, Literal, PipeExpression, PipeSubstitution,
+        Program, VariableDeclarator,
     },
-    engine::{EngineConnection, EngineManager},
+    engine::EngineManager,
     errors::{KclError, KclErrorDetails},
     executor::{Point2d, SourceRange},
 };
@@ -27,7 +28,7 @@ const EPSILON: f64 = 0.015625; // or 2^-6
 /// Update the AST to reflect the new state of the program after something like
 /// a move or a new line.
 pub async fn modify_ast_for_sketch(
-    engine: &mut EngineConnection,
+    engine: &Arc<Box<dyn EngineManager>>,
     program: &mut Program,
     // The name of the sketch.
     sketch_name: &str,

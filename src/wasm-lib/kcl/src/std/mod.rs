@@ -24,7 +24,6 @@ use serde::{Deserialize, Serialize};
 use crate::{
     ast::types::parse_json_number_as_f64,
     docs::StdLibFn,
-    engine::EngineManager,
     errors::{KclError, KclErrorDetails},
     executor::{
         ExecutorContext, ExtrudeGroup, MemoryItem, Metadata, SketchGroup, SketchGroupSet, SketchSurface, SourceRange,
@@ -100,6 +99,8 @@ lazy_static! {
         Box::new(crate::std::math::Log2),
         Box::new(crate::std::math::Log10),
         Box::new(crate::std::math::Ln),
+        Box::new(crate::std::math::ToDegrees),
+        Box::new(crate::std::math::ToRadians),
     ];
 }
 
@@ -758,6 +759,10 @@ pub async fn leg_length(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Returns the length of the given leg.
+///
+/// ```no_run
+/// legLen(5, 3)
+/// ```
 #[stdlib {
     name = "legLen",
 }]
@@ -773,6 +778,10 @@ pub async fn leg_angle_x(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Returns the angle of the given leg for x.
+///
+/// ```no_run
+/// legAngX(5, 3)
+/// ```
 #[stdlib {
     name = "legAngX",
 }]
@@ -788,6 +797,10 @@ pub async fn leg_angle_y(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Returns the angle of the given leg for y.
+///
+/// ```no_run
+/// legAngY(5, 3)
+/// ```
 #[stdlib {
     name = "legAngY",
 }]
@@ -865,6 +878,16 @@ mod tests {
             let signature = internal_fn.fn_signature();
             fn_docs.push_str(&signature);
             fn_docs.push_str("\n```\n\n");
+
+            if !internal_fn.examples().is_empty() {
+                fn_docs.push_str("#### Examples\n\n");
+
+                for example in internal_fn.examples() {
+                    fn_docs.push_str("```kcl\n");
+                    fn_docs.push_str(&example);
+                    fn_docs.push_str("\n```\n\n");
+                }
+            }
 
             fn_docs.push_str("#### Arguments\n\n");
             for arg in internal_fn.args() {

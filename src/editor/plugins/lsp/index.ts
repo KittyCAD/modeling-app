@@ -2,67 +2,10 @@ import type * as LSP from 'vscode-languageserver-protocol'
 import Client from './client'
 import { SemanticToken, deserializeTokens } from './kcl/semantic_tokens'
 import { LanguageServerPlugin } from 'editor/plugins/lsp/plugin'
-
-export interface CopilotGetCompletionsParams {
-  doc: {
-    source: string
-    tabSize: number
-    indentSize: number
-    insertSpaces: boolean
-    path: string
-    uri: string
-    relativePath: string
-    languageId: string
-    position: {
-      line: number
-      character: number
-    }
-  }
-}
-
-interface CopilotGetCompletionsResult {
-  completions: {
-    text: string
-    position: {
-      line: number
-      character: number
-    }
-    uuid: string
-    range: {
-      start: {
-        line: number
-        character: number
-      }
-      end: {
-        line: number
-        character: number
-      }
-    }
-    displayText: string
-    point: {
-      line: number
-      character: number
-    }
-    region: {
-      start: {
-        line: number
-        character: number
-      }
-      end: {
-        line: number
-        character: number
-      }
-    }
-  }[]
-}
-
-interface CopilotAcceptCompletionParams {
-  uuid: string
-}
-
-interface CopilotRejectCompletionParams {
-  uuids: string[]
-}
+import { CopilotLspCompletionParams } from 'wasm-lib/kcl/bindings/CopilotLspCompletionParams'
+import { CopilotCompletionResponse } from 'wasm-lib/kcl/bindings/CopilotCompletionResponse'
+import { CopilotAcceptCompletionParams } from 'wasm-lib/kcl/bindings/CopilotAcceptCompletionParams'
+import { CopilotRejectCompletionParams } from 'wasm-lib/kcl/bindings/CopilotRejectCompletionParams'
 
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/
 
@@ -78,7 +21,7 @@ interface LSPRequestMap {
     LSP.SemanticTokensParams,
     LSP.SemanticTokens
   ]
-  getCompletions: [CopilotGetCompletionsParams, CopilotGetCompletionsResult]
+  getCompletions: [CopilotLspCompletionParams, CopilotCompletionResponse]
   notifyAccepted: [CopilotAcceptCompletionParams, any]
   notifyRejected: [CopilotRejectCompletionParams, any]
 }
@@ -271,7 +214,7 @@ export class LanguageServerClient {
     return this.client.notify(method, params)
   }
 
-  async getCompletion(params: CopilotGetCompletionsParams) {
+  async getCompletion(params: CopilotLspCompletionParams) {
     const response = await this.request('getCompletions', params)
     //
     this.queuedUids = [...response.completions.map((c) => c.uuid)]

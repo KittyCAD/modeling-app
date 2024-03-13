@@ -65,6 +65,8 @@
 	* [`tangentialArc`](#tangentialArc)
 	* [`tangentialArcTo`](#tangentialArcTo)
 	* [`tau`](#tau)
+	* [`toDegrees`](#toDegrees)
+	* [`toRadians`](#toRadians)
 	* [`xLine`](#xLine)
 	* [`xLineTo`](#xLineTo)
 	* [`yLine`](#yLine)
@@ -81,6 +83,12 @@ Computes the absolute value of a number.
 
 ```
 abs(num: number) -> number
+```
+
+#### Examples
+
+```kcl
+const myVar = abs(-4)
 ```
 
 #### Arguments
@@ -103,6 +111,12 @@ Computes the arccosine of a number (in radians).
 acos(num: number) -> number
 ```
 
+#### Examples
+
+```kcl
+const myVar = acos(0.5)
+```
+
 #### Arguments
 
 * `num`: `number` (REQUIRED)
@@ -121,6 +135,19 @@ Returns the angle to match the given length for x.
 
 ```
 angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup) -> number
+```
+
+#### Examples
+
+```kcl
+const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line({ to: [1, 3.82], tag: 'seg01' }, %)
+  |> angledLineToX([
+       -angleToMatchLengthX('seg01', 10, %),
+       5
+     ], %)
+  |> close(%)
 ```
 
 #### Arguments
@@ -308,6 +335,19 @@ Returns the angle to match the given length for y.
 angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup) -> number
 ```
 
+#### Examples
+
+```kcl
+const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line({ to: [1, 3.82], tag: 'seg01' }, %)
+  |> angledLineToX([
+       -angleToMatchLengthY('seg01', 10, %),
+       5
+     ], %)
+  |> close(%)
+```
+
 #### Arguments
 
 * `segment_name`: `string` (REQUIRED)
@@ -491,6 +531,18 @@ Draw an angled line.
 
 ```
 angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Examples
+
+```kcl
+startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> angledLine({ angle: 45, length: 10, tag: "edge1" }, %)
+  |> line([10, 10], %)
+  |> line([0, 10], %)
+  |> close(%, "edge2")
+  |> extrude(10, %)
 ```
 
 #### Arguments
@@ -851,6 +903,18 @@ Draw an angled line of a given x length.
 angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
+#### Examples
+
+```kcl
+startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> angledLineOfXLength({ angle: 45, length: 10, tag: "edge1" }, %)
+  |> line([10, 10], %)
+  |> line([0, 10], %)
+  |> close(%, "edge2")
+  |> extrude(10, %)
+```
+
 #### Arguments
 
 * `data`: `AngledLineData` - Data to draw an angled line. (REQUIRED)
@@ -1209,6 +1273,19 @@ Draw an angled line of a given y length.
 angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
+#### Examples
+
+```kcl
+startSketchOn('YZ')
+  |> startProfileAt([0, 0], %)
+  |> angledLineOfYLength({ angle: 45, length: 10, tag: "edge1" }, %)
+  |> line([10, 10], %)
+  |> line([0, 10], %)
+  |> close(%, "edge2")
+  |> extrude(10, %)
+  |> fillet({ radius: 2, tags: ["edge1"] }, %)
+```
+
 #### Arguments
 
 * `data`: `AngledLineData` - Data to draw an angled line. (REQUIRED)
@@ -1565,6 +1642,24 @@ Draw an angled line that intersects with a given line.
 
 ```
 angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Examples
+
+```kcl
+const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> lineTo({ to: [2, 2], tag: "yo" }, %)
+  |> lineTo([3, 1], %)
+  |> angledLineThatIntersects({
+       angle: 180,
+       intersectTag: 'yo',
+       offset: 12,
+       tag: "yo2"
+     }, %)
+  |> line([4, 0], %)
+  |> close(%, "yo3")
+  |> extrude(10, %)
 ```
 
 #### Arguments
@@ -1926,6 +2021,19 @@ Draw an angled line to a given x coordinate.
 angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
+#### Examples
+
+```kcl
+startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> angledLineToX({ angle: 45, to: 10, tag: "edge1" }, %)
+  |> line([10, 10], %)
+  |> line([0, 10], %)
+  |> close(%, "edge2")
+  |> extrude(10, %)
+  |> fillet({ radius: 2, tags: ["edge1"] }, %)
+```
+
 #### Arguments
 
 * `data`: `AngledLineToData` - Data to draw an angled line to a point. (REQUIRED)
@@ -2284,6 +2392,18 @@ Draw an angled line to a given y coordinate.
 angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
+#### Examples
+
+```kcl
+startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> angledLineToY({ angle: 45, to: 10, tag: "edge1" }, %)
+  |> line([10, 10], %)
+  |> line([0, 10], %)
+  |> close(%, "edge2")
+  |> extrude(10, %)
+```
+
 #### Arguments
 
 * `data`: `AngledLineToData` - Data to draw an angled line to a point. (REQUIRED)
@@ -2640,6 +2760,20 @@ Draw an arc.
 
 ```
 arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Examples
+
+```kcl
+startSketchOn('-YZ')
+  |> startProfileAt([0, 0], %)
+  |> arc({
+       angle_start: 0,
+       angle_end: 360,
+       radius: 10,
+       tag: "edge1"
+     }, %)
+  |> extrude(10, %)
 ```
 
 #### Arguments
@@ -3011,6 +3145,12 @@ Computes the arcsine of a number (in radians).
 asin(num: number) -> number
 ```
 
+#### Examples
+
+```kcl
+const myVar = asin(0.5)
+```
+
 #### Arguments
 
 * `num`: `number` (REQUIRED)
@@ -3031,6 +3171,12 @@ Computes the arctangent of a number (in radians).
 atan(num: number) -> number
 ```
 
+#### Examples
+
+```kcl
+const myVar = atan(1.0)
+```
+
 #### Arguments
 
 * `num`: `number` (REQUIRED)
@@ -3049,6 +3195,21 @@ Draw a bezier curve.
 
 ```
 bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Examples
+
+```kcl
+startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> bezierCurve({
+       to: [10, 10],
+       control1: [5, 0],
+       control2: [5, 10],
+       tag: "edge1"
+     }, %)
+  |> close(%)
+  |> extrude(10, %)
 ```
 
 #### Arguments
@@ -3410,6 +3571,12 @@ Computes the smallest integer greater than or equal to a number.
 ceil(num: number) -> number
 ```
 
+#### Examples
+
+```kcl
+const myVar = ceil(4.5)
+```
+
 #### Arguments
 
 * `num`: `number` (REQUIRED)
@@ -3674,6 +3841,24 @@ Close the current sketch.
 
 ```
 close(sketch_group: SketchGroup, tag?: String) -> SketchGroup
+```
+
+#### Examples
+
+```kcl
+startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> line([10, 10], %)
+  |> line([10, 0], %)
+  |> close(%)
+```
+
+```kcl
+startSketchOn('YZ')
+  |> startProfileAt([0, 0], %)
+  |> line([10, 10], %)
+  |> line([10, 0], %)
+  |> close(%, "edge1")
 ```
 
 #### Arguments
@@ -4023,6 +4208,12 @@ Computes the sine of a number (in radians).
 cos(num: number) -> number
 ```
 
+#### Examples
+
+```kcl
+const anotherVar = cos(2 * pi())
+```
+
 #### Arguments
 
 * `num`: `number` (REQUIRED)
@@ -4043,6 +4234,12 @@ Return the value of Euler’s number `e`.
 e() -> number
 ```
 
+#### Examples
+
+```kcl
+const myVar = e()
+```
+
 #### Arguments
 
 
@@ -4060,6 +4257,18 @@ Extrudes by a given amount.
 
 ```
 extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
+```
+
+#### Examples
+
+```kcl
+startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %)
+  |> close(%)
+  |> extrude(5, %)
 ```
 
 #### Arguments
@@ -4376,6 +4585,19 @@ Create fillets on tagged paths.
 fillet(data: FilletData, extrude_group: ExtrudeGroup) -> ExtrudeGroup
 ```
 
+#### Examples
+
+```kcl
+const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line({ to: [0, 10], tag: "thing" }, %)
+  |> line([10, 0], %)
+  |> line({ to: [0, -10], tag: "thing2" }, %)
+  |> close(%)
+  |> extrude(10, %)
+  |> fillet({ radius: 2, tags: ["thing", "thing2"] }, %)
+```
+
 #### Arguments
 
 * `data`: `FilletData` - Data for fillets. (REQUIRED)
@@ -4666,6 +4888,12 @@ Computes the largest integer less than or equal to a number.
 floor(num: number) -> number
 ```
 
+#### Examples
+
+```kcl
+const myVar = floor(4.5)
+```
+
 #### Arguments
 
 * `num`: `number` (REQUIRED)
@@ -4684,6 +4912,20 @@ Returns the extrude wall transform.
 
 ```
 getExtrudeWallTransform(surface_name: string, extrude_group: ExtrudeGroup) -> ExtrudeTransform
+```
+
+#### Examples
+
+```kcl
+const box = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line({ to: [0, -10], tag: "surface" }, %)
+  |> close(%)
+  |> extrude(5, %)
+
+const transform = getExtrudeWallTransform('surface', box)
 ```
 
 #### Arguments
@@ -4843,6 +5085,22 @@ Get the next adjacent edge to the edge given.
 getNextAdjacentEdge(tag: String, extrude_group: ExtrudeGroup) -> Uuid
 ```
 
+#### Examples
+
+```kcl
+const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line({ to: [0, 10], tag: "thing" }, %)
+  |> line({ to: [10, 0], tag: "thing1" }, %)
+  |> line({ to: [0, -10], tag: "thing2" }, %)
+  |> close(%)
+  |> extrude(10, %)
+  |> fillet({
+       radius: 2,
+       tags: [getNextAdjacentEdge("thing", %)]
+     }, %)
+```
+
 #### Arguments
 
 * `tag`: `String` (REQUIRED)
@@ -4992,6 +5250,22 @@ Get the opposite edge to the edge given.
 
 ```
 getOppositeEdge(tag: String, extrude_group: ExtrudeGroup) -> Uuid
+```
+
+#### Examples
+
+```kcl
+const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line({ to: [0, 10], tag: "thing" }, %)
+  |> line([10, 0], %)
+  |> line({ to: [0, -10], tag: "thing2" }, %)
+  |> close(%)
+  |> extrude(10, %)
+  |> fillet({
+       radius: 2,
+       tags: ["thing", getOppositeEdge("thing", %)]
+     }, %)
 ```
 
 #### Arguments
@@ -5145,6 +5419,22 @@ Get the previous adjacent edge to the edge given.
 getPreviousAdjacentEdge(tag: String, extrude_group: ExtrudeGroup) -> Uuid
 ```
 
+#### Examples
+
+```kcl
+const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line({ to: [0, 10], tag: "thing" }, %)
+  |> line({ to: [10, 0], tag: "thing1" }, %)
+  |> line({ to: [0, -10], tag: "thing2" }, %)
+  |> close(%)
+  |> extrude(10, %)
+  |> fillet({
+       radius: 2,
+       tags: [getPreviousAdjacentEdge("thing2", %)]
+     }, %)
+```
+
 #### Arguments
 
 * `tag`: `String` (REQUIRED)
@@ -5294,6 +5584,20 @@ Use a sketch to cut a hole in another sketch.
 
 ```
 hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Examples
+
+```kcl
+const square = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %)
+  |> close(%)
+  |> hole(circle([2, 2], .5, startSketchOn('XY')), %)
+  |> hole(circle([2, 8], .5, startSketchOn('XY')), %)
+  |> extrude(2, %)
 ```
 
 #### Arguments
@@ -5811,6 +6115,28 @@ Import paths are relative to the current project directory. This only works in t
 import(file_path: String, options?: ImportFormat) -> ImportedGeometry
 ```
 
+#### Examples
+
+```kcl
+const model = import("thing.obj")
+```
+
+```kcl
+const model = import("cube.obj", { type: "obj", units: "m" })
+```
+
+```kcl
+const model = import("my_model.gltf")
+```
+
+```kcl
+const model = import("my_model.sldprt")
+```
+
+```kcl
+const model = import("my_model.step")
+```
+
 #### Arguments
 
 * `file_path`: `String` (REQUIRED)
@@ -5918,6 +6244,18 @@ Returns the last segment of x.
 
 ```
 lastSegX(sketch_group: SketchGroup) -> number
+```
+
+#### Examples
+
+```kcl
+startSketchOn("YZ")
+  |> startProfileAt([0, 0], %)
+  |> line({ to: [5, 0], tag: "thing" }, %)
+  |> line([5, 5], %)
+  |> line([0, lastSegX(%)], %)
+  |> close(%)
+  |> extrude(5, %)
 ```
 
 #### Arguments
@@ -6103,6 +6441,18 @@ Returns the last segment of y.
 lastSegY(sketch_group: SketchGroup) -> number
 ```
 
+#### Examples
+
+```kcl
+startSketchOn("YZ")
+  |> startProfileAt([0, 0], %)
+  |> line({ to: [5, 0], tag: "thing" }, %)
+  |> line([5, 5], %)
+  |> line([0, lastSegY(%)], %)
+  |> close(%)
+  |> extrude(5, %)
+```
+
 #### Arguments
 
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
@@ -6286,6 +6636,12 @@ Returns the angle of the given leg for x.
 legAngX(hypotenuse: number, leg: number) -> number
 ```
 
+#### Examples
+
+```kcl
+legAngX(5, 3)
+```
+
 #### Arguments
 
 * `hypotenuse`: `number` (REQUIRED)
@@ -6305,6 +6661,12 @@ Returns the angle of the given leg for y.
 
 ```
 legAngY(hypotenuse: number, leg: number) -> number
+```
+
+#### Examples
+
+```kcl
+legAngY(5, 3)
 ```
 
 #### Arguments
@@ -6328,6 +6690,12 @@ Returns the length of the given leg.
 legLen(hypotenuse: number, leg: number) -> number
 ```
 
+#### Examples
+
+```kcl
+legLen(5, 3)
+```
+
 #### Arguments
 
 * `hypotenuse`: `number` (REQUIRED)
@@ -6347,6 +6715,17 @@ Draw a line.
 
 ```
 line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Examples
+
+```kcl
+startSketchOn('-XY')
+  |> startProfileAt([0, 0], %)
+  |> line([10, 10], %)
+  |> line({ to: [20, 10], tag: "edge1" }, %)
+  |> close(%, "edge2")
+  |> extrude(10, %)
 ```
 
 #### Arguments
@@ -6705,6 +7084,32 @@ Draw a line to a point.
 lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
+#### Examples
+
+```kcl
+fn rectShape = (pos, w, l) => {
+  const rr = startSketchOn('YZ')
+  |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
+  |> lineTo({
+       to: [pos[0] + w / 2, pos[1] - (l / 2)],
+       tag: "edge1"
+     }, %)
+  |> lineTo({
+       to: [pos[0] + w / 2, pos[1] + l / 2],
+       tag: "edge2"
+     }, %)
+  |> lineTo({
+       to: [pos[0] - (w / 2), pos[1] + l / 2],
+       tag: "edge3"
+     }, %)
+  |> close(%, "edge4")
+  return rr
+}
+
+// Create the mounting plate extrusion, holes, and fillets
+const part = rectShape([0, 0], 20, 20)
+```
+
 #### Arguments
 
 * `data`: `LineToData` - Data to draw a line to a point. (REQUIRED)
@@ -7061,6 +7466,12 @@ Computes the natural logarithm of the number.
 ln(num: number) -> number
 ```
 
+#### Examples
+
+```kcl
+const myVar = ln(4)
+```
+
 #### Arguments
 
 * `num`: `number` (REQUIRED)
@@ -7079,6 +7490,12 @@ The result might not be correctly rounded owing to implementation details; `log2
 
 ```
 log(num: number, base: number) -> number
+```
+
+#### Examples
+
+```kcl
+const myVar = log(4, 2)
 ```
 
 #### Arguments
@@ -7102,6 +7519,12 @@ Computes the base 10 logarithm of the number.
 log10(num: number) -> number
 ```
 
+#### Examples
+
+```kcl
+const myVar = log10(4)
+```
+
 #### Arguments
 
 * `num`: `number` (REQUIRED)
@@ -7120,6 +7543,12 @@ Computes the base 2 logarithm of the number.
 
 ```
 log2(num: number) -> number
+```
+
+#### Examples
+
+```kcl
+const myVar = log2(4)
 ```
 
 #### Arguments
@@ -7142,6 +7571,12 @@ Computes the maximum of the given arguments.
 max(args: [number]) -> number
 ```
 
+#### Examples
+
+```kcl
+const myVar = max(4, 5, 6)
+```
+
 #### Arguments
 
 * `args`: `[number]` (REQUIRED)
@@ -7162,6 +7597,12 @@ Computes the minimum of the given arguments.
 min(args: [number]) -> number
 ```
 
+#### Examples
+
+```kcl
+const myVar = min(4, 5, 6)
+```
+
 #### Arguments
 
 * `args`: `[number]` (REQUIRED)
@@ -7180,6 +7621,19 @@ A circular pattern on a 2D sketch.
 
 ```
 patternCircular2d(data: CircularPattern2dData, sketch_group: SketchGroup) -> [SketchGroup]
+```
+
+#### Examples
+
+```kcl
+const part = startSketchOn('XY')
+  |> circle([0, 0], 2, %)
+  |> patternCircular2d({
+       center: [20, 20],
+       repetitions: 12,
+       arcDegrees: 210,
+       rotateDuplicates: true
+     }, %)
 ```
 
 #### Arguments
@@ -7378,6 +7832,25 @@ A circular pattern on a 3D model.
 patternCircular3d(data: CircularPattern3dData, extrude_group: ExtrudeGroup) -> [ExtrudeGroup]
 ```
 
+#### Examples
+
+```kcl
+const part = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, 1], %)
+  |> line([1, 0], %)
+  |> line([0, -1], %)
+  |> close(%)
+  |> extrude(1, %)
+  |> patternCircular3d({
+       axis: [1, 1, 0],
+       center: [10, 0, 10],
+       repetitions: 10,
+       arcDegrees: 360,
+       rotateDuplicates: true
+     }, %)
+```
+
 #### Arguments
 
 * `data`: `CircularPattern3dData` - Data for a circular pattern on a 3D model. (REQUIRED)
@@ -7541,6 +8014,18 @@ A linear pattern on a 2D sketch.
 
 ```
 patternLinear2d(data: LinearPattern2dData, sketch_group: SketchGroup) -> [SketchGroup]
+```
+
+#### Examples
+
+```kcl
+const part = startSketchOn('XY')
+  |> circle([0, 0], 2, %)
+  |> patternLinear2d({
+       axis: [0, 1],
+       repetitions: 12,
+       distance: 2
+     }, %)
 ```
 
 #### Arguments
@@ -7737,6 +8222,23 @@ A linear pattern on a 3D model.
 patternLinear3d(data: LinearPattern3dData, extrude_group: ExtrudeGroup) -> [ExtrudeGroup]
 ```
 
+#### Examples
+
+```kcl
+const part = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, 1], %)
+  |> line([1, 0], %)
+  |> line([0, -1], %)
+  |> close(%)
+  |> extrude(1, %)
+  |> patternLinear3d({
+       axis: [1, 0, 1],
+       repetitions: 3,
+       distance: 6
+     }, %)
+```
+
 #### Arguments
 
 * `data`: `LinearPattern3dData` - Data for a linear pattern on a 3D model. (REQUIRED)
@@ -7898,6 +8400,12 @@ Return the value of `pi`. Archimedes’ constant (π).
 pi() -> number
 ```
 
+#### Examples
+
+```kcl
+const myVar = pi() * 3.0
+```
+
 #### Arguments
 
 
@@ -7915,6 +8423,12 @@ Computes the number to a power.
 
 ```
 pow(num: number, pow: number) -> number
+```
+
+#### Examples
+
+```kcl
+const myVar = pow(4, 2)
 ```
 
 #### Arguments
@@ -7936,6 +8450,20 @@ Returns the angle of the segment.
 
 ```
 segAng(segment_name: string, sketch_group: SketchGroup) -> number
+```
+
+#### Examples
+
+```kcl
+const part001 = startSketchOn('XY')
+  |> startProfileAt([4.83, 12.56], %)
+  |> line([15.1, 2.48], %)
+  |> line({ to: [3.15, -9.85], tag: 'seg01' }, %)
+  |> line([-15.17, -4.1], %)
+  |> angledLine([segAng('seg01', %), 12.35], %)
+  |> line([-13.02, 10.03], %)
+  |> close(%)
+  |> extrude(4, %)
 ```
 
 #### Arguments
@@ -8122,6 +8650,18 @@ Returns the segment end of x.
 segEndX(segment_name: string, sketch_group: SketchGroup) -> number
 ```
 
+#### Examples
+
+```kcl
+startSketchOn("YZ")
+  |> startProfileAt([0, 0], %)
+  |> line({ to: [5, 0], tag: "thing" }, %)
+  |> line([5, 5], %)
+  |> line([segEndX("thing", %), 5], %)
+  |> close(%)
+  |> extrude(5, %)
+```
+
 #### Arguments
 
 * `segment_name`: `string` (REQUIRED)
@@ -8304,6 +8844,18 @@ Returns the segment end of y.
 
 ```
 segEndY(segment_name: string, sketch_group: SketchGroup) -> number
+```
+
+#### Examples
+
+```kcl
+startSketchOn("YZ")
+  |> startProfileAt([0, 0], %)
+  |> line({ to: [5, 0], tag: "thing" }, %)
+  |> line([5, 5], %)
+  |> line([segEndY("thing", %), 5], %)
+  |> close(%)
+  |> extrude(5, %)
 ```
 
 #### Arguments
@@ -8490,6 +9042,18 @@ Returns the length of the segment.
 segLen(segment_name: string, sketch_group: SketchGroup) -> number
 ```
 
+#### Examples
+
+```kcl
+startSketchOn("YZ")
+  |> startProfileAt([0, 0], %)
+  |> line({ to: [5, 0], tag: "thing" }, %)
+  |> line([5, 5], %)
+  |> line([0, segLen("thing", %)], %)
+  |> close(%)
+  |> extrude(5, %)
+```
+
 #### Arguments
 
 * `segment_name`: `string` (REQUIRED)
@@ -8674,6 +9238,12 @@ Computes the sine of a number (in radians).
 sin(num: number) -> number
 ```
 
+#### Examples
+
+```kcl
+const myVar = sin(2 * pi())
+```
+
 #### Arguments
 
 * `num`: `number` (REQUIRED)
@@ -8694,6 +9264,12 @@ Computes the square root of a number.
 sqrt(num: number) -> number
 ```
 
+#### Examples
+
+```kcl
+const myVar = sqrt(4)
+```
+
 #### Arguments
 
 * `num`: `number` (REQUIRED)
@@ -8712,6 +9288,14 @@ Start a profile at a given point.
 
 ```
 startProfileAt(data: LineData, sketch_surface: SketchSurface) -> SketchGroup
+```
+
+#### Examples
+
+```kcl
+startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([10, 10], %)
 ```
 
 #### Arguments
@@ -8967,6 +9551,13 @@ Start a sketch at a given point on the 'XY' plane.
 startSketchAt(data: LineData) -> SketchGroup
 ```
 
+#### Examples
+
+```kcl
+startSketchAt([0, 0])
+  |> line([10, 10], %)
+```
+
 #### Arguments
 
 * `data`: `LineData` - Data to draw a line. (REQUIRED)
@@ -9157,6 +9748,39 @@ Start a sketch on a specific plane or face.
 
 ```
 startSketchOn(data: SketchData, tag?: SketchOnFaceTag) -> SketchSurface
+```
+
+#### Examples
+
+```kcl
+startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([10, 10], %)
+  |> line({ to: [20, 10], tag: "edge1" }, %)
+  |> close(%, "edge2")
+```
+
+```kcl
+fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+  |> startProfileAt(pos, %)
+  |> line([0, scale], %)
+  |> line([scale, 0], %)
+  |> line([0, -scale], %)
+  |> close(%)
+  |> extrude(scale, %)
+
+  return sg
+}
+
+const box = cube([0, 0], 20)
+
+const part001 = startSketchOn(box, "start")
+  |> startProfileAt([0, 0], %)
+  |> line([10, 10], %)
+  |> line({ to: [20, 10], tag: "edge1" }, %)
+  |> close(%)
+  |> extrude(20, %)
 ```
 
 #### Arguments
@@ -9408,6 +10032,12 @@ Computes the tangent of a number (in radians).
 tan(num: number) -> number
 ```
 
+#### Examples
+
+```kcl
+const myVar = tan(2 * pi())
+```
+
 #### Arguments
 
 * `num`: `number` (REQUIRED)
@@ -9426,6 +10056,17 @@ Draw an arc.
 
 ```
 tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Examples
+
+```kcl
+startSketchOn('-YZ')
+  |> startProfileAt([0, 0], %)
+  |> line({ to: [10, 10], tag: "edge0" }, %)
+  |> tangentialArc({ radius: 10, offset: 90, tag: "edge1" }, %)
+  |> close(%)
+  |> extrude(10, %)
 ```
 
 #### Arguments
@@ -9790,6 +10431,16 @@ Draw an arc.
 tangentialArcTo(to: [number], sketch_group: SketchGroup, tag?: String) -> SketchGroup
 ```
 
+#### Examples
+
+```kcl
+startSketchOn('-YZ')
+  |> startProfileAt([0, 0], %)
+  |> line({ to: [10, 10], tag: "edge0" }, %)
+  |> tangentialArcTo([10, 0], %)
+  |> close(%)
+```
+
 #### Arguments
 
 * `to`: `[number]` (REQUIRED)
@@ -10138,8 +10789,66 @@ Return the value of `tau`. The full circle constant (τ). Equal to 2π.
 tau() -> number
 ```
 
+#### Examples
+
+```kcl
+const myVar = tau()
+```
+
 #### Arguments
 
+
+#### Returns
+
+* `number`
+
+
+
+### toDegrees
+
+Converts a number from radians to degrees.
+
+
+
+```
+toDegrees(num: number) -> number
+```
+
+#### Examples
+
+```kcl
+const myVar = toDegrees(2 * pi())
+```
+
+#### Arguments
+
+* `num`: `number` (REQUIRED)
+
+#### Returns
+
+* `number`
+
+
+
+### toRadians
+
+Converts a number from degrees to radians.
+
+
+
+```
+toRadians(num: number) -> number
+```
+
+#### Examples
+
+```kcl
+const myVar = toRadians(180)
+```
+
+#### Arguments
+
+* `num`: `number` (REQUIRED)
 
 #### Returns
 
@@ -10155,6 +10864,17 @@ Draw a line on the x-axis.
 
 ```
 xLine(data: AxisLineData, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Examples
+
+```kcl
+startSketchOn('YZ')
+  |> startProfileAt([0, 0], %)
+  |> xLine(10, %)
+  |> line([10, 10], %)
+  |> close(%, "edge1")
+  |> extrude(10, %)
 ```
 
 #### Arguments
@@ -10513,6 +11233,17 @@ Draw a line to a point on the x-axis.
 xLineTo(data: AxisLineToData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
+#### Examples
+
+```kcl
+startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> xLineTo({ to: 10, tag: "edge1" }, %)
+  |> line([10, 10], %)
+  |> close(%, "edge2")
+  |> extrude(10, %)
+```
+
 #### Arguments
 
 * `data`: `AxisLineToData` - Data to draw a line to a point on an axis. (REQUIRED)
@@ -10869,6 +11600,17 @@ Draw a line on the y-axis.
 yLine(data: AxisLineData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
+#### Examples
+
+```kcl
+startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> yLine(10, %)
+  |> line([10, 10], %)
+  |> close(%, "edge1")
+  |> extrude(10, %)
+```
+
 #### Arguments
 
 * `data`: `AxisLineData` - Data to draw a line on an axis. (REQUIRED)
@@ -11223,6 +11965,18 @@ Draw a line to a point on the y-axis.
 
 ```
 yLineTo(data: AxisLineToData, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Examples
+
+```kcl
+startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> yLineTo({ to: 10, tag: "edge1" }, %)
+  |> line([10, 10], %)
+  |> close(%, "edge2")
+  |> extrude(10, %)
+  |> fillet({ radius: 2, tags: ["edge2"] }, %)
 ```
 
 #### Arguments

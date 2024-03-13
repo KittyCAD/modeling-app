@@ -25,7 +25,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const myVar = abs(-4)"
+    ]
   },
   {
     "name": "acos",
@@ -53,7 +56,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const myVar = acos(0.5)"
+    ]
   },
   {
     "name": "angleToMatchLengthX",
@@ -1050,7 +1056,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const part001 = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [1, 3.82], tag: 'seg01' }, %)\n  |> angledLineToX([\n       -angleToMatchLengthX('seg01', 10, %),\n       5\n     ], %)\n  |> close(%)"
+    ]
   },
   {
     "name": "angleToMatchLengthY",
@@ -2047,7 +2056,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const part001 = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [1, 3.82], tag: 'seg01' }, %)\n  |> angledLineToX([\n       -angleToMatchLengthY('seg01', 10, %),\n       5\n     ], %)\n  |> close(%)"
+    ]
   },
   {
     "name": "angledLine",
@@ -4024,7 +4036,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> angledLine({ angle: 45, length: 10, tag: \"edge1\" }, %)\n  |> line([10, 10], %)\n  |> line([0, 10], %)\n  |> close(%, \"edge2\")\n  |> extrude(10, %)"
+    ]
   },
   {
     "name": "angledLineOfXLength",
@@ -6001,7 +6016,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> angledLineOfXLength({ angle: 45, length: 10, tag: \"edge1\" }, %)\n  |> line([10, 10], %)\n  |> line([0, 10], %)\n  |> close(%, \"edge2\")\n  |> extrude(10, %)"
+    ]
   },
   {
     "name": "angledLineOfYLength",
@@ -7978,7 +7996,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "startSketchOn('YZ')\n  |> startProfileAt([0, 0], %)\n  |> angledLineOfYLength({ angle: 45, length: 10, tag: \"edge1\" }, %)\n  |> line([10, 10], %)\n  |> line([0, 10], %)\n  |> close(%, \"edge2\")\n  |> extrude(10, %)\n  |> fillet({ radius: 2, tags: [\"edge1\"] }, %)"
+    ]
   },
   {
     "name": "angledLineThatIntersects",
@@ -9945,7 +9966,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const part001 = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> lineTo({ to: [2, 2], tag: \"yo\" }, %)\n  |> lineTo([3, 1], %)\n  |> angledLineThatIntersects({\n       angle: 180,\n       intersectTag: 'yo',\n       offset: 12,\n       tag: \"yo2\"\n     }, %)\n  |> line([4, 0], %)\n  |> close(%, \"yo3\")\n  |> extrude(10, %)"
+    ]
   },
   {
     "name": "angledLineToX",
@@ -11922,7 +11946,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> angledLineToX({ angle: 45, to: 10, tag: \"edge1\" }, %)\n  |> line([10, 10], %)\n  |> line([0, 10], %)\n  |> close(%, \"edge2\")\n  |> extrude(10, %)\n  |> fillet({ radius: 2, tags: [\"edge1\"] }, %)"
+    ]
   },
   {
     "name": "angledLineToY",
@@ -13899,7 +13926,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> angledLineToY({ angle: 45, to: 10, tag: \"edge1\" }, %)\n  |> line([10, 10], %)\n  |> line([0, 10], %)\n  |> close(%, \"edge2\")\n  |> extrude(10, %)"
+    ]
   },
   {
     "name": "arc",
@@ -15915,7 +15945,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "startSketchOn('-YZ')\n  |> startProfileAt([0, 0], %)\n  |> arc({\n       angle_start: 0,\n       angle_end: 360,\n       radius: 10,\n       tag: \"edge1\"\n     }, %)\n  |> extrude(10, %)"
+    ]
   },
   {
     "name": "asin",
@@ -15943,7 +15976,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const myVar = asin(0.5)"
+    ]
   },
   {
     "name": "atan",
@@ -15971,7 +16007,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const myVar = atan(1.0)"
+    ]
   },
   {
     "name": "bezierCurve",
@@ -17954,7 +17993,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> bezierCurve({\n       to: [10, 10],\n       control1: [5, 0],\n       control2: [5, 10],\n       tag: \"edge1\"\n     }, %)\n  |> close(%)\n  |> extrude(10, %)"
+    ]
   },
   {
     "name": "ceil",
@@ -17982,7 +18024,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const myVar = ceil(4.5)"
+    ]
   },
   {
     "name": "circle",
@@ -19284,7 +19329,8 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": []
   },
   {
     "name": "close",
@@ -21225,7 +21271,11 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 10], %)\n  |> line([10, 0], %)\n  |> close(%)",
+      "startSketchOn('YZ')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 10], %)\n  |> line([10, 0], %)\n  |> close(%, \"edge1\")"
+    ]
   },
   {
     "name": "cos",
@@ -21253,7 +21303,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const anotherVar = cos(2 * pi())"
+    ]
   },
   {
     "name": "e",
@@ -21271,7 +21324,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const myVar = e()"
+    ]
   },
   {
     "name": "extrude",
@@ -23007,7 +23063,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([0, 10], %)\n  |> line([10, 0], %)\n  |> line([0, -10], %)\n  |> close(%)\n  |> extrude(5, %)"
+    ]
   },
   {
     "name": "fillet",
@@ -24567,7 +24626,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const part001 = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [0, 10], tag: \"thing\" }, %)\n  |> line([10, 0], %)\n  |> line({ to: [0, -10], tag: \"thing2\" }, %)\n  |> close(%)\n  |> extrude(10, %)\n  |> fillet({ radius: 2, tags: [\"thing\", \"thing2\"] }, %)"
+    ]
   },
   {
     "name": "floor",
@@ -24595,7 +24657,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const myVar = floor(4.5)"
+    ]
   },
   {
     "name": "getExtrudeWallTransform",
@@ -25425,7 +25490,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const box = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([0, 10], %)\n  |> line([10, 0], %)\n  |> line({ to: [0, -10], tag: \"surface\" }, %)\n  |> close(%)\n  |> extrude(5, %)\n\nconst transform = getExtrudeWallTransform('surface', box)"
+    ]
   },
   {
     "name": "getNextAdjacentEdge",
@@ -26208,7 +26276,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const part001 = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [0, 10], tag: \"thing\" }, %)\n  |> line({ to: [10, 0], tag: \"thing1\" }, %)\n  |> line({ to: [0, -10], tag: \"thing2\" }, %)\n  |> close(%)\n  |> extrude(10, %)\n  |> fillet({\n       radius: 2,\n       tags: [getNextAdjacentEdge(\"thing\", %)]\n     }, %)"
+    ]
   },
   {
     "name": "getOppositeEdge",
@@ -26991,7 +27062,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const part001 = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [0, 10], tag: \"thing\" }, %)\n  |> line([10, 0], %)\n  |> line({ to: [0, -10], tag: \"thing2\" }, %)\n  |> close(%)\n  |> extrude(10, %)\n  |> fillet({\n       radius: 2,\n       tags: [\"thing\", getOppositeEdge(\"thing\", %)]\n     }, %)"
+    ]
   },
   {
     "name": "getPreviousAdjacentEdge",
@@ -27774,7 +27848,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const part001 = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [0, 10], tag: \"thing\" }, %)\n  |> line({ to: [10, 0], tag: \"thing1\" }, %)\n  |> line({ to: [0, -10], tag: \"thing2\" }, %)\n  |> close(%)\n  |> extrude(10, %)\n  |> fillet({\n       radius: 2,\n       tags: [getPreviousAdjacentEdge(\"thing2\", %)]\n     }, %)"
+    ]
   },
   {
     "name": "hole",
@@ -31652,7 +31729,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const square = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([0, 10], %)\n  |> line([10, 0], %)\n  |> line([0, -10], %)\n  |> close(%)\n  |> hole(circle([2, 2], .5, startSketchOn('XY')), %)\n  |> hole(circle([2, 8], .5, startSketchOn('XY')), %)\n  |> extrude(2, %)"
+    ]
   },
   {
     "name": "import",
@@ -32302,7 +32382,14 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const model = import(\"thing.obj\")",
+      "const model = import(\"cube.obj\", { type: \"obj\", units: \"m\" })",
+      "const model = import(\"my_model.gltf\")",
+      "const model = import(\"my_model.sldprt\")",
+      "const model = import(\"my_model.step\")"
+    ]
   },
   {
     "name": "lastSegX",
@@ -33282,7 +33369,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "startSketchOn(\"YZ\")\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [5, 0], tag: \"thing\" }, %)\n  |> line([5, 5], %)\n  |> line([0, lastSegX(%)], %)\n  |> close(%)\n  |> extrude(5, %)"
+    ]
   },
   {
     "name": "lastSegY",
@@ -34262,7 +34352,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "startSketchOn(\"YZ\")\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [5, 0], tag: \"thing\" }, %)\n  |> line([5, 5], %)\n  |> line([0, lastSegY(%)], %)\n  |> close(%)\n  |> extrude(5, %)"
+    ]
   },
   {
     "name": "legAngX",
@@ -34299,7 +34392,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "legAngX(5, 3)"
+    ]
   },
   {
     "name": "legAngY",
@@ -34336,7 +34432,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "legAngY(5, 3)"
+    ]
   },
   {
     "name": "legLen",
@@ -34373,7 +34472,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "legLen(5, 3)"
+    ]
   },
   {
     "name": "line",
@@ -36349,7 +36451,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "startSketchOn('-XY')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 10], %)\n  |> line({ to: [20, 10], tag: \"edge1\" }, %)\n  |> close(%, \"edge2\")\n  |> extrude(10, %)"
+    ]
   },
   {
     "name": "lineTo",
@@ -38325,7 +38430,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "fn rectShape = (pos, w, l) => {\n  const rr = startSketchOn('YZ')\n  |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)\n  |> lineTo({\n       to: [pos[0] + w / 2, pos[1] - (l / 2)],\n       tag: \"edge1\"\n     }, %)\n  |> lineTo({\n       to: [pos[0] + w / 2, pos[1] + l / 2],\n       tag: \"edge2\"\n     }, %)\n  |> lineTo({\n       to: [pos[0] - (w / 2), pos[1] + l / 2],\n       tag: \"edge3\"\n     }, %)\n  |> close(%, \"edge4\")\n  return rr\n}\n\n// Create the mounting plate extrusion, holes, and fillets\nconst part = rectShape([0, 0], 20, 20)"
+    ]
   },
   {
     "name": "ln",
@@ -38353,7 +38461,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const myVar = ln(4)"
+    ]
   },
   {
     "name": "log",
@@ -38390,7 +38501,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const myVar = log(4, 2)"
+    ]
   },
   {
     "name": "log10",
@@ -38418,7 +38532,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const myVar = log10(4)"
+    ]
   },
   {
     "name": "log2",
@@ -38446,7 +38563,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const myVar = log2(4)"
+    ]
   },
   {
     "name": "max",
@@ -38477,7 +38597,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const myVar = max(4, 5, 6)"
+    ]
   },
   {
     "name": "min",
@@ -38508,7 +38631,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const myVar = min(4, 5, 6)"
+    ]
   },
   {
     "name": "patternCircular2d",
@@ -40485,7 +40611,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const part = startSketchOn('XY')\n  |> circle([0, 0], 2, %)\n  |> patternCircular2d({\n       center: [20, 20],\n       repetitions: 12,\n       arcDegrees: 210,\n       rotateDuplicates: true\n     }, %)"
+    ]
   },
   {
     "name": "patternCircular3d",
@@ -42063,7 +42192,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const part = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([0, 1], %)\n  |> line([1, 0], %)\n  |> line([0, -1], %)\n  |> close(%)\n  |> extrude(1, %)\n  |> patternCircular3d({\n       axis: [1, 1, 0],\n       center: [10, 0, 10],\n       repetitions: 10,\n       arcDegrees: 360,\n       rotateDuplicates: true\n     }, %)"
+    ]
   },
   {
     "name": "patternLinear2d",
@@ -44035,7 +44167,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const part = startSketchOn('XY')\n  |> circle([0, 0], 2, %)\n  |> patternLinear2d({\n       axis: [0, 1],\n       repetitions: 12,\n       distance: 2\n     }, %)"
+    ]
   },
   {
     "name": "patternLinear3d",
@@ -45597,7 +45732,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const part = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([0, 1], %)\n  |> line([1, 0], %)\n  |> line([0, -1], %)\n  |> close(%)\n  |> extrude(1, %)\n  |> patternLinear3d({\n       axis: [1, 0, 1],\n       repetitions: 3,\n       distance: 6\n     }, %)"
+    ]
   },
   {
     "name": "pi",
@@ -45615,7 +45753,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const myVar = pi() * 3.0"
+    ]
   },
   {
     "name": "pow",
@@ -45652,7 +45793,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const myVar = pow(4, 2)"
+    ]
   },
   {
     "name": "segAng",
@@ -46640,7 +46784,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const part001 = startSketchOn('XY')\n  |> startProfileAt([4.83, 12.56], %)\n  |> line([15.1, 2.48], %)\n  |> line({ to: [3.15, -9.85], tag: 'seg01' }, %)\n  |> line([-15.17, -4.1], %)\n  |> angledLine([segAng('seg01', %), 12.35], %)\n  |> line([-13.02, 10.03], %)\n  |> close(%)\n  |> extrude(4, %)"
+    ]
   },
   {
     "name": "segEndX",
@@ -47628,7 +47775,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "startSketchOn(\"YZ\")\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [5, 0], tag: \"thing\" }, %)\n  |> line([5, 5], %)\n  |> line([segEndX(\"thing\", %), 5], %)\n  |> close(%)\n  |> extrude(5, %)"
+    ]
   },
   {
     "name": "segEndY",
@@ -48616,7 +48766,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "startSketchOn(\"YZ\")\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [5, 0], tag: \"thing\" }, %)\n  |> line([5, 5], %)\n  |> line([segEndY(\"thing\", %), 5], %)\n  |> close(%)\n  |> extrude(5, %)"
+    ]
   },
   {
     "name": "segLen",
@@ -49604,7 +49757,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "startSketchOn(\"YZ\")\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [5, 0], tag: \"thing\" }, %)\n  |> line([5, 5], %)\n  |> line([0, segLen(\"thing\", %)], %)\n  |> close(%)\n  |> extrude(5, %)"
+    ]
   },
   {
     "name": "sin",
@@ -49632,7 +49788,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const myVar = sin(2 * pi())"
+    ]
   },
   {
     "name": "sqrt",
@@ -49660,7 +49819,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const myVar = sqrt(4)"
+    ]
   },
   {
     "name": "startProfileAt",
@@ -50975,7 +51137,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 10], %)"
+    ]
   },
   {
     "name": "startSketchAt",
@@ -51990,7 +52155,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "startSketchAt([0, 0])\n  |> line([10, 10], %)"
+    ]
   },
   {
     "name": "startSketchOn",
@@ -53254,7 +53422,11 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 10], %)\n  |> line({ to: [20, 10], tag: \"edge1\" }, %)\n  |> close(%, \"edge2\")",
+      "fn cube = (pos, scale) => {\n  const sg = startSketchOn('XY')\n  |> startProfileAt(pos, %)\n  |> line([0, scale], %)\n  |> line([scale, 0], %)\n  |> line([0, -scale], %)\n  |> close(%)\n  |> extrude(scale, %)\n\n  return sg\n}\n\nconst box = cube([0, 0], 20)\n\nconst part001 = startSketchOn(box, \"start\")\n  |> startProfileAt([0, 0], %)\n  |> line([10, 10], %)\n  |> line({ to: [20, 10], tag: \"edge1\" }, %)\n  |> close(%)\n  |> extrude(20, %)"
+    ]
   },
   {
     "name": "tan",
@@ -53282,7 +53454,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const myVar = tan(2 * pi())"
+    ]
   },
   {
     "name": "tangentialArc",
@@ -55277,7 +55452,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "startSketchOn('-YZ')\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [10, 10], tag: \"edge0\" }, %)\n  |> tangentialArc({ radius: 10, offset: 90, tag: \"edge1\" }, %)\n  |> close(%)\n  |> extrude(10, %)"
+    ]
   },
   {
     "name": "tangentialArcTo",
@@ -57232,7 +57410,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "startSketchOn('-YZ')\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [10, 10], tag: \"edge0\" }, %)\n  |> tangentialArcTo([10, 0], %)\n  |> close(%)"
+    ]
   },
   {
     "name": "tau",
@@ -57250,7 +57431,72 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "const myVar = tau()"
+    ]
+  },
+  {
+    "name": "toDegrees",
+    "summary": "Converts a number from radians to degrees.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false,
+    "examples": [
+      "const myVar = toDegrees(2 * pi())"
+    ]
+  },
+  {
+    "name": "toRadians",
+    "summary": "Converts a number from degrees to radians.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false,
+    "examples": [
+      "const myVar = toRadians(180)"
+    ]
   },
   {
     "name": "xLine",
@@ -59216,7 +59462,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "startSketchOn('YZ')\n  |> startProfileAt([0, 0], %)\n  |> xLine(10, %)\n  |> line([10, 10], %)\n  |> close(%, \"edge1\")\n  |> extrude(10, %)"
+    ]
   },
   {
     "name": "xLineTo",
@@ -61182,7 +61431,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> xLineTo({ to: 10, tag: \"edge1\" }, %)\n  |> line([10, 10], %)\n  |> close(%, \"edge2\")\n  |> extrude(10, %)"
+    ]
   },
   {
     "name": "yLine",
@@ -63148,7 +63400,10 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> yLine(10, %)\n  |> line([10, 10], %)\n  |> close(%, \"edge1\")\n  |> extrude(10, %)"
+    ]
   },
   {
     "name": "yLineTo",
@@ -65114,6 +65369,9 @@
       "required": true
     },
     "unpublished": false,
-    "deprecated": false
+    "deprecated": false,
+    "examples": [
+      "startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> yLineTo({ to: 10, tag: \"edge1\" }, %)\n  |> line([10, 10], %)\n  |> close(%, \"edge2\")\n  |> extrude(10, %)\n  |> fillet({ radius: 2, tags: [\"edge2\"] }, %)"
+    ]
   }
 ]

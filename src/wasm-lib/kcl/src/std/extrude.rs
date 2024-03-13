@@ -20,6 +20,16 @@ pub async fn extrude(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Extrudes by a given amount.
+///
+/// ```no_run
+/// startSketchOn('XY')
+///     |> startProfileAt([0, 0], %)
+///     |> line([0, 10], %)
+///     |> line([10, 0], %)
+///     |> line([0, -10], %)
+///     |> close(%)
+///     |> extrude(5, %)
+/// ```
 #[stdlib {
     name = "extrude"
 }]
@@ -180,6 +190,18 @@ pub async fn get_extrude_wall_transform(args: Args) -> Result<MemoryItem, KclErr
 }
 
 /// Returns the extrude wall transform.
+///
+/// ```no_run
+/// const box = startSketchOn('XY')
+///     |> startProfileAt([0, 0], %)
+///     |> line([0, 10], %)
+///     |> line([10, 0], %)
+///     |> line({to: [0, -10], tag: "surface"}, %)
+///     |> close(%)
+///     |> extrude(5, %)
+///
+/// const transform = getExtrudeWallTransform('surface', box)
+/// ```
 #[stdlib {
     name = "getExtrudeWallTransform"
 }]
