@@ -29,7 +29,7 @@ use crate::lsp::{
     copilot::types::{CopilotCompletionResponse, CopilotEditorInfo, CopilotLspCompletionParams, DocParams},
 };
 
-use self::types::{CopilotAcceptCompletionParams, CopilotRejectCompletionParams};
+use self::types::{CopilotAcceptCompletionParams, CopilotCompletionTelemetry, CopilotRejectCompletionParams};
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Success {
@@ -57,6 +57,8 @@ pub struct Backend {
     pub editor_info: Arc<RwLock<CopilotEditorInfo>>,
     /// The cache is used to store the results of previous requests.
     pub cache: Arc<cache::CopilotCache>,
+    /// Storage so we can send telemetry data back out.
+    pub telemetry: DashMap<uuid::Uuid, CopilotCompletionTelemetry>,
 }
 
 // Implement the shared backend trait for the language server.
@@ -201,6 +203,14 @@ impl Backend {
         let completion_list = vec![];
 
         let response = CopilotCompletionResponse::from_str_vec(completion_list, line_before, doc_params.pos);
+        // Set the telemetry data for each completion.
+        for completion in response.completions.iter() {
+            let telemetry = CopilotCompletionTelemetry {
+                completion: completion.clone(),
+                params: params.clone(),
+            };
+            self.telemetry.insert(completion.uuid, telemetry);
+        }
         self.cache
             .set_cached_result(&doc_params.uri, &doc_params.pos.line, &response);
 

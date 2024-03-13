@@ -195,3 +195,11 @@ pub struct CopilotAcceptCompletionParams {
 pub struct CopilotRejectCompletionParams {
     pub uuids: Vec<uuid::Uuid>,
 }
+
+#[derive(Debug, Serialize, Deserialize, Clone, ts_rs::TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub struct CopilotCompletionTelemetry {
+    pub completion: CopilotCyclingCompletion,
+    pub params: CopilotLspCompletionParams,
+}

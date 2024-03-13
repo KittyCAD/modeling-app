@@ -56,6 +56,7 @@ fn copilot_lsp_server() -> Result<crate::lsp::copilot::Backend> {
         zoo_client,
         editor_info: Arc::new(RwLock::new(crate::lsp::copilot::types::CopilotEditorInfo::default())),
         cache: Arc::new(crate::lsp::copilot::cache::CopilotCache::new()),
+        telemetry: Default::default(),
     });
     let server = service.inner();
 
