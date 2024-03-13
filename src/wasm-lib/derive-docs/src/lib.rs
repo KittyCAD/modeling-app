@@ -176,6 +176,11 @@ fn do_stdlib_inner(
             }).collect::<Vec<String>>()
         }
     } else {
+        errors.push(Error::new_spanned(
+            &ast.sig,
+            "stdlib functions must have at least one code block",
+        ));
+
         quote! { vec![] }
     };
     let test_code_blocks = doc_info

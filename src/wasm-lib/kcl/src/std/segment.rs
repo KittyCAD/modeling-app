@@ -250,6 +250,25 @@ pub async fn angle_to_match_length_x(args: Args) -> Result<MemoryItem, KclError>
 }
 
 /// Returns the angle to match the given length for x.
+///
+/// ```no_run
+/// const myVar = 3
+/// const myVar2 = 5
+/// const myVar3 = 6
+/// const myAng = 40
+/// const myAng2 = 134
+/// const part001 = startSketchOn('XY')
+///     |> startProfileAt([0, 0], %)
+///     |> line({ to: [1, 3.82], tag: 'seg01' }, %)
+///     |> angledLineToX([
+///         -angleToMatchLengthX('seg01', myVar, %),
+///         myVar
+///         ], %)
+///     |> angledLineToY([
+///         -angleToMatchLengthY('seg01', myVar, %),
+///         myVar
+///         ], %)
+/// ```
 #[stdlib {
     name = "angleToMatchLengthX",
 }]
@@ -305,6 +324,25 @@ pub async fn angle_to_match_length_y(args: Args) -> Result<MemoryItem, KclError>
 }
 
 /// Returns the angle to match the given length for y.
+///
+/// ```no_run
+/// const myVar = 3
+/// const myVar2 = 5
+/// const myVar3 = 6
+/// const myAng = 40
+/// const myAng2 = 134
+/// const part001 = startSketchOn('XY')
+///     |> startProfileAt([0, 0], %)
+///     |> line({ to: [1, 3.82], tag: 'seg01' }, %)
+///     |> angledLineToX([
+///         -angleToMatchLengthX('seg01', myVar, %),
+///         myVar
+///         ], %)
+///     |> angledLineToY([
+///         -angleToMatchLengthY('seg01', myVar, %),
+///         myVar
+///         ], %)
+/// ```
 #[stdlib {
     name = "angleToMatchLengthY",
 }]

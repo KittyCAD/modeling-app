@@ -1057,7 +1057,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const myVar = 3\nconst myVar2 = 5\nconst myVar3 = 6\nconst myAng = 40\nconst myAng2 = 134\nconst part001 = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [1, 3.82], tag: 'seg01' }, %)\n  |> angledLineToX([\n       -angleToMatchLengthX('seg01', myVar, %),\n       myVar\n     ], %)\n  |> angledLineToY([\n       -angleToMatchLengthY('seg01', myVar, %),\n       myVar\n     ], %)"
+    ]
   },
   {
     "name": "angleToMatchLengthY",
@@ -2055,7 +2057,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const myVar = 3\nconst myVar2 = 5\nconst myVar3 = 6\nconst myAng = 40\nconst myAng2 = 134\nconst part001 = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [1, 3.82], tag: 'seg01' }, %)\n  |> angledLineToX([\n       -angleToMatchLengthX('seg01', myVar, %),\n       myVar\n     ], %)\n  |> angledLineToY([\n       -angleToMatchLengthY('seg01', myVar, %),\n       myVar\n     ], %)"
+    ]
   },
   {
     "name": "angledLine",
@@ -34389,7 +34393,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "legAngX(5, 3)"
+    ]
   },
   {
     "name": "legAngY",
@@ -34427,7 +34433,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "legAngY(5, 3)"
+    ]
   },
   {
     "name": "legLen",
@@ -34465,7 +34473,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "legLen(5, 3)"
+    ]
   },
   {
     "name": "line",

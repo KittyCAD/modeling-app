@@ -759,6 +759,10 @@ pub async fn leg_length(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Returns the length of the given leg.
+///
+/// ```no_run
+/// legLen(5, 3)
+/// ```
 #[stdlib {
     name = "legLen",
 }]
@@ -774,6 +778,10 @@ pub async fn leg_angle_x(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Returns the angle of the given leg for x.
+///
+/// ```no_run
+/// legAngX(5, 3)
+/// ```
 #[stdlib {
     name = "legAngX",
 }]
@@ -789,6 +797,10 @@ pub async fn leg_angle_y(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Returns the angle of the given leg for y.
+///
+/// ```no_run
+/// legAngY(5, 3)
+/// ```
 #[stdlib {
     name = "legAngY",
 }]

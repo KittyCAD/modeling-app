@@ -137,6 +137,27 @@ Returns the angle to match the given length for x.
 angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup) -> number
 ```
 
+#### Examples
+
+```kcl
+const myVar = 3
+const myVar2 = 5
+const myVar3 = 6
+const myAng = 40
+const myAng2 = 134
+const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line({ to: [1, 3.82], tag: 'seg01' }, %)
+  |> angledLineToX([
+       -angleToMatchLengthX('seg01', myVar, %),
+       myVar
+     ], %)
+  |> angledLineToY([
+       -angleToMatchLengthY('seg01', myVar, %),
+       myVar
+     ], %)
+```
+
 #### Arguments
 
 * `segment_name`: `string` (REQUIRED)
@@ -320,6 +341,27 @@ Returns the angle to match the given length for y.
 
 ```
 angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup) -> number
+```
+
+#### Examples
+
+```kcl
+const myVar = 3
+const myVar2 = 5
+const myVar3 = 6
+const myAng = 40
+const myAng2 = 134
+const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line({ to: [1, 3.82], tag: 'seg01' }, %)
+  |> angledLineToX([
+       -angleToMatchLengthX('seg01', myVar, %),
+       myVar
+     ], %)
+  |> angledLineToY([
+       -angleToMatchLengthY('seg01', myVar, %),
+       myVar
+     ], %)
 ```
 
 #### Arguments
@@ -6610,6 +6652,12 @@ Returns the angle of the given leg for x.
 legAngX(hypotenuse: number, leg: number) -> number
 ```
 
+#### Examples
+
+```kcl
+legAngX(5, 3)
+```
+
 #### Arguments
 
 * `hypotenuse`: `number` (REQUIRED)
@@ -6631,6 +6679,12 @@ Returns the angle of the given leg for y.
 legAngY(hypotenuse: number, leg: number) -> number
 ```
 
+#### Examples
+
+```kcl
+legAngY(5, 3)
+```
+
 #### Arguments
 
 * `hypotenuse`: `number` (REQUIRED)
@@ -6650,6 +6704,12 @@ Returns the length of the given leg.
 
 ```
 legLen(hypotenuse: number, leg: number) -> number
+```
+
+#### Examples
+
+```kcl
+legLen(5, 3)
 ```
 
 #### Arguments

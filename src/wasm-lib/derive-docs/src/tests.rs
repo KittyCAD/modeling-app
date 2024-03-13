@@ -22,6 +22,16 @@ fn test_stdlib_line_to() {
             name = "lineTo",
         },
         quote! {
+            /// This is some function.
+            /// It does shit.
+            ///
+            ///     This is code.
+            ///     It does other shit.
+            ///
+            /// ```
+            /// This is another code block.
+            /// yes sirrr.
+            /// ```
             fn inner_line_to(
                 data: LineToData,
                 sketch_group: SketchGroup,
@@ -45,6 +55,16 @@ fn test_stdlib_min() {
             name = "min",
         },
         quote! {
+            /// This is some function.
+            /// It does shit.
+            ///
+            ///     This is code.
+            ///     It does other shit.
+            ///
+            /// ```
+            /// This is another code block.
+            /// yes sirrr.
+            /// ```
             fn inner_min(
                 /// The args to do shit to.
                 args: Vec<f64>
@@ -74,6 +94,16 @@ fn test_stdlib_show() {
             name = "show",
         },
         quote! {
+            /// This is some function.
+            /// It does shit.
+            ///
+            ///     This is code.
+            ///     It does other shit.
+            ///
+            /// ```
+            /// This is another code block.
+            /// yes sirrr.
+            /// ```
             fn inner_show(
                 /// The args to do shit to.
                 _args: Vec<f64>
@@ -95,6 +125,16 @@ fn test_stdlib_box() {
             name = "show",
         },
         quote! {
+            /// This is some function.
+            /// It does shit.
+            ///
+            ///     This is code.
+            ///     It does other shit.
+            ///
+            /// ```
+            /// This is another code block.
+            /// yes sirrr.
+            /// ```
             fn inner_show(
                 /// The args to do shit to.
                 args: Box<f64>
@@ -117,6 +157,16 @@ fn test_stdlib_option() {
             name = "show",
         },
         quote! {
+            /// This is some function.
+            /// It does shit.
+            ///
+            ///     This is code.
+            ///     It does other shit.
+            ///
+            /// ```
+            /// This is another code block.
+            /// yes sirrr.
+            /// ```
             fn inner_show(
                 /// The args to do shit to.
                 args: Option<f64>
@@ -138,6 +188,16 @@ fn test_stdlib_array() {
             name = "show",
         },
         quote! {
+            /// This is some function.
+            /// It does shit.
+            ///
+            ///     This is code.
+            ///     It does other shit.
+            ///
+            /// ```
+            /// This is another code block.
+            /// yes sirrr.
+            /// ```
             fn inner_show(
                 /// The args to do shit to.
                 args: [f64; 2]
@@ -159,6 +219,16 @@ fn test_stdlib_option_input_format() {
             name = "import",
         },
         quote! {
+            /// This is some function.
+            /// It does shit.
+            ///
+            ///     This is code.
+            ///     It does other shit.
+            ///
+            /// ```
+            /// This is another code block.
+            /// yes sirrr.
+            /// ```
             fn inner_import(
                 /// The args to do shit to.
                 args: Option<kittycad::types::InputFormat>
@@ -183,6 +253,16 @@ fn test_stdlib_return_vec_sketch_group() {
             name = "import",
         },
         quote! {
+            /// This is some function.
+            /// It does shit.
+            ///
+            ///     This is code.
+            ///     It does other shit.
+            ///
+            /// ```
+            /// This is another code block.
+            /// yes sirrr.
+            /// ```
             fn inner_import(
                 /// The args to do shit to.
                 args: Option<kittycad::types::InputFormat>
@@ -207,6 +287,16 @@ fn test_stdlib_return_vec_box_sketch_group() {
             name = "import",
         },
         quote! {
+            /// This is some function.
+            /// It does shit.
+            ///
+            ///     This is code.
+            ///     It does other shit.
+            ///
+            /// ```
+            /// This is another code block.
+            /// yes sirrr.
+            /// ```
             fn inner_import(
                 /// The args to do shit to.
                 args: Option<kittycad::types::InputFormat>
@@ -299,6 +389,16 @@ fn test_stdlib_fail_non_camel_case() {
             name = "import_thing",
         },
         quote! {
+            /// This is some function.
+            /// It does shit.
+            ///
+            ///     This is code.
+            ///     It does other shit.
+            ///
+            /// ```
+            /// This is another code block.
+            /// yes sirrr.
+            /// ```
             fn inner_import_thing(
                 /// The args to do shit to.
                 args: Option<kittycad::types::InputFormat>
@@ -313,5 +413,29 @@ fn test_stdlib_fail_non_camel_case() {
     assert_eq!(
         errors[1].to_string(),
         "stdlib function names must be in camel case: `import_thing`"
+    );
+}
+
+#[test]
+fn test_stdlib_fail_no_code_block() {
+    let (_, errors) = do_stdlib(
+        quote! {
+            name = "import",
+        },
+        quote! {
+            fn inner_import(
+                /// The args to do shit to.
+                args: Option<kittycad::types::InputFormat>
+            ) -> Result<Vec<Box<SketchGroup>>> {
+                args
+            }
+        },
+    )
+    .unwrap();
+
+    assert!(!errors.is_empty());
+    assert_eq!(
+        errors[1].to_string(),
+        "stdlib functions must have at least one code block"
     );
 }
