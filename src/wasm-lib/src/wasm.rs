@@ -279,7 +279,7 @@ pub async fn copilot_lsp_run(config: ServerConfig, token: String, is_dev: bool) 
         "getCompletions",
         kcl_lib::lsp::copilot::Backend::get_completions_cycling,
     )
-    .custom_method("notifyAccepted", kcl_lib::lsp::copilot::Backend::accept_completions)
+    .custom_method("notifyAccepted", kcl_lib::lsp::copilot::Backend::accept_completion)
     .custom_method("notifyRejected", kcl_lib::lsp::copilot::Backend::reject_completions)
     .finish();
 

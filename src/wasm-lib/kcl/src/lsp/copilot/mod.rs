@@ -217,7 +217,7 @@ impl Backend {
         Ok(response)
     }
 
-    pub async fn accept_completions(&self, params: CopilotAcceptCompletionParams) {
+    pub async fn accept_completion(&self, params: CopilotAcceptCompletionParams) {
         self.client
             .log_message(MessageType::INFO, format!("Accepted completions: {:?}", params))
             .await;
