@@ -81,7 +81,9 @@ pub trait Backend {
         self.remove_workspace_folders(params.event.removed);
         // Remove the code from the current code map.
         // We do this since it means the user is changing projects so let's refresh the state.
-        self.clear_code_state();
+        if !self.current_code_map().is_empty() {
+            self.clear_code_state();
+        }
         for added in params.event.added {
             // Try to read all the files in the project.
             let project_dir = added.uri.to_string().replace("file://", "");
@@ -182,15 +184,6 @@ pub trait Backend {
     async fn do_did_close(&self, params: DidCloseTextDocumentParams) {
         self.client()
             .log_message(MessageType::INFO, format!("document closed: {:?}", params))
-            .await;
-        self.client()
-            .log_message(MessageType::INFO, format!("uri: {:?}", params.text_document.uri))
-            .await;
-        // Get the workspace folders.
-        // The key of the workspace folder is the project name.
-        let workspace_folders = self.workspace_folders();
-        self.client()
-            .log_message(MessageType::INFO, format!("workspace: {:?}", workspace_folders))
             .await;
     }
 }
