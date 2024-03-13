@@ -8,13 +8,13 @@ Draw an arc.
 
 
 
-```
+```js
 tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
 ### Examples
 
-```kcl
+```js
 startSketchOn('-YZ')
   |> startProfileAt([0, 0], %)
   |> line({ to: [10, 10], tag: "edge0" }, %)
@@ -26,7 +26,7 @@ startSketchOn('-YZ')
 ### Arguments
 
 * `data`: `TangentialArcData` - Data to draw a tangential arc. (REQUIRED)
-```
+```js
 {
 	// Offset of the arc, in degrees.
 	offset: number,
@@ -42,7 +42,7 @@ startSketchOn('-YZ')
 [number, number]
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,
@@ -209,7 +209,7 @@ startSketchOn('-YZ')
 ### Returns
 
 `SketchGroup` - A sketch group is a collection of paths.
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,

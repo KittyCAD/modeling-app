@@ -8,13 +8,13 @@ Computes the arcsine of a number (in radians).
 
 
 
-```
+```js
 asin(num: number) -> number
 ```
 
 ### Examples
 
-```kcl
+```js
 const myVar = asin(0.5)
 ```
 

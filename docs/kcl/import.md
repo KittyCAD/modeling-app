@@ -9,29 +9,29 @@ Import a CAD file.
 For formats lacking unit data (STL, OBJ, PLY), the default import unit is millimeters. Otherwise you can specify the unit by passing in the options parameter. If you import a gltf file, we will try to find the bin file and import it as well.
 Import paths are relative to the current project directory. This only works in the desktop app not in browser.
 
-```
+```js
 import(file_path: String, options?: ImportFormat) -> ImportedGeometry
 ```
 
 ### Examples
 
-```kcl
+```js
 const model = import("thing.obj")
 ```
 
-```kcl
+```js
 const model = import("cube.obj", { type: "obj", units: "m" })
 ```
 
-```kcl
+```js
 const model = import("my_model.gltf")
 ```
 
-```kcl
+```js
 const model = import("my_model.sldprt")
 ```
 
-```kcl
+```js
 const model = import("my_model.step")
 ```
 
@@ -39,7 +39,7 @@ const model = import("my_model.step")
 
 * `file_path`: `String` (REQUIRED)
 * `options`: `ImportFormat` - Import format specifier (OPTIONAL)
-```
+```js
 {
 	type: "fbx",
 } |
@@ -123,7 +123,7 @@ const model = import("my_model.step")
 ### Returns
 
 `ImportedGeometry` - Data for an imported geometry.
-```
+```js
 {
 	// The ID of the imported geometry.
 	id: uuid,

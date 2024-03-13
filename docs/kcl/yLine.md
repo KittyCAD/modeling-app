@@ -8,13 +8,13 @@ Draw a line on the y-axis.
 
 
 
-```
+```js
 yLine(data: AxisLineData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
 ### Examples
 
-```kcl
+```js
 startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> yLine(10, %)
@@ -26,7 +26,7 @@ startSketchOn('XY')
 ### Arguments
 
 * `data`: `AxisLineData` - Data to draw a line on an axis. (REQUIRED)
-```
+```js
 {
 	// The length of the line.
 	length: number,
@@ -36,7 +36,7 @@ startSketchOn('XY')
 number
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,
@@ -203,7 +203,7 @@ number
 ### Returns
 
 `SketchGroup` - A sketch group is a collection of paths.
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,

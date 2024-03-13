@@ -8,13 +8,13 @@ Converts a number from degrees to radians.
 
 
 
-```
+```js
 toRadians(num: number) -> number
 ```
 
 ### Examples
 
-```kcl
+```js
 const myVar = toRadians(180)
 ```
 

@@ -8,13 +8,13 @@ Return the value of Euler’s number `e`.
 
 
 
-```
+```js
 e() -> number
 ```
 
 ### Examples
 
-```kcl
+```js
 const myVar = e()
 ```
 

@@ -8,13 +8,13 @@ Returns the last segment of y.
 
 
 
-```
+```js
 lastSegY(sketch_group: SketchGroup) -> number
 ```
 
 ### Examples
 
-```kcl
+```js
 startSketchOn("YZ")
   |> startProfileAt([0, 0], %)
   |> line({ to: [5, 0], tag: "thing" }, %)
@@ -27,7 +27,7 @@ startSketchOn("YZ")
 ### Arguments
 
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,

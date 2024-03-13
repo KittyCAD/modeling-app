@@ -8,13 +8,13 @@ Computes the tangent of a number (in radians).
 
 
 
-```
+```js
 tan(num: number) -> number
 ```
 
 ### Examples
 
-```kcl
+```js
 const myVar = tan(2 * pi())
 ```
 

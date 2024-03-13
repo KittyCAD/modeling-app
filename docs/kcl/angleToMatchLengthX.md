@@ -8,13 +8,13 @@ Returns the angle to match the given length for x.
 
 
 
-```
+```js
 angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup) -> number
 ```
 
 ### Examples
 
-```kcl
+```js
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line({ to: [1, 3.82], tag: 'seg01' }, %)
@@ -30,7 +30,7 @@ const part001 = startSketchOn('XY')
 * `segment_name`: `string` (REQUIRED)
 * `to`: `number` (REQUIRED)
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,

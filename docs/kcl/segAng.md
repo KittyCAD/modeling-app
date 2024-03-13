@@ -8,13 +8,13 @@ Returns the angle of the segment.
 
 
 
-```
+```js
 segAng(segment_name: string, sketch_group: SketchGroup) -> number
 ```
 
 ### Examples
 
-```kcl
+```js
 const part001 = startSketchOn('XY')
   |> startProfileAt([4.83, 12.56], %)
   |> line([15.1, 2.48], %)
@@ -30,7 +30,7 @@ const part001 = startSketchOn('XY')
 
 * `segment_name`: `string` (REQUIRED)
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,

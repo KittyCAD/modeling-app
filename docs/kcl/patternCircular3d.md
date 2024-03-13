@@ -8,13 +8,13 @@ A circular pattern on a 3D model.
 
 
 
-```
+```js
 patternCircular3d(data: CircularPattern3dData, extrude_group: ExtrudeGroup) -> [ExtrudeGroup]
 ```
 
 ### Examples
 
-```kcl
+```js
 const part = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 1], %)
@@ -34,7 +34,7 @@ const part = startSketchOn('XY')
 ### Arguments
 
 * `data`: `CircularPattern3dData` - Data for a circular pattern on a 3D model. (REQUIRED)
-```
+```js
 {
 	// The arc angle (in degrees) to place the repetitions. Must be greater than 0.
 	arcDegrees: number,
@@ -49,7 +49,7 @@ const part = startSketchOn('XY')
 }
 ```
 * `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces. (REQUIRED)
-```
+```js
 {
 	// The id of the extrusion end cap
 	endCapId: uuid,

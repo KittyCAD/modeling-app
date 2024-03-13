@@ -8,13 +8,13 @@ Computes the arctangent of a number (in radians).
 
 
 
-```
+```js
 atan(num: number) -> number
 ```
 
 ### Examples
 
-```kcl
+```js
 const myVar = atan(1.0)
 ```
 

@@ -8,13 +8,13 @@ Draw an angled line.
 
 
 
-```
+```js
 angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
 ### Examples
 
-```kcl
+```js
 startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> angledLine({ angle: 45, length: 10, tag: "edge1" }, %)
@@ -27,7 +27,7 @@ startSketchOn('XY')
 ### Arguments
 
 * `data`: `AngledLineData` - Data to draw an angled line. (REQUIRED)
-```
+```js
 {
 	// The angle of the line.
 	angle: number,
@@ -39,7 +39,7 @@ startSketchOn('XY')
 [number, number]
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,
@@ -206,7 +206,7 @@ startSketchOn('XY')
 ### Returns
 
 `SketchGroup` - A sketch group is a collection of paths.
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,

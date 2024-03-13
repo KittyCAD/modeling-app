@@ -8,13 +8,13 @@ Draw a line to a point.
 
 
 
-```
+```js
 lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
 ### Examples
 
-```kcl
+```js
 fn rectShape = (pos, w, l) => {
   const rr = startSketchOn('YZ')
   |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
@@ -41,7 +41,7 @@ const part = rectShape([0, 0], 20, 20)
 ### Arguments
 
 * `data`: `LineToData` - Data to draw a line to a point. (REQUIRED)
-```
+```js
 {
 	// The tag.
 	tag: string,
@@ -51,7 +51,7 @@ const part = rectShape([0, 0], 20, 20)
 [number, number]
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,
@@ -218,7 +218,7 @@ const part = rectShape([0, 0], 20, 20)
 ### Returns
 
 `SketchGroup` - A sketch group is a collection of paths.
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,

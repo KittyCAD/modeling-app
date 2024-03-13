@@ -8,13 +8,13 @@ Computes the base 2 logarithm of the number.
 
 
 
-```
+```js
 log2(num: number) -> number
 ```
 
 ### Examples
 
-```kcl
+```js
 const myVar = log2(4)
 ```
 

@@ -8,13 +8,13 @@ Draw an angled line that intersects with a given line.
 
 
 
-```
+```js
 angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
 ### Examples
 
-```kcl
+```js
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> lineTo({ to: [2, 2], tag: "yo" }, %)
@@ -33,7 +33,7 @@ const part001 = startSketchOn('XY')
 ### Arguments
 
 * `data`: `AngledLineThatIntersectsData` - Data for drawing an angled line that intersects with a given line. (REQUIRED)
-```
+```js
 {
 	// The angle of the line.
 	angle: number,
@@ -46,7 +46,7 @@ const part001 = startSketchOn('XY')
 }
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,
@@ -213,7 +213,7 @@ const part001 = startSketchOn('XY')
 ### Returns
 
 `SketchGroup` - A sketch group is a collection of paths.
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,

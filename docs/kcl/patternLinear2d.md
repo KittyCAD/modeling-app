@@ -8,13 +8,13 @@ A linear pattern on a 2D sketch.
 
 
 
-```
+```js
 patternLinear2d(data: LinearPattern2dData, sketch_group: SketchGroup) -> [SketchGroup]
 ```
 
 ### Examples
 
-```kcl
+```js
 const part = startSketchOn('XY')
   |> circle([0, 0], 2, %)
   |> patternLinear2d({
@@ -27,7 +27,7 @@ const part = startSketchOn('XY')
 ### Arguments
 
 * `data`: `LinearPattern2dData` - Data for a linear pattern on a 2D sketch. (REQUIRED)
-```
+```js
 {
 	// The axis of the pattern. This is a 2D vector.
 	axis: [number, number],
@@ -38,7 +38,7 @@ const part = startSketchOn('XY')
 }
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,

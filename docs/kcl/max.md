@@ -8,13 +8,13 @@ Computes the maximum of the given arguments.
 
 
 
-```
+```js
 max(args: [number]) -> number
 ```
 
 ### Examples
 
-```kcl
+```js
 const myVar = max(4, 5, 6)
 ```
 

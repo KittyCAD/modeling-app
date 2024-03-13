@@ -8,7 +8,7 @@ Sketch a circle on the given plane
 
 
 
-```
+```js
 circle(center: [number, number], radius: number, surface: SketchSurface, tag?: String) -> SketchGroup
 ```
 
@@ -17,7 +17,7 @@ circle(center: [number, number], radius: number, surface: SketchSurface, tag?: S
 * `center`: `[number, number]` (REQUIRED)
 * `radius`: `number` (REQUIRED)
 * `surface`: `SketchSurface` - A sketch group type. (REQUIRED)
-```
+```js
 {
 	// The id of the plane.
 	id: uuid,
@@ -82,7 +82,7 @@ circle(center: [number, number], radius: number, surface: SketchSurface, tag?: S
 ### Returns
 
 `SketchGroup` - A sketch group is a collection of paths.
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,

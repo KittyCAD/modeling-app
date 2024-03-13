@@ -891,7 +891,7 @@ layout: manual
             fn_docs.push_str(&format!("{}\n\n", internal_fn.summary()));
             fn_docs.push_str(&format!("{}\n\n", internal_fn.description()));
 
-            fn_docs.push_str("```\n");
+            fn_docs.push_str("```js\n");
             let signature = internal_fn.fn_signature();
             fn_docs.push_str(&signature);
             fn_docs.push_str("\n```\n\n");
@@ -900,7 +900,7 @@ layout: manual
                 fn_docs.push_str("### Examples\n\n");
 
                 for example in internal_fn.examples() {
-                    fn_docs.push_str("```kcl\n");
+                    fn_docs.push_str("```js\n");
                     fn_docs.push_str(&example);
                     fn_docs.push_str("\n```\n\n");
                 }
@@ -920,7 +920,7 @@ layout: manual
                 }
 
                 if should_be_indented {
-                    fn_docs.push_str(&format!("```\n{}\n```\n", format));
+                    fn_docs.push_str(&format!("```js\n{}\n```\n", format));
                 }
             }
 
@@ -934,7 +934,7 @@ layout: manual
 
                 let (format, should_be_indented) = return_type.get_type_string().unwrap();
                 if should_be_indented {
-                    fn_docs.push_str(&format!("```\n{}\n```\n", format));
+                    fn_docs.push_str(&format!("```js\n{}\n```\n", format));
                 }
             }
 

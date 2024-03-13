@@ -8,13 +8,13 @@ A linear pattern on a 3D model.
 
 
 
-```
+```js
 patternLinear3d(data: LinearPattern3dData, extrude_group: ExtrudeGroup) -> [ExtrudeGroup]
 ```
 
 ### Examples
 
-```kcl
+```js
 const part = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 1], %)
@@ -32,7 +32,7 @@ const part = startSketchOn('XY')
 ### Arguments
 
 * `data`: `LinearPattern3dData` - Data for a linear pattern on a 3D model. (REQUIRED)
-```
+```js
 {
 	// The axis of the pattern.
 	axis: [number, number, number],
@@ -43,7 +43,7 @@ const part = startSketchOn('XY')
 }
 ```
 * `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces. (REQUIRED)
-```
+```js
 {
 	// The id of the extrusion end cap
 	endCapId: uuid,

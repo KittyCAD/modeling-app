@@ -59,7 +59,7 @@ export const CodeMenu = ({ children }: PropsWithChildren) => {
           <Menu.Item>
             <a
               className={styles.button}
-              href="https://github.com/KittyCAD/modeling-app/blob/main/docs/kcl/index.md"
+              href="https://zoo.dev/docs/kcl"
               target="_blank"
               rel="noopener noreferrer"
             >

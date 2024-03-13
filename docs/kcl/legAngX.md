@@ -8,13 +8,13 @@ Returns the angle of the given leg for x.
 
 
 
-```
+```js
 legAngX(hypotenuse: number, leg: number) -> number
 ```
 
 ### Examples
 
-```kcl
+```js
 legAngX(5, 3)
 ```
 

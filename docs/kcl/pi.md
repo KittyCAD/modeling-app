@@ -8,13 +8,13 @@ Return the value of `pi`. Archimedes’ constant (π).
 
 
 
-```
+```js
 pi() -> number
 ```
 
 ### Examples
 
-```kcl
+```js
 const myVar = pi() * 3.0
 ```
 

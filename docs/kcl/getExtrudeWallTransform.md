@@ -8,13 +8,13 @@ Returns the extrude wall transform.
 
 
 
-```
+```js
 getExtrudeWallTransform(surface_name: string, extrude_group: ExtrudeGroup) -> ExtrudeTransform
 ```
 
 ### Examples
 
-```kcl
+```js
 const box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
@@ -30,7 +30,7 @@ const transform = getExtrudeWallTransform('surface', box)
 
 * `surface_name`: `string` (REQUIRED)
 * `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces. (REQUIRED)
-```
+```js
 {
 	// The id of the extrusion end cap
 	endCapId: uuid,
@@ -164,7 +164,7 @@ const transform = getExtrudeWallTransform('surface', box)
 ### Returns
 
 `ExtrudeTransform`
-```
+```js
 {
 	position: [number, number, number],
 	rotation: [number, number, number, number],

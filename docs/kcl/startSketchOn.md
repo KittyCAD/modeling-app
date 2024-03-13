@@ -8,13 +8,13 @@ Start a sketch on a specific plane or face.
 
 
 
-```
+```js
 startSketchOn(data: SketchData, tag?: SketchOnFaceTag) -> SketchSurface
 ```
 
 ### Examples
 
-```kcl
+```js
 startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([10, 10], %)
@@ -22,7 +22,7 @@ startSketchOn('XY')
   |> close(%, "edge2")
 ```
 
-```kcl
+```js
 fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
   |> startProfileAt(pos, %)
@@ -48,7 +48,7 @@ const part001 = startSketchOn(box, "start")
 ### Arguments
 
 * `data`: `SketchData` - Data for start sketch on. You can start a sketch on a plane or an extrude group. (REQUIRED)
-```
+```js
 "XY" |
 "-XY" |
 "XZ" |
@@ -213,7 +213,7 @@ const part001 = startSketchOn(box, "start")
 }
 ```
 * `tag`: `SketchOnFaceTag` - A tag for sketch on face. (OPTIONAL)
-```
+```js
 "start" | "end" |
 string
 ```
@@ -221,7 +221,7 @@ string
 ### Returns
 
 `SketchSurface` - A sketch group type.
-```
+```js
 {
 	// The id of the plane.
 	id: uuid,

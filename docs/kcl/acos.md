@@ -8,13 +8,13 @@ Computes the arccosine of a number (in radians).
 
 
 
-```
+```js
 acos(num: number) -> number
 ```
 
 ### Examples
 
-```kcl
+```js
 const myVar = acos(0.5)
 ```
 

@@ -8,13 +8,13 @@ Extrudes by a given amount.
 
 
 
-```
+```js
 extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 ```
 
 ### Examples
 
-```kcl
+```js
 startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
@@ -28,7 +28,7 @@ startSketchOn('XY')
 
 * `length`: `number` (REQUIRED)
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,
@@ -195,7 +195,7 @@ startSketchOn('XY')
 ### Returns
 
 `ExtrudeGroup` - An extrude group is a collection of extrude surfaces.
-```
+```js
 {
 	// The id of the extrusion end cap
 	endCapId: uuid,

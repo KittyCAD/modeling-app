@@ -8,13 +8,13 @@ Computes the base 10 logarithm of the number.
 
 
 
-```
+```js
 log10(num: number) -> number
 ```
 
 ### Examples
 
-```kcl
+```js
 const myVar = log10(4)
 ```
 

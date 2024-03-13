@@ -8,13 +8,13 @@ Computes the sine of a number (in radians).
 
 
 
-```
+```js
 sin(num: number) -> number
 ```
 
 ### Examples
 
-```kcl
+```js
 const myVar = sin(2 * pi())
 ```
 

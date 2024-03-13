@@ -8,13 +8,13 @@ Computes the square root of a number.
 
 
 
-```
+```js
 sqrt(num: number) -> number
 ```
 
 ### Examples
 
-```kcl
+```js
 const myVar = sqrt(4)
 ```
 

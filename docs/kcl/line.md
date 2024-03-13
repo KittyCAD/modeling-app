@@ -8,13 +8,13 @@ Draw a line.
 
 
 
-```
+```js
 line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
 ### Examples
 
-```kcl
+```js
 startSketchOn('-XY')
   |> startProfileAt([0, 0], %)
   |> line([10, 10], %)
@@ -26,7 +26,7 @@ startSketchOn('-XY')
 ### Arguments
 
 * `data`: `LineData` - Data to draw a line. (REQUIRED)
-```
+```js
 {
 	// The tag.
 	tag: string,
@@ -36,7 +36,7 @@ startSketchOn('-XY')
 [number, number]
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,
@@ -203,7 +203,7 @@ startSketchOn('-XY')
 ### Returns
 
 `SketchGroup` - A sketch group is a collection of paths.
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,

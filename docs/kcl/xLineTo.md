@@ -8,13 +8,13 @@ Draw a line to a point on the x-axis.
 
 
 
-```
+```js
 xLineTo(data: AxisLineToData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
 ### Examples
 
-```kcl
+```js
 startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> xLineTo({ to: 10, tag: "edge1" }, %)
@@ -26,7 +26,7 @@ startSketchOn('XY')
 ### Arguments
 
 * `data`: `AxisLineToData` - Data to draw a line to a point on an axis. (REQUIRED)
-```
+```js
 {
 	// The tag.
 	tag: string,
@@ -36,7 +36,7 @@ startSketchOn('XY')
 number
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,
@@ -203,7 +203,7 @@ number
 ### Returns
 
 `SketchGroup` - A sketch group is a collection of paths.
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,

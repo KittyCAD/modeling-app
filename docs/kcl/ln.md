@@ -8,13 +8,13 @@ Computes the natural logarithm of the number.
 
 
 
-```
+```js
 ln(num: number) -> number
 ```
 
 ### Examples
 
-```kcl
+```js
 const myVar = ln(4)
 ```
 

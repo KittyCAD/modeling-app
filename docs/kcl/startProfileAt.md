@@ -8,13 +8,13 @@ Start a profile at a given point.
 
 
 
-```
+```js
 startProfileAt(data: LineData, sketch_surface: SketchSurface) -> SketchGroup
 ```
 
 ### Examples
 
-```kcl
+```js
 startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([10, 10], %)
@@ -23,7 +23,7 @@ startSketchOn('XY')
 ### Arguments
 
 * `data`: `LineData` - Data to draw a line. (REQUIRED)
-```
+```js
 {
 	// The tag.
 	tag: string,
@@ -33,7 +33,7 @@ startSketchOn('XY')
 [number, number]
 ```
 * `sketch_surface`: `SketchSurface` - A sketch group type. (REQUIRED)
-```
+```js
 {
 	// The id of the plane.
 	id: uuid,
@@ -97,7 +97,7 @@ startSketchOn('XY')
 ### Returns
 
 `SketchGroup` - A sketch group is a collection of paths.
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,

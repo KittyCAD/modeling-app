@@ -8,13 +8,13 @@ Use a sketch to cut a hole in another sketch.
 
 
 
-```
+```js
 hole(hole_sketch_group: SketchGroupSet, sketch_group: SketchGroup) -> SketchGroup
 ```
 
 ### Examples
 
-```kcl
+```js
 const square = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
@@ -29,7 +29,7 @@ const square = startSketchOn('XY')
 ### Arguments
 
 * `hole_sketch_group`: `SketchGroupSet` - A sketch group or a group of sketch groups. (REQUIRED)
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,
@@ -197,7 +197,7 @@ const square = startSketchOn('XY')
 }
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,
@@ -364,7 +364,7 @@ const square = startSketchOn('XY')
 ### Returns
 
 `SketchGroup` - A sketch group is a collection of paths.
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,

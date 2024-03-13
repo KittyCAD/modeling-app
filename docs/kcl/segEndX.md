@@ -8,13 +8,13 @@ Returns the segment end of x.
 
 
 
-```
+```js
 segEndX(segment_name: string, sketch_group: SketchGroup) -> number
 ```
 
 ### Examples
 
-```kcl
+```js
 startSketchOn("YZ")
   |> startProfileAt([0, 0], %)
   |> line({ to: [5, 0], tag: "thing" }, %)
@@ -28,7 +28,7 @@ startSketchOn("YZ")
 
 * `segment_name`: `string` (REQUIRED)
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,

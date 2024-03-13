@@ -8,13 +8,13 @@ Close the current sketch.
 
 
 
-```
+```js
 close(sketch_group: SketchGroup, tag?: String) -> SketchGroup
 ```
 
 ### Examples
 
-```kcl
+```js
 startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([10, 10], %)
@@ -22,7 +22,7 @@ startSketchOn('XZ')
   |> close(%)
 ```
 
-```kcl
+```js
 startSketchOn('YZ')
   |> startProfileAt([0, 0], %)
   |> line([10, 10], %)
@@ -33,7 +33,7 @@ startSketchOn('YZ')
 ### Arguments
 
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,
@@ -201,7 +201,7 @@ startSketchOn('YZ')
 ### Returns
 
 `SketchGroup` - A sketch group is a collection of paths.
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,

@@ -8,13 +8,13 @@ Draw a bezier curve.
 
 
 
-```
+```js
 bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
 ### Examples
 
-```kcl
+```js
 startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> bezierCurve({
@@ -30,7 +30,7 @@ startSketchOn('XY')
 ### Arguments
 
 * `data`: `BezierData` - Data to draw a bezier curve. (REQUIRED)
-```
+```js
 {
 	// The first control point.
 	control1: [number, number],
@@ -43,7 +43,7 @@ startSketchOn('XY')
 }
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,
@@ -210,7 +210,7 @@ startSketchOn('XY')
 ### Returns
 
 `SketchGroup` - A sketch group is a collection of paths.
-```
+```js
 {
 	// The plane id or face id of the sketch group.
 	entityId: uuid,
