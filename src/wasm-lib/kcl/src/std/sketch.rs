@@ -48,6 +48,30 @@ pub async fn line_to(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Draw a line to a point.
+///
+/// ```no_run
+/// fn rectShape = (pos, w, l) => {
+///     const rr = startSketchOn('XY')
+///         |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
+///         |> lineTo({
+///             to: [pos[0] + w / 2, pos[1] - (l / 2)],
+///             tag: "edge1"
+///             }, %)
+///         |> lineTo({
+///             to: [pos[0] + w / 2, pos[1] + l / 2],
+///             tag: "edge2"
+///             }, %)
+///         |> lineTo({
+///             to: [pos[0] - (w / 2), pos[1] + l / 2],
+///             tag: "edge3"
+///             }, %)
+///         |> close(%, "edge4")
+///     return rr
+/// }
+///
+/// // Create the mounting plate extrusion, holes, and fillets
+/// const part = rectShape([0, 0], 20, 20)
+/// ```
 #[stdlib {
     name = "lineTo",
 }]
@@ -127,6 +151,18 @@ pub async fn x_line_to(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Draw a line to a point on the x-axis.
+///
+/// ```no_run
+/// startSketchOn('XY')
+///    |> startProfileAt([0, 0], %)
+///    |> xLineTo({
+///    to: 10,
+///    tag: "edge1"
+///    }, %)
+///    |> line([10, 10], %)
+///    |> close(%, "edge2")
+///    |> extrude(10, %)
+/// ```
 #[stdlib {
     name = "xLineTo",
 }]
@@ -156,6 +192,19 @@ pub async fn y_line_to(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Draw a line to a point on the y-axis.
+///
+/// ```no_run
+/// startSketchOn('XY')
+///   |> startProfileAt([0, 0], %)
+///   |> yLineTo({
+///    to: 10,
+///    tag: "edge1"
+///    }, %)
+///    |> line([10, 10], %)
+///    |> close(%, "edge2")
+///    |> extrude(10, %)
+///    |> fillet({radius: 2, tags: ["edge2"]}, %)
+/// ```
 #[stdlib {
     name = "yLineTo",
 }]
@@ -200,6 +249,15 @@ pub async fn line(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Draw a line.
+///
+/// ```no_run
+/// startSketchOn('XY')
+///  |> startProfileAt([0, 0], %)
+///  |> line([10, 10], %)
+///  |> line({to: [20, 10], tag: "edge1"}, %)
+///  |> close(%, "edge2")
+///  |> extrude(10, %)
+/// ```
 #[stdlib {
     name = "line",
 }]
@@ -278,6 +336,15 @@ pub async fn x_line(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Draw a line on the x-axis.
+///
+/// ```no_run
+/// startSketchOn('XY')
+///  |> startProfileAt([0, 0], %)
+///  |> xLine(10, %)
+///  |> line([10, 10], %)
+///  |> close(%, "edge1")
+///  |> extrude(10, %)
+/// ```
 #[stdlib {
     name = "xLine",
 }]
@@ -304,6 +371,15 @@ pub async fn y_line(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Draw a line on the y-axis.
+///
+/// ```no_run
+/// startSketchOn('XY')
+/// |> startProfileAt([0, 0], %)
+/// |> yLine(10, %)
+/// |> line([10, 10], %)
+/// |> close(%, "edge1")
+/// |> extrude(10, %)
+/// ```
 #[stdlib {
     name = "yLine",
 }]
@@ -358,6 +434,20 @@ pub async fn angled_line(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Draw an angled line.
+///
+/// ```no_run
+/// startSketchOn('XY')
+/// |> startProfileAt([0, 0], %)
+/// |> angledLine({
+///   angle: 45,
+///   length: 10,
+///   tag: "edge1"
+///   }, %)
+///   |> line([10, 10], %)
+///   |> line([0, 10], %)
+///   |> close(%, "edge2")
+///   |> extrude(10, %)
+/// ```
 #[stdlib {
     name = "angledLine",
 }]
@@ -429,6 +519,20 @@ pub async fn angled_line_of_x_length(args: Args) -> Result<MemoryItem, KclError>
 }
 
 /// Draw an angled line of a given x length.
+///
+/// ```no_run
+/// startSketchOn('XY')
+/// |> startProfileAt([0, 0], %)
+/// |> angledLineOfXLength({
+///     angle: 45,
+///     length: 10,
+///     tag: "edge1"
+///     }, %)
+///    |> line([10, 10], %)
+///    |> line([0, 10], %)
+///    |> close(%, "edge2")
+///    |> extrude(10, %)
+/// ```
 #[stdlib {
     name = "angledLineOfXLength",
 }]
@@ -486,6 +590,21 @@ pub async fn angled_line_to_x(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Draw an angled line to a given x coordinate.
+///
+/// ```no_run
+/// startSketchOn('XY')
+/// |> startProfileAt([0, 0], %)
+/// |> angledLineToX({
+///    angle: 45,
+///    to: 10,
+///    tag: "edge1"
+///    }, %)
+///    |> line([10, 10], %)
+///    |> line([0, 10], %)
+///    |> close(%, "edge2")
+///    |> extrude(10, %)
+///    |> fillet({radius: 2, tags: ["edge1"]}, %)
+/// ```
 #[stdlib {
     name = "angledLineToX",
 }]
@@ -518,6 +637,21 @@ pub async fn angled_line_of_y_length(args: Args) -> Result<MemoryItem, KclError>
 }
 
 /// Draw an angled line of a given y length.
+///
+/// ```no_run
+/// startSketchOn('XY')
+/// |> startProfileAt([0, 0], %)
+/// |> angledLineOfYLength({
+///   angle: 45,
+///   length: 10,
+///   tag: "edge1"
+///   }, %)
+///   |> line([10, 10], %)
+///   |> line([0, 10], %)
+///   |> close(%, "edge2")
+///   |> extrude(10, %)
+///   |> fillet({radius: 2, tags: ["edge1"]}, %)
+/// ```
 #[stdlib {
     name = "angledLineOfYLength",
 }]

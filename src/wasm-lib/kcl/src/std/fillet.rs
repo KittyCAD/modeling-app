@@ -53,7 +53,7 @@ pub async fn fillet(args: Args) -> Result<MemoryItem, KclError> {
 ///     |> line({to: [0, -10], tag: "thing2"}, %)
 ///     |> close(%)
 ///     |> extrude(10, %)
-///     |> fillet({radius: 2, tags: ["thing", "thing2", "START", "END"]}, %)
+///     |> fillet({radius: 2, tags: ["thing", "thing2"]}, %)
 /// ```
 #[stdlib {
     name = "fillet",

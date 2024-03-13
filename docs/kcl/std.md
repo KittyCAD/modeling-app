@@ -507,6 +507,18 @@ Draw an angled line.
 angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
+#### Examples
+
+```kcl
+startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> angledLine({ angle: 45, length: 10, tag: "edge1" }, %)
+  |> line([10, 10], %)
+  |> line([0, 10], %)
+  |> close(%, "edge2")
+  |> extrude(10, %)
+```
+
 #### Arguments
 
 * `data`: `AngledLineData` - Data to draw an angled line. (REQUIRED)
@@ -865,6 +877,18 @@ Draw an angled line of a given x length.
 angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
+#### Examples
+
+```kcl
+startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> angledLineOfXLength({ angle: 45, length: 10, tag: "edge1" }, %)
+  |> line([10, 10], %)
+  |> line([0, 10], %)
+  |> close(%, "edge2")
+  |> extrude(10, %)
+```
+
 #### Arguments
 
 * `data`: `AngledLineData` - Data to draw an angled line. (REQUIRED)
@@ -1221,6 +1245,19 @@ Draw an angled line of a given y length.
 
 ```
 angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Examples
+
+```kcl
+startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> angledLineOfYLength({ angle: 45, length: 10, tag: "edge1" }, %)
+  |> line([10, 10], %)
+  |> line([0, 10], %)
+  |> close(%, "edge2")
+  |> extrude(10, %)
+  |> fillet({ radius: 2, tags: ["edge1"] }, %)
 ```
 
 #### Arguments
@@ -1938,6 +1975,19 @@ Draw an angled line to a given x coordinate.
 
 ```
 angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Examples
+
+```kcl
+startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> angledLineToX({ angle: 45, to: 10, tag: "edge1" }, %)
+  |> line([10, 10], %)
+  |> line([0, 10], %)
+  |> close(%, "edge2")
+  |> extrude(10, %)
+  |> fillet({ radius: 2, tags: ["edge1"] }, %)
 ```
 
 #### Arguments
@@ -4442,10 +4492,7 @@ const part001 = startSketchOn('XY')
   |> line({ to: [0, -10], tag: "thing2" }, %)
   |> close(%)
   |> extrude(10, %)
-  |> fillet({
-       radius: 2,
-       tags: ["thing", "thing2", "START", "END"]
-     }, %)
+  |> fillet({ radius: 2, tags: ["thing", "thing2"] }, %)
 ```
 
 #### Arguments
@@ -6511,6 +6558,17 @@ Draw a line.
 line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
+#### Examples
+
+```kcl
+startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([10, 10], %)
+  |> line({ to: [20, 10], tag: "edge1" }, %)
+  |> close(%, "edge2")
+  |> extrude(10, %)
+```
+
 #### Arguments
 
 * `data`: `LineData` - Data to draw a line. (REQUIRED)
@@ -6865,6 +6923,32 @@ Draw a line to a point.
 
 ```
 lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Examples
+
+```kcl
+fn rectShape = (pos, w, l) => {
+  const rr = startSketchOn('XY')
+  |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
+  |> lineTo({
+       to: [pos[0] + w / 2, pos[1] - (l / 2)],
+       tag: "edge1"
+     }, %)
+  |> lineTo({
+       to: [pos[0] + w / 2, pos[1] + l / 2],
+       tag: "edge2"
+     }, %)
+  |> lineTo({
+       to: [pos[0] - (w / 2), pos[1] + l / 2],
+       tag: "edge3"
+     }, %)
+  |> close(%, "edge4")
+  return rr
+}
+
+// Create the mounting plate extrusion, holes, and fillets
+const part = rectShape([0, 0], 20, 20)
 ```
 
 #### Arguments
@@ -7380,6 +7464,19 @@ A circular pattern on a 2D sketch.
 patternCircular2d(data: CircularPattern2dData, sketch_group: SketchGroup) -> [SketchGroup]
 ```
 
+#### Examples
+
+```kcl
+const part = startSketchOn('XY')
+  |> circle([0, 0], 2, %)
+  |> patternCircular2d({
+       center: [20, 20],
+       repetitions: 12,
+       arcDegrees: 210,
+       rotateDuplicates: true
+     }, %)
+```
+
 #### Arguments
 
 * `data`: `CircularPattern2dData` - Data for a circular pattern on a 2D sketch. (REQUIRED)
@@ -7576,6 +7673,25 @@ A circular pattern on a 3D model.
 patternCircular3d(data: CircularPattern3dData, extrude_group: ExtrudeGroup) -> [ExtrudeGroup]
 ```
 
+#### Examples
+
+```kcl
+const part = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, 1], %)
+  |> line([1, 0], %)
+  |> line([0, -1], %)
+  |> close(%)
+  |> extrude(1, %)
+  |> patternCircular3d({
+       axis: [1, 1, 0],
+       center: [10, 0, 10],
+       repetitions: 10,
+       arcDegrees: 360,
+       rotateDuplicates: true
+     }, %)
+```
+
 #### Arguments
 
 * `data`: `CircularPattern3dData` - Data for a circular pattern on a 3D model. (REQUIRED)
@@ -7739,6 +7855,18 @@ A linear pattern on a 2D sketch.
 
 ```
 patternLinear2d(data: LinearPattern2dData, sketch_group: SketchGroup) -> [SketchGroup]
+```
+
+#### Examples
+
+```kcl
+const part = startSketchOn('XY')
+  |> circle([0, 0], 2, %)
+  |> patternLinear2d({
+       axis: [0, 1],
+       repetitions: 12,
+       distance: 2
+     }, %)
 ```
 
 #### Arguments
@@ -7933,6 +8061,23 @@ A linear pattern on a 3D model.
 
 ```
 patternLinear3d(data: LinearPattern3dData, extrude_group: ExtrudeGroup) -> [ExtrudeGroup]
+```
+
+#### Examples
+
+```kcl
+const part = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, 1], %)
+  |> line([1, 0], %)
+  |> line([0, -1], %)
+  |> close(%)
+  |> extrude(1, %)
+  |> patternLinear3d({
+       axis: [1, 0, 1],
+       repetitions: 3,
+       distance: 6
+     }, %)
 ```
 
 #### Arguments
@@ -10443,6 +10588,17 @@ Draw a line on the x-axis.
 xLine(data: AxisLineData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
+#### Examples
+
+```kcl
+startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> xLine(10, %)
+  |> line([10, 10], %)
+  |> close(%, "edge1")
+  |> extrude(10, %)
+```
+
 #### Arguments
 
 * `data`: `AxisLineData` - Data to draw a line on an axis. (REQUIRED)
@@ -10797,6 +10953,17 @@ Draw a line to a point on the x-axis.
 
 ```
 xLineTo(data: AxisLineToData, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Examples
+
+```kcl
+startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> xLineTo({ to: 10, tag: "edge1" }, %)
+  |> line([10, 10], %)
+  |> close(%, "edge2")
+  |> extrude(10, %)
 ```
 
 #### Arguments
@@ -11155,6 +11322,17 @@ Draw a line on the y-axis.
 yLine(data: AxisLineData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
+#### Examples
+
+```kcl
+startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> yLine(10, %)
+  |> line([10, 10], %)
+  |> close(%, "edge1")
+  |> extrude(10, %)
+```
+
 #### Arguments
 
 * `data`: `AxisLineData` - Data to draw a line on an axis. (REQUIRED)
@@ -11509,6 +11687,18 @@ Draw a line to a point on the y-axis.
 
 ```
 yLineTo(data: AxisLineToData, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Examples
+
+```kcl
+startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> yLineTo({ to: 10, tag: "edge1" }, %)
+  |> line([10, 10], %)
+  |> close(%, "edge2")
+  |> extrude(10, %)
+  |> fillet({ radius: 2, tags: ["edge2"] }, %)
 ```
 
 #### Arguments
