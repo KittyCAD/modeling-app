@@ -30,7 +30,7 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
 
     let ws = client
         .modeling()
-        .commands_ws(None, None, None, None, Some(false))
+        .commands_ws(None, None, None, None, None, Some(false))
         .await?;
 
     let tokens = kcl_lib::token::lexer(code);

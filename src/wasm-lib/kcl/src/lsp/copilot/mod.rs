@@ -29,6 +29,8 @@ use crate::lsp::{
     copilot::types::{CopilotCompletionResponse, CopilotEditorInfo, CopilotLspCompletionParams, DocParams},
 };
 
+use self::types::{CopilotAcceptCompletionParams, CopilotCompletionTelemetry, CopilotRejectCompletionParams};
+
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Success {
     success: bool,
@@ -39,7 +41,7 @@ impl Success {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Backend {
     /// The client is used to send notifications and requests to the client.
     pub client: tower_lsp::Client,
@@ -54,7 +56,9 @@ pub struct Backend {
     /// The editor info is used to store information about the editor.
     pub editor_info: Arc<RwLock<CopilotEditorInfo>>,
     /// The cache is used to store the results of previous requests.
-    pub cache: cache::CopilotCache,
+    pub cache: Arc<cache::CopilotCache>,
+    /// Storage so we can send telemetry data back out.
+    pub telemetry: DashMap<uuid::Uuid, CopilotCompletionTelemetry>,
 }
 
 // Implement the shared backend trait for the language server.
@@ -158,7 +162,7 @@ impl Backend {
         let pos = params.doc.position;
         let uri = params.doc.uri.to_string();
         let rope = ropey::Rope::from_str(&params.doc.source);
-        let offset = crate::lsp::util::position_to_offset(pos, &rope).unwrap_or_default();
+        let offset = crate::lsp::util::position_to_offset(pos.into(), &rope).unwrap_or_default();
 
         Ok(DocParams {
             uri: uri.to_string(),
@@ -166,7 +170,7 @@ impl Backend {
             language: params.doc.language_id.to_string(),
             prefix: crate::lsp::util::get_text_before(offset, &rope).unwrap_or_default(),
             suffix: crate::lsp::util::get_text_after(offset, &rope).unwrap_or_default(),
-            line_before: crate::lsp::util::get_line_before(pos, &rope).unwrap_or_default(),
+            line_before: crate::lsp::util::get_line_before(pos.into(), &rope).unwrap_or_default(),
             rope,
         })
     }
@@ -185,37 +189,69 @@ impl Backend {
         let line_before = doc_params.line_before.to_string();
 
         // Let's not call it yet since it's not our model.
-        /*let completion_list = self
-        .get_completions(doc_params.language, doc_params.prefix, doc_params.suffix)
-        .await
-        .map_err(|err| Error {
-            code: tower_lsp::jsonrpc::ErrorCode::from(69),
-            data: None,
-            message: Cow::from(format!("Failed to get completions: {}", err)),
-        })?;*/
+        // We will need to wrap in spawn_local like we do in kcl/mod.rs for wasm only.
+        #[cfg(test)]
+        let completion_list = self
+            .get_completions(doc_params.language, doc_params.prefix, doc_params.suffix)
+            .await
+            .map_err(|err| Error {
+                code: tower_lsp::jsonrpc::ErrorCode::from(69),
+                data: None,
+                message: Cow::from(format!("Failed to get completions: {}", err)),
+            })?;
+        #[cfg(not(test))]
         let completion_list = vec![];
 
         let response = CopilotCompletionResponse::from_str_vec(completion_list, line_before, doc_params.pos);
+        // Set the telemetry data for each completion.
+        for completion in response.completions.iter() {
+            let telemetry = CopilotCompletionTelemetry {
+                completion: completion.clone(),
+                params: params.clone(),
+            };
+            self.telemetry.insert(completion.uuid, telemetry);
+        }
         self.cache
             .set_cached_result(&doc_params.uri, &doc_params.pos.line, &response);
 
         Ok(response)
     }
 
-    pub async fn accept_completions(&self, params: Vec<String>) {
+    pub async fn accept_completion(&self, params: CopilotAcceptCompletionParams) {
         self.client
             .log_message(MessageType::INFO, format!("Accepted completions: {:?}", params))
             .await;
 
-        // TODO: send telemetry data back out that we accepted the completions
+        // Get the original telemetry data.
+        let Some((_, original)) = self.telemetry.remove(&params.uuid) else {
+            return;
+        };
+
+        self.client
+            .log_message(MessageType::INFO, format!("Original telemetry: {:?}", original))
+            .await;
+
+        // TODO: Send the telemetry data to the zoo api.
     }
 
-    pub async fn reject_completions(&self, params: Vec<String>) {
+    pub async fn reject_completions(&self, params: CopilotRejectCompletionParams) {
         self.client
             .log_message(MessageType::INFO, format!("Rejected completions: {:?}", params))
             .await;
 
-        // TODO: send telemetry data back out that we rejected the completions
+        // Get the original telemetry data.
+        let mut originals: Vec<CopilotCompletionTelemetry> = Default::default();
+        for uuid in params.uuids {
+            if let Some((_, original)) = self.telemetry.remove(&uuid) {
+                originals.push(original);
+            }
+        }
+
+        self.client
+            .log_message(MessageType::INFO, format!("Original telemetry: {:?}", originals))
+            .await;
+
+        // TODO: Send the telemetry data to the zoo api.
     }
 }
 

@@ -37,6 +37,7 @@ import { homeCommandBarConfig } from 'lib/commandBarConfigs/homeCommandConfig'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { isTauri } from 'lib/isTauri'
 import { kclManager } from 'lang/KclSingleton'
+import { useLspContext } from 'components/LspProvider'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
@@ -51,6 +52,7 @@ const Home = () => {
       send: sendToSettings,
     },
   } = useSettingsAuthContext()
+  const { onProjectOpen } = useLspContext()
 
   // Set the default directory if it's been updated
   // during the loading of the home page. This is wrapped
@@ -84,12 +86,16 @@ const Home = () => {
         event: EventFrom<typeof homeMachine>
       ) => {
         if (event.data && 'name' in event.data) {
-          commandBarSend({ type: 'Close' })
-          navigate(
-            `${paths.FILE}/${encodeURIComponent(
-              context.defaultDirectory + sep + event.data.name
-            )}`
+          let projectPath = context.defaultDirectory + sep + event.data.name
+          onProjectOpen(
+            {
+              name: event.data.name,
+              path: projectPath,
+            },
+            null
           )
+          commandBarSend({ type: 'Close' })
+          navigate(`${paths.FILE}/${encodeURIComponent(projectPath)}`)
         }
       },
       toastSuccess: (_, event) => toast.success((event.data || '') + ''),
