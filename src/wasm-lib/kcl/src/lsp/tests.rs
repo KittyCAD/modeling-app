@@ -807,3 +807,130 @@ async fn test_kcl_lsp_signature_help() {
         panic!("Expected signature help");
     }
 }
+
+#[tokio::test]
+async fn test_kcl_lsp_semantic_tokens() {
+    let server = kcl_lsp_server().unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: "startSketchOn('XY')".to_string(),
+            },
+        })
+        .await;
+
+    // Send semantic tokens request.
+    let semantic_tokens = server
+        .semantic_tokens_full(tower_lsp::lsp_types::SemanticTokensParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    // Check the semantic tokens.
+    if let tower_lsp::lsp_types::SemanticTokensResult::Tokens(semantic_tokens) = semantic_tokens {
+        assert_eq!(semantic_tokens.data.len(), 2);
+        assert_eq!(semantic_tokens.data[0].length, 13);
+        assert_eq!(semantic_tokens.data[0].token_type, 7);
+        assert_eq!(semantic_tokens.data[1].length, 4);
+        assert_eq!(semantic_tokens.data[1].delta_start, 14);
+        assert_eq!(semantic_tokens.data[1].token_type, 3);
+    } else {
+        panic!("Expected semantic tokens");
+    }
+}
+
+#[tokio::test]
+async fn test_kcl_lsp_document_symbol() {
+    let server = kcl_lsp_server().unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: "startSketchOn('XY')".to_string(),
+            },
+        })
+        .await;
+
+    // Send document symbol request.
+    let document_symbol = server
+        .document_symbol(tower_lsp::lsp_types::DocumentSymbolParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            work_done_progress_params: Default::default(),
+            partial_result_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    // Check the document symbol.
+    if let tower_lsp::lsp_types::DocumentSymbolResponse::Nested(document_symbol) = document_symbol {
+        assert_eq!(document_symbol.len(), 1);
+        assert_eq!(document_symbol[0].name, "startSketchOn");
+    } else {
+        panic!("Expected document symbol");
+    }
+}
+
+#[tokio::test]
+async fn test_kcl_lsp_formatting() {
+    let server = kcl_lsp_server().unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"startSketchOn('XY')
+                    |> startProfileAt([0,0], %)"#
+                    .to_string(),
+            },
+        })
+        .await;
+
+    // Send formatting request.
+    let formatting = server
+        .formatting(tower_lsp::lsp_types::DocumentFormattingParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            options: tower_lsp::lsp_types::FormattingOptions {
+                tab_size: 4,
+                insert_spaces: true,
+                properties: Default::default(),
+                trim_trailing_whitespace: None,
+                insert_final_newline: None,
+                trim_final_newlines: None,
+            },
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    // Check the formatting.
+    assert_eq!(formatting.len(), 1);
+    assert_eq!(
+        formatting[0].new_text,
+        r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)"#
+    );
+}
