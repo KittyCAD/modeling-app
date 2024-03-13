@@ -310,5 +310,8 @@ fn test_stdlib_fail_non_camel_case() {
     .unwrap();
 
     assert!(!errors.is_empty());
-    assert_eq!(errors[1].to_string(), "stdlib function names must be in camel case");
+    assert_eq!(
+        errors[1].to_string(),
+        "stdlib function names must be in camel case: `import_thing`"
+    );
 }
