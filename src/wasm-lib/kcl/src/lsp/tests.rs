@@ -45,8 +45,7 @@ fn kcl_lsp_server() -> Result<crate::lsp::kcl::Backend> {
 // Create a fake copilot lsp server for testing.
 fn copilot_lsp_server() -> Result<crate::lsp::copilot::Backend> {
     // We don't actually need to authenticate to the backend for this test.
-    let mut zoo_client = kittycad::Client::new("");
-    zoo_client.set_base_url("https://api.dev.zoo.dev");
+    let zoo_client = kittycad::Client::new_from_env();
 
     // Create the backend.
     let (service, _) = tower_lsp::LspService::new(|client| crate::lsp::copilot::Backend {
@@ -1098,4 +1097,51 @@ async fn test_copilot_lsp_set_editor_info() {
     let editor_info = server.editor_info.read().unwrap();
     assert_eq!(editor_info.editor_info.name, "vscode");
     assert_eq!(editor_info.editor_info.version, "1.0.0");
+}
+
+#[tokio::test]
+async fn test_copilot_lsp_completions() {
+    let server = copilot_lsp_server().unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.copilot".try_into().unwrap(),
+                language_id: "copilot".to_string(),
+                version: 1,
+                text: "st".to_string(),
+            },
+        })
+        .await;
+
+    // Send completion request.
+    let completions = server
+        .get_completions(
+            "kcl".to_string(),
+            r#"// Create a cube.
+fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+
+const part001 = cube([0,0], 20)
+    |> close(%)
+    |> extrude(20, %)
+
+"#
+            .to_string(),
+            r#""#.to_string(),
+        )
+        .await
+        .unwrap();
+
+    // Check the completions.
+    assert_eq!(completions.len(), 1);
+    println!("got completion:\n```\n{}\n```", completions[0]);
 }
