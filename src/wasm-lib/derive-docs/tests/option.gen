@@ -68,7 +68,7 @@ impl crate::docs::StdLibFn for Show {
         false
     }
 
-    fn examples(&self) -> Vec<&str> {
+    fn examples(&self) -> Vec<String> {
         vec![]
     }
 

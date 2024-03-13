@@ -146,7 +146,21 @@ fn do_stdlib_inner(
         quote! { "" }
     };
 
-    let code_blocks = doc_info.code_blocks.clone();
+    let cb = doc_info.code_blocks.clone();
+    let code_blocks = if !cb.is_empty() {
+        quote! {
+            let code_blocks = vec![#(#cb),*];
+            code_blocks.iter().map(|cb| {
+                let tokens = crate::token::lexer(cb);
+                let parser = crate::parser::Parser::new(tokens);
+                let program = parser.ast().unwrap();
+
+                program.recast(&Default::default(), 0)
+            }).collect::<Vec<String>>()
+        }
+    } else {
+        quote! { vec![] }
+    };
     let test_code_blocks = doc_info
         .code_blocks
         .iter()
@@ -375,8 +389,8 @@ fn do_stdlib_inner(
                 #deprecated
             }
 
-            fn examples(&self) -> Vec<&str> {
-                vec![#(#code_blocks),*]
+            fn examples(&self) -> Vec<String> {
+                #code_blocks
             }
 
             fn std_lib_fn(&self) -> crate::std::StdFn {
@@ -705,13 +719,13 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
                 let ws = client
                     .modeling()
                     .commands_ws(None, None, None, None, None, Some(false))
-                    .await?;
+                    .await.unwrap();
 
                 let tokens = crate::token::lexer(#code_block);
                 let parser = crate::parser::Parser::new(tokens);
                 let program = parser.ast().unwrap();
                 let mut mem: crate::executor::ProgramMemory = Default::default();
-                let ctx = crate::executor::ExecutorContext::new(ws, kittycad::types::UnitLength::Mm).await.unwrap();
+                let ctx = crate::executor::ExecutorContext::new(kittycad::types::UnitLength::Mm).await.unwrap();
 
                 crate::executor::execute(program, &mut mem, crate::executor::BodyType::Root, &ctx).await.unwrap();
             }

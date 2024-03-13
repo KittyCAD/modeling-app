@@ -106,7 +106,7 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
     fn deprecated(&self) -> bool;
 
     /// Any example code blocks.
-    fn examples(&self) -> Vec<&str>;
+    fn examples(&self) -> Vec<String>;
 
     /// The function itself.
     fn std_lib_fn(&self) -> crate::std::StdFn;

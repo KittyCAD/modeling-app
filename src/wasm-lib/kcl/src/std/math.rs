@@ -19,6 +19,10 @@ pub async fn cos(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Computes the sine of a number (in radians).
+///
+/// ```no_run
+/// const angle = cos(2*pi())
+/// ```
 #[stdlib {
     name = "cos",
 }]

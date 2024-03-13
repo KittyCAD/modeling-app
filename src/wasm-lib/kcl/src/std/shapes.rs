@@ -128,7 +128,7 @@ impl StdLibFn for Circle {
         false
     }
 
-    fn examples(&self) -> Vec<&str> {
+    fn examples(&self) -> Vec<String> {
         vec![]
     }
 
