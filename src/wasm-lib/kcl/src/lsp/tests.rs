@@ -981,3 +981,91 @@ async fn test_kcl_lsp_rename() {
         }]
     );
 }
+
+#[tokio::test]
+async fn test_kcl_lsp_diagnostic_no_errors() {
+    let server = kcl_lsp_server().unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"const thing= 1"#.to_string(),
+            },
+        })
+        .await;
+
+    // Send diagnostics request.
+    let diagnostics = server
+        .diagnostic(tower_lsp::lsp_types::DocumentDiagnosticParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+            identifier: None,
+            previous_result_id: None,
+        })
+        .await
+        .unwrap();
+
+    // Check the diagnostics.
+    if let tower_lsp::lsp_types::DocumentDiagnosticReportResult::Report(diagnostics) = diagnostics {
+        if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics) = diagnostics {
+            assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 0);
+        } else {
+            panic!("Expected full diagnostics");
+        }
+    } else {
+        panic!("Expected diagnostics");
+    }
+}
+
+#[tokio::test]
+async fn test_kcl_lsp_diagnostic_has_errors() {
+    let server = kcl_lsp_server().unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"k;ajsndasd thing= 1"#.to_string(),
+            },
+        })
+        .await;
+
+    // Send diagnostics request.
+    let diagnostics = server
+        .diagnostic(tower_lsp::lsp_types::DocumentDiagnosticParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+            identifier: None,
+            previous_result_id: None,
+        })
+        .await
+        .unwrap();
+
+    // Check the diagnostics.
+    if let tower_lsp::lsp_types::DocumentDiagnosticReportResult::Report(diagnostics) = diagnostics {
+        if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics) = diagnostics {
+            assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 1);
+            assert_eq!(
+                diagnostics.full_document_diagnostic_report.items[0].message,
+                "lexical: found unknown token ';'"
+            );
+        } else {
+            panic!("Expected full diagnostics");
+        }
+    } else {
+        panic!("Expected diagnostics");
+    }
+}
