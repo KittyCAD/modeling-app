@@ -848,8 +848,8 @@ layout: manual
         // Generate a table of contents.
         buf.push_str("## Table of Contents\n\n");
 
-        buf.push_str("* [Types](kcl/types.md)\n");
-        buf.push_str("* [Known Issues](kcl/KNOWN-ISSUES.md)\n");
+        buf.push_str("* [Types](kcl/types)\n");
+        buf.push_str("* [Known Issues](kcl/KNOWN-ISSUES)\n");
 
         for key in combined.keys().sorted() {
             let internal_fn = combined.get(key).unwrap();
@@ -857,11 +857,7 @@ layout: manual
                 continue;
             }
 
-            buf.push_str(&format!(
-                "* [`{}`](kcl/{}.md)\n",
-                internal_fn.name(),
-                internal_fn.name()
-            ));
+            buf.push_str(&format!("* [`{}`](kcl/{})\n", internal_fn.name(), internal_fn.name()));
         }
 
         // Write the index.
