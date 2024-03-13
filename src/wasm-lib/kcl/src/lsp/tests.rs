@@ -934,3 +934,50 @@ async fn test_kcl_lsp_formatting() {
     |> startProfileAt([0, 0], %)"#
     );
 }
+
+#[tokio::test]
+async fn test_kcl_lsp_rename() {
+    let server = kcl_lsp_server().unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"const thing= 1"#.to_string(),
+            },
+        })
+        .await;
+
+    // Send rename request.
+    let rename = server
+        .rename(tower_lsp::lsp_types::RenameParams {
+            text_document_position: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 0, character: 8 },
+            },
+            new_name: "newName".to_string(),
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    // Check the rename.
+    let changes = rename.changes.unwrap();
+    let u: tower_lsp::lsp_types::Url = "file:///test.kcl".try_into().unwrap();
+    assert_eq!(
+        changes.get(&u).unwrap().clone(),
+        vec![tower_lsp::lsp_types::TextEdit {
+            range: tower_lsp::lsp_types::Range {
+                start: tower_lsp::lsp_types::Position { line: 0, character: 0 },
+                end: tower_lsp::lsp_types::Position { line: 0, character: 13 },
+            },
+            new_text: "const newName = 1\n".to_string(),
+        }]
+    );
+}
