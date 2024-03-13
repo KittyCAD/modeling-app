@@ -697,7 +697,7 @@ fn parse_array_type(type_name: &str) -> Option<(&str, usize)> {
 // For each kcl code block, we want to generate a test that checks that the
 // code block is valid kcl code and compiles and executes.
 fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> proc_macro2::TokenStream {
-    let test_name = format_ident!("test_example_{}{}", fn_name, index);
+    let test_name = format_ident!("serial_test_example_{}{}", fn_name, index);
     quote! {
         #[tokio::test]
         async fn #test_name() {

@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod test_examples_Import {
     #[tokio::test]
-    async fn test_example_import0() {
+    async fn serial_test_example_import0() {
         let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
         let http_client = reqwest::Client::builder()
             .user_agent(user_agent)
@@ -25,16 +25,23 @@ mod test_examples_Import {
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
         let mut mem: crate::executor::ProgramMemory = Default::default();
-        let ctx = crate::executor::ExecutorContext::new(kittycad::types::UnitLength::Mm)
-            .await
-            .unwrap();
+        let ctx = crate::executor::ExecutorContext {
+            engine: std::sync::Arc::new(Box::new(
+                crate::engine::conn::EngineConnection::new(ws)
+                    .await
+                    .unwrap(),
+            )),
+            fs: crate::fs::FileManager::new(),
+            stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
+            units: kittycad::types::UnitLength::Mm,
+        };
         crate::executor::execute(program, &mut mem, crate::executor::BodyType::Root, &ctx)
             .await
             .unwrap();
     }
 
     #[tokio::test]
-    async fn test_example_import1() {
+    async fn serial_test_example_import1() {
         let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
         let http_client = reqwest::Client::builder()
             .user_agent(user_agent)
@@ -58,9 +65,16 @@ mod test_examples_Import {
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
         let mut mem: crate::executor::ProgramMemory = Default::default();
-        let ctx = crate::executor::ExecutorContext::new(kittycad::types::UnitLength::Mm)
-            .await
-            .unwrap();
+        let ctx = crate::executor::ExecutorContext {
+            engine: std::sync::Arc::new(Box::new(
+                crate::engine::conn::EngineConnection::new(ws)
+                    .await
+                    .unwrap(),
+            )),
+            fs: crate::fs::FileManager::new(),
+            stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
+            units: kittycad::types::UnitLength::Mm,
+        };
         crate::executor::execute(program, &mut mem, crate::executor::BodyType::Root, &ctx)
             .await
             .unwrap();
