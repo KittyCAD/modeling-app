@@ -323,10 +323,15 @@ fn do_stdlib_inner(
         pub(crate) const #name_ident: #name_ident = #name_ident {};
     };
 
+    let test_mod_name = format_ident!("test_{}", name_ident);
+
     // The final TokenStream returned will have a few components that reference
     // `#name_ident`, the name of the function to which this macro was applied...
     let stream = quote! {
-        #(#test_code_blocks)*
+        #[cfg(test)]
+        mod #test_mod_name {
+            #(#test_code_blocks)*
+        }
 
         // ... a struct type called `#name_ident` that has no members
         #[allow(non_camel_case_types, missing_docs)]
@@ -693,42 +698,39 @@ fn parse_array_type(type_name: &str) -> Option<(&str, usize)> {
 fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> proc_macro2::TokenStream {
     let test_name = format_ident!("test_{}{}", fn_name, index);
     quote! {
-        #[cfg(test)]
-        mod tests {
-            #[tokio::test]
-            async fn #test_name() {
-                let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
-                let http_client = reqwest::Client::builder()
-                    .user_agent(user_agent)
-                    // For file conversions we need this to be long.
-                    .timeout(std::time::Duration::from_secs(600))
-                    .connect_timeout(std::time::Duration::from_secs(60));
-                let ws_client = reqwest::Client::builder()
-                    .user_agent(user_agent)
-                    // For file conversions we need this to be long.
-                    .timeout(std::time::Duration::from_secs(600))
-                    .connect_timeout(std::time::Duration::from_secs(60))
-                    .connection_verbose(true)
-                    .tcp_keepalive(std::time::Duration::from_secs(600))
-                    .http1_only();
+        #[tokio::test]
+        async fn #test_name() {
+            let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
+            let http_client = reqwest::Client::builder()
+                .user_agent(user_agent)
+                // For file conversions we need this to be long.
+                .timeout(std::time::Duration::from_secs(600))
+                .connect_timeout(std::time::Duration::from_secs(60));
+            let ws_client = reqwest::Client::builder()
+                .user_agent(user_agent)
+                // For file conversions we need this to be long.
+                .timeout(std::time::Duration::from_secs(600))
+                .connect_timeout(std::time::Duration::from_secs(60))
+                .connection_verbose(true)
+                .tcp_keepalive(std::time::Duration::from_secs(600))
+                .http1_only();
 
-                let token = std::env::var("KITTYCAD_API_TOKEN").expect("KITTYCAD_API_TOKEN not set");
+            let token = std::env::var("KITTYCAD_API_TOKEN").expect("KITTYCAD_API_TOKEN not set");
 
-                // Create the client.
-                let client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
-                let ws = client
-                    .modeling()
-                    .commands_ws(None, None, None, None, None, Some(false))
-                    .await.unwrap();
+            // Create the client.
+            let client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
+            let ws = client
+                .modeling()
+                .commands_ws(None, None, None, None, None, Some(false))
+                .await.unwrap();
 
-                let tokens = crate::token::lexer(#code_block);
-                let parser = crate::parser::Parser::new(tokens);
-                let program = parser.ast().unwrap();
-                let mut mem: crate::executor::ProgramMemory = Default::default();
-                let ctx = crate::executor::ExecutorContext::new(kittycad::types::UnitLength::Mm).await.unwrap();
+            let tokens = crate::token::lexer(#code_block);
+            let parser = crate::parser::Parser::new(tokens);
+            let program = parser.ast().unwrap();
+            let mut mem: crate::executor::ProgramMemory = Default::default();
+            let ctx = crate::executor::ExecutorContext::new(kittycad::types::UnitLength::Mm).await.unwrap();
 
-                crate::executor::execute(program, &mut mem, crate::executor::BodyType::Root, &ctx).await.unwrap();
-            }
+            crate::executor::execute(program, &mut mem, crate::executor::BodyType::Root, &ctx).await.unwrap();
         }
     }
 }

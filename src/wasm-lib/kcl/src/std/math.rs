@@ -21,7 +21,7 @@ pub async fn cos(args: Args) -> Result<MemoryItem, KclError> {
 /// Computes the sine of a number (in radians).
 ///
 /// ```no_run
-/// const angle = cos(2*pi())
+/// const anotherVar = cos(2*pi())
 /// ```
 #[stdlib {
     name = "cos",
@@ -39,6 +39,10 @@ pub async fn sin(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Computes the sine of a number (in radians).
+///
+/// ```no_run
+/// const myVar = sin(2*pi())
+/// ```
 #[stdlib {
     name = "sin",
 }]
@@ -55,6 +59,10 @@ pub async fn tan(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Computes the tangent of a number (in radians).
+///
+/// ```no_run
+/// const myVar = tan(2*pi())
+/// ```
 #[stdlib {
     name = "tan",
 }]
@@ -70,6 +78,10 @@ pub async fn pi(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Return the value of `pi`. Archimedes’ constant (π).
+///
+/// ```no_run
+/// const myVar = pi() * 3.0
+/// ```
 #[stdlib {
     name = "pi",
 }]
@@ -86,6 +98,10 @@ pub async fn sqrt(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Computes the square root of a number.
+///
+/// ```no_run
+/// const myVar = sqrt(4)
+/// ```
 #[stdlib {
     name = "sqrt",
 }]
@@ -102,6 +118,10 @@ pub async fn abs(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Computes the absolute value of a number.
+///
+/// ```no_run
+/// const myVar = abs(-4)
+/// ```
 #[stdlib {
     name = "abs",
 }]
@@ -118,6 +138,10 @@ pub async fn floor(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Computes the largest integer less than or equal to a number.
+///
+/// ```no_run
+/// const myVar = floor(4.5)
+/// ```
 #[stdlib {
     name = "floor",
 }]
@@ -134,6 +158,10 @@ pub async fn ceil(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Computes the smallest integer greater than or equal to a number.
+///
+/// ```no_run
+/// const myVar = ceil(4.5)
+/// ```
 #[stdlib {
     name = "ceil",
 }]
@@ -150,6 +178,10 @@ pub async fn min(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Computes the minimum of the given arguments.
+///
+/// ```no_run
+/// const myVar = min(4, 5, 6)
+/// ```
 #[stdlib {
     name = "min",
 }]
@@ -173,6 +205,10 @@ pub async fn max(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Computes the maximum of the given arguments.
+///
+/// ```no_run
+/// const myVar = max(4, 5, 6)
+/// ```
 #[stdlib {
     name = "max",
 }]
@@ -210,6 +246,10 @@ pub async fn pow(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Computes the number to a power.
+///
+/// ```no_run
+/// const myVar = pow(4, 2)
+/// ```
 #[stdlib {
     name = "pow",
 }]
@@ -226,6 +266,10 @@ pub async fn acos(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Computes the arccosine of a number (in radians).
+///
+/// ```no_run
+/// const myVar = acos(0.5)
+/// ```
 #[stdlib {
     name = "acos",
 }]
@@ -242,6 +286,10 @@ pub async fn asin(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Computes the arcsine of a number (in radians).
+///
+/// ```no_run
+/// const myVar = asin(0.5)
+/// ```
 #[stdlib {
     name = "asin",
 }]
@@ -258,6 +306,10 @@ pub async fn atan(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Computes the arctangent of a number (in radians).
+///
+/// ```no_run
+/// const myVar = atan(0.5)
+/// ```
 #[stdlib {
     name = "atan",
 }]
@@ -295,6 +347,10 @@ pub async fn log(args: Args) -> Result<MemoryItem, KclError> {
 /// The result might not be correctly rounded owing to implementation
 /// details; `log2()` can produce more accurate results for base 2,
 /// and `log10()` can produce more accurate results for base 10.
+///
+/// ```no_run
+/// const myVar = log(4, 2)
+/// ```
 #[stdlib {
     name = "log",
 }]
@@ -311,6 +367,10 @@ pub async fn log2(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Computes the base 2 logarithm of the number.
+///
+/// ```no_run
+/// const myVar = log2(4)
+/// ```
 #[stdlib {
     name = "log2",
 }]
@@ -327,6 +387,10 @@ pub async fn log10(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Computes the base 10 logarithm of the number.
+///
+/// ```no_run
+/// const myVar = log10(4)
+/// ```
 #[stdlib {
     name = "log10",
 }]
@@ -343,6 +407,10 @@ pub async fn ln(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Computes the natural logarithm of the number.
+///
+/// ```no_run
+/// const myVar = ln(4)
+/// ```
 #[stdlib {
     name = "ln",
 }]
@@ -358,6 +426,10 @@ pub async fn e(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Return the value of Euler’s number `e`.
+///
+/// ```no_run
+/// const myVar = e()
+/// ```
 #[stdlib {
     name = "e",
 }]
@@ -373,6 +445,10 @@ pub async fn tau(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Return the value of `tau`. The full circle constant (τ). Equal to 2π.
+///
+/// ```no_run
+/// const myVar = tau()
+/// ```
 #[stdlib {
     name = "tau",
 }]
@@ -389,6 +465,10 @@ pub async fn deg_to_rad(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Converts a number from degrees to radians.
+///
+/// ```no_run
+/// const myVar = deg_to_rad(180)
+/// ```
 #[stdlib {
     name = "to_radians",
 }]
@@ -405,6 +485,10 @@ pub async fn rad_to_deg(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Converts a number from radians to degrees.
+///
+/// ```no_run
+/// const myVar = rad_to_deg(2 * pi())
+/// ```
 #[stdlib {
     name = "to_degrees",
 }]

@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod tests {
+mod test_Import {
     #[tokio::test]
     async fn test_import0() {
         let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
@@ -32,10 +32,7 @@ mod tests {
             .await
             .unwrap();
     }
-}
 
-#[cfg(test)]
-mod tests {
     #[tokio::test]
     async fn test_import1() {
         let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
