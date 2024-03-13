@@ -860,7 +860,9 @@ async fn test_kcl_lsp_document_symbol() {
                 uri: "file:///test.kcl".try_into().unwrap(),
                 language_id: "kcl".to_string(),
                 version: 1,
-                text: "startSketchOn('XY')".to_string(),
+                text: r#"const myVar = 1
+startSketchOn('XY')"#
+                    .to_string(),
             },
         })
         .await;
@@ -881,7 +883,7 @@ async fn test_kcl_lsp_document_symbol() {
     // Check the document symbol.
     if let tower_lsp::lsp_types::DocumentSymbolResponse::Nested(document_symbol) = document_symbol {
         assert_eq!(document_symbol.len(), 1);
-        assert_eq!(document_symbol[0].name, "startSketchOn");
+        assert_eq!(document_symbol[0].name, "myVar");
     } else {
         panic!("Expected document symbol");
     }
