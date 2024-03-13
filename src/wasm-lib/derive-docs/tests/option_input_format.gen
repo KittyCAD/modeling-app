@@ -22,48 +22,7 @@ mod test_examples_import {
             .commands_ws(None, None, None, None, None, Some(false))
             .await
             .unwrap();
-        let tokens = crate::token::lexer("This is another code block.\nyes sirrr.");
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
-        let mut mem: crate::executor::ProgramMemory = Default::default();
-        let ctx = crate::executor::ExecutorContext {
-            engine: std::sync::Arc::new(Box::new(
-                crate::engine::conn::EngineConnection::new(ws)
-                    .await
-                    .unwrap(),
-            )),
-            fs: crate::fs::FileManager::new(),
-            stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
-            units: kittycad::types::UnitLength::Mm,
-        };
-        crate::executor::execute(program, &mut mem, crate::executor::BodyType::Root, &ctx)
-            .await
-            .unwrap();
-    }
-
-    #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
-    #[ignore]
-    async fn serial_test_example_import1() {
-        let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
-        let http_client = reqwest::Client::builder()
-            .user_agent(user_agent)
-            .timeout(std::time::Duration::from_secs(600))
-            .connect_timeout(std::time::Duration::from_secs(60));
-        let ws_client = reqwest::Client::builder()
-            .user_agent(user_agent)
-            .timeout(std::time::Duration::from_secs(600))
-            .connect_timeout(std::time::Duration::from_secs(60))
-            .connection_verbose(true)
-            .tcp_keepalive(std::time::Duration::from_secs(600))
-            .http1_only();
-        let token = std::env::var("KITTYCAD_API_TOKEN").expect("KITTYCAD_API_TOKEN not set");
-        let client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
-        let ws = client
-            .modeling()
-            .commands_ws(None, None, None, None, None, Some(false))
-            .await
-            .unwrap();
-        let tokens = crate::token::lexer("This is code.\nIt does other shit.");
+        let tokens = crate::token::lexer("This is code.\nIt does other shit.\nimport");
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
         let mut mem: crate::executor::ProgramMemory = Default::default();
@@ -154,10 +113,7 @@ impl crate::docs::StdLibFn for Import {
     }
 
     fn examples(&self) -> Vec<String> {
-        let code_blocks = vec![
-            "This is another code block.\nyes sirrr.",
-            "This is code.\nIt does other shit.",
-        ];
+        let code_blocks = vec!["This is code.\nIt does other shit.\nimport"];
         code_blocks
             .iter()
             .map(|cb| {
@@ -185,11 +141,7 @@ impl crate::docs::StdLibFn for Import {
 #[doc = r""]
 #[doc = r"     This is code."]
 #[doc = r"     It does other shit."]
-#[doc = r""]
-#[doc = r" ```"]
-#[doc = r" This is another code block."]
-#[doc = r" yes sirrr."]
-#[doc = r" ```"]
+#[doc = r"     import"]
 fn inner_import(
     #[doc = r" The args to do shit to."] args: Option<kittycad::types::InputFormat>,
 ) -> Result<Box<f64>> {

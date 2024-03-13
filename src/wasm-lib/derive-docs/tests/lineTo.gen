@@ -21,7 +21,7 @@ mod test_examples_line_to {
             .commands_ws(None, None, None, None, None, Some(false))
             .await
             .unwrap();
-        let tokens = crate::token::lexer("This is another code block.\nyes sirrr.");
+        let tokens = crate::token::lexer("This is another code block.\nyes sirrr.\nlineTo");
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
         let mut mem: crate::executor::ProgramMemory = Default::default();
@@ -61,7 +61,7 @@ mod test_examples_line_to {
             .commands_ws(None, None, None, None, None, Some(false))
             .await
             .unwrap();
-        let tokens = crate::token::lexer("This is code.\nIt does other shit.");
+        let tokens = crate::token::lexer("This is code.\nIt does other shit.\nlineTo");
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
         let mut mem: crate::executor::ProgramMemory = Default::default();
@@ -161,8 +161,8 @@ impl crate::docs::StdLibFn for LineTo {
 
     fn examples(&self) -> Vec<String> {
         let code_blocks = vec![
-            "This is another code block.\nyes sirrr.",
-            "This is code.\nIt does other shit.",
+            "This is another code block.\nyes sirrr.\nlineTo",
+            "This is code.\nIt does other shit.\nlineTo",
         ];
         code_blocks
             .iter()
@@ -191,10 +191,12 @@ impl crate::docs::StdLibFn for LineTo {
 #[doc = r""]
 #[doc = r"     This is code."]
 #[doc = r"     It does other shit."]
+#[doc = r"     lineTo"]
 #[doc = r""]
 #[doc = r" ```"]
 #[doc = r" This is another code block."]
 #[doc = r" yes sirrr."]
+#[doc = r" lineTo"]
 #[doc = r" ```"]
 fn inner_line_to(
     data: LineToData,

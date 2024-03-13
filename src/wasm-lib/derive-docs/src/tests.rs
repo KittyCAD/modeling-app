@@ -27,10 +27,12 @@ fn test_stdlib_line_to() {
             ///
             ///     This is code.
             ///     It does other shit.
+            ///     lineTo
             ///
             /// ```
             /// This is another code block.
             /// yes sirrr.
+            /// lineTo
             /// ```
             fn inner_line_to(
                 data: LineToData,
@@ -60,10 +62,12 @@ fn test_stdlib_min() {
             ///
             ///     This is code.
             ///     It does other shit.
+            ///     min
             ///
             /// ```
             /// This is another code block.
             /// yes sirrr.
+            /// min
             /// ```
             fn inner_min(
                 /// The args to do shit to.
@@ -99,11 +103,7 @@ fn test_stdlib_show() {
             ///
             ///     This is code.
             ///     It does other shit.
-            ///
-            /// ```
-            /// This is another code block.
-            /// yes sirrr.
-            /// ```
+            ///     show
             fn inner_show(
                 /// The args to do shit to.
                 _args: Vec<f64>
@@ -130,11 +130,7 @@ fn test_stdlib_box() {
             ///
             ///     This is code.
             ///     It does other shit.
-            ///
-            /// ```
-            /// This is another code block.
-            /// yes sirrr.
-            /// ```
+            ///     show
             fn inner_show(
                 /// The args to do shit to.
                 args: Box<f64>
@@ -162,11 +158,7 @@ fn test_stdlib_option() {
             ///
             ///     This is code.
             ///     It does other shit.
-            ///
-            /// ```
-            /// This is another code block.
-            /// yes sirrr.
-            /// ```
+            ///     show
             fn inner_show(
                 /// The args to do shit to.
                 args: Option<f64>
@@ -193,10 +185,12 @@ fn test_stdlib_array() {
             ///
             ///     This is code.
             ///     It does other shit.
+            ///     show
             ///
             /// ```
             /// This is another code block.
             /// yes sirrr.
+            /// show
             /// ```
             fn inner_show(
                 /// The args to do shit to.
@@ -224,11 +218,7 @@ fn test_stdlib_option_input_format() {
             ///
             ///     This is code.
             ///     It does other shit.
-            ///
-            /// ```
-            /// This is another code block.
-            /// yes sirrr.
-            /// ```
+            ///     import
             fn inner_import(
                 /// The args to do shit to.
                 args: Option<kittycad::types::InputFormat>
@@ -258,11 +248,7 @@ fn test_stdlib_return_vec_sketch_group() {
             ///
             ///     This is code.
             ///     It does other shit.
-            ///
-            /// ```
-            /// This is another code block.
-            /// yes sirrr.
-            /// ```
+            ///     import
             fn inner_import(
                 /// The args to do shit to.
                 args: Option<kittycad::types::InputFormat>
@@ -292,11 +278,7 @@ fn test_stdlib_return_vec_box_sketch_group() {
             ///
             ///     This is code.
             ///     It does other shit.
-            ///
-            /// ```
-            /// This is another code block.
-            /// yes sirrr.
-            /// ```
+            ///     import
             fn inner_import(
                 /// The args to do shit to.
                 args: Option<kittycad::types::InputFormat>
@@ -326,10 +308,12 @@ fn test_stdlib_doc_comment_with_code() {
             ///
             ///     This is code.
             ///     It does other shit.
+            ///     myFunc
             ///
             /// ```
             /// This is another code block.
             /// yes sirrr.
+            /// myFunc
             /// ```
             fn inner_my_func(
                 /// The args to do shit to.
@@ -360,10 +344,12 @@ fn test_stdlib_doc_comment_with_code_on_ignored_function() {
             ///
             ///     This is code.
             ///     It does other shit.
+            ///     import
             ///
             /// ```
             /// This is another code block.
             /// yes sirrr.
+            /// import
             /// ```
             fn inner_import(
                 /// The args to do shit to.
@@ -437,5 +423,39 @@ fn test_stdlib_fail_no_code_block() {
     assert_eq!(
         errors[1].to_string(),
         "stdlib functions must have at least one code block"
+    );
+}
+
+#[test]
+fn test_stdlib_fail_name_not_in_code_block() {
+    let (_, errors) = do_stdlib(
+        quote! {
+            name = "import",
+        },
+        quote! {
+            /// This is some function.
+            /// It does shit.
+            ///
+            ///     This is code.
+            ///     It does other shit.
+            ///
+            /// ```
+            /// This is another code block.
+            /// yes sirrr.
+            /// ```
+            fn inner_import(
+                /// The args to do shit to.
+                args: Option<kittycad::types::InputFormat>
+            ) -> Result<Vec<Box<SketchGroup>>> {
+                args
+            }
+        },
+    )
+    .unwrap();
+
+    assert!(!errors.is_empty());
+    assert_eq!(
+        errors[1].to_string(),
+        "stdlib functions must have the function name `import` in the code block"
     );
 }

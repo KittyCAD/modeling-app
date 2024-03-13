@@ -21,7 +21,7 @@ mod test_examples_show {
             .commands_ws(None, None, None, None, None, Some(false))
             .await
             .unwrap();
-        let tokens = crate::token::lexer("This is another code block.\nyes sirrr.");
+        let tokens = crate::token::lexer("This is another code block.\nyes sirrr.\nshow");
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
         let mut mem: crate::executor::ProgramMemory = Default::default();
@@ -61,7 +61,7 @@ mod test_examples_show {
             .commands_ws(None, None, None, None, None, Some(false))
             .await
             .unwrap();
-        let tokens = crate::token::lexer("This is code.\nIt does other shit.");
+        let tokens = crate::token::lexer("This is code.\nIt does other shit.\nshow");
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
         let mut mem: crate::executor::ProgramMemory = Default::default();
@@ -153,8 +153,8 @@ impl crate::docs::StdLibFn for Show {
 
     fn examples(&self) -> Vec<String> {
         let code_blocks = vec![
-            "This is another code block.\nyes sirrr.",
-            "This is code.\nIt does other shit.",
+            "This is another code block.\nyes sirrr.\nshow",
+            "This is code.\nIt does other shit.\nshow",
         ];
         code_blocks
             .iter()
@@ -183,10 +183,12 @@ impl crate::docs::StdLibFn for Show {
 #[doc = r""]
 #[doc = r"     This is code."]
 #[doc = r"     It does other shit."]
+#[doc = r"     show"]
 #[doc = r""]
 #[doc = r" ```"]
 #[doc = r" This is another code block."]
 #[doc = r" yes sirrr."]
+#[doc = r" show"]
 #[doc = r" ```"]
 fn inner_show(#[doc = r" The args to do shit to."] args: [f64; 2]) -> Result<Box<f64>> {
     args

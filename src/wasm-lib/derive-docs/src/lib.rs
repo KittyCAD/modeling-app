@@ -183,6 +183,20 @@ fn do_stdlib_inner(
 
         quote! { vec![] }
     };
+
+    // Make sure the function name is in all the code blocks.
+    for code_block in doc_info.code_blocks.iter() {
+        if !code_block.contains(&name) {
+            errors.push(Error::new_spanned(
+                &ast.sig,
+                format!(
+                    "stdlib functions must have the function name `{}` in the code block",
+                    name
+                ),
+            ));
+        }
+    }
+
     let test_code_blocks = doc_info
         .code_blocks
         .iter()

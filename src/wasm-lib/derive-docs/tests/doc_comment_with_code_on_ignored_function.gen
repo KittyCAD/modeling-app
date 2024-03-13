@@ -22,7 +22,7 @@ mod test_examples_import {
             .commands_ws(None, None, None, None, None, Some(false))
             .await
             .unwrap();
-        let tokens = crate::token::lexer("This is another code block.\nyes sirrr.");
+        let tokens = crate::token::lexer("This is another code block.\nyes sirrr.\nimport");
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
         let mut mem: crate::executor::ProgramMemory = Default::default();
@@ -63,7 +63,7 @@ mod test_examples_import {
             .commands_ws(None, None, None, None, None, Some(false))
             .await
             .unwrap();
-        let tokens = crate::token::lexer("This is code.\nIt does other shit.");
+        let tokens = crate::token::lexer("This is code.\nIt does other shit.\nimport");
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
         let mut mem: crate::executor::ProgramMemory = Default::default();
@@ -155,8 +155,8 @@ impl crate::docs::StdLibFn for Import {
 
     fn examples(&self) -> Vec<String> {
         let code_blocks = vec![
-            "This is another code block.\nyes sirrr.",
-            "This is code.\nIt does other shit.",
+            "This is another code block.\nyes sirrr.\nimport",
+            "This is code.\nIt does other shit.\nimport",
         ];
         code_blocks
             .iter()
@@ -185,10 +185,12 @@ impl crate::docs::StdLibFn for Import {
 #[doc = r""]
 #[doc = r"     This is code."]
 #[doc = r"     It does other shit."]
+#[doc = r"     import"]
 #[doc = r""]
 #[doc = r" ```"]
 #[doc = r" This is another code block."]
 #[doc = r" yes sirrr."]
+#[doc = r" import"]
 #[doc = r" ```"]
 fn inner_import(
     #[doc = r" The args to do shit to."] args: Option<kittycad::types::InputFormat>,
