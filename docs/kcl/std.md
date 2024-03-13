@@ -140,22 +140,14 @@ angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup)
 #### Examples
 
 ```kcl
-const myVar = 3
-const myVar2 = 5
-const myVar3 = 6
-const myAng = 40
-const myAng2 = 134
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line({ to: [1, 3.82], tag: 'seg01' }, %)
   |> angledLineToX([
-       -angleToMatchLengthX('seg01', myVar, %),
-       myVar
+       -angleToMatchLengthX('seg01', 10, %),
+       5
      ], %)
-  |> angledLineToY([
-       -angleToMatchLengthY('seg01', myVar, %),
-       myVar
-     ], %)
+  |> close(%)
 ```
 
 #### Arguments
@@ -346,22 +338,14 @@ angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup)
 #### Examples
 
 ```kcl
-const myVar = 3
-const myVar2 = 5
-const myVar3 = 6
-const myAng = 40
-const myAng2 = 134
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line({ to: [1, 3.82], tag: 'seg01' }, %)
   |> angledLineToX([
-       -angleToMatchLengthX('seg01', myVar, %),
-       myVar
+       -angleToMatchLengthY('seg01', 10, %),
+       5
      ], %)
-  |> angledLineToY([
-       -angleToMatchLengthY('seg01', myVar, %),
-       myVar
-     ], %)
+  |> close(%)
 ```
 
 #### Arguments

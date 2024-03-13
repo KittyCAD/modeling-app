@@ -1058,7 +1058,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const myVar = 3\nconst myVar2 = 5\nconst myVar3 = 6\nconst myAng = 40\nconst myAng2 = 134\nconst part001 = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [1, 3.82], tag: 'seg01' }, %)\n  |> angledLineToX([\n       -angleToMatchLengthX('seg01', myVar, %),\n       myVar\n     ], %)\n  |> angledLineToY([\n       -angleToMatchLengthY('seg01', myVar, %),\n       myVar\n     ], %)"
+      "const part001 = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [1, 3.82], tag: 'seg01' }, %)\n  |> angledLineToX([\n       -angleToMatchLengthX('seg01', 10, %),\n       5\n     ], %)\n  |> close(%)"
     ]
   },
   {
@@ -2058,7 +2058,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const myVar = 3\nconst myVar2 = 5\nconst myVar3 = 6\nconst myAng = 40\nconst myAng2 = 134\nconst part001 = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [1, 3.82], tag: 'seg01' }, %)\n  |> angledLineToX([\n       -angleToMatchLengthX('seg01', myVar, %),\n       myVar\n     ], %)\n  |> angledLineToY([\n       -angleToMatchLengthY('seg01', myVar, %),\n       myVar\n     ], %)"
+      "const part001 = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [1, 3.82], tag: 'seg01' }, %)\n  |> angledLineToX([\n       -angleToMatchLengthY('seg01', 10, %),\n       5\n     ], %)\n  |> close(%)"
     ]
   },
   {
