@@ -1,7 +1,8 @@
 use std::{collections::HashMap, env};
 
-use ep::{Destination, UnaryArithmetic};
+use ep::{sketch_types, Destination, UnaryArithmetic};
 use ept::{ListHeader, ObjectHeader};
+use kittycad_modeling_cmds::shared::Point2d;
 use kittycad_modeling_session::SessionBuilder;
 use pretty_assertions::assert_eq;
 
@@ -1045,18 +1046,70 @@ fn store_object_with_array_property() {
     )
 }
 
+/// Write the program's plan to the KCVM debugger's normal input file.
+#[allow(unused)]
+fn kcvm_dbg(kcl_program: &str) {
+    let (plan, _scope) = must_plan(kcl_program);
+    let plan_json = serde_json::to_string_pretty(&plan).unwrap();
+    std::fs::write(
+        "/Users/adamchalmers/kc-repos/modeling-api/execution-plan-debugger/test_input.json",
+        plan_json,
+    )
+    .unwrap();
+}
+
 #[tokio::test]
 async fn stdlib_cube_partial() {
     let program = r#"
-    let cube = startSketchAt([0.0, 0.0])
-        |> lineTo([4.0, 0.0], %)
+    let cube = startSketchAt([1.0, 1.0], "adam")
+        |> lineTo([21.0 ,  1.0], %, "side0")
+        |> lineTo([21.0 , 21.0], %, "side1")
+        |> lineTo([ 1.0 , 21.0], %, "side2")
+        |> lineTo([ 1.0 ,  1.0], %, "side3")
     "#;
     let (_plan, _scope) = must_plan(program);
     let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
         .ast()
         .unwrap();
     let client = test_client().await;
-    let _mem = crate::execute(ast, Some(client)).await.unwrap();
+    let mem = match crate::execute(ast, Some(client)).await {
+        Ok(mem) => mem,
+        Err(e) => panic!("{e}"),
+    };
+    let sg = &mem.sketch_groups.last().unwrap();
+    assert_eq!(
+        sg.path_rest,
+        vec![
+            sketch_types::PathSegment::ToPoint {
+                base: sketch_types::BasePath {
+                    from: Point2d { x: 1.0, y: 1.0 },
+                    to: Point2d { x: 21.0, y: 1.0 },
+                    name: "side0".into(),
+                }
+            },
+            sketch_types::PathSegment::ToPoint {
+                base: sketch_types::BasePath {
+                    from: Point2d { x: 21.0, y: 1.0 },
+                    to: Point2d { x: 21.0, y: 21.0 },
+                    name: "side1".into(),
+                }
+            },
+            sketch_types::PathSegment::ToPoint {
+                base: sketch_types::BasePath {
+                    from: Point2d { x: 21.0, y: 21.0 },
+                    to: Point2d { x: 1.0, y: 21.0 },
+                    name: "side2".into(),
+                }
+            },
+            sketch_types::PathSegment::ToPoint {
+                base: sketch_types::BasePath {
+                    from: Point2d { x: 1.0, y: 21.0 },
+                    to: Point2d { x: 1.0, y: 1.0 },
+                    name: "side3".into(),
+                }
+            },
+        ]
+    );
     // use kittycad_modeling_cmds::{each_cmd, ok_response::OkModelingCmdResponse, ImageFormat, ModelingCmd};
     // let out = client
     //     .run_command(
