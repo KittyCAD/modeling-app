@@ -8,6 +8,7 @@ use anyhow::Result;
 use clap::Parser;
 use dashmap::DashMap;
 use sha2::Digest;
+use std::io::Write;
 use tower_lsp::{
     jsonrpc::Result as RpcResult,
     lsp_types::{
@@ -319,27 +320,31 @@ impl Backend {
             .to_string();
 
         // Collect all the file data we know.
-        let mut attachments = vec![];
+        let mut buf = vec![];
+        let mut zip = zip::ZipWriter::new(std::io::Cursor::new(&mut buf));
         for entry in self.current_code_map.iter() {
             let file_name = entry.key().replace("file://", "").to_string();
 
-            let content_type = Some(mime_guess::from_path(&file_name).first_or_octet_stream().to_string());
-
-            // Try to get the content type from the file name.
-            attachments.push(kittycad::types::multipart::Attachment {
-                // Clean the URI part.
-                name: file_name.clone(),
-                filename: Some(file_name),
-                content_type,
-                data: entry.value().clone(),
-            });
+            let options = zip::write::FileOptions::default().compression_method(zip::CompressionMethod::Stored);
+            zip.start_file(file_name, options)?;
+            zip.write_all(entry.value())?;
         }
+        // Apply the changes you've made.
+        // Dropping the `ZipWriter` will have the same effect, but may silently fail
+        zip.finish()?;
+        drop(zip);
 
         // Send the telemetry data.
         self.zoo_client
             .meta()
             .create_event(
-                attachments,
+                vec![kittycad::types::multipart::Attachment {
+                    // Clean the URI part.
+                    name: "attachment".to_string(),
+                    filename: None,
+                    content_type: Some("application/x-zip".to_string()),
+                    data: buf.clone(),
+                }],
                 &kittycad::types::Event {
                     // This gets generated server side so leave empty for now.
                     attachment_uri: None,
