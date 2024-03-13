@@ -343,7 +343,7 @@ impl Backend {
                 vec![kittycad::types::multipart::Attachment {
                     // Clean the URI part.
                     name: "attachment".to_string(),
-                    filename: None,
+                    filename: Some("attachment.zip".to_string()),
                     content_type: Some("application/x-zip".to_string()),
                     data: self.create_zip()?,
                 }],
