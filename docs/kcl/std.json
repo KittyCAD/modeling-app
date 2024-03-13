@@ -33366,7 +33366,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "startSketchOn(\"YZ\")\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [5, 0], tag: \"thing\" }, %)\n  |> line([5, 5], %)\n  |> line([0, lastSegX(%)], %)\n  |> close(%)\n  |> extrude(5, %)"
+    ]
   },
   {
     "name": "lastSegY",
@@ -34347,7 +34349,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "startSketchOn(\"YZ\")\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [5, 0], tag: \"thing\" }, %)\n  |> line([5, 5], %)\n  |> line([0, lastSegY(%)], %)\n  |> close(%)\n  |> extrude(5, %)"
+    ]
   },
   {
     "name": "legAngX",
@@ -46771,7 +46775,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const part001 = startSketchOn('XY')\n  |> startProfileAt([4.83, 12.56], %)\n  |> line([15.1, 2.48], %)\n  |> line({ to: [3.15, -9.85], tag: 'seg01' }, %)\n  |> line([-15.17, -4.1], %)\n  |> angledLine([segAng('seg01', %), 12.35], %)\n  |> line([-13.02, 10.03], %)\n  |> close(%)\n  |> extrude(4, %)"
+    ]
   },
   {
     "name": "segEndX",
@@ -47760,7 +47766,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "startSketchOn(\"YZ\")\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [5, 0], tag: \"thing\" }, %)\n  |> line([5, 5], %)\n  |> line([segEndX(\"thing\", %), 5], %)\n  |> close(%)\n  |> extrude(5, %)"
+    ]
   },
   {
     "name": "segEndY",
@@ -48749,7 +48757,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "startSketchOn(\"YZ\")\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [5, 0], tag: \"thing\" }, %)\n  |> line([5, 5], %)\n  |> line([segEndY(\"thing\", %), 5], %)\n  |> close(%)\n  |> extrude(5, %)"
+    ]
   },
   {
     "name": "segLen",
@@ -49738,7 +49748,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "startSketchOn(\"YZ\")\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [5, 0], tag: \"thing\" }, %)\n  |> line([5, 5], %)\n  |> line([0, segLen(%)], %)\n  |> close(%)\n  |> extrude(5, %)"
+    ]
   },
   {
     "name": "sin",

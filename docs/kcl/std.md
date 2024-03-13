@@ -6220,6 +6220,18 @@ Returns the last segment of x.
 lastSegX(sketch_group: SketchGroup) -> number
 ```
 
+#### Examples
+
+```kcl
+startSketchOn("YZ")
+  |> startProfileAt([0, 0], %)
+  |> line({ to: [5, 0], tag: "thing" }, %)
+  |> line([5, 5], %)
+  |> line([0, lastSegX(%)], %)
+  |> close(%)
+  |> extrude(5, %)
+```
+
 #### Arguments
 
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
@@ -6401,6 +6413,18 @@ Returns the last segment of y.
 
 ```
 lastSegY(sketch_group: SketchGroup) -> number
+```
+
+#### Examples
+
+```kcl
+startSketchOn("YZ")
+  |> startProfileAt([0, 0], %)
+  |> line({ to: [5, 0], tag: "thing" }, %)
+  |> line([5, 5], %)
+  |> line([0, lastSegY(%)], %)
+  |> close(%)
+  |> extrude(5, %)
 ```
 
 #### Arguments
@@ -8384,6 +8408,20 @@ Returns the angle of the segment.
 segAng(segment_name: string, sketch_group: SketchGroup) -> number
 ```
 
+#### Examples
+
+```kcl
+const part001 = startSketchOn('XY')
+  |> startProfileAt([4.83, 12.56], %)
+  |> line([15.1, 2.48], %)
+  |> line({ to: [3.15, -9.85], tag: 'seg01' }, %)
+  |> line([-15.17, -4.1], %)
+  |> angledLine([segAng('seg01', %), 12.35], %)
+  |> line([-13.02, 10.03], %)
+  |> close(%)
+  |> extrude(4, %)
+```
+
 #### Arguments
 
 * `segment_name`: `string` (REQUIRED)
@@ -8566,6 +8604,18 @@ Returns the segment end of x.
 
 ```
 segEndX(segment_name: string, sketch_group: SketchGroup) -> number
+```
+
+#### Examples
+
+```kcl
+startSketchOn("YZ")
+  |> startProfileAt([0, 0], %)
+  |> line({ to: [5, 0], tag: "thing" }, %)
+  |> line([5, 5], %)
+  |> line([segEndX("thing", %), 5], %)
+  |> close(%)
+  |> extrude(5, %)
 ```
 
 #### Arguments
@@ -8752,6 +8802,18 @@ Returns the segment end of y.
 segEndY(segment_name: string, sketch_group: SketchGroup) -> number
 ```
 
+#### Examples
+
+```kcl
+startSketchOn("YZ")
+  |> startProfileAt([0, 0], %)
+  |> line({ to: [5, 0], tag: "thing" }, %)
+  |> line([5, 5], %)
+  |> line([segEndY("thing", %), 5], %)
+  |> close(%)
+  |> extrude(5, %)
+```
+
 #### Arguments
 
 * `segment_name`: `string` (REQUIRED)
@@ -8934,6 +8996,18 @@ Returns the length of the segment.
 
 ```
 segLen(segment_name: string, sketch_group: SketchGroup) -> number
+```
+
+#### Examples
+
+```kcl
+startSketchOn("YZ")
+  |> startProfileAt([0, 0], %)
+  |> line({ to: [5, 0], tag: "thing" }, %)
+  |> line([5, 5], %)
+  |> line([0, segLen(%)], %)
+  |> close(%)
+  |> extrude(5, %)
 ```
 
 #### Arguments
