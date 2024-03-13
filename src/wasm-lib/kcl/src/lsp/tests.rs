@@ -1,4 +1,7 @@
-use std::sync::{Arc, RwLock};
+use std::{
+    collections::BTreeMap,
+    sync::{Arc, RwLock},
+};
 
 use anyhow::Result;
 use pretty_assertions::assert_eq;
@@ -649,5 +652,25 @@ async fn test_kcl_lsp_create_zip() {
     );
 
     // Create a zip.
-    let _bytes = server.create_zip().unwrap();
+    let bytes = server.create_zip().unwrap();
+    // Write the bytes to a tmp file.
+    let tmp_dir = std::env::temp_dir();
+    let filename = format!("test-{}.zip", chrono::Utc::now().timestamp());
+    let tmp_file = tmp_dir.join(filename);
+    std::fs::write(&tmp_file, bytes).unwrap();
+
+    // Try to unzip the file.
+    let mut archive = zip::ZipArchive::new(std::fs::File::open(&tmp_file).unwrap()).unwrap();
+
+    // Check the files in the zip.
+    let mut files = BTreeMap::new();
+    for i in 0..archive.len() {
+        let file = archive.by_index(i).unwrap();
+        files.insert(file.name().to_string(), file.size());
+    }
+
+    assert_eq!(files.len(), 9);
+    let util_path = format!("{}/util.rs", string_path).replace("file://", "");
+    assert!(files.get(&util_path).is_some());
+    assert_eq!(files.get("/test.kcl"), Some(&4));
 }
