@@ -4106,6 +4106,18 @@ Extrudes by a given amount.
 extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 ```
 
+#### Examples
+
+```kcl
+startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %)
+  |> close(%)
+  |> extrude(5, %)
+```
+
 #### Arguments
 
 * `length`: `number` (REQUIRED)
@@ -4418,6 +4430,22 @@ Create fillets on tagged paths.
 
 ```
 fillet(data: FilletData, extrude_group: ExtrudeGroup) -> ExtrudeGroup
+```
+
+#### Examples
+
+```kcl
+const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line({ to: [0, 10], tag: "thing" }, %)
+  |> line([10, 0], %)
+  |> line({ to: [0, -10], tag: "thing2" }, %)
+  |> close(%)
+  |> extrude(10, %)
+  |> fillet({
+       radius: 2,
+       tags: ["thing", "thing2", "START", "END"]
+     }, %)
 ```
 
 #### Arguments
@@ -4736,6 +4764,20 @@ Returns the extrude wall transform.
 getExtrudeWallTransform(surface_name: string, extrude_group: ExtrudeGroup) -> ExtrudeTransform
 ```
 
+#### Examples
+
+```kcl
+const box = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line({ to: [0, -10], tag: "surface" }, %)
+  |> close(%)
+  |> extrude(5, %)
+
+const transform = getExtrudeWallTransform('surface', box)
+```
+
 #### Arguments
 
 * `surface_name`: `string` (REQUIRED)
@@ -4893,6 +4935,22 @@ Get the next adjacent edge to the edge given.
 getNextAdjacentEdge(tag: String, extrude_group: ExtrudeGroup) -> Uuid
 ```
 
+#### Examples
+
+```kcl
+const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line({ to: [0, 10], tag: "thing" }, %)
+  |> line({ to: [10, 0], tag: "thing1" }, %)
+  |> line({ to: [0, -10], tag: "thing2" }, %)
+  |> close(%)
+  |> extrude(10, %)
+  |> fillet({
+       radius: 2,
+       tags: [getNextAdjacentEdge("thing", %)]
+     }, %)
+```
+
 #### Arguments
 
 * `tag`: `String` (REQUIRED)
@@ -5044,6 +5102,22 @@ Get the opposite edge to the edge given.
 getOppositeEdge(tag: String, extrude_group: ExtrudeGroup) -> Uuid
 ```
 
+#### Examples
+
+```kcl
+const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line({ to: [0, 10], tag: "thing" }, %)
+  |> line([10, 0], %)
+  |> line({ to: [0, -10], tag: "thing2" }, %)
+  |> close(%)
+  |> extrude(10, %)
+  |> fillet({
+       radius: 2,
+       tags: ["thing", getOppositeEdge("thing", %)]
+     }, %)
+```
+
 #### Arguments
 
 * `tag`: `String` (REQUIRED)
@@ -5193,6 +5267,22 @@ Get the previous adjacent edge to the edge given.
 
 ```
 getPreviousAdjacentEdge(tag: String, extrude_group: ExtrudeGroup) -> Uuid
+```
+
+#### Examples
+
+```kcl
+const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line({ to: [0, 10], tag: "thing" }, %)
+  |> line({ to: [10, 0], tag: "thing1" }, %)
+  |> line({ to: [0, -10], tag: "thing2" }, %)
+  |> close(%)
+  |> extrude(10, %)
+  |> fillet({
+       radius: 2,
+       tags: [getPreviousAdjacentEdge("thing2", %)]
+     }, %)
 ```
 
 #### Arguments

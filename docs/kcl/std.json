@@ -23041,7 +23041,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([0, 10], %)\n  |> line([10, 0], %)\n  |> line([0, -10], %)\n  |> close(%)\n  |> extrude(5, %)"
+    ]
   },
   {
     "name": "fillet",
@@ -24602,7 +24604,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const part001 = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [0, 10], tag: \"thing\" }, %)\n  |> line([10, 0], %)\n  |> line({ to: [0, -10], tag: \"thing2\" }, %)\n  |> close(%)\n  |> extrude(10, %)\n  |> fillet({\n       radius: 2,\n       tags: [\"thing\", \"thing2\", \"START\", \"END\"]\n     }, %)"
+    ]
   },
   {
     "name": "floor",
@@ -25464,7 +25468,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const box = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([0, 10], %)\n  |> line([10, 0], %)\n  |> line({ to: [0, -10], tag: \"surface\" }, %)\n  |> close(%)\n  |> extrude(5, %)\n\nconst transform = getExtrudeWallTransform('surface', box)"
+    ]
   },
   {
     "name": "getNextAdjacentEdge",
@@ -26248,7 +26254,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const part001 = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [0, 10], tag: \"thing\" }, %)\n  |> line({ to: [10, 0], tag: \"thing1\" }, %)\n  |> line({ to: [0, -10], tag: \"thing2\" }, %)\n  |> close(%)\n  |> extrude(10, %)\n  |> fillet({\n       radius: 2,\n       tags: [getNextAdjacentEdge(\"thing\", %)]\n     }, %)"
+    ]
   },
   {
     "name": "getOppositeEdge",
@@ -27032,7 +27040,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const part001 = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [0, 10], tag: \"thing\" }, %)\n  |> line([10, 0], %)\n  |> line({ to: [0, -10], tag: \"thing2\" }, %)\n  |> close(%)\n  |> extrude(10, %)\n  |> fillet({\n       radius: 2,\n       tags: [\"thing\", getOppositeEdge(\"thing\", %)]\n     }, %)"
+    ]
   },
   {
     "name": "getPreviousAdjacentEdge",
@@ -27816,7 +27826,9 @@
     },
     "unpublished": false,
     "deprecated": false,
-    "examples": []
+    "examples": [
+      "const part001 = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line({ to: [0, 10], tag: \"thing\" }, %)\n  |> line({ to: [10, 0], tag: \"thing1\" }, %)\n  |> line({ to: [0, -10], tag: \"thing2\" }, %)\n  |> close(%)\n  |> extrude(10, %)\n  |> fillet({\n       radius: 2,\n       tags: [getPreviousAdjacentEdge(\"thing2\", %)]\n     }, %)"
+    ]
   },
   {
     "name": "hole",

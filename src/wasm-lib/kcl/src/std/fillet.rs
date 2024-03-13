@@ -44,6 +44,17 @@ pub async fn fillet(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Create fillets on tagged paths.
+///
+/// ```no_run
+/// const part001 = startSketchOn('XY')
+///     |> startProfileAt([0,0], %)
+///     |> line({to: [0, 10], tag: "thing"}, %)
+///     |> line([10, 0], %)
+///     |> line({to: [0, -10], tag: "thing2"}, %)
+///     |> close(%)
+///     |> extrude(10, %)
+///     |> fillet({radius: 2, tags: ["thing", "thing2", "START", "END"]}, %)
+/// ```
 #[stdlib {
     name = "fillet",
 }]
@@ -115,6 +126,17 @@ pub async fn get_opposite_edge(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Get the opposite edge to the edge given.
+///
+/// ```no_run
+/// const part001 = startSketchOn('XY')
+///     |> startProfileAt([0,0], %)
+///     |> line({to: [0, 10], tag: "thing"}, %)
+///     |> line([10, 0], %)
+///     |> line({to: [0, -10], tag: "thing2"}, %)
+///     |> close(%)
+///     |> extrude(10, %)
+///     |> fillet({radius: 2, tags: ["thing", getOppositeEdge("thing", %)]}, %)
+/// ```
 #[stdlib {
     name = "getOppositeEdge",
 }]
@@ -173,6 +195,17 @@ pub async fn get_next_adjacent_edge(args: Args) -> Result<MemoryItem, KclError> 
 }
 
 /// Get the next adjacent edge to the edge given.
+///
+/// ```no_run
+/// const part001 = startSketchOn('XY')
+///     |> startProfileAt([0,0], %)
+///     |> line({to: [0, 10], tag: "thing"}, %)
+///     |> line({to: [10, 0], tag: "thing1"}, %)
+///     |> line({to: [0, -10], tag: "thing2"}, %)
+///     |> close(%)
+///     |> extrude(10, %)
+///     |> fillet({radius: 2, tags: [getNextAdjacentEdge("thing", %)]}, %)
+/// ```
 #[stdlib {
     name = "getNextAdjacentEdge",
 }]
@@ -240,6 +273,17 @@ pub async fn get_previous_adjacent_edge(args: Args) -> Result<MemoryItem, KclErr
 }
 
 /// Get the previous adjacent edge to the edge given.
+///
+/// ```no_run
+/// const part001 = startSketchOn('XY')
+///     |> startProfileAt([0,0], %)
+///     |> line({to: [0, 10], tag: "thing"}, %)
+///     |> line({to: [10, 0], tag: "thing1"}, %)
+///     |> line({to: [0, -10], tag: "thing2"}, %)
+///     |> close(%)
+///     |> extrude(10, %)
+///     |> fillet({radius: 2, tags: [getPreviousAdjacentEdge("thing2", %)]}, %)
+/// ```
 #[stdlib {
     name = "getPreviousAdjacentEdge",
 }]
