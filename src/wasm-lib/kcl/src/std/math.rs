@@ -467,10 +467,10 @@ pub async fn to_radians(args: Args) -> Result<MemoryItem, KclError> {
 /// Converts a number from degrees to radians.
 ///
 /// ```no_run
-/// const myVar = to_radians(180)
+/// const myVar = toRadians(180)
 /// ```
 #[stdlib {
-    name = "to_radians",
+    name = "toRadians",
 }]
 fn inner_to_radians(num: f64) -> Result<f64, KclError> {
     Ok(num.to_radians())
@@ -487,10 +487,10 @@ pub async fn to_degrees(args: Args) -> Result<MemoryItem, KclError> {
 /// Converts a number from radians to degrees.
 ///
 /// ```no_run
-/// const myVar = to_degrees(2 * pi())
+/// const myVar = toDegrees(2 * pi())
 /// ```
 #[stdlib {
-    name = "to_degrees",
+    name = "toDegrees",
 }]
 fn inner_to_degrees(num: f64) -> Result<f64, KclError> {
     Ok(num.to_degrees())

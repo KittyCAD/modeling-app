@@ -32381,7 +32381,7 @@
     "deprecated": false,
     "examples": [
       "const model = import(\"thing.obj\")",
-      "const model = import(\"tests/executor/inputs/cube.obj\", { type: \"obj\", units: \"m\" })",
+      "const model = import(\"cube.obj\", { type: \"obj\", units: \"m\" })",
       "const model = import(\"my_model.gltf\")",
       "const model = import(\"my_model.sldprt\")",
       "const model = import(\"my_model.step\")"
@@ -53403,7 +53403,7 @@
     "deprecated": false,
     "examples": [
       "startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 10], %)\n  |> line({ to: [20, 10], tag: \"edge1\" }, %)\n  |> close(%, \"edge2\")",
-      "fn cube = (pos, scale) => {\n  const sg = startSketchOn('XY')\n  |> startProfileAt(pos, %)\n  |> line([0, scale], %)\n  |> line([scale, 0], %)\n  |> line([0, -scale], %)\n\n  return sg\n}\n\nconst box = cube([0, 0], 20)\n\nconst part001 = startSketchOn(box, \"start\")\n  |> close(%)\n  |> extrude(20, %)"
+      "fn cube = (pos, scale) => {\n  const sg = startSketchOn('XY')\n  |> startProfileAt(pos, %)\n  |> line([0, scale], %)\n  |> line([scale, 0], %)\n  |> line([0, -scale], %)\n  |> close(%)\n  |> extrude(scale, %)\n\n  return sg\n}\n\nconst box = cube([0, 0], 20)\n\nconst part001 = startSketchOn(box, \"start\")\n  |> startProfileAt([0, 0], %)\n  |> line([10, 10], %)\n  |> line({ to: [20, 10], tag: \"edge1\" }, %)\n  |> close(%)\n  |> extrude(20, %)"
     ]
   },
   {
@@ -57415,7 +57415,7 @@
     ]
   },
   {
-    "name": "to_degrees",
+    "name": "toDegrees",
     "summary": "Converts a number from radians to degrees.",
     "description": "",
     "tags": [],
@@ -57442,11 +57442,11 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const myVar = rad_to_deg(2 * pi())"
+      "const myVar = toDegrees(2 * pi())"
     ]
   },
   {
-    "name": "to_radians",
+    "name": "toRadians",
     "summary": "Converts a number from degrees to radians.",
     "description": "",
     "tags": [],
@@ -57473,7 +57473,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const myVar = deg_to_rad(180)"
+      "const myVar = toRadians(180)"
     ]
   },
   {

@@ -65,8 +65,8 @@
 	* [`tangentialArc`](#tangentialArc)
 	* [`tangentialArcTo`](#tangentialArcTo)
 	* [`tau`](#tau)
-	* [`to_degrees`](#to_degrees)
-	* [`to_radians`](#to_radians)
+	* [`toDegrees`](#toDegrees)
+	* [`toRadians`](#toRadians)
 	* [`xLine`](#xLine)
 	* [`xLineTo`](#xLineTo)
 	* [`yLine`](#yLine)
@@ -6096,7 +6096,7 @@ const model = import("thing.obj")
 ```
 
 ```kcl
-const model = import("tests/executor/inputs/cube.obj", { type: "obj", units: "m" })
+const model = import("cube.obj", { type: "obj", units: "m" })
 ```
 
 ```kcl
@@ -9649,6 +9649,8 @@ fn cube = (pos, scale) => {
   |> line([0, scale], %)
   |> line([scale, 0], %)
   |> line([0, -scale], %)
+  |> close(%)
+  |> extrude(scale, %)
 
   return sg
 }
@@ -9656,6 +9658,9 @@ fn cube = (pos, scale) => {
 const box = cube([0, 0], 20)
 
 const part001 = startSketchOn(box, "start")
+  |> startProfileAt([0, 0], %)
+  |> line([10, 10], %)
+  |> line({ to: [20, 10], tag: "edge1" }, %)
   |> close(%)
   |> extrude(20, %)
 ```
@@ -10681,20 +10686,20 @@ const myVar = tau()
 
 
 
-### to_degrees
+### toDegrees
 
 Converts a number from radians to degrees.
 
 
 
 ```
-to_degrees(num: number) -> number
+toDegrees(num: number) -> number
 ```
 
 #### Examples
 
 ```kcl
-const myVar = rad_to_deg(2 * pi())
+const myVar = toDegrees(2 * pi())
 ```
 
 #### Arguments
@@ -10707,20 +10712,20 @@ const myVar = rad_to_deg(2 * pi())
 
 
 
-### to_radians
+### toRadians
 
 Converts a number from degrees to radians.
 
 
 
 ```
-to_radians(num: number) -> number
+toRadians(num: number) -> number
 ```
 
 #### Examples
 
 ```kcl
-const myVar = deg_to_rad(180)
+const myVar = toRadians(180)
 ```
 
 #### Arguments
