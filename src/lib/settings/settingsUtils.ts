@@ -1,7 +1,7 @@
 import { type CameraSystem, cameraSystems } from '../cameraControls'
 import { Themes } from '../theme'
 import { isTauri } from '../isTauri'
-import { readSettingsFile } from '../tauriFS'
+import { getInitialDefaultDir, readSettingsFile } from '../tauriFS'
 import { initialSettings } from 'lib/settings/initialSettings'
 import {
   type BaseUnit,
@@ -30,7 +30,8 @@ export async function loadAndValidateSettings(): Promise<
     localStorage?.getItem(SETTINGS_PERSIST_KEY) || '{}'
   )
   const mergedSettings = Object.assign({}, localStorageSettings, fsSettings)
-  return validateSettings(mergedSettings)
+
+  return await validateSettings(mergedSettings)
 }
 
 const settingsValidators: Record<
@@ -59,7 +60,7 @@ function removeInvalidSettingsKeys(s: Record<string, unknown>) {
   return s
 }
 
-export function validateSettings(s: Record<string, unknown>) {
+export async function validateSettings(s: Record<string, unknown>) {
   let settingsNoInvalidKeys = removeInvalidSettingsKeys({ ...s })
   let errors: (keyof SettingsMachineContext)[] = []
   for (const key in settingsNoInvalidKeys) {
@@ -70,11 +71,17 @@ export function validateSettings(s: Record<string, unknown>) {
     }
   }
 
+  // Here's our chance to insert the fallback defaultDir
+  const defaultDirectory = isTauri() ? await getInitialDefaultDir() : ''
+
+  const settings = Object.assign(
+    initialSettings,
+    { defaultDirectory },
+    settingsNoInvalidKeys
+  ) as SettingsMachineContext
+
   return {
-    settings: Object.assign(
-      initialSettings,
-      settingsNoInvalidKeys
-    ) as SettingsMachineContext,
+    settings,
     errors,
   }
 }

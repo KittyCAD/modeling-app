@@ -23,7 +23,9 @@
       "fs": {
         "scope": [
           "$HOME/**/*",
+          "$APPCONFIG",
           "$APPCONFIG/**/*",
+          "$DOCUMENT",
           "$DOCUMENT/**/*"
         ],
         "all": true

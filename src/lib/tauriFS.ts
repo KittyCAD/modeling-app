@@ -103,7 +103,7 @@ async function testAndCreateDir(
 
   if (dirExists instanceof Error) {
     returnValue.error = dirExists
-  } else if (dirExists && dirExists === true) {
+  } else if (dirExists === false) {
     const newDirCreated = await createDir(directory, { recursive: true }).catch(
       (e) => {
         console.error(

@@ -1,5 +1,5 @@
 import { useMachine } from '@xstate/react'
-import { useLoaderData, useNavigate } from 'react-router-dom'
+import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { paths } from 'lib/paths'
 import { authMachine, TOKEN_PERSIST_KEY } from '../machines/authMachine'
 import withBaseUrl from '../lib/withBaseURL'
@@ -49,7 +49,9 @@ export const SettingsAuthProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const loadedSettings = useLoaderData() as ReturnType<typeof validateSettings>
+  const loadedSettings = useRouteLoaderData(paths.INDEX) as Awaited<
+    ReturnType<typeof validateSettings>
+  >
   return (
     <SettingsAuthProviderBase loadedSettings={loadedSettings}>
       {children}
@@ -77,7 +79,7 @@ export const SettingsAuthProviderBase = ({
   loadedSettings,
 }: {
   children: React.ReactNode
-  loadedSettings: ReturnType<typeof validateSettings>
+  loadedSettings: Awaited<ReturnType<typeof validateSettings>>
 }) => {
   const { settings: initialLoadedContext } = loadedSettings
   const navigate = useNavigate()
