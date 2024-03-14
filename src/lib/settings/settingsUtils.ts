@@ -40,7 +40,7 @@ const settingsValidators: Record<
 > = {
   baseUnit: (v) => baseUnitsUnion.includes(v as BaseUnit),
   cameraControls: (v) => cameraSystems.includes(v as CameraSystem),
-  defaultDirectory: (v) => typeof v === 'string' && v.length > 0,
+  defaultDirectory: (v) => typeof v === 'string' && (v.length > 0 || !isTauri()),
   defaultProjectName: (v) => typeof v === 'string' && v.length > 0,
   onboardingStatus: (v) => typeof v === 'string',
   showDebugPanel: (v) => typeof v === 'boolean',
