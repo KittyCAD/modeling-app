@@ -716,3 +716,134 @@ impl Callable for StartSketchAt {
         })
     }
 }
+
+#[derive(Debug, Clone)]
+#[cfg_attr(test, derive(Eq, PartialEq))]
+pub struct TangentialArcTo;
+
+impl Callable for TangentialArcTo {
+    fn call(
+        &self,
+        ctx: &mut crate::native_functions::Context<'_>,
+        args: Vec<EpBinding>,
+    ) -> Result<EvalPlan, CompileError> {
+        let mut instructions = Vec::new();
+        let fn_name = "tangential_arc_to";
+        // Get both required params.
+        let mut args_iter = args.into_iter();
+        let Some(to) = args_iter.next() else {
+            return Err(CompileError::NotEnoughArgs {
+                fn_name: fn_name.into(),
+                required: 2,
+                actual: 0,
+            });
+        };
+        let Some(sketch_group) = args_iter.next() else {
+            return Err(CompileError::NotEnoughArgs {
+                fn_name: fn_name.into(),
+                required: 2,
+                actual: 1,
+            });
+        };
+        let tag = match args_iter.next() {
+            Some(a) => a,
+            None => {
+                // Write an empty string and use that.
+                let empty_string_addr = ctx.next_address.offset_by(1);
+                instructions.push(Instruction::SetPrimitive {
+                    address: empty_string_addr,
+                    value: String::new().into(),
+                });
+                EpBinding::Single(empty_string_addr)
+            }
+        };
+        // Check the type of required params.
+        let to = arg_point2d(to, fn_name, &mut instructions, ctx, 0)?;
+        let sg = sg_binding(sketch_group, fn_name, "sketch group", 1)?;
+        let tag = single_binding(tag, fn_name, "string tag", 2)?;
+        let id = Uuid::new_v4();
+        // Start of the path segment (which is a straight line).
+        let length_of_3d_point = Point3d::<f64>::default().into_parts().len();
+        let start_of_tangential_arc = ctx.next_address.offset_by(1);
+        // Reserve space for the line's end, and the `relative: bool` field.
+        ctx.next_address.offset_by(length_of_3d_point + 1);
+        let new_sg_index = ctx.assign_sketch_group();
+        instructions.extend([
+            // Push the `to` 2D point onto the stack.
+            Instruction::Copy {
+                source: to,
+                length: 2,
+                destination: Destination::StackPush,
+            },
+            // Make it a 3D point.
+            Instruction::StackExtend { data: vec![0.0.into()] },
+            // Append the new path segment to memory.
+            // First comes its tag.
+            Instruction::SetPrimitive {
+                address: start_of_tangential_arc,
+                value: "TangentialArcTo".to_owned().into(),
+            },
+            // Then its to
+            Instruction::StackPop {
+                destination: Some(Destination::Address(start_of_tangential_arc + 1)),
+            },
+            // Then its `angle_snap_increment` field.
+            Instruction::SetPrimitive {
+                address: start_of_tangential_arc + 1 + length_of_3d_point,
+                value: Primitive::from("None".to_owned()),
+            },
+            // Push the path ID onto the stack.
+            Instruction::SketchGroupCopyFrom {
+                destination: Destination::StackPush,
+                length: 1,
+                source: sg,
+                offset: SketchGroup::path_id_offset(),
+            },
+            // Send the ExtendPath request
+            Instruction::ApiRequest(ApiRequest {
+                endpoint: ModelingCmdEndpoint::ExtendPath,
+                store_response: None,
+                arguments: vec![
+                    // Path ID
+                    InMemory::StackPop,
+                    // Segment
+                    InMemory::Address(start_of_tangential_arc),
+                ],
+                cmd_id: id.into(),
+            }),
+            // Push the new segment in SketchGroup format.
+            //      Path tag.
+            Instruction::StackPush {
+                data: vec![Primitive::from("ToPoint".to_owned())],
+            },
+            //      `BasePath::from` point.
+            Instruction::SketchGroupGetLastPoint {
+                source: sg,
+                destination: Destination::StackExtend,
+            },
+            //      `BasePath::to` point.
+            Instruction::Copy {
+                source: start_of_tangential_arc + 1,
+                length: 2,
+                destination: Destination::StackExtend,
+            },
+            //      `BasePath::name` string.
+            Instruction::Copy {
+                source: tag,
+                length: 1,
+                destination: Destination::StackExtend,
+            },
+            // Update the SketchGroup with its new segment.
+            Instruction::SketchGroupAddSegment {
+                destination: new_sg_index,
+                segment: InMemory::StackPop,
+                source: sg,
+            },
+        ]);
+
+        Ok(EvalPlan {
+            instructions,
+            binding: EpBinding::SketchGroup { index: new_sg_index },
+        })
+    }
+}

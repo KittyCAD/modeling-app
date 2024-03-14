@@ -1218,6 +1218,89 @@ async fn stdlib_cube_xline_yline() {
     twenty_twenty::assert_image("fixtures/cube_xyLine.png", &img, 0.9999);
 }
 
+#[tokio::test]
+async fn stdlib_cube_with_tangential_arc_to() {
+    let program = r#"
+    let cube = startSketchAt([10.0, 10.0], "adam")
+        |> lineTo([200.0 ,  10.0], %, "side0")
+        |> tangentialArcTo([210.0, 20.0], %, "arc")
+        |> lineTo([210.0 , 210.0], %, "side1")
+        |> lineTo([ 10.0 , 210.0], %, "side2")
+        |> lineTo([ 10.0 ,  10.0], %, "side3")
+        |> close(%)
+        |> extrude(100.0, %)
+    "#;
+    kcvm_dbg(program);
+    let (_plan, _scope, last_address) = must_plan(program);
+    assert_eq!(last_address, Address::ZERO + 80);
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+        .ast()
+        .unwrap();
+    let mut client = Some(test_client().await);
+    let mem = match crate::execute(ast, &mut client).await {
+        Ok(mem) => mem,
+        Err(e) => panic!("{e}"),
+    };
+    let sg = &mem.sketch_groups.last().unwrap();
+    assert_eq!(
+        sg.path_rest,
+        vec![
+            sketch_types::PathSegment::ToPoint {
+                base: sketch_types::BasePath {
+                    from: Point2d { x: 10.0, y: 10.0 },
+                    to: Point2d { x: 200.0, y: 10.0 },
+                    name: "side0".into(),
+                }
+            },
+            sketch_types::PathSegment::ToPoint {
+                base: sketch_types::BasePath {
+                    from: Point2d { x: 200.0, y: 10.0 },
+                    to: Point2d { x: 210.0, y: 20.0 },
+                    name: "arc".into(),
+                }
+            },
+            sketch_types::PathSegment::ToPoint {
+                base: sketch_types::BasePath {
+                    from: Point2d { x: 210.0, y: 20.0 },
+                    to: Point2d { x: 210.0, y: 210.0 },
+                    name: "side1".into(),
+                }
+            },
+            sketch_types::PathSegment::ToPoint {
+                base: sketch_types::BasePath {
+                    from: Point2d { x: 210.0, y: 210.0 },
+                    to: Point2d { x: 10.0, y: 210.0 },
+                    name: "side2".into(),
+                }
+            },
+            sketch_types::PathSegment::ToPoint {
+                base: sketch_types::BasePath {
+                    from: Point2d { x: 10.0, y: 210.0 },
+                    to: Point2d { x: 10.0, y: 10.0 },
+                    name: "side3".into(),
+                }
+            },
+        ]
+    );
+    // use kittycad_modeling_cmds::{each_cmd, ok_response::OkModelingCmdResponse, ImageFormat};
+    // let out = client
+    //     .unwrap()
+    //     .run_command(
+    //         uuid::Uuid::new_v4().into(),
+    //         each_cmd::TakeSnapshot {
+    //             format: ImageFormat::Png,
+    //         },
+    //     )
+    //     .await
+    //     .unwrap();
+    // let out = match out {
+    //     OkModelingCmdResponse::TakeSnapshot(b) => b,
+    //     other => panic!("wrong output: {other:?}"),
+    // };
+    // let out: Vec<u8> = out.contents.into();
+    // std::fs::write("image.png", out).unwrap();
+}
+
 async fn test_client() -> Session {
     let kittycad_api_token = env::var("KITTYCAD_API_TOKEN").expect("You must set $KITTYCAD_API_TOKEN");
     let kittycad_api_client = kittycad::Client::new(kittycad_api_token);
