@@ -3,11 +3,13 @@ on:
     branches:
       - main
     paths:
-      - 'src/wasm-lib/**.rs'
+      - '**.rs'
       - '**/Cargo.toml'
       - '**/Cargo.lock'
       - '**/rust-toolchain.toml'
       - .github/workflows/cargo-test.yml
+    paths-ignore:
+      - 'src-tauri/**.rs'
   pull_request:
     paths:
       - '**.rs'
@@ -15,6 +17,8 @@ on:
       - '**/Cargo.lock'
       - '**/rust-toolchain.toml'
       - .github/workflows/cargo-test.yml
+    paths-ignore:
+      - 'src-tauri/**.rs'
   workflow_dispatch:
 permissions: read-all
 concurrency:
