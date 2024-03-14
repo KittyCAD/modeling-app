@@ -731,8 +731,8 @@ async fn serial_test_holes() {
   |> line([10, 0], %)
   |> line([0, -10], %)
   |> close(%)
-  |> hole(circle([2, 2], .5, startSketchOn('XY')), %)
-  |> hole(circle([2, 8], .5, startSketchOn('XY')), %)
+  |> hole(circle([2, 2], .5, %), %)
+  |> hole(circle([2, 8], .5, %), %)
   |> extrude(2, %)
 "#;
 
@@ -787,10 +787,10 @@ const holeRadius = 1
 const holeIndex = 6
 
 const part = roundedRectangle([0, 0], 20, 20, 4)
-  |> hole(circle([-holeIndex, holeIndex], holeRadius,  startSketchOn('XY')), %)
-  |> hole(circle([holeIndex, holeIndex], holeRadius,  startSketchOn('XY')), %)
-  |> hole(circle([-holeIndex, -holeIndex], holeRadius,  startSketchOn('XY')), %)
-  |> hole(circle([holeIndex, -holeIndex], holeRadius,  startSketchOn('XY')), %)
+  |> hole(circle([-holeIndex, holeIndex], holeRadius, %), %)
+  |> hole(circle([holeIndex, holeIndex], holeRadius, %), %)
+  |> hole(circle([-holeIndex, -holeIndex], holeRadius, %), %)
+  |> hole(circle([holeIndex, -holeIndex], holeRadius, %), %)
   |> extrude(2, %)
 "#;
 
@@ -802,7 +802,7 @@ const part = roundedRectangle([0, 0], 20, 20, 4)
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_top_level_expression() {
-    let code = r#"circle([0,0], 22,  startSketchOn('XY')) |> extrude(14, %)"#;
+    let code = r#"startSketchOn('XY') |> circle([0,0], 22, %) |> extrude(14, %)"#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
         .await
@@ -1252,7 +1252,7 @@ async fn serial_test_stdlib_kcl_error_right_code_path() {
   |> line([0, -10], %)
   |> close(%)
   |> hole(circle([2, 2], .5), %)
-  |> hole(circle([2, 8], .5, startSketchOn('XY')), %)
+  |> hole(circle([2, 8], .5, %), %)
   |> extrude(2, %)
 "#;
 
@@ -1260,7 +1260,7 @@ async fn serial_test_stdlib_kcl_error_right_code_path() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([157, 175])], message: "this function expected 3 arguments, got 2" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([157, 175])], message: "Expected a SketchGroup or SketchSurface as the third argument, found `[UserVal(UserVal { value: Array [Number(2), Number(2)], meta: [Metadata { source_range: SourceRange([164, 170]) }] }), UserVal(UserVal { value: Number(0.5), meta: [Metadata { source_range: SourceRange([172, 174]) }] })]`" }"#
     );
 }
 
@@ -1367,6 +1367,6 @@ const part = rectShape([0, 0], 20, 20)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([987, 1036])], message: "MemberExpression array is not an array: UserVal(UserVal { value: String(\"XY\"), meta: [Metadata { source_range: SourceRange([994, 998]) }] })" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([987, 1036])], message: "Expected a [number, number] as the first argument, found `[UserVal(UserVal { value: String(\"XY\"), meta: [Metadata { source_range: SourceRange([994, 998]) }] }), UserVal(UserVal { value: Array [Number(-6.0), Number(6)], meta: [Metadata { source_range: SourceRange([1000, 1023]) }] }), UserVal(UserVal { value: Number(1), meta: [Metadata { source_range: SourceRange([856, 857]) }] })]`" }"#
     );
 }

@@ -1220,7 +1220,7 @@ pub async fn start_profile_at(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "startProfileAt",
 }]
-async fn inner_start_profile_at(
+pub(crate) async fn inner_start_profile_at(
     data: LineData,
     sketch_surface: SketchSurface,
     args: Args,
@@ -1306,7 +1306,7 @@ pub async fn close(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "close",
 }]
-async fn inner_close(
+pub(crate) async fn inner_close(
     sketch_group: Box<SketchGroup>,
     tag: Option<String>,
     args: Args,
@@ -1402,7 +1402,11 @@ pub async fn arc(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "arc",
 }]
-async fn inner_arc(data: ArcData, sketch_group: Box<SketchGroup>, args: Args) -> Result<Box<SketchGroup>, KclError> {
+pub(crate) async fn inner_arc(
+    data: ArcData,
+    sketch_group: Box<SketchGroup>,
+    args: Args,
+) -> Result<Box<SketchGroup>, KclError> {
     let from: Point2d = sketch_group.get_coords_from_paths()?;
 
     let (center, angle_start, angle_end, radius, end) = match &data {
@@ -1790,8 +1794,8 @@ pub async fn hole(args: Args) -> Result<MemoryItem, KclError> {
 ///     |> line([10, 0], %)
 ///     |> line([0, -10], %)
 ///     |> close(%)
-///     |> hole(circle([2, 2], .5, startSketchOn('XY')), %)
-///     |> hole(circle([2, 8], .5, startSketchOn('XY')), %)
+///     |> hole(circle([2, 2], .5, %), %)
+///     |> hole(circle([2, 8], .5, %), %)
 ///     |> extrude(2, %)
 /// ```
 #[stdlib {
