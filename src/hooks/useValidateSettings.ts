@@ -20,10 +20,6 @@ export function useValidateSettings() {
   // If there were validation errors either from local storage or from the file,
   // log them to the console and show a toast message to the user.
   useEffect(() => {
-    console.log({
-      settings,
-      errors,
-    })
     if (errors.length > 0) {
       send('Set All Settings', settings)
       const errorMessage =

@@ -119,6 +119,8 @@ async function testAndCreateDir(
     } else {
       returnValue.path = directory
     }
+  } else if (dirExists === true) {
+    returnValue.path = directory
   }
 
   return returnValue
