@@ -305,7 +305,7 @@ async fn computed_object_property() {
     let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
         .ast()
         .unwrap();
-    let mem = crate::execute(ast, None).await.unwrap();
+    let mem = crate::execute(ast, &mut None).await.unwrap();
     use ept::ReadMemory;
     // Should be 'true', based on the above KCL program.
     assert_eq!(mem.get(address_of_val).unwrap(), &ept::Primitive::Bool(true));
@@ -327,7 +327,7 @@ async fn computed_array_in_object() {
     let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
         .ast()
         .unwrap();
-    let mem = crate::execute(ast, None).await.unwrap();
+    let mem = crate::execute(ast, &mut None).await.unwrap();
     use ept::ReadMemory;
     // Should be 'true', based on the above KCL program.
     assert_eq!(mem.get(address_of_val).unwrap(), &ept::Primitive::Bool(true));
@@ -349,7 +349,7 @@ async fn computed_object_in_array() {
     let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
         .ast()
         .unwrap();
-    let mem = crate::execute(ast, None).await.unwrap();
+    let mem = crate::execute(ast, &mut None).await.unwrap();
     use ept::ReadMemory;
     // Should be 'true', based on the above KCL program.
     assert_eq!(mem.get(address_of_val).unwrap(), &ept::Primitive::Bool(true));
@@ -370,7 +370,7 @@ async fn computed_nested_object_property() {
     let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
         .ast()
         .unwrap();
-    let mem = crate::execute(ast, None).await.unwrap();
+    let mem = crate::execute(ast, &mut None).await.unwrap();
     use ept::ReadMemory;
     // Should be 'true', based on the above KCL program.
     assert_eq!(mem.get(address_of_val).unwrap(), &ept::Primitive::Bool(true));
@@ -465,7 +465,7 @@ async fn computed_array_index() {
     let tokens = kcl_lib::token::lexer(program);
     let parser = kcl_lib::parser::Parser::new(tokens);
     let ast = parser.ast().unwrap();
-    let mem = crate::execute(ast, None).await.unwrap();
+    let mem = crate::execute(ast, &mut None).await.unwrap();
     use ept::ReadMemory;
     // Should be "b", as pointed out in the KCL program's comment.
     assert_eq!(
@@ -1061,19 +1061,21 @@ fn kcvm_dbg(kcl_program: &str) {
 #[tokio::test]
 async fn stdlib_cube_partial() {
     let program = r#"
-    let cube = startSketchAt([1.0, 1.0], "adam")
-        |> lineTo([21.0 ,  1.0], %, "side0")
-        |> lineTo([21.0 , 21.0], %, "side1")
-        |> lineTo([ 1.0 , 21.0], %, "side2")
-        |> lineTo([ 1.0 ,  1.0], %, "side3")
+    let cube = startSketchAt([10.0, 10.0], "adam")
+        |> lineTo([210.0 ,  10.0], %, "side0")
+        |> lineTo([210.0 , 210.0], %, "side1")
+        |> lineTo([ 10.0 , 210.0], %, "side2")
+        |> lineTo([ 10.0 ,  10.0], %, "side3")
+        |> close(%)
+        |> extrude(100.0, %)
     "#;
     let (_plan, _scope, last_address) = must_plan(program);
-    assert_eq!(last_address, Address::ZERO + 65);
+    assert_eq!(last_address, Address::ZERO + 66);
     let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
         .ast()
         .unwrap();
-    let client = test_client().await;
-    let mem = match crate::execute(ast, Some(client)).await {
+    let mut client = Some(test_client().await);
+    let mem = match crate::execute(ast, &mut client).await {
         Ok(mem) => mem,
         Err(e) => panic!("{e}"),
     };
@@ -1083,36 +1085,37 @@ async fn stdlib_cube_partial() {
         vec![
             sketch_types::PathSegment::ToPoint {
                 base: sketch_types::BasePath {
-                    from: Point2d { x: 1.0, y: 1.0 },
-                    to: Point2d { x: 21.0, y: 1.0 },
+                    from: Point2d { x: 10.0, y: 10.0 },
+                    to: Point2d { x: 210.0, y: 10.0 },
                     name: "side0".into(),
                 }
             },
             sketch_types::PathSegment::ToPoint {
                 base: sketch_types::BasePath {
-                    from: Point2d { x: 21.0, y: 1.0 },
-                    to: Point2d { x: 21.0, y: 21.0 },
+                    from: Point2d { x: 210.0, y: 10.0 },
+                    to: Point2d { x: 210.0, y: 210.0 },
                     name: "side1".into(),
                 }
             },
             sketch_types::PathSegment::ToPoint {
                 base: sketch_types::BasePath {
-                    from: Point2d { x: 21.0, y: 21.0 },
-                    to: Point2d { x: 1.0, y: 21.0 },
+                    from: Point2d { x: 210.0, y: 210.0 },
+                    to: Point2d { x: 10.0, y: 210.0 },
                     name: "side2".into(),
                 }
             },
             sketch_types::PathSegment::ToPoint {
                 base: sketch_types::BasePath {
-                    from: Point2d { x: 1.0, y: 21.0 },
-                    to: Point2d { x: 1.0, y: 1.0 },
+                    from: Point2d { x: 10.0, y: 210.0 },
+                    to: Point2d { x: 10.0, y: 10.0 },
                     name: "side3".into(),
                 }
             },
         ]
     );
-    // use kittycad_modeling_cmds::{each_cmd, ok_response::OkModelingCmdResponse, ImageFormat, ModelingCmd};
+    // use kittycad_modeling_cmds::{each_cmd, ok_response::OkModelingCmdResponse, ImageFormat};
     // let out = client
+    //     .unwrap()
     //     .run_command(
     //         uuid::Uuid::new_v4().into(),
     //         each_cmd::TakeSnapshot {
@@ -1126,6 +1129,7 @@ async fn stdlib_cube_partial() {
     //     other => panic!("wrong output: {other:?}"),
     // };
     // let out: Vec<u8> = out.contents.into();
+    // std::fs::write("image.png", out).unwrap();
 }
 
 async fn test_client() -> Session {
