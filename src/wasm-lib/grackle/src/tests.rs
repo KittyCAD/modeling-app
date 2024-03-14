@@ -1066,9 +1066,10 @@ async fn stdlib_cube_partial() {
         |> lineTo([21.0 , 21.0], %, "side1")
         |> lineTo([ 1.0 , 21.0], %, "side2")
         |> lineTo([ 1.0 ,  1.0], %, "side3")
+        |> extrude(10.0, %)
     "#;
     let (_plan, _scope, last_address) = must_plan(program);
-    assert_eq!(last_address, Address::ZERO + 65);
+    assert_eq!(last_address, Address::ZERO + 66);
     let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
         .ast()
         .unwrap();

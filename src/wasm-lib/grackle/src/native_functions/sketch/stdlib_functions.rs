@@ -3,7 +3,7 @@ use kittycad_execution_plan::{
     sketch_types::{self, Axes, BasePath, Plane, SketchGroup},
     Destination, Instruction,
 };
-use kittycad_execution_plan_traits::{InMemory, Primitive, Value};
+use kittycad_execution_plan_traits::{Address, InMemory, Primitive, Value};
 use kittycad_modeling_cmds::{
     shared::{Point3d, Point4d},
     ModelingCmdEndpoint,
@@ -12,6 +12,74 @@ use uuid::Uuid;
 
 use super::helpers::{arg_point2d, no_arg_api_call, sg_binding, single_binding, stack_api_call};
 use crate::{binding_scope::EpBinding, error::CompileError, native_functions::Callable, EvalPlan};
+
+#[derive(Debug, Clone)]
+#[cfg_attr(test, derive(Eq, PartialEq))]
+pub struct Extrude;
+
+impl Callable for Extrude {
+    fn call(
+        &self,
+        _ctx: &mut crate::native_functions::Context<'_>,
+        args: Vec<EpBinding>,
+    ) -> Result<EvalPlan, CompileError> {
+        let mut instructions = Vec::new();
+        let fn_name = "extrude";
+        // Get all required params.
+        let mut args_iter = args.into_iter();
+        let Some(height) = args_iter.next() else {
+            return Err(CompileError::NotEnoughArgs {
+                fn_name: fn_name.into(),
+                required: 2,
+                actual: 0,
+            });
+        };
+        let Some(sketch_group) = args_iter.next() else {
+            return Err(CompileError::NotEnoughArgs {
+                fn_name: fn_name.into(),
+                required: 2,
+                actual: 1,
+            });
+        };
+        // Check param type.
+        let height = single_binding(height, fn_name, "numeric height", 0)?;
+        let sg = sg_binding(sketch_group, fn_name, "sketch group", 1)?;
+        let cmd_id = Uuid::new_v4().into();
+        instructions.extend([
+            // Push the `cap` bool onto the stack.
+            Instruction::StackPush {
+                data: vec![true.into()],
+            },
+            // Push the path ID onto the stack.
+            Instruction::SketchGroupCopyFrom {
+                destination: Destination::StackPush,
+                length: 1,
+                source: sg,
+                offset: SketchGroup::path_id_offset(),
+            },
+            // Call the 'extrude' API request.
+            Instruction::ApiRequest(ApiRequest {
+                endpoint: ModelingCmdEndpoint::Extrude,
+                store_response: None,
+                arguments: vec![
+                    // Target
+                    InMemory::StackPop,
+                    // Height
+                    InMemory::Address(height),
+                    // Cap
+                    InMemory::StackPop,
+                ],
+                cmd_id,
+            }),
+        ]);
+
+        // TODO: make an ExtrudeGroup and store it.
+        Ok(EvalPlan {
+            instructions,
+            binding: EpBinding::Single(Address::ZERO + 999),
+        })
+    }
+}
 
 #[derive(Debug, Clone)]
 #[cfg_attr(test, derive(Eq, PartialEq))]

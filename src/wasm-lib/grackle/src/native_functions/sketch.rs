@@ -3,4 +3,4 @@
 pub mod helpers;
 pub mod stdlib_functions;
 
-pub use stdlib_functions::{LineTo, StartSketchAt};
+pub use stdlib_functions::{Extrude, LineTo, StartSketchAt};

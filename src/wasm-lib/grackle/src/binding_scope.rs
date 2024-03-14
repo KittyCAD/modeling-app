@@ -113,6 +113,10 @@ impl BindingScope {
                     "lineTo".into(),
                     EpBinding::from(KclFunction::LineTo(native_functions::sketch::LineTo)),
                 ),
+                (
+                    "extrude".into(),
+                    EpBinding::from(KclFunction::Extrude(native_functions::sketch::Extrude)),
+                ),
             ]),
             parent: None,
         }

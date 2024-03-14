@@ -260,6 +260,7 @@ impl Planner {
                 } = match callee {
                     KclFunction::Id(f) => f.call(&mut ctx, args)?,
                     KclFunction::StartSketchAt(f) => f.call(&mut ctx, args)?,
+                    KclFunction::Extrude(f) => f.call(&mut ctx, args)?,
                     KclFunction::LineTo(f) => f.call(&mut ctx, args)?,
                     KclFunction::Add(f) => f.call(&mut ctx, args)?,
                     KclFunction::UserDefined(f) => {
@@ -631,6 +632,7 @@ enum KclFunction {
     LineTo(native_functions::sketch::LineTo),
     Add(native_functions::Add),
     UserDefined(UserDefinedFunction),
+    Extrude(native_functions::sketch::Extrude),
 }
 
 /// Context used when compiling KCL.
