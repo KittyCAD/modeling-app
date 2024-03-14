@@ -1,10 +1,6 @@
 import { type Models } from '@kittycad/lib'
-import { CameraSystem } from './cameraControls'
-import { Themes } from './theme'
-
-export const DEFAULT_PROJECT_NAME = 'project-$nnn'
-export const SETTINGS_PERSIST_KEY = 'SETTINGS_PERSIST_KEY'
-export const SETTINGS_FILE_NAME = 'settings.json'
+import { type CameraSystem } from '../cameraControls'
+import { Themes } from 'lib/theme'
 
 export enum UnitSystem {
   Imperial = 'imperial',
@@ -21,6 +17,7 @@ export type BaseUnit = Models['UnitLength_type']
 export const baseUnitsUnion = Object.values(baseUnits).flatMap((v) => v)
 
 export type Toggle = 'On' | 'Off'
+export const toggleAsArray = ['On', 'Off'] as const
 
 export type SettingsMachineContext = {
   baseUnit: BaseUnit
@@ -32,16 +29,4 @@ export type SettingsMachineContext = {
   textWrapping: Toggle
   theme: Themes
   unitSystem: UnitSystem
-}
-
-export const initialSettings: SettingsMachineContext = {
-  baseUnit: 'mm' as BaseUnit,
-  cameraControls: 'KittyCAD' as CameraSystem,
-  defaultDirectory: '',
-  defaultProjectName: DEFAULT_PROJECT_NAME,
-  onboardingStatus: '',
-  showDebugPanel: false,
-  textWrapping: 'On' as Toggle,
-  theme: Themes.System,
-  unitSystem: UnitSystem.Metric,
 }

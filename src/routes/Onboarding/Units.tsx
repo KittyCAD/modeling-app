@@ -1,5 +1,9 @@
 import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
-import { BaseUnit, baseUnits, UnitSystem } from 'lib/settings'
+import {
+  type BaseUnit,
+  baseUnits,
+  UnitSystem,
+} from 'lib/settings/settingsTypes'
 import { ActionButton } from 'components/ActionButton'
 import { SettingsSection } from '../Settings'
 import { Toggle } from 'components/Toggle/Toggle'
