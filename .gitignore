@@ -38,13 +38,9 @@ src/wasm-lib/grackle/test_json_output
 e2e/playwright/playwright-secrets.env
 e2e/playwright/temp1.png
 e2e/playwright/temp2.png
-# exports from snapshot-tests.spec.ts
-e2e/playwright/export-snapshots/*.ply
-e2e/playwright/export-snapshots/*.obj
-e2e/playwright/export-snapshots/*.step
-e2e/playwright/export-snapshots/*.stl
-e2e/playwright/export-snapshots/*binary.gltf
-e2e/playwright/export-snapshots/*embedded.gltf
+# exports from snapshot-tests.spec.ts "exports of each format should work"
+e2e/playwright/export-snapshots/*
+!e2e/playwright/export-snapshots/*.png
 
 
 /test-results/
