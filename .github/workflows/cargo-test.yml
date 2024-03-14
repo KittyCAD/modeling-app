@@ -3,7 +3,7 @@ on:
     branches:
       - main
     paths:
-      - '**.rs'
+      - 'src/wasm-lib/**.rs'
       - '**/Cargo.toml'
       - '**/Cargo.lock'
       - '**/rust-toolchain.toml'
@@ -20,7 +20,7 @@ permissions: read-all
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
-name: cargo test
+name: cargo test of wasm-lib
 jobs:
   cargotest:
     name: cargo test
