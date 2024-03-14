@@ -24,7 +24,7 @@ use self::{
 };
 
 /// Execute a KCL program by compiling into an execution plan, then running that.
-pub async fn execute(ast: Program, session: Option<Session>) -> Result<ep::Memory, Error> {
+pub async fn execute(ast: Program, session: &mut Option<Session>) -> Result<ep::Memory, Error> {
     let mut planner = Planner::new();
     let (plan, _retval) = planner.build_plan(ast)?;
     let mut mem = ep::Memory::default();
@@ -263,6 +263,7 @@ impl Planner {
                     KclFunction::Extrude(f) => f.call(&mut ctx, args)?,
                     KclFunction::LineTo(f) => f.call(&mut ctx, args)?,
                     KclFunction::Add(f) => f.call(&mut ctx, args)?,
+                    KclFunction::Close(f) => f.call(&mut ctx, args)?,
                     KclFunction::UserDefined(f) => {
                         let UserDefinedFunction {
                             params_optional,
@@ -633,6 +634,7 @@ enum KclFunction {
     Add(native_functions::Add),
     UserDefined(UserDefinedFunction),
     Extrude(native_functions::sketch::Extrude),
+    Close(native_functions::sketch::Close),
 }
 
 /// Context used when compiling KCL.

@@ -15,6 +15,56 @@ use crate::{binding_scope::EpBinding, error::CompileError, native_functions::Cal
 
 #[derive(Debug, Clone)]
 #[cfg_attr(test, derive(Eq, PartialEq))]
+pub struct Close;
+
+impl Callable for Close {
+    fn call(
+        &self,
+        _ctx: &mut crate::native_functions::Context<'_>,
+        args: Vec<EpBinding>,
+    ) -> Result<EvalPlan, CompileError> {
+        let mut instructions = Vec::new();
+        let fn_name = "close";
+        // Get all required params.
+        let mut args_iter = args.into_iter();
+        let Some(sketch_group) = args_iter.next() else {
+            return Err(CompileError::NotEnoughArgs {
+                fn_name: fn_name.into(),
+                required: 1,
+                actual: 1,
+            });
+        };
+        // Check param type.
+        let sg = sg_binding(sketch_group, fn_name, "sketch group", 1)?;
+        let cmd_id = Uuid::new_v4().into();
+        instructions.extend([
+            // Push the path ID onto the stack.
+            Instruction::SketchGroupCopyFrom {
+                destination: Destination::StackPush,
+                length: 1,
+                source: sg,
+                offset: SketchGroup::path_id_offset(),
+            },
+            // Call the 'extrude' API request.
+            Instruction::ApiRequest(ApiRequest {
+                endpoint: ModelingCmdEndpoint::ClosePath,
+                store_response: None,
+                arguments: vec![
+                    // Target (path ID)
+                    InMemory::StackPop,
+                ],
+                cmd_id,
+            }),
+        ]);
+
+        Ok(EvalPlan {
+            instructions,
+            binding: EpBinding::SketchGroup { index: sg },
+        })
+    }
+}
+#[derive(Debug, Clone)]
+#[cfg_attr(test, derive(Eq, PartialEq))]
 pub struct Extrude;
 
 impl Callable for Extrude {
