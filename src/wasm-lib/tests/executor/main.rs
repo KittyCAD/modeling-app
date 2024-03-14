@@ -802,7 +802,7 @@ const part = roundedRectangle([0, 0], 20, 20, 4)
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_top_level_expression() {
-    let code = r#"startSketchOn('YZ') |> circle([0,0], 22, %) |> extrude(14, %)"#;
+    let code = r#"startSketchOn('XY') |> circle([0,0], 22, %) |> extrude(14, %)"#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
         .await
