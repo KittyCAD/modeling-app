@@ -257,7 +257,7 @@ async fn inner_x_line(
     tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
-    Ok(inner_line([length, 0.0], sketch_group, tag, args).await?)
+    inner_line([length, 0.0], sketch_group, tag, args).await
 }
 
 /// Draw a line on the y-axis.
@@ -288,7 +288,7 @@ async fn inner_y_line(
     tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
-    Ok(inner_line([0.0, length], sketch_group, tag, args).await?)
+    inner_line([0.0, length], sketch_group, tag, args).await
 }
 
 /// Data to draw an angled line.
