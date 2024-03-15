@@ -127,15 +127,11 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLine with tag converts to xLine', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap: [
-        `angledLine({`,
-        `       angle: 157,`,
-        `       length: 1.69,`,
-        `     }, %, 'abc3')`,
-      ].join('\n'),
+      callToSwap: "angledLine({ angle: 157, length: 1.69 }, %, 'abc3')",
       constraintType: 'horizontal',
     })
-    const expectedLine = "xLine(-1.56, %, 'abc3)"
+    const expectedLine = "xLine(-1.56, %, 'abc3')"
+    console.log(newCode)
     expect(newCode).toContain(expectedLine)
     // new line should start at the same place as the old line
     expect(originalRange[0]).toBe(newCode.indexOf(expectedLine))
@@ -154,12 +150,8 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLineOfXLength with tag converts to xLine', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap: [
-        `angledLineOfXLength({`,
-        `       angle: 217,`,
-        `       length: 0.86,`,
-        `     }, %, 'abc4')`,
-      ].join('\n'),
+      callToSwap:
+        "angledLineOfXLength({ angle: 217, length: 0.86 }, %, 'abc4')",
       constraintType: 'horizontal',
     })
     const expectedLine = "xLine(-0.86, %, 'abc4')"
@@ -182,12 +174,8 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLineOfYLength with tag converts to yLine', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap: [
-        `angledLineOfYLength({`,
-        `       angle: 104,`,
-        `       length: 1.58,`,
-        `     }, %, 'abc5')`,
-      ].join('\n'),
+      callToSwap:
+        "angledLineOfYLength({ angle: 104, length: 1.58 }, %, 'abc5')",
       constraintType: 'vertical',
     })
     const expectedLine = "yLine(1.58, %, 'abc5')"
