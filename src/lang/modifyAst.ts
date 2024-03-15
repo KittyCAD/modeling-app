@@ -266,10 +266,10 @@ export function extrudeSketch(
     shouldPipe
       ? createPipeSubstitution()
       : {
-          type: 'Identifier',
-          ...dumbyStartend,
-          name: variableDeclorator.id.name,
-        },
+        type: 'Identifier',
+        ...dumbyStartend,
+        name: variableDeclorator.id.name,
+      },
   ])
 
   if (shouldPipe) {
@@ -611,11 +611,16 @@ export function giveSketchFnCallTag(
   if (!isTagExisting) {
     primaryCallExp.arguments[2] = tagLiteral
   }
-  return {
-    modifiedAst: ast,
-    tag: String(tagLiteral.value),
-    isTagExisting,
-    pathToNode: path,
+  if ('value' in tagLiteral) {
+    // Now TypeScript knows tagLiteral has a value property
+    return {
+      modifiedAst: ast,
+      tag: String(tagLiteral.value),
+      isTagExisting,
+      pathToNode: path,
+    }
+  } else {
+    throw new Error('Unable to assign tag without value')
   }
 }
 
