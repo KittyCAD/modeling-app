@@ -7,14 +7,13 @@ describe('testing angledLineThatIntersects', () => {
   it('angledLineThatIntersects should intersect with another line', async () => {
     const code = (offset: string) => `const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> lineTo({to:[2, 2], tag: "yo"}, %)
+  |> lineTo([2, 2], %, "yo")
   |> lineTo([3, 1], %)
   |> angledLineThatIntersects({
   angle: 180,
   intersectTag: 'yo',
   offset: ${offset},
-  tag: "yo2"
-}, %)
+}, %, "yo2")
 const intersect = segEndX('yo2', part001)`
     const { root } = await enginelessExecutor(parse(code('-1')))
     expect(root.intersect.value).toBe(1 + Math.sqrt(2))

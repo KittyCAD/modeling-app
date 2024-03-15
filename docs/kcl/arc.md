@@ -9,7 +9,7 @@ Draw an arc.
 
 
 ```js
-arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
+arc(data: ArcData, sketch_group: SketchGroup, tag?: String) -> SketchGroup
 ```
 
 ### Examples
@@ -20,9 +20,8 @@ startSketchOn('-YZ')
   |> arc({
        angle_start: 0,
        angle_end: 360,
-       radius: 10,
-       tag: "edge1"
-     }, %)
+       radius: 10
+     }, %, "edge1")
   |> extrude(10, %)
 ```
 
@@ -37,16 +36,12 @@ startSketchOn('-YZ')
 	angle_start: number,
 	// The radius.
 	radius: number,
-	// The tag.
-	tag: string,
 } |
 {
 	// The center.
 	center: [number, number],
 	// The radius.
 	radius: number,
-	// The tag.
-	tag: string,
 	// The to point.
 	to: [number, number],
 }
@@ -215,6 +210,7 @@ startSketchOn('-YZ')
 },
 }
 ```
+* `tag`: `String` (OPTIONAL)
 
 ### Returns
 

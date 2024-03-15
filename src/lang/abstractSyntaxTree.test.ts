@@ -360,7 +360,7 @@ describe('testing pipe operator special', () => {
   test('pipe operator with sketch', () => {
     let code = `const mySketch = startSketchAt([0, 0])
   |> lineTo([2, 3], %)
-  |> lineTo({ to: [0, 1], tag: "myPath" }, %)
+  |> lineTo([0, 1], %, "myPath")
   |> lineTo([1, 1], %)
   |> rx(45, %)
 `
@@ -370,18 +370,18 @@ describe('testing pipe operator special', () => {
       {
         type: 'VariableDeclaration',
         start: 0,
-        end: 145,
+        end: 132,
         kind: 'const',
         declarations: [
           {
             type: 'VariableDeclarator',
             start: 6,
-            end: 145,
+            end: 132,
             id: { type: 'Identifier', start: 6, end: 14, name: 'mySketch' },
             init: {
               type: 'PipeExpression',
               start: 17,
-              end: 145,
+              end: 132,
               body: [
                 {
                   type: 'CallExpression',
@@ -457,7 +457,7 @@ describe('testing pipe operator special', () => {
                 {
                   type: 'CallExpression',
                   start: 67,
-                  end: 107,
+                  end: 94,
                   callee: {
                     type: 'Identifier',
                     start: 67,
@@ -466,121 +466,92 @@ describe('testing pipe operator special', () => {
                   },
                   arguments: [
                     {
-                      type: 'ObjectExpression',
+                      type: 'ArrayExpression',
                       start: 74,
-                      end: 103,
-                      properties: [
+                      end: 80,
+                      elements: [
                         {
-                          type: 'ObjectProperty',
-                          start: 76,
-                          end: 86,
-                          key: {
-                            type: 'Identifier',
-                            start: 76,
-                            end: 78,
-                            name: 'to',
-                          },
-                          value: {
-                            type: 'ArrayExpression',
-                            start: 80,
-                            end: 86,
-                            elements: [
-                              {
-                                type: 'Literal',
-                                start: 81,
-                                end: 82,
-                                value: 0,
-                                raw: '0',
-                              },
-                              {
-                                type: 'Literal',
-                                start: 84,
-                                end: 85,
-                                value: 1,
-                                raw: '1',
-                              },
-                            ],
-                          },
+                          type: 'Literal',
+                          start: 75,
+                          end: 76,
+                          value: 0,
+                          raw: '0',
                         },
                         {
-                          type: 'ObjectProperty',
-                          start: 88,
-                          end: 101,
-                          key: {
-                            type: 'Identifier',
-                            start: 88,
-                            end: 91,
-                            name: 'tag',
-                          },
-                          value: {
-                            type: 'Literal',
-                            start: 93,
-                            end: 101,
-                            value: 'myPath',
-                            raw: '"myPath"',
-                          },
+                          type: 'Literal',
+                          start: 78,
+                          end: 79,
+                          value: 1,
+                          raw: '1',
                         },
                       ],
                     },
-                    { type: 'PipeSubstitution', start: 105, end: 106 },
+                    { type: 'PipeSubstitution', start: 82, end: 83 },
+                    {
+                      type: 'Literal',
+                      start: 85,
+                      end: 93,
+                      value: 'myPath',
+                      raw: '"myPath"',
+                    },
                   ],
                   optional: false,
                 },
                 {
                   type: 'CallExpression',
-                  start: 113,
-                  end: 130,
+                  start: 100,
+                  end: 117,
                   callee: {
                     type: 'Identifier',
-                    start: 113,
-                    end: 119,
+                    start: 100,
+                    end: 106,
                     name: 'lineTo',
                   },
                   arguments: [
                     {
                       type: 'ArrayExpression',
-                      start: 120,
-                      end: 126,
+                      start: 107,
+                      end: 113,
                       elements: [
                         {
                           type: 'Literal',
-                          start: 121,
-                          end: 122,
+                          start: 108,
+                          end: 109,
                           value: 1,
                           raw: '1',
                         },
                         {
                           type: 'Literal',
-                          start: 124,
-                          end: 125,
+                          start: 111,
+                          end: 112,
                           value: 1,
                           raw: '1',
                         },
                       ],
                     },
-                    { type: 'PipeSubstitution', start: 128, end: 129 },
+                    { type: 'PipeSubstitution', start: 115, end: 116 },
                   ],
                   optional: false,
                 },
                 {
                   type: 'CallExpression',
-                  start: 136,
-                  end: 145,
+                  start: 123,
+                  end: 132,
                   callee: {
                     type: 'Identifier',
-                    start: 136,
-                    end: 138,
+                    start: 123,
+                    end: 125,
                     name: 'rx',
                   },
                   arguments: [
                     {
                       type: 'Literal',
-                      start: 139,
-                      end: 141,
+                      start: 126,
+                      end: 128,
                       value: 45,
                       raw: '45',
                     },
-                    { type: 'PipeSubstitution', start: 143, end: 144 },
+                    { type: 'PipeSubstitution', start: 130, end: 131 },
                   ],
                   optional: false,
                 },
@@ -1502,11 +1473,11 @@ const key = 'c'`
   })
   it('comments nested within a block statement', () => {
     const code = `const mySketch = startSketchAt([0,0])
-  |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
+  |> lineTo([0, 1], %, 'myPath')
   |> lineTo([1, 1], %) /* this is
       a comment
       spanning a few lines */
-  |> lineTo({ to: [1,0], tag: "rightPath" }, %)
+  |> lineTo([1,0], %, "rightPath")
   |> close(%)
 `
 
@@ -1516,8 +1487,8 @@ const key = 'c'`
       .nonCodeNodes
     expect(sketchNonCodeMeta[indexOfSecondLineToExpression][0]).toEqual({
       type: 'NonCodeNode',
-      start: 106,
-      end: 163,
+      start: 93,
+      end: 150,
       value: {
         type: 'inlineComment',
         style: 'block',
@@ -1529,7 +1500,7 @@ const key = 'c'`
     const code = [
       'const mySk1 = startSketchAt([0, 0])',
       '  |> lineTo([1, 1], %)',
-      '  |> lineTo({to: [0, 1], tag: "myPath"}, %)',
+      '  |> lineTo([0, 1], %, "myPath")',
       '  |> lineTo([1, 1], %)',
       '// a comment',
       '  |> rx(90, %)',
@@ -1540,8 +1511,8 @@ const key = 'c'`
       .nonCodeNodes[3][0]
     expect(sketchNonCodeMeta).toEqual({
       type: 'NonCodeNode',
-      start: 125,
-      end: 138,
+      start: 114,
+      end: 127,
       value: {
         type: 'blockComment',
         value: 'a comment',

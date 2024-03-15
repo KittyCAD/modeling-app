@@ -18,7 +18,7 @@ segAng(segment_name: string, sketch_group: SketchGroup) -> number
 const part001 = startSketchOn('XY')
   |> startProfileAt([4.83, 12.56], %)
   |> line([15.1, 2.48], %)
-  |> line({ to: [3.15, -9.85], tag: 'seg01' }, %)
+  |> line([3.15, -9.85], %, 'seg01')
   |> line([-15.17, -4.1], %)
   |> angledLine([segAng('seg01', %), 12.35], %)
   |> line([-13.02, 10.03], %)

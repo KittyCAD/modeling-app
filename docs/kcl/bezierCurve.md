@@ -9,7 +9,7 @@ Draw a bezier curve.
 
 
 ```js
-bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
+bezierCurve(data: BezierData, sketch_group: SketchGroup, tag?: String) -> SketchGroup
 ```
 
 ### Examples
@@ -20,9 +20,8 @@ startSketchOn('XY')
   |> bezierCurve({
        to: [10, 10],
        control1: [5, 0],
-       control2: [5, 10],
-       tag: "edge1"
-     }, %)
+       control2: [5, 10]
+     }, %, "edge1")
   |> close(%)
   |> extrude(10, %)
 ```
@@ -36,8 +35,6 @@ startSketchOn('XY')
 	control1: [number, number],
 	// The second control point.
 	control2: [number, number],
-	// The tag.
-	tag: string,
 	// The to point.
 	to: [number, number],
 }
@@ -206,6 +203,7 @@ startSketchOn('XY')
 },
 }
 ```
+* `tag`: `String` (OPTIONAL)
 
 ### Returns
 

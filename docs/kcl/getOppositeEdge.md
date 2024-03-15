@@ -17,9 +17,9 @@ getOppositeEdge(tag: String, extrude_group: ExtrudeGroup) -> Uuid
 ```js
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line({ to: [0, 10], tag: "thing" }, %)
+  |> line([0, 10], %, "thing")
   |> line([10, 0], %)
-  |> line({ to: [0, -10], tag: "thing2" }, %)
+  |> line([0, -10], %, "thing2")
   |> close(%)
   |> extrude(10, %)
   |> fillet({

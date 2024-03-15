@@ -9,7 +9,7 @@ Draw an arc.
 
 
 ```js
-tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
+tangentialArc(data: TangentialArcData, sketch_group: SketchGroup, tag?: String) -> SketchGroup
 ```
 
 ### Examples
@@ -17,8 +17,8 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 ```js
 startSketchOn('-YZ')
   |> startProfileAt([0, 0], %)
-  |> line({ to: [10, 10], tag: "edge0" }, %)
-  |> tangentialArc({ radius: 10, offset: 90, tag: "edge1" }, %)
+  |> line([10, 10], %, "edge1")
+  |> tangentialArc({ radius: 10, offset: 90 }, %, "edge1")
   |> close(%)
   |> extrude(10, %)
 ```
@@ -32,12 +32,6 @@ startSketchOn('-YZ')
 	offset: number,
 	// Radius of the arc. Not to be confused with Raiders of the Lost Ark.
 	radius: number,
-} |
-{
-	// The tag.
-	tag: string,
-	// Where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.
-	to: [number, number],
 } |
 [number, number]
 ```
@@ -205,6 +199,7 @@ startSketchOn('-YZ')
 },
 }
 ```
+* `tag`: `String` (OPTIONAL)
 
 ### Returns
 

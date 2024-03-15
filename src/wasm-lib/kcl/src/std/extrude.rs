@@ -196,7 +196,7 @@ pub async fn get_extrude_wall_transform(args: Args) -> Result<MemoryItem, KclErr
 ///     |> startProfileAt([0, 0], %)
 ///     |> line([0, 10], %)
 ///     |> line([10, 0], %)
-///     |> line({to: [0, -10], tag: "surface"}, %)
+///     |> line([0, -10], %, "surface")
 ///     |> close(%)
 ///     |> extrude(5, %)
 ///

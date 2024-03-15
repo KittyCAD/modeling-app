@@ -9,7 +9,7 @@ Draw an angled line of a given x length.
 
 
 ```js
-angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
+angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup, tag?: String) -> SketchGroup
 ```
 
 ### Examples
@@ -17,7 +17,7 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 ```js
 startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> angledLineOfXLength({ angle: 45, length: 10, tag: "edge1" }, %)
+  |> angledLineOfXLength({ angle: 45, length: 10 }, %, "edge1")
   |> line([10, 10], %)
   |> line([0, 10], %)
   |> close(%, "edge2")
@@ -33,8 +33,6 @@ startSketchOn('XZ')
 	angle: number,
 	// The length of the line.
 	length: number,
-	// The tag.
-	tag: string,
 } |
 [number, number]
 ```
@@ -202,6 +200,7 @@ startSketchOn('XZ')
 },
 }
 ```
+* `tag`: `String` (OPTIONAL)
 
 ### Returns
 
