@@ -7,6 +7,7 @@ import { paths } from 'lib/paths'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { APP_NAME } from 'lib/constants'
 import { useUpdater } from 'hooks/useUpdater'
+import ModalContainer from 'react-modal-promise'
 
 const SignIn = () => {
   useUpdater()
@@ -38,6 +39,7 @@ const SignIn = () => {
 
   return (
     <main className="body-bg h-full min-h-screen m-0 p-0 pt-24">
+      <ModalContainer />
       <div className="max-w-2xl mx-auto">
         <div>
           <img
