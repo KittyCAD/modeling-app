@@ -608,9 +608,9 @@ export const angledLineOfXLength: SketchLineHelper = {
     const newLine = createCallback
       ? createCallback([angle, xLength]).callExp
       : createCallExpression('angledLineOfXLength', [
-        createArrayExpression([angle, xLength]),
-        createPipeSubstitution(),
-      ])
+          createArrayExpression([angle, xLength]),
+          createPipeSubstitution(),
+        ])
     const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
     if (replaceExisting) {
       pipe.body[callIndex] = newLine
@@ -682,9 +682,9 @@ export const angledLineOfYLength: SketchLineHelper = {
     const newLine = createCallback
       ? createCallback([angle, yLength]).callExp
       : createCallExpression('angledLineOfYLength', [
-        createArrayExpression([angle, yLength]),
-        createPipeSubstitution(),
-      ])
+          createArrayExpression([angle, yLength]),
+          createPipeSubstitution(),
+        ])
     const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
     if (replaceExisting) {
       pipe.body[callIndex] = newLine
@@ -919,7 +919,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
     const intersectTag =
       firstArg.type === 'ObjectExpression'
         ? firstArg.properties.find((p) => p.key.name === 'intersectTag')
-          ?.value || createLiteral('')
+            ?.value || createLiteral('')
         : createLiteral('')
     const intersectTagName =
       intersectTag.type === 'Literal' ? intersectTag.value : ''
@@ -1166,10 +1166,10 @@ function isAngleLiteral(lineArugement: Value): boolean {
   return lineArugement?.type === 'ArrayExpression'
     ? isLiteralArrayOrStatic(lineArugement.elements[0])
     : lineArugement?.type === 'ObjectExpression'
-      ? isLiteralArrayOrStatic(
+    ? isLiteralArrayOrStatic(
         lineArugement.properties.find(({ key }) => key.name === 'angle')?.value
       )
-      : false
+    : false
 }
 
 type addTagFn = (a: ModifyAstBase) => { modifiedAst: Program; tag: string }
