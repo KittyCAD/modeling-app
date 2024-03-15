@@ -38,7 +38,7 @@ test('exports of each format should work', async ({ page, context }) => {
   // And you will need to have the KittyCAD CLI installed
   const u = getUtils(page)
   await context.addInitScript(async () => {
-    ; (window as any).playwrightSkipFilePicker = true
+    ;(window as any).playwrightSkipFilePicker = true
     localStorage.setItem(
       'persistCode',
       `const topAng = 25
@@ -119,7 +119,7 @@ const part001 = startSketchOn('-XZ')
     await expect(page.getByText('Confirm Export')).toBeVisible()
 
     const getPromiseAndResolve = () => {
-      let resolve: any = () => { }
+      let resolve: any = () => {}
       const promise = new Promise<Download>((r) => {
         resolve = r
       })
@@ -140,7 +140,8 @@ const part001 = startSketchOn('-XZ')
     // Handle download
     const download = await downloadPromise1
     const downloadLocationer = (extra = '', isImage = false) =>
-      `./e2e/playwright/export-snapshots/${output.type}-${'storage' in output ? output.storage : ''
+      `./e2e/playwright/export-snapshots/${output.type}-${
+        'storage' in output ? output.storage : ''
       }${extra}.${isImage ? 'png' : output.type}`
     const downloadLocation = downloadLocationer()
 
