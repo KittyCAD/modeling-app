@@ -2,13 +2,14 @@ import { assign, createMachine } from 'xstate'
 import { Themes, getSystemTheme, setThemeClass } from 'lib/theme'
 import { CameraSystem } from 'lib/cameraControls'
 import { isTauri } from 'lib/isTauri'
-import { writeToSettingsFile } from 'lib/tauriFS'
-import { DEFAULT_PROJECT_NAME, SETTINGS_PERSIST_KEY } from 'lib/constants'
+import { writeToSettingsFiles } from 'lib/tauriFS'
+import { SETTINGS_PERSIST_KEY } from 'lib/constants'
 import {
   UnitSystem,
   type BaseUnit,
   type SettingsMachineContext,
   type Toggle,
+  SettingsLevel,
 } from 'lib/settings/settingsTypes'
 
 export const settingsMachine = createMachine(
@@ -39,7 +40,10 @@ export const settingsMachine = createMachine(
           'Set Base Unit': {
             actions: [
               assign({
-                baseUnit: (_, event) => event.data.baseUnit,
+                baseUnit: (context, event) => ({
+                  ...context.baseUnit,
+                  [event.data.level]: event.data.baseUnit,
+                }),
               }),
               'persistSettings',
               'toastSuccess',
@@ -52,7 +56,10 @@ export const settingsMachine = createMachine(
           'Set Camera Controls': {
             actions: [
               assign({
-                cameraControls: (_, event) => event.data.cameraControls,
+                cameraControls: (context, event) => ({
+                  ...context.cameraControls,
+                  [event.data.level]: event.data.cameraControls,
+                }),
               }),
               'persistSettings',
               'toastSuccess',
@@ -63,7 +70,10 @@ export const settingsMachine = createMachine(
           'Set Default Directory': {
             actions: [
               assign({
-                defaultDirectory: (_, event) => event.data.defaultDirectory,
+                defaultDirectory: (context, event) => ({
+                  ...context.defaultDirectory,
+                  [event.data.level]: event.data.defaultDirectory,
+                }),
               }),
               'persistSettings',
               'toastSuccess',
@@ -74,8 +84,10 @@ export const settingsMachine = createMachine(
           'Set Default Project Name': {
             actions: [
               assign({
-                defaultProjectName: (_, event) =>
-                  event.data.defaultProjectName.trim() || DEFAULT_PROJECT_NAME,
+                defaultProjectName: (context, event) => ({
+                  ...context.defaultProjectName,
+                  [event.data.level]: event.data.defaultProjectName,
+                }),
               }),
               'persistSettings',
               'toastSuccess',
@@ -86,7 +98,10 @@ export const settingsMachine = createMachine(
           'Set Onboarding Status': {
             actions: [
               assign({
-                onboardingStatus: (_, event) => event.data.onboardingStatus,
+                onboardingStatus: (context, event) => ({
+                  ...context.onboardingStatus,
+                  [event.data.level]: event.data.onboardingStatus,
+                }),
               }),
               'persistSettings',
             ],
@@ -96,7 +111,10 @@ export const settingsMachine = createMachine(
           'Set Text Wrapping': {
             actions: [
               assign({
-                textWrapping: (_, event) => event.data.textWrapping,
+                textWrapping: (context, event) => ({
+                  ...context.textWrapping,
+                  [event.data.level]: event.data.textWrapping,
+                }),
               }),
               'persistSettings',
               'toastSuccess',
@@ -107,7 +125,10 @@ export const settingsMachine = createMachine(
           'Set Theme': {
             actions: [
               assign({
-                theme: (_, event) => event.data.theme,
+                theme: (context, event) => ({
+                  ...context.theme,
+                  [event.data.level]: event.data.theme,
+                }),
               }),
               'persistSettings',
               'toastSuccess',
@@ -119,9 +140,15 @@ export const settingsMachine = createMachine(
           'Set Unit System': {
             actions: [
               assign({
-                unitSystem: (_, event) => event.data.unitSystem,
-                baseUnit: (_, event) =>
-                  event.data.unitSystem === 'imperial' ? 'in' : 'mm',
+                unitSystem: (context, event) => ({
+                  ...context.unitSystem,
+                  [event.data.level]: event.data.unitSystem,
+                }),
+                baseUnit: (context, event) => ({
+                  ...context.baseUnit,
+                  [event.data.level]:
+                    event.data.unitSystem === 'imperial' ? 'in' : 'mm',
+                }),
               }),
               'persistSettings',
               'toastSuccess',
@@ -133,9 +160,10 @@ export const settingsMachine = createMachine(
           'Toggle Debug Panel': {
             actions: [
               assign({
-                showDebugPanel: (context) => {
-                  return !context.showDebugPanel
-                },
+                showDebugPanel: (context, event) => ({
+                  ...context.showDebugPanel,
+                  [event.data.level]: !context.showDebugPanel[event.data.level],
+                }),
               }),
               'persistSettings',
               'toastSuccess',
@@ -150,31 +178,43 @@ export const settingsMachine = createMachine(
     schema: {
       events: {} as
         | { type: 'Set All Settings'; data: Partial<SettingsMachineContext> }
-        | { type: 'Set Base Unit'; data: { baseUnit: BaseUnit } }
+        | {
+            type: 'Set Base Unit'
+            data: { baseUnit: BaseUnit; level: SettingsLevel }
+          }
         | {
             type: 'Set Camera Controls'
-            data: { cameraControls: CameraSystem }
+            data: { cameraControls: CameraSystem; level: SettingsLevel }
           }
-        | { type: 'Set Default Directory'; data: { defaultDirectory: string } }
+        | {
+            type: 'Set Default Directory'
+            data: { defaultDirectory: string; level: SettingsLevel }
+          }
         | {
             type: 'Set Default Project Name'
-            data: { defaultProjectName: string }
+            data: { defaultProjectName: string; level: SettingsLevel }
           }
-        | { type: 'Set Onboarding Status'; data: { onboardingStatus: string } }
-        | { type: 'Set Text Wrapping'; data: { textWrapping: Toggle } }
-        | { type: 'Set Theme'; data: { theme: Themes } }
+        | {
+            type: 'Set Onboarding Status'
+            data: { onboardingStatus: string; level: SettingsLevel }
+          }
+        | {
+            type: 'Set Text Wrapping'
+            data: { textWrapping: Toggle; level: SettingsLevel }
+          }
+        | { type: 'Set Theme'; data: { theme: Themes; level: SettingsLevel } }
         | {
             type: 'Set Unit System'
-            data: { unitSystem: UnitSystem }
+            data: { unitSystem: UnitSystem; level: SettingsLevel }
           }
-        | { type: 'Toggle Debug Panel' },
+        | { type: 'Toggle Debug Panel'; data: { level: SettingsLevel } },
     },
   },
   {
     actions: {
       persistSettings: (context) => {
         if (isTauri()) {
-          writeToSettingsFile(context).catch((err) => {
+          writeToSettingsFiles(context).catch((err) => {
             console.error('Error writing settings:', err)
           })
         }
@@ -186,7 +226,9 @@ export const settingsMachine = createMachine(
       },
       setThemeClass: (context, event) => {
         const currentTheme =
-          event.type === 'Set Theme' ? event.data.theme : context.theme
+          event.type === 'Set Theme'
+            ? event.data.theme
+            : context.theme.current()
         setThemeClass(
           currentTheme === Themes.System ? getSystemTheme() : currentTheme
         )

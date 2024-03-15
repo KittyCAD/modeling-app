@@ -13,6 +13,11 @@ import { metadata } from 'tauri-plugin-fs-extra-api'
 import { settingsMachine } from 'machines/settingsMachine'
 import { ContextFrom } from 'xstate'
 import { SETTINGS_FILE_NAME } from 'lib/constants'
+import {
+  SettingsLevel,
+  SettingsMachineContext,
+  SettingsMachineSchema,
+} from './settings/settingsTypes'
 
 const PROJECT_FOLDER = 'zoo-modeling-app-projects'
 export const FILE_EXT = '.kcl'
@@ -375,18 +380,58 @@ function getPaddedIdentifierRegExp() {
   return new RegExp(`${escapedIdentifier}(${escapedIdentifier.slice(-1)}*)`)
 }
 
-export async function getSettingsFilePath() {
+export async function getUserSettingsFilePath(
+  filename: string = SETTINGS_FILE_NAME
+) {
   const dir = await appConfigDir()
-  return dir + SETTINGS_FILE_NAME
+  return dir + filename
 }
 
-export async function writeToSettingsFile(
-  settings: ContextFrom<typeof settingsMachine>
+export async function writeToSettingsFiles(
+  allSettings: ContextFrom<typeof settingsMachine>
 ) {
-  return writeTextFile(
-    await getSettingsFilePath(),
-    JSON.stringify(settings, null, 2)
-  )
+  const settingsFilePath = await getUserSettingsFilePath('')
+  const userSettings = [
+    settingsFilePath + SETTINGS_FILE_NAME,
+    getSettingsAtLevel(allSettings, 'user'),
+  ] as const
+  const projectSettings = [
+    settingsFilePath + 'settings-project.json',
+    getSettingsAtLevel(allSettings, 'project'),
+  ] as const
+  const partSettings = [
+    settingsFilePath + 'settings-part.json',
+    getSettingsAtLevel(allSettings, 'part'),
+  ] as const
+  const settingsLevels = [userSettings, projectSettings, partSettings]
+
+  settingsLevels.forEach(async ([path, settings]) => {
+    if (settings && Object.keys(settings).length) {
+      await writeTextFile(path, JSON.stringify(settings, null, 2))
+    }
+  })
+}
+
+// Gets the settings at a given level
+// note: it also filters values that match the default
+function getSettingsAtLevel(
+  settingsObject: SettingsMachineContext,
+  level: SettingsLevel
+): Partial<SettingsMachineSchema> {
+  const settings = {} as Record<keyof SettingsMachineSchema, unknown>
+
+  for (const key in settingsObject) {
+    const typedKey = key as keyof SettingsMachineContext
+    const valueAtLevel = settingsObject[typedKey][level]
+
+    if (
+      valueAtLevel !== undefined &&
+      settingsObject[typedKey].default !== valueAtLevel
+    ) {
+      settings[typedKey] = valueAtLevel as unknown
+    }
+  }
+  return settings as Partial<SettingsMachineSchema>
 }
 
 export async function readSettingsFile(): Promise<ContextFrom<
@@ -403,7 +448,7 @@ export async function readSettingsFile(): Promise<ContextFrom<
 
   if (!settingsExist) {
     console.log(`Settings file does not exist at ${path}`)
-    await writeToSettingsFile(settingsMachine.initialState.context)
+    await writeToSettingsFiles(settingsMachine.initialState.context)
     return null
   }
 

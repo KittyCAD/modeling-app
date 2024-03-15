@@ -10,6 +10,7 @@ import {
   type SettingsMachineContext,
   toggleAsArray,
   UnitSystem,
+  Setting,
 } from './settingsTypes'
 import { SETTINGS_PERSIST_KEY } from '../constants'
 
@@ -85,4 +86,10 @@ export async function validateSettings(s: Record<string, unknown>) {
     settings,
     errors,
   }
+}
+
+// Resolve a setting from the part, project, user, or default in that order
+// NOTE: This may have issues if future settings can have a value that is valid but falsy
+export function resolveSetting<T>(setting: Setting<T>): T {
+  return setting.part || setting.project || setting.user || setting.default
 }
