@@ -266,10 +266,10 @@ export function extrudeSketch(
     shouldPipe
       ? createPipeSubstitution()
       : {
-          type: 'Identifier',
-          ...dumbyStartend,
-          name: variableDeclorator.id.name,
-        },
+        type: 'Identifier',
+        ...dumbyStartend,
+        name: variableDeclorator.id.name,
+      },
   ])
 
   if (shouldPipe) {
@@ -605,7 +605,6 @@ export function giveSketchFnCallTag(
   // Tag is always 3rd expression now, using arg index feels brittle
   // but we can come up with a better way to identify tag later.
   const thirdArg = primaryCallExp.arguments?.[2]
-  console.log(thirdArg)
   const tagLiteral =
     thirdArg || (createLiteral(tag || findUniqueName(ast, 'seg', 2)) as Literal)
   const isTagExisting = !!thirdArg
