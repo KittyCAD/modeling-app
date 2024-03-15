@@ -3351,7 +3351,7 @@ const mySk1 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> lineTo([1, 1], %)
   // comment here
-  |> lineTo({ to: [0, 1], tag: 'myTag' }, %)
+  |> lineTo([0, 1], %, 'myTag')
   |> lineTo([1, 1], %)
   /* and
   here
@@ -3374,7 +3374,7 @@ const mySk1 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> lineTo([1, 1], %)
   // comment here
-  |> lineTo({ to: [0, 1], tag: 'myTag' }, %)
+  |> lineTo([0, 1], %, 'myTag')
   |> lineTo([1, 1], %)
   /* and
   here */
@@ -3392,7 +3392,7 @@ const mySk1 = startSketchOn('XY')
     fn test_recast_multiline_object() {
         let some_program_string = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([-0.01, -0.08], %)
-  |> line({ to: [0.62, 4.15], tag: 'seg01' }, %)
+  |> line([0.62, 4.15], %, 'seg01')
   |> line([2.77, -1.24], %)
   |> angledLineThatIntersects({
        angle: 201,
@@ -3482,7 +3482,7 @@ const myAng = 40
 const myAng2 = 134
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line({ to: [1, 3.82], tag: 'seg01' }, %) // ln-should-get-tag
+  |> line([1, 3.82], %, 'seg01') // ln-should-get-tag
   |> angledLineToX([
        -angleToMatchLengthX('seg01', myVar, %),
        myVar
@@ -3508,7 +3508,7 @@ const myAng = 40
 const myAng2 = 134
 const part001 = startSketchOn('XY')
    |> startProfileAt([0, 0], %)
-   |> line({ to: [1, 3.82], tag: 'seg01' }, %) // ln-should-get-tag
+   |> line([1, 3.82], %, 'seg01') // ln-should-get-tag
    |> angledLineToX([
          -angleToMatchLengthX('seg01', myVar, %),
          myVar
