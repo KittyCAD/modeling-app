@@ -6,8 +6,10 @@ import { Themes, getSystemTheme } from '../lib/theme'
 import { paths } from 'lib/paths'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { APP_NAME } from 'lib/constants'
+import { useUpdater } from 'hooks/useUpdater'
 
 const SignIn = () => {
+  useUpdater()
   const getLogoTheme = () =>
     theme === Themes.Light ||
     (theme === Themes.System && getSystemTheme() === Themes.Light)
