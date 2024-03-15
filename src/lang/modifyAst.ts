@@ -266,10 +266,10 @@ export function extrudeSketch(
     shouldPipe
       ? createPipeSubstitution()
       : {
-        type: 'Identifier',
-        ...dumbyStartend,
-        name: variableDeclorator.id.name,
-      },
+          type: 'Identifier',
+          ...dumbyStartend,
+          name: variableDeclorator.id.name,
+        },
   ])
 
   if (shouldPipe) {
