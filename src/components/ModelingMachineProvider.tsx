@@ -35,7 +35,6 @@ import useStateMachineCommands from 'hooks/useStateMachineCommands'
 import { modelingMachineConfig } from 'lib/commandBarConfigs/modelingCommandConfig'
 import { sceneInfra } from 'clientSideScene/sceneInfra'
 import {
-  getQuaternionFromZAxis,
   getSketchQuaternion,
   getSketchOrientationDetails,
 } from 'clientSideScene/sceneEntities'
@@ -48,6 +47,7 @@ import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
 import { EditorSelection } from '@uiw/react-codemirror'
 import { Vector3 } from 'three'
+import { quaternionFromUpNForward } from 'clientSideScene/helpers'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -290,11 +290,13 @@ export const ModelingMachineProvider = ({
               )
             await kclManager.executeAstMock(modifiedAst, { updates: 'code' })
 
-            const normal = new Vector3(...data.zAxis)
-            const quaternion = getQuaternionFromZAxis(normal) // todo use y axis
-            const target = new Vector3(...data.position).multiplyScalar(
+            const forward = new Vector3(...data.zAxis)
+            const up = new Vector3(...data.yAxis)
+
+            let target = new Vector3(...data.position).multiplyScalar(
               sceneInfra._baseUnitMultiplier
             )
+            const quaternion = quaternionFromUpNForward(up, forward)
             await sceneInfra.camControls.tweenCameraToQuaternion(
               quaternion,
               target

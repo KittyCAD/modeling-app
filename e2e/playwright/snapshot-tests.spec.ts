@@ -648,3 +648,48 @@ test('Client side scene scale should match engine scale mm', async ({
     maxDiffPixels: 100,
   })
 })
+
+test('Sketch on face with none z-up', async ({ page, context }) => {
+  const u = getUtils(page)
+  await context.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const part001 = startSketchOn('-XZ')
+  |> startProfileAt([1.4, 2.47], %)
+  |> line({ to: [9.31, 10.55], tag: 'seg01' }, %)
+  |> line([11.91, -10.42], %)
+  |> close(%)
+  |> extrude(5 + 7, %)
+const part002 = startSketchOn(part001, 'seg01')
+  |> startProfileAt([-2.89, 1.82], %)
+  |> line([4.68, 3.05], %)
+  |> line({ to: [0, -7.79], tag: 'seg02' }, %)
+  |> close(%)
+  |> extrude(5 + 7, %)
+`
+    )
+  })
+
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled()
+
+  await page.getByRole('button', { name: 'Start Sketch' }).click()
+  let previousCodeContent = await page.locator('.cm-content').innerText()
+
+  // click at 641, 135
+  await page.mouse.click(641, 135)
+  await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
+  previousCodeContent = await page.locator('.cm-content').innerText()
+
+  await page.waitForTimeout(300)
+
+  await expect(page).toHaveScreenshot({
+    maxDiffPixels: 100,
+  })
+
+  await page.waitForTimeout(200)
+})

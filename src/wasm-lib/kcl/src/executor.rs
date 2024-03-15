@@ -242,6 +242,8 @@ pub struct Face {
     pub y_axis: Point3d,
     /// The z-axis (normal).
     pub z_axis: Point3d,
+    /// the face id the sketch is on
+    pub face_id: uuid::Uuid,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }

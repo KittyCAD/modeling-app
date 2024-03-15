@@ -5,7 +5,6 @@ import {
   Group,
   Intersection,
   LineCurve3,
-  Matrix4,
   Mesh,
   MeshBasicMaterial,
   Object3D,
@@ -37,10 +36,9 @@ import {
   Y_AXIS,
   YZ_PLANE,
 } from './sceneInfra'
-import { isQuaternionVertical } from './helpers'
+import { isQuaternionVertical, quaternionFromUpNForward } from './helpers'
 import {
   CallExpression,
-  ExtrudeGroup,
   getTangentialArcToInfo,
   parse,
   Path,
@@ -71,7 +69,7 @@ import {
   changeSketchArguments,
   updateStartProfileAtArgs,
 } from 'lang/std/sketch'
-import { isReducedMotion, throttle } from 'lib/utils'
+import { throttle } from 'lib/utils'
 import {
   createArrayExpression,
   createCallExpressionStdLib,
@@ -171,7 +169,7 @@ class SceneEntities {
       console.warn('createIntersectionPlane called when it already exists')
       return
     }
-    const hundredM = 1000000
+    const hundredM = 100_0000
     const planeGeometry = new PlaneGeometry(hundredM, hundredM)
     const planeMaterial = new MeshBasicMaterial({
       color: 0xff0000,
@@ -187,7 +185,8 @@ class SceneEntities {
   }
   createSketchAxis(
     sketchPathToNode: PathToNode,
-    sketchNormalBackUp: [number, number, number] | null,
+    forward: [number, number, number],
+    up: [number, number, number],
     sketchPosition?: [number, number, number]
   ) {
     const orthoFactor = orthoScale(sceneInfra.camControls.camera)
@@ -249,15 +248,10 @@ class SceneEntities {
       child.layers.set(SKETCH_LAYER)
     })
 
-    const sg = sketchGroupFromPathToNode({
-      pathToNode: sketchPathToNode,
-      ast: kclManager.ast,
-      programMemory: kclManager.programMemory,
-    })
-
-    const quat = sketchNormalBackUp
-      ? getQuaternionFromZAxis(new Vector3(...sketchNormalBackUp))
-      : quaternionFromSketchGroup(sg)
+    const quat = quaternionFromUpNForward(
+      new Vector3(...up),
+      new Vector3(...forward)
+    )
     this.axisGroup.setRotationFromQuaternion(quat)
     sketchPosition && this.axisGroup.position.set(...sketchPosition)
     this.scene.add(this.axisGroup)
@@ -272,13 +266,15 @@ class SceneEntities {
     ast,
     // is draft line assumes the last segment is a draft line, and mods it as the user moves the mouse
     draftSegment,
-    normal,
+    forward,
+    up,
     position,
   }: {
     sketchPathToNode: PathToNode
     ast?: Program
     draftSegment?: DraftSegment
-    normal?: [number, number, number]
+    forward: [number, number, number]
+    up: [number, number, number]
     position?: [number, number, number]
   }) {
     sceneInfra.resetMouseListeners()
@@ -396,9 +392,10 @@ class SceneEntities {
       this.activeSegments[JSON.stringify(segPathToNode)] = seg
     })
 
-    this.currentSketchQuaternion = normal
-      ? getQuaternionFromZAxis(new Vector3(...normal))
-      : quaternionFromSketchGroup(sketchGroup)
+    this.currentSketchQuaternion = quaternionFromUpNForward(
+      new Vector3(...up),
+      new Vector3(...forward)
+    )
     group.setRotationFromQuaternion(this.currentSketchQuaternion)
     this.intersectionPlane &&
       this.intersectionPlane.setRotationFromQuaternion(
@@ -476,7 +473,13 @@ class SceneEntities {
 
           kclManager.executeAstMock(modifiedAst, { updates: 'code' })
           await this.tearDownSketch({ removeAxis: false })
-          this.setupSketch({ sketchPathToNode, draftSegment, normal, position })
+          this.setupSketch({
+            sketchPathToNode,
+            draftSegment,
+            forward,
+            up,
+            position,
+          })
         },
         onMove: (args) => {
           this.onDragSegment({
@@ -500,31 +503,36 @@ class SceneEntities {
   updateAstAndRejigSketch = async (
     sketchPathToNode: PathToNode,
     modifiedAst: Program,
-    normal?: [number, number, number]
+    forward: [number, number, number],
+    up: [number, number, number],
+    origin: [number, number, number]
   ) => {
     await kclManager.updateAst(modifiedAst, false)
     await this.tearDownSketch({ removeAxis: false })
-    this.setupSketch({ sketchPathToNode, normal })
+    this.setupSketch({ sketchPathToNode, forward, up, position: origin })
   }
   setUpDraftArc = async (
     sketchPathToNode: PathToNode,
-    normal?: [number, number, number]
+    forward: [number, number, number],
+    up: [number, number, number]
   ) => {
     await this.tearDownSketch({ removeAxis: false })
     await new Promise((resolve) => setTimeout(resolve, 100))
     this.setupSketch({
       sketchPathToNode,
       draftSegment: 'tangentialArcTo',
-      normal,
+      forward,
+      up,
     })
   }
   setUpDraftLine = async (
     sketchPathToNode: PathToNode,
-    normal?: [number, number, number]
+    forward: [number, number, number],
+    up: [number, number, number]
   ) => {
     await this.tearDownSketch({ removeAxis: false })
     await new Promise((resolve) => setTimeout(resolve, 100))
-    this.setupSketch({ sketchPathToNode, draftSegment: 'line', normal })
+    this.setupSketch({ sketchPathToNode, draftSegment: 'line', forward, up })
   }
   onDraftLineMouseMove = () => {}
   prepareTruncatedMemoryAndAst = (
@@ -819,10 +827,10 @@ class SceneEntities {
     }
   }
   async animateAfterSketch() {
-    if (isReducedMotion()) {
-      sceneInfra.camControls.usePerspectiveCamera()
-      return
-    }
+    // if (isReducedMotion()) {
+    //   sceneInfra.camControls.usePerspectiveCamera()
+    //   return
+    // }
     await sceneInfra.camControls.animateToPerspective()
   }
   removeSketchGrid() {
@@ -1091,30 +1099,6 @@ export function sketchGroupFromPathToNode({
   return programMemory.root[varDec?.id?.name || ''] as SketchGroup
 }
 
-export function quaternionFromSketchGroup(
-  sketchGroup: SketchGroup
-): Quaternion {
-  // TODO figure what is happening in the executor that it's some times returning
-  // [x,y,z] and sometimes {x,y,z}
-  if (!sketchGroup?.zAxis) {
-    // sometimes sketchGroup is undefined,
-    // I don't quiet understand the circumstances yet
-    // and it's very intermittent so leaving this here for now
-    console.log('no zAxis', sketchGroup)
-    console.trace('no zAxis')
-  }
-  const zAxisVec = massageFormats(sketchGroup?.zAxis)
-  const yAxisVec = massageFormats(sketchGroup?.yAxis)
-  const xAxisVec = new Vector3().crossVectors(yAxisVec, zAxisVec).normalize()
-
-  let yAxisVecNormalized = yAxisVec.clone().normalize()
-  let zAxisVecNormalized = zAxisVec.clone().normalize()
-
-  let rotationMatrix = new Matrix4()
-  rotationMatrix.makeBasis(xAxisVec, yAxisVecNormalized, zAxisVecNormalized)
-  return new Quaternion().setFromRotationMatrix(rotationMatrix)
-}
-
 function colorSegment(object: any, color: number) {
   const segmentHead = getParentGroup(object, [ARROWHEAD, PROFILE_START])
   if (segmentHead) {
@@ -1175,24 +1159,9 @@ export async function getSketchOrientationDetails(
     }
   }
   if (sketchGroup.on.type === 'face') {
-    // TODO instead of tracking back through artifacts, the ast and programMemory and then making another request
-    // just to find the face orientation, we should have this information in the sketchGroup.on property
-    const sketchGroupArtifact =
-      engineCommandManager.artifactMap[sketchGroup.on.sketchGroupId]
-
-    const sourceSketchVarDec = getNodeFromPath<VariableDeclarator>(
-      kclManager.ast,
-      sketchGroupArtifact.pathToNode,
-      'VariableDeclarator'
-    ).node
-    const sourceSketch = kclManager.programMemory.root[
-      sourceSketchVarDec.id.name
-    ] as ExtrudeGroup
-    const extrudeSurface = sourceSketch.value.find(
-      (a) => a.name === sketchGroup.on.value
-    )
-    if (!extrudeSurface)
-      throw new Error("couldn't find important info about the face")
+    // sketchGroup.on.sketchGroupId is the faceId always points to the very start of teh dependency change?
+    // const sketchGroupArtifact =
+    //   engineCommandManager.artifactMap[sketchGroup.on.sketchGroupId]
 
     const faceInfo: Models['FaceIsPlanar_type'] = (
       await engineCommandManager.sendSceneCommand({
@@ -1200,20 +1169,23 @@ export async function getSketchOrientationDetails(
         cmd_id: uuidv4(),
         cmd: {
           type: 'face_is_planar',
-          object_id: extrudeSurface.faceId,
+          object_id: sketchGroup.on.faceId,
         },
       })
     )?.data?.data
-    if (!faceInfo?.origin || !faceInfo?.z_axis) throw new Error('faceInfo')
-    const { z_axis, origin } = faceInfo
-    const normal = new Vector3(z_axis.x, z_axis.y, z_axis.z)
-    const quaternion = getQuaternionFromZAxis(normal)
+    if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
+      throw new Error('faceInfo')
+    const { z_axis, y_axis, origin } = faceInfo
+    const quaternion = quaternionFromUpNForward(
+      new Vector3(y_axis.x, y_axis.y, y_axis.z),
+      new Vector3(z_axis.x, z_axis.y, z_axis.z)
+    )
     return {
       quat: quaternion,
       sketchDetails: {
         sketchPathToNode,
         zAxis: [z_axis.x, z_axis.y, z_axis.z],
-        yAxis: [sketchGroup.yAxis.x, sketchGroup.yAxis.y, sketchGroup.yAxis.z],
+        yAxis: [y_axis.x, y_axis.y, y_axis.z],
         origin: [origin.x, origin.y, origin.z],
       },
     }

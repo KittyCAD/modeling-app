@@ -19,6 +19,8 @@ const commonPoints = {
   startAt: '[9.06, -12.22]',
   num1: 9.14,
   num2: 18.2,
+  // num1: 9.64,
+  // num2: 19.19,
 }
 
 test.beforeEach(async ({ context, page }) => {
@@ -575,7 +577,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   const emptySpaceClick = () =>
     page.mouse.click(728, 343).then(() => page.waitForTimeout(100))
   const topHorzSegmentClick = () =>
-    page.mouse.click(709, 289).then(() => page.waitForTimeout(100))
+    page.mouse.click(709, 290).then(() => page.waitForTimeout(100))
   const bottomHorzSegmentClick = () =>
     page.mouse.click(767, 396).then(() => page.waitForTimeout(100))
 
@@ -1408,7 +1410,7 @@ test('Sketch on face', async ({ page, context }) => {
   await page.getByText('startProfileAt([1.03, 1.03], %)').click()
   await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
   await page.getByRole('button', { name: 'Edit Sketch' }).click()
-  await page.waitForTimeout(300)
+  await page.waitForTimeout(200)
 
   const pointToDragFirst = [691, 237]
   await page.mouse.move(pointToDragFirst[0], pointToDragFirst[1])
