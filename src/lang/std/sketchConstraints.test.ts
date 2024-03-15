@@ -56,18 +56,9 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
     `  |> startProfileAt([0, 0], %)`,
     `  |> lineTo([1, 1], %, 'abc1')`,
     `  |> line([-2.04, -0.7], %, 'abc2')`,
-    `  |> angledLine({`,
-    `       angle: 157,`,
-    `       length: 1.69,`,
-    `     }, %, 'abc3')`,
-    `  |> angledLineOfXLength({`,
-    `       angle: 217,`,
-    `       length: 0.86,`,
-    `     }, %, 'abc4')`,
-    `  |> angledLineOfYLength({`,
-    `       angle: 104,`,
-    `       length: 1.58,`,
-    `     }, %, 'abc5')`,
+    `  |> angledLine({ angle: 157, length: 1.69 }, %, 'abc3')`,
+    `  |> angledLineOfXLength({ angle: 217, length: 0.86 }, %, 'abc4')`,
+    `  |> angledLineOfYLength({ angle: 104, length: 1.58 }, %, 'abc5')`,
     `  |> angledLineToX({ angle: 55, to: -2.89 }, %, 'abc6')`,
     `  |> angledLineToY({ angle: 330, to: 2.53 }, %, 'abc7')`,
     `  |> xLine(1.47, %, 'abc8')`,
@@ -95,7 +86,6 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
       callToSwap,
       constraintType: 'horizontal',
     })
-    console.log(newCode)
     expect(newCode).toContain(expectedLine)
     // new line should start at the same place as the old line
     expect(originalRange[0]).toBe(newCode.indexOf(expectedLine))

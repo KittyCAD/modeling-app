@@ -23,11 +23,7 @@ import {
   getNodePathFromSourceRange,
   isNodeSafeToReplace,
 } from './queryAst'
-import {
-  addTagForSketchOnFace,
-  getFirstArg,
-  createFirstArg,
-} from './std/sketch'
+import { addTagForSketchOnFace } from './std/sketch'
 import { isLiteralArrayOrStatic } from './std/sketchcombos'
 import { DefaultPlaneStr } from 'clientSideScene/sceneEntities'
 import { roundOff } from 'lib/utils'

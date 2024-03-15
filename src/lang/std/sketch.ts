@@ -53,40 +53,31 @@ export function getCoordsFromPaths(skGroup: SketchGroup, index = 0): Coords2d {
 
 export function createFirstArg(
   sketchFn: ToolTip,
-  val: Value | [Value, Value] | [Value, Value, Value],
-  tag?: Value
+  val: Value | [Value, Value] | [Value, Value, Value]
 ): Value {
-  if (!tag) {
-    if (Array.isArray(val)) {
-      return createArrayExpression(val)
-    }
-    return val
-  }
   if (Array.isArray(val)) {
-    if (['line', 'lineTo'].includes(sketchFn))
-      return createObjectExpression({ to: createArrayExpression(val), tag })
+    if (['line', 'lineTo'].includes(sketchFn)) return createArrayExpression(val)
     if (
       ['angledLine', 'angledLineOfXLength', 'angledLineOfYLength'].includes(
         sketchFn
       )
     )
-      return createObjectExpression({ angle: val[0], length: val[1], tag })
+      return createObjectExpression({ angle: val[0], length: val[1] })
     if (['angledLineToX', 'angledLineToY'].includes(sketchFn))
-      return createObjectExpression({ angle: val[0], to: val[1], tag })
+      return createObjectExpression({ angle: val[0], to: val[1] })
     if (['angledLineThatIntersects'].includes(sketchFn) && val[2])
       return createObjectExpression({
         angle: val[0],
         offset: val[1],
         intersectTag: val[2],
-        tag,
       })
   } else {
-    if (['xLine', 'yLine'].includes(sketchFn))
-      return createObjectExpression({ length: val, tag })
-    if (['xLineTo', 'yLineTo'].includes(sketchFn))
-      return createObjectExpression({ to: val, tag })
-    if (['startSketchAt'].includes(sketchFn))
-      return createObjectExpression({ to: val, tag })
+    if (
+      ['startSketchAt', 'xLine', 'xLineTo', 'yLine', 'yLineTo'].includes(
+        sketchFn
+      )
+    )
+      return val
   }
   throw new Error('all sketch line types should have been covered')
 }
@@ -614,9 +605,9 @@ export const angledLineOfXLength: SketchLineHelper = {
     const newLine = createCallback
       ? createCallback([angle, xLength]).callExp
       : createCallExpression('angledLineOfXLength', [
-          createArrayExpression([angle, xLength]),
-          createPipeSubstitution(),
-        ])
+        createArrayExpression([angle, xLength]),
+        createPipeSubstitution(),
+      ])
     const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
     if (replaceExisting) {
       pipe.body[callIndex] = newLine
@@ -688,9 +679,9 @@ export const angledLineOfYLength: SketchLineHelper = {
     const newLine = createCallback
       ? createCallback([angle, yLength]).callExp
       : createCallExpression('angledLineOfYLength', [
-          createArrayExpression([angle, yLength]),
-          createPipeSubstitution(),
-        ])
+        createArrayExpression([angle, yLength]),
+        createPipeSubstitution(),
+      ])
     const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
     if (replaceExisting) {
       pipe.body[callIndex] = newLine
@@ -925,7 +916,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
     const intersectTag =
       firstArg.type === 'ObjectExpression'
         ? firstArg.properties.find((p) => p.key.name === 'intersectTag')
-            ?.value || createLiteral('')
+          ?.value || createLiteral('')
         : createLiteral('')
     const intersectTagName =
       intersectTag.type === 'Literal' ? intersectTag.value : ''
@@ -1172,10 +1163,10 @@ function isAngleLiteral(lineArugement: Value): boolean {
   return lineArugement?.type === 'ArrayExpression'
     ? isLiteralArrayOrStatic(lineArugement.elements[0])
     : lineArugement?.type === 'ObjectExpression'
-    ? isLiteralArrayOrStatic(
+      ? isLiteralArrayOrStatic(
         lineArugement.properties.find(({ key }) => key.name === 'angle')?.value
       )
-    : false
+      : false
 }
 
 type addTagFn = (a: ModifyAstBase) => { modifiedAst: Program; tag: string }
