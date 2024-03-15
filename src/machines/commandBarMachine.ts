@@ -450,6 +450,7 @@ export const commandBarMachine = createMachine(
 
               const hasMismatchedDefaultValueType =
                 isRequired &&
+                resolvedDefaultValue !== undefined &&
                 typeof argValue !== typeof resolvedDefaultValue &&
                 !(argConfig.inputType === 'kcl' || argConfig.skip)
               const hasInvalidKclValue =

@@ -40,7 +40,7 @@ export default function CodeEditor() {
             in kcl before they're available as point-and-click tools, so it's
             good to have a link to{' '}
             <a
-              href="https://github.com/KittyCAD/modeling-app/blob/main/docs/kcl/std.md"
+              href="https://zoo.dev/docs/kcl"
               rel="noreferrer noopener"
               target="_blank"
             >

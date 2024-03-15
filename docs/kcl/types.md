@@ -1,4 +1,8 @@
-# Types
+---
+title: "KCL Types"
+excerpt: "Documentation of types for the KCL standard library for the Zoo Modeling App."
+layout: manual
+---
 
 `KCL` defines the following types and keywords the language.
 

@@ -17,6 +17,13 @@ const config = defineConfig({
   },
   test: {
     globals: true,
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        maxForks: 2,
+        minForks: 1,
+      }
+    },
     setupFiles: 'src/setupTests.ts',
     environment: 'happy-dom',
     coverage: {

@@ -33,16 +33,20 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { isTauri } from 'lib/isTauri'
 import { useLspContext } from 'components/LspProvider'
+import { useValidateSettings } from 'hooks/useValidateSettings'
 
 export function App() {
+  useValidateSettings()
   const { project, file } = useLoaderData() as IndexLoaderData
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
   const { onProjectOpen } = useLspContext()
 
+  const projectName = project?.name || null
+  const projectPath = project?.path || null
   useEffect(() => {
-    onProjectOpen(project || null, file || null)
-  }, [])
+    onProjectOpen({ name: projectName, path: projectPath }, file || null)
+  }, [projectName, projectPath])
 
   useHotKeyListener()
   const {

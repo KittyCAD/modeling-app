@@ -1,5 +1,5 @@
 use kcl_lib::ast::types::RequiredParamAfterOptionalParam;
-use kittycad_execution_plan::ExecutionError;
+use kittycad_execution_plan::{ExecutionError, ExecutionFailed, Instruction};
 
 use crate::String2;
 
@@ -58,6 +58,26 @@ pub enum CompileError {
 pub enum Error {
     #[error("{0}")]
     Compile(#[from] CompileError),
-    #[error("{0}")]
-    Execution(#[from] ExecutionError),
+    #[error("Failed on instruction {instruction_index}:\n{error}\n\nInstruction contents were {instruction:#?}")]
+    Execution {
+        error: ExecutionError,
+        instruction: Instruction,
+        instruction_index: usize,
+    },
+}
+
+impl From<ExecutionFailed> for Error {
+    fn from(
+        ExecutionFailed {
+            error,
+            instruction,
+            instruction_index,
+        }: ExecutionFailed,
+    ) -> Self {
+        Self::Execution {
+            error,
+            instruction,
+            instruction_index,
+        }
+    }
 }

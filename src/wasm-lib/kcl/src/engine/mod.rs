@@ -1,38 +1,15 @@
 //! Functions for managing engine communications.
 
 #[cfg(not(target_arch = "wasm32"))]
-#[cfg(not(test))]
 #[cfg(feature = "engine")]
 pub mod conn;
-#[cfg(not(target_arch = "wasm32"))]
-#[cfg(not(test))]
-#[cfg(feature = "engine")]
-pub use conn::EngineConnection;
-
+pub mod conn_mock;
 #[cfg(target_arch = "wasm32")]
-#[cfg(not(test))]
 #[cfg(feature = "engine")]
 pub mod conn_wasm;
-#[cfg(target_arch = "wasm32")]
-#[cfg(not(test))]
-#[cfg(feature = "engine")]
-pub use conn_wasm::EngineConnection;
-
-#[cfg(test)]
-pub mod conn_mock;
-#[cfg(test)]
-pub use conn_mock::EngineConnection;
-
-#[cfg(not(feature = "engine"))]
-#[cfg(not(test))]
-pub mod conn_mock;
-use anyhow::Result;
-#[cfg(not(feature = "engine"))]
-#[cfg(not(test))]
-pub use conn_mock::EngineConnection;
 
 #[async_trait::async_trait]
-pub trait EngineManager: Clone {
+pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Send a modeling command and wait for the response message.
     async fn send_modeling_cmd(
         &self,

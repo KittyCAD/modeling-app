@@ -13,7 +13,7 @@ use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
     ast::types::{BodyItem, FunctionExpression, KclNone, Value},
-    engine::{EngineConnection, EngineManager},
+    engine::EngineManager,
     errors::{KclError, KclErrorDetails},
     fs::FileManager,
     std::{FunctionKind, StdLib},
@@ -979,7 +979,7 @@ impl Default for PipeInfo {
 /// The executor context.
 #[derive(Debug, Clone)]
 pub struct ExecutorContext {
-    pub engine: EngineConnection,
+    pub engine: Arc<Box<dyn EngineManager>>,
     pub fs: FileManager,
     pub stdlib: Arc<StdLib>,
     pub units: kittycad::types::UnitLength,
@@ -987,22 +987,11 @@ pub struct ExecutorContext {
 
 impl ExecutorContext {
     /// Create a new default executor context.
-    #[cfg(test)]
-    pub async fn new(units: kittycad::types::UnitLength) -> Result<Self> {
-        Ok(Self {
-            engine: EngineConnection::new().await?,
-            fs: FileManager::new(),
-            stdlib: Arc::new(StdLib::new()),
-            units,
-        })
-    }
-
-    /// Create a new default executor context.
     #[cfg(not(test))]
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(ws: reqwest::Upgraded, units: kittycad::types::UnitLength) -> Result<Self> {
         Ok(Self {
-            engine: EngineConnection::new(ws).await?,
+            engine: Arc::new(Box::new(crate::engine::conn::EngineConnection::new(ws).await?)),
             fs: FileManager::new(),
             stdlib: Arc::new(StdLib::new()),
             units,
@@ -1292,6 +1281,8 @@ fn assign_args_to_params(
 
 #[cfg(test)]
 mod tests {
+    use std::sync::Arc;
+
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -1302,7 +1293,12 @@ mod tests {
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast()?;
         let mut mem: ProgramMemory = Default::default();
-        let ctx = ExecutorContext::new(kittycad::types::UnitLength::Mm).await?;
+        let ctx = ExecutorContext {
+            engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await?)),
+            fs: crate::fs::FileManager::new(),
+            stdlib: Arc::new(crate::std::StdLib::new()),
+            units: kittycad::types::UnitLength::Mm,
+        };
         let memory = execute(program, &mut mem, BodyType::Root, &ctx).await?;
 
         Ok(memory)

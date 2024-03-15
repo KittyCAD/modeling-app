@@ -1,61 +1,14 @@
 import { Dialog, Popover, Transition } from '@headlessui/react'
-import { Fragment, createContext, useEffect } from 'react'
+import { Fragment, useEffect } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { useMachine } from '@xstate/react'
-import { commandBarMachine } from 'machines/commandBarMachine'
-import { EventFrom, StateFrom } from 'xstate'
 import CommandBarArgument from './CommandBarArgument'
 import CommandComboBox from '../CommandComboBox'
-import { useLocation } from 'react-router-dom'
 import CommandBarReview from './CommandBarReview'
-
-type CommandsContextType = {
-  commandBarState: StateFrom<typeof commandBarMachine>
-  commandBarSend: (event: EventFrom<typeof commandBarMachine>) => void
-}
-
-export const CommandsContext = createContext<CommandsContextType>({
-  commandBarState: commandBarMachine.initialState,
-  commandBarSend: () => {},
-})
-
-export const CommandBarProvider = ({
-  children,
-}: {
-  children: React.ReactNode
-}) => {
-  const { pathname } = useLocation()
-  const [commandBarState, commandBarSend] = useMachine(commandBarMachine, {
-    devTools: true,
-    guards: {
-      'Command has no arguments': (context, _event) => {
-        return (
-          !context.selectedCommand?.args ||
-          Object.keys(context.selectedCommand?.args).length === 0
-        )
-      },
-    },
-  })
-
-  // Close the command bar when navigating
-  useEffect(() => {
-    commandBarSend({ type: 'Close' })
-  }, [pathname])
-
-  return (
-    <CommandsContext.Provider
-      value={{
-        commandBarState,
-        commandBarSend,
-      }}
-    >
-      {children}
-    </CommandsContext.Provider>
-  )
-}
+import { useLocation } from 'react-router-dom'
 
 export const CommandBar = () => {
+  const { pathname } = useLocation()
   const { commandBarState, commandBarSend } = useCommandsContext()
   const {
     context: { selectedCommand, currentArgument, commands },
@@ -63,6 +16,12 @@ export const CommandBar = () => {
   const isSelectionArgument = currentArgument?.inputType === 'selection'
   const WrapperComponent = isSelectionArgument ? Popover : Dialog
 
+  // Close the command bar when navigating
+  useEffect(() => {
+    commandBarSend({ type: 'Close' })
+  }, [pathname])
+
+  // Hook up keyboard shortcuts
   useHotkeys(['mod+k', 'mod+/'], () => {
     if (commandBarState.context.commands.length === 0) return
     if (commandBarState.matches('Closed')) {
@@ -164,4 +123,4 @@ export const CommandBar = () => {
   )
 }
 
-export default CommandBarProvider
+export default CommandBar

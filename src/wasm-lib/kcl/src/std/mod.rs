@@ -24,7 +24,6 @@ use serde::{Deserialize, Serialize};
 use crate::{
     ast::types::parse_json_number_as_f64,
     docs::StdLibFn,
-    engine::EngineManager,
     errors::{KclError, KclErrorDetails},
     executor::{
         ExecutorContext, ExtrudeGroup, MemoryItem, Metadata, SketchGroup, SketchGroupSet, SketchSurface, SourceRange,
@@ -50,6 +49,7 @@ lazy_static! {
         Box::new(crate::std::segment::SegAng),
         Box::new(crate::std::segment::AngleToMatchLengthX),
         Box::new(crate::std::segment::AngleToMatchLengthY),
+        Box::new(crate::std::shapes::Circle),
         Box::new(crate::std::sketch::LineTo),
         Box::new(crate::std::sketch::Line),
         Box::new(crate::std::sketch::XLineTo),
@@ -100,6 +100,8 @@ lazy_static! {
         Box::new(crate::std::math::Log2),
         Box::new(crate::std::math::Log10),
         Box::new(crate::std::math::Ln),
+        Box::new(crate::std::math::ToDegrees),
+        Box::new(crate::std::math::ToRadians),
     ];
 }
 
@@ -129,7 +131,7 @@ impl StdLib {
             .map(|internal_fn| (internal_fn.name(), internal_fn))
             .collect();
 
-        let kcl_internal_fns: [Box<dyn KclStdLibFn>; 1] = [Box::<shapes::Circle>::default()];
+        let kcl_internal_fns: [Box<dyn KclStdLibFn>; 0] = [];
         let kcl_fns = kcl_internal_fns
             .into_iter()
             .map(|internal_fn| (internal_fn.name(), internal_fn))
@@ -262,6 +264,103 @@ impl Args {
         }
 
         Ok((numbers[0], numbers[1]))
+    }
+
+    fn get_circle_args(
+        &self,
+    ) -> Result<([f64; 2], f64, crate::std::shapes::SketchSurfaceOrGroup, Option<String>), KclError> {
+        let first_value = self
+            .args
+            .first()
+            .ok_or_else(|| {
+                KclError::Type(KclErrorDetails {
+                    message: format!(
+                        "Expected a [number, number] as the first argument, found `{:?}`",
+                        self.args
+                    ),
+                    source_ranges: vec![self.source_range],
+                })
+            })?
+            .get_json_value()?;
+
+        let center: [f64; 2] = if let serde_json::Value::Array(arr) = first_value {
+            if arr.len() != 2 {
+                return Err(KclError::Type(KclErrorDetails {
+                    message: format!(
+                        "Expected a [number, number] as the first argument, found `{:?}`",
+                        self.args
+                    ),
+                    source_ranges: vec![self.source_range],
+                }));
+            }
+            let x = parse_json_number_as_f64(&arr[0], self.source_range)?;
+            let y = parse_json_number_as_f64(&arr[1], self.source_range)?;
+            [x, y]
+        } else {
+            return Err(KclError::Type(KclErrorDetails {
+                message: format!(
+                    "Expected a [number, number] as the first argument, found `{:?}`",
+                    self.args
+                ),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+
+        let second_value = self
+            .args
+            .get(1)
+            .ok_or_else(|| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Expected a number as the second argument, found `{:?}`", self.args),
+                    source_ranges: vec![self.source_range],
+                })
+            })?
+            .get_json_value()?;
+
+        let radius: f64 = serde_json::from_value(second_value).map_err(|e| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Failed to deserialize number from JSON: {}", e),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let third_value = self.args.get(2).ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!(
+                    "Expected a SketchGroup or SketchSurface as the third argument, found `{:?}`",
+                    self.args
+                ),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let sketch_group_or_surface = if let MemoryItem::SketchGroup(sg) = third_value {
+            crate::std::shapes::SketchSurfaceOrGroup::SketchGroup(sg.clone())
+        } else if let MemoryItem::Plane(sg) = third_value {
+            crate::std::shapes::SketchSurfaceOrGroup::SketchSurface(SketchSurface::Plane(sg.clone()))
+        } else if let MemoryItem::Face(sg) = third_value {
+            crate::std::shapes::SketchSurfaceOrGroup::SketchSurface(SketchSurface::Face(sg.clone()))
+        } else {
+            return Err(KclError::Type(KclErrorDetails {
+                message: format!(
+                    "Expected a SketchGroup or SketchSurface as the third argument, found `{:?}`",
+                    self.args
+                ),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+
+        if let Some(fourth_value) = self.args.get(3) {
+            let tag: String = serde_json::from_value(fourth_value.get_json_value()?).map_err(|e| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Failed to deserialize String from JSON: {}", e),
+                    source_ranges: vec![self.source_range],
+                })
+            })?;
+            Ok((center, radius, sketch_group_or_surface, Some(tag)))
+        } else {
+            Ok((center, radius, sketch_group_or_surface, None))
+        }
     }
 
     fn get_segment_name_sketch_group(&self) -> Result<(String, Box<SketchGroup>), KclError> {
@@ -758,6 +857,10 @@ pub async fn leg_length(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Returns the length of the given leg.
+///
+/// ```no_run
+/// legLen(5, 3)
+/// ```
 #[stdlib {
     name = "legLen",
 }]
@@ -773,6 +876,10 @@ pub async fn leg_angle_x(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Returns the angle of the given leg for x.
+///
+/// ```no_run
+/// legAngX(5, 3)
+/// ```
 #[stdlib {
     name = "legAngX",
 }]
@@ -788,6 +895,10 @@ pub async fn leg_angle_y(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Returns the angle of the given leg for y.
+///
+/// ```no_run
+/// legAngY(5, 3)
+/// ```
 #[stdlib {
     name = "legAngY",
 }]
@@ -822,14 +933,21 @@ mod tests {
         let combined = stdlib.combined();
         let mut buf = String::new();
 
-        buf.push_str("<!--- DO NOT EDIT THIS FILE. IT IS AUTOMATICALLY GENERATED. -->\n\n");
+        buf.push_str(
+            r#"---
+title: "KCL Standard Library"
+excerpt: "Documentation for the KCL standard library for the Zoo Modeling App."
+layout: manual
+---
 
-        buf.push_str("# KCL Standard Library\n\n");
+"#,
+        );
 
         // Generate a table of contents.
         buf.push_str("## Table of Contents\n\n");
 
-        buf.push_str("* [Functions](#functions)\n");
+        buf.push_str("* [Types](kcl/types)\n");
+        buf.push_str("* [Known Issues](kcl/KNOWN-ISSUES)\n");
 
         for key in combined.keys().sorted() {
             let internal_fn = combined.get(key).unwrap();
@@ -837,14 +955,14 @@ mod tests {
                 continue;
             }
 
-            buf.push_str(&format!("\t* [`{}`](#{})\n", internal_fn.name(), internal_fn.name()));
+            buf.push_str(&format!("* [`{}`](kcl/{})\n", internal_fn.name(), internal_fn.name()));
         }
 
-        buf.push_str("\n\n");
-
-        buf.push_str("## Functions\n\n");
+        // Write the index.
+        expectorate::assert_contents("../../../docs/kcl/index.md", &buf);
 
         for key in combined.keys().sorted() {
+            let mut buf = String::new();
             let internal_fn = combined.get(key).unwrap();
             if internal_fn.unpublished() {
                 continue;
@@ -852,21 +970,41 @@ mod tests {
 
             let mut fn_docs = String::new();
 
+            fn_docs.push_str(&format!(
+                r#"---
+title: "{}"
+excerpt: "{}"
+layout: manual
+---
+
+"#,
+                internal_fn.name(),
+                internal_fn.summary()
+            ));
+
             if internal_fn.deprecated() {
-                fn_docs.push_str(&format!("### {} DEPRECATED\n\n", internal_fn.name()));
-            } else {
-                fn_docs.push_str(&format!("### {}\n\n", internal_fn.name()));
+                fn_docs.push_str("**WARNING:** This function is deprecated.\n\n");
             }
 
             fn_docs.push_str(&format!("{}\n\n", internal_fn.summary()));
             fn_docs.push_str(&format!("{}\n\n", internal_fn.description()));
 
-            fn_docs.push_str("```\n");
+            fn_docs.push_str("```js\n");
             let signature = internal_fn.fn_signature();
             fn_docs.push_str(&signature);
             fn_docs.push_str("\n```\n\n");
 
-            fn_docs.push_str("#### Arguments\n\n");
+            if !internal_fn.examples().is_empty() {
+                fn_docs.push_str("### Examples\n\n");
+
+                for example in internal_fn.examples() {
+                    fn_docs.push_str("```js\n");
+                    fn_docs.push_str(&example);
+                    fn_docs.push_str("\n```\n\n");
+                }
+            }
+
+            fn_docs.push_str("### Arguments\n\n");
             for arg in internal_fn.args() {
                 let (format, should_be_indented) = arg.get_type_string().unwrap();
                 let optional_string = if arg.required { " (REQUIRED)" } else { " (OPTIONAL)" }.to_string();
@@ -880,30 +1018,31 @@ mod tests {
                 }
 
                 if should_be_indented {
-                    fn_docs.push_str(&format!("```\n{}\n```\n", format));
+                    fn_docs.push_str(&format!("```js\n{}\n```\n", format));
                 }
             }
 
             if let Some(return_type) = internal_fn.return_value() {
-                fn_docs.push_str("\n#### Returns\n\n");
+                fn_docs.push_str("\n### Returns\n\n");
                 if let Some(description) = return_type.description() {
-                    fn_docs.push_str(&format!("* `{}` - {}\n", return_type.type_, description));
+                    fn_docs.push_str(&format!("`{}` - {}\n", return_type.type_, description));
                 } else {
-                    fn_docs.push_str(&format!("* `{}`\n", return_type.type_));
+                    fn_docs.push_str(&format!("`{}`\n", return_type.type_));
                 }
 
                 let (format, should_be_indented) = return_type.get_type_string().unwrap();
                 if should_be_indented {
-                    fn_docs.push_str(&format!("```\n{}\n```\n", format));
+                    fn_docs.push_str(&format!("```js\n{}\n```\n", format));
                 }
             }
 
             fn_docs.push_str("\n\n\n");
 
             buf.push_str(&fn_docs);
-        }
 
-        expectorate::assert_contents("../../../docs/kcl/std.md", &buf);
+            // Write the file.
+            expectorate::assert_contents(&format!("../../../docs/kcl/{}.md", internal_fn.name()), &buf);
+        }
     }
 
     #[test]
