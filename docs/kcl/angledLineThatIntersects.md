@@ -9,7 +9,7 @@ Draw an angled line that intersects with a given line.
 
 
 ```js
-angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: SketchGroup) -> SketchGroup
+angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: SketchGroup, tag?: String) -> SketchGroup
 ```
 
 ### Examples
@@ -17,14 +17,13 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 ```js
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> lineTo({ to: [2, 2], tag: "yo" }, %)
+  |> lineTo([2, 2], %, "yo")
   |> lineTo([3, 1], %)
   |> angledLineThatIntersects({
        angle: 180,
        intersectTag: 'yo',
-       offset: 12,
-       tag: "yo2"
-     }, %)
+       offset: 12
+     }, %, "yo2")
   |> line([4, 0], %)
   |> close(%, "yo3")
   |> extrude(10, %)
@@ -41,8 +40,6 @@ const part001 = startSketchOn('XY')
 	intersectTag: string,
 	// The offset from the intersecting line.
 	offset: number,
-	// The tag.
-	tag: string,
 }
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
@@ -209,6 +206,7 @@ const part001 = startSketchOn('XY')
 },
 }
 ```
+* `tag`: `String` (OPTIONAL)
 
 ### Returns
 

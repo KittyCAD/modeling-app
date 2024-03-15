@@ -294,12 +294,17 @@ async fn inner_y_line(
 /// Data to draw an angled line.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub struct AngledLineData {
-    /// The angle of the line.
-    angle: f64,
-    /// The length of the line.
-    length: f64,
+#[serde(rename_all = "camelCase", untagged)]
+pub enum AngledLineData {
+    /// An angle and length with explicitly named parameters
+    AngleAndLengthNamed {
+        /// The angle of the line.
+        angle: f64,
+        /// The length of the line.
+        length: f64,
+    },
+    /// An angle and length given as a pair
+    AngleAndLengthPair([f64; 2]),
 }
 
 /// Draw an angled line.
@@ -335,7 +340,10 @@ async fn inner_angled_line(
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
-    let AngledLineData { angle, length } = data;
+    let (angle, length) = match data {
+        AngledLineData::AngleAndLengthNamed { angle, length } => (angle, length),
+        AngledLineData::AngleAndLengthPair(pair) => (pair[0], pair[1]),
+    };
 
     //double check me on this one - mike
     let delta: [f64; 2] = [
@@ -413,7 +421,10 @@ async fn inner_angled_line_of_x_length(
     tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
-    let AngledLineData { angle, length } = data;
+    let (angle, length) = match data {
+        AngledLineData::AngleAndLengthNamed { angle, length } => (angle, length),
+        AngledLineData::AngleAndLengthPair(pair) => (pair[0], pair[1]),
+    };
 
     let to = get_y_component(Angle::from_degrees(angle), length);
 
@@ -511,7 +522,10 @@ async fn inner_angled_line_of_y_length(
     tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
-    let AngledLineData { angle, length } = data;
+    let (angle, length) = match data {
+        AngledLineData::AngleAndLengthNamed { angle, length } => (angle, length),
+        AngledLineData::AngleAndLengthPair(pair) => (pair[0], pair[1]),
+    };
 
     let to = get_x_component(Angle::from_degrees(angle), length);
 

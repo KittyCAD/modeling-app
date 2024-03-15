@@ -18,7 +18,7 @@ startSketchOn(data: SketchData, tag?: SketchOnFaceTag) -> SketchSurface
 startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([10, 10], %)
-  |> line({ to: [20, 10], tag: "edge1" }, %)
+  |> line([20, 10], %, "edge1")
   |> close(%, "edge2")
 ```
 
@@ -40,7 +40,7 @@ const box = cube([0, 0], 20)
 const part001 = startSketchOn(box, "start")
   |> startProfileAt([0, 0], %)
   |> line([10, 10], %)
-  |> line({ to: [20, 10], tag: "edge1" }, %)
+  |> line([20, 10], %, "edge1")
   |> close(%)
   |> extrude(20, %)
 ```
