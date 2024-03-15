@@ -370,7 +370,7 @@ describe('testing pipe operator special', () => {
       {
         type: 'VariableDeclaration',
         start: 0,
-        end: 145,
+        end: 132,
         kind: 'const',
         declarations: [
           {
@@ -1516,8 +1516,8 @@ const key = 'c'`
       .nonCodeNodes
     expect(sketchNonCodeMeta[indexOfSecondLineToExpression][0]).toEqual({
       type: 'NonCodeNode',
-      start: 106,
-      end: 163,
+      start: 93,
+      end: 150,
       value: {
         type: 'inlineComment',
         style: 'block',
@@ -1540,8 +1540,8 @@ const key = 'c'`
       .nonCodeNodes[3][0]
     expect(sketchNonCodeMeta).toEqual({
       type: 'NonCodeNode',
-      start: 125,
-      end: 138,
+      start: 114,
+      end: 127,
       value: {
         type: 'blockComment',
         value: 'a comment',

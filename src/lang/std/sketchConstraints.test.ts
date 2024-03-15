@@ -95,6 +95,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
       callToSwap,
       constraintType: 'horizontal',
     })
+    console.log(newCode)
     expect(newCode).toContain(expectedLine)
     // new line should start at the same place as the old line
     expect(originalRange[0]).toBe(newCode.indexOf(expectedLine))

@@ -57,7 +57,7 @@ const newVar = myVar + 1`
         to: [0, 2],
         from: [0, 0],
         __geoMeta: {
-          sourceRange: [72, 109],
+          sourceRange: [72, 98],
           id: expect.any(String),
         },
         name: 'myPath',
@@ -68,7 +68,7 @@ const newVar = myVar + 1`
         from: [0, 2],
         name: '',
         __geoMeta: {
-          sourceRange: [115, 131],
+          sourceRange: [104, 120],
           id: expect.any(String),
         },
       },
@@ -77,7 +77,7 @@ const newVar = myVar + 1`
         to: [5, -1],
         from: [2, 3],
         __geoMeta: {
-          sourceRange: [137, 180],
+          sourceRange: [126, 156],
           id: expect.any(String),
         },
         name: 'rightPath',
@@ -159,7 +159,7 @@ const newVar = myVar + 1`
           to: [0, 1],
           from: [1, 1],
           __geoMeta: {
-            sourceRange: [91, 129],
+            sourceRange: [91, 118],
             id: expect.any(String),
           },
           name: 'myPath',
@@ -170,7 +170,7 @@ const newVar = myVar + 1`
           from: [0, 1],
           name: '',
           __geoMeta: {
-            sourceRange: [135, 151],
+            sourceRange: [124, 140],
             id: expect.any(String),
           },
         },

@@ -1190,67 +1190,20 @@ function addTagWithTo(
       _node,
       pathToNode
     )
-    const firstArg = callExpression.arguments?.[0]
-    if (firstArg.type === 'ObjectExpression') {
-      const existingTagName = firstArg.properties?.find(
-        (prop) => prop.key.name === 'tag'
-      )
-      if (!existingTagName) {
-        mutateObjExpProp(
-          callExpression.arguments?.[0],
-          createLiteral(tagName),
-          'tag'
-        )
-      } else {
-        tagName = `${(existingTagName.value as Literal).value}`
+    const tagArg = callExpression.arguments?.[2]
+    if (tagArg) {
+      return {
+        modifiedAst: _node,
+        tag: String(tagArg),
       }
+    } else {
+      callExpression.arguments[2] = createLiteral(tagName)
+
       return {
         modifiedAst: _node,
         tag: tagName,
       }
     }
-    if (firstArg.type === 'ArrayExpression') {
-      const objExp =
-        argType === 'default'
-          ? createObjectExpression({
-              to: firstArg,
-              tag: createLiteral(tagName),
-            })
-          : argType === 'angleLength'
-          ? createObjectExpression({
-              angle: firstArg.elements[0],
-              length: firstArg.elements[1],
-              tag: createLiteral(tagName),
-            })
-          : createObjectExpression({
-              angle: firstArg.elements[0],
-              to: firstArg.elements[1],
-              tag: createLiteral(tagName),
-            })
-      callExpression.arguments[0] = objExp
-      return {
-        modifiedAst: _node,
-        tag: tagName,
-      }
-    }
-    if (firstArg.type === 'Literal') {
-      const objExp =
-        argType === 'length'
-          ? createObjectExpression({
-              length: firstArg,
-              tag: createLiteral(tagName),
-            })
-          : createObjectExpression({
-              to: firstArg,
-              tag: createLiteral(tagName),
-            })
-      callExpression.arguments[0] = objExp
-      return {
-        modifiedAst: _node,
-        tag: tagName,
-      }
-    }
-    throw new Error('lineTo must be called with an object or array')
   }
 }
 

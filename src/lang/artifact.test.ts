@@ -143,7 +143,7 @@ const sk2 = startSketchOn('XY')
         xAxis: { x: 1, y: 0, z: 0 },
         yAxis: { x: 0, y: 1, z: 0 },
         zAxis: { x: 0, y: 0, z: 1 },
-        __meta: [{ sourceRange: [356, 381] }],
+        __meta: [{ sourceRange: [343, 368] }],
       },
     ])
   })
