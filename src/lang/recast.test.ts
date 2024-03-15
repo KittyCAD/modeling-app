@@ -64,9 +64,9 @@ log(5, myVar)
   })
   it('recast sketch declaration', () => {
     let code = `const mySketch = startSketchAt([0, 0])
-  |> lineTo({ to: [0, 1], tag: "myPath" }, %)
+  |> lineTo([0, 1], %, "myPath")
   |> lineTo([1, 1], %)
-  |> lineTo({ to: [1, 0], tag: "rightPath" }, %)
+  |> lineTo([1, 0], %, "rightPath")
   |> close(%)
 `
     const { ast } = code2ast(code)
@@ -77,7 +77,7 @@ log(5, myVar)
     const code = [
       'const mySk1 = startSketchAt([0, 0])',
       '  |> lineTo([1, 1], %)',
-      '  |> lineTo({ to: [0, 1], tag: "myTag" }, %)',
+      '  |> lineTo([0, 1], %, "myTag")',
       '  |> lineTo([1, 1], %)',
       '  |> rx(90, %)',
     ].join('\n')
@@ -237,7 +237,7 @@ const key = 'c'
     const code = [
       'const mySk1 = startSketchAt([0, 0])',
       '  |> lineTo([1, 1], %)',
-      '  |> lineTo({ to: [0, 1], tag: "myTag" }, %)',
+      '  |> lineTo([0, 1], %, "myTag")',
       '  |> lineTo([1, 1], %)',
       '  // a comment',
       '  |> rx(90, %)',
@@ -253,7 +253,7 @@ const key = 'c'
 const mySk1 = startSketchAt([0, 0])
   |> lineTo([1, 1], %)
   // comment here
-  |> lineTo({ to: [0, 1], tag: 'myTag' }, %)
+  |> lineTo([0, 1], %, 'myTag')
   |> lineTo([1, 1], %) /* and
   here
   */
@@ -275,7 +275,7 @@ const mySk1 = startSketchAt([0, 0])
 const mySk1 = startSketchAt([0, 0])
   |> lineTo([1, 1], %)
   // comment here
-  |> lineTo({ to: [0, 1], tag: 'myTag' }, %)
+  |> lineTo([0, 1], %, 'myTag')
   |> lineTo([1, 1], %) /* and
   here */
   // a comment between pipe expression statements
@@ -321,7 +321,7 @@ describe('testing call Expressions in BinaryExpressions and UnaryExpressions', (
 describe('it recasts wrapped object expressions in pipe bodies with correct indentation', () => {
   it('with a single line', () => {
     const code = `const part001 = startSketchAt([-0.01, -0.08])
-  |> line({ to: [0.62, 4.15], tag: 'seg01' }, %)
+  |> line([0.62, 4.15], %, 'seg01')
   |> line([2.77, -1.24], %)
   |> angledLineThatIntersects({
        angle: 201,

@@ -360,7 +360,7 @@ describe('testing pipe operator special', () => {
   test('pipe operator with sketch', () => {
     let code = `const mySketch = startSketchAt([0, 0])
   |> lineTo([2, 3], %)
-  |> lineTo({ to: [0, 1], tag: "myPath" }, %)
+  |> lineTo([0, 1], %, "myPath")
   |> lineTo([1, 1], %)
   |> rx(45, %)
 `
@@ -1502,11 +1502,11 @@ const key = 'c'`
   })
   it('comments nested within a block statement', () => {
     const code = `const mySketch = startSketchAt([0,0])
-  |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
+  |> lineTo([0, 1], %, 'myPath')
   |> lineTo([1, 1], %) /* this is
       a comment
       spanning a few lines */
-  |> lineTo({ to: [1,0], tag: "rightPath" }, %)
+  |> lineTo([1,0], %, "rightPath")
   |> close(%)
 `
 
@@ -1529,7 +1529,7 @@ const key = 'c'`
     const code = [
       'const mySk1 = startSketchAt([0, 0])',
       '  |> lineTo([1, 1], %)',
-      '  |> lineTo({to: [0, 1], tag: "myPath"}, %)',
+      '  |> lineTo([0, 1], %, "myPath")',
       '  |> lineTo([1, 1], %)',
       '// a comment',
       '  |> rx(90, %)',

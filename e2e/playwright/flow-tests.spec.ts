@@ -130,7 +130,7 @@ test('Basic sketch', async ({ page }) => {
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
-  |> line({ to: [${commonPoints.num1}, 0], tag: 'seg01' }, %)
+  |> line([${commonPoints.num1}, 0], %, 'seg01')
   |> line([0, ${commonPoints.num1}], %)
   |> angledLine([180, segLen('seg01', %)], %)`)
 })
