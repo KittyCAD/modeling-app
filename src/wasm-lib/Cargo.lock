@@ -1921,7 +1921,7 @@ dependencies = [
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
- "winnow",
+ "winnow 0.5.40",
  "zip",
 ]
 

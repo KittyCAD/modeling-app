@@ -2,8 +2,8 @@ use std::{collections::HashMap, env};
 
 use ep::{sketch_types, Destination, UnaryArithmetic};
 use ept::{ListHeader, ObjectHeader};
-use kittycad_modeling_cmds::shared::Point2d;
 use kittycad_execution_plan_traits::ReadMemory;
+use kittycad_modeling_cmds::shared::Point2d;
 use kittycad_modeling_session::SessionBuilder;
 use pretty_assertions::assert_eq;
 
