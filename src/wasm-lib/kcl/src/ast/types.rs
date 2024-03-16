@@ -2519,7 +2519,17 @@ impl UnaryExpression {
     }
 
     fn recast(&self, options: &FormatOptions) -> String {
-        format!("{}{}", &self.operator, self.argument.recast(options, 0))
+        match self.argument {
+            BinaryPart::Literal(_)
+            | BinaryPart::Identifier(_)
+            | BinaryPart::MemberExpression(_)
+            | BinaryPart::CallExpression(_) => {
+                format!("{}{}", &self.operator, self.argument.recast(options, 0))
+            }
+            BinaryPart::BinaryExpression(_) | BinaryPart::UnaryExpression(_) => {
+                format!("{}({})", &self.operator, self.argument.recast(options, 0))
+            }
+        }
     }
 
     pub async fn get_result(
@@ -3766,6 +3776,25 @@ const firstExtrude = startSketchOn('XY')
     #[tokio::test(flavor = "multi_thread")]
     async fn test_recast_math_start_negative() {
         let some_program_string = r#"const myVar = -5 + 6"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted.trim(), some_program_string);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_recast_math_negate_parens() {
+        let some_program_string = r#"const wallMountL = 3.82
+const thickness = 0.5
+
+startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, -(wallMountL - thickness)], %)
+  |> line([0, -(5 - thickness)], %)
+  |> line([0, -(5 - 1)], %)
+  |> line([0, -(-5 - 1)], %)"#;
         let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
