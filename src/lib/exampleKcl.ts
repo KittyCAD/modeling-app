@@ -22,7 +22,7 @@ const bracket = startSketchOn('XY')
   |> line([-shelfMountL, 0], %)
   |> line([0, -thickness], %)
   |> line([shelfMountL-thickness, 0], %, 'innerEdge')
-  |> line([0, -(wallMountL-thickness)], %)
+  |> line([0, -wallMountL+thickness)], %)
   |> close(%)
   |> extrude(width, %)
   |> fillet({
