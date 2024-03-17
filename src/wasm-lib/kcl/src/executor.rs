@@ -1325,14 +1325,13 @@ const newVar = myVar + 1"#;
             format!(
                 r#"const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> lineTo({{to:[2, 2], tag: "yo"}}, %)
+  |> lineTo([2, 2], %, "yo")
   |> lineTo([3, 1], %)
   |> angledLineThatIntersects({{
   angle: 180,
   intersectTag: 'yo',
   offset: {},
-  tag: "yo2"
-}}, %)
+}}, %, 'yo2')
 const intersect = segEndX('yo2', part001)"#,
                 offset
             )
@@ -1389,7 +1388,7 @@ const yo2 = hmm([identifierGuy + 5])"#;
         let ast = r#"const myVar = 3
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line({ to: [3, 4], tag: 'seg01' }, %)
+  |> line([3, 4], %, 'seg01')
   |> line([
   min(segLen('seg01', %), myVar),
   -legLen(segLen('seg01', %), myVar)
@@ -1404,7 +1403,7 @@ const part001 = startSketchOn('XY')
         let ast = r#"const myVar = 3
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line({ to: [3, 4], tag: 'seg01' }, %)
+  |> line([3, 4], %, 'seg01')
   |> line([
   min(segLen('seg01', %), myVar),
   legLen(segLen('seg01', %), myVar)

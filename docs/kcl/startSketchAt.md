@@ -9,7 +9,7 @@ Start a sketch at a given point on the 'XY' plane.
 
 
 ```js
-startSketchAt(data: LineData) -> SketchGroup
+startSketchAt(data: [number]) -> SketchGroup
 ```
 
 ### Examples
@@ -21,16 +21,7 @@ startSketchAt([0, 0])
 
 ### Arguments
 
-* `data`: `LineData` - Data to draw a line. (REQUIRED)
-```js
-{
-	// The tag.
-	tag: string,
-	// The to point.
-	to: [number, number],
-} |
-[number, number]
-```
+* `data`: `[number]` (REQUIRED)
 
 ### Returns
 

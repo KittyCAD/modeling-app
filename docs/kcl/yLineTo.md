@@ -9,7 +9,7 @@ Draw a line to a point on the y-axis.
 
 
 ```js
-yLineTo(data: AxisLineToData, sketch_group: SketchGroup) -> SketchGroup
+yLineTo(to: number, sketch_group: SketchGroup, tag?: String) -> SketchGroup
 ```
 
 ### Examples
@@ -17,7 +17,7 @@ yLineTo(data: AxisLineToData, sketch_group: SketchGroup) -> SketchGroup
 ```js
 startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> yLineTo({ to: 10, tag: "edge1" }, %)
+  |> yLineTo(10, %, "edge1")
   |> line([10, 10], %)
   |> close(%, "edge2")
   |> extrude(10, %)
@@ -26,16 +26,7 @@ startSketchOn('XZ')
 
 ### Arguments
 
-* `data`: `AxisLineToData` - Data to draw a line to a point on an axis. (REQUIRED)
-```js
-{
-	// The tag.
-	tag: string,
-	// The to point.
-	to: number,
-} |
-number
-```
+* `to`: `number` (REQUIRED)
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```js
 {
@@ -200,6 +191,7 @@ number
 },
 }
 ```
+* `tag`: `String` (OPTIONAL)
 
 ### Returns
 

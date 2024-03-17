@@ -23,11 +23,7 @@ import {
   getNodePathFromSourceRange,
   isNodeSafeToReplace,
 } from './queryAst'
-import {
-  addTagForSketchOnFace,
-  getFirstArg,
-  createFirstArg,
-} from './std/sketch'
+import { addTagForSketchOnFace } from './std/sketch'
 import { isLiteralArrayOrStatic } from './std/sketchcombos'
 import { DefaultPlaneStr } from 'clientSideScene/sceneEntities'
 import { roundOff } from 'lib/utils'
@@ -600,22 +596,25 @@ export function giveSketchFnCallTag(
     path,
     'CallExpression'
   )
-  const firstArg = getFirstArg(primaryCallExp)
-  const isTagExisting = !!firstArg.tag
-  const tagValue = (firstArg.tag ||
-    createLiteral(tag || findUniqueName(ast, 'seg', 2))) as Literal
-  const tagStr = String(tagValue.value)
-  const newFirstArg = createFirstArg(
-    primaryCallExp.callee.name as ToolTip,
-    firstArg.val,
-    tagValue
-  )
-  primaryCallExp.arguments[0] = newFirstArg
-  return {
-    modifiedAst: ast,
-    tag: tagStr,
-    isTagExisting,
-    pathToNode: path,
+  // Tag is always 3rd expression now, using arg index feels brittle
+  // but we can come up with a better way to identify tag later.
+  const thirdArg = primaryCallExp.arguments?.[2]
+  const tagLiteral =
+    thirdArg || (createLiteral(tag || findUniqueName(ast, 'seg', 2)) as Literal)
+  const isTagExisting = !!thirdArg
+  if (!isTagExisting) {
+    primaryCallExp.arguments[2] = tagLiteral
+  }
+  if ('value' in tagLiteral) {
+    // Now TypeScript knows tagLiteral has a value property
+    return {
+      modifiedAst: ast,
+      tag: String(tagLiteral.value),
+      isTagExisting,
+      pathToNode: path,
+    }
+  } else {
+    throw new Error('Unable to assign tag without value')
   }
 }
 

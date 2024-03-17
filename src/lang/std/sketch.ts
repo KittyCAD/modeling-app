@@ -53,40 +53,34 @@ export function getCoordsFromPaths(skGroup: SketchGroup, index = 0): Coords2d {
 
 export function createFirstArg(
   sketchFn: ToolTip,
-  val: Value | [Value, Value] | [Value, Value, Value],
-  tag?: Value
+  val: Value | [Value, Value] | [Value, Value, Value]
 ): Value {
-  if (!tag) {
-    if (Array.isArray(val)) {
-      return createArrayExpression(val)
-    }
-    return val
-  }
   if (Array.isArray(val)) {
-    if (['line', 'lineTo'].includes(sketchFn))
-      return createObjectExpression({ to: createArrayExpression(val), tag })
     if (
-      ['angledLine', 'angledLineOfXLength', 'angledLineOfYLength'].includes(
-        sketchFn
-      )
+      [
+        'angledLine',
+        'angledLineOfXLength',
+        'angledLineOfYLength',
+        'angledLineToX',
+        'angledLineToY',
+        'line',
+        'lineTo',
+      ].includes(sketchFn)
     )
-      return createObjectExpression({ angle: val[0], length: val[1], tag })
-    if (['angledLineToX', 'angledLineToY'].includes(sketchFn))
-      return createObjectExpression({ angle: val[0], to: val[1], tag })
+      return createArrayExpression(val)
     if (['angledLineThatIntersects'].includes(sketchFn) && val[2])
       return createObjectExpression({
         angle: val[0],
         offset: val[1],
         intersectTag: val[2],
-        tag,
       })
   } else {
-    if (['xLine', 'yLine'].includes(sketchFn))
-      return createObjectExpression({ length: val, tag })
-    if (['xLineTo', 'yLineTo'].includes(sketchFn))
-      return createObjectExpression({ to: val, tag })
-    if (['startSketchAt'].includes(sketchFn))
-      return createObjectExpression({ to: val, tag })
+    if (
+      ['startSketchAt', 'xLine', 'xLineTo', 'yLine', 'yLineTo'].includes(
+        sketchFn
+      )
+    )
+      return val
   }
   throw new Error('all sketch line types should have been covered')
 }
@@ -1190,67 +1184,20 @@ function addTagWithTo(
       _node,
       pathToNode
     )
-    const firstArg = callExpression.arguments?.[0]
-    if (firstArg.type === 'ObjectExpression') {
-      const existingTagName = firstArg.properties?.find(
-        (prop) => prop.key.name === 'tag'
-      )
-      if (!existingTagName) {
-        mutateObjExpProp(
-          callExpression.arguments?.[0],
-          createLiteral(tagName),
-          'tag'
-        )
-      } else {
-        tagName = `${(existingTagName.value as Literal).value}`
+    const tagArg = callExpression.arguments?.[2]
+    if (tagArg) {
+      return {
+        modifiedAst: _node,
+        tag: String(tagArg),
       }
+    } else {
+      callExpression.arguments[2] = createLiteral(tagName)
+
       return {
         modifiedAst: _node,
         tag: tagName,
       }
     }
-    if (firstArg.type === 'ArrayExpression') {
-      const objExp =
-        argType === 'default'
-          ? createObjectExpression({
-              to: firstArg,
-              tag: createLiteral(tagName),
-            })
-          : argType === 'angleLength'
-          ? createObjectExpression({
-              angle: firstArg.elements[0],
-              length: firstArg.elements[1],
-              tag: createLiteral(tagName),
-            })
-          : createObjectExpression({
-              angle: firstArg.elements[0],
-              to: firstArg.elements[1],
-              tag: createLiteral(tagName),
-            })
-      callExpression.arguments[0] = objExp
-      return {
-        modifiedAst: _node,
-        tag: tagName,
-      }
-    }
-    if (firstArg.type === 'Literal') {
-      const objExp =
-        argType === 'length'
-          ? createObjectExpression({
-              length: firstArg,
-              tag: createLiteral(tagName),
-            })
-          : createObjectExpression({
-              to: firstArg,
-              tag: createLiteral(tagName),
-            })
-      callExpression.arguments[0] = objExp
-      return {
-        modifiedAst: _node,
-        tag: tagName,
-      }
-    }
-    throw new Error('lineTo must be called with an object or array')
   }
 }
 

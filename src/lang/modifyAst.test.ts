@@ -152,25 +152,25 @@ describe('Testing giveSketchFnCallTag', () => {
       code,
       'line([0, 0.83], %)'
     )
-    expect(newCode).toContain("line({ to: [0, 0.83], tag: 'seg01' }, %)")
+    expect(newCode).toContain("line([0, 0.83], %, 'seg01')")
     expect(tag).toBe('seg01')
     expect(isTagExisting).toBe(false)
   })
   it('Should create a unique tag if seg01 already exists', () => {
     let _code = code.replace(
       'line([-2.57, -0.13], %)',
-      "line({ to: [-2.57, -0.13], tag: 'seg01' }, %)"
+      "line([-2.57, -0.13], %, 'seg01')"
     )
     const { newCode, tag, isTagExisting } = giveSketchFnCallTagTestHelper(
       _code,
       'line([0, 0.83], %)'
     )
-    expect(newCode).toContain("line({ to: [0, 0.83], tag: 'seg02' }, %)")
+    expect(newCode).toContain("line([0, 0.83], %, 'seg02')")
     expect(tag).toBe('seg02')
     expect(isTagExisting).toBe(false)
   })
   it('Should return existing tag if it already exists', () => {
-    const lineButWithTag = "line({ to: [-2.57, -0.13], tag: 'butts' }, %)"
+    const lineButWithTag = "line([-2.57, -0.13], %, 'butts')"
     let _code = code.replace('line([-2.57, -0.13], %)', lineButWithTag)
     const { newCode, tag, isTagExisting } = giveSketchFnCallTagTestHelper(
       _code,

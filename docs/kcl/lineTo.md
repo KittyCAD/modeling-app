@@ -9,7 +9,7 @@ Draw a line to a point.
 
 
 ```js
-lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
+lineTo(to: [number], sketch_group: SketchGroup, tag?: String) -> SketchGroup
 ```
 
 ### Examples
@@ -18,18 +18,9 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 fn rectShape = (pos, w, l) => {
   const rr = startSketchOn('YZ')
   |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
-  |> lineTo({
-       to: [pos[0] + w / 2, pos[1] - (l / 2)],
-       tag: "edge1"
-     }, %)
-  |> lineTo({
-       to: [pos[0] + w / 2, pos[1] + l / 2],
-       tag: "edge2"
-     }, %)
-  |> lineTo({
-       to: [pos[0] - (w / 2), pos[1] + l / 2],
-       tag: "edge3"
-     }, %)
+  |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, "edge1")
+  |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, "edge2")
+  |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, "edge3")
   |> close(%, "edge4")
   return rr
 }
@@ -40,16 +31,7 @@ const part = rectShape([0, 0], 20, 20)
 
 ### Arguments
 
-* `data`: `LineToData` - Data to draw a line to a point. (REQUIRED)
-```js
-{
-	// The tag.
-	tag: string,
-	// The to point.
-	to: [number, number],
-} |
-[number, number]
-```
+* `to`: `[number]` (REQUIRED)
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```js
 {
@@ -214,6 +196,7 @@ const part = rectShape([0, 0], 20, 20)
 },
 }
 ```
+* `tag`: `String` (OPTIONAL)
 
 ### Returns
 

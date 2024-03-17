@@ -9,10 +9,10 @@ describe('testing getNodePathFromSourceRange', () => {
 const myVar = 5
 const sk3 = startSketchAt([0, 0])
   |> lineTo([1, 2], %)
-  |> lineTo({ to: [3, 4], tag: 'yo' }, %)
+  |> lineTo([3, 4], %, 'yo')
   |> close(%)
 `
-    const subStr = "lineTo({ to: [3, 4], tag: 'yo' }, %)"
+    const subStr = "lineTo([3, 4], %, 'yo')"
     const lineToSubstringIndex = code.indexOf(subStr)
     const sourceRange: [number, number] = [
       lineToSubstringIndex,

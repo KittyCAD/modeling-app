@@ -87,7 +87,7 @@ async fn execute_and_snapshot(code: &str, units: kittycad::types::UnitLength) ->
 async fn serial_test_sketch_on_face() {
     let code = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([11.19, 28.35], %)
-  |> line({to: [28.67, -13.25], tag: "here"}, %)
+  |> line([28.67, -13.25], %, "here")
   |> line([-4.12, -22.81], %)
   |> line([-33.24, 14.55], %)
   |> close(%)
@@ -206,9 +206,9 @@ const part002 = startSketchOn(part001, "END")
 async fn serial_test_fillet_duplicate_tags() {
     let code = r#"const part001 = startSketchOn('XY')
     |> startProfileAt([0,0], %)
-    |> line({to: [0, 10], tag: "thing"}, %)
+    |> line([0, 10], %, "thing")
     |> line([10, 0], %)
-    |> line({to: [0, -10], tag: "thing2"}, %)
+    |> line([0, -10], %, "thing2")
     |> close(%)
     |> extrude(10, %)
     |> fillet({radius: 0.5, tags: ["thing", "thing"]}, %)
@@ -218,7 +218,7 @@ async fn serial_test_fillet_duplicate_tags() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([227, 277])], message: "Duplicate tags are not allowed." }"#,
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([205, 255])], message: "Duplicate tags are not allowed." }"#,
     );
 }
 
@@ -226,9 +226,9 @@ async fn serial_test_fillet_duplicate_tags() {
 async fn serial_test_basic_fillet_cube_start() {
     let code = r#"const part001 = startSketchOn('XY')
     |> startProfileAt([0,0], %)
-    |> line({to: [0, 10], tag: "thing"}, %)
+    |> line([0, 10], %, "thing")
     |> line([10, 0], %)
-    |> line({to: [0, -10], tag: "thing2"}, %)
+    |> line([0, -10], %, "thing2")
     |> close(%)
     |> extrude(10, %)
     |> fillet({radius: 2, tags: ["thing", "thing2"]}, %)
@@ -244,9 +244,9 @@ async fn serial_test_basic_fillet_cube_start() {
 async fn serial_test_basic_fillet_cube_end() {
     let code = r#"const part001 = startSketchOn('XY')
     |> startProfileAt([0,0], %)
-    |> line({to: [0, 10], tag: "thing"}, %)
+    |> line([0, 10], %, "thing")
     |> line([10, 0], %)
-    |> line({to: [0, -10], tag: "thing2"}, %)
+    |> line([0, -10], %, "thing2")
     |> close(%)
     |> extrude(10, %)
     |> fillet({radius: 2, tags: ["thing", getOppositeEdge("thing", %)]}, %)
@@ -263,9 +263,9 @@ async fn serial_test_basic_fillet_cube_end() {
 async fn serial_test_basic_fillet_cube_close_opposite() {
     let code = r#"const part001 = startSketchOn('XY')
     |> startProfileAt([0,0], %)
-    |> line({to: [0, 10], tag: "thing"}, %)
+    |> line([0, 10], %, "thing")
     |> line([10, 0], %)
-    |> line({to: [0, -10], tag: "thing2"}, %)
+    |> line([0, -10], %, "thing2")
     |> close(%, "thing3")
     |> extrude(10, %)
     |> fillet({radius: 2, tags: ["thing3", getOppositeEdge("thing3", %)]}, %)
@@ -286,9 +286,9 @@ async fn serial_test_basic_fillet_cube_close_opposite() {
 async fn serial_test_basic_fillet_cube_next_adjacent() {
     let code = r#"const part001 = startSketchOn('XY')
     |> startProfileAt([0,0], %)
-    |> line({to: [0, 10], tag: "thing"}, %)
-    |> line({to: [10, 0], tag: "thing1"}, %)
-    |> line({to: [0, -10], tag: "thing2"}, %)
+    |> line([0, 10], %, "thing")
+    |> line([10, 0], %, "thing1")
+    |> line([0, -10], %, "thing2")
     |> close(%)
     |> extrude(10, %)
     |> fillet({radius: 2, tags: [getNextAdjacentEdge("thing", %)]}, %)
@@ -308,9 +308,9 @@ async fn serial_test_basic_fillet_cube_next_adjacent() {
 async fn serial_test_basic_fillet_cube_previous_adjacent() {
     let code = r#"const part001 = startSketchOn('XY')
     |> startProfileAt([0,0], %)
-    |> line({to: [0, 10], tag: "thing"}, %)
-    |> line({to: [10, 0], tag: "thing1"}, %)
-    |> line({to: [0, -10], tag: "thing2"}, %)
+    |> line([0, 10], %, "thing")
+    |> line([10, 0], %, "thing1")
+    |> line([0, -10], %, "thing2")
     |> close(%)
     |> extrude(10, %)
     |> fillet({radius: 2, tags: [getPreviousAdjacentEdge("thing2", %)]}, %)
@@ -380,7 +380,7 @@ async fn serial_test_execute_with_angled_line() {
     let code = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([4.83, 12.56], %)
   |> line([15.1, 2.48], %)
-  |> line({ to: [3.15, -9.85], tag: 'seg01' }, %)
+  |> line([3.15, -9.85], %, 'seg01')
   |> line([-15.17, -4.1], %)
   |> angledLine([segAng('seg01', %), 12.35], %)
   |> line([-13.02, 10.03], %)
@@ -1177,7 +1177,7 @@ async fn serial_test_error_sketch_on_arc_face() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
   |> startProfileAt(pos, %)
-  |> tangentialArc({ to: [0, scale], tag: "here" }, %)
+  |> tangentialArc([0, scale], %, "here")
   |> line([scale, 0], %)
   |> line([0, -scale], %)
 
@@ -1201,7 +1201,7 @@ const part002 = startSketchOn(part001, "here")
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([294, 324])], message: "Cannot sketch on a non-planar surface: `here`" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([281, 311])], message: "Cannot sketch on a non-planar surface: `here`" }"#
     );
 }
 
@@ -1325,18 +1325,9 @@ async fn serial_test_stdlib_kcl_error_circle() {
 fn rectShape = (pos, w, l) => {
   const rr = startSketchOn('XY')
   |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
-  |> lineTo({
-       to: [pos[0] + w / 2, pos[1] - (l / 2)],
-       tag: "edge1"
-     }, %)
-  |> lineTo({
-       to: [pos[0] + w / 2, pos[1] + l / 2],
-       tag: "edge2"
-     }, %)
-  |> lineTo({
-       to: [pos[0] - (w / 2), pos[1] + l / 2],
-       tag: "edge3"
-     }, %)
+  |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, "edge1")
+  |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, "edge2")
+  |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, "edge3")
   |> close(%, "edge4")
   return rr
 }
@@ -1367,6 +1358,6 @@ const part = rectShape([0, 0], 20, 20)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([987, 1036])], message: "Expected a [number, number] as the first argument, found `[UserVal(UserVal { value: String(\"XY\"), meta: [Metadata { source_range: SourceRange([994, 998]) }] }), UserVal(UserVal { value: Array [Number(-6.0), Number(6)], meta: [Metadata { source_range: SourceRange([1000, 1023]) }] }), UserVal(UserVal { value: Number(1), meta: [Metadata { source_range: SourceRange([856, 857]) }] })]`" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([891, 940])], message: "Expected a [number, number] as the first argument, found `[UserVal(UserVal { value: String(\"XY\"), meta: [Metadata { source_range: SourceRange([898, 902]) }] }), UserVal(UserVal { value: Array [Number(-6.0), Number(6)], meta: [Metadata { source_range: SourceRange([904, 927]) }] }), UserVal(UserVal { value: Number(1), meta: [Metadata { source_range: SourceRange([760, 761]) }] })]`" }"#
     );
 }

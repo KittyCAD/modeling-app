@@ -9,7 +9,7 @@ Draw a line.
 
 
 ```js
-line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
+line(delta: [number], sketch_group: SketchGroup, tag?: String) -> SketchGroup
 ```
 
 ### Examples
@@ -18,23 +18,14 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 startSketchOn('-XY')
   |> startProfileAt([0, 0], %)
   |> line([10, 10], %)
-  |> line({ to: [20, 10], tag: "edge1" }, %)
+  |> line([20, 10], %, "edge1")
   |> close(%, "edge2")
   |> extrude(10, %)
 ```
 
 ### Arguments
 
-* `data`: `LineData` - Data to draw a line. (REQUIRED)
-```js
-{
-	// The tag.
-	tag: string,
-	// The to point.
-	to: [number, number],
-} |
-[number, number]
-```
+* `delta`: `[number]` (REQUIRED)
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```js
 {
@@ -199,6 +190,7 @@ startSketchOn('-XY')
 },
 }
 ```
+* `tag`: `String` (OPTIONAL)
 
 ### Returns
 

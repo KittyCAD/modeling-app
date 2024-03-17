@@ -55,10 +55,9 @@ const part001 = startSketchOn('-XZ')
   |> angledLineToY({
         angle: topAng,
         to: totalHeightHalf,
-        tag: 'seg04'
-      }, %)
-  |> xLineTo({ to: totalLen, tag: 'seg03' }, %)
-  |> yLine({ length: -armThick, tag: 'seg01' }, %)
+      }, %, 'seg04')
+  |> xLineTo(totalLen, %, 'seg03')
+  |> yLine(-armThick, %, 'seg01')
   |> angledLineThatIntersects({
         angle: HALF_TURN,
         offset: -armThick,
@@ -68,8 +67,7 @@ const part001 = startSketchOn('-XZ')
   |> angledLineToY({
         angle: -bottomAng,
         to: -totalHeightHalf - armThick,
-        tag: 'seg02'
-      }, %)
+      }, %, 'seg02')
   |> xLineTo(segEndX('seg03', %) + 0, %)
   |> yLine(-segLen('seg01', %), %)
   |> angledLineThatIntersects({

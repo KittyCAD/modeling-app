@@ -43,9 +43,9 @@ const newVar = myVar + 1`
   it('sketch declaration', async () => {
     let code = `const mySketch = startSketchOn('XY')
   |> startProfileAt([0,0], %)
-  |> lineTo({to: [0,2], tag: "myPath"}, %)
+  |> lineTo([0,2], %, "myPath")
   |> lineTo([2,3], %)
-  |> lineTo({ to: [5,-1], tag: "rightPath" }, %)
+  |> lineTo([5,-1], %, "rightPath")
   // |> close(%)
 `
     const { root } = await exe(code)
@@ -57,7 +57,7 @@ const newVar = myVar + 1`
         to: [0, 2],
         from: [0, 0],
         __geoMeta: {
-          sourceRange: [72, 109],
+          sourceRange: [72, 98],
           id: expect.any(String),
         },
         name: 'myPath',
@@ -68,7 +68,7 @@ const newVar = myVar + 1`
         from: [0, 2],
         name: '',
         __geoMeta: {
-          sourceRange: [115, 131],
+          sourceRange: [104, 120],
           id: expect.any(String),
         },
       },
@@ -77,7 +77,7 @@ const newVar = myVar + 1`
         to: [5, -1],
         from: [2, 3],
         __geoMeta: {
-          sourceRange: [137, 180],
+          sourceRange: [126, 156],
           id: expect.any(String),
         },
         name: 'rightPath',
@@ -99,7 +99,7 @@ const newVar = myVar + 1`
   //   const code = [
   //     'const mySk1 = startSketchAt([0,0])',
   //     '  |> lineTo([1,1], %)',
-  //     '  |> lineTo({to: [0, 1], tag: "myPath"}, %)',
+  //     '  |> lineTo([0, 1], %, "myPath")',
   //     '  |> lineTo([1, 1], %)',
   //     'const rotated = rx(90, mySk1)',
   //   ].join('\n')
@@ -126,7 +126,7 @@ const newVar = myVar + 1`
       "const mySk1 = startSketchOn('XY')",
       '  |> startProfileAt([0,0], %)',
       '  |> lineTo([1,1], %)',
-      '  |> lineTo({to: [0, 1], tag: "myPath"}, %)',
+      '  |> lineTo([0, 1], %, "myPath")',
       '  |> lineTo([1,1], %)',
       // '  |> rx(90, %)',
     ].join('\n')
@@ -159,7 +159,7 @@ const newVar = myVar + 1`
           to: [0, 1],
           from: [1, 1],
           __geoMeta: {
-            sourceRange: [91, 129],
+            sourceRange: [91, 118],
             id: expect.any(String),
           },
           name: 'myPath',
@@ -170,7 +170,7 @@ const newVar = myVar + 1`
           from: [0, 1],
           name: '',
           __geoMeta: {
-            sourceRange: [135, 151],
+            sourceRange: [124, 140],
             id: expect.any(String),
           },
         },
@@ -341,7 +341,7 @@ describe('testing math operators', () => {
       `const myVar = 3`,
       `const part001 = startSketchOn('XY')`,
       `  |> startProfileAt([0, 0], %)`,
-      `  |> line({ to: [3, 4], tag: 'seg01' }, %)`,
+      `  |> line([3, 4], %, 'seg01')`,
       `  |> line([`,
       `  min(segLen('seg01', %), myVar),`,
       `  -legLen(segLen('seg01', %), myVar)`,

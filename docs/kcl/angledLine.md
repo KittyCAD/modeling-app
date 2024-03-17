@@ -9,7 +9,7 @@ Draw an angled line.
 
 
 ```js
-angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
+angledLine(data: AngledLineData, sketch_group: SketchGroup, tag?: String) -> SketchGroup
 ```
 
 ### Examples
@@ -17,7 +17,7 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 ```js
 startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> angledLine({ angle: 45, length: 10, tag: "edge1" }, %)
+  |> angledLine({ angle: 45, length: 10 }, %, "edge1")
   |> line([10, 10], %)
   |> line([0, 10], %)
   |> close(%, "edge2")
@@ -33,8 +33,6 @@ startSketchOn('XY')
 	angle: number,
 	// The length of the line.
 	length: number,
-	// The tag.
-	tag: string,
 } |
 [number, number]
 ```
@@ -202,6 +200,7 @@ startSketchOn('XY')
 },
 }
 ```
+* `tag`: `String` (OPTIONAL)
 
 ### Returns
 
