@@ -1183,7 +1183,7 @@ function addTag(): addTagFn {
       'CallExpression'
     )
     // Tag is always 3rd expression now, using arg index feels brittle
-  // but we can come up with a better way to identify tag later.
+    // but we can come up with a better way to identify tag later.
     const thirdArg = primaryCallExp.arguments?.[2]
     const tagLiteral =
       thirdArg || (createLiteral(findUniqueName(_node, 'seg', 2)) as Literal)
