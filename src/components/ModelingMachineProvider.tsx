@@ -286,7 +286,8 @@ export const ModelingMachineProvider = ({
               sketchOnExtrudedFace(
                 kclManager.ast,
                 data.extrudeSegmentPathToNode,
-                kclManager.programMemory
+                kclManager.programMemory,
+                data.cap
               )
             await kclManager.executeAstMock(modifiedAst, { updates: 'code' })
 

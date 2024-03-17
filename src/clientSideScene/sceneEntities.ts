@@ -935,6 +935,10 @@ class SceneEntities {
                 (num) => num / sceneInfra._baseUnitMultiplier
               ) as [number, number, number],
               extrudeSegmentPathToNode: pathToNode,
+              cap:
+                artifact?.additionalData?.type === 'cap'
+                  ? artifact.additionalData.info
+                  : 'none',
             },
           })
           return true

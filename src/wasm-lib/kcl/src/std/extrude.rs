@@ -114,8 +114,8 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
 
     // Create a hashmap for quick id lookup
     let mut face_id_map = std::collections::HashMap::new();
-    let mut start_cap_id = None;
-    let mut end_cap_id = None;
+    let mut start_cap_id = Some(Uuid::new_v4());
+    let mut end_cap_id = Some(Uuid::new_v4());
 
     for face_info in face_infos {
         match face_info.cap {

@@ -16,6 +16,10 @@ interface CommandInfo {
   range: SourceRange
   pathToNode: PathToNode
   parentId?: string
+  additionalData?: {
+    type: 'cap'
+    info: 'start' | 'end'
+  }
 }
 
 type WebSocketResponse = Models['OkWebSocketResponseData_type']
@@ -1115,7 +1119,18 @@ export class EngineCommandManager extends EventTarget {
         command?.commandType === 'solid3d_get_extrusion_face_info' &&
         modelingResponse.type === 'solid3d_get_extrusion_face_info'
       ) {
+        const parent = this.artifactMap[command?.parentId || '']
         modelingResponse.data.faces.forEach((face) => {
+          if (face.cap !== 'none' && face.face_id && parent) {
+            this.artifactMap[face.face_id] = {
+              ...parent,
+              commandType: 'solid3d_get_extrusion_face_info',
+              additionalData: {
+                type: 'cap',
+                info: face.cap === 'bottom' ? 'start' : 'end',
+              },
+            }
+          }
           const curveArtifact = this.artifactMap[face?.curve_id || '']
           if (curveArtifact && face?.face_id) {
             this.artifactMap[face.face_id] = {

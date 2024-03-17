@@ -316,7 +316,8 @@ export function extrudeSketch(
 export function sketchOnExtrudedFace(
   node: Program,
   pathToNode: PathToNode,
-  programMemory: ProgramMemory
+  programMemory: ProgramMemory,
+  cap: 'none' | 'start' | 'end' = 'none'
 ): { modifiedAst: Program; pathToNode: PathToNode } {
   let _node = { ...node }
   const newSketchName = findUniqueName(node, 'part')
@@ -333,21 +334,27 @@ export function sketchOnExtrudedFace(
     'CallExpression'
   )
 
-  const { modifiedAst, tag } = addTagForSketchOnFace(
-    {
-      previousProgramMemory: programMemory,
-      pathToNode,
-      node: _node,
-    },
-    expression.callee.name
-  )
-  _node = modifiedAst
+  let _tag = ''
+  if (cap === 'none') {
+    const { modifiedAst, tag } = addTagForSketchOnFace(
+      {
+        previousProgramMemory: programMemory,
+        pathToNode,
+        node: _node,
+      },
+      expression.callee.name
+    )
+    _tag = tag
+    _node = modifiedAst
+  } else {
+    _tag = cap.toUpperCase()
+  }
 
   const newSketch = createVariableDeclaration(
     newSketchName,
     createCallExpressionStdLib('startSketchOn', [
       createIdentifier(oldSketchName),
-      createLiteral(tag),
+      createLiteral(_tag),
     ]),
     'const'
   )

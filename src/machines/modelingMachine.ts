@@ -91,6 +91,7 @@ export type ModelingMachineEvent =
             type: 'extrudeFace'
             position: [number, number, number]
             extrudeSegmentPathToNode: PathToNode
+            cap: 'start' | 'end' | 'none'
           }
       )
     }
