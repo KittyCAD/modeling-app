@@ -96,41 +96,12 @@ export async function getEventForSelectWithPoint(
         selection: { range: sourceRange, type: 'default' },
       },
     }
-  }
-  if (!sketchEnginePathId) return null
-  // selected a vertex
-  const res = await engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'path_get_curve_uuids_for_vertices',
-      vertex_ids: [data.entity_id],
-      path_id: sketchEnginePathId,
-    },
-  })
-  const curveIds = res?.data?.data?.curve_ids
-  const ranges: RangeAndId[] = curveIds
-    .map(
-      (id: string): RangeAndId => ({
-        id,
-        range: engineCommandManager.artifactMap[id].range,
-      })
-    )
-    .sort((a: RangeAndId, b: RangeAndId) => a.range[0] - b.range[0])
-  // default to the head of the curve selected
-  const _sourceRange = ranges?.[0].range
-  const artifact = engineCommandManager.artifactMap[ranges?.[0]?.id]
-  if (artifact.type === 'result') {
-    artifact.headVertexId = data.entity_id
-  }
-  return {
-    type: 'Set selection',
-    data: {
-      selectionType: 'singleCodeCursor',
-      // line-end is used to indicate that headVertexId should be sent to the engine as "selected"
-      // not the whole curve
-      selection: { range: _sourceRange, type: 'line-end' },
-    },
+  } else {
+    // if we don't recognise the entity, select nothing
+    return {
+      type: 'Set selection',
+      data: { selectionType: 'singleCodeCursor' },
+    }
   }
 }
 
