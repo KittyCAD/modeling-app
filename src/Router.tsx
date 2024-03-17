@@ -16,8 +16,6 @@ import makeUrlPathRelative from './lib/makeUrlPathRelative'
 import DownloadAppBanner from 'components/DownloadAppBanner'
 import { WasmErrBanner } from 'components/WasmErrBanner'
 import { CommandBar } from 'components/CommandBar/CommandBar'
-import ModelingMachineProvider from 'components/ModelingMachineProvider'
-import FileMachineProvider from 'components/FileMachineProvider'
 import { paths } from 'lib/paths'
 import {
   fileLoader,
@@ -25,10 +23,7 @@ import {
   indexLoader,
   onboardingRedirectLoader,
 } from 'lib/routeLoaders'
-import { CommandBarProvider } from 'components/CommandBar/CommandBarProvider'
-import SettingsAuthProvider from 'components/SettingsAuthProvider'
-import LspProvider from 'components/LspProvider'
-import { KclContextProvider } from 'lang/KclSingleton'
+import { AppMachineProvider } from 'components/AppMachineProvider'
 
 export const BROWSER_FILE_NAME = 'new'
 
@@ -37,15 +32,9 @@ const router = createBrowserRouter([
     loader: indexLoader,
     id: paths.INDEX,
     element: (
-      <CommandBarProvider>
-        <KclContextProvider>
-          <SettingsAuthProvider>
-            <LspProvider>
-              <Outlet />
-            </LspProvider>
-          </SettingsAuthProvider>
-        </KclContextProvider>
-      </CommandBarProvider>
+      <AppMachineProvider>
+        <Outlet />
+      </AppMachineProvider>
     ),
     children: [
       {
@@ -61,14 +50,10 @@ const router = createBrowserRouter([
         id: paths.FILE,
         element: (
           <Auth>
-            <FileMachineProvider>
-              <ModelingMachineProvider>
-                <Outlet />
-                <App />
-                <CommandBar />
-              </ModelingMachineProvider>
-              <WasmErrBanner />
-            </FileMachineProvider>
+            <Outlet />
+            <App />
+            <CommandBar />
+            <WasmErrBanner />
             {!isTauri() && import.meta.env.PROD && <DownloadAppBanner />}
           </Auth>
         ),

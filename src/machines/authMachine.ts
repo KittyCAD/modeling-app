@@ -1,4 +1,4 @@
-import { createMachine, assign } from 'xstate'
+import { createMachine, assign, setup, fromPromise } from 'xstate'
 import { Models } from '@kittycad/lib'
 import withBaseURL from '../lib/withBaseURL'
 import { isTauri } from 'lib/isTauri'
@@ -39,86 +39,82 @@ export type Events =
     }
 
 export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
-const persistedToken =
+export const persistedToken =
   localStorage?.getItem(TOKEN_PERSIST_KEY) ||
   getCookie('__Secure-next-auth.session-token') ||
-  ''
+  undefined
 
-export const authMachine = createMachine<UserContext, Events>(
-  {
-    id: 'Auth',
-    initial: 'checkIfLoggedIn',
-    states: {
-      checkIfLoggedIn: {
-        id: 'check-if-logged-in',
-        invoke: {
-          src: 'getUser',
-          id: 'check-logged-in',
-          onDone: [
-            {
-              target: 'loggedIn',
-              actions: assign({
-                user: (context, event) => event.data,
-              }),
-            },
-          ],
-          onError: [
-            {
-              target: 'loggedOut',
-              actions: assign({
-                user: () => undefined,
-              }),
-            },
-          ],
-        },
-      },
-      loggedIn: {
-        entry: ['goToIndexPage'],
-        on: {
-          'Log out': {
-            target: 'loggedOut',
-          },
-        },
-      },
-      loggedOut: {
-        entry: ['goToSignInPage'],
-        on: {
-          'Log in': {
-            target: 'checkIfLoggedIn',
+export const authMachine = setup({
+  types: {
+    events: {} as { type: 'Log out' } | { type: 'Log in' },
+    context: {} as UserContext,
+  },
+  actors: {
+    fetchUser: fromPromise(({ input }: { input: { token: string | undefined }}) => getUser(input.token)),
+  },
+  actions: {
+    goToIndexPage: () => ({}),
+    goToSignInPage: () => ({}),
+  }
+}).createMachine({
+  id: 'Auth',
+  preserveActionOrder: true,
+  initial: 'checkIfLoggedIn',
+  context: {
+    token: persistedToken,
+  },
+  states: {
+    checkIfLoggedIn: {
+      id: 'check-if-logged-in',
+      invoke: {
+        id: 'getUser',
+        src: 'fetchUser',
+        input: ({ context: { token } }) => ({ token }),
+        onDone: [
+          {
+            target: 'loggedIn',
             actions: assign({
-              token: (_, event) => {
-                const token = event.token || ''
-                localStorage.setItem(TOKEN_PERSIST_KEY, token)
-                return token
-              },
+              user: ({ event }) => event.output,
             }),
           },
+        ],
+        onError: [
+          {
+            target: 'loggedOut',
+            actions: assign({
+              user: () => undefined,
+            }),
+          },
+        ],
+      },
+    },
+    loggedIn: {
+      entry: ['goToIndexPage'],
+      on: {
+        'Log out': {
+          target: 'loggedOut',
         },
       },
     },
-    schema: { events: {} as { type: 'Log out' } | { type: 'Log in' } },
-    predictableActionArguments: true,
-    preserveActionOrder: true,
-    context: {
-      token: persistedToken,
+    loggedOut: {
+      entry: { type: 'goToIndexPage' },
+      on: {
+        'Log in': {
+          target: 'checkIfLoggedIn',
+        },
+      },
     },
   },
-  {
-    actions: {},
-    services: { getUser },
-    guards: {},
-    delays: {},
-  }
-)
+})
 
-async function getUser(context: UserContext) {
+export async function getUser(token?: string) {
   const url = withBaseURL('/user')
   const headers: { [key: string]: string } = {
     'Content-Type': 'application/json',
   }
 
-  if (!context.token && isTauri()) throw new Error('No token found')
-  if (context.token) headers['Authorization'] = `Bearer ${context.token}`
+  if (!token && isTauri()) throw new Error('No token found')
+  if (token) headers['Authorization'] = `Bearer ${token}`
   if (SKIP_AUTH) return LOCAL_USER
 
   const userPromise = !isTauri()
@@ -130,7 +126,7 @@ async function getUser(context: UserContext) {
         .then((res) => res.json())
         .catch((err) => console.error('error from Browser getUser', err))
     : invoke<Models['User_type'] | Record<'error_code', unknown>>('get_user', {
-        token: context.token,
+        token: token,
         hostname: VITE_KC_API_BASE_URL,
       }).catch((err) => console.error('error from Tauri getUser', err))
 
@@ -138,10 +134,10 @@ async function getUser(context: UserContext) {
 
   if ('error_code' in user) throw new Error(user.message)
 
-  return user
+  return user as Models['User_type']
 }
 
-function getCookie(cname: string): string {
+export function getCookie(cname: string): string {
   if (isTauri()) {
     return ''
   }

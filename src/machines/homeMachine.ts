@@ -1,28 +1,54 @@
-import { assign, createMachine } from 'xstate'
+import { assign, createMachine, fromPromise, setup } from 'xstate'
 import { type ProjectWithEntryPointMetadata } from 'lib/types'
 import { HomeCommandSchema } from 'lib/commandBarConfigs/homeCommandConfig'
+import { useNavigate } from 'react-router-dom'
 
-export const homeMachine = createMachine(
+export const homeMachine = setup({
+  types: {
+    context: {} as {
+      projects: ProjectWithEntryPointMetadata[]
+      defaultProjectName: string
+      defaultDirectory: string
+      navigate: ReturnType<typeof useNavigate>
+    },
+    events: {} as
+      | { type: 'Open project'; data: HomeCommandSchema['Open project'] }
+      | { type: 'Rename project'; data: HomeCommandSchema['Rename project'] }
+      | { type: 'Create project'; data: HomeCommandSchema['Create project'] }
+      | { type: 'Delete project'; data: HomeCommandSchema['Delete project'] },
+    input: {} as {
+      navigate: ReturnType<typeof useNavigate>
+      defaultProjectName: string
+      defaultDirectory: string
+    },
+  },
+  actions: {} as { toastSuccess: () => void; toastError: () => void },
+  actors: {
+    readProjects: fromPromise(async () => {
+      return []
+    }),
+    createProject: fromPromise(async () => {
+      return
+    }),
+    renameProject: fromPromise(async () => {
+      return
+    }),
+    deleteProject: fromPromise(async () => {
+      return
+    }),
+  },
+}).createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QAkD2BbMACdBDAxgBYCWAdmAHTK6xampYAOATqgFZj4AusAxAMLMwuLthbtOXANoAGALqJQjVLGJdiqUopAAPRAHYAbPooAWABwBGUwE5zAJgeGArM-MAaEAE9EN0wGYKGX97GX1nGVNDS0MbfwBfeM80TBwCEnIqGiZWDm4+ACUwUlxU8TzpeW1lVXVNbT0EcJNg02d-fzt7fU77Tx8EQ0iKCPtnfUsjGRtLGXtE5IxsPCIySmpacsk+QWFRHIluWQUkEBq1DS1TxqN7ChjzOxtXf0t7a37EcwsRibH-ZzRezA8wLEApZbpNZZTa5ba8AAiYAANmB9lsjlVTuc6ldQDdDOYKP5bm0os5TDJDJ8mlEzPpzIZHA4bO9umCIWlVpkNgcKnwAPKMYp8yTHaoqC71a6IEmBUz6BkWZzWDq2Uw0qzOIJAwz+PXWfSmeZJcFLLkZSi7ERkKCi7i8CCaShkABuqAA1pR8EIRGAALQYyonJSS3ENRDA2wUeyvd6dPVhGw0-RhGOp8IA8xGFkc80rS0Ua3qUh2oO8MDMVjMCiMZEiABmqGY6AoPr2AaD4uxYcuEYQoQpQWNNjsMnMgLGKbT3TC7TcOfsNjzqQL0KKJXQtvtXEdzoobs9lCEm87cMxIbOvel+MQqtMQRmS5ks31sZpAUsZkcIX+cQZJIrpC3KUBupTbuWlbVrW9ZcE2LYUCepRnocwYSrUfYyggbzvBQ+jMq49imLYwTUt4iCft+5i-u0-7UfoQEWtCSKoiWZbnruTqZIeXoUBAKJoihFTdqGGE3rod7UdqsQTI8hiGAqrIauRA7RvYeoqhO1jtAqjFrpkLFohBHEVlWzYwY2zatvxrFCWKWKiVKeISdh4yBJE-jGs4fhhA4zg0kRNgxhplhaW0nn4XpUKZEUuAQMZqF8FxLqkO6vG+hAgYcbAIlXmJzmNERdy0RYNiKgpthxDSEU6q8MSTJYjWGFFIEULF8WljuSX7jxx7CJlQY5ZYl44pht4IP61gyPc8njt0lIuH51UKrVVITEyMy2C1hbtQl-KmdBdaWQhGVZYluWjeJjSTf402shMEyuEyljPAFL0UNmMiuN86lWHMiSmvQ-HwKcnL6WA6FOf2k3mESMRDA4RpUm4U4qf6gSEt0QIvvqfjOCaiyrtF6zZPQXWQ+GWFlUEsbmNMf1TV9NLeXDcqRIySnNaaYPEzC5M9vl-b+IyFCjupryPF9jKWP5Kks-cbMWLERHRNt0LFntkgU2NLk4dqsz43YsTK++Kk2C+MbTOOcxzOMrhqzFxTgZ1Qba1dd6BUE1jGsLMxxK9KlDNqm3tMLUQvqYlgO5QhlsTubsFXesTTUuPTfHExshDS0RftRftGgEnTZtHbX9Zr+QJ-2S4Y3qnmTC+4tMyp1EfeOnmeQqdOhyXQrFOXXCV1hCkmLDOnBJYvRRDSsyRzGjiKj0lKdAkANAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QAkD2BbMACdBDAxgBYCWAdmAMS6yzFSkDaADALqKgAOqtALsaqXYgAHogAsAJgA0IAJ6IJATgAcAOgBsAdgCsYzYoCMEsdu3LNAXwsy0mHARLlVyallKosHAE6oAVmHweWAoAYS8wXB5sbz8AnmY2JBAuXn5BJNEEAzF1MVVdXUV1JnVtCXUVGXkECW0DVTEAZgNlRvUDbINS5SsbDGw8IjIwZ1cY-0DggCUwUlw7cbiEoRTiPgEhTI6O-KZtJnMzOs0dKsRNVtU9xqbG5Wzc7V6QWwGHYdHYTx8JoNDwyLRH5LVgrbhrNKbRAPPIFMRFEplCrKM4IXL1MRdCq1C7KRSKRrPV72IZOFxfRaTCgAETAABswFFvrFAsskqt1ulQFscrCTPDiqVypU5OdlNpVBJlMUzLkVCcJET+iTHCNyczfsEAPIcWYakGJTjgzlQrK8-L8hFC5Go1oS7aFfSKJpKuyDVWqMIRPikKD6wIUCACEZkABuqAA1iN8ACogBaSnxUHs42QjLQ81wq1IkXVEzqVTSlQlJgGRoEgyut6kkZeyJkP2JihgLw+LyqDh0yIAM1QXnQqhj3rACeBrOTRtSG3TZtKheUTFLEnL2hXYlt9UaEiUBmdYjx6illesL2V7o+Mzm6Ab-p4geDqjDkZG4SvI8TbMnEOn3MQjR0hb4uoFSNGUkhMIoqKrnkByHioigQUoRRViqF6zPMN5Ni2bYdl2PC9v2qivvM75jkmhrJKmP4iH+AF4kUIFgRIEGomImKFkYyiSNo6h3EYigoeeTi0gyPqNmR95OE+UaqBA9KMqRLLkWCU5cjRs4SkwzH3Ioq56eYUHwqo2RboeoHOgYmjqIJ7zCfJYm3s2rZ9rhPZ9gOcmiYpvyfpRqmmg8BagauoHSroXHrqKaIElcRiHlxjRMCuTwnsSQkjDMuAQJhZHBEGUmkOGMkAhAo5KbAvkcmmv4IIozHGXUpYVGxByNKiFRMKoJz4icOSGGYYg2TWqiZdlvq3nlD7SS+ESlYmFUGBRVXUZkdWdQYjVdHurWos0ErLolJxcR05hWUNHqjTl5VOThnZuYRJVlZqlVUWpq31RtBhNdtrSotuEiqLpRR6IelklMeJ7uHJ8BJGltlgCp35vYgcbqKiqPnR86ruBNiMmjOnGaA0pilJomI6FKf11Pk+KtPiJTOkwg2pWe8OfLjKb+QTShqN1bHKOUOQC21UWaJZXV6V0G1MJoUopX0bps3WDmJnj1XqWDm73CYuiy0Ypiol9BZ4gN4raDomh8ZjTiXhh42q5zSOmpIUE3PkvH7KU7QmPo1sjCJjJXb8asrdCmilqofE63oEj69oUEVF1i6x7LBzStZLOK8Nl327lIfIwgZiKF1Nw3GWShJXsu31ZbiUErXuRnZn1YejqsxB3E+cBeHWvZKYMdxxu9TSvuYhNdKjR3FYVhAA */
     id: 'Home machine',
 
     initial: 'Reading projects',
 
-    context: {
+    context: ({ input }) => ({
       projects: [] as ProjectWithEntryPointMetadata[],
-      defaultProjectName: '',
-      defaultDirectory: '',
-    },
+      ...input,
+    }),
 
-    on: {
-      assign: {
-        actions: assign((_, event) => ({
-          ...event.data,
-        })),
-        target: '.Reading projects',
-      },
-    },
     states: {
       'Has no projects': {
         on: {
@@ -135,30 +161,9 @@ export const homeMachine = createMachine(
         entry: ['navigateToProject'],
       },
     },
-
-    schema: {
-      events: {} as
-        | { type: 'Open project'; data: HomeCommandSchema['Open project'] }
-        | { type: 'Rename project'; data: HomeCommandSchema['Rename project'] }
-        | { type: 'Create project'; data: HomeCommandSchema['Create project'] }
-        | { type: 'Delete project'; data: HomeCommandSchema['Delete project'] }
-        | { type: 'navigate'; data: { name: string } }
-        | {
-            type: 'done.invoke.read-projects'
-            data: ProjectWithEntryPointMetadata[]
-          }
-        | { type: 'assign'; data: { [key: string]: any } },
     },
 
     predictableActionArguments: true,
     preserveActionOrder: true,
-    tsTypes: {} as import('./homeMachine.typegen').Typegen0,
   },
-  {
-    actions: {
-      setProjects: assign((_, event) => {
-        return { projects: event.data as ProjectWithEntryPointMetadata[] }
-      }),
-    },
-  }
 )

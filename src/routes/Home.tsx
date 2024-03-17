@@ -39,12 +39,17 @@ import { isTauri } from 'lib/isTauri'
 import { kclManager } from 'lang/KclSingleton'
 import { useLspContext } from 'components/LspProvider'
 import { useValidateSettings } from 'hooks/useValidateSettings'
+import { AppMachineContext } from 'machines/appMachine'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
 const Home = () => {
   useValidateSettings()
-  const { commandBarSend } = useCommandsContext()
+  const home = AppMachineContext.useSelector(s => s.children.home)
+  home?.on('done.invoke.read-projects', (e) => {
+    // do some nonsense
+  })
+  const commands = AppMachineContext.useSelector(s => s.children.commands)
   const navigate = useNavigate()
   const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
   const {

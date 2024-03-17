@@ -13,6 +13,7 @@ import {
 } from 'components/NetworkHealthIndicator'
 import { useKclContext } from 'lang/KclSingleton'
 import { useStore } from 'useStore'
+import { AppMachineContext } from 'machines/appMachine'
 
 // This might not be necessary, AnyStateMachine from xstate is working
 export type AllMachines =
@@ -46,7 +47,7 @@ export default function useStateMachineCommands<
   allCommandsRequireNetwork = false,
   onCancel,
 }: UseStateMachineCommandsArgs<T, S>) {
-  const { commandBarSend } = useCommandsContext()
+  const commandsActorRef = AppMachineContext.useSelector(s => s.children.commands)
   const { overallState } = useNetworkStatus()
   const { isExecuting } = useKclContext()
   const { isStreamReady } = useStore((s) => ({
@@ -72,10 +73,10 @@ export default function useStateMachineCommands<
       )
       .filter((c) => c !== null) as Command[] // TS isn't smart enough to know this filter removes nulls
 
-    commandBarSend({ type: 'Add commands', data: { commands: newCommands } })
+    commandsActorRef?.send({ type: 'Add commands', data: { commands: newCommands } })
 
     return () => {
-      commandBarSend({
+      commandsActorRef?.send({
         type: 'Remove commands',
         data: { commands: newCommands },
       })
