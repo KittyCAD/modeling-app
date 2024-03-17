@@ -121,6 +121,10 @@ impl BindingScope {
                     "close".into(),
                     EpBinding::from(KclFunction::Close(native_functions::sketch::Close)),
                 ),
+                (
+                    "import".into(),
+                    EpBinding::from(KclFunction::ImportFile(native_functions::import_files::ImportFiles)),
+                ),
             ]),
             parent: None,
         }

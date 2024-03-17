@@ -7,6 +7,7 @@ use kittycad_execution_plan_traits::Address;
 
 use crate::{CompileError, EpBinding, EvalPlan};
 
+pub mod import_files;
 pub mod sketch;
 
 /// The identity function. Always returns its first input.

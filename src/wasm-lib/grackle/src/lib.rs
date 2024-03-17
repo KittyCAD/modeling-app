@@ -264,6 +264,7 @@ impl Planner {
                     KclFunction::LineTo(f) => f.call(&mut ctx, args)?,
                     KclFunction::Add(f) => f.call(&mut ctx, args)?,
                     KclFunction::Close(f) => f.call(&mut ctx, args)?,
+                    KclFunction::ImportFile(f) => f.call(&mut self.next_addr, args)?,
                     KclFunction::UserDefined(f) => {
                         let UserDefinedFunction {
                             params_optional,
@@ -631,6 +632,7 @@ enum KclFunction {
     Id(native_functions::Id),
     StartSketchAt(native_functions::sketch::StartSketchAt),
     LineTo(native_functions::sketch::LineTo),
+    ImportFile(native_functions::import_files::ImportFiles),
     Add(native_functions::Add),
     UserDefined(UserDefinedFunction),
     Extrude(native_functions::sketch::Extrude),
