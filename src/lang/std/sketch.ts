@@ -149,7 +149,7 @@ export const lineTo: SketchLineHelper = {
       pathToNode,
     }
   },
-  addTag: addTagWithTo('default'),
+  addTag: addTag(),
 }
 
 export const line: SketchLineHelper = {
@@ -240,7 +240,7 @@ export const line: SketchLineHelper = {
       pathToNode,
     }
   },
-  addTag: addTagWithTo('default'),
+  addTag: addTag(),
 }
 
 export const xLineTo: SketchLineHelper = {
@@ -288,7 +288,7 @@ export const xLineTo: SketchLineHelper = {
       pathToNode,
     }
   },
-  addTag: addTagWithTo('default'),
+  addTag: addTag(),
 }
 
 export const yLineTo: SketchLineHelper = {
@@ -336,7 +336,7 @@ export const yLineTo: SketchLineHelper = {
       pathToNode,
     }
   },
-  addTag: addTagWithTo('default'),
+  addTag: addTag(),
 }
 
 export const xLine: SketchLineHelper = {
@@ -386,7 +386,7 @@ export const xLine: SketchLineHelper = {
       pathToNode,
     }
   },
-  addTag: addTagWithTo('length'),
+  addTag: addTag(),
 }
 
 export const yLine: SketchLineHelper = {
@@ -430,7 +430,7 @@ export const yLine: SketchLineHelper = {
       pathToNode,
     }
   },
-  addTag: addTagWithTo('length'),
+  addTag: addTag(),
 }
 
 export const tangentialArcTo: SketchLineHelper = {
@@ -510,7 +510,7 @@ export const tangentialArcTo: SketchLineHelper = {
     }
   },
   // TODO copy-paste from angledLine
-  addTag: addTagWithTo('angleLength'),
+  addTag: addTag(),
 }
 export const angledLine: SketchLineHelper = {
   add: ({
@@ -576,7 +576,7 @@ export const angledLine: SketchLineHelper = {
       pathToNode,
     }
   },
-  addTag: addTagWithTo('angleLength'),
+  addTag: addTag(),
 }
 
 export const angledLineOfXLength: SketchLineHelper = {
@@ -649,7 +649,7 @@ export const angledLineOfXLength: SketchLineHelper = {
       pathToNode,
     }
   },
-  addTag: addTagWithTo('angleLength'),
+  addTag: addTag(),
 }
 
 export const angledLineOfYLength: SketchLineHelper = {
@@ -723,7 +723,7 @@ export const angledLineOfYLength: SketchLineHelper = {
       pathToNode,
     }
   },
-  addTag: addTagWithTo('angleLength'),
+  addTag: addTag(),
 }
 
 export const angledLineToX: SketchLineHelper = {
@@ -792,7 +792,7 @@ export const angledLineToX: SketchLineHelper = {
       pathToNode,
     }
   },
-  addTag: addTagWithTo('angleTo'),
+  addTag: addTag(),
 }
 
 export const angledLineToY: SketchLineHelper = {
@@ -862,7 +862,7 @@ export const angledLineToY: SketchLineHelper = {
       pathToNode,
     }
   },
-  addTag: addTagWithTo('angleTo'),
+  addTag: addTag(),
 }
 
 export const angledLineThatIntersects: SketchLineHelper = {
@@ -951,7 +951,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
       pathToNode,
     }
   },
-  addTag: addTagWithTo('angleTo'), // TODO might be wrong
+  addTag: addTag(), // TODO might be wrong
 }
 
 export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
@@ -1174,29 +1174,31 @@ function isAngleLiteral(lineArugement: Value): boolean {
 
 type addTagFn = (a: ModifyAstBase) => { modifiedAst: Program; tag: string }
 
-function addTagWithTo(
-  argType: 'angleLength' | 'angleTo' | 'default' | 'length'
-): addTagFn {
+function addTag(): addTagFn {
   return ({ node, pathToNode }) => {
-    let tagName = findUniqueName(node, 'seg', 2)
     const _node = { ...node }
-    const { node: callExpression } = getNodeFromPath<CallExpression>(
+    const { node: primaryCallExp } = getNodeFromPath<CallExpression>(
       _node,
-      pathToNode
+      pathToNode,
+      'CallExpression'
     )
-    const tagArg = callExpression.arguments?.[2]
-    if (tagArg) {
+    // Tag is always 3rd expression now, using arg index feels brittle
+    // but we can come up with a better way to identify tag later.
+    const thirdArg = primaryCallExp.arguments?.[2]
+    const tagLiteral =
+      thirdArg || (createLiteral(findUniqueName(_node, 'seg', 2)) as Literal)
+    const isTagExisting = !!thirdArg
+    if (!isTagExisting) {
+      primaryCallExp.arguments[2] = tagLiteral
+    }
+    if ('value' in tagLiteral) {
+      // Now TypeScript knows tagLiteral has a value property
       return {
         modifiedAst: _node,
-        tag: String(tagArg),
+        tag: String(tagLiteral.value),
       }
     } else {
-      callExpression.arguments[2] = createLiteral(tagName)
-
-      return {
-        modifiedAst: _node,
-        tag: tagName,
-      }
+      throw new Error('Unable to assign tag without value')
     }
   }
 }
