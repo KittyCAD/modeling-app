@@ -1119,6 +1119,7 @@ export class EngineCommandManager extends EventTarget {
         command?.commandType === 'solid3d_get_extrusion_face_info' &&
         modelingResponse.type === 'solid3d_get_extrusion_face_info'
       ) {
+        console.log('modelingResposne', modelingResponse)
         const parent = this.artifactMap[command?.parentId || '']
         modelingResponse.data.faces.forEach((face) => {
           if (face.cap !== 'none' && face.face_id && parent) {
@@ -1478,6 +1479,7 @@ export class EngineCommandManager extends EventTarget {
         // edges's parent id is to the original "start_path" artifact
         if (edgeArtifact?.parentId) return edgeArtifact.parentId
       }
+      if (command.type === 'close_path') return command.path_id
       // handle other commands that have a parent here
     }
     const pathToNode = ast
