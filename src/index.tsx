@@ -15,9 +15,9 @@ import { UpdaterModal, createUpdaterModal } from 'components/UpdaterModal'
 import { isTauri } from 'lib/isTauri'
 import { platform } from 'os'
 import {
-  UpdaterRelaunchModal,
-  createUpdaterRelaunchModal,
-} from 'components/UpdaterRelaunchModal'
+  UpdaterRestartModal,
+  createUpdaterRestartModal,
+} from 'components/UpdaterRestartModal'
 
 // uncomment for xstate inspector
 // import { DEV } from 'env'
@@ -69,7 +69,7 @@ const runTauriUpdater = async () => {
         // On macOS and Linux, the restart needs to be manually triggered
         const isNotWindows = navigator.userAgent.indexOf('Win') === -1
         if (isNotWindows) {
-          const relaunchModal = createUpdaterRelaunchModal(UpdaterRelaunchModal)
+          const relaunchModal = createUpdaterRestartModal(UpdaterRestartModal)
           const { wantRestart } = await relaunchModal(manifest)
           if (wantRestart) {
             await relaunch()
