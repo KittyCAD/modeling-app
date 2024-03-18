@@ -109,7 +109,7 @@ export const TextEditor = ({
 
     if (
       // TODO find a less lazy way of getting the last
-      Date.now() - (window as any).lastCodeMirrorSelectionUpdatedFromScene <
+      Date.now() - useStore.getState().lastCodeMirrorSelectionUpdatedFromScene <
       150
     )
       return // update triggered by scene selection

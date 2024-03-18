@@ -75,9 +75,15 @@ export const ModelingMachineProvider = ({
   const streamRef = useRef<HTMLDivElement>(null)
   useSetupEngineManager(streamRef, token)
 
-  const { isShiftDown, editorView } = useStore((s) => ({
+  const {
+    isShiftDown,
+    editorView,
+    setLastCodeMirrorSelectionUpdatedFromScene,
+  } = useStore((s) => ({
     isShiftDown: s.isShiftDown,
     editorView: s.editorView,
+    setLastCodeMirrorSelectionUpdatedFromScene:
+      s.setLastCodeMirrorSelectionUpdatedFromScene,
   }))
 
   // Settings machine setup
@@ -110,8 +116,7 @@ export const ModelingMachineProvider = ({
           if (!editorView) return {}
           const dispatchSelection = (selection?: EditorSelection) => {
             if (!selection) return // TODO less of hack for the below please
-            ;(window as any).lastCodeMirrorSelectionUpdatedFromScene =
-              Date.now()
+            setLastCodeMirrorSelectionUpdatedFromScene(Date.now())
             setTimeout(() => editorView.dispatch({ selection }))
           }
           let selections: Selections = {
