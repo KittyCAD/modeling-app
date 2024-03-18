@@ -59,24 +59,14 @@ root.render(
 reportWebVitals()
 
 const runTauriUpdater = async () => {
-  const unlisten = await onUpdaterEvent(({ error, status }) => {
-    // This will log all updater events, including status updates and errors.
-    console.log('Updater event', error, status)
-  })
-
   try {
     const { shouldUpdate, manifest } = await checkUpdate()
-
     if (shouldUpdate) {
       const modal = createUpdaterModal(UpdaterModal)
       const { wantUpdate } = await modal(manifest)
-
       if (wantUpdate) {
-        // Install the update. This will also restart the app on Windows!
         await installUpdate()
-
-        // On macOS and Linux you will need to restart the app manually.
-        // You could use this step to display another confirmation dialog.
+        // On macOS and Linux, the restart needs to be manually triggered
         const isNotWindows = navigator.userAgent.indexOf('Win') === -1
         if (isNotWindows) {
           const relaunchModal = createUpdaterRelaunchModal(UpdaterRelaunchModal)
@@ -90,8 +80,6 @@ const runTauriUpdater = async () => {
   } catch (error) {
     console.error(error)
   }
-
-  // you need to call unlisten if your handler goes out of scope, for example if the component is unmounted.
-  unlisten()
 }
+
 isTauri() && runTauriUpdater()
