@@ -13,6 +13,11 @@ import {
 import { relaunch } from '@tauri-apps/api/process'
 import { UpdaterModal, createUpdaterModal } from 'components/UpdaterModal'
 import { isTauri } from 'lib/isTauri'
+import { platform } from 'os'
+import {
+  UpdaterRelaunchModal,
+  createUpdaterRelaunchModal,
+} from 'components/UpdaterRelaunchModal'
 
 // uncomment for xstate inspector
 // import { DEV } from 'env'
@@ -72,7 +77,14 @@ const runTauriUpdater = async () => {
 
         // On macOS and Linux you will need to restart the app manually.
         // You could use this step to display another confirmation dialog.
-        await relaunch()
+        const isNotWindows = navigator.userAgent.indexOf('Win') === -1
+        if (isNotWindows) {
+          const relaunchModal = createUpdaterRelaunchModal(UpdaterRelaunchModal)
+          const { wantRestart } = await relaunchModal(manifest)
+          if (wantRestart) {
+            await relaunch()
+          }
+        }
       }
     }
   } catch (error) {

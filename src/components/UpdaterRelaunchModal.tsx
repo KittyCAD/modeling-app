@@ -1,42 +1,36 @@
 import { UpdateManifest } from '@tauri-apps/api/updater'
 import { create, InstanceProps } from 'react-modal-promise'
 import { ActionButton } from './ActionButton'
-import { Marked } from '@ts-stack/markdown'
 
 type ModalResolve = {
-  wantUpdate: boolean
+  wantRestart: boolean
 }
 
 type ModalReject = boolean
 
-type UpdaterModalProps = InstanceProps<ModalResolve, ModalReject> &
+type UpdaterRelaunchModalProps = InstanceProps<ModalResolve, ModalReject> &
   UpdateManifest
 
-export const createUpdaterModal = create<
-  UpdaterModalProps,
+export const createUpdaterRelaunchModal = create<
+  UpdaterRelaunchModalProps,
   ModalResolve,
   ModalReject
 >
 
-export const UpdaterModal = ({
+export const UpdaterRelaunchModal = ({
   onResolve,
   version,
-  date,
-  body,
-}: UpdaterModalProps) => (
+}: UpdaterRelaunchModalProps) => (
   <div className="fixed inset-0 z-50 grid place-content-center bg-chalkboard-110/50">
     <div className="max-w-3xl p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
-      <h1 className="text-3xl font-bold">New version available!</h1>
-      <p className="my-4">v{version}</p>
-      <p className="my-4">Published on {date}</p>
-      <p
-        className="my-4"
-        dangerouslySetInnerHTML={{ __html: Marked.parse(body) }}
-      />
+      <h1 className="text-3xl font-bold">Ready to restart?</h1>
+      <p className="my-4">
+        v{version} has been installed. Restart the app to use the new features.
+      </p>
       <div className="flex justify-between">
         <ActionButton
           Element="button"
-          onClick={() => onResolve({ wantUpdate: false })}
+          onClick={() => onResolve({ wantRestart: false })}
           icon={{
             icon: 'close',
             bgClassName: 'bg-destroy-80',
@@ -48,11 +42,11 @@ export const UpdaterModal = ({
         </ActionButton>
         <ActionButton
           Element="button"
-          onClick={() => onResolve({ wantUpdate: true })}
+          onClick={() => onResolve({ wantRestart: true })}
           icon={{ icon: 'arrowRight', bgClassName: 'dark:bg-chalkboard-80' }}
           className="dark:hover:bg-chalkboard-80/50"
         >
-          Update
+          Restart
         </ActionButton>
       </div>
     </div>
