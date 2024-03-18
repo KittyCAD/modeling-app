@@ -12,6 +12,7 @@ import {
 } from '@tauri-apps/api/updater'
 import { relaunch } from '@tauri-apps/api/process'
 import { UpdaterModal, createUpdaterModal } from 'components/UpdaterModal'
+import { isTauri } from 'lib/isTauri'
 
 // uncomment for xstate inspector
 // import { DEV } from 'env'
@@ -81,4 +82,4 @@ const runTauriUpdater = async () => {
   // you need to call unlisten if your handler goes out of scope, for example if the component is unmounted.
   unlisten()
 }
-runTauriUpdater()
+isTauri() && runTauriUpdater()
