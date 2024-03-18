@@ -8,7 +8,7 @@ import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { APP_NAME } from 'lib/constants'
 
 const SignIn = () => {
-    const getLogoTheme = () =>
+  const getLogoTheme = () =>
     theme === Themes.Light ||
     (theme === Themes.System && getSystemTheme() === Themes.Light)
       ? '-dark'
@@ -36,7 +36,7 @@ const SignIn = () => {
 
   return (
     <main className="body-bg h-full min-h-screen m-0 p-0 pt-24">
-            <div className="max-w-2xl mx-auto">
+      <div className="max-w-2xl mx-auto">
         <div>
           <img
             src={`/zma-logomark${getLogoTheme()}.svg`}

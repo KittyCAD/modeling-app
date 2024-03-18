@@ -7,7 +7,6 @@ import { CollapsiblePanel } from './components/CollapsiblePanel'
 import { MemoryPanel } from './components/MemoryPanel'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
 import { Stream } from './components/Stream'
-import ModalContainer from 'react-modal-promise'
 import { EngineCommand } from './lang/std/engineConnection'
 import { throttle } from './lib/utils'
 import { AppHeader } from './components/AppHeader'
@@ -136,7 +135,6 @@ export function App() {
         project={{ project, file }}
         enableMenu={true}
       />
-      <ModalContainer />
       <Resizable
         className={
           'pointer-events-none h-full flex flex-col flex-1 z-10 my-5 ml-5 pr-1 transition-opacity transition-duration-75 ' +
