@@ -293,9 +293,6 @@ impl LineBare {
         let length_of_3d_point = Point3d::<f64>::default().into_parts().len();
         let start_of_line = ctx.next_address.offset_by(1);
 
-        // Reserve space for the segment last point
-        let to_point_from = ctx.next_address.offset_by(2);
-
         // Reserve space for the line's end, and the `relative: bool` field.
         ctx.next_address.offset_by(length_of_3d_point + 1);
         let new_sg_index = ctx.assign_sketch_group();
@@ -407,6 +404,12 @@ impl LineBare {
                 source: sg,
                 destination: Destination::StackExtend,
             },
+        ]);
+
+        // Reserve space for the segment last point
+        let to_point_from = ctx.next_address.offset_by(2);
+
+        instructions.extend([
             // Copy to the primary stack as well to be worked with.
             Instruction::SketchGroupGetLastPoint {
                 source: sg,
@@ -463,14 +466,8 @@ impl LineBare {
                     }
                     _ => panic!("This `at` type does not match what's expected."),
                 }
-            } else {
-                panic!("Must pass a list of length 2");
             }
-        } else {
-            panic!("Must pass a sequence here.");
-        }
-
-        if let EpBinding::Single(addr) = to {
+        } else if let EpBinding::Single(addr) = to {
             match opts {
                 // ToPoint { from: { x1, y1 }, to: { x1 + x2, y1 } }
                 LineBareOptions { at: At::RelativeX } => {
@@ -540,6 +537,8 @@ impl LineBare {
                 }
                 _ => panic!("This `at` type does not match what's expected."),
             }
+        } else {
+          panic!("Must be a sequence or single value binding.");
         }
 
         instructions.extend([

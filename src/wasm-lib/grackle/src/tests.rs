@@ -1065,7 +1065,7 @@ async fn stdlib_cube_partial() {
         |> close(%)
         |> extrude(100.0, %)
     "#;
-    let (_plan, _scope, last_address) = must_plan(program);
+    let (_plan, _scope, _last_address) = must_plan(program);
     //assert_eq!(last_address, Address::ZERO + 54);
     kcvm_dbg(
         program,
@@ -1113,23 +1113,23 @@ async fn stdlib_cube_partial() {
             },
         ]
     );
-    // use kittycad_modeling_cmds::{each_cmd, ok_response::OkModelingCmdResponse, ImageFormat};
-    // let out = client
-    //     .unwrap()
-    //     .run_command(
-    //         uuid::Uuid::new_v4().into(),
-    //         each_cmd::TakeSnapshot {
-    //             format: ImageFormat::Png,
-    //         },
-    //     )
-    //     .await
-    //     .unwrap();
-    // let out = match out {
-    //     OkModelingCmdResponse::TakeSnapshot(b) => b,
-    //     other => panic!("wrong output: {other:?}"),
-    // };
-    // let out: Vec<u8> = out.contents.into();
-    // std::fs::write("image.png", out).unwrap();
+    use kittycad_modeling_cmds::{each_cmd, ok_response::OkModelingCmdResponse, ImageFormat};
+    let out = client
+        .unwrap()
+        .run_command(
+            uuid::Uuid::new_v4().into(),
+            kittycad_modeling_cmds::ModelingCmd::from(each_cmd::TakeSnapshot {
+                format: ImageFormat::Png,
+            }),
+        )
+        .await
+        .unwrap();
+    let out = match out {
+        OkModelingCmdResponse::TakeSnapshot(b) => b,
+        other => panic!("wrong output: {other:?}"),
+    };
+    let out: Vec<u8> = out.contents.into();
+    std::fs::write("cube_lineTo.png", out).unwrap();
 }
 
 #[tokio::test]
@@ -1147,7 +1147,7 @@ async fn stdlib_cube_xline_yline() {
         program,
         "/home/lee/Code/Zoo/modeling-api/execution-plan-debugger/cube_xyline.json",
     );
-    let (_plan, _scope, last_address) = must_plan(program);
+    let (_plan, _scope, _last_address) = must_plan(program);
 
     let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
         .ast()
@@ -1184,8 +1184,8 @@ async fn stdlib_cube_xline_yline() {
             },
             sketch_types::PathSegment::ToPoint {
                 base: sketch_types::BasePath {
-                    from: Point2d { x: 0.0, y: 0.0 },
-                    to: Point2d { x: 10.0, y: 10.0 },
+                    from: Point2d { x: 0.0, y: 210.0 },
+                    to: Point2d { x: 0.0, y: 0.0 },
                     name: "side3".into(),
                 }
             },
@@ -1196,9 +1196,9 @@ async fn stdlib_cube_xline_yline() {
         .unwrap()
         .run_command(
             uuid::Uuid::new_v4().into(),
-            each_cmd::TakeSnapshot {
+            kittycad_modeling_cmds::ModelingCmd::from(each_cmd::TakeSnapshot {
                 format: ImageFormat::Png,
-            },
+            }),
         )
         .await
         .unwrap();
@@ -1207,7 +1207,7 @@ async fn stdlib_cube_xline_yline() {
         other => panic!("wrong output: {other:?}"),
     };
     let out: Vec<u8> = out.contents.into();
-    std::fs::write("box-xline-yline.png", out).unwrap();
+    std::fs::write("cube_xyLine.png", out).unwrap();
 }
 
 async fn test_client() -> Session {

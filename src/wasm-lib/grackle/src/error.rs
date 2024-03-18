@@ -76,7 +76,7 @@ impl From<ExecutionFailed> for Error {
     ) -> Self {
         Self::Execution {
             error,
-            instruction,
+            instruction: instruction.expect("no instruction"),
             instruction_index,
         }
     }
