@@ -1,7 +1,6 @@
 import { UpdateManifest } from '@tauri-apps/api/updater'
 import { create, InstanceProps } from 'react-modal-promise'
 import { ActionButton } from './ActionButton'
-import { Marked } from '@ts-stack/markdown'
 
 type ModalResolve = {
   wantUpdate: boolean
@@ -29,10 +28,7 @@ export const UpdaterModal = ({
       <h1 className="text-3xl font-bold">New version available!</h1>
       <p className="my-4">v{version}</p>
       <p className="my-4">Published on {date}</p>
-      <p
-        className="my-4"
-        dangerouslySetInnerHTML={{ __html: Marked.parse(body) }}
-      />
+      <p className="my-4 max-h-60 overflow-y-auto">{body}</p>
       <div className="flex justify-between">
         <ActionButton
           Element="button"
