@@ -1473,9 +1473,12 @@ export class EngineCommandManager extends EventTarget {
     })
     const getParentId = (): string | undefined => {
       if (command.type === 'extend_path') return command.path
-      if (command.type === 'solid3d_get_extrusion_face_info')
-        return command.object_id
-      // TODO handle other commands that have a parent
+      if (command.type === 'solid3d_get_extrusion_face_info') {
+        const edgeArtifact = this.artifactMap[command.edge_id]
+        // edges's parent id is to the original "start_path" artifact
+        if (edgeArtifact?.parentId) return edgeArtifact.parentId
+      }
+      // handle other commands that have a parent here
     }
     const pathToNode = ast
       ? getNodePathFromSourceRange(ast, range || [0, 0])
