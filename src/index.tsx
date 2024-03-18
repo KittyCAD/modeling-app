@@ -4,6 +4,14 @@ import reportWebVitals from './reportWebVitals'
 import { Toaster } from 'react-hot-toast'
 import { Router } from './Router'
 import { HotkeysProvider } from 'react-hotkeys-hook'
+import ModalContainer from 'react-modal-promise'
+import {
+  checkUpdate,
+  installUpdate,
+  onUpdaterEvent,
+} from '@tauri-apps/api/updater'
+import { relaunch } from '@tauri-apps/api/process'
+import { UpdaterModal, createUpdaterModal } from 'components/UpdaterModal'
 
 // uncomment for xstate inspector
 // import { DEV } from 'env'
@@ -35,6 +43,7 @@ root.render(
         },
       }}
     />
+    <ModalContainer />
   </HotkeysProvider>
 )
 
@@ -42,3 +51,34 @@ root.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals()
+
+const runTauriUpdater = async () => {
+  const unlisten = await onUpdaterEvent(({ error, status }) => {
+    // This will log all updater events, including status updates and errors.
+    console.log('Updater event', error, status)
+  })
+
+  try {
+    const { shouldUpdate, manifest } = await checkUpdate()
+
+    if (shouldUpdate) {
+      const modal = createUpdaterModal(UpdaterModal)
+      const { wantUpdate } = await modal(manifest)
+
+      if (wantUpdate) {
+        // Install the update. This will also restart the app on Windows!
+        await installUpdate()
+
+        // On macOS and Linux you will need to restart the app manually.
+        // You could use this step to display another confirmation dialog.
+        await relaunch()
+      }
+    }
+  } catch (error) {
+    console.error(error)
+  }
+
+  // you need to call unlisten if your handler goes out of scope, for example if the component is unmounted.
+  unlisten()
+}
+runTauriUpdater()
