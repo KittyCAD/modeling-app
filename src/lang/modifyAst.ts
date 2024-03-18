@@ -1,4 +1,3 @@
-import { ToolTip } from '../useStore'
 import { Selection } from 'lib/selections'
 import {
   Program,

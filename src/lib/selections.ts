@@ -48,11 +48,6 @@ export type Selections = {
   codeBasedSelections: Selection[]
 }
 
-interface RangeAndId {
-  id: string
-  range: SourceRange
-}
-
 export async function getEventForSelectWithPoint(
   {
     data,
