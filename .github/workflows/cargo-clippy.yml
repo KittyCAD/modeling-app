@@ -9,12 +9,6 @@ on:
       - '**.rs'
       - .github/workflows/cargo-clippy.yml
   pull_request:
-    paths:
-      - '**/Cargo.toml'
-      - '**/Cargo.lock'
-      - '**/rust-toolchain.toml'
-      - '**.rs'
-      - .github/workflows/cargo-build.yml
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
