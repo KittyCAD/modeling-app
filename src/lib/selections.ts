@@ -35,7 +35,9 @@ export type Selection = {
     | 'default'
     | 'line-end'
     | 'line-mid'
-    | 'face'
+    | 'extrude-wall'
+    | 'start-cap'
+    | 'end-cap'
     | 'point'
     | 'edge'
     | 'line'
@@ -76,11 +78,25 @@ export async function getEventForSelectWithPoint(
   const sourceRange = _artifact?.range
   if (_artifact) {
     if (_artifact.commandType === 'solid3d_get_extrusion_face_info') {
+      if (_artifact?.additionalData)
+        return {
+          type: 'Set selection',
+          data: {
+            selectionType: 'singleCodeCursor',
+            selection: {
+              range: sourceRange,
+              type:
+                _artifact?.additionalData.info === 'end'
+                  ? 'end-cap'
+                  : 'start-cap',
+            },
+          },
+        }
       return {
         type: 'Set selection',
         data: {
           selectionType: 'singleCodeCursor',
-          selection: { range: sourceRange, type: 'face' },
+          selection: { range: sourceRange, type: 'extrude-wall' },
         },
       }
     }
@@ -377,7 +393,7 @@ export function getSelectionType(
   return selection.codeBasedSelections
     .map((s, i) => {
       if (canExtrudeSelectionItem(selection, i)) {
-        return ['face', 1] as ResolvedSelectionType // This is implicitly determining what a face is, which is bad
+        return ['extrude-wall', 1] as ResolvedSelectionType // This is implicitly determining what a face is, which is bad
       } else {
         return ['other', 1] as ResolvedSelectionType
       }
@@ -421,7 +437,7 @@ export function canSubmitSelectionArg(
   )
 }
 
-export function codeToIdSelections(
+function codeToIdSelections(
   codeBasedSelections: Selection[]
 ): SelectionToEngine[] {
   return codeBasedSelections
@@ -451,7 +467,23 @@ export function codeToIdSelections(
           return
         }
         if (
-          type === 'face' &&
+          type === 'start-cap' &&
+          entry.artifact.commandType === 'solid3d_get_extrusion_face_info' &&
+          entry?.artifact?.additionalData?.info === 'start'
+        ) {
+          bestCandidate = entry
+          return
+        }
+        if (
+          type === 'end-cap' &&
+          entry.artifact.commandType === 'solid3d_get_extrusion_face_info' &&
+          entry?.artifact?.additionalData?.info === 'end'
+        ) {
+          bestCandidate = entry
+          return
+        }
+        if (
+          type === 'extrude-wall' &&
           entry.artifact.commandType === 'solid3d_get_extrusion_face_info'
         ) {
           bestCandidate = entry
