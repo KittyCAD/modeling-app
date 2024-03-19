@@ -1471,6 +1471,7 @@ dependencies = [
 name = "grackle"
 version = "0.1.0"
 dependencies = [
+ "image",
  "kcl-lib",
  "kittycad",
  "kittycad-execution-plan",
@@ -1482,6 +1483,7 @@ dependencies = [
  "serde_json",
  "thiserror",
  "tokio",
+ "twenty-twenty",
  "uuid",
 ]
 
@@ -2007,7 +2009,7 @@ dependencies = [
 [[package]]
 name = "kittycad-execution-plan"
 version = "0.1.0"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#4dfeb5c9ce2cc3fb853dd14cf948a922f3724ef4"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#494225aaac06fab77c4822e7dc48738ecca35392"
 dependencies = [
  "bytes",
  "insta",
@@ -2027,7 +2029,7 @@ dependencies = [
 [[package]]
 name = "kittycad-execution-plan-macros"
 version = "0.1.9"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#4dfeb5c9ce2cc3fb853dd14cf948a922f3724ef4"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#494225aaac06fab77c4822e7dc48738ecca35392"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2037,7 +2039,7 @@ dependencies = [
 [[package]]
 name = "kittycad-execution-plan-traits"
 version = "0.1.13"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#4dfeb5c9ce2cc3fb853dd14cf948a922f3724ef4"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#494225aaac06fab77c4822e7dc48738ecca35392"
 dependencies = [
  "serde",
  "thiserror",
@@ -2046,8 +2048,8 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.1.30"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#4dfeb5c9ce2cc3fb853dd14cf948a922f3724ef4"
+version = "0.1.32"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#494225aaac06fab77c4822e7dc48738ecca35392"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2075,7 +2077,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.2"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#4dfeb5c9ce2cc3fb853dd14cf948a922f3724ef4"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#494225aaac06fab77c4822e7dc48738ecca35392"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2085,11 +2087,12 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-session"
 version = "0.1.1"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#4dfeb5c9ce2cc3fb853dd14cf948a922f3724ef4"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#494225aaac06fab77c4822e7dc48738ecca35392"
 dependencies = [
  "futures",
  "kittycad",
  "kittycad-modeling-cmds",
+ "lsystem",
  "reqwest",
  "serde_json",
  "thiserror",
@@ -2186,6 +2189,12 @@ dependencies = [
  "serde_repr",
  "url",
 ]
+
+[[package]]
+name = "lsystem"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "23c47210f2a9f5ae2073e7b847026e3233bcb012aa6845201c69c26481762a81"
 
 [[package]]
 name = "matchit"
