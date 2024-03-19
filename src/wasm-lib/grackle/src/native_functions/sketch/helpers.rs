@@ -139,7 +139,7 @@ pub fn sequence_binding(
     }
 }
 
-/// Extract a 2D point from an argument to a KCL Function.
+/// Extract a 2D point from an argument to a Cabble.
 pub fn arg_point2d(
     arg: EpBinding,
     fn_name: &'static str,
@@ -148,7 +148,7 @@ pub fn arg_point2d(
     arg_number: usize,
 ) -> Result<Address, CompileError> {
     let expected = "2D point (array with length 2)";
-    let elements = sequence_binding(arg, fn_name, "an array of length 2", arg_number)?;
+    let elements = sequence_binding(arg, "startSketchAt", "an array of length 2", arg_number)?;
     if elements.len() != 2 {
         return Err(CompileError::ArgWrongType {
             fn_name,
@@ -165,12 +165,12 @@ pub fn arg_point2d(
     let start_z = start + 2;
     instructions.extend([
         Instruction::Copy {
-            source: single_binding(elements[0].clone(), fn_name, "number", arg_number)?,
+            source: single_binding(elements[0].clone(), "startSketchAt", "number", arg_number)?,
             destination: Destination::Address(start_x),
             length: 1,
         },
         Instruction::Copy {
-            source: single_binding(elements[1].clone(), fn_name, "number", arg_number)?,
+            source: single_binding(elements[1].clone(), "startSketchAt", "number", arg_number)?,
             destination: Destination::Address(start_y),
             length: 1,
         },
