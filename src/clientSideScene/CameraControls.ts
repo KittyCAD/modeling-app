@@ -731,6 +731,7 @@ export class CameraControls {
 
   async tweenCameraToQuaternion(
     targetQuaternion: Quaternion,
+    targetPosition = new Vector3(),
     duration = 500,
     toOrthographic = true
   ): Promise<void> {
@@ -750,12 +751,14 @@ export class CameraControls {
     }
     await this._tweenCameraToQuaternion(
       targetQuaternion,
+      targetPosition,
       remainingDuration,
       toOrthographic
     )
   }
   _tweenCameraToQuaternion(
     targetQuaternion: Quaternion,
+    targetPosition: Vector3,
     duration = 500,
     toOrthographic = false
   ): Promise<void> {
@@ -763,15 +766,21 @@ export class CameraControls {
       const camera = this.camera
       this._isCamMovingCallback(true, true)
       const initialQuaternion = camera.quaternion.clone()
+      const initialTarget = this.target.clone()
       const isVertical = isQuaternionVertical(targetQuaternion)
       let tweenEnd = isVertical ? 0.99 : 1
-      const controlsTarget = this.target.clone()
-      const initialDistance = controlsTarget.distanceTo(camera.position.clone())
+      const tempVec = new Vector3()
+      const initialDistance = initialTarget.distanceTo(camera.position.clone())
 
       const cameraAtTime = (animationProgress: number /* 0 - 1 */) => {
         const currentQ = tempQuaternion.slerpQuaternions(
           initialQuaternion,
           targetQuaternion,
+          animationProgress
+        )
+        const currentTarget = tempVec.lerpVectors(
+          initialTarget,
+          targetPosition,
           animationProgress
         )
         if (this.camera instanceof PerspectiveCamera)
@@ -781,12 +790,11 @@ export class CameraControls {
             .set(0, 0, 1)
             .applyQuaternion(currentQ)
             .multiplyScalar(initialDistance)
-            .add(controlsTarget)
+            .add(currentTarget)
 
         this.camera.up.set(0, 1, 0).applyQuaternion(currentQ).normalize()
         this.camera.quaternion.copy(currentQ)
-        this.target.copy(controlsTarget)
-        // this.controls.update()
+        this.target.copy(currentTarget)
         this.camera.updateProjectionMatrix()
         this.update()
         this.onCameraChange()

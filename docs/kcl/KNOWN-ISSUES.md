@@ -1,4 +1,8 @@
-# Known Issues
+---
+title: "KCL Known Issues"
+excerpt: "Known issues with the KCL standard library for the Zoo Modeling App."
+layout: manual
+---
 
 The following are bugs that are not in modeling-app or kcl itself. These bugs
 once fixed in engine will just start working here with no language changes.
@@ -12,3 +16,5 @@ once fixed in engine will just start working here with no language changes.
     you cannot edit it, after v1, the engine will account for this. You also cannot
     currently move or transform the imported objects at all, once we have assemblies
     this will work.
+
+- **Fillets**: Fillets cannot intersect, you will get an error. Only simple fillet cases work currently.

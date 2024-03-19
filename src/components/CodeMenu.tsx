@@ -1,9 +1,6 @@
 import { Menu } from '@headlessui/react'
 import { PropsWithChildren } from 'react'
-import {
-  faArrowUpRightFromSquare,
-  faEllipsis,
-} from '@fortawesome/free-solid-svg-icons'
+import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons'
 import { ActionIcon } from './ActionIcon'
 import styles from './CodeMenu.module.css'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
@@ -29,7 +26,7 @@ export const CodeMenu = ({ children }: PropsWithChildren) => {
       >
         <Menu.Button className="p-0 border-none relative">
           <ActionIcon
-            icon={faEllipsis}
+            icon="three-dots"
             className="p-1"
             size="sm"
             bgClassName={
@@ -62,7 +59,7 @@ export const CodeMenu = ({ children }: PropsWithChildren) => {
           <Menu.Item>
             <a
               className={styles.button}
-              href="https://github.com/KittyCAD/modeling-app/blob/main/docs/kcl/std.md"
+              href="https://zoo.dev/docs/kcl"
               target="_blank"
               rel="noopener noreferrer"
             >

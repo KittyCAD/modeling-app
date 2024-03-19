@@ -60,11 +60,12 @@ function createCallWrapper(
   tag?: Value,
   valueUsedInTransform?: number
 ): ReturnType<TransformCallback> {
+  const args = [createFirstArg(a, val), createPipeSubstitution()]
+  if (tag) {
+    args.push(tag)
+  }
   return {
-    callExp: createCallExpression(a, [
-      createFirstArg(a, val, tag),
-      createPipeSubstitution(),
-    ]),
+    callExp: createCallExpression(a, args),
     valueUsedInTransform,
   }
 }
@@ -89,14 +90,15 @@ function intersectCallWrapper({
     offset: offsetVal,
     intersectTag,
   }
+  const args: Value[] = [
+    createObjectExpression(firstArg),
+    createPipeSubstitution(),
+  ]
   if (tag) {
-    firstArg['tag'] = tag
+    args.push(tag)
   }
   return {
-    callExp: createCallExpression(fnName, [
-      createObjectExpression(firstArg),
-      createPipeSubstitution(),
-    ]),
+    callExp: createCallExpression(fnName, args),
     valueUsedInTransform,
   }
 }
@@ -1419,7 +1421,8 @@ export function transformAstSketchLines({
     const callExp = getNode<CallExpression>('CallExpression')?.node
     const varDec = getNode<VariableDeclarator>('VariableDeclarator').node
 
-    const { val, tag: callBackTag } = getFirstArg(callExp)
+    const { val } = getFirstArg(callExp)
+    const callBackTag = callExp.arguments[2]
     const _referencedSegmentNameVal =
       callExp.arguments[0]?.type === 'ObjectExpression' &&
       callExp.arguments[0].properties?.find(

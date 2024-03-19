@@ -206,9 +206,7 @@ describe('testing addTagForSketchOnFace', () => {
       },
       'lineTo'
     )
-    const expectedCode = genCode(
-      "lineTo({ to: [-1.59, -1.54], tag: 'seg01' }, %)"
-    )
+    const expectedCode = genCode("lineTo([-1.59, -1.54], %, 'seg01')")
     expect(recast(modifiedAst)).toBe(expectedCode)
   })
 })

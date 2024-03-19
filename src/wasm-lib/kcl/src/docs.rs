@@ -30,6 +30,9 @@ pub struct StdLibFnData {
     pub unpublished: bool,
     /// If the function is deprecated.
     pub deprecated: bool,
+    /// Code examples.
+    /// These are tested and we know they compile and execute.
+    pub examples: Vec<String>,
 }
 
 /// This struct defines a single argument to a stdlib function.
@@ -105,6 +108,9 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
     /// If the function is deprecated.
     fn deprecated(&self) -> bool;
 
+    /// Any example code blocks.
+    fn examples(&self) -> Vec<String>;
+
     /// The function itself.
     fn std_lib_fn(&self) -> crate::std::StdFn;
 
@@ -122,6 +128,7 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
             return_value: self.return_value(),
             unpublished: self.unpublished(),
             deprecated: self.deprecated(),
+            examples: self.examples(),
         })
     }
 
@@ -132,7 +139,11 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
             if i > 0 {
                 signature.push_str(", ");
             }
-            signature.push_str(&format!("{}: {}", arg.name, arg.type_));
+            if arg.required {
+                signature.push_str(&format!("{}: {}", arg.name, arg.type_));
+            } else {
+                signature.push_str(&format!("{}?: {}", arg.name, arg.type_));
+            }
         }
         signature.push(')');
         if let Some(return_value) = self.return_value() {
@@ -306,7 +317,7 @@ pub fn get_type_string_from_schema(schema: &schemars::schema::Schema) -> Result<
             if let Some(format) = &o.format {
                 if format == "uuid" {
                     return Ok((Primitive::Uuid.to_string(), false));
-                } else if format == "double" || format == "uint" || format == "int64" {
+                } else if format == "double" || format == "uint" || format == "int64" || format == "uint32" {
                     return Ok((Primitive::Number.to_string(), false));
                 } else {
                     anyhow::bail!("unknown format: {}", format);
@@ -424,7 +435,7 @@ pub fn get_autocomplete_string_from_schema(schema: &schemars::schema::Schema) ->
             if let Some(format) = &o.format {
                 if format == "uuid" {
                     return Ok(Primitive::Uuid.to_string());
-                } else if format == "double" || format == "uint" || format == "int64" {
+                } else if format == "double" || format == "uint" || format == "int64" || format == "uint32" {
                     return Ok(Primitive::Number.to_string());
                 } else {
                     anyhow::bail!("unknown format: {}", format);
@@ -556,7 +567,7 @@ mod tests {
 
     #[test]
     fn test_deserialize_function() {
-        let some_function_string = r#"{"type":"StdLib","func":{"name":"line","summary":"","description":"","tags":[],"returnValue":{"type":"","required":false,"name":"","schema":{}},"args":[],"unpublished":false,"deprecated":false}}"#;
+        let some_function_string = r#"{"type":"StdLib","func":{"name":"line","summary":"","description":"","tags":[],"returnValue":{"type":"","required":false,"name":"","schema":{}},"args":[],"unpublished":false,"deprecated":false, "examples": []}}"#;
         let some_function: crate::ast::types::Function = serde_json::from_str(some_function_string).unwrap();
 
         assert_eq!(

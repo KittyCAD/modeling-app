@@ -29,41 +29,37 @@ import {
   getSortIcon,
 } from '../lib/sorting'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { DEFAULT_PROJECT_NAME } from 'machines/settingsMachine'
+import { DEFAULT_PROJECT_NAME } from 'lib/constants'
 import { sep } from '@tauri-apps/api/path'
 import { homeCommandBarConfig } from 'lib/commandBarConfigs/homeCommandConfig'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { isTauri } from 'lib/isTauri'
 import { kclManager } from 'lang/KclSingleton'
+import { useLspContext } from 'components/LspProvider'
+import { useValidateSettings } from 'hooks/useValidateSettings'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
 const Home = () => {
+  useValidateSettings()
   const { commandBarSend } = useCommandsContext()
   const navigate = useNavigate()
-  const { projects: loadedProjects, newDefaultDirectory } =
-    useLoaderData() as HomeLoaderData
+  const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
   const {
     settings: {
       context: { defaultDirectory, defaultProjectName },
       send: sendToSettings,
     },
-  } = useGlobalStateContext()
+  } = useSettingsAuthContext()
+  const { onProjectOpen } = useLspContext()
 
-  // Set the default directory if it's been updated
-  // during the loading of the home page. This is wrapped
-  // in a single-use effect to avoid a potential infinite loop.
+  // Cancel all KCL executions while on the home page
   useEffect(() => {
     kclManager.cancelAllExecutions()
-    if (newDefaultDirectory) {
-      sendToSettings({
-        type: 'Set Default Directory',
-        data: { defaultDirectory: newDefaultDirectory },
-      })
-    }
   }, [])
+
   useHotkeys(
     isTauri() ? 'mod+,' : 'shift+mod+,',
     () => navigate(paths.HOME + paths.SETTINGS),
@@ -84,12 +80,16 @@ const Home = () => {
         event: EventFrom<typeof homeMachine>
       ) => {
         if (event.data && 'name' in event.data) {
-          commandBarSend({ type: 'Close' })
-          navigate(
-            `${paths.FILE}/${encodeURIComponent(
-              context.defaultDirectory + sep + event.data.name
-            )}`
+          let projectPath = context.defaultDirectory + sep + event.data.name
+          onProjectOpen(
+            {
+              name: event.data.name,
+              path: projectPath,
+            },
+            null
           )
+          commandBarSend({ type: 'Close' })
+          navigate(`${paths.FILE}/${encodeURIComponent(projectPath)}`)
         }
       },
       toastSuccess: (_, event) => toast.success((event.data || '') + ''),

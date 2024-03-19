@@ -24,7 +24,7 @@ use self::{
 };
 
 /// Execute a KCL program by compiling into an execution plan, then running that.
-pub async fn execute(ast: Program, session: Option<Session>) -> Result<ep::Memory, Error> {
+pub async fn execute(ast: Program, session: &mut Option<Session>) -> Result<ep::Memory, Error> {
     let mut planner = Planner::new();
     let (plan, _retval) = planner.build_plan(ast)?;
     let mut mem = ep::Memory::default();
@@ -33,11 +33,14 @@ pub async fn execute(ast: Program, session: Option<Session>) -> Result<ep::Memor
 }
 
 /// Compiles KCL programs into Execution Plans.
+#[derive(Debug)]
 struct Planner {
     /// Maps KCL identifiers to what they hold, and where in KCEP virtual memory they'll be written to.
     binding_scope: BindingScope,
-    /// Next available KCEP virtual machine memory address.
+    /// Next available KCVM virtual machine memory address.
     next_addr: Address,
+    /// Next available KCVM sketch group index.
+    next_sketch_group: usize,
 }
 
 impl Planner {
@@ -45,6 +48,7 @@ impl Planner {
         Self {
             binding_scope: BindingScope::prelude(),
             next_addr: Address::ZERO,
+            next_sketch_group: 0,
         }
     }
 
@@ -246,14 +250,20 @@ impl Planner {
 
                 // Emit instructions to call that function with the given arguments.
                 use native_functions::Callable;
+                let mut ctx = native_functions::Context {
+                    next_address: &mut self.next_addr,
+                    next_sketch_group: &mut self.next_sketch_group,
+                };
                 let EvalPlan {
                     instructions: eval_instrs,
                     binding,
                 } = match callee {
-                    KclFunction::Id(f) => f.call(&mut self.next_addr, args)?,
-                    KclFunction::StartSketchAt(f) => f.call(&mut self.next_addr, args)?,
-                    KclFunction::LineTo(f) => f.call(&mut self.next_addr, args)?,
-                    KclFunction::Add(f) => f.call(&mut self.next_addr, args)?,
+                    KclFunction::Id(f) => f.call(&mut ctx, args)?,
+                    KclFunction::StartSketchAt(f) => f.call(&mut ctx, args)?,
+                    KclFunction::Extrude(f) => f.call(&mut ctx, args)?,
+                    KclFunction::LineTo(f) => f.call(&mut ctx, args)?,
+                    KclFunction::Add(f) => f.call(&mut ctx, args)?,
+                    KclFunction::Close(f) => f.call(&mut ctx, args)?,
                     KclFunction::UserDefined(f) => {
                         let UserDefinedFunction {
                             params_optional,
@@ -623,6 +633,8 @@ enum KclFunction {
     LineTo(native_functions::sketch::LineTo),
     Add(native_functions::Add),
     UserDefined(UserDefinedFunction),
+    Extrude(native_functions::sketch::Extrude),
+    Close(native_functions::sketch::Close),
 }
 
 /// Context used when compiling KCL.

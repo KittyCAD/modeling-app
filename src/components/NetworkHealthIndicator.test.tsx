@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
-import { GlobalStateProvider } from './GlobalStateProvider'
-import CommandBarProvider from './CommandBar/CommandBar'
+import { SettingsAuthProviderJest } from './SettingsAuthProvider'
+import { CommandBarProvider } from './CommandBar/CommandBarProvider'
 import {
   NETWORK_HEALTH_TEXT,
   NetworkHealthIndicator,
@@ -13,7 +13,7 @@ function TestWrap({ children }: { children: React.ReactNode }) {
   return (
     <BrowserRouter>
       <CommandBarProvider>
-        <GlobalStateProvider>{children}</GlobalStateProvider>
+        <SettingsAuthProviderJest>{children}</SettingsAuthProviderJest>
       </CommandBarProvider>
     </BrowserRouter>
   )
@@ -30,7 +30,7 @@ describe('NetworkHealthIndicator tests', () => {
     fireEvent.click(screen.getByTestId('network-toggle'))
 
     expect(screen.getByTestId('network')).toHaveTextContent(
-      NETWORK_HEALTH_TEXT[NetworkHealthState.Ok]
+      NETWORK_HEALTH_TEXT[NetworkHealthState.Issue]
     )
   })
 

@@ -1,6 +1,6 @@
 {
   "name": "untitled-app",
-  "version": "0.15.5",
+  "version": "0.15.6",
   "private": true,
   "dependencies": {
     "@codemirror/autocomplete": "^6.10.2",
@@ -10,7 +10,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@headlessui/react": "^1.7.17",
     "@headlessui/tailwindcss": "^0.2.0",
-    "@kittycad/lib": "^0.0.54",
+    "@kittycad/lib": "^0.0.55",
     "@lezer/javascript": "^1.4.9",
     "@open-rpc/client-js": "^1.8.1",
     "@react-hook/resize-observer": "^1.2.6",
@@ -33,6 +33,7 @@
     "fuse.js": "^7.0.0",
     "http-server": "^14.1.1",
     "json-rpc-2.0": "^1.6.0",
+    "jszip": "^3.10.1",
     "node-fetch": "^3.3.2",
     "re-resizable": "^6.9.11",
     "react": "^18.2.0",

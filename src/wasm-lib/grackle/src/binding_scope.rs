@@ -24,6 +24,8 @@ pub enum EpBinding {
     },
     /// Not associated with a KCEP address.
     Function(KclFunction),
+    /// SketchGroups have their own storage.
+    SketchGroup { index: usize },
 }
 
 impl From<KclFunction> for EpBinding {
@@ -47,6 +49,7 @@ impl EpBinding {
                             .ok_or(CompileError::IndexOutOfBounds { i, len: elements.len() })
                     }
                     EpBinding::Map { .. } => Err(CompileError::CannotIndex),
+                    EpBinding::SketchGroup { .. } => Err(CompileError::CannotIndex),
                     EpBinding::Single(_) => Err(CompileError::CannotIndex),
                     EpBinding::Function(_) => Err(CompileError::CannotIndex),
                 },
@@ -54,6 +57,7 @@ impl EpBinding {
                 LiteralValue::String(property) => match self {
                     EpBinding::Single(_) => Err(CompileError::NoProperties),
                     EpBinding::Function(_) => Err(CompileError::NoProperties),
+                    EpBinding::SketchGroup { .. } => Err(CompileError::NoProperties),
                     EpBinding::Sequence { .. } => Err(CompileError::ArrayDoesNotHaveProperties),
                     EpBinding::Map {
                         properties,
@@ -108,6 +112,14 @@ impl BindingScope {
                 (
                     "lineTo".into(),
                     EpBinding::from(KclFunction::LineTo(native_functions::sketch::LineTo)),
+                ),
+                (
+                    "extrude".into(),
+                    EpBinding::from(KclFunction::Extrude(native_functions::sketch::Extrude)),
+                ),
+                (
+                    "close".into(),
+                    EpBinding::from(KclFunction::Close(native_functions::sketch::Close)),
                 ),
             ]),
             parent: None,

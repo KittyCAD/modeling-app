@@ -6,6 +6,7 @@ use wasm_bindgen::prelude::wasm_bindgen;
 use crate::{
     errors::{KclError, KclErrorDetails},
     fs::FileSystem,
+    wasm::JsFuture,
 };
 
 #[wasm_bindgen(module = "/../../lang/std/fileSystemManager.ts")]
@@ -37,9 +38,9 @@ impl FileManager {
 unsafe impl Send for FileManager {}
 unsafe impl Sync for FileManager {}
 
-#[async_trait::async_trait(?Send)]
+#[async_trait::async_trait]
 impl FileSystem for FileManager {
-    async fn read<P: AsRef<std::path::Path>>(
+    async fn read<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
         &self,
         path: P,
         source_range: crate::executor::SourceRange,
@@ -64,7 +65,7 @@ impl FileSystem for FileManager {
                 })
             })?;
 
-        let value = wasm_bindgen_futures::JsFuture::from(promise).await.map_err(|e| {
+        let value = JsFuture::from(promise).await.map_err(|e| {
             KclError::Engine(KclErrorDetails {
                 message: format!("Failed to wait for promise from engine: {:?}", e),
                 source_ranges: vec![source_range],
@@ -77,7 +78,7 @@ impl FileSystem for FileManager {
         Ok(bytes)
     }
 
-    async fn exists<P: AsRef<std::path::Path>>(
+    async fn exists<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
         &self,
         path: P,
         source_range: crate::executor::SourceRange,
@@ -102,7 +103,7 @@ impl FileSystem for FileManager {
                 })
             })?;
 
-        let value = wasm_bindgen_futures::JsFuture::from(promise).await.map_err(|e| {
+        let value = JsFuture::from(promise).await.map_err(|e| {
             KclError::Engine(KclErrorDetails {
                 message: format!("Failed to wait for promise from engine: {:?}", e),
                 source_ranges: vec![source_range],
@@ -119,7 +120,7 @@ impl FileSystem for FileManager {
         Ok(it_exists)
     }
 
-    async fn get_all_files<P: AsRef<std::path::Path>>(
+    async fn get_all_files<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
         &self,
         path: P,
         source_range: crate::executor::SourceRange,
@@ -144,7 +145,7 @@ impl FileSystem for FileManager {
                 })
             })?;
 
-        let value = wasm_bindgen_futures::JsFuture::from(promise).await.map_err(|e| {
+        let value = JsFuture::from(promise).await.map_err(|e| {
             KclError::Engine(KclErrorDetails {
                 message: format!("Failed to wait for promise from javascript: {:?}", e),
                 source_ranges: vec![source_range],

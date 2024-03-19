@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { useStore } from '../useStore'
 import { getNormalisedCoordinates } from '../lib/utils'
 import Loading from './Loading'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Models } from '@kittycad/lib'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
@@ -28,10 +28,11 @@ export const Stream = ({ className = '' }: { className?: string }) => {
     setDidDragInStream: s.setDidDragInStream,
     streamDimensions: s.streamDimensions,
   }))
-  const { settings } = useGlobalStateContext()
+  const { settings } = useSettingsAuthContext()
   const { state } = useModelingContext()
   const { isExecuting } = useKclContext()
   const { overallState } = useNetworkStatus()
+
   const isNetworkOkay = overallState === NetworkHealthState.Ok
 
   useEffect(() => {

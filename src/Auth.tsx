@@ -1,9 +1,9 @@
 import Loading from './components/Loading'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 
 // Wrapper around protected routes, used in src/Router.tsx
 export const Auth = ({ children }: React.PropsWithChildren) => {
-  const { auth } = useGlobalStateContext()
+  const { auth } = useSettingsAuthContext()
   const isLoggingIn = auth?.state.matches('checkIfLoggedIn')
 
   return isLoggingIn ? (

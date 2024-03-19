@@ -13,7 +13,7 @@ use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
     ast::types::{BodyItem, FunctionExpression, KclNone, Value},
-    engine::{EngineConnection, EngineManager},
+    engine::EngineManager,
     errors::{KclError, KclErrorDetails},
     fs::FileManager,
     std::{FunctionKind, StdLib},
@@ -977,7 +977,7 @@ impl Default for PipeInfo {
 /// The executor context.
 #[derive(Debug, Clone)]
 pub struct ExecutorContext {
-    pub engine: EngineConnection,
+    pub engine: Arc<Box<dyn EngineManager>>,
     pub fs: FileManager,
     pub stdlib: Arc<StdLib>,
     pub units: kittycad::types::UnitLength,
@@ -985,22 +985,11 @@ pub struct ExecutorContext {
 
 impl ExecutorContext {
     /// Create a new default executor context.
-    #[cfg(test)]
-    pub async fn new(units: kittycad::types::UnitLength) -> Result<Self> {
-        Ok(Self {
-            engine: EngineConnection::new().await?,
-            fs: FileManager::new(),
-            stdlib: Arc::new(StdLib::new()),
-            units,
-        })
-    }
-
-    /// Create a new default executor context.
     #[cfg(not(test))]
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(ws: reqwest::Upgraded, units: kittycad::types::UnitLength) -> Result<Self> {
         Ok(Self {
-            engine: EngineConnection::new(ws).await?,
+            engine: Arc::new(Box::new(crate::engine::conn::EngineConnection::new(ws).await?)),
             fs: FileManager::new(),
             stdlib: Arc::new(StdLib::new()),
             units,
@@ -1290,6 +1279,8 @@ fn assign_args_to_params(
 
 #[cfg(test)]
 mod tests {
+    use std::sync::Arc;
+
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -1300,7 +1291,12 @@ mod tests {
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast()?;
         let mut mem: ProgramMemory = Default::default();
-        let ctx = ExecutorContext::new(kittycad::types::UnitLength::Mm).await?;
+        let ctx = ExecutorContext {
+            engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await?)),
+            fs: crate::fs::FileManager::new(),
+            stdlib: Arc::new(crate::std::StdLib::new()),
+            units: kittycad::types::UnitLength::Mm,
+        };
         let memory = execute(program, &mut mem, BodyType::Root, &ctx).await?;
 
         Ok(memory)
@@ -1327,14 +1323,13 @@ const newVar = myVar + 1"#;
             format!(
                 r#"const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> lineTo({{to:[2, 2], tag: "yo"}}, %)
+  |> lineTo([2, 2], %, "yo")
   |> lineTo([3, 1], %)
   |> angledLineThatIntersects({{
   angle: 180,
   intersectTag: 'yo',
   offset: {},
-  tag: "yo2"
-}}, %)
+}}, %, 'yo2')
 const intersect = segEndX('yo2', part001)"#,
                 offset
             )
@@ -1391,7 +1386,7 @@ const yo2 = hmm([identifierGuy + 5])"#;
         let ast = r#"const myVar = 3
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line({ to: [3, 4], tag: 'seg01' }, %)
+  |> line([3, 4], %, 'seg01')
   |> line([
   min(segLen('seg01', %), myVar),
   -legLen(segLen('seg01', %), myVar)
@@ -1406,7 +1401,7 @@ const part001 = startSketchOn('XY')
         let ast = r#"const myVar = 3
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line({ to: [3, 4], tag: 'seg01' }, %)
+  |> line([3, 4], %, 'seg01')
   |> line([
   min(segLen('seg01', %), myVar),
   legLen(segLen('seg01', %), myVar)

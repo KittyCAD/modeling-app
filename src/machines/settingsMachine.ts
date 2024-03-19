@@ -1,53 +1,41 @@
 import { assign, createMachine } from 'xstate'
-import { Themes, getSystemTheme, setThemeClass } from '../lib/theme'
+import { Themes, getSystemTheme, setThemeClass } from 'lib/theme'
 import { CameraSystem } from 'lib/cameraControls'
-import { Models } from '@kittycad/lib'
-
-const kclManagerPromise = import('lang/KclSingleton').then(
-  (module) => module.kclManager
-)
-
-export const DEFAULT_PROJECT_NAME = 'project-$nnn'
-
-export enum UnitSystem {
-  Imperial = 'imperial',
-  Metric = 'metric',
-}
-
-export const baseUnits = {
-  imperial: ['in', 'ft', 'yd'],
-  metric: ['mm', 'cm', 'm'],
-} as const
-
-export type BaseUnit = Models['UnitLength_type']
-
-export const baseUnitsUnion = Object.values(baseUnits).flatMap((v) => v)
-
-export type Toggle = 'On' | 'Off'
-
-export const SETTINGS_PERSIST_KEY = 'SETTINGS_PERSIST_KEY'
+import { isTauri } from 'lib/isTauri'
+import { writeToSettingsFile } from 'lib/tauriFS'
+import { DEFAULT_PROJECT_NAME, SETTINGS_PERSIST_KEY } from 'lib/constants'
+import {
+  UnitSystem,
+  type BaseUnit,
+  type SettingsMachineContext,
+  type Toggle,
+} from 'lib/settings/settingsTypes'
 
 export const settingsMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlTQAIAVACzAFswBtABgF1FQAHAe1iYsfbNxAAPRAA42+AEwB2KQFYAzGznKAnADZli1QBoQAT2kBGKfm37lOned3nzqgL6vjlLLgJFSFdCoAETAAMwBDAFdiagAFACc+ACswAGNqADlw5nYuJBB+QWFRfMkEABY5fDYa2rra83LjMwQdLWV8BXLyuxlVLU1Ld090bzxCEnJKYLComODMeLS0PniTXLFCoUwRMTK7fC1zNql7NgUjtnKjU0RlBSqpLVUVPVUda60tYZAvHHG-FNAgBVbBCKjIEywNBMDb5LbFPaILqdfRSORsS4qcxXZqIHqyK6qY4XOxsGTKco-P4+Cb+aYAIXCsDAVFBQjhvAE212pWkskUKnUml0+gUNxaqkU+EccnKF1UCnucnMcjcHl+o3+vkmZBofCgUFIMwARpEoFRYuFsGBiJyCtzEXzWrJlGxlKdVFKvfY1XiEBjyvhVOVzBdzu13pYFNStbTAQFqAB5bAmvjheIQf4QtDhNCRWD2hE7EqgfayHTEh7lHQNSxSf1Scz4cpHHFyFVujTKczuDXYPgQOBiGl4TaOktIhAAWg6X3nC4Xp39050sYw2rpYHHRUnztVhPJqmUlIGbEriv9WhrLZ6uibHcqUr7riAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlTQAIBBY4qyrXWAbQAYBdRUABwHtYmLP2w8QAD0TsANCACe0gL5K5THHkIlylKgCEAhrDBUAqtmEduSEAKEixNqQgCM7AJz52AJgAsAVg8AZgAOEIA2fxd3XzlFBCCXf3xfdlS0kN9vGIiVNXRmTSJSCnQqAGEDAFswACcDCtE0Wv5iNi5xO2FMUXFnWQVlVRB1Fi0S3QARMAAzAwBXYmpJzFqwAGM0flr5K07Bbt6nRH9w-HcXcPcI8PYAdgu0oLiTu+98EPdQ0-8g8N8gu53HkRgUNARijoytM5otqAAFFoAKw21AActUwHsbF0HH1EFkvOxiSTScSXLFBggrsk7r4AuEQuxAd4oiEQaMitpStQAPLYABG-AMtQgGkYaAMaHm7WsfAOeOOCEC+HCiTevlu5JcYReCBCLhSFzc3m8SWJrJcHLBY0hPKoABUwBJqAB1eq8XgabHy+w9Rygfp69jWjDg8ZQ6gOgAWYBqPtsCv9+P17Hw3juIV+Pn87kiGeeVINIXwuf8rPC4WiVZcQVDhQh3N05mEjHksDQcYTuOTSrp+Du5ZC3g8bizbkp8QCaaelwep3YTP8vnr4btDv4UCgpCo0wF8ygVHhBmwYGI3aTR0DiFupfY-giQSC3iflZfepHvnwQV8Lge93cX4qxCO4VGGbB+AgOBxE5eAcUvANJEQABaXwQj1ZCQLvUkmXpFwzStYZYIjfY-SvJDXBHLxa01Stc0yIE7j1NwKW-NUAl8a4-DuZkwKUIA */
     id: 'Settings',
     predictableActionArguments: true,
-    context: {
-      baseUnit: 'mm' as BaseUnit,
-      cameraControls: 'KittyCAD' as CameraSystem,
-      defaultDirectory: '',
-      defaultProjectName: DEFAULT_PROJECT_NAME,
-      onboardingStatus: '',
-      showDebugPanel: false,
-      textWrapping: 'On' as Toggle,
-      theme: Themes.System,
-      unitSystem: UnitSystem.Metric,
-    },
+    context: {} as SettingsMachineContext,
     initial: 'idle',
     states: {
       idle: {
-        entry: ['setThemeClass'],
+        entry: ['setThemeClass', 'setClientSideSceneUnits', 'persistSettings'],
         on: {
+          'Set All Settings': {
+            actions: [
+              assign((context, event) => {
+                return {
+                  ...context,
+                  ...event.data,
+                }
+              }),
+              'persistSettings',
+              'setThemeClass',
+            ],
+            target: 'idle',
+            internal: true,
+          },
           'Set Base Unit': {
             actions: [
               assign({
@@ -55,9 +43,8 @@ export const settingsMachine = createMachine(
               }),
               'persistSettings',
               'toastSuccess',
-              async () => {
-                ;(await kclManagerPromise).executeAst()
-              },
+              'setClientSideSceneUnits',
+              'Execute AST',
             ],
             target: 'idle',
             internal: true,
@@ -138,9 +125,7 @@ export const settingsMachine = createMachine(
               }),
               'persistSettings',
               'toastSuccess',
-              async () => {
-                ;(await kclManagerPromise).executeAst()
-              },
+              'Execute AST',
             ],
             target: 'idle',
             internal: true,
@@ -164,6 +149,7 @@ export const settingsMachine = createMachine(
     tsTypes: {} as import('./settingsMachine.typegen').Typegen0,
     schema: {
       events: {} as
+        | { type: 'Set All Settings'; data: Partial<SettingsMachineContext> }
         | { type: 'Set Base Unit'; data: { baseUnit: BaseUnit } }
         | {
             type: 'Set Camera Controls'
@@ -187,6 +173,11 @@ export const settingsMachine = createMachine(
   {
     actions: {
       persistSettings: (context) => {
+        if (isTauri()) {
+          writeToSettingsFile(context).catch((err) => {
+            console.error('Error writing settings:', err)
+          })
+        }
         try {
           localStorage.setItem(SETTINGS_PERSIST_KEY, JSON.stringify(context))
         } catch (e) {

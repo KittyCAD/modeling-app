@@ -1,11 +1,15 @@
 import { useMachine } from '@xstate/react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { paths } from 'lib/paths'
 import { authMachine, TOKEN_PERSIST_KEY } from '../machines/authMachine'
 import withBaseUrl from '../lib/withBaseURL'
-import React, { createContext, useEffect, useRef } from 'react'
+import React, { createContext, useEffect } from 'react'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
-import { SETTINGS_PERSIST_KEY, settingsMachine } from 'machines/settingsMachine'
+import { settingsMachine } from 'machines/settingsMachine'
+import {
+  fallbackLoadedSettings,
+  validateSettings,
+} from 'lib/settings/settingsUtils'
 import { toast } from 'react-hot-toast'
 import { setThemeClass, Themes } from 'lib/theme'
 import {
@@ -19,6 +23,7 @@ import { isTauri } from 'lib/isTauri'
 import { settingsCommandBarConfig } from 'lib/commandBarConfigs/settingsCommandConfig'
 import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
 import { sceneInfra } from 'clientSideScene/sceneInfra'
+import { kclManager } from 'lang/KclSingleton'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -26,7 +31,7 @@ type MachineContext<T extends AnyStateMachine> = {
   send: Prop<InterpreterFrom<T>, 'send'>
 }
 
-type GlobalContext = {
+type SettingsAuthContextType = {
   auth: MachineContext<typeof authMachine>
   settings: MachineContext<typeof settingsMachine>
 }
@@ -37,37 +42,66 @@ type GlobalContext = {
 let settingsStateRef: (typeof settingsMachine)['context'] | undefined
 export const getSettingsState = () => settingsStateRef
 
-export const GlobalStateContext = createContext({} as GlobalContext)
+export const SettingsAuthContext = createContext({} as SettingsAuthContextType)
 
-export const GlobalStateProvider = ({
+export const SettingsAuthProvider = ({
   children,
 }: {
   children: React.ReactNode
 }) => {
-  const navigate = useNavigate()
+  const loadedSettings = useRouteLoaderData(paths.INDEX) as Awaited<
+    ReturnType<typeof validateSettings>
+  >
+  return (
+    <SettingsAuthProviderBase loadedSettings={loadedSettings}>
+      {children}
+    </SettingsAuthProviderBase>
+  )
+}
 
-  // Settings machine setup
-  const retrievedSettings = useRef(
-    localStorage?.getItem(SETTINGS_PERSIST_KEY) || '{}'
+// For use in jest tests we don't want to use the loader data
+// and mock the whole Router
+export const SettingsAuthProviderJest = ({
+  children,
+}: {
+  children: React.ReactNode
+}) => {
+  const loadedSettings = fallbackLoadedSettings
+  return (
+    <SettingsAuthProviderBase loadedSettings={loadedSettings}>
+      {children}
+    </SettingsAuthProviderBase>
   )
-  const persistedSettings = Object.assign(
-    settingsMachine.initialState.context,
-    JSON.parse(retrievedSettings.current) as Partial<
-      (typeof settingsMachine)['context']
-    >
-  )
+}
+
+export const SettingsAuthProviderBase = ({
+  children,
+  loadedSettings,
+}: {
+  children: React.ReactNode
+  loadedSettings: Awaited<ReturnType<typeof validateSettings>>
+}) => {
+  const { settings: initialLoadedContext } = loadedSettings
+  const navigate = useNavigate()
 
   const [settingsState, settingsSend, settingsActor] = useMachine(
     settingsMachine,
     {
-      context: persistedSettings,
+      context: initialLoadedContext,
       actions: {
+        setClientSideSceneUnits: (context, event) => {
+          const newBaseUnit =
+            event.type === 'Set Base Unit'
+              ? event.data.baseUnit
+              : context.baseUnit
+          sceneInfra.baseUnit = newBaseUnit
+        },
         toastSuccess: (context, event) => {
           const truncatedNewValue =
             'data' in event && event.data instanceof Object
-              ? (String(
-                  context[Object.keys(event.data)[0] as keyof typeof context]
-                ).substring(0, 28) as any)
+              ? (context[Object.keys(event.data)[0] as keyof typeof context]
+                  .toString()
+                  .substring(0, 28) as any)
               : undefined
           toast.success(
             event.type +
@@ -78,6 +112,7 @@ export const GlobalStateProvider = ({
                 : '')
           )
         },
+        'Execute AST': () => kclManager.executeAst(),
       },
     }
   )
@@ -102,7 +137,6 @@ export const GlobalStateProvider = ({
       if (settingsState.context.theme !== 'system') return
       setThemeClass(e.matches ? Themes.Dark : Themes.Light)
     }
-    sceneInfra.baseUnit = settingsState?.context?.baseUnit || 'mm'
 
     matcher.addEventListener('change', listener)
     return () => matcher.removeEventListener('change', listener)
@@ -133,7 +167,7 @@ export const GlobalStateProvider = ({
   })
 
   return (
-    <GlobalStateContext.Provider
+    <SettingsAuthContext.Provider
       value={{
         auth: {
           state: authState,
@@ -148,11 +182,11 @@ export const GlobalStateProvider = ({
       }}
     >
       {children}
-    </GlobalStateContext.Provider>
+    </SettingsAuthContext.Provider>
   )
 }
 
-export default GlobalStateProvider
+export default SettingsAuthProvider
 
 export function logout() {
   localStorage.removeItem(TOKEN_PERSIST_KEY)

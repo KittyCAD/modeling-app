@@ -5,7 +5,7 @@ import {
   useNextClick,
 } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { bracket } from 'lib/exampleKcl'
 import {
@@ -31,7 +31,7 @@ function OnboardingWithNewFile() {
     settings: {
       context: { defaultDirectory },
     },
-  } = useGlobalStateContext()
+  } = useSettingsAuthContext()
 
   async function createAndOpenNewProject() {
     const projects = await getProjectsInDir(defaultDirectory)
@@ -58,7 +58,7 @@ function OnboardingWithNewFile() {
       <div className="max-w-3xl p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
         {!isTauri() ? (
           <>
-            <h1 className="text-2xl font-bold text-warn-80 dark:text-warn-10">
+            <h1 className="text-3xl font-bold text-warn-80 dark:text-warn-10">
               Replaying onboarding resets your code
             </h1>
             <p className="my-4">
@@ -77,7 +77,7 @@ function OnboardingWithNewFile() {
           </>
         ) : (
           <>
-            <h1 className="flex flex-wrap items-center gap-4 text-2xl font-bold">
+            <h1 className="flex flex-wrap items-center gap-4 text-3xl font-bold">
               Would you like to create a new project?
             </h1>
             <section className="my-12">
@@ -111,7 +111,7 @@ export default function Introduction() {
         context: { theme },
       },
     },
-  } = useGlobalStateContext()
+  } = useSettingsAuthContext()
   const getLogoTheme = () =>
     theme === Themes.Light ||
     (theme === Themes.System && getSystemTheme() === Themes.Light)
@@ -128,7 +128,7 @@ export default function Introduction() {
   return isStarterCode ? (
     <div className="fixed inset-0 z-50 grid place-content-center bg-chalkboard-110/50">
       <div className="max-w-3xl p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
-        <h1 className="flex flex-wrap items-center gap-4 text-2xl font-bold">
+        <h1 className="flex flex-wrap items-center gap-4 text-3xl font-bold">
           <img
             src={`/zma-logomark${getLogoTheme()}.svg`}
             alt={APP_NAME}
@@ -156,11 +156,20 @@ export default function Introduction() {
             >
               expectations for alpha users here
             </a>
-            . Please give us feedback on your experience! We are trying to
-            release as early as possible to get feedback from users like you.
+            , and please give us feedback on your experience{' '}
+            <a
+              href="https://discord.com/invite/JQEpHR7Nt2"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              our Discord
+            </a>
+            ! We are trying to release as early as possible to get feedback from
+            users like you.
           </p>
         </section>
         <OnboardingButtons
+          currentSlug={onboardingPaths.INDEX}
           className="mt-6"
           dismiss={dismiss}
           next={next}

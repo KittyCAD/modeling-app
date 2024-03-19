@@ -24,7 +24,8 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import * as TWEEN from '@tweenjs/tween.js'
 import { SourceRange } from 'lang/wasm'
 import { Axis } from 'lib/selections'
-import { BaseUnit, SETTINGS_PERSIST_KEY } from 'machines/settingsMachine'
+import { type BaseUnit } from 'lib/settings/settingsTypes'
+import { SETTINGS_PERSIST_KEY } from 'lib/constants'
 import { CameraControls } from './CameraControls'
 
 type SendType = ReturnType<typeof useModelingContext>['send']

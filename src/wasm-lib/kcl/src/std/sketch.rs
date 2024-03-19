@@ -23,45 +23,41 @@ use crate::{
     },
 };
 
-/// Data to draw a line to a point.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase", untagged)]
-pub enum LineToData {
-    /// A point with a tag.
-    PointWithTag {
-        /// The to point.
-        to: [f64; 2],
-        /// The tag.
-        tag: String,
-    },
-    /// A point.
-    Point([f64; 2]),
-}
-
 /// Draw a line to a point.
 pub async fn line_to(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (LineToData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
+    let (to, sketch_group, tag): ([f64; 2], Box<SketchGroup>, Option<String>) =
+        args.get_data_and_sketch_group_and_tag()?;
 
-    let new_sketch_group = inner_line_to(data, sketch_group, args).await?;
+    let new_sketch_group = inner_line_to(to, sketch_group, tag, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
 /// Draw a line to a point.
+///
+/// ```no_run
+/// fn rectShape = (pos, w, l) => {
+///     const rr = startSketchOn('YZ')
+///         |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
+///         |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, "edge1")
+///         |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, "edge2")
+///         |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, "edge3")
+///         |> close(%, "edge4")
+///     return rr
+/// }
+///
+/// // Create the mounting plate extrusion, holes, and fillets
+/// const part = rectShape([0, 0], 20, 20)
+/// ```
 #[stdlib {
     name = "lineTo",
 }]
 async fn inner_line_to(
-    data: LineToData,
+    to: [f64; 2],
     sketch_group: Box<SketchGroup>,
+    tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
-    let to = match data {
-        LineToData::PointWithTag { to, .. } => to,
-        LineToData::Point(to) => to,
-    };
-
     let id = uuid::Uuid::new_v4();
 
     args.send_modeling_cmd(
@@ -84,11 +80,7 @@ async fn inner_line_to(
         base: BasePath {
             from: from.into(),
             to,
-            name: if let LineToData::PointWithTag { tag, .. } = data {
-                tag.to_string()
-            } else {
-                "".to_string()
-            },
+            name: tag.unwrap_or("".to_string()),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -102,116 +94,104 @@ async fn inner_line_to(
     Ok(new_sketch_group)
 }
 
-/// Data to draw a line to a point on an axis.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase", untagged)]
-pub enum AxisLineToData {
-    /// A point with a tag.
-    PointWithTag {
-        /// The to point.
-        to: f64,
-        /// The tag.
-        tag: String,
-    },
-    /// A point.
-    Point(f64),
-}
-
 /// Draw a line to a point on the x-axis.
 pub async fn x_line_to(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (AxisLineToData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
+    let (to, sketch_group, tag): (f64, Box<SketchGroup>, Option<String>) = args.get_data_and_sketch_group_and_tag()?;
 
-    let new_sketch_group = inner_x_line_to(data, sketch_group, args).await?;
+    let new_sketch_group = inner_x_line_to(to, sketch_group, tag, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
 /// Draw a line to a point on the x-axis.
+///
+/// ```no_run
+/// startSketchOn('XY')
+///    |> startProfileAt([0, 0], %)
+///    |> xLineTo(10, %, "edge1")
+///    |> line([10, 10], %)
+///    |> close(%, "edge2")
+///    |> extrude(10, %)
+/// ```
 #[stdlib {
     name = "xLineTo",
 }]
 async fn inner_x_line_to(
-    data: AxisLineToData,
+    to: f64,
     sketch_group: Box<SketchGroup>,
+    tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
 
-    let line_to_data = match data {
-        AxisLineToData::PointWithTag { to, tag } => LineToData::PointWithTag { to: [to, from.y], tag },
-        AxisLineToData::Point(data) => LineToData::Point([data, from.y]),
-    };
-
-    let new_sketch_group = inner_line_to(line_to_data, sketch_group, args).await?;
+    let new_sketch_group = inner_line_to([to, from.y], sketch_group, tag, args).await?;
 
     Ok(new_sketch_group)
 }
 
 /// Draw a line to a point on the y-axis.
 pub async fn y_line_to(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (AxisLineToData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
+    let (to, sketch_group, tag): (f64, Box<SketchGroup>, Option<String>) = args.get_data_and_sketch_group_and_tag()?;
 
-    let new_sketch_group = inner_y_line_to(data, sketch_group, args).await?;
+    let new_sketch_group = inner_y_line_to(to, sketch_group, tag, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
 /// Draw a line to a point on the y-axis.
+///
+/// ```no_run
+/// startSketchOn('XZ')
+///   |> startProfileAt([0, 0], %)
+///   |> yLineTo(10, %, "edge1")
+///   |> line([10, 10], %)
+///   |> close(%, "edge2")
+///   |> extrude(10, %)
+///   |> fillet({radius: 2, tags: ["edge2"]}, %)
+/// ```
 #[stdlib {
     name = "yLineTo",
 }]
 async fn inner_y_line_to(
-    data: AxisLineToData,
+    to: f64,
     sketch_group: Box<SketchGroup>,
+    tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
 
-    let line_to_data = match data {
-        AxisLineToData::PointWithTag { to, tag } => LineToData::PointWithTag { to: [from.x, to], tag },
-        AxisLineToData::Point(data) => LineToData::Point([from.x, data]),
-    };
-
-    let new_sketch_group = inner_line_to(line_to_data, sketch_group, args).await?;
+    let new_sketch_group = inner_line_to([from.x, to], sketch_group, tag, args).await?;
     Ok(new_sketch_group)
-}
-
-/// Data to draw a line.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase", untagged)]
-pub enum LineData {
-    /// A point with a tag.
-    PointWithTag {
-        /// The to point.
-        to: [f64; 2],
-        /// The tag.
-        tag: String,
-    },
-    /// A point.
-    Point([f64; 2]),
 }
 
 /// Draw a line.
 pub async fn line(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (LineData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
+    let (delta, sketch_group, tag): ([f64; 2], Box<SketchGroup>, Option<String>) =
+        args.get_data_and_sketch_group_and_tag()?;
 
-    let new_sketch_group = inner_line(data, sketch_group, args).await?;
+    let new_sketch_group = inner_line(delta, sketch_group, tag, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
 /// Draw a line.
+///
+/// ```no_run
+/// startSketchOn('-XY')
+///  |> startProfileAt([0, 0], %)
+///  |> line([10, 10], %)
+///  |> line([20, 10], %, "edge1")
+///  |> close(%, "edge2")
+///  |> extrude(10, %)
+/// ```
 #[stdlib {
     name = "line",
 }]
-async fn inner_line(data: LineData, sketch_group: Box<SketchGroup>, args: Args) -> Result<Box<SketchGroup>, KclError> {
+async fn inner_line(
+    delta: [f64; 2],
+    sketch_group: Box<SketchGroup>,
+    tag: Option<String>,
+    args: Args,
+) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
-    let inner_args = match &data {
-        LineData::PointWithTag { to, .. } => *to,
-        LineData::Point(to) => *to,
-    };
-
-    let delta = inner_args;
-    let to = [from.x + inner_args[0], from.y + inner_args[1]];
+    let to = [from.x + delta[0], from.y + delta[1]];
 
     let id = uuid::Uuid::new_v4();
 
@@ -235,11 +215,7 @@ async fn inner_line(data: LineData, sketch_group: Box<SketchGroup>, args: Args) 
         base: BasePath {
             from: from.into(),
             to,
-            name: if let LineData::PointWithTag { tag, .. } = data {
-                tag.to_string()
-            } else {
-                "".to_string()
-            },
+            name: tag.unwrap_or("".to_string()),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -253,72 +229,66 @@ async fn inner_line(data: LineData, sketch_group: Box<SketchGroup>, args: Args) 
     Ok(new_sketch_group)
 }
 
-/// Data to draw a line on an axis.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase", untagged)]
-pub enum AxisLineData {
-    /// The length with a tag.
-    LengthWithTag {
-        /// The length of the line.
-        length: f64,
-        /// The tag.
-        tag: String,
-    },
-    /// The length.
-    Length(f64),
-}
-
 /// Draw a line on the x-axis.
 pub async fn x_line(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (AxisLineData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
+    let (length, sketch_group, tag): (f64, Box<SketchGroup>, Option<String>) =
+        args.get_data_and_sketch_group_and_tag()?;
 
-    let new_sketch_group = inner_x_line(data, sketch_group, args).await?;
+    let new_sketch_group = inner_x_line(length, sketch_group, tag, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
 /// Draw a line on the x-axis.
+///
+/// ```no_run
+/// startSketchOn('YZ')
+///  |> startProfileAt([0, 0], %)
+///  |> xLine(10, %)
+///  |> line([10, 10], %)
+///  |> close(%, "edge1")
+///  |> extrude(10, %)
+/// ```
 #[stdlib {
     name = "xLine",
 }]
 async fn inner_x_line(
-    data: AxisLineData,
+    length: f64,
     sketch_group: Box<SketchGroup>,
+    tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
-    let line_data = match data {
-        AxisLineData::LengthWithTag { length, tag } => LineData::PointWithTag { to: [length, 0.0], tag },
-        AxisLineData::Length(length) => LineData::Point([length, 0.0]),
-    };
-
-    let new_sketch_group = inner_line(line_data, sketch_group, args).await?;
-    Ok(new_sketch_group)
+    inner_line([length, 0.0], sketch_group, tag, args).await
 }
 
 /// Draw a line on the y-axis.
 pub async fn y_line(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (AxisLineData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
+    let (length, sketch_group, tag): (f64, Box<SketchGroup>, Option<String>) =
+        args.get_data_and_sketch_group_and_tag()?;
 
-    let new_sketch_group = inner_y_line(data, sketch_group, args).await?;
+    let new_sketch_group = inner_y_line(length, sketch_group, tag, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
 /// Draw a line on the y-axis.
+///
+/// ```no_run
+/// startSketchOn('XY')
+/// |> startProfileAt([0, 0], %)
+/// |> yLine(10, %)
+/// |> line([10, 10], %)
+/// |> close(%, "edge1")
+/// |> extrude(10, %)
+/// ```
 #[stdlib {
     name = "yLine",
 }]
 async fn inner_y_line(
-    data: AxisLineData,
+    length: f64,
     sketch_group: Box<SketchGroup>,
+    tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
-    let line_data = match data {
-        AxisLineData::LengthWithTag { length, tag } => LineData::PointWithTag { to: [0.0, length], tag },
-        AxisLineData::Length(length) => LineData::Point([0.0, length]),
-    };
-
-    let new_sketch_group = inner_line(line_data, sketch_group, args).await?;
-    Ok(new_sketch_group)
+    inner_line([0.0, length], sketch_group, tag, args).await
 }
 
 /// Data to draw an angled line.
@@ -326,50 +296,53 @@ async fn inner_y_line(
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum AngledLineData {
-    /// An angle and length with a tag.
-    AngleWithTag {
+    /// An angle and length with explicitly named parameters
+    AngleAndLengthNamed {
         /// The angle of the line.
         angle: f64,
         /// The length of the line.
         length: f64,
-        /// The tag.
-        tag: String,
     },
-    /// An angle and length.
-    AngleAndLength([f64; 2]),
-}
-
-impl AngledLineData {
-    pub fn into_inner_line(self, to: [f64; 2]) -> LineData {
-        if let AngledLineData::AngleWithTag { tag, .. } = self {
-            LineData::PointWithTag { to, tag }
-        } else {
-            LineData::Point(to)
-        }
-    }
+    /// An angle and length given as a pair
+    AngleAndLengthPair([f64; 2]),
 }
 
 /// Draw an angled line.
 pub async fn angled_line(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (AngledLineData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
+    let (data, sketch_group, tag): (AngledLineData, Box<SketchGroup>, Option<String>) =
+        args.get_data_and_sketch_group_and_tag()?;
 
-    let new_sketch_group = inner_angled_line(data, sketch_group, args).await?;
+    let new_sketch_group = inner_angled_line(data, sketch_group, tag, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
 /// Draw an angled line.
+///
+/// ```no_run
+/// startSketchOn('XY')
+///   |> startProfileAt([0, 0], %)
+///   |> angledLine({
+///     angle: 45,
+///     length: 10,
+///   }, %, "edge1")
+///   |> line([10, 10], %)
+///   |> line([0, 10], %)
+///   |> close(%, "edge2")
+///   |> extrude(10, %)
+/// ```
 #[stdlib {
     name = "angledLine",
 }]
 async fn inner_angled_line(
     data: AngledLineData,
     sketch_group: Box<SketchGroup>,
+    tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
-    let (angle, length) = match &data {
-        AngledLineData::AngleWithTag { angle, length, .. } => (*angle, *length),
-        AngledLineData::AngleAndLength(angle_and_length) => (angle_and_length[0], angle_and_length[1]),
+    let (angle, length) = match data {
+        AngledLineData::AngleAndLengthNamed { angle, length } => (angle, length),
+        AngledLineData::AngleAndLengthPair(pair) => (pair[0], pair[1]),
     };
 
     //double check me on this one - mike
@@ -387,11 +360,7 @@ async fn inner_angled_line(
         base: BasePath {
             from: from.into(),
             to,
-            name: if let AngledLineData::AngleWithTag { tag, .. } = data {
-                tag.to_string()
-            } else {
-                "".to_string()
-            },
+            name: tag.unwrap_or("".to_string()),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -422,29 +391,44 @@ async fn inner_angled_line(
 
 /// Draw an angled line of a given x length.
 pub async fn angled_line_of_x_length(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (AngledLineData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
+    let (data, sketch_group, tag): (AngledLineData, Box<SketchGroup>, Option<String>) =
+        args.get_data_and_sketch_group_and_tag()?;
 
-    let new_sketch_group = inner_angled_line_of_x_length(data, sketch_group, args).await?;
+    let new_sketch_group = inner_angled_line_of_x_length(data, sketch_group, tag, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
 /// Draw an angled line of a given x length.
+///
+/// ```no_run
+/// startSketchOn('XZ')
+///   |> startProfileAt([0, 0], %)
+///   |> angledLineOfXLength({
+///       angle: 45,
+///       length: 10,
+///     }, %, "edge1")
+///   |> line([10, 10], %)
+///   |> line([0, 10], %)
+///   |> close(%, "edge2")
+///   |> extrude(10, %)
+/// ```
 #[stdlib {
     name = "angledLineOfXLength",
 }]
 async fn inner_angled_line_of_x_length(
     data: AngledLineData,
     sketch_group: Box<SketchGroup>,
+    tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
-    let (angle, length) = match &data {
-        AngledLineData::AngleWithTag { angle, length, .. } => (*angle, *length),
-        AngledLineData::AngleAndLength(angle_and_length) => (angle_and_length[0], angle_and_length[1]),
+    let (angle, length) = match data {
+        AngledLineData::AngleAndLengthNamed { angle, length } => (angle, length),
+        AngledLineData::AngleAndLengthPair(pair) => (pair[0], pair[1]),
     };
 
     let to = get_y_component(Angle::from_degrees(angle), length);
 
-    let new_sketch_group = inner_line(data.into_inner_line(to.into()), sketch_group, args).await?;
+    let new_sketch_group = inner_line(to.into(), sketch_group, tag, args).await?;
 
     Ok(new_sketch_group)
 }
@@ -452,120 +436,144 @@ async fn inner_angled_line_of_x_length(
 /// Data to draw an angled line to a point.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(rename_all = "camelCase", untagged)]
-pub enum AngledLineToData {
-    /// An angle and point with a tag.
-    AngleWithTag {
-        /// The angle of the line.
-        angle: f64,
-        /// The point to draw to.
-        to: f64,
-        /// The tag.
-        tag: String,
-    },
-    /// An angle and point to draw to.
-    AngleAndPoint([f64; 2]),
-}
-
-impl AngledLineToData {
-    pub fn into_inner_line(self, x_to: f64, y_to: f64) -> LineToData {
-        if let AngledLineToData::AngleWithTag { tag, .. } = self {
-            LineToData::PointWithTag { to: [x_to, y_to], tag }
-        } else {
-            LineToData::Point([x_to, y_to])
-        }
-    }
+#[serde(rename_all = "camelCase")]
+pub struct AngledLineToData {
+    /// The angle of the line.
+    angle: f64,
+    /// The point to draw to.
+    to: f64,
 }
 
 /// Draw an angled line to a given x coordinate.
 pub async fn angled_line_to_x(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (AngledLineToData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
+    let (data, sketch_group, tag): (AngledLineToData, Box<SketchGroup>, Option<String>) =
+        args.get_data_and_sketch_group_and_tag()?;
 
-    let new_sketch_group = inner_angled_line_to_x(data, sketch_group, args).await?;
+    let new_sketch_group = inner_angled_line_to_x(data, sketch_group, tag, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
 /// Draw an angled line to a given x coordinate.
+///
+/// ```no_run
+/// startSketchOn('XY')
+///   |> startProfileAt([0, 0], %)
+///   |> angledLineToX({
+///     angle: 45,
+///     to: 10,
+///     }, %, "edge1")
+///   |> line([10, 10], %)
+///   |> line([0, 10], %)
+///   |> close(%, "edge2")
+///   |> extrude(10, %)
+///   |> fillet({radius: 2, tags: ["edge1"]}, %)
+/// ```
 #[stdlib {
     name = "angledLineToX",
 }]
 async fn inner_angled_line_to_x(
     data: AngledLineToData,
     sketch_group: Box<SketchGroup>,
+    tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
-    let (angle, x_to) = match &data {
-        AngledLineToData::AngleWithTag { angle, to, .. } => (*angle, *to),
-        AngledLineToData::AngleAndPoint(angle_and_to) => (angle_and_to[0], angle_and_to[1]),
-    };
+    let AngledLineToData { angle, to: x_to } = data;
 
     let x_component = x_to - from.x;
     let y_component = x_component * f64::tan(angle.to_radians());
     let y_to = from.y + y_component;
 
-    let new_sketch_group = inner_line_to(data.into_inner_line(x_to, y_to), sketch_group, args).await?;
+    let new_sketch_group = inner_line_to([x_to, y_to], sketch_group, tag, args).await?;
     Ok(new_sketch_group)
 }
 
 /// Draw an angled line of a given y length.
 pub async fn angled_line_of_y_length(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (AngledLineData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
+    let (data, sketch_group, tag): (AngledLineData, Box<SketchGroup>, Option<String>) =
+        args.get_data_and_sketch_group_and_tag()?;
 
-    let new_sketch_group = inner_angled_line_of_y_length(data, sketch_group, args).await?;
+    let new_sketch_group = inner_angled_line_of_y_length(data, sketch_group, tag, args).await?;
 
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
 /// Draw an angled line of a given y length.
+///
+/// ```no_run
+/// startSketchOn('YZ')
+///   |> startProfileAt([0, 0], %)
+///   |> angledLineOfYLength({
+///       angle: 45,
+///       length: 10,
+///     }, %, "edge1")
+///   |> line([10, 10], %)
+///   |> line([0, 10], %)
+///   |> close(%, "edge2")
+///   |> extrude(10, %)
+///   |> fillet({radius: 2, tags: ["edge1"]}, %)
+/// ```
 #[stdlib {
     name = "angledLineOfYLength",
 }]
 async fn inner_angled_line_of_y_length(
     data: AngledLineData,
     sketch_group: Box<SketchGroup>,
+    tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
-    let (angle, length) = match &data {
-        AngledLineData::AngleWithTag { angle, length, .. } => (*angle, *length),
-        AngledLineData::AngleAndLength(angle_and_length) => (angle_and_length[0], angle_and_length[1]),
+    let (angle, length) = match data {
+        AngledLineData::AngleAndLengthNamed { angle, length } => (angle, length),
+        AngledLineData::AngleAndLengthPair(pair) => (pair[0], pair[1]),
     };
 
     let to = get_x_component(Angle::from_degrees(angle), length);
 
-    let new_sketch_group = inner_line(data.into_inner_line(to.into()), sketch_group, args).await?;
+    let new_sketch_group = inner_line(to.into(), sketch_group, tag, args).await?;
 
     Ok(new_sketch_group)
 }
 
 /// Draw an angled line to a given y coordinate.
 pub async fn angled_line_to_y(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (AngledLineToData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
+    let (data, sketch_group, tag): (AngledLineToData, Box<SketchGroup>, Option<String>) =
+        args.get_data_and_sketch_group_and_tag()?;
 
-    let new_sketch_group = inner_angled_line_to_y(data, sketch_group, args).await?;
+    let new_sketch_group = inner_angled_line_to_y(data, sketch_group, tag, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
 /// Draw an angled line to a given y coordinate.
+///
+/// ```no_run
+/// startSketchOn('XY')
+///   |> startProfileAt([0, 0], %)
+///   |> angledLineToY({
+///       angle: 45,
+///       to: 10,
+///     }, %, "edge1")
+///   |> line([10, 10], %)
+///   |> line([0, 10], %)
+///   |> close(%, "edge2")
+///   |> extrude(10, %)
+/// ```
 #[stdlib {
     name = "angledLineToY",
 }]
 async fn inner_angled_line_to_y(
     data: AngledLineToData,
     sketch_group: Box<SketchGroup>,
+    tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
-    let (angle, y_to) = match &data {
-        AngledLineToData::AngleWithTag { angle, to, .. } => (*angle, *to),
-        AngledLineToData::AngleAndPoint(angle_and_to) => (angle_and_to[0], angle_and_to[1]),
-    };
+    let AngledLineToData { angle, to: y_to } = data;
 
     let y_component = y_to - from.y;
     let x_component = y_component / f64::tan(angle.to_radians());
     let x_to = from.x + x_component;
 
-    let new_sketch_group = inner_line_to(data.into_inner_line(x_to, y_to), sketch_group, args).await?;
+    let new_sketch_group = inner_line_to([x_to, y_to], sketch_group, tag, args).await?;
     Ok(new_sketch_group)
 }
 
@@ -581,24 +589,39 @@ pub struct AngledLineThatIntersectsData {
     pub intersect_tag: String,
     /// The offset from the intersecting line.
     pub offset: Option<f64>,
-    /// The tag.
-    pub tag: Option<String>,
 }
 
 /// Draw an angled line that intersects with a given line.
 pub async fn angled_line_that_intersects(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (AngledLineThatIntersectsData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
-    let new_sketch_group = inner_angled_line_that_intersects(data, sketch_group, args).await?;
+    let (data, sketch_group, tag): (AngledLineThatIntersectsData, Box<SketchGroup>, Option<String>) =
+        args.get_data_and_sketch_group_and_tag()?;
+    let new_sketch_group = inner_angled_line_that_intersects(data, sketch_group, tag, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
 /// Draw an angled line that intersects with a given line.
+///
+/// ```no_run
+/// const part001 = startSketchOn('XY')
+///   |> startProfileAt([0, 0], %)
+///   |> lineTo([2, 2], %, "yo")
+///   |> lineTo([3, 1], %)
+///   |> angledLineThatIntersects({
+///       angle: 180,
+///       intersectTag: 'yo',
+///       offset: 12,
+///     }, %, "yo2")
+///   |> line([4, 0], %)
+///   |> close(%, "yo3")
+///   |> extrude(10, %)
+/// ```
 #[stdlib {
     name = "angledLineThatIntersects",
 }]
 async fn inner_angled_line_that_intersects(
     data: AngledLineThatIntersectsData,
     sketch_group: Box<SketchGroup>,
+    tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let intersect_path = sketch_group
@@ -622,33 +645,32 @@ async fn inner_angled_line_that_intersects(
         from,
     );
 
-    let line_to_data = if let Some(tag) = data.tag {
-        LineToData::PointWithTag { to: to.into(), tag }
-    } else {
-        LineToData::Point(to.into())
-    };
-
-    let new_sketch_group = inner_line_to(line_to_data, sketch_group, args).await?;
+    let new_sketch_group = inner_line_to(to.into(), sketch_group, tag, args).await?;
     Ok(new_sketch_group)
 }
 
 /// Start a sketch at a given point.
 pub async fn start_sketch_at(args: Args) -> Result<MemoryItem, KclError> {
-    let data: LineData = args.get_data()?;
+    let data: [f64; 2] = args.get_data()?;
 
     let sketch_group = inner_start_sketch_at(data, args).await?;
     Ok(MemoryItem::SketchGroup(sketch_group))
 }
 
 /// Start a sketch at a given point on the 'XY' plane.
+///
+/// ```no_run
+/// startSketchAt([0, 0])
+///    |> line([10, 10], %)
+/// ```
 #[stdlib {
     name = "startSketchAt",
 }]
-async fn inner_start_sketch_at(data: LineData, args: Args) -> Result<Box<SketchGroup>, KclError> {
+async fn inner_start_sketch_at(data: [f64; 2], args: Args) -> Result<Box<SketchGroup>, KclError> {
     // Let's assume it's the XY plane for now, this is just for backwards compatibility.
     let xy_plane = PlaneData::XY;
     let sketch_surface = inner_start_sketch_on(SketchData::Plane(xy_plane), None, args.clone()).await?;
-    let sketch_group = inner_start_profile_at(data, sketch_surface, args).await?;
+    let sketch_group = inner_start_profile_at(data, sketch_surface, None, args).await?;
     Ok(sketch_group)
 }
 
@@ -785,6 +807,37 @@ pub async fn start_sketch_on(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Start a sketch on a specific plane or face.
+///
+/// ```no_run
+/// startSketchOn('XY')
+///  |> startProfileAt([0, 0], %)
+///  |> line([10, 10], %)
+///  |> line([20, 10], %, "edge1")
+///  |> close(%, "edge2")
+/// ```
+///
+/// ```no_run
+/// fn cube = (pos, scale) => {
+///     const sg = startSketchOn('XY')
+///         |> startProfileAt(pos, %)
+///         |> line([0, scale], %)
+///         |> line([scale, 0], %)
+///         |> line([0, -scale], %)
+///         |> close(%)
+///         |> extrude(scale, %)
+///
+///     return sg
+/// }
+///
+/// const box = cube([0,0], 20)
+///
+/// const part001 = startSketchOn(box, "start")
+/// |> startProfileAt([0, 0], %)
+/// |> line([10, 10], %)
+/// |> line([20, 10], %, "edge1")
+/// |> close(%)
+/// |> extrude(20, %)
+/// ```
 #[stdlib {
     name = "startSketchOn",
 }]
@@ -1004,26 +1057,28 @@ async fn start_sketch_on_plane(data: PlaneData, args: Args) -> Result<Box<Plane>
 
 /// Start a profile at a given point.
 pub async fn start_profile_at(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_surface): (LineData, SketchSurface) = args.get_data_and_sketch_surface()?;
+    let (start, sketch_surface, tag): ([f64; 2], SketchSurface, Option<String>) = args.get_data_and_sketch_surface()?;
 
-    let sketch_group = inner_start_profile_at(data, sketch_surface, args).await?;
+    let sketch_group = inner_start_profile_at(start, sketch_surface, tag, args).await?;
     Ok(MemoryItem::SketchGroup(sketch_group))
 }
 
 /// Start a profile at a given point.
+///
+/// ```no_run
+/// startSketchOn('XY')
+///     |> startProfileAt([0, 0], %)
+///     |> line([10, 10], %)
+/// ```
 #[stdlib {
     name = "startProfileAt",
 }]
-async fn inner_start_profile_at(
-    data: LineData,
+pub(crate) async fn inner_start_profile_at(
+    to: [f64; 2],
     sketch_surface: SketchSurface,
+    tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
-    let to = match &data {
-        LineData::PointWithTag { to, .. } => *to,
-        LineData::Point(to) => *to,
-    };
-
     let id = uuid::Uuid::new_v4();
     let path_id = uuid::Uuid::new_v4();
 
@@ -1044,11 +1099,7 @@ async fn inner_start_profile_at(
     let current_path = BasePath {
         from: to,
         to,
-        name: if let LineData::PointWithTag { tag, .. } = data {
-            tag.to_string()
-        } else {
-            "".to_string()
-        },
+        name: tag.unwrap_or("".to_string()),
         geo_meta: GeoMeta {
             id,
             metadata: args.source_range.into(),
@@ -1073,18 +1124,38 @@ async fn inner_start_profile_at(
 
 /// Close the current sketch.
 pub async fn close(args: Args) -> Result<MemoryItem, KclError> {
-    let sketch_group = args.get_sketch_group()?;
+    let (sketch_group, tag): (Box<SketchGroup>, Option<String>) = args.get_sketch_group_and_optional_tag()?;
 
-    let new_sketch_group = inner_close(sketch_group, args).await?;
+    let new_sketch_group = inner_close(sketch_group, tag, args).await?;
 
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
 /// Close the current sketch.
+///
+/// ```no_run
+/// startSketchOn('XZ')
+///    |> startProfileAt([0, 0], %)
+///    |> line([10, 10], %)
+///    |> line([10, 0], %)
+///    |> close(%)
+/// ```
+///
+/// ```no_run
+/// startSketchOn('YZ')
+///    |> startProfileAt([0, 0], %)
+///    |> line([10, 10], %)
+///    |> line([10, 0], %)
+///    |> close(%, "edge1")
+/// ```
 #[stdlib {
     name = "close",
 }]
-async fn inner_close(sketch_group: Box<SketchGroup>, args: Args) -> Result<Box<SketchGroup>, KclError> {
+pub(crate) async fn inner_close(
+    sketch_group: Box<SketchGroup>,
+    tag: Option<String>,
+    args: Args,
+) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
     let to: Point2d = sketch_group.start.from.into();
 
@@ -1110,8 +1181,7 @@ async fn inner_close(sketch_group: Box<SketchGroup>, args: Args) -> Result<Box<S
         base: BasePath {
             from: from.into(),
             to: to.into(),
-            // TODO: should we use a different name?
-            name: "".into(),
+            name: tag.unwrap_or_default(),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -1127,18 +1197,7 @@ async fn inner_close(sketch_group: Box<SketchGroup>, args: Args) -> Result<Box<S
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum ArcData {
-    /// Angles and radius with a tag.
-    AnglesAndRadiusWithTag {
-        /// The start angle.
-        angle_start: f64,
-        /// The end angle.
-        angle_end: f64,
-        /// The radius.
-        radius: f64,
-        /// The tag.
-        tag: String,
-    },
-    /// Angles and radius.
+    /// Angles and radius with an optional tag.
     AnglesAndRadius {
         /// The start angle.
         angle_start: f64,
@@ -1147,18 +1206,7 @@ pub enum ArcData {
         /// The radius.
         radius: f64,
     },
-    /// Center, to and radius with a tag.
-    CenterToRadiusWithTag {
-        /// The center.
-        center: [f64; 2],
-        /// The to point.
-        to: [f64; 2],
-        /// The radius.
-        radius: f64,
-        /// The tag.
-        tag: String,
-    },
-    /// Center, to and radius.
+    /// Center, to and radius with an optional tag.
     CenterToRadius {
         /// The center.
         center: [f64; 2],
@@ -1171,31 +1219,37 @@ pub enum ArcData {
 
 /// Draw an arc.
 pub async fn arc(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (ArcData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
+    let (data, sketch_group, tag): (ArcData, Box<SketchGroup>, Option<String>) =
+        args.get_data_and_sketch_group_and_tag()?;
 
-    let new_sketch_group = inner_arc(data, sketch_group, args).await?;
+    let new_sketch_group = inner_arc(data, sketch_group, tag, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
 /// Draw an arc.
+///
+/// ```no_run
+/// startSketchOn('-YZ')
+///   |> startProfileAt([0, 0], %)
+///   |> arc({
+///     angle_start: 0,
+///     angle_end: 360,
+///     radius: 10,
+///   }, %, "edge1")
+///   |> extrude(10, %)
+/// ```
 #[stdlib {
     name = "arc",
 }]
-async fn inner_arc(data: ArcData, sketch_group: Box<SketchGroup>, args: Args) -> Result<Box<SketchGroup>, KclError> {
+pub(crate) async fn inner_arc(
+    data: ArcData,
+    sketch_group: Box<SketchGroup>,
+    tag: Option<String>,
+    args: Args,
+) -> Result<Box<SketchGroup>, KclError> {
     let from: Point2d = sketch_group.get_coords_from_paths()?;
 
     let (center, angle_start, angle_end, radius, end) = match &data {
-        ArcData::AnglesAndRadiusWithTag {
-            angle_start,
-            angle_end,
-            radius,
-            ..
-        } => {
-            let a_start = Angle::from_degrees(*angle_start);
-            let a_end = Angle::from_degrees(*angle_end);
-            let (center, end) = arc_center_and_end(from, a_start, a_end, *radius);
-            (center, a_start, a_end, *radius, end)
-        }
         ArcData::AnglesAndRadius {
             angle_start,
             angle_end,
@@ -1205,10 +1259,6 @@ async fn inner_arc(data: ArcData, sketch_group: Box<SketchGroup>, args: Args) ->
             let a_end = Angle::from_degrees(*angle_end);
             let (center, end) = arc_center_and_end(from, a_start, a_end, *radius);
             (center, a_start, a_end, *radius, end)
-        }
-        ArcData::CenterToRadiusWithTag { center, to, radius, .. } => {
-            let (angle_start, angle_end) = arc_angles(from, center.into(), to.into(), *radius, args.source_range)?;
-            (center.into(), angle_start, angle_end, *radius, to.into())
         }
         ArcData::CenterToRadius { center, to, radius } => {
             let (angle_start, angle_end) = arc_angles(from, center.into(), to.into(), *radius, args.source_range)?;
@@ -1237,12 +1287,7 @@ async fn inner_arc(data: ArcData, sketch_group: Box<SketchGroup>, args: Args) ->
         base: BasePath {
             from: from.into(),
             to: end.into(),
-            name: match data {
-                ArcData::AnglesAndRadiusWithTag { tag, .. } => tag.to_string(),
-                ArcData::AnglesAndRadius { .. } => "".to_string(),
-                ArcData::CenterToRadiusWithTag { tag, .. } => tag.to_string(),
-                ArcData::CenterToRadius { .. } => "".to_string(),
-            },
+            name: tag.unwrap_or("".to_string()),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -1268,32 +1313,39 @@ pub enum TangentialArcData {
         /// Offset of the arc, in degrees.
         offset: f64,
     },
-    /// A point with a tag.
-    PointWithTag {
-        /// Where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.
-        to: [f64; 2],
-        /// The tag.
-        tag: String,
-    },
     /// A point where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.
     Point([f64; 2]),
 }
 
 /// Draw a tangential arc.
 pub async fn tangential_arc(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (TangentialArcData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
+    let (data, sketch_group, tag): (TangentialArcData, Box<SketchGroup>, Option<String>) =
+        args.get_data_and_sketch_group_and_tag()?;
 
-    let new_sketch_group = inner_tangential_arc(data, sketch_group, args).await?;
+    let new_sketch_group = inner_tangential_arc(data, sketch_group, tag, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
 /// Draw an arc.
+///
+/// ```no_run
+/// startSketchOn('-YZ')
+///   |> startProfileAt([0, 0], %)
+///   |> line([10, 10], %, "edge1")
+///   |> tangentialArc({
+///     radius: 10,
+///     offset: 90,
+///   }, %, "edge1")
+///   |> close(%)
+///   |> extrude(10, %)
+/// ```
 #[stdlib {
     name = "tangentialArc",
 }]
 async fn inner_tangential_arc(
     data: TangentialArcData,
     sketch_group: Box<SketchGroup>,
+    tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from: Point2d = sketch_group.get_coords_from_paths()?;
@@ -1323,11 +1375,6 @@ async fn inner_tangential_arc(
             .await?;
             to.into()
         }
-        TangentialArcData::PointWithTag { to, .. } => {
-            args.send_modeling_cmd(id, tan_arc_to(&sketch_group, to)).await?;
-
-            *to
-        }
         TangentialArcData::Point(to) => {
             args.send_modeling_cmd(id, tan_arc_to(&sketch_group, to)).await?;
 
@@ -1341,10 +1388,7 @@ async fn inner_tangential_arc(
         base: BasePath {
             from: from.into(),
             to,
-            name: match data {
-                TangentialArcData::PointWithTag { tag, .. } => tag.to_string(),
-                TangentialArcData::Point(_) | TangentialArcData::RadiusAndOffset { .. } => "".to_string(),
-            },
+            name: tag.unwrap_or("".to_string()),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -1402,6 +1446,14 @@ pub async fn tangential_arc_to(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Draw an arc.
+///
+/// ```no_run
+/// startSketchOn('-YZ')
+/// |> startProfileAt([0, 0], %)
+/// |> line([10, 10], %, "edge0")
+/// |> tangentialArcTo([10, 0], %)
+/// |> close(%)
+/// ```
 #[stdlib {
     name = "tangentialArcTo",
 }]
@@ -1453,59 +1505,52 @@ async fn inner_tangential_arc_to(
 /// Data to draw a bezier curve.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(rename_all = "camelCase", untagged)]
-pub enum BezierData {
-    /// Points with a tag.
-    PointsWithTag {
-        /// The to point.
-        to: [f64; 2],
-        /// The first control point.
-        control1: [f64; 2],
-        /// The second control point.
-        control2: [f64; 2],
-        /// The tag.
-        tag: String,
-    },
-    /// Points.
-    Points {
-        /// The to point.
-        to: [f64; 2],
-        /// The first control point.
-        control1: [f64; 2],
-        /// The second control point.
-        control2: [f64; 2],
-    },
+#[serde(rename_all = "camelCase")]
+pub struct BezierData {
+    /// The to point.
+    to: [f64; 2],
+    /// The first control point.
+    control1: [f64; 2],
+    /// The second control point.
+    control2: [f64; 2],
 }
 
 /// Draw a bezier curve.
 pub async fn bezier_curve(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (BezierData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
+    let (data, sketch_group, tag): (BezierData, Box<SketchGroup>, Option<String>) =
+        args.get_data_and_sketch_group_and_tag()?;
 
-    let new_sketch_group = inner_bezier_curve(data, sketch_group, args).await?;
+    let new_sketch_group = inner_bezier_curve(data, sketch_group, tag, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
 /// Draw a bezier curve.
+///
+/// ```no_run
+/// startSketchOn('XY')
+///  |> startProfileAt([0, 0], %)
+///  |> bezierCurve({
+///      to: [10, 10],
+///      control1: [5, 0],
+///      control2: [5, 10],
+///    }, %, "edge1")
+///  |> close(%)
+///  |> extrude(10, %)
+/// ```
 #[stdlib {
     name = "bezierCurve",
 }]
 async fn inner_bezier_curve(
     data: BezierData,
     sketch_group: Box<SketchGroup>,
+    tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
 
-    let (to, control1, control2) = match &data {
-        BezierData::PointsWithTag {
-            to, control1, control2, ..
-        } => (to, control1, control2),
-        BezierData::Points { to, control1, control2 } => (to, control1, control2),
-    };
-
     let relative = true;
-    let delta = to;
-    let to = [from.x + to[0], from.y + to[1]];
+    let delta = data.to;
+    let to = [from.x + data.to[0], from.y + data.to[1]];
 
     let id = uuid::Uuid::new_v4();
 
@@ -1515,13 +1560,13 @@ async fn inner_bezier_curve(
             path: sketch_group.id,
             segment: kittycad::types::PathSegment::Bezier {
                 control1: Point3D {
-                    x: control1[0],
-                    y: control1[1],
+                    x: data.control1[0],
+                    y: data.control1[1],
                     z: 0.0,
                 },
                 control2: Point3D {
-                    x: control2[0],
-                    y: control2[1],
+                    x: data.control2[0],
+                    y: data.control2[1],
                     z: 0.0,
                 },
                 end: Point3D {
@@ -1539,11 +1584,7 @@ async fn inner_bezier_curve(
         base: BasePath {
             from: from.into(),
             to,
-            name: if let BezierData::PointsWithTag { tag, .. } = data {
-                tag.to_string()
-            } else {
-                "".to_string()
-            },
+            name: tag.unwrap_or_default().to_string(),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -1566,6 +1607,18 @@ pub async fn hole(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Use a sketch to cut a hole in another sketch.
+///
+/// ```no_run
+/// const square = startSketchOn('XY')
+///     |> startProfileAt([0, 0], %)
+///     |> line([0, 10], %)
+///     |> line([10, 0], %)
+///     |> line([0, -10], %)
+///     |> close(%)
+///     |> hole(circle([2, 2], .5, %), %)
+///     |> hole(circle([2, 8], .5, %), %)
+///     |> extrude(2, %)
+/// ```
 #[stdlib {
     name = "hole",
 }]
@@ -1631,28 +1684,7 @@ mod tests {
 
     use pretty_assertions::assert_eq;
 
-    use crate::std::sketch::{LineData, PlaneData};
-
-    #[test]
-    fn test_deserialize_line_data() {
-        let data = LineData::Point([0.0, 1.0]);
-        let mut str_json = serde_json::to_string(&data).unwrap();
-        assert_eq!(str_json, "[0.0,1.0]");
-
-        str_json = "[0, 1]".to_string();
-        let data: LineData = serde_json::from_str(&str_json).unwrap();
-        assert_eq!(data, LineData::Point([0.0, 1.0]));
-
-        str_json = "{ \"to\": [0.0, 1.0], \"tag\": \"thing\" }".to_string();
-        let data: LineData = serde_json::from_str(&str_json).unwrap();
-        assert_eq!(
-            data,
-            LineData::PointWithTag {
-                to: [0.0, 1.0],
-                tag: "thing".to_string()
-            }
-        );
-    }
+    use crate::std::sketch::PlaneData;
 
     #[test]
     fn test_deserialize_plane_data() {

@@ -1,7 +1,6 @@
 use anyhow::Result;
 use kcl_lib::{
     ast::{modify::modify_ast_for_sketch, types::Program},
-    engine::EngineManager,
     executor::{ExecutorContext, MemoryItem, PlaneType, SourceRange},
 };
 use kittycad::types::{ModelingCmd, Point3D};
@@ -30,7 +29,7 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
 
     let ws = client
         .modeling()
-        .commands_ws(None, None, None, None, Some(false))
+        .commands_ws(None, None, None, None, None, Some(false))
         .await?;
 
     let tokens = kcl_lib::token::lexer(code);
@@ -105,9 +104,9 @@ async fn serial_test_modify_sketch_part001() {
         name
     );
 
-    let (mut ctx, program, sketch_id) = setup(&code, name).await.unwrap();
+    let (ctx, program, sketch_id) = setup(&code, name).await.unwrap();
     let mut new_program = program.clone();
-    let new_code = modify_ast_for_sketch(&mut ctx.engine, &mut new_program, name, PlaneType::XY, sketch_id)
+    let new_code = modify_ast_for_sketch(&ctx.engine, &mut new_program, name, PlaneType::XY, sketch_id)
         .await
         .unwrap();
 
@@ -130,9 +129,9 @@ async fn serial_test_modify_sketch_part002() {
         name
     );
 
-    let (mut ctx, program, sketch_id) = setup(&code, name).await.unwrap();
+    let (ctx, program, sketch_id) = setup(&code, name).await.unwrap();
     let mut new_program = program.clone();
-    let new_code = modify_ast_for_sketch(&mut ctx.engine, &mut new_program, name, PlaneType::XY, sketch_id)
+    let new_code = modify_ast_for_sketch(&ctx.engine, &mut new_program, name, PlaneType::XY, sketch_id)
         .await
         .unwrap();
 
@@ -157,9 +156,9 @@ async fn serial_test_modify_close_sketch() {
         name
     );
 
-    let (mut ctx, program, sketch_id) = setup(&code, name).await.unwrap();
+    let (ctx, program, sketch_id) = setup(&code, name).await.unwrap();
     let mut new_program = program.clone();
-    let new_code = modify_ast_for_sketch(&mut ctx.engine, &mut new_program, name, PlaneType::XY, sketch_id)
+    let new_code = modify_ast_for_sketch(&ctx.engine, &mut new_program, name, PlaneType::XY, sketch_id)
         .await
         .unwrap();
 
@@ -183,9 +182,9 @@ async fn serial_test_modify_line_to_close_sketch() {
         name
     );
 
-    let (mut ctx, program, sketch_id) = setup(&code, name).await.unwrap();
+    let (ctx, program, sketch_id) = setup(&code, name).await.unwrap();
     let mut new_program = program.clone();
-    let new_code = modify_ast_for_sketch(&mut ctx.engine, &mut new_program, name, PlaneType::XY, sketch_id)
+    let new_code = modify_ast_for_sketch(&ctx.engine, &mut new_program, name, PlaneType::XY, sketch_id)
         .await
         .unwrap();
 
@@ -220,9 +219,9 @@ const {} = startSketchOn("XY")
         name
     );
 
-    let (mut ctx, program, sketch_id) = setup(&code, name).await.unwrap();
+    let (ctx, program, sketch_id) = setup(&code, name).await.unwrap();
     let mut new_program = program.clone();
-    let result = modify_ast_for_sketch(&mut ctx.engine, &mut new_program, name, PlaneType::XY, sketch_id).await;
+    let result = modify_ast_for_sketch(&ctx.engine, &mut new_program, name, PlaneType::XY, sketch_id).await;
 
     assert!(result.is_err());
     assert_eq!(
@@ -245,9 +244,9 @@ async fn serial_test_modify_line_should_close_sketch() {
         name
     );
 
-    let (mut ctx, program, sketch_id) = setup(&code, name).await.unwrap();
+    let (ctx, program, sketch_id) = setup(&code, name).await.unwrap();
     let mut new_program = program.clone();
-    let new_code = modify_ast_for_sketch(&mut ctx.engine, &mut new_program, name, PlaneType::XY, sketch_id)
+    let new_code = modify_ast_for_sketch(&ctx.engine, &mut new_program, name, PlaneType::XY, sketch_id)
         .await
         .unwrap();
 

@@ -158,7 +158,7 @@ impl EngineConnection {
     }
 }
 
-#[async_trait::async_trait(?Send)]
+#[async_trait::async_trait]
 impl EngineManager for EngineConnection {
     async fn send_modeling_cmd(
         &self,
