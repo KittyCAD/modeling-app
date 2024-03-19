@@ -29,9 +29,7 @@ export const UpdaterModal = ({
     <div className="max-w-3xl min-w-[45rem] p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
       <div className="flex items-center">
         <h1 className="flex-grow text-3xl font-bold">New version available!</h1>
-        <div className="">
-          <Logo className="h-9" />
-        </div>
+        <Logo className="h-9" />
       </div>
       <div className="my-4 flex items-baseline">
         <span
@@ -46,7 +44,11 @@ export const UpdaterModal = ({
       <div
         className="my-4 max-h-60 overflow-y-auto"
         dangerouslySetInnerHTML={{
-          __html: Marked.parse(body, { gfm: true, breaks: true }),
+          __html: Marked.parse(body, {
+            gfm: true,
+            breaks: true,
+            sanitize: true,
+          }),
         }}
       ></div>
       <div className="flex justify-between">
