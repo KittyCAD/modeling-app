@@ -59,6 +59,7 @@ const router = createBrowserRouter([
       {
         loader: fileLoader,
         id: paths.FILE,
+        path: paths.FILE + '/:id',
         element: (
           <Auth>
             <FileMachineProvider>
@@ -74,8 +75,11 @@ const router = createBrowserRouter([
         ),
         children: [
           {
-            path: paths.FILE + '/:id',
             loader: onboardingRedirectLoader,
+            index: true,
+            element: <></>,
+          },
+          {
             children: [
               {
                 path: makeUrlPathRelative(paths.SETTINGS),
