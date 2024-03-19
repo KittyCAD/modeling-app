@@ -1065,12 +1065,6 @@ async fn stdlib_cube_partial() {
         |> close(%)
         |> extrude(100.0, %)
     "#;
-    let (_plan, _scope, _last_address) = must_plan(program);
-    //assert_eq!(last_address, Address::ZERO + 54);
-    kcvm_dbg(
-        program,
-        "/home/lee/Code/Zoo/modeling-api/execution-plan-debugger/cube_partial.json",
-    );
     let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
         .ast()
         .unwrap();
@@ -1124,12 +1118,19 @@ async fn stdlib_cube_partial() {
         )
         .await
         .unwrap();
+
     let out = match out {
-        OkModelingCmdResponse::TakeSnapshot(b) => b,
+        OkModelingCmdResponse::TakeSnapshot(kittycad_modeling_cmds::output::TakeSnapshot { contents: b }) => b,
         other => panic!("wrong output: {other:?}"),
     };
-    let out: Vec<u8> = out.contents.into();
-    std::fs::write("cube_lineTo.png", out).unwrap();
+
+    use image::io::Reader as ImageReader;
+    let img = ImageReader::new(std::io::Cursor::new(out))
+        .with_guessed_format()
+        .unwrap()
+        .decode()
+        .unwrap();
+    twenty_twenty::assert_image("fixtures/cube_lineTo.png", &img, 0.9999);
 }
 
 #[tokio::test]
@@ -1202,12 +1203,19 @@ async fn stdlib_cube_xline_yline() {
         )
         .await
         .unwrap();
+
     let out = match out {
-        OkModelingCmdResponse::TakeSnapshot(b) => b,
+        OkModelingCmdResponse::TakeSnapshot(kittycad_modeling_cmds::output::TakeSnapshot { contents: b }) => b,
         other => panic!("wrong output: {other:?}"),
     };
-    let out: Vec<u8> = out.contents.into();
-    std::fs::write("cube_xyLine.png", out).unwrap();
+
+    use image::io::Reader as ImageReader;
+    let img = ImageReader::new(std::io::Cursor::new(out))
+        .with_guessed_format()
+        .unwrap()
+        .decode()
+        .unwrap();
+    twenty_twenty::assert_image("fixtures/cube_xyLine.png", &img, 0.9999);
 }
 
 async fn test_client() -> Session {

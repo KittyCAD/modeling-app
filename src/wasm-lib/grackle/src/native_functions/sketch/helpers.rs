@@ -139,7 +139,7 @@ pub fn sequence_binding(
     }
 }
 
-/// Extract a 2D point from an argument to a Cabble. <- What's a Cabble?
+/// Extract a 2D point from an argument to a KCL Function.
 pub fn arg_point2d(
     arg: EpBinding,
     fn_name: &'static str,

@@ -23,6 +23,12 @@ pub enum At {
     AbsoluteY,
 }
 
+impl At {
+    pub fn is_relative(&self) -> bool {
+        *self == At::RelativeX || *self == At::RelativeY || *self == At::RelativeXY
+    }
+}
+
 #[derive(Debug, Clone)]
 #[cfg_attr(test, derive(Eq, PartialEq))]
 pub struct Close;
@@ -151,7 +157,7 @@ impl Callable for LineTo {
         ctx: &mut crate::native_functions::Context<'_>,
         args: Vec<EpBinding>,
     ) -> Result<EvalPlan, CompileError> {
-        LineBare::call(ctx, args, LineBareOptions { at: At::AbsoluteXY })
+        LineBare::call(ctx, "lineTo", args, LineBareOptions { at: At::AbsoluteXY })
     }
 }
 
@@ -165,7 +171,7 @@ impl Callable for Line {
         ctx: &mut crate::native_functions::Context<'_>,
         args: Vec<EpBinding>,
     ) -> Result<EvalPlan, CompileError> {
-        LineBare::call(ctx, args, LineBareOptions { at: At::RelativeXY })
+        LineBare::call(ctx, "line", args, LineBareOptions { at: At::RelativeXY })
     }
 }
 
@@ -179,7 +185,7 @@ impl Callable for XLineTo {
         ctx: &mut crate::native_functions::Context<'_>,
         args: Vec<EpBinding>,
     ) -> Result<EvalPlan, CompileError> {
-        LineBare::call(ctx, args, LineBareOptions { at: At::AbsoluteX })
+        LineBare::call(ctx, "xLineTo", args, LineBareOptions { at: At::AbsoluteX })
     }
 }
 
@@ -193,7 +199,7 @@ impl Callable for XLine {
         ctx: &mut crate::native_functions::Context<'_>,
         args: Vec<EpBinding>,
     ) -> Result<EvalPlan, CompileError> {
-        LineBare::call(ctx, args, LineBareOptions { at: At::RelativeX })
+        LineBare::call(ctx, "xLine", args, LineBareOptions { at: At::RelativeX })
     }
 }
 
@@ -207,7 +213,7 @@ impl Callable for YLineTo {
         ctx: &mut crate::native_functions::Context<'_>,
         args: Vec<EpBinding>,
     ) -> Result<EvalPlan, CompileError> {
-        LineBare::call(ctx, args, LineBareOptions { at: At::AbsoluteY })
+        LineBare::call(ctx, "yLineTo", args, LineBareOptions { at: At::AbsoluteY })
     }
 }
 
@@ -221,7 +227,7 @@ impl Callable for YLine {
         ctx: &mut crate::native_functions::Context<'_>,
         args: Vec<EpBinding>,
     ) -> Result<EvalPlan, CompileError> {
-        LineBare::call(ctx, args, LineBareOptions { at: At::RelativeY })
+        LineBare::call(ctx, "yLine", args, LineBareOptions { at: At::RelativeY })
     }
 }
 
@@ -242,11 +248,11 @@ pub struct LineBareOptions {
 impl LineBare {
     fn call(
         ctx: &mut crate::native_functions::Context<'_>,
+        fn_name: &'static str,
         args: Vec<EpBinding>,
         opts: LineBareOptions,
     ) -> Result<EvalPlan, CompileError> {
         let mut instructions = Vec::new();
-        let fn_name = "lineBare";
 
         let required = 2;
 
@@ -301,60 +307,65 @@ impl LineBare {
         match opts {
             LineBareOptions { at: At::AbsoluteXY, .. } | LineBareOptions { at: At::RelativeXY, .. } => {
                 // Push the `to` 2D point onto the stack.
-                if let EpBinding::Sequence { elements, length_at: _ } = to.clone() {
-                    if let &[EpBinding::Single(el0), EpBinding::Single(el1)] = elements.as_slice() {
-                        instructions.extend([
-                            Instruction::Copy {
-                                source: el0,
-                                length: 1,
-                                destination: Destination::StackPush,
-                            },
-                            Instruction::Copy {
-                                source: el1,
-                                length: 1,
-                                destination: Destination::StackExtend,
-                            },
-                            // Make it a 3D point.
-                            Instruction::StackExtend { data: vec![0.0.into()] },
-                        ]);
-                    } else {
-                        panic!("Must pass a list of length 2");
-                    }
-                } else {
-                    panic!("Must pass a sequence here.");
-                }
+                let EpBinding::Sequence { elements, length_at: _ } = to.clone() else {
+                    return Err(CompileError::InvalidOperand("Must pass a list of length 2"));
+                };
+                let &[EpBinding::Single(el0), EpBinding::Single(el1)] = elements.as_slice() else {
+                    return Err(CompileError::InvalidOperand("Must pass a sequence here."));
+                };
+                instructions.extend([
+                    Instruction::Copy {
+                        // X
+                        source: el0,
+                        length: 1,
+                        destination: Destination::StackPush,
+                    },
+                    Instruction::Copy {
+                        // Y
+                        source: el1,
+                        length: 1,
+                        destination: Destination::StackExtend,
+                    },
+                    Instruction::StackExtend { data: vec![0.0.into()] }, // Z
+                ]);
             }
             LineBareOptions { at: At::AbsoluteX, .. } | LineBareOptions { at: At::RelativeX, .. } => {
-                if let EpBinding::Single(addr) = to {
-                    instructions.extend([
-                        Instruction::Copy {
-                            source: addr,
-                            length: 1,
-                            destination: Destination::StackPush,
-                        },
-                        Instruction::StackExtend {
-                            data: vec![Primitive::from(0.0), Primitive::from(0.0)],
-                        },
-                    ]);
-                } else {
-                    panic!("Must pass a single value here.");
-                }
+                let EpBinding::Single(addr) = to else {
+                    return Err(CompileError::InvalidOperand("Must pass a single value here."));
+                };
+                instructions.extend([
+                    Instruction::Copy {
+                        // X
+                        source: addr,
+                        length: 1,
+                        destination: Destination::StackPush,
+                    },
+                    Instruction::StackExtend {
+                        data: vec![Primitive::from(0.0)],
+                    }, // Y
+                    Instruction::StackExtend {
+                        data: vec![Primitive::from(0.0)],
+                    }, // Z
+                ]);
             }
             LineBareOptions { at: At::AbsoluteY, .. } | LineBareOptions { at: At::RelativeY, .. } => {
-                if let EpBinding::Single(addr) = to {
-                    instructions.extend([
-                        Instruction::Copy {
-                            source: addr,
-                            length: 1,
-                            destination: Destination::StackPush,
-                        },
-                        Instruction::StackExtend {
-                            data: vec![Primitive::from(0.0), Primitive::from(0.0)],
-                        },
-                    ]);
-                } else {
-                    panic!("Must pass a single value here.");
-                }
+                let EpBinding::Single(addr) = to else {
+                    return Err(CompileError::InvalidOperand("Must pass a single value here."));
+                };
+                instructions.extend([
+                    Instruction::StackPush {
+                        data: vec![Primitive::from(0.0)],
+                    }, // X
+                    Instruction::Copy {
+                        // Y
+                        source: addr,
+                        length: 1,
+                        destination: Destination::StackExtend,
+                    },
+                    Instruction::StackExtend {
+                        data: vec![Primitive::from(0.0)],
+                    }, // Z
+                ]);
             }
         }
 
@@ -372,7 +383,7 @@ impl LineBare {
             // Then its `relative` field.
             Instruction::SetPrimitive {
                 address: start_of_line + 1 + length_of_3d_point,
-                value: (opts.at == At::RelativeX || opts.at == At::RelativeY || opts.at == At::RelativeXY).into(),
+                value: opts.at.is_relative().into(),
             },
             // Push the path ID onto the stack.
             Instruction::SketchGroupCopyFrom {
@@ -464,7 +475,11 @@ impl LineBare {
                             },
                         ]);
                     }
-                    _ => panic!("This `at` type does not match what's expected."),
+                    _ => {
+                        return Err(CompileError::InvalidOperand(
+                            "A Sequence with At::...X or At::...Y is not valid here. Must be At::...XY.",
+                        ));
+                    }
                 }
             }
         } else if let EpBinding::Single(addr) = to {
@@ -535,10 +550,16 @@ impl LineBare {
                         },
                     ]);
                 }
-                _ => panic!("This `at` type does not match what's expected."),
+                _ => {
+                    return Err(CompileError::InvalidOperand(
+                        "A Single binding with At::...XY is not valid here.",
+                    ));
+                }
             }
         } else {
-          panic!("Must be a sequence or single value binding.");
+            return Err(CompileError::InvalidOperand(
+                "Must be a sequence or single value binding.",
+            ));
         }
 
         instructions.extend([
