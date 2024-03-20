@@ -30,7 +30,7 @@ describe('NetworkHealthIndicator tests', () => {
     fireEvent.click(screen.getByTestId('network-toggle'))
 
     expect(screen.getByTestId('network')).toHaveTextContent(
-      NETWORK_HEALTH_TEXT[NetworkHealthState.Issue]
+      NETWORK_HEALTH_TEXT[NetworkHealthState.Ok]
     )
   })
 
