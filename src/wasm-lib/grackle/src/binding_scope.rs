@@ -191,6 +191,10 @@ impl BindingScope {
                     EpBinding::from(KclFunction::YLine(native_functions::sketch::YLine)),
                 ),
                 (
+                    "tangentialArcTo".into(),
+                    EpBinding::from(KclFunction::TangentialArcTo(native_functions::sketch::TangentialArcTo)),
+                ),
+                (
                     "extrude".into(),
                     EpBinding::from(KclFunction::Extrude(native_functions::sketch::Extrude)),
                 ),

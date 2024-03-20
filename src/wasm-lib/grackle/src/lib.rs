@@ -285,6 +285,7 @@ impl Planner {
                     KclFunction::XLine(f) => f.call(&mut ctx, args)?,
                     KclFunction::YLineTo(f) => f.call(&mut ctx, args)?,
                     KclFunction::YLine(f) => f.call(&mut ctx, args)?,
+                    KclFunction::TangentialArcTo(f) => f.call(&mut ctx, args)?,
                     KclFunction::Add(f) => f.call(&mut ctx, args)?,
                     KclFunction::Close(f) => f.call(&mut ctx, args)?,
                     KclFunction::UserDefined(f) => {
@@ -674,6 +675,7 @@ enum KclFunction {
     XLine(native_functions::sketch::XLine),
     YLineTo(native_functions::sketch::YLineTo),
     YLine(native_functions::sketch::YLine),
+    TangentialArcTo(native_functions::sketch::TangentialArcTo),
     Add(native_functions::Add),
     Log(native_functions::Log),
     Max(native_functions::Max),
