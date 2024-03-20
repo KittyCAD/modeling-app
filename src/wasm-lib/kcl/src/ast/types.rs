@@ -351,6 +351,31 @@ impl Program {
 
         None
     }
+
+    /// Merge two `Program`s together.
+    pub fn merge(self, ast_other: Program) -> Program {
+      let mut body_new: Vec<BodyItem> = vec![];
+      body_new.extend(self.body);
+      body_new.extend(ast_other.body);
+
+      let mut non_code_nodes_new: HashMap<usize, Vec<NonCodeNode>> = HashMap::new();
+      non_code_nodes_new.extend(self.non_code_meta.non_code_nodes);
+      non_code_nodes_new.extend(ast_other.non_code_meta.non_code_nodes);
+
+      let mut start_new: Vec<NonCodeNode> = vec![];
+      start_new.extend(self.non_code_meta.start);
+      start_new.extend(ast_other.non_code_meta.start);
+
+      Program {
+        start: self.start,
+        end: self.end + (ast_other.end - ast_other.start),
+        body: body_new,
+        non_code_meta: NonCodeMeta {
+          non_code_nodes: non_code_nodes_new,
+          start: start_new,
+        },
+      }
+    }
 }
 
 pub trait ValueMeta {

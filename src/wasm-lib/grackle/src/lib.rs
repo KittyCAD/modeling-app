@@ -11,6 +11,8 @@ use kcl_lib::{
     ast,
     ast::types::{BodyItem, FunctionExpressionParts, KclNone, LiteralValue, Program},
 };
+extern crate alloc;
+use kcl_macros::parse_file;
 use kcl_value_group::into_single_value;
 use kittycad_execution_plan::{self as ep, Destination, Instruction};
 use kittycad_execution_plan_traits as ept;
@@ -24,9 +26,11 @@ use self::{
 };
 
 /// Execute a KCL program by compiling into an execution plan, then running that.
-pub async fn execute(ast: Program, session: &mut Option<Session>) -> Result<ep::Memory, Error> {
+/// Include a `prelude.kcl` inlined as a `Program` struct thanks to a proc_macro `parse!`.
+/// This makes additional functions available to the user.
+pub async fn execute(ast_user: Program, session: &mut Option<Session>) -> Result<ep::Memory, Error> {
     let mut planner = Planner::new();
-    let (plan, _retval) = planner.build_plan(ast)?;
+    let (plan, _retval) = planner.build_plan(ast_user)?;
     let mut mem = ep::Memory::default();
     ep::execute(&mut mem, plan, session).await?;
     Ok(mem)
@@ -54,7 +58,9 @@ impl Planner {
 
     /// If successful, return the KCEP instructions for executing the given program.
     /// If the program is a function with a return, then it also returns the KCL function's return value.
-    fn build_plan(&mut self, program: Program) -> Result<(Vec<Instruction>, Option<EpBinding>), CompileError> {
+    fn build_plan(&mut self, ast_user: Program) -> Result<(Vec<Instruction>, Option<EpBinding>), CompileError> {
+        let ast_prelude = parse_file!("./prelude.kcl");
+        let program = ast_prelude.merge(ast_user);
         program
             .body
             .into_iter()

@@ -1442,3 +1442,23 @@ async fn cos_sin_pi() {
     // Constants don't live in memory.
     assert_eq!(*z, constants::PI);
 }
+
+#[tokio::test]
+async fn kcl_prelude() {
+    let program = "
+        let the_answer_to_the_universe_is = hey_from_one_of_the_devs_of_the_past_i_wish_you_a_great_day_and_maybe_gave_you_a_little_smile_as_youve_found_this()
+    ";
+    let (_plan, scope, _) = must_plan(program);
+    let Some(EpBinding::Single(the_answer_to_the_universe_is)) = scope.get("the_answer_to_the_universe_is") else {
+        panic!(
+            "Unexpected binding for variable 'the_answer_to_the_universe_is': {:?}",
+            scope.get("the_answer_to_the_universe_is")
+        );
+    };
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+        .ast()
+        .unwrap();
+    let mem = crate::execute(ast, &mut None).await.unwrap();
+    use ept::ReadMemory;
+    assert_eq!(*mem.get(the_answer_to_the_universe_is).unwrap(), Primitive::from(42i64));
+}

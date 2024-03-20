@@ -32,23 +32,23 @@ impl<'a> Context<'a> {
 /// Unary operator macro to quickly create new bindings.
 macro_rules! define_unary {
   () => {};
-  ($h:ident$( $r:ident)*) => {
+  ($fn_name:ident$( $rest:ident)*) => {
     #[derive(Debug, Clone)]
     #[cfg_attr(test, derive(Eq, PartialEq))]
-    pub struct $h;
+    pub struct $fn_name;
 
-    impl Callable for $h {
+    impl Callable for $fn_name {
         fn call(&self, ctx: &mut Context<'_>, mut args: Vec<EpBinding>) -> Result<EvalPlan, CompileError> {
             if args.len() > 1 {
                 return Err(CompileError::TooManyArgs {
-                    fn_name: "$h".into(),
+                    fn_name: "$fn_name".into(),
                     maximum: 1,
                     actual: args.len(),
                 });
             }
 
             let not_enough_args = CompileError::NotEnoughArgs {
-                fn_name: "$h".into(),
+                fn_name: "$fn_name".into(),
                 required: 1,
                 actual: args.len(),
             };
@@ -61,7 +61,7 @@ macro_rules! define_unary {
             let instructions = vec![
               Instruction::UnaryArithmetic {
                 arithmetic: UnaryArithmetic {
-                  operation: UnaryOperation::$h,
+                  operation: UnaryOperation::$fn_name,
                   operand: Operand::Reference(arg0)
                 },
                 destination: Destination::Address(destination)
@@ -75,7 +75,7 @@ macro_rules! define_unary {
         }
     }
 
-    define_unary!($($r)*);
+    define_unary!($($rest)*);
   };
 }
 
@@ -115,27 +115,27 @@ impl Callable for Id {
 /// Binary operator macro to quickly create new bindings.
 macro_rules! define_binary {
   () => {};
-  ($h:ident$( $r:ident)*) => {
+  ($fn_name:ident$( $rest:ident)*) => {
     #[derive(Debug, Clone)]
     #[cfg_attr(test, derive(Eq, PartialEq))]
-    pub struct $h;
+    pub struct $fn_name;
 
-    impl Callable for $h {
+    impl Callable for $fn_name {
         fn call(&self, ctx: &mut Context<'_>, mut args: Vec<EpBinding>) -> Result<EvalPlan, CompileError> {
           let len = args.len();
           if len > 2 {
               return Err(CompileError::TooManyArgs {
-                  fn_name: "$h".into(),
+                  fn_name: "$fn_name".into(),
                   maximum: 2,
                   actual: len,
               });
           }
           let not_enough_args = CompileError::NotEnoughArgs {
-              fn_name: "$h".into(),
+              fn_name: "$fn_name".into(),
               required: 2,
               actual: len,
           };
-          const ERR: &str = "cannot use composite values (e.g. array) as arguments to $h";
+          const ERR: &str = "cannot use composite values (e.g. array) as arguments to $fn_name";
           let EpBinding::Single(arg1) = args.pop().ok_or(not_enough_args.clone())? else {
               return Err(CompileError::InvalidOperand(ERR));
           };
@@ -146,7 +146,7 @@ macro_rules! define_binary {
           Ok(EvalPlan {
               instructions: vec![Instruction::BinaryArithmetic {
                   arithmetic: BinaryArithmetic {
-                      operation: BinaryOperation::$h,
+                      operation: BinaryOperation::$fn_name,
                       operand0: Operand::Reference(arg0),
                       operand1: Operand::Reference(arg1),
                   },
@@ -157,7 +157,7 @@ macro_rules! define_binary {
         }
     }
 
-    define_binary!($($r)*);
+    define_binary!($($rest)*);
   };
 }
 

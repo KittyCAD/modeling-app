@@ -8,6 +8,7 @@ description = "A new executor for KCL which compiles to Execution Plans"
 [dependencies]
 image = { version = "0.24.7", default-features = false, features = ["png"] }
 kcl-lib = { path = "../kcl" }
+kcl-macros = { path = "../kcl-macros/" }
 kittycad = { workspace = true }
 kittycad-execution-plan = { workspace = true }
 kittycad-execution-plan-traits = { workspace = true }

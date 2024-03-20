@@ -1,0 +1,3 @@
+fn hey_from_one_of_the_devs_of_the_past_i_wish_you_a_great_day_and_maybe_gave_you_a_little_smile_as_youve_found_this = () => {
+  return 42
+}
