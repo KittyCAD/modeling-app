@@ -958,7 +958,7 @@ impl TryFrom<Token> for Identifier {
             Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: token.as_source_ranges(),
                 message: format!(
-                    "Cannot assign a variable to a reserved keyword: {}",
+                    "Word Cannot assign a variable to a reserved keyword: {}",
                     token.value.as_str()
                 ),
             }))
@@ -1283,13 +1283,6 @@ fn optional_after_required(params: &[Parameter]) -> Result<(), KclError> {
 
 impl Identifier {
     fn into_valid_binding_name(self) -> Result<Identifier, KclError> {
-        // Make sure they are not assigning a variable to a stdlib function.
-        if crate::std::name_in_stdlib(&self.name) {
-            return Err(KclError::Syntax(KclErrorDetails {
-                source_ranges: vec![SourceRange([self.start, self.end])],
-                message: format!("Cannot assign a variable to a reserved keyword: {}", self.name),
-            }));
-        }
         Ok(self)
     }
 }

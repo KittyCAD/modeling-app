@@ -43,7 +43,12 @@ impl EpBinding {
     /// Look up the given property of this binding.
     pub fn property_of(&self, property: LiteralIdentifier) -> Result<&Self, CompileError> {
         match property {
-            LiteralIdentifier::Identifier(_) => todo!("Support identifier properties"),
+            LiteralIdentifier::Identifier(ident) => {
+              let EpBinding::Map { length_at: _, properties } = self else {
+                return Err(CompileError::CannotIndex)
+              };
+              properties.get(&ident.name).ok_or(CompileError::CannotIndex)
+            }
             LiteralIdentifier::Literal(litval) => match litval.value {
                 // Arrays can be indexed by integers.
                 LiteralValue::IInteger(i) => match self {

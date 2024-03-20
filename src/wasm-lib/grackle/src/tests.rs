@@ -1144,10 +1144,6 @@ async fn stdlib_cube_xline_yline() {
         |> close(%)
         |> extrude(100.0, %)
     "#;
-    kcvm_dbg(
-        program,
-        "/home/lee/Code/Zoo/modeling-api/execution-plan-debugger/cube_xyline.json",
-    );
     let (_plan, _scope, _last_address) = must_plan(program);
 
     let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
@@ -1461,4 +1457,49 @@ async fn kcl_prelude() {
     let mem = crate::execute(ast, &mut None).await.unwrap();
     use ept::ReadMemory;
     assert_eq!(*mem.get(the_answer_to_the_universe_is).unwrap(), Primitive::from(42i64));
+}
+
+#[tokio::test]
+async fn angled_line() {
+    let program = r#"
+    let zigzag = startSketchAt([0.0, 0.0], "test")
+        |> angledLine({ angle: 45.0, length: 100 }, %, "")
+        |> angledLine({ angle: 45.0 + 90.0, length: 100 }, %, "")
+        |> angledLine({ angle: 45.0, length: 100 }, %, "")
+        |> angledLine({ angle: 45.0 + 90.0, length: 100 }, %, "")
+        |> close(%)
+        |> extrude(100.0, %)
+    "#;
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+        .ast()
+        .unwrap();
+    let mut client = Some(test_client().await);
+    let mem = match crate::execute(ast, &mut client).await {
+        Ok(mem) => mem,
+        Err(e) => panic!("{e}"),
+    };
+    use kittycad_modeling_cmds::{each_cmd, ok_response::OkModelingCmdResponse, ImageFormat};
+    let out = client
+        .unwrap()
+        .run_command(
+            uuid::Uuid::new_v4().into(),
+            kittycad_modeling_cmds::ModelingCmd::from(each_cmd::TakeSnapshot {
+                format: ImageFormat::Png,
+            }),
+        )
+        .await
+        .unwrap();
+
+    let out = match out {
+        OkModelingCmdResponse::TakeSnapshot(kittycad_modeling_cmds::output::TakeSnapshot { contents: b }) => b,
+        other => panic!("wrong output: {other:?}"),
+    };
+
+    use image::io::Reader as ImageReader;
+    let img = ImageReader::new(std::io::Cursor::new(out))
+        .with_guessed_format()
+        .unwrap()
+        .decode()
+        .unwrap();
+    twenty_twenty::assert_image("fixtures/zigzag_angledLine.png", &img, 0.9999);
 }
