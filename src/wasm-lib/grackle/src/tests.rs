@@ -1,7 +1,7 @@
 use std::{collections::HashMap, env};
 
-use ep::{sketch_types, Destination, UnaryArithmetic};
-use ept::{ListHeader, ObjectHeader};
+use ep::{constants, sketch_types, Destination, UnaryArithmetic};
+use ept::{ListHeader, ObjectHeader, Primitive};
 use kittycad_modeling_cmds::shared::Point2d;
 use kittycad_modeling_session::SessionBuilder;
 use pretty_assertions::assert_eq;
@@ -1413,4 +1413,32 @@ fn mod_and_pow() {
             }
         ]
     );
+}
+#[tokio::test]
+async fn cos_sin_pi() {
+    let program = "
+        let x = cos(45.0)*10
+        let y = sin(45.0)*10
+        let z = PI
+        ";
+    let (_plan, scope, _) = must_plan(program);
+    let Some(EpBinding::Single(x)) = scope.get("x") else {
+        panic!("Unexpected binding for variable 'x': {:?}", scope.get("x"));
+    };
+    let Some(EpBinding::Single(y)) = scope.get("y") else {
+        panic!("Unexpected binding for variable 'y': {:?}", scope.get("y"));
+    };
+    let Some(EpBinding::Constant(z)) = scope.get("z") else {
+        panic!("Unexpected binding for variable 'z': {:?}", scope.get("z"));
+    };
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+        .ast()
+        .unwrap();
+    let mem = crate::execute(ast, &mut None).await.unwrap();
+    use ept::ReadMemory;
+    assert_eq!(*mem.get(x).unwrap(), Primitive::from(5.253219888177298));
+    assert_eq!(*mem.get(y).unwrap(), Primitive::from(8.509035245341185));
+
+    // Constants don't live in memory.
+    assert_eq!(*z, constants::PI);
 }

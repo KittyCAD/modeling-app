@@ -67,6 +67,12 @@ pub fn sg_binding(
             actual: "function".to_owned(),
             arg_number,
         }),
+        EpBinding::Constant(_) => Err(CompileError::ArgWrongType {
+            fn_name,
+            expected,
+            actual: "constant".to_owned(),
+            arg_number,
+        }),
     }
 }
 pub fn single_binding(
@@ -99,6 +105,12 @@ pub fn single_binding(
             fn_name,
             expected,
             actual: "function".to_owned(),
+            arg_number,
+        }),
+        EpBinding::Constant(_) => Err(CompileError::ArgWrongType {
+            fn_name,
+            expected,
+            actual: "constant".to_owned(),
             arg_number,
         }),
     }
@@ -134,6 +146,12 @@ pub fn sequence_binding(
             fn_name,
             expected,
             actual: "function".to_owned(),
+            arg_number,
+        }),
+        EpBinding::Constant(_) => Err(CompileError::ArgWrongType {
+            fn_name,
+            expected,
+            actual: "constant".to_owned(),
             arg_number,
         }),
     }
