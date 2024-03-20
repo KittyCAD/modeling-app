@@ -114,6 +114,26 @@ impl BindingScope {
                     EpBinding::from(KclFunction::LineTo(native_functions::sketch::LineTo)),
                 ),
                 (
+                    "line".into(),
+                    EpBinding::from(KclFunction::Line(native_functions::sketch::Line)),
+                ),
+                (
+                    "xLineTo".into(),
+                    EpBinding::from(KclFunction::XLineTo(native_functions::sketch::XLineTo)),
+                ),
+                (
+                    "xLine".into(),
+                    EpBinding::from(KclFunction::XLine(native_functions::sketch::XLine)),
+                ),
+                (
+                    "yLineTo".into(),
+                    EpBinding::from(KclFunction::YLineTo(native_functions::sketch::YLineTo)),
+                ),
+                (
+                    "yLine".into(),
+                    EpBinding::from(KclFunction::YLine(native_functions::sketch::YLine)),
+                ),
+                (
                     "extrude".into(),
                     EpBinding::from(KclFunction::Extrude(native_functions::sketch::Extrude)),
                 ),
