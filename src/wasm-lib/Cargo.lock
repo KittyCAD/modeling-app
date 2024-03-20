@@ -2009,7 +2009,7 @@ dependencies = [
 [[package]]
 name = "kittycad-execution-plan"
 version = "0.1.0"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#494225aaac06fab77c4822e7dc48738ecca35392"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#fd5ba0ffaa95b9320edff25388efe4feca5ff968"
 dependencies = [
  "bytes",
  "insta",
@@ -2029,7 +2029,7 @@ dependencies = [
 [[package]]
 name = "kittycad-execution-plan-macros"
 version = "0.1.9"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#494225aaac06fab77c4822e7dc48738ecca35392"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#fd5ba0ffaa95b9320edff25388efe4feca5ff968"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2039,7 +2039,7 @@ dependencies = [
 [[package]]
 name = "kittycad-execution-plan-traits"
 version = "0.1.13"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#494225aaac06fab77c4822e7dc48738ecca35392"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#fd5ba0ffaa95b9320edff25388efe4feca5ff968"
 dependencies = [
  "serde",
  "thiserror",
@@ -2048,8 +2048,8 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.1.32"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#494225aaac06fab77c4822e7dc48738ecca35392"
+version = "0.2.2"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#fd5ba0ffaa95b9320edff25388efe4feca5ff968"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2076,8 +2076,8 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds-macros"
-version = "0.1.2"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#494225aaac06fab77c4822e7dc48738ecca35392"
+version = "0.1.4"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#fd5ba0ffaa95b9320edff25388efe4feca5ff968"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2087,7 +2087,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-session"
 version = "0.1.1"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#494225aaac06fab77c4822e7dc48738ecca35392"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#fd5ba0ffaa95b9320edff25388efe4feca5ff968"
 dependencies = [
  "futures",
  "kittycad",
