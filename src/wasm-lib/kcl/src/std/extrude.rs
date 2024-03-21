@@ -114,6 +114,7 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
 
     // Create a hashmap for quick id lookup
     let mut face_id_map = std::collections::HashMap::new();
+    // creating fake ids for start and end caps is to make extrudes mock-execute safe
     let mut start_cap_id = Some(Uuid::new_v4());
     let mut end_cap_id = Some(Uuid::new_v4());
 
@@ -165,6 +166,7 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
             new_value.push(ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
                 position: sketch_group.position, // TODO should be for the extrude surface
                 rotation: sketch_group.rotation, // TODO should be for the extrude surface
+                // pushing this values with a fake face_id to make extrudes mock-execute safe
                 face_id: Uuid::new_v4(),
                 name: path.get_base().name.clone(),
                 geo_meta: GeoMeta {
