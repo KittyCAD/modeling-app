@@ -13,6 +13,10 @@ interface CommandInfo {
   range: SourceRange
   pathToNode: PathToNode
   parentId?: string
+  additionalData?: {
+    type: 'cap'
+    info: 'start' | 'end'
+  }
 }
 
 type WebSocketResponse = Models['OkWebSocketResponseData_type']
@@ -1069,12 +1073,40 @@ export class EngineCommandManager {
       } as const
       this.artifactMap[id] = artifact
       if (
-        command.commandType === 'entity_linear_pattern' ||
-        command.commandType === 'entity_circular_pattern'
+        (command.commandType === 'entity_linear_pattern' &&
+          modelingResponse.type === 'entity_linear_pattern') ||
+        (command.commandType === 'entity_circular_pattern' &&
+          modelingResponse.type === 'entity_circular_pattern')
       ) {
-        const entities = (modelingResponse as any)?.data?.entity_ids
+        const entities = modelingResponse.data.entity_ids
         entities?.forEach((entity: string) => {
           this.artifactMap[entity] = artifact
+        })
+      }
+      if (
+        command?.commandType === 'solid3d_get_extrusion_face_info' &&
+        modelingResponse.type === 'solid3d_get_extrusion_face_info'
+      ) {
+        console.log('modelingResposne', modelingResponse)
+        const parent = this.artifactMap[command?.parentId || '']
+        modelingResponse.data.faces.forEach((face) => {
+          if (face.cap !== 'none' && face.face_id && parent) {
+            this.artifactMap[face.face_id] = {
+              ...parent,
+              commandType: 'solid3d_get_extrusion_face_info',
+              additionalData: {
+                type: 'cap',
+                info: face.cap === 'bottom' ? 'start' : 'end',
+              },
+            }
+          }
+          const curveArtifact = this.artifactMap[face?.curve_id || '']
+          if (curveArtifact && face?.face_id) {
+            this.artifactMap[face.face_id] = {
+              ...curveArtifact,
+              commandType: 'solid3d_get_extrusion_face_info',
+            }
+          }
         })
       }
       resolve({
@@ -1388,12 +1420,6 @@ export class EngineCommandManager {
     const promise = new Promise((_resolve, reject) => {
       resolve = _resolve
     })
-    const getParentId = (): string | undefined => {
-      if (command.type === 'extend_path') {
-        return command.path
-      }
-      // TODO handle other commands that have a parent
-    }
     const pathToNode = ast
       ? getNodePathFromSourceRange(ast, range || [0, 0])
       : []
@@ -1402,7 +1428,6 @@ export class EngineCommandManager {
       pathToNode,
       type: 'pending',
       commandType: command.type,
-      parentId: getParentId(),
       promise,
       resolve,
     }
@@ -1419,10 +1444,14 @@ export class EngineCommandManager {
       resolve = _resolve
     })
     const getParentId = (): string | undefined => {
-      if (command.type === 'extend_path') {
-        return command.path
+      if (command.type === 'extend_path') return command.path
+      if (command.type === 'solid3d_get_extrusion_face_info') {
+        const edgeArtifact = this.artifactMap[command.edge_id]
+        // edges's parent id is to the original "start_path" artifact
+        if (edgeArtifact?.parentId) return edgeArtifact.parentId
       }
-      // TODO handle other commands that have a parent
+      if (command.type === 'close_path') return command.path_id
+      // handle other commands that have a parent here
     }
     const pathToNode = ast
       ? getNodePathFromSourceRange(ast, range || [0, 0])

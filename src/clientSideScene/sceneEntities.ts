@@ -5,7 +5,6 @@ import {
   Group,
   Intersection,
   LineCurve3,
-  Matrix4,
   Mesh,
   MeshBasicMaterial,
   Object3D,
@@ -37,7 +36,7 @@ import {
   Y_AXIS,
   YZ_PLANE,
 } from './sceneInfra'
-import { isQuaternionVertical } from './helpers'
+import { isQuaternionVertical, quaternionFromUpNForward } from './helpers'
 import {
   CallExpression,
   getTangentialArcToInfo,
@@ -55,7 +54,7 @@ import {
 } from 'lang/wasm'
 import { kclManager } from 'lang/KclSingleton'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
-import { executeAst } from 'useStore'
+import { executeAst, useStore } from 'useStore'
 import { engineCommandManager } from 'lang/std/engineConnection'
 import {
   createArcGeometry,
@@ -70,16 +69,22 @@ import {
   changeSketchArguments,
   updateStartProfileAtArgs,
 } from 'lang/std/sketch'
-import { isReducedMotion, throttle } from 'lib/utils'
+import { throttle } from 'lib/utils'
 import {
   createArrayExpression,
   createCallExpressionStdLib,
   createLiteral,
   createPipeSubstitution,
 } from 'lang/modifyAst'
-import { getEventForSegmentSelection } from 'lib/selections'
+import {
+  getEventForSegmentSelection,
+  sendSelectEventToEngine,
+} from 'lib/selections'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import { createGridHelper, orthoScale, perspScale } from './helpers'
+import { Models } from '@kittycad/lib'
+import { v4 as uuidv4 } from 'uuid'
+import { SketchDetails } from 'machines/modelingMachine'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -164,7 +169,7 @@ class SceneEntities {
       console.warn('createIntersectionPlane called when it already exists')
       return
     }
-    const hundredM = 1000000
+    const hundredM = 100_0000
     const planeGeometry = new PlaneGeometry(hundredM, hundredM)
     const planeMaterial = new MeshBasicMaterial({
       color: 0xff0000,
@@ -178,7 +183,12 @@ class SceneEntities {
     this.intersectionPlane.layers.set(INTERSECTION_PLANE_LAYER)
     this.scene.add(this.intersectionPlane)
   }
-  createSketchAxis(sketchPathToNode: PathToNode) {
+  createSketchAxis(
+    sketchPathToNode: PathToNode,
+    forward: [number, number, number],
+    up: [number, number, number],
+    sketchPosition?: [number, number, number]
+  ) {
     const orthoFactor = orthoScale(sceneInfra.camControls.camera)
     const baseXColor = 0x000055
     const baseYColor = 0x550000
@@ -238,14 +248,12 @@ class SceneEntities {
       child.layers.set(SKETCH_LAYER)
     })
 
-    const quat = quaternionFromSketchGroup(
-      sketchGroupFromPathToNode({
-        pathToNode: sketchPathToNode,
-        ast: kclManager.ast,
-        programMemory: kclManager.programMemory,
-      })
+    const quat = quaternionFromUpNForward(
+      new Vector3(...up),
+      new Vector3(...forward)
     )
     this.axisGroup.setRotationFromQuaternion(quat)
+    sketchPosition && this.axisGroup.position.set(...sketchPosition)
     this.scene.add(this.axisGroup)
   }
   removeIntersectionPlane() {
@@ -258,10 +266,16 @@ class SceneEntities {
     ast,
     // is draft line assumes the last segment is a draft line, and mods it as the user moves the mouse
     draftSegment,
+    forward,
+    up,
+    position,
   }: {
     sketchPathToNode: PathToNode
     ast?: Program
     draftSegment?: DraftSegment
+    forward: [number, number, number]
+    up: [number, number, number]
+    position?: [number, number, number]
   }) {
     sceneInfra.resetMouseListeners()
     this.createIntersectionPlane()
@@ -286,6 +300,7 @@ class SceneEntities {
     if (!Array.isArray(sketchGroup?.value)) return
     this.sceneProgramMemory = programMemory
     const group = new Group()
+    position && group.position.set(...position)
     group.userData = {
       type: SKETCH_GROUP_SEGMENTS,
       pathToNode: sketchPathToNode,
@@ -377,13 +392,18 @@ class SceneEntities {
       this.activeSegments[JSON.stringify(segPathToNode)] = seg
     })
 
-    this.currentSketchQuaternion = quaternionFromSketchGroup(sketchGroup)
+    this.currentSketchQuaternion = quaternionFromUpNForward(
+      new Vector3(...up),
+      new Vector3(...forward)
+    )
     group.setRotationFromQuaternion(this.currentSketchQuaternion)
     this.intersectionPlane &&
       this.intersectionPlane.setRotationFromQuaternion(
         this.currentSketchQuaternion
       )
-
+    this.intersectionPlane &&
+      position &&
+      this.intersectionPlane.position.set(...position)
     this.scene.add(group)
     if (!draftSegment) {
       sceneInfra.setCallbacks({
@@ -453,7 +473,13 @@ class SceneEntities {
 
           kclManager.executeAstMock(modifiedAst, { updates: 'code' })
           await this.tearDownSketch({ removeAxis: false })
-          this.setupSketch({ sketchPathToNode, draftSegment })
+          this.setupSketch({
+            sketchPathToNode,
+            draftSegment,
+            forward,
+            up,
+            position,
+          })
         },
         onMove: (args) => {
           this.onDragSegment({
@@ -476,21 +502,37 @@ class SceneEntities {
   }
   updateAstAndRejigSketch = async (
     sketchPathToNode: PathToNode,
-    modifiedAst: Program
+    modifiedAst: Program,
+    forward: [number, number, number],
+    up: [number, number, number],
+    origin: [number, number, number]
   ) => {
     await kclManager.updateAst(modifiedAst, false)
     await this.tearDownSketch({ removeAxis: false })
-    this.setupSketch({ sketchPathToNode })
+    this.setupSketch({ sketchPathToNode, forward, up, position: origin })
   }
-  setUpDraftArc = async (sketchPathToNode: PathToNode) => {
+  setUpDraftArc = async (
+    sketchPathToNode: PathToNode,
+    forward: [number, number, number],
+    up: [number, number, number]
+  ) => {
     await this.tearDownSketch({ removeAxis: false })
     await new Promise((resolve) => setTimeout(resolve, 100))
-    this.setupSketch({ sketchPathToNode, draftSegment: 'tangentialArcTo' })
+    this.setupSketch({
+      sketchPathToNode,
+      draftSegment: 'tangentialArcTo',
+      forward,
+      up,
+    })
   }
-  setUpDraftLine = async (sketchPathToNode: PathToNode) => {
+  setUpDraftLine = async (
+    sketchPathToNode: PathToNode,
+    forward: [number, number, number],
+    up: [number, number, number]
+  ) => {
     await this.tearDownSketch({ removeAxis: false })
     await new Promise((resolve) => setTimeout(resolve, 100))
-    this.setupSketch({ sketchPathToNode, draftSegment: 'line' })
+    this.setupSketch({ sketchPathToNode, draftSegment: 'line', forward, up })
   }
   onDraftLineMouseMove = () => {}
   prepareTruncatedMemoryAndAst = (
@@ -785,10 +827,10 @@ class SceneEntities {
     }
   }
   async animateAfterSketch() {
-    if (isReducedMotion()) {
-      sceneInfra.camControls.usePerspectiveCamera()
-      return
-    }
+    // if (isReducedMotion()) {
+    //   sceneInfra.camControls.usePerspectiveCamera()
+    //   return
+    // }
     await sceneInfra.camControls.animateToPerspective()
   }
   removeSketchGrid() {
@@ -853,26 +895,81 @@ class SceneEntities {
         const type: DefaultPlane = selected.userData.type
         selected.material.color = defaultPlaneColor(type)
       },
-      onClick: (args) => {
+      onClick: async (args) => {
+        const checkExtrudeFaceClick = async (): Promise<boolean> => {
+          const { streamDimensions } = useStore.getState()
+          const { entity_id } = await sendSelectEventToEngine(
+            args?.mouseEvent,
+            document.getElementById('video-stream') as HTMLVideoElement,
+            streamDimensions
+          )
+          if (!entity_id) return false
+          const artifact = engineCommandManager.artifactMap[entity_id]
+          if (artifact?.commandType !== 'solid3d_get_extrusion_face_info')
+            return false
+          const faceInfo: Models['FaceIsPlanar_type'] = (
+            await engineCommandManager.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: {
+                type: 'face_is_planar',
+                object_id: entity_id,
+              },
+            })
+          )?.data?.data
+          if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
+            return false
+          const { z_axis, origin, y_axis } = faceInfo
+          const pathToNode = getNodePathFromSourceRange(
+            kclManager.ast,
+            artifact.range
+          )
+
+          sceneInfra.modelingSend({
+            type: 'Select default plane',
+            data: {
+              type: 'extrudeFace',
+              zAxis: [z_axis.x, z_axis.y, z_axis.z],
+              yAxis: [y_axis.x, y_axis.y, y_axis.z],
+              position: [origin.x, origin.y, origin.z].map(
+                (num) => num / sceneInfra._baseUnitMultiplier
+              ) as [number, number, number],
+              extrudeSegmentPathToNode: pathToNode,
+              cap:
+                artifact?.additionalData?.type === 'cap'
+                  ? artifact.additionalData.info
+                  : 'none',
+            },
+          })
+          return true
+        }
+
+        if (await checkExtrudeFaceClick()) return
+
         if (!args || !args.intersects?.[0]) return
         if (args.mouseEvent.which !== 1) return
         const { intersects } = args
         const type = intersects?.[0].object.name || ''
         const posNorm = Number(intersects?.[0]?.normal?.z) > 0
         let planeString: DefaultPlaneStr = posNorm ? 'XY' : '-XY'
-        let normal: [number, number, number] = posNorm ? [0, 0, 1] : [0, 0, -1]
+        let zAxis: [number, number, number] = posNorm ? [0, 0, 1] : [0, 0, -1]
+        let yAxis: [number, number, number] = [0, 1, 0]
         if (type === YZ_PLANE) {
           planeString = posNorm ? 'YZ' : '-YZ'
-          normal = posNorm ? [1, 0, 0] : [-1, 0, 0]
+          zAxis = posNorm ? [1, 0, 0] : [-1, 0, 0]
+          yAxis = [0, 0, 1]
         } else if (type === XZ_PLANE) {
           planeString = posNorm ? 'XZ' : '-XZ'
-          normal = posNorm ? [0, 1, 0] : [0, -1, 0]
+          zAxis = posNorm ? [0, 1, 0] : [0, -1, 0]
+          yAxis = [0, 0, 1]
         }
         sceneInfra.modelingSend({
           type: 'Select default plane',
           data: {
+            type: 'defaultPlane',
             plane: planeString,
-            normal,
+            zAxis,
+            yAxis,
           },
         })
       },
@@ -1002,31 +1099,8 @@ export function sketchGroupFromPathToNode({
     pathToNode,
     'VariableDeclarator'
   ).node
+  // console.trace('where from?')
   return programMemory.root[varDec?.id?.name || ''] as SketchGroup
-}
-
-export function quaternionFromSketchGroup(
-  sketchGroup: SketchGroup
-): Quaternion {
-  // TODO figure what is happening in the executor that it's some times returning
-  // [x,y,z] and sometimes {x,y,z}
-  if (!sketchGroup?.zAxis) {
-    // sometimes sketchGroup is undefined,
-    // I don't quiet understand the circumstances yet
-    // and it's very intermittent so leaving this here for now
-    console.log('no zAxis', sketchGroup)
-    console.trace('no zAxis')
-  }
-  const zAxisVec = massageFormats(sketchGroup?.zAxis)
-  const yAxisVec = massageFormats(sketchGroup?.yAxis)
-  const xAxisVec = new Vector3().crossVectors(yAxisVec, zAxisVec).normalize()
-
-  let yAxisVecNormalized = yAxisVec.clone().normalize()
-  let zAxisVecNormalized = zAxisVec.clone().normalize()
-
-  let rotationMatrix = new Matrix4()
-  rotationMatrix.makeBasis(xAxisVec, yAxisVecNormalized, zAxisVecNormalized)
-  return new Quaternion().setFromRotationMatrix(rotationMatrix)
 }
 
 function colorSegment(object: any, color: number) {
@@ -1063,10 +1137,68 @@ export function getSketchQuaternion(
     programMemory: kclManager.programMemory,
   })
   const zAxis = sketchGroup?.zAxis || sketchNormalBackUp
+  return getQuaternionFromZAxis(massageFormats(zAxis))
+}
+export async function getSketchOrientationDetails(
+  sketchPathToNode: PathToNode
+): Promise<{
+  quat: Quaternion
+  sketchDetails: SketchDetails
+}> {
+  const sketchGroup = sketchGroupFromPathToNode({
+    pathToNode: sketchPathToNode,
+    ast: kclManager.ast,
+    programMemory: kclManager.programMemory,
+  })
+  if (sketchGroup.on.type === 'plane') {
+    const zAxis = sketchGroup?.zAxis
+    return {
+      quat: getQuaternionFromZAxis(massageFormats(zAxis)),
+      sketchDetails: {
+        sketchPathToNode,
+        zAxis: [zAxis.x, zAxis.y, zAxis.z],
+        yAxis: [sketchGroup.yAxis.x, sketchGroup.yAxis.y, sketchGroup.yAxis.z],
+        origin: [0, 0, 0],
+      },
+    }
+  }
+  if (sketchGroup.on.type === 'face') {
+    const faceInfo: Models['FaceIsPlanar_type'] = (
+      await engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'face_is_planar',
+          object_id: sketchGroup.on.faceId,
+        },
+      })
+    )?.data?.data
+    if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
+      throw new Error('faceInfo')
+    const { z_axis, y_axis, origin } = faceInfo
+    const quaternion = quaternionFromUpNForward(
+      new Vector3(y_axis.x, y_axis.y, y_axis.z),
+      new Vector3(z_axis.x, z_axis.y, z_axis.z)
+    )
+    return {
+      quat: quaternion,
+      sketchDetails: {
+        sketchPathToNode,
+        zAxis: [z_axis.x, z_axis.y, z_axis.z],
+        yAxis: [y_axis.x, y_axis.y, y_axis.z],
+        origin: [origin.x, origin.y, origin.z],
+      },
+    }
+  }
+  throw new Error(
+    'sketchGroup.on.type not recognized, has a new type been added?'
+  )
+}
+
+export function getQuaternionFromZAxis(zAxis: Vector3): Quaternion {
   const dummyCam = new PerspectiveCamera()
   dummyCam.up.set(0, 0, 1)
-  const _zAxis = massageFormats(zAxis)
-  dummyCam.position.copy(_zAxis)
+  dummyCam.position.copy(zAxis)
   dummyCam.lookAt(0, 0, 0)
   dummyCam.updateMatrix()
   const quaternion = dummyCam.quaternion.clone()
@@ -1075,7 +1207,7 @@ export function getSketchQuaternion(
 
   // because vertical quaternions are a gimbal lock, for the orbit controls
   // it's best to set them explicitly to the vertical position with a known good camera up
-  if (isVert && _zAxis.z < 0) {
+  if (isVert && zAxis.z < 0) {
     quaternion.set(0, 1, 0, 0)
   } else if (isVert) {
     quaternion.set(0, 0, 0, 1)

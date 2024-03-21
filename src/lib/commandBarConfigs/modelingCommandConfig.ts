@@ -117,7 +117,7 @@ export const modelingMachineConfig: CommandSetConfig<
     args: {
       selection: {
         inputType: 'selection',
-        selectionTypes: ['face'],
+        selectionTypes: ['extrude-wall', 'start-cap', 'end-cap'],
         multiple: false, // TODO: multiple selection
         required: true,
         skip: true,
