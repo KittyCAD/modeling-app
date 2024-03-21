@@ -885,7 +885,7 @@ export class EngineCommandManager {
     height: number
     executeCode: (code?: string, force?: boolean) => void
     token?: string
-    theme?: Themes.Dark | Themes.Light
+    theme?: Themes
   }) {
     if (width === 0 || height === 0) {
       return

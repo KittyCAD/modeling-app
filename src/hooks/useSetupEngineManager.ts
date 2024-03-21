@@ -4,7 +4,7 @@ import { useStore } from '../useStore'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { deferExecution } from 'lib/utils'
 import { kclManager } from 'lang/KclSingleton'
-import { Themes, getSystemTheme } from 'lib/theme'
+import { Themes } from 'lib/theme'
 
 export function useSetupEngineManager(
   streamRef: React.RefObject<HTMLDivElement>,
@@ -46,7 +46,7 @@ export function useSetupEngineManager(
           return kclManager.executeAst(_ast, true)
         },
         token,
-        theme: theme === Themes.System ? getSystemTheme() : theme,
+        theme,
       })
       setStreamDimensions({
         streamWidth: quadWidth,

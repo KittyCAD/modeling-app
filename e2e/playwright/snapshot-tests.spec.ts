@@ -22,7 +22,7 @@ test.beforeEach(async ({ context, page }) => {
         onboardingStatus: 'dismissed',
         showDebugPanel: true,
         textWrapping: 'On',
-        theme: 'system',
+        theme: 'dark',
         unitSystem: 'imperial',
       })
     )

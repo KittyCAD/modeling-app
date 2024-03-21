@@ -6,7 +6,8 @@ export enum Themes {
 
 // Get the theme from the system settings manually
 export function getSystemTheme(): Exclude<Themes, 'system'> {
-  return typeof window !== 'undefined' && 'matchMedia' in window
+  return typeof globalThis.window !== 'undefined' &&
+    'matchMedia' in globalThis.window
     ? window.matchMedia('(prefers-color-scheme: dark)').matches
       ? Themes.Dark
       : Themes.Light

@@ -61,13 +61,13 @@ export const ModelingMachineProvider = ({
   const {
     auth,
     settings: {
-      context: { baseUnit },
+      context: { baseUnit, theme },
     },
   } = useSettingsAuthContext()
   const { code } = useKclContext()
   const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)
-  useSetupEngineManager(streamRef, token)
+  useSetupEngineManager(streamRef, token, theme)
 
   const { isShiftDown, editorView } = useStore((s) => ({
     isShiftDown: s.isShiftDown,
