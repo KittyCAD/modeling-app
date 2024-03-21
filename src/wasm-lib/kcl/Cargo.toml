@@ -13,7 +13,7 @@ keywords = ["kcl", "KittyCAD", "CAD"]
 [dependencies]
 anyhow = { version = "1.0.81", features = ["backtrace"] }
 async-recursion = "1.1.0"
-async-trait = "0.1.77"
+async-trait = "0.1.78"
 chrono = "0.4.35"
 clap = { version = "4.5.2", features = ["cargo", "derive", "env", "unicode"], optional = true }
 dashmap = "5.5.3"
