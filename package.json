@@ -49,7 +49,7 @@
     "tauri-plugin-fs-extra-api": "https://github.com/tauri-apps/tauri-plugin-fs-extra#v1",
     "three": "^0.160.0",
     "toml": "^3.0.0",
-    "ts-node": "^10.9.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.4.3",
     "uuid": "^9.0.1",
     "vitest": "^1.4.0",
