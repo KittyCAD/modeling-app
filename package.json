@@ -129,7 +129,7 @@
     "@wdio/spec-reporter": "^8.32.4",
     "@xstate/cli": "^0.5.17",
     "autoprefixer": "^10.4.19",
-    "eslint": "^8.53.0",
+    "eslint": "^8.57.0",
     "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-css-modules": "^2.12.0",
     "happy-dom": "^14.2.0",
