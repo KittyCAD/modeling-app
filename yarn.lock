@@ -2277,10 +2277,10 @@
   resolved "https://registry.yarnpkg.com/@types/crypto-js/-/crypto-js-4.2.2.tgz#771c4a768d94eb5922cc202a3009558204df0cea"
   integrity sha512-sDOLlVbHhXpAUAL0YHDUUwDZf3iN4Bwi4W6a0W0b+QcAezUbRtH4FVb+9J4h+XFPW7l/gQ9F8qC7P+Ec4k8QVQ==
 
-"@types/debounce-promise@^3.1.8":
-  version "3.1.8"
-  resolved "https://registry.yarnpkg.com/@types/debounce-promise/-/debounce-promise-3.1.8.tgz#79c679b48d97c121b36fad264dc62ffbc0d50d9f"
-  integrity sha512-xtglA5PhbH1XpWrzeiE+dUwuzZlhtICqq+IoXMIepMa39qM2YHhmsqCMG5ZTDX8i4G6833PZDgSbm0ALiZcngg==
+"@types/debounce-promise@^3.1.9":
+  version "3.1.9"
+  resolved "https://registry.yarnpkg.com/@types/debounce-promise/-/debounce-promise-3.1.9.tgz#b59346fe5c24636ebe0fb88f2f7e41b888b1cd7c"
+  integrity sha512-awNxydYSU+E2vL7EiOAMtiSOfL5gUM5X4YSE2A92qpxDJQ/rXz6oMPYBFDcDywlUmvIDI6zsqgq17cGm5CITQw==
 
 "@types/eslint@^8.4.5":
   version "8.44.1"

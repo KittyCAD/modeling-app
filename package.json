@@ -112,7 +112,7 @@
     "@playwright/test": "^1.39.0",
     "@tauri-apps/cli": "^1.5.11",
     "@types/crypto-js": "^4.2.2",
-    "@types/debounce-promise": "^3.1.8",
+    "@types/debounce-promise": "^3.1.9",
     "@types/pixelmatch": "^5.2.6",
     "@types/pngjs": "^6.0.4",
     "@types/react-modal": "^3.16.3",
