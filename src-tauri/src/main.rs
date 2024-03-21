@@ -10,9 +10,9 @@ use std::path::PathBuf;
 use anyhow::Result;
 use oauth2::TokenResponse;
 use serde::Serialize;
+use std::process::Command;
 use tauri::ipc::InvokeError;
 use tauri_plugin_shell::ShellExt;
-use std::process::Command;
 const DEFAULT_HOST: &str = "https://api.kittycad.io";
 
 /// This command returns the a json string parse from a toml file at the path.
