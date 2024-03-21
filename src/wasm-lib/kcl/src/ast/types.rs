@@ -2761,12 +2761,14 @@ async fn execute_pipe_body(
 #[databake(path = kcl_lib::ast::types)]
 #[serde(tag = "type")]
 #[display(style = "snake_case")]
-pub enum FnArgType {
+pub enum FnArgPrimitive {
     /// A string type.
     String,
     /// A number type.
     Number,
     /// A boolean type.
+    #[display("bool")]
+    #[serde(rename = "bool")]
     Boolean,
     /// A sketch group type.
     SketchGroup,
@@ -2774,6 +2776,16 @@ pub enum FnArgType {
     SketchSurface,
     /// An extrude group type.
     ExtrudeGroup,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
+#[serde(tag = "type")]
+pub enum FnArgType {
+    /// A primitive type.
+    Primitive(FnArgPrimitive),
+    // An array of a primitive type.
+    Array(FnArgPrimitive),
 }
 
 /// Parameter of a KCL function.
@@ -3826,9 +3838,33 @@ const firstExtrude = startSketchOn('XY')
         };
         let params = &func_expr.params;
         assert_eq!(params.len(), 3);
-        assert_eq!(params[0].type_, Some(FnArgType::Number));
-        assert_eq!(params[1].type_, Some(FnArgType::String));
-        assert_eq!(params[2].type_, Some(FnArgType::String));
+        assert_eq!(params[0].type_, Some(FnArgType::Primitive(FnArgPrimitive::Number)));
+        assert_eq!(params[1].type_, Some(FnArgType::Primitive(FnArgPrimitive::String)));
+        assert_eq!(params[2].type_, Some(FnArgType::Primitive(FnArgPrimitive::String)));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_type_args_array_on_functions() {
+        let some_program_string = r#"fn thing = (arg0: number[], arg1: string[], tag?: string) => {
+    return arg0
+}"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        // Check the program output for the types of the parameters.
+        let function = program.body.first().unwrap();
+        let BodyItem::VariableDeclaration(var_decl) = function else {
+            panic!("expected a variable declaration")
+        };
+        let Value::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+            panic!("expected a function expression")
+        };
+        let params = &func_expr.params;
+        assert_eq!(params.len(), 3);
+        assert_eq!(params[0].type_, Some(FnArgType::Array(FnArgPrimitive::Number)));
+        assert_eq!(params[1].type_, Some(FnArgType::Array(FnArgPrimitive::String)));
+        assert_eq!(params[2].type_, Some(FnArgType::Primitive(FnArgPrimitive::String)));
     }
 
     #[tokio::test(flavor = "multi_thread")]

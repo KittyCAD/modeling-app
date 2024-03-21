@@ -11,10 +11,10 @@ use winnow::{
 use crate::{
     ast::types::{
         ArrayExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression, CommentStyle,
-        ExpressionStatement, FnArgType, FunctionExpression, Identifier, Literal, LiteralIdentifier, LiteralValue,
-        MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty,
-        Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, UnaryExpression, UnaryOperator, Value,
-        VariableDeclaration, VariableDeclarator, VariableKind,
+        ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression, Identifier, Literal, LiteralIdentifier,
+        LiteralValue, MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression,
+        ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, UnaryExpression,
+        UnaryOperator, Value, VariableDeclaration, VariableDeclarator, VariableKind,
     },
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
@@ -1233,7 +1233,42 @@ fn arguments(i: TokenSlice) -> PResult<Vec<Value>> {
         .parse_next(i)
 }
 
-fn parameter(i: TokenSlice) -> PResult<(Token, std::option::Option<Token>, bool)> {
+/// A type of a function argument.
+/// This can be:
+/// - a primitive type, e.g. 'number' or 'string' or 'bool'
+/// - an array type, e.g. 'number[]' or 'string[]' or 'bool[]'
+/// - an object type, e.g. '{x: number, y: number}' or '{name: string, age: number}'
+fn argument_type(i: TokenSlice) -> PResult<FnArgType> {
+    let type_ = alt((
+        // Array types
+        (one_of(TokenType::Type), open_bracket, close_bracket).map(|(token, _, _)| {
+            FnArgPrimitive::from_str(&token.value)
+                .map(FnArgType::Array)
+                .map_err(|err| {
+                    KclError::Syntax(KclErrorDetails {
+                        source_ranges: token.as_source_ranges(),
+                        message: format!("Invalid type: {}", err),
+                    })
+                })
+        }),
+        // Primitive types
+        one_of(TokenType::Type).map(|token: Token| {
+            FnArgPrimitive::from_str(&token.value)
+                .map(FnArgType::Primitive)
+                .map_err(|err| {
+                    KclError::Syntax(KclErrorDetails {
+                        source_ranges: token.as_source_ranges(),
+                        message: format!("Invalid type: {}", err),
+                    })
+                })
+        }),
+    ))
+    .parse_next(i)?
+    .map_err(|e: KclError| ErrMode::Backtrack(ContextError::from(e)))?;
+    Ok(type_)
+}
+
+fn parameter(i: TokenSlice) -> PResult<(Token, std::option::Option<FnArgType>, bool)> {
     let (arg_name, _, optional, _, _, _, type_) = (
         any.verify(|token: &Token| !matches!(token.token_type, TokenType::Brace) || token.value != ")"),
         opt(whitespace),
@@ -1241,7 +1276,7 @@ fn parameter(i: TokenSlice) -> PResult<(Token, std::option::Option<Token>, bool)
         opt(whitespace),
         opt(colon),
         opt(whitespace),
-        opt(any.verify(|token: &Token| !matches!(token.token_type, TokenType::Brace) || token.value != ")")),
+        opt(argument_type),
     )
         .parse_next(i)?;
     Ok((arg_name, type_, optional.is_some()))
@@ -1259,16 +1294,7 @@ fn parameters(i: TokenSlice) -> PResult<Vec<Parameter>> {
         .into_iter()
         .map(|(arg_name, type_, optional)| {
             let identifier = Identifier::try_from(arg_name).and_then(Identifier::into_valid_binding_name)?;
-            let type_ = type_
-                .map(|t| {
-                    FnArgType::from_str(&t.value).map_err(|err| {
-                        KclError::Syntax(KclErrorDetails {
-                            source_ranges: t.as_source_ranges(),
-                            message: format!("Invalid type: {}", err),
-                        })
-                    })
-                })
-                .transpose()?;
+
             Ok(Parameter {
                 identifier,
                 type_,

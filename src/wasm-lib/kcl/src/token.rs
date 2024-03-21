@@ -27,6 +27,8 @@ pub enum TokenType {
     String,
     /// A keyword.
     Keyword,
+    /// A type.
+    Type,
     /// A brace.
     Brace,
     /// Whitespace.
@@ -59,6 +61,7 @@ impl TryFrom<TokenType> for SemanticTokenType {
             TokenType::Number => Self::NUMBER,
             TokenType::Word => Self::VARIABLE,
             TokenType::Keyword => Self::KEYWORD,
+            TokenType::Type => Self::TYPE,
             TokenType::Operator => Self::OPERATOR,
             TokenType::QuestionMark => Self::OPERATOR,
             TokenType::String => Self::STRING,

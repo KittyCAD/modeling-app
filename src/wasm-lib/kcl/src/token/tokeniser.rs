@@ -26,7 +26,7 @@ pub fn token(i: &mut Located<&str>) -> PResult<Token> {
         ':' => colon,
         '.' => alt((number, double_period, period)),
         ' ' | '\t' | '\n' => whitespace,
-        _ => alt((operator, keyword, word))
+        _ => alt((operator, keyword,type_, word))
     }
     .parse_next(i)
     {
@@ -165,6 +165,32 @@ fn keyword(i: &mut Located<&str>) -> PResult<Token> {
     );
     let (value, range) = keyword.with_span().parse_next(i)?;
     Ok(Token::from_range(range, TokenType::Keyword, value.to_owned()))
+}
+
+fn type_(i: &mut Located<&str>) -> PResult<Token> {
+    // These are the types themselves.
+    let type_candidates = alt((
+        "string",
+        "number",
+        "bool",
+        "list",
+        "map",
+        "set",
+        "tuple",
+        "struct",
+        "enum",
+        "interface",
+        "type",
+        "any",
+    ));
+    // Look ahead. If any of these characters follow the type, then it's not a type, it's just
+    // the start of a normal word.
+    let type_ = terminated(
+        type_candidates,
+        peek(none_of(('a'..='z', 'A'..='Z', '-', '_', '0'..='9'))),
+    );
+    let (value, range) = type_.with_span().parse_next(i)?;
+    Ok(Token::from_range(range, TokenType::Type, value.to_owned()))
 }
 
 #[cfg(test)]
