@@ -24,7 +24,7 @@
     "@types/node": "^16.7.13",
     "@types/react": "^18.2.67",
     "@types/react-dom": "^18.2.22",
-    "@uiw/react-codemirror": "^4.21.20",
+    "@uiw/react-codemirror": "^4.21.24",
     "@xstate/inspect": "^0.8.0",
     "@xstate/react": "^3.2.2",
     "crypto-js": "^4.2.0",
