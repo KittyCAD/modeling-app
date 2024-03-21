@@ -37,8 +37,10 @@ export const ZOOM_MAGIC_NUMBER = 63.5
 
 export const INTERSECTION_PLANE_LAYER = 1
 export const SKETCH_LAYER = 2
-export const DEBUG_SHOW_INTERSECTION_PLANE = false
-export const DEBUG_SHOW_BOTH_SCENES = false
+
+// redundant types so that it can be changed temporarily but CI will catch the wrong type
+export const DEBUG_SHOW_INTERSECTION_PLANE: false = false
+export const DEBUG_SHOW_BOTH_SCENES: false = false
 
 export const RAYCASTABLE_PLANE = 'raycastable-plane'
 export const DEFAULT_PLANES = 'default-planes'
@@ -97,13 +99,13 @@ class SceneInfra {
   _baseUnitMultiplier = 1
   onDragCallback: (arg: OnDragCallbackArgs) => void = () => {}
   onMoveCallback: (arg: OnMoveCallbackArgs) => void = () => {}
-  onClickCallback: (arg?: OnClickCallbackArgs) => void = () => {}
+  onClickCallback: (arg: OnClickCallbackArgs) => void = () => {}
   onMouseEnter: (arg: OnMouseEnterLeaveArgs) => void = () => {}
   onMouseLeave: (arg: OnMouseEnterLeaveArgs) => void = () => {}
   setCallbacks = (callbacks: {
     onDrag?: (arg: OnDragCallbackArgs) => void
     onMove?: (arg: OnMoveCallbackArgs) => void
-    onClick?: (arg?: OnClickCallbackArgs) => void
+    onClick?: (arg: OnClickCallbackArgs) => void
     onMouseEnter?: (arg: OnMouseEnterLeaveArgs) => void
     onMouseLeave?: (arg: OnMouseEnterLeaveArgs) => void
   }) => {
@@ -272,16 +274,19 @@ class SceneInfra {
     let transformedPoint = intersectPoint.clone()
     if (transformedPoint) {
       transformedPoint.applyQuaternion(inversePlaneQuaternion)
-      transformedPoint?.sub(
-        new Vector3(...planePosition).applyQuaternion(inversePlaneQuaternion)
-      )
     }
+    const twoD = new Vector2(
+      // I think the intersection plane doesn't get scale when nearly everything else does, maybe that should change
+      transformedPoint.x / this._baseUnitMultiplier,
+      transformedPoint.y / this._baseUnitMultiplier
+    ) // z should be 0
+    const planePositionCorrected = new Vector3(
+      ...planePosition
+    ).applyQuaternion(inversePlaneQuaternion)
+    twoD.sub(new Vector2(...planePositionCorrected))
 
     return {
-      twoD: new Vector2(
-        transformedPoint.x / this._baseUnitMultiplier,
-        transformedPoint.y / this._baseUnitMultiplier
-      ), // z should be 0
+      twoD,
       threeD: intersectPoint.divideScalar(this._baseUnitMultiplier),
       intersection: planeIntersects[0],
     }
@@ -464,7 +469,7 @@ class SceneInfra {
           intersects,
         })
       } else {
-        this.onClickCallback()
+        this.onClickCallback({ mouseEvent, intersects })
       }
       // Clear the selected state whether it was dragged or not
       this.selected = null
@@ -478,7 +483,7 @@ class SceneInfra {
         intersects,
       })
     } else {
-      this.onClickCallback()
+      this.onClickCallback({ mouseEvent, intersects })
     }
   }
   showDefaultPlanes() {

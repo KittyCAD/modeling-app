@@ -1,6 +1,7 @@
 import { executeAst, executeCode } from 'useStore'
 import { Selections } from 'lib/selections'
 import { KCLError } from './errors'
+import { v4 as uuidv4 } from 'uuid'
 import {
   EngineCommandManager,
   engineCommandManager,
@@ -14,6 +15,8 @@ import {
   Program,
   ProgramMemory,
   recast,
+  SketchGroup,
+  ExtrudeGroup,
 } from 'lang/wasm'
 import { bracket } from 'lib/exampleKcl'
 import { createContext, useContext, useEffect, useState } from 'react'
@@ -235,7 +238,6 @@ class KclManager {
     updateCode = false,
     executionId?: number
   ) {
-    console.trace('executeAst')
     const currentExecutionId = executionId || Date.now()
     this._cancelTokens.set(currentExecutionId, false)
 
@@ -245,6 +247,7 @@ class KclManager {
       ast,
       engineCommandManager: this.engineCommandManager,
     })
+    enterEditMode(programMemory)
     this.isExecuting = false
     // Check the cancellation token for this execution before applying side effects
     if (this._cancelTokens.get(currentExecutionId)) {
@@ -333,6 +336,7 @@ class KclManager {
     }
     if (!result.isChange) return
     const { logs, errors, programMemory, ast } = result
+    enterEditMode(programMemory)
     this.logs = logs
     this.kclErrors = errors
     this.programMemory = programMemory
@@ -519,4 +523,19 @@ function safeLSGetItem(key: string) {
 function safteLSSetItem(key: string, value: string) {
   if (typeof window === 'undefined') return
   localStorage?.setItem(key, value)
+}
+
+function enterEditMode(programMemory: ProgramMemory) {
+  const firstSketchOrExtrudeGroup = Object.values(programMemory.root).find(
+    (node) => node.type === 'ExtrudeGroup' || node.type === 'SketchGroup'
+  ) as SketchGroup | ExtrudeGroup
+  firstSketchOrExtrudeGroup &&
+    engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'edit_mode_enter',
+        target: firstSketchOrExtrudeGroup.id,
+      },
+    })
 }

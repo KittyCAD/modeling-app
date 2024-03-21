@@ -425,6 +425,7 @@ export class CameraControls {
     if (this.camera instanceof OrthographicCamera) return
     const { x: px, y: py, z: pz } = this.camera.position
     const { x: qx, y: qy, z: qz, w: qw } = this.camera.quaternion
+    const oldCamUp = this.camera.up.clone()
     const aspect = window.innerWidth / window.innerHeight
     this.lastPerspectiveFov = this.camera.fov
     const { z_near, z_far } = calculateNearFarFromFOV(this.lastPerspectiveFov)
@@ -436,7 +437,8 @@ export class CameraControls {
       z_near,
       z_far
     )
-    this.camera.up.set(0, 0, 1)
+
+    this.camera.up.copy(oldCamUp)
     this.camera.layers.enable(SKETCH_LAYER)
     if (DEBUG_SHOW_INTERSECTION_PLANE)
       this.camera.layers.enable(INTERSECTION_PLANE_LAYER)
@@ -458,13 +460,14 @@ export class CameraControls {
   }
   private createPerspectiveCamera = () => {
     const { z_near, z_far } = calculateNearFarFromFOV(this.lastPerspectiveFov)
+    const previousCamUp = this.camera.up.clone()
     this.camera = new PerspectiveCamera(
       this.lastPerspectiveFov,
       window.innerWidth / window.innerHeight,
       z_near,
       z_far
     )
-    this.camera.up.set(0, 0, 1)
+    this.camera.up.copy(previousCamUp)
     this.camera.layers.enable(SKETCH_LAYER)
     if (DEBUG_SHOW_INTERSECTION_PLANE)
       this.camera.layers.enable(INTERSECTION_PLANE_LAYER)
@@ -618,7 +621,7 @@ export class CameraControls {
       didChange = true
     }
 
-    this.safeLookAtTarget()
+    this.safeLookAtTarget(this.camera.up)
 
     // Update the camera's matrices
     this.camera.updateMatrixWorld()
@@ -683,48 +686,48 @@ export class CameraControls {
     targetAngle = -Math.PI / 2,
     duration = 500
   ): Promise<void> {
-    // should tween the camera so that it has an xPosition of 0, and forcing it's yPosition to be negative
-    // zPosition should stay the same
-    const xyRadius = Math.sqrt(
-      (this.target.x - this.camera.position.x) ** 2 +
-        (this.target.y - this.camera.position.y) ** 2
-    )
-    const xyAngle = Math.atan2(
-      this.camera.position.y - this.target.y,
-      this.camera.position.x - this.target.x
-    )
-    this._isCamMovingCallback(true, true)
     return new Promise((resolve) => {
+      // should tween the camera so that it has an xPosition of 0, and forcing it's yPosition to be negative
+      // zPosition should stay the same
+      const xyRadius = Math.sqrt(
+        (this.target.x - this.camera.position.x) ** 2 +
+          (this.target.y - this.camera.position.y) ** 2
+      )
+      const xyAngle = Math.atan2(
+        this.camera.position.y - this.target.y,
+        this.camera.position.x - this.target.x
+      )
+      const camAtTime = (obj: { angle: number }) => {
+        const x = xyRadius * Math.cos(obj.angle)
+        const y = xyRadius * Math.sin(obj.angle)
+        this.camera.position.set(
+          this.target.x + x,
+          this.target.y + y,
+          this.camera.position.z
+        )
+        this.update()
+        this.onCameraChange()
+      }
+      const onComplete = (obj: { angle: number }) => {
+        camAtTime(obj)
+        this._isCamMovingCallback(false, true)
+
+        // resolve after a couple of frames
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => resolve())
+        })
+      }
+      this._isCamMovingCallback(true, true)
+
+      if (isReducedMotion()) {
+        onComplete({ angle: targetAngle })
+        return
+      }
+
       new TWEEN.Tween({ angle: xyAngle })
         .to({ angle: targetAngle }, duration)
-        .onUpdate((obj) => {
-          const x = xyRadius * Math.cos(obj.angle)
-          const y = xyRadius * Math.sin(obj.angle)
-          this.camera.position.set(
-            this.target.x + x,
-            this.target.y + y,
-            this.camera.position.z
-          )
-          this.update()
-          this.onCameraChange()
-        })
-        .onComplete((obj) => {
-          const x = xyRadius * Math.cos(obj.angle)
-          const y = xyRadius * Math.sin(obj.angle)
-          this.camera.position.set(
-            this.target.x + x,
-            this.target.y + y,
-            this.camera.position.z
-          )
-          this.update()
-          this.onCameraChange()
-          this._isCamMovingCallback(false, true)
-
-          // resolve after a couple of frames
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => resolve())
-          })
-        })
+        .onUpdate(camAtTime)
+        .onComplete(onComplete)
         .start()
     })
   }
@@ -778,6 +781,8 @@ export class CameraControls {
           targetQuaternion,
           animationProgress
         )
+        const up = new Vector3(0, 0, 1).applyQuaternion(currentQ)
+        this.camera.up.copy(up)
         const currentTarget = tempVec.lerpVectors(
           initialTarget,
           targetPosition,
@@ -802,7 +807,7 @@ export class CameraControls {
 
       const onComplete = async () => {
         if (isReducedMotion() && toOrthographic) {
-          cameraAtTime(0.99)
+          cameraAtTime(0.9999)
           this.useOrthographicCamera()
         } else if (toOrthographic) {
           await this.animateToOrthographic()
@@ -863,37 +868,40 @@ export class CameraControls {
 
       animateFovChange() // Start the animation
     })
-  animateToPerspective = () =>
+  animateToPerspective = (targetCamUp = new Vector3(0, 0, 1)) =>
     new Promise((resolve) => {
-      if (this.syncDirection === 'engineToClient')
+      if (this.syncDirection === 'engineToClient') {
         console.warn(
           'animate To Perspective not design to work with engineToClient syncDirection.'
         )
+      }
       this.isFovAnimationInProgress = true
-      // Immediately set the camera to perspective with a very low FOV
       const targetFov = this.fovBeforeOrtho // Target FOV for perspective
       this.lastPerspectiveFov = 4
       let currentFov = 4
-      this.camera.updateProjectionMatrix()
-      const fovAnimationStep = (targetFov - currentFov) / FRAMES_TO_ANIMATE_IN
+      const initialCameraUp = this.camera.up.clone()
       this.usePerspectiveCamera()
+      const tempVec = new Vector3()
 
-      const animateFovChange = () => {
-        if (this.camera instanceof OrthographicCamera) return
-        if (this.camera.fov < targetFov) {
-          // Increase the FOV
-          currentFov = Math.min(currentFov + fovAnimationStep, targetFov)
-          // this.camera.fov = currentFov
-          this.camera.updateProjectionMatrix()
-          this.dollyZoom(currentFov)
-          requestAnimationFrame(animateFovChange) // Continue the animation
-        } else {
-          // Set the flag to false as the FOV animation is complete
-          this.isFovAnimationInProgress = false
-          resolve(true)
-        }
+      const cameraAtTime = (t: number) => {
+        currentFov =
+          this.lastPerspectiveFov + (targetFov - this.lastPerspectiveFov) * t
+        const currentUp = tempVec.lerpVectors(initialCameraUp, targetCamUp, t)
+        this.camera.up.copy(currentUp)
+        this.dollyZoom(currentFov)
       }
-      animateFovChange() // Start the animation
+
+      const onComplete = () => {
+        this.isFovAnimationInProgress = false
+        resolve(true)
+      }
+
+      new TWEEN.Tween({ t: 0 })
+        .to({ t: 1 }, isReducedMotion() ? 50 : FRAMES_TO_ANIMATE_IN * 16) // Assuming 60fps, hence 16ms per frame
+        .easing(TWEEN.Easing.Quadratic.InOut)
+        .onUpdate(({ t }) => cameraAtTime(t))
+        .onComplete(onComplete)
+        .start()
     })
 
   reactCameraPropertiesCallback: (a: ReactCameraProperties) => void = () => {}

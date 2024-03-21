@@ -3,6 +3,7 @@ import ReactCodeMirror, {
   Extension,
   ViewUpdate,
   keymap,
+  SelectionRange,
 } from '@uiw/react-codemirror'
 import { TEST } from 'env'
 import { useCommandsContext } from 'hooks/useCommandsContext'
@@ -75,7 +76,7 @@ export const TextEditor = ({
   })
 
   const {
-    context: { selectionRanges, selectionRangeTypeMap },
+    context: { selectionRanges },
     send,
     state,
   } = useModelingContext()
@@ -91,10 +92,27 @@ export const TextEditor = ({
     if (isNetworkOkay) kclManager.setCodeAndExecute(newCode)
     else kclManager.setCode(newCode)
   } //, []);
+  const lastSelection = useRef('')
   const onUpdate = (viewUpdate: ViewUpdate) => {
     if (!editorView) {
       setEditorView(viewUpdate.view)
     }
+    const selString = stringifyRanges(
+      viewUpdate?.state?.selection?.ranges || []
+    )
+    if (selString === lastSelection.current) {
+      // onUpdate is noisy and is fired a lot by extensions
+      // since we're only interested in selections changes we can ignore most of these.
+      return
+    }
+    lastSelection.current = selString
+
+    if (
+      // TODO find a less lazy way of getting the last
+      Date.now() - useStore.getState().lastCodeMirrorSelectionUpdatedFromScene <
+      150
+    )
+      return // update triggered by scene selection
     if (sceneInfra.selected) return // mid drag
     const ignoreEvents: ModelingMachineEvent['type'][] = [
       'Equip Line tool',
@@ -104,7 +122,6 @@ export const TextEditor = ({
     const eventInfo = processCodeMirrorRanges({
       codeMirrorRanges: viewUpdate.state.selection.ranges,
       selectionRanges,
-      selectionRangeTypeMap,
       isShiftDown,
     })
     if (!eventInfo) return
@@ -225,4 +242,8 @@ export const TextEditor = ({
       />
     </div>
   )
+}
+
+function stringifyRanges(ranges: readonly SelectionRange[]): string {
+  return ranges.map(({ to, from }) => `${to}->${from}`).join('&')
 }

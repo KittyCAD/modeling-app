@@ -308,6 +308,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -339,6 +340,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -1308,6 +1314,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -1339,6 +1346,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -2331,6 +2343,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -2362,6 +2375,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -3302,6 +3320,7 @@
                 "type": "object",
                 "required": [
                   "__meta",
+                  "faceId",
                   "id",
                   "sketchGroupId",
                   "type",
@@ -3333,6 +3352,11 @@
                         }
                       }
                     }
+                  },
+                  "faceId": {
+                    "description": "the face id the sketch is on",
+                    "type": "string",
+                    "format": "uuid"
                   },
                   "id": {
                     "description": "The id of the face.",
@@ -4315,6 +4339,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -4346,6 +4371,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -5286,6 +5316,7 @@
                 "type": "object",
                 "required": [
                   "__meta",
+                  "faceId",
                   "id",
                   "sketchGroupId",
                   "type",
@@ -5317,6 +5348,11 @@
                         }
                       }
                     }
+                  },
+                  "faceId": {
+                    "description": "the face id the sketch is on",
+                    "type": "string",
+                    "format": "uuid"
                   },
                   "id": {
                     "description": "The id of the face.",
@@ -6299,6 +6335,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -6330,6 +6367,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -7270,6 +7312,7 @@
                 "type": "object",
                 "required": [
                   "__meta",
+                  "faceId",
                   "id",
                   "sketchGroupId",
                   "type",
@@ -7301,6 +7344,11 @@
                         }
                       }
                     }
+                  },
+                  "faceId": {
+                    "description": "the face id the sketch is on",
+                    "type": "string",
+                    "format": "uuid"
                   },
                   "id": {
                     "description": "The id of the face.",
@@ -8273,6 +8321,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -8304,6 +8353,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -9244,6 +9298,7 @@
                 "type": "object",
                 "required": [
                   "__meta",
+                  "faceId",
                   "id",
                   "sketchGroupId",
                   "type",
@@ -9275,6 +9330,11 @@
                         }
                       }
                     }
+                  },
+                  "faceId": {
+                    "description": "the face id the sketch is on",
+                    "type": "string",
+                    "format": "uuid"
                   },
                   "id": {
                     "description": "The id of the face.",
@@ -10242,6 +10302,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -10273,6 +10334,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -11213,6 +11279,7 @@
                 "type": "object",
                 "required": [
                   "__meta",
+                  "faceId",
                   "id",
                   "sketchGroupId",
                   "type",
@@ -11244,6 +11311,11 @@
                         }
                       }
                     }
+                  },
+                  "faceId": {
+                    "description": "the face id the sketch is on",
+                    "type": "string",
+                    "format": "uuid"
                   },
                   "id": {
                     "description": "The id of the face.",
@@ -12211,6 +12283,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -12242,6 +12315,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -13182,6 +13260,7 @@
                 "type": "object",
                 "required": [
                   "__meta",
+                  "faceId",
                   "id",
                   "sketchGroupId",
                   "type",
@@ -13213,6 +13292,11 @@
                         }
                       }
                     }
+                  },
+                  "faceId": {
+                    "description": "the face id the sketch is on",
+                    "type": "string",
+                    "format": "uuid"
                   },
                   "id": {
                     "description": "The id of the face.",
@@ -14227,6 +14311,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -14258,6 +14343,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -15198,6 +15288,7 @@
                 "type": "object",
                 "required": [
                   "__meta",
+                  "faceId",
                   "id",
                   "sketchGroupId",
                   "type",
@@ -15229,6 +15320,11 @@
                         }
                       }
                     }
+                  },
+                  "faceId": {
+                    "description": "the face id the sketch is on",
+                    "type": "string",
+                    "format": "uuid"
                   },
                   "id": {
                     "description": "The id of the face.",
@@ -16279,6 +16375,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -16310,6 +16407,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -17250,6 +17352,7 @@
                 "type": "object",
                 "required": [
                   "__meta",
+                  "faceId",
                   "id",
                   "sketchGroupId",
                   "type",
@@ -17281,6 +17384,11 @@
                         }
                       }
                     }
+                  },
+                  "faceId": {
+                    "description": "the face id the sketch is on",
+                    "type": "string",
+                    "format": "uuid"
                   },
                   "id": {
                     "description": "The id of the face.",
@@ -18238,6 +18346,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -18269,6 +18378,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -18584,6 +18698,7 @@
                       "type": "object",
                       "required": [
                         "__meta",
+                        "faceId",
                         "id",
                         "sketchGroupId",
                         "type",
@@ -18615,6 +18730,11 @@
                               }
                             }
                           }
+                        },
+                        "faceId": {
+                          "description": "the face id the sketch is on",
+                          "type": "string",
+                          "format": "uuid"
                         },
                         "id": {
                           "description": "The id of the face.",
@@ -19548,6 +19668,7 @@
                 "type": "object",
                 "required": [
                   "__meta",
+                  "faceId",
                   "id",
                   "sketchGroupId",
                   "type",
@@ -19579,6 +19700,11 @@
                         }
                       }
                     }
+                  },
+                  "faceId": {
+                    "description": "the face id the sketch is on",
+                    "type": "string",
+                    "format": "uuid"
                   },
                   "id": {
                     "description": "The id of the face.",
@@ -20521,6 +20647,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -20552,6 +20679,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -21492,6 +21624,7 @@
                 "type": "object",
                 "required": [
                   "__meta",
+                  "faceId",
                   "id",
                   "sketchGroupId",
                   "type",
@@ -21523,6 +21656,11 @@
                         }
                       }
                     }
+                  },
+                  "faceId": {
+                    "description": "the face id the sketch is on",
+                    "type": "string",
+                    "format": "uuid"
                   },
                   "id": {
                     "description": "The id of the face.",
@@ -22527,6 +22665,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -22558,6 +22697,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -29046,6 +29190,7 @@
                       "type": "object",
                       "required": [
                         "__meta",
+                        "faceId",
                         "id",
                         "sketchGroupId",
                         "type",
@@ -29077,6 +29222,11 @@
                               }
                             }
                           }
+                        },
+                        "faceId": {
+                          "description": "the face id the sketch is on",
+                          "type": "string",
+                          "format": "uuid"
                         },
                         "id": {
                           "description": "The id of the face.",
@@ -30013,6 +30163,7 @@
                         "type": "object",
                         "required": [
                           "__meta",
+                          "faceId",
                           "id",
                           "sketchGroupId",
                           "type",
@@ -30044,6 +30195,11 @@
                                 }
                               }
                             }
+                          },
+                          "faceId": {
+                            "description": "the face id the sketch is on",
+                            "type": "string",
+                            "format": "uuid"
                           },
                           "id": {
                             "description": "The id of the face.",
@@ -30988,6 +31144,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -31019,6 +31176,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -31950,6 +32112,7 @@
                 "type": "object",
                 "required": [
                   "__meta",
+                  "faceId",
                   "id",
                   "sketchGroupId",
                   "type",
@@ -31981,6 +32144,11 @@
                         }
                       }
                     }
+                  },
+                  "faceId": {
+                    "description": "the face id the sketch is on",
+                    "type": "string",
+                    "format": "uuid"
                   },
                   "id": {
                     "description": "The id of the face.",
@@ -33580,6 +33748,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -33611,6 +33780,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -34563,6 +34737,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -34594,6 +34769,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -35680,6 +35860,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -35711,6 +35892,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -36651,6 +36837,7 @@
                 "type": "object",
                 "required": [
                   "__meta",
+                  "faceId",
                   "id",
                   "sketchGroupId",
                   "type",
@@ -36682,6 +36869,11 @@
                         }
                       }
                     }
+                  },
+                  "faceId": {
+                    "description": "the face id the sketch is on",
+                    "type": "string",
+                    "format": "uuid"
                   },
                   "id": {
                     "description": "The id of the face.",
@@ -37638,6 +37830,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -37669,6 +37862,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -38609,6 +38807,7 @@
                 "type": "object",
                 "required": [
                   "__meta",
+                  "faceId",
                   "id",
                   "sketchGroupId",
                   "type",
@@ -38640,6 +38839,11 @@
                         }
                       }
                     }
+                  },
+                  "faceId": {
+                    "description": "the face id the sketch is on",
+                    "type": "string",
+                    "format": "uuid"
                   },
                   "id": {
                     "description": "The id of the face.",
@@ -39825,6 +40029,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -39856,6 +40061,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -40789,6 +40999,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -40820,6 +41031,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -43381,6 +43597,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -43412,6 +43629,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -44345,6 +44567,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -44376,6 +44599,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -46953,6 +47181,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -46984,6 +47213,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -47944,6 +48178,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -47975,6 +48210,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -48935,6 +49175,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -48966,6 +49207,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -49926,6 +50172,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -49957,6 +50204,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -50934,6 +51186,7 @@
               "type": "object",
               "required": [
                 "__meta",
+                "faceId",
                 "id",
                 "sketchGroupId",
                 "type",
@@ -50965,6 +51218,11 @@
                       }
                     }
                   }
+                },
+                "faceId": {
+                  "description": "the face id the sketch is on",
+                  "type": "string",
+                  "format": "uuid"
                 },
                 "id": {
                   "description": "The id of the face.",
@@ -51295,6 +51553,7 @@
                 "type": "object",
                 "required": [
                   "__meta",
+                  "faceId",
                   "id",
                   "sketchGroupId",
                   "type",
@@ -51326,6 +51585,11 @@
                         }
                       }
                     }
+                  },
+                  "faceId": {
+                    "description": "the face id the sketch is on",
+                    "type": "string",
+                    "format": "uuid"
                   },
                   "id": {
                     "description": "The id of the face.",
@@ -52283,6 +52547,7 @@
                 "type": "object",
                 "required": [
                   "__meta",
+                  "faceId",
                   "id",
                   "sketchGroupId",
                   "type",
@@ -52314,6 +52579,11 @@
                         }
                       }
                     }
+                  },
+                  "faceId": {
+                    "description": "the face id the sketch is on",
+                    "type": "string",
+                    "format": "uuid"
                   },
                   "id": {
                     "description": "The id of the face.",
@@ -54160,6 +54430,7 @@
             "type": "object",
             "required": [
               "__meta",
+              "faceId",
               "id",
               "sketchGroupId",
               "type",
@@ -54191,6 +54462,11 @@
                     }
                   }
                 }
+              },
+              "faceId": {
+                "description": "the face id the sketch is on",
+                "type": "string",
+                "format": "uuid"
               },
               "id": {
                 "description": "The id of the face.",
@@ -54594,6 +54870,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -54625,6 +54902,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -55565,6 +55847,7 @@
                 "type": "object",
                 "required": [
                   "__meta",
+                  "faceId",
                   "id",
                   "sketchGroupId",
                   "type",
@@ -55596,6 +55879,11 @@
                         }
                       }
                     }
+                  },
+                  "faceId": {
+                    "description": "the face id the sketch is on",
+                    "type": "string",
+                    "format": "uuid"
                   },
                   "id": {
                     "description": "The id of the face.",
@@ -56552,6 +56840,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -56583,6 +56872,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -57523,6 +57817,7 @@
                 "type": "object",
                 "required": [
                   "__meta",
+                  "faceId",
                   "id",
                   "sketchGroupId",
                   "type",
@@ -57554,6 +57849,11 @@
                         }
                       }
                     }
+                  },
+                  "faceId": {
+                    "description": "the face id the sketch is on",
+                    "type": "string",
+                    "format": "uuid"
                   },
                   "id": {
                     "description": "The id of the face.",
@@ -58588,6 +58888,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -58619,6 +58920,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -59559,6 +59865,7 @@
                 "type": "object",
                 "required": [
                   "__meta",
+                  "faceId",
                   "id",
                   "sketchGroupId",
                   "type",
@@ -59590,6 +59897,11 @@
                         }
                       }
                     }
+                  },
+                  "faceId": {
+                    "description": "the face id the sketch is on",
+                    "type": "string",
+                    "format": "uuid"
                   },
                   "id": {
                     "description": "The id of the face.",
@@ -60541,6 +60853,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -60572,6 +60885,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -61512,6 +61830,7 @@
                 "type": "object",
                 "required": [
                   "__meta",
+                  "faceId",
                   "id",
                   "sketchGroupId",
                   "type",
@@ -61543,6 +61862,11 @@
                         }
                       }
                     }
+                  },
+                  "faceId": {
+                    "description": "the face id the sketch is on",
+                    "type": "string",
+                    "format": "uuid"
                   },
                   "id": {
                     "description": "The id of the face.",
@@ -62494,6 +62818,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -62525,6 +62850,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -63465,6 +63795,7 @@
                 "type": "object",
                 "required": [
                   "__meta",
+                  "faceId",
                   "id",
                   "sketchGroupId",
                   "type",
@@ -63496,6 +63827,11 @@
                         }
                       }
                     }
+                  },
+                  "faceId": {
+                    "description": "the face id the sketch is on",
+                    "type": "string",
+                    "format": "uuid"
                   },
                   "id": {
                     "description": "The id of the face.",
@@ -64447,6 +64783,7 @@
                   "type": "object",
                   "required": [
                     "__meta",
+                    "faceId",
                     "id",
                     "sketchGroupId",
                     "type",
@@ -64478,6 +64815,11 @@
                           }
                         }
                       }
+                    },
+                    "faceId": {
+                      "description": "the face id the sketch is on",
+                      "type": "string",
+                      "format": "uuid"
                     },
                     "id": {
                       "description": "The id of the face.",
@@ -65418,6 +65760,7 @@
                 "type": "object",
                 "required": [
                   "__meta",
+                  "faceId",
                   "id",
                   "sketchGroupId",
                   "type",
@@ -65449,6 +65792,11 @@
                         }
                       }
                     }
+                  },
+                  "faceId": {
+                    "description": "the face id the sketch is on",
+                    "type": "string",
+                    "format": "uuid"
                   },
                   "id": {
                     "description": "The id of the face.",
