@@ -1240,6 +1240,8 @@ fn arguments(i: TokenSlice) -> PResult<Vec<Value>> {
 /// - an object type, e.g. '{x: number, y: number}' or '{name: string, age: number}'
 fn argument_type(i: TokenSlice) -> PResult<FnArgType> {
     let type_ = alt((
+        // Object types
+        (open_brace, parameters, close_brace).map(|(_, params, _)| Ok(FnArgType::Object { properties: params })),
         // Array types
         (one_of(TokenType::Type), open_bracket, close_bracket).map(|(token, _, _)| {
             FnArgPrimitive::from_str(&token.value)

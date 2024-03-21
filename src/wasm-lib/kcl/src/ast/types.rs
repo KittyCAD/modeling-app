@@ -2782,6 +2782,10 @@ pub enum FnArgType {
     Primitive(FnArgPrimitive),
     // An array of a primitive type.
     Array(FnArgPrimitive),
+    // An object type.
+    Object {
+        properties: Vec<Parameter>,
+    },
 }
 
 /// Parameter of a KCL function.
@@ -3860,6 +3864,63 @@ const firstExtrude = startSketchOn('XY')
         assert_eq!(params.len(), 3);
         assert_eq!(params[0].type_, Some(FnArgType::Array(FnArgPrimitive::Number)));
         assert_eq!(params[1].type_, Some(FnArgType::Array(FnArgPrimitive::String)));
+        assert_eq!(params[2].type_, Some(FnArgType::Primitive(FnArgPrimitive::String)));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_type_args_object_on_functions() {
+        let some_program_string = r#"fn thing = (arg0: number[], arg1: {thing: number, things: string[], more?: string}, tag?: string) => {
+    return arg0
+}"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        // Check the program output for the types of the parameters.
+        let function = program.body.first().unwrap();
+        let BodyItem::VariableDeclaration(var_decl) = function else {
+            panic!("expected a variable declaration")
+        };
+        let Value::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+            panic!("expected a function expression")
+        };
+        let params = &func_expr.params;
+        assert_eq!(params.len(), 3);
+        assert_eq!(params[0].type_, Some(FnArgType::Array(FnArgPrimitive::Number)));
+        assert_eq!(
+            params[1].type_,
+            Some(FnArgType::Object {
+                properties: vec![
+                    Parameter {
+                        identifier: Identifier {
+                            start: 35,
+                            end: 40,
+                            name: "thing".to_owned()
+                        },
+                        type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
+                        optional: false
+                    },
+                    Parameter {
+                        identifier: Identifier {
+                            start: 50,
+                            end: 56,
+                            name: "things".to_owned()
+                        },
+                        type_: Some(FnArgType::Array(FnArgPrimitive::String)),
+                        optional: false
+                    },
+                    Parameter {
+                        identifier: Identifier {
+                            start: 68,
+                            end: 72,
+                            name: "more".to_owned()
+                        },
+                        type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
+                        optional: true
+                    }
+                ]
+            })
+        );
         assert_eq!(params[2].type_, Some(FnArgType::Primitive(FnArgPrimitive::String)));
     }
 
