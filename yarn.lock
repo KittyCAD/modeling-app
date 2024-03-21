@@ -2456,10 +2456,10 @@
   resolved "https://registry.yarnpkg.com/@types/which/-/which-2.0.2.tgz#54541d02d6b1daee5ec01ac0d1b37cecf37db1ae"
   integrity sha512-113D3mDkZDjo+EeUEHCFy0qniNc1ZpecGiAU7WSo7YDoSzolZIQKpYFHrPpjkB2nuyahcKfrmLXeQlh7gqJYdw==
 
-"@types/wicg-file-system-access@^2020.9.6":
-  version "2020.9.6"
-  resolved "https://registry.yarnpkg.com/@types/wicg-file-system-access/-/wicg-file-system-access-2020.9.6.tgz#da34476b1e29451c8b7aa1a6db86b185647cd970"
-  integrity sha512-6hogE75Hl2Ov/jgp8ZhDaGmIF/q3J07GtXf8nCJCwKTHq7971po5+DId7grft09zG7plBwpF6ZU0yx9Du4/e1A==
+"@types/wicg-file-system-access@^2023.10.5":
+  version "2023.10.5"
+  resolved "https://registry.yarnpkg.com/@types/wicg-file-system-access/-/wicg-file-system-access-2023.10.5.tgz#14b3c25eb4d914b5734795bdea71da229f918b9d"
+  integrity sha512-e9kZO9kCdLqT2h9Tw38oGv9UNzBBWaR1MzuAavxPcsV/7FJ3tWbU6RI3uB+yKIDPGLkGVbplS52ub0AcRLvrhA==
 
 "@types/ws@^8.5.3":
   version "8.5.10"
