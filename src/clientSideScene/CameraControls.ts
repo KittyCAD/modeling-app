@@ -36,7 +36,7 @@ type interactionType = 'pan' | 'rotate' | 'zoom'
 
 const throttledEngCmd = throttle((cmd: EngineCommand) => {
   engineCommandManager.sendSceneCommand(cmd)
-}, 1000 / 15)
+}, 1000 / 30)
 
 interface ThreeCamValues {
   position: Vector3
