@@ -1503,3 +1503,89 @@ async fn angled_line() {
         .unwrap();
     twenty_twenty::assert_image("fixtures/zigzag_angledLine.png", &img, 0.9999);
 }
+
+#[tokio::test]
+async fn angled_line_to_x() {
+    let program = r#"
+    let zigzag = startSketchAt([0.0, 0.0], "test")
+        |> angledLineToX({ angle: toRadians(85.0), to: 300.0 }, %, "")
+        |> angledLineToX({ angle: toRadians(35.0), to: 550.0 }, %, "")
+        |> close(%)
+        |> extrude(100.0, %)
+    "#;
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+        .ast()
+        .unwrap();
+    let mut client = Some(test_client().await);
+    let mem = match crate::execute(ast, &mut client).await {
+        Ok(mem) => mem,
+        Err(e) => panic!("{e}"),
+    };
+    use kittycad_modeling_cmds::{each_cmd, ok_response::OkModelingCmdResponse, ImageFormat};
+    let out = client
+        .unwrap()
+        .run_command(
+            uuid::Uuid::new_v4().into(),
+            kittycad_modeling_cmds::ModelingCmd::from(each_cmd::TakeSnapshot {
+                format: ImageFormat::Png,
+            }),
+        )
+        .await
+        .unwrap();
+
+    let out = match out {
+        OkModelingCmdResponse::TakeSnapshot(kittycad_modeling_cmds::output::TakeSnapshot { contents: b }) => b,
+        other => panic!("wrong output: {other:?}"),
+    };
+
+    use image::io::Reader as ImageReader;
+    let img = ImageReader::new(std::io::Cursor::new(out))
+        .with_guessed_format()
+        .unwrap()
+        .decode()
+        .unwrap();
+    twenty_twenty::assert_image("fixtures/tri_angledLineToX.png", &img, 0.9999);
+}
+
+#[tokio::test]
+async fn angled_line_x() {
+    let program = r#"
+    let zigzag = startSketchAt([0.0, 0.0], "test")
+        |> angledLineX({ angle: toRadians(85.0), to: 300.0 }, %, "")
+        |> angledLineX({ angle: toRadians(35.0), to: 550.0 }, %, "")
+        |> close(%)
+        |> extrude(100.0, %)
+    "#;
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+        .ast()
+        .unwrap();
+    let mut client = Some(test_client().await);
+    let mem = match crate::execute(ast, &mut client).await {
+        Ok(mem) => mem,
+        Err(e) => panic!("{e}"),
+    };
+    use kittycad_modeling_cmds::{each_cmd, ok_response::OkModelingCmdResponse, ImageFormat};
+    let out = client
+        .unwrap()
+        .run_command(
+            uuid::Uuid::new_v4().into(),
+            kittycad_modeling_cmds::ModelingCmd::from(each_cmd::TakeSnapshot {
+                format: ImageFormat::Png,
+            }),
+        )
+        .await
+        .unwrap();
+
+    let out = match out {
+        OkModelingCmdResponse::TakeSnapshot(kittycad_modeling_cmds::output::TakeSnapshot { contents: b }) => b,
+        other => panic!("wrong output: {other:?}"),
+    };
+
+    use image::io::Reader as ImageReader;
+    let img = ImageReader::new(std::io::Cursor::new(out))
+        .with_guessed_format()
+        .unwrap()
+        .decode()
+        .unwrap();
+    twenty_twenty::assert_image("fixtures/tri_angledLineX.png", &img, 0.9999);
+}

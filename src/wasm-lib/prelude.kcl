@@ -2,12 +2,34 @@ fn hey_from_one_of_the_devs_of_the_past_i_wish_you_a_great_day_and_maybe_gave_yo
   return 42
 }
 
+let TAU = PI * 2.0
+
 fn angledLine = (args, segment_group, tag?) => {
   let x = cos(args.angle) * args.length
   let y = sin(args.angle) * args.length
   return line([x, y], segment_group, tag)
 }
 
-fn line2 = (args, segment_group, tag?) => {
-  return line([args[0], args[1]], segment_group, tag)
+fn angledLineTo_ = (args, axis) => {
+  let fn = { X: [cos, sin], Y: [sin, cos] }
+  let a = args.to
+  let length = args.to / fn[axis][0](args.angle)
+  let b = fn[axis][1](args.angle) * length
+  return [x, y]
+}
+
+fn angledLineToX = (args, segment_group, tag?) => {
+  return lineTo(angledLineTo_(args, "X"), segment_group, tag)
+}
+
+fn angledLineX = (args, segment_group, tag?) => {
+  return line(angledLineTo_(args, "X"), segment_group, tag)
+}
+
+fn angledLineToY = (args, segment_group, tag?) => {
+  return lineTo(angledLineTo_(args, "Y"), segment_group, tag)
+}
+
+fn angledLineY = (args, segment_group, tag?) => {
+  return line(angledLineTo_(args, "Y"), segment_group, tag)
 }
