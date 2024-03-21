@@ -1821,12 +1821,14 @@ const bracket = startSketchOn('XY')
         fn opt_param(s: &'static str) -> Parameter {
             Parameter {
                 identifier: ident(s),
+                type_: None,
                 optional: true,
             }
         }
         fn req_param(s: &'static str) -> Parameter {
             Parameter {
                 identifier: ident(s),
+                type_: None,
                 optional: false,
             }
         }

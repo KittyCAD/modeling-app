@@ -2757,6 +2757,25 @@ async fn execute_pipe_body(
     }
 }
 
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, JsonSchema, Bake, FromStr, Display)]
+#[databake(path = kcl_lib::ast::types)]
+#[serde(tag = "type")]
+#[display(style = "snake_case")]
+pub enum FnArgType {
+    /// A string type.
+    String,
+    /// A number type.
+    Number,
+    /// A boolean type.
+    Boolean,
+    /// A sketch group type.
+    SketchGroup,
+    /// A sketch surface type.
+    SketchSurface,
+    /// An extrude group type.
+    ExtrudeGroup,
+}
+
 /// Parameter of a KCL function.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
@@ -2765,6 +2784,10 @@ async fn execute_pipe_body(
 pub struct Parameter {
     /// The parameter's label or name.
     pub identifier: Identifier,
+    /// The type of the parameter.
+    /// This is optional if the user defines a type.
+    #[ts(skip)]
+    pub type_: Option<FnArgType>,
     /// Is the parameter optional?
     pub optional: bool,
 }
@@ -3785,6 +3808,30 @@ const firstExtrude = startSketchOn('XY')
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_type_args_on_functions() {
+        let some_program_string = r#"fn thing = (arg0: number, arg1: string, tag?: string) => {
+    return arg0
+}"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        // Check the program output for the types of the parameters.
+        let function = program.body.first().unwrap();
+        let BodyItem::VariableDeclaration(var_decl) = function else {
+            panic!("expected a variable declaration")
+        };
+        let Value::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+            panic!("expected a function expression")
+        };
+        let params = &func_expr.params;
+        assert_eq!(params.len(), 3);
+        assert_eq!(params[0].type_, Some(FnArgType::Number));
+        assert_eq!(params[1].type_, Some(FnArgType::String));
+        assert_eq!(params[2].type_, Some(FnArgType::String));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_recast_math_negate_parens() {
         let some_program_string = r#"const wallMountL = 3.82
 const thickness = 0.5
@@ -3885,6 +3932,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                             end: 0,
                             name: "foo".to_owned(),
                         },
+                        type_: None,
                         optional: false,
                     }],
                     body: Program {
@@ -3907,6 +3955,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                             end: 0,
                             name: "foo".to_owned(),
                         },
+                        type_: None,
                         optional: true,
                     }],
                     body: Program {
@@ -3930,6 +3979,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                                 end: 0,
                                 name: "foo".to_owned(),
                             },
+                            type_: None,
                             optional: false,
                         },
                         Parameter {
@@ -3938,6 +3988,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                                 end: 0,
                                 name: "bar".to_owned(),
                             },
+                            type_: None,
                             optional: true,
                         },
                     ],

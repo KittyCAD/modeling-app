@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use winnow::{
     combinator::{alt, delimited, opt, peek, preceded, repeat, separated, terminated},
     dispatch,
@@ -6,18 +8,19 @@ use winnow::{
     token::{any, one_of},
 };
 
-use super::{math::BinaryExpressionToken, PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR};
 use crate::{
     ast::types::{
         ArrayExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression, CommentStyle,
-        ExpressionStatement, FunctionExpression, Identifier, Literal, LiteralIdentifier, LiteralValue,
+        ExpressionStatement, FnArgType, FunctionExpression, Identifier, Literal, LiteralIdentifier, LiteralValue,
         MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty,
         Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, UnaryExpression, UnaryOperator, Value,
         VariableDeclaration, VariableDeclarator, VariableKind,
     },
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
-    parser::parser_impl::error::ContextError,
+    parser::{
+        math::BinaryExpressionToken, parser_impl::error::ContextError, PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
+    },
     token::{Token, TokenType},
 };
 
@@ -1210,6 +1213,11 @@ fn colon(i: TokenSlice) -> PResult<()> {
     Ok(())
 }
 
+fn question_mark(i: TokenSlice) -> PResult<()> {
+    TokenType::QuestionMark.parse_from(i)?;
+    Ok(())
+}
+
 /// Parse a comma, optionally followed by some whitespace.
 fn comma_sep(i: TokenSlice) -> PResult<()> {
     (opt(whitespace), comma, opt(whitespace))
@@ -1225,34 +1233,47 @@ fn arguments(i: TokenSlice) -> PResult<Vec<Value>> {
         .parse_next(i)
 }
 
-fn required_param(i: TokenSlice) -> PResult<Token> {
-    any.verify(|token: &Token| !matches!(token.token_type, TokenType::Brace) || token.value != ")")
-        .parse_next(i)
-}
-
-fn optional_param(i: TokenSlice) -> PResult<Token> {
-    let token = required_param.parse_next(i)?;
-    let _question_mark = one_of(TokenType::QuestionMark).parse_next(i)?;
-    Ok(token)
+fn parameter(i: TokenSlice) -> PResult<(Token, std::option::Option<Token>, bool)> {
+    let (arg_name, _, optional, _, _, _, type_) = (
+        any.verify(|token: &Token| !matches!(token.token_type, TokenType::Brace) || token.value != ")"),
+        opt(whitespace),
+        opt(question_mark),
+        opt(whitespace),
+        opt(colon),
+        opt(whitespace),
+        opt(any.verify(|token: &Token| !matches!(token.token_type, TokenType::Brace) || token.value != ")")),
+    )
+        .parse_next(i)?;
+    Ok((arg_name, type_, optional.is_some()))
 }
 
 /// Parameters are declared in a function signature, and used within a function.
 fn parameters(i: TokenSlice) -> PResult<Vec<Parameter>> {
     // Get all tokens until the next ), because that ends the parameter list.
-    let candidates: Vec<_> = separated(
-        0..,
-        alt((optional_param.map(|t| (t, true)), required_param.map(|t| (t, false)))),
-        comma_sep,
-    )
-    .context(expected("function parameters"))
-    .parse_next(i)?;
+    let candidates: Vec<_> = separated(0.., parameter, comma_sep)
+        .context(expected("function parameters"))
+        .parse_next(i)?;
 
     // Make sure all those tokens are valid parameters.
     let params: Vec<Parameter> = candidates
         .into_iter()
-        .map(|(token, optional)| {
-            let identifier = Identifier::try_from(token).and_then(Identifier::into_valid_binding_name)?;
-            Ok(Parameter { identifier, optional })
+        .map(|(arg_name, type_, optional)| {
+            let identifier = Identifier::try_from(arg_name).and_then(Identifier::into_valid_binding_name)?;
+            let type_ = type_
+                .map(|t| {
+                    FnArgType::from_str(&t.value).map_err(|err| {
+                        KclError::Syntax(KclErrorDetails {
+                            source_ranges: t.as_source_ranges(),
+                            message: format!("Invalid type: {}", err),
+                        })
+                    })
+                })
+                .transpose()?;
+            Ok(Parameter {
+                identifier,
+                type_,
+                optional,
+            })
         })
         .collect::<Result<_, _>>()
         .map_err(|e: KclError| ErrMode::Backtrack(ContextError::from(e)))?;
@@ -2382,6 +2403,7 @@ e
                         end: 0,
                         name: "a".to_owned(),
                     },
+                    type_: None,
                     optional: true,
                 }],
                 true,
@@ -2393,6 +2415,7 @@ e
                         end: 0,
                         name: "a".to_owned(),
                     },
+                    type_: None,
                     optional: false,
                 }],
                 true,
@@ -2405,6 +2428,7 @@ e
                             end: 0,
                             name: "a".to_owned(),
                         },
+                        type_: None,
                         optional: false,
                     },
                     Parameter {
@@ -2413,6 +2437,7 @@ e
                             end: 0,
                             name: "b".to_owned(),
                         },
+                        type_: None,
                         optional: true,
                     },
                 ],
@@ -2426,6 +2451,7 @@ e
                             end: 0,
                             name: "a".to_owned(),
                         },
+                        type_: None,
                         optional: true,
                     },
                     Parameter {
@@ -2434,6 +2460,7 @@ e
                             end: 0,
                             name: "b".to_owned(),
                         },
+                        type_: None,
                         optional: false,
                     },
                 ],
