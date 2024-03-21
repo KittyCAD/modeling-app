@@ -1,6 +1,6 @@
 use std::{collections::HashMap, env};
 
-use ep::{constants, sketch_types, Destination, UnaryArithmetic};
+use ep::{constants, instruction::SourceRange, sketch_types, Destination, UnaryArithmetic};
 use ept::{ListHeader, ObjectHeader, Primitive};
 use kittycad_modeling_cmds::shared::Point2d;
 use kittycad_modeling_session::SessionBuilder;
@@ -34,14 +34,20 @@ fn assignments() {
     assert_eq!(
         plan,
         vec![
-            Instruction::from(InstructionKind::SetPrimitive {
-                address: Address::ZERO,
-                value: 1i64.into(),
-            }),
-            Instruction::from(InstructionKind::SetPrimitive {
-                address: Address::ZERO.offset(1),
-                value: 2i64.into(),
-            }),
+            Instruction::from_range(
+                InstructionKind::SetPrimitive {
+                    address: Address::ZERO,
+                    value: 1i64.into(),
+                },
+                SourceRange([17, 18])
+            ),
+            Instruction::from_range(
+                InstructionKind::SetPrimitive {
+                    address: Address::ZERO.offset(1),
+                    value: 2i64.into(),
+                },
+                SourceRange([35, 36]),
+            ),
         ]
     );
 }
@@ -395,70 +401,106 @@ async fn computed_array_index() {
         vec![
             // Setting the array
             // First, the length of the array (number of elements).
-            Instruction::from(InstructionKind::SetPrimitive {
-                address: Address::ZERO,
-                value: ListHeader { count: 3, size: 6 }.into()
-            }),
+            Instruction::from_range(
+                InstructionKind::SetPrimitive {
+                    address: Address::ZERO,
+                    value: ListHeader { count: 3, size: 6 }.into()
+                },
+                SourceRange([17, 32])
+            ),
             // Elem 0 length
-            Instruction::from(InstructionKind::SetPrimitive {
-                address: Address::ZERO + 1,
-                value: 1usize.into()
-            }),
+            Instruction::from_range(
+                InstructionKind::SetPrimitive {
+                    address: Address::ZERO + 1,
+                    value: 1usize.into()
+                },
+                SourceRange([17, 32])
+            ),
             // Elem 0 value
-            Instruction::from(InstructionKind::SetPrimitive {
-                address: Address::ZERO + 2,
-                value: "a".to_owned().into()
-            }),
+            Instruction::from_range(
+                InstructionKind::SetPrimitive {
+                    address: Address::ZERO + 2,
+                    value: "a".to_owned().into()
+                },
+                SourceRange([18, 21])
+            ),
             // Elem 1 length
-            Instruction::from(InstructionKind::SetPrimitive {
-                address: Address::ZERO + 3,
-                value: 1usize.into()
-            }),
+            Instruction::from_range(
+                InstructionKind::SetPrimitive {
+                    address: Address::ZERO + 3,
+                    value: 1usize.into()
+                },
+                SourceRange([17, 32])
+            ),
             // Elem 1 value
-            Instruction::from(InstructionKind::SetPrimitive {
-                address: Address::ZERO + 4,
-                value: "b".to_owned().into()
-            }),
+            Instruction::from_range(
+                InstructionKind::SetPrimitive {
+                    address: Address::ZERO + 4,
+                    value: "b".to_owned().into()
+                },
+                SourceRange([23, 26])
+            ),
             // Elem 2 length
-            Instruction::from(InstructionKind::SetPrimitive {
-                address: Address::ZERO + 5,
-                value: 1usize.into()
-            }),
+            Instruction::from_range(
+                InstructionKind::SetPrimitive {
+                    address: Address::ZERO + 5,
+                    value: 1usize.into()
+                },
+                SourceRange([17, 32])
+            ),
             // Elem 2 value
-            Instruction::from(InstructionKind::SetPrimitive {
-                address: Address::ZERO + 6,
-                value: "c".to_owned().into()
-            }),
+            Instruction::from_range(
+                InstructionKind::SetPrimitive {
+                    address: Address::ZERO + 6,
+                    value: "c".to_owned().into()
+                },
+                SourceRange([28, 31])
+            ),
             // Calculate the index (1+1)
             // First, the left operand
-            Instruction::from(InstructionKind::SetPrimitive {
-                address: Address::ZERO + 7,
-                value: 1i64.to_owned().into()
-            }),
-            // Then the right operand
-            Instruction::from(InstructionKind::SetPrimitive {
-                address: Address::ZERO + 8,
-                value: 1i64.to_owned().into()
-            }),
-            // Then index, which is left operand + right operand
-            Instruction::from(InstructionKind::BinaryArithmetic {
-                arithmetic: ep::BinaryArithmetic {
-                    operation: ep::BinaryOperation::Add,
-                    operand0: ep::Operand::Reference(Address::ZERO + 7),
-                    operand1: ep::Operand::Reference(Address::ZERO + 8)
+            Instruction::from_range(
+                InstructionKind::SetPrimitive {
+                    address: Address::ZERO + 7,
+                    value: 1i64.to_owned().into()
                 },
-                destination: Destination::Address(Address::ZERO + 9)
-            }),
+                SourceRange([49, 50])
+            ),
+            // Then the right operand
+            Instruction::from_range(
+                InstructionKind::SetPrimitive {
+                    address: Address::ZERO + 8,
+                    value: 1i64.to_owned().into()
+                },
+                SourceRange([51, 52])
+            ),
+            // Then index, which is left operand + right operand
+            Instruction::from_range(
+                InstructionKind::BinaryArithmetic {
+                    arithmetic: ep::BinaryArithmetic {
+                        operation: ep::BinaryOperation::Add,
+                        operand0: ep::Operand::Reference(Address::ZERO + 7),
+                        operand1: ep::Operand::Reference(Address::ZERO + 8)
+                    },
+                    destination: Destination::Address(Address::ZERO + 9)
+                },
+                SourceRange([49, 52])
+            ),
             // Get the element at the index
-            Instruction::from(InstructionKind::AddrOfMember {
-                start: ep::Operand::Literal(Address::ZERO.into()),
-                member: ep::Operand::Reference(Address::ZERO + 9)
-            }),
+            Instruction::from_range(
+                InstructionKind::AddrOfMember {
+                    start: ep::Operand::Literal(Address::ZERO.into()),
+                    member: ep::Operand::Reference(Address::ZERO + 9)
+                },
+                SourceRange([91, 96])
+            ),
             // Write it to the next free address.
-            Instruction::from(InstructionKind::CopyLen {
-                source_range: ep::Operand::StackPop,
-                destination_range: ep::Operand::Literal(expected_address_of_prop.into()),
-            }),
+            Instruction::from_range(
+                InstructionKind::CopyLen {
+                    source_range: ep::Operand::StackPop,
+                    destination_range: ep::Operand::Literal(expected_address_of_prop.into()),
+                },
+                SourceRange([85, 97])
+            ),
         ]
     );
     // Now let's run the program and check what's actually in the memory afterwards.
@@ -627,36 +669,51 @@ fn composite_binary_exprs() {
     assert_eq!(
         plan,
         vec![
-            Instruction::from(InstructionKind::SetPrimitive {
-                address: addr0,
-                value: 1i64.into(),
-            }),
-            Instruction::from(InstructionKind::SetPrimitive {
-                address: addr1,
-                value: 2i64.into(),
-            }),
-            Instruction::from(InstructionKind::SetPrimitive {
-                address: addr2,
-                value: 3i64.into(),
-            }),
+            Instruction::from_range(
+                InstructionKind::SetPrimitive {
+                    address: addr0,
+                    value: 1i64.into(),
+                },
+                SourceRange([17, 18])
+            ),
+            Instruction::from_range(
+                InstructionKind::SetPrimitive {
+                    address: addr1,
+                    value: 2i64.into(),
+                },
+                SourceRange([35, 36]),
+            ),
+            Instruction::from_range(
+                InstructionKind::SetPrimitive {
+                    address: addr2,
+                    value: 3i64.into(),
+                },
+                SourceRange([53, 54])
+            ),
             // Adds 1 + 2
-            Instruction::from(InstructionKind::BinaryArithmetic {
-                arithmetic: ep::BinaryArithmetic {
-                    operation: ep::BinaryOperation::Add,
-                    operand0: ep::Operand::Reference(addr0),
-                    operand1: ep::Operand::Reference(addr1),
+            Instruction::from_range(
+                InstructionKind::BinaryArithmetic {
+                    arithmetic: ep::BinaryArithmetic {
+                        operation: ep::BinaryOperation::Add,
+                        operand0: ep::Operand::Reference(addr0),
+                        operand1: ep::Operand::Reference(addr1),
+                    },
+                    destination: Destination::Address(addr3),
                 },
-                destination: Destination::Address(addr3),
-            }),
+                SourceRange([73, 78])
+            ),
             // Adds `x` + 3, where `x` is (1 + 2)
-            Instruction::from(InstructionKind::BinaryArithmetic {
-                arithmetic: ep::BinaryArithmetic {
-                    operation: ep::BinaryOperation::Add,
-                    operand0: ep::Operand::Reference(addr3),
-                    operand1: ep::Operand::Reference(addr2),
+            Instruction::from_range(
+                InstructionKind::BinaryArithmetic {
+                    arithmetic: ep::BinaryArithmetic {
+                        operation: ep::BinaryOperation::Add,
+                        operand0: ep::Operand::Reference(addr3),
+                        operand1: ep::Operand::Reference(addr2),
+                    },
+                    destination: Destination::Address(Address::ZERO.offset(4)),
                 },
-                destination: Destination::Address(Address::ZERO.offset(4)),
-            }),
+                SourceRange([73, 82])
+            ),
         ]
     );
 }
