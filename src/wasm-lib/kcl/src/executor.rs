@@ -1914,6 +1914,7 @@ const bracket = startSketchOn('XY')
                     body: Vec::new(),
                     non_code_meta: Default::default(),
                 },
+                return_type: None,
             };
             let actual = assign_args_to_params(func_expr, args, ProgramMemory::new());
             assert_eq!(

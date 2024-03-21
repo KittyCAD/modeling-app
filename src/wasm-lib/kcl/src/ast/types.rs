@@ -2813,6 +2813,8 @@ pub struct FunctionExpression {
     pub end: usize,
     pub params: Vec<Parameter>,
     pub body: Program,
+    #[serde(skip)]
+    pub return_type: Option<FnArgType>,
 }
 
 impl_value_meta!(FunctionExpression);
@@ -2848,6 +2850,7 @@ impl FunctionExpression {
             end,
             params,
             body,
+            return_type: _,
         } = self;
         let mut params_required = Vec::with_capacity(params.len());
         let mut params_optional = Vec::with_capacity(params.len());
@@ -3925,6 +3928,61 @@ const firstExtrude = startSketchOn('XY')
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_return_type_on_functions() {
+        let some_program_string = r#"fn thing = () => {thing: number, things: string[], more?: string} {
+    return 1
+}"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        // Check the program output for the types of the parameters.
+        let function = program.body.first().unwrap();
+        let BodyItem::VariableDeclaration(var_decl) = function else {
+            panic!("expected a variable declaration")
+        };
+        let Value::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+            panic!("expected a function expression")
+        };
+        let params = &func_expr.params;
+        assert_eq!(params.len(), 0);
+        assert_eq!(
+            func_expr.return_type,
+            Some(FnArgType::Object {
+                properties: vec![
+                    Parameter {
+                        identifier: Identifier {
+                            start: 18,
+                            end: 23,
+                            name: "thing".to_owned()
+                        },
+                        type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
+                        optional: false
+                    },
+                    Parameter {
+                        identifier: Identifier {
+                            start: 33,
+                            end: 39,
+                            name: "things".to_owned()
+                        },
+                        type_: Some(FnArgType::Array(FnArgPrimitive::String)),
+                        optional: false
+                    },
+                    Parameter {
+                        identifier: Identifier {
+                            start: 51,
+                            end: 55,
+                            name: "more".to_owned()
+                        },
+                        type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
+                        optional: true
+                    }
+                ]
+            })
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_recast_math_negate_parens() {
         let some_program_string = r#"const wallMountL = 3.82
 const thickness = 0.5
@@ -4011,6 +4069,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                         body: Vec::new(),
                         non_code_meta: Default::default(),
                     },
+                    return_type: None,
                 },
             ),
             (
@@ -4034,6 +4093,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                         body: Vec::new(),
                         non_code_meta: Default::default(),
                     },
+                    return_type: None,
                 },
             ),
             (
@@ -4057,6 +4117,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                         body: Vec::new(),
                         non_code_meta: Default::default(),
                     },
+                    return_type: None,
                 },
             ),
             (
@@ -4091,6 +4152,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                         body: Vec::new(),
                         non_code_meta: Default::default(),
                     },
+                    return_type: None,
                 },
             ),
         ]

@@ -483,6 +483,9 @@ fn function_expression(i: TokenSlice) -> PResult<FunctionExpression> {
     ignore_whitespace(i);
     big_arrow(i)?;
     ignore_whitespace(i);
+    // Optional type arguments.
+    let return_type = opt(argument_type).parse_next(i)?;
+    ignore_whitespace(i);
     open_brace(i)?;
     let body = function_body(i)?;
     let end = close_brace(i)?.end;
@@ -491,6 +494,7 @@ fn function_expression(i: TokenSlice) -> PResult<FunctionExpression> {
         end,
         params,
         body,
+        return_type,
     })
 }
 
@@ -1548,7 +1552,8 @@ const mySk1 = startSketchAt([0, 0])"#;
                             value: NonCodeValue::NewLine
                         }],
                     },
-                }
+                },
+                return_type: None,
             }
         );
     }
