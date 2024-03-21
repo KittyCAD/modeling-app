@@ -848,7 +848,6 @@ fn value_allowed_in_pipe_expr(i: TokenSlice) -> PResult<Value> {
         array.map(Box::new).map(Value::ArrayExpression),
         object.map(Box::new).map(Value::ObjectExpression),
         pipe_sub.map(Box::new).map(Value::PipeSubstitution),
-        function_expression.map(Box::new).map(Value::FunctionExpression),
         unnecessarily_bracketed,
     ))
     .context(expected("a KCL value (but not a pipe expression)"))
