@@ -1,95 +1,67 @@
-import { type CameraSystem, cameraSystems } from '../cameraControls'
-import { Themes } from '../theme'
 import { isTauri } from '../isTauri'
-import { getInitialDefaultDir, readSettingsFile } from '../tauriFS'
-import { initialSettings } from 'lib/settings/initialSettings'
 import {
-  type BaseUnit,
-  baseUnitsUnion,
-  type Toggle,
-  type SettingsMachineContext,
-  toggleAsArray,
-  UnitSystem,
-  Setting,
-} from './settingsTypes'
+  getInitialDefaultDir,
+  getSettingsFilePaths,
+  readSettingsFile,
+} from '../tauriFS'
+import { Setting, SettingsLevel, createSettings, settings } from 'lib/settings/initialSettings'
 import { SETTINGS_PERSIST_KEY } from '../constants'
 
-export const fallbackLoadedSettings = {
-  settings: initialSettings,
-  errors: [] as (keyof SettingsMachineContext)[],
-}
 
-function isEnumMember<T extends Record<string, unknown>>(v: unknown, e: T) {
+export function isEnumMember<T extends Record<string, unknown>>(
+  v: unknown,
+  e: T
+) {
   return Object.values(e).includes(v)
 }
 
-export async function loadAndValidateSettings(): Promise<
-  ReturnType<typeof validateSettings>
-> {
-  const fsSettings = isTauri() ? await readSettingsFile() : {}
+export async function loadAndValidateSettings() {
+  const settings = createSettings()
+  settings.app.projectDirectory.default = await getInitialDefaultDir()
+  console.log('initial settings object', settings)
+  // First, get the settings data at the user and project level
+  const settingsFilePaths = await getSettingsFilePaths()
+  console.log('settingsFilePaths', settingsFilePaths)
+
+  // Now, iterate through the found settings and use the setter function at the corresponding level
+  // This will also validate the setting
+  const fsUserSettings = isTauri() ? await readSettingsFile() : {}
+  const fsUserSettingsTransformed = Object.fromEntries(
+    Object.entries(fsUserSettings).map(([k, v]) => [
+      k,
+      {
+        user: v,
+      },
+    ])
+  )
   const localStorageSettings = JSON.parse(
     localStorage?.getItem(SETTINGS_PERSIST_KEY) || '{}'
   )
-  const mergedSettings = Object.assign({}, localStorageSettings, fsSettings)
 
-  return await validateSettings(mergedSettings)
+  console.log('loaded settings', {
+    localStorageSettings,
+    fsUserSettings,
+    fsUserSettingsTransformed,
+  })
+  const mergedSettings = Object.assign({}, localStorageSettings, fsUserSettingsTransformed)
+
+  // Return the settings object
+  return settings
 }
 
-const settingsValidators: Record<
-  keyof SettingsMachineContext,
-  (v: unknown) => boolean
-> = {
-  baseUnit: (v) => baseUnitsUnion.includes(v as BaseUnit),
-  cameraControls: (v) => cameraSystems.includes(v as CameraSystem),
-  defaultDirectory: (v) =>
-    typeof v === 'string' && (v.length > 0 || !isTauri()),
-  defaultProjectName: (v) => typeof v === 'string' && v.length > 0,
-  onboardingStatus: (v) => typeof v === 'string',
-  showDebugPanel: (v) => typeof v === 'boolean',
-  textWrapping: (v) => toggleAsArray.includes(v as Toggle),
-  theme: (v) => isEnumMember(v, Themes),
-  unitSystem: (v) => isEnumMember(v, UnitSystem),
-}
+export function getChangedSettingsAtLevel(allSettings: typeof settings, level: SettingsLevel) {
+  const changedSettings = {} as Record<keyof typeof settings, Record<string, unknown>>
+  Object.entries(allSettings).forEach(([category, settingsCategory]) => {
+    const categoryKey = category as keyof typeof settings
+    Object.entries(settingsCategory).forEach(([setting, settingValue]: [string, Setting]) => {
+      if (settingValue[level] !== settingValue.default && settingValue[level] !== undefined) {
+        if (!changedSettings[categoryKey]) {
+          changedSettings[categoryKey] = {}
+        }
+        changedSettings[categoryKey][setting] = settingValue[level]
+      }
+    })
+  })
 
-function removeInvalidSettingsKeys(s: Record<string, unknown>) {
-  const validKeys = Object.keys(initialSettings)
-  for (const key in s) {
-    if (!validKeys.includes(key)) {
-      console.warn(`Invalid key found in settings: ${key}`)
-      delete s[key]
-    }
-  }
-  return s
-}
-
-export async function validateSettings(s: Record<string, unknown>) {
-  let settingsNoInvalidKeys = removeInvalidSettingsKeys({ ...s })
-  let errors: (keyof SettingsMachineContext)[] = []
-  for (const key in settingsNoInvalidKeys) {
-    const k = key as keyof SettingsMachineContext
-    if (!settingsValidators[k](settingsNoInvalidKeys[k])) {
-      delete settingsNoInvalidKeys[k]
-      errors.push(k)
-    }
-  }
-
-  // Here's our chance to insert the fallback defaultDir
-  const defaultDirectory = isTauri() ? await getInitialDefaultDir() : ''
-
-  const settings = Object.assign(
-    initialSettings,
-    { defaultDirectory },
-    settingsNoInvalidKeys
-  ) as SettingsMachineContext
-
-  return {
-    settings,
-    errors,
-  }
-}
-
-// Resolve a setting from the part, project, user, or default in that order
-// NOTE: This may have issues if future settings can have a value that is valid but falsy
-export function resolveSetting<T>(setting: Setting<T>): T {
-  return setting.part || setting.project || setting.user || setting.default
+  return changedSettings as typeof settings
 }

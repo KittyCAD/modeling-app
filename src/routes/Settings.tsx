@@ -5,8 +5,8 @@ import { open } from '@tauri-apps/api/dialog'
 import { DEFAULT_PROJECT_NAME, SETTINGS_PERSIST_KEY } from 'lib/constants'
 import {
   type BaseUnit,
-  UnitSystem,
   baseUnits,
+  baseUnitsUnion,
 } from 'lib/settings/settingsTypes'
 import { Toggle } from 'components/Toggle/Toggle'
 import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
@@ -16,26 +16,26 @@ import { paths } from 'lib/paths'
 import { Themes } from '../lib/theme'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import {
-  CameraSystem,
   cameraSystems,
   cameraMouseDragGuards,
+  CameraSystem,
 } from 'lib/cameraControls'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
 import {
   createNewProject,
   getNextProjectIndex,
   getProjectsInDir,
-  getSettingsFilePath,
-  initializeProjectDirectory,
+  getSettingsFilePaths,
   interpolateProjectNameWithIndex,
 } from 'lib/tauriFS'
-import { initialSettings } from 'lib/settings/initialSettings'
 import { ONBOARDING_PROJECT_NAME } from './Onboarding'
 import { sep } from '@tauri-apps/api/path'
 import { bracket } from 'lib/exampleKcl'
 import { isTauri } from 'lib/isTauri'
 import { invoke } from '@tauri-apps/api'
 import toast from 'react-hot-toast'
+import { useState } from 'react'
+import { SettingsLevel } from 'lib/settings/initialSettings'
 
 export const Settings = () => {
   const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
@@ -43,25 +43,17 @@ export const Settings = () => {
     (useRouteLoaderData(paths.FILE) as IndexLoaderData) || undefined
   const navigate = useNavigate()
   const location = useLocation()
+  const [settingsLevel, setSettingsLevel] = useState<SettingsLevel>('user')
   const isFileSettings = location.pathname.includes(paths.FILE)
   const dotDotSlash = useDotDotSlash()
   useHotkeys('esc', () => navigate(dotDotSlash()))
   const {
     settings: {
       send,
-      state: {
-        context: {
-          baseUnit,
-          cameraControls,
-          defaultDirectory,
-          defaultProjectName,
-          showDebugPanel,
-          theme,
-          unitSystem,
-        },
-      },
+      state: { context },
     },
   } = useSettingsAuthContext()
+  const mouseControls = context.modeling.mouseControls.current
 
   async function handleDirectorySelection() {
     // the `recursive` property added following
@@ -69,22 +61,22 @@ export const Settings = () => {
     const newDirectory = await open({
       directory: true,
       recursive: true,
-      defaultPath: defaultDirectory || paths.INDEX,
+      defaultPath: context.app.projectDirectory.current || paths.INDEX,
       title: 'Choose a new default directory',
     })
 
     if (newDirectory && newDirectory !== null && !Array.isArray(newDirectory)) {
       send({
-        type: 'Set Default Directory',
-        data: { defaultDirectory: newDirectory },
+        type: `set.app.projectDirectory.${settingsLevel}`,
+        data: { path: `app.onboardingStatus.${settingsLevel}`, value: newDirectory },
       })
     }
   }
 
   function restartOnboarding() {
     send({
-      type: 'Set Onboarding Status',
-      data: { onboardingStatus: '' },
+      type: `set.app.onboardingStatus.${settingsLevel}`,
+      data: { path: `app.onboardingStatus.${settingsLevel}`, value: '' },
     })
 
     if (isFileSettings) {
@@ -95,6 +87,7 @@ export const Settings = () => {
   }
 
   async function createAndOpenNewProject() {
+    const defaultDirectory = context.app.projectDirectory.current
     const projects = await getProjectsInDir(defaultDirectory)
     const nextIndex = await getNextProjectIndex(
       ONBOARDING_PROJECT_NAME,
@@ -142,6 +135,15 @@ export const Settings = () => {
           </a>
           , and start a discussion if you don't see it! Your feedback will help
           us prioritize what to build next.
+          <Toggle
+            offLabel="User"
+            onLabel="Project"
+            onChange={() =>
+              setSettingsLevel((v) => (v === 'project' ? 'user' : 'project'))
+            }
+            checked={settingsLevel === 'project'}
+            name="settings-level"
+          />
         </p>
         <SettingsSection
           title="Camera Controls"
@@ -150,11 +152,14 @@ export const Settings = () => {
           <select
             id="camera-controls"
             className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
-            value={cameraControls}
+            value={context.modeling.mouseControls[settingsLevel] || context.modeling.mouseControls.current}
             onChange={(e) => {
               send({
-                type: 'Set Camera Controls',
-                data: { cameraControls: e.target.value as CameraSystem },
+                type: `set.modeling.mouseControls.${settingsLevel}`,
+                data: {
+                  path: `modeling.mouseControls.${settingsLevel}`,
+                  value: e.target.value as CameraSystem,
+                },
               })
             }}
           >
@@ -167,15 +172,15 @@ export const Settings = () => {
           <ul className="mx-4 my-2 text-sm leading-relaxed">
             <li>
               <strong>Pan:</strong>{' '}
-              {cameraMouseDragGuards[cameraControls].pan.description}
+              {cameraMouseDragGuards[mouseControls].pan.description}
             </li>
             <li>
               <strong>Zoom:</strong>{' '}
-              {cameraMouseDragGuards[cameraControls].zoom.description}
+              {cameraMouseDragGuards[mouseControls].zoom.description}
             </li>
             <li>
               <strong>Rotate:</strong>{' '}
-              {cameraMouseDragGuards[cameraControls].rotate.description}
+              {cameraMouseDragGuards[mouseControls].rotate.description}
             </li>
           </ul>
         </SettingsSection>
@@ -188,7 +193,7 @@ export const Settings = () => {
               <div className="flex w-full gap-4 p-1 border rounded border-chalkboard-30">
                 <input
                   className="flex-1 px-2 bg-transparent"
-                  value={defaultDirectory}
+                  value={context.app.projectDirectory[settingsLevel] || context.app.projectDirectory.current}
                   disabled
                   data-testid="default-directory-input"
                 />
@@ -209,13 +214,14 @@ export const Settings = () => {
             >
               <input
                 className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
-                defaultValue={defaultProjectName}
+                defaultValue={context.project.defaultProjectName[settingsLevel] || context.project.defaultProjectName.current}
                 onBlur={(e) => {
                   const newValue = e.target.value.trim() || DEFAULT_PROJECT_NAME
                   send({
-                    type: 'Set Default Project Name',
+                    type: `set.project.defaultProjectName.${settingsLevel}`,
                     data: {
-                      defaultProjectName: newValue,
+                      path: `project.defaultProjectName.${settingsLevel}`,
+                      value: newValue,
                     },
                   })
                   e.target.value = newValue
@@ -228,41 +234,24 @@ export const Settings = () => {
           </>
         )}
         <SettingsSection
-          title="Unit System"
-          description="Which unit system to use by default"
-        >
-          <Toggle
-            offLabel="Imperial"
-            onLabel="Metric"
-            name="settings-units"
-            checked={unitSystem === UnitSystem.Metric}
-            onChange={(e) => {
-              const newUnitSystem = e.target.checked
-                ? UnitSystem.Metric
-                : UnitSystem.Imperial
-              send({
-                type: 'Set Unit System',
-                data: { unitSystem: newUnitSystem },
-              })
-            }}
-          />
-        </SettingsSection>
-        <SettingsSection
           title="Base Unit"
           description="Which base unit to use in dimensions by default"
         >
           <select
             id="base-unit"
             className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
-            value={baseUnit}
+            value={context.modeling.defaultUnit[settingsLevel] || context.modeling.defaultUnit.current}
             onChange={(e) => {
               send({
-                type: 'Set Base Unit',
-                data: { baseUnit: e.target.value as BaseUnit },
+                type: `set.modeling.defaultUnit.${settingsLevel}`,
+                data: {
+                  path: `modeling.defaultUnit.${settingsLevel}`,
+                  value: e.target.value as BaseUnit,
+                },
               })
             }}
           >
-            {baseUnits[unitSystem as keyof typeof baseUnits].map((unit) => (
+            {baseUnitsUnion.map((unit) => (
               <option key={unit} value={unit}>
                 {unit}
               </option>
@@ -275,9 +264,15 @@ export const Settings = () => {
         >
           <Toggle
             name="settings-debug-panel"
-            checked={showDebugPanel}
+            checked={context.modeling.showDebugPanel[settingsLevel] || context.modeling.showDebugPanel.current}
             onChange={(e) => {
-              send('Toggle Debug Panel')
+              send({
+                type: `set.project.entryPointFileName.${settingsLevel}`,
+                data: {
+                  path: `modeling.showDebugPanel.${settingsLevel}`,
+                  value: e.target.checked,
+                },
+              })
             }}
           />
         </SettingsSection>
@@ -288,11 +283,14 @@ export const Settings = () => {
           <select
             id="settings-theme"
             className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
-            value={theme}
+            value={context.app.theme[settingsLevel] || context.app.theme.current}
             onChange={(e) => {
               send({
-                type: 'Set Theme',
-                data: { theme: e.target.value as Themes },
+                type: `set.app.theme.${settingsLevel}`,
+                data: {
+                  path: `app.theme.${settingsLevel}`,
+                  value: e.target.value as Themes,
+                },
               })
             }}
           >
@@ -323,11 +321,12 @@ export const Settings = () => {
           {isTauri() ? (
             <span className="flex gap-4 flex-wrap items-center">
               <button
-                onClick={async () =>
+                onClick={async () => {
+                  const paths = await getSettingsFilePaths()
                   void invoke('show_in_folder', {
-                    path: await getSettingsFilePath(),
+                    path: paths.user,
                   })
-                }
+                }}
                 className="text-base"
               >
                 Show settings.json in folder
@@ -338,12 +337,7 @@ export const Settings = () => {
                   // since we can't set that in the settings machine's
                   // initial context due to it being async
                   send({
-                    type: 'Set All Settings',
-                    data: {
-                      ...initialSettings,
-                      defaultDirectory:
-                        (await initializeProjectDirectory('')).path ?? '',
-                    },
+                    type: 'Reset settings',
                   })
                   toast.success('Settings restored to default')
                 }}
@@ -356,10 +350,7 @@ export const Settings = () => {
             <button
               onClick={() => {
                 localStorage.removeItem(SETTINGS_PERSIST_KEY)
-                send({
-                  type: 'Set All Settings',
-                  data: initialSettings,
-                })
+                send({ type: 'Reset settings' })
                 toast.success('Settings restored to default')
               }}
               className="text-base"

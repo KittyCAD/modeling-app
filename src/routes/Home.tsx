@@ -38,20 +38,15 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { isTauri } from 'lib/isTauri'
 import { kclManager } from 'lang/KclSingleton'
 import { useLspContext } from 'components/LspProvider'
-import { useValidateSettings } from 'hooks/useValidateSettings'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
 const Home = () => {
-  useValidateSettings()
   const { commandBarSend } = useCommandsContext()
   const navigate = useNavigate()
   const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
   const {
-    settings: {
-      context: { defaultDirectory, defaultProjectName },
-      send: sendToSettings,
-    },
+    settings: { context: settings, send: sendToSettings },
   } = useSettingsAuthContext()
   const { onProjectOpen } = useLspContext()
 
@@ -71,8 +66,8 @@ const Home = () => {
   const [state, send, actor] = useMachine(homeMachine, {
     context: {
       projects: loadedProjects,
-      defaultProjectName,
-      defaultDirectory,
+      defaultProjectName: settings.project.defaultProjectName.current,
+      defaultDirectory: settings.app.projectDirectory.current,
     },
     actions: {
       navigateToProject: (
@@ -105,7 +100,7 @@ const Home = () => {
         let name = (
           event.data && 'name' in event.data
             ? event.data.name
-            : defaultProjectName
+            : settings.project.defaultProjectName.current
         ).trim()
         let shouldUpdateDefaultProjectName = false
 
@@ -124,8 +119,11 @@ const Home = () => {
 
         if (shouldUpdateDefaultProjectName) {
           sendToSettings({
-            type: 'Set Default Project Name',
-            data: { defaultProjectName: DEFAULT_PROJECT_NAME },
+            type: 'set.project.defaultProjectName.user',
+            data: {
+              path: 'project.defaultProjectName.user',
+              value: DEFAULT_PROJECT_NAME,
+            },
           })
         }
 
@@ -179,9 +177,17 @@ const Home = () => {
     actor,
   })
 
+  // Update the default project name and directory in the home machine
+  // when the settings change
   useEffect(() => {
-    send({ type: 'assign', data: { defaultProjectName, defaultDirectory } })
-  }, [defaultDirectory, defaultProjectName, send])
+    send({
+      type: 'assign',
+      data: {
+        defaultProjectName: settings.project.defaultProjectName.current,
+        defaultDirectory: settings.app.projectDirectory.current,
+      },
+    })
+  }, [settings.app.projectDirectory, settings.project.defaultProjectName, send])
 
   async function handleRenameProject(
     e: FormEvent<HTMLFormElement>,
@@ -254,7 +260,7 @@ const Home = () => {
           <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
             Loaded from{' '}
             <span className="text-energy-70 dark:text-energy-40">
-              {defaultDirectory}
+              {settings.app.projectDirectory.current}
             </span>
             .{' '}
             <Link to="settings" className="underline underline-offset-2">

@@ -28,8 +28,8 @@ export const indexLoader: LoaderFunction = async (): ReturnType<
 
 // Redirect users to the appropriate onboarding page if they haven't completed it
 export const onboardingRedirectLoader: ActionFunction = async ({ request }) => {
-  const { settings } = await loadAndValidateSettings()
-  const onboardingStatus = settings.onboardingStatus || ''
+  const settings = await loadAndValidateSettings()
+  const onboardingStatus = settings.app.onboardingStatus.current || ''
   const notEnRouteToOnboarding = !request.url.includes(paths.ONBOARDING.INDEX)
   // '' is the initial state, 'done' and 'dismissed' are the final states
   const hasValidOnboardingStatus =
@@ -50,9 +50,9 @@ export const onboardingRedirectLoader: ActionFunction = async ({ request }) => {
 export const fileLoader: LoaderFunction = async ({
   params,
 }): Promise<IndexLoaderData | Response> => {
-  const { settings } = await loadAndValidateSettings()
+  const settings = await loadAndValidateSettings()
 
-  const defaultDir = settings.defaultDirectory || ''
+  const defaultDir = settings.app.projectDirectory.current || ''
 
   if (params.id && params.id !== BROWSER_FILE_NAME) {
     const decodedId = decodeURIComponent(params.id)
@@ -110,13 +110,15 @@ export const homeLoader: LoaderFunction = async (): Promise<
   if (!isTauri()) {
     return redirect(paths.FILE + '/' + BROWSER_FILE_NAME)
   }
-  const { settings } = await loadAndValidateSettings()
+  const settings = await loadAndValidateSettings()
+
+  console.log('settings', settings)
   const projectDir = await initializeProjectDirectory(
-    settings.defaultDirectory || (await getInitialDefaultDir())
+    settings.app.projectDirectory.current || (await getInitialDefaultDir())
   )
 
   if (projectDir.path) {
-    if (projectDir.path !== settings.defaultDirectory) {
+    if (projectDir.path !== settings.app.projectDirectory.current) {
       localStorage.setItem(
         SETTINGS_PERSIST_KEY,
         JSON.stringify({
