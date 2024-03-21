@@ -2,9 +2,9 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
 import { type ProjectWithEntryPointMetadata } from 'lib/types'
-import { GlobalStateProvider } from './GlobalStateProvider'
+import { SettingsAuthProviderJest } from './SettingsAuthProvider'
 import { APP_NAME } from 'lib/constants'
-import { vi } from 'vitest'
+import { CommandBarProvider } from './CommandBar/CommandBarProvider'
 
 const now = new Date()
 const projectWellFormed = {
@@ -42,9 +42,11 @@ describe('ProjectSidebarMenu tests', () => {
   test('Renders the project name', () => {
     render(
       <BrowserRouter>
-        <GlobalStateProvider>
-          <ProjectSidebarMenu project={projectWellFormed} />
-        </GlobalStateProvider>
+        <CommandBarProvider>
+          <SettingsAuthProviderJest>
+            <ProjectSidebarMenu project={projectWellFormed} />
+          </SettingsAuthProviderJest>
+        </CommandBarProvider>
       </BrowserRouter>
     )
 
@@ -61,9 +63,11 @@ describe('ProjectSidebarMenu tests', () => {
   test('Renders app name if given no project', () => {
     render(
       <BrowserRouter>
-        <GlobalStateProvider>
-          <ProjectSidebarMenu />
-        </GlobalStateProvider>
+        <CommandBarProvider>
+          <SettingsAuthProviderJest>
+            <ProjectSidebarMenu />
+          </SettingsAuthProviderJest>
+        </CommandBarProvider>
       </BrowserRouter>
     )
 
@@ -75,9 +79,14 @@ describe('ProjectSidebarMenu tests', () => {
   test('Renders as a link if set to do so', () => {
     render(
       <BrowserRouter>
-        <GlobalStateProvider>
-          <ProjectSidebarMenu project={projectWellFormed} renderAsLink={true} />
-        </GlobalStateProvider>
+        <CommandBarProvider>
+          <SettingsAuthProviderJest>
+            <ProjectSidebarMenu
+              project={projectWellFormed}
+              renderAsLink={true}
+            />
+          </SettingsAuthProviderJest>
+        </CommandBarProvider>
       </BrowserRouter>
     )
 

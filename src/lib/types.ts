@@ -11,7 +11,6 @@ export type ProjectWithEntryPointMetadata = FileEntry & {
 }
 export type HomeLoaderData = {
   projects: ProjectWithEntryPointMetadata[]
-  newDefaultDirectory?: string
 }
 
 // From https://github.com/tauri-apps/tauri/blob/1.x/tooling/api/src/fs.ts#L159

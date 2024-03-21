@@ -24,7 +24,7 @@ use self::{
 };
 
 /// Execute a KCL program by compiling into an execution plan, then running that.
-pub async fn execute(ast: Program, session: Option<Session>) -> Result<ep::Memory, Error> {
+pub async fn execute(ast: Program, session: &mut Option<Session>) -> Result<ep::Memory, Error> {
     let mut planner = Planner::new();
     let (plan, _retval) = planner.build_plan(ast)?;
     let mut mem = ep::Memory::default();
@@ -33,11 +33,14 @@ pub async fn execute(ast: Program, session: Option<Session>) -> Result<ep::Memor
 }
 
 /// Compiles KCL programs into Execution Plans.
+#[derive(Debug)]
 struct Planner {
     /// Maps KCL identifiers to what they hold, and where in KCEP virtual memory they'll be written to.
     binding_scope: BindingScope,
-    /// Next available KCEP virtual machine memory address.
+    /// Next available KCVM virtual machine memory address.
     next_addr: Address,
+    /// Next available KCVM sketch group index.
+    next_sketch_group: usize,
 }
 
 impl Planner {
@@ -45,6 +48,7 @@ impl Planner {
         Self {
             binding_scope: BindingScope::prelude(),
             next_addr: Address::ZERO,
+            next_sketch_group: 0,
         }
     }
 
@@ -246,14 +250,44 @@ impl Planner {
 
                 // Emit instructions to call that function with the given arguments.
                 use native_functions::Callable;
+                let mut ctx = native_functions::Context {
+                    next_address: &mut self.next_addr,
+                    next_sketch_group: &mut self.next_sketch_group,
+                };
                 let EvalPlan {
                     instructions: eval_instrs,
                     binding,
                 } = match callee {
-                    KclFunction::Id(f) => f.call(&mut self.next_addr, args)?,
-                    KclFunction::StartSketchAt(f) => f.call(&mut self.next_addr, args)?,
-                    KclFunction::LineTo(f) => f.call(&mut self.next_addr, args)?,
-                    KclFunction::Add(f) => f.call(&mut self.next_addr, args)?,
+                    KclFunction::Id(f) => f.call(&mut ctx, args)?,
+                    KclFunction::Abs(f) => f.call(&mut ctx, args)?,
+                    KclFunction::Acos(f) => f.call(&mut ctx, args)?,
+                    KclFunction::Asin(f) => f.call(&mut ctx, args)?,
+                    KclFunction::Atan(f) => f.call(&mut ctx, args)?,
+                    KclFunction::Ceil(f) => f.call(&mut ctx, args)?,
+                    KclFunction::Cos(f) => f.call(&mut ctx, args)?,
+                    KclFunction::Floor(f) => f.call(&mut ctx, args)?,
+                    KclFunction::Ln(f) => f.call(&mut ctx, args)?,
+                    KclFunction::Log10(f) => f.call(&mut ctx, args)?,
+                    KclFunction::Log2(f) => f.call(&mut ctx, args)?,
+                    KclFunction::Sin(f) => f.call(&mut ctx, args)?,
+                    KclFunction::Sqrt(f) => f.call(&mut ctx, args)?,
+                    KclFunction::Tan(f) => f.call(&mut ctx, args)?,
+                    KclFunction::ToDegrees(f) => f.call(&mut ctx, args)?,
+                    KclFunction::ToRadians(f) => f.call(&mut ctx, args)?,
+                    KclFunction::Log(f) => f.call(&mut ctx, args)?,
+                    KclFunction::Max(f) => f.call(&mut ctx, args)?,
+                    KclFunction::Min(f) => f.call(&mut ctx, args)?,
+                    KclFunction::StartSketchAt(f) => f.call(&mut ctx, args)?,
+                    KclFunction::Extrude(f) => f.call(&mut ctx, args)?,
+                    KclFunction::LineTo(f) => f.call(&mut ctx, args)?,
+                    KclFunction::Line(f) => f.call(&mut ctx, args)?,
+                    KclFunction::XLineTo(f) => f.call(&mut ctx, args)?,
+                    KclFunction::XLine(f) => f.call(&mut ctx, args)?,
+                    KclFunction::YLineTo(f) => f.call(&mut ctx, args)?,
+                    KclFunction::YLine(f) => f.call(&mut ctx, args)?,
+                    KclFunction::TangentialArcTo(f) => f.call(&mut ctx, args)?,
+                    KclFunction::Add(f) => f.call(&mut ctx, args)?,
+                    KclFunction::Close(f) => f.call(&mut ctx, args)?,
                     KclFunction::UserDefined(f) => {
                         let UserDefinedFunction {
                             params_optional,
@@ -619,10 +653,36 @@ impl Eq for UserDefinedFunction {}
 #[cfg_attr(test, derive(Eq, PartialEq))]
 enum KclFunction {
     Id(native_functions::Id),
+    Abs(native_functions::Abs),
+    Acos(native_functions::Acos),
+    Asin(native_functions::Asin),
+    Atan(native_functions::Atan),
+    Ceil(native_functions::Ceil),
+    Cos(native_functions::Cos),
+    Floor(native_functions::Floor),
+    Ln(native_functions::Ln),
+    Log10(native_functions::Log10),
+    Log2(native_functions::Log2),
+    Sin(native_functions::Sin),
+    Sqrt(native_functions::Sqrt),
+    Tan(native_functions::Tan),
+    ToDegrees(native_functions::ToDegrees),
+    ToRadians(native_functions::ToRadians),
     StartSketchAt(native_functions::sketch::StartSketchAt),
     LineTo(native_functions::sketch::LineTo),
+    Line(native_functions::sketch::Line),
+    XLineTo(native_functions::sketch::XLineTo),
+    XLine(native_functions::sketch::XLine),
+    YLineTo(native_functions::sketch::YLineTo),
+    YLine(native_functions::sketch::YLine),
+    TangentialArcTo(native_functions::sketch::TangentialArcTo),
     Add(native_functions::Add),
+    Log(native_functions::Log),
+    Max(native_functions::Max),
+    Min(native_functions::Min),
     UserDefined(UserDefinedFunction),
+    Extrude(native_functions::sketch::Extrude),
+    Close(native_functions::sketch::Close),
 }
 
 /// Context used when compiling KCL.

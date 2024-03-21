@@ -33,7 +33,16 @@
           "path": "$HOME/**/*"
         },
         {
-          "path": "$APPDATA/**/*"
+          "path": "$APPCONFIG"
+        },
+        {
+          "path": "$APPCONFIG/**/*"
+        },
+        {
+          "path": "$DOCUMENT"
+        },
+        {
+          "path": "$DOCUMENT/**/*"
         }
       ]
     },

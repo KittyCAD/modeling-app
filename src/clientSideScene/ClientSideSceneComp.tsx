@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from 'react'
 import { useModelingContext } from 'hooks/useModelingContext'
 
 import { cameraMouseDragGuards } from 'lib/cameraControls'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useStore } from 'useStore'
 import { DEBUG_SHOW_BOTH_SCENES, sceneInfra } from './sceneInfra'
 import { ReactCameraProperties } from './CameraControls'
@@ -35,7 +35,7 @@ export const ClientSideScene = ({
   cameraControls,
 }: {
   cameraControls: ReturnType<
-    typeof useGlobalStateContext
+    typeof useSettingsAuthContext
   >['settings']['context']['cameraControls']
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null)

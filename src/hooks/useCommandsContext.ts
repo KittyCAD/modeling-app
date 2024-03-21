@@ -1,4 +1,4 @@
-import { CommandsContext } from 'components/CommandBar/CommandBar'
+import { CommandsContext } from 'components/CommandBar/CommandBarProvider'
 import { useContext } from 'react'
 
 export const useCommandsContext = () => {

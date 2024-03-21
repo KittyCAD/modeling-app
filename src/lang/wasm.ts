@@ -7,6 +7,9 @@ import init, {
   is_points_ccw,
   get_tangential_arc_to_info,
   program_memory_init,
+  ServerConfig,
+  copilot_lsp_run,
+  kcl_lsp_run,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
@@ -17,6 +20,7 @@ import type { Program } from '../wasm-lib/kcl/bindings/Program'
 import type { Token } from '../wasm-lib/kcl/bindings/Token'
 import { Coords2d } from './std/sketch'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
+import { DEV } from 'env'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Value } from '../wasm-lib/kcl/bindings/Value'
@@ -136,7 +140,7 @@ export const executor = async (
   return _programMemory
 }
 
-const getSettingsState = import('components/GlobalStateProvider').then(
+const getSettingsState = import('components/SettingsAuthProvider').then(
   (module) => module.getSettingsState
 )
 
@@ -277,5 +281,25 @@ export function programMemoryInit(): ProgramMemory {
 
     console.log(kclError)
     throw kclError
+  }
+}
+
+export async function copilotLspRun(config: ServerConfig, token: string) {
+  try {
+    console.log('starting copilot lsp')
+    await copilot_lsp_run(config, token, DEV)
+  } catch (e: any) {
+    console.log('copilot lsp failed', e)
+    // We can't restart here because a moved value, we should do this another way.
+  }
+}
+
+export async function kclLspRun(config: ServerConfig, token: string) {
+  try {
+    console.log('start kcl lsp')
+    await kcl_lsp_run(config, token, DEV)
+  } catch (e: any) {
+    console.log('kcl lsp failed', e)
+    // We can't restart here because a moved value, we should do this another way.
   }
 }

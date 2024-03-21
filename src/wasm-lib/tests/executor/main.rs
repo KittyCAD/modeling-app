@@ -1,5 +1,4 @@
 use anyhow::Result;
-use kcl_lib::engine::EngineManager;
 
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
@@ -28,7 +27,7 @@ async fn execute_and_snapshot(code: &str, units: kittycad::types::UnitLength) ->
 
     let ws = client
         .modeling()
-        .commands_ws(None, None, None, None, Some(false))
+        .commands_ws(None, None, None, None, None, Some(false))
         .await?;
 
     // Create a temporary file to write the output to.
@@ -88,7 +87,7 @@ async fn execute_and_snapshot(code: &str, units: kittycad::types::UnitLength) ->
 async fn serial_test_sketch_on_face() {
     let code = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([11.19, 28.35], %)
-  |> line({to: [28.67, -13.25], tag: "here"}, %)
+  |> line([28.67, -13.25], %, "here")
   |> line([-4.12, -22.81], %)
   |> line([-33.24, 14.55], %)
   |> close(%)
@@ -207,9 +206,9 @@ const part002 = startSketchOn(part001, "END")
 async fn serial_test_fillet_duplicate_tags() {
     let code = r#"const part001 = startSketchOn('XY')
     |> startProfileAt([0,0], %)
-    |> line({to: [0, 10], tag: "thing"}, %)
+    |> line([0, 10], %, "thing")
     |> line([10, 0], %)
-    |> line({to: [0, -10], tag: "thing2"}, %)
+    |> line([0, -10], %, "thing2")
     |> close(%)
     |> extrude(10, %)
     |> fillet({radius: 0.5, tags: ["thing", "thing"]}, %)
@@ -219,7 +218,7 @@ async fn serial_test_fillet_duplicate_tags() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([227, 277])], message: "Duplicate tags are not allowed." }"#,
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([205, 255])], message: "Duplicate tags are not allowed." }"#,
     );
 }
 
@@ -227,9 +226,9 @@ async fn serial_test_fillet_duplicate_tags() {
 async fn serial_test_basic_fillet_cube_start() {
     let code = r#"const part001 = startSketchOn('XY')
     |> startProfileAt([0,0], %)
-    |> line({to: [0, 10], tag: "thing"}, %)
+    |> line([0, 10], %, "thing")
     |> line([10, 0], %)
-    |> line({to: [0, -10], tag: "thing2"}, %)
+    |> line([0, -10], %, "thing2")
     |> close(%)
     |> extrude(10, %)
     |> fillet({radius: 2, tags: ["thing", "thing2"]}, %)
@@ -245,9 +244,9 @@ async fn serial_test_basic_fillet_cube_start() {
 async fn serial_test_basic_fillet_cube_end() {
     let code = r#"const part001 = startSketchOn('XY')
     |> startProfileAt([0,0], %)
-    |> line({to: [0, 10], tag: "thing"}, %)
+    |> line([0, 10], %, "thing")
     |> line([10, 0], %)
-    |> line({to: [0, -10], tag: "thing2"}, %)
+    |> line([0, -10], %, "thing2")
     |> close(%)
     |> extrude(10, %)
     |> fillet({radius: 2, tags: ["thing", getOppositeEdge("thing", %)]}, %)
@@ -264,9 +263,9 @@ async fn serial_test_basic_fillet_cube_end() {
 async fn serial_test_basic_fillet_cube_close_opposite() {
     let code = r#"const part001 = startSketchOn('XY')
     |> startProfileAt([0,0], %)
-    |> line({to: [0, 10], tag: "thing"}, %)
+    |> line([0, 10], %, "thing")
     |> line([10, 0], %)
-    |> line({to: [0, -10], tag: "thing2"}, %)
+    |> line([0, -10], %, "thing2")
     |> close(%, "thing3")
     |> extrude(10, %)
     |> fillet({radius: 2, tags: ["thing3", getOppositeEdge("thing3", %)]}, %)
@@ -287,9 +286,9 @@ async fn serial_test_basic_fillet_cube_close_opposite() {
 async fn serial_test_basic_fillet_cube_next_adjacent() {
     let code = r#"const part001 = startSketchOn('XY')
     |> startProfileAt([0,0], %)
-    |> line({to: [0, 10], tag: "thing"}, %)
-    |> line({to: [10, 0], tag: "thing1"}, %)
-    |> line({to: [0, -10], tag: "thing2"}, %)
+    |> line([0, 10], %, "thing")
+    |> line([10, 0], %, "thing1")
+    |> line([0, -10], %, "thing2")
     |> close(%)
     |> extrude(10, %)
     |> fillet({radius: 2, tags: [getNextAdjacentEdge("thing", %)]}, %)
@@ -309,9 +308,9 @@ async fn serial_test_basic_fillet_cube_next_adjacent() {
 async fn serial_test_basic_fillet_cube_previous_adjacent() {
     let code = r#"const part001 = startSketchOn('XY')
     |> startProfileAt([0,0], %)
-    |> line({to: [0, 10], tag: "thing"}, %)
-    |> line({to: [10, 0], tag: "thing1"}, %)
-    |> line({to: [0, -10], tag: "thing2"}, %)
+    |> line([0, 10], %, "thing")
+    |> line([10, 0], %, "thing1")
+    |> line([0, -10], %, "thing2")
     |> close(%)
     |> extrude(10, %)
     |> fillet({radius: 2, tags: [getPreviousAdjacentEdge("thing2", %)]}, %)
@@ -381,7 +380,7 @@ async fn serial_test_execute_with_angled_line() {
     let code = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([4.83, 12.56], %)
   |> line([15.1, 2.48], %)
-  |> line({ to: [3.15, -9.85], tag: 'seg01' }, %)
+  |> line([3.15, -9.85], %, 'seg01')
   |> line([-15.17, -4.1], %)
   |> angledLine([segAng('seg01', %), 12.35], %)
   |> line([-13.02, 10.03], %)
@@ -732,8 +731,8 @@ async fn serial_test_holes() {
   |> line([10, 0], %)
   |> line([0, -10], %)
   |> close(%)
-  |> hole(circle([2, 2], .5, startSketchOn('XY')), %)
-  |> hole(circle([2, 8], .5, startSketchOn('XY')), %)
+  |> hole(circle([2, 2], .5, %), %)
+  |> hole(circle([2, 8], .5, %), %)
   |> extrude(2, %)
 "#;
 
@@ -788,10 +787,10 @@ const holeRadius = 1
 const holeIndex = 6
 
 const part = roundedRectangle([0, 0], 20, 20, 4)
-  |> hole(circle([-holeIndex, holeIndex], holeRadius,  startSketchOn('XY')), %)
-  |> hole(circle([holeIndex, holeIndex], holeRadius,  startSketchOn('XY')), %)
-  |> hole(circle([-holeIndex, -holeIndex], holeRadius,  startSketchOn('XY')), %)
-  |> hole(circle([holeIndex, -holeIndex], holeRadius,  startSketchOn('XY')), %)
+  |> hole(circle([-holeIndex, holeIndex], holeRadius, %), %)
+  |> hole(circle([holeIndex, holeIndex], holeRadius, %), %)
+  |> hole(circle([-holeIndex, -holeIndex], holeRadius, %), %)
+  |> hole(circle([holeIndex, -holeIndex], holeRadius, %), %)
   |> extrude(2, %)
 "#;
 
@@ -803,7 +802,7 @@ const part = roundedRectangle([0, 0], 20, 20, 4)
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_top_level_expression() {
-    let code = r#"circle([0,0], 22,  startSketchOn('XY')) |> extrude(14, %)"#;
+    let code = r#"startSketchOn('XY') |> circle([0,0], 22, %) |> extrude(14, %)"#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
         .await
@@ -815,7 +814,7 @@ async fn serial_test_top_level_expression() {
 async fn serial_test_patterns_linear_basic() {
     let code = r#"const part =  startSketchOn('XY')
     |> circle([0,0], 2, %)
-    |> patternLinear({axis: [0,1], repetitions: 12, distance: 2}, %)
+    |> patternLinear2d({axis: [0,1], repetitions: 12, distance: 2}, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
@@ -833,7 +832,7 @@ async fn serial_test_patterns_linear_basic_3d() {
     |> line([0, -1], %)
     |> close(%)
     |> extrude(1, %)
-    |> patternLinear({axis: [1, 0], repetitions: 3, distance: 6}, %)
+    |> patternLinear3d({axis: [1, 0, 1], repetitions: 3, distance: 6}, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
@@ -846,7 +845,7 @@ async fn serial_test_patterns_linear_basic_3d() {
 async fn serial_test_patterns_linear_basic_negative_distance() {
     let code = r#"const part = startSketchOn('XY')
     |> circle([0,0], 2, %)
-    |> patternLinear({axis: [0,1], repetitions: 12, distance: -2}, %)
+    |> patternLinear2d({axis: [0,1], repetitions: 12, distance: -2}, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
@@ -863,7 +862,7 @@ async fn serial_test_patterns_linear_basic_negative_distance() {
 async fn serial_test_patterns_linear_basic_negative_axis() {
     let code = r#"const part = startSketchOn('XY')
     |> circle([0,0], 2, %)
-    |> patternLinear({axis: [0,-1], repetitions: 12, distance: 2}, %)
+    |> patternLinear2d({axis: [0,-1], repetitions: 12, distance: 2}, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
@@ -880,7 +879,7 @@ async fn serial_test_patterns_linear_basic_negative_axis() {
 async fn serial_test_patterns_linear_basic_holes() {
     let code = r#"const circles = startSketchOn('XY')
     |> circle([5, 5], 1, %)
-    |> patternLinear({axis: [1,1], repetitions: 12, distance: 3}, %)
+    |> patternLinear2d({axis: [1,1], repetitions: 12, distance: 3}, %)
 
 const rectangle = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
@@ -902,7 +901,7 @@ const rectangle = startSketchOn('XY')
 async fn serial_test_patterns_circular_basic_2d() {
     let code = r#"const part = startSketchOn('XY')
     |> circle([0,0], 2, %)
-    |> patternCircular({axis: [0,1], center: [20, 20, 20], repetitions: 12, arcDegrees: 210, rotateDuplicates: true}, %)
+    |> patternCircular2d({center: [20, 20], repetitions: 12, arcDegrees: 210, rotateDuplicates: true}, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
@@ -920,7 +919,7 @@ async fn serial_test_patterns_circular_basic_3d() {
     |> line([0, -1], %)
     |> close(%)
     |> extrude(1, %)
-    |> patternCircular({axis: [0,1], center: [-20, -20, -20], repetitions: 40, arcDegrees: 360, rotateDuplicates: false}, %)
+    |> patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repetitions: 40, arcDegrees: 360, rotateDuplicates: false}, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
@@ -938,7 +937,7 @@ async fn serial_test_patterns_circular_3d_tilted_axis() {
     |> line([0, -1], %)
     |> close(%)
     |> extrude(1, %)
-    |> patternCircular({axis: [1,1], center: [10, 0, 10], repetitions: 10, arcDegrees: 360, rotateDuplicates: true}, %)
+    |> patternCircular3d({axis: [1,1,0], center: [10, 0, 10], repetitions: 10, arcDegrees: 360, rotateDuplicates: true}, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
@@ -1178,7 +1177,7 @@ async fn serial_test_error_sketch_on_arc_face() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
   |> startProfileAt(pos, %)
-  |> tangentialArc({ to: [0, scale], tag: "here" }, %)
+  |> tangentialArc([0, scale], %, "here")
   |> line([scale, 0], %)
   |> line([0, -scale], %)
 
@@ -1202,7 +1201,7 @@ const part002 = startSketchOn(part001, "here")
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([294, 324])], message: "Cannot sketch on a non-planar surface: `here`" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([281, 311])], message: "Cannot sketch on a non-planar surface: `here`" }"#
     );
 }
 
@@ -1253,7 +1252,7 @@ async fn serial_test_stdlib_kcl_error_right_code_path() {
   |> line([0, -10], %)
   |> close(%)
   |> hole(circle([2, 2], .5), %)
-  |> hole(circle([2, 8], .5, startSketchOn('XY')), %)
+  |> hole(circle([2, 8], .5, %), %)
   |> extrude(2, %)
 "#;
 
@@ -1261,7 +1260,7 @@ async fn serial_test_stdlib_kcl_error_right_code_path() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([157, 175])], message: "this function expected 3 arguments, got 2" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([157, 175])], message: "Expected a SketchGroup or SketchSurface as the third argument, found `[UserVal(UserVal { value: Array [Number(2), Number(2)], meta: [Metadata { source_range: SourceRange([164, 170]) }] }), UserVal(UserVal { value: Number(0.5), meta: [Metadata { source_range: SourceRange([172, 174]) }] })]`" }"#
     );
 }
 
@@ -1315,4 +1314,96 @@ const part002 = startSketchOn(part001, "end")
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_circle_tagged.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_stdlib_kcl_error_circle() {
+    let code = r#"// Mounting Plate
+// A flat piece of material, often metal or plastic, that serves as a support or base for attaching, securing, or mounting various types of equipment, devices, or components. 
+
+// Create a function that defines the body width and length of the mounting plate. Tag the corners so they can be passed through the fillet function.
+fn rectShape = (pos, w, l) => {
+  const rr = startSketchOn('XY')
+  |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
+  |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, "edge1")
+  |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, "edge2")
+  |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, "edge3")
+  |> close(%, "edge4")
+  return rr
+}
+
+// Define the hole radius and x, y location constants
+const holeRadius = 1
+const holeIndex = 6
+
+// Create the mounting plate extrusion, holes, and fillets
+const part = rectShape([0, 0], 20, 20)
+  |> hole(circle('XY', [-holeIndex, holeIndex], holeRadius), %)
+  |> hole(circle('XY', [holeIndex, holeIndex], holeRadius), %)
+  |> hole(circle('XY', [-holeIndex, -holeIndex], holeRadius), %)
+  |> hole(circle('XY', [holeIndex, -holeIndex], holeRadius), %)
+  |> extrude(2, %)
+  |> fillet({
+       radius: 4,
+       tags: [
+          getNextAdjacentEdge("edge1", %),
+          getNextAdjacentEdge("edge2", %),
+          getNextAdjacentEdge("edge3", %),
+          getNextAdjacentEdge("edge4", %)
+       ]
+     }, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([891, 940])], message: "Expected a [number, number] as the first argument, found `[UserVal(UserVal { value: String(\"XY\"), meta: [Metadata { source_range: SourceRange([898, 902]) }] }), UserVal(UserVal { value: Array [Number(-6.0), Number(6)], meta: [Metadata { source_range: SourceRange([904, 927]) }] }), UserVal(UserVal { value: Number(1), meta: [Metadata { source_range: SourceRange([760, 761]) }] })]`" }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_big_number_angle_to_match_length_x() {
+    let code = r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([1, 3.82], %, 'seg01')
+  |> angledLineToX([
+       -angleToMatchLengthX('seg01', 3, %),
+       3
+     ], %)
+  |> close(%)
+  |> extrude(10, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/big_number_angle_to_match_length_x.png",
+        &result,
+        1.0,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_big_number_angle_to_match_length_y() {
+    let code = r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([1, 3.82], %, 'seg01')
+  |> angledLineToX([
+       -angleToMatchLengthY('seg01', 3, %),
+       3
+     ], %)
+  |> close(%)
+  |> extrude(10, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/big_number_angle_to_match_length_y.png",
+        &result,
+        1.0,
+    );
 }

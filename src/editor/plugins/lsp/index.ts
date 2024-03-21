@@ -2,67 +2,10 @@ import type * as LSP from 'vscode-languageserver-protocol'
 import Client from './client'
 import { SemanticToken, deserializeTokens } from './kcl/semantic_tokens'
 import { LanguageServerPlugin } from 'editor/plugins/lsp/plugin'
-
-export interface CopilotGetCompletionsParams {
-  doc: {
-    source: string
-    tabSize: number
-    indentSize: number
-    insertSpaces: boolean
-    path: string
-    uri: string
-    relativePath: string
-    languageId: string
-    position: {
-      line: number
-      character: number
-    }
-  }
-}
-
-interface CopilotGetCompletionsResult {
-  completions: {
-    text: string
-    position: {
-      line: number
-      character: number
-    }
-    uuid: string
-    range: {
-      start: {
-        line: number
-        character: number
-      }
-      end: {
-        line: number
-        character: number
-      }
-    }
-    displayText: string
-    point: {
-      line: number
-      character: number
-    }
-    region: {
-      start: {
-        line: number
-        character: number
-      }
-      end: {
-        line: number
-        character: number
-      }
-    }
-  }[]
-}
-
-interface CopilotAcceptCompletionParams {
-  uuid: string
-}
-
-interface CopilotRejectCompletionParams {
-  uuids: string[]
-}
+import { CopilotLspCompletionParams } from 'wasm-lib/kcl/bindings/CopilotLspCompletionParams'
+import { CopilotCompletionResponse } from 'wasm-lib/kcl/bindings/CopilotCompletionResponse'
+import { CopilotAcceptCompletionParams } from 'wasm-lib/kcl/bindings/CopilotAcceptCompletionParams'
+import { CopilotRejectCompletionParams } from 'wasm-lib/kcl/bindings/CopilotRejectCompletionParams'
 
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/
 
@@ -78,7 +21,7 @@ interface LSPRequestMap {
     LSP.SemanticTokensParams,
     LSP.SemanticTokens
   ]
-  getCompletions: [CopilotGetCompletionsParams, CopilotGetCompletionsResult]
+  getCompletions: [CopilotLspCompletionParams, CopilotCompletionResponse]
   notifyAccepted: [CopilotAcceptCompletionParams, any]
   notifyRejected: [CopilotRejectCompletionParams, any]
 }
@@ -88,6 +31,11 @@ interface LSPNotifyMap {
   initialized: LSP.InitializedParams
   'textDocument/didChange': LSP.DidChangeTextDocumentParams
   'textDocument/didOpen': LSP.DidOpenTextDocumentParams
+  'textDocument/didClose': LSP.DidCloseTextDocumentParams
+  'workspace/didChangeWorkspaceFolders': LSP.DidChangeWorkspaceFoldersParams
+  'workspace/didCreateFiles': LSP.CreateFilesParams
+  'workspace/didRenameFiles': LSP.RenameFilesParams
+  'workspace/didDeleteFiles': LSP.DeleteFilesParams
 }
 
 export interface LanguageServerClientOptions {
@@ -149,12 +97,52 @@ export class LanguageServerClient {
   textDocumentDidOpen(params: LSP.DidOpenTextDocumentParams) {
     this.notify('textDocument/didOpen', params)
 
+    // Update the facet of the plugins to the correct value.
+    for (const plugin of this.plugins) {
+      plugin.documentUri = params.textDocument.uri
+      plugin.languageId = params.textDocument.languageId
+    }
+
     this.updateSemanticTokens(params.textDocument.uri)
   }
 
   textDocumentDidChange(params: LSP.DidChangeTextDocumentParams) {
     this.notify('textDocument/didChange', params)
     this.updateSemanticTokens(params.textDocument.uri)
+  }
+
+  textDocumentDidClose(params: LSP.DidCloseTextDocumentParams) {
+    this.notify('textDocument/didClose', params)
+  }
+
+  workspaceDidChangeWorkspaceFolders(
+    added: LSP.WorkspaceFolder[],
+    removed: LSP.WorkspaceFolder[]
+  ) {
+    // Add all the current workspace folders in the plugin to removed.
+    for (const plugin of this.plugins) {
+      removed.push(...plugin.workspaceFolders)
+    }
+    this.notify('workspace/didChangeWorkspaceFolders', {
+      event: { added, removed },
+    })
+
+    // Add all the new workspace folders to the plugins.
+    for (const plugin of this.plugins) {
+      plugin.workspaceFolders = added
+    }
+  }
+
+  workspaceDidCreateFiles(params: LSP.CreateFilesParams) {
+    this.notify('workspace/didCreateFiles', params)
+  }
+
+  workspaceDidRenameFiles(params: LSP.RenameFilesParams) {
+    this.notify('workspace/didRenameFiles', params)
+  }
+
+  workspaceDidDeleteFiles(params: LSP.DeleteFilesParams) {
+    this.notify('workspace/didDeleteFiles', params)
   }
 
   async updateSemanticTokens(uri: string) {
@@ -226,7 +214,7 @@ export class LanguageServerClient {
     return this.client.notify(method, params)
   }
 
-  async getCompletion(params: CopilotGetCompletionsParams) {
+  async getCompletion(params: CopilotLspCompletionParams) {
     const response = await this.request('getCompletions', params)
     //
     this.queuedUids = [...response.completions.map((c) => c.uuid)]

@@ -35,14 +35,20 @@ pub fn stack_api_call<const N: usize>(
     }))
 }
 
-pub fn single_binding(
+pub fn sg_binding(
     b: EpBinding,
     fn_name: &'static str,
     expected: &'static str,
     arg_number: usize,
-) -> Result<Address, CompileError> {
+) -> Result<usize, CompileError> {
     match b {
-        EpBinding::Single(a) => Ok(a),
+        EpBinding::SketchGroup { index } => Ok(index),
+        EpBinding::Single(_) => Err(CompileError::ArgWrongType {
+            fn_name,
+            expected,
+            actual: "single".to_owned(),
+            arg_number,
+        }),
         EpBinding::Sequence { .. } => Err(CompileError::ArgWrongType {
             fn_name,
             expected,
@@ -59,6 +65,52 @@ pub fn single_binding(
             fn_name,
             expected,
             actual: "function".to_owned(),
+            arg_number,
+        }),
+        EpBinding::Constant(_) => Err(CompileError::ArgWrongType {
+            fn_name,
+            expected,
+            actual: "constant".to_owned(),
+            arg_number,
+        }),
+    }
+}
+pub fn single_binding(
+    b: EpBinding,
+    fn_name: &'static str,
+    expected: &'static str,
+    arg_number: usize,
+) -> Result<Address, CompileError> {
+    match b {
+        EpBinding::Single(a) => Ok(a),
+        EpBinding::SketchGroup { .. } => Err(CompileError::ArgWrongType {
+            fn_name,
+            expected,
+            actual: "SketchGroup".to_owned(),
+            arg_number,
+        }),
+        EpBinding::Sequence { .. } => Err(CompileError::ArgWrongType {
+            fn_name,
+            expected,
+            actual: "array".to_owned(),
+            arg_number,
+        }),
+        EpBinding::Map { .. } => Err(CompileError::ArgWrongType {
+            fn_name,
+            expected,
+            actual: "object".to_owned(),
+            arg_number,
+        }),
+        EpBinding::Function(_) => Err(CompileError::ArgWrongType {
+            fn_name,
+            expected,
+            actual: "function".to_owned(),
+            arg_number,
+        }),
+        EpBinding::Constant(_) => Err(CompileError::ArgWrongType {
+            fn_name,
+            expected,
+            actual: "constant".to_owned(),
             arg_number,
         }),
     }
@@ -78,6 +130,12 @@ pub fn sequence_binding(
             actual: "single".to_owned(),
             arg_number,
         }),
+        EpBinding::SketchGroup { .. } => Err(CompileError::ArgWrongType {
+            fn_name,
+            expected,
+            actual: "SketchGroup".to_owned(),
+            arg_number,
+        }),
         EpBinding::Map { .. } => Err(CompileError::ArgWrongType {
             fn_name,
             expected,
@@ -90,19 +148,25 @@ pub fn sequence_binding(
             actual: "function".to_owned(),
             arg_number,
         }),
+        EpBinding::Constant(_) => Err(CompileError::ArgWrongType {
+            fn_name,
+            expected,
+            actual: "constant".to_owned(),
+            arg_number,
+        }),
     }
 }
 
-/// Extract a 2D point from an argument to a Cabble.
+/// Extract a 2D point from an argument to a KCL Function.
 pub fn arg_point2d(
     arg: EpBinding,
     fn_name: &'static str,
     instructions: &mut Vec<Instruction>,
-    next_addr: &mut Address,
+    ctx: &mut crate::native_functions::Context<'_>,
     arg_number: usize,
 ) -> Result<Address, CompileError> {
     let expected = "2D point (array with length 2)";
-    let elements = sequence_binding(arg, "startSketchAt", "an array of length 2", arg_number)?;
+    let elements = sequence_binding(arg, fn_name, "an array of length 2", arg_number)?;
     if elements.len() != 2 {
         return Err(CompileError::ArgWrongType {
             fn_name,
@@ -113,18 +177,18 @@ pub fn arg_point2d(
     }
     // KCL stores points as an array.
     // KC API stores them as Rust objects laid flat out in memory.
-    let start = next_addr.offset_by(2);
+    let start = ctx.next_address.offset_by(2);
     let start_x = start;
     let start_y = start + 1;
     let start_z = start + 2;
     instructions.extend([
         Instruction::Copy {
-            source: single_binding(elements[0].clone(), "startSketchAt", "number", arg_number)?,
+            source: single_binding(elements[0].clone(), fn_name, "number", arg_number)?,
             destination: Destination::Address(start_x),
             length: 1,
         },
         Instruction::Copy {
-            source: single_binding(elements[1].clone(), "startSketchAt", "number", arg_number)?,
+            source: single_binding(elements[1].clone(), fn_name, "number", arg_number)?,
             destination: Destination::Address(start_y),
             length: 1,
         },
@@ -133,5 +197,6 @@ pub fn arg_point2d(
             value: 0.0.into(),
         },
     ]);
+    ctx.next_address.offset_by(1); // After we pushed 0.0 here, just above.
     Ok(start)
 }

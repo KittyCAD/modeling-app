@@ -250,7 +250,7 @@ describe('testing doesPipeHave', () => {
   it('finds close', () => {
     const exampleCode = `const length001 = 2
 const part001 = startSketchAt([-1.41, 3.46])
-  |> line({ to: [19.49, 1.16], tag: 'seg01' }, %)
+  |> line([19.49, 1.16], %, 'seg01')
   |> angledLine([-35, length001], %)
   |> line([-3.22, -7.36], %)
   |> angledLine([-175, segLen('seg01', %)], %)
@@ -267,7 +267,7 @@ const part001 = startSketchAt([-1.41, 3.46])
   it('finds extrude', () => {
     const exampleCode = `const length001 = 2
 const part001 = startSketchAt([-1.41, 3.46])
-  |> line({ to: [19.49, 1.16], tag: 'seg01' }, %)
+  |> line([19.49, 1.16], %, 'seg01')
   |> angledLine([-35, length001], %)
   |> line([-3.22, -7.36], %)
   |> angledLine([-175, segLen('seg01', %)], %)
@@ -285,7 +285,7 @@ const part001 = startSketchAt([-1.41, 3.46])
   it('does NOT find close', () => {
     const exampleCode = `const length001 = 2
 const part001 = startSketchAt([-1.41, 3.46])
-  |> line({ to: [19.49, 1.16], tag: 'seg01' }, %)
+  |> line([19.49, 1.16], %, 'seg01')
   |> angledLine([-35, length001], %)
   |> line([-3.22, -7.36], %)
   |> angledLine([-175, segLen('seg01', %)], %)
@@ -314,7 +314,7 @@ describe('testing hasExtrudeSketchGroup', () => {
   it('find sketch group', async () => {
     const exampleCode = `const length001 = 2
 const part001 = startSketchAt([-1.41, 3.46])
-  |> line({ to: [19.49, 1.16], tag: 'seg01' }, %)
+  |> line([19.49, 1.16], %, 'seg01')
   |> angledLine([-35, length001], %)
   |> line([-3.22, -7.36], %)
   |> angledLine([-175, segLen('seg01', %)], %)`
@@ -330,7 +330,7 @@ const part001 = startSketchAt([-1.41, 3.46])
   it('find extrude group', async () => {
     const exampleCode = `const length001 = 2
 const part001 = startSketchAt([-1.41, 3.46])
-  |> line({ to: [19.49, 1.16], tag: 'seg01' }, %)
+  |> line([19.49, 1.16], %, 'seg01')
   |> angledLine([-35, length001], %)
   |> line([-3.22, -7.36], %)
   |> angledLine([-175, segLen('seg01', %)], %)

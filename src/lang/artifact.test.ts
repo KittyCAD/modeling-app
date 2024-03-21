@@ -94,7 +94,7 @@ const mySketch001 = startSketchOn('XY')
 const sk1 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> lineTo([-2.5, 0], %)
-  |> lineTo({ to: [0, 10], tag: "p" }, %)
+  |> lineTo([0, 10], %, "p")
   |> lineTo([2.5, 0], %)
   // |> rx(45, %)
   // |> translate([1,0,1], %)
@@ -104,7 +104,7 @@ const theExtrude = extrude(2, sk1)
 const sk2 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> lineTo([-2.5, 0], %)
-  |> lineTo({ to: [0, 3], tag: "p" }, %)
+  |> lineTo([0, 3], %, "p")
   |> lineTo([2.5, 0], %)
   // |> transform(theTransf, %)
   |> extrude(2, %)
@@ -143,7 +143,7 @@ const sk2 = startSketchOn('XY')
         xAxis: { x: 1, y: 0, z: 0 },
         yAxis: { x: 0, y: 1, z: 0 },
         zAxis: { x: 0, y: 0, z: 1 },
-        __meta: [{ sourceRange: [356, 381] }],
+        __meta: [{ sourceRange: [343, 368] }],
       },
     ])
   })
