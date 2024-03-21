@@ -122,7 +122,7 @@
     "@types/wicg-file-system-access": "^2023.10.5",
     "@types/ws": "^8.5.5",
     "@vitejs/plugin-react": "^4.2.1",
-    "@wdio/cli": "^8.24.3",
+    "@wdio/cli": "^8.35.1",
     "@wdio/globals": "^8.24.3",
     "@wdio/local-runner": "^8.24.3",
     "@wdio/mocha-framework": "^8.35.0",
