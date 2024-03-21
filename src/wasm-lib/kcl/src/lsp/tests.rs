@@ -1105,6 +1105,7 @@ async fn test_copilot_lsp_set_editor_info() {
 }
 
 #[tokio::test]
+#[ignore] // Ignore til hosted model is faster (@jessfraz working on).
 async fn test_copilot_lsp_completions_raw() {
     let server = copilot_lsp_server().unwrap();
 
@@ -1158,6 +1159,7 @@ async fn test_copilot_lsp_completions_raw() {
 }
 
 #[tokio::test]
+#[ignore] // Ignore til hosted model is faster (@jessfraz working on).
 async fn test_copilot_lsp_completions() {
     let server = copilot_lsp_server().unwrap();
 
