@@ -299,7 +299,7 @@ fn inner_angle_to_match_length_x(
 
     let diff = (to - last_line.to[0]).abs();
 
-    let angle_r = diff / length.acos();
+    let angle_r = (diff / length).acos();
 
     if diff > length {
         Ok(0.0)
@@ -365,7 +365,7 @@ fn inner_angle_to_match_length_y(
 
     let diff = (to - last_line.to[1]).abs();
 
-    let angle_r = diff / length.asin();
+    let angle_r = (diff / length).asin();
 
     if diff > length {
         Ok(0.0)

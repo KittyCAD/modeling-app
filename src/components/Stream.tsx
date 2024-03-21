@@ -31,7 +31,6 @@ export const Stream = ({ className = '' }: { className?: string }) => {
   const { state } = useModelingContext()
   const { isExecuting } = useKclContext()
   const { overallState } = useNetworkStatus()
-
   const isNetworkOkay = overallState === NetworkHealthState.Ok
 
   useEffect(() => {
