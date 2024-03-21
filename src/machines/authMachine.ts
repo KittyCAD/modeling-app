@@ -1,5 +1,5 @@
 import { createMachine, assign } from 'xstate'
-import { Models, api_tokens } from '@kittycad/lib'
+import { Models } from '@kittycad/lib'
 import withBaseURL from '../lib/withBaseURL'
 import { isTauri } from 'lib/isTauri'
 import { invoke } from '@tauri-apps/api'
