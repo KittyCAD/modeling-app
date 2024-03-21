@@ -159,9 +159,7 @@ impl Program {
     /// Returns a value that includes the given character position.
     /// This is a bit more recursive than `get_body_item_for_position`.
     pub fn get_value_for_position(&self, pos: usize) -> Option<&Value> {
-        let Some(item) = self.get_body_item_for_position(pos) else {
-            return None;
-        };
+        let item = self.get_body_item_for_position(pos)?;
 
         // Recurse over the item.
         match item {
@@ -177,9 +175,7 @@ impl Program {
         if self.non_code_meta.contains(pos) {
             return Some(&self.non_code_meta);
         }
-        let Some(item) = self.get_body_item_for_position(pos) else {
-            return None;
-        };
+        let item = self.get_body_item_for_position(pos)?;
 
         // Recurse over the item.
         let value = match item {

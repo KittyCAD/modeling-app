@@ -12,7 +12,7 @@ use kcl_lib::{
     ast::types::{BodyItem, FunctionExpressionParts, KclNone, LiteralValue, Program},
 };
 use kcl_value_group::into_single_value;
-use kittycad_execution_plan::{self as ep, Destination, Instruction};
+use kittycad_execution_plan::{self as ep, Destination, Instruction, InstructionKind};
 use kittycad_execution_plan_traits as ept;
 use kittycad_execution_plan_traits::{Address, NumericPrimitive};
 use kittycad_modeling_session::Session;
@@ -88,10 +88,10 @@ impl Planner {
             SingleValue::None(KclNone { start: _, end: _ }) => {
                 let address = self.next_addr.offset_by(1);
                 Ok(EvalPlan {
-                    instructions: vec![Instruction::SetPrimitive {
+                    instructions: vec![Instruction::from(InstructionKind::SetPrimitive {
                         address,
                         value: ept::Primitive::Nil,
-                    }],
+                    })],
                     binding: EpBinding::Single(address),
                 })
             }
@@ -118,10 +118,10 @@ impl Planner {
                 let size = 1;
                 let address = self.next_addr.offset_by(size);
                 Ok(EvalPlan {
-                    instructions: vec![Instruction::SetPrimitive {
+                    instructions: vec![Instruction::from(InstructionKind::SetPrimitive {
                         address,
                         value: kcep_val,
-                    }],
+                    })],
                     binding: EpBinding::Single(address),
                 })
             }
@@ -138,10 +138,10 @@ impl Planner {
                 if let Some(b) = b {
                     let address = self.next_addr.offset_by(1);
                     return Ok(EvalPlan {
-                        instructions: vec![Instruction::SetPrimitive {
+                        instructions: vec![Instruction::from(InstructionKind::SetPrimitive {
                             address,
                             value: ept::Primitive::Bool(b),
-                        }],
+                        })],
                         binding: EpBinding::Single(address),
                     });
                 }
@@ -167,7 +167,7 @@ impl Planner {
                 };
                 let destination = self.next_addr.offset_by(1);
                 let mut plan = operand.instructions;
-                plan.push(Instruction::UnaryArithmetic {
+                plan.push(Instruction::from(InstructionKind::UnaryArithmetic {
                     arithmetic: ep::UnaryArithmetic {
                         operation: match expr.operator {
                             ast::types::UnaryOperator::Neg => ep::UnaryOperation::Neg,
@@ -176,7 +176,7 @@ impl Planner {
                         operand: ep::Operand::Reference(binding),
                     },
                     destination: Destination::Address(destination),
-                });
+                }));
                 Ok(EvalPlan {
                     instructions: plan,
                     binding: EpBinding::Single(destination),
@@ -199,7 +199,7 @@ impl Planner {
                 let mut plan = Vec::with_capacity(l.instructions.len() + r.instructions.len() + 1);
                 plan.extend(l.instructions);
                 plan.extend(r.instructions);
-                plan.push(Instruction::BinaryArithmetic {
+                plan.push(Instruction::from(InstructionKind::BinaryArithmetic {
                     arithmetic: ep::BinaryArithmetic {
                         operation: match expr.operator {
                             ast::types::BinaryOperator::Add => ep::BinaryOperation::Add,
@@ -213,7 +213,7 @@ impl Planner {
                         operand1: ep::Operand::Reference(r_binding),
                     },
                     destination: Destination::Address(destination),
-                });
+                }));
                 Ok(EvalPlan {
                     instructions: plan,
                     binding: EpBinding::Single(destination),
@@ -395,10 +395,10 @@ impl Planner {
                         };
 
                         // Find the address of the member, push to stack.
-                        instructions.push(Instruction::AddrOfMember {
+                        instructions.push(Instruction::from(InstructionKind::AddrOfMember {
                             member: addr_of_member,
                             start: structure_start,
-                        });
+                        }));
                         // If there's another member after this one, its starting object is the
                         // address we just pushed to the stack.
                         structure_start = ep::Operand::StackPop;
@@ -407,10 +407,10 @@ impl Planner {
                     // The final address is on the stack.
                     // Move it to addressable memory.
                     let final_prop_addr = self.next_addr.offset_by(1);
-                    instructions.push(Instruction::CopyLen {
+                    instructions.push(Instruction::from(InstructionKind::CopyLen {
                         source_range: ep::Operand::StackPop,
                         destination_range: ep::Operand::Literal(final_prop_addr.into()),
-                    });
+                    }));
 
                     Ok(EvalPlan {
                         instructions,
@@ -503,10 +503,10 @@ impl Planner {
                         if let Some(length_at) = length_at {
                             let length_of_this_element = (self.next_addr - length_at) - 1;
                             // Append element's length
-                            acc_instrs.push(Instruction::SetPrimitive {
+                            acc_instrs.push(Instruction::from(InstructionKind::SetPrimitive {
                                 address: length_at,
                                 value: length_of_this_element.into(),
-                            });
+                            }));
                         }
                         // Append element's value
                         acc_instrs.extend(instrs_for_this_element);
@@ -516,14 +516,14 @@ impl Planner {
                 // The array's overall instructions are:
                 // - Write a length header
                 // - Write everything to calculate its elements.
-                let mut instructions = vec![Instruction::SetPrimitive {
+                let mut instructions = vec![Instruction::from(InstructionKind::SetPrimitive {
                     address: length_at,
                     value: ept::ObjectHeader {
                         properties: keys,
                         size: (self.next_addr - length_at) - 1,
                     }
                     .into(),
-                }];
+                })];
                 instructions.extend(instructions_for_each_element);
                 let binding = EpBinding::Map {
                     length_at,
@@ -560,10 +560,10 @@ impl Planner {
                         if let Some(length_at) = length_at {
                             let length_of_this_element = (self.next_addr - length_at) - 1;
                             // Append element's length
-                            acc_instrs.push(Instruction::SetPrimitive {
+                            acc_instrs.push(Instruction::from(InstructionKind::SetPrimitive {
                                 address: length_at,
                                 value: length_of_this_element.into(),
-                            });
+                            }));
                         }
                         // Append element's value
                         acc_instrs.extend(instrs_for_this_element);
@@ -573,14 +573,14 @@ impl Planner {
                 // The array's overall instructions are:
                 // - Write a length header
                 // - Write everything to calculate its elements.
-                let mut instructions = vec![Instruction::SetPrimitive {
+                let mut instructions = vec![Instruction::from(InstructionKind::SetPrimitive {
                     address: length_at,
                     value: ept::ListHeader {
                         count: element_count,
                         size: (self.next_addr - length_at) - 1,
                     }
                     .into(),
-                }];
+                })];
                 instructions.extend(instructions_for_each_element);
                 let binding = EpBinding::Sequence {
                     length_at,

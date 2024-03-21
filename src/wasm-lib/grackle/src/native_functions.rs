@@ -3,7 +3,8 @@
 //! But some other stdlib functions will be written in KCL.
 
 use kittycad_execution_plan::{
-    BinaryArithmetic, BinaryOperation, Destination, Instruction, Operand, UnaryArithmetic, UnaryOperation,
+    BinaryArithmetic, BinaryOperation, Destination, Instruction, InstructionKind, Operand, UnaryArithmetic,
+    UnaryOperation,
 };
 use kittycad_execution_plan_traits::Address;
 
@@ -59,13 +60,13 @@ macro_rules! define_unary {
 
             let destination = ctx.next_address.offset_by(1);
             let instructions = vec![
-              Instruction::UnaryArithmetic {
+              Instruction::from(InstructionKind::UnaryArithmetic {
                 arithmetic: UnaryArithmetic {
                   operation: UnaryOperation::$h,
                   operand: Operand::Reference(arg0)
                 },
                 destination: Destination::Address(destination)
-              }
+              })
             ];
 
             Ok(EvalPlan {
@@ -144,14 +145,14 @@ macro_rules! define_binary {
           };
           let destination = ctx.next_address.offset_by(1);
           Ok(EvalPlan {
-              instructions: vec![Instruction::BinaryArithmetic {
+              instructions: vec![Instruction::from(InstructionKind::BinaryArithmetic {
                   arithmetic: BinaryArithmetic {
                       operation: BinaryOperation::$h,
                       operand0: Operand::Reference(arg0),
                       operand1: Operand::Reference(arg1),
                   },
                   destination: Destination::Address(destination),
-              }],
+              })],
               binding: EpBinding::Single(destination),
           })
         }
