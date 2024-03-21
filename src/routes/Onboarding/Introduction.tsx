@@ -29,12 +29,12 @@ function OnboardingWithNewFile() {
   const next = useNextClick(onboardingPaths.INDEX)
   const {
     settings: {
-      context: { defaultDirectory },
+      context: { app: { projectDirectory } },
     },
   } = useSettingsAuthContext()
 
   async function createAndOpenNewProject() {
-    const projects = await getProjectsInDir(defaultDirectory)
+    const projects = await getProjectsInDir(projectDirectory.current)
     const nextIndex = await getNextProjectIndex(
       ONBOARDING_PROJECT_NAME,
       projects
@@ -44,7 +44,7 @@ function OnboardingWithNewFile() {
       nextIndex
     )
     const newFile = await createNewProject(
-      defaultDirectory + sep + name,
+      projectDirectory.current + sep + name,
       bracket
     )
     navigate(
@@ -108,13 +108,13 @@ export default function Introduction() {
   const {
     settings: {
       state: {
-        context: { theme },
+        context: { app: { theme } },
       },
     },
   } = useSettingsAuthContext()
   const getLogoTheme = () =>
-    theme === Themes.Light ||
-    (theme === Themes.System && getSystemTheme() === Themes.Light)
+    theme.current === Themes.Light ||
+    (theme.current === Themes.System && getSystemTheme() === Themes.Light)
       ? '-dark'
       : ''
   const dismiss = useDismiss()

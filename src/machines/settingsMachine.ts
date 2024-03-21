@@ -7,10 +7,6 @@ import {
 } from 'lib/settings/initialSettings'
 import { Leaves, PathValue } from 'lib/types'
 import { BaseUnit } from 'lib/settings/settingsTypes'
-import { setPropertyByPath } from 'lib/objectPropertyByPath'
-import { getChangedSettingsAtLevel } from 'lib/settings/settingsUtils'
-import { writeToSettingsFiles } from 'lib/tauriFS'
-import { isTauri } from 'lib/isTauri'
 
 type SetEvent<T extends Leaves<typeof settings>> = {
   type: `set.${T}`
@@ -128,13 +124,6 @@ export const settingsMachine = createMachine(
         setThemeClass(
           currentTheme === Themes.System ? getSystemTheme() : currentTheme
         )
-      },
-      persistSettings: (context, event) => {
-        console.log('context', context)
-        console.log('event', event)
-        if (isTauri()) {
-          writeToSettingsFiles(context)
-        }
       },
     },
   }

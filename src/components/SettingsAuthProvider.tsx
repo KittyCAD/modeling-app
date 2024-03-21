@@ -22,6 +22,7 @@ import { sceneInfra } from 'clientSideScene/sceneInfra'
 import { kclManager } from 'lang/KclSingleton'
 import { IndexLoaderData } from 'lib/types'
 import { SettingsLevel, settings } from 'lib/settings/initialSettings'
+import { writeToSettingsFiles } from 'lib/tauriFS'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -111,6 +112,13 @@ export const SettingsAuthProviderBase = ({
           )
         },
         'Execute AST': () => kclManager.executeAst(),
+        persistSettings: (context, event) => {
+          if (isTauri()) {
+            writeToSettingsFiles(context, loadedProject)
+          } else {
+            // TODO: persist settings to local storage otherwise
+          }
+        },
       },
     }
   )

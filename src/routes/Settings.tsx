@@ -34,8 +34,9 @@ import { bracket } from 'lib/exampleKcl'
 import { isTauri } from 'lib/isTauri'
 import { invoke } from '@tauri-apps/api'
 import toast from 'react-hot-toast'
-import { useState } from 'react'
-import { SettingsLevel } from 'lib/settings/initialSettings'
+import React, { useState } from 'react'
+import { Setting, SettingsLevel } from 'lib/settings/initialSettings'
+import decamelize from 'decamelize'
 
 export const Settings = () => {
   const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
@@ -43,8 +44,10 @@ export const Settings = () => {
     (useRouteLoaderData(paths.FILE) as IndexLoaderData) || undefined
   const navigate = useNavigate()
   const location = useLocation()
-  const [settingsLevel, setSettingsLevel] = useState<SettingsLevel>('user')
   const isFileSettings = location.pathname.includes(paths.FILE)
+  const [settingsLevel, setSettingsLevel] = useState<SettingsLevel>(
+    isFileSettings ? 'project' : 'user'
+  )
   const dotDotSlash = useDotDotSlash()
   useHotkeys('esc', () => navigate(dotDotSlash()))
   const {
@@ -68,7 +71,10 @@ export const Settings = () => {
     if (newDirectory && newDirectory !== null && !Array.isArray(newDirectory)) {
       send({
         type: `set.app.projectDirectory.${settingsLevel}`,
-        data: { path: `app.onboardingStatus.${settingsLevel}`, value: newDirectory },
+        data: {
+          path: `app.onboardingStatus.${settingsLevel}`,
+          value: newDirectory,
+        },
       })
     }
   }
@@ -135,55 +141,118 @@ export const Settings = () => {
           </a>
           , and start a discussion if you don't see it! Your feedback will help
           us prioritize what to build next.
-          <Toggle
-            offLabel="User"
-            onLabel="Project"
-            onChange={() =>
-              setSettingsLevel((v) => (v === 'project' ? 'user' : 'project'))
-            }
-            checked={settingsLevel === 'project'}
-            name="settings-level"
-          />
+          {isFileSettings && (
+            <Toggle
+              offLabel="User"
+              onLabel="Project"
+              onChange={() =>
+                setSettingsLevel((v) => (v === 'project' ? 'user' : 'project'))
+              }
+              checked={settingsLevel === 'project'}
+              name="settings-level"
+            />
+          )}
         </p>
-        <SettingsSection
-          title="Camera Controls"
-          description="How you want to control the camera in the 3D view"
-        >
-          <select
-            id="camera-controls"
-            className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
-            value={context.modeling.mouseControls[settingsLevel] || context.modeling.mouseControls.current}
-            onChange={(e) => {
-              send({
-                type: `set.modeling.mouseControls.${settingsLevel}`,
-                data: {
-                  path: `modeling.mouseControls.${settingsLevel}`,
-                  value: e.target.value as CameraSystem,
-                },
-              })
-            }}
-          >
-            {cameraSystems.map((program) => (
-              <option key={program} value={program}>
-                {program}
-              </option>
-            ))}
-          </select>
-          <ul className="mx-4 my-2 text-sm leading-relaxed">
-            <li>
-              <strong>Pan:</strong>{' '}
-              {cameraMouseDragGuards[mouseControls].pan.description}
-            </li>
-            <li>
-              <strong>Zoom:</strong>{' '}
-              {cameraMouseDragGuards[mouseControls].zoom.description}
-            </li>
-            <li>
-              <strong>Rotate:</strong>{' '}
-              {cameraMouseDragGuards[mouseControls].rotate.description}
-            </li>
-          </ul>
-        </SettingsSection>
+        {Object.entries(context).map(([category, categorySettings]) => (
+          <div key={category}>
+            <h2 className="text-lg capitalize font-bold">
+              {decamelize(category, { separator: ' ' })}
+            </h2>
+            {Object.entries(categorySettings).map(([settingName, s]) => {
+              const setting = s as Setting<string | boolean>
+              let Component: React.ReactNode
+              switch (setting.settingsUI) {
+                case 'select':
+                  Component = (
+                    <select
+                      id={settingName}
+                      className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
+                      value={setting.current}
+                      onChange={(e) => {
+                        send({
+                          type: `set.${category}.${settingName}.${settingsLevel}`,
+                          data: {
+                            path: `${category}.${settingName}.${settingsLevel}`,
+                            value: e.target.value,
+                          },
+                        })
+                      }}
+                    >
+                      {setting.options?.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  )
+                  break
+                case 'input':
+                  Component = (
+                    <input
+                      className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
+                      defaultValue={setting.current}
+                      onBlur={(e) => {
+                        const newValue =
+                          e.target.value.trim() || setting.default
+                        send({
+                          type: `set.${category}.${settingName}.${settingsLevel}`,
+                          data: {
+                            path: `${category}.${settingName}.${settingsLevel}`,
+                            value: newValue,
+                          },
+                        })
+                        e.target.value = newValue
+                      }}
+                      autoCapitalize="off"
+                      autoComplete="off"
+                      data-testid={`${settingName}-input`}
+                    />
+                  )
+                  break
+                case 'toggle':
+                  Component = (
+                    <Toggle
+                      name={`${category}-${settingName}`}
+                      checked={Boolean(setting.current)}
+                      onChange={(e) => {
+                        send({
+                          type: `set.${category}.${settingName}.${settingsLevel}`,
+                          data: {
+                            path: `${category}.${settingName}.${settingsLevel}`,
+                            value: e.target.checked,
+                          },
+                        })
+                      }}
+                    />
+                  )
+                  break
+                default:
+                  Component = setting.settingsUI
+                    ? setting.settingsUI({
+                        value: setting.current,
+                        onChange: (e) => {
+                          send({
+                            type: `set.${category}.${settingName}.${settingsLevel}`,
+                            data: {
+                              path: `${category}.${settingName}.${settingsLevel}`,
+                              value: e.target.value,
+                            },
+                          })
+                        },
+                      })
+                    : null
+              }
+              return (
+                <SettingsSection
+                  title={decamelize(settingName, { separator: ' ' })}
+                  key={settingName}
+                >
+                  {Component}
+                </SettingsSection>
+              )
+            })}
+          </div>
+        ))}
         {(window as any).__TAURI__ && (
           <>
             <SettingsSection
@@ -193,7 +262,10 @@ export const Settings = () => {
               <div className="flex w-full gap-4 p-1 border rounded border-chalkboard-30">
                 <input
                   className="flex-1 px-2 bg-transparent"
-                  value={context.app.projectDirectory[settingsLevel] || context.app.projectDirectory.current}
+                  value={
+                    context.app.projectDirectory[settingsLevel] ||
+                    context.app.projectDirectory.current
+                  }
                   disabled
                   data-testid="default-directory-input"
                 />
@@ -214,7 +286,10 @@ export const Settings = () => {
             >
               <input
                 className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
-                defaultValue={context.project.defaultProjectName[settingsLevel] || context.project.defaultProjectName.current}
+                defaultValue={
+                  context.project.defaultProjectName[settingsLevel] ||
+                  context.project.defaultProjectName.current
+                }
                 onBlur={(e) => {
                   const newValue = e.target.value.trim() || DEFAULT_PROJECT_NAME
                   send({
@@ -240,7 +315,10 @@ export const Settings = () => {
           <select
             id="base-unit"
             className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
-            value={context.modeling.defaultUnit[settingsLevel] || context.modeling.defaultUnit.current}
+            value={
+              context.modeling.defaultUnit[settingsLevel] ||
+              context.modeling.defaultUnit.current
+            }
             onChange={(e) => {
               send({
                 type: `set.modeling.defaultUnit.${settingsLevel}`,
@@ -264,7 +342,10 @@ export const Settings = () => {
         >
           <Toggle
             name="settings-debug-panel"
-            checked={context.modeling.showDebugPanel[settingsLevel] || context.modeling.showDebugPanel.current}
+            checked={
+              context.modeling.showDebugPanel[settingsLevel] ||
+              context.modeling.showDebugPanel.current
+            }
             onChange={(e) => {
               send({
                 type: `set.project.entryPointFileName.${settingsLevel}`,
@@ -283,7 +364,9 @@ export const Settings = () => {
           <select
             id="settings-theme"
             className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
-            value={context.app.theme[settingsLevel] || context.app.theme.current}
+            value={
+              context.app.theme[settingsLevel] || context.app.theme.current
+            }
             onChange={(e) => {
               send({
                 type: `set.app.theme.${settingsLevel}`,

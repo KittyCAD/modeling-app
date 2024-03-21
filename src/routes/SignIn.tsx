@@ -6,23 +6,22 @@ import { Themes, getSystemTheme } from '../lib/theme'
 import { paths } from 'lib/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { APP_NAME } from 'lib/constants'
-import { useValidateSettings } from 'hooks/useValidateSettings'
 
 const SignIn = () => {
-  useValidateSettings()
-  const getLogoTheme = () =>
-    theme === Themes.Light ||
-    (theme === Themes.System && getSystemTheme() === Themes.Light)
-      ? '-dark'
-      : ''
   const {
     auth: { send },
     settings: {
       state: {
-        context: { theme },
+        context: { app: { theme } },
       },
     },
   } = useSettingsAuthContext()
+
+  const getLogoTheme = () =>
+    theme.current === Themes.Light ||
+    (theme.current === Themes.System && getSystemTheme() === Themes.Light)
+      ? '-dark'
+      : ''
 
   const signInTauri = async () => {
     // We want to invoke our command to login via device auth.
@@ -32,7 +31,7 @@ const SignIn = () => {
       })
       send({ type: 'Log in', token })
     } catch (error) {
-      console.error('login button', error)
+      console.error('Error with login button', error)
     }
   }
 

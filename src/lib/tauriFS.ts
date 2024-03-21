@@ -386,30 +386,28 @@ export async function getUserSettingsFilePath(
 }
 
 export async function writeToSettingsFiles(
-  allSettings: ContextFrom<typeof settingsMachine>
+  allSettings: ContextFrom<typeof settingsMachine>,
+  projectData?: IndexLoaderData
 ) {
-  const settingsFilePath = await getUserSettingsFilePath('')
-  const userSettings = [
-    settingsFilePath + SETTINGS_FILE_NAME,
-    getChangedSettingsAtLevel(allSettings, 'user'),
-  ] as const
-  const projectSettings = [
-    settingsFilePath + 'settings-project.json',
-    getChangedSettingsAtLevel(allSettings, 'project'),
-  ] as const
+  const path = await getUserSettingsFilePath('') + SETTINGS_FILE_NAME
+  const settings = getChangedSettingsAtLevel(allSettings, 'user')
 
-  console.log('user-level settings', userSettings)
-  console.log('project-level settings', projectSettings)
+  if (settings && Object.keys(settings).length) {
+    await writeTextFile(path, JSON.stringify(settings, null, 2))
+  } else {
+    await removeFile(path)
+  }
 
-  const settingsLevels = [userSettings, projectSettings]
+  if (projectData) {
+    const path = projectData?.project?.path  + sep+ 'settings.json'
+    const settings = getChangedSettingsAtLevel(allSettings, 'project')
 
-  settingsLevels.forEach(async ([path, settings]) => {
     if (settings && Object.keys(settings).length) {
       await writeTextFile(path, JSON.stringify(settings, null, 2))
     } else {
       await removeFile(path)
     }
-  })
+  }
 }
 
 export async function readSettingsFile(): Promise<Partial<ContextFrom<
