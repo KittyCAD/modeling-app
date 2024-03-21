@@ -2798,7 +2798,7 @@ pub struct Parameter {
     pub identifier: Identifier,
     /// The type of the parameter.
     /// This is optional if the user defines a type.
-    #[ts(skip)]
+    #[serde(skip)]
     pub type_: Option<FnArgType>,
     /// Is the parameter optional?
     pub optional: bool,
