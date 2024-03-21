@@ -169,7 +169,14 @@ fn keyword(i: &mut Located<&str>) -> PResult<Token> {
 
 fn type_(i: &mut Located<&str>) -> PResult<Token> {
     // These are the types themselves.
-    let type_candidates = alt(("string", "number", "bool"));
+    let type_candidates = alt((
+        "string",
+        "number",
+        "bool",
+        "sketch_group",
+        "sketch_surface",
+        "extrude_group",
+    ));
     // Look ahead. If any of these characters follow the type, then it's not a type, it's just
     // the start of a normal word.
     let type_ = terminated(
