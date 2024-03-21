@@ -4,142 +4,123 @@ import {
   type Toggle,
   UnitSystem,
   baseUnitsUnion,
+  SettingsPaths,
+  SettingsLevel,
 } from 'lib/settings/settingsTypes'
 import { settingsMachine } from 'machines/settingsMachine'
 import { type CameraSystem, cameraSystems } from '../cameraControls'
 import { Themes } from '../theme'
+import { PathValue } from 'lib/types'
 
 // SETTINGS MACHINE
-export type SettingsCommandSchema = {
-  'Set Base Unit': {
-    baseUnit: BaseUnit
+export type SettingsCommandSchema<T extends SettingsPaths = SettingsPaths> = {
+  [K in `set.${SettingsPaths}`]: {
+    level: SettingsLevel
+    value: PathValue<typeof settingsMachine.context, T>['default']
   }
-  'Set Camera Controls': {
-    cameraControls: CameraSystem
-  }
-  'Set Default Project Name': {
-    defaultProjectName: string
-  }
-  'Set Text Wrapping': {
-    textWrapping: Toggle
-  }
-  'Set Theme': {
-    theme: Themes
-  }
-  'Set Unit System': {
-    unitSystem: UnitSystem
-  }
+}
+
+const levelArgConfig = {
+  inputType: 'options' as const,
+  required: true,
+  defaultValue: 'user' as SettingsLevel,
+  options: [
+    { name: 'User', value: 'user' as SettingsLevel, isCurrent: true },
+    { name: 'Project', value: 'project' as SettingsLevel },
+  ],
 }
 
 export const settingsCommandBarConfig: CommandSetConfig<
   typeof settingsMachine,
   SettingsCommandSchema
 > = {
-  'Set Base Unit': {
+  'set.modeling.defaultUnit': {
     icon: 'settings',
     args: {
-      baseUnit: {
+      level: levelArgConfig,
+      value: {
         inputType: 'options',
         required: true,
-        defaultValueFromContext: (context) => context.baseUnit,
+        defaultValueFromContext: (context) => context.modeling.defaultUnit.current,
         options: [],
         optionsFromContext: (context) =>
           Object.values(baseUnitsUnion).map((v) => ({
             name: v,
             value: v,
-            isCurrent: v === context.baseUnit,
+            isCurrent: v === context.modeling.defaultUnit.current,
           })),
       },
     },
   },
-  'Set Camera Controls': {
+  'set.modeling.mouseControls': {
     icon: 'settings',
     args: {
-      cameraControls: {
+      level: levelArgConfig,
+      value: {
         inputType: 'options',
         required: true,
-        defaultValueFromContext: (context) => context.cameraControls,
+        defaultValueFromContext: (context) => context.modeling.mouseControls.current,
         options: [],
         optionsFromContext: (context) =>
           Object.values(cameraSystems).map((v) => ({
             name: v,
             value: v,
-            isCurrent: v === context.cameraControls,
+            isCurrent: v === context.modeling.mouseControls.current,
           })),
       },
     },
   },
-  'Set Default Project Name': {
+  'set.project.defaultProjectName': {
     icon: 'settings',
     hide: 'web',
     args: {
-      defaultProjectName: {
+      level: levelArgConfig,
+      value: {
         inputType: 'string',
         required: true,
-        defaultValueFromContext: (context) => context.defaultProjectName,
+        defaultValueFromContext: (context) => context.project.defaultProjectName.current,
       },
     },
   },
-  'Set Text Wrapping': {
+  'set.textEditor.textWrapping': {
     icon: 'settings',
     args: {
-      textWrapping: {
+      level: levelArgConfig,
+      value: {
         inputType: 'options',
         required: true,
-        defaultValueFromContext: (context) => context.textWrapping,
+        defaultValueFromContext: (context) => context.textEditor.textWrapping.current,
         options: [],
         optionsFromContext: (context) => [
           {
             name: 'On',
             value: 'On' as Toggle,
-            isCurrent: context.textWrapping === 'On',
+            isCurrent: context.textEditor.textWrapping.current === 'On',
           },
           {
             name: 'Off',
             value: 'Off' as Toggle,
-            isCurrent: context.textWrapping === 'Off',
+            isCurrent: context.textEditor.textWrapping.current === 'Off',
           },
         ],
       },
     },
   },
-  'Set Theme': {
+  'set.app.theme': {
     icon: 'settings',
     args: {
-      theme: {
+      level: levelArgConfig,
+      value: {
         inputType: 'options',
         required: true,
-        defaultValueFromContext: (context) => context.theme,
+        defaultValueFromContext: (context) => context.app.theme.current,
         options: [],
         optionsFromContext: (context) =>
           Object.values(Themes).map((v) => ({
             name: v,
             value: v,
-            isCurrent: v === context.theme,
+            isCurrent: v === context.app.theme.current,
           })),
-      },
-    },
-  },
-  'Set Unit System': {
-    icon: 'settings',
-    args: {
-      unitSystem: {
-        inputType: 'options',
-        required: true,
-        defaultValueFromContext: (context) => context.unitSystem,
-        options: [],
-        optionsFromContext: (context) => [
-          {
-            name: 'Imperial',
-            value: 'imperial' as UnitSystem,
-            isCurrent: context.unitSystem === 'imperial',
-          },
-          {
-            name: 'Metric',
-            value: 'metric' as UnitSystem,
-            isCurrent: context.unitSystem === 'metric',
-          },
-        ],
       },
     },
   },

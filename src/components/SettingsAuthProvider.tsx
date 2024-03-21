@@ -8,6 +8,7 @@ import useStateMachineCommands from '../hooks/useStateMachineCommands'
 import { settingsMachine } from 'machines/settingsMachine'
 import { toast } from 'react-hot-toast'
 import { setThemeClass, Themes } from 'lib/theme'
+import decamelize from 'decamelize'
 import {
   AnyStateMachine,
   ContextFrom,
@@ -21,7 +22,7 @@ import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
 import { sceneInfra } from 'clientSideScene/sceneInfra'
 import { kclManager } from 'lang/KclSingleton'
 import { IndexLoaderData } from 'lib/types'
-import { SettingsLevel, settings } from 'lib/settings/initialSettings'
+import { settings } from 'lib/settings/initialSettings'
 import { writeToSettingsFiles } from 'lib/tauriFS'
 
 type MachineContext<T extends AnyStateMachine> = {
@@ -100,15 +101,24 @@ export const SettingsAuthProviderBase = ({
           sceneInfra.baseUnit = newBaseUnit
         },
         toastSuccess: (context, event) => {
-          const [category, setting, level] = event.data.path.split('.') as [keyof typeof settings, string, SettingsLevel]
+          const [category, setting] = event.type
+            .replace(/^set./, '')
+            .split('.') as [keyof typeof settings, string]
           const truncatedNewValue = event.data.value?.toString().slice(0, 28)
+          const message = `Set ${decamelize(category, { separator: ' ' })}: ${decamelize(
+            setting,
+            { separator: ' ' }
+          )}` +
+            (truncatedNewValue
+              ? ` to "${truncatedNewValue}${
+                  truncatedNewValue.length === 28 ? '...' : ''
+                }" at the ${event.data.level} level`
+              : '')
           toast.success(
-            `Set ${category}: ${setting}` +
-              (truncatedNewValue
-                ? ` to "${truncatedNewValue}${
-                    truncatedNewValue.length === 28 ? '...' : ''
-                  }" at the ${level} level`
-                : '')
+            message,
+            {
+              duration: message.split(' ').length * 100 + 1500,
+            }
           )
         },
         'Execute AST': () => kclManager.executeAst(),
@@ -124,13 +134,13 @@ export const SettingsAuthProviderBase = ({
   )
   settingsStateRef = settingsState.context
 
-  // useStateMachineCommands({
-  //   machineId: 'settings',
-  //   state: settingsState,
-  //   send: settingsSend,
-  //   commandBarConfig: settingsCommandBarConfig,
-  //   actor: settingsActor,
-  // })
+  useStateMachineCommands({
+    machineId: 'settings',
+    state: settingsState,
+    send: settingsSend,
+    commandBarConfig: settingsCommandBarConfig,
+    actor: settingsActor,
+  })
 
   // Listen for changes to the system theme and update the app theme accordingly
   // This is only done if the theme setting is set to 'system'.

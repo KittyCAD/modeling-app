@@ -5,7 +5,6 @@ import { open } from '@tauri-apps/api/dialog'
 import { DEFAULT_PROJECT_NAME, SETTINGS_PERSIST_KEY } from 'lib/constants'
 import {
   type BaseUnit,
-  baseUnits,
   baseUnitsUnion,
 } from 'lib/settings/settingsTypes'
 import { Toggle } from 'components/Toggle/Toggle'
@@ -15,11 +14,6 @@ import { type IndexLoaderData } from 'lib/types'
 import { paths } from 'lib/paths'
 import { Themes } from '../lib/theme'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import {
-  cameraSystems,
-  cameraMouseDragGuards,
-  CameraSystem,
-} from 'lib/cameraControls'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
 import {
   createNewProject,
@@ -56,7 +50,6 @@ export const Settings = () => {
       state: { context },
     },
   } = useSettingsAuthContext()
-  const mouseControls = context.modeling.mouseControls.current
 
   async function handleDirectorySelection() {
     // the `recursive` property added following
@@ -70,9 +63,9 @@ export const Settings = () => {
 
     if (newDirectory && newDirectory !== null && !Array.isArray(newDirectory)) {
       send({
-        type: `set.app.projectDirectory.${settingsLevel}`,
+        type: `set.app.projectDirectory`,
         data: {
-          path: `app.onboardingStatus.${settingsLevel}`,
+          level: settingsLevel,
           value: newDirectory,
         },
       })
@@ -81,8 +74,8 @@ export const Settings = () => {
 
   function restartOnboarding() {
     send({
-      type: `set.app.onboardingStatus.${settingsLevel}`,
-      data: { path: `app.onboardingStatus.${settingsLevel}`, value: '' },
+      type: `set.app.onboardingStatus`,
+      data: { level: 'user', value: '' },
     })
 
     if (isFileSettings) {
@@ -146,7 +139,7 @@ export const Settings = () => {
               offLabel="User"
               onLabel="Project"
               onChange={() =>
-                setSettingsLevel((v) => (v === 'project' ? 'user' : 'project'))
+                setSettingsLevel((v: SettingsLevel) => (v === 'project' ? 'user' : 'project'))
               }
               checked={settingsLevel === 'project'}
               name="settings-level"
@@ -167,12 +160,12 @@ export const Settings = () => {
                     <select
                       id={settingName}
                       className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
-                      value={setting.current}
+                      value={String(setting.current)}
                       onChange={(e) => {
                         send({
-                          type: `set.${category}.${settingName}.${settingsLevel}`,
+                          type: `set.${category}.${settingName}`,
                           data: {
-                            path: `${category}.${settingName}.${settingsLevel}`,
+                            level: settingsLevel,
                             value: e.target.value,
                           },
                         })
@@ -195,9 +188,9 @@ export const Settings = () => {
                         const newValue =
                           e.target.value.trim() || setting.default
                         send({
-                          type: `set.${category}.${settingName}.${settingsLevel}`,
+                          type: `set.${category}.${settingName}`,
                           data: {
-                            path: `${category}.${settingName}.${settingsLevel}`,
+                            level: settingsLevel,
                             value: newValue,
                           },
                         })
@@ -216,9 +209,9 @@ export const Settings = () => {
                       checked={Boolean(setting.current)}
                       onChange={(e) => {
                         send({
-                          type: `set.${category}.${settingName}.${settingsLevel}`,
+                          type: `set.${category}.${settingName}`,
                           data: {
-                            path: `${category}.${settingName}.${settingsLevel}`,
+                            level: settingsLevel,
                             value: e.target.checked,
                           },
                         })
@@ -232,9 +225,9 @@ export const Settings = () => {
                         value: setting.current,
                         onChange: (e) => {
                           send({
-                            type: `set.${category}.${settingName}.${settingsLevel}`,
+                            type: `set.${category}.${settingName}`,
                             data: {
-                              path: `${category}.${settingName}.${settingsLevel}`,
+                              level: settingsLevel,
                               value: e.target.value,
                             },
                           })
@@ -293,9 +286,9 @@ export const Settings = () => {
                 onBlur={(e) => {
                   const newValue = e.target.value.trim() || DEFAULT_PROJECT_NAME
                   send({
-                    type: `set.project.defaultProjectName.${settingsLevel}`,
+                    type: `set.project.defaultProjectName`,
                     data: {
-                      path: `project.defaultProjectName.${settingsLevel}`,
+                      level: settingsLevel,
                       value: newValue,
                     },
                   })
@@ -321,9 +314,9 @@ export const Settings = () => {
             }
             onChange={(e) => {
               send({
-                type: `set.modeling.defaultUnit.${settingsLevel}`,
+                type: `set.modeling.defaultUnit`,
                 data: {
-                  path: `modeling.defaultUnit.${settingsLevel}`,
+                  level: settingsLevel,
                   value: e.target.value as BaseUnit,
                 },
               })
@@ -348,9 +341,9 @@ export const Settings = () => {
             }
             onChange={(e) => {
               send({
-                type: `set.project.entryPointFileName.${settingsLevel}`,
+                type: `set.modeling.showDebugPanel`,
                 data: {
-                  path: `modeling.showDebugPanel.${settingsLevel}`,
+                  level: settingsLevel,
                   value: e.target.checked,
                 },
               })
@@ -369,9 +362,9 @@ export const Settings = () => {
             }
             onChange={(e) => {
               send({
-                type: `set.app.theme.${settingsLevel}`,
+                type: `set.app.theme`,
                 data: {
-                  path: `app.theme.${settingsLevel}`,
+                  level: settingsLevel,
                   value: e.target.value as Themes,
                 },
               })

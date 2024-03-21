@@ -32,8 +32,8 @@ export type Paths<T, D extends number = 10> = [D] extends [never] ? never : T ex
 type Idx<T, K> = K extends keyof T ? T[K] :
     number extends keyof T ? K extends `${number}` ? T[number] : never : never
 
-export type PathValue<T, P extends Paths<T, 4>> = P extends `${infer Key}.${infer Rest}`
-    ? Rest extends Paths<Idx<T, Key>, 4>
+export type PathValue<T, P extends Paths<T, 1>> = P extends `${infer Key}.${infer Rest}`
+    ? Rest extends Paths<Idx<T, Key>, 1>
     ? PathValue<Idx<T, Key>, Rest>
     : never
     : Idx<T, P>

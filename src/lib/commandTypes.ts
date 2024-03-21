@@ -83,14 +83,14 @@ export type CommandConfig<
   args?: {
     [ArgName in keyof CommandSchema]: CommandArgumentConfig<
       CommandSchema[ArgName],
-      T
+      ContextFrom<T>
     >
   }
 }
 
 export type CommandArgumentConfig<
   OutputType,
-  T extends AnyStateMachine = AnyStateMachine
+  C = ContextFrom<AnyStateMachine>
 > =
   | {
       description?: string
@@ -111,14 +111,14 @@ export type CommandArgumentConfig<
                 } // Should be the commandbarMachine's context, but it creates a circular dependency
               ) => CommandArgumentOption<OutputType>[])
           optionsFromContext?: (
-            context: ContextFrom<T>
+            context: C
           ) => CommandArgumentOption<OutputType>[]
           defaultValue?:
             | OutputType
             | ((
                 commandBarContext: ContextFrom<typeof commandBarMachine>
               ) => OutputType)
-          defaultValueFromContext?: (context: ContextFrom<T>) => OutputType
+          defaultValueFromContext?: (context: C) => OutputType
         }
       | {
           inputType: Extract<CommandInputType, 'selection'>
@@ -133,7 +133,7 @@ export type CommandArgumentConfig<
             | ((
                 commandBarContext: ContextFrom<typeof commandBarMachine>
               ) => OutputType)
-          defaultValueFromContext?: (context: ContextFrom<T>) => OutputType
+          defaultValueFromContext?: (context: C) => OutputType
         }
     )
 

@@ -1,6 +1,7 @@
 import { DEFAULT_PROJECT_NAME } from 'lib/constants'
 import {
   BaseUnit,
+  SettingProps,
   Toggle,
   baseUnitsUnion,
   toggleAsArray,
@@ -8,46 +9,7 @@ import {
 import { Themes } from 'lib/theme'
 import { isEnumMember } from './settingsUtils'
 import { CameraSystem, cameraMouseDragGuards, cameraSystems } from 'lib/cameraControls'
-import { isTauri } from 'lib/isTauri'
-import { FILE_EXT, PROJECT_ENTRYPOINT, getInitialDefaultDir } from 'lib/tauriFS'
-import { ChangeEventHandler } from 'react'
-
-interface SettingProps<T> {
-  /**
-   * The default value of the setting, used if no user or project value is set
-  */
-  defaultValue: T
-  /**
-   * The name of the setting, used in the settings panel
-  */
-  title?: string
-  /**
-   * A description of the setting, used in the settings panel
-  */
-  description?: string
-  /**
-   * A function that validates the setting value.
-   * You can use this to either do simple type checks,
-   * or do more thorough validation that
-   * can't be done with TypeScript types alone.
-   * @param v - The value to validate
-   * @returns {boolean} - Whether the value is valid
-   * @example
-   * ```ts
-   * const mySetting = new Setting<number>({
-   *   defaultValue: 0,
-   *   validate: (v) => v >= 0, // Only allow positive numbers
-   * }) 
-   * ```
-   */
-  validate: (v: T) => boolean
-  /**
-   * The UI to use for the setting in the settings panel
-   */
-  settingsUI: 'toggle' | 'input' | 'select' | (({ value, onChange }: { value: T, onChange: ChangeEventHandler<HTMLElement>}) => React.ReactNode)
-}
-
-export type SettingsLevel = 'user' | 'project'
+import { FILE_EXT, PROJECT_ENTRYPOINT } from 'lib/tauriFS'
 
 /**
  * A setting that can be set at the user or project level
@@ -117,6 +79,18 @@ export function createSettings() {
         defaultValue: Themes.System,
         validate: (v) => isEnumMember(v, Themes),
         settingsUI: 'select',
+        commandConfig: {
+          inputType: 'options',
+          required: true,
+          defaultValueFromContext: (context) => context.app.theme.current,
+          options: [],
+          optionsFromContext: (context) =>
+            Object.values(Themes).map((v) => ({
+              name: v,
+              value: v,
+              isCurrent: v === context.app.theme.current,
+            })),
+        }
       }),
       onboardingStatus: new Setting<string>({
         defaultValue: '',

@@ -1,30 +1,13 @@
 import { assign, createMachine } from 'xstate'
 import { Themes, getSystemTheme, setThemeClass } from 'lib/theme'
+import { createSettings, settings } from 'lib/settings/initialSettings'
 import {
-  createSettings,
-  settings,
+  BaseUnit,
+  SetEventTypes,
   SettingsLevel,
-} from 'lib/settings/initialSettings'
-import { Leaves, PathValue } from 'lib/types'
-import { BaseUnit } from 'lib/settings/settingsTypes'
-
-type SetEvent<T extends Leaves<typeof settings>> = {
-  type: `set.${T}`
-  data: {
-    path: T
-    value: PathValue<typeof settings, T>
-  }
-}
-
-type SetEventTypes = SetEvent<Leaves<typeof settings>>
-
-type WildcardSetEvent<T extends Leaves<typeof settings>> = {
-  type: `*`
-  data: {
-    path: T
-    value: PathValue<typeof settings, T>
-  }
-}
+  SettingsPaths,
+  WildcardSetEvent,
+} from 'lib/settings/settingsTypes'
 
 export const settingsMachine = createMachine(
   {
@@ -56,15 +39,15 @@ export const settingsMachine = createMachine(
             ],
           },
 
-          'set.app.theme.user': {
+          'set.app.theme': {
             target: 'idle',
             internal: true,
-            actions: ['setSettingAtLevel', 'toastSuccess', 'setThemeClass', 'persistSettings'],
-          },
-          'set.app.theme.project': {
-            target: 'idle',
-            internal: true,
-            actions: ['setSettingAtLevel', 'toastSuccess', 'setThemeClass', 'persistSettings'],
+            actions: [
+              'setSettingAtLevel',
+              'toastSuccess',
+              'setThemeClass',
+              'persistSettings',
+            ],
           },
 
           'Reset settings': {
@@ -78,15 +61,15 @@ export const settingsMachine = createMachine(
     tsTypes: {} as import('./settingsMachine.typegen').Typegen0,
     schema: {
       events: {} as
-        | WildcardSetEvent<Leaves<typeof settings>>
+        | WildcardSetEvent<SettingsPaths>
         | SetEventTypes
         | {
-            type: `set.app.theme.${SettingsLevel}`
-            data: { path: `app.theme.${SettingsLevel}`; value: Themes }
+            type: 'set.app.theme'
+            data: { level: SettingsLevel; value: Themes }
           }
         | {
             type: 'set.modeling.units'
-            data: { path: `modeling.units.${SettingsLevel}`; value: BaseUnit }
+            data: { level: SettingsLevel; value: BaseUnit }
           }
         | { type: 'Reset settings' },
     },
@@ -95,12 +78,10 @@ export const settingsMachine = createMachine(
     actions: {
       resetSettings: assign(createSettings()),
       setSettingAtLevel: assign((context, event) => {
-        const { path, value } = event.data
-        const [category, setting, level] = path.split('.') as [
-          keyof typeof settings,
-          string,
-          SettingsLevel
-        ]
+        const { level, value } = event.data
+        const [category, setting] = event.type
+          .replace(/^set./, '')
+          .split('.') as [keyof typeof settings, string]
 
         // @ts-ignore
         context[category][setting][level] = value
@@ -116,11 +97,8 @@ export const settingsMachine = createMachine(
 
         return newContext
       }),
-      setThemeClass: (context, event) => {
-        const currentTheme =
-          (event.type === 'set.app.theme.project' || event.type === 'set.app.theme.user')
-            ? (event.data.value as Themes)
-            : context.app.theme.current ?? Themes.System
+      setThemeClass: (context) => {
+        const currentTheme = context.app.theme.current ?? Themes.System
         setThemeClass(
           currentTheme === Themes.System ? getSystemTheme() : currentTheme
         )
