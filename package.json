@@ -59,7 +59,7 @@
     "web-vitals": "^3.5.2",
     "ws": "^8.13.0",
     "xstate": "^4.38.2",
-    "zustand": "^4.4.5"
+    "zustand": "^4.5.2"
   },
   "scripts": {
     "start": "vite",
