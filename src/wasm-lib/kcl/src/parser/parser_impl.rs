@@ -848,6 +848,7 @@ fn value_allowed_in_pipe_expr(i: TokenSlice) -> PResult<Value> {
         array.map(Box::new).map(Value::ArrayExpression),
         object.map(Box::new).map(Value::ObjectExpression),
         pipe_sub.map(Box::new).map(Value::PipeSubstitution),
+        function_expression.map(Box::new).map(Value::FunctionExpression),
         unnecessarily_bracketed,
     ))
     .context(expected("a KCL value (but not a pipe expression)"))
@@ -1270,9 +1271,8 @@ fn argument_type(i: TokenSlice) -> PResult<FnArgType> {
 }
 
 fn parameter(i: TokenSlice) -> PResult<(Token, std::option::Option<FnArgType>, bool)> {
-    let (arg_name, _, optional, _, _, _, type_) = (
+    let (arg_name, optional, _, _, _, type_) = (
         any.verify(|token: &Token| !matches!(token.token_type, TokenType::Brace) || token.value != ")"),
-        opt(whitespace),
         opt(question_mark),
         opt(whitespace),
         opt(colon),
