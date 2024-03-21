@@ -4,10 +4,12 @@ import { useStore } from '../useStore'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { deferExecution } from 'lib/utils'
 import { kclManager } from 'lang/KclSingleton'
+import { Themes, getSystemTheme } from 'lib/theme'
 
 export function useSetupEngineManager(
   streamRef: React.RefObject<HTMLDivElement>,
-  token?: string
+  token?: string,
+  theme = Themes.System
 ) {
   const {
     setMediaStream,
@@ -44,6 +46,7 @@ export function useSetupEngineManager(
           return kclManager.executeAst(_ast, true)
         },
         token,
+        theme: theme === Themes.System ? getSystemTheme() : theme,
       })
       setStreamDimensions({
         streamWidth: quadWidth,

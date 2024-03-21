@@ -5,6 +5,7 @@ import { exportSave } from 'lib/exportSave'
 import { v4 as uuidv4 } from 'uuid'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { sceneInfra } from 'clientSideScene/sceneInfra'
+import { Themes, getThemeColorForEngine } from 'lib/theme'
 
 let lastMessage = ''
 
@@ -876,6 +877,7 @@ export class EngineCommandManager {
     height,
     executeCode,
     token,
+    theme = Themes.Dark,
   }: {
     setMediaStream: (stream: MediaStream) => void
     setIsStreamReady: (isStreamReady: boolean) => void
@@ -883,6 +885,7 @@ export class EngineCommandManager {
     height: number
     executeCode: (code?: string, force?: boolean) => void
     token?: string
+    theme?: Themes.Dark | Themes.Light
   }) {
     if (width === 0 || height === 0) {
       return
@@ -907,6 +910,19 @@ export class EngineCommandManager {
         }
       },
       onEngineConnectionOpen: () => {
+        // Set the stream background color
+        // This takes RGBA values from 0-1
+        // So we convert from the conventional 0-255 found in Figma
+
+        this.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'set_background_color',
+            color: getThemeColorForEngine(theme),
+          },
+        })
+
         // Make the axis gizmo.
         // We do this after the connection opened to avoid a race condition.
         // Connected opened is the last thing that happens when the stream

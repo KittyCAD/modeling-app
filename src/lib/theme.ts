@@ -21,3 +21,12 @@ export function setThemeClass(theme: Themes) {
     document.body.classList.remove('dark')
   }
 }
+
+export function getThemeColorForEngine(theme: Themes) {
+  const resolvedTheme = theme === Themes.System ? getSystemTheme() : theme
+  const dark = 28 / 255
+  const light = 242 / 255
+  return resolvedTheme === Themes.Dark
+    ? { r: dark, g: dark, b: dark, a: 1 }
+    : { r: light, g: light, b: light, a: 1 }
+}
