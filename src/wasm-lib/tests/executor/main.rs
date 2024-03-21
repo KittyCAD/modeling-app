@@ -1361,3 +1361,49 @@ const part = rectShape([0, 0], 20, 20)
         r#"type: KclErrorDetails { source_ranges: [SourceRange([891, 940])], message: "Expected a [number, number] as the first argument, found `[UserVal(UserVal { value: String(\"XY\"), meta: [Metadata { source_range: SourceRange([898, 902]) }] }), UserVal(UserVal { value: Array [Number(-6.0), Number(6)], meta: [Metadata { source_range: SourceRange([904, 927]) }] }), UserVal(UserVal { value: Number(1), meta: [Metadata { source_range: SourceRange([760, 761]) }] })]`" }"#
     );
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_big_number_angle_to_match_length_x() {
+    let code = r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([1, 3.82], %, 'seg01')
+  |> angledLineToX([
+       -angleToMatchLengthX('seg01', 3, %),
+       3
+     ], %)
+  |> close(%)
+  |> extrude(10, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/big_number_angle_to_match_length_x.png",
+        &result,
+        1.0,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_big_number_angle_to_match_length_y() {
+    let code = r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([1, 3.82], %, 'seg01')
+  |> angledLineToX([
+       -angleToMatchLengthY('seg01', 3, %),
+       3
+     ], %)
+  |> close(%)
+  |> extrude(10, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/big_number_angle_to_match_length_y.png",
+        &result,
+        1.0,
+    );
+}
