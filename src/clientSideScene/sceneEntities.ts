@@ -1163,10 +1163,6 @@ export async function getSketchOrientationDetails(
     }
   }
   if (sketchGroup.on.type === 'face') {
-    // sketchGroup.on.sketchGroupId is the faceId always points to the very start of the dependency change?
-    // const sketchGroupArtifact =
-    //   engineCommandManager.artifactMap[sketchGroup.on.sketchGroupId]
-
     const faceInfo: Models['FaceIsPlanar_type'] = (
       await engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
