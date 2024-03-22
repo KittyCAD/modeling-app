@@ -27,6 +27,7 @@ import { Axis } from 'lib/selections'
 import { type BaseUnit } from 'lib/settings/settingsTypes'
 import { SETTINGS_PERSIST_KEY } from 'lib/constants'
 import { CameraControls } from './CameraControls'
+import { EngineCommandManager } from 'lang/std/engineConnection'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -86,7 +87,7 @@ interface OnMoveCallbackArgs {
 // This singleton class is responsible for all of the under the hood setup for the client side scene.
 // That is the cameras and switching between them, raycasters for click mouse events and their abstractions (onClick etc), setting up controls.
 // Anything that added the the scene for the user to interact with is probably in SceneEntities.ts
-class SceneInfra {
+export class SceneInfra {
   static instance: SceneInfra
   scene: Scene
   renderer: WebGLRenderer
@@ -126,7 +127,7 @@ class SceneInfra {
     )
   }
   resetMouseListeners = () => {
-    sceneInfra.setCallbacks({
+    this.setCallbacks({
       onDrag: () => {},
       onMove: () => {},
       onClick: () => {},
@@ -155,7 +156,7 @@ class SceneInfra {
   } | null = null
   mouseDownVector: null | Vector2 = null
 
-  constructor() {
+  constructor(engineCommandManager: EngineCommandManager) {
     // SCENE
     this.scene = new Scene()
     this.scene.background = new Color(0x000000)
@@ -178,7 +179,11 @@ class SceneInfra {
     const x = Math.cos(ang) * length
     const y = Math.sin(ang) * length
 
-    this.camControls = new CameraControls(false, this.renderer.domElement)
+    this.camControls = new CameraControls(
+      false,
+      this.renderer.domElement,
+      engineCommandManager
+    )
     this.camControls.subscribeToCamChange(() => this.onCameraChange())
     this.camControls.camera.layers.enable(SKETCH_LAYER)
     this.camControls.camera.position.set(0, -x, y)
@@ -221,9 +226,9 @@ class SceneInfra {
       ?.getObjectByName('gridHelper')
     planesGroup &&
       planesGroup.scale.set(
-        scale / sceneInfra._baseUnitMultiplier,
-        scale / sceneInfra._baseUnitMultiplier,
-        scale / sceneInfra._baseUnitMultiplier
+        scale / this._baseUnitMultiplier,
+        scale / this._baseUnitMultiplier,
+        scale / this._baseUnitMultiplier
       )
     axisGroup?.name === 'gridHelper' && axisGroup.scale.set(scale, scale, scale)
   }
@@ -255,7 +260,7 @@ class SceneInfra {
   } | null => {
     this.planeRaycaster.setFromCamera(
       this.currentMouseVector,
-      sceneInfra.camControls.camera
+      this.camControls.camera
     )
     const planeIntersects = this.planeRaycaster.intersectObjects(
       this.scene.children,
@@ -527,9 +532,9 @@ class SceneInfra {
       this.camControls.target
     )
     planesGroup.scale.set(
-      sceneScale / sceneInfra._baseUnitMultiplier,
-      sceneScale / sceneInfra._baseUnitMultiplier,
-      sceneScale / sceneInfra._baseUnitMultiplier
+      sceneScale / this._baseUnitMultiplier,
+      sceneScale / this._baseUnitMultiplier,
+      sceneScale / this._baseUnitMultiplier
     )
     this.scene.add(planesGroup)
   }
@@ -540,7 +545,7 @@ class SceneInfra {
     if (planesGroup) this.scene.remove(planesGroup)
   }
   updateOtherSelectionColors = (otherSelections: Axis[]) => {
-    const axisGroup = sceneInfra.scene.children.find(
+    const axisGroup = this.scene.children.find(
       ({ userData }) => userData?.type === AXIS_GROUP
     )
     const axisMap: { [key: string]: Axis } = {
@@ -561,8 +566,6 @@ class SceneInfra {
     })
   }
 }
-
-export const sceneInfra = new SceneInfra()
 
 export function getSceneScale(
   camera: PerspectiveCamera | OrthographicCamera,
