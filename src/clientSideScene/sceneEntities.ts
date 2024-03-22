@@ -28,7 +28,6 @@ import {
   INTERSECTION_PLANE_LAYER,
   OnMouseEnterLeaveArgs,
   RAYCASTABLE_PLANE,
-  sceneInfra,
   SKETCH_GROUP_SEGMENTS,
   SKETCH_LAYER,
   X_AXIS,
@@ -52,10 +51,9 @@ import {
   VariableDeclaration,
   VariableDeclarator,
 } from 'lang/wasm'
-import { kclManager } from 'lang/KclSingleton'
+import { engineCommandManager, kclManager, sceneInfra } from 'lib/singletons'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 import { executeAst, useStore } from 'useStore'
-import { engineCommandManager } from 'lang/std/engineConnection'
 import {
   createArcGeometry,
   dashedStraight,
@@ -85,6 +83,7 @@ import { createGridHelper, orthoScale, perspScale } from './helpers'
 import { Models } from '@kittycad/lib'
 import { v4 as uuidv4 } from 'uuid'
 import { SketchDetails } from 'machines/modelingMachine'
+import { EngineCommandManager } from 'lang/std/engineConnection'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -100,14 +99,16 @@ export const PROFILE_START = 'profile-start'
 // This singleton Class is responsible for all of the things the user sees and interacts with.
 // That mostly mean sketch elements.
 // Cameras, controls, raycasters, etc are handled by sceneInfra
-class SceneEntities {
+export class SceneEntities {
+  engineCommandManager: EngineCommandManager
   scene: Scene
   sceneProgramMemory: ProgramMemory = { root: {}, return: null }
   activeSegments: { [key: string]: Group } = {}
   intersectionPlane: Mesh | null = null
   axisGroup: Group | null = null
   currentSketchQuaternion: Quaternion | null = null
-  constructor() {
+  constructor(engineCommandManager: EngineCommandManager) {
+    this.engineCommandManager = engineCommandManager
     this.scene = sceneInfra?.scene
     sceneInfra?.camControls.subscribeToCamChange(this.onCamChange)
   }
@@ -289,7 +290,7 @@ class SceneEntities {
     const { programMemory } = await executeAst({
       ast: truncatedAst,
       useFakeExecutor: true,
-      engineCommandManager,
+      engineCommandManager: this.engineCommandManager,
       programMemoryOverride,
     })
     const sketchGroup = sketchGroupFromPathToNode({
@@ -637,7 +638,7 @@ class SceneEntities {
       const { programMemory } = await executeAst({
         ast: truncatedAst,
         useFakeExecutor: true,
-        engineCommandManager: engineCommandManager,
+        engineCommandManager: this.engineCommandManager,
         programMemoryOverride,
       })
       this.sceneProgramMemory = programMemory
@@ -904,11 +905,11 @@ class SceneEntities {
             streamDimensions
           )
           if (!entity_id) return false
-          const artifact = engineCommandManager.artifactMap[entity_id]
+          const artifact = this.engineCommandManager.artifactMap[entity_id]
           if (artifact?.commandType !== 'solid3d_get_extrusion_face_info')
             return false
           const faceInfo: Models['FaceIsPlanar_type'] = (
-            await engineCommandManager.sendSceneCommand({
+            await this.engineCommandManager.sendSceneCommand({
               type: 'modeling_cmd_req',
               cmd_id: uuidv4(),
               cmd: {
@@ -978,8 +979,6 @@ class SceneEntities {
 }
 
 export type DefaultPlaneStr = 'XY' | 'XZ' | 'YZ' | '-XY' | '-XZ' | '-YZ'
-
-export const sceneEntitiesManager = new SceneEntities()
 
 // calculations/pure-functions/easy to test so no excuse not to
 

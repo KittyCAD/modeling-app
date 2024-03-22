@@ -22,8 +22,7 @@ import {
 import { isTauri } from 'lib/isTauri'
 import { settingsCommandBarConfig } from 'lib/commandBarConfigs/settingsCommandConfig'
 import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
-import { sceneInfra } from 'clientSideScene/sceneInfra'
-import { kclManager } from 'lang/KclSingleton'
+import { kclManager, sceneInfra } from 'lib/singletons'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -147,7 +146,6 @@ export const SettingsAuthProviderBase = ({
     actions: {
       goToSignInPage: () => {
         navigate(paths.SIGN_IN)
-
         logout()
       },
       goToIndexPage: () => {

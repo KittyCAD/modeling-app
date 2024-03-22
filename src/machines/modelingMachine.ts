@@ -2,7 +2,7 @@ import { PathToNode, VariableDeclarator } from 'lang/wasm'
 import { Axis, Selection, Selections } from 'lib/selections'
 import { assign, createMachine } from 'xstate'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
-import { kclManager } from 'lang/KclSingleton'
+import { kclManager, sceneInfra, sceneEntitiesManager } from 'lib/singletons'
 import {
   horzVertInfo,
   applyConstraintHorzVert,
@@ -34,11 +34,7 @@ import {
 } from 'components/Toolbar/SetAbsDistance'
 import { Models } from '@kittycad/lib/dist/types/src'
 import { ModelingCommandSchema } from 'lib/commandBarConfigs/modelingCommandConfig'
-import {
-  DefaultPlaneStr,
-  sceneEntitiesManager,
-} from 'clientSideScene/sceneEntities'
-import { sceneInfra } from 'clientSideScene/sceneInfra'
+import { DefaultPlaneStr } from 'clientSideScene/sceneEntities'
 import { Vector3 } from 'three'
 import { quaternionFromUpNForward } from 'clientSideScene/helpers'
 

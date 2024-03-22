@@ -19,7 +19,7 @@ import {
 import {
   EngineCommand,
   Subscription,
-  engineCommandManager,
+  EngineCommandManager,
 } from 'lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
 import { deg2Rad } from 'lib/utils2d'
@@ -33,10 +33,6 @@ const FRAMES_TO_ANIMATE_IN = 30
 const tempQuaternion = new Quaternion() // just used for maths
 
 type interactionType = 'pan' | 'rotate' | 'zoom'
-
-const throttledEngCmd = throttle((cmd: EngineCommand) => {
-  engineCommandManager.sendSceneCommand(cmd)
-}, 1000 / 30)
 
 interface ThreeCamValues {
   position: Vector3
@@ -62,68 +58,8 @@ export type ReactCameraProperties =
 
 const lastCmdDelay = 50
 
-const throttledUpdateEngineCamera = throttle((threeValues: ThreeCamValues) => {
-  const cmd: EngineCommand = {
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_look_at',
-      ...convertThreeCamValuesToEngineCam(threeValues),
-    },
-  }
-  engineCommandManager.sendSceneCommand(cmd)
-}, 1000 / 15)
-
-let lastPerspectiveCmd: EngineCommand | null = null
-let lastPerspectiveCmdTime: number = Date.now()
-let lastPerspectiveCmdTimeoutId: number | null = null
-
-const sendLastPerspectiveReliableChannel = () => {
-  if (
-    lastPerspectiveCmd &&
-    Date.now() - lastPerspectiveCmdTime >= lastCmdDelay
-  ) {
-    engineCommandManager.sendSceneCommand(lastPerspectiveCmd, true)
-    lastPerspectiveCmdTime = Date.now()
-  }
-}
-
-const throttledUpdateEngineFov = throttle(
-  (vals: {
-    position: Vector3
-    quaternion: Quaternion
-    zoom: number
-    fov: number
-    target: Vector3
-  }) => {
-    const cmd: EngineCommand = {
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_perspective_settings',
-        ...convertThreeCamValuesToEngineCam({
-          ...vals,
-          isPerspective: true,
-        }),
-        fov_y: vals.fov,
-        ...calculateNearFarFromFOV(vals.fov),
-      },
-    }
-    engineCommandManager.sendSceneCommand(cmd)
-    lastPerspectiveCmd = cmd
-    lastPerspectiveCmdTime = Date.now()
-    if (lastPerspectiveCmdTimeoutId !== null) {
-      clearTimeout(lastPerspectiveCmdTimeoutId)
-    }
-    lastPerspectiveCmdTimeoutId = setTimeout(
-      sendLastPerspectiveReliableChannel,
-      lastCmdDelay
-    ) as any as number
-  },
-  1000 / 30
-)
-
 export class CameraControls {
+  engineCommandManager: EngineCommandManager
   syncDirection: 'clientToEngine' | 'engineToClient' = 'engineToClient'
   camera: PerspectiveCamera | OrthographicCamera
   target: Vector3
@@ -213,7 +149,77 @@ export class CameraControls {
     this.update(true)
   }
 
-  constructor(isOrtho = false, domElement: HTMLCanvasElement) {
+  throttledEngCmd = throttle((cmd: EngineCommand) => {
+    this.engineCommandManager.sendSceneCommand(cmd)
+  }, 1000 / 30)
+
+  throttledUpdateEngineCamera = throttle((threeValues: ThreeCamValues) => {
+    const cmd: EngineCommand = {
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        ...convertThreeCamValuesToEngineCam(threeValues),
+      },
+    }
+    this.engineCommandManager.sendSceneCommand(cmd)
+  }, 1000 / 15)
+
+  lastPerspectiveCmd: EngineCommand | null = null
+  lastPerspectiveCmdTime: number = Date.now()
+  lastPerspectiveCmdTimeoutId: number | null = null
+
+  sendLastPerspectiveReliableChannel = () => {
+    if (
+      this.lastPerspectiveCmd &&
+      Date.now() - this.lastPerspectiveCmdTime >= lastCmdDelay
+    ) {
+      this.engineCommandManager.sendSceneCommand(this.lastPerspectiveCmd, true)
+      this.lastPerspectiveCmdTime = Date.now()
+    }
+  }
+
+  throttledUpdateEngineFov = throttle(
+    (vals: {
+      position: Vector3
+      quaternion: Quaternion
+      zoom: number
+      fov: number
+      target: Vector3
+    }) => {
+      const cmd: EngineCommand = {
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_perspective_settings',
+          ...convertThreeCamValuesToEngineCam({
+            ...vals,
+            isPerspective: true,
+          }),
+          fov_y: vals.fov,
+          ...calculateNearFarFromFOV(vals.fov),
+        },
+      }
+      this.engineCommandManager.sendSceneCommand(cmd)
+      this.lastPerspectiveCmd = cmd
+      this.lastPerspectiveCmdTime = Date.now()
+      if (this.lastPerspectiveCmdTimeoutId !== null) {
+        clearTimeout(this.lastPerspectiveCmdTimeoutId)
+      }
+      this.lastPerspectiveCmdTimeoutId = setTimeout(
+        this.sendLastPerspectiveReliableChannel,
+        lastCmdDelay
+      ) as any as number
+    },
+    1000 / 30
+  )
+
+  constructor(
+    isOrtho = false,
+    domElement: HTMLCanvasElement,
+    engineCommandManager: EngineCommandManager
+  ) {
+    this.engineCommandManager = engineCommandManager
     this.camera = isOrtho ? new OrthographicCamera() : new PerspectiveCamera()
     this.camera.up.set(0, 0, 1)
     this.camera.far = 20000
@@ -310,7 +316,7 @@ export class CameraControls {
     this.handleStart()
 
     if (this.syncDirection === 'engineToClient') {
-      void engineCommandManager.sendSceneCommand({
+      void this.engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
           type: 'camera_drag_start',
@@ -334,7 +340,7 @@ export class CameraControls {
       if (interaction === 'none') return
 
       if (this.syncDirection === 'engineToClient') {
-        throttledEngCmd({
+        this.throttledEngCmd({
           type: 'modeling_cmd_req',
           cmd: {
             type: 'camera_drag_move',
@@ -377,7 +383,7 @@ export class CameraControls {
     if (this.syncDirection === 'engineToClient') {
       const interaction = this.getInteractionType(event)
       if (interaction === 'none') return
-      void engineCommandManager.sendSceneCommand({
+      void this.engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
           type: 'camera_drag_end',
@@ -401,7 +407,7 @@ export class CameraControls {
         this.handleEnd()
         return
       }
-      throttledEngCmd({
+      this.throttledEngCmd({
         type: 'modeling_cmd_req',
         cmd: {
           type: 'default_camera_zoom',
@@ -449,7 +455,7 @@ export class CameraControls {
 
     this.camera.quaternion.set(qx, qy, qz, qw)
     this.camera.updateProjectionMatrix()
-    engineCommandManager.sendSceneCommand({
+    this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
       cmd: {
@@ -493,7 +499,7 @@ export class CameraControls {
   }
   usePerspectiveCamera = () => {
     this._usePerspectiveCamera()
-    engineCommandManager.sendSceneCommand({
+    this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
       cmd: {
@@ -561,7 +567,7 @@ export class CameraControls {
     this.camera.near = z_near
     this.camera.far = z_far
 
-    throttledUpdateEngineFov({
+    this.throttledUpdateEngineFov({
       fov: newFov,
       position: newPosition,
       quaternion: this.camera.quaternion,
@@ -924,7 +930,7 @@ export class CameraControls {
     }
 
     if (this.syncDirection === 'clientToEngine' || forceUpdate)
-      throttledUpdateEngineCamera({
+      this.throttledUpdateEngineCamera({
         quaternion: this.camera.quaternion,
         position: this.camera.position,
         zoom: this.camera.zoom,

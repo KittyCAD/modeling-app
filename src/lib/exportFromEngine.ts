@@ -1,4 +1,4 @@
-import { engineCommandManager } from 'lang/std/engineConnection'
+import { engineCommandManager } from 'lib/singletons'
 import { type Models } from '@kittycad/lib'
 import { v4 as uuidv4 } from 'uuid'
 

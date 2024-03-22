@@ -6,7 +6,7 @@ import styles from './CodeMenu.module.css'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
 import { editorShortcutMeta } from './TextEditor'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { kclManager } from 'lang/KclSingleton'
+import { kclManager } from 'lib/singletons'
 
 export const CodeMenu = ({ children }: PropsWithChildren) => {
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =

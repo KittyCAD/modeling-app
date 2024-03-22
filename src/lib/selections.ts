@@ -1,10 +1,13 @@
 import { Models } from '@kittycad/lib'
-import { engineCommandManager } from 'lang/std/engineConnection'
+import {
+  engineCommandManager,
+  kclManager,
+  sceneEntitiesManager,
+} from 'lib/singletons'
 import { CallExpression, SourceRange, parse, recast } from 'lang/wasm'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { v4 as uuidv4 } from 'uuid'
 import { EditorSelection } from '@codemirror/state'
-import { kclManager } from 'lang/KclSingleton'
 import { SelectionRange } from '@uiw/react-codemirror'
 import { getNormalisedCoordinates, isOverlap } from 'lib/utils'
 import { isCursorInSketchCommandRange } from 'lang/util'
@@ -18,7 +21,6 @@ import { CommandArgument } from './commandTypes'
 import {
   STRAIGHT_SEGMENT,
   TANGENTIAL_ARC_TO_SEGMENT,
-  sceneEntitiesManager,
   getParentGroup,
   PROFILE_START,
 } from 'clientSideScene/sceneEntities'

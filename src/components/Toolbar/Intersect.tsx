@@ -15,7 +15,7 @@ import {
 import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
 import { createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
-import { kclManager } from 'lang/KclSingleton'
+import { kclManager } from 'lib/singletons'
 
 const getModalInfo = createInfoModal(GetInfoModal)
 

@@ -4,7 +4,6 @@ import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
 import { v4 as uuidv4 } from 'uuid'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
-import { sceneInfra } from 'clientSideScene/sceneInfra'
 
 let lastMessage = ''
 
@@ -183,7 +182,6 @@ class EngineConnection {
     console.log(`${JSON.stringify(this.state)} → ${JSON.stringify(next)}`)
 
     if (next.type === EngineConnectionStateType.Disconnecting) {
-      console.trace()
       const sub = next.value
       if (sub.type === DisconnectingType.Error) {
         // Record the last step we failed at.
@@ -220,8 +218,10 @@ class EngineConnection {
 
   // TODO: actual type is ClientMetrics
   private webrtcStatsCollector?: () => Promise<ClientMetrics>
+  private engineCommandManager: EngineCommandManager
 
   constructor({
+    engineCommandManager,
     url,
     token,
     onConnectionStateChange = () => {},
@@ -230,6 +230,7 @@ class EngineConnection {
     onConnectionStarted = () => {},
     onClose = () => {},
   }: {
+    engineCommandManager: EngineCommandManager
     url: string
     token?: string
     onConnectionStateChange?: (state: EngineConnectionState) => void
@@ -238,6 +239,7 @@ class EngineConnection {
     onClose?: (engineConnection: EngineConnection) => void
     onNewTrack?: (track: NewTrackArgs) => void
   }) {
+    this.engineCommandManager = engineCommandManager
     this.url = url
     this.token = token
     this.failedConnTimeout = null
@@ -563,8 +565,8 @@ class EngineConnection {
           .join('\n')
         if (message.request_id) {
           const artifactThatFailed =
-            engineCommandManager.artifactMap[message.request_id] ||
-            engineCommandManager.lastArtifactMap[message.request_id]
+            this.engineCommandManager.artifactMap[message.request_id] ||
+            this.engineCommandManager.lastArtifactMap[message.request_id]
           console.error(
             `Error in response to request ${message.request_id}:\n${errorsString}
 failed cmd type was ${artifactThatFailed?.commandType}`
@@ -831,7 +833,6 @@ export class EngineCommandManager {
   artifactMap: ArtifactMap = {}
   lastArtifactMap: ArtifactMap = {}
   sceneCommandArtifacts: ArtifactMap = {}
-  private getAst: () => Program = () => ({ start: 0, end: 0, body: [] } as any)
   outSequence = 1
   inSequence = 1
   engineConnection?: EngineConnection
@@ -866,11 +867,17 @@ export class EngineCommandManager {
 
   constructor() {
     this.engineConnection = undefined
-    ;(async () => {
-      // circular dependency needs one to be lazy loaded
-      const { kclManager } = await import('lang/KclSingleton')
-      this.getAst = () => kclManager.ast
-    })()
+  }
+
+  private _camControlsCameraChange = () => {}
+  set camControlsCameraChange(cb: () => void) {
+    this._camControlsCameraChange = cb
+  }
+
+  private getAst: () => Program = () =>
+    ({ start: 0, end: 0, body: [], nonCodeMeta: {} } as any)
+  set getAstCb(cb: () => Program) {
+    this.getAst = cb
   }
 
   start({
@@ -903,6 +910,7 @@ export class EngineCommandManager {
 
     const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}`
     this.engineConnection = new EngineConnection({
+      engineCommandManager: this,
       url,
       token,
       onConnectionStateChange: (state: EngineConnectionState) => {
@@ -929,7 +937,7 @@ export class EngineCommandManager {
             gizmo_mode: true,
           },
         })
-        sceneInfra.camControls.onCameraChange()
+        this._camControlsCameraChange()
         this.sendSceneCommand({
           // CameraControls subscribes to default_camera_get_settings response events
           // firing this at connection ensure the camera's are synced initially
@@ -1619,5 +1627,3 @@ export class EngineCommandManager {
     return planeId
   }
 }
-
-export const engineCommandManager = new EngineCommandManager()

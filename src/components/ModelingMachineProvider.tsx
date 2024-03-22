@@ -12,8 +12,8 @@ import { SetSelections, modelingMachine } from 'machines/modelingMachine'
 import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { isCursorInSketchCommandRange } from 'lang/util'
-import { engineCommandManager } from 'lang/std/engineConnection'
-import { kclManager, useKclContext } from 'lang/KclSingleton'
+import { kclManager, sceneInfra, engineCommandManager } from 'lib/singletons'
+import { useKclContext } from 'lang/KclProvider'
 import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
 import {
   angleBetweenInfo,
@@ -33,10 +33,9 @@ import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
 import useStateMachineCommands from 'hooks/useStateMachineCommands'
 import { modelingMachineConfig } from 'lib/commandBarConfigs/modelingCommandConfig'
-import { sceneInfra } from 'clientSideScene/sceneInfra'
 import {
-  getSketchQuaternion,
   getSketchOrientationDetails,
+  getSketchQuaternion,
 } from 'clientSideScene/sceneEntities'
 import { sketchOnExtrudedFace, startSketchOnDefault } from 'lang/modifyAst'
 import { Program, parse } from 'lang/wasm'

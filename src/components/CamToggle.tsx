@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
-import { sceneInfra } from '../clientSideScene/sceneInfra'
-import { engineCommandManager } from 'lang/std/engineConnection'
+import { engineCommandManager, sceneInfra } from 'lib/singletons'
 import { throttle, isReducedMotion } from 'lib/utils'
 
 const updateDollyZoom = throttle(
