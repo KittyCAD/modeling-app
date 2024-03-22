@@ -474,7 +474,7 @@ test('Auto complete works', async ({ page }) => {
   const u = getUtils(page)
   // const PUR = 400 / 37.5 //pixeltoUnitRatio
   await page.setViewportSize({ width: 1200, height: 500 })
-  const lspStartPromise = page.waitForEvent('console', (message) => 
+  const lspStartPromise = page.waitForEvent('console', (message) =>
     message.text().includes('[lsp] [window/logMessage]')
   )
   await page.goto('/')
