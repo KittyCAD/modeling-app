@@ -1812,10 +1812,10 @@
     ts-node "^10.9.1"
     tslib "~2.4"
 
-"@lezer/common@^1.0.0", "@lezer/common@^1.2.0":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@lezer/common/-/common-1.2.1.tgz#198b278b7869668e1bebbe687586e12a42731049"
-  integrity sha512-yemX0ZD2xS/73llMZIK6KplkjIjf2EvAHcinDi/TfJ9hS25G0388+ClHt6/3but0oOxinTcQHJLDXh6w1crzFQ==
+"@lezer/common@^1.0.0":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@lezer/common/-/common-1.0.3.tgz#1808f70e2b0a7b1fdcbaf5c074723d2d4ed1e4c5"
+  integrity sha512-JH4wAXCgUOcCGNekQPLhVeUtIqjH0yPBs7vvUdSjyQama9618IOKFJwkv2kcqdhF0my8hQEgCTEJU0GIgnahvA==
 
 "@lezer/highlight@^1.0.0", "@lezer/highlight@^1.1.3":
   version "1.1.6"
@@ -1825,11 +1825,10 @@
     "@lezer/common" "^1.0.0"
 
 "@lezer/javascript@^1.4.9":
-  version "1.4.13"
-  resolved "https://registry.yarnpkg.com/@lezer/javascript/-/javascript-1.4.13.tgz#e6459a000e1d7369db3e97b1764da63eeb5afe1b"
-  integrity sha512-5IBr8LIO3xJdJH1e9aj/ZNLE4LSbdsx25wFmGRAZsj2zSmwAYjx26JyU/BYOCpRQlu1jcv1z3vy4NB9+UkfRow==
+  version "1.4.9"
+  resolved "https://registry.yarnpkg.com/@lezer/javascript/-/javascript-1.4.9.tgz#1536427af5187621b3b616f21b6a21df3ffd1dbe"
+  integrity sha512-7Uv8mBBE6l44spgWEZvEMdDqGV+FIuY7kJ1o5TFm+jxIuxydO3PcKJYiINij09igd1D/9P7l2KDqpkN8c3bM6A==
   dependencies:
-    "@lezer/common" "^1.2.0"
     "@lezer/highlight" "^1.1.3"
     "@lezer/lr" "^1.3.0"
 
