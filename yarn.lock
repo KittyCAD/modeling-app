@@ -1824,7 +1824,7 @@
   dependencies:
     "@lezer/common" "^1.0.0"
 
-"@lezer/javascript@^1.4.13":
+"@lezer/javascript@^1.4.9":
   version "1.4.13"
   resolved "https://registry.yarnpkg.com/@lezer/javascript/-/javascript-1.4.13.tgz#e6459a000e1d7369db3e97b1764da63eeb5afe1b"
   integrity sha512-5IBr8LIO3xJdJH1e9aj/ZNLE4LSbdsx25wFmGRAZsj2zSmwAYjx26JyU/BYOCpRQlu1jcv1z3vy4NB9+UkfRow==

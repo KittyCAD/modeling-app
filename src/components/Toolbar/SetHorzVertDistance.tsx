@@ -13,7 +13,7 @@ import {
 import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
 import { createLiteral, createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
-import { kclManager } from 'lang/KclSingleton'
+import { kclManager } from 'lib/singletons'
 import { Selections } from 'lib/selections'
 
 const getModalInfo = createInfoModal(GetInfoModal)

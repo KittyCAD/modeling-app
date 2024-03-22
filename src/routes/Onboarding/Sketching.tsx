@@ -2,7 +2,7 @@ import { OnboardingButtons, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useStore } from 'useStore'
 import { useEffect } from 'react'
-import { kclManager } from 'lang/KclSingleton'
+import { kclManager } from 'lib/singletons'
 
 export default function Sketching() {
   const buttonDownInStream = useStore((s) => s.buttonDownInStream)

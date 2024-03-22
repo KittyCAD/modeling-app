@@ -5,12 +5,12 @@ import {
   ConnectingType,
   ConnectingTypeGroup,
   DisconnectingType,
-  engineCommandManager,
   EngineConnectionState,
   EngineConnectionStateType,
   ErrorType,
   initialConnectingTypeGroupState,
 } from '../lang/std/engineConnection'
+import { engineCommandManager } from '../lib/singletons'
 import Tooltip from './Tooltip'
 
 export enum NetworkHealthState {

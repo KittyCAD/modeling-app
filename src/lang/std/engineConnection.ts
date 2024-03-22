@@ -4,7 +4,6 @@ import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
 import { v4 as uuidv4 } from 'uuid'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
-import { sceneInfra } from 'clientSideScene/sceneInfra'
 import { Themes, getThemeColorForEngine } from 'lib/theme'
 
 let lastMessage = ''
@@ -14,6 +13,10 @@ interface CommandInfo {
   range: SourceRange
   pathToNode: PathToNode
   parentId?: string
+  additionalData?: {
+    type: 'cap'
+    info: 'start' | 'end'
+  }
 }
 
 type WebSocketResponse = Models['OkWebSocketResponseData_type']
@@ -180,7 +183,6 @@ class EngineConnection {
     console.log(`${JSON.stringify(this.state)} → ${JSON.stringify(next)}`)
 
     if (next.type === EngineConnectionStateType.Disconnecting) {
-      console.trace()
       const sub = next.value
       if (sub.type === DisconnectingType.Error) {
         // Record the last step we failed at.
@@ -217,8 +219,10 @@ class EngineConnection {
 
   // TODO: actual type is ClientMetrics
   private webrtcStatsCollector?: () => Promise<ClientMetrics>
+  private engineCommandManager: EngineCommandManager
 
   constructor({
+    engineCommandManager,
     url,
     token,
     onConnectionStateChange = () => {},
@@ -227,6 +231,7 @@ class EngineConnection {
     onConnectionStarted = () => {},
     onClose = () => {},
   }: {
+    engineCommandManager: EngineCommandManager
     url: string
     token?: string
     onConnectionStateChange?: (state: EngineConnectionState) => void
@@ -235,6 +240,7 @@ class EngineConnection {
     onClose?: (engineConnection: EngineConnection) => void
     onNewTrack?: (track: NewTrackArgs) => void
   }) {
+    this.engineCommandManager = engineCommandManager
     this.url = url
     this.token = token
     this.failedConnTimeout = null
@@ -560,8 +566,8 @@ class EngineConnection {
           .join('\n')
         if (message.request_id) {
           const artifactThatFailed =
-            engineCommandManager.artifactMap[message.request_id] ||
-            engineCommandManager.lastArtifactMap[message.request_id]
+            this.engineCommandManager.artifactMap[message.request_id] ||
+            this.engineCommandManager.lastArtifactMap[message.request_id]
           console.error(
             `Error in response to request ${message.request_id}:\n${errorsString}
 failed cmd type was ${artifactThatFailed?.commandType}`
@@ -828,7 +834,6 @@ export class EngineCommandManager {
   artifactMap: ArtifactMap = {}
   lastArtifactMap: ArtifactMap = {}
   sceneCommandArtifacts: ArtifactMap = {}
-  private getAst: () => Program = () => ({ start: 0, end: 0, body: [] } as any)
   outSequence = 1
   inSequence = 1
   engineConnection?: EngineConnection
@@ -863,11 +868,17 @@ export class EngineCommandManager {
 
   constructor() {
     this.engineConnection = undefined
-    ;(async () => {
-      // circular dependency needs one to be lazy loaded
-      const { kclManager } = await import('lang/KclSingleton')
-      this.getAst = () => kclManager.ast
-    })()
+  }
+
+  private _camControlsCameraChange = () => {}
+  set camControlsCameraChange(cb: () => void) {
+    this._camControlsCameraChange = cb
+  }
+
+  private getAst: () => Program = () =>
+    ({ start: 0, end: 0, body: [], nonCodeMeta: {} } as any)
+  set getAstCb(cb: () => Program) {
+    this.getAst = cb
   }
 
   start({
@@ -902,6 +913,7 @@ export class EngineCommandManager {
 
     const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}`
     this.engineConnection = new EngineConnection({
+      engineCommandManager: this,
       url,
       token,
       onConnectionStateChange: (state: EngineConnectionState) => {
@@ -941,7 +953,7 @@ export class EngineCommandManager {
             gizmo_mode: true,
           },
         })
-        sceneInfra.camControls.onCameraChange()
+        this._camControlsCameraChange()
         this.sendSceneCommand({
           // CameraControls subscribes to default_camera_get_settings response events
           // firing this at connection ensure the camera's are synced initially
@@ -1085,12 +1097,40 @@ export class EngineCommandManager {
       } as const
       this.artifactMap[id] = artifact
       if (
-        command.commandType === 'entity_linear_pattern' ||
-        command.commandType === 'entity_circular_pattern'
+        (command.commandType === 'entity_linear_pattern' &&
+          modelingResponse.type === 'entity_linear_pattern') ||
+        (command.commandType === 'entity_circular_pattern' &&
+          modelingResponse.type === 'entity_circular_pattern')
       ) {
-        const entities = (modelingResponse as any)?.data?.entity_ids
+        const entities = modelingResponse.data.entity_ids
         entities?.forEach((entity: string) => {
           this.artifactMap[entity] = artifact
+        })
+      }
+      if (
+        command?.commandType === 'solid3d_get_extrusion_face_info' &&
+        modelingResponse.type === 'solid3d_get_extrusion_face_info'
+      ) {
+        console.log('modelingResposne', modelingResponse)
+        const parent = this.artifactMap[command?.parentId || '']
+        modelingResponse.data.faces.forEach((face) => {
+          if (face.cap !== 'none' && face.face_id && parent) {
+            this.artifactMap[face.face_id] = {
+              ...parent,
+              commandType: 'solid3d_get_extrusion_face_info',
+              additionalData: {
+                type: 'cap',
+                info: face.cap === 'bottom' ? 'start' : 'end',
+              },
+            }
+          }
+          const curveArtifact = this.artifactMap[face?.curve_id || '']
+          if (curveArtifact && face?.face_id) {
+            this.artifactMap[face.face_id] = {
+              ...curveArtifact,
+              commandType: 'solid3d_get_extrusion_face_info',
+            }
+          }
         })
       }
       resolve({
@@ -1404,12 +1444,6 @@ export class EngineCommandManager {
     const promise = new Promise((_resolve, reject) => {
       resolve = _resolve
     })
-    const getParentId = (): string | undefined => {
-      if (command.type === 'extend_path') {
-        return command.path
-      }
-      // TODO handle other commands that have a parent
-    }
     const pathToNode = ast
       ? getNodePathFromSourceRange(ast, range || [0, 0])
       : []
@@ -1418,7 +1452,6 @@ export class EngineCommandManager {
       pathToNode,
       type: 'pending',
       commandType: command.type,
-      parentId: getParentId(),
       promise,
       resolve,
     }
@@ -1435,10 +1468,14 @@ export class EngineCommandManager {
       resolve = _resolve
     })
     const getParentId = (): string | undefined => {
-      if (command.type === 'extend_path') {
-        return command.path
+      if (command.type === 'extend_path') return command.path
+      if (command.type === 'solid3d_get_extrusion_face_info') {
+        const edgeArtifact = this.artifactMap[command.edge_id]
+        // edges's parent id is to the original "start_path" artifact
+        if (edgeArtifact?.parentId) return edgeArtifact.parentId
       }
-      // TODO handle other commands that have a parent
+      if (command.type === 'close_path') return command.path_id
+      // handle other commands that have a parent here
     }
     const pathToNode = ast
       ? getNodePathFromSourceRange(ast, range || [0, 0])
@@ -1606,5 +1643,3 @@ export class EngineCommandManager {
     return planeId
   }
 }
-
-export const engineCommandManager = new EngineCommandManager()

@@ -33,10 +33,12 @@ export default class Server {
       this.#fromServer,
       fileSystemManager
     )
+    if (!token || token === '') {
+      throw new Error(
+        type_ + ': auth token is required for lsp server to start'
+      )
+    }
     if (type_ === 'copilot') {
-      if (!token || token === '') {
-        throw new Error('auth token is required for copilot')
-      }
       await copilotLspRun(config, token)
     } else if (type_ === 'kcl') {
       await kclLspRun(config, token || '')

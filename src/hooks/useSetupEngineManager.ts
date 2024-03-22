@@ -1,9 +1,8 @@
 import { useLayoutEffect, useEffect, useRef } from 'react'
 import { parse } from '../lang/wasm'
 import { useStore } from '../useStore'
-import { engineCommandManager } from '../lang/std/engineConnection'
+import { engineCommandManager, kclManager } from 'lib/singletons'
 import { deferExecution } from 'lib/utils'
-import { kclManager } from 'lang/KclSingleton'
 import { Themes } from 'lib/theme'
 
 export function useSetupEngineManager(
