@@ -121,7 +121,6 @@ export function App() {
 
     const newCmdId = uuidv4()
     if (buttonDownInStream === undefined) {
-      console.log('sending highlight_set_entity')
       debounceSocketSend({
         type: 'modeling_cmd_req',
         cmd: {
