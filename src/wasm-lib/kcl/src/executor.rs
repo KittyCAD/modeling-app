@@ -1219,6 +1219,9 @@ pub async fn execute(
         }
     }
 
+    // Signal to engine we're done. Flush the batch.
+    ctx.engine.signal_end().await?;
+
     Ok(memory.clone())
 }
 

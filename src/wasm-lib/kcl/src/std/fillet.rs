@@ -165,6 +165,7 @@ async fn inner_get_opposite_edge(tag: String, extrude_group: Box<ExtrudeGroup>, 
             },
         )
         .await?;
+
     let kittycad::types::OkWebSocketResponseData::Modeling {
         modeling_response: kittycad::types::OkModelingCmdResponse::Solid3DGetOppositeEdge { data: opposite_edge },
     } = &resp

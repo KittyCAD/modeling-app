@@ -3,6 +3,7 @@
 
 use std::sync::{Arc, Mutex};
 
+use crate::executor::SourceRange;
 use anyhow::{anyhow, Result};
 use dashmap::DashMap;
 use futures::{SinkExt, StreamExt};
@@ -71,20 +72,113 @@ struct ToEngineReq {
     request_sent: oneshot::Sender<Result<()>>,
 }
 
+fn is_cmd_with_return_values(cmd: &kittycad::types::ModelingCmd) -> bool {
+    let (kittycad::types::ModelingCmd::Export { .. }
+    | kittycad::types::ModelingCmd::Extrude { .. }
+    | kittycad::types::ModelingCmd::SketchModeDisable { .. }
+    | kittycad::types::ModelingCmd::ObjectBringToFront { .. }
+    | kittycad::types::ModelingCmd::SelectWithPoint { .. }
+    | kittycad::types::ModelingCmd::HighlightSetEntity { .. }
+    | kittycad::types::ModelingCmd::EntityGetChildUuid { .. }
+    | kittycad::types::ModelingCmd::EntityGetNumChildren { .. }
+    | kittycad::types::ModelingCmd::EntityGetParentId { .. }
+    | kittycad::types::ModelingCmd::EntityGetAllChildUuids { .. }
+    | kittycad::types::ModelingCmd::CameraDragMove { .. }
+    | kittycad::types::ModelingCmd::CameraDragEnd { .. }
+    | kittycad::types::ModelingCmd::DefaultCameraGetSettings { .. }
+    | kittycad::types::ModelingCmd::DefaultCameraZoom { .. }
+    | kittycad::types::ModelingCmd::SelectGet { .. }
+    | kittycad::types::ModelingCmd::Solid3DGetAllEdgeFaces { .. }
+    | kittycad::types::ModelingCmd::Solid3DGetAllOppositeEdges { .. }
+    | kittycad::types::ModelingCmd::Solid3DGetOppositeEdge { .. }
+    | kittycad::types::ModelingCmd::Solid3DGetNextAdjacentEdge { .. }
+    | kittycad::types::ModelingCmd::Solid3DGetPrevAdjacentEdge { .. }
+    | kittycad::types::ModelingCmd::GetEntityType { .. }
+    | kittycad::types::ModelingCmd::CurveGetControlPoints { .. }
+    | kittycad::types::ModelingCmd::CurveGetType { .. }
+    | kittycad::types::ModelingCmd::MouseClick { .. }
+    | kittycad::types::ModelingCmd::TakeSnapshot { .. }
+    | kittycad::types::ModelingCmd::PathGetInfo { .. }
+    | kittycad::types::ModelingCmd::PathGetCurveUuidsForVertices { .. }
+    | kittycad::types::ModelingCmd::PathGetVertexUuids { .. }
+    | kittycad::types::ModelingCmd::CurveGetEndPoints { .. }
+    | kittycad::types::ModelingCmd::FaceIsPlanar { .. }
+    | kittycad::types::ModelingCmd::FaceGetPosition { .. }
+    | kittycad::types::ModelingCmd::FaceGetGradient { .. }
+    | kittycad::types::ModelingCmd::PlaneIntersectAndProject { .. }
+    | kittycad::types::ModelingCmd::ImportFiles { .. }
+    | kittycad::types::ModelingCmd::Mass { .. }
+    | kittycad::types::ModelingCmd::Volume { .. }
+    | kittycad::types::ModelingCmd::Density { .. }
+    | kittycad::types::ModelingCmd::SurfaceArea { .. }
+    | kittycad::types::ModelingCmd::CenterOfMass { .. }
+    | kittycad::types::ModelingCmd::GetSketchModePlane { .. }
+    | kittycad::types::ModelingCmd::EntityGetDistance { .. }
+    | kittycad::types::ModelingCmd::EntityLinearPattern { .. }
+    | kittycad::types::ModelingCmd::EntityCircularPattern { .. }
+    | kittycad::types::ModelingCmd::Solid3DGetExtrusionFaceInfo { .. }) = cmd
+    else {
+        return false;
+    };
+
+    true
+}
+
 impl EngineConnection {
     /// Start waiting for incoming engine requests, and send each one over the WebSocket to the engine.
     async fn start_write_actor(mut tcp_write: WebSocketTcpWrite, mut engine_req_rx: mpsc::Receiver<ToEngineReq>) {
+        let mut batch: Vec<kittycad::types::ModelingCmdReq> = vec![];
+
         while let Some(req) = engine_req_rx.recv().await {
             let ToEngineReq { req, request_sent } = req;
-            let res = if let kittycad::types::WebSocketRequest::ModelingCmdReq {
-                cmd: kittycad::types::ModelingCmd::ImportFiles { .. },
-                cmd_id: _,
-            } = &req
-            {
+            let kittycad::types::WebSocketRequest::ModelingCmdReq { cmd, cmd_id } = &req else {
+                return;
+            };
+
+            let res = if let kittycad::types::ModelingCmd::ImportFiles { .. } = cmd {
                 // Send it as binary.
                 Self::inner_send_to_engine_binary(req, &mut tcp_write).await
             } else {
-                Self::inner_send_to_engine(req, &mut tcp_write).await
+                // Backported from the new Grackle-core KCL.
+                // We will batch all commands until we hit one which has
+                // return values we want to wait for. Currently, that means
+                // waiting for API requests with return values that are not just
+                // request confirmations (ex. face or edge data).
+
+                batch.push(kittycad::types::ModelingCmdReq {
+                    cmd: cmd.clone(),
+                    cmd_id: *cmd_id,
+                });
+
+                if is_cmd_with_return_values(&cmd) || *cmd_id == uuid::Uuid::nil() {
+                    // If the batch has zero commands, and we're about to load
+                    // a command that has return values, don't wrap it in a
+                    // ModelingCmdBatchReq.
+                    let future = if batch.len() == 1 {
+                        Self::inner_send_to_engine(
+                            kittycad::types::WebSocketRequest::ModelingCmdReq {
+                                cmd: cmd.clone(),
+                                cmd_id: *cmd_id,
+                            },
+                            &mut tcp_write,
+                        )
+                    } else {
+                        // Serde will properly serialize these.
+                        Self::inner_send_to_engine(
+                            kittycad::types::WebSocketRequest::ModelingCmdBatchReq {
+                                requests: batch.clone(),
+                            },
+                            &mut tcp_write,
+                        )
+                    };
+
+                    // Prepare for a new batch of instructions.
+                    batch.clear();
+
+                    future.await
+                } else {
+                    Ok(())
+                }
             };
             let _ = request_sent.send(res);
         }
@@ -163,7 +257,7 @@ impl EngineManager for EngineConnection {
     async fn send_modeling_cmd(
         &self,
         id: uuid::Uuid,
-        source_range: crate::executor::SourceRange,
+        source_range: SourceRange,
         cmd: kittycad::types::ModelingCmd,
     ) -> Result<OkWebSocketResponseData, KclError> {
         let (tx, rx) = oneshot::channel();
@@ -200,7 +294,18 @@ impl EngineManager for EngineConnection {
                 })
             })?;
 
-        // Wait for the response.
+        // Only wait for a response if it's a command *with* return values
+        // So most of the time, this condition will be true.
+        if !is_cmd_with_return_values(&cmd) {
+            // Simulate an empty response type
+            return Ok(OkWebSocketResponseData::Modeling {
+                modeling_response: kittycad::types::OkModelingCmdResponse::Empty {},
+            });
+        }
+
+        // If it's a submitted batch, we want to check the batch return value
+        // in case of any errors.
+
         let current_time = std::time::Instant::now();
         while current_time.elapsed().as_secs() < 60 {
             if let Ok(guard) = self.socket_health.lock() {

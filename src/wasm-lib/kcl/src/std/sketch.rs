@@ -915,7 +915,7 @@ async fn start_sketch_on_face(
             })
             .ok_or_else(|| {
                 KclError::Type(KclErrorDetails {
-                    message: format!("Expected a face with the tag `{}`", tag),
+                    message: format!("Expected a face with the tag `{}` for sketch", tag),
                     source_ranges: vec![args.source_range],
                 })
             })??,
