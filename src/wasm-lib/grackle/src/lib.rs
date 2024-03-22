@@ -12,7 +12,9 @@ use kcl_lib::{
     ast::types::{BodyItem, FunctionExpressionParts, KclNone, LiteralValue, Program},
 };
 use kcl_value_group::into_single_value;
-use kittycad_execution_plan::{self as ep, Destination, Instruction, InstructionKind};
+use kittycad_execution_plan::{
+    self as ep, instruction::SourceRange as KcvmSourceRange, Destination, Instruction, InstructionKind,
+};
 use kittycad_execution_plan_traits as ept;
 use kittycad_execution_plan_traits::{Address, NumericPrimitive};
 use kittycad_modeling_session::Session;
@@ -85,13 +87,16 @@ impl Planner {
     /// Returns the instructions, and the destination address of the value.
     fn plan_to_compute_single(&mut self, ctx: &mut Context, value: SingleValue) -> Result<EvalPlan, CompileError> {
         match value {
-            SingleValue::None(KclNone { start: _, end: _ }) => {
+            SingleValue::None(KclNone { start, end }) => {
                 let address = self.next_addr.offset_by(1);
                 Ok(EvalPlan {
-                    instructions: vec![Instruction::from(InstructionKind::SetPrimitive {
-                        address,
-                        value: ept::Primitive::Nil,
-                    })],
+                    instructions: vec![Instruction::from_range(
+                        InstructionKind::SetPrimitive {
+                            address,
+                            value: ept::Primitive::Nil,
+                        },
+                        KcvmSourceRange([start, end]),
+                    )],
                     binding: EpBinding::Single(address),
                 })
             }
@@ -118,10 +123,13 @@ impl Planner {
                 let size = 1;
                 let address = self.next_addr.offset_by(size);
                 Ok(EvalPlan {
-                    instructions: vec![Instruction::from(InstructionKind::SetPrimitive {
-                        address,
-                        value: kcep_val,
-                    })],
+                    instructions: vec![Instruction::from_range(
+                        InstructionKind::SetPrimitive {
+                            address,
+                            value: kcep_val,
+                        },
+                        KcvmSourceRange([expr.start, expr.end]),
+                    )],
                     binding: EpBinding::Single(address),
                 })
             }
@@ -138,10 +146,13 @@ impl Planner {
                 if let Some(b) = b {
                     let address = self.next_addr.offset_by(1);
                     return Ok(EvalPlan {
-                        instructions: vec![Instruction::from(InstructionKind::SetPrimitive {
-                            address,
-                            value: ept::Primitive::Bool(b),
-                        })],
+                        instructions: vec![Instruction::from_range(
+                            InstructionKind::SetPrimitive {
+                                address,
+                                value: ept::Primitive::Bool(b),
+                            },
+                            KcvmSourceRange([expr.start, expr.end]),
+                        )],
                         binding: EpBinding::Single(address),
                     });
                 }
@@ -167,16 +178,19 @@ impl Planner {
                 };
                 let destination = self.next_addr.offset_by(1);
                 let mut plan = operand.instructions;
-                plan.push(Instruction::from(InstructionKind::UnaryArithmetic {
-                    arithmetic: ep::UnaryArithmetic {
-                        operation: match expr.operator {
-                            ast::types::UnaryOperator::Neg => ep::UnaryOperation::Neg,
-                            ast::types::UnaryOperator::Not => ep::UnaryOperation::Not,
+                plan.push(Instruction::from_range(
+                    InstructionKind::UnaryArithmetic {
+                        arithmetic: ep::UnaryArithmetic {
+                            operation: match expr.operator {
+                                ast::types::UnaryOperator::Neg => ep::UnaryOperation::Neg,
+                                ast::types::UnaryOperator::Not => ep::UnaryOperation::Not,
+                            },
+                            operand: ep::Operand::Reference(binding),
                         },
-                        operand: ep::Operand::Reference(binding),
+                        destination: Destination::Address(destination),
                     },
-                    destination: Destination::Address(destination),
-                }));
+                    KcvmSourceRange([expr.start, expr.end]),
+                ));
                 Ok(EvalPlan {
                     instructions: plan,
                     binding: EpBinding::Single(destination),
@@ -199,21 +213,24 @@ impl Planner {
                 let mut plan = Vec::with_capacity(l.instructions.len() + r.instructions.len() + 1);
                 plan.extend(l.instructions);
                 plan.extend(r.instructions);
-                plan.push(Instruction::from(InstructionKind::BinaryArithmetic {
-                    arithmetic: ep::BinaryArithmetic {
-                        operation: match expr.operator {
-                            ast::types::BinaryOperator::Add => ep::BinaryOperation::Add,
-                            ast::types::BinaryOperator::Sub => ep::BinaryOperation::Sub,
-                            ast::types::BinaryOperator::Mul => ep::BinaryOperation::Mul,
-                            ast::types::BinaryOperator::Div => ep::BinaryOperation::Div,
-                            ast::types::BinaryOperator::Mod => ep::BinaryOperation::Mod,
-                            ast::types::BinaryOperator::Pow => ep::BinaryOperation::Pow,
+                plan.push(Instruction::from_range(
+                    InstructionKind::BinaryArithmetic {
+                        arithmetic: ep::BinaryArithmetic {
+                            operation: match expr.operator {
+                                ast::types::BinaryOperator::Add => ep::BinaryOperation::Add,
+                                ast::types::BinaryOperator::Sub => ep::BinaryOperation::Sub,
+                                ast::types::BinaryOperator::Mul => ep::BinaryOperation::Mul,
+                                ast::types::BinaryOperator::Div => ep::BinaryOperation::Div,
+                                ast::types::BinaryOperator::Mod => ep::BinaryOperation::Mod,
+                                ast::types::BinaryOperator::Pow => ep::BinaryOperation::Pow,
+                            },
+                            operand0: ep::Operand::Reference(l_binding),
+                            operand1: ep::Operand::Reference(r_binding),
                         },
-                        operand0: ep::Operand::Reference(l_binding),
-                        operand1: ep::Operand::Reference(r_binding),
+                        destination: Destination::Address(destination),
                     },
-                    destination: Destination::Address(destination),
-                }));
+                    KcvmSourceRange([expr.start, expr.end]),
+                ));
                 Ok(EvalPlan {
                     instructions: plan,
                     binding: EpBinding::Single(destination),
@@ -344,6 +361,7 @@ impl Planner {
                 Ok(EvalPlan { instructions, binding })
             }
             SingleValue::MemberExpression(mut expr) => {
+                let source_range = KcvmSourceRange([expr.start, expr.end]);
                 let parse = move || {
                     let mut stack = Vec::new();
                     loop {
@@ -373,6 +391,7 @@ impl Planner {
                     let mut structure_start = ep::Operand::Literal(starting_address.into());
                     properties.reverse();
                     for (property, _computed) in properties {
+                        let source_range = KcvmSourceRange([property.start(), property.end()]);
                         // Where is the member stored?
                         let addr_of_member = match property {
                             // If it's some identifier, then look up where that identifier will be stored.
@@ -395,10 +414,13 @@ impl Planner {
                         };
 
                         // Find the address of the member, push to stack.
-                        instructions.push(Instruction::from(InstructionKind::AddrOfMember {
-                            member: addr_of_member,
-                            start: structure_start,
-                        }));
+                        instructions.push(Instruction::from_range(
+                            InstructionKind::AddrOfMember {
+                                member: addr_of_member,
+                                start: structure_start,
+                            },
+                            source_range,
+                        ));
                         // If there's another member after this one, its starting object is the
                         // address we just pushed to the stack.
                         structure_start = ep::Operand::StackPop;
@@ -407,10 +429,13 @@ impl Planner {
                     // The final address is on the stack.
                     // Move it to addressable memory.
                     let final_prop_addr = self.next_addr.offset_by(1);
-                    instructions.push(Instruction::from(InstructionKind::CopyLen {
-                        source_range: ep::Operand::StackPop,
-                        destination_range: ep::Operand::Literal(final_prop_addr.into()),
-                    }));
+                    instructions.push(Instruction::from_range(
+                        InstructionKind::CopyLen {
+                            source_range: ep::Operand::StackPop,
+                            destination_range: ep::Operand::Literal(final_prop_addr.into()),
+                        },
+                        source_range,
+                    ));
 
                     Ok(EvalPlan {
                         instructions,
@@ -503,10 +528,13 @@ impl Planner {
                         if let Some(length_at) = length_at {
                             let length_of_this_element = (self.next_addr - length_at) - 1;
                             // Append element's length
-                            acc_instrs.push(Instruction::from(InstructionKind::SetPrimitive {
-                                address: length_at,
-                                value: length_of_this_element.into(),
-                            }));
+                            acc_instrs.push(Instruction::from_range(
+                                InstructionKind::SetPrimitive {
+                                    address: length_at,
+                                    value: length_of_this_element.into(),
+                                },
+                                KcvmSourceRange([expr.start, expr.end]),
+                            ));
                         }
                         // Append element's value
                         acc_instrs.extend(instrs_for_this_element);
@@ -516,14 +544,17 @@ impl Planner {
                 // The array's overall instructions are:
                 // - Write a length header
                 // - Write everything to calculate its elements.
-                let mut instructions = vec![Instruction::from(InstructionKind::SetPrimitive {
-                    address: length_at,
-                    value: ept::ObjectHeader {
-                        properties: keys,
-                        size: (self.next_addr - length_at) - 1,
-                    }
-                    .into(),
-                })];
+                let mut instructions = vec![Instruction::from_range(
+                    InstructionKind::SetPrimitive {
+                        address: length_at,
+                        value: ept::ObjectHeader {
+                            properties: keys,
+                            size: (self.next_addr - length_at) - 1,
+                        }
+                        .into(),
+                    },
+                    KcvmSourceRange([expr.start, expr.end]),
+                )];
                 instructions.extend(instructions_for_each_element);
                 let binding = EpBinding::Map {
                     length_at,
@@ -560,10 +591,13 @@ impl Planner {
                         if let Some(length_at) = length_at {
                             let length_of_this_element = (self.next_addr - length_at) - 1;
                             // Append element's length
-                            acc_instrs.push(Instruction::from(InstructionKind::SetPrimitive {
-                                address: length_at,
-                                value: length_of_this_element.into(),
-                            }));
+                            acc_instrs.push(Instruction::from_range(
+                                InstructionKind::SetPrimitive {
+                                    address: length_at,
+                                    value: length_of_this_element.into(),
+                                },
+                                KcvmSourceRange([expr.start, expr.end]),
+                            ));
                         }
                         // Append element's value
                         acc_instrs.extend(instrs_for_this_element);
@@ -573,14 +607,17 @@ impl Planner {
                 // The array's overall instructions are:
                 // - Write a length header
                 // - Write everything to calculate its elements.
-                let mut instructions = vec![Instruction::from(InstructionKind::SetPrimitive {
-                    address: length_at,
-                    value: ept::ListHeader {
-                        count: element_count,
-                        size: (self.next_addr - length_at) - 1,
-                    }
-                    .into(),
-                })];
+                let mut instructions = vec![Instruction::from_range(
+                    InstructionKind::SetPrimitive {
+                        address: length_at,
+                        value: ept::ListHeader {
+                            count: element_count,
+                            size: (self.next_addr - length_at) - 1,
+                        }
+                        .into(),
+                    },
+                    KcvmSourceRange([expr.start, expr.end]),
+                )];
                 instructions.extend(instructions_for_each_element);
                 let binding = EpBinding::Sequence {
                     length_at,
