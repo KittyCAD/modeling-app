@@ -112,6 +112,7 @@ export const settingsMachine = createMachine(
               'persistSettings',
               'toastSuccess',
               'setThemeClass',
+              'setEngineTheme',
             ],
             target: 'idle',
             internal: true,

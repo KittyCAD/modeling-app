@@ -11,7 +11,7 @@ import {
   validateSettings,
 } from 'lib/settings/settingsUtils'
 import { toast } from 'react-hot-toast'
-import { setThemeClass, Themes } from 'lib/theme'
+import { getThemeColorForEngine, setThemeClass, Themes } from 'lib/theme'
 import {
   AnyStateMachine,
   ContextFrom,
@@ -22,7 +22,8 @@ import {
 import { isTauri } from 'lib/isTauri'
 import { settingsCommandBarConfig } from 'lib/commandBarConfigs/settingsCommandConfig'
 import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
-import { kclManager, sceneInfra } from 'lib/singletons'
+import { kclManager, sceneInfra, engineCommandManager } from 'lib/singletons'
+import { v4 as uuidv4 } from 'uuid'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -94,6 +95,16 @@ export const SettingsAuthProviderBase = ({
               ? event.data.baseUnit
               : context.baseUnit
           sceneInfra.baseUnit = newBaseUnit
+        },
+        setEngineTheme: (context) => {
+          engineCommandManager.sendSceneCommand({
+            cmd_id: uuidv4(),
+            type: 'modeling_cmd_req',
+            cmd: {
+              type: 'set_background_color',
+              color: getThemeColorForEngine(context.theme),
+            },
+          })
         },
         toastSuccess: (context, event) => {
           const truncatedNewValue =
