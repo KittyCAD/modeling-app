@@ -482,8 +482,7 @@ test('Auto complete works', async ({ page }) => {
       return true
     }
     return false
-  }
-  )
+  })
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
   await lspStartPromise
