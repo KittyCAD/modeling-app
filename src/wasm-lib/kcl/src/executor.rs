@@ -1823,12 +1823,14 @@ const bracket = startSketchOn('XY')
         fn opt_param(s: &'static str) -> Parameter {
             Parameter {
                 identifier: ident(s),
+                type_: None,
                 optional: true,
             }
         }
         fn req_param(s: &'static str) -> Parameter {
             Parameter {
                 identifier: ident(s),
+                type_: None,
                 optional: false,
             }
         }
@@ -1914,6 +1916,7 @@ const bracket = startSketchOn('XY')
                     body: Vec::new(),
                     non_code_meta: Default::default(),
                 },
+                return_type: None,
             };
             let actual = assign_args_to_params(func_expr, args, ProgramMemory::new());
             assert_eq!(

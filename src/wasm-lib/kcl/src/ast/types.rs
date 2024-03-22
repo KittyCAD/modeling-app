@@ -2753,6 +2753,41 @@ async fn execute_pipe_body(
     }
 }
 
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, JsonSchema, Bake, FromStr, Display)]
+#[databake(path = kcl_lib::ast::types)]
+#[serde(tag = "type")]
+#[display(style = "snake_case")]
+pub enum FnArgPrimitive {
+    /// A string type.
+    String,
+    /// A number type.
+    Number,
+    /// A boolean type.
+    #[display("bool")]
+    #[serde(rename = "bool")]
+    Boolean,
+    /// A sketch group type.
+    SketchGroup,
+    /// A sketch surface type.
+    SketchSurface,
+    /// An extrude group type.
+    ExtrudeGroup,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
+#[serde(tag = "type")]
+pub enum FnArgType {
+    /// A primitive type.
+    Primitive(FnArgPrimitive),
+    // An array of a primitive type.
+    Array(FnArgPrimitive),
+    // An object type.
+    Object {
+        properties: Vec<Parameter>,
+    },
+}
+
 /// Parameter of a KCL function.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
@@ -2761,6 +2796,10 @@ async fn execute_pipe_body(
 pub struct Parameter {
     /// The parameter's label or name.
     pub identifier: Identifier,
+    /// The type of the parameter.
+    /// This is optional if the user defines a type.
+    #[serde(skip)]
+    pub type_: Option<FnArgType>,
     /// Is the parameter optional?
     pub optional: bool,
 }
@@ -2774,6 +2813,8 @@ pub struct FunctionExpression {
     pub end: usize,
     pub params: Vec<Parameter>,
     pub body: Program,
+    #[serde(skip)]
+    pub return_type: Option<FnArgType>,
 }
 
 impl_value_meta!(FunctionExpression);
@@ -2809,6 +2850,7 @@ impl FunctionExpression {
             end,
             params,
             body,
+            return_type: _,
         } = self;
         let mut params_required = Vec::with_capacity(params.len());
         let mut params_optional = Vec::with_capacity(params.len());
@@ -3781,6 +3823,166 @@ const firstExtrude = startSketchOn('XY')
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_type_args_on_functions() {
+        let some_program_string = r#"fn thing = (arg0: number, arg1: string, tag?: string) => {
+    return arg0
+}"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        // Check the program output for the types of the parameters.
+        let function = program.body.first().unwrap();
+        let BodyItem::VariableDeclaration(var_decl) = function else {
+            panic!("expected a variable declaration")
+        };
+        let Value::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+            panic!("expected a function expression")
+        };
+        let params = &func_expr.params;
+        assert_eq!(params.len(), 3);
+        assert_eq!(params[0].type_, Some(FnArgType::Primitive(FnArgPrimitive::Number)));
+        assert_eq!(params[1].type_, Some(FnArgType::Primitive(FnArgPrimitive::String)));
+        assert_eq!(params[2].type_, Some(FnArgType::Primitive(FnArgPrimitive::String)));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_type_args_array_on_functions() {
+        let some_program_string = r#"fn thing = (arg0: number[], arg1: string[], tag?: string) => {
+    return arg0
+}"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        // Check the program output for the types of the parameters.
+        let function = program.body.first().unwrap();
+        let BodyItem::VariableDeclaration(var_decl) = function else {
+            panic!("expected a variable declaration")
+        };
+        let Value::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+            panic!("expected a function expression")
+        };
+        let params = &func_expr.params;
+        assert_eq!(params.len(), 3);
+        assert_eq!(params[0].type_, Some(FnArgType::Array(FnArgPrimitive::Number)));
+        assert_eq!(params[1].type_, Some(FnArgType::Array(FnArgPrimitive::String)));
+        assert_eq!(params[2].type_, Some(FnArgType::Primitive(FnArgPrimitive::String)));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_type_args_object_on_functions() {
+        let some_program_string = r#"fn thing = (arg0: number[], arg1: {thing: number, things: string[], more?: string}, tag?: string) => {
+    return arg0
+}"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        // Check the program output for the types of the parameters.
+        let function = program.body.first().unwrap();
+        let BodyItem::VariableDeclaration(var_decl) = function else {
+            panic!("expected a variable declaration")
+        };
+        let Value::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+            panic!("expected a function expression")
+        };
+        let params = &func_expr.params;
+        assert_eq!(params.len(), 3);
+        assert_eq!(params[0].type_, Some(FnArgType::Array(FnArgPrimitive::Number)));
+        assert_eq!(
+            params[1].type_,
+            Some(FnArgType::Object {
+                properties: vec![
+                    Parameter {
+                        identifier: Identifier {
+                            start: 35,
+                            end: 40,
+                            name: "thing".to_owned()
+                        },
+                        type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
+                        optional: false
+                    },
+                    Parameter {
+                        identifier: Identifier {
+                            start: 50,
+                            end: 56,
+                            name: "things".to_owned()
+                        },
+                        type_: Some(FnArgType::Array(FnArgPrimitive::String)),
+                        optional: false
+                    },
+                    Parameter {
+                        identifier: Identifier {
+                            start: 68,
+                            end: 72,
+                            name: "more".to_owned()
+                        },
+                        type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
+                        optional: true
+                    }
+                ]
+            })
+        );
+        assert_eq!(params[2].type_, Some(FnArgType::Primitive(FnArgPrimitive::String)));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_return_type_on_functions() {
+        let some_program_string = r#"fn thing = () => {thing: number, things: string[], more?: string} {
+    return 1
+}"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        // Check the program output for the types of the parameters.
+        let function = program.body.first().unwrap();
+        let BodyItem::VariableDeclaration(var_decl) = function else {
+            panic!("expected a variable declaration")
+        };
+        let Value::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+            panic!("expected a function expression")
+        };
+        let params = &func_expr.params;
+        assert_eq!(params.len(), 0);
+        assert_eq!(
+            func_expr.return_type,
+            Some(FnArgType::Object {
+                properties: vec![
+                    Parameter {
+                        identifier: Identifier {
+                            start: 18,
+                            end: 23,
+                            name: "thing".to_owned()
+                        },
+                        type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
+                        optional: false
+                    },
+                    Parameter {
+                        identifier: Identifier {
+                            start: 33,
+                            end: 39,
+                            name: "things".to_owned()
+                        },
+                        type_: Some(FnArgType::Array(FnArgPrimitive::String)),
+                        optional: false
+                    },
+                    Parameter {
+                        identifier: Identifier {
+                            start: 51,
+                            end: 55,
+                            name: "more".to_owned()
+                        },
+                        type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
+                        optional: true
+                    }
+                ]
+            })
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_recast_math_negate_parens() {
         let some_program_string = r#"const wallMountL = 3.82
 const thickness = 0.5
@@ -3867,6 +4069,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                         body: Vec::new(),
                         non_code_meta: Default::default(),
                     },
+                    return_type: None,
                 },
             ),
             (
@@ -3881,6 +4084,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                             end: 0,
                             name: "foo".to_owned(),
                         },
+                        type_: None,
                         optional: false,
                     }],
                     body: Program {
@@ -3889,6 +4093,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                         body: Vec::new(),
                         non_code_meta: Default::default(),
                     },
+                    return_type: None,
                 },
             ),
             (
@@ -3903,6 +4108,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                             end: 0,
                             name: "foo".to_owned(),
                         },
+                        type_: None,
                         optional: true,
                     }],
                     body: Program {
@@ -3911,6 +4117,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                         body: Vec::new(),
                         non_code_meta: Default::default(),
                     },
+                    return_type: None,
                 },
             ),
             (
@@ -3926,6 +4133,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                                 end: 0,
                                 name: "foo".to_owned(),
                             },
+                            type_: None,
                             optional: false,
                         },
                         Parameter {
@@ -3934,6 +4142,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                                 end: 0,
                                 name: "bar".to_owned(),
                             },
+                            type_: None,
                             optional: true,
                         },
                     ],
@@ -3943,6 +4152,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                         body: Vec::new(),
                         non_code_meta: Default::default(),
                     },
+                    return_type: None,
                 },
             ),
         ]

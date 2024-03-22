@@ -1460,7 +1460,6 @@ fn mod_and_pow() {
     let addr2 = Address::ZERO.offset(2);
     let addr3 = Address::ZERO.offset(3);
     let addr4 = Address::ZERO.offset(4);
-    print!("{:?}", plan);
     assert_eq!(
         plan,
         vec![
