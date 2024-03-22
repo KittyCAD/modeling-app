@@ -18,7 +18,7 @@
     "@tauri-apps/api": "^1.5.3",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^14.0.0",
-    "@testing-library/user-event": "^14.5.1",
+    "@testing-library/user-event": "^14.5.2",
     "@ts-stack/markdown": "^1.5.0",
     "@tweenjs/tween.js": "^23.1.1",
     "@types/node": "^18.19.26",
