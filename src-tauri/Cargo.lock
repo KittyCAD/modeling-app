@@ -83,9 +83,16 @@ dependencies = [
  "tauri",
  "tauri-build",
  "tauri-plugin-fs-extra",
+ "tauri-plugin-localhost",
  "tokio",
  "toml 0.8.2",
 ]
+
+[[package]]
+name = "ascii"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d92bec98840b8f03a5ff5413de5293bfcd8bf96467cf5452609f939ec6f5de16"
 
 [[package]]
 name = "async-trait"
@@ -365,6 +372,12 @@ dependencies = [
  "wasm-bindgen",
  "winapi",
 ]
+
+[[package]]
+name = "chunked_transfer"
+version = "1.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6e4de3bc4ea267985becf712dc6d9eed8b04c953b3fcfb339ebc87acd9804901"
 
 [[package]]
 name = "cocoa"
@@ -1251,7 +1264,7 @@ dependencies = [
  "futures-core",
  "futures-sink",
  "futures-util",
- "http",
+ "http 0.2.9",
  "indexmap 2.2.5",
  "slab",
  "tokio",
@@ -1347,13 +1360,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "http"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "21b9ddb458710bc376481b842f5da65cdf31522de232c1ca8146abce2a358258"
+dependencies = [
+ "bytes",
+ "fnv",
+ "itoa 1.0.6",
+]
+
+[[package]]
 name = "http-body"
 version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d5f38f16d184e36f2408a55281cd658ecbd3ca05cce6d6510a176eca393e26d1"
 dependencies = [
  "bytes",
- "http",
+ "http 0.2.9",
  "pin-project-lite",
 ]
 
@@ -1386,7 +1410,7 @@ dependencies = [
  "futures-core",
  "futures-util",
  "h2",
- "http",
+ "http 0.2.9",
  "http-body",
  "httparse",
  "httpdate",
@@ -1406,7 +1430,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8d78e1e73ec14cf7375674f74d7dde185c8206fd9dea6fb6295e8a98098aaa97"
 dependencies = [
  "futures-util",
- "http",
+ "http 0.2.9",
  "hyper",
  "rustls",
  "tokio",
@@ -1677,7 +1701,7 @@ dependencies = [
  "data-encoding",
  "format_serde_error",
  "futures",
- "http",
+ "http 0.2.9",
  "itertools",
  "log",
  "mime_guess",
@@ -2112,7 +2136,7 @@ dependencies = [
  "base64 0.13.1",
  "chrono",
  "getrandom 0.2.9",
- "http",
+ "http 0.2.9",
  "rand 0.8.5",
  "reqwest",
  "serde",
@@ -2870,7 +2894,7 @@ dependencies = [
  "futures-core",
  "futures-util",
  "h2",
- "http",
+ "http 0.2.9",
  "http-body",
  "hyper",
  "hyper-rustls",
@@ -2924,7 +2948,7 @@ checksum = "ff44108c7925d082f2861e683a88618b68235ad9cdc60d64d9d1188efc951cdb"
 dependencies = [
  "anyhow",
  "async-trait",
- "http",
+ "http 0.2.9",
  "reqwest",
  "serde",
  "task-local-extensions",
@@ -2942,7 +2966,7 @@ dependencies = [
  "chrono",
  "futures",
  "getrandom 0.2.9",
- "http",
+ "http 0.2.9",
  "hyper",
  "parking_lot 0.11.2",
  "reqwest",
@@ -3779,7 +3803,7 @@ dependencies = [
  "glob",
  "gtk",
  "heck 0.4.1",
- "http",
+ "http 0.2.9",
  "ignore",
  "indexmap 1.9.3",
  "objc",
@@ -3876,7 +3900,7 @@ dependencies = [
 [[package]]
 name = "tauri-plugin-fs-extra"
 version = "0.0.0"
-source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v1#8cd4a39864986ae3600be9f23d089afd3988c43a"
+source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v1#8f857dc4e1cb1f9f6509f62f2c0586b037510e00"
 dependencies = [
  "log",
  "serde",
@@ -3886,13 +3910,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "tauri-plugin-localhost"
+version = "0.1.0"
+source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v1#8f857dc4e1cb1f9f6509f62f2c0586b037510e00"
+dependencies = [
+ "http 1.1.0",
+ "log",
+ "serde",
+ "serde_json",
+ "tauri",
+ "thiserror",
+ "tiny_http",
+]
+
+[[package]]
 name = "tauri-runtime"
 version = "0.14.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cf2d0652aa2891ff3e9caa2401405257ea29ab8372cce01f186a5825f1bd0e76"
 dependencies = [
  "gtk",
- "http",
+ "http 0.2.9",
  "http-range",
  "rand 0.8.5",
  "raw-window-handle",
@@ -4036,6 +4074,18 @@ dependencies = [
  "libc",
  "num_threads",
  "serde",
+]
+
+[[package]]
+name = "tiny_http"
+version = "0.12.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "389915df6413a2e74fb181895f933386023c71110878cd0825588928e64cdc82"
+dependencies = [
+ "ascii",
+ "chunked_transfer",
+ "httpdate",
+ "log",
 ]
 
 [[package]]
@@ -5039,7 +5089,7 @@ dependencies = [
  "glib",
  "gtk",
  "html5ever 0.25.2",
- "http",
+ "http 0.2.9",
  "kuchiki",
  "libc",
  "log",
