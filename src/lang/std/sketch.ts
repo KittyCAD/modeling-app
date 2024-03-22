@@ -1169,10 +1169,11 @@ function isAngleLiteral(lineArugement: Value): boolean {
   return lineArugement?.type === 'ArrayExpression'
     ? isLiteralArrayOrStatic(lineArugement.elements[0])
     : lineArugement?.type === 'ObjectExpression'
-    ? isLiteralArrayOrStatic(
-        lineArugement.properties.find(({ key }) => key.name === 'angle')?.value
-      )
-    : false
+      ? isLiteralArrayOrStatic(
+          lineArugement.properties.find(({ key }) => key.name === 'angle')
+            ?.value
+        )
+      : false
 }
 
 type addTagFn = (a: ModifyAstBase) => { modifiedAst: Program; tag: string }

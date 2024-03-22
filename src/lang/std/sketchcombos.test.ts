@@ -64,7 +64,7 @@ function getConstraintTypeFromSourceHelper(
   const ast = parse(code)
   const args = (ast.body[0] as any).expression.arguments[0].elements as [
     Value,
-    Value
+    Value,
   ]
   const fnName = (ast.body[0] as any).expression.callee.name as ToolTip
   return getConstraintType(args, fnName)

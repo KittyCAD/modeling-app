@@ -56,8 +56,8 @@ type ClientMetrics = Models['ClientMetrics_type']
 type Value<T, U> = U extends undefined
   ? { type: T; value: U }
   : U extends void
-  ? { type: T }
-  : { type: T; value: U }
+    ? { type: T }
+    : { type: T; value: U }
 
 type State<T, U> = Value<T, U>
 
@@ -876,7 +876,7 @@ export class EngineCommandManager {
   }
 
   private getAst: () => Program = () =>
-    ({ start: 0, end: 0, body: [], nonCodeMeta: {} } as any)
+    ({ start: 0, end: 0, body: [], nonCodeMeta: {} }) as any
   set getAstCb(cb: () => Program) {
     this.getAst = cb
   }

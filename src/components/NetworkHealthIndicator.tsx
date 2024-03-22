@@ -112,8 +112,8 @@ export function useNetworkStatus() {
       !internetConnected
         ? NetworkHealthState.Disconnected
         : hasIssues
-        ? NetworkHealthState.Issue
-        : NetworkHealthState.Ok
+          ? NetworkHealthState.Issue
+          : NetworkHealthState.Ok
     )
   }, [hasIssues, internetConnected])
 
