@@ -6,13 +6,13 @@ import { useParams } from 'react-router-dom'
 import { kclManager } from 'lib/singletons'
 
 const KclContext = createContext({
-  code: kclManager.code,
-  programMemory: kclManager.programMemory,
-  ast: kclManager.ast,
-  isExecuting: kclManager.isExecuting,
-  errors: kclManager.kclErrors,
-  logs: kclManager.logs,
-  wasmInitFailed: kclManager.wasmInitFailed,
+  code: kclManager?.code || '',
+  programMemory: kclManager?.programMemory,
+  ast: kclManager?.ast,
+  isExecuting: kclManager?.isExecuting,
+  errors: kclManager?.kclErrors,
+  logs: kclManager?.logs,
+  wasmInitFailed: kclManager?.wasmInitFailed,
 })
 
 export function useKclContext() {
