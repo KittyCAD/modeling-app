@@ -258,7 +258,7 @@ impl EngineManager for EngineConnection {
               });
               acc
            }),
-           batch_id: id
+           batch_id: uuid::Uuid::new_v4()
           };
 
         let final_req = if self.batch.lock().unwrap().len() == 1 {
