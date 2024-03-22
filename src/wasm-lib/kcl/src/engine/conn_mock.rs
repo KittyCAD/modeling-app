@@ -19,6 +19,7 @@ impl EngineConnection {
 impl crate::engine::EngineManager for EngineConnection {
     async fn send_modeling_cmd(
         &self,
+        _flush_batch: bool,
         _id: uuid::Uuid,
         _source_range: crate::executor::SourceRange,
         _cmd: kittycad::types::ModelingCmd,

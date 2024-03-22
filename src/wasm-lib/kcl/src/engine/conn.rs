@@ -29,6 +29,7 @@ pub struct EngineConnection {
     responses: Arc<DashMap<uuid::Uuid, WebSocketResponse>>,
     tcp_read_handle: Arc<TcpReadHandle>,
     socket_health: Arc<Mutex<SocketHealth>>,
+    batch: Arc<Mutex<Vec<WebSocketRequest>>>,
 }
 
 pub struct TcpRead {
@@ -154,27 +155,129 @@ impl EngineConnection {
             }),
             responses,
             socket_health,
+            batch: Arc::new(Mutex::new(Vec::new())),
         })
     }
 }
+
+
+fn is_cmd_with_return_values(cmd: &kittycad::types::ModelingCmd) -> bool {
+    let (kittycad::types::ModelingCmd::Export { .. }
+    | kittycad::types::ModelingCmd::Extrude { .. }
+    | kittycad::types::ModelingCmd::SketchModeDisable { .. }
+    | kittycad::types::ModelingCmd::ObjectBringToFront { .. }
+    | kittycad::types::ModelingCmd::SelectWithPoint { .. }
+    | kittycad::types::ModelingCmd::HighlightSetEntity { .. }
+    | kittycad::types::ModelingCmd::EntityGetChildUuid { .. }
+    | kittycad::types::ModelingCmd::EntityGetNumChildren { .. }
+    | kittycad::types::ModelingCmd::EntityGetParentId { .. }
+    | kittycad::types::ModelingCmd::EntityGetAllChildUuids { .. }
+    | kittycad::types::ModelingCmd::CameraDragMove { .. }
+    | kittycad::types::ModelingCmd::CameraDragEnd { .. }
+    | kittycad::types::ModelingCmd::DefaultCameraGetSettings { .. }
+    | kittycad::types::ModelingCmd::DefaultCameraZoom { .. }
+    | kittycad::types::ModelingCmd::SelectGet { .. }
+    | kittycad::types::ModelingCmd::Solid3DGetAllEdgeFaces { .. }
+    | kittycad::types::ModelingCmd::Solid3DGetAllOppositeEdges { .. }
+    | kittycad::types::ModelingCmd::Solid3DGetOppositeEdge { .. }
+    | kittycad::types::ModelingCmd::Solid3DGetNextAdjacentEdge { .. }
+    | kittycad::types::ModelingCmd::Solid3DGetPrevAdjacentEdge { .. }
+    | kittycad::types::ModelingCmd::GetEntityType { .. }
+    | kittycad::types::ModelingCmd::CurveGetControlPoints { .. }
+    | kittycad::types::ModelingCmd::CurveGetType { .. }
+    | kittycad::types::ModelingCmd::MouseClick { .. }
+    | kittycad::types::ModelingCmd::TakeSnapshot { .. }
+    | kittycad::types::ModelingCmd::PathGetInfo { .. }
+    | kittycad::types::ModelingCmd::PathGetCurveUuidsForVertices { .. }
+    | kittycad::types::ModelingCmd::PathGetVertexUuids { .. }
+    | kittycad::types::ModelingCmd::CurveGetEndPoints { .. }
+    | kittycad::types::ModelingCmd::FaceIsPlanar { .. }
+    | kittycad::types::ModelingCmd::FaceGetPosition { .. }
+    | kittycad::types::ModelingCmd::FaceGetGradient { .. }
+    | kittycad::types::ModelingCmd::PlaneIntersectAndProject { .. }
+    | kittycad::types::ModelingCmd::ImportFiles { .. }
+    | kittycad::types::ModelingCmd::Mass { .. }
+    | kittycad::types::ModelingCmd::Volume { .. }
+    | kittycad::types::ModelingCmd::Density { .. }
+    | kittycad::types::ModelingCmd::SurfaceArea { .. }
+    | kittycad::types::ModelingCmd::CenterOfMass { .. }
+    | kittycad::types::ModelingCmd::GetSketchModePlane { .. }
+    | kittycad::types::ModelingCmd::EntityGetDistance { .. }
+    | kittycad::types::ModelingCmd::EntityLinearPattern { .. }
+    | kittycad::types::ModelingCmd::EntityCircularPattern { .. }
+    | kittycad::types::ModelingCmd::Solid3DGetExtrusionFaceInfo { .. }) = cmd
+    else {
+        return false;
+    };
+
+    true
+}
+
 
 #[async_trait::async_trait]
 impl EngineManager for EngineConnection {
     async fn send_modeling_cmd(
         &self,
+        flush_batch: bool,
         id: uuid::Uuid,
         source_range: crate::executor::SourceRange,
         cmd: kittycad::types::ModelingCmd,
     ) -> Result<OkWebSocketResponseData, KclError> {
+        let req = WebSocketRequest::ModelingCmdReq {
+          cmd: cmd.clone(),
+          cmd_id: id,
+        };
+
+        println!("req {:?}", req);
+
+        if !flush_batch {
+          self.batch.lock().unwrap().push(req);
+        }
+
+        // If the batch only has this one command that expects a return value,
+        // fire it right away, or if we want to flush batch queue.
+        let is_sending = (is_cmd_with_return_values(&cmd) && self.batch.lock().unwrap().len() == 1)
+          || flush_batch
+          || is_cmd_with_return_values(&cmd);
+
+        // Return a fake modeling_request empty response.
+        if !is_sending {
+          println!("fake {:?}", cmd);
+          return Ok(OkWebSocketResponseData::Modeling {
+            modeling_response: kittycad::types::OkModelingCmdResponse::Empty {}
+          });
+        }
+
+        let batched_requests =
+          WebSocketRequest::ModelingCmdBatchReq {
+           requests: self.batch.lock().unwrap().iter().fold(vec![], |mut acc, val| {
+              let WebSocketRequest::ModelingCmdReq { cmd, cmd_id } = val else { return acc; };
+              acc.push(kittycad::types::ModelingCmdReq {
+                cmd: cmd.clone(),
+                cmd_id: *cmd_id,
+              });
+              acc
+           }),
+           batch_id: id
+          };
+
+        let final_req = if self.batch.lock().unwrap().len() == 1 {
+          self.batch.lock().unwrap().get(0).unwrap().clone()
+        } else {
+          batched_requests
+        };
+
+        // Throw away the old batch queue.
+        self.batch.lock().unwrap().clear();
+
+        println!("final req {:?}", final_req);
+
         let (tx, rx) = oneshot::channel();
 
         // Send the request to the engine, via the actor.
         self.engine_req_tx
             .send(ToEngineReq {
-                req: WebSocketRequest::ModelingCmdReq {
-                    cmd: cmd.clone(),
-                    cmd_id: id,
-                },
+                req: final_req.clone(),
                 request_sent: tx,
             })
             .await
@@ -200,6 +303,7 @@ impl EngineManager for EngineConnection {
                 })
             })?;
 
+
         // Wait for the response.
         let current_time = std::time::Instant::now();
         while current_time.elapsed().as_secs() < 60 {
@@ -213,6 +317,7 @@ impl EngineManager for EngineConnection {
             }
             // We pop off the responses to cleanup our mappings.
             if let Some((_, resp)) = self.responses.remove(&id) {
+                println!("{:?}", resp);
                 return if let Some(data) = &resp.resp {
                     Ok(data.clone())
                 } else {

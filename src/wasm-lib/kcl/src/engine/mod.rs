@@ -13,6 +13,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Send a modeling command and wait for the response message.
     async fn send_modeling_cmd(
         &self,
+        flush_batch: bool,
         id: uuid::Uuid,
         source_range: crate::executor::SourceRange,
         cmd: kittycad::types::ModelingCmd,
