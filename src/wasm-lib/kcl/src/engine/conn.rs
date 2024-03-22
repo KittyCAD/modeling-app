@@ -150,7 +150,7 @@ impl EngineConnection {
                     cmd_id: *cmd_id,
                 });
 
-                if is_cmd_with_return_values(&cmd) || *cmd_id == uuid::Uuid::nil() {
+                if is_cmd_with_return_values(cmd) || *cmd_id == uuid::Uuid::nil() {
                     // If the batch has zero commands, and we're about to load
                     // a command that has return values, don't wrap it in a
                     // ModelingCmdBatchReq.
