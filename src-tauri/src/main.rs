@@ -10,7 +10,6 @@ use oauth2::TokenResponse;
 use std::process::Command;
 use tauri::{utils::config::AppUrl, InvokeError, Manager, WindowUrl};
 const DEFAULT_HOST: &str = "https://api.kittycad.io";
-const PORT: u16 = 3000;
 
 /// This command returns the a json string parse from a toml file at the path.
 #[tauri::command]
@@ -164,8 +163,9 @@ fn show_in_folder(path: String) {
 }
 
 fn main() {
+    let port = portpicker::pick_unused_port().expect("failed to find unused port");
     let mut context = tauri::generate_context!();
-    let url = format!("http://localhost:{}", PORT).parse().unwrap();
+    let url = format!("http://localhost:{}", port).parse().unwrap();
     let window_url = WindowUrl::External(url);
 
     // rewrite the config so the IPC is enabled on this URL
@@ -189,7 +189,7 @@ fn main() {
             read_txt_file,
             show_in_folder,
         ])
-        .plugin(tauri_plugin_localhost::Builder::new(PORT).build())
+        .plugin(tauri_plugin_localhost::Builder::new(port).build())
         .plugin(tauri_plugin_fs_extra::init())
         .run(context)
         .expect("error while running tauri application");
