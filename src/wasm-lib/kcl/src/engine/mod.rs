@@ -8,16 +8,92 @@ pub mod conn_mock;
 #[cfg(feature = "engine")]
 pub mod conn_wasm;
 
+use std::sync::{Arc, Mutex};
+
+use kittycad::types::{OkWebSocketResponseData, WebSocketRequest};
+
+use crate::errors::{KclError, KclErrorDetails};
+
 #[async_trait::async_trait]
 pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
+    /// Get the batch of commands to be sent to the engine.
+    fn batch(&self) -> Arc<Mutex<Vec<kittycad::types::WebSocketRequest>>>;
+
     /// Send a modeling command and wait for the response message.
+    async fn inner_send_modeling_cmd(
+        &self,
+        id: uuid::Uuid,
+        source_range: crate::executor::SourceRange,
+        cmd: kittycad::types::WebSocketRequest,
+    ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError>;
+
     async fn send_modeling_cmd(
         &self,
         flush_batch: bool,
         id: uuid::Uuid,
         source_range: crate::executor::SourceRange,
         cmd: kittycad::types::ModelingCmd,
-    ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError>;
+    ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError> {
+        let req = WebSocketRequest::ModelingCmdReq {
+            cmd: cmd.clone(),
+            cmd_id: id,
+        };
+
+        if !flush_batch {
+            self.batch().lock().unwrap().push(req);
+        }
+
+        // If the batch only has this one command that expects a return value,
+        // fire it right away, or if we want to flush batch queue.
+        let is_sending = (is_cmd_with_return_values(&cmd) && self.batch().lock().unwrap().len() == 1)
+            || flush_batch
+            || is_cmd_with_return_values(&cmd);
+
+        // Return a fake modeling_request empty response.
+        if !is_sending {
+            return Ok(OkWebSocketResponseData::Modeling {
+                modeling_response: kittycad::types::OkModelingCmdResponse::Empty {},
+            });
+        }
+
+        let batched_requests = WebSocketRequest::ModelingCmdBatchReq {
+            requests: self.batch().lock().unwrap().iter().fold(vec![], |mut acc, val| {
+                let WebSocketRequest::ModelingCmdReq { cmd, cmd_id } = val else {
+                    return acc;
+                };
+                acc.push(kittycad::types::ModelingCmdReq {
+                    cmd: cmd.clone(),
+                    cmd_id: *cmd_id,
+                });
+                acc
+            }),
+            batch_id: uuid::Uuid::new_v4(),
+        };
+
+        let final_req = if self.batch().lock().unwrap().len() == 1 {
+            // We can unwrap here because we know the batch has only one element.
+            self.batch().lock().unwrap().first().unwrap().clone()
+        } else {
+            batched_requests
+        };
+
+        // Throw away the old batch queue.
+        self.batch().lock().unwrap().clear();
+
+        // We pop off the responses to cleanup our mappings.
+        let id_final = match final_req {
+            WebSocketRequest::ModelingCmdBatchReq { requests: _, batch_id } => batch_id,
+            WebSocketRequest::ModelingCmdReq { cmd: _, cmd_id } => cmd_id,
+            _ => {
+                return Err(KclError::Engine(KclErrorDetails {
+                    message: format!("The final request is not a modeling command: {:?}", final_req),
+                    source_ranges: vec![source_range],
+                }));
+            }
+        };
+
+        self.inner_send_modeling_cmd(id_final, source_range, final_req).await
+    }
 }
 
 pub fn is_cmd_with_return_values(cmd: &kittycad::types::ModelingCmd) -> bool {
