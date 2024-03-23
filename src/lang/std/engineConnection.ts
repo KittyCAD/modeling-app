@@ -21,6 +21,7 @@ interface CommandInfo {
     | {
         type: 'batch-ids'
         ids: string[]
+        info?: null
       }
 }
 
