@@ -1222,17 +1222,6 @@ pub async fn execute(
         }
     }
 
-    // Fire the batch since we've reached the end.
-    // ctx.engine
-    //     .send_modeling_cmd(
-    //         true,
-    //         uuid::Uuid::new_v4(),
-    //         SourceRange::default(),
-    //         // This is ignored when flush_batch is true.
-    //         kittycad::types::ModelingCmd::EditModeExit {},
-    //     )
-    //     .await?;
-
     Ok(memory.clone())
 }
 
