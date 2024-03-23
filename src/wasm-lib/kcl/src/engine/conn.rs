@@ -227,20 +227,7 @@ impl EngineManager for EngineConnection {
 
         // We pop off the responses to cleanup our mappings.
         let id_final = match final_req {
-            WebSocketRequest::ModelingCmdBatchReq {
-                ref requests,
-                batch_id: _,
-            } => {
-                // Get the cmd_id from the last request in the batch.
-                if let Some(last_req) = requests.last() {
-                    last_req.cmd_id
-                } else {
-                    return Err(KclError::Engine(KclErrorDetails {
-                        message: "The final request is a batch request, but it has no requests".to_string(),
-                        source_ranges: vec![source_range],
-                    }));
-                }
-            }
+            WebSocketRequest::ModelingCmdBatchReq { requests: _, batch_id } => batch_id,
             WebSocketRequest::ModelingCmdReq { cmd: _, cmd_id } => cmd_id,
             _ => {
                 return Err(KclError::Engine(KclErrorDetails {
