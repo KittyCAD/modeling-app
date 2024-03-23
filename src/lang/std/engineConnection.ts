@@ -1440,7 +1440,6 @@ export class EngineCommandManager {
         return this.handlePendingBatchCommand(parseCommand.requests)
       }
     }
-    console.log('command', command)
     throw Error('shouldnt reach here')
   }
   handlePendingSceneCommand(
