@@ -4,7 +4,6 @@ import { getNormalisedCoordinates } from '../lib/utils'
 import Loading from './Loading'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useModelingContext } from 'hooks/useModelingContext'
-import { useKclContext } from 'lang/KclProvider'
 import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
 import { NetworkHealthState, useNetworkStatus } from './NetworkHealthIndicator'
 import { butName } from 'lib/cameraControls'
@@ -29,7 +28,6 @@ export const Stream = ({ className = '' }: { className?: string }) => {
   }))
   const { settings } = useSettingsAuthContext()
   const { state } = useModelingContext()
-  const { isExecuting } = useKclContext()
   const { overallState } = useNetworkStatus()
   const isNetworkOkay = overallState === NetworkHealthState.Ok
 

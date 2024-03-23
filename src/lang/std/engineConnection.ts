@@ -13,10 +13,15 @@ interface CommandInfo {
   range: SourceRange
   pathToNode: PathToNode
   parentId?: string
-  additionalData?: {
-    type: 'cap'
-    info: 'start' | 'end'
-  }
+  additionalData?:
+    | {
+        type: 'cap'
+        info: 'start' | 'end'
+      }
+    | {
+        type: 'batch-ids'
+        ids: string[]
+      }
 }
 
 type WebSocketResponse = Models['OkWebSocketResponseData_type']
@@ -792,7 +797,7 @@ failed cmd type was ${artifactThatFailed?.commandType}`
 export type EngineCommand = Models['WebSocketRequest_type']
 type ModelTypes = Models['OkModelingCmdResponse_type']['type']
 
-type CommandTypes = Models['ModelingCmd_type']['type']
+type CommandTypes = Models['ModelingCmd_type']['type'] | 'batch'
 
 type UnreliableResponses = Extract<
   Models['OkModelingCmdResponse_type'],
@@ -1073,6 +1078,19 @@ export class EngineCommandManager {
     }
     const modelingResponse = message.data.modeling_response
     const command = this.artifactMap[id]
+    if (
+      command?.type === 'pending' &&
+      command.commandType === 'batch' &&
+      command?.additionalData?.type === 'batch-ids'
+    ) {
+      command.additionalData.ids.forEach((id) => {
+        this.handleModelingCommand(message, id)
+      })
+      // batch artifact is just a container, we don't need to keep it
+      // once we process all the commands inside it
+      delete this.artifactMap[id]
+      return
+    }
     const sceneCommand = this.sceneCommandArtifacts[id]
     this.addCommandLog({
       type: 'receive-reliable',
@@ -1469,8 +1487,7 @@ export class EngineCommandManager {
     id: string,
     command: Models['ModelingCmd_type'],
     ast?: Program,
-    range?: SourceRange,
-    batch?: bool
+    range?: SourceRange
   ) {
     let resolve: (val: any) => void = () => {}
     const promise = new Promise((_resolve, reject) => {
@@ -1492,7 +1509,7 @@ export class EngineCommandManager {
     this.artifactMap[id] = {
       range: range || [0, 0],
       pathToNode,
-      type: batch ? 'batch' : 'pending',
+      type: 'pending',
       commandType: command.type,
       parentId: getParentId(),
       promise,
@@ -1510,35 +1527,26 @@ export class EngineCommandManager {
     const promise = new Promise((_resolve, reject) => {
       resolve = _resolve
     })
-    var promiseArray = []
-    for (const command of commands) {
-      // Add to our promise.
-      promiseArray.push(
-        this.handlePendingCommand(
-          command.cmd_id,
-          command.cmd,
-          ast,
-          range,
-          'batch'
-        )
-      )
-    }
 
-    const pathToNode = ast
-      ? getNodePathFromSourceRange(ast, range || [0, 0])
-      : []
-    // Add the overall batch command to the artifact map
+    // Add the overall batch command to the artifact map just so we can track all of the
+    // individual commands that are part of the batch.
+    // we'll delete this artifact once all of the individual commands have been processed.
     this.artifactMap[id] = {
       range: range || [0, 0],
-      pathToNode,
+      pathToNode: [],
       type: 'pending',
-      commandType: 'modeling_cmd_batch_req',
+      commandType: 'batch',
+      additionalData: { type: 'batch-ids', ids: commands.map((c) => c.cmd_id) },
       parentId: undefined,
       promise,
       resolve,
     }
 
-    return Promise.all(promiseArray)
+    return Promise.all(
+      commands.map((c) =>
+        this.handlePendingCommand(c.cmd_id, c.cmd, ast, range)
+      )
+    )
   }
   sendModelingCommandFromWasm(
     id: string,
