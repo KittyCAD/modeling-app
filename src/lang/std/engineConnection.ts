@@ -1469,7 +1469,8 @@ export class EngineCommandManager {
     id: string,
     command: Models['ModelingCmd_type'],
     ast?: Program,
-    range?: SourceRange
+    range?: SourceRange,
+    batch?: bool
   ) {
     let resolve: (val: any) => void = () => {}
     const promise = new Promise((_resolve, reject) => {
@@ -1491,7 +1492,7 @@ export class EngineCommandManager {
     this.artifactMap[id] = {
       range: range || [0, 0],
       pathToNode,
-      type: 'pending',
+      type: batch ? 'batch' : 'pending',
       commandType: command.type,
       parentId: getParentId(),
       promise,
@@ -1505,12 +1506,36 @@ export class EngineCommandManager {
     ast?: Program,
     range?: SourceRange
   ) {
+    let resolve: (val: any) => void = () => {}
+    const promise = new Promise((_resolve, reject) => {
+      resolve = _resolve
+    })
     var promiseArray = []
     for (const command of commands) {
       // Add to our promise.
       promiseArray.push(
-        this.handlePendingCommand(command.cmd_id, command.cmd, ast, range)
+        this.handlePendingCommand(
+          command.cmd_id,
+          command.cmd,
+          ast,
+          range,
+          'batch'
+        )
       )
+    }
+
+    const pathToNode = ast
+      ? getNodePathFromSourceRange(ast, range || [0, 0])
+      : []
+    // Add the overall batch command to the artifact map
+    this.artifactMap[id] = {
+      range: range || [0, 0],
+      pathToNode,
+      type: 'pending',
+      commandType: 'modeling_cmd_batch_req',
+      parentId: undefined,
+      promise,
+      resolve,
     }
 
     return Promise.all(promiseArray)
