@@ -39,7 +39,22 @@
 }
 
 .panel[open] {
-  @apply flex-grow max-h-full h-48 my-1 rounded;
+  @apply relative flex-grow max-h-full h-48 my-1 rounded;
+}
+
+/*
+  Open panels have a little bit of a buffer around them
+  to make it harder to accidentally click or interact with the stream behind them.
+  The right side buffer is a little smaller so people don't get frustrated by it.
+  TODO: make this logic flexible for if the panel is on the right side of the screen.
+*/
+.panel[open]::before {
+  @apply absolute -inset-5 -top-2 -right-1 z-0;
+  @apply content-[''];
+}
+
+.panel[open]:first-of-type::before {
+  @apply -top-5;
 }
 
 .panel[open] + .panel[open],
