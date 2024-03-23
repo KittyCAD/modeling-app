@@ -17,7 +17,7 @@ use crate::errors::{KclError, KclErrorDetails};
 #[async_trait::async_trait]
 pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Get the batch of commands to be sent to the engine.
-    fn batch(&self) -> Arc<Mutex<Vec<kittycad::types::WebSocketRequest>>>;
+    fn batch(&self) -> Arc<Mutex<Vec<(kittycad::types::WebSocketRequest, crate::executor::SourceRange)>>>;
 
     /// Send a modeling command and wait for the response message.
     async fn inner_send_modeling_cmd(
@@ -25,6 +25,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         id: uuid::Uuid,
         source_range: crate::executor::SourceRange,
         cmd: kittycad::types::WebSocketRequest,
+        id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
     ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError>;
 
     async fn send_modeling_cmd(
@@ -40,7 +41,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         };
 
         if !flush_batch {
-            self.batch().lock().unwrap().push(req);
+            self.batch().lock().unwrap().push((req.clone(), source_range));
         }
 
         // If the batch only has this one command that expects a return value,
@@ -57,7 +58,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         }
 
         let batched_requests = WebSocketRequest::ModelingCmdBatchReq {
-            requests: self.batch().lock().unwrap().iter().fold(vec![], |mut acc, val| {
+            requests: self.batch().lock().unwrap().iter().fold(vec![], |mut acc, (val, _)| {
                 let WebSocketRequest::ModelingCmdReq { cmd, cmd_id } = val else {
                     return acc;
                 };
@@ -72,10 +73,27 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
         let final_req = if self.batch().lock().unwrap().len() == 1 {
             // We can unwrap here because we know the batch has only one element.
-            self.batch().lock().unwrap().first().unwrap().clone()
+            self.batch().lock().unwrap().first().unwrap().0.clone()
         } else {
             batched_requests
         };
+
+        // Create the map of original command IDs to source range.
+        // This is for the wasm side, kurt needs it for selections.
+        let mut id_to_source_range = std::collections::HashMap::new();
+        for (req, range) in self.batch().lock().unwrap().iter() {
+            match req {
+                WebSocketRequest::ModelingCmdReq { cmd: _, cmd_id } => {
+                    id_to_source_range.insert(*cmd_id, *range);
+                }
+                _ => {
+                    return Err(KclError::Engine(KclErrorDetails {
+                        message: format!("The request is not a modeling command: {:?}", req),
+                        source_ranges: vec![*range],
+                    }));
+                }
+            }
+        }
 
         // Throw away the old batch queue.
         self.batch().lock().unwrap().clear();
@@ -92,7 +110,8 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             }
         };
 
-        self.inner_send_modeling_cmd(id_final, source_range, final_req).await
+        self.inner_send_modeling_cmd(id_final, source_range, final_req, id_to_source_range)
+            .await
     }
 }
 

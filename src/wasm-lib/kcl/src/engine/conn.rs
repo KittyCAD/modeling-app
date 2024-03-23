@@ -29,7 +29,7 @@ pub struct EngineConnection {
     responses: Arc<DashMap<uuid::Uuid, WebSocketResponse>>,
     tcp_read_handle: Arc<TcpReadHandle>,
     socket_health: Arc<Mutex<SocketHealth>>,
-    batch: Arc<Mutex<Vec<WebSocketRequest>>>,
+    batch: Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>,
 }
 
 pub struct TcpRead {
@@ -162,7 +162,7 @@ impl EngineConnection {
 
 #[async_trait::async_trait]
 impl EngineManager for EngineConnection {
-    fn batch(&self) -> Arc<Mutex<Vec<WebSocketRequest>>> {
+    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>> {
         self.batch.clone()
     }
 
@@ -171,6 +171,7 @@ impl EngineManager for EngineConnection {
         id: uuid::Uuid,
         source_range: crate::executor::SourceRange,
         cmd: kittycad::types::WebSocketRequest,
+        _id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
     ) -> Result<OkWebSocketResponseData, KclError> {
         let (tx, rx) = oneshot::channel();
 

@@ -10,7 +10,7 @@ use crate::errors::KclError;
 
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
-    batch: Arc<Mutex<Vec<WebSocketRequest>>>,
+    batch: Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>,
 }
 
 impl EngineConnection {
@@ -23,7 +23,7 @@ impl EngineConnection {
 
 #[async_trait::async_trait]
 impl crate::engine::EngineManager for EngineConnection {
-    fn batch(&self) -> Arc<Mutex<Vec<WebSocketRequest>>> {
+    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>> {
         self.batch.clone()
     }
 
@@ -32,6 +32,7 @@ impl crate::engine::EngineManager for EngineConnection {
         _id: uuid::Uuid,
         _source_range: crate::executor::SourceRange,
         _cmd: kittycad::types::WebSocketRequest,
+        _id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
     ) -> Result<OkWebSocketResponseData, KclError> {
         Ok(OkWebSocketResponseData::Modeling {
             modeling_response: kittycad::types::OkModelingCmdResponse::Empty {},

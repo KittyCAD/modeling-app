@@ -25,7 +25,7 @@ extern "C" {
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
     manager: Arc<EngineCommandManager>,
-    batch: Arc<Mutex<Vec<WebSocketRequest>>>,
+    batch: Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>,
 }
 
 // Safety: WebAssembly will only ever run in a single-threaded context.
@@ -43,7 +43,7 @@ impl EngineConnection {
 
 #[async_trait::async_trait]
 impl crate::engine::EngineManager for EngineConnection {
-    fn batch(&self) -> Arc<Mutex<Vec<WebSocketRequest>>> {
+    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>> {
         self.batch.clone()
     }
 
@@ -52,6 +52,7 @@ impl crate::engine::EngineManager for EngineConnection {
         id: uuid::Uuid,
         source_range: crate::executor::SourceRange,
         cmd: kittycad::types::WebSocketRequest,
+        id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
     ) -> Result<kittycad::types::OkWebSocketResponseData, KclError> {
         let source_range_str = serde_json::to_string(&source_range).map_err(|e| {
             KclError::Engine(KclErrorDetails {
