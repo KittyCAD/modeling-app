@@ -11,7 +11,7 @@ use tokio::sync::{mpsc, oneshot};
 use tokio_tungstenite::tungstenite::Message as WsMsg;
 
 use crate::{
-    engine::EngineManager,
+    engine::{is_cmd_with_return_values, EngineManager},
     errors::{KclError, KclErrorDetails},
 };
 
@@ -160,58 +160,6 @@ impl EngineConnection {
     }
 }
 
-fn is_cmd_with_return_values(cmd: &kittycad::types::ModelingCmd) -> bool {
-    let (kittycad::types::ModelingCmd::Export { .. }
-    | kittycad::types::ModelingCmd::Extrude { .. }
-    | kittycad::types::ModelingCmd::SketchModeDisable { .. }
-    | kittycad::types::ModelingCmd::ObjectBringToFront { .. }
-    | kittycad::types::ModelingCmd::SelectWithPoint { .. }
-    | kittycad::types::ModelingCmd::HighlightSetEntity { .. }
-    | kittycad::types::ModelingCmd::EntityGetChildUuid { .. }
-    | kittycad::types::ModelingCmd::EntityGetNumChildren { .. }
-    | kittycad::types::ModelingCmd::EntityGetParentId { .. }
-    | kittycad::types::ModelingCmd::EntityGetAllChildUuids { .. }
-    | kittycad::types::ModelingCmd::CameraDragMove { .. }
-    | kittycad::types::ModelingCmd::CameraDragEnd { .. }
-    | kittycad::types::ModelingCmd::DefaultCameraGetSettings { .. }
-    | kittycad::types::ModelingCmd::DefaultCameraZoom { .. }
-    | kittycad::types::ModelingCmd::SelectGet { .. }
-    | kittycad::types::ModelingCmd::Solid3DGetAllEdgeFaces { .. }
-    | kittycad::types::ModelingCmd::Solid3DGetAllOppositeEdges { .. }
-    | kittycad::types::ModelingCmd::Solid3DGetOppositeEdge { .. }
-    | kittycad::types::ModelingCmd::Solid3DGetNextAdjacentEdge { .. }
-    | kittycad::types::ModelingCmd::Solid3DGetPrevAdjacentEdge { .. }
-    | kittycad::types::ModelingCmd::GetEntityType { .. }
-    | kittycad::types::ModelingCmd::CurveGetControlPoints { .. }
-    | kittycad::types::ModelingCmd::CurveGetType { .. }
-    | kittycad::types::ModelingCmd::MouseClick { .. }
-    | kittycad::types::ModelingCmd::TakeSnapshot { .. }
-    | kittycad::types::ModelingCmd::PathGetInfo { .. }
-    | kittycad::types::ModelingCmd::PathGetCurveUuidsForVertices { .. }
-    | kittycad::types::ModelingCmd::PathGetVertexUuids { .. }
-    | kittycad::types::ModelingCmd::CurveGetEndPoints { .. }
-    | kittycad::types::ModelingCmd::FaceIsPlanar { .. }
-    | kittycad::types::ModelingCmd::FaceGetPosition { .. }
-    | kittycad::types::ModelingCmd::FaceGetGradient { .. }
-    | kittycad::types::ModelingCmd::PlaneIntersectAndProject { .. }
-    | kittycad::types::ModelingCmd::ImportFiles { .. }
-    | kittycad::types::ModelingCmd::Mass { .. }
-    | kittycad::types::ModelingCmd::Volume { .. }
-    | kittycad::types::ModelingCmd::Density { .. }
-    | kittycad::types::ModelingCmd::SurfaceArea { .. }
-    | kittycad::types::ModelingCmd::CenterOfMass { .. }
-    | kittycad::types::ModelingCmd::GetSketchModePlane { .. }
-    | kittycad::types::ModelingCmd::EntityGetDistance { .. }
-    | kittycad::types::ModelingCmd::EntityLinearPattern { .. }
-    | kittycad::types::ModelingCmd::EntityCircularPattern { .. }
-    | kittycad::types::ModelingCmd::Solid3DGetExtrusionFaceInfo { .. }) = cmd
-    else {
-        return false;
-    };
-
-    true
-}
-
 #[async_trait::async_trait]
 impl EngineManager for EngineConnection {
     async fn send_modeling_cmd(
@@ -257,14 +205,25 @@ impl EngineManager for EngineConnection {
             batch_id: uuid::Uuid::new_v4(),
         };
 
-        let final_req = if self.batch.lock().unwrap().len() == 1 {
-            self.batch.lock().unwrap().first().unwrap().clone()
+        let mut batch = match self.batch.lock() {
+            Ok(b) => b.clone(),
+            Err(e) => {
+                return Err(KclError::Engine(KclErrorDetails {
+                    message: format!("Failed to lock batch: {}", e),
+                    source_ranges: vec![source_range],
+                }));
+            }
+        };
+
+        let final_req = if batch.len() == 1 {
+            // We can unwrap here because we know the batch has only one element.
+            batch.first().unwrap().clone()
         } else {
             batched_requests
         };
 
         // Throw away the old batch queue.
-        self.batch.lock().unwrap().clear();
+        batch.clear();
 
         let (tx, rx) = oneshot::channel();
 
