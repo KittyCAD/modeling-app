@@ -66,6 +66,13 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         &self,
         source_range: crate::executor::SourceRange,
     ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError> {
+        // Return early if we have no commands to send.
+        if self.batch().lock().unwrap().is_empty() {
+            return Ok(OkWebSocketResponseData::Modeling {
+                modeling_response: kittycad::types::OkModelingCmdResponse::Empty {},
+            });
+        }
+
         let batched_requests = WebSocketRequest::ModelingCmdBatchReq {
             requests: self.batch().lock().unwrap().iter().fold(vec![], |mut acc, (val, _)| {
                 let WebSocketRequest::ModelingCmdReq { cmd, cmd_id } = val else {
