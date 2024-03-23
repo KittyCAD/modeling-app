@@ -205,25 +205,17 @@ impl EngineManager for EngineConnection {
             batch_id: uuid::Uuid::new_v4(),
         };
 
-        let mut batch = match self.batch.lock() {
-            Ok(b) => b.clone(),
-            Err(e) => {
-                return Err(KclError::Engine(KclErrorDetails {
-                    message: format!("Failed to lock batch: {}", e),
-                    source_ranges: vec![source_range],
-                }));
-            }
-        };
+        println!("Sending batched requests: {:#?}", batched_requests);
 
-        let final_req = if batch.len() == 1 {
+        let final_req = if self.batch.lock().unwrap().len() == 1 {
             // We can unwrap here because we know the batch has only one element.
-            batch.first().unwrap().clone()
+            self.batch.lock().unwrap().first().unwrap().clone()
         } else {
             batched_requests
         };
 
         // Throw away the old batch queue.
-        batch.clear();
+        self.batch.lock().unwrap().clear();
 
         // We pop off the responses to cleanup our mappings.
         let id_final = match final_req {
@@ -236,6 +228,8 @@ impl EngineManager for EngineConnection {
                 }));
             }
         };
+
+        println!("id_final: {:#?}", id_final);
 
         let (tx, rx) = oneshot::channel();
 
