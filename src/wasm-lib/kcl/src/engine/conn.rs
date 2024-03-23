@@ -225,6 +225,18 @@ impl EngineManager for EngineConnection {
         // Throw away the old batch queue.
         batch.clear();
 
+        // We pop off the responses to cleanup our mappings.
+        let id_final = match final_req {
+            WebSocketRequest::ModelingCmdBatchReq { requests: _, batch_id } => batch_id,
+            WebSocketRequest::ModelingCmdReq { cmd: _, cmd_id } => cmd_id,
+            _ => {
+                return Err(KclError::Engine(KclErrorDetails {
+                    message: format!("The final request is not a modeling command: {:?}", final_req),
+                    source_ranges: vec![source_range],
+                }));
+            }
+        };
+
         let (tx, rx) = oneshot::channel();
 
         // Send the request to the engine, via the actor.
@@ -268,7 +280,7 @@ impl EngineManager for EngineConnection {
                 }
             }
             // We pop off the responses to cleanup our mappings.
-            if let Some((_, resp)) = self.responses.remove(&id) {
+            if let Some((_, resp)) = self.responses.remove(&id_final) {
                 return if let Some(data) = &resp.resp {
                     Ok(data.clone())
                 } else {
@@ -281,7 +293,7 @@ impl EngineManager for EngineConnection {
         }
 
         Err(KclError::Engine(KclErrorDetails {
-            message: format!("Modeling command timed out `{}`", id),
+            message: format!("Modeling command timed out `{}`", id_final),
             source_ranges: vec![source_range],
         }))
     }
