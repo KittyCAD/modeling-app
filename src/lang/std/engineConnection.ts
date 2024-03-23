@@ -1088,7 +1088,15 @@ export class EngineCommandManager {
       })
       // batch artifact is just a container, we don't need to keep it
       // once we process all the commands inside it
+      const resolve = command.resolve
       delete this.artifactMap[id]
+      resolve({
+        id,
+        commandType: command.commandType,
+        range: command.range,
+        data: modelingResponse,
+        raw: message,
+      })
       return
     }
     const sceneCommand = this.sceneCommandArtifacts[id]
@@ -1517,7 +1525,7 @@ export class EngineCommandManager {
     }
     return promise
   }
-  handlePendingBatchCommand(
+  async handlePendingBatchCommand(
     id: string,
     commands: Models['ModelingCmdReq_type'][],
     ast?: Program,
@@ -1542,11 +1550,12 @@ export class EngineCommandManager {
       resolve,
     }
 
-    return Promise.all(
+    await Promise.all(
       commands.map((c) =>
         this.handlePendingCommand(c.cmd_id, c.cmd, ast, range)
       )
     )
+    return promise
   }
   sendModelingCommandFromWasm(
     id: string,
