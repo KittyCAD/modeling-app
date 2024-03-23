@@ -1426,11 +1426,13 @@ export class EngineCommandManager {
     range,
     command,
     ast,
+    idToRangeMap,
   }: {
     id: string
     range: SourceRange
     command: EngineCommand | string
     ast: Program
+    idToRangeMap?: { [key: string]: SourceRange }
   }): Promise<any> {
     if (this.engineConnection === undefined) {
       return Promise.resolve()
@@ -1457,13 +1459,17 @@ export class EngineCommandManager {
       typeof command !== 'string' &&
       command.type === 'modeling_cmd_batch_req'
     ) {
-      return this.handlePendingBatchCommand(id, command.requests)
+      return this.handlePendingBatchCommand(id, command.requests, idToRangeMap)
     } else if (typeof command === 'string') {
       const parseCommand: EngineCommand = JSON.parse(command)
       if (parseCommand.type === 'modeling_cmd_req') {
         return this.handlePendingCommand(id, parseCommand?.cmd, ast, range)
       } else if (parseCommand.type === 'modeling_cmd_batch_req') {
-        return this.handlePendingBatchCommand(id, parseCommand.requests)
+        return this.handlePendingBatchCommand(
+          id,
+          parseCommand.requests,
+          idToRangeMap
+        )
       }
     }
     throw Error('shouldnt reach here')
@@ -1528,6 +1534,7 @@ export class EngineCommandManager {
   async handlePendingBatchCommand(
     id: string,
     commands: Models['ModelingCmdReq_type'][],
+    idToRangeMap?: { [key: string]: SourceRange },
     ast?: Program,
     range?: SourceRange
   ) {
@@ -1535,6 +1542,10 @@ export class EngineCommandManager {
     const promise = new Promise((_resolve, reject) => {
       resolve = _resolve
     })
+
+    if (!idToRangeMap) {
+      throw new Error('idToRangeMap is required for batch commands')
+    }
 
     // Add the overall batch command to the artifact map just so we can track all of the
     // individual commands that are part of the batch.
@@ -1552,7 +1563,7 @@ export class EngineCommandManager {
 
     await Promise.all(
       commands.map((c) =>
-        this.handlePendingCommand(c.cmd_id, c.cmd, ast, range)
+        this.handlePendingCommand(c.cmd_id, c.cmd, ast, idToRangeMap[c.cmd_id])
       )
     )
     return promise
@@ -1560,7 +1571,8 @@ export class EngineCommandManager {
   sendModelingCommandFromWasm(
     id: string,
     rangeStr: string,
-    commandStr: string
+    commandStr: string,
+    idToRangeStr: string
   ): Promise<any> {
     if (this.engineConnection === undefined) {
       return Promise.resolve()
@@ -1578,6 +1590,8 @@ export class EngineCommandManager {
       throw new Error('commandStr is undefined')
     }
     const range: SourceRange = JSON.parse(rangeStr)
+    const idToRangeMap: { [key: string]: SourceRange } =
+      JSON.parse(idToRangeStr)
 
     // We only care about the modeling command response.
     return this.sendModelingCommand({
@@ -1585,6 +1599,7 @@ export class EngineCommandManager {
       range,
       command: commandStr,
       ast: this.getAst(),
+      idToRangeMap,
     }).then(({ raw }) => JSON.stringify(raw))
   }
   commandResult(id: string): Promise<any> {

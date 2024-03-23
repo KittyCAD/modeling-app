@@ -19,6 +19,7 @@ extern "C" {
         id: String,
         rangeStr: String,
         cmdStr: String,
+        idToRangeStr: String,
     ) -> Result<js_sys::Promise, js_sys::Error>;
 }
 
@@ -66,10 +67,16 @@ impl crate::engine::EngineManager for EngineConnection {
                 source_ranges: vec![source_range],
             })
         })?;
+        let id_to_source_range_str = serde_json::to_string(&id_to_source_range).map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: format!("Failed to serialize id to source range: {:?}", e),
+                source_ranges: vec![source_range],
+            })
+        })?;
 
         let promise = self
             .manager
-            .send_modeling_cmd_from_wasm(id.to_string(), source_range_str, cmd_str)
+            .send_modeling_cmd_from_wasm(id.to_string(), source_range_str, cmd_str, id_to_source_range_str)
             .map_err(|e| {
                 KclError::Engine(KclErrorDetails {
                     message: e.to_string().into(),
