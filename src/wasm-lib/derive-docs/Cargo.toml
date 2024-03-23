@@ -23,6 +23,7 @@ serde_tokenstream = "0.2"
 syn = { version = "2.0.53", features = ["full"] }
 
 [dev-dependencies]
+anyhow = "1.0.81"
 expectorate = "1.1.0"
-openapitor = { git = "https://github.com/KittyCAD/kittycad.rs", branch = "main" }
 pretty_assertions = "1.4.0"
+rustfmt-wrapper = "0.2.1"
