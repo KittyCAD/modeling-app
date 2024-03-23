@@ -1427,11 +1427,20 @@ export class EngineCommandManager {
     this.engineConnection?.send(command)
     if (typeof command !== 'string' && command.type === 'modeling_cmd_req') {
       return this.handlePendingCommand(id, command?.cmd, ast, range)
+    } else if (
+      typeof command !== 'string' &&
+      command.type === 'modeling_cmd_batch_req'
+    ) {
+      return this.handlePendingBatchCommand(command.requests)
     } else if (typeof command === 'string') {
       const parseCommand: EngineCommand = JSON.parse(command)
-      if (parseCommand.type === 'modeling_cmd_req')
+      if (parseCommand.type === 'modeling_cmd_req') {
         return this.handlePendingCommand(id, parseCommand?.cmd, ast, range)
+      } else if (parseCommand.type === 'modeling_cmd_batch_req') {
+        return this.handlePendingBatchCommand(parseCommand.requests)
+      }
     }
+    console.log('command', command)
     throw Error('shouldnt reach here')
   }
   handlePendingSceneCommand(
@@ -1490,6 +1499,22 @@ export class EngineCommandManager {
       resolve,
     }
     return promise
+  }
+  handlePendingBatchCommand(
+    commands: Models['ModelingCmdReq_type'][],
+    ast?: Program,
+    range?: SourceRange
+  ) {
+    var promiseArray = []
+    for (const command of commands) {
+      // Add to our promise.
+
+      promiseArray.push(
+        this.handlePendingCommand(command.cmd_id, command.cmd, ast, range)
+      )
+    }
+
+    return Promise.all(promiseArray)
   }
   sendModelingCommandFromWasm(
     id: string,

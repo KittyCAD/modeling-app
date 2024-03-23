@@ -3,7 +3,7 @@
 use std::sync::{Arc, Mutex};
 
 use anyhow::Result;
-use kittycad::types::{OkWebSocketResponseData, WebSocketRequest};
+use kittycad::types::WebSocketRequest;
 use wasm_bindgen::prelude::*;
 
 use crate::errors::{KclError, KclErrorDetails};
