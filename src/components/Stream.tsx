@@ -101,7 +101,7 @@ export const Stream = ({ className = '' }: { className?: string }) => {
         controls={false}
         onPlay={() => setIsLoading(false)}
         onMouseMoveCapture={handleMouseMove}
-        className={`w-full cursor-pointer h-full`}
+        className="w-full cursor-pointer h-full"
         disablePictureInPicture
         style={{ transitionDuration: '200ms', transitionProperty: 'filter' }}
         id="video-stream"
