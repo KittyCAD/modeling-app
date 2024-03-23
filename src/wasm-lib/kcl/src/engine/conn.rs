@@ -205,8 +205,6 @@ impl EngineManager for EngineConnection {
             batch_id: uuid::Uuid::new_v4(),
         };
 
-        println!("Sending batched requests: {:#?}", batched_requests);
-
         let final_req = if self.batch.lock().unwrap().len() == 1 {
             // We can unwrap here because we know the batch has only one element.
             self.batch.lock().unwrap().first().unwrap().clone()
@@ -228,8 +226,6 @@ impl EngineManager for EngineConnection {
                 }));
             }
         };
-
-        println!("id_final: {:#?}", id_final);
 
         let (tx, rx) = oneshot::channel();
 
