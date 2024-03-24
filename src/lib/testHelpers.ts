@@ -4,6 +4,7 @@ import {
   EngineCommand,
 } from '../lang/std/engineConnection'
 import { Models } from '@kittycad/lib'
+import { Themes } from './theme'
 
 type WebSocketResponse = Models['OkWebSocketResponseData_type']
 
@@ -81,6 +82,7 @@ export async function executor(
     width: 0,
     height: 0,
     executeCode: () => {},
+    theme: Themes.Dark,
   })
   await engineCommandManager.waitForReady
   engineCommandManager.startNewSession()

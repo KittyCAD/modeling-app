@@ -34,8 +34,11 @@
         "request": true,
         "scope": [
           "https://dev.kittycad.io/*",
+          "https://dev.zoo.dev/*",
           "https://kittycad.io/*",
-          "https://api.dev.kittycad.io/*"
+          "https://zoo.dev/*",
+          "https://api.dev.kittycad.io/*",
+          "https://api.dev.zoo.dev/*"
         ]
       },
       "os": {

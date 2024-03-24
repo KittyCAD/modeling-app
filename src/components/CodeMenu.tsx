@@ -77,7 +77,7 @@ export const CodeMenu = ({ children }: PropsWithChildren) => {
           <Menu.Item>
             <a
               className={styles.button}
-              href="https://github.com/KittyCAD/kcl-samples"
+              href="https://zoo.dev/docs/kcl-samples"
               target="_blank"
               rel="noopener noreferrer"
             >

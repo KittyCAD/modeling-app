@@ -22,7 +22,7 @@ test.beforeEach(async ({ context, page }) => {
         onboardingStatus: 'dismissed',
         showDebugPanel: true,
         textWrapping: 'On',
-        theme: 'system',
+        theme: 'dark',
         unitSystem: 'imperial',
       })
     )
@@ -397,7 +397,7 @@ test('Draft segments should look right', async ({ page, context }) => {
         onboardingStatus: 'dismissed',
         showDebugPanel: true,
         textWrapping: 'On',
-        theme: 'system',
+        theme: 'dark',
         unitSystem: 'imperial',
       })
     )
@@ -475,7 +475,7 @@ test('Client side scene scale should match engine scale inch', async ({
         onboardingStatus: 'dismissed',
         showDebugPanel: true,
         textWrapping: 'On',
-        theme: 'system',
+        theme: 'dark',
         unitSystem: 'imperial',
       })
     )
@@ -575,7 +575,7 @@ test('Client side scene scale should match engine scale mm', async ({
         onboardingStatus: 'dismissed',
         showDebugPanel: true,
         textWrapping: 'On',
-        theme: 'system',
+        theme: 'dark',
         unitSystem: 'metric',
       })
     )

@@ -4,7 +4,6 @@ import { getNormalisedCoordinates } from '../lib/utils'
 import Loading from './Loading'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useModelingContext } from 'hooks/useModelingContext'
-import { useKclContext } from 'lang/KclProvider'
 import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
 import { NetworkHealthState, useNetworkStatus } from './NetworkHealthIndicator'
 import { butName } from 'lib/cameraControls'
@@ -29,7 +28,6 @@ export const Stream = ({ className = '' }: { className?: string }) => {
   }))
   const { settings } = useSettingsAuthContext()
   const { state } = useModelingContext()
-  const { isExecuting } = useKclContext()
   const { overallState } = useNetworkStatus()
   const isNetworkOkay = overallState === NetworkHealthState.Ok
 
@@ -103,7 +101,7 @@ export const Stream = ({ className = '' }: { className?: string }) => {
         controls={false}
         onPlay={() => setIsLoading(false)}
         onMouseMoveCapture={handleMouseMove}
-        className={`w-full cursor-pointer h-full ${isExecuting && 'blur-md'}`}
+        className="w-full cursor-pointer h-full"
         disablePictureInPicture
         style={{ transitionDuration: '200ms', transitionProperty: 'filter' }}
         id="video-stream"
