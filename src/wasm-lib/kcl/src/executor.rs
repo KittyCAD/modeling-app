@@ -1010,6 +1010,7 @@ pub async fn execute(
     // Before we even start executing the program, set the units.
     ctx.engine
         .send_modeling_cmd(
+            false,
             uuid::Uuid::new_v4(),
             SourceRange::default(),
             kittycad::types::ModelingCmd::SetSceneUnits {
@@ -1220,6 +1221,9 @@ pub async fn execute(
             },
         }
     }
+
+    // Flush the batch queue.
+    ctx.engine.flush_batch(SourceRange::default()).await?;
 
     Ok(memory.clone())
 }

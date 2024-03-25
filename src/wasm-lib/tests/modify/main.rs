@@ -25,7 +25,11 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
     let token = std::env::var("KITTYCAD_API_TOKEN").expect("KITTYCAD_API_TOKEN not set");
 
     // Create the client.
-    let client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
+    let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
+    // Set a local engine address if it's set.
+    if let Ok(addr) = std::env::var("LOCAL_ENGINE_ADDR") {
+        client.set_base_url(addr);
+    }
 
     let ws = client
         .modeling()
@@ -49,6 +53,7 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
     let plane_id = uuid::Uuid::new_v4();
     ctx.engine
         .send_modeling_cmd(
+            false,
             plane_id,
             SourceRange::default(),
             ModelingCmd::MakePlane {
@@ -67,6 +72,7 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
     // You can however get path info without sketch mode.
     ctx.engine
         .send_modeling_cmd(
+            false,
             uuid::Uuid::new_v4(),
             SourceRange::default(),
             ModelingCmd::SketchModeEnable {
@@ -82,6 +88,7 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
     // We can't get control points of an existing sketch without being in edit mode.
     ctx.engine
         .send_modeling_cmd(
+            false,
             uuid::Uuid::new_v4(),
             SourceRange::default(),
             ModelingCmd::EditModeEnter { target: sketch_id },

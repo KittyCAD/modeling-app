@@ -265,15 +265,15 @@ export class CameraControls {
       this.onCameraChange()
     }
     setTimeout(() => {
-      engineCommandManager.subscribeTo({
+      this.engineCommandManager.subscribeTo({
         event: 'camera_drag_end',
         callback: cb,
       })
-      engineCommandManager.subscribeTo({
+      this.engineCommandManager.subscribeTo({
         event: 'default_camera_zoom',
         callback: cb,
       })
-      engineCommandManager.subscribeTo({
+      this.engineCommandManager.subscribeTo({
         event: 'default_camera_get_settings',
         callback: cb,
       })

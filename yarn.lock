@@ -1378,10 +1378,10 @@
     "@babel/helper-validator-identifier" "^7.22.20"
     to-fast-properties "^2.0.0"
 
-"@codemirror/autocomplete@^6.0.0", "@codemirror/autocomplete@^6.10.2":
-  version "6.10.2"
-  resolved "https://registry.yarnpkg.com/@codemirror/autocomplete/-/autocomplete-6.10.2.tgz#d3a7e2a4ddd1e8a2992b1b17d4e7692542c71052"
-  integrity sha512-3dCL7b0j2GdtZzWN5j7HDpRAJ26ip07R4NGYz7QYthIYMiX8I4E4TNrYcdTayPJGeVQtd/xe7lWU4XL7THFb/w==
+"@codemirror/autocomplete@^6.0.0", "@codemirror/autocomplete@^6.15.0":
+  version "6.15.0"
+  resolved "https://registry.yarnpkg.com/@codemirror/autocomplete/-/autocomplete-6.15.0.tgz#37bc320f20cdda332d6bf4d1fc7f300f8fc5f04c"
+  integrity sha512-G2Zm0mXznxz97JhaaOdoEG2cVupn4JjPaS4AcNvZzhOsnnG9YVN68VzfoUw6dYTsIxT6a/cmoFEN47KAWhXaOg==
   dependencies:
     "@codemirror/language" "^6.0.0"
     "@codemirror/state" "^6.0.0"
@@ -1802,10 +1802,10 @@
   resolved "https://registry.yarnpkg.com/@juggle/resize-observer/-/resize-observer-3.4.0.tgz#08d6c5e20cf7e4cc02fd181c4b0c225cd31dbb60"
   integrity sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==
 
-"@kittycad/lib@^0.0.55":
-  version "0.0.55"
-  resolved "https://registry.yarnpkg.com/@kittycad/lib/-/lib-0.0.55.tgz#7fe327bb8c55422d7d233b5982a35eb32095d44b"
-  integrity sha512-Xvs7WJqW/U2VG5MSKjUx8uDY7e9Wibq/zpfXVef26+b1W0OS0A6MZOXAMmHwDVuAYWuHDdgPa/Hg8NGK1GXd1g==
+"@kittycad/lib@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@kittycad/lib/-/lib-0.1.0.tgz#1a65936cd4f933bbea5a691f195f6eb63f1c14b2"
+  integrity sha512-Zx7ukUDIJSoDowMII+j5WU8FqcYaOA3HqtG6dNwSiv4+MdU+Ifuj+XjduqxUxP0Z4eaq4u6hV8lBsv4b4CYzeA==
   dependencies:
     node-fetch "3.3.2"
     openapi-types "^12.0.0"
@@ -2191,10 +2191,10 @@
     "@testing-library/dom" "^9.0.0"
     "@types/react-dom" "^18.0.0"
 
-"@testing-library/user-event@^14.5.1":
-  version "14.5.1"
-  resolved "https://registry.yarnpkg.com/@testing-library/user-event/-/user-event-14.5.1.tgz#27337d72046d5236b32fd977edee3f74c71d332f"
-  integrity sha512-UCcUKrUYGj7ClomOo2SpNVvx4/fkd/2BbIHDCle8A0ax+P3bU7yJwDBDrS6ZwdTMARWTGODX1hEsCcO+7beJjg==
+"@testing-library/user-event@^14.5.2":
+  version "14.5.2"
+  resolved "https://registry.yarnpkg.com/@testing-library/user-event/-/user-event-14.5.2.tgz#db7257d727c891905947bd1c1a99da20e03c2ebd"
+  integrity sha512-YAh82Wh4TIrxYLmfGcixwD18oIjyC1pFQC2Y01F2lzV2HTMiYrI0nze0FD0ocB//CKS/7jIUgae+adPqxK5yCQ==
 
 "@tootallnate/quickjs-emscripten@^0.23.0":
   version "0.23.0"
@@ -5438,10 +5438,10 @@ graphemer@^1.4.0:
   resolved "https://registry.yarnpkg.com/graphemer/-/graphemer-1.4.0.tgz#fb2f1d55e0e3a1849aeffc90c4fa0dd53a0e66c6"
   integrity sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==
 
-happy-dom@^14.2.0:
-  version "14.2.0"
-  resolved "https://registry.yarnpkg.com/happy-dom/-/happy-dom-14.2.0.tgz#6b6126c2c70ce7334fe479b40501094dd2648631"
-  integrity sha512-vTqF/9MEkRKgYy5eKq9W0uiNmkgnVAmJhRwn8x8fQBR7lc4C84859jLhgZ1lR4Gi/t70oSdgvtLpxlHjgdJrAw==
+happy-dom@^14.3.1:
+  version "14.3.1"
+  resolved "https://registry.yarnpkg.com/happy-dom/-/happy-dom-14.3.1.tgz#3ddab7fd7273c2d9b94ebbfe9b5b67f5c9f7d18d"
+  integrity sha512-uv2mE7jUH0S3cTnDPqNQj+J+Z5wOevqzopc7e8URXtcCH2STubCjPFVyEJ1ONGSv/aL/uvNwo5WWjsinpWpADQ==
   dependencies:
     entities "^4.5.0"
     webidl-conversions "^7.0.0"
