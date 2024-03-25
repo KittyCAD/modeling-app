@@ -442,35 +442,7 @@ export class SceneEntities {
       position: origin,
       maybeModdedAst: kclManager.ast,
     })
-    sceneInfra.setCallbacks({
-      onDrag: ({ selected, intersectionPoint, mouseEvent, intersects }) => {
-        if (mouseEvent.which !== 1) return
-        this.onDragSegment({
-          object: selected,
-          intersection2d: intersectionPoint.twoD,
-          intersects,
-          sketchPathToNode,
-        })
-      },
-      onMove: () => {},
-      onClick: (args) => {
-        if (args?.mouseEvent.which !== 1) return
-        if (!args || !args.selected) {
-          sceneInfra.modelingSend({
-            type: 'Set selection',
-            data: {
-              selectionType: 'singleCodeCursor',
-            },
-          })
-          return
-        }
-        const { selected } = args
-        const event = getEventForSegmentSelection(selected)
-        if (!event) return
-        sceneInfra.modelingSend(event)
-      },
-      ...mouseEnterLeaveCallbacks(),
-    })
+    this.setupSketchIdleCallbacks(sketchPathToNode)
   }
   setUpDraftSegment = async (
     sketchPathToNode: PathToNode,
@@ -527,6 +499,37 @@ export class SceneEntities {
       truncatedAst,
       programMemoryOverride,
       variableDeclarationName,
+    })
+  }
+  setupSketchIdleCallbacks = (pathToNode: PathToNode) => {
+    sceneInfra.setCallbacks({
+      onDrag: ({ selected, intersectionPoint, mouseEvent, intersects }) => {
+        if (mouseEvent.which !== 1) return
+        this.onDragSegment({
+          object: selected,
+          intersection2d: intersectionPoint.twoD,
+          intersects,
+          sketchPathToNode: pathToNode,
+        })
+      },
+      onMove: () => {},
+      onClick: (args) => {
+        if (args?.mouseEvent.which !== 1) return
+        if (!args || !args.selected) {
+          sceneInfra.modelingSend({
+            type: 'Set selection',
+            data: {
+              selectionType: 'singleCodeCursor',
+            },
+          })
+          return
+        }
+        const { selected } = args
+        const event = getEventForSegmentSelection(selected)
+        if (!event) return
+        sceneInfra.modelingSend(event)
+      },
+      ...mouseEnterLeaveCallbacks(),
     })
   }
   setupDraftSegmentCallbacks = ({
@@ -1292,7 +1295,7 @@ function massageFormats(a: any): Vector3 {
     : new Vector3(a.x, a.y, a.z)
 }
 
-export function mouseEnterLeaveCallbacks() {
+function mouseEnterLeaveCallbacks() {
   return {
     onMouseEnter: ({ selected }: OnMouseEnterLeaveArgs) => {
       if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {

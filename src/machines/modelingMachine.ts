@@ -1,10 +1,5 @@
 import { PathToNode, VariableDeclarator } from 'lang/wasm'
-import {
-  Axis,
-  Selection,
-  Selections,
-  getEventForSegmentSelection,
-} from 'lib/selections'
+import { Axis, Selection, Selections } from 'lib/selections'
 import { assign, createMachine } from 'xstate'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { kclManager, sceneInfra, sceneEntitiesManager } from 'lib/singletons'
@@ -39,10 +34,7 @@ import {
 } from 'components/Toolbar/SetAbsDistance'
 import { Models } from '@kittycad/lib/dist/types/src'
 import { ModelingCommandSchema } from 'lib/commandBarConfigs/modelingCommandConfig'
-import {
-  DefaultPlaneStr,
-  mouseEnterLeaveCallbacks,
-} from 'clientSideScene/sceneEntities'
+import { DefaultPlaneStr } from 'clientSideScene/sceneEntities'
 import { Vector3 } from 'three'
 import { quaternionFromUpNForward } from 'clientSideScene/helpers'
 
@@ -845,40 +837,9 @@ export const modelingMachine = createMachine(
             position: sketchDetails.origin,
             maybeModdedAst: kclManager.ast,
           })
-          sceneInfra.setCallbacks({
-            onDrag: ({
-              selected,
-              intersectionPoint,
-              mouseEvent,
-              intersects,
-            }) => {
-              if (mouseEvent.which !== 1) return
-              sceneEntitiesManager.onDragSegment({
-                object: selected,
-                intersection2d: intersectionPoint.twoD,
-                intersects,
-                sketchPathToNode: sketchDetails.sketchPathToNode,
-              })
-            },
-            onMove: () => {},
-            onClick: (args) => {
-              if (args?.mouseEvent.which !== 1) return
-              if (!args || !args.selected) {
-                sceneInfra.modelingSend({
-                  type: 'Set selection',
-                  data: {
-                    selectionType: 'singleCodeCursor',
-                  },
-                })
-                return
-              }
-              const { selected } = args
-              const event = getEventForSegmentSelection(selected)
-              if (!event) return
-              sceneInfra.modelingSend(event)
-            },
-            ...mouseEnterLeaveCallbacks(),
-          })
+          sceneEntitiesManager.setupSketchIdleCallbacks(
+            sketchDetails?.sketchPathToNode || []
+          )
         })()
       },
       'animate after sketch': () => {
