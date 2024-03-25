@@ -34,6 +34,7 @@ layout: manual
 * [`getNextAdjacentEdge`](kcl/getNextAdjacentEdge)
 * [`getOppositeEdge`](kcl/getOppositeEdge)
 * [`getPreviousAdjacentEdge`](kcl/getPreviousAdjacentEdge)
+* [`helix`](kcl/helix)
 * [`hole`](kcl/hole)
 * [`import`](kcl/import)
 * [`lastSegX`](kcl/lastSegX)

@@ -543,6 +543,66 @@ const pt2 = b2.value[0]
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn serial_test_helix_defaults() {
+    let code = r#"const part001 = startSketchOn('XY')
+     |> circle([5, 5], 10, %)
+     |> extrude(10, %)
+     |> helix({revolutions: 16, angle_start: 0}, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/helix_defaults.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_helix_defaults_negative_extrude() {
+    let code = r#"const part001 = startSketchOn('XY')
+     |> circle([5, 5], 10, %)
+     |> extrude(-10, %)
+     |> helix({revolutions: 16, angle_start: 0}, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/helix_defaults_negative_extrude.png",
+        &result,
+        1.0,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_helix_ccw() {
+    let code = r#"const part001 = startSketchOn('XY')
+     |> circle([5, 5], 10, %)
+     |> extrude(10, %)
+     |> helix({revolutions: 16, angle_start: 0, ccw: true}, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/helix_ccw.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_helix_with_length() {
+    let code = r#"const part001 = startSketchOn('XY')
+     |> circle([5, 5], 10, %)
+     |> extrude(10, %)
+     |> helix({revolutions: 16, angle_start: 0, length: 3}, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/helix_with_length.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_close_arc() {
     let code = r#"const center = [0,0]
 const radius = 40
