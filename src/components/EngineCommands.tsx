@@ -1,4 +1,5 @@
-import { CommandLog, engineCommandManager } from 'lang/std/engineConnection'
+import { CommandLog } from 'lang/std/engineConnection'
+import { engineCommandManager } from 'lib/singletons'
 import { useState, useEffect } from 'react'
 
 function useEngineCommands(): [CommandLog[], () => void] {

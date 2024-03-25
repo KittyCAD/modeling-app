@@ -55,6 +55,7 @@ pub enum CompileError {
 }
 
 #[derive(Debug, thiserror::Error)]
+#[allow(clippy::large_enum_variant)]
 pub enum Error {
     #[error("{0}")]
     Compile(#[from] CompileError),

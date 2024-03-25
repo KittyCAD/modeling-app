@@ -242,6 +242,8 @@ pub struct Face {
     pub y_axis: Point3d,
     /// The z-axis (normal).
     pub z_axis: Point3d,
+    /// the face id the sketch is on
+    pub face_id: uuid::Uuid,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
@@ -1008,6 +1010,7 @@ pub async fn execute(
     // Before we even start executing the program, set the units.
     ctx.engine
         .send_modeling_cmd(
+            false,
             uuid::Uuid::new_v4(),
             SourceRange::default(),
             kittycad::types::ModelingCmd::SetSceneUnits {
@@ -1218,6 +1221,9 @@ pub async fn execute(
             },
         }
     }
+
+    // Flush the batch queue.
+    ctx.engine.flush_batch(SourceRange::default()).await?;
 
     Ok(memory.clone())
 }
@@ -1821,12 +1827,14 @@ const bracket = startSketchOn('XY')
         fn opt_param(s: &'static str) -> Parameter {
             Parameter {
                 identifier: ident(s),
+                type_: None,
                 optional: true,
             }
         }
         fn req_param(s: &'static str) -> Parameter {
             Parameter {
                 identifier: ident(s),
+                type_: None,
                 optional: false,
             }
         }
@@ -1912,6 +1920,7 @@ const bracket = startSketchOn('XY')
                     body: Vec::new(),
                     non_code_meta: Default::default(),
                 },
+                return_type: None,
             };
             let actual = assign_args_to_params(func_expr, args, ProgramMemory::new());
             assert_eq!(

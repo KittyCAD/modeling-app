@@ -10,7 +10,7 @@ import {
   getTransformInfos,
   transformAstSketchLines,
 } from '../../lang/std/sketchcombos'
-import { kclManager } from 'lang/KclSingleton'
+import { kclManager } from 'lib/singletons'
 
 export function horzVertInfo(
   selectionRanges: Selections,

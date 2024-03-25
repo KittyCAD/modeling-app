@@ -40,3 +40,12 @@ export function isQuaternionVertical(q: Quaternion) {
   // no x or y components means it's vertical
   return compareVec2Epsilon2([v.x, v.y], [0, 0])
 }
+
+export function quaternionFromUpNForward(up: Vector3, forward: Vector3) {
+  const dummyCam = new PerspectiveCamera()
+  dummyCam.up.copy(up)
+  dummyCam.position.copy(forward)
+  dummyCam.lookAt(0, 0, 0)
+  dummyCam.updateMatrix()
+  return dummyCam.quaternion.clone()
+}

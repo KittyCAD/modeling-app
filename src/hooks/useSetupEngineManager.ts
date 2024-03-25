@@ -1,13 +1,14 @@
 import { useLayoutEffect, useEffect, useRef } from 'react'
 import { parse } from '../lang/wasm'
 import { useStore } from '../useStore'
-import { engineCommandManager } from '../lang/std/engineConnection'
+import { engineCommandManager, kclManager } from 'lib/singletons'
 import { deferExecution } from 'lib/utils'
-import { kclManager } from 'lang/KclSingleton'
+import { Themes } from 'lib/theme'
 
 export function useSetupEngineManager(
   streamRef: React.RefObject<HTMLDivElement>,
-  token?: string
+  token?: string,
+  theme = Themes.System
 ) {
   const {
     setMediaStream,
@@ -44,6 +45,7 @@ export function useSetupEngineManager(
           return kclManager.executeAst(_ast, true)
         },
         token,
+        theme,
       })
       setStreamDimensions({
         streamWidth: quadWidth,

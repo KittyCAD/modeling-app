@@ -7,8 +7,8 @@ import {
   findUniqueName,
 } from '../lang/modifyAst'
 import { findAllPreviousVariables, PrevVariable } from '../lang/queryAst'
-import { engineCommandManager } from '../lang/std/engineConnection'
-import { kclManager, useKclContext } from 'lang/KclSingleton'
+import { engineCommandManager, kclManager } from 'lib/singletons'
+import { useKclContext } from 'lang/KclProvider'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { executeAst } from 'useStore'
 

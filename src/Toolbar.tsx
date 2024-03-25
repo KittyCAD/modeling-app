@@ -1,12 +1,12 @@
 import { WheelEvent, useRef, useMemo } from 'react'
 import { isCursorInSketchCommandRange } from 'lang/util'
-import { engineCommandManager } from './lang/std/engineConnection'
+import { engineCommandManager, kclManager } from 'lib/singletons'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { ActionButton } from 'components/ActionButton'
 import usePlatform from 'hooks/usePlatform'
 import { isSingleCursorInPipe } from 'lang/queryAst'
-import { kclManager, useKclContext } from 'lang/KclSingleton'
+import { useKclContext } from 'lang/KclProvider'
 import {
   NetworkHealthState,
   useNetworkStatus,
