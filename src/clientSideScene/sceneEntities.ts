@@ -37,6 +37,7 @@ import {
 } from './sceneInfra'
 import { isQuaternionVertical, quaternionFromUpNForward } from './helpers'
 import {
+  ArrayExpression,
   CallExpression,
   getTangentialArcToInfo,
   parse,
@@ -70,9 +71,12 @@ import {
 import { throttle } from 'lib/utils'
 import {
   createArrayExpression,
+  createBinaryExpression,
   createCallExpressionStdLib,
   createLiteral,
+  createPipeExpression,
   createPipeSubstitution,
+  createUnaryExpression,
 } from 'lang/modifyAst'
 import {
   getEventForSegmentSelection,
@@ -547,6 +551,126 @@ export class SceneEntities {
         })
       },
       ...mouseEnterLeaveCallbacks(),
+    })
+  }
+  setupDraftRectangle = async (
+    sketchPathToNode: PathToNode,
+    forward: [number, number, number],
+    up: [number, number, number],
+    origin: [number, number, number],
+    shouldTearDown = true
+  ) => {
+    const _ast = JSON.parse(JSON.stringify(kclManager.ast))
+
+    const variableDeclarationName =
+      getNodeFromPath<VariableDeclaration>(
+        _ast,
+        sketchPathToNode || [],
+        'VariableDeclaration'
+      )?.node?.declarations?.[0]?.id?.name || ''
+    const sg = kclManager.programMemory.root[
+      variableDeclarationName
+    ] as SketchGroup
+
+    /**
+     * We want to generate this kind of code mod:
+     * const yo = startSketchOn('XY')
+     *  |> startProfileAt([0, 0], %)
+     *  |> angledLine([0, 0], %, 'a')
+     *  |> angledLine([segAng('a', %) - 90, 0], %, 'b')
+     *  |> angledLine([segAng('a', %), -segLen('a', %)], %, 'c')
+     *  |> close(%)
+     */
+    // Here is that kcl code as an array of call expressions
+    const callExpressions = [
+      createCallExpressionStdLib('startProfileAt', [
+        createArrayExpression([createLiteral(0), createLiteral(0)]),
+        createPipeSubstitution(),
+      ]),
+      createCallExpressionStdLib('angledLine', [
+        createArrayExpression([
+          createLiteral(0), // 0 deg
+          createLiteral(10), // This will be the width of the rectangle
+        ]),
+        createPipeSubstitution(),
+        createLiteral('a'),
+      ]),
+      createCallExpressionStdLib('angledLine', [
+        createArrayExpression([
+          createBinaryExpression([
+            createCallExpressionStdLib('segAng', [
+              createLiteral('a'),
+              createPipeSubstitution(),
+            ]),
+            '+',
+            createLiteral(90),
+          ]), // 90 offset from the previous line
+          createLiteral(5), // This will be the height of the rectangle
+        ]),
+        createPipeSubstitution(),
+        createLiteral('b'),
+      ]),
+      createCallExpressionStdLib('angledLine', [
+        createArrayExpression([
+          createCallExpressionStdLib('segAng', [
+            createLiteral('a'),
+            createPipeSubstitution(),
+          ]), // same angle as the first line
+          createUnaryExpression(
+            createCallExpressionStdLib('segLen', [
+              createLiteral('a'),
+              createPipeSubstitution(),
+            ]),
+            '-'
+          ), // negative height
+        ]),
+        createPipeSubstitution(),
+        createLiteral('c'),
+      ]),
+      createCallExpressionStdLib('close', [createPipeSubstitution()]),
+    ]
+
+    const startSketchOn = getNodeFromPath<VariableDeclaration>(
+      _ast,
+      sketchPathToNode || [],
+      'VariableDeclaration'
+    )?.node?.declarations
+
+    const startSketchOnInit = startSketchOn?.[0]?.init
+    startSketchOn[0].init = createPipeExpression([
+      startSketchOnInit,
+      ...callExpressions,
+    ])
+
+    // if (shouldTearDown) await this.tearDownSketch({ removeAxis: false })
+    const { truncatedAst, programMemoryOverride, sketchGroup } =
+      await this.setupSketch({
+        sketchPathToNode,
+        forward,
+        up,
+        position: origin,
+        maybeModdedAst: _ast,
+        draftExpressionsIndices: { start: 0, end: 3 },
+      })
+
+    sceneInfra.setCallbacks({
+      onMove: (args) => {
+        // Update the width and height of the draft rectangle
+        const pathToNodeTwo = JSON.parse(JSON.stringify(sketchPathToNode))
+        pathToNodeTwo[1][0] = 0
+
+        const sketchInit = getNodeFromPath<VariableDeclaration>(
+          _ast,
+          pathToNodeTwo || [],
+          'VariableDeclaration'
+        )?.node?.declarations?.[0]?.init
+
+        if (sketchInit.type === 'PipeExpression') {
+          ((sketchInit.body[2] as CallExpression).arguments[0] as ArrayExpression).elements[1] = createLiteral(args.intersectionPoint.twoD.x);
+          ((sketchInit.body[3] as CallExpression).arguments[0] as ArrayExpression).elements[1] = createLiteral(args.intersectionPoint.twoD.y)
+        }
+      },
+      onClick: async (args) => {},
     })
   }
   setupSketchIdleCallbacks = (pathToNode: PathToNode) => {
