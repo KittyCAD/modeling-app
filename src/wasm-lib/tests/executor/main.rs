@@ -603,6 +603,22 @@ async fn serial_test_helix_with_length() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn serial_test_dimensions_match() {
+    let code = r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Cm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/dimensions_match.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_close_arc() {
     let code = r#"const center = [0,0]
 const radius = 40
