@@ -134,6 +134,11 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 pub fn is_cmd_with_return_values(cmd: &kittycad::types::ModelingCmd) -> bool {
     let (kittycad::types::ModelingCmd::Export { .. }
     | kittycad::types::ModelingCmd::Extrude { .. }
+    | kittycad::types::ModelingCmd::DefaultCameraLookAt { .. }
+    | kittycad::types::ModelingCmd::DefaultCameraFocusOn { .. }
+    | kittycad::types::ModelingCmd::DefaultCameraGetSettings { .. }
+    | kittycad::types::ModelingCmd::DefaultCameraPerspectiveSettings { .. }
+    | kittycad::types::ModelingCmd::DefaultCameraZoom { .. }
     | kittycad::types::ModelingCmd::SketchModeDisable { .. }
     | kittycad::types::ModelingCmd::ObjectBringToFront { .. }
     | kittycad::types::ModelingCmd::SelectWithPoint { .. }

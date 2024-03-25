@@ -550,7 +550,7 @@ async fn serial_test_helix_defaults() {
      |> helix({revolutions: 16, angle_start: 0}, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Cm)
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/helix_defaults.png", &result, 1.0);
@@ -564,7 +564,7 @@ async fn serial_test_helix_defaults_negative_extrude() {
      |> helix({revolutions: 16, angle_start: 0}, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Cm)
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image(
@@ -582,7 +582,7 @@ async fn serial_test_helix_ccw() {
      |> helix({revolutions: 16, angle_start: 0, ccw: true}, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Cm)
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/helix_ccw.png", &result, 1.0);
@@ -596,7 +596,7 @@ async fn serial_test_helix_with_length() {
      |> helix({revolutions: 16, angle_start: 0, length: 3}, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Cm)
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/helix_with_length.png", &result, 1.0);
@@ -612,7 +612,7 @@ async fn serial_test_dimensions_match() {
   |> close(%)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Cm)
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/dimensions_match.png", &result, 1.0);
