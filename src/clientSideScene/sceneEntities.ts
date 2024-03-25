@@ -264,29 +264,29 @@ export class SceneEntities {
 
   async setupSketch({
     sketchPathToNode,
-    ast,
-    // is draft line assumes the last segment is a draft line, and mods it as the user moves the mouse
-    draftSegment,
     forward,
     up,
     position,
+    maybeModdedAst,
+    draftExpressionsIndices,
   }: {
     sketchPathToNode: PathToNode
-    ast?: Program
-    draftSegment?: DraftSegment
+    maybeModdedAst: Program
+    draftExpressionsIndices?: { start: number; end: number }
     forward: [number, number, number]
     up: [number, number, number]
     position?: [number, number, number]
-  }) {
+  }): Promise<{
+    truncatedAst: Program
+    programMemoryOverride: ProgramMemory
+    sketchGroup: SketchGroup
+    variableDeclarationName: string
+  }> {
     sceneInfra.resetMouseListeners()
     this.createIntersectionPlane()
 
     const { truncatedAst, programMemoryOverride, variableDeclarationName } =
-      this.prepareTruncatedMemoryAndAst(
-        sketchPathToNode || [],
-        kclManager.ast,
-        draftSegment
-      )
+      this.prepareTruncatedMemoryAndAst(sketchPathToNode || [], maybeModdedAst)
     const { programMemory } = await executeAst({
       ast: truncatedAst,
       useFakeExecutor: true,
@@ -298,7 +298,13 @@ export class SceneEntities {
       ast: kclManager.ast,
       programMemory,
     })
-    if (!Array.isArray(sketchGroup?.value)) return
+    if (!Array.isArray(sketchGroup?.value))
+      return {
+        truncatedAst,
+        programMemoryOverride,
+        sketchGroup,
+        variableDeclarationName,
+      }
     this.sceneProgramMemory = programMemory
     const group = new Group()
     position && group.position.set(...position)
@@ -341,7 +347,10 @@ export class SceneEntities {
         kclManager.ast,
         segment.__geoMeta.sourceRange
       )
-      if (draftSegment && (sketchGroup.value[index - 1] || sketchGroup.start)) {
+      if (
+        draftExpressionsIndices &&
+        (sketchGroup.value[index - 1] || sketchGroup.start)
+      ) {
         const previousSegment =
           sketchGroup.value[index - 1] || sketchGroup.start
         const previousSegmentPathToNode = getNodePathFromSourceRange(
@@ -356,7 +365,9 @@ export class SceneEntities {
         segPathToNode[1][0] = bodyIndex
       }
       const isDraftSegment =
-        draftSegment && index === sketchGroup.value.length - 1
+        draftExpressionsIndices &&
+        index <= draftExpressionsIndices.end &&
+        index >= draftExpressionsIndices.start
       let seg
       const callExpName = getNodeFromPath<CallExpression>(
         kclManager.ast,
@@ -406,100 +417,14 @@ export class SceneEntities {
       position &&
       this.intersectionPlane.position.set(...position)
     this.scene.add(group)
-    if (!draftSegment) {
-      sceneInfra.setCallbacks({
-        onDrag: ({ selected, intersectionPoint, mouseEvent, intersects }) => {
-          if (mouseEvent.which !== 1) return
-          this.onDragSegment({
-            object: selected,
-            intersection2d: intersectionPoint.twoD,
-            intersects,
-            sketchPathToNode,
-          })
-        },
-        onMove: () => {},
-        onClick: (args) => {
-          if (args?.mouseEvent.which !== 1) return
-          if (!args || !args.selected) {
-            sceneInfra.modelingSend({
-              type: 'Set selection',
-              data: {
-                selectionType: 'singleCodeCursor',
-              },
-            })
-            return
-          }
-          const { selected } = args
-          const event = getEventForSegmentSelection(selected)
-          if (!event) return
-          sceneInfra.modelingSend(event)
-        },
-        ...mouseEnterLeaveCallbacks(),
-      })
-    } else {
-      sceneInfra.setCallbacks({
-        onClick: async (args) => {
-          if (!args) return
-          if (args.mouseEvent.which !== 1) return
-          const { intersectionPoint } = args
-          let intersection2d = intersectionPoint?.twoD
-          const profileStart = args.intersects
-            .map(({ object }) => getParentGroup(object, [PROFILE_START]))
-            .find((a) => a?.name === PROFILE_START)
-
-          let modifiedAst
-          if (profileStart) {
-            modifiedAst = addCloseToPipe({
-              node: kclManager.ast,
-              programMemory: kclManager.programMemory,
-              pathToNode: sketchPathToNode,
-            })
-          } else if (intersection2d) {
-            const lastSegment = sketchGroup.value.slice(-1)[0]
-            modifiedAst = addNewSketchLn({
-              node: kclManager.ast,
-              programMemory: kclManager.programMemory,
-              to: [intersection2d.x, intersection2d.y],
-              from: [lastSegment.to[0], lastSegment.to[1]],
-              fnName:
-                lastSegment.type === 'TangentialArcTo'
-                  ? 'tangentialArcTo'
-                  : 'line',
-              pathToNode: sketchPathToNode,
-            }).modifiedAst
-          } else {
-            // return early as we didn't modify the ast
-            return
-          }
-
-          kclManager.executeAstMock(modifiedAst, { updates: 'code' })
-          await this.tearDownSketch({ removeAxis: false })
-          this.setupSketch({
-            sketchPathToNode,
-            draftSegment,
-            forward,
-            up,
-            position,
-          })
-        },
-        onMove: (args) => {
-          this.onDragSegment({
-            intersection2d: args.intersectionPoint.twoD,
-            object: Object.values(this.activeSegments).slice(-1)[0],
-            intersects: args.intersects,
-            sketchPathToNode,
-            draftInfo: {
-              draftSegment,
-              truncatedAst,
-              programMemoryOverride,
-              variableDeclarationName,
-            },
-          })
-        },
-        ...mouseEnterLeaveCallbacks(),
-      })
-    }
     sceneInfra.camControls.enableRotate = false
+
+    return {
+      truncatedAst,
+      programMemoryOverride,
+      sketchGroup,
+      variableDeclarationName,
+    }
   }
   updateAstAndRejigSketch = async (
     sketchPathToNode: PathToNode,
@@ -510,32 +435,181 @@ export class SceneEntities {
   ) => {
     await kclManager.updateAst(modifiedAst, false)
     await this.tearDownSketch({ removeAxis: false })
-    this.setupSketch({ sketchPathToNode, forward, up, position: origin })
-  }
-  setUpDraftArc = async (
-    sketchPathToNode: PathToNode,
-    forward: [number, number, number],
-    up: [number, number, number]
-  ) => {
-    await this.tearDownSketch({ removeAxis: false })
-    await new Promise((resolve) => setTimeout(resolve, 100))
-    this.setupSketch({
+    await this.setupSketch({
       sketchPathToNode,
-      draftSegment: 'tangentialArcTo',
       forward,
       up,
+      position: origin,
+      maybeModdedAst: kclManager.ast,
+    })
+    sceneInfra.setCallbacks({
+      onDrag: ({ selected, intersectionPoint, mouseEvent, intersects }) => {
+        if (mouseEvent.which !== 1) return
+        this.onDragSegment({
+          object: selected,
+          intersection2d: intersectionPoint.twoD,
+          intersects,
+          sketchPathToNode,
+        })
+      },
+      onMove: () => {},
+      onClick: (args) => {
+        if (args?.mouseEvent.which !== 1) return
+        if (!args || !args.selected) {
+          sceneInfra.modelingSend({
+            type: 'Set selection',
+            data: {
+              selectionType: 'singleCodeCursor',
+            },
+          })
+          return
+        }
+        const { selected } = args
+        const event = getEventForSegmentSelection(selected)
+        if (!event) return
+        sceneInfra.modelingSend(event)
+      },
+      ...mouseEnterLeaveCallbacks(),
     })
   }
-  setUpDraftLine = async (
+  setUpDraftSegment = async (
     sketchPathToNode: PathToNode,
     forward: [number, number, number],
-    up: [number, number, number]
+    up: [number, number, number],
+    origin: [number, number, number],
+    segmentName: 'line' | 'tangentialArcTo' = 'line',
+    shouldTearDown = true
   ) => {
-    await this.tearDownSketch({ removeAxis: false })
-    await new Promise((resolve) => setTimeout(resolve, 100))
-    this.setupSketch({ sketchPathToNode, draftSegment: 'line', forward, up })
+    const _ast = JSON.parse(JSON.stringify(kclManager.ast))
+
+    const variableDeclarationName =
+      getNodeFromPath<VariableDeclaration>(
+        _ast,
+        sketchPathToNode || [],
+        'VariableDeclaration'
+      )?.node?.declarations?.[0]?.id?.name || ''
+    const sg = kclManager.programMemory.root[
+      variableDeclarationName
+    ] as SketchGroup
+    const lastSeg = sg.value.slice(-1)[0] || sg.start
+
+    const index = sg.value.length // because we've added a new segment that's not in the memory yet, no need for `-1`
+
+    let modifiedAst = addNewSketchLn({
+      node: kclManager.ast,
+      programMemory: kclManager.programMemory,
+      to: [lastSeg.to[0], lastSeg.to[1]],
+      from: [lastSeg.to[0], lastSeg.to[1]],
+      fnName: segmentName,
+      pathToNode: sketchPathToNode,
+    }).modifiedAst
+    modifiedAst = parse(recast(modifiedAst))
+
+    const draftExpressionsIndices = { start: index, end: index }
+
+    if (shouldTearDown) await this.tearDownSketch({ removeAxis: false })
+    const { truncatedAst, programMemoryOverride, sketchGroup } =
+      await this.setupSketch({
+        sketchPathToNode,
+        forward,
+        up,
+        position: origin,
+        maybeModdedAst: modifiedAst,
+        draftExpressionsIndices,
+      })
+    this.setupDraftSegmentCallbacks({
+      sketchPathToNode,
+      sketchGroup,
+      forward,
+      up,
+      origin,
+      segmentName,
+      truncatedAst,
+      programMemoryOverride,
+      variableDeclarationName,
+    })
   }
-  onDraftLineMouseMove = () => {}
+  setupDraftSegmentCallbacks = ({
+    sketchPathToNode,
+    sketchGroup,
+    forward,
+    up,
+    segmentName,
+    truncatedAst,
+    programMemoryOverride,
+    variableDeclarationName,
+    origin,
+  }: {
+    sketchPathToNode: PathToNode
+    sketchGroup: SketchGroup
+    forward: [number, number, number]
+    up: [number, number, number]
+    origin: [number, number, number]
+    segmentName: 'line' | 'tangentialArcTo'
+    truncatedAst: Program
+    programMemoryOverride: ProgramMemory
+    variableDeclarationName: string
+  }) => {
+    sceneInfra.setCallbacks({
+      onClick: async (args) => {
+        if (!args) return
+        if (args.mouseEvent.which !== 1) return
+        const { intersectionPoint } = args
+        let intersection2d = intersectionPoint?.twoD
+        const profileStart = args.intersects
+          .map(({ object }) => getParentGroup(object, [PROFILE_START]))
+          .find((a) => a?.name === PROFILE_START)
+
+        let modifiedAst
+        if (profileStart) {
+          modifiedAst = addCloseToPipe({
+            node: kclManager.ast,
+            programMemory: kclManager.programMemory,
+            pathToNode: sketchPathToNode,
+          })
+        } else if (intersection2d) {
+          const lastSegment = sketchGroup.value.slice(-1)[0]
+          modifiedAst = addNewSketchLn({
+            node: kclManager.ast,
+            programMemory: kclManager.programMemory,
+            to: [intersection2d.x, intersection2d.y],
+            from: [lastSegment.to[0], lastSegment.to[1]],
+            fnName:
+              lastSegment.type === 'TangentialArcTo'
+                ? 'tangentialArcTo'
+                : 'line',
+            pathToNode: sketchPathToNode,
+          }).modifiedAst
+        } else {
+          // return early as we didn't modify the ast
+          return
+        }
+
+        await kclManager.executeAstMock(modifiedAst, { updates: 'code' })
+        this.setUpDraftSegment(
+          sketchPathToNode,
+          forward,
+          up,
+          origin,
+          segmentName
+        )
+      },
+      onMove: (args) => {
+        this.onDragSegment({
+          intersection2d: args.intersectionPoint.twoD,
+          object: Object.values(this.activeSegments).slice(-1)[0],
+          intersects: args.intersects,
+          sketchPathToNode,
+          draftInfo: {
+            truncatedAst,
+            programMemoryOverride,
+            variableDeclarationName,
+          },
+        })
+      },
+      ...mouseEnterLeaveCallbacks(),
+    })
+  }
   prepareTruncatedMemoryAndAst = (
     sketchPathToNode: PathToNode,
     ast?: Program,
@@ -559,7 +633,6 @@ export class SceneEntities {
     sketchPathToNode: PathToNode
     intersects: Intersection<Object3D<Object3DEventMap>>[]
     draftInfo?: {
-      draftSegment: DraftSegment
       truncatedAst: Program
       programMemoryOverride: ProgramMemory
       variableDeclarationName: string
@@ -1098,7 +1171,6 @@ export function sketchGroupFromPathToNode({
     pathToNode,
     'VariableDeclarator'
   ).node
-  // console.trace('where from?')
   return programMemory.root[varDec?.id?.name || ''] as SketchGroup
 }
 
@@ -1220,7 +1292,7 @@ function massageFormats(a: any): Vector3 {
     : new Vector3(a.x, a.y, a.z)
 }
 
-function mouseEnterLeaveCallbacks() {
+export function mouseEnterLeaveCallbacks() {
   return {
     onMouseEnter: ({ selected }: OnMouseEnterLeaveArgs) => {
       if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
