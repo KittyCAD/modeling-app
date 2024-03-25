@@ -489,70 +489,6 @@ export class SceneEntities {
         maybeModdedAst: modifiedAst,
         draftExpressionsIndices,
       })
-    this.setupDraftSegmentCallbacks({
-      sketchPathToNode,
-      sketchGroup,
-      forward,
-      up,
-      origin,
-      segmentName,
-      truncatedAst,
-      programMemoryOverride,
-      variableDeclarationName,
-    })
-  }
-  setupSketchIdleCallbacks = (pathToNode: PathToNode) => {
-    sceneInfra.setCallbacks({
-      onDrag: ({ selected, intersectionPoint, mouseEvent, intersects }) => {
-        if (mouseEvent.which !== 1) return
-        this.onDragSegment({
-          object: selected,
-          intersection2d: intersectionPoint.twoD,
-          intersects,
-          sketchPathToNode: pathToNode,
-        })
-      },
-      onMove: () => {},
-      onClick: (args) => {
-        if (args?.mouseEvent.which !== 1) return
-        if (!args || !args.selected) {
-          sceneInfra.modelingSend({
-            type: 'Set selection',
-            data: {
-              selectionType: 'singleCodeCursor',
-            },
-          })
-          return
-        }
-        const { selected } = args
-        const event = getEventForSegmentSelection(selected)
-        if (!event) return
-        sceneInfra.modelingSend(event)
-      },
-      ...mouseEnterLeaveCallbacks(),
-    })
-  }
-  setupDraftSegmentCallbacks = ({
-    sketchPathToNode,
-    sketchGroup,
-    forward,
-    up,
-    segmentName,
-    truncatedAst,
-    programMemoryOverride,
-    variableDeclarationName,
-    origin,
-  }: {
-    sketchPathToNode: PathToNode
-    sketchGroup: SketchGroup
-    forward: [number, number, number]
-    up: [number, number, number]
-    origin: [number, number, number]
-    segmentName: 'line' | 'tangentialArcTo'
-    truncatedAst: Program
-    programMemoryOverride: ProgramMemory
-    variableDeclarationName: string
-  }) => {
     sceneInfra.setCallbacks({
       onClick: async (args) => {
         if (!args) return
@@ -609,6 +545,37 @@ export class SceneEntities {
             variableDeclarationName,
           },
         })
+      },
+      ...mouseEnterLeaveCallbacks(),
+    })
+  }
+  setupSketchIdleCallbacks = (pathToNode: PathToNode) => {
+    sceneInfra.setCallbacks({
+      onDrag: ({ selected, intersectionPoint, mouseEvent, intersects }) => {
+        if (mouseEvent.which !== 1) return
+        this.onDragSegment({
+          object: selected,
+          intersection2d: intersectionPoint.twoD,
+          intersects,
+          sketchPathToNode: pathToNode,
+        })
+      },
+      onMove: () => {},
+      onClick: (args) => {
+        if (args?.mouseEvent.which !== 1) return
+        if (!args || !args.selected) {
+          sceneInfra.modelingSend({
+            type: 'Set selection',
+            data: {
+              selectionType: 'singleCodeCursor',
+            },
+          })
+          return
+        }
+        const { selected } = args
+        const event = getEventForSegmentSelection(selected)
+        if (!event) return
+        sceneInfra.modelingSend(event)
       },
       ...mouseEnterLeaveCallbacks(),
     })
