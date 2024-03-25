@@ -149,8 +149,6 @@ pub fn is_cmd_with_return_values(cmd: &kittycad::types::ModelingCmd) -> bool {
     | kittycad::types::ModelingCmd::EntityGetAllChildUuids { .. }
     | kittycad::types::ModelingCmd::CameraDragMove { .. }
     | kittycad::types::ModelingCmd::CameraDragEnd { .. }
-    | kittycad::types::ModelingCmd::DefaultCameraGetSettings { .. }
-    | kittycad::types::ModelingCmd::DefaultCameraZoom { .. }
     | kittycad::types::ModelingCmd::SelectGet { .. }
     | kittycad::types::ModelingCmd::Solid3DGetAllEdgeFaces { .. }
     | kittycad::types::ModelingCmd::Solid3DGetAllOppositeEdges { .. }
