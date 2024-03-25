@@ -13,7 +13,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import styles from './FileTree.module.css'
 import { FILE_EXT, sortProject } from 'lib/tauriFS'
 import { CustomIcon } from './CustomIcon'
-import { kclManager } from 'lang/KclSingleton'
+import { kclManager } from 'lib/singletons'
 import { useDocumentHasFocus } from 'hooks/useDocumentHasFocus'
 import { useLspContext } from './LspProvider'
 

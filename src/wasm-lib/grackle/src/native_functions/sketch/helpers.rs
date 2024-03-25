@@ -1,4 +1,4 @@
-use kittycad_execution_plan::{api_request::ApiRequest, Destination, Instruction};
+use kittycad_execution_plan::{api_request::ApiRequest, Destination, Instruction, InstructionKind};
 use kittycad_execution_plan_traits::{Address, InMemory};
 use kittycad_modeling_cmds::{id::ModelingCmdId, ModelingCmdEndpoint};
 
@@ -6,12 +6,12 @@ use crate::{binding_scope::EpBinding, error::CompileError};
 
 /// Emit instructions for an API call with no parameters.
 pub fn no_arg_api_call(instrs: &mut Vec<Instruction>, endpoint: ModelingCmdEndpoint, cmd_id: ModelingCmdId) {
-    instrs.push(Instruction::ApiRequest(ApiRequest {
+    instrs.push(Instruction::from(InstructionKind::ApiRequest(ApiRequest {
         endpoint,
         store_response: None,
         arguments: vec![],
         cmd_id,
-    }))
+    })))
 }
 
 /// Emit instructions for an API call with the given parameters.
@@ -26,13 +26,13 @@ pub fn stack_api_call<const N: usize>(
     data: [Vec<kittycad_execution_plan_traits::Primitive>; N],
 ) {
     let arguments = vec![InMemory::StackPop; data.len()];
-    instrs.extend(data.map(|data| Instruction::StackPush { data }));
-    instrs.push(Instruction::ApiRequest(ApiRequest {
+    instrs.extend(data.map(|data| Instruction::from(InstructionKind::StackPush { data })));
+    instrs.push(Instruction::from(InstructionKind::ApiRequest(ApiRequest {
         endpoint,
         store_response,
         arguments,
         cmd_id,
-    }))
+    })))
 }
 
 pub fn sg_binding(
@@ -182,20 +182,20 @@ pub fn arg_point2d(
     let start_y = start + 1;
     let start_z = start + 2;
     instructions.extend([
-        Instruction::Copy {
+        Instruction::from(InstructionKind::Copy {
             source: single_binding(elements[0].clone(), fn_name, "number", arg_number)?,
             destination: Destination::Address(start_x),
             length: 1,
-        },
-        Instruction::Copy {
+        }),
+        Instruction::from(InstructionKind::Copy {
             source: single_binding(elements[1].clone(), fn_name, "number", arg_number)?,
             destination: Destination::Address(start_y),
             length: 1,
-        },
-        Instruction::SetPrimitive {
+        }),
+        Instruction::from(InstructionKind::SetPrimitive {
             address: start_z,
             value: 0.0.into(),
-        },
+        }),
     ]);
     ctx.next_address.offset_by(1); // After we pushed 0.0 here, just above.
     Ok(start)

@@ -1,15 +1,13 @@
 import { MouseEventHandler, useEffect, useRef, useState } from 'react'
-import { v4 as uuidv4 } from 'uuid'
 import { useStore } from '../useStore'
 import { getNormalisedCoordinates } from '../lib/utils'
 import Loading from './Loading'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import { Models } from '@kittycad/lib'
-import { engineCommandManager } from '../lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
-import { useKclContext } from 'lang/KclSingleton'
 import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
 import { NetworkHealthState, useNetworkStatus } from './NetworkHealthIndicator'
+import { butName } from 'lib/cameraControls'
+import { sendSelectEventToEngine } from 'lib/selections'
 
 export const Stream = ({ className = '' }: { className?: string }) => {
   const [isLoading, setIsLoading] = useState(true)
@@ -30,7 +28,6 @@ export const Stream = ({ className = '' }: { className?: string }) => {
   }))
   const { settings } = useSettingsAuthContext()
   const { state } = useModelingContext()
-  const { isExecuting } = useKclContext()
   const { overallState } = useNetworkStatus()
   const isNetworkOkay = overallState === NetworkHealthState.Ok
 
@@ -60,50 +57,14 @@ export const Stream = ({ className = '' }: { className?: string }) => {
     setClickCoords({ x, y })
   }
 
-  const handleMouseUp: MouseEventHandler<HTMLDivElement> = ({
-    clientX,
-    clientY,
-    ctrlKey,
-  }) => {
+  const handleMouseUp: MouseEventHandler<HTMLDivElement> = (e) => {
     if (!videoRef.current) return
     setButtonDownInStream(undefined)
     if (state.matches('Sketch')) return
     if (state.matches('Sketch no face')) return
-    const { x, y } = getNormalisedCoordinates({
-      clientX,
-      clientY,
-      el: videoRef.current,
-      ...streamDimensions,
-    })
 
-    const newCmdId = uuidv4()
-    const interaction = ctrlKey ? 'pan' : 'rotate'
-
-    const command: Models['WebSocketRequest_type'] = {
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'camera_drag_end',
-        interaction,
-        window: { x, y },
-      },
-      cmd_id: newCmdId,
-    }
-
-    if (!didDragInStream) {
-      command.cmd = {
-        type: 'select_with_point',
-        selected_at_window: { x, y },
-        selection_type: 'add',
-      }
-      engineCommandManager.sendSceneCommand(command)
-    } else if (didDragInStream) {
-      command.cmd = {
-        type: 'handle_mouse_drag_end',
-        window: { x, y },
-      }
-      void engineCommandManager.sendSceneCommand(command)
-    } else {
-      engineCommandManager.sendSceneCommand(command)
+    if (!didDragInStream && butName(e).left) {
+      sendSelectEventToEngine(e, videoRef.current, streamDimensions)
     }
 
     setDidDragInStream(false)
@@ -140,9 +101,10 @@ export const Stream = ({ className = '' }: { className?: string }) => {
         controls={false}
         onPlay={() => setIsLoading(false)}
         onMouseMoveCapture={handleMouseMove}
-        className={`w-full cursor-pointer h-full ${isExecuting && 'blur-md'}`}
+        className="w-full cursor-pointer h-full"
         disablePictureInPicture
         style={{ transitionDuration: '200ms', transitionProperty: 'filter' }}
+        id="video-stream"
       />
       <ClientSideScene cameraControls={settings.context?.cameraControls} />
       {!isNetworkOkay && !isLoading && (

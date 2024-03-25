@@ -93,6 +93,8 @@ export interface StoreState {
     path: string
   }[]
   setHomeMenuItems: (items: { name: string; path: string }[]) => void
+  lastCodeMirrorSelectionUpdatedFromScene: number
+  setLastCodeMirrorSelectionUpdatedFromScene: (time: number) => void
 }
 
 export const useStore = create<StoreState>()(
@@ -156,6 +158,9 @@ export const useStore = create<StoreState>()(
         setHomeShowMenu: (showHomeMenu) => set({ showHomeMenu }),
         homeMenuItems: [],
         setHomeMenuItems: (homeMenuItems) => set({ homeMenuItems }),
+        lastCodeMirrorSelectionUpdatedFromScene: Date.now(),
+        setLastCodeMirrorSelectionUpdatedFromScene: (time) =>
+          set({ lastCodeMirrorSelectionUpdatedFromScene: time }),
       }
     },
     {

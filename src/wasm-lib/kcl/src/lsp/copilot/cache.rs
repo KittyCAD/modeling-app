@@ -77,9 +77,7 @@ impl CopilotCache {
     }
 
     pub fn get_cached_result(&self, uri: &String, last_line: u32) -> Option<CopilotCompletionResponse> {
-        let Some(cached_line) = self.get_last_line(uri) else {
-            return None;
-        };
+        let cached_line = self.get_last_line(uri)?;
         if last_line != cached_line {
             return None;
         };
