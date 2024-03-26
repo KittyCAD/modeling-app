@@ -25,7 +25,7 @@ export const UpdaterRestartModal = ({
     <div className="max-w-3xl p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
       <h1 className="text-3xl font-bold">Ready to restart?</h1>
       <p className="my-4" data-testid="update-restart-version">
-        v{version} has been installed. Restart the app to use the new features.
+        v{version} is now installed. Restart the app to use the new features.
       </p>
       <div className="flex justify-between">
         <ActionButton
