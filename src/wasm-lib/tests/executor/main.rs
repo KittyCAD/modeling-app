@@ -1704,14 +1704,14 @@ async fn serial_test_revolve_on_face() {
   |> extrude(10, %)
 
 const sketch001 = startSketchOn(box, "end")
-  |> startProfileAt([10, 5], %)
-  |> line([-10, 0], %)
-  |> line([0, 2], %)
-  |> line([10, 0], %)
+  |> startProfileAt([5, 10], %)
+  |> line([0, -10], %)
+  |> line([2, 0], %)
+  |> line([0, 10], %)
   |> close(%)
   |> revolve({
       axis: 'y',
-      angle: 90,
+      angle: -90,
   }, %)
 "#;
 
@@ -1752,13 +1752,12 @@ async fn serial_test_simple_revolve_sketch_on_edge() {
      |> revolve({axis: 'y', angle: 180}, %)
 
 const part002 = startSketchOn(part001, 'end')
-    |> startProfileAt([0, 0], %)
+    |> startProfileAt([4.5, -5], %)
     |> line([0, 5], %)
     |> line([5, 0], %)
     |> line([0, -5], %)
     |> close(%)
     |> extrude(5, %)
-
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
