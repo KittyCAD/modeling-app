@@ -242,6 +242,8 @@ pub struct Face {
     pub y_axis: Point3d,
     /// The z-axis (normal).
     pub z_axis: Point3d,
+    /// the face id the sketch is on
+    pub face_id: uuid::Uuid,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
@@ -1008,6 +1010,7 @@ pub async fn execute(
     // Before we even start executing the program, set the units.
     ctx.engine
         .send_modeling_cmd(
+            false,
             uuid::Uuid::new_v4(),
             SourceRange::default(),
             kittycad::types::ModelingCmd::SetSceneUnits {
@@ -1219,6 +1222,9 @@ pub async fn execute(
         }
     }
 
+    // Flush the batch queue.
+    ctx.engine.flush_batch(SourceRange::default()).await?;
+
     Ok(memory.clone())
 }
 
@@ -1323,14 +1329,13 @@ const newVar = myVar + 1"#;
             format!(
                 r#"const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> lineTo({{to:[2, 2], tag: "yo"}}, %)
+  |> lineTo([2, 2], %, "yo")
   |> lineTo([3, 1], %)
   |> angledLineThatIntersects({{
   angle: 180,
   intersectTag: 'yo',
   offset: {},
-  tag: "yo2"
-}}, %)
+}}, %, 'yo2')
 const intersect = segEndX('yo2', part001)"#,
                 offset
             )
@@ -1387,7 +1392,7 @@ const yo2 = hmm([identifierGuy + 5])"#;
         let ast = r#"const myVar = 3
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line({ to: [3, 4], tag: 'seg01' }, %)
+  |> line([3, 4], %, 'seg01')
   |> line([
   min(segLen('seg01', %), myVar),
   -legLen(segLen('seg01', %), myVar)
@@ -1402,7 +1407,7 @@ const part001 = startSketchOn('XY')
         let ast = r#"const myVar = 3
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line({ to: [3, 4], tag: 'seg01' }, %)
+  |> line([3, 4], %, 'seg01')
   |> line([
   min(segLen('seg01', %), myVar),
   legLen(segLen('seg01', %), myVar)
@@ -1822,12 +1827,14 @@ const bracket = startSketchOn('XY')
         fn opt_param(s: &'static str) -> Parameter {
             Parameter {
                 identifier: ident(s),
+                type_: None,
                 optional: true,
             }
         }
         fn req_param(s: &'static str) -> Parameter {
             Parameter {
                 identifier: ident(s),
+                type_: None,
                 optional: false,
             }
         }
@@ -1913,6 +1920,7 @@ const bracket = startSketchOn('XY')
                     body: Vec::new(),
                     non_code_meta: Default::default(),
                 },
+                return_type: None,
             };
             let actual = assign_args_to_params(func_expr, args, ProgramMemory::new());
             assert_eq!(

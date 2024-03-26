@@ -55,6 +55,7 @@ pub enum CompileError {
 }
 
 #[derive(Debug, thiserror::Error)]
+#[allow(clippy::large_enum_variant)]
 pub enum Error {
     #[error("{0}")]
     Compile(#[from] CompileError),
@@ -76,7 +77,7 @@ impl From<ExecutionFailed> for Error {
     ) -> Self {
         Self::Execution {
             error,
-            instruction,
+            instruction: instruction.expect("no instruction"),
             instruction_index,
         }
     }

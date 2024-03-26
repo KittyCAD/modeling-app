@@ -58,12 +58,9 @@ async fn inner_circle(
         SketchSurfaceOrGroup::SketchSurface(surface) => surface,
         SketchSurfaceOrGroup::SketchGroup(group) => group.on,
     };
-    let mut sketch_group = crate::std::sketch::inner_start_profile_at(
-        crate::std::sketch::LineData::Point([center[0] + radius, center[1]]),
-        sketch_surface,
-        args.clone(),
-    )
-    .await?;
+    let mut sketch_group =
+        crate::std::sketch::inner_start_profile_at([center[0] + radius, center[1]], sketch_surface, None, args.clone())
+            .await?;
 
     // Call arc.
     sketch_group = crate::std::sketch::inner_arc(
@@ -71,9 +68,9 @@ async fn inner_circle(
             angle_start: 0.0,
             angle_end: 360.0,
             radius,
-            tag,
         },
         sketch_group,
+        tag,
         args.clone(),
     )
     .await?;

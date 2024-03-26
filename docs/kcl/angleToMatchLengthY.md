@@ -17,7 +17,7 @@ angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup)
 ```js
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line({ to: [1, 3.82], tag: 'seg01' }, %)
+  |> line([1, 3.82], %, 'seg01')
   |> angledLineToX([
        -angleToMatchLengthY('seg01', 10, %),
        5
@@ -69,6 +69,8 @@ const part001 = startSketchOn('XY')
 },
 } |
 {
+	// the face id the sketch is on
+	faceId: uuid,
 	// The id of the face.
 	id: uuid,
 	// The original sketch group id of the object we are sketching on.

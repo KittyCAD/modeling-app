@@ -5,13 +5,12 @@ import {
   ConnectingType,
   ConnectingTypeGroup,
   DisconnectingType,
-  engineCommandManager,
-  EngineCommandManagerEvents,
-  EngineConnectionEvents,
+  EngineConnectionState,
   EngineConnectionStateType,
   ErrorType,
   initialConnectingTypeGroupState,
 } from '../lang/std/engineConnection'
+import { engineCommandManager } from '../lib/singletons'
 import Tooltip from './Tooltip'
 
 export enum NetworkHealthState {
@@ -82,35 +81,37 @@ const overallConnectionStateIcon: Record<
 }
 
 export function useNetworkStatus() {
-  const [steps, setSteps] = useState(
-    structuredClone(initialConnectingTypeGroupState)
-  )
+  const [steps, setSteps] = useState(initialConnectingTypeGroupState)
   const [internetConnected, setInternetConnected] = useState<boolean>(true)
   const [overallState, setOverallState] = useState<NetworkHealthState>(
-    NetworkHealthState.Disconnected
+    NetworkHealthState.Ok
   )
-  const [pingPongHealth, setPingPongHealth] = useState<'OK' | 'BAD'>('BAD')
   const [hasCopied, setHasCopied] = useState<boolean>(false)
 
   const [error, setError] = useState<ErrorType | undefined>(undefined)
 
-  const hasIssue = (i: [ConnectingType, boolean | undefined]) =>
-    i[1] === undefined ? i[1] : !i[1]
+  const issues: Record<ConnectingTypeGroup, boolean> = {
+    [ConnectingTypeGroup.WebSocket]: steps[ConnectingTypeGroup.WebSocket].some(
+      (a: [ConnectingType, boolean | undefined]) => a[1] === false
+    ),
+    [ConnectingTypeGroup.ICE]: steps[ConnectingTypeGroup.ICE].some(
+      (a: [ConnectingType, boolean | undefined]) => a[1] === false
+    ),
+    [ConnectingTypeGroup.WebRTC]: steps[ConnectingTypeGroup.WebRTC].some(
+      (a: [ConnectingType, boolean | undefined]) => a[1] === false
+    ),
+  }
 
-  const [issues, setIssues] = useState<
-    Record<ConnectingTypeGroup, boolean | undefined>
-  >({
-    [ConnectingTypeGroup.WebSocket]: undefined,
-    [ConnectingTypeGroup.ICE]: undefined,
-    [ConnectingTypeGroup.WebRTC]: undefined,
-  })
+  const hasIssues: boolean =
+    issues[ConnectingTypeGroup.WebSocket] ||
+    issues[ConnectingTypeGroup.ICE] ||
+    issues[ConnectingTypeGroup.WebRTC]
 
-  const [hasIssues, setHasIssues] = useState<boolean | undefined>(undefined)
   useEffect(() => {
     setOverallState(
       !internetConnected
         ? NetworkHealthState.Disconnected
-        : hasIssues || hasIssues === undefined
+        : hasIssues
         ? NetworkHealthState.Issue
         : NetworkHealthState.Ok
     )
@@ -133,59 +134,19 @@ export function useNetworkStatus() {
   }, [])
 
   useEffect(() => {
-    console.log(pingPongHealth)
-  }, [pingPongHealth])
-
-  useEffect(() => {
-    const issues = {
-      [ConnectingTypeGroup.WebSocket]: steps[
-        ConnectingTypeGroup.WebSocket
-      ].reduce(
-        (acc: boolean | undefined, a) =>
-          acc === true || acc === undefined ? acc : hasIssue(a),
-        false
-      ),
-      [ConnectingTypeGroup.ICE]: steps[ConnectingTypeGroup.ICE].reduce(
-        (acc: boolean | undefined, a) =>
-          acc === true || acc === undefined ? acc : hasIssue(a),
-        false
-      ),
-      [ConnectingTypeGroup.WebRTC]: steps[ConnectingTypeGroup.WebRTC].reduce(
-        (acc: boolean | undefined, a) =>
-          acc === true || acc === undefined ? acc : hasIssue(a),
-        false
-      ),
-    }
-    setIssues(issues)
-  }, [steps])
-
-  useEffect(() => {
-    setHasIssues(
-      issues[ConnectingTypeGroup.WebSocket] ||
-        issues[ConnectingTypeGroup.ICE] ||
-        issues[ConnectingTypeGroup.WebRTC]
-    )
-  }, [issues])
-
-  useEffect(() => {
-    const onPingPongChange = ({ detail: state }: CustomEvent) => {
-      setPingPongHealth(state)
-    }
-
-    const onConnectionStateChange = ({
-      detail: engineConnectionState,
-    }: CustomEvent) => {
-      setSteps((steps) => {
-        let nextSteps = structuredClone(steps)
+    engineCommandManager.onConnectionStateChange(
+      (engineConnectionState: EngineConnectionState) => {
+        let hasSetAStep = false
 
         if (
           engineConnectionState.type === EngineConnectionStateType.Connecting
         ) {
-          const groups = Object.values(nextSteps)
+          const groups = Object.values(steps)
           for (let group of groups) {
             for (let step of group) {
               if (step[0] !== engineConnectionState.value.type) continue
               step[1] = true
+              hasSetAStep = true
             }
           }
         }
@@ -193,7 +154,7 @@ export function useNetworkStatus() {
         if (
           engineConnectionState.type === EngineConnectionStateType.Disconnecting
         ) {
-          const groups = Object.values(nextSteps)
+          const groups = Object.values(steps)
           for (let group of groups) {
             for (let step of group) {
               if (
@@ -204,6 +165,7 @@ export function useNetworkStatus() {
                     ?.type === step[0]
                 ) {
                   step[1] = false
+                  hasSetAStep = true
                 }
               }
             }
@@ -214,50 +176,11 @@ export function useNetworkStatus() {
           }
         }
 
-        // Reset the state of all steps if we have disconnected.
-        if (
-          engineConnectionState.type === EngineConnectionStateType.Disconnected
-        ) {
-          return structuredClone(initialConnectingTypeGroupState)
+        if (hasSetAStep) {
+          setSteps(steps)
         }
-
-        return nextSteps
-      })
-    }
-
-    const onEngineAvailable = ({ detail: engineConnection }: CustomEvent) => {
-      engineConnection.addEventListener(
-        EngineConnectionEvents.PingPongChanged,
-        onPingPongChange as EventListener
-      )
-      engineConnection.addEventListener(
-        EngineConnectionEvents.ConnectionStateChanged,
-        onConnectionStateChange as EventListener
-      )
-    }
-
-    engineCommandManager.addEventListener(
-      EngineCommandManagerEvents.EngineAvailable,
-      onEngineAvailable as EventListener
+      }
     )
-
-    return () => {
-      engineCommandManager.removeEventListener(
-        EngineCommandManagerEvents.EngineAvailable,
-        onEngineAvailable as EventListener
-      )
-
-      // When the component is unmounted these should be assigned, but it's possible
-      // the component mounts and unmounts before engine is available.
-      engineCommandManager.engineConnection?.addEventListener(
-        EngineConnectionEvents.PingPongChanged,
-        onPingPongChange as EventListener
-      )
-      engineCommandManager.engineConnection?.addEventListener(
-        EngineConnectionEvents.ConnectionStateChanged,
-        onConnectionStateChange as EventListener
-      )
-    }
   }, [])
 
   return {
@@ -269,7 +192,6 @@ export function useNetworkStatus() {
     error,
     setHasCopied,
     hasCopied,
-    pingPongHealth,
   }
 }
 
@@ -334,18 +256,18 @@ export const NetworkHealthIndicator = () => {
                     size="lg"
                     icon={
                       hasIssueToIcon[
-                        String(issues[name as ConnectingTypeGroup])
+                        issues[name as ConnectingTypeGroup].toString()
                       ]
                     }
                     iconClassName={
                       hasIssueToIconColors[
-                        String(issues[name as ConnectingTypeGroup])
+                        issues[name as ConnectingTypeGroup].toString()
                       ].icon
                     }
                     bgClassName={
                       'rounded-sm ' +
                       hasIssueToIconColors[
-                        String(issues[name as ConnectingTypeGroup])
+                        issues[name as ConnectingTypeGroup].toString()
                       ].bg
                     }
                   />

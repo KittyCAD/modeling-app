@@ -11,7 +11,7 @@ import {
   NetworkHealthState,
   useNetworkStatus,
 } from 'components/NetworkHealthIndicator'
-import { useKclContext } from 'lang/KclSingleton'
+import { useKclContext } from 'lang/KclProvider'
 import { useStore } from 'useStore'
 
 // This might not be necessary, AnyStateMachine from xstate is working

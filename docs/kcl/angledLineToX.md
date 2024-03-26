@@ -9,7 +9,7 @@ Draw an angled line to a given x coordinate.
 
 
 ```js
-angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
+angledLineToX(data: AngledLineToData, sketch_group: SketchGroup, tag?: String) -> SketchGroup
 ```
 
 ### Examples
@@ -17,7 +17,7 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 ```js
 startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> angledLineToX({ angle: 45, to: 10, tag: "edge1" }, %)
+  |> angledLineToX({ angle: 45, to: 10 }, %, "edge1")
   |> line([10, 10], %)
   |> line([0, 10], %)
   |> close(%, "edge2")
@@ -32,12 +32,9 @@ startSketchOn('XY')
 {
 	// The angle of the line.
 	angle: number,
-	// The tag.
-	tag: string,
 	// The point to draw to.
 	to: number,
-} |
-[number, number]
+}
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```js
@@ -79,6 +76,8 @@ startSketchOn('XY')
 },
 } |
 {
+	// the face id the sketch is on
+	faceId: uuid,
 	// The id of the face.
 	id: uuid,
 	// The original sketch group id of the object we are sketching on.
@@ -203,6 +202,7 @@ startSketchOn('XY')
 },
 }
 ```
+* `tag`: `String` (OPTIONAL)
 
 ### Returns
 
@@ -246,6 +246,8 @@ startSketchOn('XY')
 },
 } |
 {
+	// the face id the sketch is on
+	faceId: uuid,
 	// The id of the face.
 	id: uuid,
 	// The original sketch group id of the object we are sketching on.

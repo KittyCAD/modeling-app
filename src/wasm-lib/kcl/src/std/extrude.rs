@@ -3,6 +3,7 @@
 use anyhow::Result;
 use derive_docs::stdlib;
 use schemars::JsonSchema;
+use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -113,8 +114,9 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
 
     // Create a hashmap for quick id lookup
     let mut face_id_map = std::collections::HashMap::new();
-    let mut start_cap_id = None;
-    let mut end_cap_id = None;
+    // creating fake ids for start and end caps is to make extrudes mock-execute safe
+    let mut start_cap_id = Some(Uuid::new_v4());
+    let mut end_cap_id = Some(Uuid::new_v4());
 
     for face_info in face_infos {
         match face_info.cap {
@@ -160,6 +162,18 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
                     new_value.push(extrude_surface);
                 }
             }
+        } else {
+            new_value.push(ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
+                position: sketch_group.position, // TODO should be for the extrude surface
+                rotation: sketch_group.rotation, // TODO should be for the extrude surface
+                // pushing this values with a fake face_id to make extrudes mock-execute safe
+                face_id: Uuid::new_v4(),
+                name: path.get_base().name.clone(),
+                geo_meta: GeoMeta {
+                    id: path.get_base().geo_meta.id,
+                    metadata: path.get_base().geo_meta.metadata.clone(),
+                },
+            }));
         }
     }
 
@@ -196,7 +210,7 @@ pub async fn get_extrude_wall_transform(args: Args) -> Result<MemoryItem, KclErr
 ///     |> startProfileAt([0, 0], %)
 ///     |> line([0, 10], %)
 ///     |> line([10, 0], %)
-///     |> line({to: [0, -10], tag: "surface"}, %)
+///     |> line([0, -10], %, "surface")
 ///     |> close(%)
 ///     |> extrude(5, %)
 ///

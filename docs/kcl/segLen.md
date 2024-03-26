@@ -17,7 +17,7 @@ segLen(segment_name: string, sketch_group: SketchGroup) -> number
 ```js
 startSketchOn("YZ")
   |> startProfileAt([0, 0], %)
-  |> line({ to: [5, 0], tag: "thing" }, %)
+  |> line([5, 0], %, "thing")
   |> line([5, 5], %)
   |> line([0, segLen("thing", %)], %)
   |> close(%)
@@ -67,6 +67,8 @@ startSketchOn("YZ")
 },
 } |
 {
+	// the face id the sketch is on
+	faceId: uuid,
 	// The id of the face.
 	id: uuid,
 	// The original sketch group id of the object we are sketching on.

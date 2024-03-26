@@ -7,7 +7,7 @@ import React, { createContext, useEffect } from 'react'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
 import { settingsMachine } from 'machines/settingsMachine'
 import { toast } from 'react-hot-toast'
-import { setThemeClass, Themes } from 'lib/theme'
+import { getThemeColorForEngine, setThemeClass, Themes } from 'lib/theme'
 import decamelize from 'decamelize'
 import {
   AnyStateMachine,
@@ -19,8 +19,8 @@ import {
 import { isTauri } from 'lib/isTauri'
 import { settingsCommandBarConfig } from 'lib/commandBarConfigs/settingsCommandConfig'
 import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
-import { sceneInfra } from 'clientSideScene/sceneInfra'
-import { kclManager } from 'lang/KclSingleton'
+import { kclManager, sceneInfra, engineCommandManager } from 'lib/singletons'
+import { v4 as uuidv4 } from 'uuid'
 import { IndexLoaderData } from 'lib/types'
 import { settings } from 'lib/settings/initialSettings'
 import { writeToSettingsFiles } from 'lib/tauriFS'
@@ -100,6 +100,16 @@ export const SettingsAuthProviderBase = ({
               : context.modeling.defaultUnit.current
           sceneInfra.baseUnit = newBaseUnit
         },
+        setEngineTheme: (context) => {
+          engineCommandManager.sendSceneCommand({
+            cmd_id: uuidv4(),
+            type: 'modeling_cmd_req',
+            cmd: {
+              type: 'set_background_color',
+              color: getThemeColorForEngine(context.app.theme.current),
+            },
+          })
+        },
         toastSuccess: (context, event) => {
           const [category, setting] = event.type
             .replace(/^set./, '')
@@ -161,7 +171,6 @@ export const SettingsAuthProviderBase = ({
     actions: {
       goToSignInPage: () => {
         navigate(paths.SIGN_IN)
-
         logout()
       },
       goToIndexPage: () => {

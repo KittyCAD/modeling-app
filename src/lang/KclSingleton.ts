@@ -1,10 +1,9 @@
 import { executeAst, executeCode } from 'useStore'
 import { Selections } from 'lib/selections'
 import { KCLError } from './errors'
-import {
-  EngineCommandManager,
-  engineCommandManager,
-} from './std/engineConnection'
+import { v4 as uuidv4 } from 'uuid'
+import { EngineCommandManager } from './std/engineConnection'
+
 import { deferExecution } from 'lib/utils'
 import {
   CallExpression,
@@ -14,20 +13,19 @@ import {
   Program,
   ProgramMemory,
   recast,
+  SketchGroup,
+  ExtrudeGroup,
 } from 'lang/wasm'
 import { bracket } from 'lib/exampleKcl'
-import { createContext, useContext, useEffect, useState } from 'react'
 import { getNodeFromPath } from './queryAst'
-import { type IndexLoaderData } from 'lib/types'
-import { Params, useLoaderData } from 'react-router-dom'
+import { Params } from 'react-router-dom'
 import { isTauri } from 'lib/isTauri'
 import { writeTextFile } from '@tauri-apps/api/fs'
 import { toast } from 'react-hot-toast'
-import { useParams } from 'react-router-dom'
 
 const PERSIST_CODE_TOKEN = 'persistCode'
 
-class KclManager {
+export class KclManager {
   private _code = bracket
   private _ast: Program = {
     body: [],
@@ -211,7 +209,7 @@ class KclManager {
       console.error('error parsing code', e)
       if (e instanceof KCLError) {
         this.kclErrors = [e]
-        if (e.msg === 'file is empty') engineCommandManager?.endSession()
+        if (e.msg === 'file is empty') this.engineCommandManager?.endSession()
       }
       return null
     }
@@ -235,7 +233,6 @@ class KclManager {
     updateCode = false,
     executionId?: number
   ) {
-    console.trace('executeAst')
     const currentExecutionId = executionId || Date.now()
     this._cancelTokens.set(currentExecutionId, false)
 
@@ -245,6 +242,7 @@ class KclManager {
       ast,
       engineCommandManager: this.engineCommandManager,
     })
+    enterEditMode(programMemory, this.engineCommandManager)
     this.isExecuting = false
     // Check the cancellation token for this execution before applying side effects
     if (this._cancelTokens.get(currentExecutionId)) {
@@ -259,7 +257,7 @@ class KclManager {
       this.code = recast(ast)
     }
     this._executeCallback()
-    engineCommandManager.addCommandLog({
+    this.engineCommandManager.addCommandLog({
       type: 'execution-done',
       data: null,
     })
@@ -292,11 +290,11 @@ class KclManager {
     this._kclErrors = errors
     this._programMemory = programMemory
     if (updates !== 'codeAndArtifactRanges') return
-    Object.entries(engineCommandManager.artifactMap).forEach(
+    Object.entries(this.engineCommandManager.artifactMap).forEach(
       ([commandId, artifact]) => {
         if (!artifact.pathToNode) return
         const node = getNodeFromPath<CallExpression>(
-          kclManager.ast,
+          this.ast,
           artifact.pathToNode,
           'CallExpression'
         ).node
@@ -304,14 +302,14 @@ class KclManager {
         const [oldStart, oldEnd] = artifact.range
         if (oldStart === 0 && oldEnd === 0) return
         if (oldStart === node.start && oldEnd === node.end) return
-        engineCommandManager.artifactMap[commandId].range = [
+        this.engineCommandManager.artifactMap[commandId].range = [
           node.start,
           node.end,
         ]
       }
     )
   }
-  async executeCode(code?: string, executionId?: number) {
+  executeCode = async (code?: string, executionId?: number) => {
     const currentExecutionId = executionId || Date.now()
     this._cancelTokens.set(currentExecutionId, false)
     if (this._cancelTokens.get(currentExecutionId)) {
@@ -321,7 +319,7 @@ class KclManager {
     await this.ensureWasmInit()
     await this?.engineCommandManager?.waitForReady
     const result = await executeCode({
-      engineCommandManager,
+      engineCommandManager: this.engineCommandManager,
       code: code || this._code,
       lastAst: this._ast,
       force: false,
@@ -333,6 +331,7 @@ class KclManager {
     }
     if (!result.isChange) return
     const { logs, errors, programMemory, ast } = result
+    enterEditMode(programMemory, this.engineCommandManager)
     this.logs = logs
     this.kclErrors = errors
     this.programMemory = programMemory
@@ -446,71 +445,6 @@ class KclManager {
   }
 }
 
-export const kclManager = new KclManager(engineCommandManager)
-
-const KclContext = createContext({
-  code: kclManager.code,
-  programMemory: kclManager.programMemory,
-  ast: kclManager.ast,
-  isExecuting: kclManager.isExecuting,
-  errors: kclManager.kclErrors,
-  logs: kclManager.logs,
-  wasmInitFailed: kclManager.wasmInitFailed,
-})
-
-export function useKclContext() {
-  return useContext(KclContext)
-}
-
-export function KclContextProvider({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  // If we try to use this component anywhere but under the paths.FILE route it will fail
-  // Because useLoaderData assumes we are on within it's context.
-  const { code: loadedCode } = useLoaderData() as IndexLoaderData
-  const [code, setCode] = useState(loadedCode || kclManager.code)
-  const [programMemory, setProgramMemory] = useState(kclManager.programMemory)
-  const [ast, setAst] = useState(kclManager.ast)
-  const [isExecuting, setIsExecuting] = useState(false)
-  const [errors, setErrors] = useState<KCLError[]>([])
-  const [logs, setLogs] = useState<string[]>([])
-  const [wasmInitFailed, setWasmInitFailed] = useState(false)
-
-  useEffect(() => {
-    kclManager.registerCallBacks({
-      setCode,
-      setProgramMemory,
-      setAst,
-      setLogs,
-      setKclErrors: setErrors,
-      setIsExecuting,
-      setWasmInitFailed,
-    })
-  }, [])
-
-  const params = useParams()
-  useEffect(() => {
-    kclManager.setParams(params)
-  }, [params])
-  return (
-    <KclContext.Provider
-      value={{
-        code,
-        programMemory,
-        ast,
-        isExecuting,
-        errors,
-        logs,
-        wasmInitFailed,
-      }}
-    >
-      {children}
-    </KclContext.Provider>
-  )
-}
-
 function safeLSGetItem(key: string) {
   if (typeof window === 'undefined') return null
   return localStorage?.getItem(key)
@@ -519,4 +453,22 @@ function safeLSGetItem(key: string) {
 function safteLSSetItem(key: string, value: string) {
   if (typeof window === 'undefined') return
   localStorage?.setItem(key, value)
+}
+
+function enterEditMode(
+  programMemory: ProgramMemory,
+  engineCommandManager: EngineCommandManager
+) {
+  const firstSketchOrExtrudeGroup = Object.values(programMemory.root).find(
+    (node) => node.type === 'ExtrudeGroup' || node.type === 'SketchGroup'
+  ) as SketchGroup | ExtrudeGroup
+  firstSketchOrExtrudeGroup &&
+    engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'edit_mode_enter',
+        target: firstSketchOrExtrudeGroup.id,
+      },
+    })
 }

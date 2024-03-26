@@ -17,7 +17,7 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag?: String) -> Sketch
 ```js
 startSketchOn('-YZ')
   |> startProfileAt([0, 0], %)
-  |> line({ to: [10, 10], tag: "edge0" }, %)
+  |> line([10, 10], %, "edge0")
   |> tangentialArcTo([10, 0], %)
   |> close(%)
 ```
@@ -65,6 +65,8 @@ startSketchOn('-YZ')
 },
 } |
 {
+	// the face id the sketch is on
+	faceId: uuid,
 	// The id of the face.
 	id: uuid,
 	// The original sketch group id of the object we are sketching on.
@@ -233,6 +235,8 @@ startSketchOn('-YZ')
 },
 } |
 {
+	// the face id the sketch is on
+	faceId: uuid,
 	// The id of the face.
 	id: uuid,
 	// The original sketch group id of the object we are sketching on.

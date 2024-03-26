@@ -19,7 +19,7 @@ import { isTauri } from 'lib/isTauri'
 import { useNavigate } from 'react-router-dom'
 import { paths } from 'lib/paths'
 import { useEffect } from 'react'
-import { kclManager } from 'lang/KclSingleton'
+import { kclManager } from 'lib/singletons'
 import { sep } from '@tauri-apps/api/path'
 import { APP_NAME } from 'lib/constants'
 

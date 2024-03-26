@@ -843,7 +843,7 @@ async fn test_kcl_lsp_semantic_tokens() {
     if let tower_lsp::lsp_types::SemanticTokensResult::Tokens(semantic_tokens) = semantic_tokens {
         assert_eq!(semantic_tokens.data.len(), 2);
         assert_eq!(semantic_tokens.data[0].length, 13);
-        assert_eq!(semantic_tokens.data[0].token_type, 7);
+        assert_eq!(semantic_tokens.data[0].token_type, 8);
         assert_eq!(semantic_tokens.data[1].length, 4);
         assert_eq!(semantic_tokens.data[1].delta_start, 14);
         assert_eq!(semantic_tokens.data[1].token_type, 3);
@@ -1105,6 +1105,7 @@ async fn test_copilot_lsp_set_editor_info() {
 }
 
 #[tokio::test]
+#[ignore] // Ignore til hosted model is faster (@jessfraz working on).
 async fn test_copilot_lsp_completions_raw() {
     let server = copilot_lsp_server().unwrap();
 
@@ -1124,24 +1125,13 @@ async fn test_copilot_lsp_completions_raw() {
     let completions = server
         .get_completions(
             "kcl".to_string(),
-            r#"// Create a cube.
-fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
-    |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
-
-  return sg
-}
-
-const part001 = cube([0,0], 20)
-    |> close(%)
-    |> extrude(20, %)
-
-"#
+            r#"const bracket = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  "#
             .to_string(),
-            r#""#.to_string(),
+            r#"  |> close(%)
+  |> extrude(10, %)"#
+                .to_string(),
         )
         .await
         .unwrap();
@@ -1154,24 +1144,13 @@ const part001 = cube([0,0], 20)
     let completions_hit_cache = server
         .get_completions(
             "kcl".to_string(),
-            r#"// Create a cube.
-fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
-    |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
-
-  return sg
-}
-
-const part001 = cube([0,0], 20)
-    |> close(%)
-    |> extrude(20, %)
-
-"#
+            r#"const bracket = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  "#
             .to_string(),
-            r#""#.to_string(),
+            r#"  |> close(%)
+  |> extrude(10, %)"#
+                .to_string(),
         )
         .await
         .unwrap();
@@ -1180,6 +1159,7 @@ const part001 = cube([0,0], 20)
 }
 
 #[tokio::test]
+#[ignore] // Ignore til hosted model is faster (@jessfraz working on).
 async fn test_copilot_lsp_completions() {
     let server = copilot_lsp_server().unwrap();
 
@@ -1202,23 +1182,13 @@ async fn test_copilot_lsp_completions() {
             insert_spaces: true,
             language_id: "kcl".to_string(),
             path: "file:///test.copilot".to_string(),
-            position: crate::lsp::copilot::types::CopilotPosition { line: 0, character: 1 },
+            position: crate::lsp::copilot::types::CopilotPosition { line: 3, character: 3 },
             relative_path: "test.copilot".to_string(),
-            source: r#"// Create a cube.
-fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
-    |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
-
-  return sg
-}
-
-const part001 = cube([0,0], 20)
-    |> close(%)
-    |> extrude(20, %)
-
+            source: r#"const bracket = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  
+  |> close(%)
+  |> extrude(10, %)
 "#
             .to_string(),
             tab_size: 4,

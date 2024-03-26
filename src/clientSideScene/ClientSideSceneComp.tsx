@@ -4,9 +4,10 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { cameraMouseDragGuards } from 'lib/cameraControls'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useStore } from 'useStore'
-import { DEBUG_SHOW_BOTH_SCENES, sceneInfra } from './sceneInfra'
+import { DEBUG_SHOW_BOTH_SCENES } from './sceneInfra'
 import { ReactCameraProperties } from './CameraControls'
 import { throttle } from 'lib/utils'
+import { sceneInfra } from 'lib/singletons'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)

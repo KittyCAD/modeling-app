@@ -9,7 +9,7 @@ Start a profile at a given point.
 
 
 ```js
-startProfileAt(data: LineData, sketch_surface: SketchSurface) -> SketchGroup
+startProfileAt(to: [number], sketch_surface: SketchSurface, tag?: String) -> SketchGroup
 ```
 
 ### Examples
@@ -22,16 +22,7 @@ startSketchOn('XY')
 
 ### Arguments
 
-* `data`: `LineData` - Data to draw a line. (REQUIRED)
-```js
-{
-	// The tag.
-	tag: string,
-	// The to point.
-	to: [number, number],
-} |
-[number, number]
-```
+* `to`: `[number]` (REQUIRED)
 * `sketch_surface`: `SketchSurface` - A sketch group type. (REQUIRED)
 ```js
 {
@@ -66,6 +57,8 @@ startSketchOn('XY')
 },
 } |
 {
+	// the face id the sketch is on
+	faceId: uuid,
 	// The id of the face.
 	id: uuid,
 	// The original sketch group id of the object we are sketching on.
@@ -93,6 +86,7 @@ startSketchOn('XY')
 },
 }
 ```
+* `tag`: `String` (OPTIONAL)
 
 ### Returns
 
@@ -136,6 +130,8 @@ startSketchOn('XY')
 },
 } |
 {
+	// the face id the sketch is on
+	faceId: uuid,
 	// The id of the face.
 	id: uuid,
 	// The original sketch group id of the object we are sketching on.

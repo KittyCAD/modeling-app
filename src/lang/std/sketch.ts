@@ -53,40 +53,34 @@ export function getCoordsFromPaths(skGroup: SketchGroup, index = 0): Coords2d {
 
 export function createFirstArg(
   sketchFn: ToolTip,
-  val: Value | [Value, Value] | [Value, Value, Value],
-  tag?: Value
+  val: Value | [Value, Value] | [Value, Value, Value]
 ): Value {
-  if (!tag) {
-    if (Array.isArray(val)) {
-      return createArrayExpression(val)
-    }
-    return val
-  }
   if (Array.isArray(val)) {
-    if (['line', 'lineTo'].includes(sketchFn))
-      return createObjectExpression({ to: createArrayExpression(val), tag })
     if (
-      ['angledLine', 'angledLineOfXLength', 'angledLineOfYLength'].includes(
-        sketchFn
-      )
+      [
+        'angledLine',
+        'angledLineOfXLength',
+        'angledLineOfYLength',
+        'angledLineToX',
+        'angledLineToY',
+        'line',
+        'lineTo',
+      ].includes(sketchFn)
     )
-      return createObjectExpression({ angle: val[0], length: val[1], tag })
-    if (['angledLineToX', 'angledLineToY'].includes(sketchFn))
-      return createObjectExpression({ angle: val[0], to: val[1], tag })
+      return createArrayExpression(val)
     if (['angledLineThatIntersects'].includes(sketchFn) && val[2])
       return createObjectExpression({
         angle: val[0],
         offset: val[1],
         intersectTag: val[2],
-        tag,
       })
   } else {
-    if (['xLine', 'yLine'].includes(sketchFn))
-      return createObjectExpression({ length: val, tag })
-    if (['xLineTo', 'yLineTo'].includes(sketchFn))
-      return createObjectExpression({ to: val, tag })
-    if (['startSketchAt'].includes(sketchFn))
-      return createObjectExpression({ to: val, tag })
+    if (
+      ['startSketchAt', 'xLine', 'xLineTo', 'yLine', 'yLineTo'].includes(
+        sketchFn
+      )
+    )
+      return val
   }
   throw new Error('all sketch line types should have been covered')
 }
@@ -155,7 +149,7 @@ export const lineTo: SketchLineHelper = {
       pathToNode,
     }
   },
-  addTag: addTagWithTo('default'),
+  addTag: addTag(),
 }
 
 export const line: SketchLineHelper = {
@@ -246,7 +240,7 @@ export const line: SketchLineHelper = {
       pathToNode,
     }
   },
-  addTag: addTagWithTo('default'),
+  addTag: addTag(),
 }
 
 export const xLineTo: SketchLineHelper = {
@@ -294,7 +288,7 @@ export const xLineTo: SketchLineHelper = {
       pathToNode,
     }
   },
-  addTag: addTagWithTo('default'),
+  addTag: addTag(),
 }
 
 export const yLineTo: SketchLineHelper = {
@@ -342,7 +336,7 @@ export const yLineTo: SketchLineHelper = {
       pathToNode,
     }
   },
-  addTag: addTagWithTo('default'),
+  addTag: addTag(),
 }
 
 export const xLine: SketchLineHelper = {
@@ -392,7 +386,7 @@ export const xLine: SketchLineHelper = {
       pathToNode,
     }
   },
-  addTag: addTagWithTo('length'),
+  addTag: addTag(),
 }
 
 export const yLine: SketchLineHelper = {
@@ -436,7 +430,7 @@ export const yLine: SketchLineHelper = {
       pathToNode,
     }
   },
-  addTag: addTagWithTo('length'),
+  addTag: addTag(),
 }
 
 export const tangentialArcTo: SketchLineHelper = {
@@ -516,7 +510,7 @@ export const tangentialArcTo: SketchLineHelper = {
     }
   },
   // TODO copy-paste from angledLine
-  addTag: addTagWithTo('angleLength'),
+  addTag: addTag(),
 }
 export const angledLine: SketchLineHelper = {
   add: ({
@@ -582,7 +576,7 @@ export const angledLine: SketchLineHelper = {
       pathToNode,
     }
   },
-  addTag: addTagWithTo('angleLength'),
+  addTag: addTag(),
 }
 
 export const angledLineOfXLength: SketchLineHelper = {
@@ -655,7 +649,7 @@ export const angledLineOfXLength: SketchLineHelper = {
       pathToNode,
     }
   },
-  addTag: addTagWithTo('angleLength'),
+  addTag: addTag(),
 }
 
 export const angledLineOfYLength: SketchLineHelper = {
@@ -729,7 +723,7 @@ export const angledLineOfYLength: SketchLineHelper = {
       pathToNode,
     }
   },
-  addTag: addTagWithTo('angleLength'),
+  addTag: addTag(),
 }
 
 export const angledLineToX: SketchLineHelper = {
@@ -798,7 +792,7 @@ export const angledLineToX: SketchLineHelper = {
       pathToNode,
     }
   },
-  addTag: addTagWithTo('angleTo'),
+  addTag: addTag(),
 }
 
 export const angledLineToY: SketchLineHelper = {
@@ -868,7 +862,7 @@ export const angledLineToY: SketchLineHelper = {
       pathToNode,
     }
   },
-  addTag: addTagWithTo('angleTo'),
+  addTag: addTag(),
 }
 
 export const angledLineThatIntersects: SketchLineHelper = {
@@ -957,7 +951,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
       pathToNode,
     }
   },
-  addTag: addTagWithTo('angleTo'), // TODO might be wrong
+  addTag: addTag(), // TODO might be wrong
 }
 
 export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
@@ -1161,11 +1155,14 @@ export function addTagForSketchOnFace(
   a: ModifyAstBase,
   expressionName: string
 ) {
+  if (expressionName === 'close') {
+    return addTag(1)(a)
+  }
   if (expressionName in sketchLineHelperMap) {
     const { addTag } = sketchLineHelperMap[expressionName]
     return addTag(a)
   }
-  throw new Error('not a sketch line helper')
+  throw new Error(`"${expressionName}" is not a sketch line helper`)
 }
 
 function isAngleLiteral(lineArugement: Value): boolean {
@@ -1180,77 +1177,32 @@ function isAngleLiteral(lineArugement: Value): boolean {
 
 type addTagFn = (a: ModifyAstBase) => { modifiedAst: Program; tag: string }
 
-function addTagWithTo(
-  argType: 'angleLength' | 'angleTo' | 'default' | 'length'
-): addTagFn {
+function addTag(tagIndex = 2): addTagFn {
   return ({ node, pathToNode }) => {
-    let tagName = findUniqueName(node, 'seg', 2)
     const _node = { ...node }
-    const { node: callExpression } = getNodeFromPath<CallExpression>(
+    const { node: primaryCallExp } = getNodeFromPath<CallExpression>(
       _node,
-      pathToNode
+      pathToNode,
+      'CallExpression'
     )
-    const firstArg = callExpression.arguments?.[0]
-    if (firstArg.type === 'ObjectExpression') {
-      const existingTagName = firstArg.properties?.find(
-        (prop) => prop.key.name === 'tag'
-      )
-      if (!existingTagName) {
-        mutateObjExpProp(
-          callExpression.arguments?.[0],
-          createLiteral(tagName),
-          'tag'
-        )
-      } else {
-        tagName = `${(existingTagName.value as Literal).value}`
-      }
+    // Tag is always 3rd expression now, using arg index feels brittle
+    // but we can come up with a better way to identify tag later.
+    const thirdArg = primaryCallExp.arguments?.[tagIndex]
+    const tagLiteral =
+      thirdArg || (createLiteral(findUniqueName(_node, 'seg', 2)) as Literal)
+    const isTagExisting = !!thirdArg
+    if (!isTagExisting) {
+      primaryCallExp.arguments[tagIndex] = tagLiteral
+    }
+    if ('value' in tagLiteral) {
+      // Now TypeScript knows tagLiteral has a value property
       return {
         modifiedAst: _node,
-        tag: tagName,
+        tag: String(tagLiteral.value),
       }
+    } else {
+      throw new Error('Unable to assign tag without value')
     }
-    if (firstArg.type === 'ArrayExpression') {
-      const objExp =
-        argType === 'default'
-          ? createObjectExpression({
-              to: firstArg,
-              tag: createLiteral(tagName),
-            })
-          : argType === 'angleLength'
-          ? createObjectExpression({
-              angle: firstArg.elements[0],
-              length: firstArg.elements[1],
-              tag: createLiteral(tagName),
-            })
-          : createObjectExpression({
-              angle: firstArg.elements[0],
-              to: firstArg.elements[1],
-              tag: createLiteral(tagName),
-            })
-      callExpression.arguments[0] = objExp
-      return {
-        modifiedAst: _node,
-        tag: tagName,
-      }
-    }
-    if (firstArg.type === 'Literal') {
-      const objExp =
-        argType === 'length'
-          ? createObjectExpression({
-              length: firstArg,
-              tag: createLiteral(tagName),
-            })
-          : createObjectExpression({
-              to: firstArg,
-              tag: createLiteral(tagName),
-            })
-      callExpression.arguments[0] = objExp
-      return {
-        modifiedAst: _node,
-        tag: tagName,
-      }
-    }
-    throw new Error('lineTo must be called with an object or array')
   }
 }
 

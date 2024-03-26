@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use winnow::{
     combinator::{alt, delimited, opt, peek, preceded, repeat, separated, terminated},
     dispatch,
@@ -6,18 +8,19 @@ use winnow::{
     token::{any, one_of},
 };
 
-use super::{math::BinaryExpressionToken, PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR};
 use crate::{
     ast::types::{
         ArrayExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression, CommentStyle,
-        ExpressionStatement, FunctionExpression, Identifier, Literal, LiteralIdentifier, LiteralValue,
-        MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty,
-        Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, UnaryExpression, UnaryOperator, Value,
-        VariableDeclaration, VariableDeclarator, VariableKind,
+        ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression, Identifier, Literal, LiteralIdentifier,
+        LiteralValue, MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression,
+        ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, UnaryExpression,
+        UnaryOperator, Value, VariableDeclaration, VariableDeclarator, VariableKind,
     },
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
-    parser::parser_impl::error::ContextError,
+    parser::{
+        math::BinaryExpressionToken, parser_impl::error::ContextError, PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
+    },
     token::{Token, TokenType},
 };
 
@@ -480,6 +483,9 @@ fn function_expression(i: TokenSlice) -> PResult<FunctionExpression> {
     ignore_whitespace(i);
     big_arrow(i)?;
     ignore_whitespace(i);
+    // Optional type arguments.
+    let return_type = opt(argument_type).parse_next(i)?;
+    ignore_whitespace(i);
     open_brace(i)?;
     let body = function_body(i)?;
     let end = close_brace(i)?.end;
@@ -488,6 +494,7 @@ fn function_expression(i: TokenSlice) -> PResult<FunctionExpression> {
         end,
         params,
         body,
+        return_type,
     })
 }
 
@@ -1210,6 +1217,11 @@ fn colon(i: TokenSlice) -> PResult<()> {
     Ok(())
 }
 
+fn question_mark(i: TokenSlice) -> PResult<()> {
+    TokenType::QuestionMark.parse_from(i)?;
+    Ok(())
+}
+
 /// Parse a comma, optionally followed by some whitespace.
 fn comma_sep(i: TokenSlice) -> PResult<()> {
     (opt(whitespace), comma, opt(whitespace))
@@ -1225,34 +1237,74 @@ fn arguments(i: TokenSlice) -> PResult<Vec<Value>> {
         .parse_next(i)
 }
 
-fn required_param(i: TokenSlice) -> PResult<Token> {
-    any.verify(|token: &Token| !matches!(token.token_type, TokenType::Brace) || token.value != ")")
-        .parse_next(i)
+/// A type of a function argument.
+/// This can be:
+/// - a primitive type, e.g. 'number' or 'string' or 'bool'
+/// - an array type, e.g. 'number[]' or 'string[]' or 'bool[]'
+/// - an object type, e.g. '{x: number, y: number}' or '{name: string, age: number}'
+fn argument_type(i: TokenSlice) -> PResult<FnArgType> {
+    let type_ = alt((
+        // Object types
+        (open_brace, parameters, close_brace).map(|(_, params, _)| Ok(FnArgType::Object { properties: params })),
+        // Array types
+        (one_of(TokenType::Type), open_bracket, close_bracket).map(|(token, _, _)| {
+            FnArgPrimitive::from_str(&token.value)
+                .map(FnArgType::Array)
+                .map_err(|err| {
+                    KclError::Syntax(KclErrorDetails {
+                        source_ranges: token.as_source_ranges(),
+                        message: format!("Invalid type: {}", err),
+                    })
+                })
+        }),
+        // Primitive types
+        one_of(TokenType::Type).map(|token: Token| {
+            FnArgPrimitive::from_str(&token.value)
+                .map(FnArgType::Primitive)
+                .map_err(|err| {
+                    KclError::Syntax(KclErrorDetails {
+                        source_ranges: token.as_source_ranges(),
+                        message: format!("Invalid type: {}", err),
+                    })
+                })
+        }),
+    ))
+    .parse_next(i)?
+    .map_err(|e: KclError| ErrMode::Backtrack(ContextError::from(e)))?;
+    Ok(type_)
 }
 
-fn optional_param(i: TokenSlice) -> PResult<Token> {
-    let token = required_param.parse_next(i)?;
-    let _question_mark = one_of(TokenType::QuestionMark).parse_next(i)?;
-    Ok(token)
+fn parameter(i: TokenSlice) -> PResult<(Token, std::option::Option<FnArgType>, bool)> {
+    let (arg_name, optional, _, _, _, type_) = (
+        any.verify(|token: &Token| !matches!(token.token_type, TokenType::Brace) || token.value != ")"),
+        opt(question_mark),
+        opt(whitespace),
+        opt(colon),
+        opt(whitespace),
+        opt(argument_type),
+    )
+        .parse_next(i)?;
+    Ok((arg_name, type_, optional.is_some()))
 }
 
 /// Parameters are declared in a function signature, and used within a function.
 fn parameters(i: TokenSlice) -> PResult<Vec<Parameter>> {
     // Get all tokens until the next ), because that ends the parameter list.
-    let candidates: Vec<_> = separated(
-        0..,
-        alt((optional_param.map(|t| (t, true)), required_param.map(|t| (t, false)))),
-        comma_sep,
-    )
-    .context(expected("function parameters"))
-    .parse_next(i)?;
+    let candidates: Vec<_> = separated(0.., parameter, comma_sep)
+        .context(expected("function parameters"))
+        .parse_next(i)?;
 
     // Make sure all those tokens are valid parameters.
     let params: Vec<Parameter> = candidates
         .into_iter()
-        .map(|(token, optional)| {
-            let identifier = Identifier::try_from(token).and_then(Identifier::into_valid_binding_name)?;
-            Ok(Parameter { identifier, optional })
+        .map(|(arg_name, type_, optional)| {
+            let identifier = Identifier::try_from(arg_name).and_then(Identifier::into_valid_binding_name)?;
+
+            Ok(Parameter {
+                identifier,
+                type_,
+                optional,
+            })
         })
         .collect::<Result<_, _>>()
         .map_err(|e: KclError| ErrMode::Backtrack(ContextError::from(e)))?;
@@ -1500,7 +1552,8 @@ const mySk1 = startSketchAt([0, 0])"#;
                             value: NonCodeValue::NewLine
                         }],
                     },
-                }
+                },
+                return_type: None,
             }
         );
     }
@@ -2382,6 +2435,7 @@ e
                         end: 0,
                         name: "a".to_owned(),
                     },
+                    type_: None,
                     optional: true,
                 }],
                 true,
@@ -2393,6 +2447,7 @@ e
                         end: 0,
                         name: "a".to_owned(),
                     },
+                    type_: None,
                     optional: false,
                 }],
                 true,
@@ -2405,6 +2460,7 @@ e
                             end: 0,
                             name: "a".to_owned(),
                         },
+                        type_: None,
                         optional: false,
                     },
                     Parameter {
@@ -2413,6 +2469,7 @@ e
                             end: 0,
                             name: "b".to_owned(),
                         },
+                        type_: None,
                         optional: true,
                     },
                 ],
@@ -2426,6 +2483,7 @@ e
                             end: 0,
                             name: "a".to_owned(),
                         },
+                        type_: None,
                         optional: true,
                     },
                     Parameter {
@@ -2434,6 +2492,7 @@ e
                             end: 0,
                             name: "b".to_owned(),
                         },
+                        type_: None,
                         optional: false,
                     },
                 ],
@@ -2903,9 +2962,9 @@ mod snapshot_tests {
     snapshot_test!(
         af,
         r#"const mySketch = startSketchAt([0,0])
-        |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
+        |> lineTo([0, 1], %, 'myPath')
         |> lineTo([1, 1], %)
-        |> lineTo({ to: [1,0], tag: "rightPath" }, %)
+        |> lineTo([1, 0], %, 'rightPath')
         |> close(%)"#
     );
     snapshot_test!(

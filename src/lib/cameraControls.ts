@@ -39,7 +39,7 @@ export interface MouseGuard {
   rotate: MouseGuardHandler
 }
 
-const butName = (e: React.MouseEvent) => ({
+export const butName = (e: React.MouseEvent) => ({
   middle: !!(e.buttons & 4) || e.button === 1,
   right: !!(e.buttons & 2) || e.button === 2,
   left: !!(e.buttons & 1) || e.button === 0,

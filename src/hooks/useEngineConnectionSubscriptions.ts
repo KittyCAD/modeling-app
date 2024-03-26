@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useStore } from 'useStore'
-import { engineCommandManager } from '../lang/std/engineConnection'
+import { engineCommandManager } from 'lib/singletons'
 import { useModelingContext } from './useModelingContext'
 import { getEventForSelectWithPoint } from 'lib/selections'
 

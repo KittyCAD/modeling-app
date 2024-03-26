@@ -9,7 +9,7 @@ Draw a line on the x-axis.
 
 
 ```js
-xLine(data: AxisLineData, sketch_group: SketchGroup) -> SketchGroup
+xLine(length: number, sketch_group: SketchGroup, tag?: String) -> SketchGroup
 ```
 
 ### Examples
@@ -25,16 +25,7 @@ startSketchOn('YZ')
 
 ### Arguments
 
-* `data`: `AxisLineData` - Data to draw a line on an axis. (REQUIRED)
-```js
-{
-	// The length of the line.
-	length: number,
-	// The tag.
-	tag: string,
-} |
-number
-```
+* `length`: `number` (REQUIRED)
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
 ```js
 {
@@ -75,6 +66,8 @@ number
 },
 } |
 {
+	// the face id the sketch is on
+	faceId: uuid,
 	// The id of the face.
 	id: uuid,
 	// The original sketch group id of the object we are sketching on.
@@ -199,6 +192,7 @@ number
 },
 }
 ```
+* `tag`: `String` (OPTIONAL)
 
 ### Returns
 
@@ -242,6 +236,8 @@ number
 },
 } |
 {
+	// the face id the sketch is on
+	faceId: uuid,
 	// The id of the face.
 	id: uuid,
 	// The original sketch group id of the object we are sketching on.

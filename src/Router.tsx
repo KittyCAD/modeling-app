@@ -28,7 +28,7 @@ import {
 import { CommandBarProvider } from 'components/CommandBar/CommandBarProvider'
 import SettingsAuthProvider from 'components/SettingsAuthProvider'
 import LspProvider from 'components/LspProvider'
-import { KclContextProvider } from 'lang/KclSingleton'
+import { KclContextProvider } from 'lang/KclProvider'
 
 export const BROWSER_FILE_NAME = 'new'
 
@@ -59,6 +59,7 @@ const router = createBrowserRouter([
       {
         loader: fileLoader,
         id: paths.FILE,
+        path: paths.FILE + '/:id',
         element: (
           <Auth>
             <FileMachineProvider>
@@ -74,8 +75,11 @@ const router = createBrowserRouter([
         ),
         children: [
           {
-            path: paths.FILE + '/:id',
             loader: onboardingRedirectLoader,
+            index: true,
+            element: <></>,
+          },
+          {
             children: [
               {
                 index: true,

@@ -2,6 +2,7 @@
 
 pub mod extrude;
 pub mod fillet;
+pub mod helix;
 pub mod import;
 pub mod kcl_stdlib;
 pub mod math;
@@ -79,6 +80,7 @@ lazy_static! {
         Box::new(crate::std::fillet::GetOppositeEdge),
         Box::new(crate::std::fillet::GetNextAdjacentEdge),
         Box::new(crate::std::fillet::GetPreviousAdjacentEdge),
+        Box::new(crate::std::helix::Helix),
         Box::new(crate::std::import::Import),
         Box::new(crate::std::math::Cos),
         Box::new(crate::std::math::Sin),
@@ -206,7 +208,10 @@ impl Args {
         id: uuid::Uuid,
         cmd: kittycad::types::ModelingCmd,
     ) -> Result<OkWebSocketResponseData, KclError> {
-        self.ctx.engine.send_modeling_cmd(id, self.source_range, cmd).await
+        self.ctx
+            .engine
+            .send_modeling_cmd(false, id, self.source_range, cmd)
+            .await
     }
 
     fn make_user_val_from_json(&self, j: serde_json::Value) -> Result<MemoryItem, KclError> {
@@ -622,7 +627,54 @@ impl Args {
         Ok((data, sketch_group))
     }
 
-    fn get_data_and_sketch_surface<T: serde::de::DeserializeOwned>(&self) -> Result<(T, SketchSurface), KclError> {
+    fn get_data_and_sketch_group_and_tag<T: serde::de::DeserializeOwned>(
+        &self,
+    ) -> Result<(T, Box<SketchGroup>, Option<String>), KclError> {
+        let first_value = self
+            .args
+            .first()
+            .ok_or_else(|| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Expected a struct as the first argument, found `{:?}`", self.args),
+                    source_ranges: vec![self.source_range],
+                })
+            })?
+            .get_json_value()?;
+
+        let data: T = serde_json::from_value(first_value).map_err(|e| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Failed to deserialize struct from JSON: {}", e),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let second_value = self.args.get(1).ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Expected a SketchGroup as the second argument, found `{:?}`", self.args),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let sketch_group = if let MemoryItem::SketchGroup(sg) = second_value {
+            sg.clone()
+        } else {
+            return Err(KclError::Type(KclErrorDetails {
+                message: format!("Expected a SketchGroup as the second argument, found `{:?}`", self.args),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+        let tag = if let Some(tag) = self.args.get(2) {
+            tag.get_json_opt()?
+        } else {
+            None
+        };
+
+        Ok((data, sketch_group, tag))
+    }
+
+    fn get_data_and_sketch_surface<T: serde::de::DeserializeOwned>(
+        &self,
+    ) -> Result<(T, SketchSurface, Option<String>), KclError> {
         let first_value = self
             .args
             .first()
@@ -661,8 +713,13 @@ impl Args {
                 source_ranges: vec![self.source_range],
             }));
         };
+        let tag = if let Some(tag) = self.args.get(2) {
+            tag.get_json_opt()?
+        } else {
+            None
+        };
 
-        Ok((data, sketch_surface))
+        Ok((data, sketch_surface, tag))
     }
 
     fn get_data_and_extrude_group<T: serde::de::DeserializeOwned>(&self) -> Result<(T, Box<ExtrudeGroup>), KclError> {

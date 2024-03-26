@@ -15,7 +15,7 @@ import makeUrlPathRelative from './makeUrlPathRelative'
 import { sep } from '@tauri-apps/api/path'
 import { readDir, readTextFile } from '@tauri-apps/api/fs'
 import { metadata } from 'tauri-plugin-fs-extra-api'
-import { kclManager } from 'lang/KclSingleton'
+import { kclManager } from 'lib/singletons'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 
 // The root loader simply resolves the settings and any errors that
