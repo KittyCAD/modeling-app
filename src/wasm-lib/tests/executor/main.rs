@@ -1710,7 +1710,7 @@ const sketch001 = startSketchOn(box, "end")
   |> line([10, 0], %)
   |> close(%)
   |> revolve({
-      axis: 'x',
+      axis: 'y',
       angle: 90,
   }, %)
 "#;
