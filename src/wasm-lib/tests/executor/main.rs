@@ -1675,10 +1675,10 @@ const sketch001 = startSketchOn(box, "END")
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_basic_revolve_circle() {
     let code = r#"const sketch001 = startSketchOn('XY')
-  |> circle([20.5, 20.5], 10, %)
+  |> circle([15, 0], 5, %)
   |> revolve({
-    angle: 90, 
-    axis: 'x' 
+    angle: 360, 
+    axis: 'y' 
     }, %)
 "#;
 
