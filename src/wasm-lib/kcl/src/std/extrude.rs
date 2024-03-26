@@ -121,8 +121,6 @@ pub(crate) async fn do_post_extrude(
         vec![]
     };
 
-    println!("face_infos: {:?}", face_infos);
-
     // Create a hashmap for quick id lookup
     let mut face_id_map = std::collections::HashMap::new();
     // creating fake ids for start and end caps is to make extrudes mock-execute safe

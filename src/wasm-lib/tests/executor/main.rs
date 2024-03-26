@@ -1653,14 +1653,13 @@ async fn serial_test_revolve_on_edge() {
     let code = r#"const box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, 5], %)
-  |> line([5, 0], %)
-  |> line([0, -5], %, 'revolveAxis') 
+  |> line([5, 0], %, 'revolveAxis')
+  |> line([0, -5], %) 
   |> close(%)
   |> extrude(5, %)
 
 const sketch001 = startSketchOn(box, "END")
-  |> startProfileAt([0, 0], %)
-  |> circle([7, 2.5], 1, %)
+  |> circle([2.5, 2.5], 1, %)
   |> revolve({
     angle: 90, 
     axis: getOppositeEdge("revolveAxis", box) 
@@ -1671,6 +1670,22 @@ const sketch001 = startSketchOn(box, "END")
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/revolve_on_edge.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_basic_revolve_circle() {
+    let code = r#"const sketch001 = startSketchOn('XY')
+  |> circle([20.5, 20.5], 10, %)
+  |> revolve({
+    angle: 90, 
+    axis: 'x' 
+    }, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/basic_revolve_circle.png", &result, 1.0);
 }
 
 #[tokio::test(flavor = "multi_thread")]
