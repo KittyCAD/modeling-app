@@ -347,6 +347,7 @@ export class SceneEntities {
     this.activeSegments[JSON.stringify(segPathToNode)] = _profileStart
 
     sketchGroup.value.forEach((segment, index) => {
+      // problem here
       let segPathToNode = getNodePathFromSourceRange(
         kclManager.ast,
         segment.__geoMeta.sourceRange
@@ -357,8 +358,9 @@ export class SceneEntities {
       ) {
         const previousSegment =
           sketchGroup.value[index - 1] || sketchGroup.start
+        console.log('previousSegment', previousSegment)
         const previousSegmentPathToNode = getNodePathFromSourceRange(
-          kclManager.ast,
+          maybeModdedAst,
           previousSegment.__geoMeta.sourceRange
         )
         const bodyIndex = previousSegmentPathToNode[1][0]
@@ -560,7 +562,7 @@ export class SceneEntities {
     origin: [number, number, number],
     shouldTearDown = true
   ) => {
-    const _ast = JSON.parse(JSON.stringify(kclManager.ast))
+    let _ast = JSON.parse(JSON.stringify(kclManager.ast))
 
     const variableDeclarationName =
       getNodeFromPath<VariableDeclaration>(
@@ -642,7 +644,10 @@ export class SceneEntities {
       ...callExpressions,
     ])
 
+    _ast = parse(recast(_ast))
+
     // if (shouldTearDown) await this.tearDownSketch({ removeAxis: false })
+    console.log('sketchPathToNode for setupSketch', sketchPathToNode)
     const { truncatedAst, programMemoryOverride, sketchGroup } =
       await this.setupSketch({
         sketchPathToNode,
@@ -654,7 +659,7 @@ export class SceneEntities {
       })
 
     sceneInfra.setCallbacks({
-      onMove: (args) => {
+      onMove: async (args) => {
         // Update the width and height of the draft rectangle
         const pathToNodeTwo = JSON.parse(JSON.stringify(sketchPathToNode))
         pathToNodeTwo[1][0] = 0
@@ -666,9 +671,36 @@ export class SceneEntities {
         )?.node?.declarations?.[0]?.init
 
         if (sketchInit.type === 'PipeExpression') {
-          ((sketchInit.body[2] as CallExpression).arguments[0] as ArrayExpression).elements[1] = createLiteral(args.intersectionPoint.twoD.x);
-          ((sketchInit.body[3] as CallExpression).arguments[0] as ArrayExpression).elements[1] = createLiteral(args.intersectionPoint.twoD.y)
+          ;(
+            (sketchInit.body[2] as CallExpression)
+              .arguments[0] as ArrayExpression
+          ).elements[1] = createLiteral(args.intersectionPoint.twoD.x)
+          ;(
+            (sketchInit.body[3] as CallExpression)
+              .arguments[0] as ArrayExpression
+          ).elements[1] = createLiteral(args.intersectionPoint.twoD.y)
         }
+        const { programMemory } = await executeAst({
+          ast: _ast,
+          useFakeExecutor: true,
+          engineCommandManager: this.engineCommandManager,
+          programMemoryOverride,
+        })
+        this.sceneProgramMemory = programMemory
+        const sketchGroup = programMemory.root[
+          variableDeclarationName
+        ] as SketchGroup
+        const sgPaths = sketchGroup.value
+        const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+  
+        
+        this.updateSegment(sketchGroup.start, 0,0, _ast, orthoFactor, sketchGroup)
+        const yo: any[] = []
+        sgPaths.forEach((seg, index) => {
+          yo.push(seg.from, seg.to)
+          this.updateSegment(seg, index, 0, _ast, orthoFactor, sketchGroup)
+        })
+        console.log('from and to', JSON.stringify(yo))
       },
       onClick: async (args) => {},
     })
@@ -815,51 +847,60 @@ export class SceneEntities {
       const sgPaths = sketchGroup.value
       const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
-      const updateSegment = (
-        segment: Path | SketchGroup['start'],
-        index: number
-      ) => {
-        const segPathToNode = getNodePathFromSourceRange(
-          modifiedAst,
-          segment.__geoMeta.sourceRange
-        )
-        const originalPathToNodeStr = JSON.stringify(segPathToNode)
-        segPathToNode[1][0] = varDecIndex
-        const pathToNodeStr = JSON.stringify(segPathToNode)
-        // more hacks to hopefully be solved by proper pathToNode info in memory/sketchGroup segments
-        const group =
-          this.activeSegments[pathToNodeStr] ||
-          this.activeSegments[originalPathToNodeStr]
-        // const prevSegment = sketchGroup.slice(index - 1)[0]
-        const type = group?.userData?.type
-        const factor =
-          (sceneInfra.camControls.camera instanceof OrthographicCamera
-            ? orthoFactor
-            : perspScale(sceneInfra.camControls.camera, group)) /
-          sceneInfra._baseUnitMultiplier
-        if (type === TANGENTIAL_ARC_TO_SEGMENT) {
-          this.updateTangentialArcToSegment({
-            prevSegment: sgPaths[index - 1],
-            from: segment.from,
-            to: segment.to,
-            group: group,
-            scale: factor,
-          })
-        } else if (type === STRAIGHT_SEGMENT) {
-          this.updateStraightSegment({
-            from: segment.from,
-            to: segment.to,
-            group: group,
-            scale: factor,
-          })
-        } else if (type === PROFILE_START) {
-          group.position.set(segment.from[0], segment.from[1], 0)
-          group.scale.set(factor, factor, factor)
-        }
-      }
-      updateSegment(sketchGroup.start, 0)
-      sgPaths.forEach(updateSegment)
+      
+      this.updateSegment(sketchGroup.start, 0,varDecIndex, modifiedAst, orthoFactor, sketchGroup)
+      sgPaths.forEach((group, index) => this.updateSegment(group, index, varDecIndex, modifiedAst, orthoFactor, sketchGroup))
     })()
+  }
+
+  updateSegment = (
+    segment: Path | SketchGroup['start'],
+    index: number,
+    varDecIndex: number,
+    modifiedAst: Program,
+    orthoFactor: number,
+    sketchGroup: SketchGroup,
+  ) => {
+    const segPathToNode = getNodePathFromSourceRange(
+      modifiedAst,
+      segment.__geoMeta.sourceRange
+    )
+    const sgPaths = sketchGroup.value
+    const originalPathToNodeStr = JSON.stringify(segPathToNode)
+    segPathToNode[1][0] = varDecIndex
+    const pathToNodeStr = JSON.stringify(segPathToNode)
+    console.log('newpathToNodeStr', pathToNodeStr)
+    console.log('originalPathToNodeStr', originalPathToNodeStr)
+    // more hacks to hopefully be solved by proper pathToNode info in memory/sketchGroup segments
+    const group =
+      this.activeSegments[pathToNodeStr] ||
+      this.activeSegments[originalPathToNodeStr]
+    // const prevSegment = sketchGroup.slice(index - 1)[0]
+    const type = group?.userData?.type
+    const factor =
+      (sceneInfra.camControls.camera instanceof OrthographicCamera
+        ? orthoFactor
+        : perspScale(sceneInfra.camControls.camera, group)) /
+      sceneInfra._baseUnitMultiplier
+    if (type === TANGENTIAL_ARC_TO_SEGMENT) {
+      this.updateTangentialArcToSegment({
+        prevSegment: sgPaths[index - 1],
+        from: segment.from,
+        to: segment.to,
+        group: group,
+        scale: factor,
+      })
+    } else if (type === STRAIGHT_SEGMENT) {
+      this.updateStraightSegment({
+        from: segment.from,
+        to: segment.to,
+        group,
+        scale: factor,
+      })
+    } else if (type === PROFILE_START) {
+      group.position.set(segment.from[0], segment.from[1], 0)
+      group.scale.set(factor, factor, factor)
+    }
   }
 
   updateTangentialArcToSegment({
@@ -950,6 +991,9 @@ export class SceneEntities {
   }) {
     group.userData.from = from
     group.userData.to = to
+
+    console.log('updating the following', group, from, to)
+
     const shape = new Shape()
     shape.moveTo(0, -0.08 * scale)
     shape.lineTo(0, 0.08 * scale) // The width of the line

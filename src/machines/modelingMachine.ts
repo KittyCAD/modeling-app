@@ -884,7 +884,7 @@ export const modelingMachine = createMachine(
           sketchDetails.sketchPathToNode,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin,
+          sketchDetails.origin
         )
       },
       'set up draft line without teardown': ({ sketchDetails }) => {
