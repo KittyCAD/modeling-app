@@ -56,6 +56,7 @@ layout: manual
 * [`patternLinear3d`](kcl/patternLinear3d)
 * [`pi`](kcl/pi)
 * [`pow`](kcl/pow)
+* [`revolve`](kcl/revolve)
 * [`segAng`](kcl/segAng)
 * [`segEndX`](kcl/segEndX)
 * [`segEndY`](kcl/segEndY)

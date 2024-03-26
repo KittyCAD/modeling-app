@@ -47,6 +47,15 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
     )
     .await?;
 
+    do_post_extrude(sketch_group, length, id, args).await
+}
+
+pub(crate) async fn do_post_extrude(
+    sketch_group: Box<SketchGroup>,
+    length: f64,
+    id: Uuid,
+    args: Args,
+) -> Result<Box<ExtrudeGroup>, KclError> {
     // We need to do this after extrude for sketch on face.
     if let SketchSurface::Face(_) = sketch_group.on {
         // Disable the sketch mode.
