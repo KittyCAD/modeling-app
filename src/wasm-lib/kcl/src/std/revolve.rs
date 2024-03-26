@@ -41,15 +41,16 @@ pub enum RevolveAxis {
 /// Axis of revolution.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
+#[serde(rename_all = "camelCase")]
 pub enum RevolveAxisAndOrigin {
     /// X-axis.
-    #[serde(alias = "x")]
+    #[serde(alias = "X")]
     X,
     /// Y-axis.
-    #[serde(alias = "y")]
+    #[serde(alias = "Y")]
     Y,
     /// Z-axis.
-    #[serde(alias = "z")]
+    #[serde(alias = "Z")]
     Z,
     /// Flip the X-axis.
     #[serde(rename = "-X", alias = "-x")]
@@ -117,7 +118,21 @@ pub async fn revolve(args: Args) -> Result<MemoryItem, KclError> {
 ///     |> line([0, -5.5], %)
 ///     |> line([-2, 0], %)
 ///     |> close(%)
-///     |> revolve({axis: 'y'}, %)
+///     |> revolve({axis: 'y'}, %) // default angle is 360
+/// ```
+///
+/// ```no_run
+/// const part001 = startSketchOn('XY')
+///     |> startProfileAt([4, 12], %)
+///     |> line([2, 0], %)
+///     |> line([0, -6], %)
+///     |> line([4, -6], %)
+///     |> line([0, -6], %)
+///     |> line([-3.75, -4.5], %)
+///     |> line([0, -5.5], %)
+///     |> line([-2, 0], %)
+///     |> close(%)
+///     |> revolve({axis: 'y', angle: 180}, %)
 /// ```
 #[stdlib {
     name = "revolve",
@@ -189,4 +204,48 @@ async fn inner_revolve(
     }
 
     do_post_extrude(sketch_group, 0.0, id, args).await
+}
+
+#[cfg(test)]
+mod tests {
+
+    use pretty_assertions::assert_eq;
+
+    use crate::std::revolve::{RevolveAxis, RevolveAxisAndOrigin};
+
+    #[test]
+    fn test_deserialize_revolve_axis() {
+        let data = RevolveAxis::Axis(RevolveAxisAndOrigin::X);
+        let mut str_json = serde_json::to_string(&data).unwrap();
+        assert_eq!(str_json, "\"x\"");
+
+        str_json = "\"Y\"".to_string();
+        let data: RevolveAxis = serde_json::from_str(&str_json).unwrap();
+        assert_eq!(data, RevolveAxis::Axis(RevolveAxisAndOrigin::Y));
+
+        str_json = "\"-Y\"".to_string();
+        let data: RevolveAxis = serde_json::from_str(&str_json).unwrap();
+        assert_eq!(data, RevolveAxis::Axis(RevolveAxisAndOrigin::NegY));
+
+        str_json = "\"-x\"".to_string();
+        let data: RevolveAxis = serde_json::from_str(&str_json).unwrap();
+        assert_eq!(data, RevolveAxis::Axis(RevolveAxisAndOrigin::NegX));
+
+        let data = RevolveAxis::Axis(RevolveAxisAndOrigin::Custom {
+            axis: [0.0, -1.0, 0.0],
+            origin: [1.0, 0.0, 2.0],
+        });
+        str_json = serde_json::to_string(&data).unwrap();
+        assert_eq!(str_json, r#"{"custom":{"axis":[0.0,-1.0,0.0],"origin":[1.0,0.0,2.0]}}"#);
+
+        str_json = r#"{"custom": {"axis": [0,-1,0], "origin": [1,0,2.0]}}"#.to_string();
+        let data: RevolveAxis = serde_json::from_str(&str_json).unwrap();
+        assert_eq!(
+            data,
+            RevolveAxis::Axis(RevolveAxisAndOrigin::Custom {
+                axis: [0.0, -1.0, 0.0],
+                origin: [1.0, 0.0, 2.0]
+            })
+        );
+    }
 }

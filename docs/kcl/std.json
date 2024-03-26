@@ -48537,21 +48537,21 @@
                       "description": "X-axis.",
                       "type": "string",
                       "enum": [
-                        "X"
+                        "x"
                       ]
                     },
                     {
                       "description": "Y-axis.",
                       "type": "string",
                       "enum": [
-                        "Y"
+                        "y"
                       ]
                     },
                     {
                       "description": "Z-axis.",
                       "type": "string",
                       "enum": [
-                        "Z"
+                        "z"
                       ]
                     },
                     {
@@ -48578,10 +48578,10 @@
                     {
                       "type": "object",
                       "required": [
-                        "Custom"
+                        "custom"
                       ],
                       "properties": {
-                        "Custom": {
+                        "custom": {
                           "type": "object",
                           "required": [
                             "axis",
@@ -50362,7 +50362,8 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const part001 = startSketchOn('XY')\n  |> startProfileAt([4, 12], %)\n  |> line([2, 0], %)\n  |> line([0, -6], %)\n  |> line([4, -6], %)\n  |> line([0, -6], %)\n  |> line([-3.75, -4.5], %)\n  |> line([0, -5.5], %)\n  |> line([-2, 0], %)\n  |> close(%)\n  |> revolve({ axis: 'y' }, %)"
+      "const part001 = startSketchOn('XY')\n  |> startProfileAt([4, 12], %)\n  |> line([2, 0], %)\n  |> line([0, -6], %)\n  |> line([4, -6], %)\n  |> line([0, -6], %)\n  |> line([-3.75, -4.5], %)\n  |> line([0, -5.5], %)\n  |> line([-2, 0], %)\n  |> close(%)\n  |> revolve({ axis: 'y' }, %) // default angle is 360",
+      "const part001 = startSketchOn('XY')\n  |> startProfileAt([4, 12], %)\n  |> line([2, 0], %)\n  |> line([0, -6], %)\n  |> line([4, -6], %)\n  |> line([0, -6], %)\n  |> line([-3.75, -4.5], %)\n  |> line([0, -5.5], %)\n  |> line([-2, 0], %)\n  |> close(%)\n  |> revolve({ axis: 'y', angle: 180 }, %)"
     ]
   },
   {

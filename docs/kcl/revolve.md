@@ -25,7 +25,21 @@ const part001 = startSketchOn('XY')
   |> line([0, -5.5], %)
   |> line([-2, 0], %)
   |> close(%)
-  |> revolve({ axis: 'y' }, %)
+  |> revolve({ axis: 'y' }, %) // default angle is 360
+```
+
+```js
+const part001 = startSketchOn('XY')
+  |> startProfileAt([4, 12], %)
+  |> line([2, 0], %)
+  |> line([0, -6], %)
+  |> line([4, -6], %)
+  |> line([0, -6], %)
+  |> line([-3.75, -4.5], %)
+  |> line([0, -5.5], %)
+  |> line([-2, 0], %)
+  |> close(%)
+  |> revolve({ axis: 'y', angle: 180 }, %)
 ```
 
 ### Arguments
@@ -36,14 +50,14 @@ const part001 = startSketchOn('XY')
 	// Angle to revolve (in degrees). Default is 360.
 	angle: number,
 	// Axis of revolution.
-	axis: "X" |
-"Y" |
-"Z" |
+	axis: "x" |
+"y" |
+"z" |
 "-X" |
 "-Y" |
 "-Z" |
 {
-	Custom: {
+	custom: {
 	// The axis.
 	axis: [number, number, number],
 	// The origin.
