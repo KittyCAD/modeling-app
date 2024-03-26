@@ -27,7 +27,6 @@ describe('UpdaterModal tests', () => {
     )
 
     expect(screen.getByTestId('update-version')).toHaveTextContent(data.version)
-    // data and body will likely get transformed. No test for now
 
     const updateButton = screen.getByTestId('update-button-update')
     expect(updateButton).toBeEnabled()

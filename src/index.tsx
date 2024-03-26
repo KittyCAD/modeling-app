@@ -5,15 +5,10 @@ import { Toaster } from 'react-hot-toast'
 import { Router } from './Router'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
-import {
-  checkUpdate,
-  installUpdate,
-  onUpdaterEvent,
-} from '@tauri-apps/api/updater'
+import { checkUpdate, installUpdate } from '@tauri-apps/api/updater'
 import { relaunch } from '@tauri-apps/api/process'
 import { UpdaterModal, createUpdaterModal } from 'components/UpdaterModal'
 import { isTauri } from 'lib/isTauri'
-import { platform } from 'os'
 import {
   UpdaterRestartModal,
   createUpdaterRestartModal,

@@ -29,7 +29,6 @@ describe('UpdaterRestartModal tests', () => {
     expect(screen.getByTestId('update-restart-version')).toHaveTextContent(
       data.version
     )
-    // data and body will likely get transformed. No test for now
 
     const updateButton = screen.getByTestId('update-restrart-button-update')
     expect(updateButton).toBeEnabled()
