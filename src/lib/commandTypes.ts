@@ -97,18 +97,20 @@ export type CommandArgumentConfig<
       required:
         | boolean
         | ((
-            commandBarContext: { argumentsToSubmit: Record<string, unknown> } // Should be the commandbarMachine's context, but it creates a circular dependency
+            commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
+            machineContext?: C
           ) => boolean)
       skip?: boolean
     } & (
       | {
-          inputType: Extract<CommandInputType, 'options'>
+          inputType: 'options'
           options:
             | CommandArgumentOption<OutputType>[]
             | ((
                 commandBarContext: {
                   argumentsToSubmit: Record<string, unknown>
-                } // Should be the commandbarMachine's context, but it creates a circular dependency
+                }, // Should be the commandbarMachine's context, but it creates a circular dependency
+                machineContext?: C
               ) => CommandArgumentOption<OutputType>[])
           optionsFromContext?: (
             context: C
@@ -116,7 +118,8 @@ export type CommandArgumentConfig<
           defaultValue?:
             | OutputType
             | ((
-                commandBarContext: ContextFrom<typeof commandBarMachine>
+                commandBarContext: ContextFrom<typeof commandBarMachine>,
+                machineContext?: C
               ) => OutputType)
           defaultValueFromContext?: (context: C) => OutputType
         }
@@ -131,7 +134,8 @@ export type CommandArgumentConfig<
           defaultValue?:
             | OutputType
             | ((
-                commandBarContext: ContextFrom<typeof commandBarMachine>
+                commandBarContext: ContextFrom<typeof commandBarMachine>,
+                machineContext?: C
               ) => OutputType)
           defaultValueFromContext?: (context: C) => OutputType
         }
@@ -155,7 +159,8 @@ export type CommandArgument<
       required:
         | boolean
         | ((
-            commandBarContext: { argumentsToSubmit: Record<string, unknown> } // Should be the commandbarMachine's context, but it creates a circular dependency
+            commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
+            machineContext?: ContextFrom<T>
           ) => boolean)
       skip?: boolean
       machineActor: InterpreterFrom<T>
@@ -167,12 +172,14 @@ export type CommandArgument<
             | ((
                 commandBarContext: {
                   argumentsToSubmit: Record<string, unknown>
-                } // Should be the commandbarMachine's context, but it creates a circular dependency
-              ) => CommandArgumentOption<OutputType>[])
+                }, // Should be the commandbarMachine's context, but it creates a circular dependency
+                machineContext?: ContextFrom<T>
+                ) => CommandArgumentOption<OutputType>[])
           defaultValue?:
             | OutputType
             | ((
-                commandBarContext: ContextFrom<typeof commandBarMachine>
+                commandBarContext: ContextFrom<typeof commandBarMachine>,
+                machineContext?: ContextFrom<T>
               ) => OutputType)
         }
       | {
@@ -186,7 +193,8 @@ export type CommandArgument<
           defaultValue?:
             | OutputType
             | ((
-                commandBarContext: ContextFrom<typeof commandBarMachine>
+                commandBarContext: ContextFrom<typeof commandBarMachine>,
+                machineContext?: ContextFrom<T>
               ) => OutputType)
         }
       | {
@@ -194,7 +202,8 @@ export type CommandArgument<
           defaultValue?:
             | OutputType
             | ((
-                commandBarContext: ContextFrom<typeof commandBarMachine>
+                commandBarContext: ContextFrom<typeof commandBarMachine>,
+                machineContext?: ContextFrom<T>
               ) => OutputType)
         }
     )

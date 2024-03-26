@@ -43,7 +43,7 @@ export type WildcardSetEvent<T extends SettingsPaths = SettingsPaths> = {
   }
 }
 
-export interface SettingProps<T> {
+export interface SettingProps<T = unknown> {
   /**
    * The default value of the setting, used if no user or project value is set
    */

@@ -1,26 +1,25 @@
-import { type CommandSetConfig } from '../commandTypes'
+import { Command, CommandArgumentConfig } from '../commandTypes'
 import {
-  type BaseUnit,
-  type Toggle,
-  UnitSystem,
-  baseUnitsUnion,
   SettingsPaths,
   SettingsLevel,
+  SettingProps,
 } from 'lib/settings/settingsTypes'
 import { settingsMachine } from 'machines/settingsMachine'
-import { type CameraSystem, cameraSystems } from '../cameraControls'
-import { Themes } from '../theme'
 import { PathValue } from 'lib/types'
+import { settings } from 'lib/settings/initialSettings'
+import { AnyStateMachine, InterpreterFrom } from 'xstate'
+import { getPropertyByPath } from 'lib/objectPropertyByPath'
+import { buildCommandArgument } from 'lib/createMachineCommand'
 
 // SETTINGS MACHINE
 export type SettingsCommandSchema<T extends SettingsPaths = SettingsPaths> = {
   [K in `set.${SettingsPaths}`]: {
     level: SettingsLevel
-    value: PathValue<typeof settingsMachine.context, T>['default']
+    value: PathValue<typeof settings, T>['default']
   }
 }
 
-const levelArgConfig = {
+const levelArgConfig = (actor: InterpreterFrom<AnyStateMachine>) => ({
   inputType: 'options' as const,
   required: true,
   defaultValue: 'user' as SettingsLevel,
@@ -28,104 +27,48 @@ const levelArgConfig = {
     { name: 'User', value: 'user' as SettingsLevel, isCurrent: true },
     { name: 'Project', value: 'project' as SettingsLevel },
   ],
-}
+  machineActor: actor,
+})
 
-export const settingsCommandBarConfig: CommandSetConfig<
-  typeof settingsMachine,
-  SettingsCommandSchema
-> = {
-  'set.modeling.defaultUnit': {
+// Takes a Setting with a commandConfig and creates a Command
+// that can be used in the CommandBar component.
+export function createSettingsCommand(
+  type: SettingsPaths,
+  send: Function,
+  actor: InterpreterFrom<typeof settingsMachine>
+) {
+  type S = PathValue<typeof settings, typeof type>
+
+  const valueArgPartialConfig = (getPropertyByPath(settings, type) as SettingProps<S['default']>)['commandConfig']
+  if (!valueArgPartialConfig) return null
+
+  const valueArgConfig = {
+    ...valueArgPartialConfig,
+    required: true,
+  } as CommandArgumentConfig<S['default']>
+
+  // @ts-ignore - TODO figure out this typing for valueArgConfig
+  const valueArg = buildCommandArgument(valueArgConfig, settings, actor)
+  
+  console.log('valueArg', valueArg)
+
+  const command: Command = {
+    name: type,
+    ownerMachine: 'settings',
     icon: 'settings',
-    args: {
-      level: levelArgConfig,
-      value: {
-        inputType: 'options',
-        required: true,
-        defaultValueFromContext: (context) =>
-          context.modeling.defaultUnit.current,
-        options: [],
-        optionsFromContext: (context) =>
-          Object.values(baseUnitsUnion).map((v) => ({
-            name: v,
-            value: v,
-            isCurrent: v === context.modeling.defaultUnit.current,
-          })),
-      },
+    needsReview: false,
+    onSubmit: (data) => {
+      if (data !== undefined && data !== null) {
+        send({ type: `set.${type}`, data })
+      } else {
+        send(type)
+      }
     },
-  },
-  'set.modeling.mouseControls': {
-    icon: 'settings',
     args: {
-      level: levelArgConfig,
-      value: {
-        inputType: 'options',
-        required: true,
-        defaultValueFromContext: (context) =>
-          context.modeling.mouseControls.current,
-        options: [],
-        optionsFromContext: (context) =>
-          Object.values(cameraSystems).map((v) => ({
-            name: v,
-            value: v,
-            isCurrent: v === context.modeling.mouseControls.current,
-          })),
-      },
-    },
-  },
-  'set.project.defaultProjectName': {
-    icon: 'settings',
-    hide: 'web',
-    args: {
-      level: levelArgConfig,
-      value: {
-        inputType: 'string',
-        required: true,
-        defaultValueFromContext: (context) =>
-          context.project.defaultProjectName.current,
-      },
-    },
-  },
-  'set.textEditor.textWrapping': {
-    icon: 'settings',
-    args: {
-      level: levelArgConfig,
-      value: {
-        inputType: 'options',
-        required: true,
-        defaultValueFromContext: (context) =>
-          context.textEditor.textWrapping.current,
-        options: [],
-        optionsFromContext: (context) => [
-          {
-            name: 'On',
-            value: 'On' as Toggle,
-            isCurrent: context.textEditor.textWrapping.current === 'On',
-          },
-          {
-            name: 'Off',
-            value: 'Off' as Toggle,
-            isCurrent: context.textEditor.textWrapping.current === 'Off',
-          },
-        ],
-      },
-    },
-  },
-  'set.app.theme': {
-    icon: 'settings',
-    args: {
-      level: levelArgConfig,
-      value: {
-        inputType: 'options',
-        required: true,
-        defaultValueFromContext: (context) => context.app.theme.current,
-        options: [],
-        optionsFromContext: (context) =>
-          Object.values(Themes).map((v) => ({
-            name: v,
-            value: v,
-            isCurrent: v === context.app.theme.current,
-          })),
-      },
-    },
-  },
+      level: levelArgConfig(actor),
+      value: valueArg,
+    }
+  }
+
+  return command
 }

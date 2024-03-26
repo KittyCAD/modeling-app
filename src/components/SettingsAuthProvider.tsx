@@ -17,13 +17,15 @@ import {
   StateFrom,
 } from 'xstate'
 import { isTauri } from 'lib/isTauri'
-import { settingsCommandBarConfig } from 'lib/commandBarConfigs/settingsCommandConfig'
 import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
 import { kclManager, sceneInfra, engineCommandManager } from 'lib/singletons'
 import { v4 as uuidv4 } from 'uuid'
 import { IndexLoaderData } from 'lib/types'
 import { settings } from 'lib/settings/initialSettings'
 import { writeToSettingsFiles } from 'lib/tauriFS'
+import { createSettingsCommand } from 'lib/commandBarConfigs/settingsCommandConfig'
+import { useCommandsContext } from 'hooks/useCommandsContext'
+import { Command } from 'lib/commandTypes'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -86,6 +88,7 @@ export const SettingsAuthProviderBase = ({
   loadedProject?: IndexLoaderData
 }) => {
   const navigate = useNavigate()
+  const { commandBarSend } = useCommandsContext()
 
   const [settingsState, settingsSend, settingsActor] = useMachine(
     settingsMachine,
@@ -142,13 +145,43 @@ export const SettingsAuthProviderBase = ({
   )
   settingsStateRef = settingsState.context
 
-  useStateMachineCommands({
-    machineId: 'settings',
-    state: settingsState,
-    send: settingsSend,
-    commandBarConfig: settingsCommandBarConfig,
-    actor: settingsActor,
-  })
+  useEffect(() => {
+    const commands = [
+      createSettingsCommand(
+        'modeling.defaultUnit',
+        settingsSend,
+        settingsActor
+      ),
+      createSettingsCommand(
+        'app.theme',
+        settingsSend,
+        settingsActor
+      ),
+      createSettingsCommand(
+        'textEditor.textWrapping',
+        settingsSend,
+        settingsActor
+      )
+    ].filter((c) => c !== null) as Command[]
+
+    console.log('commands', commands)
+
+    commandBarSend({ type: 'Add commands', data: { commands: commands } })
+
+    return () => {
+      commandBarSend({
+        type: 'Remove commands',
+        data: { commands },
+      })
+    }
+  }, [settingsState])
+  // useStateMachineCommands({
+  //   machineId: 'settings',
+  //   state: settingsState,
+  //   send: settingsSend,
+  //   commandBarConfig: settingsCommandBarConfig,
+  //   actor: settingsActor,
+  // })
 
   // Listen for changes to the system theme and update the app theme accordingly
   // This is only done if the theme setting is set to 'system'.

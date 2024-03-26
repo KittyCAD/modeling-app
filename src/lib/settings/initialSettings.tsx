@@ -2,9 +2,8 @@ import { DEFAULT_PROJECT_NAME } from 'lib/constants'
 import {
   BaseUnit,
   SettingProps,
-  Toggle,
+  SettingsLevel,
   baseUnitsUnion,
-  toggleAsArray,
 } from 'lib/settings/settingsTypes'
 import { Themes } from 'lib/theme'
 import { isEnumMember } from './settingsUtils'
@@ -77,7 +76,11 @@ export class Setting<T = unknown> {
    * @todo - This may have issues if future settings can have a value that is valid but falsy
    */
   private resolve() {
-    return this._project || this._user || this._default
+    return this._project !== undefined
+      ? this._project
+      : this._user !== undefined
+      ? this._user
+      : this._default
   }
 }
 
@@ -96,11 +99,15 @@ export function createSettings() {
         commandConfig: {
           inputType: 'options',
           defaultValueFromContext: (context) => context.app.theme.current,
-          optionsFromContext: (context) =>
+          options: (cmdContext, settingsContext) =>
             Object.values(Themes).map((v) => ({
               name: v,
               value: v,
-              isCurrent: v === context.app.theme.current,
+              isCurrent:
+                v ===
+                settingsContext.app.theme[
+                  cmdContext.argumentsToSubmit.level as SettingsLevel
+                ],
             })),
         },
       }),
@@ -163,12 +170,22 @@ export function createSettings() {
           inputType: 'options',
           defaultValueFromContext: (context) =>
             context.modeling.defaultUnit.current,
-          optionsFromContext: (context) =>
-            Object.values(baseUnitsUnion).map((v) => ({
+          options: (cmdContext, settingsContext) => {
+            console.log('options for defaultUnit', {
+              cmdContext,
+              settingsContext,
+            })
+
+            return Object.values(baseUnitsUnion).map((v) => ({
               name: v,
               value: v,
-              isCurrent: v === context.modeling.defaultUnit.current,
-            })),
+              isCurrent:
+                v ===
+                settingsContext.modeling.defaultUnit[
+                  cmdContext.argumentsToSubmit.level as SettingsLevel
+                ],
+            }))
+          },
         },
       }),
       mouseControls: new Setting<CameraSystem>({
@@ -178,11 +195,15 @@ export function createSettings() {
           inputType: 'options',
           defaultValueFromContext: (context) =>
             context.modeling.mouseControls.current,
-          optionsFromContext: (context) =>
+          options: (cmdContext, settingsContext) =>
             Object.values(cameraSystems).map((v) => ({
               name: v,
               value: v,
-              isCurrent: v === context.modeling.mouseControls.current,
+              isCurrent:
+                v ===
+                settingsContext.modeling.mouseControls[
+                  cmdContext.argumentsToSubmit.level as SettingsLevel
+                ],
             })),
         },
         Component: ({ value, onChange }) => (

@@ -138,7 +138,8 @@ export const Settings = () => {
               {decamelize(category, { separator: ' ' })}
             </h2>
             {Object.entries(categorySettings)
-              .filter( // Filter out settings that don't have a Component or inputType
+              .filter(
+                // Filter out settings that don't have a Component or inputType
                 (item: [string, Setting<unknown>]) =>
                   item[1].Component || item[1].commandConfig?.inputType
               )
@@ -198,8 +199,8 @@ export const Settings = () => {
                             } as unknown as Event<WildcardSetEvent>)
                           }
                         >
-                          {setting.commandConfig.options instanceof Array &&
-                              setting.commandConfig.options.map((option) => (
+                          {setting.commandConfig.options instanceof Array
+                            ? setting.commandConfig.options.map((option) => (
                                 <option
                                   key={option.name}
                                   value={String(option.value)}
@@ -207,7 +208,22 @@ export const Settings = () => {
                                 >
                                   {option.name}
                                 </option>
-                              ))}
+                              ))
+                            : setting.commandConfig
+                                .options?.(
+                                  {
+                                    argumentsToSubmit: { level: settingsLevel },
+                                  },
+                                  context
+                                )
+                                .map((option) => (
+                                  <option
+                                    key={option.name}
+                                    value={String(option.value)}
+                                  >
+                                    {option.name}
+                                  </option>
+                                ))}
                           {setting.commandConfig.optionsFromContext &&
                             setting.commandConfig
                               .optionsFromContext(context)
