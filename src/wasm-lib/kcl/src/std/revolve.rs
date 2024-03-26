@@ -166,7 +166,7 @@ async fn inner_revolve(
                     axis,
                     origin,
                     tolerance: DEFAULT_TOLERANCE,
-                    axis_is_2d: false,
+                    axis_is_2d: true,
                 },
             )
             .await?;
