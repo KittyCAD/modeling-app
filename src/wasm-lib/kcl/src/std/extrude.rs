@@ -36,6 +36,7 @@ pub async fn extrude(args: Args) -> Result<MemoryItem, KclError> {
 }]
 async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) -> Result<Box<ExtrudeGroup>, KclError> {
     let id = uuid::Uuid::new_v4();
+
     // Extrude the element.
     args.send_modeling_cmd(
         id,
