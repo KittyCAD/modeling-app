@@ -6,11 +6,10 @@ use kittycad::types::ModelingCmd;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use super::extrude::do_post_extrude;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{ExtrudeGroup, MemoryItem, SketchGroup},
-    std::Args,
+    std::{extrude::do_post_extrude, fillet::EdgeReference, Args},
 };
 
 /// Data for revolution surfaces.
@@ -24,10 +23,21 @@ pub struct RevolveData {
     pub axis: RevolveAxis,
 }
 
+/// Axis of revolution or tagged edge.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(untagged)]
+pub enum RevolveAxis {
+    /// Axis of revolution.
+    Axis(RevolveAxisAndOrigin),
+    /// Tagged edge.
+    Edge(EdgeReference),
+}
+
 /// Axis of revolution.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-pub enum RevolveAxis {
+pub enum RevolveAxisAndOrigin {
     /// X-axis.
     #[serde(alias = "x")]
     X,
@@ -54,17 +64,17 @@ pub enum RevolveAxis {
     },
 }
 
-impl RevolveAxis {
+impl RevolveAxisAndOrigin {
     /// Get the axis and origin.
     pub fn axis_and_origin(&self) -> Result<(kittycad::types::Point3D, kittycad::types::Point3D), KclError> {
         let (axis, origin) = match self {
-            RevolveAxis::X => ([1.0, 0.0, 0.0], [0.0, 0.0, 0.0]),
-            RevolveAxis::Y => ([0.0, 1.0, 0.0], [0.0, 0.0, 0.0]),
-            RevolveAxis::Z => ([0.0, 0.0, 1.0], [0.0, 0.0, 0.0]),
-            RevolveAxis::NegX => ([-1.0, 0.0, 0.0], [0.0, 0.0, 0.0]),
-            RevolveAxis::NegY => ([0.0, -1.0, 0.0], [0.0, 0.0, 0.0]),
-            RevolveAxis::NegZ => ([0.0, 0.0, -1.0], [0.0, 0.0, 0.0]),
-            RevolveAxis::Custom { axis, origin } => (*axis, *origin),
+            RevolveAxisAndOrigin::X => ([1.0, 0.0, 0.0], [0.0, 0.0, 0.0]),
+            RevolveAxisAndOrigin::Y => ([0.0, 1.0, 0.0], [0.0, 0.0, 0.0]),
+            RevolveAxisAndOrigin::Z => ([0.0, 0.0, 1.0], [0.0, 0.0, 0.0]),
+            RevolveAxisAndOrigin::NegX => ([-1.0, 0.0, 0.0], [0.0, 0.0, 0.0]),
+            RevolveAxisAndOrigin::NegY => ([0.0, -1.0, 0.0], [0.0, 0.0, 0.0]),
+            RevolveAxisAndOrigin::NegZ => ([0.0, 0.0, -1.0], [0.0, 0.0, 0.0]),
+            RevolveAxisAndOrigin::Custom { axis, origin } => (*axis, *origin),
         };
 
         Ok((
@@ -115,7 +125,7 @@ async fn inner_revolve(
 ) -> Result<Box<ExtrudeGroup>, KclError> {
     if let Some(angle) = data.angle {
         // Return an error if the angle is less than -360 or greater than 360.
-        if angle < -360.0 || angle > 360.0 {
+        if !(-360.0..=360.0).contains(&angle) {
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!("Expected angle to be between -360 and 360, found `{}`", angle),
                 source_ranges: vec![args.source_range],
@@ -123,18 +133,53 @@ async fn inner_revolve(
         }
     }
 
-    let (axis, origin) = data.axis.axis_and_origin()?;
+    let angle = kittycad::types::Angle::from_degrees(data.angle.unwrap_or(360.0));
+
     let id = uuid::Uuid::new_v4();
-    args.send_modeling_cmd(
-        id,
-        ModelingCmd::Revolve {
-            angle: kittycad::types::Angle::from_degrees(data.angle.unwrap_or(360.0)),
-            target: sketch_group.id,
-            axis,
-            origin,
-        },
-    )
-    .await?;
+    match data.axis {
+        RevolveAxis::Axis(axis) => {
+            let (axis, origin) = axis.axis_and_origin()?;
+            args.send_modeling_cmd(
+                id,
+                ModelingCmd::Revolve {
+                    angle,
+                    target: sketch_group.id,
+                    axis,
+                    origin,
+                },
+            )
+            .await?;
+        }
+        RevolveAxis::Edge(edge) => {
+            let edge_id = match edge {
+                EdgeReference::Uuid(uuid) => uuid,
+                EdgeReference::Tag(tag) => {
+                    sketch_group
+                        .value
+                        .iter()
+                        .find(|p| p.get_name() == tag)
+                        .ok_or_else(|| {
+                            KclError::Type(KclErrorDetails {
+                                message: format!("No edge found with tag: `{}`", tag),
+                                source_ranges: vec![args.source_range],
+                            })
+                        })?
+                        .get_base()
+                        .geo_meta
+                        .id
+                }
+            };
+            args.send_modeling_cmd(
+                id,
+                ModelingCmd::RevolveAboutEdge {
+                    angle,
+                    target: sketch_group.id,
+                    edge_id,
+                },
+            )
+            .await?;
+        }
+    }
 
     do_post_extrude(sketch_group, 0.0, id, args).await
 }
