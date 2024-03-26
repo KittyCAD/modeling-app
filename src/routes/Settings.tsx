@@ -56,7 +56,6 @@ export const Settings = () => {
     },
   } = useSettingsAuthContext()
 
-
   function restartOnboarding() {
     send({
       type: `set.app.onboardingStatus`,
@@ -138,59 +137,121 @@ export const Settings = () => {
             <h2 className="text-lg capitalize font-bold">
               {decamelize(category, { separator: ' ' })}
             </h2>
-            {Object.entries(categorySettings).map(([settingName, s]) => {
-              const setting = s as Setting<string | boolean>
-              let Component: React.ReactNode
+            {Object.entries(categorySettings)
+              .filter( // Filter out settings that don't have a Component or inputType
+                (item: [string, Setting<unknown>]) =>
+                  item[1].Component || item[1].commandConfig?.inputType
+              )
+              .map(([settingName, s]) => {
+                const setting = s as Setting<string | boolean>
+                let Component: React.ReactNode
 
-              if (setting.Component) {
-                Component = (
-                  <setting.Component
-                    value={setting.current}
-                    onChange={(e) => {
-                      if ('value' in e.target ) {
-                        send({
-                          type: `set.${category}.${settingName}`,
-                          data: {
-                            level: settingsLevel,
-                            value: e.target.value,
-                          },
-                        } as unknown as Event<WildcardSetEvent>)
-                      }
-                    }}
-                  />
-                )
-              } else {
-                switch (setting.commandConfig?.inputType) {
-                  case 'boolean':
-                    Component = (
-                      <Toggle
-                        offLabel="Off"
-                        onLabel="On"
-                        onChange={(e) =>
+                if (setting.Component) {
+                  Component = (
+                    <setting.Component
+                      value={setting[settingsLevel] || setting.default}
+                      onChange={(e) => {
+                        if ('value' in e.target) {
                           send({
                             type: `set.${category}.${settingName}`,
                             data: {
                               level: settingsLevel,
-                              value: Boolean(e.target.checked),
+                              value: e.target.value,
                             },
                           } as unknown as Event<WildcardSetEvent>)
                         }
-                        checked={Boolean(setting[settingsLevel])}
-                        name={`${category}-${settingName}`}
-                      />
-                    )
+                      }}
+                    />
+                  )
+                } else {
+                  switch (setting.commandConfig?.inputType) {
+                    case 'boolean':
+                      Component = (
+                        <Toggle
+                          offLabel="Off"
+                          onLabel="On"
+                          onChange={(e) =>
+                            send({
+                              type: `set.${category}.${settingName}`,
+                              data: {
+                                level: settingsLevel,
+                                value: Boolean(e.target.checked),
+                              },
+                            } as unknown as Event<WildcardSetEvent>)
+                          }
+                          checked={Boolean(setting[settingsLevel])}
+                          name={`${category}-${settingName}`}
+                        />
+                      )
+                      break
+                    case 'options':
+                      Component = (
+                        <select
+                          value={String(setting.current)}
+                          onChange={(e) =>
+                            send({
+                              type: `set.${category}.${settingName}`,
+                              data: {
+                                level: settingsLevel,
+                                value: e.target.value,
+                              },
+                            } as unknown as Event<WildcardSetEvent>)
+                          }
+                        >
+                          {setting.commandConfig.options instanceof Array &&
+                              setting.commandConfig.options.map((option) => (
+                                <option
+                                  key={option.name}
+                                  value={String(option.value)}
+                                  selected={option.isCurrent}
+                                >
+                                  {option.name}
+                                </option>
+                              ))}
+                          {setting.commandConfig.optionsFromContext &&
+                            setting.commandConfig
+                              .optionsFromContext(context)
+                              .map((option) => (
+                                <option
+                                  key={option.name}
+                                  value={String(option.value)}
+                                  selected={option.isCurrent}
+                                >
+                                  {option.name}
+                                </option>
+                              ))}
+                        </select>
+                      )
+                      break
+                    case 'string':
+                      Component = (
+                        <input
+                          type="text"
+                          defaultValue={String(setting.current)}
+                          onBlur={(e) =>
+                            send({
+                              type: `set.${category}.${settingName}`,
+                              data: {
+                                level: settingsLevel,
+                                value: e.target.value,
+                              },
+                            } as unknown as Event<WildcardSetEvent>)
+                          }
+                        />
+                      )
+                      break
+                  }
                 }
-              }
 
-              return (
-                <SettingsSection
-                  title={decamelize(settingName, { separator: ' ' })}
-                  key={settingName}
-                >
-                  {Component}
-                </SettingsSection>
-              )
-            })}
+                return (
+                  <SettingsSection
+                    title={decamelize(settingName, { separator: ' ' })}
+                    key={settingName}
+                  >
+                    {Component}
+                  </SettingsSection>
+                )
+              })}
           </div>
         ))}
         <SettingsSection

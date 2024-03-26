@@ -95,9 +95,7 @@ export function createSettings() {
         validate: (v) => isEnumMember(v, Themes),
         commandConfig: {
           inputType: 'options',
-          required: true,
           defaultValueFromContext: (context) => context.app.theme.current,
-          options: [],
           optionsFromContext: (context) =>
             Object.values(Themes).map((v) => ({
               name: v,
@@ -163,6 +161,8 @@ export function createSettings() {
         validate: (v) => baseUnitsUnion.includes(v as BaseUnit),
         commandConfig: {
           inputType: 'options',
+          defaultValueFromContext: (context) =>
+            context.modeling.defaultUnit.current,
           optionsFromContext: (context) =>
             Object.values(baseUnitsUnion).map((v) => ({
               name: v,
@@ -176,6 +176,8 @@ export function createSettings() {
         validate: (v) => cameraSystems.includes(v as CameraSystem),
         commandConfig: {
           inputType: 'options',
+          defaultValueFromContext: (context) =>
+            context.modeling.mouseControls.current,
           optionsFromContext: (context) =>
             Object.values(cameraSystems).map((v) => ({
               name: v,

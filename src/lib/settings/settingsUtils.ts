@@ -57,12 +57,12 @@ export function getChangedSettingsAtLevel(
         // If setting is different its ancestors' non-undefined values,
         // then it has been changed from the default
         if (
+          settingValue[level] !== undefined &&
           ((level === 'project' &&
-            ((settingValue.user &&
-              settingValue.project !== settingValue.user) ||
+            (settingValue.user !== undefined ?
+              settingValue.project !== settingValue.user :
               settingValue.project !== settingValue.default)) ||
-            (level === 'user' && settingValue.user !== settingValue.default)) &&
-          settingValue[level] !== undefined
+            (level === 'user' && settingValue.user !== settingValue.default))
         ) {
           if (!changedSettings[categoryKey]) {
             changedSettings[categoryKey] = {}
