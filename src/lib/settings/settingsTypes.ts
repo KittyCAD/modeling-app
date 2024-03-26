@@ -21,7 +21,10 @@ export const baseUnitsUnion = Object.values(baseUnits).flatMap((v) => v)
 export type Toggle = 'On' | 'Off'
 export const toggleAsArray = ['On', 'Off'] as const
 
-export type SettingsPaths = Exclude<Paths<typeof settings, 1>, keyof typeof settings>
+export type SettingsPaths = Exclude<
+  Paths<typeof settings, 1>,
+  keyof typeof settings
+>
 type SetEvent<T extends SettingsPaths> = {
   type: `set.${T}`
   data: {
@@ -32,7 +35,7 @@ type SetEvent<T extends SettingsPaths> = {
 
 export type SetEventTypes = SetEvent<SettingsPaths>
 
-export type WildcardSetEvent<T extends SettingsPaths> = {
+export type WildcardSetEvent<T extends SettingsPaths = SettingsPaths> = {
   type: `*`
   data: {
     level: SettingsLevel
@@ -43,15 +46,15 @@ export type WildcardSetEvent<T extends SettingsPaths> = {
 export interface SettingProps<T> {
   /**
    * The default value of the setting, used if no user or project value is set
-  */
+   */
   defaultValue: T
   /**
    * The name of the setting, used in the settings panel
-  */
+   */
   title?: string
   /**
    * A description of the setting, used in the settings panel
-  */
+   */
   description?: string
   /**
    * A function that validates the setting value.
@@ -65,14 +68,24 @@ export interface SettingProps<T> {
    * const mySetting = new Setting<number>({
    *   defaultValue: 0,
    *   validate: (v) => v >= 0, // Only allow positive numbers
-   * }) 
+   * })
    * ```
    */
   validate: (v: T) => boolean
   /**
    * The UI to use for the setting in the settings panel
    */
-  settingsUI: 'toggle' | 'input' | 'select' | (({ value, onChange }: { value: T, onChange: ChangeEventHandler<HTMLElement>}) => React.ReactNode)
+  settingsUI:
+    | 'toggle'
+    | 'input'
+    | 'select'
+    | (({
+        value,
+        onChange,
+      }: {
+        value: T
+        onChange: ChangeEventHandler<HTMLElement>
+      }) => React.ReactNode)
   commandConfig: CommandArgumentConfig<T>
 }
 

@@ -22,8 +22,8 @@ import { paths } from 'lib/paths'
 import {
   fileLoader,
   homeLoader,
-  indexLoader,
   onboardingRedirectLoader,
+  settingsLoader,
 } from 'lib/routeLoaders'
 import { CommandBarProvider } from 'components/CommandBar/CommandBarProvider'
 import SettingsAuthProvider from 'components/SettingsAuthProvider'
@@ -34,7 +34,7 @@ export const BROWSER_FILE_NAME = 'new'
 
 const router = createBrowserRouter([
   {
-    loader: indexLoader,
+    loader: settingsLoader,
     id: paths.INDEX,
     element: (
       <CommandBarProvider>
@@ -47,6 +47,7 @@ const router = createBrowserRouter([
         </KclContextProvider>
       </CommandBarProvider>
     ),
+    errorElement: <ErrorPage />,
     children: [
       {
         path: paths.INDEX,
@@ -54,7 +55,6 @@ const router = createBrowserRouter([
           isTauri()
             ? redirect(paths.HOME)
             : redirect(paths.FILE + '/' + BROWSER_FILE_NAME),
-        errorElement: <ErrorPage />,
       },
       {
         loader: fileLoader,
@@ -78,14 +78,18 @@ const router = createBrowserRouter([
             loader: onboardingRedirectLoader,
             children: [
               {
+                index: true,
+                id: paths.FILE + 'SETTINGS',
+                loader: settingsLoader,
+                element: <></>,
+              },
+              {
                 path: makeUrlPathRelative(paths.SETTINGS),
-                loader: indexLoader, // very rare someone will load into settings first, but it's possible in the browser
                 element: <Settings />,
               },
               {
                 path: makeUrlPathRelative(paths.ONBOARDING.INDEX),
                 element: <Onboarding />,
-                loader: indexLoader, // very rare someone will load into settings first, but it's possible in the browser
                 children: onboardingRoutes,
               },
             ],
@@ -105,7 +109,14 @@ const router = createBrowserRouter([
         loader: homeLoader,
         children: [
           {
+            index: true,
+            element: <></>,
+            id: paths.HOME + 'SETTINGS',
+            loader: settingsLoader,
+          },
+          {
             path: makeUrlPathRelative(paths.SETTINGS),
+            loader: settingsLoader,
             element: <Settings />,
           },
         ],

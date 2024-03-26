@@ -1,7 +1,7 @@
 import { ActionFunction, LoaderFunction, redirect } from 'react-router-dom'
 import { HomeLoaderData, IndexLoaderData } from './types'
 import { isTauri } from './isTauri'
-import { paths } from './paths'
+import { getProjectMetaByRouteId, paths } from './paths'
 import { BROWSER_FILE_NAME } from 'Router'
 import { SETTINGS_PERSIST_KEY } from 'lib/constants'
 import { loadAndValidateSettings } from './settings/settingsUtils'
@@ -20,10 +20,23 @@ import { fileSystemManager } from 'lang/std/fileSystemManager'
 
 // The root loader simply resolves the settings and any errors that
 // occurred during the settings load
-export const indexLoader: LoaderFunction = async (): ReturnType<
-  typeof loadAndValidateSettings
-> => {
-  return await loadAndValidateSettings()
+export const settingsLoader: LoaderFunction = async ({
+  params,
+}): ReturnType<typeof loadAndValidateSettings> => {
+  let settings = await loadAndValidateSettings()
+
+  // I don't love that we have to read the settings again here,
+  // but we need to get the project path to load the project settings
+  if (params.id) {
+    const defaultDir = settings.app.projectDirectory.current || ''
+    const projectPathData = getProjectMetaByRouteId(params.id, defaultDir)
+    if (projectPathData) {
+      const { projectPath } = projectPathData
+      settings = await loadAndValidateSettings(projectPath)
+    }
+  }
+
+  return settings
 }
 
 // Redirect users to the appropriate onboarding page if they haven't completed it
@@ -50,19 +63,16 @@ export const onboardingRedirectLoader: ActionFunction = async ({ request }) => {
 export const fileLoader: LoaderFunction = async ({
   params,
 }): Promise<IndexLoaderData | Response> => {
-  const settings = await loadAndValidateSettings()
+  let settings = await loadAndValidateSettings()
 
   const defaultDir = settings.app.projectDirectory.current || ''
+  const projectPathData = getProjectMetaByRouteId(params.id, defaultDir)
 
-  if (params.id && params.id !== BROWSER_FILE_NAME) {
-    const decodedId = decodeURIComponent(params.id)
-    const projectAndFile = decodedId.replace(defaultDir + sep, '')
-    const firstSlashIndex = projectAndFile.indexOf(sep)
-    const projectName = projectAndFile.slice(0, firstSlashIndex)
-    const projectPath = defaultDir + sep + projectName
-    const currentFileName = projectAndFile.slice(firstSlashIndex + 1)
+  if (params.id !== BROWSER_FILE_NAME && projectPathData) {
+    const { projectName, projectPath, currentFileName, currentFilePath } =
+      projectPathData
 
-    if (firstSlashIndex === -1 || !currentFileName)
+    if (!currentFileName || !currentFilePath)
       return redirect(
         `${paths.FILE}/${encodeURIComponent(
           `${params.id}${sep}${PROJECT_ENTRYPOINT}`
@@ -71,7 +81,7 @@ export const fileLoader: LoaderFunction = async ({
 
     // TODO: PROJECT_ENTRYPOINT is hardcoded
     // until we support setting a project's entrypoint file
-    const code = await readTextFile(decodedId)
+    const code = await readTextFile(currentFilePath)
     const entrypointMetadata = await metadata(
       projectPath + sep + PROJECT_ENTRYPOINT
     )
@@ -82,7 +92,7 @@ export const fileLoader: LoaderFunction = async ({
     // So that WASM gets an updated path for operations
     fileSystemManager.dir = projectPath
 
-    return {
+    const projectData: IndexLoaderData = {
       code,
       project: {
         name: projectName,
@@ -92,8 +102,12 @@ export const fileLoader: LoaderFunction = async ({
       },
       file: {
         name: currentFileName,
-        path: params.id,
+        path: currentFilePath,
       },
+    }
+
+    return {
+      ...projectData,
     }
   }
 

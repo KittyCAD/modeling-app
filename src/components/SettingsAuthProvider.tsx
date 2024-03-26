@@ -105,21 +105,19 @@ export const SettingsAuthProviderBase = ({
             .replace(/^set./, '')
             .split('.') as [keyof typeof settings, string]
           const truncatedNewValue = event.data.value?.toString().slice(0, 28)
-          const message = `Set ${decamelize(category, { separator: ' ' })}: ${decamelize(
-            setting,
-            { separator: ' ' }
-          )}` +
+          const message =
+            `Set ${decamelize(category, { separator: ' ' })}: ${decamelize(
+              setting,
+              { separator: ' ' }
+            )}` +
             (truncatedNewValue
               ? ` to "${truncatedNewValue}${
                   truncatedNewValue.length === 28 ? '...' : ''
                 }" at the ${event.data.level} level`
               : '')
-          toast.success(
-            message,
-            {
-              duration: message.split(' ').length * 100 + 1500,
-            }
-          )
+          toast.success(message, {
+            duration: message.split(' ').length * 100 + 1500,
+          })
         },
         'Execute AST': () => kclManager.executeAst(),
         persistSettings: (context, event) => {

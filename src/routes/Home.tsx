@@ -38,10 +38,12 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { isTauri } from 'lib/isTauri'
 import { kclManager } from 'lang/KclSingleton'
 import { useLspContext } from 'components/LspProvider'
+import { useRefreshSettings } from 'hooks/useRefreshSettings'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
 const Home = () => {
+  useRefreshSettings(paths.HOME + 'SETTINGS')
   const { commandBarSend } = useCommandsContext()
   const navigate = useNavigate()
   const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
@@ -102,13 +104,6 @@ const Home = () => {
             ? event.data.name
             : settings.project.defaultProjectName.current
         ).trim()
-        let shouldUpdateDefaultProjectName = false
-
-        // If there is no default project name, flag it to be set to the default
-        if (!name) {
-          name = DEFAULT_PROJECT_NAME
-          shouldUpdateDefaultProjectName = true
-        }
 
         if (doesProjectNameNeedInterpolated(name)) {
           const nextIndex = await getNextProjectIndex(name, projects)
@@ -116,16 +111,6 @@ const Home = () => {
         }
 
         await createNewProject(context.defaultDirectory + sep + name)
-
-        if (shouldUpdateDefaultProjectName) {
-          sendToSettings({
-            type: 'set.project.defaultProjectName.user',
-            data: {
-              path: 'project.defaultProjectName.user',
-              value: DEFAULT_PROJECT_NAME,
-            },
-          })
-        }
 
         return `Successfully created "${name}"`
       },

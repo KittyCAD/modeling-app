@@ -33,8 +33,10 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { isTauri } from 'lib/isTauri'
 import { useLspContext } from 'components/LspProvider'
+import { useRefreshSettings } from 'hooks/useRefreshSettings'
 
 export function App() {
+  useRefreshSettings(paths.FILE + 'SETTINGS')
   const { project, file } = useLoaderData() as IndexLoaderData
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
@@ -62,10 +64,14 @@ export function App() {
   }))
 
   const { settings } = useSettingsAuthContext()
-  const { modeling: { showDebugPanel }, app: { theme, onboardingStatus }} = settings.context
+  const {
+    modeling: { showDebugPanel },
+    app: { theme, onboardingStatus },
+  } = settings.context
   const { state, send } = useModelingContext()
 
-  const editorTheme = theme.current === Themes.System ? getSystemTheme() : theme.current
+  const editorTheme =
+    theme.current === Themes.System ? getSystemTheme() : theme.current
 
   // Pane toggling keyboard shortcuts
   const togglePane = useCallback(

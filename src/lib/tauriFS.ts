@@ -15,7 +15,7 @@ import { settingsMachine } from 'machines/settingsMachine'
 import { ContextFrom } from 'xstate'
 import { SETTINGS_FILE_NAME } from 'lib/constants'
 import { getChangedSettingsAtLevel } from './settings/settingsUtils'
-import { SettingsLevel } from './settings/initialSettings'
+import { SettingsLevel } from './settings/settingsTypes'
 
 const PROJECT_FOLDER = 'zoo-modeling-app-projects'
 export const FILE_EXT = '.kcl'
@@ -389,32 +389,32 @@ export async function writeToSettingsFiles(
   allSettings: ContextFrom<typeof settingsMachine>,
   projectData?: IndexLoaderData
 ) {
-  const path = await getUserSettingsFilePath('') + SETTINGS_FILE_NAME
+  const path = (await getUserSettingsFilePath('')) + SETTINGS_FILE_NAME
   const settings = getChangedSettingsAtLevel(allSettings, 'user')
 
   if (settings && Object.keys(settings).length) {
     await writeTextFile(path, JSON.stringify(settings, null, 2))
-  } else {
+  } else if (await exists(path)) {
     await removeFile(path)
   }
 
   if (projectData) {
-    const path = projectData?.project?.path  + sep+ 'settings.json'
+    const path = projectData?.project?.path + sep + 'settings.json'
     const settings = getChangedSettingsAtLevel(allSettings, 'project')
 
     if (settings && Object.keys(settings).length) {
       await writeTextFile(path, JSON.stringify(settings, null, 2))
-    } else {
+    } else if (await exists(path)) {
       await removeFile(path)
     }
   }
 }
 
-export async function readSettingsFile(): Promise<Partial<ContextFrom<
-  typeof settingsMachine
->>> {
-  const dir = await appConfigDir()
-  const path = dir + SETTINGS_FILE_NAME
+export async function readSettingsFile(
+  path: string
+): Promise<Partial<ContextFrom<typeof settingsMachine>>> {
+  const dir = path.slice(0, path.lastIndexOf(sep))
+
   const dirExists = await exists(dir)
   if (!dirExists) {
     await createDir(dir, { recursive: true })
@@ -437,12 +437,20 @@ export async function readSettingsFile(): Promise<Partial<ContextFrom<
 }
 
 export async function getSettingsFilePaths(
-  projectData?: IndexLoaderData
+  projectPath?: string
 ): Promise<Partial<Record<SettingsLevel, string>>> {
-  const user = await getUserSettingsFilePath()
-  const project = projectData
-    ? projectData.project?.path + SETTINGS_FILE_NAME
-    : undefined
+  const { user, project } = await getSettingsFolderPaths(projectPath)
+
+  return {
+    user: user + SETTINGS_FILE_NAME,
+    project:
+      project !== undefined ? project + sep + SETTINGS_FILE_NAME : undefined,
+  }
+}
+
+export async function getSettingsFolderPaths(projectPath?: string) {
+  const user = await appConfigDir()
+  const project = projectPath ?? undefined
 
   return {
     user,

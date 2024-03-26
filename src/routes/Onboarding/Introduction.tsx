@@ -29,7 +29,9 @@ function OnboardingWithNewFile() {
   const next = useNextClick(onboardingPaths.INDEX)
   const {
     settings: {
-      context: { app: { projectDirectory } },
+      context: {
+        app: { projectDirectory },
+      },
     },
   } = useSettingsAuthContext()
 
@@ -108,7 +110,9 @@ export default function Introduction() {
   const {
     settings: {
       state: {
-        context: { app: { theme } },
+        context: {
+          app: { theme },
+        },
       },
     },
   } = useSettingsAuthContext()

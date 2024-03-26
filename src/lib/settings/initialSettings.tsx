@@ -8,17 +8,21 @@ import {
 } from 'lib/settings/settingsTypes'
 import { Themes } from 'lib/theme'
 import { isEnumMember } from './settingsUtils'
-import { CameraSystem, cameraMouseDragGuards, cameraSystems } from 'lib/cameraControls'
+import {
+  CameraSystem,
+  cameraMouseDragGuards,
+  cameraSystems,
+} from 'lib/cameraControls'
 import { FILE_EXT, PROJECT_ENTRYPOINT } from 'lib/tauriFS'
 
 /**
  * A setting that can be set at the user or project level
- * @constructor 
+ * @constructor
  */
 export class Setting<T = unknown> {
   /**
    * The current value of the setting, prioritizing project, then user, then default
-  */
+   */
   public current: T
   public settingsUI: SettingProps<T>['settingsUI']
   private validate: (v: T) => boolean
@@ -35,7 +39,9 @@ export class Setting<T = unknown> {
   /**
    * The default setting. Overridden by the user and project if set
    */
-  get default(): T { return this._default }
+  get default(): T {
+    return this._default
+  }
   set default(v: T) {
     this._default = this.validate(v) ? v : this._default
     this.current = this.resolve()
@@ -73,7 +79,7 @@ export function createSettings() {
   return {
     /** Settings that affect the behavior of the entire app,
      *  beyond just modeling or navigating, for example
-    */
+     */
     app: {
       theme: new Setting<Themes>({
         defaultValue: Themes.System,
@@ -90,7 +96,7 @@ export function createSettings() {
               value: v,
               isCurrent: v === context.app.theme.current,
             })),
-        }
+        },
       }),
       onboardingStatus: new Setting<string>({
         defaultValue: '',
@@ -116,33 +122,36 @@ export function createSettings() {
       mouseControls: new Setting<CameraSystem>({
         defaultValue: 'KittyCAD',
         validate: (v) => cameraSystems.includes(v as CameraSystem),
-        settingsUI: ({ value, onChange }) => <>
-        <select
-            id="camera-controls"
-            className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
-            value={value}
-            onChange={onChange}
-          >
-            {cameraSystems.map((program) => (
-              <option key={program} value={program}>
-                {program}
-              </option>
-            ))}
-          </select>
-          <ul className="mx-4 my-2 text-sm leading-relaxed">
-            <li>
-              <strong>Pan:</strong>{' '}
-              {cameraMouseDragGuards[value].pan.description}
-            </li>
-            <li>
-              <strong>Zoom:</strong>{' '}
-              {cameraMouseDragGuards[value].zoom.description}
-            </li>
-            <li>
-              <strong>Rotate:</strong>{' '}
-              {cameraMouseDragGuards[value].rotate.description}
-            </li>
-          </ul></>
+        settingsUI: ({ value, onChange }) => (
+          <>
+            <select
+              id="camera-controls"
+              className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
+              value={value}
+              onChange={onChange}
+            >
+              {cameraSystems.map((program) => (
+                <option key={program} value={program}>
+                  {program}
+                </option>
+              ))}
+            </select>
+            <ul className="mx-4 my-2 text-sm leading-relaxed">
+              <li>
+                <strong>Pan:</strong>{' '}
+                {cameraMouseDragGuards[value].pan.description}
+              </li>
+              <li>
+                <strong>Zoom:</strong>{' '}
+                {cameraMouseDragGuards[value].zoom.description}
+              </li>
+              <li>
+                <strong>Rotate:</strong>{' '}
+                {cameraMouseDragGuards[value].rotate.description}
+              </li>
+            </ul>
+          </>
+        ),
       }),
       showDebugPanel: new Setting<boolean>({
         defaultValue: false,
@@ -167,7 +176,7 @@ export function createSettings() {
     },
     /**
      * Settings that affect the behavior of the KCL text editor.
-    */
+     */
     textEditor: {
       textWrapping: new Setting<Toggle>({
         defaultValue: 'On',
@@ -177,7 +186,7 @@ export function createSettings() {
     },
     /**
      * Settings that affect the behavior of project management.
-    */
+     */
     project: {
       defaultProjectName: new Setting<string>({
         defaultValue: DEFAULT_PROJECT_NAME,
@@ -192,7 +201,7 @@ export function createSettings() {
     },
     /**
      * Settings that affect the behavior of the command bar.
-    */
+     */
     commandBar: {
       includeSettings: new Setting<boolean>({
         defaultValue: true,

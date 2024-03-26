@@ -11,7 +11,7 @@ import {
 
 export const settingsMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlnXwCoBtABgF1FQAHAe1ky3exZAAeiAEwBmAIz4A7OIBsU+lICssgJxLV9WQA4ANCACeibUvr5hSjfVHb6FqSYC+j-agw48hEuUpp8AW3YIMGIPfABXbG5YBmYkEA4uHj54oQQAFhN8O1kVWWExVXEVKX0jBHFFMyl0mXzVVXSm2XTnV3QsXAIiUgoqAENWVnw0AAswfzBY-kTuTF5+NLElc3SCtYtRdM1Sw0RxAu1zTWFlbRri1pcQN07PHvIAJTh0AAJfO5imGc45hdTEABafL4UQtLYqRSWYR2JRlfb0bSSVRbdJVLQ2YTiZzXbBBOD8W4eeDxWbJRZA8SVUHg9KQ5RKGHCeEIKQglGiOyiTk2JQ2No3DrErykH5JeYpUBpA5mejiLayRUabTbVS7cqVcTpGkQ7baYS1aw4xxAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlnXwFsB7CMYnKfAV20zVgG0AGAXUSgADrVidMtbEJAAPRABYAHAFZ8vAEwA2FVq0aNAZgCcARl0B2ADQgAnolO8LvfBYUXT+48YW+tCgF8Am1QMZgIiUgoqAENhYXw0AAswajA+QSQQUXEsKRl5BCM1DQUDMo0VQwVjJxt7BFMDJXwNWo0LFSU3c0DgkFCsXAiScgAlOHQAAkow4YyZHIl8rMKAWn18Q39q3ScVFQ1NFXqHXiVTfGNqhSdeXi1DJQ1TIJD0IbxCUbIAKgWsks8tJVopjFp8KZjEpqi9lKZDE0TnYzgZXO5PG0fH4+u85l9IuRQlMYsRiFNsGAAO4zD7hAEiMTLEGgda6fAKJoIiyIkwWYwWawoxpGFxaHkKFS1a7woL9bD0OAyQbhRZM4EFRBrUyOLY7SVafaHTSnBDGDqQiz6DRKbwqTxvAZ04bfUhq3KSFlyBxHdQIhR6HTQmoC02OUwKPW7GrPdy8QxygJAA */
     id: 'Settings',
     predictableActionArguments: true,
     context: {} as ReturnType<typeof createSettings>,
@@ -55,6 +55,18 @@ export const settingsMachine = createMachine(
             internal: true,
             actions: ['resetSettings', 'persistSettings'],
           },
+
+          'Set all settings': {
+            target: 'idle',
+            internal: true,
+            actions: [
+              'setAllSettings',
+              'persistSettings',
+              'setThemeClass',
+              'Execute AST',
+              'setClientSideSceneUnits',
+            ],
+          },
         },
       },
     },
@@ -71,12 +83,16 @@ export const settingsMachine = createMachine(
             type: 'set.modeling.units'
             data: { level: SettingsLevel; value: BaseUnit }
           }
-        | { type: 'Reset settings' },
+        | { type: 'Reset settings' }
+        | { type: 'Set all settings'; settings: typeof settings },
     },
   },
   {
     actions: {
       resetSettings: assign(createSettings()),
+      setAllSettings: assign((_, event) => {
+        return event.settings
+      }),
       setSettingAtLevel: assign((context, event) => {
         const { level, value } = event.data
         const [category, setting] = event.type

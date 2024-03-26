@@ -6,6 +6,8 @@ import { DEFAULT_PROJECT_NAME, SETTINGS_PERSIST_KEY } from 'lib/constants'
 import {
   type BaseUnit,
   baseUnitsUnion,
+  SettingsLevel,
+  WildcardSetEvent,
 } from 'lib/settings/settingsTypes'
 import { Toggle } from 'components/Toggle/Toggle'
 import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
@@ -20,6 +22,7 @@ import {
   getNextProjectIndex,
   getProjectsInDir,
   getSettingsFilePaths,
+  getSettingsFolderPaths,
   interpolateProjectNameWithIndex,
 } from 'lib/tauriFS'
 import { ONBOARDING_PROJECT_NAME } from './Onboarding'
@@ -29,8 +32,10 @@ import { isTauri } from 'lib/isTauri'
 import { invoke } from '@tauri-apps/api'
 import toast from 'react-hot-toast'
 import React, { useState } from 'react'
-import { Setting, SettingsLevel } from 'lib/settings/initialSettings'
+import { Setting } from 'lib/settings/initialSettings'
 import decamelize from 'decamelize'
+import { Event } from 'xstate'
+import { useRefreshSettings } from 'hooks/useRefreshSettings'
 
 export const Settings = () => {
   const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
@@ -139,7 +144,9 @@ export const Settings = () => {
               offLabel="User"
               onLabel="Project"
               onChange={() =>
-                setSettingsLevel((v: SettingsLevel) => (v === 'project' ? 'user' : 'project'))
+                setSettingsLevel((v: SettingsLevel) =>
+                  v === 'project' ? 'user' : 'project'
+                )
               }
               checked={settingsLevel === 'project'}
               name="settings-level"
@@ -168,7 +175,7 @@ export const Settings = () => {
                             level: settingsLevel,
                             value: e.target.value,
                           },
-                        })
+                        } as unknown as Event<WildcardSetEvent>)
                       }}
                     >
                       {setting.options?.map((option) => (
@@ -183,7 +190,7 @@ export const Settings = () => {
                   Component = (
                     <input
                       className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
-                      defaultValue={setting.current}
+                      defaultValue={String(setting.current)}
                       onBlur={(e) => {
                         const newValue =
                           e.target.value.trim() || setting.default
@@ -193,8 +200,8 @@ export const Settings = () => {
                             level: settingsLevel,
                             value: newValue,
                           },
-                        })
-                        e.target.value = newValue
+                        } as unknown as Event<WildcardSetEvent>)
+                        e.target.value = String(newValue)
                       }}
                       autoCapitalize="off"
                       autoComplete="off"
@@ -214,7 +221,7 @@ export const Settings = () => {
                             level: settingsLevel,
                             value: e.target.checked,
                           },
-                        })
+                        } as unknown as Event<WildcardSetEvent>)
                       }}
                     />
                   )
@@ -228,9 +235,12 @@ export const Settings = () => {
                             type: `set.${category}.${settingName}`,
                             data: {
                               level: settingsLevel,
-                              value: e.target.value,
+                              value:
+                                'value' in e.target
+                                  ? e.target.value
+                                  : setting.default,
                             },
-                          })
+                          } as unknown as Event<WildcardSetEvent>)
                         },
                       })
                     : null
@@ -398,7 +408,7 @@ export const Settings = () => {
             <span className="flex gap-4 flex-wrap items-center">
               <button
                 onClick={async () => {
-                  const paths = await getSettingsFilePaths()
+                  const paths = await getSettingsFolderPaths()
                   void invoke('show_in_folder', {
                     path: paths.user,
                   })

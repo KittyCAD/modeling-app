@@ -1,3 +1,4 @@
+import { sep } from '@tauri-apps/api/path'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 
 const prependRoutes =
@@ -19,4 +20,25 @@ export const paths = {
   ONBOARDING: prependRoutes(onboardingPaths)(
     '/onboarding'
   ) as typeof onboardingPaths,
+}
+
+export function getProjectMetaByRouteId(id?: string, defaultDir = '') {
+  if (!id) return undefined
+
+  const decodedId = decodeURIComponent(id).replace(/\/$/g, '') // remove trailing slash
+  const projectAndFile = decodedId.replace(defaultDir + sep, '')
+  const filePathParts = projectAndFile.split(sep)
+  const projectName = filePathParts[0]
+  const projectPath = defaultDir + sep + projectName
+  const lastPathPart = filePathParts[filePathParts.length - 1]
+  const currentFileName =
+    lastPathPart === projectName ? undefined : lastPathPart
+  const currentFilePath = lastPathPart === projectName ? undefined : decodedId
+
+  return {
+    projectName,
+    projectPath,
+    currentFileName,
+    currentFilePath,
+  }
 }

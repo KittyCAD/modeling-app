@@ -12,7 +12,9 @@ const SignIn = () => {
     auth: { send },
     settings: {
       state: {
-        context: { app: { theme } },
+        context: {
+          app: { theme },
+        },
       },
     },
   } = useSettingsAuthContext()

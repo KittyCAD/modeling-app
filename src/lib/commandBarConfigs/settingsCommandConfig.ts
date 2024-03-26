@@ -41,7 +41,8 @@ export const settingsCommandBarConfig: CommandSetConfig<
       value: {
         inputType: 'options',
         required: true,
-        defaultValueFromContext: (context) => context.modeling.defaultUnit.current,
+        defaultValueFromContext: (context) =>
+          context.modeling.defaultUnit.current,
         options: [],
         optionsFromContext: (context) =>
           Object.values(baseUnitsUnion).map((v) => ({
@@ -59,7 +60,8 @@ export const settingsCommandBarConfig: CommandSetConfig<
       value: {
         inputType: 'options',
         required: true,
-        defaultValueFromContext: (context) => context.modeling.mouseControls.current,
+        defaultValueFromContext: (context) =>
+          context.modeling.mouseControls.current,
         options: [],
         optionsFromContext: (context) =>
           Object.values(cameraSystems).map((v) => ({
@@ -78,7 +80,8 @@ export const settingsCommandBarConfig: CommandSetConfig<
       value: {
         inputType: 'string',
         required: true,
-        defaultValueFromContext: (context) => context.project.defaultProjectName.current,
+        defaultValueFromContext: (context) =>
+          context.project.defaultProjectName.current,
       },
     },
   },
@@ -89,7 +92,8 @@ export const settingsCommandBarConfig: CommandSetConfig<
       value: {
         inputType: 'options',
         required: true,
-        defaultValueFromContext: (context) => context.textEditor.textWrapping.current,
+        defaultValueFromContext: (context) =>
+          context.textEditor.textWrapping.current,
         options: [],
         optionsFromContext: (context) => [
           {
