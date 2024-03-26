@@ -1289,40 +1289,14 @@ export class EngineCommandManager {
     this.callbacksEngineStateConnection.push(callback)
   }
   endSession() {
-    // TODO: instead of sending a single command with `object_ids: Object.keys(this.artifactMap)`
-    // we need to loop over them each individually because if the engine doesn't recognise a single
-    // id the whole command fails.
-    const artifactsToDelete: any = {}
-    Object.entries(this.artifactMap).forEach(([id, artifact]) => {
-      const artifactTypesToDelete: ArtifactMap[string]['commandType'][] = [
-        // 'start_path' creates a new scene object for the path, which is why it needs to be deleted,
-        // however all of the segments in the path are its children so there don't need to be deleted.
-        // this fact is very opaque in the api and docs (as to what should can be deleted).
-        // Using an array is the list is likely to grow.
-        'start_path',
-        'entity_linear_pattern',
-        'entity_circular_pattern',
-      ]
-      if (artifactTypesToDelete.includes(artifact.commandType)) {
-        artifactsToDelete[id] = artifact
-      }
-      if (artifact.commandType === 'import_files') {
-        // TODO why is this handled differently from other artifacts, i.e. why does it not use the id from the
-        // modeling command? We're having to do special clean up for this one special object.
-        artifactsToDelete[(artifact as any)?.data?.data?.object_id] = artifact
-      }
-    })
-    Object.keys(artifactsToDelete).forEach((id) => {
-      const deleteCmd: EngineCommand = {
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'remove_scene_objects',
-          object_ids: [id],
-        },
-      }
-      this.engineConnection?.send(deleteCmd)
-    })
+    const deleteCmd: EngineCommand = {
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'scene_clear_all',
+      },
+    }
+    this.engineConnection?.send(deleteCmd)
   }
   addCommandLog(message: CommandLog) {
     if (this._commandLogs.length > 500) {
