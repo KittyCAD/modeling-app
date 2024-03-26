@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use super::extrude::do_post_extrude;
 use crate::{
-    errors::KclError,
+    errors::{KclError, KclErrorDetails},
     executor::{ExtrudeGroup, MemoryItem, SketchGroup},
     std::Args,
 };
@@ -113,6 +113,16 @@ async fn inner_revolve(
     sketch_group: Box<SketchGroup>,
     args: Args,
 ) -> Result<Box<ExtrudeGroup>, KclError> {
+    if let Some(angle) = data.angle {
+        // Return an error if the angle is less than -360 or greater than 360.
+        if angle < -360.0 || angle > 360.0 {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: format!("Expected angle to be between -360 and 360, found `{}`", angle),
+                source_ranges: vec![args.source_range],
+            }));
+        }
+    }
+
     let (axis, origin) = data.axis.axis_and_origin()?;
     let id = uuid::Uuid::new_v4();
     args.send_modeling_cmd(

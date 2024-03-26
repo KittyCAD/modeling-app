@@ -1509,3 +1509,75 @@ async fn serial_test_simple_revolve() {
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/simple_revolve.png", &result, 1.0);
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_revolve_bad_angle_low() {
+    let code = r#"const part001 = startSketchOn('XY')
+     |> startProfileAt([4, 12], %)
+     |> line([2, 0], %)
+     |> line([0, -6], %)
+     |> line([4, -6], %)
+     |> line([0, -6], %)
+     |> line([-3.75, -4.5], %)
+     |> line([0, -5.5], %)
+     |> line([-2, 0], %)
+     |> close(%)
+     |> revolve({axis: 'y', angle: -455}, %)
+
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([278, 314])], message: "Expected angle to be between -360 and 360, found `-455`" }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_revolve_bad_angle_high() {
+    let code = r#"const part001 = startSketchOn('XY')
+     |> startProfileAt([4, 12], %)
+     |> line([2, 0], %)
+     |> line([0, -6], %)
+     |> line([4, -6], %)
+     |> line([0, -6], %)
+     |> line([-3.75, -4.5], %)
+     |> line([0, -5.5], %)
+     |> line([-2, 0], %)
+     |> close(%)
+     |> revolve({axis: 'y', angle: 455}, %)
+
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([278, 313])], message: "Expected angle to be between -360 and 360, found `455`" }"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_simple_revolve_custom_angle() {
+    let code = r#"const part001 = startSketchOn('XY')
+     |> startProfileAt([4, 12], %)
+     |> line([2, 0], %)
+     |> line([0, -6], %)
+     |> line([4, -6], %)
+     |> line([0, -6], %)
+     |> line([-3.75, -4.5], %)
+     |> line([0, -5.5], %)
+     |> line([-2, 0], %)
+     |> close(%)
+     |> revolve({axis: 'y', angle: 180}, %)
+
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/simple_revolve_custom_angle.png", &result, 1.0);
+}
