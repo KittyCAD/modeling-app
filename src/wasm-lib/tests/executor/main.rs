@@ -1,8 +1,22 @@
+use std::time::Duration;
+
 use anyhow::Result;
+use tokio::time::sleep;
+
+async fn execute_and_snapshot(code: &str, units: kittycad::types::UnitLength) -> Result<image::DynamicImage> {
+    for _ in 0..2 {
+        match execute_and_snapshot_once(code, units.clone()).await {
+            Ok(v) => return Ok(v),
+            _ => {}
+        }
+        sleep(Duration::from_secs(1)).await;
+    }
+    execute_and_snapshot_once(code, units).await
+}
 
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
-async fn execute_and_snapshot(code: &str, units: kittycad::types::UnitLength) -> Result<image::DynamicImage> {
+async fn execute_and_snapshot_once(code: &str, units: kittycad::types::UnitLength) -> Result<image::DynamicImage> {
     let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
     let http_client = reqwest::Client::builder()
         .user_agent(user_agent)
