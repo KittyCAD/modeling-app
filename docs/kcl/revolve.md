@@ -16,9 +16,16 @@ revolve(data: RevolveData, sketch_group: SketchGroup) -> ExtrudeGroup
 
 ```js
 const part001 = startSketchOn('XY')
-  |> circle([5, 5], 10, %)
-  |> extrude(10, %)
-  |> revolve({ axis: 'z' }, %)
+  |> startProfileAt([4, 12], %)
+  |> line([2, 0], %)
+  |> line([0, -6], %)
+  |> line([4, -6], %)
+  |> line([0, -6], %)
+  |> line([-3.75, -4.5], %)
+  |> line([0, -5.5], %)
+  |> line([-2, 0], %)
+  |> close(%)
+  |> revolve({ axis: 'y' }, %)
 ```
 
 ### Arguments
@@ -29,7 +36,20 @@ const part001 = startSketchOn('XY')
 	// Angle to revolve (in degrees). Default is 360.
 	angle: number,
 	// Axis of revolution.
-	axis: "X" | "Y" | "Z" | "-X" | "-Y" | "-Z",
+	axis: "X" |
+"Y" |
+"Z" |
+"-X" |
+"-Y" |
+"-Z" |
+{
+	Custom: {
+	// The axis.
+	axis: [number, number, number],
+	// The origin.
+	origin: [number, number, number],
+},
+},
 }
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)

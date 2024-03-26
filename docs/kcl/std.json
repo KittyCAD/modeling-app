@@ -48571,6 +48571,44 @@
                   "enum": [
                     "-Z"
                   ]
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "Custom"
+                  ],
+                  "properties": {
+                    "Custom": {
+                      "type": "object",
+                      "required": [
+                        "axis",
+                        "origin"
+                      ],
+                      "properties": {
+                        "axis": {
+                          "description": "The axis.",
+                          "type": "array",
+                          "items": {
+                            "type": "number",
+                            "format": "double"
+                          },
+                          "maxItems": 3,
+                          "minItems": 3
+                        },
+                        "origin": {
+                          "description": "The origin.",
+                          "type": "array",
+                          "items": {
+                            "type": "number",
+                            "format": "double"
+                          },
+                          "maxItems": 3,
+                          "minItems": 3
+                        }
+                      }
+                    }
+                  },
+                  "additionalProperties": false
                 }
               ]
             }
@@ -50305,7 +50343,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const part001 = startSketchOn('XY')\n  |> circle([5, 5], 10, %)\n  |> extrude(10, %)\n  |> revolve({ axis: 'z' }, %)"
+      "const part001 = startSketchOn('XY')\n  |> startProfileAt([4, 12], %)\n  |> line([2, 0], %)\n  |> line([0, -6], %)\n  |> line([4, -6], %)\n  |> line([0, -6], %)\n  |> line([-3.75, -4.5], %)\n  |> line([0, -5.5], %)\n  |> line([-2, 0], %)\n  |> close(%)\n  |> revolve({ axis: 'y' }, %)"
     ]
   },
   {

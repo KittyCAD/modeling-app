@@ -46,25 +46,39 @@ pub enum RevolveAxis {
     /// Flip the Z-axis.
     #[serde(rename = "-Z", alias = "-z")]
     NegZ,
+    Custom {
+        /// The axis.
+        axis: [f64; 3],
+        /// The origin.
+        origin: [f64; 3],
+    },
 }
 
 impl RevolveAxis {
-    /// Get the axis around 0,0,0 origin.
-    pub fn axis_from_origin(&self) -> Result<kittycad::types::Point3D, KclError> {
-        let axis = match self {
-            RevolveAxis::X => [1.0, 0.0, 0.0],
-            RevolveAxis::Y => [0.0, 1.0, 0.0],
-            RevolveAxis::Z => [0.0, 0.0, 1.0],
-            RevolveAxis::NegX => [-1.0, 0.0, 0.0],
-            RevolveAxis::NegY => [0.0, -1.0, 0.0],
-            RevolveAxis::NegZ => [0.0, 0.0, -1.0],
+    /// Get the axis and origin.
+    pub fn axis_and_origin(&self) -> Result<(kittycad::types::Point3D, kittycad::types::Point3D), KclError> {
+        let (axis, origin) = match self {
+            RevolveAxis::X => ([1.0, 0.0, 0.0], [0.0, 0.0, 0.0]),
+            RevolveAxis::Y => ([0.0, 1.0, 0.0], [0.0, 0.0, 0.0]),
+            RevolveAxis::Z => ([0.0, 0.0, 1.0], [0.0, 0.0, 0.0]),
+            RevolveAxis::NegX => ([-1.0, 0.0, 0.0], [0.0, 0.0, 0.0]),
+            RevolveAxis::NegY => ([0.0, -1.0, 0.0], [0.0, 0.0, 0.0]),
+            RevolveAxis::NegZ => ([0.0, 0.0, -1.0], [0.0, 0.0, 0.0]),
+            RevolveAxis::Custom { axis, origin } => (*axis, *origin),
         };
 
-        Ok(kittycad::types::Point3D {
-            x: axis[0],
-            y: axis[1],
-            z: axis[2],
-        })
+        Ok((
+            kittycad::types::Point3D {
+                x: axis[0],
+                y: axis[1],
+                z: axis[2],
+            },
+            kittycad::types::Point3D {
+                x: origin[0],
+                y: origin[1],
+                z: origin[2],
+            },
+        ))
     }
 }
 
@@ -99,14 +113,15 @@ async fn inner_revolve(
     sketch_group: Box<SketchGroup>,
     args: Args,
 ) -> Result<Box<ExtrudeGroup>, KclError> {
+    let (axis, origin) = data.axis.axis_and_origin()?;
     let id = uuid::Uuid::new_v4();
     args.send_modeling_cmd(
         id,
         ModelingCmd::Revolve {
             angle: kittycad::types::Angle::from_degrees(data.angle.unwrap_or(360.0)),
             target: sketch_group.id,
-            axis: data.axis.axis_from_origin()?,
-            origin: kittycad::types::Point3D { x: 0.0, y: 0.0, z: 0.0 },
+            axis,
+            origin,
         },
     )
     .await?;
