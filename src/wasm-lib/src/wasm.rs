@@ -22,6 +22,7 @@ pub async fn execute_wasm(
 ) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
     // deserialize the ast from a stringified json
+    // i'm a comment
 
     use kcl_lib::executor::ExecutorContext;
     let program: kcl_lib::ast::types::Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
