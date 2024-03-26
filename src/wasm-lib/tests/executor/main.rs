@@ -1652,6 +1652,27 @@ async fn serial_test_simple_revolve_custom_axis() {
 async fn serial_test_revolve_on_edge() {
     let code = r#"const box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
+  |> line([0, 20], %, 'revolveAxis')
+  |> line([20, 0], %)
+  |> line([0, -20], %) 
+  |> close(%)
+|> revolve({
+    angle: 90, 
+    axis: 'revolveAxis' 
+    }, %)
+
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/revolve_on_edge.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_revolve_on_face_circle() {
+    let code = r#"const box = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   |> line([0, 5], %)
   |> line([5, 0], %, 'revolveAxis')
   |> line([0, -5], %) 
@@ -1661,15 +1682,43 @@ async fn serial_test_revolve_on_edge() {
 const sketch001 = startSketchOn(box, "END")
   |> circle([2.5, 2.5], 1, %)
   |> revolve({
-    angle: 90, 
-    axis: getOppositeEdge("revolveAxis", box) 
+    angle: -90, 
+    axis: 'y' 
     }, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
         .await
         .unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/revolve_on_edge.png", &result, 1.0);
+    twenty_twenty::assert_image("tests/executor/outputs/revolve_on_face_circle.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_revolve_on_face() {
+    let code = r#"const box = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %)
+  |> close(%, 'revolveAxis')
+  |> extrude(10, %)
+
+const sketch001 = startSketchOn(box, "end")
+  |> startProfileAt([10, 5], %)
+  |> line([-10, 0], %)
+  |> line([0, 2], %)
+  |> line([10, 0], %)
+  |> close(%)
+  |> revolve({
+      axis: 'x',
+      angle: 90,
+  }, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/revolve_on_face.png", &result, 1.0);
 }
 
 #[tokio::test(flavor = "multi_thread")]

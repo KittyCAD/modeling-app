@@ -5,10 +5,11 @@ use derive_docs::stdlib;
 use kittycad::types::ModelingCmd;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, MemoryItem, SketchGroup},
+    executor::{ExtrudeGroup, MemoryItem, SketchGroup, UserVal},
     std::{
         extrude::do_post_extrude,
         fillet::{EdgeReference, DEFAULT_TOLERANCE},
@@ -204,6 +205,59 @@ async fn inner_revolve(
     }
 
     do_post_extrude(sketch_group, 0.0, id, args).await
+}
+
+/// Get an edge on a 3D solid.
+pub async fn get_edge(args: Args) -> Result<MemoryItem, KclError> {
+    let (tag, extrude_group): (String, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+
+    let edge = inner_get_edge(tag, extrude_group, args.clone()).await?;
+    Ok(MemoryItem::UserVal(UserVal {
+        value: serde_json::to_value(edge).map_err(|e| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Failed to convert Uuid to json: {}", e),
+                source_ranges: vec![args.source_range],
+            })
+        })?,
+        meta: vec![args.source_range.into()],
+    }))
+}
+
+/// Get an edge on a 3D solid.
+///
+/// ```no_run
+/// const box = startSketchOn('XY')
+///     |> startProfileAt([0, 0], %)
+///     |> line([0, 20], %)
+///     |> line([20, 0], %)
+///     |> line([0, -20], %, 'revolveAxis')
+///     |> close(%)
+///     |> extrude(20, %)
+///
+/// const sketch001 = startSketchOn(box, "end")
+///     |> circle([2.5, 2.5], 1, %)
+///     |> revolve({
+///         angle: -90,
+///         axis: getEdge("revolveAxis", box)
+///     }, %)
+/// ```
+#[stdlib {
+    name = "getEdge",
+}]
+async fn inner_get_edge(tag: String, extrude_group: Box<ExtrudeGroup>, args: Args) -> Result<Uuid, KclError> {
+    let tagged_path = extrude_group
+        .sketch_group_values
+        .iter()
+        .find(|p| p.get_name() == tag)
+        .ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!("No edge found with tag: `{}`", tag),
+                source_ranges: vec![args.source_range],
+            })
+        })?
+        .get_base();
+
+    Ok(tagged_path.geo_meta.id)
 }
 
 #[cfg(test)]
