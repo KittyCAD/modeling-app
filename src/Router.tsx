@@ -75,16 +75,12 @@ const router = createBrowserRouter([
         ),
         children: [
           {
-            loader: onboardingRedirectLoader,
-            index: true,
-            element: <></>,
-          },
-          {
+            id: paths.FILE + 'SETTINGS',
+            loader: settingsLoader,
             children: [
               {
+                loader: onboardingRedirectLoader,
                 index: true,
-                id: paths.FILE + 'SETTINGS',
-                loader: settingsLoader,
                 element: <></>,
               },
               {

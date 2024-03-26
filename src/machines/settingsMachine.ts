@@ -62,11 +62,11 @@ export const settingsMachine = createMachine(
             internal: true,
             actions: [
               'setAllSettings',
-              'persistSettings',
               'setThemeClass',
               'setEngineTheme',
               'Execute AST',
               'setClientSideSceneUnits',
+              'persistSettings',
             ],
           },
         },

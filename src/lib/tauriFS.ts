@@ -398,8 +398,8 @@ export async function writeToSettingsFiles(
     await removeFile(path)
   }
 
-  if (projectData) {
-    const path = projectData?.project?.path + sep + 'settings.json'
+  if (projectData?.project?.path) {
+    const path = projectData.project.path + sep + 'settings.json'
     const settings = getChangedSettingsAtLevel(allSettings, 'project')
 
     if (settings && Object.keys(settings).length) {

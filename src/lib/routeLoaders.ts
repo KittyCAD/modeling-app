@@ -40,10 +40,10 @@ export const settingsLoader: LoaderFunction = async ({
 }
 
 // Redirect users to the appropriate onboarding page if they haven't completed it
-export const onboardingRedirectLoader: ActionFunction = async ({ request }) => {
+export const onboardingRedirectLoader: ActionFunction = async (args) => {
   const settings = await loadAndValidateSettings()
   const onboardingStatus = settings.app.onboardingStatus.current || ''
-  const notEnRouteToOnboarding = !request.url.includes(paths.ONBOARDING.INDEX)
+  const notEnRouteToOnboarding = !args.request.url.includes(paths.ONBOARDING.INDEX)
   // '' is the initial state, 'done' and 'dismissed' are the final states
   const hasValidOnboardingStatus =
     onboardingStatus.length === 0 ||
@@ -57,7 +57,7 @@ export const onboardingRedirectLoader: ActionFunction = async ({ request }) => {
     )
   }
 
-  return null
+  return settingsLoader(args)
 }
 
 export const fileLoader: LoaderFunction = async ({

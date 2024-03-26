@@ -66,7 +66,9 @@ export const ModelingMachineProvider = ({
   const {
     auth,
     settings: {
-      context: { app: { theme }, modeling: { defaultUnit } },
+      context: {
+        app: { theme },
+      },
     },
   } = useSettingsAuthContext()
   const { code } = useKclContext()
@@ -229,20 +231,11 @@ export const ModelingMachineProvider = ({
             }
           }
 
-          if (
-            format.type === 'obj' ||
-            format.type === 'stl' ||
-            format.type === 'ply'
-          ) {
-            format.units = defaultUnit.current
-          }
-
           if (format.type === 'ply' || format.type === 'stl') {
             format.selection = { type: 'default_scene' }
           }
 
           exportFromEngine({
-            source_unit: defaultUnit.current,
             format: format as Models['OutputFormat_type'],
           }).catch((e) => toast.error('Error while exporting', e)) // TODO I think we need to throw the error from engineCommandManager
         },
