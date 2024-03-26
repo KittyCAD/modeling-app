@@ -19,7 +19,7 @@ import {
   createVariableDeclaration,
 } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
-import { kclManager } from 'lang/KclSingleton'
+import { kclManager } from 'lib/singletons'
 
 const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
 

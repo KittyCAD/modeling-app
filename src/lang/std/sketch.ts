@@ -1155,11 +1155,14 @@ export function addTagForSketchOnFace(
   a: ModifyAstBase,
   expressionName: string
 ) {
+  if (expressionName === 'close') {
+    return addTag(1)(a)
+  }
   if (expressionName in sketchLineHelperMap) {
     const { addTag } = sketchLineHelperMap[expressionName]
     return addTag(a)
   }
-  throw new Error('not a sketch line helper')
+  throw new Error(`"${expressionName}" is not a sketch line helper`)
 }
 
 function isAngleLiteral(lineArugement: Value): boolean {
@@ -1174,7 +1177,7 @@ function isAngleLiteral(lineArugement: Value): boolean {
 
 type addTagFn = (a: ModifyAstBase) => { modifiedAst: Program; tag: string }
 
-function addTag(): addTagFn {
+function addTag(tagIndex = 2): addTagFn {
   return ({ node, pathToNode }) => {
     const _node = { ...node }
     const { node: primaryCallExp } = getNodeFromPath<CallExpression>(
@@ -1184,12 +1187,12 @@ function addTag(): addTagFn {
     )
     // Tag is always 3rd expression now, using arg index feels brittle
     // but we can come up with a better way to identify tag later.
-    const thirdArg = primaryCallExp.arguments?.[2]
+    const thirdArg = primaryCallExp.arguments?.[tagIndex]
     const tagLiteral =
       thirdArg || (createLiteral(findUniqueName(_node, 'seg', 2)) as Literal)
     const isTagExisting = !!thirdArg
     if (!isTagExisting) {
-      primaryCallExp.arguments[2] = tagLiteral
+      primaryCallExp.arguments[tagIndex] = tagLiteral
     }
     if ('value' in tagLiteral) {
       // Now TypeScript knows tagLiteral has a value property

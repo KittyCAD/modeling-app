@@ -1,6 +1,26 @@
+use anyhow::Result;
 use quote::quote;
 
 use crate::{do_stdlib, parse_array_type};
+
+fn clean_text(s: &str) -> String {
+    // Add newlines after end-braces at <= two levels of indentation.
+    if cfg!(not(windows)) {
+        let regex = regex::Regex::new(r"(})(\n\s{0,8}[^} ])").unwrap();
+        regex.replace_all(s, "$1\n$2").to_string()
+    } else {
+        let regex = regex::Regex::new(r"(})(\r\n\s{0,8}[^} ])").unwrap();
+        regex.replace_all(s, "$1\r\n$2").to_string()
+    }
+}
+
+/// Format a TokenStream as a string and run `rustfmt` on the result.
+fn get_text_fmt(output: &proc_macro2::TokenStream) -> Result<String> {
+    // Format the file with rustfmt.
+    let content = rustfmt_wrapper::rustfmt(output).unwrap();
+
+    Ok(clean_text(&content))
+}
 
 #[test]
 fn test_get_inner_array_type() {
@@ -47,7 +67,7 @@ fn test_stdlib_line_to() {
     let _expected = quote! {};
 
     assert!(errors.is_empty());
-    expectorate::assert_contents("tests/lineTo.gen", &openapitor::types::get_text_fmt(&item).unwrap());
+    expectorate::assert_contents("tests/lineTo.gen", &get_text_fmt(&item).unwrap());
 }
 
 #[test]
@@ -88,7 +108,7 @@ fn test_stdlib_min() {
     let _expected = quote! {};
 
     assert!(errors.is_empty());
-    expectorate::assert_contents("tests/min.gen", &openapitor::types::get_text_fmt(&item).unwrap());
+    expectorate::assert_contents("tests/min.gen", &get_text_fmt(&item).unwrap());
 }
 
 #[test]
@@ -115,7 +135,7 @@ fn test_stdlib_show() {
     let _expected = quote! {};
 
     assert!(errors.is_empty());
-    expectorate::assert_contents("tests/show.gen", &openapitor::types::get_text_fmt(&item).unwrap());
+    expectorate::assert_contents("tests/show.gen", &get_text_fmt(&item).unwrap());
 }
 
 #[test]
@@ -143,7 +163,7 @@ fn test_stdlib_box() {
     let _expected = quote! {};
 
     assert!(errors.is_empty());
-    expectorate::assert_contents("tests/box.gen", &openapitor::types::get_text_fmt(&item).unwrap());
+    expectorate::assert_contents("tests/box.gen", &get_text_fmt(&item).unwrap());
 }
 
 #[test]
@@ -170,7 +190,7 @@ fn test_stdlib_option() {
     .unwrap();
 
     assert!(errors.is_empty());
-    expectorate::assert_contents("tests/option.gen", &openapitor::types::get_text_fmt(&item).unwrap());
+    expectorate::assert_contents("tests/option.gen", &get_text_fmt(&item).unwrap());
 }
 
 #[test]
@@ -203,7 +223,7 @@ fn test_stdlib_array() {
     .unwrap();
 
     assert!(errors.is_empty());
-    expectorate::assert_contents("tests/array.gen", &openapitor::types::get_text_fmt(&item).unwrap());
+    expectorate::assert_contents("tests/array.gen", &get_text_fmt(&item).unwrap());
 }
 
 #[test]
@@ -230,10 +250,7 @@ fn test_stdlib_option_input_format() {
     .unwrap();
 
     assert!(errors.is_empty());
-    expectorate::assert_contents(
-        "tests/option_input_format.gen",
-        &openapitor::types::get_text_fmt(&item).unwrap(),
-    );
+    expectorate::assert_contents("tests/option_input_format.gen", &get_text_fmt(&item).unwrap());
 }
 
 #[test]
@@ -260,10 +277,7 @@ fn test_stdlib_return_vec_sketch_group() {
     .unwrap();
 
     assert!(errors.is_empty());
-    expectorate::assert_contents(
-        "tests/return_vec_sketch_group.gen",
-        &openapitor::types::get_text_fmt(&item).unwrap(),
-    );
+    expectorate::assert_contents("tests/return_vec_sketch_group.gen", &get_text_fmt(&item).unwrap());
 }
 
 #[test]
@@ -290,10 +304,7 @@ fn test_stdlib_return_vec_box_sketch_group() {
     .unwrap();
 
     assert!(errors.is_empty());
-    expectorate::assert_contents(
-        "tests/return_vec_box_sketch_group.gen",
-        &openapitor::types::get_text_fmt(&item).unwrap(),
-    );
+    expectorate::assert_contents("tests/return_vec_box_sketch_group.gen", &get_text_fmt(&item).unwrap());
 }
 
 #[test]
@@ -326,10 +337,7 @@ fn test_stdlib_doc_comment_with_code() {
     .unwrap();
 
     assert!(errors.is_empty());
-    expectorate::assert_contents(
-        "tests/doc_comment_with_code.gen",
-        &openapitor::types::get_text_fmt(&item).unwrap(),
-    );
+    expectorate::assert_contents("tests/doc_comment_with_code.gen", &get_text_fmt(&item).unwrap());
 }
 
 #[test]
@@ -364,7 +372,7 @@ fn test_stdlib_doc_comment_with_code_on_ignored_function() {
     assert!(errors.is_empty());
     expectorate::assert_contents(
         "tests/doc_comment_with_code_on_ignored_function.gen",
-        &openapitor::types::get_text_fmt(&item).unwrap(),
+        &get_text_fmt(&item).unwrap(),
     );
 }
 

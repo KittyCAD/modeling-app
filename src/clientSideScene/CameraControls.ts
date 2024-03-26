@@ -19,7 +19,7 @@ import {
 import {
   EngineCommand,
   Subscription,
-  engineCommandManager,
+  EngineCommandManager,
 } from 'lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
 import { deg2Rad } from 'lib/utils2d'
@@ -33,10 +33,6 @@ const FRAMES_TO_ANIMATE_IN = 30
 const tempQuaternion = new Quaternion() // just used for maths
 
 type interactionType = 'pan' | 'rotate' | 'zoom'
-
-const throttledEngCmd = throttle((cmd: EngineCommand) => {
-  engineCommandManager.sendSceneCommand(cmd)
-}, 1000 / 15)
 
 interface ThreeCamValues {
   position: Vector3
@@ -62,68 +58,8 @@ export type ReactCameraProperties =
 
 const lastCmdDelay = 50
 
-const throttledUpdateEngineCamera = throttle((threeValues: ThreeCamValues) => {
-  const cmd: EngineCommand = {
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_look_at',
-      ...convertThreeCamValuesToEngineCam(threeValues),
-    },
-  }
-  engineCommandManager.sendSceneCommand(cmd)
-}, 1000 / 15)
-
-let lastPerspectiveCmd: EngineCommand | null = null
-let lastPerspectiveCmdTime: number = Date.now()
-let lastPerspectiveCmdTimeoutId: number | null = null
-
-const sendLastPerspectiveReliableChannel = () => {
-  if (
-    lastPerspectiveCmd &&
-    Date.now() - lastPerspectiveCmdTime >= lastCmdDelay
-  ) {
-    engineCommandManager.sendSceneCommand(lastPerspectiveCmd, true)
-    lastPerspectiveCmdTime = Date.now()
-  }
-}
-
-const throttledUpdateEngineFov = throttle(
-  (vals: {
-    position: Vector3
-    quaternion: Quaternion
-    zoom: number
-    fov: number
-    target: Vector3
-  }) => {
-    const cmd: EngineCommand = {
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_perspective_settings',
-        ...convertThreeCamValuesToEngineCam({
-          ...vals,
-          isPerspective: true,
-        }),
-        fov_y: vals.fov,
-        ...calculateNearFarFromFOV(vals.fov),
-      },
-    }
-    engineCommandManager.sendSceneCommand(cmd)
-    lastPerspectiveCmd = cmd
-    lastPerspectiveCmdTime = Date.now()
-    if (lastPerspectiveCmdTimeoutId !== null) {
-      clearTimeout(lastPerspectiveCmdTimeoutId)
-    }
-    lastPerspectiveCmdTimeoutId = setTimeout(
-      sendLastPerspectiveReliableChannel,
-      lastCmdDelay
-    ) as any as number
-  },
-  1000 / 30
-)
-
 export class CameraControls {
+  engineCommandManager: EngineCommandManager
   syncDirection: 'clientToEngine' | 'engineToClient' = 'engineToClient'
   camera: PerspectiveCamera | OrthographicCamera
   target: Vector3
@@ -213,7 +149,77 @@ export class CameraControls {
     this.update(true)
   }
 
-  constructor(isOrtho = false, domElement: HTMLCanvasElement) {
+  throttledEngCmd = throttle((cmd: EngineCommand) => {
+    this.engineCommandManager.sendSceneCommand(cmd)
+  }, 1000 / 30)
+
+  throttledUpdateEngineCamera = throttle((threeValues: ThreeCamValues) => {
+    const cmd: EngineCommand = {
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        ...convertThreeCamValuesToEngineCam(threeValues),
+      },
+    }
+    this.engineCommandManager.sendSceneCommand(cmd)
+  }, 1000 / 15)
+
+  lastPerspectiveCmd: EngineCommand | null = null
+  lastPerspectiveCmdTime: number = Date.now()
+  lastPerspectiveCmdTimeoutId: number | null = null
+
+  sendLastPerspectiveReliableChannel = () => {
+    if (
+      this.lastPerspectiveCmd &&
+      Date.now() - this.lastPerspectiveCmdTime >= lastCmdDelay
+    ) {
+      this.engineCommandManager.sendSceneCommand(this.lastPerspectiveCmd, true)
+      this.lastPerspectiveCmdTime = Date.now()
+    }
+  }
+
+  throttledUpdateEngineFov = throttle(
+    (vals: {
+      position: Vector3
+      quaternion: Quaternion
+      zoom: number
+      fov: number
+      target: Vector3
+    }) => {
+      const cmd: EngineCommand = {
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_perspective_settings',
+          ...convertThreeCamValuesToEngineCam({
+            ...vals,
+            isPerspective: true,
+          }),
+          fov_y: vals.fov,
+          ...calculateNearFarFromFOV(vals.fov),
+        },
+      }
+      this.engineCommandManager.sendSceneCommand(cmd)
+      this.lastPerspectiveCmd = cmd
+      this.lastPerspectiveCmdTime = Date.now()
+      if (this.lastPerspectiveCmdTimeoutId !== null) {
+        clearTimeout(this.lastPerspectiveCmdTimeoutId)
+      }
+      this.lastPerspectiveCmdTimeoutId = setTimeout(
+        this.sendLastPerspectiveReliableChannel,
+        lastCmdDelay
+      ) as any as number
+    },
+    1000 / 30
+  )
+
+  constructor(
+    isOrtho = false,
+    domElement: HTMLCanvasElement,
+    engineCommandManager: EngineCommandManager
+  ) {
+    this.engineCommandManager = engineCommandManager
     this.camera = isOrtho ? new OrthographicCamera() : new PerspectiveCamera()
     this.camera.up.set(0, 0, 1)
     this.camera.far = 20000
@@ -259,15 +265,15 @@ export class CameraControls {
       this.onCameraChange()
     }
     setTimeout(() => {
-      engineCommandManager.subscribeTo({
+      this.engineCommandManager.subscribeTo({
         event: 'camera_drag_end',
         callback: cb,
       })
-      engineCommandManager.subscribeTo({
+      this.engineCommandManager.subscribeTo({
         event: 'default_camera_zoom',
         callback: cb,
       })
-      engineCommandManager.subscribeTo({
+      this.engineCommandManager.subscribeTo({
         event: 'default_camera_get_settings',
         callback: cb,
       })
@@ -310,7 +316,7 @@ export class CameraControls {
     this.handleStart()
 
     if (this.syncDirection === 'engineToClient') {
-      void engineCommandManager.sendSceneCommand({
+      void this.engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
           type: 'camera_drag_start',
@@ -334,7 +340,7 @@ export class CameraControls {
       if (interaction === 'none') return
 
       if (this.syncDirection === 'engineToClient') {
-        throttledEngCmd({
+        this.throttledEngCmd({
           type: 'modeling_cmd_req',
           cmd: {
             type: 'camera_drag_move',
@@ -377,7 +383,7 @@ export class CameraControls {
     if (this.syncDirection === 'engineToClient') {
       const interaction = this.getInteractionType(event)
       if (interaction === 'none') return
-      void engineCommandManager.sendSceneCommand({
+      void this.engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
           type: 'camera_drag_end',
@@ -401,7 +407,7 @@ export class CameraControls {
         this.handleEnd()
         return
       }
-      throttledEngCmd({
+      this.throttledEngCmd({
         type: 'modeling_cmd_req',
         cmd: {
           type: 'default_camera_zoom',
@@ -425,6 +431,7 @@ export class CameraControls {
     if (this.camera instanceof OrthographicCamera) return
     const { x: px, y: py, z: pz } = this.camera.position
     const { x: qx, y: qy, z: qz, w: qw } = this.camera.quaternion
+    const oldCamUp = this.camera.up.clone()
     const aspect = window.innerWidth / window.innerHeight
     this.lastPerspectiveFov = this.camera.fov
     const { z_near, z_far } = calculateNearFarFromFOV(this.lastPerspectiveFov)
@@ -436,7 +443,8 @@ export class CameraControls {
       z_near,
       z_far
     )
-    this.camera.up.set(0, 0, 1)
+
+    this.camera.up.copy(oldCamUp)
     this.camera.layers.enable(SKETCH_LAYER)
     if (DEBUG_SHOW_INTERSECTION_PLANE)
       this.camera.layers.enable(INTERSECTION_PLANE_LAYER)
@@ -447,7 +455,7 @@ export class CameraControls {
 
     this.camera.quaternion.set(qx, qy, qz, qw)
     this.camera.updateProjectionMatrix()
-    engineCommandManager.sendSceneCommand({
+    this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
       cmd: {
@@ -458,13 +466,14 @@ export class CameraControls {
   }
   private createPerspectiveCamera = () => {
     const { z_near, z_far } = calculateNearFarFromFOV(this.lastPerspectiveFov)
+    const previousCamUp = this.camera.up.clone()
     this.camera = new PerspectiveCamera(
       this.lastPerspectiveFov,
       window.innerWidth / window.innerHeight,
       z_near,
       z_far
     )
-    this.camera.up.set(0, 0, 1)
+    this.camera.up.copy(previousCamUp)
     this.camera.layers.enable(SKETCH_LAYER)
     if (DEBUG_SHOW_INTERSECTION_PLANE)
       this.camera.layers.enable(INTERSECTION_PLANE_LAYER)
@@ -490,7 +499,7 @@ export class CameraControls {
   }
   usePerspectiveCamera = () => {
     this._usePerspectiveCamera()
-    engineCommandManager.sendSceneCommand({
+    this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
       cmd: {
@@ -558,7 +567,7 @@ export class CameraControls {
     this.camera.near = z_near
     this.camera.far = z_far
 
-    throttledUpdateEngineFov({
+    this.throttledUpdateEngineFov({
       fov: newFov,
       position: newPosition,
       quaternion: this.camera.quaternion,
@@ -618,7 +627,7 @@ export class CameraControls {
       didChange = true
     }
 
-    this.safeLookAtTarget()
+    this.safeLookAtTarget(this.camera.up)
 
     // Update the camera's matrices
     this.camera.updateMatrixWorld()
@@ -683,48 +692,48 @@ export class CameraControls {
     targetAngle = -Math.PI / 2,
     duration = 500
   ): Promise<void> {
-    // should tween the camera so that it has an xPosition of 0, and forcing it's yPosition to be negative
-    // zPosition should stay the same
-    const xyRadius = Math.sqrt(
-      (this.target.x - this.camera.position.x) ** 2 +
-        (this.target.y - this.camera.position.y) ** 2
-    )
-    const xyAngle = Math.atan2(
-      this.camera.position.y - this.target.y,
-      this.camera.position.x - this.target.x
-    )
-    this._isCamMovingCallback(true, true)
     return new Promise((resolve) => {
+      // should tween the camera so that it has an xPosition of 0, and forcing it's yPosition to be negative
+      // zPosition should stay the same
+      const xyRadius = Math.sqrt(
+        (this.target.x - this.camera.position.x) ** 2 +
+          (this.target.y - this.camera.position.y) ** 2
+      )
+      const xyAngle = Math.atan2(
+        this.camera.position.y - this.target.y,
+        this.camera.position.x - this.target.x
+      )
+      const camAtTime = (obj: { angle: number }) => {
+        const x = xyRadius * Math.cos(obj.angle)
+        const y = xyRadius * Math.sin(obj.angle)
+        this.camera.position.set(
+          this.target.x + x,
+          this.target.y + y,
+          this.camera.position.z
+        )
+        this.update()
+        this.onCameraChange()
+      }
+      const onComplete = (obj: { angle: number }) => {
+        camAtTime(obj)
+        this._isCamMovingCallback(false, true)
+
+        // resolve after a couple of frames
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => resolve())
+        })
+      }
+      this._isCamMovingCallback(true, true)
+
+      if (isReducedMotion()) {
+        onComplete({ angle: targetAngle })
+        return
+      }
+
       new TWEEN.Tween({ angle: xyAngle })
         .to({ angle: targetAngle }, duration)
-        .onUpdate((obj) => {
-          const x = xyRadius * Math.cos(obj.angle)
-          const y = xyRadius * Math.sin(obj.angle)
-          this.camera.position.set(
-            this.target.x + x,
-            this.target.y + y,
-            this.camera.position.z
-          )
-          this.update()
-          this.onCameraChange()
-        })
-        .onComplete((obj) => {
-          const x = xyRadius * Math.cos(obj.angle)
-          const y = xyRadius * Math.sin(obj.angle)
-          this.camera.position.set(
-            this.target.x + x,
-            this.target.y + y,
-            this.camera.position.z
-          )
-          this.update()
-          this.onCameraChange()
-          this._isCamMovingCallback(false, true)
-
-          // resolve after a couple of frames
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => resolve())
-          })
-        })
+        .onUpdate(camAtTime)
+        .onComplete(onComplete)
         .start()
     })
   }
@@ -778,6 +787,8 @@ export class CameraControls {
           targetQuaternion,
           animationProgress
         )
+        const up = new Vector3(0, 0, 1).applyQuaternion(currentQ)
+        this.camera.up.copy(up)
         const currentTarget = tempVec.lerpVectors(
           initialTarget,
           targetPosition,
@@ -802,7 +813,7 @@ export class CameraControls {
 
       const onComplete = async () => {
         if (isReducedMotion() && toOrthographic) {
-          cameraAtTime(0.99)
+          cameraAtTime(0.9999)
           this.useOrthographicCamera()
         } else if (toOrthographic) {
           await this.animateToOrthographic()
@@ -863,37 +874,40 @@ export class CameraControls {
 
       animateFovChange() // Start the animation
     })
-  animateToPerspective = () =>
+  animateToPerspective = (targetCamUp = new Vector3(0, 0, 1)) =>
     new Promise((resolve) => {
-      if (this.syncDirection === 'engineToClient')
+      if (this.syncDirection === 'engineToClient') {
         console.warn(
           'animate To Perspective not design to work with engineToClient syncDirection.'
         )
+      }
       this.isFovAnimationInProgress = true
-      // Immediately set the camera to perspective with a very low FOV
       const targetFov = this.fovBeforeOrtho // Target FOV for perspective
       this.lastPerspectiveFov = 4
       let currentFov = 4
-      this.camera.updateProjectionMatrix()
-      const fovAnimationStep = (targetFov - currentFov) / FRAMES_TO_ANIMATE_IN
+      const initialCameraUp = this.camera.up.clone()
       this.usePerspectiveCamera()
+      const tempVec = new Vector3()
 
-      const animateFovChange = () => {
-        if (this.camera instanceof OrthographicCamera) return
-        if (this.camera.fov < targetFov) {
-          // Increase the FOV
-          currentFov = Math.min(currentFov + fovAnimationStep, targetFov)
-          // this.camera.fov = currentFov
-          this.camera.updateProjectionMatrix()
-          this.dollyZoom(currentFov)
-          requestAnimationFrame(animateFovChange) // Continue the animation
-        } else {
-          // Set the flag to false as the FOV animation is complete
-          this.isFovAnimationInProgress = false
-          resolve(true)
-        }
+      const cameraAtTime = (t: number) => {
+        currentFov =
+          this.lastPerspectiveFov + (targetFov - this.lastPerspectiveFov) * t
+        const currentUp = tempVec.lerpVectors(initialCameraUp, targetCamUp, t)
+        this.camera.up.copy(currentUp)
+        this.dollyZoom(currentFov)
       }
-      animateFovChange() // Start the animation
+
+      const onComplete = () => {
+        this.isFovAnimationInProgress = false
+        resolve(true)
+      }
+
+      new TWEEN.Tween({ t: 0 })
+        .to({ t: 1 }, isReducedMotion() ? 50 : FRAMES_TO_ANIMATE_IN * 16) // Assuming 60fps, hence 16ms per frame
+        .easing(TWEEN.Easing.Quadratic.InOut)
+        .onUpdate(({ t }) => cameraAtTime(t))
+        .onComplete(onComplete)
+        .start()
     })
 
   reactCameraPropertiesCallback: (a: ReactCameraProperties) => void = () => {}
@@ -916,7 +930,7 @@ export class CameraControls {
     }
 
     if (this.syncDirection === 'clientToEngine' || forceUpdate)
-      throttledUpdateEngineCamera({
+      this.throttledUpdateEngineCamera({
         quaternion: this.camera.quaternion,
         position: this.camera.position,
         zoom: this.camera.zoom,

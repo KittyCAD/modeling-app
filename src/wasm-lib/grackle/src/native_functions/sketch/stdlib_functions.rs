@@ -1,7 +1,7 @@
 use kittycad_execution_plan::{
     api_request::ApiRequest,
     sketch_types::{self, Axes, BasePath, Plane, SketchGroup},
-    BinaryArithmetic, BinaryOperation, Destination, Instruction, Operand,
+    BinaryArithmetic, BinaryOperation, Destination, Instruction, InstructionKind, Operand,
 };
 use kittycad_execution_plan_traits::{Address, InMemory, Primitive, Value};
 use kittycad_modeling_cmds::{
@@ -55,14 +55,14 @@ impl Callable for Close {
         let cmd_id = Uuid::new_v4().into();
         instructions.extend([
             // Push the path ID onto the stack.
-            Instruction::SketchGroupCopyFrom {
+            Instruction::from(InstructionKind::SketchGroupCopyFrom {
                 destination: Destination::StackPush,
                 length: 1,
                 source: sg,
                 offset: SketchGroup::path_id_offset(),
-            },
+            }),
             // Call the 'extrude' API request.
-            Instruction::ApiRequest(ApiRequest {
+            Instruction::from(InstructionKind::ApiRequest(ApiRequest {
                 endpoint: ModelingCmdEndpoint::ClosePath,
                 store_response: None,
                 arguments: vec![
@@ -70,7 +70,7 @@ impl Callable for Close {
                     InMemory::StackPop,
                 ],
                 cmd_id,
-            }),
+            })),
         ]);
 
         Ok(EvalPlan {
@@ -113,18 +113,18 @@ impl Callable for Extrude {
         let cmd_id = Uuid::new_v4().into();
         instructions.extend([
             // Push the `cap` bool onto the stack.
-            Instruction::StackPush {
+            Instruction::from(InstructionKind::StackPush {
                 data: vec![true.into()],
-            },
+            }),
             // Push the path ID onto the stack.
-            Instruction::SketchGroupCopyFrom {
+            Instruction::from(InstructionKind::SketchGroupCopyFrom {
                 destination: Destination::StackPush,
                 length: 1,
                 source: sg,
                 offset: SketchGroup::path_id_offset(),
-            },
+            }),
             // Call the 'extrude' API request.
-            Instruction::ApiRequest(ApiRequest {
+            Instruction::from(InstructionKind::ApiRequest(ApiRequest {
                 endpoint: ModelingCmdEndpoint::Extrude,
                 store_response: None,
                 arguments: vec![
@@ -136,7 +136,7 @@ impl Callable for Extrude {
                     InMemory::StackPop,
                 ],
                 cmd_id,
-            }),
+            })),
         ]);
 
         // TODO: make an ExtrudeGroup and store it.
@@ -279,10 +279,10 @@ impl LineBare {
             None => {
                 // Write an empty string and use that.
                 let empty_string_addr = ctx.next_address.offset_by(1);
-                instructions.push(Instruction::SetPrimitive {
+                instructions.push(Instruction::from(InstructionKind::SetPrimitive {
                     address: empty_string_addr,
                     value: String::new().into(),
-                });
+                }));
                 EpBinding::Single(empty_string_addr)
             }
         };
@@ -314,19 +314,20 @@ impl LineBare {
                     return Err(CompileError::InvalidOperand("Must pass a sequence here."));
                 };
                 instructions.extend([
-                    Instruction::Copy {
-                        // X
+                    // X
+                    Instruction::from(InstructionKind::Copy {
                         source: el0,
                         length: 1,
                         destination: Destination::StackPush,
-                    },
-                    Instruction::Copy {
-                        // Y
+                    }),
+                    // Y
+                    Instruction::from(InstructionKind::Copy {
                         source: el1,
                         length: 1,
                         destination: Destination::StackExtend,
-                    },
-                    Instruction::StackExtend { data: vec![0.0.into()] }, // Z
+                    }),
+                    // Z
+                    Instruction::from(InstructionKind::StackExtend { data: vec![0.0.into()] }),
                 ]);
             }
             LineBareOptions { at: At::AbsoluteX, .. } | LineBareOptions { at: At::RelativeX, .. } => {
@@ -334,18 +335,18 @@ impl LineBare {
                     return Err(CompileError::InvalidOperand("Must pass a single value here."));
                 };
                 instructions.extend([
-                    Instruction::Copy {
+                    Instruction::from(InstructionKind::Copy {
                         // X
                         source: addr,
                         length: 1,
                         destination: Destination::StackPush,
-                    },
-                    Instruction::StackExtend {
+                    }),
+                    Instruction::from(InstructionKind::StackExtend {
                         data: vec![Primitive::from(0.0)],
-                    }, // Y
-                    Instruction::StackExtend {
+                    }), // Y
+                    Instruction::from(InstructionKind::StackExtend {
                         data: vec![Primitive::from(0.0)],
-                    }, // Z
+                    }), // Z
                 ]);
             }
             LineBareOptions { at: At::AbsoluteY, .. } | LineBareOptions { at: At::RelativeY, .. } => {
@@ -353,18 +354,20 @@ impl LineBare {
                     return Err(CompileError::InvalidOperand("Must pass a single value here."));
                 };
                 instructions.extend([
-                    Instruction::StackPush {
+                    // X
+                    Instruction::from(InstructionKind::StackPush {
                         data: vec![Primitive::from(0.0)],
-                    }, // X
-                    Instruction::Copy {
-                        // Y
+                    }),
+                    // Y
+                    Instruction::from(InstructionKind::Copy {
                         source: addr,
                         length: 1,
                         destination: Destination::StackExtend,
-                    },
-                    Instruction::StackExtend {
+                    }),
+                    // Z
+                    Instruction::from(InstructionKind::StackExtend {
                         data: vec![Primitive::from(0.0)],
-                    }, // Z
+                    }),
                 ]);
             }
         }
@@ -372,28 +375,28 @@ impl LineBare {
         instructions.extend([
             // Append the new path segment to memory.
             // First comes its tag.
-            Instruction::SetPrimitive {
+            Instruction::from(InstructionKind::SetPrimitive {
                 address: start_of_line,
                 value: "Line".to_owned().into(),
-            },
+            }),
             // Then its end
-            Instruction::StackPop {
+            Instruction::from(InstructionKind::StackPop {
                 destination: Some(Destination::Address(start_of_line + 1)),
-            },
+            }),
             // Then its `relative` field.
-            Instruction::SetPrimitive {
+            Instruction::from(InstructionKind::SetPrimitive {
                 address: start_of_line + 1 + length_of_3d_point,
                 value: opts.at.is_relative().into(),
-            },
+            }),
             // Push the path ID onto the stack.
-            Instruction::SketchGroupCopyFrom {
+            Instruction::from(InstructionKind::SketchGroupCopyFrom {
                 destination: Destination::StackPush,
                 length: 1,
                 source: sg,
                 offset: SketchGroup::path_id_offset(),
-            },
+            }),
             // Send the ExtendPath request
-            Instruction::ApiRequest(ApiRequest {
+            Instruction::from(InstructionKind::ApiRequest(ApiRequest {
                 endpoint: ModelingCmdEndpoint::ExtendPath,
                 store_response: None,
                 arguments: vec![
@@ -403,18 +406,18 @@ impl LineBare {
                     InMemory::Address(start_of_line),
                 ],
                 cmd_id: id.into(),
-            }),
+            })),
             // Push the new segment in SketchGroup format.
             //      Path tag.
-            Instruction::StackPush {
+            Instruction::from(InstructionKind::StackPush {
                 data: vec![Primitive::from("ToPoint".to_owned())],
-            },
+            }),
             //      `BasePath::from` point.
             // Place them in the secondary stack to prepare ToPoint structure.
-            Instruction::SketchGroupGetLastPoint {
+            Instruction::from(InstructionKind::SketchGroupGetLastPoint {
                 source: sg,
                 destination: Destination::StackExtend,
-            },
+            }),
         ]);
 
         // Reserve space for the segment last point
@@ -422,10 +425,10 @@ impl LineBare {
 
         instructions.extend([
             // Copy to the primary stack as well to be worked with.
-            Instruction::SketchGroupGetLastPoint {
+            Instruction::from(InstructionKind::SketchGroupGetLastPoint {
                 source: sg,
                 destination: Destination::Address(to_point_from),
-            },
+            }),
         ]);
 
         //      `BasePath::to` point.
@@ -441,38 +444,38 @@ impl LineBare {
                     // ToPoint { from: { x1, y1 }, to: { x1 + x2, y1 + y2 } }
                     LineBareOptions { at: At::RelativeXY, .. } => {
                         instructions.extend([
-                            Instruction::BinaryArithmetic {
+                            Instruction::from(InstructionKind::BinaryArithmetic {
                                 arithmetic: BinaryArithmetic {
                                     operation: BinaryOperation::Add,
                                     operand0: Operand::Reference(to_point_from + 0),
                                     operand1: Operand::Reference(el0),
                                 },
                                 destination: Destination::StackExtend,
-                            },
-                            Instruction::BinaryArithmetic {
+                            }),
+                            Instruction::from(InstructionKind::BinaryArithmetic {
                                 arithmetic: BinaryArithmetic {
                                     operation: BinaryOperation::Add,
                                     operand0: Operand::Reference(to_point_from + 1),
                                     operand1: Operand::Reference(el1),
                                 },
                                 destination: Destination::StackExtend,
-                            },
+                            }),
                         ]);
                     }
                     // ToPoint { from: { x1, y1 }, to: { x2, y2 } }
                     LineBareOptions { at: At::AbsoluteXY, .. } => {
                         // Otherwise just directly copy the new points.
                         instructions.extend([
-                            Instruction::Copy {
+                            Instruction::from(InstructionKind::Copy {
                                 source: el0,
                                 length: 1,
                                 destination: Destination::StackExtend,
-                            },
-                            Instruction::Copy {
+                            }),
+                            Instruction::from(InstructionKind::Copy {
                                 source: el1,
                                 length: 1,
                                 destination: Destination::StackExtend,
-                            },
+                            }),
                         ]);
                     }
                     _ => {
@@ -487,67 +490,67 @@ impl LineBare {
                 // ToPoint { from: { x1, y1 }, to: { x1 + x2, y1 } }
                 LineBareOptions { at: At::RelativeX } => {
                     instructions.extend([
-                        Instruction::BinaryArithmetic {
+                        Instruction::from(InstructionKind::BinaryArithmetic {
                             arithmetic: BinaryArithmetic {
                                 operation: BinaryOperation::Add,
                                 operand0: Operand::Reference(to_point_from + 0),
                                 operand1: Operand::Reference(addr),
                             },
                             destination: Destination::StackExtend,
-                        },
-                        Instruction::Copy {
+                        }),
+                        Instruction::from(InstructionKind::Copy {
                             source: to_point_from + 1,
                             length: 1,
                             destination: Destination::StackExtend,
-                        },
+                        }),
                     ]);
                 }
                 // ToPoint { from: { x1, y1 }, to: { x2, y1 } }
                 LineBareOptions { at: At::AbsoluteX } => {
                     instructions.extend([
-                        Instruction::Copy {
+                        Instruction::from(InstructionKind::Copy {
                             source: addr,
                             length: 1,
                             destination: Destination::StackExtend,
-                        },
-                        Instruction::Copy {
+                        }),
+                        Instruction::from(InstructionKind::Copy {
                             source: to_point_from + 1,
                             length: 1,
                             destination: Destination::StackExtend,
-                        },
+                        }),
                     ]);
                 }
                 // ToPoint { from: { x1, y1 }, to: { x1, y1 + y2 } }
                 LineBareOptions { at: At::RelativeY } => {
                     instructions.extend([
-                        Instruction::Copy {
+                        Instruction::from(InstructionKind::Copy {
                             source: to_point_from + 0,
                             length: 1,
                             destination: Destination::StackExtend,
-                        },
-                        Instruction::BinaryArithmetic {
+                        }),
+                        Instruction::from(InstructionKind::BinaryArithmetic {
                             arithmetic: BinaryArithmetic {
                                 operation: BinaryOperation::Add,
                                 operand0: Operand::Reference(to_point_from + 1),
                                 operand1: Operand::Reference(addr),
                             },
                             destination: Destination::StackExtend,
-                        },
+                        }),
                     ]);
                 }
                 // ToPoint { from: { x1, y1 }, to: { x1, y2 } }
                 LineBareOptions { at: At::AbsoluteY } => {
                     instructions.extend([
-                        Instruction::Copy {
+                        Instruction::from(InstructionKind::Copy {
                             source: to_point_from + 0,
                             length: 1,
                             destination: Destination::StackExtend,
-                        },
-                        Instruction::Copy {
+                        }),
+                        Instruction::from(InstructionKind::Copy {
                             source: addr,
                             length: 1,
                             destination: Destination::StackExtend,
-                        },
+                        }),
                     ]);
                 }
                 _ => {
@@ -564,17 +567,17 @@ impl LineBare {
 
         instructions.extend([
             //      `BasePath::name` string.
-            Instruction::Copy {
+            Instruction::from(InstructionKind::Copy {
                 source: tag,
                 length: 1,
                 destination: Destination::StackExtend,
-            },
+            }),
             // Update the SketchGroup with its new segment.
-            Instruction::SketchGroupAddSegment {
+            Instruction::from(InstructionKind::SketchGroupAddSegment {
                 destination: new_sg_index,
                 segment: InMemory::StackPop,
                 source: sg,
-            },
+            }),
         ]);
 
         Ok(EvalPlan {
@@ -655,15 +658,15 @@ impl Callable for StartSketchAt {
         no_arg_api_call(&mut instructions, ModelingCmdEndpoint::StartPath, path_id.into());
 
         // Move the path pen to the given point.
-        instructions.push(Instruction::StackPush {
+        instructions.push(Instruction::from(InstructionKind::StackPush {
             data: vec![path_id.into()],
-        });
-        instructions.push(Instruction::ApiRequest(ApiRequest {
+        }));
+        instructions.push(Instruction::from(InstructionKind::ApiRequest(ApiRequest {
             endpoint: ModelingCmdEndpoint::MovePathPen,
             store_response: None,
             arguments: vec![InMemory::StackPop, InMemory::Address(start_point)],
             cmd_id: Uuid::new_v4().into(),
-        }));
+        })));
 
         // Starting a sketch creates a sketch group.
         // Updating the sketch will update this sketch group later.
@@ -695,17 +698,17 @@ impl Callable for StartSketchAt {
         };
         let sketch_group_index = ctx.assign_sketch_group();
         instructions.extend([
-            Instruction::SketchGroupSet {
+            Instruction::from(InstructionKind::SketchGroupSet {
                 sketch_group,
                 destination: sketch_group_index,
-            },
+            }),
             // As mentioned above: Copy the existing data over the `path_first`.
-            Instruction::SketchGroupSetBasePath {
+            Instruction::from(InstructionKind::SketchGroupSetBasePath {
                 source: sketch_group_index,
                 from: InMemory::Address(start_point),
                 to: InMemory::Address(start_point),
                 name: tag.map(InMemory::Address),
-            },
+            }),
         ]);
 
         Ok(EvalPlan {
@@ -750,10 +753,10 @@ impl Callable for TangentialArcTo {
             None => {
                 // Write an empty string and use that.
                 let empty_string_addr = ctx.next_address.offset_by(1);
-                instructions.push(Instruction::SetPrimitive {
+                instructions.push(Instruction::from(InstructionKind::SetPrimitive {
                     address: empty_string_addr,
                     value: String::new().into(),
-                });
+                }));
                 EpBinding::Single(empty_string_addr)
             }
         };
@@ -770,37 +773,37 @@ impl Callable for TangentialArcTo {
         let new_sg_index = ctx.assign_sketch_group();
         instructions.extend([
             // Push the `to` 2D point onto the stack.
-            Instruction::Copy {
+            Instruction::from(InstructionKind::Copy {
                 source: to,
                 length: 2,
                 destination: Destination::StackPush,
-            },
+            }),
             // Make it a 3D point.
-            Instruction::StackExtend { data: vec![0.0.into()] },
+            Instruction::from(InstructionKind::StackExtend { data: vec![0.0.into()] }),
             // Append the new path segment to memory.
             // First comes its tag.
-            Instruction::SetPrimitive {
+            Instruction::from(InstructionKind::SetPrimitive {
                 address: start_of_tangential_arc,
                 value: "TangentialArcTo".to_owned().into(),
-            },
+            }),
             // Then its to
-            Instruction::StackPop {
+            Instruction::from(InstructionKind::StackPop {
                 destination: Some(Destination::Address(start_of_tangential_arc + 1)),
-            },
+            }),
             // Then its `angle_snap_increment` field.
-            Instruction::SetPrimitive {
+            Instruction::from(InstructionKind::SetPrimitive {
                 address: start_of_tangential_arc + 1 + length_of_3d_point,
                 value: Primitive::from("None".to_owned()),
-            },
+            }),
             // Push the path ID onto the stack.
-            Instruction::SketchGroupCopyFrom {
+            Instruction::from(InstructionKind::SketchGroupCopyFrom {
                 destination: Destination::StackPush,
                 length: 1,
                 source: sg,
                 offset: SketchGroup::path_id_offset(),
-            },
+            }),
             // Send the ExtendPath request
-            Instruction::ApiRequest(ApiRequest {
+            Instruction::from(InstructionKind::ApiRequest(ApiRequest {
                 endpoint: ModelingCmdEndpoint::ExtendPath,
                 store_response: None,
                 arguments: vec![
@@ -810,35 +813,35 @@ impl Callable for TangentialArcTo {
                     InMemory::Address(start_of_tangential_arc),
                 ],
                 cmd_id: id.into(),
-            }),
+            })),
             // Push the new segment in SketchGroup format.
             //      Path tag.
-            Instruction::StackPush {
+            Instruction::from(InstructionKind::StackPush {
                 data: vec![Primitive::from("ToPoint".to_owned())],
-            },
+            }),
             //      `BasePath::from` point.
-            Instruction::SketchGroupGetLastPoint {
+            Instruction::from(InstructionKind::SketchGroupGetLastPoint {
                 source: sg,
                 destination: Destination::StackExtend,
-            },
+            }),
             //      `BasePath::to` point.
-            Instruction::Copy {
+            Instruction::from(InstructionKind::Copy {
                 source: start_of_tangential_arc + 1,
                 length: 2,
                 destination: Destination::StackExtend,
-            },
+            }),
             //      `BasePath::name` string.
-            Instruction::Copy {
+            Instruction::from(InstructionKind::Copy {
                 source: tag,
                 length: 1,
                 destination: Destination::StackExtend,
-            },
+            }),
             // Update the SketchGroup with its new segment.
-            Instruction::SketchGroupAddSegment {
+            Instruction::from(InstructionKind::SketchGroupAddSegment {
                 destination: new_sg_index,
                 segment: InMemory::StackPop,
                 source: sg,
-            },
+            }),
         ]);
 
         Ok(EvalPlan {

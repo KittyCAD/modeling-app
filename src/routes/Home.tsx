@@ -36,7 +36,7 @@ import { sep } from '@tauri-apps/api/path'
 import { homeCommandBarConfig } from 'lib/commandBarConfigs/homeCommandConfig'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { isTauri } from 'lib/isTauri'
-import { kclManager } from 'lang/KclSingleton'
+import { kclManager } from 'lib/singletons'
 import { useLspContext } from 'components/LspProvider'
 import { useValidateSettings } from 'hooks/useValidateSettings'
 

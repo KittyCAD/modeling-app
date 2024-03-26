@@ -4,7 +4,7 @@ import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
 import { v4 as uuidv4 } from 'uuid'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
-import { sceneInfra } from 'clientSideScene/sceneInfra'
+import { Themes, getThemeColorForEngine } from 'lib/theme'
 
 let lastMessage = ''
 
@@ -13,6 +13,16 @@ interface CommandInfo {
   range: SourceRange
   pathToNode: PathToNode
   parentId?: string
+  additionalData?:
+    | {
+        type: 'cap'
+        info: 'start' | 'end'
+      }
+    | {
+        type: 'batch-ids'
+        ids: string[]
+        info?: null
+      }
 }
 
 type WebSocketResponse = Models['OkWebSocketResponseData_type']
@@ -179,7 +189,6 @@ class EngineConnection {
     console.log(`${JSON.stringify(this.state)} → ${JSON.stringify(next)}`)
 
     if (next.type === EngineConnectionStateType.Disconnecting) {
-      console.trace()
       const sub = next.value
       if (sub.type === DisconnectingType.Error) {
         // Record the last step we failed at.
@@ -216,8 +225,10 @@ class EngineConnection {
 
   // TODO: actual type is ClientMetrics
   private webrtcStatsCollector?: () => Promise<ClientMetrics>
+  private engineCommandManager: EngineCommandManager
 
   constructor({
+    engineCommandManager,
     url,
     token,
     onConnectionStateChange = () => {},
@@ -226,6 +237,7 @@ class EngineConnection {
     onConnectionStarted = () => {},
     onClose = () => {},
   }: {
+    engineCommandManager: EngineCommandManager
     url: string
     token?: string
     onConnectionStateChange?: (state: EngineConnectionState) => void
@@ -234,6 +246,7 @@ class EngineConnection {
     onClose?: (engineConnection: EngineConnection) => void
     onNewTrack?: (track: NewTrackArgs) => void
   }) {
+    this.engineCommandManager = engineCommandManager
     this.url = url
     this.token = token
     this.failedConnTimeout = null
@@ -559,8 +572,8 @@ class EngineConnection {
           .join('\n')
         if (message.request_id) {
           const artifactThatFailed =
-            engineCommandManager.artifactMap[message.request_id] ||
-            engineCommandManager.lastArtifactMap[message.request_id]
+            this.engineCommandManager.artifactMap[message.request_id] ||
+            this.engineCommandManager.lastArtifactMap[message.request_id]
           console.error(
             `Error in response to request ${message.request_id}:\n${errorsString}
 failed cmd type was ${artifactThatFailed?.commandType}`
@@ -785,7 +798,7 @@ failed cmd type was ${artifactThatFailed?.commandType}`
 export type EngineCommand = Models['WebSocketRequest_type']
 type ModelTypes = Models['OkModelingCmdResponse_type']['type']
 
-type CommandTypes = Models['ModelingCmd_type']['type']
+type CommandTypes = Models['ModelingCmd_type']['type'] | 'batch'
 
 type UnreliableResponses = Extract<
   Models['OkModelingCmdResponse_type'],
@@ -827,7 +840,6 @@ export class EngineCommandManager {
   artifactMap: ArtifactMap = {}
   lastArtifactMap: ArtifactMap = {}
   sceneCommandArtifacts: ArtifactMap = {}
-  private getAst: () => Program = () => ({ start: 0, end: 0, body: [] } as any)
   outSequence = 1
   inSequence = 1
   engineConnection?: EngineConnection
@@ -862,11 +874,17 @@ export class EngineCommandManager {
 
   constructor() {
     this.engineConnection = undefined
-    ;(async () => {
-      // circular dependency needs one to be lazy loaded
-      const { kclManager } = await import('lang/KclSingleton')
-      this.getAst = () => kclManager.ast
-    })()
+  }
+
+  private _camControlsCameraChange = () => {}
+  set camControlsCameraChange(cb: () => void) {
+    this._camControlsCameraChange = cb
+  }
+
+  private getAst: () => Program = () =>
+    ({ start: 0, end: 0, body: [], nonCodeMeta: {} } as any)
+  set getAstCb(cb: () => Program) {
+    this.getAst = cb
   }
 
   start({
@@ -876,6 +894,7 @@ export class EngineCommandManager {
     height,
     executeCode,
     token,
+    theme = Themes.Dark,
   }: {
     setMediaStream: (stream: MediaStream) => void
     setIsStreamReady: (isStreamReady: boolean) => void
@@ -883,6 +902,7 @@ export class EngineCommandManager {
     height: number
     executeCode: (code?: string, force?: boolean) => void
     token?: string
+    theme?: Themes
   }) {
     if (width === 0 || height === 0) {
       return
@@ -899,6 +919,7 @@ export class EngineCommandManager {
 
     const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}`
     this.engineConnection = new EngineConnection({
+      engineCommandManager: this,
       url,
       token,
       onConnectionStateChange: (state: EngineConnectionState) => {
@@ -907,6 +928,19 @@ export class EngineCommandManager {
         }
       },
       onEngineConnectionOpen: () => {
+        // Set the stream background color
+        // This takes RGBA values from 0-1
+        // So we convert from the conventional 0-255 found in Figma
+
+        this.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'set_background_color',
+            color: getThemeColorForEngine(theme),
+          },
+        })
+
         // Make the axis gizmo.
         // We do this after the connection opened to avoid a race condition.
         // Connected opened is the last thing that happens when the stream
@@ -925,7 +959,7 @@ export class EngineCommandManager {
             gizmo_mode: true,
           },
         })
-        sceneInfra.camControls.onCameraChange()
+        this._camControlsCameraChange()
         this.sendSceneCommand({
           // CameraControls subscribes to default_camera_get_settings response events
           // firing this at connection ensure the camera's are synced initially
@@ -1045,6 +1079,27 @@ export class EngineCommandManager {
     }
     const modelingResponse = message.data.modeling_response
     const command = this.artifactMap[id]
+    if (
+      command?.type === 'pending' &&
+      command.commandType === 'batch' &&
+      command?.additionalData?.type === 'batch-ids'
+    ) {
+      command.additionalData.ids.forEach((id) => {
+        this.handleModelingCommand(message, id)
+      })
+      // batch artifact is just a container, we don't need to keep it
+      // once we process all the commands inside it
+      const resolve = command.resolve
+      delete this.artifactMap[id]
+      resolve({
+        id,
+        commandType: command.commandType,
+        range: command.range,
+        data: modelingResponse,
+        raw: message,
+      })
+      return
+    }
     const sceneCommand = this.sceneCommandArtifacts[id]
     this.addCommandLog({
       type: 'receive-reliable',
@@ -1069,12 +1124,40 @@ export class EngineCommandManager {
       } as const
       this.artifactMap[id] = artifact
       if (
-        command.commandType === 'entity_linear_pattern' ||
-        command.commandType === 'entity_circular_pattern'
+        (command.commandType === 'entity_linear_pattern' &&
+          modelingResponse.type === 'entity_linear_pattern') ||
+        (command.commandType === 'entity_circular_pattern' &&
+          modelingResponse.type === 'entity_circular_pattern')
       ) {
-        const entities = (modelingResponse as any)?.data?.entity_ids
+        const entities = modelingResponse.data.entity_ids
         entities?.forEach((entity: string) => {
           this.artifactMap[entity] = artifact
+        })
+      }
+      if (
+        command?.commandType === 'solid3d_get_extrusion_face_info' &&
+        modelingResponse.type === 'solid3d_get_extrusion_face_info'
+      ) {
+        console.log('modelingResposne', modelingResponse)
+        const parent = this.artifactMap[command?.parentId || '']
+        modelingResponse.data.faces.forEach((face) => {
+          if (face.cap !== 'none' && face.face_id && parent) {
+            this.artifactMap[face.face_id] = {
+              ...parent,
+              commandType: 'solid3d_get_extrusion_face_info',
+              additionalData: {
+                type: 'cap',
+                info: face.cap === 'bottom' ? 'start' : 'end',
+              },
+            }
+          }
+          const curveArtifact = this.artifactMap[face?.curve_id || '']
+          if (curveArtifact && face?.face_id) {
+            this.artifactMap[face.face_id] = {
+              ...curveArtifact,
+              commandType: 'solid3d_get_extrusion_face_info',
+            }
+          }
         })
       }
       resolve({
@@ -1206,40 +1289,14 @@ export class EngineCommandManager {
     this.callbacksEngineStateConnection.push(callback)
   }
   endSession() {
-    // TODO: instead of sending a single command with `object_ids: Object.keys(this.artifactMap)`
-    // we need to loop over them each individually because if the engine doesn't recognise a single
-    // id the whole command fails.
-    const artifactsToDelete: any = {}
-    Object.entries(this.artifactMap).forEach(([id, artifact]) => {
-      const artifactTypesToDelete: ArtifactMap[string]['commandType'][] = [
-        // 'start_path' creates a new scene object for the path, which is why it needs to be deleted,
-        // however all of the segments in the path are its children so there don't need to be deleted.
-        // this fact is very opaque in the api and docs (as to what should can be deleted).
-        // Using an array is the list is likely to grow.
-        'start_path',
-        'entity_linear_pattern',
-        'entity_circular_pattern',
-      ]
-      if (artifactTypesToDelete.includes(artifact.commandType)) {
-        artifactsToDelete[id] = artifact
-      }
-      if (artifact.commandType === 'import_files') {
-        // TODO why is this handled differently from other artifacts, i.e. why does it not use the id from the
-        // modeling command? We're having to do special clean up for this one special object.
-        artifactsToDelete[(artifact as any)?.data?.data?.object_id] = artifact
-      }
-    })
-    Object.keys(artifactsToDelete).forEach((id) => {
-      const deleteCmd: EngineCommand = {
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'remove_scene_objects',
-          object_ids: [id],
-        },
-      }
-      this.engineConnection?.send(deleteCmd)
-    })
+    const deleteCmd: EngineCommand = {
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'scene_clear_all',
+      },
+    }
+    this.engineConnection?.send(deleteCmd)
   }
   addCommandLog(message: CommandLog) {
     if (this._commandLogs.length > 500) {
@@ -1344,11 +1401,13 @@ export class EngineCommandManager {
     range,
     command,
     ast,
+    idToRangeMap,
   }: {
     id: string
     range: SourceRange
     command: EngineCommand | string
     ast: Program
+    idToRangeMap?: { [key: string]: SourceRange }
   }): Promise<any> {
     if (this.engineConnection === undefined) {
       return Promise.resolve()
@@ -1371,10 +1430,22 @@ export class EngineCommandManager {
     this.engineConnection?.send(command)
     if (typeof command !== 'string' && command.type === 'modeling_cmd_req') {
       return this.handlePendingCommand(id, command?.cmd, ast, range)
+    } else if (
+      typeof command !== 'string' &&
+      command.type === 'modeling_cmd_batch_req'
+    ) {
+      return this.handlePendingBatchCommand(id, command.requests, idToRangeMap)
     } else if (typeof command === 'string') {
       const parseCommand: EngineCommand = JSON.parse(command)
-      if (parseCommand.type === 'modeling_cmd_req')
+      if (parseCommand.type === 'modeling_cmd_req') {
         return this.handlePendingCommand(id, parseCommand?.cmd, ast, range)
+      } else if (parseCommand.type === 'modeling_cmd_batch_req') {
+        return this.handlePendingBatchCommand(
+          id,
+          parseCommand.requests,
+          idToRangeMap
+        )
+      }
     }
     throw Error('shouldnt reach here')
   }
@@ -1388,12 +1459,6 @@ export class EngineCommandManager {
     const promise = new Promise((_resolve, reject) => {
       resolve = _resolve
     })
-    const getParentId = (): string | undefined => {
-      if (command.type === 'extend_path') {
-        return command.path
-      }
-      // TODO handle other commands that have a parent
-    }
     const pathToNode = ast
       ? getNodePathFromSourceRange(ast, range || [0, 0])
       : []
@@ -1402,7 +1467,6 @@ export class EngineCommandManager {
       pathToNode,
       type: 'pending',
       commandType: command.type,
-      parentId: getParentId(),
       promise,
       resolve,
     }
@@ -1419,10 +1483,14 @@ export class EngineCommandManager {
       resolve = _resolve
     })
     const getParentId = (): string | undefined => {
-      if (command.type === 'extend_path') {
-        return command.path
+      if (command.type === 'extend_path') return command.path
+      if (command.type === 'solid3d_get_extrusion_face_info') {
+        const edgeArtifact = this.artifactMap[command.edge_id]
+        // edges's parent id is to the original "start_path" artifact
+        if (edgeArtifact?.parentId) return edgeArtifact.parentId
       }
-      // TODO handle other commands that have a parent
+      if (command.type === 'close_path') return command.path_id
+      // handle other commands that have a parent here
     }
     const pathToNode = ast
       ? getNodePathFromSourceRange(ast, range || [0, 0])
@@ -1438,10 +1506,48 @@ export class EngineCommandManager {
     }
     return promise
   }
+  async handlePendingBatchCommand(
+    id: string,
+    commands: Models['ModelingCmdReq_type'][],
+    idToRangeMap?: { [key: string]: SourceRange },
+    ast?: Program,
+    range?: SourceRange
+  ) {
+    let resolve: (val: any) => void = () => {}
+    const promise = new Promise((_resolve, reject) => {
+      resolve = _resolve
+    })
+
+    if (!idToRangeMap) {
+      throw new Error('idToRangeMap is required for batch commands')
+    }
+
+    // Add the overall batch command to the artifact map just so we can track all of the
+    // individual commands that are part of the batch.
+    // we'll delete this artifact once all of the individual commands have been processed.
+    this.artifactMap[id] = {
+      range: range || [0, 0],
+      pathToNode: [],
+      type: 'pending',
+      commandType: 'batch',
+      additionalData: { type: 'batch-ids', ids: commands.map((c) => c.cmd_id) },
+      parentId: undefined,
+      promise,
+      resolve,
+    }
+
+    await Promise.all(
+      commands.map((c) =>
+        this.handlePendingCommand(c.cmd_id, c.cmd, ast, idToRangeMap[c.cmd_id])
+      )
+    )
+    return promise
+  }
   sendModelingCommandFromWasm(
     id: string,
     rangeStr: string,
-    commandStr: string
+    commandStr: string,
+    idToRangeStr: string
   ): Promise<any> {
     if (this.engineConnection === undefined) {
       return Promise.resolve()
@@ -1459,6 +1565,8 @@ export class EngineCommandManager {
       throw new Error('commandStr is undefined')
     }
     const range: SourceRange = JSON.parse(rangeStr)
+    const idToRangeMap: { [key: string]: SourceRange } =
+      JSON.parse(idToRangeStr)
 
     // We only care about the modeling command response.
     return this.sendModelingCommand({
@@ -1466,6 +1574,7 @@ export class EngineCommandManager {
       range,
       command: commandStr,
       ast: this.getAst(),
+      idToRangeMap,
     }).then(({ raw }) => JSON.stringify(raw))
   }
   commandResult(id: string): Promise<any> {
@@ -1590,5 +1699,3 @@ export class EngineCommandManager {
     return planeId
   }
 }
-
-export const engineCommandManager = new EngineCommandManager()

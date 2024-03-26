@@ -843,7 +843,7 @@ async fn test_kcl_lsp_semantic_tokens() {
     if let tower_lsp::lsp_types::SemanticTokensResult::Tokens(semantic_tokens) = semantic_tokens {
         assert_eq!(semantic_tokens.data.len(), 2);
         assert_eq!(semantic_tokens.data[0].length, 13);
-        assert_eq!(semantic_tokens.data[0].token_type, 7);
+        assert_eq!(semantic_tokens.data[0].token_type, 8);
         assert_eq!(semantic_tokens.data[1].length, 4);
         assert_eq!(semantic_tokens.data[1].delta_start, 14);
         assert_eq!(semantic_tokens.data[1].token_type, 3);

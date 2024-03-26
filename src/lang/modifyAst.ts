@@ -1,4 +1,3 @@
-import { ToolTip } from '../useStore'
 import { Selection } from 'lib/selections'
 import {
   Program,
@@ -64,7 +63,6 @@ export function addStartProfileAt(
   pathToNode: PathToNode,
   at: [number, number]
 ): { modifiedAst: Program; pathToNode: PathToNode } {
-  console.log('addStartProfileAt called')
   const variableDeclaration = getNodeFromPath<VariableDeclaration>(
     node,
     pathToNode,
@@ -317,17 +315,17 @@ export function extrudeSketch(
 export function sketchOnExtrudedFace(
   node: Program,
   pathToNode: PathToNode,
-  programMemory: ProgramMemory
+  programMemory: ProgramMemory,
+  cap: 'none' | 'start' | 'end' = 'none'
 ): { modifiedAst: Program; pathToNode: PathToNode } {
   let _node = { ...node }
   const newSketchName = findUniqueName(node, 'part')
-  const { node: oldSketchNode, shallowPath: pathToOldSketch } =
-    getNodeFromPath<VariableDeclarator>(
-      _node,
-      pathToNode,
-      'VariableDeclarator',
-      true
-    )
+  const { node: oldSketchNode } = getNodeFromPath<VariableDeclarator>(
+    _node,
+    pathToNode,
+    'VariableDeclarator',
+    true
+  )
   const oldSketchName = oldSketchNode.id.name
   const { node: expression } = getNodeFromPath<CallExpression>(
     _node,
@@ -335,42 +333,44 @@ export function sketchOnExtrudedFace(
     'CallExpression'
   )
 
-  const { modifiedAst, tag } = addTagForSketchOnFace(
-    {
-      previousProgramMemory: programMemory,
-      pathToNode,
-      node: _node,
-    },
-    expression.callee.name
-  )
-  _node = modifiedAst
+  let _tag = ''
+  if (cap === 'none') {
+    const { modifiedAst, tag } = addTagForSketchOnFace(
+      {
+        previousProgramMemory: programMemory,
+        pathToNode,
+        node: _node,
+      },
+      expression.callee.name
+    )
+    _tag = tag
+    _node = modifiedAst
+  } else {
+    _tag = cap.toUpperCase()
+  }
 
   const newSketch = createVariableDeclaration(
     newSketchName,
-    createPipeExpression([
-      createCallExpressionStdLib('startSketchAt', [
-        createArrayExpression([createLiteral(0), createLiteral(0)]),
-      ]),
-      createCallExpressionStdLib('lineTo', [
-        createArrayExpression([createLiteral(1), createLiteral(1)]),
-        createPipeSubstitution(),
-      ]),
-      createCallExpression('transform', [
-        createCallExpressionStdLib('getExtrudeWallTransform', [
-          createLiteral(tag),
-          createIdentifier(oldSketchName),
-        ]),
-        createPipeSubstitution(),
-      ]),
+    createCallExpressionStdLib('startSketchOn', [
+      createIdentifier(oldSketchName),
+      createLiteral(_tag),
     ]),
     'const'
   )
-  const expressionIndex = getLastIndex(pathToOldSketch)
+
+  const expressionIndex = pathToNode[1][0] as number
   _node.body.splice(expressionIndex + 1, 0, newSketch)
+  const newpathToNode: PathToNode = [
+    ['body', ''],
+    [expressionIndex + 1, 'index'],
+    ['declarations', 'VariableDeclaration'],
+    [0, 'index'],
+    ['init', 'VariableDeclarator'],
+  ]
 
   return {
     modifiedAst: _node,
-    pathToNode: [...pathToNode.slice(0, -1), [expressionIndex, 'index']],
+    pathToNode: newpathToNode,
   }
 }
 

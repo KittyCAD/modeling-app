@@ -21,9 +21,11 @@ async fn execute_and_snapshot(code: &str, units: kittycad::types::UnitLength) ->
     let token = std::env::var("KITTYCAD_API_TOKEN").expect("KITTYCAD_API_TOKEN not set");
 
     // Create the client.
-    let client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
-    // uncomment to use a local server
-    //client.set_base_url("http://system76-pc:8080/");
+    let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
+    // Set a local engine address if it's set.
+    if let Ok(addr) = std::env::var("LOCAL_ENGINE_ADDR") {
+        client.set_base_url(addr);
+    }
 
     let ws = client
         .modeling()
@@ -45,6 +47,7 @@ async fn execute_and_snapshot(code: &str, units: kittycad::types::UnitLength) ->
 
     ctx.engine
         .send_modeling_cmd(
+            false,
             uuid::Uuid::new_v4(),
             kcl_lib::executor::SourceRange::default(),
             kittycad::types::ModelingCmd::DefaultCameraLookAt {
@@ -60,6 +63,7 @@ async fn execute_and_snapshot(code: &str, units: kittycad::types::UnitLength) ->
     let resp = ctx
         .engine
         .send_modeling_cmd(
+            false,
             uuid::Uuid::new_v4(),
             kcl_lib::executor::SourceRange::default(),
             kittycad::types::ModelingCmd::TakeSnapshot {
@@ -536,6 +540,82 @@ const pt2 = b2.value[0]
         &result,
         1.0,
     );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_helix_defaults() {
+    let code = r#"const part001 = startSketchOn('XY')
+     |> circle([5, 5], 10, %)
+     |> extrude(10, %)
+     |> helix({revolutions: 16, angle_start: 0}, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/helix_defaults.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_helix_defaults_negative_extrude() {
+    let code = r#"const part001 = startSketchOn('XY')
+     |> circle([5, 5], 10, %)
+     |> extrude(-10, %)
+     |> helix({revolutions: 16, angle_start: 0}, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/helix_defaults_negative_extrude.png",
+        &result,
+        1.0,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_helix_ccw() {
+    let code = r#"const part001 = startSketchOn('XY')
+     |> circle([5, 5], 10, %)
+     |> extrude(10, %)
+     |> helix({revolutions: 16, angle_start: 0, ccw: true}, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/helix_ccw.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_helix_with_length() {
+    let code = r#"const part001 = startSketchOn('XY')
+     |> circle([5, 5], 10, %)
+     |> extrude(10, %)
+     |> helix({revolutions: 16, angle_start: 0, length: 3}, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/helix_with_length.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_dimensions_match() {
+    let code = r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/dimensions_match.png", &result, 1.0);
 }
 
 #[tokio::test(flavor = "multi_thread")]

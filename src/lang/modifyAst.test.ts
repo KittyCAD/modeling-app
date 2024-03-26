@@ -12,8 +12,10 @@ import {
   addSketchTo,
   giveSketchFnCallTag,
   moveValueIntoNewVariable,
+  sketchOnExtrudedFace,
 } from './modifyAst'
 import { enginelessExecutor } from '../lib/testHelpers'
+import { getNodePathFromSourceRange } from './queryAst'
 
 beforeAll(() => initPromise)
 
@@ -272,5 +274,91 @@ const yo2 = hmm([identifierGuy + 5])`
     const newCode = recast(modifiedAst)
     expect(newCode).toContain(`const newVar = identifierGuy + 5`)
     expect(newCode).toContain(`const yo2 = hmm([newVar])`)
+  })
+})
+
+describe('testing sketchOnExtrudedFace', () => {
+  test('it should be able to extrude on regular segments', async () => {
+    const code = `const part001 = startSketchOn('-XZ')
+  |> startProfileAt([3.58, 2.06], %)
+  |> line([9.7, 9.19], %)
+  |> line([8.62, -9.57], %)
+  |> close(%)
+  |> extrude(5 + 7, %)`
+    const ast = parse(code)
+    const programMemory = await enginelessExecutor(ast)
+    const snippet = `line([9.7, 9.19], %)`
+    const range: [number, number] = [
+      code.indexOf(snippet),
+      code.indexOf(snippet) + snippet.length,
+    ]
+    const pathToNode = getNodePathFromSourceRange(ast, range)
+
+    const { modifiedAst } = sketchOnExtrudedFace(ast, pathToNode, programMemory)
+    const newCode = recast(modifiedAst)
+    expect(newCode).toContain(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt([3.58, 2.06], %)
+  |> line([9.7, 9.19], %, 'seg01')
+  |> line([8.62, -9.57], %)
+  |> close(%)
+  |> extrude(5 + 7, %)
+const part002 = startSketchOn(part001, 'seg01')`)
+  })
+  test('it should be able to extrude on close segments', async () => {
+    const code = `const part001 = startSketchOn('-XZ')
+  |> startProfileAt([3.58, 2.06], %)
+  |> line([9.7, 9.19], %)
+  |> line([8.62, -9.57], %)
+  |> close(%)
+  |> extrude(5 + 7, %)`
+    const ast = parse(code)
+    const programMemory = await enginelessExecutor(ast)
+    const snippet = `close(%)`
+    const range: [number, number] = [
+      code.indexOf(snippet),
+      code.indexOf(snippet) + snippet.length,
+    ]
+    const pathToNode = getNodePathFromSourceRange(ast, range)
+
+    const { modifiedAst } = sketchOnExtrudedFace(ast, pathToNode, programMemory)
+    const newCode = recast(modifiedAst)
+    expect(newCode).toContain(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt([3.58, 2.06], %)
+  |> line([9.7, 9.19], %)
+  |> line([8.62, -9.57], %)
+  |> close(%, 'seg01')
+  |> extrude(5 + 7, %)
+const part002 = startSketchOn(part001, 'seg01')`)
+  })
+  test('it should be able to extrude on start-end caps', async () => {
+    const code = `const part001 = startSketchOn('-XZ')
+  |> startProfileAt([3.58, 2.06], %)
+  |> line([9.7, 9.19], %)
+  |> line([8.62, -9.57], %)
+  |> close(%)
+  |> extrude(5 + 7, %)`
+    const ast = parse(code)
+    const programMemory = await enginelessExecutor(ast)
+    const snippet = `startProfileAt([3.58, 2.06], %)`
+    const range: [number, number] = [
+      code.indexOf(snippet),
+      code.indexOf(snippet) + snippet.length,
+    ]
+    const pathToNode = getNodePathFromSourceRange(ast, range)
+
+    const { modifiedAst } = sketchOnExtrudedFace(
+      ast,
+      pathToNode,
+      programMemory,
+      'end'
+    )
+    const newCode = recast(modifiedAst)
+    expect(newCode).toContain(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt([3.58, 2.06], %)
+  |> line([9.7, 9.19], %)
+  |> line([8.62, -9.57], %)
+  |> close(%)
+  |> extrude(5 + 7, %)
+const part002 = startSketchOn(part001, 'END')`)
   })
 })

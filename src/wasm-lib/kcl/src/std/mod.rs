@@ -2,6 +2,7 @@
 
 pub mod extrude;
 pub mod fillet;
+pub mod helix;
 pub mod import;
 pub mod kcl_stdlib;
 pub mod math;
@@ -79,6 +80,7 @@ lazy_static! {
         Box::new(crate::std::fillet::GetOppositeEdge),
         Box::new(crate::std::fillet::GetNextAdjacentEdge),
         Box::new(crate::std::fillet::GetPreviousAdjacentEdge),
+        Box::new(crate::std::helix::Helix),
         Box::new(crate::std::import::Import),
         Box::new(crate::std::math::Cos),
         Box::new(crate::std::math::Sin),
@@ -206,7 +208,10 @@ impl Args {
         id: uuid::Uuid,
         cmd: kittycad::types::ModelingCmd,
     ) -> Result<OkWebSocketResponseData, KclError> {
-        self.ctx.engine.send_modeling_cmd(id, self.source_range, cmd).await
+        self.ctx
+            .engine
+            .send_modeling_cmd(false, id, self.source_range, cmd)
+            .await
     }
 
     fn make_user_val_from_json(&self, j: serde_json::Value) -> Result<MemoryItem, KclError> {

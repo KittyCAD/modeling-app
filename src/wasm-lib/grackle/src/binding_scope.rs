@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 use kcl_lib::ast::types::{LiteralIdentifier, LiteralValue};
-
 use kittycad_execution_plan::constants;
 use kittycad_execution_plan_traits::Primitive;
 
