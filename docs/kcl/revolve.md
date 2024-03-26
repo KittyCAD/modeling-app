@@ -49,7 +49,9 @@ const part001 = startSketchOn('XY')
 	// The origin.
 	origin: [number, number, number],
 },
-},
+} |
+uuid |
+string,
 }
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)

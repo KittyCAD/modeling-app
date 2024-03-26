@@ -24200,12 +24200,12 @@
                 "description": "A string or a uuid.",
                 "anyOf": [
                   {
-                    "description": "A uuid.",
+                    "description": "A uuid of an edge.",
                     "type": "string",
                     "format": "uuid"
                   },
                   {
-                    "description": "A string.",
+                    "description": "A tag name of an edge.",
                     "type": "string"
                   }
                 ]
@@ -48529,86 +48529,105 @@
             },
             "axis": {
               "description": "Axis of revolution.",
-              "oneOf": [
+              "anyOf": [
                 {
-                  "description": "X-axis.",
-                  "type": "string",
-                  "enum": [
-                    "X"
-                  ]
-                },
-                {
-                  "description": "Y-axis.",
-                  "type": "string",
-                  "enum": [
-                    "Y"
-                  ]
-                },
-                {
-                  "description": "Z-axis.",
-                  "type": "string",
-                  "enum": [
-                    "Z"
-                  ]
-                },
-                {
-                  "description": "Flip the X-axis.",
-                  "type": "string",
-                  "enum": [
-                    "-X"
-                  ]
-                },
-                {
-                  "description": "Flip the Y-axis.",
-                  "type": "string",
-                  "enum": [
-                    "-Y"
-                  ]
-                },
-                {
-                  "description": "Flip the Z-axis.",
-                  "type": "string",
-                  "enum": [
-                    "-Z"
-                  ]
-                },
-                {
-                  "type": "object",
-                  "required": [
-                    "Custom"
-                  ],
-                  "properties": {
-                    "Custom": {
+                  "description": "Axis of revolution.",
+                  "oneOf": [
+                    {
+                      "description": "X-axis.",
+                      "type": "string",
+                      "enum": [
+                        "X"
+                      ]
+                    },
+                    {
+                      "description": "Y-axis.",
+                      "type": "string",
+                      "enum": [
+                        "Y"
+                      ]
+                    },
+                    {
+                      "description": "Z-axis.",
+                      "type": "string",
+                      "enum": [
+                        "Z"
+                      ]
+                    },
+                    {
+                      "description": "Flip the X-axis.",
+                      "type": "string",
+                      "enum": [
+                        "-X"
+                      ]
+                    },
+                    {
+                      "description": "Flip the Y-axis.",
+                      "type": "string",
+                      "enum": [
+                        "-Y"
+                      ]
+                    },
+                    {
+                      "description": "Flip the Z-axis.",
+                      "type": "string",
+                      "enum": [
+                        "-Z"
+                      ]
+                    },
+                    {
                       "type": "object",
                       "required": [
-                        "axis",
-                        "origin"
+                        "Custom"
                       ],
                       "properties": {
-                        "axis": {
-                          "description": "The axis.",
-                          "type": "array",
-                          "items": {
-                            "type": "number",
-                            "format": "double"
-                          },
-                          "maxItems": 3,
-                          "minItems": 3
-                        },
-                        "origin": {
-                          "description": "The origin.",
-                          "type": "array",
-                          "items": {
-                            "type": "number",
-                            "format": "double"
-                          },
-                          "maxItems": 3,
-                          "minItems": 3
+                        "Custom": {
+                          "type": "object",
+                          "required": [
+                            "axis",
+                            "origin"
+                          ],
+                          "properties": {
+                            "axis": {
+                              "description": "The axis.",
+                              "type": "array",
+                              "items": {
+                                "type": "number",
+                                "format": "double"
+                              },
+                              "maxItems": 3,
+                              "minItems": 3
+                            },
+                            "origin": {
+                              "description": "The origin.",
+                              "type": "array",
+                              "items": {
+                                "type": "number",
+                                "format": "double"
+                              },
+                              "maxItems": 3,
+                              "minItems": 3
+                            }
+                          }
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
-                  },
-                  "additionalProperties": false
+                  ]
+                },
+                {
+                  "description": "Tagged edge.",
+                  "anyOf": [
+                    {
+                      "description": "A uuid of an edge.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    {
+                      "description": "A tag name of an edge.",
+                      "type": "string"
+                    }
+                  ]
                 }
               ]
             }
