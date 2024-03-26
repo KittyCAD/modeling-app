@@ -1673,14 +1673,14 @@ async fn serial_test_revolve_on_edge() {
 async fn serial_test_revolve_on_face_circle() {
     let code = r#"const box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([0, 5], %)
-  |> line([5, 0], %, 'revolveAxis')
-  |> line([0, -5], %) 
+  |> line([0, 20], %)
+  |> line([20, 0], %, 'revolveAxis')
+  |> line([0, -20], %) 
   |> close(%)
-  |> extrude(5, %)
+  |> extrude(20, %)
 
 const sketch001 = startSketchOn(box, "END")
-  |> circle([2.5, 2.5], 1, %)
+  |> circle([10,10], 4, %)
   |> revolve({
     angle: -90, 
     axis: 'y' 
