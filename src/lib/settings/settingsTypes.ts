@@ -1,6 +1,6 @@
 import { type Models } from '@kittycad/lib'
 import { settings } from './initialSettings'
-import { PathValue, Paths } from 'lib/types'
+import { AtLeast, PathValue, Paths } from 'lib/types'
 import { ChangeEventHandler } from 'react'
 import { CommandArgumentConfig } from 'lib/commandTypes'
 
@@ -73,20 +73,21 @@ export interface SettingProps<T> {
    */
   validate: (v: T) => boolean
   /**
-   * The UI to use for the setting in the settings panel
+   * A command argument configuration for the setting.
+   * If this is provided, the setting will appear in the command bar.
    */
-  settingsUI:
-    | 'toggle'
-    | 'input'
-    | 'select'
-    | (({
-        value,
-        onChange,
-      }: {
-        value: T
-        onChange: ChangeEventHandler<HTMLElement>
-      }) => React.ReactNode)
-  commandConfig: CommandArgumentConfig<T>
+  commandConfig?: AtLeast<CommandArgumentConfig<T>, 'inputType'>
+  /**
+   * A React component to use for the setting in the settings panel.
+   * If this is not provided but a commandConfig is, the `inputType`
+   * of the commandConfig will be used to determine the component.
+   * If this is not provided and there is no commandConfig, the
+   * setting will not be able to be edited directly by the user.
+   */
+  Component?: React.ComponentType<{
+    value: T
+    onChange: ChangeEventHandler
+  }>
 }
 
 export type SettingsLevel = 'user' | 'project'

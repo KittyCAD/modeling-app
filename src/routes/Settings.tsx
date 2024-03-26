@@ -56,26 +56,6 @@ export const Settings = () => {
     },
   } = useSettingsAuthContext()
 
-  async function handleDirectorySelection() {
-    // the `recursive` property added following
-    // this advice for permissions: https://github.com/tauri-apps/tauri/issues/4851#issuecomment-1210711455
-    const newDirectory = await open({
-      directory: true,
-      recursive: true,
-      defaultPath: context.app.projectDirectory.current || paths.INDEX,
-      title: 'Choose a new default directory',
-    })
-
-    if (newDirectory && newDirectory !== null && !Array.isArray(newDirectory)) {
-      send({
-        type: `set.app.projectDirectory`,
-        data: {
-          level: settingsLevel,
-          value: newDirectory,
-        },
-      })
-    }
-  }
 
   function restartOnboarding() {
     send({
@@ -161,14 +141,13 @@ export const Settings = () => {
             {Object.entries(categorySettings).map(([settingName, s]) => {
               const setting = s as Setting<string | boolean>
               let Component: React.ReactNode
-              switch (setting.settingsUI) {
-                case 'select':
-                  Component = (
-                    <select
-                      id={settingName}
-                      className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
-                      value={String(setting.current)}
-                      onChange={(e) => {
+
+              if (setting.Component) {
+                Component = (
+                  <setting.Component
+                    value={setting.current}
+                    onChange={(e) => {
+                      if ('value' in e.target ) {
                         send({
                           type: `set.${category}.${settingName}`,
                           data: {
@@ -176,75 +155,12 @@ export const Settings = () => {
                             value: e.target.value,
                           },
                         } as unknown as Event<WildcardSetEvent>)
-                      }}
-                    >
-                      {setting.options?.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  )
-                  break
-                case 'input':
-                  Component = (
-                    <input
-                      className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
-                      defaultValue={String(setting.current)}
-                      onBlur={(e) => {
-                        const newValue =
-                          e.target.value.trim() || setting.default
-                        send({
-                          type: `set.${category}.${settingName}`,
-                          data: {
-                            level: settingsLevel,
-                            value: newValue,
-                          },
-                        } as unknown as Event<WildcardSetEvent>)
-                        e.target.value = String(newValue)
-                      }}
-                      autoCapitalize="off"
-                      autoComplete="off"
-                      data-testid={`${settingName}-input`}
-                    />
-                  )
-                  break
-                case 'toggle':
-                  Component = (
-                    <Toggle
-                      name={`${category}-${settingName}`}
-                      checked={Boolean(setting.current)}
-                      onChange={(e) => {
-                        send({
-                          type: `set.${category}.${settingName}`,
-                          data: {
-                            level: settingsLevel,
-                            value: e.target.checked,
-                          },
-                        } as unknown as Event<WildcardSetEvent>)
-                      }}
-                    />
-                  )
-                  break
-                default:
-                  Component = setting.settingsUI
-                    ? setting.settingsUI({
-                        value: setting.current,
-                        onChange: (e) => {
-                          send({
-                            type: `set.${category}.${settingName}`,
-                            data: {
-                              level: settingsLevel,
-                              value:
-                                'value' in e.target
-                                  ? e.target.value
-                                  : setting.default,
-                            },
-                          } as unknown as Event<WildcardSetEvent>)
-                        },
-                      })
-                    : null
+                      }
+                    }}
+                  />
+                )
               }
+
               return (
                 <SettingsSection
                   title={decamelize(settingName, { separator: ' ' })}
@@ -256,137 +172,6 @@ export const Settings = () => {
             })}
           </div>
         ))}
-        {(window as any).__TAURI__ && (
-          <>
-            <SettingsSection
-              title="Default Directory"
-              description="Where newly-created projects are saved on your local computer"
-            >
-              <div className="flex w-full gap-4 p-1 border rounded border-chalkboard-30">
-                <input
-                  className="flex-1 px-2 bg-transparent"
-                  value={
-                    context.app.projectDirectory[settingsLevel] ||
-                    context.app.projectDirectory.current
-                  }
-                  disabled
-                  data-testid="default-directory-input"
-                />
-                <ActionButton
-                  Element="button"
-                  onClick={handleDirectorySelection}
-                  icon={{
-                    icon: 'folder',
-                  }}
-                >
-                  Choose a folder
-                </ActionButton>
-              </div>
-            </SettingsSection>
-            <SettingsSection
-              title="Default Project Name"
-              description="Name template for new projects. Use $n to include an incrementing index"
-            >
-              <input
-                className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
-                defaultValue={
-                  context.project.defaultProjectName[settingsLevel] ||
-                  context.project.defaultProjectName.current
-                }
-                onBlur={(e) => {
-                  const newValue = e.target.value.trim() || DEFAULT_PROJECT_NAME
-                  send({
-                    type: `set.project.defaultProjectName`,
-                    data: {
-                      level: settingsLevel,
-                      value: newValue,
-                    },
-                  })
-                  e.target.value = newValue
-                }}
-                autoCapitalize="off"
-                autoComplete="off"
-                data-testid="name-input"
-              />
-            </SettingsSection>
-          </>
-        )}
-        <SettingsSection
-          title="Base Unit"
-          description="Which base unit to use in dimensions by default"
-        >
-          <select
-            id="base-unit"
-            className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
-            value={
-              context.modeling.defaultUnit[settingsLevel] ||
-              context.modeling.defaultUnit.current
-            }
-            onChange={(e) => {
-              send({
-                type: `set.modeling.defaultUnit`,
-                data: {
-                  level: settingsLevel,
-                  value: e.target.value as BaseUnit,
-                },
-              })
-            }}
-          >
-            {baseUnitsUnion.map((unit) => (
-              <option key={unit} value={unit}>
-                {unit}
-              </option>
-            ))}
-          </select>
-        </SettingsSection>
-        <SettingsSection
-          title="Debug Panel"
-          description="Show the debug panel in the editor"
-        >
-          <Toggle
-            name="settings-debug-panel"
-            checked={
-              context.modeling.showDebugPanel[settingsLevel] ||
-              context.modeling.showDebugPanel.current
-            }
-            onChange={(e) => {
-              send({
-                type: `set.modeling.showDebugPanel`,
-                data: {
-                  level: settingsLevel,
-                  value: e.target.checked,
-                },
-              })
-            }}
-          />
-        </SettingsSection>
-        <SettingsSection
-          title="Editor Theme"
-          description="Apply a light or dark theme to the editor"
-        >
-          <select
-            id="settings-theme"
-            className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
-            value={
-              context.app.theme[settingsLevel] || context.app.theme.current
-            }
-            onChange={(e) => {
-              send({
-                type: `set.app.theme`,
-                data: {
-                  level: settingsLevel,
-                  value: e.target.value as Themes,
-                },
-              })
-            }}
-          >
-            {Object.entries(Themes).map(([label, value]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-        </SettingsSection>
         <SettingsSection
           title="Onboarding"
           description="Replay the onboarding process"
