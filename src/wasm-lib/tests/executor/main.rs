@@ -1511,6 +1511,50 @@ async fn serial_test_simple_revolve() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn serial_test_simple_revolve_uppercase() {
+    let code = r#"const part001 = startSketchOn('XY')
+     |> startProfileAt([4, 12], %)
+     |> line([2, 0], %)
+     |> line([0, -6], %)
+     |> line([4, -6], %)
+     |> line([0, -6], %)
+     |> line([-3.75, -4.5], %)
+     |> line([0, -5.5], %)
+     |> line([-2, 0], %)
+     |> close(%)
+     |> revolve({axis: 'Y'}, %)
+
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/simple_revolve_uppercase.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_simple_revolve_negative() {
+    let code = r#"const part001 = startSketchOn('XY')
+     |> startProfileAt([4, 12], %)
+     |> line([2, 0], %)
+     |> line([0, -6], %)
+     |> line([4, -6], %)
+     |> line([0, -6], %)
+     |> line([-3.75, -4.5], %)
+     |> line([0, -5.5], %)
+     |> line([-2, 0], %)
+     |> close(%)
+     |> revolve({axis: '-Y', angle: 180}, %)
+
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/simple_revolve_negative.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_revolve_bad_angle_low() {
     let code = r#"const part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
@@ -1580,4 +1624,29 @@ async fn serial_test_simple_revolve_custom_angle() {
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/simple_revolve_custom_angle.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_revolve_on_edge() {
+    let code = r#"const box = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, 5], %)
+  |> line([5, 0], %)
+  |> line([0, -5], %, 'revolveAxis') 
+  |> close(%)
+  |> extrude(5, %)
+
+const sketch001 = startSketchOn(box, "END")
+  |> startProfileAt([0, 0], %)
+  |> circle([7, 2.5], 1, %)
+  |> revolve({
+    angle: 90, 
+    axis: getOppositeEdge("revolveAxis", box) 
+    }, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/revolve_on_edge.png", &result, 1.0);
 }
