@@ -9,7 +9,11 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{ExtrudeGroup, MemoryItem, SketchGroup},
-    std::{extrude::do_post_extrude, fillet::EdgeReference, Args},
+    std::{
+        extrude::do_post_extrude,
+        fillet::{EdgeReference, DEFAULT_TOLERANCE},
+        Args,
+    },
 };
 
 /// Data for revolution surfaces.
@@ -146,6 +150,8 @@ async fn inner_revolve(
                     target: sketch_group.id,
                     axis,
                     origin,
+                    tolerance: DEFAULT_TOLERANCE,
+                    axis_is_2d: false,
                 },
             )
             .await?;
@@ -175,6 +181,7 @@ async fn inner_revolve(
                     angle,
                     target: sketch_group.id,
                     edge_id,
+                    tolerance: DEFAULT_TOLERANCE,
                 },
             )
             .await?;

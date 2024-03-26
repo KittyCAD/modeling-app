@@ -13,6 +13,8 @@ use crate::{
     std::Args,
 };
 
+pub(crate) const DEFAULT_TOLERANCE: f64 = 0.0000001;
+
 /// Data for fillets.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -100,7 +102,7 @@ async fn inner_fillet(
                 edge_id,
                 object_id: extrude_group.id,
                 radius: data.radius,
-                tolerance: 0.0000001, // We can let the user set this in the future.
+                tolerance: DEFAULT_TOLERANCE, // We can let the user set this in the future.
             },
         )
         .await?;
