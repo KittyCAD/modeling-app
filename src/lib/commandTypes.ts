@@ -12,7 +12,7 @@ import { commandBarMachine } from 'machines/commandBarMachine'
 
 type Icon = CustomIconName
 const PLATFORMS = ['both', 'web', 'desktop'] as const
-const INPUT_TYPES = ['options', 'string', 'kcl', 'selection'] as const
+const INPUT_TYPES = ['options', 'string', 'kcl', 'selection', 'boolean'] as const
 export interface KclExpression {
   valueAst: Value
   valueText: string
@@ -121,13 +121,22 @@ export type CommandArgumentConfig<
           defaultValueFromContext?: (context: C) => OutputType
         }
       | {
-          inputType: Extract<CommandInputType, 'selection'>
+          inputType: 'selection'
           selectionTypes: Selection['type'][]
           multiple: boolean
         }
-      | { inputType: Extract<CommandInputType, 'kcl'>; defaultValue?: string } // KCL expression inputs have simple strings as default values
+      | { inputType: 'kcl'; defaultValue?: string } // KCL expression inputs have simple strings as default values
       | {
-          inputType: Extract<CommandInputType, 'string'>
+          inputType: 'string'
+          defaultValue?:
+            | OutputType
+            | ((
+                commandBarContext: ContextFrom<typeof commandBarMachine>
+              ) => OutputType)
+          defaultValueFromContext?: (context: C) => OutputType
+        }
+      | {
+          inputType: 'boolean'
           defaultValue?:
             | OutputType
             | ((
@@ -167,13 +176,21 @@ export type CommandArgument<
               ) => OutputType)
         }
       | {
-          inputType: Extract<CommandInputType, 'selection'>
+          inputType: 'selection'
           selectionTypes: Selection['type'][]
           multiple: boolean
         }
-      | { inputType: Extract<CommandInputType, 'kcl'>; defaultValue?: string } // KCL expression inputs have simple strings as default values
+      | { inputType: 'kcl'; defaultValue?: string } // KCL expression inputs have simple strings as default value
       | {
-          inputType: Extract<CommandInputType, 'string'>
+          inputType: 'string'
+          defaultValue?:
+            | OutputType
+            | ((
+                commandBarContext: ContextFrom<typeof commandBarMachine>
+              ) => OutputType)
+        }
+      | {
+          inputType: 'boolean'
           defaultValue?:
             | OutputType
             | ((

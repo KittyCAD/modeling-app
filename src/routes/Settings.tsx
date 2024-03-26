@@ -159,6 +159,27 @@ export const Settings = () => {
                     }}
                   />
                 )
+              } else {
+                switch (setting.commandConfig?.inputType) {
+                  case 'boolean':
+                    Component = (
+                      <Toggle
+                        offLabel="Off"
+                        onLabel="On"
+                        onChange={(e) =>
+                          send({
+                            type: `set.${category}.${settingName}`,
+                            data: {
+                              level: settingsLevel,
+                              value: Boolean(e.target.checked),
+                            },
+                          } as unknown as Event<WildcardSetEvent>)
+                        }
+                        checked={Boolean(setting[settingsLevel])}
+                        name={`${category}-${settingName}`}
+                      />
+                    )
+                }
               }
 
               return (

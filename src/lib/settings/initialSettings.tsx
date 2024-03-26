@@ -218,28 +218,28 @@ export function createSettings() {
         defaultValue: false,
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
-          inputType: 'options',
+          inputType: 'boolean',
         },
       }),
       reduceMotion: new Setting<boolean>({
         defaultValue: false,
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
-          inputType: 'options',
+          inputType: 'boolean',
         },
       }),
       moveOrthoginalToSketch: new Setting<boolean>({
         defaultValue: false,
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
-          inputType: 'options',
+          inputType: 'boolean',
         },
       }),
       plumbusesOnly: new Setting<boolean>({
         defaultValue: false,
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
-          inputType: 'options',
+          inputType: 'boolean',
         },
       }),
     },
@@ -247,11 +247,11 @@ export function createSettings() {
      * Settings that affect the behavior of the KCL text editor.
      */
     textEditor: {
-      textWrapping: new Setting<Toggle>({
-        defaultValue: 'On',
-        validate: (v) => toggleAsArray.includes(v as Toggle),
+      textWrapping: new Setting<boolean>({
+        defaultValue: true,
+        validate: (v) => typeof v === 'boolean',
         commandConfig: {
-          inputType: 'options',
+          inputType: 'boolean',
         },
       }),
     },
@@ -282,7 +282,7 @@ export function createSettings() {
         defaultValue: true,
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
-          inputType: 'options',
+          inputType: 'boolean',
         },
       }),
     },
