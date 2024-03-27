@@ -232,7 +232,7 @@ impl crate::docs::StdLibFn for Import {
     }
 
     fn tags(&self) -> Vec<String> {
-        vec![]
+        vec!["norun".to_string()]
     }
 
     fn args(&self) -> Vec<crate::docs::StdLibFnArg> {

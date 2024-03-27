@@ -345,6 +345,7 @@ fn test_stdlib_doc_comment_with_code_on_ignored_function() {
     let (item, errors) = do_stdlib(
         quote! {
             name = "import",
+            tags = ["norun"]
         },
         quote! {
             /// This is some function.
