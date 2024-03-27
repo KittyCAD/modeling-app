@@ -3,7 +3,7 @@ import { secrets } from './secrets'
 import { getUtils } from './test-utils'
 import waitOn from 'wait-on'
 import { Themes } from '../../src/lib/theme'
-import { initialSettings } from '../../src/lib/settings/initialSettings'
+import { settings } from '../../src/lib/settings/initialSettings'
 import { roundOff } from 'lib/utils'
 
 /*
@@ -565,15 +565,15 @@ test('Stored settings are validated and fall back to defaults', async ({
       () => localStorage.getItem('SETTINGS_PERSIST_KEY') || '{}'
     )
   )
-  await expect(storedSettings.baseUnit).toBe(initialSettings.baseUnit)
+  await expect(storedSettings.baseUnit).toBe(settings.baseUnit)
   await expect(storedSettings.cameraControls).toBe(
-    initialSettings.cameraControls
+    settings.cameraControls
   )
   await expect(storedSettings.defaultDirectory).toBe(
-    initialSettings.defaultDirectory
+    settings.defaultDirectory
   )
   await expect(storedSettings.defaultProjectName).toBe(
-    initialSettings.defaultProjectName
+    settings.defaultProjectName
   )
 })
 

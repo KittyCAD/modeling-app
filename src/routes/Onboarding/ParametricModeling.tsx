@@ -11,7 +11,11 @@ export default function ParametricModeling() {
   }))
   const {
     settings: {
-      context: { theme },
+      context: {
+        app: {
+          theme: { current: theme },
+        },
+      },
     },
   } = useSettingsAuthContext()
   const getImageTheme = () =>
