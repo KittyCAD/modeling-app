@@ -983,11 +983,13 @@ pub struct ExecutorContext {
     pub fs: FileManager,
     pub stdlib: Arc<StdLib>,
     pub units: kittycad::types::UnitLength,
+    /// Mock mode is only for the modeling app when they just want to mock engine calls and not
+    /// actually make them.
+    pub is_mock: bool,
 }
 
 impl ExecutorContext {
     /// Create a new default executor context.
-    #[cfg(not(test))]
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(ws: reqwest::Upgraded, units: kittycad::types::UnitLength) -> Result<Self> {
         Ok(Self {
@@ -995,6 +997,7 @@ impl ExecutorContext {
             fs: FileManager::new(),
             stdlib: Arc::new(StdLib::new()),
             units,
+            is_mock: false,
         })
     }
 }
@@ -1302,6 +1305,7 @@ mod tests {
             fs: crate::fs::FileManager::new(),
             stdlib: Arc::new(crate::std::StdLib::new()),
             units: kittycad::types::UnitLength::Mm,
+            is_mock: false,
         };
         let memory = execute(program, &mut mem, BodyType::Root, &ctx).await?;
 

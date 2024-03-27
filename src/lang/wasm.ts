@@ -127,13 +127,15 @@ export interface ProgramMemory {
 export const executor = async (
   node: Program,
   programMemory: ProgramMemory = { root: {}, return: null },
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: EngineCommandManager,
+  isMock: boolean = false
 ): Promise<ProgramMemory> => {
   engineCommandManager.startNewSession()
   const _programMemory = await _executor(
     node,
     programMemory,
-    engineCommandManager
+    engineCommandManager,
+    isMock
   )
   await engineCommandManager.waitForAllCommands()
 
@@ -148,7 +150,8 @@ const getSettingsState = import('components/SettingsAuthProvider').then(
 export const _executor = async (
   node: Program,
   programMemory: ProgramMemory = { root: {}, return: null },
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: EngineCommandManager,
+  isMock: boolean
 ): Promise<ProgramMemory> => {
   try {
     const baseUnit = (await getSettingsState)()?.baseUnit || 'mm'
@@ -157,7 +160,8 @@ export const _executor = async (
       JSON.stringify(programMemory),
       baseUnit,
       engineCommandManager,
-      fileSystemManager
+      fileSystemManager,
+      isMock
     )
     return memory
   } catch (e: any) {

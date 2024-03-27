@@ -2743,6 +2743,12 @@ async fn execute_pipe_body(
             pipe_info.body = body.to_vec();
             call_expression.execute(memory, pipe_info, ctx).await
         }
+        Value::Identifier(identifier) => {
+            let result = memory.get(&identifier.name, identifier.into())?;
+            pipe_info.previous_results.push(result.clone());
+            pipe_info.index += 1;
+            execute_pipe_body(memory, body, pipe_info, source_range, ctx).await
+        }
         _ => {
             // Return an error this should not happen.
             Err(KclError::Semantic(KclErrorDetails {

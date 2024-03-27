@@ -149,6 +149,7 @@ pub async fn import(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "import",
+    tags = ["norun"],
 }]
 async fn inner_import(
     file_path: String,

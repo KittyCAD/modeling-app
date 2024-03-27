@@ -36,6 +36,7 @@ pub async fn extrude(args: Args) -> Result<MemoryItem, KclError> {
 }]
 async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) -> Result<Box<ExtrudeGroup>, KclError> {
     let id = uuid::Uuid::new_v4();
+
     // Extrude the element.
     args.send_modeling_cmd(
         id,
@@ -47,6 +48,15 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
     )
     .await?;
 
+    do_post_extrude(sketch_group, length, id, args).await
+}
+
+pub(crate) async fn do_post_extrude(
+    sketch_group: Box<SketchGroup>,
+    length: f64,
+    id: Uuid,
+    args: Args,
+) -> Result<Box<ExtrudeGroup>, KclError> {
     // We need to do this after extrude for sketch on face.
     if let SketchSurface::Face(_) = sketch_group.on {
         // Disable the sketch mode.
@@ -115,8 +125,8 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
     // Create a hashmap for quick id lookup
     let mut face_id_map = std::collections::HashMap::new();
     // creating fake ids for start and end caps is to make extrudes mock-execute safe
-    let mut start_cap_id = Some(Uuid::new_v4());
-    let mut end_cap_id = Some(Uuid::new_v4());
+    let mut start_cap_id = if args.ctx.is_mock { Some(Uuid::new_v4()) } else { None };
+    let mut end_cap_id = if args.ctx.is_mock { Some(Uuid::new_v4()) } else { None };
 
     for face_info in face_infos {
         match face_info.cap {
@@ -162,7 +172,8 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
                     new_value.push(extrude_surface);
                 }
             }
-        } else {
+        } else if args.ctx.is_mock {
+            // Only pre-populate the extrude surface if we are in mock mode.
             new_value.push(ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
                 position: sketch_group.position, // TODO should be for the extrude surface
                 rotation: sketch_group.rotation, // TODO should be for the extrude surface
