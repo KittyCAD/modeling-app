@@ -118,19 +118,16 @@ export const SettingsAuthProviderBase = ({
           })
         },
         toastSuccess: (context, event) => {
-          const [category, setting] = event.type
+          const eventParts = event.type
             .replace(/^set./, '')
             .split('.') as [keyof typeof settings, string]
           const truncatedNewValue = event.data.value?.toString().slice(0, 28)
           const message =
-            `Set ${decamelize(category, { separator: ' ' })}: ${decamelize(
-              setting,
-              { separator: ' ' }
-            )}` +
+            `Set ${decamelize(eventParts[1], { separator: ' ' })}` +
             (truncatedNewValue
               ? ` to "${truncatedNewValue}${
                   truncatedNewValue.length === 28 ? '...' : ''
-                }" at the ${event.data.level} level`
+                }"${event.data.level === 'project' ? ' for this project' : ' as a user default'}`
               : '')
           toast.success(message, {
             duration: message.split(' ').length * 100 + 1500,
@@ -155,7 +152,14 @@ export const SettingsAuthProviderBase = ({
   // and they are configured statically in initialiSettings
   useEffect(() => {
     const commands = settingsWithCommandConfigs
-      .map((type) => createSettingsCommand(type, settingsSend, settingsActor, loadedProject !== undefined))
+      .map((type) =>
+        createSettingsCommand(
+          type,
+          settingsSend,
+          settingsActor,
+          loadedProject !== undefined
+        )
+      )
       .filter((c) => c !== null) as Command[]
 
     commandBarSend({ type: 'Add commands', data: { commands: commands } })

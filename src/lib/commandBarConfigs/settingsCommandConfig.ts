@@ -14,6 +14,7 @@ import { settings } from 'lib/settings/initialSettings'
 import { AnyStateMachine, InterpreterFrom } from 'xstate'
 import { getPropertyByPath } from 'lib/objectPropertyByPath'
 import { buildCommandArgument } from 'lib/createMachineCommand'
+import decamelize from 'decamelize'
 
 // SETTINGS MACHINE
 export type SettingsCommandSchema<T extends SettingsPaths = SettingsPaths> = {
@@ -62,9 +63,8 @@ export function createSettingsCommand(
     S['default']
   >
   const valueArgPartialConfig = settingConfig['commandConfig']
-  const shouldHideOnThisLevel = isProjectAvailable
-    ? settingConfig.hideOnLevel === 'project'
-    : settingConfig.hideOnLevel === 'user'
+  const shouldHideOnThisLevel =
+    settingConfig?.hideOnLevel === 'user' && !isProjectAvailable
   if (!valueArgPartialConfig || shouldHideOnThisLevel) return null
 
   const valueArgConfig = {
@@ -77,6 +77,7 @@ export function createSettingsCommand(
 
   const command: Command = {
     name: type,
+    displayName: `Settings · ${decamelize(type.replaceAll('.', ' · '), { separator: ' ' })}`,
     ownerMachine: 'settings',
     icon: 'settings',
     needsReview: false,

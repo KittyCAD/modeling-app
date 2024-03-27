@@ -66,6 +66,7 @@ export type Command<
   args?: {
     [ArgName in keyof CommandSchema]: CommandArgument<CommandSchema[ArgName], T>
   }
+  displayName?: string
   description?: string
   icon?: Icon
   hide?: (typeof PLATFORMS)[number]

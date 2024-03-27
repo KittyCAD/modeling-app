@@ -80,7 +80,12 @@ function CommandComboBox({
                 className="w-5 h-5 dark:text-energy-10"
               />
             )}
-            <p className="flex-grow">{option.name} </p>
+            <p className="flex-grow">{option.displayName || option.name} </p>
+            {option.description && (
+              <p className="text-xs text-chalkboard-60 dark:text-chalkboard-40">
+                {option.description}
+              </p>
+            )}
           </Combobox.Option>
         ))}
       </Combobox.Options>

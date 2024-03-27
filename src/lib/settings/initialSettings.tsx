@@ -98,7 +98,6 @@ export function createSettings() {
       theme: new Setting<Themes>({
         defaultValue: Themes.System,
         validate: (v) => isEnumMember(v, Themes),
-        hideOnLevel: 'user',
         commandConfig: {
           inputType: 'options',
           defaultValueFromContext: (context) => context.app.theme.current,
