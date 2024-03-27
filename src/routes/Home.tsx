@@ -68,7 +68,7 @@ const Home = () => {
   const [state, send, actor] = useMachine(homeMachine, {
     context: {
       projects: loadedProjects,
-      defaultProjectName: settings.project.defaultProjectName.current,
+      defaultProjectName: settings.projects.defaultProjectName.current,
       defaultDirectory: settings.app.projectDirectory.current,
     },
     actions: {
@@ -102,7 +102,7 @@ const Home = () => {
         let name = (
           event.data && 'name' in event.data
             ? event.data.name
-            : settings.project.defaultProjectName.current
+            : settings.projects.defaultProjectName.current
         ).trim()
 
         if (doesProjectNameNeedInterpolated(name)) {
@@ -168,11 +168,11 @@ const Home = () => {
     send({
       type: 'assign',
       data: {
-        defaultProjectName: settings.project.defaultProjectName.current,
+        defaultProjectName: settings.projects.defaultProjectName.current,
         defaultDirectory: settings.app.projectDirectory.current,
       },
     })
-  }, [settings.app.projectDirectory, settings.project.defaultProjectName, send])
+  }, [settings.app.projectDirectory, settings.projects.defaultProjectName, send])
 
   async function handleRenameProject(
     e: FormEvent<HTMLFormElement>,

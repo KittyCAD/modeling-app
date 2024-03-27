@@ -78,6 +78,11 @@ export interface SettingProps<T = unknown> {
    */
   commandConfig?: AtLeast<CommandArgumentConfig<T>, 'inputType'>
   /**
+   * Whether to hide the setting on a certain level.
+   * This will be applied in both the settings panel and the command bar.
+   */
+  hideOnLevel?: SettingsLevel
+  /**
    * A React component to use for the setting in the settings panel.
    * If this is not provided but a commandConfig is, the `inputType`
    * of the commandConfig will be used to determine the component.

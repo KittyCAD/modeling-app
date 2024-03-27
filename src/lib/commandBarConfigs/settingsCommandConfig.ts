@@ -1,4 +1,8 @@
-import { Command, CommandArgument, CommandArgumentConfig } from '../commandTypes'
+import {
+  Command,
+  CommandArgument,
+  CommandArgumentConfig,
+} from '../commandTypes'
 import {
   SettingsPaths,
   SettingsLevel,
@@ -27,17 +31,20 @@ export const settingsWithCommandConfigs = Object.entries(settings).flatMap(
       .map(([settingName]) => `${categoryName}.${settingName}`)
 ) as SettingsPaths[]
 
-const levelArgConfig = <T extends AnyStateMachine = AnyStateMachine>(actor: InterpreterFrom<T>, isProjectAvailable: boolean): CommandArgument<SettingsLevel, T> => ({
+const levelArgConfig = <T extends AnyStateMachine = AnyStateMachine>(
+  actor: InterpreterFrom<T>,
+  isProjectAvailable: boolean
+): CommandArgument<SettingsLevel, T> => ({
   inputType: 'options' as const,
   required: true,
   defaultValue: isProjectAvailable ? 'project' : 'user',
   skip: true,
-  options: isProjectAvailable ? [
-    { name: 'User', value: 'user' as SettingsLevel },
-    { name: 'Project', value: 'project' as SettingsLevel, isCurrent: true },
-  ] : [
-    { name: 'User', value: 'user' as SettingsLevel, isCurrent: true },
-  ],
+  options: isProjectAvailable
+    ? [
+        { name: 'User', value: 'user' as SettingsLevel },
+        { name: 'Project', value: 'project' as SettingsLevel, isCurrent: true },
+      ]
+    : [{ name: 'User', value: 'user' as SettingsLevel, isCurrent: true }],
   machineActor: actor,
 })
 
@@ -51,10 +58,14 @@ export function createSettingsCommand(
 ) {
   type S = PathValue<typeof settings, typeof type>
 
-  const valueArgPartialConfig = (
-    getPropertyByPath(settings, type) as SettingProps<S['default']>
-  )['commandConfig']
-  if (!valueArgPartialConfig) return null
+  const settingConfig = getPropertyByPath(settings, type) as SettingProps<
+    S['default']
+  >
+  const valueArgPartialConfig = settingConfig['commandConfig']
+  const shouldHideOnThisLevel = isProjectAvailable
+    ? settingConfig.hideOnLevel === 'project'
+    : settingConfig.hideOnLevel === 'user'
+  if (!valueArgPartialConfig || shouldHideOnThisLevel) return null
 
   const valueArgConfig = {
     ...valueArgPartialConfig,

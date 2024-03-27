@@ -59,9 +59,9 @@ export function getChangedSettingsAtLevel(
         if (
           settingValue[level] !== undefined &&
           ((level === 'project' &&
-            (settingValue.user !== undefined ?
-              settingValue.project !== settingValue.user :
-              settingValue.project !== settingValue.default)) ||
+            (settingValue.user !== undefined
+              ? settingValue.project !== settingValue.user
+              : settingValue.project !== settingValue.default)) ||
             (level === 'user' && settingValue.user !== settingValue.default))
         ) {
           if (!changedSettings[categoryKey]) {
@@ -83,12 +83,15 @@ export function setSettingsAtLevel(
 ) {
   Object.entries(newSettings).forEach(([category, settingsCategory]) => {
     const categoryKey = category as keyof typeof settings
+    if (!allSettings[categoryKey]) return // ignore unrecognized categories
     Object.entries(settingsCategory).forEach(
-      ([setting, settingValue]: [string, Setting]) => {
-        // TODO: How do you get a valid type for allSettings[categoryKey][setting]?
+      ([settingKey, settingValue]: [string, Setting]) => {
+        // TODO: How do you get a valid type for allSettings[categoryKey][settingKey]?
         // it seems to always collapses to `never`, which is not correct
         // @ts-ignore
-        allSettings[categoryKey][setting][level] = settingValue as unknown
+        if (!allSettings[categoryKey][settingKey]) return // ignore unrecognized settings
+        // @ts-ignore
+        allSettings[categoryKey][settingKey][level] = settingValue as unknown
       }
     )
   })

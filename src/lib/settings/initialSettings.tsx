@@ -27,6 +27,7 @@ export class Setting<T = unknown> {
    * The current value of the setting, prioritizing project, then user, then default
    */
   public current: T
+  public hideOnLevel: SettingProps<T>['hideOnLevel']
   public commandConfig: SettingProps<T>['commandConfig']
   public Component: SettingProps<T>['Component']
   private validate: (v: T) => boolean
@@ -38,6 +39,7 @@ export class Setting<T = unknown> {
     this._default = props.defaultValue
     this.current = props.defaultValue
     this.validate = props.validate
+    this.hideOnLevel = props.hideOnLevel
     this.commandConfig = props.commandConfig
     this.Component = props.Component
   }
@@ -96,6 +98,7 @@ export function createSettings() {
       theme: new Setting<Themes>({
         defaultValue: Themes.System,
         validate: (v) => isEnumMember(v, Themes),
+        hideOnLevel: 'user',
         commandConfig: {
           inputType: 'options',
           defaultValueFromContext: (context) => context.app.theme.current,
@@ -118,6 +121,7 @@ export function createSettings() {
       projectDirectory: new Setting<string>({
         defaultValue: '',
         description: 'The directory to save and load projects from',
+        hideOnLevel: 'project',
         validate: (v) => typeof v === 'string' && (v.length > 0 || !isTauri()),
         Component: ({ value, onChange }) => {
           const inputRef = useRef<HTMLInputElement>(null)
@@ -185,6 +189,7 @@ export function createSettings() {
       mouseControls: new Setting<CameraSystem>({
         defaultValue: 'KittyCAD',
         validate: (v) => cameraSystems.includes(v as CameraSystem),
+        hideOnLevel: 'project',
         commandConfig: {
           inputType: 'options',
           defaultValueFromContext: (context) =>
@@ -244,15 +249,9 @@ export function createSettings() {
         commandConfig: {
           inputType: 'boolean',
         },
+        hideOnLevel: 'project',
       }),
       moveOrthoginalToSketch: new Setting<boolean>({
-        defaultValue: false,
-        validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
-        },
-      }),
-      plumbusesOnly: new Setting<boolean>({
         defaultValue: false,
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
@@ -275,13 +274,14 @@ export function createSettings() {
     /**
      * Settings that affect the behavior of project management.
      */
-    project: {
+    projects: {
       defaultProjectName: new Setting<string>({
         defaultValue: DEFAULT_PROJECT_NAME,
         validate: (v) => typeof v === 'string' && v.length > 0,
         commandConfig: {
           inputType: 'string',
         },
+        hideOnLevel: 'project'
       }),
       entryPointFileName: new Setting<string>({
         defaultValue: PROJECT_ENTRYPOINT + FILE_EXT,
@@ -289,6 +289,7 @@ export function createSettings() {
         commandConfig: {
           inputType: 'string',
         },
+        hideOnLevel: 'project'
       }),
     },
     /**
