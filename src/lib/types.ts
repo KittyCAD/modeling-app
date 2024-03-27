@@ -80,7 +80,6 @@ export type Leaves<T, D extends number = 10> = [D] extends [never]
   ? { [K in keyof T]-?: Join<K, Leaves<T[K], Prev[D]>> }[keyof T]
   : ''
 
-
 // Thanks to @micfan on StackOverflow for this utility type:
 // https://stackoverflow.com/a/57390160/22753272
 export type AtLeast<T, K extends keyof T> = Partial<T> & Pick<T, K>

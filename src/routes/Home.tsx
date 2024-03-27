@@ -172,7 +172,11 @@ const Home = () => {
         defaultDirectory: settings.app.projectDirectory.current,
       },
     })
-  }, [settings.app.projectDirectory, settings.projects.defaultProjectName, send])
+  }, [
+    settings.app.projectDirectory,
+    settings.projects.defaultProjectName,
+    send,
+  ])
 
   async function handleRenameProject(
     e: FormEvent<HTMLFormElement>,

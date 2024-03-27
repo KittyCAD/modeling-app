@@ -118,16 +118,21 @@ export const SettingsAuthProviderBase = ({
           })
         },
         toastSuccess: (context, event) => {
-          const eventParts = event.type
-            .replace(/^set./, '')
-            .split('.') as [keyof typeof settings, string]
+          const eventParts = event.type.replace(/^set./, '').split('.') as [
+            keyof typeof settings,
+            string
+          ]
           const truncatedNewValue = event.data.value?.toString().slice(0, 28)
           const message =
             `Set ${decamelize(eventParts[1], { separator: ' ' })}` +
             (truncatedNewValue
               ? ` to "${truncatedNewValue}${
                   truncatedNewValue.length === 28 ? '...' : ''
-                }"${event.data.level === 'project' ? ' for this project' : ' as a user default'}`
+                }"${
+                  event.data.level === 'project'
+                    ? ' for this project'
+                    : ' as a user default'
+                }`
               : '')
           toast.success(message, {
             duration: message.split(' ').length * 100 + 1500,
@@ -153,7 +158,8 @@ export const SettingsAuthProviderBase = ({
   useEffect(() => {
     // If the user wants to hide the settings commands
     //from the command bar don't add them.
-    if (settingsState.context.commandBar.includeSettings.current === false) return
+    if (settingsState.context.commandBar.includeSettings.current === false)
+      return
 
     const commands = settingsWithCommandConfigs(settingsState.context)
       .map((type) =>
@@ -162,8 +168,9 @@ export const SettingsAuthProviderBase = ({
           send: settingsSend,
           context: settingsState.context,
           actor: settingsActor,
-          isProjectAvailable: loadedProject !== undefined
-      }))
+          isProjectAvailable: loadedProject !== undefined,
+        })
+      )
       .filter((c) => c !== null) as Command[]
 
     commandBarSend({ type: 'Add commands', data: { commands: commands } })

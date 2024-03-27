@@ -1,4 +1,10 @@
-import { AnyStateMachine, ContextFrom, EventFrom, InterpreterFrom, StateFrom } from 'xstate'
+import {
+  AnyStateMachine,
+  ContextFrom,
+  EventFrom,
+  InterpreterFrom,
+  StateFrom,
+} from 'xstate'
 import { isTauri } from './isTauri'
 import {
   Command,
@@ -106,7 +112,7 @@ function buildCommandArguments<
 
 export function buildCommandArgument<
   T extends AnyStateMachine,
-  O extends CommandSetSchema<T> = CommandSetSchema<T>,
+  O extends CommandSetSchema<T> = CommandSetSchema<T>
 >(
   arg: CommandArgumentConfig<O, T>,
   context: ContextFrom<T>,

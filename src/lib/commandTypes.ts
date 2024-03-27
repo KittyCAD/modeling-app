@@ -12,7 +12,13 @@ import { commandBarMachine } from 'machines/commandBarMachine'
 
 type Icon = CustomIconName
 const PLATFORMS = ['both', 'web', 'desktop'] as const
-const INPUT_TYPES = ['options', 'string', 'kcl', 'selection', 'boolean'] as const
+const INPUT_TYPES = [
+  'options',
+  'string',
+  'kcl',
+  'selection',
+  'boolean',
+] as const
 export interface KclExpression {
   valueAst: Value
   valueText: string
@@ -175,7 +181,7 @@ export type CommandArgument<
                   argumentsToSubmit: Record<string, unknown>
                 }, // Should be the commandbarMachine's context, but it creates a circular dependency
                 machineContext?: ContextFrom<T>
-                ) => CommandArgumentOption<OutputType>[])
+              ) => CommandArgumentOption<OutputType>[])
           defaultValue?:
             | OutputType
             | ((

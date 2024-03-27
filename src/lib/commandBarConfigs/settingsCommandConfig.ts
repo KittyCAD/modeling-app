@@ -16,7 +16,9 @@ import { buildCommandArgument } from 'lib/createMachineCommand'
 import decamelize from 'decamelize'
 
 // An array of the paths to all of the settings that have commandConfigs
-export const settingsWithCommandConfigs = (s: ContextFrom<typeof settingsMachine>) =>
+export const settingsWithCommandConfigs = (
+  s: ContextFrom<typeof settingsMachine>
+) =>
   Object.entries(s).flatMap(([categoryName, categorySettings]) =>
     Object.entries(categorySettings)
       .filter(([_, setting]) => setting.commandConfig !== undefined)
@@ -62,7 +64,7 @@ export function createSettingsCommand({
   send,
   context,
   actor,
-  isProjectAvailable
+  isProjectAvailable,
 }: CreateSettingsArgs) {
   type S = PathValue<typeof context, typeof type>
 
