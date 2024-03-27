@@ -22386,7 +22386,7 @@
   },
   {
     "name": "cos",
-    "summary": "Computes the sine of a number (in radians).",
+    "summary": "Computes the cosine of a number (in radians).",
     "description": "",
     "tags": [
       "math"
