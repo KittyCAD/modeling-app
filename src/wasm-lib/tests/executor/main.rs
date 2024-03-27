@@ -143,6 +143,15 @@ const part002 = startSketchOn(part001, "start")
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn serial_test_mike_stress_lines() {
+    let code = include_str!("inputs/mike_stress_test.kcl");
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/mike_stress_test.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_sketch_on_face_end() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')

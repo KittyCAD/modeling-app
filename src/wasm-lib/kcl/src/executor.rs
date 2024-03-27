@@ -953,19 +953,16 @@ impl ExtrudeSurface {
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct PipeInfo {
+    /// The result of evaluating each child expression.
+    /// TODO: This probably could just be Option<MemoryItem> and only store the
+    /// most recent value.
     pub previous_results: Vec<MemoryItem>,
-    pub is_in_pipe: bool,
-    pub index: usize,
-    pub body: Vec<Value>,
 }
 
 impl PipeInfo {
     pub fn new() -> Self {
         Self {
             previous_results: Vec::new(),
-            is_in_pipe: false,
-            index: 0,
-            body: Vec::new(),
         }
     }
 }
