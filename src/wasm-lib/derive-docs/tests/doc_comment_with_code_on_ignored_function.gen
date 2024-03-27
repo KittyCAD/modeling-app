@@ -30,12 +30,75 @@ mod test_examples_import {
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
         let mut mem: crate::executor::ProgramMemory = Default::default();
-        let ctx = crate::executor::ExecutorContext::new(ws, kittycad::types::UnitLength::Mm)
+        let units = kittycad::types::UnitLength::Mm;
+        let ctx = crate::executor::ExecutorContext::new(ws, units.clone())
             .await
             .unwrap();
         crate::executor::execute(program, &mut mem, crate::executor::BodyType::Root, &ctx)
             .await
             .unwrap();
+        let (x, y) = crate::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
+        ctx.engine
+            .send_modeling_cmd(
+                false,
+                uuid::Uuid::new_v4(),
+                crate::executor::SourceRange::default(),
+                kittycad::types::ModelingCmd::DefaultCameraLookAt {
+                    center: kittycad::types::Point3D {
+                        x: 0.0,
+                        y: 0.0,
+                        z: 0.0,
+                    },
+                    up: kittycad::types::Point3D {
+                        x: 0.0,
+                        y: 0.0,
+                        z: 1.0,
+                    },
+                    vantage: kittycad::types::Point3D {
+                        x: 0.0,
+                        y: -x,
+                        z: y,
+                    },
+                    sequence: None,
+                },
+            )
+            .await
+            .unwrap();
+        let resp = ctx
+            .engine
+            .send_modeling_cmd(
+                false,
+                uuid::Uuid::new_v4(),
+                crate::executor::SourceRange::default(),
+                kittycad::types::ModelingCmd::TakeSnapshot {
+                    format: kittycad::types::ImageFormat::Png,
+                },
+            )
+            .await
+            .unwrap();
+        let output_file =
+            std::env::temp_dir().join(format!("kcl_output_{}.png", uuid::Uuid::new_v4()));
+        if let kittycad::types::OkWebSocketResponseData::Modeling {
+            modeling_response: kittycad::types::OkModelingCmdResponse::TakeSnapshot { data },
+        } = &resp
+        {
+            std::fs::write(&output_file, &data.contents.0).unwrap();
+        } else {
+            panic!("Unexpected response from engine: {:?}", resp);
+        }
+
+        let actual = image::io::Reader::open(output_file)
+            .unwrap()
+            .decode()
+            .unwrap();
+        twenty_twenty::assert_image(
+            &format!(
+                "../../../../docs/kcl/images/{}.png",
+                "serial_test_example_import0"
+            ),
+            &actual,
+            1.0,
+        );
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
@@ -68,12 +131,75 @@ mod test_examples_import {
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
         let mut mem: crate::executor::ProgramMemory = Default::default();
-        let ctx = crate::executor::ExecutorContext::new(ws, kittycad::types::UnitLength::Mm)
+        let units = kittycad::types::UnitLength::Mm;
+        let ctx = crate::executor::ExecutorContext::new(ws, units.clone())
             .await
             .unwrap();
         crate::executor::execute(program, &mut mem, crate::executor::BodyType::Root, &ctx)
             .await
             .unwrap();
+        let (x, y) = crate::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
+        ctx.engine
+            .send_modeling_cmd(
+                false,
+                uuid::Uuid::new_v4(),
+                crate::executor::SourceRange::default(),
+                kittycad::types::ModelingCmd::DefaultCameraLookAt {
+                    center: kittycad::types::Point3D {
+                        x: 0.0,
+                        y: 0.0,
+                        z: 0.0,
+                    },
+                    up: kittycad::types::Point3D {
+                        x: 0.0,
+                        y: 0.0,
+                        z: 1.0,
+                    },
+                    vantage: kittycad::types::Point3D {
+                        x: 0.0,
+                        y: -x,
+                        z: y,
+                    },
+                    sequence: None,
+                },
+            )
+            .await
+            .unwrap();
+        let resp = ctx
+            .engine
+            .send_modeling_cmd(
+                false,
+                uuid::Uuid::new_v4(),
+                crate::executor::SourceRange::default(),
+                kittycad::types::ModelingCmd::TakeSnapshot {
+                    format: kittycad::types::ImageFormat::Png,
+                },
+            )
+            .await
+            .unwrap();
+        let output_file =
+            std::env::temp_dir().join(format!("kcl_output_{}.png", uuid::Uuid::new_v4()));
+        if let kittycad::types::OkWebSocketResponseData::Modeling {
+            modeling_response: kittycad::types::OkModelingCmdResponse::TakeSnapshot { data },
+        } = &resp
+        {
+            std::fs::write(&output_file, &data.contents.0).unwrap();
+        } else {
+            panic!("Unexpected response from engine: {:?}", resp);
+        }
+
+        let actual = image::io::Reader::open(output_file)
+            .unwrap()
+            .decode()
+            .unwrap();
+        twenty_twenty::assert_image(
+            &format!(
+                "../../../../docs/kcl/images/{}.png",
+                "serial_test_example_import1"
+            ),
+            &actual,
+            1.0,
+        );
     }
 }
 
