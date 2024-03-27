@@ -13,6 +13,8 @@ use crate::{
     std::Args,
 };
 
+pub(crate) const DEFAULT_TOLERANCE: f64 = 0.0000001;
+
 /// Data for fillets.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -21,18 +23,18 @@ pub struct FilletData {
     /// The radius of the fillet.
     pub radius: f64,
     /// The tags of the paths you want to fillet.
-    pub tags: Vec<StringOrUuid>,
+    pub tags: Vec<EdgeReference>,
 }
 
 /// A string or a uuid.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Ord, PartialOrd, Eq, Hash)]
 #[ts(export)]
 #[serde(untagged)]
-pub enum StringOrUuid {
-    /// A uuid.
-    Uuid(Uuid),
-    /// A string.
-    String(String),
+pub enum EdgeReference {
+    /// A uuid of an edge.
+    Uuid(uuid::Uuid),
+    /// A tag name of an edge.
+    Tag(String),
 }
 
 /// Create fillets on tagged paths.
@@ -76,8 +78,8 @@ async fn inner_fillet(
 
     for tag in data.tags {
         let edge_id = match tag {
-            StringOrUuid::Uuid(uuid) => uuid,
-            StringOrUuid::String(tag) => {
+            EdgeReference::Uuid(uuid) => uuid,
+            EdgeReference::Tag(tag) => {
                 extrude_group
                     .sketch_group_values
                     .iter()
@@ -100,7 +102,7 @@ async fn inner_fillet(
                 edge_id,
                 object_id: extrude_group.id,
                 radius: data.radius,
-                tolerance: 0.0000001, // We can let the user set this in the future.
+                tolerance: DEFAULT_TOLERANCE, // We can let the user set this in the future.
             },
         )
         .await?;

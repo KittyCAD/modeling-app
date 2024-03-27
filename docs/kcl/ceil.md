@@ -12,6 +12,10 @@ Computes the smallest integer greater than or equal to a number.
 ceil(num: number) -> number
 ```
 
+### Tags
+
+* `math`
+
 ### Examples
 
 ```js

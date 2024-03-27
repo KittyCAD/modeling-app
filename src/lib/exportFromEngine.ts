@@ -5,10 +5,8 @@ import { v4 as uuidv4 } from 'uuid'
 // Isolating a function to call the engine to export the current scene.
 // Because it has given us trouble in automated testing environments.
 export function exportFromEngine({
-  source_unit,
   format,
 }: {
-  source_unit: Models['UnitLength_type']
   format: Models['OutputFormat_type']
 }) {
   return engineCommandManager.sendSceneCommand({
@@ -20,7 +18,6 @@ export function exportFromEngine({
       // in the scene to export. In that case, you'd pass the IDs thru here.
       entity_ids: [],
       format,
-      source_unit,
     },
     cmd_id: uuidv4(),
   })

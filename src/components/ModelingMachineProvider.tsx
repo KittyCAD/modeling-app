@@ -242,7 +242,6 @@ export const ModelingMachineProvider = ({
           }
 
           exportFromEngine({
-            source_unit: baseUnit,
             format: format as Models['OutputFormat_type'],
           }).catch((e) => toast.error('Error while exporting', e)) // TODO I think we need to throw the error from engineCommandManager
         },

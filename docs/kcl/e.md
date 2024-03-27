@@ -12,6 +12,10 @@ Return the value of Euler’s number `e`.
 e() -> number
 ```
 
+### Tags
+
+* `math`
+
 ### Examples
 
 ```js
