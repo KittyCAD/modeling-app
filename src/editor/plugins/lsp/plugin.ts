@@ -1,4 +1,4 @@
-import { completeFromList } from '@codemirror/autocomplete'
+import { completeFromList, snippetCompletion } from '@codemirror/autocomplete'
 import { setDiagnostics } from '@codemirror/lint'
 import { Facet } from '@codemirror/state'
 import { EditorView, Tooltip } from '@codemirror/view'
@@ -222,6 +222,10 @@ export class LanguageServerPlugin implements PluginValue {
             htmlNode.innerHTML = htmlString
             return { dom: htmlNode }
           }
+        }
+
+        if (insertText && insertTextFormat === 2) {
+          return snippetCompletion(insertText, completion)
         }
 
         return completion

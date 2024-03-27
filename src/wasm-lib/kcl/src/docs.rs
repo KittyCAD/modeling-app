@@ -184,8 +184,11 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
                     // any errors in the `self`'s signature.
                     .map(|(index, item)| {
                         let format = item.get_autocomplete_string().unwrap();
-                        if item.type_ == "SketchGroup" || item.type_ == "ExtrudeGroup" {
+                        if item.type_ == "SketchGroup" || item.type_ == "ExtrudeGroup" || item.type_ == "SketchSurface"
+                        {
                             format!("${{{}:{}}}", index + 1, "%")
+                        } else if format.contains('{') {
+                            format.replace('{', "\\{").replace('}', "\\}").to_string()
                         } else {
                             format!("${{{}:{}}}", index + 1, format)
                         }
@@ -432,6 +435,24 @@ pub fn get_type_string_from_schema(schema: &schemars::schema::Schema) -> Result<
 pub fn get_autocomplete_string_from_schema(schema: &schemars::schema::Schema) -> Result<String> {
     match schema {
         schemars::schema::Schema::Object(o) => {
+            if let Some(enum_values) = &o.enum_values {
+                let mut parsed_enum_values: Vec<String> = Default::default();
+                let mut had_enum_string = false;
+                for enum_value in enum_values {
+                    if let serde_json::value::Value::String(enum_value) = enum_value {
+                        had_enum_string = true;
+                        parsed_enum_values.push(format!("\"{}\"", enum_value));
+                    } else {
+                        had_enum_string = false;
+                        break;
+                    }
+                }
+
+                if had_enum_string && !parsed_enum_values.is_empty() {
+                    return Ok(parsed_enum_values[0].to_string());
+                }
+            }
+
             if let Some(format) = &o.format {
                 if format == "uuid" {
                     return Ok(Primitive::Uuid.to_string());
@@ -451,9 +472,6 @@ pub fn get_autocomplete_string_from_schema(schema: &schemars::schema::Schema) ->
                         continue;
                     }
 
-                    if let Some(description) = get_description_string_from_schema(prop) {
-                        fn_docs.push_str(&format!("\t// {}\n", description));
-                    }
                     fn_docs.push_str(&format!(
                         "\t{}: {},\n",
                         prop_name,
@@ -469,7 +487,17 @@ pub fn get_autocomplete_string_from_schema(schema: &schemars::schema::Schema) ->
             if let Some(array_val) = &o.array {
                 if let Some(schemars::schema::SingleOrVec::Single(items)) = &array_val.items {
                     // Let's print out the object's properties.
-                    return Ok(format!("[{}]", get_autocomplete_string_from_schema(items)?));
+                    match array_val.max_items {
+                        Some(val) => {
+                            return Ok(format!(
+                                "[{}]",
+                                (0..val).map(|_| "number").collect::<Vec<_>>().join(", ")
+                            ));
+                        }
+                        None => {
+                            return Ok(format!("[{}]", get_autocomplete_string_from_schema(items)?));
+                        }
+                    };
                 } else if let Some(items) = &array_val.contains {
                     return Ok(format!("[{}]", get_autocomplete_string_from_schema(items)?));
                 }
@@ -478,7 +506,36 @@ pub fn get_autocomplete_string_from_schema(schema: &schemars::schema::Schema) ->
             if let Some(subschemas) = &o.subschemas {
                 let mut fn_docs = String::new();
                 if let Some(items) = &subschemas.one_of {
-                    if let Some(item) = items.iter().next() {
+                    let mut had_enum_string = false;
+                    let mut parsed_enum_values: Vec<String> = Vec::new();
+                    for item in items {
+                        if let schemars::schema::Schema::Object(o) = item {
+                            if let Some(enum_values) = &o.enum_values {
+                                for enum_value in enum_values {
+                                    if let serde_json::value::Value::String(enum_value) = enum_value {
+                                        had_enum_string = true;
+                                        parsed_enum_values.push(format!("\"{}\"", enum_value));
+                                    } else {
+                                        had_enum_string = false;
+                                        break;
+                                    }
+                                }
+                                if !had_enum_string {
+                                    break;
+                                }
+                            } else {
+                                had_enum_string = false;
+                                break;
+                            }
+                        } else {
+                            had_enum_string = false;
+                            break;
+                        }
+                    }
+
+                    if had_enum_string && !parsed_enum_values.is_empty() {
+                        return Ok(parsed_enum_values[0].to_string());
+                    } else if let Some(item) = items.iter().next() {
                         // Let's print out the object's properties.
                         fn_docs.push_str(&get_autocomplete_string_from_schema(item)?);
                     }
