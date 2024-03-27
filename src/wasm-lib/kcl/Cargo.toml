@@ -71,6 +71,7 @@ base64 = "0.22.0"
 convert_case = "0.6.0"
 criterion = "0.5.1"
 expectorate = "1.1.0"
+iai = "0.1"
 image = "0.24.9"
 insta = { version = "1.38.0", features = ["json"] }
 itertools = "0.12.1"
@@ -79,5 +80,9 @@ tokio = { version = "1.37.0", features = ["rt-multi-thread", "macros", "time"] }
 twenty-twenty = "0.7.0"
 
 [[bench]]
-name = "compiler_benchmark"
+name = "compiler_benchmark_criterion"
+harness = false
+
+[[bench]]
+name = "compiler_benchmark_iai"
 harness = false
