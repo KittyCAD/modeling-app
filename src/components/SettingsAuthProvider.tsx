@@ -151,6 +151,10 @@ export const SettingsAuthProviderBase = ({
   // Because their state machine doesn't have a meaningful .nextEvents,
   // and they are configured statically in initialiSettings
   useEffect(() => {
+    // If the user wants to hide the settings commands
+    //from the command bar don't add them.
+    if (settingsState.context.commandBar.includeSettings.current === false) return
+
     const commands = settingsWithCommandConfigs
       .map((type) =>
         createSettingsCommand(
