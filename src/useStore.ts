@@ -263,7 +263,7 @@ export async function executeAst({
     }
     const programMemory = await (useFakeExecutor
       ? enginelessExecutor(ast, programMemoryOverride || programMemoryInit())
-      : _executor(ast, programMemoryInit(), engineCommandManager))
+      : _executor(ast, programMemoryInit(), engineCommandManager, false))
 
     await engineCommandManager.waitForAllCommands()
     return {

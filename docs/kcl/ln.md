@@ -12,6 +12,10 @@ Computes the natural logarithm of the number.
 ln(num: number) -> number
 ```
 
+### Tags
+
+* `math`
+
 ### Examples
 
 ```js

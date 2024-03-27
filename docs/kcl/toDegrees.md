@@ -12,6 +12,10 @@ Converts a number from radians to degrees.
 toDegrees(num: number) -> number
 ```
 
+### Tags
+
+* `math`
+
 ### Examples
 
 ```js

@@ -12,6 +12,10 @@ Returns the length of the given leg.
 legLen(hypotenuse: number, leg: number) -> number
 ```
 
+### Tags
+
+* `utilities`
+
 ### Examples
 
 ```js

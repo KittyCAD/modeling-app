@@ -48,12 +48,12 @@
     "shortDescription": "",
     "targets": "all"
   },
-  "identifier": "io.kittycad.modeling-app",
+  "identifier": "dev.zoo.modeling-app",
   "plugins": {
     "shell": {
       "open": true
     }
   },
   "productName": "zoo-modeling-app",
-  "version": "0.16.0"
+  "version": "0.17.0"
 }

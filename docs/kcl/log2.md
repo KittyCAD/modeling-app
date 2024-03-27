@@ -12,6 +12,10 @@ Computes the base 2 logarithm of the number.
 log2(num: number) -> number
 ```
 
+### Tags
+
+* `math`
+
 ### Examples
 
 ```js

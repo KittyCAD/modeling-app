@@ -12,6 +12,10 @@ Computes the absolute value of a number.
 abs(num: number) -> number
 ```
 
+### Tags
+
+* `math`
+
 ### Examples
 
 ```js

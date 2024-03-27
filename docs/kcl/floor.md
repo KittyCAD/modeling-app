@@ -12,6 +12,10 @@ Computes the largest integer less than or equal to a number.
 floor(num: number) -> number
 ```
 
+### Tags
+
+* `math`
+
 ### Examples
 
 ```js
