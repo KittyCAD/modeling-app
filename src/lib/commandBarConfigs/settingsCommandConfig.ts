@@ -1,4 +1,4 @@
-import { Command, CommandArgumentConfig } from '../commandTypes'
+import { Command, CommandArgument, CommandArgumentConfig } from '../commandTypes'
 import {
   SettingsPaths,
   SettingsLevel,
@@ -19,13 +19,24 @@ export type SettingsCommandSchema<T extends SettingsPaths = SettingsPaths> = {
   }
 }
 
-const levelArgConfig = (actor: InterpreterFrom<AnyStateMachine>) => ({
+// An array of the paths to all of the settings that have commandConfigs
+export const settingsWithCommandConfigs = Object.entries(settings).flatMap(
+  ([categoryName, categorySettings]) =>
+    Object.entries(categorySettings)
+      .filter(([_, setting]) => setting.commandConfig !== undefined)
+      .map(([settingName]) => `${categoryName}.${settingName}`)
+) as SettingsPaths[]
+
+const levelArgConfig = <T extends AnyStateMachine = AnyStateMachine>(actor: InterpreterFrom<T>, isProjectAvailable: boolean): CommandArgument<SettingsLevel, T> => ({
   inputType: 'options' as const,
   required: true,
-  defaultValue: 'user' as SettingsLevel,
-  options: [
+  defaultValue: isProjectAvailable ? 'project' : 'user',
+  skip: true,
+  options: isProjectAvailable ? [
+    { name: 'User', value: 'user' as SettingsLevel },
+    { name: 'Project', value: 'project' as SettingsLevel, isCurrent: true },
+  ] : [
     { name: 'User', value: 'user' as SettingsLevel, isCurrent: true },
-    { name: 'Project', value: 'project' as SettingsLevel },
   ],
   machineActor: actor,
 })
@@ -35,11 +46,14 @@ const levelArgConfig = (actor: InterpreterFrom<AnyStateMachine>) => ({
 export function createSettingsCommand(
   type: SettingsPaths,
   send: Function,
-  actor: InterpreterFrom<typeof settingsMachine>
+  actor: InterpreterFrom<typeof settingsMachine>,
+  isProjectAvailable: boolean
 ) {
   type S = PathValue<typeof settings, typeof type>
 
-  const valueArgPartialConfig = (getPropertyByPath(settings, type) as SettingProps<S['default']>)['commandConfig']
+  const valueArgPartialConfig = (
+    getPropertyByPath(settings, type) as SettingProps<S['default']>
+  )['commandConfig']
   if (!valueArgPartialConfig) return null
 
   const valueArgConfig = {
@@ -49,8 +63,6 @@ export function createSettingsCommand(
 
   // @ts-ignore - TODO figure out this typing for valueArgConfig
   const valueArg = buildCommandArgument(valueArgConfig, settings, actor)
-  
-  console.log('valueArg', valueArg)
 
   const command: Command = {
     name: type,
@@ -65,9 +77,9 @@ export function createSettingsCommand(
       }
     },
     args: {
-      level: levelArgConfig(actor),
+      level: levelArgConfig(actor, isProjectAvailable),
       value: valueArg,
-    }
+    },
   }
 
   return command

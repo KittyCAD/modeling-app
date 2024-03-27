@@ -23,9 +23,13 @@ import { v4 as uuidv4 } from 'uuid'
 import { IndexLoaderData } from 'lib/types'
 import { settings } from 'lib/settings/initialSettings'
 import { writeToSettingsFiles } from 'lib/tauriFS'
-import { createSettingsCommand } from 'lib/commandBarConfigs/settingsCommandConfig'
+import {
+  createSettingsCommand,
+  settingsWithCommandConfigs,
+} from 'lib/commandBarConfigs/settingsCommandConfig'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { Command } from 'lib/commandTypes'
+import { BaseUnit } from 'lib/settings/settingsTypes'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -96,10 +100,10 @@ export const SettingsAuthProviderBase = ({
       context: loadedSettings,
       actions: {
         setClientSideSceneUnits: (context, event) => {
-          if (event.type !== 'set.modeling.units') return
+          if (event.type !== 'set.modeling.defaultUnit') return
           const newBaseUnit =
-            event.type === 'set.modeling.units'
-              ? event.data.value
+            event.type === 'set.modeling.defaultUnit'
+              ? (event.data.value as BaseUnit)
               : context.modeling.defaultUnit.current
           sceneInfra.baseUnit = newBaseUnit
         },
@@ -145,26 +149,14 @@ export const SettingsAuthProviderBase = ({
   )
   settingsStateRef = settingsState.context
 
+  // Add settings commands to the command bar
+  // They're treated slightly differently than other commands
+  // Because their state machine doesn't have a meaningful .nextEvents,
+  // and they are configured statically in initialiSettings
   useEffect(() => {
-    const commands = [
-      createSettingsCommand(
-        'modeling.defaultUnit',
-        settingsSend,
-        settingsActor
-      ),
-      createSettingsCommand(
-        'app.theme',
-        settingsSend,
-        settingsActor
-      ),
-      createSettingsCommand(
-        'textEditor.textWrapping',
-        settingsSend,
-        settingsActor
-      )
-    ].filter((c) => c !== null) as Command[]
-
-    console.log('commands', commands)
+    const commands = settingsWithCommandConfigs
+      .map((type) => createSettingsCommand(type, settingsSend, settingsActor, loadedProject !== undefined))
+      .filter((c) => c !== null) as Command[]
 
     commandBarSend({ type: 'Add commands', data: { commands: commands } })
 
@@ -174,14 +166,13 @@ export const SettingsAuthProviderBase = ({
         data: { commands },
       })
     }
-  }, [settingsState])
-  // useStateMachineCommands({
-  //   machineId: 'settings',
-  //   state: settingsState,
-  //   send: settingsSend,
-  //   commandBarConfig: settingsCommandBarConfig,
-  //   actor: settingsActor,
-  // })
+  }, [
+    settingsState,
+    settingsSend,
+    settingsActor,
+    commandBarSend,
+    settingsWithCommandConfigs,
+  ])
 
   // Listen for changes to the system theme and update the app theme accordingly
   // This is only done if the theme setting is set to 'system'.

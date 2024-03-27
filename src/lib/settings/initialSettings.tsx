@@ -170,13 +170,8 @@ export function createSettings() {
           inputType: 'options',
           defaultValueFromContext: (context) =>
             context.modeling.defaultUnit.current,
-          options: (cmdContext, settingsContext) => {
-            console.log('options for defaultUnit', {
-              cmdContext,
-              settingsContext,
-            })
-
-            return Object.values(baseUnitsUnion).map((v) => ({
+          options: (cmdContext, settingsContext) =>
+            Object.values(baseUnitsUnion).map((v) => ({
               name: v,
               value: v,
               isCurrent:
@@ -184,8 +179,7 @@ export function createSettings() {
                 settingsContext.modeling.defaultUnit[
                   cmdContext.argumentsToSubmit.level as SettingsLevel
                 ],
-            }))
-          },
+            })),
         },
       }),
       mouseControls: new Setting<CameraSystem>({

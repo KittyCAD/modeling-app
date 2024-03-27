@@ -27,7 +27,7 @@ export const settingsMachine = createMachine(
             actions: ['setSettingAtLevel', 'toastSuccess', 'persistSettings'],
           },
 
-          'set.modeling.units': {
+          'set.modeling.defaultUnit': {
             target: 'idle',
             internal: true,
             actions: [

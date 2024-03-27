@@ -218,7 +218,6 @@ export const TextEditor = ({
           ],
         })
       )
-      console.log('refreshed extensions', textWrapping)
       if (textWrapping.current) extensions.push(EditorView.lineWrapping)
     }
 
