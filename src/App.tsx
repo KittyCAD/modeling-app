@@ -99,8 +99,8 @@ export function App() {
   )
     ? 'opacity-20'
     : didDragInStream
-    ? 'opacity-40'
-    : ''
+      ? 'opacity-40'
+      : ''
 
   useEngineConnectionSubscriptions()
 

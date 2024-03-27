@@ -11,7 +11,7 @@ import {
 
 interface CreateMachineCommandProps<
   T extends AnyStateMachine,
-  S extends CommandSetSchema<T>
+  S extends CommandSetSchema<T>,
 > {
   type: EventFrom<T>['type']
   ownerMachine: T['id']
@@ -26,7 +26,7 @@ interface CreateMachineCommandProps<
 // from a more terse Command Bar Meta definition.
 export function createMachineCommand<
   T extends AnyStateMachine,
-  S extends CommandSetSchema<T>
+  S extends CommandSetSchema<T>,
 >({
   ownerMachine,
   type,
@@ -87,7 +87,7 @@ export function createMachineCommand<
 function buildCommandArguments<
   T extends AnyStateMachine,
   S extends CommandSetSchema<T>,
-  CommandName extends EventFrom<T>['type'] = EventFrom<T>['type']
+  CommandName extends EventFrom<T>['type'] = EventFrom<T>['type'],
 >(
   state: StateFrom<T>,
   args: CommandConfig<T, CommandName, S>['args'],
@@ -106,7 +106,7 @@ function buildCommandArguments<
 
 function buildCommandArgument<
   O extends CommandSetSchema<T>,
-  T extends AnyStateMachine
+  T extends AnyStateMachine,
 >(
   arg: CommandArgumentConfig<O, T>,
   argName: string,

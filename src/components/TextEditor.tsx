@@ -199,10 +199,10 @@ export const TextEditor = ({
                   e.shiftKey && e.metaKey
                     ? 0.01
                     : e.metaKey
-                    ? 0.1
-                    : e.shiftKey
-                    ? 10
-                    : 1
+                      ? 0.1
+                      : e.shiftKey
+                        ? 10
+                        : 1
 
                 const delta = e.movementX * multiplier
 

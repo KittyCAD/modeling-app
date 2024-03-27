@@ -133,8 +133,8 @@ const xyLineSetLength =
     const lineVal = forceValueUsedInTransform
       ? forceValueUsedInTransform
       : referenceSeg
-      ? segRef
-      : args[0]
+        ? segRef
+        : args[0]
     return createCallWrapper(xOrY, lineVal, tag, getArgLiteralVal(args[0]))
   }
 
@@ -151,18 +151,18 @@ const basicAngledLineCreateNode =
       varValToUse === 'ang'
         ? varValA
         : referenceSeg === 'ang'
-        ? getClosesAngleDirection(
-            args[0],
-            refAng,
-            createSegAngle(referenceSegName) as BinaryPart
-          )
-        : args[0]
+          ? getClosesAngleDirection(
+              args[0],
+              refAng,
+              createSegAngle(referenceSegName) as BinaryPart
+            )
+          : args[0]
     const nonForcedLen =
       varValToUse === 'len'
         ? varValB
         : referenceSeg === 'len'
-        ? createSegLen(referenceSegName)
-        : args[1]
+          ? createSegLen(referenceSegName)
+          : args[1]
     const shouldForceAng = valToForce === 'ang' && forceValueUsedInTransform
     const shouldForceLen = valToForce === 'len' && forceValueUsedInTransform
     return createCallWrapper(
@@ -476,13 +476,13 @@ const setAngleBetweenCreateNode =
         tranformToType === 'none'
           ? 'angledLine'
           : tranformToType === 'xAbs'
-          ? 'angledLineToX'
-          : 'angledLineToY',
+            ? 'angledLineToX'
+            : 'angledLineToY',
         tranformToType === 'none'
           ? [binExp, args[1]]
           : tranformToType === 'xAbs'
-          ? [binExp, varValA]
-          : [binExp, varValB],
+            ? [binExp, varValA]
+            : [binExp, varValB],
         tag,
         valueUsedInTransform
       )

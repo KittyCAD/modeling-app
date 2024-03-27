@@ -36,8 +36,8 @@ export function absDistanceInfo({
     constraint === 'xAbs' || constraint === 'yAbs'
       ? constraint
       : constraint === 'snapToYAxis'
-      ? 'xAbs'
-      : 'yAbs'
+        ? 'xAbs'
+        : 'yAbs'
   const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
     getNodePathFromSourceRange(kclManager.ast, range)
   )
