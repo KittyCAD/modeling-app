@@ -4,18 +4,18 @@ expression: actual
 ---
 {
   "start": 0,
-  "end": 26,
+  "end": 29,
   "body": [
     {
       "type": "VariableDeclaration",
       "type": "VariableDeclaration",
       "start": 0,
-      "end": 26,
+      "end": 29,
       "declarations": [
         {
           "type": "VariableDeclarator",
           "start": 6,
-          "end": 26,
+          "end": 29,
           "id": {
             "type": "Identifier",
             "start": 6,
@@ -26,7 +26,7 @@ expression: actual
             "type": "PipeExpression",
             "type": "PipeExpression",
             "start": 14,
-            "end": 26,
+            "end": 29,
             "body": [
               {
                 "type": "CallExpression",
@@ -55,7 +55,7 @@ expression: actual
                 "type": "CallExpression",
                 "type": "CallExpression",
                 "start": 22,
-                "end": 26,
+                "end": 29,
                 "callee": {
                   "type": "Identifier",
                   "start": 22,
@@ -70,6 +70,12 @@ expression: actual
                     "end": 25,
                     "value": 2,
                     "raw": "2"
+                  },
+                  {
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution",
+                    "start": 27,
+                    "end": 28
                   }
                 ],
                 "optional": false
