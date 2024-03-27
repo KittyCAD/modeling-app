@@ -482,6 +482,17 @@ async fn serial_test_execute_engine_error_return() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn serial_test_execute_i_shape() {
+    // This is some code from lee that starts a pipe expression with a variable.
+    let code = include_str!("inputs/i_shape.kcl");
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/i_shape.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 #[ignore] // ignore until more stack fixes
 async fn serial_test_execute_pipes_on_pipes() {
     let code = include_str!("inputs/pipes_on_pipes.kcl");
