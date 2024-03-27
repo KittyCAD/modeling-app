@@ -12,6 +12,10 @@ Computes the base 10 logarithm of the number.
 log10(num: number) -> number
 ```
 
+### Tags
+
+* `math`
+
 ### Examples
 
 ```js

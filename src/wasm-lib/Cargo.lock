@@ -1853,6 +1853,7 @@ dependencies = [
  "bson",
  "chrono",
  "clap",
+ "convert_case",
  "criterion",
  "dashmap",
  "databake",

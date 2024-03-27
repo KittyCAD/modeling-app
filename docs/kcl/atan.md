@@ -12,6 +12,10 @@ Computes the arctangent of a number (in radians).
 atan(num: number) -> number
 ```
 
+### Tags
+
+* `math`
+
 ### Examples
 
 ```js
