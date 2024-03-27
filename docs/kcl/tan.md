@@ -12,6 +12,10 @@ Computes the tangent of a number (in radians).
 tan(num: number) -> number
 ```
 
+### Tags
+
+* `math`
+
 ### Examples
 
 ```js

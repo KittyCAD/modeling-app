@@ -12,6 +12,10 @@ Return the value of `pi`. Archimedes’ constant (π).
 pi() -> number
 ```
 
+### Tags
+
+* `math`
+
 ### Examples
 
 ```js
