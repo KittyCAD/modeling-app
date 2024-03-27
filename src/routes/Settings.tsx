@@ -126,7 +126,7 @@ export const Settings = () => {
               <h1 className="text-2xl font-bold">Settings</h1>
               <button
                 onClick={close}
-                className="p-0 m-0 focus:ring-0 focus:outline-none border-none hover:bg-destroy-10 focus:bg-destroy-10 dark:hover:bg-destroy-80/50 dark:focus::bg-destroy-80/50"
+                className="p-0 m-0 focus:ring-0 focus:outline-none border-none hover:bg-destroy-10 focus:bg-destroy-10 dark:hover:bg-destroy-80/50 dark:focus:bg-destroy-80/50"
               >
                 <CustomIcon name="close" className="w-5 h-5" />
               </button>
@@ -157,7 +157,7 @@ export const Settings = () => {
                 </RadioGroup.Option>
               )}
             </RadioGroup>
-            <div className="flex flex-grow overflow-hidden items-stretch pl-4 pr-5 pb-5 gap-3">
+            <div className="flex flex-grow overflow-hidden items-stretch pl-4 pr-5 pb-5 gap-4">
               <div className="flex w-64 flex-col gap-3 pr-2 py-1 border-0 border-r border-r-chalkboard-20 dark:border-r-chalkboard-90">
                 {Object.entries(context)
                   .filter(([_, categorySettings]) =>
@@ -216,7 +216,7 @@ export const Settings = () => {
               </div>
               <div
                 ref={scrollRef}
-                className="flex flex-col gap-6 pr-2 overflow-y-auto"
+                className="flex flex-col gap-6 px-2 overflow-y-auto"
               >
                 {Object.entries(context)
                   .filter(([_, categorySettings]) =>
@@ -252,6 +252,7 @@ export const Settings = () => {
                                 separator: ' ',
                               })}
                               key={`${category}-${settingName}-${settingsLevel}`}
+                              description={setting.description}
                               settingHasChanged={
                                 setting[settingsLevel] !== undefined &&
                                 setting[settingsLevel] !==
@@ -295,7 +296,7 @@ export const Settings = () => {
                     Element="button"
                     onClick={restartOnboarding}
                     icon={{
-                      icon: faArrowRotateBack,
+                      icon: 'refresh',
                       size: 'sm',
                       className: 'p-1',
                     }}
@@ -315,7 +316,8 @@ export const Settings = () => {
                 >
                   {isTauri() ? (
                     <div className="flex gap-4 flex-wrap items-center">
-                      <button
+                      <ActionButton
+                        Element="button"
                         onClick={async () => {
                           console.log('projectPath', projectPath)
                           const paths = await getSettingsFolderPaths(
@@ -325,11 +327,16 @@ export const Settings = () => {
                             path: paths[settingsLevel],
                           })
                         }}
-                        className="text-sm font-mono rounded-sm"
+                        icon={{
+                          icon: 'folder',
+                          size: 'sm',
+                          className: 'p-1',
+                        }}
                       >
-                        Show settings.json in folder
-                      </button>
-                      <button
+                        Show in folder
+                      </ActionButton>
+                      <ActionButton
+                        Element="button"
                         onClick={async () => {
                           // We have to re-call initializeProjectDirectory
                           // since we can't set that in the settings machine's
@@ -339,10 +346,15 @@ export const Settings = () => {
                           })
                           toast.success('Settings restored to default')
                         }}
-                        className="text-sm font-mono rounded-sm"
+                        icon={{
+                          icon: 'refresh',
+                          size: 'sm',
+                          className: 'p-1 text-chalkboard-10',
+                          bgClassName: 'bg-destroy-70',
+                        }}
                       >
                         Restore default settings
-                      </button>
+                      </ActionButton>
                     </div>
                   ) : (
                     <button
@@ -413,7 +425,7 @@ export function SettingsSection({
   parentLevel,
   settingHasChanged,
   onFallback,
-  headingClassName = 'text-base font-normal capitalize tracking-wide ml-0.5',
+  headingClassName = 'text-base font-normal capitalize tracking-wide',
 }: SettingsSectionProps) {
   return (
     <section
@@ -421,8 +433,8 @@ export function SettingsSection({
         'group grid grid-cols-2 gap-6 items-start ' +
         className +
         (settingHasChanged
-          ? ' border-0 border-l-2 border-energy-50 dark:border-energy-20'
-          : ' ml-0.5')
+          ? ' border-0 border-l-2 -ml-0.5 border-energy-50 dark:border-energy-20'
+          : '')
       }
     >
       <div className="ml-2">
@@ -435,12 +447,16 @@ export function SettingsSection({
             >
               <CustomIcon name="refresh" className="w-4 h-4" />
               <Tooltip position="right">
-                Roll back to match {parentLevel} setting
+                Roll back to match {parentLevel}
               </Tooltip>
             </button>
           )}
         </div>
-        {description && <p className="mt-2 text-sm">{description}</p>}
+        {description && (
+          <p className="mt-2 text-xs text-chalkboard-80 dark:text-chalkboard-30">
+            {description}
+          </p>
+        )}
       </div>
       <div>{children}</div>
     </section>
