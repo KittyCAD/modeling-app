@@ -2830,11 +2830,31 @@ let myBox = box([0,0], -3, -16, -10)
         let parser = crate::parser::Parser::new(tokens);
         parser.ast().unwrap();
     }
+
     #[test]
     fn must_use_percent_in_pipeline_fn() {
         let some_program_string = r#"
         foo()
             |> bar(2)
+        "#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let err = parser.ast().unwrap_err();
+        println!("{err}")
+    }
+
+    #[test]
+    fn can_split_up_pipeline() {
+        let some_program_string = r#"
+            let w = 100
+            const p = startSketchAt([0,0])
+              |> lineTo([w, 0], %)
+              |> lineTo([w, w], %)
+              |> lineTo([0, w], %)
+            const q = p
+              |> lineTo([0, 0], %)
+              |> close(%)
+              |> extrude(w, %)
         "#;
         let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
