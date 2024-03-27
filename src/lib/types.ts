@@ -84,3 +84,10 @@ export type Leaves<T, D extends number = 10> = [D] extends [never]
 // Thanks to @micfan on StackOverflow for this utility type:
 // https://stackoverflow.com/a/57390160/22753272
 export type AtLeast<T, K extends keyof T> = Partial<T> & Pick<T, K>
+
+export function isEnumMember<T extends Record<string, unknown>>(
+  v: unknown,
+  e: T
+) {
+  return Object.values(e).includes(v)
+}

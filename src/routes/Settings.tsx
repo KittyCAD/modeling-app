@@ -1,11 +1,9 @@
 import { faArrowRotateBack, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../components/ActionButton'
 import { AppHeader } from '../components/AppHeader'
-import { open } from '@tauri-apps/api/dialog'
-import { DEFAULT_PROJECT_NAME, SETTINGS_PERSIST_KEY } from 'lib/constants'
+import { SETTINGS_PERSIST_KEY } from 'lib/constants'
 import {
-  type BaseUnit,
-  baseUnitsUnion,
+  SetEventTypes,
   SettingsLevel,
   WildcardSetEvent,
 } from 'lib/settings/settingsTypes'
@@ -14,14 +12,12 @@ import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { type IndexLoaderData } from 'lib/types'
 import { paths } from 'lib/paths'
-import { Themes } from '../lib/theme'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
 import {
   createNewProject,
   getNextProjectIndex,
   getProjectsInDir,
-  getSettingsFilePaths,
   getSettingsFolderPaths,
   interpolateProjectNameWithIndex,
 } from 'lib/tauriFS'
@@ -31,11 +27,10 @@ import { bracket } from 'lib/exampleKcl'
 import { isTauri } from 'lib/isTauri'
 import { invoke } from '@tauri-apps/api'
 import toast from 'react-hot-toast'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Setting } from 'lib/settings/initialSettings'
 import decamelize from 'decamelize'
 import { Event } from 'xstate'
-import { useRefreshSettings } from 'hooks/useRefreshSettings'
 
 export const Settings = () => {
   const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
@@ -152,133 +147,19 @@ export const Settings = () => {
                     item[1].hideOnLevel !== settingsLevel &&
                     (item[1].Component || item[1].commandConfig?.inputType)
                 )
-                .map(([settingName, s]) => {
-                  const setting = s as Setting<string | boolean>
-                  let Component: React.ReactNode
-
-                  if (setting.Component) {
-                    Component = (
-                      <setting.Component
-                        value={setting[settingsLevel] || setting.default}
-                        onChange={(e) => {
-                          if ('value' in e.target) {
-                            send({
-                              type: `set.${category}.${settingName}`,
-                              data: {
-                                level: settingsLevel,
-                                value: e.target.value,
-                              },
-                            } as unknown as Event<WildcardSetEvent>)
-                          }
-                        }}
-                      />
-                    )
-                  } else {
-                    switch (setting.commandConfig?.inputType) {
-                      case 'boolean':
-                        Component = (
-                          <Toggle
-                            offLabel="Off"
-                            onLabel="On"
-                            onChange={(e) =>
-                              send({
-                                type: `set.${category}.${settingName}`,
-                                data: {
-                                  level: settingsLevel,
-                                  value: Boolean(e.target.checked),
-                                },
-                              } as unknown as Event<WildcardSetEvent>)
-                            }
-                            checked={Boolean(setting[settingsLevel])}
-                            name={`${category}-${settingName}`}
-                          />
-                        )
-                        break
-                      case 'options':
-                        Component = (
-                          <select
-                            value={String(setting.current)}
-                            onChange={(e) =>
-                              send({
-                                type: `set.${category}.${settingName}`,
-                                data: {
-                                  level: settingsLevel,
-                                  value: e.target.value,
-                                },
-                              } as unknown as Event<WildcardSetEvent>)
-                            }
-                          >
-                            {setting.commandConfig.options instanceof Array
-                              ? setting.commandConfig.options.map((option) => (
-                                  <option
-                                    key={option.name}
-                                    value={String(option.value)}
-                                    selected={option.isCurrent}
-                                  >
-                                    {option.name}
-                                  </option>
-                                ))
-                              : setting.commandConfig
-                                  .options?.(
-                                    {
-                                      argumentsToSubmit: {
-                                        level: settingsLevel,
-                                      },
-                                    },
-                                    context
-                                  )
-                                  .map((option) => (
-                                    <option
-                                      key={option.name}
-                                      value={String(option.value)}
-                                    >
-                                      {option.name}
-                                    </option>
-                                  ))}
-                            {setting.commandConfig.optionsFromContext &&
-                              setting.commandConfig
-                                .optionsFromContext(context)
-                                .map((option) => (
-                                  <option
-                                    key={option.name}
-                                    value={String(option.value)}
-                                    selected={option.isCurrent}
-                                  >
-                                    {option.name}
-                                  </option>
-                                ))}
-                          </select>
-                        )
-                        break
-                      case 'string':
-                        Component = (
-                          <input
-                            type="text"
-                            defaultValue={String(setting.current)}
-                            onBlur={(e) =>
-                              send({
-                                type: `set.${category}.${settingName}`,
-                                data: {
-                                  level: settingsLevel,
-                                  value: e.target.value,
-                                },
-                              } as unknown as Event<WildcardSetEvent>)
-                            }
-                          />
-                        )
-                        break
-                    }
-                  }
-
-                  return (
-                    <SettingsSection
-                      title={decamelize(settingName, { separator: ' ' })}
-                      key={settingName}
-                    >
-                      {Component}
-                    </SettingsSection>
-                  )
-                })}
+                .map(([settingName, s]) => (
+                  <SettingsSection
+                    title={decamelize(settingName, { separator: ' ' })}
+                    key={`${category}-${settingName}-${settingsLevel}`}
+                  >
+                    <GeneratedSetting
+                      category={category}
+                      settingName={settingName}
+                      settingsLevel={settingsLevel}
+                      setting={s as Setting}
+                    />
+                  </SettingsSection>
+                ))}
             </div>
           ))}
         <SettingsSection
@@ -383,5 +264,133 @@ export function SettingsSection({
       </div>
       <div>{children}</div>
     </section>
+  )
+}
+
+interface GeneratedSettingProps {
+  // We don't need the fancy types here,
+  // it doesn't help us with autocomplete or anything
+  category: string
+  settingName: string
+  settingsLevel: SettingsLevel
+  setting: Setting<unknown>
+}
+
+function GeneratedSetting({
+  category,
+  settingName,
+  settingsLevel,
+  setting,
+}: GeneratedSettingProps) {
+  const {
+    settings: { context, send },
+  } = useSettingsAuthContext()
+  const options = useMemo(() => {
+    return setting.commandConfig &&
+      'options' in setting.commandConfig &&
+      setting.commandConfig.options
+      ? setting.commandConfig.options instanceof Array
+        ? setting.commandConfig.options
+        : setting.commandConfig.options(
+            {
+              argumentsToSubmit: {
+                level: settingsLevel,
+              },
+            },
+            context
+          )
+      : []
+  }, [setting, settingsLevel, context])
+
+  if (setting.Component)
+    return (
+      <setting.Component
+        value={setting[settingsLevel] || setting.getFallback(settingsLevel)}
+        onChange={(e) => {
+          if ('value' in e.target) {
+            send({
+              type: `set.${category}.${settingName}`,
+              data: {
+                level: settingsLevel,
+                value: e.target.value,
+              },
+            } as unknown as Event<WildcardSetEvent>)
+          }
+        }}
+      />
+    )
+
+  switch (setting.commandConfig?.inputType) {
+    case 'boolean':
+      return (
+        <Toggle
+          offLabel="Off"
+          onLabel="On"
+          onChange={(e) =>
+            send({
+              type: `set.${category}.${settingName}`,
+              data: {
+                level: settingsLevel,
+                value: Boolean(e.target.checked),
+              },
+            } as SetEventTypes)
+          }
+          checked={Boolean(
+            setting[settingsLevel] !== undefined
+              ? setting[settingsLevel]
+              : setting.getFallback(settingsLevel)
+          )}
+          name={`${category}-${settingName}`}
+        />
+      )
+    case 'options':
+      return (
+        <select
+          value={String(
+            setting[settingsLevel] || setting.getFallback(settingsLevel)
+          )}
+          onChange={(e) =>
+            send({
+              type: `set.${category}.${settingName}`,
+              data: {
+                level: settingsLevel,
+                value: e.target.value,
+              },
+            } as unknown as Event<WildcardSetEvent>)
+          }
+        >
+          {options &&
+            options.length > 0 &&
+            options.map((option) => (
+              <option key={option.name} value={String(option.value)}>
+                {option.name}
+              </option>
+            ))}
+        </select>
+      )
+    case 'string':
+      return (
+        <input
+          type="text"
+          defaultValue={String(
+            setting[settingsLevel] || setting.getFallback(settingsLevel)
+          )}
+          onBlur={(e) =>
+            send({
+              type: `set.${category}.${settingName}`,
+              data: {
+                level: settingsLevel,
+                value: e.target.value,
+              },
+            } as unknown as Event<WildcardSetEvent>)
+          }
+        />
+      )
+  }
+  return (
+    <p className="text-destroy-70 dark:text-destroy-20">
+      No component or input type found for setting {settingName} in category{' '}
+      {category}
+    </p>
   )
 }

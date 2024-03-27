@@ -6,13 +6,13 @@ import {
   baseUnitsUnion,
 } from 'lib/settings/settingsTypes'
 import { Themes } from 'lib/theme'
-import { isEnumMember } from './settingsUtils'
+import { isEnumMember } from 'lib/types'
 import {
   CameraSystem,
   cameraMouseDragGuards,
   cameraSystems,
 } from 'lib/cameraControls'
-import { FILE_EXT, PROJECT_ENTRYPOINT } from 'lib/tauriFS'
+import { PROJECT_ENTRYPOINT } from 'lib/tauriFS'
 import { isTauri } from 'lib/isTauri'
 import { ActionButton } from 'components/ActionButton'
 import { useRef } from 'react'
@@ -82,6 +82,17 @@ export class Setting<T = unknown> {
       ? this._project
       : this._user !== undefined
       ? this._user
+      : this._default
+  }
+  /**
+   * @param {SettingsLevel} level - The level to get the fallback for
+   * @returns {T} - The value of the setting above the given level, falling back as needed
+   */
+  public getFallback(level: SettingsLevel): T {
+    return level === 'project'
+      ? this._user !== undefined
+        ? this._user
+        : this._default
       : this._default
   }
 }

@@ -1,20 +1,10 @@
-import { isTauri } from '../isTauri'
 import {
   getInitialDefaultDir,
   getSettingsFilePaths,
   readSettingsFile,
 } from '../tauriFS'
 import { Setting, createSettings, settings } from 'lib/settings/initialSettings'
-import { SETTINGS_PERSIST_KEY } from '../constants'
 import { SettingsLevel } from './settingsTypes'
-import { IndexLoaderData } from 'lib/types'
-
-export function isEnumMember<T extends Record<string, unknown>>(
-  v: unknown,
-  e: T
-) {
-  return Object.values(e).includes(v)
-}
 
 export async function loadAndValidateSettings(projectPath?: string) {
   const settings = createSettings()
