@@ -27,6 +27,12 @@ export const settingsMachine = createMachine(
             actions: ['setSettingAtLevel', 'toastSuccess', 'persistSettings'],
           },
 
+          'set.app.onboardingStatus': {
+            target: 'idle',
+            internal: true,
+            actions: ['setSettingAtLevel', 'persistSettings'], // No toast
+          },
+
           'set.modeling.defaultUnit': {
             target: 'idle',
             internal: true,

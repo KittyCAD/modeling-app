@@ -1,6 +1,5 @@
-import { faArrowRotateBack, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRotateBack } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../components/ActionButton'
-import { AppHeader } from '../components/AppHeader'
 import { SETTINGS_PERSIST_KEY } from 'lib/constants'
 import {
   SetEventTypes,
@@ -8,9 +7,8 @@ import {
   WildcardSetEvent,
 } from 'lib/settings/settingsTypes'
 import { Toggle } from 'components/Toggle/Toggle'
-import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { type IndexLoaderData } from 'lib/types'
 import { paths } from 'lib/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
@@ -31,15 +29,9 @@ import React, { Fragment, useMemo, useRef, useState } from 'react'
 import { Setting } from 'lib/settings/initialSettings'
 import decamelize from 'decamelize'
 import { Event } from 'xstate'
-import {
-  Dialog,
-  RadioGroup,
-  RadioGroupProps,
-  RadioOptionProps,
-  Transition,
-} from '@headlessui/react'
-import { ActionIcon } from 'components/ActionIcon'
+import { Dialog, RadioGroup, Transition } from '@headlessui/react'
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
+import Tooltip from 'components/Tooltip'
 
 export const Settings = () => {
   const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
@@ -165,25 +157,62 @@ export const Settings = () => {
                 </RadioGroup.Option>
               )}
             </RadioGroup>
-            <div className="flex flex-grow overflow-hidden items-stretch pl-4 pr-5 pb-5 gap-5">
+            <div className="flex flex-grow overflow-hidden items-stretch pl-4 pr-5 pb-5 gap-3">
               <div className="flex w-64 flex-col gap-3 pr-2 py-1 border-0 border-r border-r-chalkboard-20 dark:border-r-chalkboard-90">
-                {Object.keys(context).map((category) => (
-                  <button
-                    onClick={() =>
-                      scrollRef.current
-                        ?.querySelector(`#category-${category}`)
-                        ?.scrollIntoView({
-                          block: 'nearest',
-                          behavior: context.modeling.reduceMotion.current
-                            ? 'instant'
-                            : 'smooth',
-                        })
-                    }
-                    className="capitalize text-left border-none px-1"
-                  >
-                    {decamelize(category, { separator: ' ' })}
-                  </button>
-                ))}
+                {Object.entries(context)
+                  .filter(([_, categorySettings]) =>
+                    // Filter out categories that don't have any non-hidden settings
+                    Object.values(categorySettings).some(
+                      (c: Setting) => c.hideOnLevel !== settingsLevel
+                    )
+                  )
+                  .map(([category]) => (
+                    <button
+                      onClick={() =>
+                        scrollRef.current
+                          ?.querySelector(`#category-${category}`)
+                          ?.scrollIntoView({
+                            block: 'nearest',
+                            behavior: context.modeling.reduceMotion.current
+                              ? 'instant'
+                              : 'smooth',
+                          })
+                      }
+                      className="capitalize text-left border-none px-1"
+                    >
+                      {decamelize(category, { separator: ' ' })}
+                    </button>
+                  ))}
+                <button
+                  onClick={() =>
+                    scrollRef.current
+                      ?.querySelector(`#settings-resets`)
+                      ?.scrollIntoView({
+                        block: 'nearest',
+                        behavior: context.modeling.reduceMotion.current
+                          ? 'instant'
+                          : 'smooth',
+                      })
+                  }
+                  className="capitalize text-left border-none px-1"
+                >
+                  Resets
+                </button>
+                <button
+                  onClick={() =>
+                    scrollRef.current
+                      ?.querySelector(`#settings-about`)
+                      ?.scrollIntoView({
+                        block: 'nearest',
+                        behavior: context.modeling.reduceMotion.current
+                          ? 'instant'
+                          : 'smooth',
+                      })
+                  }
+                  className="capitalize text-left border-none px-1"
+                >
+                  About
+                </button>
               </div>
               <div
                 ref={scrollRef}
@@ -213,22 +242,51 @@ export const Settings = () => {
                             (item[1].Component ||
                               item[1].commandConfig?.inputType)
                         )
-                        .map(([settingName, s]) => (
-                          <SettingsSection
-                            title={decamelize(settingName, { separator: ' ' })}
-                            key={`${category}-${settingName}-${settingsLevel}`}
-                          >
-                            <GeneratedSetting
-                              category={category}
-                              settingName={settingName}
-                              settingsLevel={settingsLevel}
-                              setting={s as Setting}
-                            />
-                          </SettingsSection>
-                        ))}
+                        .map(([settingName, s]) => {
+                          const setting = s as Setting
+                          const parentValue =
+                            setting[setting.getParentLevel(settingsLevel)]
+                          return (
+                            <SettingsSection
+                              title={decamelize(settingName, {
+                                separator: ' ',
+                              })}
+                              key={`${category}-${settingName}-${settingsLevel}`}
+                              settingHasChanged={
+                                setting[settingsLevel] !== undefined &&
+                                setting[settingsLevel] !==
+                                  setting.getFallback(settingsLevel)
+                              }
+                              parentLevel={setting.getParentLevel(
+                                settingsLevel
+                              )}
+                              onFallback={() =>
+                                send({
+                                  type: `set.${category}.${settingName}`,
+                                  data: {
+                                    level: settingsLevel,
+                                    value:
+                                      parentValue !== undefined
+                                        ? parentValue
+                                        : setting.getFallback(settingsLevel),
+                                  },
+                                } as SetEventTypes)
+                              }
+                            >
+                              <GeneratedSetting
+                                category={category}
+                                settingName={settingName}
+                                settingsLevel={settingsLevel}
+                                setting={setting}
+                              />
+                            </SettingsSection>
+                          )
+                        })}
                     </>
                   ))}
-                <h2 className="text-2xl mt-6 font-bold">Resets</h2>
+                <h2 id="settings-resets" className="text-2xl mt-6 font-bold">
+                  Resets
+                </h2>
                 <SettingsSection
                   title="Onboarding"
                   description="Replay the onboarding process"
@@ -299,7 +357,9 @@ export const Settings = () => {
                     </button>
                   )}
                 </SettingsSection>
-                <h2 className="text-2xl mt-6 font-bold">About Modeling App</h2>
+                <h2 id="settings-about" className="text-2xl mt-6 font-bold">
+                  About Modeling App
+                </h2>
                 <div className="text-sm mb-12">
                   <p>
                     {/* This uses a Vite plugin, set in vite.config.ts
@@ -339,6 +399,9 @@ interface SettingsSectionProps extends React.PropsWithChildren {
   title: string
   description?: string
   className?: string
+  parentLevel?: SettingsLevel | 'default'
+  onFallback?: () => void
+  settingHasChanged?: boolean
   headingClassName?: string
 }
 
@@ -347,13 +410,37 @@ export function SettingsSection({
   description,
   className,
   children,
-  headingClassName = 'text-base font-normal capitalize tracking-wide',
+  parentLevel,
+  settingHasChanged,
+  onFallback,
+  headingClassName = 'text-base font-normal capitalize tracking-wide ml-0.5',
 }: SettingsSectionProps) {
   return (
-    <section className={'grid grid-cols-2 gap-6 items-start ' + className}>
-      <div>
-        <h2 className={headingClassName}>{title}</h2>
-        <p className="mt-2 text-sm">{description}</p>
+    <section
+      className={
+        'group grid grid-cols-2 gap-6 items-start ' +
+        className +
+        (settingHasChanged
+          ? ' border-0 border-l-2 border-energy-50 dark:border-energy-20'
+          : ' ml-0.5')
+      }
+    >
+      <div className="ml-2">
+        <div className="flex items-center gap-2">
+          <h2 className={headingClassName}>{title}</h2>
+          {onFallback && parentLevel && settingHasChanged && (
+            <button
+              onClick={onFallback}
+              className="hidden group-hover:block group-focus-within:block border-none p-0 hover:bg-warn-10 dark:hover:bg-warn-80 focus:bg-warn-10 dark:focus:bg-warn-80 focus:outline-none"
+            >
+              <CustomIcon name="refresh" className="w-4 h-4" />
+              <Tooltip position="right">
+                Roll back to match {parentLevel} setting
+              </Tooltip>
+            </button>
+          )}
+        </div>
+        {description && <p className="mt-2 text-sm">{description}</p>}
       </div>
       <div>{children}</div>
     </section>
@@ -502,14 +589,17 @@ function SettingsTabButton(props: SettingsTabButtonProps) {
     <div
       className={`cursor-pointer select-none flex items-center gap-1 p-1 pr-2 -mb-[1px] border-0 border-b ${
         checked
-          ? 'border-energy-10 dark:border-energy-90'
-          : 'border-chalkboard-20 dark:border-chalkboard-90 hover:bg-energy-10/50 dark:hover:bg-energy-90/50'
+          ? 'border-energy-10 dark:border-energy-20'
+          : 'border-chalkboard-20 dark:border-chalkboard-30 hover:bg-energy-10/50 dark:hover:bg-energy-90/50'
       }`}
     >
       <CustomIcon
         name={icon}
         className={
-          'w-5 h-5 ' + (checked ? 'bg-energy-10 dark:bg-energy-90' : '')
+          'w-5 h-5 ' +
+          (checked
+            ? 'bg-energy-10 dark:bg-energy-20 dark:text-chalkboard-110'
+            : '')
         }
       />
       <span>{text}</span>

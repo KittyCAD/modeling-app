@@ -89,12 +89,15 @@ export class Setting<T = unknown> {
    * @param {SettingsLevel} level - The level to get the fallback for
    * @returns {T} - The value of the setting above the given level, falling back as needed
    */
-  public getFallback(level: SettingsLevel): T {
+  public getFallback(level: SettingsLevel | 'default'): T {
     return level === 'project'
       ? this._user !== undefined
         ? this._user
         : this._default
       : this._default
+  }
+  public getParentLevel(level: SettingsLevel): SettingsLevel | 'default' {
+    return level === 'project' ? 'user' : 'default'
   }
 }
 
