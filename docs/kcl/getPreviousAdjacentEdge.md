@@ -20,11 +20,11 @@ const part001 = startSketchOn('XY')
   |> line([0, 10], %, "thing")
   |> line([10, 0], %, "thing1")
   |> line([0, -10], %, "thing2")
-  |> close(%)
+  |> close(%, "thing3")
   |> extrude(10, %)
   |> fillet({
        radius: 2,
-       tags: [getPreviousAdjacentEdge("thing2", %)]
+       tags: [getPreviousAdjacentEdge("thing3", %)]
      }, %)
 ```
 

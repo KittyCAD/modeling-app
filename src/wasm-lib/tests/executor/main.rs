@@ -293,9 +293,9 @@ async fn serial_test_basic_fillet_cube_next_adjacent() {
     |> line([0, 10], %, "thing")
     |> line([10, 0], %, "thing1")
     |> line([0, -10], %, "thing2")
-    |> close(%)
+    |> close(%, "thing3")
     |> extrude(10, %)
-    |> fillet({radius: 2, tags: [getNextAdjacentEdge("thing", %)]}, %)
+    |> fillet({radius: 2, tags: [getNextAdjacentEdge("thing3", %)]}, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
@@ -315,9 +315,9 @@ async fn serial_test_basic_fillet_cube_previous_adjacent() {
     |> line([0, 10], %, "thing")
     |> line([10, 0], %, "thing1")
     |> line([0, -10], %, "thing2")
-    |> close(%)
+    |> close(%, "thing3")
     |> extrude(10, %)
-    |> fillet({radius: 2, tags: [getPreviousAdjacentEdge("thing2", %)]}, %)
+    |> fillet({radius: 2, tags: [getPreviousAdjacentEdge("thing3", %)]}, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)

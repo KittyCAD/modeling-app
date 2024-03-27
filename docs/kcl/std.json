@@ -28183,7 +28183,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const part001 = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([0, 10], %, \"thing\")\n  |> line([10, 0], %, \"thing1\")\n  |> line([0, -10], %, \"thing2\")\n  |> close(%)\n  |> extrude(10, %)\n  |> fillet({\n       radius: 2,\n       tags: [getNextAdjacentEdge(\"thing\", %)]\n     }, %)"
+      "const part001 = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([0, 10], %, \"thing\")\n  |> line([10, 0], %, \"thing1\")\n  |> line([0, -10], %, \"thing2\")\n  |> close(%, \"thing3\")\n  |> extrude(10, %)\n  |> fillet({\n       radius: 2,\n       tags: [getNextAdjacentEdge(\"thing3\", %)]\n     }, %)"
     ]
   },
   {
@@ -29755,7 +29755,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const part001 = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([0, 10], %, \"thing\")\n  |> line([10, 0], %, \"thing1\")\n  |> line([0, -10], %, \"thing2\")\n  |> close(%)\n  |> extrude(10, %)\n  |> fillet({\n       radius: 2,\n       tags: [getPreviousAdjacentEdge(\"thing2\", %)]\n     }, %)"
+      "const part001 = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([0, 10], %, \"thing\")\n  |> line([10, 0], %, \"thing1\")\n  |> line([0, -10], %, \"thing2\")\n  |> close(%, \"thing3\")\n  |> extrude(10, %)\n  |> fillet({\n       radius: 2,\n       tags: [getPreviousAdjacentEdge(\"thing3\", %)]\n     }, %)"
     ]
   },
   {

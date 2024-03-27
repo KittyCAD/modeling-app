@@ -204,9 +204,9 @@ pub async fn get_next_adjacent_edge(args: Args) -> Result<MemoryItem, KclError> 
 ///     |> line([0, 10], %, "thing")
 ///     |> line([10, 0], %, "thing1")
 ///     |> line([0, -10], %, "thing2")
-///     |> close(%)
+///     |> close(%, "thing3")
 ///     |> extrude(10, %)
-///     |> fillet({radius: 2, tags: [getNextAdjacentEdge("thing", %)]}, %)
+///     |> fillet({radius: 2, tags: [getNextAdjacentEdge("thing3", %)]}, %)
 /// ```
 #[stdlib {
     name = "getNextAdjacentEdge",
@@ -233,7 +233,7 @@ async fn inner_get_next_adjacent_edge(
     let resp = args
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
-            ModelingCmd::Solid3DGetNextAdjacentEdge {
+            ModelingCmd::Solid3DGetPrevAdjacentEdge {
                 edge_id: tagged_path.geo_meta.id,
                 object_id: extrude_group.id,
                 face_id,
@@ -241,7 +241,7 @@ async fn inner_get_next_adjacent_edge(
         )
         .await?;
     let kittycad::types::OkWebSocketResponseData::Modeling {
-        modeling_response: kittycad::types::OkModelingCmdResponse::Solid3DGetNextAdjacentEdge { data: ajacent_edge },
+        modeling_response: kittycad::types::OkModelingCmdResponse::Solid3DGetPrevAdjacentEdge { data: ajacent_edge },
     } = &resp
     else {
         return Err(KclError::Engine(KclErrorDetails {
@@ -282,9 +282,9 @@ pub async fn get_previous_adjacent_edge(args: Args) -> Result<MemoryItem, KclErr
 ///     |> line([0, 10], %, "thing")
 ///     |> line([10, 0], %, "thing1")
 ///     |> line([0, -10], %, "thing2")
-///     |> close(%)
+///     |> close(%, "thing3")
 ///     |> extrude(10, %)
-///     |> fillet({radius: 2, tags: [getPreviousAdjacentEdge("thing2", %)]}, %)
+///     |> fillet({radius: 2, tags: [getPreviousAdjacentEdge("thing3", %)]}, %)
 /// ```
 #[stdlib {
     name = "getPreviousAdjacentEdge",
@@ -311,7 +311,7 @@ async fn inner_get_previous_adjacent_edge(
     let resp = args
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
-            ModelingCmd::Solid3DGetPrevAdjacentEdge {
+            ModelingCmd::Solid3DGetNextAdjacentEdge {
                 edge_id: tagged_path.geo_meta.id,
                 object_id: extrude_group.id,
                 face_id,
@@ -319,7 +319,7 @@ async fn inner_get_previous_adjacent_edge(
         )
         .await?;
     let kittycad::types::OkWebSocketResponseData::Modeling {
-        modeling_response: kittycad::types::OkModelingCmdResponse::Solid3DGetPrevAdjacentEdge { data: ajacent_edge },
+        modeling_response: kittycad::types::OkModelingCmdResponse::Solid3DGetNextAdjacentEdge { data: ajacent_edge },
     } = &resp
     else {
         return Err(KclError::Engine(KclErrorDetails {
