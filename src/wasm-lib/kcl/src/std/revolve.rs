@@ -123,6 +123,16 @@ pub async fn revolve(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 ///
 /// ```no_run
+/// // A donut shape.
+/// const sketch001 = startSketchOn('XY')
+///     |> circle([15, 0], 5, %)
+///     |> revolve({
+///         angle: 360,
+///         axis: 'y'
+///     }, %)
+/// ```
+///
+/// ```no_run
 /// const part001 = startSketchOn('XY')
 ///     |> startProfileAt([4, 12], %)
 ///     |> line([2, 0], %)
