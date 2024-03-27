@@ -26548,7 +26548,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const box = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([0, 20], %)\n  |> line([20, 0], %)\n  |> line([0, -20], %, 'revolveAxis')\n  |> close(%)\n  |> extrude(20, %)\n\nconst sketch001 = startSketchOn(box, \"end\")\n  |> circle([2.5, 2.5], 1, %)\n  |> revolve({\n       angle: -90,\n       axis: getEdge(\"revolveAxis\", box)\n     }, %)"
+      "const box = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([0, 10], %)\n  |> line([10, 0], %)\n  |> line([0, -10], %, 'revolveAxis')\n  |> close(%)\n  |> extrude(10, %)\n\nconst sketch001 = startSketchOn(box, \"revolveAxis\")\n  |> startProfileAt([5, 10], %)\n  |> line([0, -10], %)\n  |> line([2, 0], %)\n  |> line([0, 10], %)\n  |> close(%)\n  |> revolve({\n       axis: getEdge('revolveAxis', box),\n       angle: 90\n     }, %)"
     ]
   },
   {
