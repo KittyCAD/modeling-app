@@ -17,6 +17,7 @@ import { isTauri } from 'lib/isTauri'
 import { ActionButton } from 'components/ActionButton'
 import { useRef } from 'react'
 import { open } from '@tauri-apps/api/dialog'
+import { CustomIcon } from 'components/CustomIcon'
 
 /**
  * A setting that can be set at the user or project level
@@ -136,16 +137,15 @@ export function createSettings() {
         Component: ({ value, onChange }) => {
           const inputRef = useRef<HTMLInputElement>(null)
           return (
-            <div className="flex w-full gap-4 p-1 border rounded border-chalkboard-30">
+            <div className="flex gap-4 p-1 border rounded-sm border-chalkboard-30">
               <input
-                className="flex-1 px-2 bg-transparent"
+                className="flex-grow text-xs px-2 bg-transparent"
                 value={value}
                 onBlur={onChange}
                 disabled
                 data-testid="default-directory-input"
               />
-              <ActionButton
-                Element="button"
+              <button
                 onClick={async () => {
                   const newValue = await open({
                     directory: true,
@@ -162,12 +162,10 @@ export function createSettings() {
                     inputRef.current.value = newValue
                   }
                 }}
-                icon={{
-                  icon: 'folder',
-                }}
+                className="p-0 m-0 border-none hover:bg-energy-10 focus:bg-energy-10 dark:hover:bg-energy-80/50 dark:focus::bg-energy-80/50"
               >
-                Choose a folder
-              </ActionButton>
+                <CustomIcon name="folder" className="w-5 h-5" />
+              </button>
             </div>
           )
         },
@@ -229,18 +227,24 @@ export function createSettings() {
                 </option>
               ))}
             </select>
-            <ul className="mx-4 my-2 text-sm leading-relaxed">
-              <li>
-                <strong>Pan:</strong>{' '}
-                {cameraMouseDragGuards[value].pan.description}
+            <ul className="mx-0 my-2 flex flex-col gap-2 text-sm">
+              <li className="grid grid-cols-4 gap-1">
+                <strong>Pan</strong>
+                <p className="col-span-3 leading-tight">
+                  {cameraMouseDragGuards[value].pan.description}
+                </p>
               </li>
-              <li>
-                <strong>Zoom:</strong>{' '}
-                {cameraMouseDragGuards[value].zoom.description}
+              <li className="grid grid-cols-4 gap-1">
+                <strong>Zoom</strong>
+                <p className="col-span-3 leading-tight">
+                  {cameraMouseDragGuards[value].zoom.description}
+                </p>
               </li>
-              <li>
-                <strong>Rotate:</strong>{' '}
-                {cameraMouseDragGuards[value].rotate.description}
+              <li className="grid grid-cols-4 gap-1">
+                <strong>Rotate</strong>
+                <p className="col-span-3 leading-tight">
+                  {cameraMouseDragGuards[value].rotate.description}
+                </p>
               </li>
             </ul>
           </>

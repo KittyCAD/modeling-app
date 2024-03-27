@@ -25,6 +25,7 @@ export type CustomIconName =
   | 'network'
   | 'networkCrossedOut'
   | 'parallel'
+  | 'person'
   | 'plus'
   | 'search'
   | 'settings'
@@ -453,6 +454,22 @@ export const CustomIcon = ({
           />
         </svg>
       )
+    case 'person':
+      return (
+        <svg
+          {...props}
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M12 6C12 7.10457 11.1046 8 10 8C8.89543 8 8 7.10457 8 6C8 4.89543 8.89543 4 10 4C11.1046 4 12 4.89543 12 6ZM13 6C13 7.65685 11.6569 9 10 9C8.34315 9 7 7.65685 7 6C7 4.34315 8.34315 3 10 3C11.6569 3 13 4.34315 13 6ZM5 12V11L9 10H11L15 11V12C15 14.7614 12.7614 17 10 17C7.23858 17 5 14.7614 5 12ZM6 11.7808L9.12311 11H10.8769L14 11.7808V12C14 14.2091 12.2091 16 10 16C7.79086 16 6 14.2091 6 12V11.7808Z"
+            fill="currentColor"
+          />
+        </svg>
+      )
     case 'plus':
       return (
         <svg
@@ -462,8 +479,8 @@ export const CustomIcon = ({
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
+            fillRule="evenodd"
+            clipRule="evenodd"
             d="M9.5 9.5V5.5H10.5V9.5H14.5V10.5H10.5V14.5H9.5V10.5H5.5V9.5H9.5Z"
             fill="currentColor"
           />
