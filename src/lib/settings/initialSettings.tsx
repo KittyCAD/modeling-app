@@ -279,16 +279,20 @@ export function createSettings() {
         validate: (v) => typeof v === 'string' && v.length > 0,
         commandConfig: {
           inputType: 'string',
+          defaultValueFromContext: (context) =>
+            context.projects.defaultProjectName.current,
         },
-        hideOnLevel: 'project'
+        hideOnLevel: 'project',
       }),
       entryPointFileName: new Setting<string>({
-        defaultValue: PROJECT_ENTRYPOINT + FILE_EXT,
+        defaultValue: PROJECT_ENTRYPOINT,
         validate: (v) => typeof v === 'string' && v.length > 0,
         commandConfig: {
           inputType: 'string',
+          defaultValueFromContext: (context) =>
+            context.projects.entryPointFileName.current,
         },
-        hideOnLevel: 'project'
+        hideOnLevel: 'project',
       }),
     },
     /**

@@ -150,7 +150,9 @@ export function buildCommandArgument<
   } else {
     return {
       inputType: arg.inputType,
-      defaultValue: arg.defaultValue,
+      defaultValue: arg.defaultValueFromContext
+        ? arg.defaultValueFromContext(context)
+        : arg.defaultValue,
       ...baseCommandArgument,
     }
   }

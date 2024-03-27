@@ -10,56 +10,63 @@ import {
 } from 'lib/settings/settingsTypes'
 import { settingsMachine } from 'machines/settingsMachine'
 import { PathValue } from 'lib/types'
-import { settings } from 'lib/settings/initialSettings'
-import { AnyStateMachine, InterpreterFrom } from 'xstate'
+import { AnyStateMachine, ContextFrom, InterpreterFrom } from 'xstate'
 import { getPropertyByPath } from 'lib/objectPropertyByPath'
 import { buildCommandArgument } from 'lib/createMachineCommand'
 import decamelize from 'decamelize'
 
-// SETTINGS MACHINE
-export type SettingsCommandSchema<T extends SettingsPaths = SettingsPaths> = {
-  [K in `set.${SettingsPaths}`]: {
-    level: SettingsLevel
-    value: PathValue<typeof settings, T>['default']
-  }
-}
-
 // An array of the paths to all of the settings that have commandConfigs
-export const settingsWithCommandConfigs = Object.entries(settings).flatMap(
-  ([categoryName, categorySettings]) =>
+export const settingsWithCommandConfigs = (s: ContextFrom<typeof settingsMachine>) =>
+  Object.entries(s).flatMap(([categoryName, categorySettings]) =>
     Object.entries(categorySettings)
       .filter(([_, setting]) => setting.commandConfig !== undefined)
       .map(([settingName]) => `${categoryName}.${settingName}`)
-) as SettingsPaths[]
+  ) as SettingsPaths[]
 
 const levelArgConfig = <T extends AnyStateMachine = AnyStateMachine>(
   actor: InterpreterFrom<T>,
-  isProjectAvailable: boolean
+  isProjectAvailable: boolean,
+  hideOnLevel?: SettingsLevel
 ): CommandArgument<SettingsLevel, T> => ({
   inputType: 'options' as const,
   required: true,
-  defaultValue: isProjectAvailable ? 'project' : 'user',
+  defaultValue:
+    isProjectAvailable && hideOnLevel !== 'project' ? 'project' : 'user',
   skip: true,
-  options: isProjectAvailable
-    ? [
-        { name: 'User', value: 'user' as SettingsLevel },
-        { name: 'Project', value: 'project' as SettingsLevel, isCurrent: true },
-      ]
-    : [{ name: 'User', value: 'user' as SettingsLevel, isCurrent: true }],
+  options:
+    isProjectAvailable && hideOnLevel !== 'project'
+      ? [
+          { name: 'User', value: 'user' as SettingsLevel },
+          {
+            name: 'Project',
+            value: 'project' as SettingsLevel,
+            isCurrent: true,
+          },
+        ]
+      : [{ name: 'User', value: 'user' as SettingsLevel, isCurrent: true }],
   machineActor: actor,
 })
 
+interface CreateSettingsArgs {
+  type: SettingsPaths
+  send: Function
+  context: ContextFrom<typeof settingsMachine>
+  actor: InterpreterFrom<typeof settingsMachine>
+  isProjectAvailable: boolean
+}
+
 // Takes a Setting with a commandConfig and creates a Command
 // that can be used in the CommandBar component.
-export function createSettingsCommand(
-  type: SettingsPaths,
-  send: Function,
-  actor: InterpreterFrom<typeof settingsMachine>,
-  isProjectAvailable: boolean
-) {
-  type S = PathValue<typeof settings, typeof type>
+export function createSettingsCommand({
+  type,
+  send,
+  context,
+  actor,
+  isProjectAvailable
+}: CreateSettingsArgs) {
+  type S = PathValue<typeof context, typeof type>
 
-  const settingConfig = getPropertyByPath(settings, type) as SettingProps<
+  const settingConfig = getPropertyByPath(context, type) as SettingProps<
     S['default']
   >
   const valueArgPartialConfig = settingConfig['commandConfig']
@@ -73,11 +80,13 @@ export function createSettingsCommand(
   } as CommandArgumentConfig<S['default']>
 
   // @ts-ignore - TODO figure out this typing for valueArgConfig
-  const valueArg = buildCommandArgument(valueArgConfig, settings, actor)
+  const valueArg = buildCommandArgument(valueArgConfig, context, actor)
 
   const command: Command = {
     name: type,
-    displayName: `Settings · ${decamelize(type.replaceAll('.', ' · '), { separator: ' ' })}`,
+    displayName: `Settings · ${decamelize(type.replaceAll('.', ' · '), {
+      separator: ' ',
+    })}`,
     ownerMachine: 'settings',
     icon: 'settings',
     needsReview: false,
@@ -89,7 +98,11 @@ export function createSettingsCommand(
       }
     },
     args: {
-      level: levelArgConfig(actor, isProjectAvailable),
+      level: levelArgConfig(
+        actor,
+        isProjectAvailable,
+        settingConfig.hideOnLevel
+      ),
       value: valueArg,
     },
   }

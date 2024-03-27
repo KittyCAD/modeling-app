@@ -155,15 +155,15 @@ export const SettingsAuthProviderBase = ({
     //from the command bar don't add them.
     if (settingsState.context.commandBar.includeSettings.current === false) return
 
-    const commands = settingsWithCommandConfigs
+    const commands = settingsWithCommandConfigs(settingsState.context)
       .map((type) =>
-        createSettingsCommand(
+        createSettingsCommand({
           type,
-          settingsSend,
-          settingsActor,
-          loadedProject !== undefined
-        )
-      )
+          send: settingsSend,
+          context: settingsState.context,
+          actor: settingsActor,
+          isProjectAvailable: loadedProject !== undefined
+      }))
       .filter((c) => c !== null) as Command[]
 
     commandBarSend({ type: 'Add commands', data: { commands: commands } })
