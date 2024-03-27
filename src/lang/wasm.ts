@@ -10,6 +10,7 @@ import init, {
   ServerConfig,
   copilot_lsp_run,
   kcl_lsp_run,
+  get_camera_zoom_magnitude_per_unit_length,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
@@ -21,6 +22,8 @@ import type { Token } from '../wasm-lib/kcl/bindings/Token'
 import { Coords2d } from './std/sketch'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import { DEV } from 'env'
+import { Point2d } from 'wasm-lib/kcl/bindings/Point2d'
+import { BaseUnit } from 'lib/settings/settingsTypes'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Value } from '../wasm-lib/kcl/bindings/Value'
@@ -307,4 +310,17 @@ export async function kclLspRun(config: ServerConfig, token: string) {
     console.log('kcl lsp failed', e)
     // We can't restart here because a moved value, we should do this another way.
   }
+}
+
+export function getCameraZoomMagnitudePerUnitLength(
+  unit: BaseUnit
+): Promise<Point2d> {
+  return initPromise
+    .then(() => {
+      return get_camera_zoom_magnitude_per_unit_length(JSON.stringify(unit))
+    })
+    .catch((e: any) => {
+      console.log(e)
+      throw e
+    })
 }

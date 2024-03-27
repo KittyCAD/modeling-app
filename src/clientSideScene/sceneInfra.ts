@@ -22,7 +22,11 @@ import {
 import { compareVec2Epsilon2 } from 'lang/std/sketch'
 import { useModelingContext } from 'hooks/useModelingContext'
 import * as TWEEN from '@tweenjs/tween.js'
-import { SourceRange } from 'lang/wasm'
+import {
+  SourceRange,
+  getCameraZoomMagnitudePerUnitLength,
+  initPromise,
+} from 'lang/wasm'
 import { Axis } from 'lib/selections'
 import { type BaseUnit } from 'lib/settings/settingsTypes'
 import { SETTINGS_PERSIST_KEY } from 'lib/constants'
@@ -169,15 +173,10 @@ export class SceneInfra {
     window.addEventListener('resize', this.onWindowResize)
 
     // CAMERA
-    const camHeightDistanceRatio = 0.5
     const baseUnit: BaseUnit =
       JSON.parse(localStorage?.getItem(SETTINGS_PERSIST_KEY) || ('{}' as any))
         .baseUnit || 'mm'
-    const baseRadius = 5.6
-    const length = baseUnitTomm(baseUnit) * baseRadius
-    const ang = Math.atan(camHeightDistanceRatio)
-    const x = Math.cos(ang) * length
-    const y = Math.sin(ang) * length
+    const cameraSettings = getCameraZoomMagnitudePerUnitLength(baseUnit)
 
     this.camControls = new CameraControls(
       false,
@@ -186,9 +185,11 @@ export class SceneInfra {
     )
     this.camControls.subscribeToCamChange(() => this.onCameraChange())
     this.camControls.camera.layers.enable(SKETCH_LAYER)
-    this.camControls.camera.position.set(0, -x, y)
-    if (DEBUG_SHOW_INTERSECTION_PLANE)
-      this.camControls.camera.layers.enable(INTERSECTION_PLANE_LAYER)
+    cameraSettings.then((result) => {
+      this.camControls.camera.position.set(0, -result.x, result.y)
+      if (DEBUG_SHOW_INTERSECTION_PLANE)
+        this.camControls.camera.layers.enable(INTERSECTION_PLANE_LAYER)
+    })
 
     // RAYCASTERS
     this.raycaster.layers.enable(SKETCH_LAYER)

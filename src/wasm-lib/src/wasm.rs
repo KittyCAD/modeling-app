@@ -376,3 +376,18 @@ pub fn program_memory_init() -> Result<JsValue, String> {
     // gloo-serialize crate instead.
     JsValue::from_serde(&memory).map_err(|e| e.to_string())
 }
+
+/// Get the camera zoom magnitude per unit length for a given unit length.
+/// We share this logic with the front end so its the same for the cargo tests and the modeling
+/// app.
+#[wasm_bindgen]
+pub fn get_camera_zoom_magnitude_per_unit_length(unit_str: &str) -> Result<JsValue, String> {
+    let unit: kittycad::types::UnitLength = serde_json::from_str(unit_str).map_err(|e| e.to_string())?;
+    let result = kcl_lib::std::utils::get_camera_zoom_magnitude_per_unit_length(unit);
+
+    JsValue::from_serde(&kcl_lib::executor::Point2d {
+        x: result.0,
+        y: result.1,
+    })
+    .map_err(|e| e.to_string())
+}
