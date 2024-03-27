@@ -69,10 +69,12 @@ debug = true # Flamegraphs of benchmarks require accurate debug symbols
 [dev-dependencies]
 criterion = "0.5.1"
 expectorate = "1.1.0"
+image = "0.24.9"
 insta = { version = "1.36.1", features = ["json"] }
 itertools = "0.12.1"
 pretty_assertions = "1.4.0"
 tokio = { version = "1.36.0", features = ["rt-multi-thread", "macros", "time"] }
+twenty-twenty = "0.7.0"
 
 [[bench]]
 name = "compiler_benchmark"

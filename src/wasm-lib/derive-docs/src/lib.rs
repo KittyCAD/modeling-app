@@ -733,6 +733,7 @@ fn parse_array_type(type_name: &str) -> Option<(&str, usize)> {
 // code block is valid kcl code and compiles and executes.
 fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> proc_macro2::TokenStream {
     let test_name = format_ident!("serial_test_example_{}{}", fn_name, index);
+    let test_name_str = format!("serial_test_example_{}{}", fn_name, index);
 
     // TODO: We ignore import for now, because the files don't exist and we just want
     // to show easy imports.
@@ -778,9 +779,58 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
             let parser = crate::parser::Parser::new(tokens);
             let program = parser.ast().unwrap();
             let mut mem: crate::executor::ProgramMemory = Default::default();
-            let ctx = crate::executor::ExecutorContext::new(ws,kittycad::types::UnitLength::Mm).await.unwrap();
+            let units = kittycad::types::UnitLength::Mm;
+            let ctx = crate::executor::ExecutorContext::new(ws, units.clone()).await.unwrap();
 
             crate::executor::execute(program, &mut mem, crate::executor::BodyType::Root, &ctx).await.unwrap();
+
+            let (x, y) = crate::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
+
+            ctx.engine
+                .send_modeling_cmd(
+                    false,
+                    uuid::Uuid::new_v4(),
+                    crate::executor::SourceRange::default(),
+                    kittycad::types::ModelingCmd::DefaultCameraLookAt {
+                        center: kittycad::types::Point3D { x: 0.0, y: 0.0, z: 0.0 },
+                        up: kittycad::types::Point3D { x: 0.0, y: 0.0, z: 1.0 },
+                        vantage: kittycad::types::Point3D { x: 0.0, y: -x, z: y },
+                        sequence: None,
+                    },
+                )
+                .await.unwrap();
+
+            // Send a snapshot request to the engine.
+            let resp = ctx
+                .engine
+                .send_modeling_cmd(
+                    false,
+                    uuid::Uuid::new_v4(),
+                    crate::executor::SourceRange::default(),
+                    kittycad::types::ModelingCmd::TakeSnapshot {
+                        format: kittycad::types::ImageFormat::Png,
+                    },
+                )
+                .await.unwrap();
+
+            // Create a temporary file to write the output to.
+            let output_file = std::env::temp_dir().join(format!("kcl_output_{}.png", uuid::Uuid::new_v4()));
+
+            if let kittycad::types::OkWebSocketResponseData::Modeling {
+                modeling_response: kittycad::types::OkModelingCmdResponse::TakeSnapshot { data },
+            } = &resp
+            {
+                // Save the snapshot locally.
+                std::fs::write(&output_file, &data.contents.0).unwrap();
+            } else {
+                panic!("Unexpected response from engine: {:?}", resp);
+            }
+
+
+            // Read the output file.
+            let actual = image::io::Reader::open(output_file).unwrap().decode().unwrap();
+            twenty_twenty::assert_image(&format!("../../../../docs/kcl/images/{}.png", #test_name_str), &actual, 1.0);
+
         }
     }
 }
