@@ -715,15 +715,9 @@ impl BinaryPart {
     pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
-        pipe_info: &mut PipeInfo,
+        pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
-        // We DO NOT set this globally because if we did and this was called inside a pipe it would
-        // stop the execution of the pipe.
-        // THIS IS IMPORTANT.
-        let mut new_pipe_info = pipe_info.clone();
-        new_pipe_info.is_in_pipe = false;
-
         match self {
             BinaryPart::Literal(literal) => Ok(literal.into()),
             BinaryPart::Identifier(identifier) => {
@@ -731,14 +725,10 @@ impl BinaryPart {
                 Ok(value.clone())
             }
             BinaryPart::BinaryExpression(binary_expression) => {
-                binary_expression.get_result(memory, &mut new_pipe_info, ctx).await
+                binary_expression.get_result(memory, pipe_info, ctx).await
             }
-            BinaryPart::CallExpression(call_expression) => {
-                call_expression.execute(memory, &mut new_pipe_info, ctx).await
-            }
-            BinaryPart::UnaryExpression(unary_expression) => {
-                unary_expression.get_result(memory, &mut new_pipe_info, ctx).await
-            }
+            BinaryPart::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, ctx).await,
+            BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, ctx).await,
             BinaryPart::MemberExpression(member_expression) => member_expression.get_result(memory),
         }
     }
@@ -1019,7 +1009,7 @@ impl CallExpression {
     pub async fn execute(
         &self,
         memory: &mut ProgramMemory,
-        pipe_info: &mut PipeInfo,
+        pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
         let fn_name = self.callee.name.clone();
@@ -1037,14 +1027,7 @@ impl CallExpression {
                 Value::BinaryExpression(binary_expression) => {
                     binary_expression.get_result(memory, pipe_info, ctx).await?
                 }
-                Value::CallExpression(call_expression) => {
-                    // We DO NOT set this globally because if we did and this was called inside a pipe it would
-                    // stop the execution of the pipe.
-                    // THIS IS IMPORTANT.
-                    let mut new_pipe_info = pipe_info.clone();
-                    new_pipe_info.is_in_pipe = false;
-                    call_expression.execute(memory, &mut new_pipe_info, ctx).await?
-                }
+                Value::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, ctx).await?,
                 Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, ctx).await?,
                 Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, ctx).await?,
                 Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, ctx).await?,
@@ -1056,7 +1039,7 @@ impl CallExpression {
                 }
                 Value::PipeSubstitution(pipe_substitution) => pipe_info
                     .previous_results
-                    .get(&pipe_info.index - 1)
+                    .last()
                     .ok_or_else(|| {
                         KclError::Semantic(KclErrorDetails {
                             message: format!("PipeSubstitution index out of bounds: {:?}", pipe_info),
@@ -1081,13 +1064,7 @@ impl CallExpression {
                 // Attempt to call the function.
                 let args = crate::std::Args::new(fn_args, self.into(), ctx.clone());
                 let result = func.std_lib_fn()(args).await?;
-                if pipe_info.is_in_pipe {
-                    pipe_info.index += 1;
-                    pipe_info.previous_results.push(result);
-                    execute_pipe_body(memory, &pipe_info.body.clone(), pipe_info, self.into(), ctx).await
-                } else {
-                    Ok(result)
-                }
+                Ok(result)
             }
             FunctionKind::Std(func) => {
                 let function_expression = func.function();
@@ -1152,14 +1129,7 @@ impl CallExpression {
                 })?;
                 let result = result.get_value()?;
 
-                if pipe_info.is_in_pipe {
-                    pipe_info.index += 1;
-                    pipe_info.previous_results.push(result);
-
-                    execute_pipe_body(memory, &pipe_info.body.clone(), pipe_info, self.into(), ctx).await
-                } else {
-                    Ok(result)
-                }
+                Ok(result)
             }
             FunctionKind::UserDefined => {
                 let func = memory.get(&fn_name, self.into())?;
@@ -1175,14 +1145,7 @@ impl CallExpression {
 
                 let result = result.get_value()?;
 
-                if pipe_info.is_in_pipe {
-                    pipe_info.index += 1;
-                    pipe_info.previous_results.push(result);
-
-                    execute_pipe_body(memory, &pipe_info.body.clone(), pipe_info, self.into(), ctx).await
-                } else {
-                    Ok(result)
-                }
+                Ok(result)
             }
         }
     }
@@ -1731,7 +1694,7 @@ impl ArrayExpression {
     pub async fn execute(
         &self,
         memory: &mut ProgramMemory,
-        pipe_info: &mut PipeInfo,
+        pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
         let mut results = Vec::with_capacity(self.elements.len());
@@ -1747,14 +1710,7 @@ impl ArrayExpression {
                 Value::BinaryExpression(binary_expression) => {
                     binary_expression.get_result(memory, pipe_info, ctx).await?
                 }
-                Value::CallExpression(call_expression) => {
-                    // We DO NOT set this globally because if we did and this was called inside a pipe it would
-                    // stop the execution of the pipe.
-                    // THIS IS IMPORTANT.
-                    let mut new_pipe_info = pipe_info.clone();
-                    new_pipe_info.is_in_pipe = false;
-                    call_expression.execute(memory, &mut new_pipe_info, ctx).await?
-                }
+                Value::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, ctx).await?,
                 Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, ctx).await?,
                 Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, ctx).await?,
                 Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, ctx).await?,
@@ -1885,7 +1841,7 @@ impl ObjectExpression {
     pub async fn execute(
         &self,
         memory: &mut ProgramMemory,
-        pipe_info: &mut PipeInfo,
+        pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
         let mut object = Map::new();
@@ -1900,14 +1856,7 @@ impl ObjectExpression {
                 Value::BinaryExpression(binary_expression) => {
                     binary_expression.get_result(memory, pipe_info, ctx).await?
                 }
-                Value::CallExpression(call_expression) => {
-                    // We DO NOT set this globally because if we did and this was called inside a pipe it would
-                    // stop the execution of the pipe.
-                    // THIS IS IMPORTANT.
-                    let mut new_pipe_info = pipe_info.clone();
-                    new_pipe_info.is_in_pipe = false;
-                    call_expression.execute(memory, &mut new_pipe_info, ctx).await?
-                }
+                Value::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, ctx).await?,
                 Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, ctx).await?,
                 Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, ctx).await?,
                 Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, ctx).await?,
@@ -2338,25 +2287,11 @@ impl BinaryExpression {
     pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
-        pipe_info: &mut PipeInfo,
+        pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
-        // We DO NOT set this globally because if we did and this was called inside a pipe it would
-        // stop the execution of the pipe.
-        // THIS IS IMPORTANT.
-        let mut new_pipe_info = pipe_info.clone();
-        new_pipe_info.is_in_pipe = false;
-
-        let left_json_value = self
-            .left
-            .get_result(memory, &mut new_pipe_info, ctx)
-            .await?
-            .get_json_value()?;
-        let right_json_value = self
-            .right
-            .get_result(memory, &mut new_pipe_info, ctx)
-            .await?
-            .get_json_value()?;
+        let left_json_value = self.left.get_result(memory, pipe_info, ctx).await?.get_json_value()?;
+        let right_json_value = self.right.get_result(memory, pipe_info, ctx).await?.get_json_value()?;
 
         // First check if we are doing string concatenation.
         if self.operator == BinaryOperator::Add {
@@ -2542,19 +2477,13 @@ impl UnaryExpression {
     pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
-        pipe_info: &mut PipeInfo,
+        pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
-        // We DO NOT set this globally because if we did and this was called inside a pipe it would
-        // stop the execution of the pipe.
-        // THIS IS IMPORTANT.
-        let mut new_pipe_info = pipe_info.clone();
-        new_pipe_info.is_in_pipe = false;
-
         let num = parse_json_number_as_f64(
             &self
                 .argument
-                .get_result(memory, &mut new_pipe_info, ctx)
+                .get_result(memory, pipe_info, ctx)
                 .await?
                 .get_json_value()?,
             self.into(),
@@ -2606,6 +2535,8 @@ pub enum UnaryOperator {
 pub struct PipeExpression {
     pub start: usize,
     pub end: usize,
+    // TODO: Only the first body expression can be any Value.
+    // The rest will be CallExpression, and the AST type should reflect this.
     pub body: Vec<Value>,
     pub non_code_meta: NonCodeMeta,
 }
@@ -2696,12 +2627,9 @@ impl PipeExpression {
     pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
-        pipe_info: &mut PipeInfo,
+        pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
-        // Reset the previous results.
-        pipe_info.previous_results = vec![];
-        pipe_info.index = 0;
         execute_pipe_body(memory, &self.body, pipe_info, self.into(), ctx).await
     }
 
@@ -2717,57 +2645,11 @@ impl PipeExpression {
 async fn execute_pipe_body(
     memory: &mut ProgramMemory,
     body: &[Value],
-    pipe_info: &mut PipeInfo,
+    pipe_info: &PipeInfo,
     source_range: SourceRange,
     ctx: &ExecutorContext,
 ) -> Result<MemoryItem, KclError> {
-    if pipe_info.index == body.len() {
-        pipe_info.is_in_pipe = false;
-        return Ok(pipe_info
-            .previous_results
-            .last()
-            .ok_or_else(|| {
-                KclError::Semantic(KclErrorDetails {
-                    message: "Pipe body results should have at least one expression".to_string(),
-                    source_ranges: vec![source_range],
-                })
-            })?
-            .clone());
-    }
-
-    let expression = body.get(pipe_info.index).ok_or_else(|| {
-        KclError::Semantic(KclErrorDetails {
-            message: format!("Invalid index for pipe: {}", pipe_info.index),
-            source_ranges: vec![source_range],
-        })
-    })?;
-
-    match expression {
-        Value::BinaryExpression(binary_expression) => {
-            let result = binary_expression.get_result(memory, pipe_info, ctx).await?;
-            pipe_info.previous_results.push(result);
-            pipe_info.index += 1;
-            execute_pipe_body(memory, body, pipe_info, source_range, ctx).await
-        }
-        Value::CallExpression(call_expression) => {
-            pipe_info.is_in_pipe = true;
-            pipe_info.body = body.to_vec();
-            call_expression.execute(memory, pipe_info, ctx).await
-        }
-        Value::Identifier(identifier) => {
-            let result = memory.get(&identifier.name, identifier.into())?;
-            pipe_info.previous_results.push(result.clone());
-            pipe_info.index += 1;
-            execute_pipe_body(memory, body, pipe_info, source_range, ctx).await
-        }
-        _ => {
-            // Return an error this should not happen.
-            Err(KclError::Semantic(KclErrorDetails {
-                message: format!("PipeExpression not implemented here: {:?}", expression),
-                source_ranges: vec![expression.into()],
-            }))
-        }
-    }
+    todo!("Iterate over child expressions")
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, JsonSchema, Bake, FromStr, Display)]
