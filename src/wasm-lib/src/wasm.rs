@@ -19,6 +19,7 @@ pub async fn execute_wasm(
     units: &str,
     engine_manager: kcl_lib::engine::conn_wasm::EngineCommandManager,
     fs_manager: kcl_lib::fs::wasm::FileSystemManager,
+    is_mock: bool,
 ) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
     // deserialize the ast from a stringified json
@@ -37,6 +38,7 @@ pub async fn execute_wasm(
         fs,
         stdlib: std::sync::Arc::new(kcl_lib::std::StdLib::new()),
         units,
+        is_mock,
     };
 
     let memory = kcl_lib::executor::execute(program, &mut mem, kcl_lib::executor::BodyType::Root, &ctx)

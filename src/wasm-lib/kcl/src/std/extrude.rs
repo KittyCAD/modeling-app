@@ -125,8 +125,8 @@ pub(crate) async fn do_post_extrude(
     // Create a hashmap for quick id lookup
     let mut face_id_map = std::collections::HashMap::new();
     // creating fake ids for start and end caps is to make extrudes mock-execute safe
-    let mut start_cap_id = Some(Uuid::new_v4());
-    let mut end_cap_id = Some(Uuid::new_v4());
+    let mut start_cap_id = if args.ctx.is_mock { Some(Uuid::new_v4()) } else { None };
+    let mut end_cap_id = if args.ctx.is_mock { Some(Uuid::new_v4()) } else { None };
 
     for face_info in face_infos {
         match face_info.cap {
@@ -172,7 +172,8 @@ pub(crate) async fn do_post_extrude(
                     new_value.push(extrude_surface);
                 }
             }
-        } else {
+        } else if args.ctx.is_mock {
+            // Only pre-populate the extrude surface if we are in mock mode.
             new_value.push(ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
                 position: sketch_group.position, // TODO should be for the extrude surface
                 rotation: sketch_group.rotation, // TODO should be for the extrude surface
