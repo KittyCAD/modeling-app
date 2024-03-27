@@ -1701,6 +1701,30 @@ const sketch001 = startSketchOn(box, "revolveAxis")
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn serial_test_revolve_on_face_circle_edge() {
+    let code = r#"const box = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, 20], %)
+  |> line([20, 0], %)
+  |> line([0, -20], %, 'revolveAxis') 
+  |> close(%)
+  |> extrude(20, %)
+
+const sketch001 = startSketchOn(box, "END")
+  |> circle([10,10], 4, %)
+  |> revolve({
+    angle: 90, 
+    axis: getOppositeEdge('revolveAxis', box) 
+    }, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/revolve_on_face_circle_edge.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_revolve_on_face_circle() {
     let code = r#"const box = startSketchOn('XY')
   |> startProfileAt([0, 0], %)

@@ -135,6 +135,41 @@ pub async fn revolve(args: Args) -> Result<MemoryItem, KclError> {
 ///     |> close(%)
 ///     |> revolve({axis: 'y', angle: 180}, %)
 /// ```
+///
+/// ```no_run
+/// const box = startSketchOn('XY')
+///     |> startProfileAt([0, 0], %)
+///     |> line([0, 20], %)
+///     |> line([20, 0], %)
+///     |> line([0, -20], %)
+///     |> close(%)
+///     |> extrude(20, %)
+///
+/// const sketch001 = startSketchOn(box, "END")
+///     |> circle([10,10], 4, %)
+///     |> revolve({
+///         angle: -90,
+///         axis: 'y'
+///     }, %)
+/// ```
+///
+/// ```no_run
+/// const box = startSketchOn('XY')
+///     |> startProfileAt([0, 0], %)
+///     |> line([0, 20], %)
+///     |> line([20, 0], %)
+///     |> line([0, -20], %, 'revolveAxis')
+///     |> close(%)
+///     |> extrude(20, %)
+///
+/// const sketch001 = startSketchOn(box, "END")
+///     |> circle([10,10], 4, %)
+///     |> revolve({
+///         angle: 90,
+///         axis: getOppositeEdge('revolveAxis', box)
+///     }, %)
+///
+/// ```
 #[stdlib {
     name = "revolve",
 }]
