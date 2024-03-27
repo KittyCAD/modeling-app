@@ -923,6 +923,7 @@ pub async fn leg_length(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "legLen",
+    tags = ["utilities"],
 }]
 fn inner_leg_length(hypotenuse: f64, leg: f64) -> f64 {
     (hypotenuse.powi(2) - f64::min(hypotenuse.abs(), leg.abs()).powi(2)).sqrt()
@@ -942,6 +943,7 @@ pub async fn leg_angle_x(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "legAngX",
+    tags = ["utilities"],
 }]
 fn inner_leg_angle_x(hypotenuse: f64, leg: f64) -> f64 {
     (leg.min(hypotenuse) / hypotenuse).acos().to_degrees()
@@ -961,6 +963,7 @@ pub async fn leg_angle_y(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "legAngY",
+    tags = ["utilities"],
 }]
 fn inner_leg_angle_y(hypotenuse: f64, leg: f64) -> f64 {
     (leg.min(hypotenuse) / hypotenuse).asin().to_degrees()
@@ -983,6 +986,7 @@ pub enum Primitive {
 
 #[cfg(test)]
 mod tests {
+    use base64::Engine;
     use itertools::Itertools;
 
     use crate::std::StdLib;
@@ -1057,10 +1061,33 @@ layout: manual
             if !internal_fn.examples().is_empty() {
                 fn_docs.push_str("### Examples\n\n");
 
-                for example in internal_fn.examples() {
+                for (index, example) in internal_fn.examples().iter().enumerate() {
                     fn_docs.push_str("```js\n");
-                    fn_docs.push_str(&example);
+                    fn_docs.push_str(example);
                     fn_docs.push_str("\n```\n\n");
+
+                    // If this is not a "math" or "utilities" function,
+                    // we should add the image to the docs.
+                    if !internal_fn.tags().contains(&"math".to_string())
+                        && !internal_fn.tags().contains(&"utilities".to_string())
+                    {
+                        // Read the image file and encode as base64.
+                        let image_path = format!(
+                            "../../../docs/kcl/serial_test_example_{}_{}.png",
+                            internal_fn.name(),
+                            index
+                        );
+
+                        let image_data = std::fs::read(&image_path).unwrap();
+                        let image_data = base64::engine::general_purpose::STANDARD.encode(&image_data);
+
+                        fn_docs.push_str(&format!(
+                            "<img src=\"data:image/png;base64,{}\" alt=\"Rendered example of {} {}\" />\n\n",
+                            image_data,
+                            internal_fn.name(),
+                            index
+                        ));
+                    }
                 }
             }
 

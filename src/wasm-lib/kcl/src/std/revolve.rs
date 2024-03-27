@@ -168,7 +168,6 @@ pub async fn revolve(args: Args) -> Result<MemoryItem, KclError> {
 ///         angle: 90,
 ///         axis: getOppositeEdge('revolveAxis', box)
 ///     }, %)
-///
 /// ```
 #[stdlib {
     name = "revolve",

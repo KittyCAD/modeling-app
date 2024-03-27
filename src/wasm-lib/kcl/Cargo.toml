@@ -67,6 +67,7 @@ debug = true
 debug = true # Flamegraphs of benchmarks require accurate debug symbols
 
 [dev-dependencies]
+base64 = "0.22.0"
 criterion = "0.5.1"
 expectorate = "1.1.0"
 image = "0.24.9"

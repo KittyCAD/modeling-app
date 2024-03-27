@@ -91,10 +91,7 @@ mod test_examples_show {
             .decode()
             .unwrap();
         twenty_twenty::assert_image(
-            &format!(
-                "../../../../docs/kcl/images/{}.png",
-                "serial_test_example_show0"
-            ),
+            &format!("tests/outputs/{}.png", "serial_test_example_show0"),
             &actual,
             1.0,
         );
@@ -191,10 +188,7 @@ mod test_examples_show {
             .decode()
             .unwrap();
         twenty_twenty::assert_image(
-            &format!(
-                "../../../../docs/kcl/images/{}.png",
-                "serial_test_example_show1"
-            ),
+            &format!("tests/outputs/{}.png", "serial_test_example_show1"),
             &actual,
             1.0,
         );
