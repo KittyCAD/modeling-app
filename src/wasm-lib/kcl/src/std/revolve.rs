@@ -147,6 +147,27 @@ pub async fn revolve(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 ///
 /// ```no_run
+/// const part001 = startSketchOn('XY')
+///     |> startProfileAt([4, 12], %)
+///     |> line([2, 0], %)
+///     |> line([0, -6], %)
+///     |> line([4, -6], %)
+///     |> line([0, -6], %)
+///     |> line([-3.75, -4.5], %)
+///     |> line([0, -5.5], %)
+///     |> line([-2, 0], %)
+///     |> close(%)
+///     |> revolve({axis: 'y', angle: 180}, %)
+/// const part002 = startSketchOn(part001, 'end')
+///     |> startProfileAt([4.5, -5], %)
+///     |> line([0, 5], %)
+///     |> line([5, 0], %)
+///     |> line([0, -5], %)
+///     |> close(%)
+///     |> extrude(5, %)
+/// ```
+///
+/// ```no_run
 /// const box = startSketchOn('XY')
 ///     |> startProfileAt([0, 0], %)
 ///     |> line([0, 20], %)
