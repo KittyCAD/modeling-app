@@ -2649,7 +2649,55 @@ async fn execute_pipe_body(
     source_range: SourceRange,
     ctx: &ExecutorContext,
 ) -> Result<MemoryItem, KclError> {
-    todo!("Iterate over child expressions")
+    let mut body_iter = body.iter();
+    let first = body_iter.next().ok_or_else(|| {
+        KclError::Semantic(KclErrorDetails {
+            message: "Pipe expressions cannot be empty".to_owned(),
+            source_ranges: vec![source_range],
+        })
+    })?;
+    // Evaluate the first element in the pipeline.
+    // They use the `pipe_info` from some AST node above this, so that if pipe expression is nested in a larger pipe expression,
+    // they use the % from the parent. After all, this pipe expression hasn't been executed yet, so it doesn't have any % value
+    // of its own.
+    let output = match first {
+        Value::BinaryExpression(binary_expression) => binary_expression.get_result(memory, &pipe_info, ctx).await?,
+        Value::CallExpression(call_expression) => call_expression.execute(memory, &pipe_info, ctx).await?,
+        Value::Identifier(identifier) => memory.get(&identifier.name, identifier.into())?.clone(),
+        _ => {
+            // Return an error this should not happen.
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: format!("PipeExpression not implemented here: {:?}", first),
+                source_ranges: vec![first.into()],
+            }));
+        }
+    };
+    // Now that we've evaluated the first child expression in the pipeline, following child expressions
+    // should use the previous child expression for %.
+    // This means there's no more need for the previous `pipe_info` from the parent AST node above this one.
+    let mut new_pipe_info = PipeInfo::new();
+    new_pipe_info.previous_results.push(output);
+    // Evaluate remaining elements.
+    for expression in body {
+        let output = match expression {
+            Value::BinaryExpression(binary_expression) => {
+                binary_expression.get_result(memory, &new_pipe_info, ctx).await?
+            }
+            Value::CallExpression(call_expression) => call_expression.execute(memory, &new_pipe_info, ctx).await?,
+            Value::Identifier(identifier) => memory.get(&identifier.name, identifier.into())?.clone(),
+            _ => {
+                // Return an error this should not happen.
+                return Err(KclError::Semantic(KclErrorDetails {
+                    message: format!("PipeExpression not implemented here: {:?}", expression),
+                    source_ranges: vec![expression.into()],
+                }));
+            }
+        };
+        new_pipe_info.previous_results.push(output);
+    }
+    // Safe to unwrap here, because `new_pipe_info` always has something pushed in when the `match first` executes.
+    let final_output = new_pipe_info.previous_results.pop().unwrap();
+    Ok(final_output)
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, JsonSchema, Bake, FromStr, Display)]
