@@ -843,11 +843,7 @@ export class EngineCommandManager {
   outSequence = 1
   inSequence = 1
   engineConnection?: EngineConnection
-  defaultPlanes: { xy: string; yz: string; xz: string } = {
-    xy: '',
-    yz: '',
-    xz: '',
-  }
+  defaultPlanes: { xy: string; yz: string; xz: string } | null = null
   _commandLogs: CommandLog[] = []
   _commandLogCallBack: (command: CommandLog[]) => void = () => {}
   // Folks should realize that wait for ready does not get called _everytime_
@@ -1245,6 +1241,7 @@ export class EngineCommandManager {
   startNewSession() {
     this.lastArtifactMap = this.artifactMap
     this.artifactMap = {}
+    this.initPlanes()
   }
   subscribeTo<T extends ModelTypes>({
     event,
@@ -1296,6 +1293,7 @@ export class EngineCommandManager {
         type: 'scene_clear_all',
       },
     }
+    this.defaultPlanes = null
     this.engineConnection?.send(deleteCmd)
   }
   addCommandLog(message: CommandLog) {
@@ -1603,6 +1601,7 @@ export class EngineCommandManager {
     }
   }
   private async initPlanes() {
+    if (this.planesInitialized()) return
     const [xy, yz, xz] = [
       await this.createPlane({
         x_axis: { x: 1, y: 0, z: 0 },
@@ -1626,20 +1625,14 @@ export class EngineCommandManager {
       event: 'select_with_point',
       callback: ({ data }) => {
         if (!data?.entity_id) return
-        if (
-          ![
-            this.defaultPlanes.xy,
-            this.defaultPlanes.yz,
-            this.defaultPlanes.xz,
-          ].includes(data.entity_id)
-        )
-          return
+        if (![xy, yz, xz].includes(data.entity_id)) return
         this.onPlaneSelectCallback(data.entity_id)
       },
     })
   }
   planesInitialized(): boolean {
     return (
+      !!this.defaultPlanes &&
       this.defaultPlanes.xy !== '' &&
       this.defaultPlanes.yz !== '' &&
       this.defaultPlanes.xz !== ''
