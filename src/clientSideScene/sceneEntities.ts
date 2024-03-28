@@ -15,6 +15,7 @@ import {
   Quaternion,
   Scene,
   Shape,
+  SphereGeometry,
   Vector2,
   Vector3,
 } from 'three'
@@ -87,14 +88,15 @@ import { EngineCommandManager } from 'lang/std/engineConnection'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
+export const EXTRA_SEGMENT_HANDLE = 'extraSegmentHandle'
+export const PROFILE_START = 'profile-start'
 export const STRAIGHT_SEGMENT = 'straight-segment'
 export const STRAIGHT_SEGMENT_BODY = 'straight-segment-body'
 export const STRAIGHT_SEGMENT_DASH = 'straight-segment-body-dashed'
-export const TANGENTIAL_ARC_TO_SEGMENT = 'tangential-arc-to-segment'
-export const TANGENTIAL_ARC_TO_SEGMENT_BODY = 'tangential-arc-to-segment-body'
 export const TANGENTIAL_ARC_TO__SEGMENT_DASH =
   'tangential-arc-to-segment-body-dashed'
-export const PROFILE_START = 'profile-start'
+export const TANGENTIAL_ARC_TO_SEGMENT = 'tangential-arc-to-segment'
+export const TANGENTIAL_ARC_TO_SEGMENT_BODY = 'tangential-arc-to-segment-body'
 
 // This singleton Class is responsible for all of the things the user sees and interacts with.
 // That mostly mean sketch elements.
@@ -282,7 +284,6 @@ export class SceneEntities {
     sketchGroup: SketchGroup
     variableDeclarationName: string
   }> {
-    sceneInfra.resetMouseListeners()
     this.createIntersectionPlane()
 
     const { truncatedAst, programMemoryOverride, variableDeclarationName } =
@@ -435,6 +436,7 @@ export class SceneEntities {
   ) => {
     await kclManager.updateAst(modifiedAst, false)
     await this.tearDownSketch({ removeAxis: false })
+    sceneInfra.resetMouseListeners()
     await this.setupSketch({
       sketchPathToNode,
       forward,
@@ -442,7 +444,12 @@ export class SceneEntities {
       position: origin,
       maybeModdedAst: kclManager.ast,
     })
-    this.setupSketchIdleCallbacks(sketchPathToNode)
+    this.setupSketchIdleCallbacks({
+      forward,
+      up,
+      position: origin,
+      pathToNode: sketchPathToNode,
+    })
   }
   setUpDraftSegment = async (
     sketchPathToNode: PathToNode,
@@ -480,6 +487,7 @@ export class SceneEntities {
     const draftExpressionsIndices = { start: index, end: index }
 
     if (shouldTearDown) await this.tearDownSketch({ removeAxis: false })
+    sceneInfra.resetMouseListeners()
     const { truncatedAst, programMemoryOverride, sketchGroup } =
       await this.setupSketch({
         sketchPathToNode,
@@ -549,10 +557,100 @@ export class SceneEntities {
       ...mouseEnterLeaveCallbacks(),
     })
   }
-  setupSketchIdleCallbacks = (pathToNode: PathToNode) => {
+  setupSketchIdleCallbacks = ({
+    pathToNode,
+    up,
+    forward,
+    position,
+  }: {
+    pathToNode: PathToNode
+    forward: [number, number, number]
+    up: [number, number, number]
+    position?: [number, number, number]
+  }) => {
+    let addingNewSegmentStatus: 'nothing' | 'pending' | 'added' = 'nothing'
     sceneInfra.setCallbacks({
-      onDrag: ({ selected, intersectionPoint, mouseEvent, intersects }) => {
+      onDragEnd: async () => {
+        if (addingNewSegmentStatus !== 'nothing') {
+          await this.tearDownSketch({ removeAxis: false })
+          this.setupSketch({
+            sketchPathToNode: pathToNode,
+            maybeModdedAst: kclManager.ast,
+            up,
+            forward,
+            position,
+          })
+          // setting up the callbacks again resets value in closures
+          this.setupSketchIdleCallbacks({
+            pathToNode,
+            up,
+            forward,
+            position,
+          })
+        }
+      },
+      onDrag: async ({
+        selected,
+        intersectionPoint,
+        mouseEvent,
+        intersects,
+      }) => {
         if (mouseEvent.which !== 1) return
+
+        const group = getParentGroup(selected, [EXTRA_SEGMENT_HANDLE])
+        if (group?.name === EXTRA_SEGMENT_HANDLE) {
+          const segGroup = getParentGroup(selected)
+          const pathToNode: PathToNode = segGroup?.userData?.pathToNode
+          const pathToNodeIndex = pathToNode.findIndex(
+            (x) => x[1] === 'PipeExpression'
+          )
+
+          const sketchGroup = sketchGroupFromPathToNode({
+            pathToNode,
+            ast: kclManager.ast,
+            programMemory: kclManager.programMemory,
+          })
+
+          const pipeIndex = pathToNode[pathToNodeIndex + 1][0] as number
+          if (addingNewSegmentStatus === 'nothing') {
+            const prevSegment = sketchGroup.value[pipeIndex - 2]
+            const yo = addNewSketchLn({
+              node: kclManager.ast,
+              programMemory: kclManager.programMemory,
+              to: [intersectionPoint.twoD.x, intersectionPoint.twoD.y],
+              from: [prevSegment.from[0], prevSegment.from[1]],
+              fnName:
+                prevSegment.type === 'TangentialArcTo'
+                  ? 'tangentialArcTo'
+                  : 'line',
+              pathToNode: pathToNode,
+            })
+            addingNewSegmentStatus = 'pending'
+            await kclManager.executeAstMock(yo.modifiedAst, {
+              updates: 'code',
+            })
+            await this.tearDownSketch({ removeAxis: false })
+            this.setupSketch({
+              sketchPathToNode: pathToNode,
+              maybeModdedAst: kclManager.ast,
+              up,
+              forward,
+              position,
+            })
+            addingNewSegmentStatus = 'added'
+          } else if (addingNewSegmentStatus === 'added') {
+            const pathToNodeForNewSegment = pathToNode.slice(0, pathToNodeIndex)
+            pathToNodeForNewSegment.push([pipeIndex - 2, 'index'])
+            this.onDragSegment({
+              sketchPathToNode: pathToNodeForNewSegment,
+              object: selected,
+              intersection2d: intersectionPoint.twoD,
+              intersects,
+            })
+          }
+          return
+        }
+
         this.onDragSegment({
           object: selected,
           intersection2d: intersectionPoint.twoD,
@@ -843,6 +941,32 @@ export class SceneEntities {
       arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
       arrowGroup.scale.set(scale, scale, scale)
     }
+
+    // TODO this should be created in setupSketch, not updateStraightSegment
+    // it should only be updated here
+    const extraSegmentHandle = (group.getObjectByName(EXTRA_SEGMENT_HANDLE) ||
+      (() => {
+        const mat = new MeshBasicMaterial({ color: 0xffffff })
+        const sphereMesh = new Mesh(new SphereGeometry(0.6, 12, 12), mat)
+
+        const handleGroup = new Group()
+        handleGroup.userData.type = EXTRA_SEGMENT_HANDLE
+        handleGroup.name = EXTRA_SEGMENT_HANDLE
+        handleGroup.add(sphereMesh)
+        handleGroup.layers.set(SKETCH_LAYER)
+        handleGroup.traverse((child) => {
+          child.layers.set(SKETCH_LAYER)
+        })
+        return handleGroup
+      })()) as Group
+
+    extraSegmentHandle.position.set(
+      from[0] + 0.08 * (to[0] - from[0]),
+      from[1] + 0.08 * (to[1] - from[1]),
+      0
+    )
+    extraSegmentHandle.scale.set(scale, scale, scale)
+    group.add(extraSegmentHandle)
 
     const straightSegmentBody = group.children.find(
       (child) => child.userData.type === STRAIGHT_SEGMENT_BODY

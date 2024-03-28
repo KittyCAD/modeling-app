@@ -98,18 +98,24 @@ export class SceneInfra {
   isFovAnimationInProgress = false
   _baseUnit: BaseUnit = 'mm'
   _baseUnitMultiplier = 1
+  onDragStartCallback: (arg: OnDragCallbackArgs) => void = () => {}
+  onDragEndCallback: (arg: OnDragCallbackArgs) => void = () => {}
   onDragCallback: (arg: OnDragCallbackArgs) => void = () => {}
   onMoveCallback: (arg: OnMoveCallbackArgs) => void = () => {}
   onClickCallback: (arg: OnClickCallbackArgs) => void = () => {}
   onMouseEnter: (arg: OnMouseEnterLeaveArgs) => void = () => {}
   onMouseLeave: (arg: OnMouseEnterLeaveArgs) => void = () => {}
   setCallbacks = (callbacks: {
+    onDragStart?: (arg: OnDragCallbackArgs) => void
+    onDragEnd?: (arg: OnDragCallbackArgs) => void
     onDrag?: (arg: OnDragCallbackArgs) => void
     onMove?: (arg: OnMoveCallbackArgs) => void
     onClick?: (arg: OnClickCallbackArgs) => void
     onMouseEnter?: (arg: OnMouseEnterLeaveArgs) => void
     onMouseLeave?: (arg: OnMouseEnterLeaveArgs) => void
   }) => {
+    this.onDragStartCallback = callbacks.onDragStart || this.onDragStartCallback
+    this.onDragEndCallback = callbacks.onDragEnd || this.onDragEndCallback
     this.onDragCallback = callbacks.onDrag || this.onDragCallback
     this.onMoveCallback = callbacks.onMove || this.onMoveCallback
     this.onClickCallback = callbacks.onClick || this.onClickCallback
@@ -128,6 +134,8 @@ export class SceneInfra {
   }
   resetMouseListeners = () => {
     this.setCallbacks({
+      onDragStart: () => {},
+      onDragEnd: () => {},
       onDrag: () => {},
       onMove: () => {},
       onClick: () => {},
@@ -455,8 +463,16 @@ export class SceneInfra {
 
     if (this.selected) {
       if (this.selected.hasBeenDragged) {
-        // this is where we could fire a onDragEnd event
-        // console.log('onDragEnd', this.selected)
+        // TODO do the types properly here
+        this.onDragEndCallback({
+          intersectionPoint: {
+            twoD: planeIntersectPoint?.twoD as any,
+            threeD: planeIntersectPoint?.threeD as any,
+          },
+          intersects,
+          mouseEvent,
+          selected: this.selected as any,
+        })
       } else if (planeIntersectPoint?.twoD && planeIntersectPoint?.threeD) {
         // fire onClick event as there was no drags
         this.onClickCallback({

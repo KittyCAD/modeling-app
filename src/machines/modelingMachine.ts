@@ -836,6 +836,7 @@ export const modelingMachine = createMachine(
           if (Object.keys(sceneEntitiesManager.activeSegments).length > 0) {
             await sceneEntitiesManager.tearDownSketch({ removeAxis: false })
           }
+          sceneInfra.resetMouseListeners()
           await sceneEntitiesManager.setupSketch({
             sketchPathToNode: sketchDetails?.sketchPathToNode || [],
             forward: sketchDetails.zAxis,
@@ -843,9 +844,13 @@ export const modelingMachine = createMachine(
             position: sketchDetails.origin,
             maybeModdedAst: kclManager.ast,
           })
-          sceneEntitiesManager.setupSketchIdleCallbacks(
-            sketchDetails?.sketchPathToNode || []
-          )
+          sceneInfra.resetMouseListeners()
+          sceneEntitiesManager.setupSketchIdleCallbacks({
+            pathToNode: sketchDetails?.sketchPathToNode || [],
+            forward: sketchDetails.zAxis,
+            up: sketchDetails.yAxis,
+            position: sketchDetails.origin,
+          })
         })()
       },
       'animate after sketch': () => {
