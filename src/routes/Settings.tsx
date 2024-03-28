@@ -434,6 +434,7 @@ export function SettingsSection({
               className="hidden group-hover:block group-focus-within:block border-none p-0 hover:bg-warn-10 dark:hover:bg-warn-80 focus:bg-warn-10 dark:focus:bg-warn-80 focus:outline-none"
             >
               <CustomIcon name="refresh" className="w-4 h-4" />
+              <span className="sr-only">Roll back {title}</span>
               <Tooltip position="right">
                 Roll back to match {parentLevel}
               </Tooltip>
@@ -530,6 +531,7 @@ function GeneratedSetting({
     case 'options':
       return (
         <select
+          name={`${category}-${settingName}`}
           className="p-1 bg-transparent border rounded-sm border-chalkboard-30 w-full"
           value={String(
             setting[settingsLevel] || setting.getFallback(settingsLevel)
@@ -556,6 +558,7 @@ function GeneratedSetting({
     case 'string':
       return (
         <input
+          name={`${category}-${settingName}`}
           type="text"
           className="p-1 bg-transparent border rounded-sm border-chalkboard-30 w-full"
           defaultValue={String(

@@ -100,7 +100,6 @@ export const SettingsAuthProviderBase = ({
       context: loadedSettings,
       actions: {
         setClientSideSceneUnits: (context, event) => {
-          if (event.type !== 'set.modeling.defaultUnit') return
           const newBaseUnit =
             event.type === 'set.modeling.defaultUnit'
               ? (event.data.value as BaseUnit)

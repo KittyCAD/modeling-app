@@ -95,8 +95,17 @@ export interface SettingProps<T = unknown> {
   }>
 }
 
+/** The levels available to set settings at.
+ * `project` settings are specific and saved in the project directory.
+ * `user` settings are global and saved in the app config directory.
+ */
 export type SettingsLevel = 'user' | 'project'
 
+/**
+ * A utility type to transform the settings object
+ * such that instead of having leaves of type `Setting<T>`,
+ * it has leaves of type `T`.
+ */
 type RecursiveSettingsPayloads<T> = {
   [P in keyof T]: T[P] extends Setting<infer U>
     ? U
