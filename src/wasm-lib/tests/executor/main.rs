@@ -502,7 +502,7 @@ async fn serial_test_execute_i_shape() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-#[ignore] // ignore until more stack fixes
+#[ignore] // No longer a stack overflow problem, instead it causes an engine internal error.
 async fn serial_test_execute_pipes_on_pipes() {
     let code = include_str!("inputs/pipes_on_pipes.kcl");
 
@@ -523,7 +523,6 @@ async fn serial_test_execute_cylinder() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-#[ignore = "currently stack overflows"]
 async fn serial_test_execute_kittycad_svg() {
     let code = include_str!("inputs/kittycad_svg.kcl");
 
