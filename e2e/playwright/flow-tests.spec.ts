@@ -514,9 +514,7 @@ test.describe('Settings persistence and validation tests', () => {
   // Override test setup
   // with corrupted settings
   const storageState = structuredClone(basicStorageState)
-  const s = JSON.parse(
-    storageState.origins[0].localStorage[2].value
-  )
+  const s = JSON.parse(storageState.origins[0].localStorage[2].value)
   s.app.theme = 'dark'
   s.app.projectDirectory = 123 as any
   s.modeling.defaultUnit = 'invalid' as any
@@ -525,7 +523,7 @@ test.describe('Settings persistence and validation tests', () => {
   storageState.origins[0].localStorage[2].value = JSON.stringify(s)
 
   test.use({ storageState })
-  
+
   test('Stored settings are validated and fall back to defaults', async ({
     page,
   }) => {
@@ -536,9 +534,7 @@ test.describe('Settings persistence and validation tests', () => {
 
     // Check the settings were reset
     const storedSettings = JSON.parse(
-      await page.evaluate(
-        () => localStorage.getItem('/settings.json') || '{}'
-      )
+      await page.evaluate(() => localStorage.getItem('/settings.json') || '{}')
     )
     await expect(storedSettings?.app?.theme).toBe('dark')
 
@@ -548,15 +544,60 @@ test.describe('Settings persistence and validation tests', () => {
     await expect(storedSettings?.app?.projectDirectory).toBe(undefined)
     await expect(storedSettings?.projects?.defaultProjectName).toBe(undefined)
   })
+
+  test('Project settings can be set and override user settings', async ({
+    page,
+  }) => {
+    const u = getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+
+    // Open the settings modal with the browser keyboard shortcut
+    await page.keyboard.press('Meta+Shift+,')
+
+    await expect(
+      page.getByRole('heading', { name: 'Settings', exact: true })
+    ).toBeVisible()
+    await page
+      .locator('select[name="app-theme"]')
+      .selectOption({ value: 'light' })
+
+    // Verify the toast appeared
+    await expect(
+      page.getByText(`Set theme to "light" for this project`)
+    ).toBeVisible()
+    // Check that the theme changed
+    await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
+
+    // Check that the user setting was not changed
+    await page.getByRole('radio', { name: 'User' }).click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('dark')
+
+    // Roll back to default "system" theme
+    await page
+      .getByText(
+        'themeRoll back themeRoll back to match defaultThe overall appearance of the appl'
+      )
+      .hover()
+    await page
+      .getByRole('button', {
+        name: 'Roll back theme ; Has tooltip: Roll back to match default',
+      })
+      .click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+
+    // Check that the project setting did not change
+    await page.getByRole('radio', { name: 'Project' }).click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
+  })
 })
 
 // Onboarding tests
 test.describe('Onboarding tests', () => {
   // Override test setup
   const storageState = structuredClone(basicStorageState)
-  const s = JSON.parse(
-    storageState.origins[0].localStorage[2].value
-  )
+  const s = JSON.parse(storageState.origins[0].localStorage[2].value)
   s.app.onboardingStatus = '/export'
   storageState.origins[0].localStorage[2].value = JSON.stringify(s)
   test.use({ storageState })
@@ -756,9 +797,9 @@ test.describe('Command bar tests', () => {
     // Brief boilerplate
     await page.setViewportSize({ width: 1200, height: 500 })
     await page.goto('/', { waitUntil: 'domcontentloaded' })
-  
+
     let cmdSearchBar = page.getByPlaceholder('Search commands')
-  
+
     // First try opening the command bar and closing it
     // It has a different label on mac and windows/linux, "Meta+K" and "Ctrl+/" respectively
     await page
@@ -768,15 +809,17 @@ test.describe('Command bar tests', () => {
     await expect(cmdSearchBar).toBeVisible()
     await page.keyboard.press('Escape')
     await expect(cmdSearchBar).not.toBeVisible()
-  
+
     // Now try the same, but with the keyboard shortcut, check focus
     await page.keyboard.press('Meta+K')
     await expect(cmdSearchBar).toBeVisible()
     await expect(cmdSearchBar).toBeFocused()
-  
+
     // Try typing in the command bar
     await page.keyboard.type('theme')
-    const themeOption = page.getByRole('option', { name: 'Settings · app · theme' })
+    const themeOption = page.getByRole('option', {
+      name: 'Settings · app · theme',
+    })
     await expect(themeOption).toBeVisible()
     await themeOption.click()
     const themeInput = page.getByPlaceholder('Select an option')
@@ -791,13 +834,15 @@ test.describe('Command bar tests', () => {
       'active'
     )
     await page.keyboard.press('Enter')
-  
+
     // Check the toast appeared
-    await expect(page.getByText(`Set theme to "system" for this project`)).toBeVisible()
+    await expect(
+      page.getByText(`Set theme to "system" for this project`)
+    ).toBeVisible()
     // Check that the theme changed
     await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
   })
-  
+
   // Override test setup code
   const storageState = structuredClone(basicStorageState)
   storageState.origins[0].localStorage[1].value = `const distance = sqrt(20)
@@ -825,18 +870,20 @@ test.describe('Command bar tests', () => {
       page.getByRole('button', { name: 'Start Sketch' })
     ).not.toBeDisabled()
     await page.getByText('|> startProfileAt([-6.95, 4.98], %)').click()
-    await expect(page.getByRole('button', { name: 'Extrude' })).not.toBeDisabled()
+    await expect(
+      page.getByRole('button', { name: 'Extrude' })
+    ).not.toBeDisabled()
 
     let cmdSearchBar = page.getByPlaceholder('Search commands')
     await page.keyboard.press('Meta+K')
     await expect(cmdSearchBar).toBeVisible()
-  
+
     // Search for extrude command and choose it
     await page.getByRole('option', { name: 'Extrude' }).click()
-  
+
     // Assert that we're on the distance step
     await expect(page.getByRole('button', { name: 'distance' })).toBeDisabled()
-  
+
     // Assert that the an alternative variable name is chosen,
     // since the default variable name is already in use (distance)
     await page.getByRole('button', { name: 'Create new variable' }).click()
@@ -845,7 +892,7 @@ test.describe('Command bar tests', () => {
     )
     await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled()
     await page.getByRole('button', { name: 'Continue' }).click()
-  
+
     // Review step and argument hotkeys
     await expect(
       page.getByRole('button', { name: 'Submit command' })
@@ -855,9 +902,9 @@ test.describe('Command bar tests', () => {
       page.getByRole('button', { name: 'Distance 12', exact: false })
     ).toBeDisabled()
     await page.keyboard.press('Enter')
-  
+
     await expect(page.getByText('Confirm Extrude')).toBeVisible()
-  
+
     // Check that the code was updated
     await page.keyboard.press('Enter')
     // Unfortunately this indentation seems to matter for the test
