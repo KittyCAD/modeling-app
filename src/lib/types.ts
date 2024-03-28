@@ -1,6 +1,5 @@
 import { type Metadata } from 'tauri-plugin-fs-extra-api'
 import { type FileEntry } from '@tauri-apps/api/fs'
-import { F } from 'vitest/dist/reporters-P7C2ytIv'
 
 export type IndexLoaderData = {
   code: string | null

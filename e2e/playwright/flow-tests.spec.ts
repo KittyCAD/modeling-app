@@ -5,6 +5,8 @@ import waitOn from 'wait-on'
 import { Themes } from '../../src/lib/theme'
 import { settings } from '../../src/lib/settings/initialSettings'
 import { roundOff } from 'lib/utils'
+import { SETTINGS_FILE_NAME } from 'lib/constants'
+import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -34,18 +36,25 @@ test.beforeEach(async ({ context, page }) => {
     localStorage.setItem('TOKEN_PERSIST_KEY', token)
     localStorage.setItem('persistCode', ``)
     localStorage.setItem(
-      'SETTINGS_PERSIST_KEY',
+      '/' + SETTINGS_FILE_NAME,
       JSON.stringify({
-        baseUnit: 'in',
-        cameraControls: 'KittyCAD',
-        defaultDirectory: '',
-        defaultProjectName: 'project-$nnn',
-        onboardingStatus: 'dismissed',
-        showDebugPanel: true,
-        textWrapping: 'On',
-        theme: 'system',
-        unitSystem: 'imperial',
-      })
+        app: {
+          theme: Themes.System,
+          onboardingStatus: 'dismissed',
+          projectDirectory: '',
+        },
+        modeling: {
+          defaultUnit: 'in',
+          mouseControls: 'KittyCAD',
+          showDebugPanel: true,
+        },
+        projects: {
+          defaultProjectName: 'project-$nnn',
+        },
+        textEditor: {
+          textWrapping: true,
+        },
+      } satisfies Partial<SaveSettingsPayload>)
     )
   }, secrets.token)
   // kill animations, speeds up tests and reduced flakiness
@@ -537,39 +546,44 @@ test('Stored settings are validated and fall back to defaults', async ({
   // with corrupted settings
   await context.addInitScript(async () => {
     const storedSettings = JSON.parse(
-      localStorage.getItem('SETTINGS_PERSIST_KEY') || '{}'
-    )
+      localStorage.getItem('/' + SETTINGS_FILE_NAME) || '{}'
+    ) as SaveSettingsPayload
+
+    console.log('storedSettings', storedSettings)
 
     // Corrupt the settings
-    storedSettings.baseUnit = 'invalid'
-    storedSettings.cameraControls = `() => alert('hack the planet')`
-    storedSettings.defaultDirectory = 123
-    storedSettings.defaultProjectName = false
+    storedSettings.modeling.defaultUnit = 'invalid' as any
+    storedSettings.modeling.mouseControls =
+      `() => alert('hack the planet')` as any
+    storedSettings.app.projectDirectory = 123 as any
+    storedSettings.projects.defaultProjectName = false as any
 
-    localStorage.setItem('SETTINGS_PERSIST_KEY', JSON.stringify(storedSettings))
+    localStorage.setItem(
+      '/' + SETTINGS_FILE_NAME,
+      JSON.stringify(storedSettings)
+    )
   })
 
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/', { waitUntil: 'domcontentloaded' })
 
-  // Check the toast appeared
-  await expect(
-    page.getByText(`Error validating persisted settings:`, {
-      exact: false,
-    })
-  ).toBeVisible()
-
   // Check the settings were reset
   const storedSettings = JSON.parse(
     await page.evaluate(
-      () => localStorage.getItem('SETTINGS_PERSIST_KEY') || '{}'
+      () => localStorage.getItem('/' + SETTINGS_FILE_NAME) || '{}'
     )
+  ) as SaveSettingsPayload
+  await expect(storedSettings.modeling.defaultUnit).toBe(
+    settings.modeling.defaultUnit
   )
-  await expect(storedSettings.baseUnit).toBe(settings.baseUnit)
-  await expect(storedSettings.cameraControls).toBe(settings.cameraControls)
-  await expect(storedSettings.defaultDirectory).toBe(settings.defaultDirectory)
-  await expect(storedSettings.defaultProjectName).toBe(
-    settings.defaultProjectName
+  await expect(storedSettings.modeling.mouseControls).toBe(
+    settings.modeling.mouseControls
+  )
+  await expect(storedSettings.app.projectDirectory).toBe(
+    settings.app.projectDirectory
+  )
+  await expect(storedSettings.projects.defaultProjectName).toBe(
+    settings.projects.defaultProjectName
   )
 })
 

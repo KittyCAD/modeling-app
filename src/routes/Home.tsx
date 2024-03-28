@@ -31,7 +31,6 @@ import {
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { DEFAULT_PROJECT_NAME } from 'lib/constants'
 import { sep } from '@tauri-apps/api/path'
 import { homeCommandBarConfig } from 'lib/commandBarConfigs/homeCommandConfig'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -48,7 +47,7 @@ const Home = () => {
   const navigate = useNavigate()
   const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
   const {
-    settings: { context: settings, send: sendToSettings },
+    settings: { context: settings },
   } = useSettingsAuthContext()
   const { onProjectOpen } = useLspContext()
 

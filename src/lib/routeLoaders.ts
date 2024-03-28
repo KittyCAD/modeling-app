@@ -72,15 +72,16 @@ export const fileLoader: LoaderFunction = async ({
 
   const defaultDir = settings.app.projectDirectory.current || '/'
   const projectPathData = getProjectMetaByRouteId(params.id, defaultDir)
+  const isBrowserProject = params.id === decodeURIComponent(BROWSER_PATH)
 
-  if (params.id !== decodeURIComponent(BROWSER_PATH) && projectPathData) {
+  if (!isBrowserProject && projectPathData) {
     const { projectName, projectPath, currentFileName, currentFilePath } =
       projectPathData
 
     if (!currentFileName || !currentFilePath) {
       return redirect(
         `${paths.FILE}/${encodeURIComponent(
-          `${params.id}${sep}${PROJECT_ENTRYPOINT}`
+          `${params.id}${isTauri() ? sep : '/'}${PROJECT_ENTRYPOINT}`
         )}`
       )
     }

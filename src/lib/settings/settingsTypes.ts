@@ -1,5 +1,5 @@
 import { type Models } from '@kittycad/lib'
-import { settings } from './initialSettings'
+import { Setting, settings } from './initialSettings'
 import { AtLeast, PathValue, Paths } from 'lib/types'
 import { ChangeEventHandler } from 'react'
 import { CommandArgumentConfig } from 'lib/commandTypes'
@@ -96,3 +96,11 @@ export interface SettingProps<T = unknown> {
 }
 
 export type SettingsLevel = 'user' | 'project'
+
+type RecursiveSettingsPayloads<T> = {
+  [P in keyof T]: T[P] extends Setting<infer U>
+    ? U
+    : Partial<RecursiveSettingsPayloads<T[P]>>
+}
+
+export type SaveSettingsPayload = RecursiveSettingsPayloads<typeof settings>

@@ -10,10 +10,7 @@ import { appConfigDir, documentDir, homeDir, sep } from '@tauri-apps/api/path'
 import { isTauri } from './isTauri'
 import { type ProjectWithEntryPointMetadata } from 'lib/types'
 import { metadata } from 'tauri-plugin-fs-extra-api'
-import { settingsMachine } from 'machines/settingsMachine'
-import { ContextFrom } from 'xstate'
 import {
-  BROWSER_PROJECT_NAME,
   FILE_EXT,
   INDEX_IDENTIFIER,
   MAX_PADDING,
@@ -22,8 +19,7 @@ import {
   RELEVANT_FILE_TYPES,
   SETTINGS_FILE_NAME,
 } from 'lib/constants'
-import { SettingsLevel } from './settings/settingsTypes'
-import { BROWSER_PATH } from './paths'
+import { SaveSettingsPayload, SettingsLevel } from './settings/settingsTypes'
 
 type PathWithPossibleError = {
   path: string | null
@@ -379,7 +375,7 @@ export async function getUserSettingsFilePath(
 
 export async function readSettingsFile(
   path: string
-): Promise<Partial<ContextFrom<typeof settingsMachine>>> {
+): Promise<Partial<SaveSettingsPayload>> {
   const dir = path.slice(0, path.lastIndexOf(sep))
 
   const dirExists = await exists(dir)
@@ -411,7 +407,9 @@ export async function getSettingsFilePaths(
   return {
     user: user + SETTINGS_FILE_NAME,
     project:
-      project !== undefined ? project + sep + SETTINGS_FILE_NAME : undefined,
+      project !== undefined
+        ? project + (isTauri() ? sep : '/') + SETTINGS_FILE_NAME
+        : undefined,
   }
 }
 

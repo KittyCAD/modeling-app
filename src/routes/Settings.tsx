@@ -313,7 +313,7 @@ export const Settings = () => {
                     }
                   `}
                 >
-                  <div className="flex flex-col gap-4">
+                  <div className="flex flex-col items-start gap-4">
                     {isTauri() && (
                       <ActionButton
                         Element="button"

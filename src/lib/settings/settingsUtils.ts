@@ -4,7 +4,7 @@ import {
   readSettingsFile,
 } from '../tauriFS'
 import { Setting, createSettings, settings } from 'lib/settings/initialSettings'
-import { SettingsLevel } from './settingsTypes'
+import { SaveSettingsPayload, SettingsLevel } from './settingsTypes'
 import { isTauri } from 'lib/isTauri'
 import { removeFile, writeTextFile } from '@tauri-apps/api/fs'
 import { exists } from 'tauri-plugin-fs-extra-api'
@@ -12,7 +12,9 @@ import { exists } from 'tauri-plugin-fs-extra-api'
 function getSettingsFromStorage(path: string) {
   return isTauri()
     ? readSettingsFile(path)
-    : (JSON.parse(localStorage.getItem(path) ?? '{}') as typeof settings)
+    : (JSON.parse(
+        localStorage.getItem(path) ?? '{}'
+      ) as Partial<SaveSettingsPayload>)
 }
 
 export async function loadAndValidateSettings(projectPath?: string) {
@@ -77,8 +79,8 @@ async function writeOrClearPersistedSettings(
       )
     }
     localStorage.setItem(settingsFilePath, JSON.stringify(changedSettings))
-  } else if (await exists(settingsFilePath)) {
-    if (isTauri()) {
+  } else {
+    if (isTauri() && (await exists(settingsFilePath))) {
       await removeFile(settingsFilePath)
     }
     localStorage.removeItem(settingsFilePath)
@@ -122,7 +124,7 @@ export function getChangedSettingsAtLevel(
 export function setSettingsAtLevel(
   allSettings: typeof settings,
   level: SettingsLevel,
-  newSettings: Partial<typeof settings>
+  newSettings: Partial<SaveSettingsPayload>
 ) {
   Object.entries(newSettings).forEach(([category, settingsCategory]) => {
     const categoryKey = category as keyof typeof settings
