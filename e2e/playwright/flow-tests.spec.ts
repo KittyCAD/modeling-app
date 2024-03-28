@@ -566,12 +566,8 @@ test('Stored settings are validated and fall back to defaults', async ({
     )
   )
   await expect(storedSettings.baseUnit).toBe(settings.baseUnit)
-  await expect(storedSettings.cameraControls).toBe(
-    settings.cameraControls
-  )
-  await expect(storedSettings.defaultDirectory).toBe(
-    settings.defaultDirectory
-  )
+  await expect(storedSettings.cameraControls).toBe(settings.cameraControls)
+  await expect(storedSettings.defaultDirectory).toBe(settings.defaultDirectory)
   await expect(storedSettings.defaultProjectName).toBe(
     settings.defaultProjectName
   )

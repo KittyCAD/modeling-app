@@ -9,7 +9,6 @@ import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { bracket } from 'lib/exampleKcl'
 import {
-  PROJECT_ENTRYPOINT,
   createNewProject,
   getNextProjectIndex,
   getProjectsInDir,
@@ -21,7 +20,7 @@ import { paths } from 'lib/paths'
 import { useEffect } from 'react'
 import { kclManager } from 'lib/singletons'
 import { sep } from '@tauri-apps/api/path'
-import { APP_NAME } from 'lib/constants'
+import { APP_NAME, PROJECT_ENTRYPOINT } from 'lib/constants'
 
 function OnboardingWithNewFile() {
   const navigate = useNavigate()

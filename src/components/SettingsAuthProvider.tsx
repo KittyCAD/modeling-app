@@ -22,7 +22,6 @@ import { kclManager, sceneInfra, engineCommandManager } from 'lib/singletons'
 import { v4 as uuidv4 } from 'uuid'
 import { IndexLoaderData } from 'lib/types'
 import { settings } from 'lib/settings/initialSettings'
-import { writeToSettingsFiles } from 'lib/tauriFS'
 import {
   createSettingsCommand,
   settingsWithCommandConfigs,
@@ -30,6 +29,7 @@ import {
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { Command } from 'lib/commandTypes'
 import { BaseUnit } from 'lib/settings/settingsTypes'
+import { saveSettings } from 'lib/settings/settingsUtils'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -139,13 +139,8 @@ export const SettingsAuthProviderBase = ({
           })
         },
         'Execute AST': () => kclManager.executeAst(),
-        persistSettings: (context, event) => {
-          if (isTauri()) {
-            writeToSettingsFiles(context, loadedProject)
-          } else {
-            // TODO: persist settings to local storage otherwise
-          }
-        },
+        persistSettings: (context) =>
+          saveSettings(context, loadedProject?.project?.path),
       },
     }
   )

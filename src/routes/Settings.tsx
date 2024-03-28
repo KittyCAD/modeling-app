@@ -1,6 +1,4 @@
-import { faArrowRotateBack } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../components/ActionButton'
-import { SETTINGS_PERSIST_KEY } from 'lib/constants'
 import {
   SetEventTypes,
   SettingsLevel,
@@ -103,8 +101,8 @@ export const Settings = () => {
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
-          enterFrom="opacity-0 translate-y-4"
-          enterTo="opacity-100 translate-y-0"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
           leave="ease-in duration-75"
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
@@ -168,6 +166,7 @@ export const Settings = () => {
                   )
                   .map(([category]) => (
                     <button
+                      key={category}
                       onClick={() =>
                         scrollRef.current
                           ?.querySelector(`#category-${category}`)
@@ -226,7 +225,7 @@ export const Settings = () => {
                     )
                   )
                   .map(([category, categorySettings]) => (
-                    <>
+                    <Fragment key={category}>
                       <h2
                         id={`category-${category}`}
                         className="text-2xl mt-6 first-of-type:mt-0 capitalize font-bold"
@@ -283,7 +282,7 @@ export const Settings = () => {
                             </SettingsSection>
                           )
                         })}
-                    </>
+                    </Fragment>
                   ))}
                 <h2 id="settings-resets" className="text-2xl mt-6 font-bold">
                   Resets
@@ -314,8 +313,8 @@ export const Settings = () => {
                     }
                   `}
                 >
-                  {isTauri() ? (
-                    <div className="flex gap-4 flex-wrap items-center">
+                  <div className="flex flex-col gap-4">
+                    {isTauri() && (
                       <ActionButton
                         Element="button"
                         onClick={async () => {
@@ -335,39 +334,28 @@ export const Settings = () => {
                       >
                         Show in folder
                       </ActionButton>
-                      <ActionButton
-                        Element="button"
-                        onClick={async () => {
-                          // We have to re-call initializeProjectDirectory
-                          // since we can't set that in the settings machine's
-                          // initial context due to it being async
-                          send({
-                            type: 'Reset settings',
-                          })
-                          toast.success('Settings restored to default')
-                        }}
-                        icon={{
-                          icon: 'refresh',
-                          size: 'sm',
-                          className: 'p-1 text-chalkboard-10',
-                          bgClassName: 'bg-destroy-70',
-                        }}
-                      >
-                        Restore default settings
-                      </ActionButton>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        localStorage.removeItem(SETTINGS_PERSIST_KEY)
-                        send({ type: 'Reset settings' })
+                    )}
+                    <ActionButton
+                      Element="button"
+                      onClick={async () => {
+                        // We have to re-call initializeProjectDirectory
+                        // since we can't set that in the settings machine's
+                        // initial context due to it being async
+                        send({
+                          type: 'Reset settings',
+                        })
                         toast.success('Settings restored to default')
                       }}
-                      className="text-base"
+                      icon={{
+                        icon: 'refresh',
+                        size: 'sm',
+                        className: 'p-1 text-chalkboard-10',
+                        bgClassName: 'bg-destroy-70',
+                      }}
                     >
                       Restore default settings
-                    </button>
-                  )}
+                    </ActionButton>
+                  </div>
                 </SettingsSection>
                 <h2 id="settings-about" className="text-2xl mt-6 font-bold">
                   About Modeling App

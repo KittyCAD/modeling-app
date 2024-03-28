@@ -29,8 +29,7 @@ import { CommandBarProvider } from 'components/CommandBar/CommandBarProvider'
 import SettingsAuthProvider from 'components/SettingsAuthProvider'
 import LspProvider from 'components/LspProvider'
 import { KclContextProvider } from 'lang/KclProvider'
-
-export const BROWSER_FILE_NAME = 'new'
+import { BROWSER_PROJECT_NAME } from 'lib/constants'
 
 const router = createBrowserRouter([
   {
@@ -54,7 +53,7 @@ const router = createBrowserRouter([
         loader: () =>
           isTauri()
             ? redirect(paths.HOME)
-            : redirect(paths.FILE + '/' + BROWSER_FILE_NAME),
+            : redirect(paths.FILE + '/%2F' + BROWSER_PROJECT_NAME),
       },
       {
         loader: fileLoader,

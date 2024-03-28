@@ -5,33 +5,25 @@ import {
   readDir,
   readTextFile,
   writeTextFile,
-  removeFile,
 } from '@tauri-apps/api/fs'
 import { appConfigDir, documentDir, homeDir, sep } from '@tauri-apps/api/path'
 import { isTauri } from './isTauri'
-import { IndexLoaderData, type ProjectWithEntryPointMetadata } from 'lib/types'
+import { type ProjectWithEntryPointMetadata } from 'lib/types'
 import { metadata } from 'tauri-plugin-fs-extra-api'
 import { settingsMachine } from 'machines/settingsMachine'
 import { ContextFrom } from 'xstate'
-import { SETTINGS_FILE_NAME } from 'lib/constants'
-import { getChangedSettingsAtLevel } from './settings/settingsUtils'
+import {
+  BROWSER_PROJECT_NAME,
+  FILE_EXT,
+  INDEX_IDENTIFIER,
+  MAX_PADDING,
+  PROJECT_ENTRYPOINT,
+  PROJECT_FOLDER,
+  RELEVANT_FILE_TYPES,
+  SETTINGS_FILE_NAME,
+} from 'lib/constants'
 import { SettingsLevel } from './settings/settingsTypes'
-
-const PROJECT_FOLDER = 'zoo-modeling-app-projects'
-export const FILE_EXT = '.kcl'
-export const PROJECT_ENTRYPOINT = 'main' + FILE_EXT
-const INDEX_IDENTIFIER = '$n' // $nn.. will pad the number with 0s
-export const MAX_PADDING = 7
-const RELEVANT_FILE_TYPES = [
-  'kcl',
-  'fbx',
-  'gltf',
-  'glb',
-  'obj',
-  'ply',
-  'step',
-  'stl',
-]
+import { BROWSER_PATH } from './paths'
 
 type PathWithPossibleError = {
   path: string | null
@@ -385,31 +377,6 @@ export async function getUserSettingsFilePath(
   return dir + filename
 }
 
-export async function writeToSettingsFiles(
-  allSettings: ContextFrom<typeof settingsMachine>,
-  projectData?: IndexLoaderData
-) {
-  const path = (await getUserSettingsFilePath('')) + SETTINGS_FILE_NAME
-  const settings = getChangedSettingsAtLevel(allSettings, 'user')
-
-  if (settings && Object.keys(settings).length) {
-    await writeTextFile(path, JSON.stringify(settings, null, 2))
-  } else if (await exists(path)) {
-    await removeFile(path)
-  }
-
-  if (projectData?.project?.path) {
-    const path = projectData.project.path + sep + 'settings.json'
-    const settings = getChangedSettingsAtLevel(allSettings, 'project')
-
-    if (settings && Object.keys(settings).length) {
-      await writeTextFile(path, JSON.stringify(settings, null, 2))
-    } else if (await exists(path)) {
-      await removeFile(path)
-    }
-  }
-}
-
 export async function readSettingsFile(
   path: string
 ): Promise<Partial<ContextFrom<typeof settingsMachine>>> {
@@ -449,8 +416,8 @@ export async function getSettingsFilePaths(
 }
 
 export async function getSettingsFolderPaths(projectPath?: string) {
-  const user = await appConfigDir()
-  const project = projectPath ?? undefined
+  const user = isTauri() ? await appConfigDir() : '/'
+  const project = projectPath !== undefined ? projectPath : undefined
 
   return {
     user,

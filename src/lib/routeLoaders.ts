@@ -1,15 +1,18 @@
 import { ActionFunction, LoaderFunction, redirect } from 'react-router-dom'
-import { HomeLoaderData, IndexLoaderData } from './types'
+import { FileLoaderData, HomeLoaderData, IndexLoaderData } from './types'
 import { isTauri } from './isTauri'
 import { getProjectMetaByRouteId, paths } from './paths'
-import { BROWSER_FILE_NAME } from 'Router'
-import { SETTINGS_PERSIST_KEY } from 'lib/constants'
+import { BROWSER_PATH } from 'lib/paths'
+import {
+  BROWSER_FILE_NAME,
+  BROWSER_PROJECT_NAME,
+  PROJECT_ENTRYPOINT,
+} from 'lib/constants'
 import { loadAndValidateSettings } from './settings/settingsUtils'
 import {
   getInitialDefaultDir,
   getProjectsInDir,
   initializeProjectDirectory,
-  PROJECT_ENTRYPOINT,
 } from './tauriFS'
 import makeUrlPathRelative from './makeUrlPathRelative'
 import { sep } from '@tauri-apps/api/path'
@@ -64,22 +67,23 @@ export const onboardingRedirectLoader: ActionFunction = async (args) => {
 
 export const fileLoader: LoaderFunction = async ({
   params,
-}): Promise<IndexLoaderData | Response> => {
+}): Promise<FileLoaderData | Response> => {
   let settings = await loadAndValidateSettings()
 
-  const defaultDir = settings.app.projectDirectory.current || ''
+  const defaultDir = settings.app.projectDirectory.current || '/'
   const projectPathData = getProjectMetaByRouteId(params.id, defaultDir)
 
-  if (params.id !== BROWSER_FILE_NAME && projectPathData) {
+  if (params.id !== decodeURIComponent(BROWSER_PATH) && projectPathData) {
     const { projectName, projectPath, currentFileName, currentFilePath } =
       projectPathData
 
-    if (!currentFileName || !currentFilePath)
+    if (!currentFileName || !currentFilePath) {
       return redirect(
         `${paths.FILE}/${encodeURIComponent(
           `${params.id}${sep}${PROJECT_ENTRYPOINT}`
         )}`
       )
+    }
 
     // TODO: PROJECT_ENTRYPOINT is hardcoded
     // until we support setting a project's entrypoint file
@@ -115,6 +119,15 @@ export const fileLoader: LoaderFunction = async ({
 
   return {
     code: '',
+    project: {
+      name: BROWSER_PROJECT_NAME,
+      path: '/' + BROWSER_PROJECT_NAME,
+      children: [],
+    },
+    file: {
+      name: BROWSER_FILE_NAME,
+      path: decodeURIComponent(BROWSER_PATH),
+    },
   }
 }
 
@@ -124,25 +137,15 @@ export const homeLoader: LoaderFunction = async (): Promise<
   HomeLoaderData | Response
 > => {
   if (!isTauri()) {
-    return redirect(paths.FILE + '/' + BROWSER_FILE_NAME)
+    return redirect(paths.FILE + '/' + BROWSER_PROJECT_NAME)
   }
   const settings = await loadAndValidateSettings()
 
-  console.log('settings', settings)
   const projectDir = await initializeProjectDirectory(
     settings.app.projectDirectory.current || (await getInitialDefaultDir())
   )
 
   if (projectDir.path) {
-    if (projectDir.path !== settings.app.projectDirectory.current) {
-      localStorage.setItem(
-        SETTINGS_PERSIST_KEY,
-        JSON.stringify({
-          ...settings,
-          defaultDirectory: projectDir,
-        })
-      )
-    }
     const projects = await getProjectsInDir(projectDir.path)
 
     return {

@@ -5,6 +5,15 @@ import {
 } from '../tauriFS'
 import { Setting, createSettings, settings } from 'lib/settings/initialSettings'
 import { SettingsLevel } from './settingsTypes'
+import { isTauri } from 'lib/isTauri'
+import { removeFile, writeTextFile } from '@tauri-apps/api/fs'
+import { exists } from 'tauri-plugin-fs-extra-api'
+
+function getSettingsFromStorage(path: string) {
+  return isTauri()
+    ? readSettingsFile(path)
+    : (JSON.parse(localStorage.getItem(path) ?? '{}') as typeof settings)
+}
 
 export async function loadAndValidateSettings(projectPath?: string) {
   const settings = createSettings()
@@ -14,7 +23,7 @@ export async function loadAndValidateSettings(projectPath?: string) {
 
   // Load the settings from the files
   if (settingsFilePaths.user) {
-    const userSettings = await readSettingsFile(settingsFilePaths.user)
+    const userSettings = await getSettingsFromStorage(settingsFilePaths.user)
     if (userSettings) {
       setSettingsAtLevel(settings, 'user', userSettings)
     }
@@ -22,7 +31,9 @@ export async function loadAndValidateSettings(projectPath?: string) {
 
   // Load the project settings if they exist
   if (settingsFilePaths.project) {
-    const projectSettings = await readSettingsFile(settingsFilePaths.project)
+    const projectSettings = await getSettingsFromStorage(
+      settingsFilePaths.project
+    )
     if (projectSettings) {
       setSettingsAtLevel(settings, 'project', projectSettings)
     }
@@ -30,6 +41,48 @@ export async function loadAndValidateSettings(projectPath?: string) {
 
   // Return the settings object
   return settings
+}
+
+export async function saveSettings(
+  allSettings: typeof settings,
+  projectPath?: string
+) {
+  const settingsFilePaths = await getSettingsFilePaths(projectPath)
+
+  if (settingsFilePaths.user) {
+    const changedSettings = getChangedSettingsAtLevel(allSettings, 'user')
+
+    await writeOrClearPersistedSettings(settingsFilePaths.user, changedSettings)
+  }
+
+  if (settingsFilePaths.project) {
+    const changedSettings = getChangedSettingsAtLevel(allSettings, 'project')
+
+    await writeOrClearPersistedSettings(
+      settingsFilePaths.project,
+      changedSettings
+    )
+  }
+}
+
+async function writeOrClearPersistedSettings(
+  settingsFilePath: string,
+  changedSettings: typeof settings
+) {
+  if (changedSettings && Object.keys(changedSettings).length) {
+    if (isTauri()) {
+      await writeTextFile(
+        settingsFilePath,
+        JSON.stringify(changedSettings, null, 2)
+      )
+    }
+    localStorage.setItem(settingsFilePath, JSON.stringify(changedSettings))
+  } else if (await exists(settingsFilePath)) {
+    if (isTauri()) {
+      await removeFile(settingsFilePath)
+    }
+    localStorage.removeItem(settingsFilePath)
+  }
 }
 
 export function getChangedSettingsAtLevel(
