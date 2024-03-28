@@ -20,7 +20,7 @@ function CommandComboBox({
     options.find((o) => 'isCurrent' in o && o.isCurrent) || null
 
   const fuse = new Fuse(options, {
-    keys: ['name', 'description'],
+    keys: ['displayName', 'name', 'description'],
     threshold: 0.3,
   })
 
