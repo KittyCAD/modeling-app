@@ -25,32 +25,32 @@ expression: actual
           "init": {
             "type": "PipeExpression",
             "type": "PipeExpression",
-            "start": 17,
+            "start": 44,
             "end": 86,
-            "body": [
-              {
-                "type": "CallExpression",
-                "type": "CallExpression",
+            "head": {
+              "type": "CallExpression",
+              "type": "CallExpression",
+              "start": 17,
+              "end": 36,
+              "callee": {
+                "type": "Identifier",
                 "start": 17,
-                "end": 36,
-                "callee": {
-                  "type": "Identifier",
-                  "start": 17,
-                  "end": 30,
-                  "name": "startSketchOn"
-                },
-                "arguments": [
-                  {
-                    "type": "Literal",
-                    "type": "Literal",
-                    "start": 31,
-                    "end": 35,
-                    "value": "XY",
-                    "raw": "'XY'"
-                  }
-                ],
-                "optional": false
+                "end": 30,
+                "name": "startSketchOn"
               },
+              "arguments": [
+                {
+                  "type": "Literal",
+                  "type": "Literal",
+                  "start": 31,
+                  "end": 35,
+                  "value": "XY",
+                  "raw": "'XY'"
+                }
+              ],
+              "optional": false
+            },
+            "tail": [
               {
                 "type": "CallExpression",
                 "type": "CallExpression",

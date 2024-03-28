@@ -25,31 +25,31 @@ expression: actual
           "init": {
             "type": "PipeExpression",
             "type": "PipeExpression",
-            "start": 11,
+            "start": 33,
             "end": 53,
-            "body": [
-              {
-                "type": "CallExpression",
-                "type": "CallExpression",
+            "head": {
+              "type": "CallExpression",
+              "type": "CallExpression",
+              "start": 11,
+              "end": 29,
+              "callee": {
+                "type": "Identifier",
                 "start": 11,
-                "end": 29,
-                "callee": {
-                  "type": "Identifier",
-                  "start": 11,
-                  "end": 24,
-                  "name": "startSketchAt"
-                },
-                "arguments": [
-                  {
-                    "type": "Identifier",
-                    "type": "Identifier",
-                    "start": 25,
-                    "end": 28,
-                    "name": "pos"
-                  }
-                ],
-                "optional": false
+                "end": 24,
+                "name": "startSketchAt"
               },
+              "arguments": [
+                {
+                  "type": "Identifier",
+                  "type": "Identifier",
+                  "start": 25,
+                  "end": 28,
+                  "name": "pos"
+                }
+              ],
+              "optional": false
+            },
+            "tail": [
               {
                 "type": "CallExpression",
                 "type": "CallExpression",

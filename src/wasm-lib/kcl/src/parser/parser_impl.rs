@@ -136,7 +136,7 @@ fn pipe_expression(i: TokenSlice) -> PResult<PipeExpression> {
     if let Some(nc) = noncode {
         non_code_meta.insert(0, nc);
     }
-    let mut values = vec![head];
+    let mut values = Vec::new();
     let value_surrounded_by_comments = (
         repeat(0.., preceded(opt(whitespace), non_code_node)), // Before the value
         preceded(opt(whitespace), fn_call),                    // The value
@@ -185,7 +185,8 @@ fn pipe_expression(i: TokenSlice) -> PResult<PipeExpression> {
     Ok(PipeExpression {
         start: values.first().unwrap().start(),
         end: values.last().unwrap().end().max(max_noncode_end),
-        body: values,
+        head,
+        tail: values,
         non_code_meta,
     })
 }
@@ -1584,7 +1585,7 @@ const mySk1 = startSketchAt([0, 0])"#;
         let tokens = crate::token::lexer(test_input);
         let mut slice = tokens.as_slice();
         let PipeExpression {
-            body, non_code_meta, ..
+            tail, non_code_meta, ..
         } = pipe_expression.parse_next(&mut slice).unwrap();
         assert_eq!(non_code_meta.non_code_nodes.len(), 1);
         assert_eq!(
@@ -1594,7 +1595,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                 style: CommentStyle::Line,
             }
         );
-        assert_eq!(body.len(), 4);
+        assert_eq!(tail.len(), 3);
     }
 
     #[test]

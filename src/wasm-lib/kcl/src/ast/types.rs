@@ -2532,7 +2532,10 @@ pub struct PipeExpression {
     pub end: usize,
     // TODO: Only the first body expression can be any Value.
     // The rest will be CallExpression, and the AST type should reflect this.
-    pub body: Vec<Value>,
+    /// First child expression.
+    pub head: Value,
+    /// Remaining child expressions.
+    pub tail: Vec<Value>,
     pub non_code_meta: NonCodeMeta,
 }
 
@@ -2545,23 +2548,40 @@ impl From<PipeExpression> for Value {
 }
 
 impl PipeExpression {
-    pub fn new(body: Vec<Value>) -> Self {
+    pub fn new(mut body: Vec<Value>) -> Self {
+        let head = body.remove(0);
         Self {
             start: 0,
             end: 0,
-            body,
+            head,
+            tail: body,
             non_code_meta: Default::default(),
         }
     }
 
+    /// Iterate over all child expressions in this pipe expression.
+    pub fn iter(&self) -> impl Iterator<Item = &Value> {
+        std::iter::once(&self.head).chain(self.tail.iter())
+    }
+
+    /// Iterate over all child expressions in this pipe expression.
+    pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut Value> {
+        std::iter::once(&mut self.head).chain(self.tail.iter_mut())
+    }
+
+    /// Iterate over all child expressions in this pipe expression.
+    pub fn all_children(self) -> impl Iterator<Item = Value> {
+        std::iter::once(self.head).chain(self.tail)
+    }
+
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
-        for value in &mut self.body {
+        for value in self.iter_mut() {
             value.replace_value(source_range, new_value.clone());
         }
     }
 
     pub fn get_constraint_level(&self) -> ConstraintLevel {
-        if self.body.is_empty() {
+        if self.tail.is_empty() {
             return ConstraintLevel::Ignore {
                 source_ranges: vec![self.into()],
             };
@@ -2569,7 +2589,7 @@ impl PipeExpression {
 
         // Iterate over all body expressions.
         let mut constraint_levels = ConstraintLevels::new();
-        for expression in &self.body {
+        for expression in self.iter() {
             constraint_levels.push(expression.get_constraint_level());
         }
 
@@ -2577,8 +2597,7 @@ impl PipeExpression {
     }
 
     fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
-        self.body
-            .iter()
+        self.iter()
             .enumerate()
             .map(|(index, statement)| {
                 let indentation = options.get_indentation(indentation_level + 1);
@@ -2596,7 +2615,7 @@ impl PipeExpression {
                     }
                 }
 
-                if index != self.body.len() - 1 {
+                if index != self.tail.len() - 1 {
                     s += "\n";
                     s += &indentation;
                     s += PIPE_OPERATOR;
@@ -2609,7 +2628,7 @@ impl PipeExpression {
 
     /// Returns a hover value that includes the given character position.
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
-        for b in &self.body {
+        for b in self.iter() {
             let b_source_range: SourceRange = b.into();
             if b_source_range.contains(pos) {
                 return b.get_hover_value_for_position(pos, code);
@@ -2625,12 +2644,12 @@ impl PipeExpression {
         pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
-        execute_pipe_body(memory, &self.body, pipe_info, self.into(), ctx).await
+        execute_pipe_body(memory, &self.head, &self.tail, pipe_info, ctx).await
     }
 
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        for statement in &mut self.body {
+        for statement in self.iter_mut() {
             statement.rename_identifiers(old_name, new_name);
         }
     }
@@ -2639,31 +2658,24 @@ impl PipeExpression {
 #[async_recursion::async_recursion(?Send)]
 async fn execute_pipe_body(
     memory: &mut ProgramMemory,
-    body: &[Value],
+    head: &Value,
+    tail: &[Value],
     pipe_info: &PipeInfo,
-    source_range: SourceRange,
     ctx: &ExecutorContext,
 ) -> Result<MemoryItem, KclError> {
-    let mut body = body.iter();
-    let first = body.next().ok_or_else(|| {
-        KclError::Semantic(KclErrorDetails {
-            message: "Pipe expressions cannot be empty".to_owned(),
-            source_ranges: vec![source_range],
-        })
-    })?;
     // Evaluate the first element in the pipeline.
     // They use the `pipe_info` from some AST node above this, so that if pipe expression is nested in a larger pipe expression,
     // they use the % from the parent. After all, this pipe expression hasn't been executed yet, so it doesn't have any % value
     // of its own.
-    let output = match first {
+    let output = match head {
         Value::BinaryExpression(binary_expression) => binary_expression.get_result(memory, pipe_info, ctx).await?,
         Value::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, ctx).await?,
         Value::Identifier(identifier) => memory.get(&identifier.name, identifier.into())?.clone(),
         _ => {
             // Return an error this should not happen.
             return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("PipeExpression not implemented here: {:?}", first),
-                source_ranges: vec![first.into()],
+                message: format!("PipeExpression not implemented here: {head:?}"),
+                source_ranges: vec![head.into()],
             }));
         }
     };
@@ -2673,7 +2685,7 @@ async fn execute_pipe_body(
     let mut new_pipe_info = PipeInfo::new();
     new_pipe_info.previous_results = Some(output);
     // Evaluate remaining elements.
-    for expression in body {
+    for expression in tail {
         let output = match expression {
             Value::BinaryExpression(binary_expression) => {
                 binary_expression.get_result(memory, &new_pipe_info, ctx).await?

@@ -25,32 +25,32 @@ expression: actual
           "init": {
             "type": "PipeExpression",
             "type": "PipeExpression",
-            "start": 14,
+            "start": 23,
             "end": 36,
-            "body": [
-              {
-                "type": "BinaryExpression",
-                "type": "BinaryExpression",
+            "head": {
+              "type": "BinaryExpression",
+              "type": "BinaryExpression",
+              "start": 14,
+              "end": 19,
+              "operator": "+",
+              "left": {
+                "type": "Literal",
+                "type": "Literal",
                 "start": 14,
-                "end": 19,
-                "operator": "+",
-                "left": {
-                  "type": "Literal",
-                  "type": "Literal",
-                  "start": 14,
-                  "end": 15,
-                  "value": 5,
-                  "raw": "5"
-                },
-                "right": {
-                  "type": "Literal",
-                  "type": "Literal",
-                  "start": 18,
-                  "end": 19,
-                  "value": 6,
-                  "raw": "6"
-                }
+                "end": 15,
+                "value": 5,
+                "raw": "5"
               },
+              "right": {
+                "type": "Literal",
+                "type": "Literal",
+                "start": 18,
+                "end": 19,
+                "value": 6,
+                "raw": "6"
+              }
+            },
+            "tail": [
               {
                 "type": "CallExpression",
                 "type": "CallExpression",
