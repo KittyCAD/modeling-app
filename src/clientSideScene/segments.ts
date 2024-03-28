@@ -20,6 +20,7 @@ import {
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { PathToNode, SketchGroup, getTangentialArcToInfo } from 'lang/wasm'
 import {
+  EXTRA_SEGMENT_HANDLE,
   PROFILE_START,
   STRAIGHT_SEGMENT,
   STRAIGHT_SEGMENT_BODY,
@@ -131,6 +132,22 @@ export function straightSegment({
 
   group.add(mesh)
   if (callExpName !== 'close') group.add(arrowGroup)
+
+  const mat = new MeshBasicMaterial({ color: 0xffffff })
+  const sphereMesh = new Mesh(new SphereGeometry(0.02 * scale, 12, 12), mat)
+
+  const extraSegmentGroup = new Group()
+  extraSegmentGroup.userData.type = EXTRA_SEGMENT_HANDLE
+  extraSegmentGroup.name = EXTRA_SEGMENT_HANDLE
+  extraSegmentGroup.add(sphereMesh)
+
+  extraSegmentGroup.position.set(
+    from[0] + 0.08 * (to[0] - from[0]),
+    from[1] + 0.08 * (to[1] - from[1]),
+    0
+  )
+  extraSegmentGroup.scale.set(scale, scale, scale)
+  group.add(extraSegmentGroup)
 
   return group
 }

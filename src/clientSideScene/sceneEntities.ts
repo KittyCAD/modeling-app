@@ -942,31 +942,16 @@ export class SceneEntities {
       arrowGroup.scale.set(scale, scale, scale)
     }
 
-    // TODO this should be created in setupSketch, not updateStraightSegment
-    // it should only be updated here
-    const extraSegmentHandle = (group.getObjectByName(EXTRA_SEGMENT_HANDLE) ||
-      (() => {
-        const mat = new MeshBasicMaterial({ color: 0xffffff })
-        const sphereMesh = new Mesh(new SphereGeometry(0.6, 12, 12), mat)
-
-        const handleGroup = new Group()
-        handleGroup.userData.type = EXTRA_SEGMENT_HANDLE
-        handleGroup.name = EXTRA_SEGMENT_HANDLE
-        handleGroup.add(sphereMesh)
-        handleGroup.layers.set(SKETCH_LAYER)
-        handleGroup.traverse((child) => {
-          child.layers.set(SKETCH_LAYER)
-        })
-        return handleGroup
-      })()) as Group
-
-    extraSegmentHandle.position.set(
-      from[0] + 0.08 * (to[0] - from[0]),
-      from[1] + 0.08 * (to[1] - from[1]),
-      0
-    )
-    extraSegmentHandle.scale.set(scale, scale, scale)
-    group.add(extraSegmentHandle)
+    const extraSegmentGroup = group.getObjectByName(EXTRA_SEGMENT_HANDLE)
+    if (extraSegmentGroup) {
+      extraSegmentGroup.position.set(
+        from[0] + 0.08 * (to[0] - from[0]),
+        from[1] + 0.08 * (to[1] - from[1]),
+        0
+      )
+      extraSegmentGroup.scale.set(scale, scale, scale)
+      group.add(extraSegmentGroup)
+    }
 
     const straightSegmentBody = group.children.find(
       (child) => child.userData.type === STRAIGHT_SEGMENT_BODY
