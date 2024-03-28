@@ -1039,7 +1039,7 @@ impl CallExpression {
                 }
                 Value::PipeSubstitution(pipe_substitution) => pipe_info
                     .previous_results
-                    .last()
+                    .as_ref()
                     .ok_or_else(|| {
                         KclError::Semantic(KclErrorDetails {
                             message: format!("PipeSubstitution index out of bounds: {:?}", pipe_info),
@@ -2676,7 +2676,7 @@ async fn execute_pipe_body(
     // should use the previous child expression for %.
     // This means there's no more need for the previous `pipe_info` from the parent AST node above this one.
     let mut new_pipe_info = PipeInfo::new();
-    new_pipe_info.previous_results.push(output);
+    new_pipe_info.previous_results = Some(output);
     // Evaluate remaining elements.
     for expression in body {
         let output = match expression {
@@ -2693,10 +2693,10 @@ async fn execute_pipe_body(
                 }));
             }
         };
-        new_pipe_info.previous_results.push(output);
+        new_pipe_info.previous_results = Some(output);
     }
-    // Safe to unwrap here, because `new_pipe_info` always has something pushed in when the `match first` executes.
-    let final_output = new_pipe_info.previous_results.pop().unwrap();
+    // Safe to unwrap here, because `newpipe_info` always has something pushed in when the `match first` executes.
+    let final_output = new_pipe_info.previous_results.unwrap();
     Ok(final_output)
 }
 
