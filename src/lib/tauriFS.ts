@@ -1,15 +1,21 @@
 import {
-  FileEntry,
-  createDir,
+  mkdir,
   exists,
   readDir,
   readTextFile,
   writeTextFile,
-} from '@tauri-apps/api/fs'
-import { appConfigDir, documentDir, homeDir, sep } from '@tauri-apps/api/path'
+  stat,
+} from '@tauri-apps/plugin-fs'
+import { invoke } from '@tauri-apps/api/core'
+import {
+  appConfigDir,
+  documentDir,
+  homeDir,
+  join,
+  sep,
+} from '@tauri-apps/api/path'
 import { isTauri } from './isTauri'
-import { type ProjectWithEntryPointMetadata } from 'lib/types'
-import { metadata } from 'tauri-plugin-fs-extra-api'
+import type { FileEntry, ProjectWithEntryPointMetadata } from 'lib/types'
 import { settingsMachine } from 'machines/settingsMachine'
 import { ContextFrom } from 'xstate'
 import { SETTINGS_FILE_NAME } from 'lib/constants'
@@ -104,7 +110,7 @@ async function testAndCreateDir(
   if (dirExists instanceof Error) {
     returnValue.error = dirExists
   } else if (dirExists === false) {
-    const newDirCreated = await createDir(directory, { recursive: true }).catch(
+    const newDirCreated = await mkdir(directory, { recursive: true }).catch(
       (e) => {
         console.error(
           `Error creating directory ${directory}. Original error:`,
@@ -137,14 +143,12 @@ export function isProjectDirectory(fileOrDir: Partial<FileEntry>) {
 // and return the valid projects
 export async function getProjectsInDir(projectDir: string) {
   const readProjects = (
-    await readDir(projectDir, {
-      recursive: true,
-    })
+    await invoke<FileEntry[]>('read_dir_recursive', { path: projectDir })
   ).filter(isProjectDirectory)
 
   const projectsWithMetadata = await Promise.all(
     readProjects.map(async (p) => ({
-      entrypointMetadata: await metadata(p.path + sep + PROJECT_ENTRYPOINT),
+      entrypointMetadata: await stat(await join(p.path, PROJECT_ENTRYPOINT)),
       ...p,
     }))
   )
@@ -204,8 +208,8 @@ export function deepFileFilterFlat(
 // Read the contents of a project directory
 // and return all relevant files and sub-directories recursively
 export async function readProject(projectDir: string) {
-  const readFiles = await readDir(projectDir, {
-    recursive: true,
+  const readFiles = await invoke<FileEntry[]>('read_dir_recursive', {
+    path: projectDir,
   })
 
   return deepFileFilter(readFiles, isRelevantFileOrDir)
@@ -293,29 +297,29 @@ export async function createNewProject(
 
   const dirExists = await exists(path)
   if (!dirExists) {
-    await createDir(path, { recursive: true }).catch((err) => {
+    await mkdir(path, { recursive: true }).catch((err) => {
       console.error('Error creating new directory:', err)
       throw err
     })
   }
 
-  await writeTextFile(path + sep + PROJECT_ENTRYPOINT, initCode).catch(
+  await writeTextFile(await join(path, PROJECT_ENTRYPOINT), initCode).catch(
     (err) => {
       console.error('Error creating new file:', err)
       throw err
     }
   )
 
-  const m = await metadata(path)
+  const m = await stat(path)
 
   return {
-    name: path.slice(path.lastIndexOf(sep) + 1),
+    name: path.slice(path.lastIndexOf(sep()) + 1),
     path: path,
     entrypointMetadata: m,
     children: [
       {
         name: PROJECT_ENTRYPOINT,
-        path: path + sep + PROJECT_ENTRYPOINT,
+        path: await join(path, PROJECT_ENTRYPOINT),
         children: [],
       },
     ],
@@ -396,7 +400,7 @@ export async function readSettingsFile(): Promise<ContextFrom<
   const path = dir + SETTINGS_FILE_NAME
   const dirExists = await exists(dir)
   if (!dirExists) {
-    await createDir(dir, { recursive: true })
+    await mkdir(dir, { recursive: true })
   }
 
   const settingsExist = dirExists ? await exists(path) : false

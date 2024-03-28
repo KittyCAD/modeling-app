@@ -1,5 +1,5 @@
 import { FormEvent, useEffect } from 'react'
-import { removeDir, renameFile } from '@tauri-apps/api/fs'
+import { remove, rename } from '@tauri-apps/plugin-fs'
 import {
   createNewProject,
   getNextProjectIndex,
@@ -32,7 +32,7 @@ import useStateMachineCommands from '../hooks/useStateMachineCommands'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { DEFAULT_PROJECT_NAME } from 'lib/constants'
-import { sep } from '@tauri-apps/api/path'
+import { join, sep } from '@tauri-apps/api/path'
 import { homeCommandBarConfig } from 'lib/commandBarConfigs/homeCommandConfig'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { isTauri } from 'lib/isTauri'
@@ -80,7 +80,7 @@ const Home = () => {
         event: EventFrom<typeof homeMachine>
       ) => {
         if (event.data && 'name' in event.data) {
-          let projectPath = context.defaultDirectory + sep + event.data.name
+          let projectPath = context.defaultDirectory + sep() + event.data.name
           onProjectOpen(
             {
               name: event.data.name,
@@ -120,7 +120,7 @@ const Home = () => {
           name = interpolateProjectNameWithIndex(name, nextIndex)
         }
 
-        await createNewProject(context.defaultDirectory + sep + name)
+        await createNewProject(await join(context.defaultDirectory, name))
 
         if (shouldUpdateDefaultProjectName) {
           sendToSettings({
@@ -142,9 +142,10 @@ const Home = () => {
           name = interpolateProjectNameWithIndex(name, nextIndex)
         }
 
-        await renameFile(
-          context.defaultDirectory + sep + oldName,
-          context.defaultDirectory + sep + name
+        await rename(
+          await join(context.defaultDirectory, oldName),
+          await join(context.defaultDirectory, name),
+          {}
         )
         return `Successfully renamed "${oldName}" to "${name}"`
       },
@@ -152,7 +153,7 @@ const Home = () => {
         context: ContextFrom<typeof homeMachine>,
         event: EventFrom<typeof homeMachine, 'Delete project'>
       ) => {
-        await removeDir(context.defaultDirectory + sep + event.data.name, {
+        await remove(await join(context.defaultDirectory, event.data.name), {
           recursive: true,
         })
         return `Successfully deleted "${event.data.name}"`

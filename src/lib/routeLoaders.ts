@@ -1,5 +1,5 @@
 import { ActionFunction, LoaderFunction, redirect } from 'react-router-dom'
-import { HomeLoaderData, IndexLoaderData } from './types'
+import { FileEntry, HomeLoaderData, IndexLoaderData } from './types'
 import { isTauri } from './isTauri'
 import { paths } from './paths'
 import { BROWSER_FILE_NAME } from 'Router'
@@ -12,11 +12,11 @@ import {
   PROJECT_ENTRYPOINT,
 } from './tauriFS'
 import makeUrlPathRelative from './makeUrlPathRelative'
-import { sep } from '@tauri-apps/api/path'
-import { readDir, readTextFile } from '@tauri-apps/api/fs'
-import { metadata } from 'tauri-plugin-fs-extra-api'
+import { join, sep } from '@tauri-apps/api/path'
+import { readDir, readTextFile, stat } from '@tauri-apps/plugin-fs'
 import { kclManager } from 'lib/singletons'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
+import { invoke } from '@tauri-apps/api/core'
 
 // The root loader simply resolves the settings and any errors that
 // occurred during the settings load
@@ -56,26 +56,28 @@ export const fileLoader: LoaderFunction = async ({
 
   if (params.id && params.id !== BROWSER_FILE_NAME) {
     const decodedId = decodeURIComponent(params.id)
-    const projectAndFile = decodedId.replace(defaultDir + sep, '')
-    const firstSlashIndex = projectAndFile.indexOf(sep)
+    const projectAndFile = decodedId.replace(defaultDir + sep(), '')
+    const firstSlashIndex = projectAndFile.indexOf(sep())
     const projectName = projectAndFile.slice(0, firstSlashIndex)
-    const projectPath = defaultDir + sep + projectName
+    const projectPath = await join(defaultDir, projectName)
     const currentFileName = projectAndFile.slice(firstSlashIndex + 1)
 
     if (firstSlashIndex === -1 || !currentFileName)
       return redirect(
         `${paths.FILE}/${encodeURIComponent(
-          `${params.id}${sep}${PROJECT_ENTRYPOINT}`
+          await join(params.id, PROJECT_ENTRYPOINT)
         )}`
       )
 
     // TODO: PROJECT_ENTRYPOINT is hardcoded
     // until we support setting a project's entrypoint file
     const code = await readTextFile(decodedId)
-    const entrypointMetadata = await metadata(
-      projectPath + sep + PROJECT_ENTRYPOINT
+    const entrypointMetadata = await stat(
+      await join(projectPath, PROJECT_ENTRYPOINT)
     )
-    const children = await readDir(projectPath, { recursive: true })
+    const children = await invoke<FileEntry[]>('read_dir_recursive', {
+      path: projectPath,
+    })
     kclManager.setCodeAndExecute(code, false)
 
     // Set the file system manager to the project path

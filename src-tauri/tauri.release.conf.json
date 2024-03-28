@@ -1,6 +1,6 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
-  "tauri": {
+  "plugins": {
     "updater": {
       "active": true,
       "endpoints": [

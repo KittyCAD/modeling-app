@@ -13,7 +13,8 @@ on:
   # Will checkout the last commit from the default branch (main as of 2023-10-04)
 
 env:
-  BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && contains(github.event.pull_request.title, 'Cut release v') }}
+  # BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && contains(github.event.pull_request.title, 'Cut release v') }}
+  BUILD_RELEASE: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -125,6 +126,9 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-14, ubuntu-latest, windows-latest]
+    env:
+      TAURI_ARGS_MACOS: ${{ matrix.os == 'macos-14' && '--target universal-apple-darwin' || '' }}
+      TAURI_ARGS_UBUNTU: ${{ matrix.os == 'ubuntu-latest' && '--bundles' || '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -144,10 +148,12 @@ jobs:
           sudo apt-get update &&
           sudo apt-get install -y
           libgtk-3-dev
-          libgtksourceview-3.0-dev
-          webkit2gtk-4.0
-          libappindicator3-dev
+          libayatana-appindicator3-dev
+          libwebkit2gtk-4.0-dev
           webkit2gtk-driver
+          libsoup-3.0-dev
+          libjavascriptcoregtk-4.1-dev
+          libwebkit2gtk-4.1-dev
           xvfb
 
       - name: Sync node version and setup cache
@@ -219,28 +225,24 @@ jobs:
         shell: cmd
 
       - name: Build the app (debug)
-        uses: tauri-apps/tauri-action@v0
         if: ${{ env.BUILD_RELEASE == 'false' }}
-        with:
-          includeRelease: false
-          includeDebug: true
-          args: ${{ matrix.os == 'macos-14' && '--target universal-apple-darwin' || '' }}
+        run: "yarn tauri build --debug ${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
 
       - name: Build the app (release) and sign
         uses: tauri-apps/tauri-action@v0
         if: ${{ env.BUILD_RELEASE == 'true' }}
         env:
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          TAURI_CONF_ARGS: "--config ${{ matrix.os == 'windows-latest' && 'src-tauri\\tauri.release.conf.json' || 'src-tauri/tauri.release.conf.json' }}"
+          TAURI_ARGS_RELEASE: "--config ${{ matrix.os == 'windows-latest' && 'src-tauri\\tauri.release.conf.json' || 'src-tauri/tauri.release.conf.json' }}"
         with:
-          args: "${{ matrix.os == 'macos-14' && '--target universal-apple-darwin' || '' }} ${{ env.TAURI_CONF_ARGS }}"
+          args: "${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }} ${{ env.TAURI_ARGS_RELEASE }}"
 
       - uses: actions/upload-artifact@v3
         if: matrix.os != 'ubuntu-latest'
@@ -253,7 +255,7 @@ jobs:
       - name: Run e2e tests (linux only)
         if: matrix.os == 'ubuntu-latest'
         run: |
-          cargo install tauri-driver@0.1.3
+          cargo install tauri-driver
           source .env.${{ env.BUILD_RELEASE == 'true' && 'production' || 'development' }}
           export VITE_KC_API_BASE_URL
           xvfb-run yarn test:e2e:tauri

@@ -22,7 +22,7 @@ export default function CmdK() {
         <h2 className="text-2xl font-bold">Command Bar</h2>
         <p className="my-4">
           Press{' '}
-          {platformName === 'darwin' ? (
+          {platformName === 'macos' ? (
             <>
               <kbd className={kbdClasses}>⌘K</kbd>
             </>

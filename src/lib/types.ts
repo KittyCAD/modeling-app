@@ -1,5 +1,4 @@
-import { type Metadata } from 'tauri-plugin-fs-extra-api'
-import { type FileEntry } from '@tauri-apps/api/fs'
+import { type FileInfo } from '@tauri-apps/plugin-fs'
 
 export type IndexLoaderData = {
   code: string | null
@@ -8,8 +7,21 @@ export type IndexLoaderData = {
 }
 
 export type ProjectWithEntryPointMetadata = FileEntry & {
-  entrypointMetadata: Metadata
+  entrypointMetadata: FileInfo
 }
 export type HomeLoaderData = {
   projects: ProjectWithEntryPointMetadata[]
+}
+
+// From https://github.com/tauri-apps/tauri/blob/1.x/tooling/api/src/fs.ts#L159
+// Removed from tauri v2
+export interface FileEntry {
+  path: string
+  /**
+   * Name of the directory/file
+   * can be null if the path terminates with `..`
+   */
+  name?: string
+  /** Children of this entry if it's a directory; null otherwise */
+  children?: FileEntry[]
 }

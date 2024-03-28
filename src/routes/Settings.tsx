@@ -1,7 +1,7 @@
 import { faArrowRotateBack, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../components/ActionButton'
 import { AppHeader } from '../components/AppHeader'
-import { open } from '@tauri-apps/api/dialog'
+import { open } from '@tauri-apps/plugin-dialog'
 import { DEFAULT_PROJECT_NAME, SETTINGS_PERSIST_KEY } from 'lib/constants'
 import {
   type BaseUnit,
@@ -31,11 +31,11 @@ import {
 } from 'lib/tauriFS'
 import { initialSettings } from 'lib/settings/initialSettings'
 import { ONBOARDING_PROJECT_NAME } from './Onboarding'
-import { sep } from '@tauri-apps/api/path'
+import { join } from '@tauri-apps/api/path'
 import { bracket } from 'lib/exampleKcl'
 import { isTauri } from 'lib/isTauri'
-import { invoke } from '@tauri-apps/api'
 import toast from 'react-hot-toast'
+import { invoke } from '@tauri-apps/api/core'
 
 export const Settings = () => {
   const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
@@ -105,7 +105,7 @@ export const Settings = () => {
       nextIndex
     )
     const newFile = await createNewProject(
-      defaultDirectory + sep + name,
+      await join(defaultDirectory, name),
       bracket
     )
     navigate(`${paths.FILE}/${encodeURIComponent(newFile.path)}`)
@@ -179,7 +179,7 @@ export const Settings = () => {
             </li>
           </ul>
         </SettingsSection>
-        {(window as any).__TAURI__ && (
+        {isTauri() && (
           <>
             <SettingsSection
               title="Default Directory"

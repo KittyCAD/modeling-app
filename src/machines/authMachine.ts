@@ -2,7 +2,7 @@ import { createMachine, assign } from 'xstate'
 import { Models } from '@kittycad/lib'
 import withBaseURL from '../lib/withBaseURL'
 import { isTauri } from 'lib/isTauri'
-import { invoke } from '@tauri-apps/api'
+import { invoke } from '@tauri-apps/api/core'
 import { VITE_KC_API_BASE_URL } from 'env'
 
 const SKIP_AUTH =
