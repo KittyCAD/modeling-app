@@ -1804,7 +1804,6 @@ async fn serial_test_basic_revolve_circle() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-#[ignore] // Ignore this test until https://github.com/KittyCAD/engine/pull/1930 is fixed
 async fn serial_test_simple_revolve_sketch_on_edge() {
     let code = r#"const part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)
