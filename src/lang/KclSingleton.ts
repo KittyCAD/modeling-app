@@ -428,17 +428,15 @@ export class KclManager {
     return this?.engineCommandManager?.defaultPlanes
   }
 
-  getPlaneId(axis: 'xy' | 'xz' | 'yz'): string {
-    return this.defaultPlanes[axis]
-  }
-
   showPlanes() {
+    if (!this.defaultPlanes) return
     void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, false)
     void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, false)
     void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, false)
   }
 
   hidePlanes() {
+    if (!this.defaultPlanes) return
     void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, true)
     void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, true)
     void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, true)
