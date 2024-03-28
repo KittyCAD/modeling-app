@@ -293,9 +293,9 @@ async fn serial_test_basic_fillet_cube_next_adjacent() {
     |> line([0, 10], %, "thing")
     |> line([10, 0], %, "thing1")
     |> line([0, -10], %, "thing2")
-    |> close(%)
+    |> close(%, "thing3")
     |> extrude(10, %)
-    |> fillet({radius: 2, tags: [getNextAdjacentEdge("thing", %)]}, %)
+    |> fillet({radius: 2, tags: [getNextAdjacentEdge("thing3", %)]}, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
@@ -315,9 +315,9 @@ async fn serial_test_basic_fillet_cube_previous_adjacent() {
     |> line([0, 10], %, "thing")
     |> line([10, 0], %, "thing1")
     |> line([0, -10], %, "thing2")
-    |> close(%)
+    |> close(%, "thing3")
     |> extrude(10, %)
-    |> fillet({radius: 2, tags: [getPreviousAdjacentEdge("thing2", %)]}, %)
+    |> fillet({radius: 2, tags: [getPreviousAdjacentEdge("thing3", %)]}, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
@@ -479,6 +479,17 @@ async fn serial_test_execute_engine_error_return() {
         result.err().unwrap().to_string(),
         r#"engine: KclErrorDetails { source_ranges: [SourceRange([222, 235])], message: "Modeling command failed: Some([ApiError { error_code: BadRequest, message: \"The path is not closed.  Solid2D construction requires a closed path!\" }])" }"#,
     );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_execute_i_shape() {
+    // This is some code from lee that starts a pipe expression with a variable.
+    let code = include_str!("inputs/i_shape.kcl");
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/i_shape.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -1793,7 +1804,6 @@ async fn serial_test_basic_revolve_circle() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-#[ignore] // Ignore this test until https://github.com/KittyCAD/engine/pull/1930 is fixed
 async fn serial_test_simple_revolve_sketch_on_edge() {
     let code = r#"const part001 = startSketchOn('XY')
      |> startProfileAt([4, 12], %)

@@ -18,7 +18,7 @@ pub async fn cos(args: Args) -> Result<MemoryItem, KclError> {
     args.make_user_val_from_f64(result)
 }
 
-/// Computes the sine of a number (in radians).
+/// Computes the cosine of a number (in radians).
 ///
 /// ```no_run
 /// const anotherVar = cos(2*pi())

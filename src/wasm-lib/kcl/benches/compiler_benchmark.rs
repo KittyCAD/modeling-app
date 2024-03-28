@@ -12,6 +12,7 @@ pub fn bench_parse(c: &mut Criterion) {
         ("big_kitt", KITT_PROGRAM),
         ("cube", CUBE_PROGRAM),
         ("math", MATH_PROGRAM),
+        ("mike_stress_test", MIKE_STRESS_TEST_PROGRAM),
     ] {
         let tokens = kcl_lib::token::lexer(file);
         c.bench_function(&format!("parse_{name}"), move |b| {
@@ -35,3 +36,4 @@ const KITT_PROGRAM: &str = include_str!("../../tests/executor/inputs/kittycad_sv
 const PIPES_PROGRAM: &str = include_str!("../../tests/executor/inputs/pipes_on_pipes.kcl");
 const CUBE_PROGRAM: &str = include_str!("../../tests/executor/inputs/cube.kcl");
 const MATH_PROGRAM: &str = include_str!("../../tests/executor/inputs/math.kcl");
+const MIKE_STRESS_TEST_PROGRAM: &str = include_str!("../../tests/executor/inputs/mike_stress_test.kcl");

@@ -986,6 +986,17 @@ impl CallExpression {
         })
     }
 
+    /// Is at least one argument the '%' i.e. the substitution operator?
+    pub fn has_substitution_arg(&self) -> bool {
+        self.arguments
+            .iter()
+            .any(|arg| matches!(arg, Value::PipeSubstitution(_)))
+    }
+
+    pub fn as_source_ranges(&self) -> Vec<SourceRange> {
+        vec![SourceRange([self.start, self.end])]
+    }
+
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
         for arg in &mut self.arguments {
             arg.replace_value(source_range, new_value.clone());
@@ -2742,6 +2753,12 @@ async fn execute_pipe_body(
             pipe_info.is_in_pipe = true;
             pipe_info.body = body.to_vec();
             call_expression.execute(memory, pipe_info, ctx).await
+        }
+        Value::Identifier(identifier) => {
+            let result = memory.get(&identifier.name, identifier.into())?;
+            pipe_info.previous_results.push(result.clone());
+            pipe_info.index += 1;
+            execute_pipe_body(memory, body, pipe_info, source_range, ctx).await
         }
         _ => {
             // Return an error this should not happen.
