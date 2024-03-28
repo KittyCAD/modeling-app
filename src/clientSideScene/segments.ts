@@ -133,17 +133,23 @@ export function straightSegment({
   group.add(mesh)
   if (callExpName !== 'close') group.add(arrowGroup)
 
-  const mat = new MeshBasicMaterial({ color: 0xffffff })
-  const sphereMesh = new Mesh(new SphereGeometry(0.02 * scale, 12, 12), mat)
+  const mat = new MeshBasicMaterial({
+    color: 0xffffff,
+    transparent: true,
+    opacity: 0,
+  })
+  const sphereMesh = new Mesh(new SphereGeometry(0.03 * scale, 12, 12), mat)
 
   const extraSegmentGroup = new Group()
   extraSegmentGroup.userData.type = EXTRA_SEGMENT_HANDLE
   extraSegmentGroup.name = EXTRA_SEGMENT_HANDLE
   extraSegmentGroup.add(sphereMesh)
-
+  const offsetFromBase = new Vector2(to[0] - from[0], to[1] - from[1])
+    .normalize()
+    .multiplyScalar(1.2 * scale)
   extraSegmentGroup.position.set(
-    from[0] + 0.08 * (to[0] - from[0]),
-    from[1] + 0.08 * (to[1] - from[1]),
+    from[0] + offsetFromBase.x,
+    from[1] + offsetFromBase.y,
     0
   )
   extraSegmentGroup.scale.set(scale, scale, scale)

@@ -15,7 +15,6 @@ import {
   Quaternion,
   Scene,
   Shape,
-  SphereGeometry,
   Vector2,
   Vector3,
 } from 'three'
@@ -944,9 +943,12 @@ export class SceneEntities {
 
     const extraSegmentGroup = group.getObjectByName(EXTRA_SEGMENT_HANDLE)
     if (extraSegmentGroup) {
+      const offsetFromBase = new Vector2(to[0] - from[0], to[1] - from[1])
+        .normalize()
+        .multiplyScalar(1.2 * scale)
       extraSegmentGroup.position.set(
-        from[0] + 0.08 * (to[0] - from[0]),
-        from[1] + 0.08 * (to[1] - from[1]),
+        from[0] + offsetFromBase.x,
+        from[1] + offsetFromBase.y,
         0
       )
       extraSegmentGroup.scale.set(scale, scale, scale)
@@ -1395,6 +1397,14 @@ function mouseEnterLeaveCallbacks() {
         sceneInfra.highlightCallback([node.start, node.end])
         const yellow = 0xffff00
         colorSegment(selected, yellow)
+        const extraSegmentGroup = parent.getObjectByName(EXTRA_SEGMENT_HANDLE)
+        if (extraSegmentGroup) {
+          extraSegmentGroup.traverse((child) => {
+            if (child instanceof Mesh) {
+              child.material.opacity = 1
+            }
+          })
+        }
         return
       }
       sceneInfra.highlightCallback([0, 0])
@@ -1411,6 +1421,14 @@ function mouseEnterLeaveCallbacks() {
         selected,
         isSelected ? 0x0000ff : parent?.userData?.baseColor || 0xffffff
       )
+      const extraSegmentGroup = parent?.getObjectByName(EXTRA_SEGMENT_HANDLE)
+      if (extraSegmentGroup) {
+        extraSegmentGroup.traverse((child) => {
+          if (child instanceof Mesh) {
+            child.material.opacity = 0
+          }
+        })
+      }
       if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
         const obj = selected as Mesh
         const mat = obj.material as MeshBasicMaterial
