@@ -462,11 +462,23 @@ function enterEditMode(
   ) as SketchGroup | ExtrudeGroup
   firstSketchOrExtrudeGroup &&
     engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'edit_mode_enter',
-        target: firstSketchOrExtrudeGroup.id,
-      },
+      type: 'modeling_cmd_batch_req',
+      batch_id: uuidv4(),
+      requests: [
+        {
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'edit_mode_enter',
+            target: firstSketchOrExtrudeGroup.id,
+          },
+        },
+        {
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'set_selection_filter',
+            filter: ['face', 'edge', 'solid2d'],
+          },
+        },
+      ],
     })
 }
