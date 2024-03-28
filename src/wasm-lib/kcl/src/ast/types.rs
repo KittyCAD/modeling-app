@@ -2661,8 +2661,8 @@ async fn execute_pipe_body(
     // they use the % from the parent. After all, this pipe expression hasn't been executed yet, so it doesn't have any % value
     // of its own.
     let output = match first {
-        Value::BinaryExpression(binary_expression) => binary_expression.get_result(memory, &pipe_info, ctx).await?,
-        Value::CallExpression(call_expression) => call_expression.execute(memory, &pipe_info, ctx).await?,
+        Value::BinaryExpression(binary_expression) => binary_expression.get_result(memory, pipe_info, ctx).await?,
+        Value::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, ctx).await?,
         Value::Identifier(identifier) => memory.get(&identifier.name, identifier.into())?.clone(),
         _ => {
             // Return an error this should not happen.
