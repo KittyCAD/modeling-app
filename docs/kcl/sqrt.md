@@ -12,6 +12,10 @@ Computes the square root of a number.
 sqrt(num: number) -> number
 ```
 
+### Tags
+
+* `math`
+
 ### Examples
 
 ```js

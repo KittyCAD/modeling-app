@@ -139,7 +139,7 @@ fn pipe_expression(i: TokenSlice) -> PResult<PipeExpression> {
     let mut values = vec![head];
     let value_surrounded_by_comments = (
         repeat(0.., preceded(opt(whitespace), non_code_node)), // Before the value
-        preceded(opt(whitespace), value_allowed_in_pipe_expr), // The value
+        preceded(opt(whitespace), fn_call),                    // The value
         repeat(0.., noncode_just_after_code),                  // After the value
     );
     let tail: Vec<(Vec<_>, _, Vec<_>)> = repeat(
@@ -151,7 +151,23 @@ fn pipe_expression(i: TokenSlice) -> PResult<PipeExpression> {
     ))
     .parse_next(i)?;
 
-    // All child parsers have been run. Time to structure the return value.
+    // All child parsers have been run.
+    // First, ensure they all have a % in their args.
+    let calls_without_substitution = tail.iter().find_map(|(_nc, call_expr, _nc2)| {
+        if !call_expr.has_substitution_arg() {
+            Some(call_expr.as_source_ranges())
+        } else {
+            None
+        }
+    });
+    if let Some(source_ranges) = calls_without_substitution {
+        let err = KclError::Syntax(KclErrorDetails {
+            source_ranges,
+            message: "All expressions in a pipeline must use the % (substitution operator)".to_owned(),
+        });
+        return Err(ErrMode::Cut(err.into()));
+    }
+    // Time to structure the return value.
     let mut code_count = 0;
     let mut max_noncode_end = 0;
     for (noncode_before, code, noncode_after) in tail {
@@ -159,7 +175,7 @@ fn pipe_expression(i: TokenSlice) -> PResult<PipeExpression> {
             max_noncode_end = nc.end.max(max_noncode_end);
             non_code_meta.insert(code_count, nc);
         }
-        values.push(code);
+        values.push(Value::CallExpression(Box::new(code)));
         code_count += 1;
         for nc in noncode_after {
             max_noncode_end = nc.end.max(max_noncode_end);
@@ -1561,7 +1577,7 @@ const mySk1 = startSketchAt([0, 0])"#;
     #[test]
     fn inline_comment_pipe_expression() {
         let test_input = r#"a('XY')
-        |> b()
+        |> b(%)
         |> c(%) // inline-comment
         |> d(%)"#;
 
@@ -1778,10 +1794,10 @@ const mySk1 = startSketchAt([0, 0])"#;
     #[test]
     fn some_pipe_expr() {
         let test_program = r#"x()
-        |> y() /* this is
+        |> y(%) /* this is
         a comment
         spanning a few lines */
-        |> z()"#;
+        |> z(%)"#;
         let tokens = crate::token::lexer(test_program);
         let actual = pipe_expression.parse(&tokens).unwrap();
         let n = actual.non_code_meta.non_code_nodes.len();
@@ -1795,17 +1811,17 @@ const mySk1 = startSketchAt([0, 0])"#;
     fn comments_in_pipe_expr() {
         for (i, test_program) in [
             r#"y() |> /*hi*/ z(%)"#,
-            "1 |>/*hi*/  f",
+            "1 |>/*hi*/ f(%)",
             r#"y() |> /*hi*/ z(%)"#,
-            "1 /*hi*/ |> f",
+            "1 /*hi*/ |> f(%)",
             "1
         // Hi
-        |> f",
+        |> f(%)",
             "1
         /* Hi 
         there
         */
-        |> f",
+        |> f(%)",
         ]
         .into_iter()
         .enumerate()
@@ -2814,6 +2830,17 @@ let myBox = box([0,0], -3, -16, -10)
         let parser = crate::parser::Parser::new(tokens);
         parser.ast().unwrap();
     }
+    #[test]
+    fn must_use_percent_in_pipeline_fn() {
+        let some_program_string = r#"
+        foo()
+            |> bar(2)
+        "#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let err = parser.ast().unwrap_err();
+        println!("{err}")
+    }
 }
 
 #[cfg(test)]
@@ -2864,7 +2891,7 @@ mod snapshot_tests {
                 let tokens = crate::token::lexer($test_kcl_program);
                 let actual = match program.parse(&tokens) {
                     Ok(x) => x,
-                    Err(_e) => panic!("could not parse test"),
+                    Err(e) => panic!("could not parse test: {e:?}"),
                 };
                 insta::assert_json_snapshot!(actual);
             }
@@ -2972,7 +2999,7 @@ mod snapshot_tests {
         "const mySketch = startSketchAt([0,0]) |> lineTo([1, 1], %) |> close(%)"
     );
     snapshot_test!(ah, "const myBox = startSketchAt(p)");
-    snapshot_test!(ai, r#"const myBox = f(1) |> g(2)"#);
+    snapshot_test!(ai, r#"const myBox = f(1) |> g(2, %)"#);
     snapshot_test!(aj, r#"const myBox = startSketchAt(p) |> line([0, l], %)"#);
     snapshot_test!(ak, "lineTo({ to: [0, 1] })");
     snapshot_test!(al, "lineTo({ to: [0, 1], from: [3, 3] })");

@@ -12,6 +12,10 @@ Return the value of `tau`. The full circle constant (τ). Equal to 2π.
 tau() -> number
 ```
 
+### Tags
+
+* `math`
+
 ### Examples
 
 ```js

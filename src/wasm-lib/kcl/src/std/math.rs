@@ -18,13 +18,14 @@ pub async fn cos(args: Args) -> Result<MemoryItem, KclError> {
     args.make_user_val_from_f64(result)
 }
 
-/// Computes the sine of a number (in radians).
+/// Computes the cosine of a number (in radians).
 ///
 /// ```no_run
 /// const anotherVar = cos(2*pi())
 /// ```
 #[stdlib {
     name = "cos",
+    tags = ["math"],
 }]
 fn inner_cos(num: f64) -> Result<f64, KclError> {
     Ok(num.cos())
@@ -45,6 +46,7 @@ pub async fn sin(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "sin",
+    tags = ["math"],
 }]
 fn inner_sin(num: f64) -> Result<f64, KclError> {
     Ok(num.sin())
@@ -65,6 +67,7 @@ pub async fn tan(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "tan",
+    tags = ["math"],
 }]
 fn inner_tan(num: f64) -> Result<f64, KclError> {
     Ok(num.tan())
@@ -84,6 +87,7 @@ pub async fn pi(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "pi",
+    tags = ["math"],
 }]
 fn inner_pi() -> Result<f64, KclError> {
     Ok(std::f64::consts::PI)
@@ -104,6 +108,7 @@ pub async fn sqrt(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "sqrt",
+    tags = ["math"],
 }]
 fn inner_sqrt(num: f64) -> Result<f64, KclError> {
     Ok(num.sqrt())
@@ -124,6 +129,7 @@ pub async fn abs(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "abs",
+    tags = ["math"],
 }]
 fn inner_abs(num: f64) -> Result<f64, KclError> {
     Ok(num.abs())
@@ -144,6 +150,7 @@ pub async fn floor(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "floor",
+    tags = ["math"],
 }]
 fn inner_floor(num: f64) -> Result<f64, KclError> {
     Ok(num.floor())
@@ -164,6 +171,7 @@ pub async fn ceil(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "ceil",
+    tags = ["math"],
 }]
 fn inner_ceil(num: f64) -> Result<f64, KclError> {
     Ok(num.ceil())
@@ -184,6 +192,7 @@ pub async fn min(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "min",
+    tags = ["math"],
 }]
 fn inner_min(args: Vec<f64>) -> f64 {
     let mut min = std::f64::MAX;
@@ -211,6 +220,7 @@ pub async fn max(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "max",
+    tags = ["math"],
 }]
 fn inner_max(args: Vec<f64>) -> f64 {
     let mut max = std::f64::MAX;
@@ -252,6 +262,7 @@ pub async fn pow(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "pow",
+    tags = ["math"],
 }]
 fn inner_pow(num: f64, pow: f64) -> Result<f64, KclError> {
     Ok(num.powf(pow))
@@ -272,6 +283,7 @@ pub async fn acos(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "acos",
+    tags = ["math"],
 }]
 fn inner_acos(num: f64) -> Result<f64, KclError> {
     Ok(num.acos())
@@ -292,6 +304,7 @@ pub async fn asin(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "asin",
+    tags = ["math"],
 }]
 fn inner_asin(num: f64) -> Result<f64, KclError> {
     Ok(num.asin())
@@ -312,6 +325,7 @@ pub async fn atan(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "atan",
+    tags = ["math"],
 }]
 fn inner_atan(num: f64) -> Result<f64, KclError> {
     Ok(num.atan())
@@ -353,6 +367,7 @@ pub async fn log(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "log",
+    tags = ["math"],
 }]
 fn inner_log(num: f64, base: f64) -> Result<f64, KclError> {
     Ok(num.log(base))
@@ -373,6 +388,7 @@ pub async fn log2(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "log2",
+    tags = ["math"],
 }]
 fn inner_log2(num: f64) -> Result<f64, KclError> {
     Ok(num.log2())
@@ -393,6 +409,7 @@ pub async fn log10(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "log10",
+    tags = ["math"],
 }]
 fn inner_log10(num: f64) -> Result<f64, KclError> {
     Ok(num.log10())
@@ -413,6 +430,7 @@ pub async fn ln(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "ln",
+    tags = ["math"],
 }]
 fn inner_ln(num: f64) -> Result<f64, KclError> {
     Ok(num.ln())
@@ -432,6 +450,7 @@ pub async fn e(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "e",
+    tags = ["math"],
 }]
 fn inner_e() -> Result<f64, KclError> {
     Ok(std::f64::consts::E)
@@ -451,6 +470,7 @@ pub async fn tau(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "tau",
+    tags = ["math"],
 }]
 fn inner_tau() -> Result<f64, KclError> {
     Ok(std::f64::consts::TAU)
@@ -471,6 +491,7 @@ pub async fn to_radians(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "toRadians",
+    tags = ["math"],
 }]
 fn inner_to_radians(num: f64) -> Result<f64, KclError> {
     Ok(num.to_radians())
@@ -491,6 +512,7 @@ pub async fn to_degrees(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "toDegrees",
+    tags = ["math"],
 }]
 fn inner_to_degrees(num: f64) -> Result<f64, KclError> {
     Ok(num.to_degrees())

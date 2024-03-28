@@ -13,8 +13,8 @@ keywords = ["kcl", "KittyCAD", "CAD"]
 [dependencies]
 anyhow = { version = "1.0.81", features = ["backtrace"] }
 async-recursion = "1.1.0"
-async-trait = "0.1.78"
-chrono = "0.4.35"
+async-trait = "0.1.79"
+chrono = "0.4.37"
 clap = { version = "4.5.3", features = ["cargo", "derive", "env", "unicode"], optional = true }
 dashmap = "5.5.3"
 databake = { version = "0.1.7", features = ["derive"] }
@@ -32,7 +32,7 @@ reqwest = { version = "0.11.26", default-features = false, features = ["stream",
 ropey = "1.6.1"
 schemars = { version = "0.8.16", features = ["impl_json_schema", "url", "uuid1"] }
 serde = { version = "1.0.197", features = ["derive"] }
-serde_json = "1.0.114"
+serde_json = "1.0.115"
 sha2 = "0.10.8"
 thiserror = "1.0.58"
 ts-rs = { version = "7.1.1", features = ["uuid-impl"] }
@@ -67,12 +67,16 @@ debug = true
 debug = true # Flamegraphs of benchmarks require accurate debug symbols
 
 [dev-dependencies]
+base64 = "0.22.0"
+convert_case = "0.6.0"
 criterion = "0.5.1"
 expectorate = "1.1.0"
-insta = { version = "1.36.1", features = ["json"] }
+image = "0.24.9"
+insta = { version = "1.37.0", features = ["json"] }
 itertools = "0.12.1"
 pretty_assertions = "1.4.0"
 tokio = { version = "1.36.0", features = ["rt-multi-thread", "macros", "time"] }
+twenty-twenty = "0.7.0"
 
 [[bench]]
 name = "compiler_benchmark"

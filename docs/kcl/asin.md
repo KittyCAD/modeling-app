@@ -12,6 +12,10 @@ Computes the arcsine of a number (in radians).
 asin(num: number) -> number
 ```
 
+### Tags
+
+* `math`
+
 ### Examples
 
 ```js
