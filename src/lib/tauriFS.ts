@@ -381,7 +381,7 @@ function getPaddedIdentifierRegExp() {
 
 export async function getSettingsFilePath() {
   const dir = await appConfigDir()
-  return dir + SETTINGS_FILE_NAME
+  return await join(dir, SETTINGS_FILE_NAME)
 }
 
 export async function writeToSettingsFile(
@@ -397,7 +397,7 @@ export async function readSettingsFile(): Promise<ContextFrom<
   typeof settingsMachine
 > | null> {
   const dir = await appConfigDir()
-  const path = dir + SETTINGS_FILE_NAME
+  const path = await join(dir, SETTINGS_FILE_NAME)
   const dirExists = await exists(dir)
   if (!dirExists) {
     await mkdir(dir, { recursive: true })
