@@ -18,6 +18,8 @@ import {
   Intersection,
   Object3D,
   Object3DEventMap,
+  TextureLoader,
+  Texture,
 } from 'three'
 import { compareVec2Epsilon2 } from 'lang/std/sketch'
 import { useModelingContext } from 'hooks/useModelingContext'
@@ -54,6 +56,7 @@ export const ARROWHEAD = 'arrowhead'
 
 export interface OnMouseEnterLeaveArgs {
   selected: Object3D<Object3DEventMap>
+  dragSelected?: Object3D<Object3DEventMap>
   mouseEvent: MouseEvent
 }
 
@@ -98,6 +101,7 @@ export class SceneInfra {
   isFovAnimationInProgress = false
   _baseUnit: BaseUnit = 'mm'
   _baseUnitMultiplier = 1
+  extraSegmentTexture: Texture
   onDragStartCallback: (arg: OnDragCallbackArgs) => void = () => {}
   onDragEndCallback: (arg: OnDragCallbackArgs) => void = () => {}
   onDragCallback: (arg: OnDragCallbackArgs) => void = () => {}
@@ -219,6 +223,13 @@ export class SceneInfra {
 
     const light = new AmbientLight(0x505050) // soft white light
     this.scene.add(light)
+
+    const textureLoader = new TextureLoader()
+    this.extraSegmentTexture = textureLoader.load(
+      '/clientSideSceneAssets/extra-segment-texture.png'
+    )
+    this.extraSegmentTexture.anisotropy =
+      this.renderer.capabilities.getMaxAnisotropy()
 
     SceneInfra.instance = this
   }
@@ -368,6 +379,7 @@ export class SceneInfra {
         this.hoveredObject = firstIntersectObject
         this.onMouseEnter({
           selected: this.hoveredObject,
+          dragSelected: this.selected?.object,
           mouseEvent: mouseEvent,
         })
       }
@@ -375,6 +387,7 @@ export class SceneInfra {
       if (this.hoveredObject) {
         this.onMouseLeave({
           selected: this.hoveredObject,
+          dragSelected: this.selected?.object,
           mouseEvent: mouseEvent,
         })
         this.hoveredObject = null

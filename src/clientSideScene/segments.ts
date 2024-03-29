@@ -12,8 +12,11 @@ import {
   Mesh,
   MeshBasicMaterial,
   NormalBufferAttributes,
+  Points,
+  PointsMaterial,
   Shape,
   SphereGeometry,
+  Texture,
   Vector2,
   Vector3,
 } from 'three'
@@ -72,6 +75,7 @@ export function straightSegment({
   isDraftSegment,
   scale = 1,
   callExpName,
+  texture,
 }: {
   from: Coords2d
   to: Coords2d
@@ -80,6 +84,7 @@ export function straightSegment({
   isDraftSegment?: boolean
   scale?: number
   callExpName: string
+  texture: Texture
 }): Group {
   const group = new Group()
 
@@ -133,16 +138,30 @@ export function straightSegment({
   group.add(mesh)
   if (callExpName !== 'close') group.add(arrowGroup)
 
-  const mat = new MeshBasicMaterial({
-    color: 0xffffff,
+  const particleMaterial = new PointsMaterial({
+    size: 16,
+    map: texture,
     transparent: true,
     opacity: 0,
   })
-  const sphereMesh = new Mesh(new SphereGeometry(0.03 * scale, 12, 12), mat)
+  const mat = new MeshBasicMaterial({
+    transparent: true,
+    color: 0xff0000,
+    opacity: 0,
+  })
+  const particleGeometry = new BufferGeometry().setFromPoints([
+    new Vector3(0, 0, 0),
+  ])
+  const particle = new Points(particleGeometry, particleMaterial)
+  particle.userData.ignoreColorChange = true
+  particle.userData.type = EXTRA_SEGMENT_HANDLE
+  const sphereMesh = new Mesh(new SphereGeometry(0.55, 12, 12), mat)
+  sphereMesh.userData.ignoreColorChange = true
 
   const extraSegmentGroup = new Group()
   extraSegmentGroup.userData.type = EXTRA_SEGMENT_HANDLE
   extraSegmentGroup.name = EXTRA_SEGMENT_HANDLE
+  extraSegmentGroup.add(particle)
   extraSegmentGroup.add(sphereMesh)
   const offsetFromBase = new Vector2(to[0] - from[0], to[1] - from[1])
     .normalize()

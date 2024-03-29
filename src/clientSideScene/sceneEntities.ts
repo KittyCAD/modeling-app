@@ -12,6 +12,7 @@ import {
   OrthographicCamera,
   PerspectiveCamera,
   PlaneGeometry,
+  Points,
   Quaternion,
   Scene,
   Shape,
@@ -393,6 +394,7 @@ export class SceneEntities {
           isDraftSegment,
           scale: factor,
           callExpName,
+          texture: sceneInfra.extraSegmentTexture,
         })
       }
       seg.layers.set(SKETCH_LAYER)
@@ -1271,7 +1273,7 @@ function colorSegment(object: any, color: number) {
   ])
   if (straightSegmentBody) {
     straightSegmentBody.traverse((child) => {
-      if (child instanceof Mesh) {
+      if (child instanceof Mesh && !child.userData.ignoreColorChange) {
         child.material.color.set(color)
       }
     })
@@ -1375,7 +1377,7 @@ function massageFormats(a: any): Vector3 {
 
 function mouseEnterLeaveCallbacks() {
   return {
-    onMouseEnter: ({ selected }: OnMouseEnterLeaveArgs) => {
+    onMouseEnter: ({ selected, dragSelected }: OnMouseEnterLeaveArgs) => {
       if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
         const obj = selected as Mesh
         const mat = obj.material as MeshBasicMaterial
@@ -1400,8 +1402,8 @@ function mouseEnterLeaveCallbacks() {
         const extraSegmentGroup = parent.getObjectByName(EXTRA_SEGMENT_HANDLE)
         if (extraSegmentGroup) {
           extraSegmentGroup.traverse((child) => {
-            if (child instanceof Mesh) {
-              child.material.opacity = 1
+            if (child instanceof Points) {
+              child.material.opacity = dragSelected ? 0 : 1
             }
           })
         }
@@ -1424,7 +1426,7 @@ function mouseEnterLeaveCallbacks() {
       const extraSegmentGroup = parent?.getObjectByName(EXTRA_SEGMENT_HANDLE)
       if (extraSegmentGroup) {
         extraSegmentGroup.traverse((child) => {
-          if (child instanceof Mesh) {
+          if (child instanceof Points) {
             child.material.opacity = 0
           }
         })
