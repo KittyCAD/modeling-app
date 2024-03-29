@@ -4,7 +4,7 @@ import { getUtils } from './test-utils'
 import { Models } from '@kittycad/lib'
 import fsp from 'fs/promises'
 import { spawn } from 'child_process'
-import { APP_NAME, SETTINGS_FILE_NAME } from 'lib/constants'
+import { APP_NAME, SETTINGS_FILE_EXT } from 'lib/constants'
 import JSZip from 'jszip'
 import path from 'path'
 import { basicSettings } from './storageStates'
@@ -514,7 +514,7 @@ test.describe('Client side scene scale should match engine scale', () => {
   test('Millimeters', async ({ page, context }) => {
     await context.addInitScript(async () => {
       localStorage.setItem(
-        '/' + SETTINGS_FILE_NAME,
+        '/' + SETTINGS_FILE_EXT,
         JSON.stringify(
           Object.assign({}, basicSettings, {
             modeling: {

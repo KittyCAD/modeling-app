@@ -8,13 +8,20 @@ import { SaveSettingsPayload, SettingsLevel } from './settingsTypes'
 import { isTauri } from 'lib/isTauri'
 import { removeFile, writeTextFile } from '@tauri-apps/api/fs'
 import { exists } from 'tauri-plugin-fs-extra-api'
+import * as TOML from '@iarna/toml'
 
+/**
+ * We expect the settings to be stored in a TOML file
+ * or TOML-formatted string in localStorage
+ * under a top-level [settings] key.
+ * @param path
+ * @returns
+ */
 function getSettingsFromStorage(path: string) {
   return isTauri()
     ? readSettingsFile(path)
-    : (JSON.parse(
-        localStorage.getItem(path) ?? '{}'
-      ) as Partial<SaveSettingsPayload>)
+    : (TOML.parse(localStorage.getItem(path) ?? '')
+        .settings as Partial<SaveSettingsPayload>)
 }
 
 export async function loadAndValidateSettings(projectPath?: string) {
@@ -22,6 +29,8 @@ export async function loadAndValidateSettings(projectPath?: string) {
   settings.app.projectDirectory.default = await getInitialDefaultDir()
   // First, get the settings data at the user and project level
   const settingsFilePaths = await getSettingsFilePaths(projectPath)
+
+  console.log('settingsFilePaths', settingsFilePaths)
 
   // Load the settings from the files
   if (settingsFilePaths.user) {
@@ -69,16 +78,19 @@ export async function saveSettings(
 
 async function writeOrClearPersistedSettings(
   settingsFilePath: string,
-  changedSettings: typeof settings
+  changedSettings: Partial<SaveSettingsPayload>
 ) {
   if (changedSettings && Object.keys(changedSettings).length) {
     if (isTauri()) {
       await writeTextFile(
         settingsFilePath,
-        JSON.stringify(changedSettings, null, 2)
+        TOML.stringify({ settings: changedSettings })
       )
     }
-    localStorage.setItem(settingsFilePath, JSON.stringify(changedSettings))
+    localStorage.setItem(
+      settingsFilePath,
+      TOML.stringify({ settings: changedSettings })
+    )
   } else {
     if (isTauri() && (await exists(settingsFilePath))) {
       await removeFile(settingsFilePath)
@@ -90,7 +102,7 @@ async function writeOrClearPersistedSettings(
 export function getChangedSettingsAtLevel(
   allSettings: typeof settings,
   level: SettingsLevel
-) {
+): Partial<SaveSettingsPayload> {
   const changedSettings = {} as Record<
     keyof typeof settings,
     Record<string, unknown>
@@ -118,7 +130,7 @@ export function getChangedSettingsAtLevel(
     )
   })
 
-  return changedSettings as typeof settings
+  return changedSettings
 }
 
 export function setSettingsAtLevel(

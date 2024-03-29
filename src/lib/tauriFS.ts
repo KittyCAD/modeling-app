@@ -17,9 +17,10 @@ import {
   PROJECT_ENTRYPOINT,
   PROJECT_FOLDER,
   RELEVANT_FILE_TYPES,
-  SETTINGS_FILE_NAME,
+  SETTINGS_FILE_EXT,
 } from 'lib/constants'
 import { SaveSettingsPayload, SettingsLevel } from './settings/settingsTypes'
+import * as TOML from '@iarna/toml'
 
 type PathWithPossibleError = {
   path: string | null
@@ -367,7 +368,7 @@ function getPaddedIdentifierRegExp() {
 }
 
 export async function getUserSettingsFilePath(
-  filename: string = SETTINGS_FILE_NAME
+  filename: string = SETTINGS_FILE_EXT
 ) {
   const dir = await appConfigDir()
   return dir + filename
@@ -392,7 +393,8 @@ export async function readSettingsFile(
 
   try {
     const settings = await readTextFile(path)
-    return JSON.parse(settings)
+    // We expect the settings to be under a top-level [settings] key
+    return TOML.parse(settings).settings as Partial<SaveSettingsPayload>
   } catch (e) {
     console.error('Error reading settings file:', e)
     return {}
@@ -405,10 +407,10 @@ export async function getSettingsFilePaths(
   const { user, project } = await getSettingsFolderPaths(projectPath)
 
   return {
-    user: user + SETTINGS_FILE_NAME,
+    user: user + 'user' + SETTINGS_FILE_EXT,
     project:
       project !== undefined
-        ? project + (isTauri() ? sep : '/') + SETTINGS_FILE_NAME
+        ? project + (isTauri() ? sep : '/') + 'project' + SETTINGS_FILE_EXT
         : undefined,
   }
 }

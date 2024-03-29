@@ -12,7 +12,6 @@ import {
   cameraMouseDragGuards,
   cameraSystems,
 } from 'lib/cameraControls'
-import { PROJECT_ENTRYPOINT } from 'lib/constants'
 import { isTauri } from 'lib/isTauri'
 import { useRef } from 'react'
 import { open } from '@tauri-apps/api/dialog'
