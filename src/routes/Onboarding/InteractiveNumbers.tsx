@@ -32,13 +32,20 @@ export default function InteractiveNumbers() {
             natural to you. Let's try something out that demonstrates this
             principle, by editing numbers without typing.
           </p>
+          <ol className="pl-6 my-4 list-decimal">
+            <li className="list-decimal">
+              Press and hold the <kbd className={kbdClasses}>Alt</kbd> (or{' '}
+              <kbd className={kbdClasses}>Option</kbd>) key
+            </li>
+            <li>
+              Hover over the number assigned to <code>width</code> on line{' '}
+              {bracketWidthConstantLine}
+            </li>
+            <li>Drag the number left and right to change its value</li>
+          </ol>
           <p className="my-4">
-            Hover over the number assigned to <code>width</code> on line{' '}
-            {bracketWidthConstantLine}. Now, while holding the{' '}
-            <kbd className={kbdClasses}>Alt</kbd> (or{' '}
-            <kbd className={kbdClasses}>Option</kbd>) key, drag the number left
-            and right. You can hold down different modifier keys to change the
-            value by different increments:
+            You can hold down different modifier keys to change the value by
+            different increments:
           </p>
           <ul className="flex flex-col text-sm my-4 mx-12 divide-y divide-chalkboard-20 dark:divide-chalkboard-70">
             <li className="flex justify-between m-0 px-0 py-2">
