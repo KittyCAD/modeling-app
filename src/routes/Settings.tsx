@@ -173,9 +173,7 @@ export const Settings = () => {
                           ?.querySelector(`#category-${category}`)
                           ?.scrollIntoView({
                             block: 'nearest',
-                            behavior: context.modeling.reduceMotion.current
-                              ? 'instant'
-                              : 'smooth',
+                            behavior: 'smooth',
                           })
                       }
                       className="capitalize text-left border-none px-1"
@@ -189,9 +187,7 @@ export const Settings = () => {
                       ?.querySelector(`#settings-resets`)
                       ?.scrollIntoView({
                         block: 'nearest',
-                        behavior: context.modeling.reduceMotion.current
-                          ? 'instant'
-                          : 'smooth',
+                        behavior: 'smooth',
                       })
                   }
                   className="capitalize text-left border-none px-1"
@@ -204,9 +200,7 @@ export const Settings = () => {
                       ?.querySelector(`#settings-about`)
                       ?.scrollIntoView({
                         block: 'nearest',
-                        behavior: context.modeling.reduceMotion.current
-                          ? 'instant'
-                          : 'smooth',
+                        behavior: 'smooth',
                       })
                   }
                   className="capitalize text-left border-none px-1"

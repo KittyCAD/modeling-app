@@ -278,29 +278,31 @@ export function createSettings() {
         },
       }),
       /**
+       * TODO: This setting is not yet implemented.
        * Whether to turn off animations and other motion effects
        */
-      reduceMotion: new Setting<boolean>({
-        defaultValue: false,
-        description: 'Whether to turn off animations and other motion effects',
-        validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
-        },
-        hideOnLevel: 'project',
-      }),
+      // reduceMotion: new Setting<boolean>({
+      //   defaultValue: false,
+      //   description: 'Whether to turn off animations and other motion effects',
+      //   validate: (v) => typeof v === 'boolean',
+      //   commandConfig: {
+      //     inputType: 'boolean',
+      //   },
+      //   hideOnLevel: 'project',
+      // }),
       /**
+       * TODO: This setting is not yet implemented.
        * Whether to move to view the sketch plane orthogonally
        * when creating entering or creating a sketch.
        */
-      moveOrthoginalToSketch: new Setting<boolean>({
-        defaultValue: false,
-        description: 'Whether to move to view sketch planes orthogonally',
-        validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
-        },
-      }),
+      // moveOrthoginalToSketch: new Setting<boolean>({
+      //   defaultValue: false,
+      //   description: 'Whether to move to view sketch planes orthogonally',
+      //   validate: (v) => typeof v === 'boolean',
+      //   commandConfig: {
+      //     inputType: 'boolean',
+      //   },
+      // }),
     },
     /**
      * Settings that affect the behavior of the KCL text editor.
@@ -339,19 +341,22 @@ export function createSettings() {
         hideOnLevel: 'project',
       }),
       /**
+       * TODO: This setting is not yet implemented.
+       * It requires more sophisticated fallback logic if the user sets this setting to a
+       * non-existent file. This setting is currently hardcoded to PROJECT_ENTRYPOINT.
        * The default file to open when a project is loaded
        */
-      entryPointFileName: new Setting<string>({
-        defaultValue: PROJECT_ENTRYPOINT,
-        description: 'The default file to open when a project is loaded',
-        validate: (v) => typeof v === 'string' && v.length > 0,
-        commandConfig: {
-          inputType: 'string',
-          defaultValueFromContext: (context) =>
-            context.projects.entryPointFileName.current,
-        },
-        hideOnLevel: 'project',
-      }),
+      // entryPointFileName: new Setting<string>({
+      //   defaultValue: PROJECT_ENTRYPOINT,
+      //   description: 'The default file to open when a project is loaded',
+      //   validate: (v) => typeof v === 'string' && v.length > 0,
+      //   commandConfig: {
+      //     inputType: 'string',
+      //     defaultValueFromContext: (context) =>
+      //       context.projects.entryPointFileName.current,
+      //   },
+      //   hideOnLevel: 'project',
+      // }),
     },
     /**
      * Settings that affect the behavior of the command bar.
