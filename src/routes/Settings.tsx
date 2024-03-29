@@ -125,6 +125,7 @@ export const Settings = () => {
               <button
                 onClick={close}
                 className="p-0 m-0 focus:ring-0 focus:outline-none border-none hover:bg-destroy-10 focus:bg-destroy-10 dark:hover:bg-destroy-80/50 dark:focus:bg-destroy-80/50"
+                data-testid="settings-close-button"  
               >
                 <CustomIcon name="close" className="w-5 h-5" />
               </button>
@@ -526,12 +527,14 @@ function GeneratedSetting({
               : setting.getFallback(settingsLevel)
           )}
           name={`${category}-${settingName}`}
+          data-testid={`${category}-${settingName}`}
         />
       )
     case 'options':
       return (
         <select
           name={`${category}-${settingName}`}
+          data-testid={`${category}-${settingName}`}
           className="p-1 bg-transparent border rounded-sm border-chalkboard-30 w-full"
           value={String(
             setting[settingsLevel] || setting.getFallback(settingsLevel)
@@ -559,6 +562,7 @@ function GeneratedSetting({
       return (
         <input
           name={`${category}-${settingName}`}
+          data-testid={`${category}-${settingName}`}
           type="text"
           className="p-1 bg-transparent border rounded-sm border-chalkboard-30 w-full"
           defaultValue={String(
