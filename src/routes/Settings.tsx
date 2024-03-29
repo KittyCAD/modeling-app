@@ -568,15 +568,21 @@ function GeneratedSetting({
           defaultValue={String(
             setting[settingsLevel] || setting.getFallback(settingsLevel)
           )}
-          onBlur={(e) =>
-            send({
-              type: `set.${category}.${settingName}`,
-              data: {
-                level: settingsLevel,
-                value: e.target.value,
-              },
-            } as unknown as Event<WildcardSetEvent>)
-          }
+          onBlur={(e) => {
+            if (
+              setting[settingsLevel] === undefined
+                ? setting.getFallback(settingsLevel) !== e.target.value
+                : setting[settingsLevel] !== e.target.value
+            ) {
+              send({
+                type: `set.${category}.${settingName}`,
+                data: {
+                  level: settingsLevel,
+                  value: e.target.value,
+                },
+              } as unknown as Event<WildcardSetEvent>)
+            }
+          }}
         />
       )
   }
