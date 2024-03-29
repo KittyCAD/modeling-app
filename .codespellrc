@@ -1,3 +1,3 @@
 [codespell]
-ignore-words-list: crate,everytime,inout,co-ordinate,ot,nwo,absolutey,AtLeast
+ignore-words-list: crate,everytime,inout,co-ordinate,ot,nwo,absolutey,atleast
 skip: **/target,node_modules,build,**/Cargo.lock,./docs/kcl/*.md
