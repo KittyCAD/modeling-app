@@ -30,9 +30,15 @@ export default function Sketching() {
         <h1 className="text-2xl font-bold">Sketching</h1>
         <p className="my-4">
           Our 3D modeling tools are still very much a work in progress, but we
-          want to show you some early features. Try creating a sketch by
-          clicking Create Sketch in the top toolbar, then clicking the Line
-          tool, and clicking in the 3D view.
+          want to show you some early features. Try sketching by clicking Start
+          Sketch in the top toolbar and selecting a plane to draw on. Now you
+          can start clicking to draw lines and shapes.
+        </p>
+        <p className="my-4">
+          The Line tool will be equipped by default, but you can switch it to as
+          you go by clicking another tool in the toolbar, or unequip it by
+          clicking the Line tool button. With no tool selected, you can move
+          points and add constraints to your sketch.
         </p>
         <p className="my-4">
           Watch the code pane as you click. Point-and-click interactions are
