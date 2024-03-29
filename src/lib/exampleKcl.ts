@@ -34,15 +34,28 @@ const bracket = startSketchOn('XY')
   |> fillet({
        radius: filletR + thickness,
        tags: [getNextAdjacentEdge('outerEdge', %)]
-     }, %)
-`
-export const bracketWidthConstantLine =
-  bracket.split('\n').findIndex((line) => line.includes('const width')) + 1
-export const bracketThicknessCalculationLine =
-  bracket.split('\n').findIndex((line) => line.includes('const thickness')) + 1
+     }, %)`
 
-if (bracketWidthConstantLine === 0 || bracketThicknessCalculationLine === 0) {
-  throw new Error(
-    'Could not find the width constant in the example bracket code. Was it renamed?'
-  )
+function findLineInExampleCode({
+  searchText,
+  example = bracket,
+}: {
+  searchText: string
+  example?: string
+}) {
+  const lines = example.split('\n')
+  const lineNumber = lines.findIndex((l) => l.includes(searchText)) + 1
+  if (lineNumber === 0) {
+    throw new Error(
+      `Could not find the line with search text "${searchText}" in the example code. Was it removed?`
+    )
+  }
+  return lineNumber
 }
+
+export const bracketWidthConstantLine = findLineInExampleCode({
+  searchText: 'const width',
+})
+export const bracketThicknessCalculationLine = findLineInExampleCode({
+  searchText: 'const thickness',
+})
