@@ -36,3 +36,10 @@ const bracket = startSketchOn('XY')
        tags: [getNextAdjacentEdge('outerEdge', %)]
      }, %)
 `
+export const bracketWidthConstantLine = bracket.split('\n').findIndex((line) => line.includes('const width')) + 1
+export const bracketThicknessCalculationLine = bracket.split('\n').findIndex((line) => line.includes('const thickness')) + 1
+
+
+if (bracketWidthConstantLine === 0 || bracketThicknessCalculationLine === 0) {
+  throw new Error('Could not find the width constant in the example bracket code. Was it renamed?')
+}

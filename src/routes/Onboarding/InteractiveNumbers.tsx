@@ -2,6 +2,7 @@ import { OnboardingButtons, kbdClasses, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useStore } from '../../useStore'
 import { useBackdropHighlight } from 'hooks/useBackdropHighlight'
+import { bracketWidthConstantLine } from 'lib/exampleKcl'
 
 export default function InteractiveNumbers() {
   const { buttonDownInStream } = useStore((s) => ({
@@ -26,7 +27,7 @@ export default function InteractiveNumbers() {
           <h2 className="text-3xl font-bold">Hybrid editing</h2>
 
           <p className="my-4">
-            Try changing the value of <code>width</code> on line 2 by holding
+            Try changing the value of <code>width</code> on line {bracketWidthConstantLine + 1} by holding
             the <kbd className={kbdClasses}>Alt</kbd> (or{' '}
             <kbd className={kbdClasses}>Option</kbd>) key and dragging the
             number left and right. You can hold down different modifier keys to
