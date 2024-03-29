@@ -35,6 +35,8 @@ interface addCall extends ModifyAstBase {
   referencedSegment?: Path
   replaceExisting?: boolean
   createCallback?: TransformCallback // TODO: #29 probably should not be optional
+  /// defaults to false, normal behavior  is to add a new callExpression to the end of the pipeExpression
+  spliceBetween?: boolean
 }
 
 interface updateArgs extends ModifyAstBase {

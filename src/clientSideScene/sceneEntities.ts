@@ -296,7 +296,7 @@ export class SceneEntities {
     })
     const sketchGroup = sketchGroupFromPathToNode({
       pathToNode: sketchPathToNode,
-      ast: kclManager.ast,
+      ast: maybeModdedAst,
       programMemory,
     })
     if (!Array.isArray(sketchGroup?.value))
@@ -475,15 +475,15 @@ export class SceneEntities {
 
     const index = sg.value.length // because we've added a new segment that's not in the memory yet, no need for `-1`
 
-    let modifiedAst = addNewSketchLn({
-      node: kclManager.ast,
+    const mod = addNewSketchLn({
+      node: _ast,
       programMemory: kclManager.programMemory,
       to: [lastSeg.to[0], lastSeg.to[1]],
       from: [lastSeg.to[0], lastSeg.to[1]],
       fnName: segmentName,
       pathToNode: sketchPathToNode,
-    }).modifiedAst
-    modifiedAst = parse(recast(modifiedAst))
+    })
+    const modifiedAst = parse(recast(mod.modifiedAst))
 
     const draftExpressionsIndices = { start: index, end: index }
 
@@ -615,7 +615,7 @@ export class SceneEntities {
           const pipeIndex = pathToNode[pathToNodeIndex + 1][0] as number
           if (addingNewSegmentStatus === 'nothing') {
             const prevSegment = sketchGroup.value[pipeIndex - 2]
-            const yo = addNewSketchLn({
+            const mod = addNewSketchLn({
               node: kclManager.ast,
               programMemory: kclManager.programMemory,
               to: [intersectionPoint.twoD.x, intersectionPoint.twoD.y],
@@ -625,9 +625,10 @@ export class SceneEntities {
                   ? 'tangentialArcTo'
                   : 'line',
               pathToNode: pathToNode,
+              spliceBetween: true,
             })
             addingNewSegmentStatus = 'pending'
-            await kclManager.executeAstMock(yo.modifiedAst, {
+            await kclManager.executeAstMock(mod.modifiedAst, {
               updates: 'code',
             })
             await this.tearDownSketch({ removeAxis: false })

@@ -162,6 +162,7 @@ export const line: SketchLineHelper = {
     replaceExisting,
     referencedSegment,
     createCallback,
+    spliceBetween,
   }) => {
     const _node = { ...node }
     const { node: pipe } = getNodeFromPath<PipeExpression | CallExpression>(
@@ -169,27 +170,11 @@ export const line: SketchLineHelper = {
       pathToNode,
       'PipeExpression'
     )
-    const { node: callExpression } = getNodeFromPath<
-      PipeExpression | CallExpression
-    >(_node, pathToNode, 'CallExpression')
-    const { node: varDec } = getNodeFromPath<VariableDeclarator>(
-      _node,
-      pathToNode,
-      'VariableDeclarator'
-    )
 
     const newXVal = createLiteral(roundOff(to[0] - from[0], 2))
     const newYVal = createLiteral(roundOff(to[1] - from[1], 2))
 
-    const isAddingSegmentBetween =
-      callExpression.type === 'CallExpression' &&
-      callExpression.start >= pipe.start &&
-      callExpression.end <= pipe.end
-    if (
-      isAddingSegmentBetween &&
-      !createCallback &&
-      pipe.type === 'PipeExpression'
-    ) {
+    if (spliceBetween && !createCallback && pipe.type === 'PipeExpression') {
       const callExp = createCallExpression('line', [
         createArrayExpression([newXVal, newYVal]),
         createPipeSubstitution(),
@@ -1089,6 +1074,7 @@ interface CreateLineFnCallArgs {
   from: [number, number]
   fnName: ToolTip
   pathToNode: PathToNode
+  spliceBetween?: boolean
 }
 
 export function addNewSketchLn({
@@ -1098,6 +1084,7 @@ export function addNewSketchLn({
   fnName,
   pathToNode,
   from,
+  spliceBetween = false,
 }: CreateLineFnCallArgs): {
   modifiedAst: Program
   pathToNode: PathToNode
@@ -1118,6 +1105,7 @@ export function addNewSketchLn({
     to,
     from,
     replaceExisting: false,
+    spliceBetween,
   })
 }
 

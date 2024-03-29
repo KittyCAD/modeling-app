@@ -229,7 +229,7 @@ export class SceneInfra {
       '/clientSideSceneAssets/extra-segment-texture.png'
     )
     this.extraSegmentTexture.anisotropy =
-      this.renderer.capabilities.getMaxAnisotropy()
+      this.renderer?.capabilities?.getMaxAnisotropy?.()
 
     SceneInfra.instance = this
   }
