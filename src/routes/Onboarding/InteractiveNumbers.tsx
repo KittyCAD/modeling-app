@@ -27,8 +27,9 @@ export default function InteractiveNumbers() {
           <h2 className="text-3xl font-bold">Hybrid editing</h2>
 
           <p className="my-4">
-            Try changing the value of <code>width</code> on line {bracketWidthConstantLine + 1} by holding
-            the <kbd className={kbdClasses}>Alt</kbd> (or{' '}
+            Try changing the value of <code>width</code> on line{' '}
+            {bracketWidthConstantLine + 1} by holding the{' '}
+            <kbd className={kbdClasses}>Alt</kbd> (or{' '}
             <kbd className={kbdClasses}>Option</kbd>) key and dragging the
             number left and right. You can hold down different modifier keys to
             change the value by different increments:
