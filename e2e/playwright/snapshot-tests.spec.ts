@@ -7,7 +7,7 @@ import { spawn } from 'child_process'
 import { APP_NAME, SETTINGS_FILE_EXT } from 'lib/constants'
 import JSZip from 'jszip'
 import path from 'path'
-import { basicSettings } from './storageStates'
+import { basicSettings, basicStorageState } from './storageStates'
 
 test.beforeEach(async ({ page }) => {
   // reducedMotion kills animations, which speeds up tests and reduces flakiness
@@ -511,19 +511,15 @@ test.describe('Client side scene scale should match engine scale', () => {
     })
   })
 
-  test('Millimeters', async ({ page, context }) => {
-    await context.addInitScript(async () => {
-      localStorage.setItem(
-        '/' + SETTINGS_FILE_EXT,
-        JSON.stringify(
-          Object.assign({}, basicSettings, {
-            modeling: {
-              defaultUnit: 'mm',
-            },
-          })
-        )
-      )
-    })
+  // Override test setup
+  // with millimeters as the default unit
+  const storageState = structuredClone(basicStorageState)
+  const s = structuredClone(basicSettings)
+  s.modeling.defaultUnit = 'mm'
+  storageState.origins[0].localStorage[2].value = JSON.stringify(s)
+  test.use({ storageState })
+
+  test('Millimeters', async ({ page }) => {
     const u = getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
