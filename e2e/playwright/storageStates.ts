@@ -1,5 +1,24 @@
 import { secrets } from './secrets'
 
+export const basicSettings = {
+  app: {
+    theme: 'dark',
+    onboardingStatus: 'dismissed',
+    projectDirectory: '',
+  },
+  modeling: {
+    defaultUnit: 'in',
+    mouseControls: 'KittyCAD',
+    showDebugPanel: true,
+  },
+  projects: {
+    defaultProjectName: 'project-$nnn',
+  },
+  textEditor: {
+    textWrapping: true,
+  },
+}
+
 export const basicStorageState = {
   cookies: [],
   origins: [
@@ -10,24 +29,7 @@ export const basicStorageState = {
         { name: 'persistCode', value: '' },
         {
           name: '/settings.json',
-          value: JSON.stringify({
-            app: {
-              theme: 'dark',
-              onboardingStatus: 'dismissed',
-              projectDirectory: '',
-            },
-            modeling: {
-              defaultUnit: 'in',
-              mouseControls: 'KittyCAD',
-              showDebugPanel: true,
-            },
-            projects: {
-              defaultProjectName: 'project-$nnn',
-            },
-            textEditor: {
-              textWrapping: true,
-            },
-          }),
+          value: JSON.stringify(basicSettings),
         },
       ],
     },
