@@ -4,7 +4,7 @@ import { getUtils } from './test-utils'
 import { Models } from '@kittycad/lib'
 import fsp from 'fs/promises'
 import { spawn } from 'child_process'
-import { APP_NAME, SETTINGS_FILE_EXT } from 'lib/constants'
+import { APP_NAME } from 'lib/constants'
 import JSZip from 'jszip'
 import path from 'path'
 import { basicSettings, basicStorageState } from './storageStates'
@@ -14,6 +14,10 @@ test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
 })
 
+test.use({
+  /* Use a common shared localStorage */
+  storageState: basicStorageState,
+})
 test.setTimeout(60_000)
 
 test('exports of each format should work', async ({ page, context }) => {
