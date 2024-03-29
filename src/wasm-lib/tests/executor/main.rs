@@ -111,6 +111,15 @@ const part002 = startSketchOn(part001, "here")
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face.png", &result, 0.999);
 }
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_riddle_small() {
+    let code = include_str!("inputs/riddle_small.kcl");
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/riddle_small.png", &result, 0.999);
+}
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_sketch_on_face_start() {
@@ -140,6 +149,15 @@ const part002 = startSketchOn(part001, "start")
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_start.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_mike_stress_lines() {
+    let code = include_str!("inputs/mike_stress_test.kcl");
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/mike_stress_test.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -493,7 +511,7 @@ async fn serial_test_execute_i_shape() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-#[ignore] // ignore until more stack fixes
+#[ignore] // No longer a stack overflow problem, instead it causes an engine internal error.
 async fn serial_test_execute_pipes_on_pipes() {
     let code = include_str!("inputs/pipes_on_pipes.kcl");
 
@@ -514,7 +532,6 @@ async fn serial_test_execute_cylinder() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-#[ignore = "currently stack overflows"]
 async fn serial_test_execute_kittycad_svg() {
     let code = include_str!("inputs/kittycad_svg.kcl");
 
@@ -1830,4 +1847,67 @@ const part002 = startSketchOn(part001, 'end')
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/simple_revolve_sketch_on_edge.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_plumbus_fillets() {
+    let code = r#"fn make_circle = (face, tag, pos, radius) => {
+  const sg = startSketchOn(face, tag)
+  |> startProfileAt([pos[0] + radius, pos[1]], %)
+  |> arc({
+       angle_end: 360,
+       angle_start: 0,
+       radius: radius
+     }, %, 'arc-' + tag)
+  |> close(%)
+
+  return sg
+}
+
+fn pentagon = (len) => {
+  const sg = startSketchOn('XY')
+  |> startProfileAt([-len / 2, -len / 2], %)
+  |> angledLine({ angle: 0, length: len }, %, 'a')
+  |> angledLine({
+       angle: segAng('a', %) + 180 - 108,
+       length: len
+     }, %, 'b')
+  |> angledLine({
+       angle: segAng('b', %) + 180 - 108,
+       length: len
+     }, %, 'c')
+  |> angledLine({
+       angle: segAng('c', %) + 180 - 108,
+       length: len
+     }, %, 'd')
+  |> angledLine({
+       angle: segAng('d', %) + 180 - 108,
+       length: len
+     }, %)
+
+  return sg
+}
+
+const p = pentagon(8)
+  |> extrude(5, %)
+
+const plumbus0 = make_circle(p, 'a', [0, 0], 1.5)
+  |> extrude(3, %)
+  |> fillet({
+       radius: 0.5,
+       tags: ['arc-a', getOppositeEdge('arc-a', %)]
+     }, %)
+
+const plumbus1 = make_circle(p, 'b', [0, 0], 1.5)
+  |> extrude(3, %)
+  |> fillet({
+       radius: 0.5,
+       tags: ['arc-b', getOppositeEdge('arc-b', %)]
+     }, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/plumbus_fillets.png", &result, 1.0);
 }
