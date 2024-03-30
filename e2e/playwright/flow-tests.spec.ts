@@ -1470,9 +1470,13 @@ test('Sketch on face', async ({ page, context }) => {
   await page.getByText('startProfileAt([1.03, 1.03], %)').click()
   await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
   await page.getByRole('button', { name: 'Edit Sketch' }).click()
+  await page.setViewportSize({ width: 1200, height: 1200 })
+  await u.openAndClearDebugPanel()
+  await u.updateCamPosition([452, -152, 1166])
+  await u.closeDebugPanel()
   await page.waitForTimeout(200)
 
-  const pointToDragFirst = [691, 237]
+  const pointToDragFirst = [787, 565]
   await page.mouse.move(pointToDragFirst[0], pointToDragFirst[1])
   await page.mouse.down()
   await page.mouse.move(pointToDragFirst[0] - 20, pointToDragFirst[1], {
@@ -1486,7 +1490,7 @@ test('Sketch on face', async ({ page, context }) => {
   await expect(page.locator('.cm-content'))
     .toContainText(`const part002 = startSketchOn(part001, 'seg01')
 |> startProfileAt([1.03, 1.03], %)
-|> line([2.81, -0.33], %)
+|> line([2.93, -0.2], %)
 |> line([-4.44, -2.13], %)
 |> close(%)`)
 
@@ -1509,7 +1513,7 @@ test('Sketch on face', async ({ page, context }) => {
   await expect(page.locator('.cm-content'))
     .toContainText(`const part002 = startSketchOn(part001, 'seg01')
 |> startProfileAt([1.03, 1.03], %)
-|> line([2.81, -0.33], %)
+|> line([2.93, -0.2], %)
 |> line([-4.44, -2.13], %)
 |> close(%)
 |> extrude(5 + 7, %)`)
