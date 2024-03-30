@@ -111,14 +111,32 @@ const part002 = startSketchOn(part001, "here")
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face.png", &result, 0.999);
 }
+
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_riddle_small() {
     let code = include_str!("inputs/riddle_small.kcl");
-
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/riddle_small.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_pentagon_fillet_desugar() {
+    let code = include_str!("inputs/pentagon_fillet_desugar.kcl");
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Cm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/pentagon_fillet_desugar.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_pentagon_fillet_sugar() {
+    let code = include_str!("inputs/pentagon_fillet_sugar.kcl");
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Cm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/pentagon_fillet_sugar.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
