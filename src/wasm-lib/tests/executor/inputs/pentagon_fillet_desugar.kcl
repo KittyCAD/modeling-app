@@ -31,11 +31,11 @@ fn pentagon = (len) => {
      }, sg8)
 }
 
-const p = pentagon(8)
-const pe = extrude(5, p)
+const p = pentagon(48)
+const pe = extrude(30, p)
 
-const plumbus0 = make_circle(pe, 'a', [0, 0], 1.5)
-const plumbus1 = extrude(3, plumbus0)
+const plumbus0 = make_circle(pe, 'a', [0, 0], 9)
+const plumbus1 = extrude(18, plumbus0)
 const plumbus2 = fillet({
        radius: 0.5,
        tags: ['arc-a', getOppositeEdge('arc-a', plumbus1)]
