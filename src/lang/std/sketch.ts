@@ -170,6 +170,11 @@ export const line: SketchLineHelper = {
       pathToNode,
       'PipeExpression'
     )
+    const { node: varDec } = getNodeFromPath<VariableDeclarator>(
+      _node,
+      pathToNode,
+      'VariableDeclarator'
+    )
 
     const newXVal = createLiteral(roundOff(to[0] - from[0], 2))
     const newYVal = createLiteral(roundOff(to[1] - from[1], 2))
