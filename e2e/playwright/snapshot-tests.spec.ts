@@ -16,6 +16,10 @@ test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
 })
 
+test.use({
+  storageState: basicStorageState,
+})
+
 test.setTimeout(60_000)
 
 test('exports of each format should work', async ({ page, context }) => {
@@ -430,6 +434,10 @@ test('Draft segments should look right', async ({ page, context }) => {
 })
 
 test.describe('Client side scene scale should match engine scale', () => {
+  test.use({
+    storageState: basicStorageState,
+  })
+
   test('Inch', async ({ page }) => {
     const u = getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
