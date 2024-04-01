@@ -8,6 +8,8 @@ import { APP_NAME } from 'lib/constants'
 import JSZip from 'jszip'
 import path from 'path'
 import { basicSettings, basicStorageState } from './storageStates'
+import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
+import * as TOML from '@iarna/toml'
 
 test.beforeEach(async ({ page }) => {
   // reducedMotion kills animations, which speeds up tests and reduces flakiness
@@ -514,9 +516,11 @@ test.describe('Client side scene scale should match engine scale', () => {
   // Override test setup
   // with millimeters as the default unit
   const storageState = structuredClone(basicStorageState)
-  const s = structuredClone(basicSettings)
+  const s = structuredClone(basicSettings) as SaveSettingsPayload
   s.modeling.defaultUnit = 'mm'
-  storageState.origins[0].localStorage[2].value = JSON.stringify(s)
+  storageState.origins[0].localStorage[2].value = TOML.stringify({
+    settings: s,
+  })
   test.use({ storageState })
 
   test('Millimeters', async ({ page }) => {
