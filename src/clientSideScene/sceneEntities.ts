@@ -393,6 +393,7 @@ export class SceneEntities {
           pathToNode: segPathToNode,
           isDraftSegment,
           scale: factor,
+          texture: sceneInfra.extraSegmentTexture,
         })
       } else {
         seg = straightSegment({

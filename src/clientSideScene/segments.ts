@@ -24,6 +24,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { PathToNode, SketchGroup, getTangentialArcToInfo } from 'lang/wasm'
 import {
   EXTRA_SEGMENT_HANDLE,
+  MIN_SEGMENT_LENGTH,
   PROFILE_START,
   STRAIGHT_SEGMENT,
   STRAIGHT_SEGMENT_BODY,
@@ -34,6 +35,7 @@ import {
 } from './sceneEntities'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import { ARROWHEAD } from './sceneInfra'
+import { getPxLength } from './helpers'
 
 export function profileStart({
   from,
@@ -128,16 +130,53 @@ export function straightSegment({
   }
   group.name = STRAIGHT_SEGMENT
 
+  const length = Math.sqrt(
+    Math.pow(to[0] - from[0], 2) + Math.pow(to[1] - from[1], 2)
+  )
   const arrowGroup = createArrowhead(scale)
   arrowGroup.position.set(to[0], to[1], 0)
   const dir = new Vector3()
     .subVectors(new Vector3(to[0], to[1], 0), new Vector3(from[0], from[1], 0))
     .normalize()
   arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
+  const pxLength = getPxLength(scale, length)
+  const shouldHide = pxLength < MIN_SEGMENT_LENGTH
+  arrowGroup.visible = !shouldHide
 
   group.add(mesh)
   if (callExpName !== 'close') group.add(arrowGroup)
 
+  const extraSegmentGroup = createExtraSegmentHandle(scale, texture)
+  const offsetFromBase = new Vector2(to[0] - from[0], to[1] - from[1])
+    .normalize()
+    .multiplyScalar(1.2 * scale)
+  extraSegmentGroup.position.set(
+    from[0] + offsetFromBase.x,
+    from[1] + offsetFromBase.y,
+    0
+  )
+  extraSegmentGroup.visible = !shouldHide
+  group.add(extraSegmentGroup)
+
+  return group
+}
+
+function createArrowhead(scale = 1): Group {
+  const arrowMaterial = new MeshBasicMaterial({ color: 0xffffff })
+  const arrowheadMesh = new Mesh(new ConeGeometry(0.31, 1.5, 12), arrowMaterial)
+  arrowheadMesh.position.set(0, -0.6, 0)
+  const sphereMesh = new Mesh(new SphereGeometry(0.27, 12, 12), arrowMaterial)
+
+  const arrowGroup = new Group()
+  arrowGroup.userData.type = ARROWHEAD
+  arrowGroup.name = ARROWHEAD
+  arrowGroup.add(arrowheadMesh, sphereMesh)
+  arrowGroup.lookAt(new Vector3(0, 1, 0))
+  arrowGroup.scale.set(scale, scale, scale)
+  return arrowGroup
+}
+
+function createExtraSegmentHandle(scale: number, texture: Texture): Group {
   const particleMaterial = new PointsMaterial({
     size: 16,
     map: texture,
@@ -163,33 +202,8 @@ export function straightSegment({
   extraSegmentGroup.name = EXTRA_SEGMENT_HANDLE
   extraSegmentGroup.add(particle)
   extraSegmentGroup.add(sphereMesh)
-  const offsetFromBase = new Vector2(to[0] - from[0], to[1] - from[1])
-    .normalize()
-    .multiplyScalar(1.2 * scale)
-  extraSegmentGroup.position.set(
-    from[0] + offsetFromBase.x,
-    from[1] + offsetFromBase.y,
-    0
-  )
   extraSegmentGroup.scale.set(scale, scale, scale)
-  group.add(extraSegmentGroup)
-
-  return group
-}
-
-function createArrowhead(scale = 1): Group {
-  const arrowMaterial = new MeshBasicMaterial({ color: 0xffffff })
-  const arrowheadMesh = new Mesh(new ConeGeometry(0.31, 1.5, 12), arrowMaterial)
-  arrowheadMesh.position.set(0, -0.6, 0)
-  const sphereMesh = new Mesh(new SphereGeometry(0.27, 12, 12), arrowMaterial)
-
-  const arrowGroup = new Group()
-  arrowGroup.userData.type = ARROWHEAD
-  arrowGroup.name = ARROWHEAD
-  arrowGroup.add(arrowheadMesh, sphereMesh)
-  arrowGroup.lookAt(new Vector3(0, 1, 0))
-  arrowGroup.scale.set(scale, scale, scale)
-  return arrowGroup
+  return extraSegmentGroup
 }
 
 export function tangentialArcToSegment({
@@ -200,6 +214,7 @@ export function tangentialArcToSegment({
   pathToNode,
   isDraftSegment,
   scale = 1,
+  texture,
 }: {
   prevSegment: SketchGroup['value'][number]
   from: Coords2d
@@ -208,6 +223,7 @@ export function tangentialArcToSegment({
   pathToNode: PathToNode
   isDraftSegment?: boolean
   scale?: number
+  texture: Texture
 }): Group {
   const group = new Group()
 
@@ -220,12 +236,13 @@ export function tangentialArcToSegment({
         )
       : prevSegment.from
 
-  const { center, radius, startAngle, endAngle, ccw } = getTangentialArcToInfo({
-    arcStartPoint: from,
-    arcEndPoint: to,
-    tanPreviousPoint: previousPoint,
-    obtuse: true,
-  })
+  const { center, radius, startAngle, endAngle, ccw, arcLength } =
+    getTangentialArcToInfo({
+      arcStartPoint: from,
+      arcEndPoint: to,
+      tanPreviousPoint: previousPoint,
+      obtuse: true,
+    })
 
   const geometry = createArcGeometry({
     center,
@@ -261,6 +278,22 @@ export function tangentialArcToSegment({
     new Vector3(0, 1, 0),
     new Vector3(Math.cos(arrowheadAngle), Math.sin(arrowheadAngle), 0)
   )
+  const pxLength = getPxLength(scale, arcLength)
+  const shouldHide = pxLength < MIN_SEGMENT_LENGTH
+  arrowGroup.visible = !shouldHide
+
+  const extraSegmentGroup = createExtraSegmentHandle(scale, texture)
+  const offsetFromBase = new Vector2(to[0] - from[0], to[1] - from[1])
+    .normalize()
+    .multiplyScalar(1.2 * scale)
+
+  // TODO figure out placement for arc
+  // extraSegmentGroup.position.set(
+  //   from[0] + offsetFromBase.x,
+  //   from[1] + offsetFromBase.y,
+  //   0
+  // )
+  extraSegmentGroup.visible = false // TODO set to true once we figure out above placement
 
   group.add(mesh, arrowGroup)
 
