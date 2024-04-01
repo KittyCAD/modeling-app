@@ -151,6 +151,11 @@ pub(crate) async fn do_post_extrude(
 
     // If we were sketching on a face, we need the original face id.
     if let SketchSurface::Face(face) = sketch_group.on {
+        // TODO: Remove this log.
+        eprintln!(
+            "Sketching on a face tagged {} (ID {}), which is part of SketchGroup {}, looking for edge {edge_id}",
+            face.value, face.id, face.sketch_group_id
+        );
         sketch_group.id = face.sketch_group_id;
     }
 

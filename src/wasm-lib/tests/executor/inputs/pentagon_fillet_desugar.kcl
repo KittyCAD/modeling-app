@@ -40,3 +40,9 @@ const plumbus2 = fillet({
        radius: 0.5,
        tags: ['arc-a', getOppositeEdge('arc-a', plumbus1)]
      }, plumbus1)
+const plumbus3 = make_circle(pe, 'b', [0, 0], 9)
+const plumbus4 = extrude(18, plumbus3)
+const plumbus5 = fillet({
+       radius: 0.5,
+       tags: ['arc-b', getOppositeEdge('arc-b', plumbus4)]
+     }, plumbus4)
