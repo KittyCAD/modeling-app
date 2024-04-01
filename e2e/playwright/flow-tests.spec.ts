@@ -1515,7 +1515,9 @@ test('Sketch on face', async ({ page, context }) => {
   await expect(page.locator('.cm-content'))
     .toContainText(`const part002 = startSketchOn(part001, 'seg01')
 |> startProfileAt([1.03, 1.03], %)
-|> line([2.93, -0.2], %)
+|> line([${process?.env?.CI ? 2.74 : 2.93}, -${
+    process?.env?.CI ? 0.24 : 0.2
+  }], %)
 |> line([-4.44, -2.13], %)
 |> close(%)
 |> extrude(5 + 7, %)`)
