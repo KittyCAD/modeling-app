@@ -313,9 +313,10 @@ export const Settings = () => {
                       <ActionButton
                         Element="button"
                         onClick={async () => {
-                          console.log('projectPath', projectPath)
                           const paths = await getSettingsFolderPaths(
                             projectPath
+                              ? decodeURIComponent(projectPath)
+                              : undefined
                           )
                           void invoke('show_in_folder', {
                             path: paths[settingsLevel],
@@ -333,9 +334,6 @@ export const Settings = () => {
                     <ActionButton
                       Element="button"
                       onClick={async () => {
-                        // We have to re-call initializeProjectDirectory
-                        // since we can't set that in the settings machine's
-                        // initial context due to it being async
                         send({
                           type: 'Reset settings',
                         })
