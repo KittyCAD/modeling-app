@@ -208,7 +208,7 @@ export function App() {
         </div>
       </Resizable>
       <Stream className="absolute inset-0 z-0" />
-      {showDebugPanel && (
+      {showDebugPanel.current && (
         <DebugPanel
           title="Debug"
           className={
