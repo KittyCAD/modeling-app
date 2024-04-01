@@ -98,23 +98,23 @@ export const settingsMachine = createMachine(
             type: 'set.modeling.units'
             data: { level: SettingsLevel; value: BaseUnit }
           }
-        | { type: 'Reset settings' }
+        | { type: 'Reset settings', defaultDirectory: string }
         | { type: 'Set all settings'; settings: typeof settings },
     },
   },
   {
     actions: {
-      resetSettings: assign((context) => {
+      resetSettings: assign((context, { defaultDirectory }) => {
         // Reset everything except onboarding status,
         // which should be preserved
-        const onboardingStatus = context.app.onboardingStatus
-        return {
-          ...createSettings(),
-          app: {
-            ...createSettings().app,
-            onboardingStatus,
-          },
+        const newSettings = createSettings()
+        if (context.app.onboardingStatus.user) {
+          newSettings.app.onboardingStatus.user = context.app.onboardingStatus.user
         }
+        newSettings.app.projectDirectory.default = defaultDirectory
+
+        console.log('new app settings', newSettings)
+        return newSettings
       }),
       setAllSettings: assign((_, event) => {
         return event.settings

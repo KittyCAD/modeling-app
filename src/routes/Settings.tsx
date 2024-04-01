@@ -12,6 +12,7 @@ import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
 import {
   createNewProject,
+  getInitialDefaultDir,
   getNextProjectIndex,
   getProjectsInDir,
   getSettingsFolderPaths,
@@ -334,8 +335,10 @@ export const Settings = () => {
                     <ActionButton
                       Element="button"
                       onClick={async () => {
+                        const defaultDirectory = await getInitialDefaultDir()
                         send({
                           type: 'Reset settings',
+                          defaultDirectory,
                         })
                         toast.success('Settings restored to default')
                       }}
