@@ -240,7 +240,7 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          TAURI_ARGS_RELEASE: "--config src-tauri/tauri.release.conf.json"
+          TAURI_ARGS_RELEASE: ""
         with:
           args: "--verbose ${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }} ${{ env.TAURI_ARGS_RELEASE }}"
 
