@@ -994,9 +994,8 @@ impl ExecutorContext {
     }
 }
 
-/// Execute a AST's program.
-#[async_recursion(?Send)]
-pub async fn execute(
+/// Execute an AST's program.
+pub async fn execute_outer(
     program: crate::ast::types::Program,
     memory: &mut ProgramMemory,
     _options: BodyType,
@@ -1013,7 +1012,17 @@ pub async fn execute(
             },
         )
         .await?;
+    execute(program, memory, _options, ctx).await
+}
 
+/// Execute an AST's program.
+#[async_recursion(?Send)]
+pub(crate) async fn execute(
+    program: crate::ast::types::Program,
+    memory: &mut ProgramMemory,
+    _options: BodyType,
+    ctx: &ExecutorContext,
+) -> Result<ProgramMemory, KclError> {
     let pipe_info = PipeInfo::default();
 
     // Iterate over the body of the program.
@@ -1299,7 +1308,7 @@ mod tests {
             units: kittycad::types::UnitLength::Mm,
             is_mock: false,
         };
-        let memory = execute(program, &mut mem, BodyType::Root, &ctx).await?;
+        let memory = execute_outer(program, &mut mem, BodyType::Root, &ctx).await?;
 
         Ok(memory)
     }
