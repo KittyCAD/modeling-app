@@ -41,7 +41,7 @@ pub async fn execute_wasm(
         is_mock,
     };
 
-    let memory = kcl_lib::executor::execute(program, &mut mem, kcl_lib::executor::BodyType::Root, &ctx)
+    let memory = kcl_lib::executor::execute_outer(program, &mut mem, kcl_lib::executor::BodyType::Root, &ctx)
         .await
         .map_err(String::from)?;
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
