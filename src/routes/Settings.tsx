@@ -31,6 +31,7 @@ import { Event } from 'xstate'
 import { Dialog, RadioGroup, Transition } from '@headlessui/react'
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
+import { shouldHideSetting } from 'lib/settings/settingsUtils'
 
 export const Settings = () => {
   const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
@@ -163,7 +164,8 @@ export const Settings = () => {
                   .filter(([_, categorySettings]) =>
                     // Filter out categories that don't have any non-hidden settings
                     Object.values(categorySettings).some(
-                      (c: Setting) => c.hideOnLevel !== settingsLevel
+                      (setting: Setting) =>
+                        !shouldHideSetting(setting, settingsLevel)
                     )
                   )
                   .map(([category]) => (
@@ -217,11 +219,7 @@ export const Settings = () => {
                   .filter(([_, categorySettings]) =>
                     // Filter out categories that don't have any non-hidden settings
                     Object.values(categorySettings).some(
-                      (c: Setting) =>
-                        c.hideOnLevel !== settingsLevel &&
-                        (!c.hideOnPlatform || isTauri()
-                          ? c.hideOnPlatform !== 'desktop'
-                          : c.hideOnPlatform !== 'web')
+                      (setting) => !shouldHideSetting(setting, settingsLevel)
                     )
                   )
                   .map(([category, categorySettings]) => (
@@ -235,12 +233,9 @@ export const Settings = () => {
                       {Object.entries(categorySettings)
                         .filter(
                           // Filter out settings that don't have a Component or inputType
-                          // or are hidden on the current level
+                          // or are hidden on the current level or the current platform
                           (item: [string, Setting<unknown>]) =>
-                            item[1].hideOnLevel !== settingsLevel &&
-                            (!item[1].hideOnPlatform || isTauri()
-                              ? item[1].hideOnPlatform !== 'desktop'
-                              : item[1].hideOnPlatform !== 'web') &&
+                            !shouldHideSetting(item[1], settingsLevel) &&
                             (item[1].Component ||
                               item[1].commandConfig?.inputType)
                         )

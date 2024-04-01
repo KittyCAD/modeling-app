@@ -153,3 +153,20 @@ export function setSettingsAtLevel(
 
   return allSettings
 }
+
+/**
+ * Returns true if the setting should be hidden
+ * based on its config, the current settings level,
+ * and the current platform.
+ */
+export function shouldHideSetting(
+  setting: Setting<unknown>,
+  settingsLevel: SettingsLevel
+) {
+  return (
+    setting.hideOnLevel === settingsLevel ||
+    (setting.hideOnPlatform && isTauri()
+      ? setting.hideOnPlatform === 'desktop'
+      : setting.hideOnPlatform === 'web')
+  )
+}
