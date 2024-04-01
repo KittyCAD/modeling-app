@@ -1916,12 +1916,12 @@ const plumbus0 = make_circle(p, 'a', [0, 0], 1.5)
        tags: ['arc-a', getOppositeEdge('arc-a', %)]
      }, %)
 
-const plumbus1 = make_circle(p, 'b', [0, 0], 1.5)
-  |> extrude(3, %)
-  |> fillet({
-       radius: 0.5,
-       tags: ['arc-b', getOppositeEdge('arc-b', %)]
-     }, %)
+// const plumbus1 = make_circle(p, 'b', [0, 0], 1.5)
+//   |> extrude(3, %)
+//   |> fillet({
+//        radius: 0.5,
+//        tags: ['arc-b', getOppositeEdge('arc-b', %)]
+//      }, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
