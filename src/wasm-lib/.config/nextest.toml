@@ -14,12 +14,12 @@ slow-timeout = { period = "30s", terminate-after = 5 }
 [[profile.default.overrides]]
 filter = "test(serial_test_)"
 test-group = "serial-integration"
-threads-required = 4
+threads-required = 2
 
 [[profile.ci.overrides]]
 filter = "test(serial_test_)"
 test-group = "serial-integration"
-threads-required = 4
+threads-required = 2
 
 [[profile.default.overrides]]
 filter = "test(parser::parser_impl::snapshot_tests)"
