@@ -60,7 +60,14 @@ export const settingsMachine = createMachine(
           'Reset settings': {
             target: 'idle',
             internal: true,
-            actions: ['resetSettings', 'persistSettings'],
+            actions: [
+              'resetSettings',
+              'setThemeClass',
+              'setEngineTheme',
+              'setClientSideSceneUnits',
+              'Execute AST',
+              'persistSettings'
+            ],
           },
 
           'Set all settings': {
@@ -97,7 +104,18 @@ export const settingsMachine = createMachine(
   },
   {
     actions: {
-      resetSettings: assign(createSettings()),
+      resetSettings: assign((context) => {
+        // Reset everything except onboarding status,
+        // which should be preserved
+        const onboardingStatus = context.app.onboardingStatus
+        return {
+          ...createSettings(),
+          app: {
+            ...createSettings().app,
+            onboardingStatus,
+          },
+        }
+      }),
       setAllSettings: assign((_, event) => {
         return event.settings
       }),
