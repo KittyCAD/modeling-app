@@ -251,6 +251,7 @@ export function getTangentialArcToInfo({
   startAngle: number
   endAngle: number
   ccw: boolean
+  arcLength: number
 } {
   const result = get_tangential_arc_to_info(
     arcStartPoint[0],
@@ -268,6 +269,7 @@ export function getTangentialArcToInfo({
     startAngle: result.start_angle,
     endAngle: result.end_angle,
     ccw: result.ccw > 0,
+    arcLength: result.arc_length,
   }
 }
 

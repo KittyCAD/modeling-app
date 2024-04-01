@@ -36,7 +36,11 @@ import {
   Y_AXIS,
   YZ_PLANE,
 } from './sceneInfra'
-import { isQuaternionVertical, quaternionFromUpNForward } from './helpers'
+import {
+  getPxLength,
+  isQuaternionVertical,
+  quaternionFromUpNForward,
+} from './helpers'
 import {
   CallExpression,
   getTangentialArcToInfo,
@@ -97,6 +101,7 @@ export const TANGENTIAL_ARC_TO__SEGMENT_DASH =
   'tangential-arc-to-segment-body-dashed'
 export const TANGENTIAL_ARC_TO_SEGMENT = 'tangential-arc-to-segment'
 export const TANGENTIAL_ARC_TO_SEGMENT_BODY = 'tangential-arc-to-segment-body'
+export const MIN_SEGMENT_LENGTH = 60 // in pixels
 
 // This singleton Class is responsible for all of the things the user sees and interacts with.
 // That mostly mean sketch elements.
@@ -856,8 +861,6 @@ export class SceneEntities {
     group.userData.prevSegment = prevSegment
     const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
 
-    arrowGroup.position.set(to[0], to[1], 0)
-
     const previousPoint =
       prevSegment?.type === 'TangentialArcTo'
         ? getTangentPointFromPreviousArc(
@@ -874,13 +877,21 @@ export class SceneEntities {
       obtuse: true,
     })
 
-    const arrowheadAngle =
-      arcInfo.endAngle + (Math.PI / 2) * (arcInfo.ccw ? 1 : -1)
-    arrowGroup.quaternion.setFromUnitVectors(
-      new Vector3(0, 1, 0),
-      new Vector3(Math.cos(arrowheadAngle), Math.sin(arrowheadAngle), 0)
-    )
-    arrowGroup.scale.set(scale, scale, scale)
+    const pxLength = getPxLength(scale, arcInfo.arcLength)
+    const shouldHide = pxLength < MIN_SEGMENT_LENGTH
+
+    if (arrowGroup) {
+      arrowGroup.position.set(to[0], to[1], 0)
+
+      const arrowheadAngle =
+        arcInfo.endAngle + (Math.PI / 2) * (arcInfo.ccw ? 1 : -1)
+      arrowGroup.quaternion.setFromUnitVectors(
+        new Vector3(0, 1, 0),
+        new Vector3(Math.cos(arrowheadAngle), Math.sin(arrowheadAngle), 0)
+      )
+      arrowGroup.scale.set(scale, scale, scale)
+      arrowGroup.visible = !shouldHide
+    }
 
     const tangentialArcToSegmentBody = group.children.find(
       (child) => child.userData.type === TANGENTIAL_ARC_TO_SEGMENT_BODY
@@ -931,6 +942,13 @@ export class SceneEntities {
     shape.lineTo(0, 0.08 * scale) // The width of the line
     const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
 
+    const length = Math.sqrt(
+      Math.pow(to[0] - from[0], 2) + Math.pow(to[1] - from[1], 2)
+    )
+
+    const pxLength = getPxLength(scale, length)
+    const shouldHide = pxLength < MIN_SEGMENT_LENGTH
+
     if (arrowGroup) {
       arrowGroup.position.set(to[0], to[1], 0)
 
@@ -942,6 +960,7 @@ export class SceneEntities {
         .normalize()
       arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
       arrowGroup.scale.set(scale, scale, scale)
+      arrowGroup.visible = !shouldHide
     }
 
     const extraSegmentGroup = group.getObjectByName(EXTRA_SEGMENT_HANDLE)
@@ -955,7 +974,7 @@ export class SceneEntities {
         0
       )
       extraSegmentGroup.scale.set(scale, scale, scale)
-      group.add(extraSegmentGroup)
+      extraSegmentGroup.visible = !shouldHide
     }
 
     const straightSegmentBody = group.children.find(
