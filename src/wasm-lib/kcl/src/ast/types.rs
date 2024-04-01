@@ -2649,8 +2649,8 @@ async fn execute_pipe_body(
     source_range: SourceRange,
     ctx: &ExecutorContext,
 ) -> Result<MemoryItem, KclError> {
-    let mut body_iter = body.iter();
-    let first = body_iter.next().ok_or_else(|| {
+    let mut body = body.iter();
+    let first = body.next().ok_or_else(|| {
         KclError::Semantic(KclErrorDetails {
             message: "Pipe expressions cannot be empty".to_owned(),
             source_ranges: vec![source_range],
