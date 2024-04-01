@@ -517,7 +517,9 @@ test.describe('Settings persistence and validation tests', () => {
   // Override test setup
   // with corrupted settings
   const storageState = structuredClone(basicStorageState)
-  const s = TOML.parse(storageState.origins[0].localStorage[2].value) as { settings: SaveSettingsPayload }
+  const s = TOML.parse(storageState.origins[0].localStorage[2].value) as {
+    settings: SaveSettingsPayload
+  }
   s.settings.app.theme = Themes.Dark
   s.settings.app.projectDirectory = 123 as any
   s.settings.modeling.defaultUnit = 'invalid' as any
@@ -540,7 +542,6 @@ test.describe('Settings persistence and validation tests', () => {
       await page.evaluate(() => localStorage.getItem('/user.toml') || '{}')
     ) as { settings: SaveSettingsPayload }
 
-    console.log('settings', storedSettings)
     expect(storedSettings.settings.app?.theme).toBe('dark')
 
     // Check that the invalid settings were removed
@@ -602,7 +603,9 @@ test.describe('Settings persistence and validation tests', () => {
 test.describe('Onboarding tests', () => {
   // Override test setup
   const storageState = structuredClone(basicStorageState)
-  const s = TOML.parse(storageState.origins[0].localStorage[2].value) as { settings: SaveSettingsPayload }
+  const s = TOML.parse(storageState.origins[0].localStorage[2].value) as {
+    settings: SaveSettingsPayload
+  }
   s.settings.app.onboardingStatus = '/export'
   storageState.origins[0].localStorage[2].value = TOML.stringify(s)
   test.use({ storageState })

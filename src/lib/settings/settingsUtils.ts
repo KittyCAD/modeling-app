@@ -30,8 +30,6 @@ export async function loadAndValidateSettings(projectPath?: string) {
   // First, get the settings data at the user and project level
   const settingsFilePaths = await getSettingsFilePaths(projectPath)
 
-  console.log('settingsFilePaths', settingsFilePaths)
-
   // Load the settings from the files
   if (settingsFilePaths.user) {
     const userSettings = await getSettingsFromStorage(settingsFilePaths.user)
