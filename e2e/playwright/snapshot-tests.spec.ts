@@ -14,10 +14,6 @@ test.beforeEach(async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
 })
 
-test.use({
-  /* Use a common shared localStorage */
-  storageState: basicStorageState,
-})
 test.setTimeout(60_000)
 
 test('exports of each format should work', async ({ page, context }) => {

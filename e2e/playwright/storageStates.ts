@@ -1,8 +1,11 @@
+import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { secrets } from './secrets'
+import * as TOML from '@iarna/toml'
+import { Themes } from 'lib/theme'
 
 export const basicSettings = {
   app: {
-    theme: 'dark',
+    theme: Themes.Dark,
     onboardingStatus: 'dismissed',
     projectDirectory: '',
   },
@@ -17,7 +20,7 @@ export const basicSettings = {
   textEditor: {
     textWrapping: true,
   },
-}
+} satisfies Partial<SaveSettingsPayload>
 
 export const basicStorageState = {
   cookies: [],
@@ -28,8 +31,8 @@ export const basicStorageState = {
         { name: 'TOKEN_PERSIST_KEY', value: secrets.token },
         { name: 'persistCode', value: '' },
         {
-          name: '/settings.json',
-          value: JSON.stringify(basicSettings),
+          name: '/user.toml',
+          value: TOML.stringify({ settings: basicSettings }),
         },
       ],
     },

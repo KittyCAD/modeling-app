@@ -3,6 +3,9 @@ import { getUtils } from './test-utils'
 import waitOn from 'wait-on'
 import { roundOff } from 'lib/utils'
 import { basicStorageState } from './storageStates'
+import * as TOML from '@iarna/toml'
+import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
+import { Themes } from 'lib/theme'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -514,13 +517,13 @@ test.describe('Settings persistence and validation tests', () => {
   // Override test setup
   // with corrupted settings
   const storageState = structuredClone(basicStorageState)
-  const s = JSON.parse(storageState.origins[0].localStorage[2].value)
-  s.app.theme = 'dark'
-  s.app.projectDirectory = 123 as any
-  s.modeling.defaultUnit = 'invalid' as any
-  s.modeling.mouseControls = `() => alert('hack the planet')` as any
-  s.projects.defaultProjectName = false as any
-  storageState.origins[0].localStorage[2].value = JSON.stringify(s)
+  const s = TOML.parse(storageState.origins[0].localStorage[2].value) as { settings: SaveSettingsPayload }
+  s.settings.app.theme = Themes.Dark
+  s.settings.app.projectDirectory = 123 as any
+  s.settings.modeling.defaultUnit = 'invalid' as any
+  s.settings.modeling.mouseControls = `() => alert('hack the planet')` as any
+  s.settings.projects.defaultProjectName = false as any
+  storageState.origins[0].localStorage[2].value = TOML.stringify(s)
 
   test.use({ storageState })
 
@@ -533,16 +536,18 @@ test.describe('Settings persistence and validation tests', () => {
     await u.waitForAuthSkipAppStart()
 
     // Check the settings were reset
-    const storedSettings = JSON.parse(
-      await page.evaluate(() => localStorage.getItem('/settings.json') || '{}')
-    )
-    await expect(storedSettings?.app?.theme).toBe('dark')
+    const storedSettings = TOML.parse(
+      await page.evaluate(() => localStorage.getItem('/user.toml') || '{}')
+    ) as { settings: SaveSettingsPayload }
+
+    console.log('settings', storedSettings)
+    expect(storedSettings.settings.app?.theme).toBe('dark')
 
     // Check that the invalid settings were removed
-    await expect(storedSettings?.modeling?.defaultUnit).toBe(undefined)
-    await expect(storedSettings?.modeling?.mouseControls).toBe(undefined)
-    await expect(storedSettings?.app?.projectDirectory).toBe(undefined)
-    await expect(storedSettings?.projects?.defaultProjectName).toBe(undefined)
+    expect(storedSettings.settings.modeling?.defaultUnit).toBe(undefined)
+    expect(storedSettings.settings.modeling?.mouseControls).toBe(undefined)
+    expect(storedSettings.settings.app?.projectDirectory).toBe(undefined)
+    expect(storedSettings.settings.projects?.defaultProjectName).toBe(undefined)
   })
 
   test('Project settings can be set and override user settings', async ({
@@ -597,9 +602,9 @@ test.describe('Settings persistence and validation tests', () => {
 test.describe('Onboarding tests', () => {
   // Override test setup
   const storageState = structuredClone(basicStorageState)
-  const s = JSON.parse(storageState.origins[0].localStorage[2].value)
-  s.app.onboardingStatus = '/export'
-  storageState.origins[0].localStorage[2].value = JSON.stringify(s)
+  const s = TOML.parse(storageState.origins[0].localStorage[2].value) as { settings: SaveSettingsPayload }
+  s.settings.app.onboardingStatus = '/export'
+  storageState.origins[0].localStorage[2].value = TOML.stringify(s)
   test.use({ storageState })
 
   test('Onboarding redirects and code updating', async ({ page, context }) => {
