@@ -118,8 +118,12 @@ export class SceneEntities {
     this.engineCommandManager = engineCommandManager
     this.scene = sceneInfra?.scene
     sceneInfra?.camControls.subscribeToCamChange(this.onCamChange)
+    window.addEventListener('resize', this.onWindowResize)
   }
 
+  onWindowResize = () => {
+    this.onCamChange()
+  }
   onCamChange = () => {
     const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
