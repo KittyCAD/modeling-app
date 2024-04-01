@@ -83,6 +83,11 @@ export interface SettingProps<T = unknown> {
    */
   hideOnLevel?: SettingsLevel
   /**
+   * Whether to hide the setting on a certain platform.
+   * This will be applied in both the settings panel and the command bar.
+   */
+  hideOnPlatform?: 'web' | 'desktop'
+  /**
    * A React component to use for the setting in the settings panel.
    * If this is not provided but a commandConfig is, the `inputType`
    * of the commandConfig will be used to determine the component.

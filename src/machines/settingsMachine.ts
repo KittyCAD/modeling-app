@@ -98,7 +98,7 @@ export const settingsMachine = createMachine(
             type: 'set.modeling.units'
             data: { level: SettingsLevel; value: BaseUnit }
           }
-        | { type: 'Reset settings', defaultDirectory: string }
+        | { type: 'Reset settings'; defaultDirectory: string }
         | { type: 'Set all settings'; settings: typeof settings },
     },
   },
@@ -109,7 +109,8 @@ export const settingsMachine = createMachine(
         // which should be preserved
         const newSettings = createSettings()
         if (context.app.onboardingStatus.user) {
-          newSettings.app.onboardingStatus.user = context.app.onboardingStatus.user
+          newSettings.app.onboardingStatus.user =
+            context.app.onboardingStatus.user
         }
         newSettings.app.projectDirectory.default = defaultDirectory
 

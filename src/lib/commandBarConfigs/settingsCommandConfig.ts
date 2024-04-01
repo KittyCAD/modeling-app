@@ -14,6 +14,7 @@ import { AnyStateMachine, ContextFrom, InterpreterFrom } from 'xstate'
 import { getPropertyByPath } from 'lib/objectPropertyByPath'
 import { buildCommandArgument } from 'lib/createMachineCommand'
 import decamelize from 'decamelize'
+import { isTauri } from 'lib/isTauri'
 
 // An array of the paths to all of the settings that have commandConfigs
 export const settingsWithCommandConfigs = (
@@ -74,7 +75,17 @@ export function createSettingsCommand({
   const valueArgPartialConfig = settingConfig['commandConfig']
   const shouldHideOnThisLevel =
     settingConfig?.hideOnLevel === 'user' && !isProjectAvailable
-  if (!valueArgPartialConfig || shouldHideOnThisLevel) return null
+  const shouldHideOnThisPlatform =
+    settingConfig.hideOnPlatform &&
+    (isTauri()
+      ? settingConfig.hideOnPlatform === 'desktop'
+      : settingConfig.hideOnPlatform === 'web')
+  if (
+    !valueArgPartialConfig ||
+    shouldHideOnThisLevel ||
+    shouldHideOnThisPlatform
+  )
+    return null
 
   const valueArgConfig = {
     ...valueArgPartialConfig,

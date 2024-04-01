@@ -217,7 +217,11 @@ export const Settings = () => {
                   .filter(([_, categorySettings]) =>
                     // Filter out categories that don't have any non-hidden settings
                     Object.values(categorySettings).some(
-                      (c: Setting) => c.hideOnLevel !== settingsLevel
+                      (c: Setting) =>
+                        c.hideOnLevel !== settingsLevel &&
+                        (!c.hideOnPlatform || isTauri()
+                          ? c.hideOnPlatform !== 'desktop'
+                          : c.hideOnPlatform !== 'web')
                     )
                   )
                   .map(([category, categorySettings]) => (
@@ -234,6 +238,9 @@ export const Settings = () => {
                           // or are hidden on the current level
                           (item: [string, Setting<unknown>]) =>
                             item[1].hideOnLevel !== settingsLevel &&
+                            (!item[1].hideOnPlatform || isTauri()
+                              ? item[1].hideOnPlatform !== 'desktop'
+                              : item[1].hideOnPlatform !== 'web') &&
                             (item[1].Component ||
                               item[1].commandConfig?.inputType)
                         )

@@ -28,6 +28,7 @@ export class Setting<T = unknown> {
    */
   public current: T
   public hideOnLevel: SettingProps<T>['hideOnLevel']
+  public hideOnPlatform: SettingProps<T>['hideOnPlatform']
   public commandConfig: SettingProps<T>['commandConfig']
   public Component: SettingProps<T>['Component']
   public description?: string
@@ -42,6 +43,7 @@ export class Setting<T = unknown> {
     this.validate = props.validate
     this.description = props.description
     this.hideOnLevel = props.hideOnLevel
+    this.hideOnPlatform = props.hideOnPlatform
     this.commandConfig = props.commandConfig
     this.Component = props.Component
   }
@@ -138,6 +140,7 @@ export function createSettings() {
         defaultValue: '',
         description: 'The directory to save and load projects from',
         hideOnLevel: 'project',
+        hideOnPlatform: 'web',
         validate: (v) => typeof v === 'string' && (v.length > 0 || !isTauri()),
         Component: ({ value, onChange }) => {
           const inputRef = useRef<HTMLInputElement>(null)
@@ -338,6 +341,7 @@ export function createSettings() {
             context.projects.defaultProjectName.current,
         },
         hideOnLevel: 'project',
+        hideOnPlatform: 'web',
       }),
       /**
        * TODO: This setting is not yet implemented.
