@@ -68,6 +68,7 @@ export const ModelingMachineProvider = ({
     settings: {
       context: {
         app: { theme },
+        modeling: { defaultUnit },
       },
     },
   } = useSettingsAuthContext()
@@ -229,6 +230,14 @@ export const ModelingMachineProvider = ({
                 direction: 'positive',
               },
             }
+          }
+
+          if (
+            format.type === 'obj' ||
+            format.type === 'stl' ||
+            format.type === 'ply'
+          ) {
+            format.units = defaultUnit.current
           }
 
           if (format.type === 'ply' || format.type === 'stl') {
