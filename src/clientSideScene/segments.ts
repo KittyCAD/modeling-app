@@ -283,19 +283,22 @@ export function tangentialArcToSegment({
   arrowGroup.visible = !shouldHide
 
   const extraSegmentGroup = createExtraSegmentHandle(scale, texture)
-  const offsetFromBase = new Vector2(to[0] - from[0], to[1] - from[1])
-    .normalize()
-    .multiplyScalar(1.2 * scale)
+  const circumference = getPxLength(scale, 2 * Math.PI * radius)
+  const extraSegmentAngleDelta = (15 / circumference) * Math.PI * 2
+  const extraSegmentAngle = startAngle + (ccw ? 1 : -1) * extraSegmentAngleDelta
+  const extraSegmentOffset = new Vector2(
+    Math.cos(extraSegmentAngle) * radius,
+    Math.sin(extraSegmentAngle) * radius
+  )
+  extraSegmentGroup.position.set(
+    center[0] + extraSegmentOffset.x,
+    center[1] + extraSegmentOffset.y,
+    0
+  )
 
-  // TODO figure out placement for arc
-  // extraSegmentGroup.position.set(
-  //   from[0] + offsetFromBase.x,
-  //   from[1] + offsetFromBase.y,
-  //   0
-  // )
-  extraSegmentGroup.visible = false // TODO set to true once we figure out above placement
+  extraSegmentGroup.visible = !shouldHide
 
-  group.add(mesh, arrowGroup)
+  group.add(mesh, arrowGroup, extraSegmentGroup)
 
   return group
 }

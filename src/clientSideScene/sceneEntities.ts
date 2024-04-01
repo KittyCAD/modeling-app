@@ -630,10 +630,10 @@ export class SceneEntities {
               programMemory: kclManager.programMemory,
               to: [intersectionPoint.twoD.x, intersectionPoint.twoD.y],
               from: [prevSegment.from[0], prevSegment.from[1]],
-              fnName:
-                prevSegment.type === 'TangentialArcTo'
-                  ? 'tangentialArcTo'
-                  : 'line',
+              // TODO assuming it's always a straight segments being added
+              // as this is easiest, and we'll need to add "tabbing" behavior
+              // to support other segment types
+              fnName: 'line',
               pathToNode: pathToNode,
               spliceBetween: true,
             })
@@ -865,6 +865,7 @@ export class SceneEntities {
     group.userData.to = to
     group.userData.prevSegment = prevSegment
     const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
+    const extraSegmentGroup = group.getObjectByName(EXTRA_SEGMENT_HANDLE)
 
     const previousPoint =
       prevSegment?.type === 'TangentialArcTo'
@@ -896,6 +897,24 @@ export class SceneEntities {
       )
       arrowGroup.scale.set(scale, scale, scale)
       arrowGroup.visible = !shouldHide
+    }
+
+    if (extraSegmentGroup) {
+      const circumference = getPxLength(scale, 2 * Math.PI * arcInfo.radius)
+      const extraSegmentAngleDelta = (15 / circumference) * Math.PI * 2
+      const extraSegmentAngle =
+        arcInfo.startAngle + (arcInfo.ccw ? 1 : -1) * extraSegmentAngleDelta
+      const extraSegmentOffset = new Vector2(
+        Math.cos(extraSegmentAngle) * arcInfo.radius,
+        Math.sin(extraSegmentAngle) * arcInfo.radius
+      )
+      extraSegmentGroup.position.set(
+        arcInfo.center[0] + extraSegmentOffset.x,
+        arcInfo.center[1] + extraSegmentOffset.y,
+        0
+      )
+      arrowGroup.scale.set(scale, scale, scale)
+      extraSegmentGroup.visible = !shouldHide
     }
 
     const tangentialArcToSegmentBody = group.children.find(
