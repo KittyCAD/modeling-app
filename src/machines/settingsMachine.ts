@@ -66,7 +66,7 @@ export const settingsMachine = createMachine(
               'setEngineTheme',
               'setClientSideSceneUnits',
               'Execute AST',
-              'persistSettings'
+              'persistSettings',
             ],
           },
 
