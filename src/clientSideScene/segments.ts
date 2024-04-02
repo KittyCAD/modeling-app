@@ -442,7 +442,7 @@ export function dashedStraight(
   scale = 1
 ): BufferGeometry<NormalBufferAttributes> {
   const dashSize = 18 * scale
-  const gapSize = 18 * scale // todo: gabSize is not respected
+  const gapSize = 18 * scale // TODO: gapSize is not respected
   const dashLine = new LineCurve3(
     new Vector3(from[0], from[1], 0),
     new Vector3(to[0], to[1], 0)
