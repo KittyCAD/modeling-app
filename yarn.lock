@@ -1683,6 +1683,11 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-2.0.2.tgz#d9fae00a2d5cb40f92cfe64b47ad749fbc38f917"
   integrity sha512-6EwiSjwWYP7pTckG6I5eyFANjPhmPjUX9JRLUSfNPC7FX7zK9gyZAfUEaECL6ALTpGX5AjnBq3C9XmVWPitNpw==
 
+"@iarna/toml@^2.2.5":
+  version "2.2.5"
+  resolved "https://registry.yarnpkg.com/@iarna/toml/-/toml-2.2.5.tgz#b32366c89b43c6f8cefbdefac778b9c828e3ba8c"
+  integrity sha512-trnsAYxU3xnS1gPHPyU961coFyLkh4gAD/0zQ5mymY4yOZ+CYvsPqUbOFSw0aDM4y0tV7tiFxL/1XfXPNC6IPg==
+
 "@isaacs/cliui@^8.0.2":
   version "8.0.2"
   resolved "https://registry.yarnpkg.com/@isaacs/cliui/-/cliui-8.0.2.tgz#b37667b7bc181c168782259bab42474fbf52b550"
@@ -8327,7 +8332,6 @@ tar@^6.1.11:
 
 "tauri-plugin-fs-extra-api@https://github.com/tauri-apps/tauri-plugin-fs-extra#v1":
   version "0.0.0"
-  uid b0a4a479cabb00bb7a689756f742ef89da4f2601
   resolved "https://github.com/tauri-apps/tauri-plugin-fs-extra#b0a4a479cabb00bb7a689756f742ef89da4f2601"
   dependencies:
     "@tauri-apps/api" "1.5.3"

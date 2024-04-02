@@ -19,10 +19,10 @@ root.render(
   <HotkeysProvider>
     <Router />
     <Toaster
-      position="top-center"
+      position="bottom-center"
       toastOptions={{
         style: {
-          borderRadius: '0.25rem',
+          borderRadius: '3px',
         },
         className:
           'bg-chalkboard-10 dark:bg-chalkboard-90 text-chalkboard-110 dark:text-chalkboard-10 rounded-sm border-chalkboard-20/50 dark:border-chalkboard-80/50',
