@@ -229,7 +229,7 @@ jobs:
         run: "yarn tauri build --debug ${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
 
       - name: Build the app (release) and sign
-        uses: tauri-apps/tauri-action@v0
+        uses: tauri-apps/tauri-action@628e3af377483ade2e81348d91a51d859e2660e1
         if: ${{ env.BUILD_RELEASE == 'true' }}
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
