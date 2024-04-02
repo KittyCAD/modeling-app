@@ -9,7 +9,6 @@ import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { bracket } from 'lib/exampleKcl'
 import {
-  PROJECT_ENTRYPOINT,
   createNewProject,
   getNextProjectIndex,
   getProjectsInDir,
@@ -20,8 +19,8 @@ import { useNavigate } from 'react-router-dom'
 import { paths } from 'lib/paths'
 import { useEffect } from 'react'
 import { kclManager } from 'lib/singletons'
-import { join, sep } from '@tauri-apps/api/path'
-import { APP_NAME } from 'lib/constants'
+import { join } from '@tauri-apps/api/path'
+import { APP_NAME, PROJECT_ENTRYPOINT } from 'lib/constants'
 
 function OnboardingWithNewFile() {
   const navigate = useNavigate()
@@ -29,12 +28,14 @@ function OnboardingWithNewFile() {
   const next = useNextClick(onboardingPaths.INDEX)
   const {
     settings: {
-      context: { defaultDirectory },
+      context: {
+        app: { projectDirectory },
+      },
     },
   } = useSettingsAuthContext()
 
   async function createAndOpenNewProject() {
-    const projects = await getProjectsInDir(defaultDirectory)
+    const projects = await getProjectsInDir(projectDirectory.current)
     const nextIndex = await getNextProjectIndex(
       ONBOARDING_PROJECT_NAME,
       projects
@@ -44,7 +45,7 @@ function OnboardingWithNewFile() {
       nextIndex
     )
     const newFile = await createNewProject(
-      await join(defaultDirectory, name),
+      await join(projectDirectory.current, name),
       bracket
     )
     navigate(
@@ -108,13 +109,15 @@ export default function Introduction() {
   const {
     settings: {
       state: {
-        context: { theme },
+        context: {
+          app: { theme },
+        },
       },
     },
   } = useSettingsAuthContext()
   const getLogoTheme = () =>
-    theme === Themes.Light ||
-    (theme === Themes.System && getSystemTheme() === Themes.Light)
+    theme.current === Themes.Light ||
+    (theme.current === Themes.System && getSystemTheme() === Themes.Light)
       ? '-dark'
       : ''
   const dismiss = useDismiss()

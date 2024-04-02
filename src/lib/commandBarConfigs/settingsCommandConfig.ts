@@ -1,146 +1,124 @@
-import { type CommandSetConfig } from '../commandTypes'
 import {
-  type BaseUnit,
-  type Toggle,
-  UnitSystem,
-  baseUnitsUnion,
+  Command,
+  CommandArgument,
+  CommandArgumentConfig,
+} from '../commandTypes'
+import {
+  SettingsPaths,
+  SettingsLevel,
+  SettingProps,
 } from 'lib/settings/settingsTypes'
 import { settingsMachine } from 'machines/settingsMachine'
-import { type CameraSystem, cameraSystems } from '../cameraControls'
-import { Themes } from '../theme'
+import { PathValue } from 'lib/types'
+import { AnyStateMachine, ContextFrom, InterpreterFrom } from 'xstate'
+import { getPropertyByPath } from 'lib/objectPropertyByPath'
+import { buildCommandArgument } from 'lib/createMachineCommand'
+import decamelize from 'decamelize'
+import { isTauri } from 'lib/isTauri'
 
-// SETTINGS MACHINE
-export type SettingsCommandSchema = {
-  'Set Base Unit': {
-    baseUnit: BaseUnit
-  }
-  'Set Camera Controls': {
-    cameraControls: CameraSystem
-  }
-  'Set Default Project Name': {
-    defaultProjectName: string
-  }
-  'Set Text Wrapping': {
-    textWrapping: Toggle
-  }
-  'Set Theme': {
-    theme: Themes
-  }
-  'Set Unit System': {
-    unitSystem: UnitSystem
-  }
+// An array of the paths to all of the settings that have commandConfigs
+export const settingsWithCommandConfigs = (
+  s: ContextFrom<typeof settingsMachine>
+) =>
+  Object.entries(s).flatMap(([categoryName, categorySettings]) =>
+    Object.entries(categorySettings)
+      .filter(([_, setting]) => setting.commandConfig !== undefined)
+      .map(([settingName]) => `${categoryName}.${settingName}`)
+  ) as SettingsPaths[]
+
+const levelArgConfig = <T extends AnyStateMachine = AnyStateMachine>(
+  actor: InterpreterFrom<T>,
+  isProjectAvailable: boolean,
+  hideOnLevel?: SettingsLevel
+): CommandArgument<SettingsLevel, T> => ({
+  inputType: 'options' as const,
+  required: true,
+  defaultValue:
+    isProjectAvailable && hideOnLevel !== 'project' ? 'project' : 'user',
+  skip: true,
+  options:
+    isProjectAvailable && hideOnLevel !== 'project'
+      ? [
+          { name: 'User', value: 'user' as SettingsLevel },
+          {
+            name: 'Project',
+            value: 'project' as SettingsLevel,
+            isCurrent: true,
+          },
+        ]
+      : [{ name: 'User', value: 'user' as SettingsLevel, isCurrent: true }],
+  machineActor: actor,
+})
+
+interface CreateSettingsArgs {
+  type: SettingsPaths
+  send: Function
+  context: ContextFrom<typeof settingsMachine>
+  actor: InterpreterFrom<typeof settingsMachine>
+  isProjectAvailable: boolean
 }
 
-export const settingsCommandBarConfig: CommandSetConfig<
-  typeof settingsMachine,
-  SettingsCommandSchema
-> = {
-  'Set Base Unit': {
+// Takes a Setting with a commandConfig and creates a Command
+// that can be used in the CommandBar component.
+export function createSettingsCommand({
+  type,
+  send,
+  context,
+  actor,
+  isProjectAvailable,
+}: CreateSettingsArgs) {
+  type S = PathValue<typeof context, typeof type>
+
+  const settingConfig = getPropertyByPath(context, type) as SettingProps<
+    S['default']
+  >
+  const valueArgPartialConfig = settingConfig['commandConfig']
+  const shouldHideOnThisLevel =
+    settingConfig?.hideOnLevel === 'user' && !isProjectAvailable
+  const shouldHideOnThisPlatform =
+    settingConfig.hideOnPlatform &&
+    (isTauri()
+      ? settingConfig.hideOnPlatform === 'desktop'
+      : settingConfig.hideOnPlatform === 'web')
+  if (
+    !valueArgPartialConfig ||
+    shouldHideOnThisLevel ||
+    shouldHideOnThisPlatform
+  )
+    return null
+
+  const valueArgConfig = {
+    ...valueArgPartialConfig,
+    required: true,
+  } as CommandArgumentConfig<S['default']>
+
+  // @ts-ignore - TODO figure out this typing for valueArgConfig
+  const valueArg = buildCommandArgument(valueArgConfig, context, actor)
+
+  const command: Command = {
+    name: type,
+    displayName: `Settings · ${decamelize(type.replaceAll('.', ' · '), {
+      separator: ' ',
+    })}`,
+    ownerMachine: 'settings',
     icon: 'settings',
-    args: {
-      baseUnit: {
-        inputType: 'options',
-        required: true,
-        defaultValueFromContext: (context) => context.baseUnit,
-        options: [],
-        optionsFromContext: (context) =>
-          Object.values(baseUnitsUnion).map((v) => ({
-            name: v,
-            value: v,
-            isCurrent: v === context.baseUnit,
-          })),
-      },
+    needsReview: false,
+    onSubmit: (data) => {
+      if (data !== undefined && data !== null) {
+        send({ type: `set.${type}`, data })
+      } else {
+        send(type)
+      }
     },
-  },
-  'Set Camera Controls': {
-    icon: 'settings',
     args: {
-      cameraControls: {
-        inputType: 'options',
-        required: true,
-        defaultValueFromContext: (context) => context.cameraControls,
-        options: [],
-        optionsFromContext: (context) =>
-          Object.values(cameraSystems).map((v) => ({
-            name: v,
-            value: v,
-            isCurrent: v === context.cameraControls,
-          })),
-      },
+      level: levelArgConfig(
+        actor,
+        isProjectAvailable,
+        settingConfig.hideOnLevel
+      ),
+      value: valueArg,
     },
-  },
-  'Set Default Project Name': {
-    icon: 'settings',
-    hide: 'web',
-    args: {
-      defaultProjectName: {
-        inputType: 'string',
-        required: true,
-        defaultValueFromContext: (context) => context.defaultProjectName,
-      },
-    },
-  },
-  'Set Text Wrapping': {
-    icon: 'settings',
-    args: {
-      textWrapping: {
-        inputType: 'options',
-        required: true,
-        defaultValueFromContext: (context) => context.textWrapping,
-        options: [],
-        optionsFromContext: (context) => [
-          {
-            name: 'On',
-            value: 'On' as Toggle,
-            isCurrent: context.textWrapping === 'On',
-          },
-          {
-            name: 'Off',
-            value: 'Off' as Toggle,
-            isCurrent: context.textWrapping === 'Off',
-          },
-        ],
-      },
-    },
-  },
-  'Set Theme': {
-    icon: 'settings',
-    args: {
-      theme: {
-        inputType: 'options',
-        required: true,
-        defaultValueFromContext: (context) => context.theme,
-        options: [],
-        optionsFromContext: (context) =>
-          Object.values(Themes).map((v) => ({
-            name: v,
-            value: v,
-            isCurrent: v === context.theme,
-          })),
-      },
-    },
-  },
-  'Set Unit System': {
-    icon: 'settings',
-    args: {
-      unitSystem: {
-        inputType: 'options',
-        required: true,
-        defaultValueFromContext: (context) => context.unitSystem,
-        options: [],
-        optionsFromContext: (context) => [
-          {
-            name: 'Imperial',
-            value: 'imperial' as UnitSystem,
-            isCurrent: context.unitSystem === 'imperial',
-          },
-          {
-            name: 'Metric',
-            value: 'metric' as UnitSystem,
-            isCurrent: context.unitSystem === 'metric',
-          },
-        ],
-      },
-    },
-  },
+  }
+
+  return command
 }

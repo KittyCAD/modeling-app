@@ -85,8 +85,8 @@ export function useNextClick(newStatus: string) {
 
   return useCallback(() => {
     send({
-      type: 'Set Onboarding Status',
-      data: { onboardingStatus: newStatus },
+      type: 'set.app.onboardingStatus',
+      data: { level: 'user', value: newStatus },
     })
     navigate(filePath + paths.ONBOARDING.INDEX.slice(0, -1) + newStatus)
   }, [filePath, newStatus, send, navigate])
@@ -101,8 +101,8 @@ export function useDismiss() {
 
   return useCallback(() => {
     send({
-      type: 'Set Onboarding Status',
-      data: { onboardingStatus: 'dismissed' },
+      type: 'set.app.onboardingStatus',
+      data: { level: 'user', value: 'dismissed' },
     })
     navigate(filePath)
   }, [send, navigate, filePath])

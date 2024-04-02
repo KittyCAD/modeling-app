@@ -13,11 +13,12 @@ import {
   StateFrom,
 } from 'xstate'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { DEFAULT_FILE_NAME, fileMachine } from 'machines/fileMachine'
+import { fileMachine } from 'machines/fileMachine'
 import { mkdir, remove, rename, create } from '@tauri-apps/plugin-fs'
-import { FILE_EXT, readProject } from 'lib/tauriFS'
+import { readProject } from 'lib/tauriFS'
 import { isTauri } from 'lib/isTauri'
 import { join, sep } from '@tauri-apps/api/path'
+import { DEFAULT_FILE_NAME, FILE_EXT } from 'lib/constants'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>

@@ -74,7 +74,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                 selectedCommand.icon && (
                   <CustomIcon name={selectedCommand.icon} className="w-5 h-5" />
                 )}
-              {selectedCommand?.name}
+              {selectedCommand.displayName || selectedCommand.name}
             </p>
             {Object.entries(selectedCommand?.args || {})
               .filter(([_, argConfig]) =>
