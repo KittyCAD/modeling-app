@@ -243,7 +243,7 @@ jobs:
         run: |
           ls src-tauri
           cat src-tauri/tauri.release.conf.json
-          yarn tauri build -v -c src-tauri/tauri.release.conf.json ${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}
+          yarn tauri build -v ${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}
 
       - uses: actions/upload-artifact@v3
         if: matrix.os != 'ubuntu-latest'
