@@ -666,14 +666,14 @@ test('Sketch on face with none z-up', async ({ page, context }) => {
       'persistCode',
       `const part001 = startSketchOn('-XZ')
   |> startProfileAt([1.4, 2.47], %)
-  |> line({ to: [9.31, 10.55], tag: 'seg01' }, %)
+  |> line([9.31, 10.55], %, 'seg01')
   |> line([11.91, -10.42], %)
   |> close(%)
   |> extrude(5 + 7, %)
 const part002 = startSketchOn(part001, 'seg01')
   |> startProfileAt([-2.89, 1.82], %)
   |> line([4.68, 3.05], %)
-  |> line({ to: [0, -7.79], tag: 'seg02' }, %)
+  |> line([0, -7.79], %, 'seg02')
   |> close(%)
   |> extrude(5 + 7, %)
 `
@@ -700,6 +700,4 @@ const part002 = startSketchOn(part001, 'seg01')
   await expect(page).toHaveScreenshot({
     maxDiffPixels: 100,
   })
-
-  await page.waitForTimeout(200)
 })

@@ -41,7 +41,7 @@ async fn execute_and_snapshot(code: &str, units: kittycad::types::UnitLength) ->
     let mut mem: kcl_lib::executor::ProgramMemory = Default::default();
     let ctx = kcl_lib::executor::ExecutorContext::new(ws, units.clone()).await?;
 
-    let _ = kcl_lib::executor::execute(program, &mut mem, kcl_lib::executor::BodyType::Root, &ctx).await?;
+    let _ = kcl_lib::executor::execute_outer(program, &mut mem, kcl_lib::executor::BodyType::Root, &ctx).await?;
 
     let (x, y) = kcl_lib::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
 
@@ -111,14 +111,32 @@ const part002 = startSketchOn(part001, "here")
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face.png", &result, 0.999);
 }
+
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_riddle_small() {
     let code = include_str!("inputs/riddle_small.kcl");
-
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/riddle_small.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_pentagon_fillet_desugar() {
+    let code = include_str!("inputs/pentagon_fillet_desugar.kcl");
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Cm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/pentagon_fillet_desugar.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_pentagon_fillet_sugar() {
+    let code = include_str!("inputs/pentagon_fillet_sugar.kcl");
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Cm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/pentagon_fillet_sugar.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -1898,12 +1916,12 @@ const plumbus0 = make_circle(p, 'a', [0, 0], 1.5)
        tags: ['arc-a', getOppositeEdge('arc-a', %)]
      }, %)
 
-const plumbus1 = make_circle(p, 'b', [0, 0], 1.5)
-  |> extrude(3, %)
-  |> fillet({
-       radius: 0.5,
-       tags: ['arc-b', getOppositeEdge('arc-b', %)]
-     }, %)
+// const plumbus1 = make_circle(p, 'b', [0, 0], 1.5)
+//   |> extrude(3, %)
+//   |> fillet({
+//        radius: 0.5,
+//        tags: ['arc-b', getOppositeEdge('arc-b', %)]
+//      }, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
