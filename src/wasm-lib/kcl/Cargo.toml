@@ -72,7 +72,7 @@ convert_case = "0.6.0"
 criterion = "0.5.1"
 expectorate = "1.1.0"
 image = "0.24.9"
-insta = { version = "1.37.0", features = ["json"] }
+insta = { version = "1.38.0", features = ["json"] }
 itertools = "0.12.1"
 pretty_assertions = "1.4.0"
 tokio = { version = "1.36.0", features = ["rt-multi-thread", "macros", "time"] }
