@@ -343,6 +343,7 @@ test('extrude on each default plane should be stable', async ({
   await u.clearAndCloseDebugPanel()
 
   await page.getByText('Code').click()
+  await page.waitForTimeout(100) // extra wait for first snapshot
   await expect(page).toHaveScreenshot({
     maxDiffPixels: 100,
   })
