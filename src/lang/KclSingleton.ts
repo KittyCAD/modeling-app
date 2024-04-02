@@ -88,7 +88,6 @@ export class KclManager {
       setTimeout(() => {
         // Wait one event loop to give a chance for params to be set
         // Save the file to disk
-        // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
         this._params.id &&
           writeTextFile(this._params.id, code).catch((err) => {
             // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)

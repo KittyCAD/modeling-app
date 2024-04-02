@@ -81,7 +81,7 @@ export const TextEditor = ({
   } = useModelingContext()
 
   const { settings } = useSettingsAuthContext()
-  const textWrapping = settings.context?.textWrapping ?? 'On'
+  const textWrapping = settings.context.textEditor.textWrapping
   const { commandBarSend } = useCommandsContext()
   const { enable: convertEnabled, handleClick: convertCallback } =
     useConvertToVariable()
@@ -218,11 +218,11 @@ export const TextEditor = ({
           ],
         })
       )
-      if (textWrapping === 'On') extensions.push(EditorView.lineWrapping)
+      if (textWrapping.current) extensions.push(EditorView.lineWrapping)
     }
 
     return extensions
-  }, [kclLSP, textWrapping, convertCallback])
+  }, [kclLSP, textWrapping.current, convertCallback])
 
   return (
     <div

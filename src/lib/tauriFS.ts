@@ -10,25 +10,17 @@ import { appConfigDir, documentDir, homeDir, sep } from '@tauri-apps/api/path'
 import { isTauri } from './isTauri'
 import { type ProjectWithEntryPointMetadata } from 'lib/types'
 import { metadata } from 'tauri-plugin-fs-extra-api'
-import { settingsMachine } from 'machines/settingsMachine'
-import { ContextFrom } from 'xstate'
-import { SETTINGS_FILE_NAME } from 'lib/constants'
-
-const PROJECT_FOLDER = 'zoo-modeling-app-projects'
-export const FILE_EXT = '.kcl'
-export const PROJECT_ENTRYPOINT = 'main' + FILE_EXT
-const INDEX_IDENTIFIER = '$n' // $nn.. will pad the number with 0s
-export const MAX_PADDING = 7
-const RELEVANT_FILE_TYPES = [
-  'kcl',
-  'fbx',
-  'gltf',
-  'glb',
-  'obj',
-  'ply',
-  'step',
-  'stl',
-]
+import {
+  FILE_EXT,
+  INDEX_IDENTIFIER,
+  MAX_PADDING,
+  PROJECT_ENTRYPOINT,
+  PROJECT_FOLDER,
+  RELEVANT_FILE_TYPES,
+  SETTINGS_FILE_EXT,
+} from 'lib/constants'
+import { SaveSettingsPayload, SettingsLevel } from './settings/settingsTypes'
+import * as TOML from '@iarna/toml'
 
 type PathWithPossibleError = {
   path: string | null
@@ -375,25 +367,18 @@ function getPaddedIdentifierRegExp() {
   return new RegExp(`${escapedIdentifier}(${escapedIdentifier.slice(-1)}*)`)
 }
 
-export async function getSettingsFilePath() {
-  const dir = await appConfigDir()
-  return dir + SETTINGS_FILE_NAME
-}
-
-export async function writeToSettingsFile(
-  settings: ContextFrom<typeof settingsMachine>
+export async function getUserSettingsFilePath(
+  filename: string = SETTINGS_FILE_EXT
 ) {
-  return writeTextFile(
-    await getSettingsFilePath(),
-    JSON.stringify(settings, null, 2)
-  )
+  const dir = await appConfigDir()
+  return dir + filename
 }
 
-export async function readSettingsFile(): Promise<ContextFrom<
-  typeof settingsMachine
-> | null> {
-  const dir = await appConfigDir()
-  const path = dir + SETTINGS_FILE_NAME
+export async function readSettingsFile(
+  path: string
+): Promise<Partial<SaveSettingsPayload>> {
+  const dir = path.slice(0, path.lastIndexOf(sep))
+
   const dirExists = await exists(dir)
   if (!dirExists) {
     await createDir(dir, { recursive: true })
@@ -403,15 +388,39 @@ export async function readSettingsFile(): Promise<ContextFrom<
 
   if (!settingsExist) {
     console.log(`Settings file does not exist at ${path}`)
-    await writeToSettingsFile(settingsMachine.initialState.context)
-    return null
+    return {}
   }
 
   try {
     const settings = await readTextFile(path)
-    return JSON.parse(settings)
+    // We expect the settings to be under a top-level [settings] key
+    return TOML.parse(settings).settings as Partial<SaveSettingsPayload>
   } catch (e) {
     console.error('Error reading settings file:', e)
-    return null
+    return {}
+  }
+}
+
+export async function getSettingsFilePaths(
+  projectPath?: string
+): Promise<Partial<Record<SettingsLevel, string>>> {
+  const { user, project } = await getSettingsFolderPaths(projectPath)
+
+  return {
+    user: user + 'user' + SETTINGS_FILE_EXT,
+    project:
+      project !== undefined
+        ? project + (isTauri() ? sep : '/') + 'project' + SETTINGS_FILE_EXT
+        : undefined,
+  }
+}
+
+export async function getSettingsFolderPaths(projectPath?: string) {
+  const user = isTauri() ? await appConfigDir() : '/'
+  const project = projectPath !== undefined ? projectPath : undefined
+
+  return {
+    user,
+    project,
   }
 }

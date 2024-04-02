@@ -154,7 +154,8 @@ export const _executor = async (
   isMock: boolean
 ): Promise<ProgramMemory> => {
   try {
-    const baseUnit = (await getSettingsState)()?.baseUnit || 'mm'
+    const baseUnit =
+      (await getSettingsState)()?.modeling.defaultUnit.current || 'mm'
     const memory: ProgramMemory = await execute_wasm(
       JSON.stringify(node),
       JSON.stringify(programMemory),

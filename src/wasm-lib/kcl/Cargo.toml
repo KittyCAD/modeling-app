@@ -50,7 +50,7 @@ web-sys = { version = "0.3.69", features = ["console"] }
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 approx = "0.5"
 bson = { version = "2.9.0", features = ["uuid-1", "chrono"] }
-tokio = { version = "1.36.0", features = ["full"] }
+tokio = { version = "1.37.0", features = ["full"] }
 tokio-tungstenite = { version = "0.21.0", features = ["rustls-tls-native-roots"] }
 tower-lsp = { version = "0.20.0", features = ["proposed"] }
 
@@ -72,10 +72,10 @@ convert_case = "0.6.0"
 criterion = "0.5.1"
 expectorate = "1.1.0"
 image = "0.24.9"
-insta = { version = "1.37.0", features = ["json"] }
+insta = { version = "1.38.0", features = ["json"] }
 itertools = "0.12.1"
 pretty_assertions = "1.4.0"
-tokio = { version = "1.36.0", features = ["rt-multi-thread", "macros", "time"] }
+tokio = { version = "1.37.0", features = ["rt-multi-thread", "macros", "time"] }
 twenty-twenty = "0.7.0"
 
 [[bench]]

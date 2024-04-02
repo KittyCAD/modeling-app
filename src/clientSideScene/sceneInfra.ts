@@ -27,9 +27,9 @@ import * as TWEEN from '@tweenjs/tween.js'
 import { SourceRange } from 'lang/wasm'
 import { Axis } from 'lib/selections'
 import { type BaseUnit } from 'lib/settings/settingsTypes'
-import { SETTINGS_PERSIST_KEY } from 'lib/constants'
 import { CameraControls } from './CameraControls'
 import { EngineCommandManager } from 'lang/std/engineConnection'
+import { settings } from 'lib/settings/initialSettings'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -182,9 +182,7 @@ export class SceneInfra {
 
     // CAMERA
     const camHeightDistanceRatio = 0.5
-    const baseUnit: BaseUnit =
-      JSON.parse(localStorage?.getItem(SETTINGS_PERSIST_KEY) || ('{}' as any))
-        .baseUnit || 'mm'
+    const baseUnit: BaseUnit = settings.modeling.defaultUnit.current
     const baseRadius = 5.6
     const length = baseUnitTomm(baseUnit) * baseRadius
     const ang = Math.atan(camHeightDistanceRatio)

@@ -1,4 +1,10 @@
-import { AnyStateMachine, EventFrom, InterpreterFrom, StateFrom } from 'xstate'
+import {
+  AnyStateMachine,
+  ContextFrom,
+  EventFrom,
+  InterpreterFrom,
+  StateFrom,
+} from 'xstate'
 import { isTauri } from './isTauri'
 import {
   Command,
@@ -97,20 +103,19 @@ function buildCommandArguments<
 
   for (const arg in args) {
     const argConfig = args[arg] as CommandArgumentConfig<S[typeof arg], T>
-    const newArg = buildCommandArgument(argConfig, arg, state, machineActor)
+    const newArg = buildCommandArgument(argConfig, state.context, machineActor)
     newArgs[arg] = newArg
   }
 
   return newArgs
 }
 
-function buildCommandArgument<
-  O extends CommandSetSchema<T>,
-  T extends AnyStateMachine
+export function buildCommandArgument<
+  T extends AnyStateMachine,
+  O extends CommandSetSchema<T> = CommandSetSchema<T>
 >(
   arg: CommandArgumentConfig<O, T>,
-  argName: string,
-  state: StateFrom<T>,
+  context: ContextFrom<T>,
   machineActor: InterpreterFrom<T>
 ): CommandArgument<O, T> & { inputType: typeof arg.inputType } {
   const baseCommandArgument = {
@@ -121,7 +126,7 @@ function buildCommandArgument<
   } satisfies Omit<CommandArgument<O, T>, 'inputType'>
 
   if (arg.inputType === 'options') {
-    if (!arg.options) {
+    if (!(arg.options || arg.optionsFromContext)) {
       throw new Error('Options must be provided for options input type')
     }
 
@@ -129,10 +134,10 @@ function buildCommandArgument<
       inputType: arg.inputType,
       ...baseCommandArgument,
       defaultValue: arg.defaultValueFromContext
-        ? arg.defaultValueFromContext(state.context)
+        ? arg.defaultValueFromContext(context)
         : arg.defaultValue,
       options: arg.optionsFromContext
-        ? arg.optionsFromContext(state.context)
+        ? arg.optionsFromContext(context)
         : arg.options,
     } satisfies CommandArgument<O, T> & { inputType: 'options' }
   } else if (arg.inputType === 'selection') {
@@ -151,7 +156,9 @@ function buildCommandArgument<
   } else {
     return {
       inputType: arg.inputType,
-      defaultValue: arg.defaultValue,
+      defaultValue: arg.defaultValueFromContext
+        ? arg.defaultValueFromContext(context)
+        : arg.defaultValue,
       ...baseCommandArgument,
     }
   }
