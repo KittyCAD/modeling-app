@@ -341,12 +341,9 @@ test('extrude on each default plane should be stable', async ({
   await u.openDebugPanel()
   await u.expectCmdLog('[data-message-type="execution-done"]')
   await u.clearAndCloseDebugPanel()
+  await page.waitForTimeout(200)
 
   await page.getByText('Code').click()
-  await page.waitForTimeout(100) // extra wait for first snapshot
-  await expect(page).toHaveScreenshot({
-    maxDiffPixels: 100,
-  })
   await page.getByText('Code').click()
 
   const runSnapshotsForOtherPlanes = async (plane = 'XY') => {
@@ -365,6 +362,7 @@ test('extrude on each default plane should be stable', async ({
     })
     await page.getByText('Code').click()
   }
+  await runSnapshotsForOtherPlanes('XY')
   await runSnapshotsForOtherPlanes('-XY')
 
   await runSnapshotsForOtherPlanes('XZ')
