@@ -167,10 +167,10 @@ jobs:
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Setup Rust cache
-        uses: swatinem/rust-cache@v2
-        with:
-          workspaces: './src-tauri -> target'
+      # - name: Setup Rust cache
+      #   uses: swatinem/rust-cache@v2
+      #   with:
+      #     workspaces: './src-tauri -> target'
 
       - uses: Swatinem/rust-cache@v2
         with:
@@ -240,10 +240,7 @@ jobs:
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         shell: bash
-        run: |
-          ls src-tauri
-          cat src-tauri/tauri.release.conf.json
-          yarn tauri build -v ${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}
+        run: "yarn tauri build -c src-tauri/tauri.release.conf.json -v ${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
 
       - uses: actions/upload-artifact@v3
         if: matrix.os != 'ubuntu-latest'
