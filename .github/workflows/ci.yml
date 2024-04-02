@@ -239,10 +239,11 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          TAURI_ARGS_RELEASE: "${{ matrix.os == 'windows-latest' && 'src-tauri\\tauri.release.conf.json' || 'src-tauri/tauri.release.conf.json' }}"
+        shell: bash
         run: |
-          "cat ${{ env.TAURI_ARGS_RELEASE }}"
-          "yarn tauri build -v -c ${{ env.TAURI_ARGS_RELEASE }} ${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
+          ls src-tauri
+          cat src-tauri/tauri.release.conf.json
+          yarn tauri build -v -c src-tauri/tauri.release.conf.json ${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
 
       - uses: actions/upload-artifact@v3
         if: matrix.os != 'ubuntu-latest'
