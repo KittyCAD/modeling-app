@@ -13,7 +13,7 @@ import { Extension } from '@codemirror/state'
 import { LanguageSupport } from '@codemirror/language'
 import { useNavigate } from 'react-router-dom'
 import { paths } from 'lib/paths'
-import { FileEntry } from 'lib/types'
+import { FileEntry } from '@tauri-apps/api/fs'
 
 const DEFAULT_FILE_NAME: string = 'main.kcl'
 
