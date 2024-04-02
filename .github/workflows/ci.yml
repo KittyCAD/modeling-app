@@ -229,7 +229,6 @@ jobs:
         run: "yarn tauri build --debug ${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
 
       - name: Build the app (release) and sign
-        uses: tauri-apps/tauri-action@628e3af377483ade2e81348d91a51d859e2660e1
         if: ${{ env.BUILD_RELEASE == 'true' }}
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
@@ -240,9 +239,8 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          TAURI_ARGS_RELEASE: "--config ${{ matrix.os == 'windows-latest' && 'src-tauri\\tauri.release.conf.json' || 'src-tauri/tauri.release.conf.json' }}"
-        with:
-          args: "--verbose ${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }} ${{ env.TAURI_ARGS_RELEASE }}"
+          TAURI_ARGS_RELEASE: "-c ${{ matrix.os == 'windows-latest' && 'src-tauri\\tauri.release.conf.json' || 'src-tauri/tauri.release.conf.json' }}"
+        run: "yarn tauri build -v ${{ env.TAURI_ARGS_RELEASE }} ${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
 
       - uses: actions/upload-artifact@v3
         if: matrix.os != 'ubuntu-latest'
