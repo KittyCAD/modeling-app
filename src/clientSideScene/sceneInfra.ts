@@ -30,6 +30,7 @@ import { type BaseUnit } from 'lib/settings/settingsTypes'
 import { CameraControls } from './CameraControls'
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import { settings } from 'lib/settings/initialSettings'
+import { MouseState } from 'machines/modelingMachine'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -102,6 +103,7 @@ export class SceneInfra {
   _baseUnit: BaseUnit = 'mm'
   _baseUnitMultiplier = 1
   extraSegmentTexture: Texture
+  lastMouseState: MouseState = { type: 'idle' }
   onDragStartCallback: (arg: OnDragCallbackArgs) => void = () => {}
   onDragEndCallback: (arg: OnDragCallbackArgs) => void = () => {}
   onDragCallback: (arg: OnDragCallbackArgs) => void = () => {}
@@ -338,8 +340,6 @@ export class SceneInfra {
         planeIntersectPoint.twoD &&
         planeIntersectPoint.threeD
       ) {
-        // // console.log('onDrag', this.selected)
-
         this.onDragCallback({
           mouseEvent,
           intersectionPoint: {
@@ -348,6 +348,10 @@ export class SceneInfra {
           },
           intersects,
           selected: this.selected.object,
+        })
+        this.updateMouseState({
+          type: 'isDragging',
+          on: this.selected.object,
         })
       }
     } else if (
@@ -373,6 +377,7 @@ export class SceneInfra {
             selected: this.hoveredObject,
             mouseEvent: mouseEvent,
           })
+          if (!this.selected) this.updateMouseState({ type: 'idle' })
         }
         this.hoveredObject = firstIntersectObject
         this.onMouseEnter({
@@ -380,6 +385,11 @@ export class SceneInfra {
           dragSelected: this.selected?.object,
           mouseEvent: mouseEvent,
         })
+        if (!this.selected)
+          this.updateMouseState({
+            type: 'isHovering',
+            on: this.hoveredObject,
+          })
       }
     } else {
       if (this.hoveredObject) {
@@ -388,6 +398,7 @@ export class SceneInfra {
           dragSelected: this.selected?.object,
           mouseEvent: mouseEvent,
         })
+        if (!this.selected) this.updateMouseState({ type: 'idle' })
         this.hoveredObject = null
       }
     }
@@ -445,6 +456,11 @@ export class SceneInfra {
       (a, b) => a.distance - b.distance
     )
   }
+  updateMouseState(mouseState: MouseState) {
+    if (this.lastMouseState.type === mouseState.type) return
+    this.lastMouseState = mouseState
+    this.modelingSend({ type: 'Set mouse state', data: mouseState })
+  }
 
   onMouseDown = (event: MouseEvent) => {
     this.currentMouseVector.x = (event.clientX / window.innerWidth) * 2 - 1
@@ -484,6 +500,16 @@ export class SceneInfra {
           mouseEvent,
           selected: this.selected as any,
         })
+        if (intersects.length) {
+          this.updateMouseState({
+            type: 'isHovering',
+            on: intersects[0].object,
+          })
+        } else {
+          this.updateMouseState({
+            type: 'idle',
+          })
+        }
       } else if (planeIntersectPoint?.twoD && planeIntersectPoint?.threeD) {
         // fire onClick event as there was no drags
         this.onClickCallback({
