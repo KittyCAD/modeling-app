@@ -167,10 +167,12 @@ jobs:
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
 
-      # - name: Setup Rust cache
-      #   uses: swatinem/rust-cache@v2
-      #   with:
-      #     workspaces: './src-tauri -> target'
+      # TODO: re-enable for Windows builds, see https://github.com/tauri-apps/tauri/issues/9045
+      - name: Setup Rust cache
+        if: matrix.os != 'windows-latest'
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
 
       - uses: Swatinem/rust-cache@v2
         with:
@@ -229,6 +231,7 @@ jobs:
         run: "yarn tauri build --debug ${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
 
       - name: Build the app (release) and sign
+        uses: tauri-apps/tauri-action@v0
         if: ${{ env.BUILD_RELEASE == 'true' }}
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
@@ -239,8 +242,9 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-        shell: bash
-        run: "yarn tauri build -c src-tauri/tauri.release.conf.json -v ${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
+          TAURI_CONF_ARGS: "--config ${{ matrix.os == 'windows-latest' && 'src-tauri\\tauri.release.conf.json' || 'src-tauri/tauri.release.conf.json' }}"
+        with:
+          args: "${{ matrix.os == 'macos-14' && '--target universal-apple-darwin' || '' }} ${{ env.TAURI_CONF_ARGS }}"
 
       - uses: actions/upload-artifact@v3
         if: matrix.os != 'ubuntu-latest'
