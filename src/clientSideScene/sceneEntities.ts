@@ -674,11 +674,24 @@ export class SceneEntities {
           ;(
             (sketchInit.body[2] as CallExpression)
               .arguments[0] as ArrayExpression
-          ).elements[1] = createLiteral(args.intersectionPoint.twoD.x)
+          ) = createArrayExpression([
+            createLiteral(args.intersectionPoint.twoD.x >= 0 ? 0 : 180),
+            createLiteral(Math.abs(args.intersectionPoint.twoD.x))
+          ])
           ;(
             (sketchInit.body[3] as CallExpression)
               .arguments[0] as ArrayExpression
-          ).elements[1] = createLiteral(args.intersectionPoint.twoD.y)
+          ) = createArrayExpression([
+            createBinaryExpression([
+              createCallExpressionStdLib('segAng', [
+                createLiteral('a'),
+                createPipeSubstitution(),
+              ]),
+              (Math.sign(args.intersectionPoint.twoD.y) === Math.sign(args.intersectionPoint.twoD.x)) ? '+' : '-',
+              createLiteral(90),
+            ]), // 90 offset from the previous line
+            createLiteral(Math.abs(args.intersectionPoint.twoD.y)), // This will be the height of the rectangle
+          ])
         }
         const { programMemory } = await executeAst({
           ast: _ast,
