@@ -28,17 +28,15 @@ export function createGridHelper({
   gridHelper.rotation.x = Math.PI / 2
   return gridHelper
 }
+const fudgeFactor = 72.66985970437086
 
 export const orthoScale = (cam: OrthographicCamera | PerspectiveCamera) =>
-  (0.55 * 760) / cam.zoom / window.innerHeight
+  (0.55 * fudgeFactor) / cam.zoom / window.innerHeight
 
 export const perspScale = (cam: PerspectiveCamera, group: Group | Mesh) =>
-  (group.position.distanceTo(cam.position) * cam.fov * 760) /
+  (group.position.distanceTo(cam.position) * cam.fov * fudgeFactor) /
   4000 /
   window.innerHeight
-
-export const getPxLength = (scale: number, length: number) =>
-  (length * 10.458256051295065) / scale
 
 export function isQuaternionVertical(q: Quaternion) {
   const v = new Vector3(0, 0, 1).applyQuaternion(q)

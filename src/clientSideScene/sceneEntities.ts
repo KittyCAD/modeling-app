@@ -36,11 +36,7 @@ import {
   Y_AXIS,
   YZ_PLANE,
 } from './sceneInfra'
-import {
-  getPxLength,
-  isQuaternionVertical,
-  quaternionFromUpNForward,
-} from './helpers'
+import { isQuaternionVertical, quaternionFromUpNForward } from './helpers'
 import {
   CallExpression,
   getTangentialArcToInfo,
@@ -93,6 +89,7 @@ import { EngineCommandManager } from 'lang/std/engineConnection'
 type DraftSegment = 'line' | 'tangentialArcTo'
 
 export const EXTRA_SEGMENT_HANDLE = 'extraSegmentHandle'
+export const EXTRA_SEGMENT_OFFSET_PX = 8
 export const PROFILE_START = 'profile-start'
 export const STRAIGHT_SEGMENT = 'straight-segment'
 export const STRAIGHT_SEGMENT_BODY = 'straight-segment-body'
@@ -883,7 +880,7 @@ export class SceneEntities {
       obtuse: true,
     })
 
-    const pxLength = getPxLength(scale, arcInfo.arcLength)
+    const pxLength = arcInfo.arcLength / scale
     const shouldHide = pxLength < MIN_SEGMENT_LENGTH
 
     if (arrowGroup) {
@@ -900,8 +897,9 @@ export class SceneEntities {
     }
 
     if (extraSegmentGroup) {
-      const circumference = getPxLength(scale, 2 * Math.PI * arcInfo.radius)
-      const extraSegmentAngleDelta = (15 / circumference) * Math.PI * 2
+      const circumferenceInPx = (2 * Math.PI * arcInfo.radius) / scale
+      const extraSegmentAngleDelta =
+        (EXTRA_SEGMENT_OFFSET_PX / circumferenceInPx) * Math.PI * 2
       const extraSegmentAngle =
         arcInfo.startAngle + (arcInfo.ccw ? 1 : -1) * extraSegmentAngleDelta
       const extraSegmentOffset = new Vector2(
@@ -913,7 +911,7 @@ export class SceneEntities {
         arcInfo.center[1] + extraSegmentOffset.y,
         0
       )
-      arrowGroup.scale.set(scale, scale, scale)
+      extraSegmentGroup.scale.set(scale, scale, scale)
       extraSegmentGroup.visible = !shouldHide
     }
 
@@ -962,15 +960,15 @@ export class SceneEntities {
     group.userData.from = from
     group.userData.to = to
     const shape = new Shape()
-    shape.moveTo(0, -0.08 * scale)
-    shape.lineTo(0, 0.08 * scale) // The width of the line
+    shape.moveTo(0, -1.2 * scale) // The width of the line in px (2.4px in this case)
+    shape.lineTo(0, 1.2 * scale)
     const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
 
     const length = Math.sqrt(
       Math.pow(to[0] - from[0], 2) + Math.pow(to[1] - from[1], 2)
     )
 
-    const pxLength = getPxLength(scale, length)
+    const pxLength = length / scale
     const shouldHide = pxLength < MIN_SEGMENT_LENGTH
 
     if (arrowGroup) {
@@ -991,7 +989,7 @@ export class SceneEntities {
     if (extraSegmentGroup) {
       const offsetFromBase = new Vector2(to[0] - from[0], to[1] - from[1])
         .normalize()
-        .multiplyScalar(1.2 * scale)
+        .multiplyScalar(EXTRA_SEGMENT_OFFSET_PX * scale)
       extraSegmentGroup.position.set(
         from[0] + offsetFromBase.x,
         from[1] + offsetFromBase.y,
@@ -1446,7 +1444,7 @@ function mouseEnterLeaveCallbacks() {
         const extraSegmentGroup = parent.getObjectByName(EXTRA_SEGMENT_HANDLE)
         if (extraSegmentGroup) {
           extraSegmentGroup.traverse((child) => {
-            if (child instanceof Points) {
+            if (child instanceof Points || child instanceof Mesh) {
               child.material.opacity = dragSelected ? 0 : 1
             }
           })
@@ -1470,7 +1468,7 @@ function mouseEnterLeaveCallbacks() {
       const extraSegmentGroup = parent?.getObjectByName(EXTRA_SEGMENT_HANDLE)
       if (extraSegmentGroup) {
         extraSegmentGroup.traverse((child) => {
-          if (child instanceof Points) {
+          if (child instanceof Points || child instanceof Mesh) {
             child.material.opacity = 0
           }
         })
