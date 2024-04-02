@@ -133,7 +133,7 @@ export type MoveDesc = { line: number; snippet: string }
 
 export const modelingMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogC0AdgCsAZgB04gEyjhADnEA2GgoUAWJQBoQAT0QBGGuICckmoZkbTM42YWKAvk91oMOfAQDKYdgAJYLDByTm5aBiQQFjYwniiBBFtpGhlxDRphGg1ZURlhXQMEcRLDSVF5UwV84XEK8Rc3dCw8KElsCEwwHz9A4NCuXAjeGI5B3kTBLWFJDWV5hVSZZTrlBUKjS1FZiUrDeWVDasaQdxb8ds7ugFFcdjAAJ0CAaz9yAAthqNG4iaFlmZWZSmZRaKyGQzKYQaDYIGSmDSzdKyDSGcQ0KrAk5nTxtDpdAi3e5PWCvdgfKiGSLMVhjbh-BCCaw0WaQrZqdGLAr6RAZGSSWzCZSiIEKNFi5TY5q4y4E658dgPACuGC+NNi4wSQgqM3hNFEwNEGlEYthENELJkCjWplMFpsGlRUo8rVlNz4LAe7DV0Vpvy1jKtCkkVuZMjsDpNsOEwjKUIkcxNqWhomd5za3jJH2IZEomEzb0+9BGfs1oESEOtkmM0K0ahMplkZqOZUrYrRlgUJrTMoL5Pekj7HwAklcegEgl0BuFi99S-SA4ZoWUdWsTSLlsozZlzNkZPrG0a5F2e66hwPz6OCcgSK8+lAALZgO7+ABuj045BImB9PzL-CMeFW2qTQhU0ZMzVRKR0RoVJ6nyJQNFPC5z0HLN3ivbobzvIJH2fAJ3lQB5sAAL24dhv1-ed4nLQDoUkVRrX1CF8ihGQzXECFymNLJIU4-U8mQjN0LQwtMOIbhYEVEg8H8QjiLIu5v38CBsCk3MwCojUF1ohArCNCwNDSDFENMI51h5OEzGUCwKgtbJRDMtEhNE-tXJHMciEk6TZPfL1sC-TAVLUiiKE02d1TpGiAL05ZgztK0RVBYxNHYyzw1qcprCODQY2EZYjRc1DL087yHhk3B-AAQQAIW8fwAA0tKihkrC7JExEMGxOPhNJYXhAy7ShRY4NMWoGlcU5pTPESSoJLzcCk8rZNq+qAE1mv9XS2u2aw7GUOR9mFA7YU5YN8rstlHEdIrZvQ8SFqWir-DIKAuk2-8K2RaQlBA+QxWEUx+otXV1zyg1AbG27C3cjDSsWnzKq6fB2CLalfW06KvvEGYVANDE0TSfZ+sOc7gVRQHHSUKFobcubukexH-CYR4WdwVTyCVTASCeVT1LCj6dJiqwrVmW0eoyI5VC3dKxURWMqjG-LHVy1NJpxGaYfpiSEeWyr5NI8jv0wPQXpwKAhgijGWsXZZ+S7TQu3SI0aBWM0kpDO1QPysQVgmpoXRQu6xPhp7fI-ALjdN79sAtwWsbo8wcitQGkrMEUzQO7YTTGzFqiqWpaY+WGHrK57YFwEgmH8dhUEa+PWs4qRlnERYFDG6ozH6vcQzkeZ5n1RxwyLi97tDpmK6rmu642q2-yFr60QsIVOJjHHjBhdKupmI0h8cpc5hyEeS-HvX-DAABHJVlORqBUYb23G3KbfAayPIJG5Iol3RJETFg-VjqmGPtrRmZ8mA82NtQOe1FG75AsOGFY+xGwU03l-RsMwTCcUOLaTIag1YB3TLDE+80y6yQeGAB8qB3z+HIKQu4sAH7bWsMGQ41gDRWlRCacQZolBlEsMCfcOROQHWAWPAkAAlMAggwB8BCEqe4jDhZ1CkGiVQ+kdQGlhCCGyjk14misGZbIoiQ5yivtgauAAZPAYBp6oB-NAzGrV246JKKCW0CZ1CwiUNnTIe05CJghMY-s4lrhmOrqFGAdxsDKR5uQaeijEj7WDK3A0WD-rKObJYSQYFVDpMdKCY+VUADuMkCJEUNkpIKfNQqUH8HgAAZqgAgEBuBgHaLgV8qBXiSBgOwQQBtFIUUwIIBpqAEmIGMoifJGQxpmCVtw9KqJzBdlDFg2wENCklI4HJcpgzlLVI0nU3AjSCCPAeERSQTBubsEaQ8B8PS-D9N2UbYZozxlWX1NWLqqI0TGitGNfqrd+TZFdrBOorFDCbNKW+COgVgr81qaM5prT2mdO6b0wQflPzfhGccsZDiba6SJvyNEih7BQkMIKfqVopCOHfnYUo+UoXbKxZHKpIVDlIrORcq5JAblEXuRi1lgVcWNPecSyQix5D7zEJoalRlqzHVSK3ECShmUBFWo1I5JyWm4DaXgNFbSMUkAAEawEEHwUV+L0bzwTlZSE2SDqwXDLsCyRR4QHWrBkVEoJZAHULuraaQcYbFOhZqhq2qmncoeJc65tzBWPNNeay1byCVbRikTGYQj1B1FMPqLQ-UzI2TqNaCQG9oRAMDYHYSIatkarqv4NakbkV6tRV0o1iazWCD0Fa8VWDpAaMcvCHGxpTquyzYrC0XD83quqg2ptXKHjnJjby-ldyHl9KTd23tabPoTNXvAle+V5jpEhKdSEiJXbaJdaSmQs7XpdGbbq-VHT20bsEA+qRqabUwIDJmlIEJwWOTtIYYGBoBTogtOaE0UJhD3vwI+xdy7Y18vje+z9O6f2OL-Zxc62Q2pWDUGZT+EyRSAjRPIOC+oASztvqjJ9KKDVvoxXR94mGSzYaJZxbYyczAoP3PkEm7VXaMpUEuKwtHnx33eM26NKG10Jr6ax9jc5OMZv7cYEw+i1i5TSu60E-J5jMIRGIGMBpZ0sweGzDmXMebwpqTYpFz623oseZZ6zAVbMPEEAcsKKnIrpsSXbAUXDrAHTinIfq1RtjrzmMKdxch-ZTWrUQ0N2z3PPhs9zXmHKwqyaXTyuNAr30ZfZp57LPncuUH89bQLEzgtexROFtYkX0p5WkLGOLwH35JY1sGtyVi9W2MwOOPoU44jiv3EnQjRxMhHDyAs91Y1qxewxMwxid6q2ENQoNmxtc7GEjCTXV6+FolBVifE3dC8JkxkRPsMwsF1CKxlkUJWSIcaOCyCCY+u3huSGHLgDgBBJsqElSk2bCI5BA0smsMoaR24PZxoDNIP3rF-YB0DykWHCUZvyPyC0VoL2EeBNGQGswVgSHWcCWC+DkvbZEr9-bmBJC4AFd+Ubk4QgTau3a6wmVZDqClsyA0L3ECghmMuVWcsoKQq272BnaOmeSAAHJ1wAAqoDwOwWABAqoQAgIECiXpmaa7uOK+YiI80GkckZRYoJYTzCTmYV+mQc0KFR0NpXqv-Aa61zr0gYV7HY7q3pTQu5ZBAoxFoE0brEC8TFtg0oVoVjHwx+wYHPPWr8NmF2LIKhqNR7NGkKQcwhTLFBcsJ0cvNZuTT8DqkHGccVmYpKvNea5iyFgl1IvZlslOzmECbqkpq-9eLgAFRO1EmJDw4m1w5-0bnwe91wgOuYYESg7TolsPCIvqJJUXv3JYY03YR81rchP-Ap3p+z6aaEpU5j-CM9QHY83jpf6KEchaE6lkEQ2RjOGOoLIV2UvY+JUdmOudSL0c8AAeVwBbRfUNUkCqm8DH0EDAJaUEEgPYBgMtiX2uz0hKGDDyFqCckdDqDUFhCTAFGwTUFylbhKDg1P1hn8FZ38HqRIEoB6HGxUjAHYK5gCF5T1XeSZC4iOARCRy0ChBsFEAd2WH3zSByEhiFBsBHhYLrnYM4N8AnAX0GHeSFC+R0wkDmWyEOFhAdAgxKDsCUAGhXhcjIGwAfD5VaGnmZm5j1XgJczaXsMcPuEEFrkEA0PCjwLtQqGAldxBSWEyFkOSSsBKFSHbmhHUDsMBx8OcNrlcLIG6C0LGy510Mzz-Xyi+TkCh0YmhEoK0GrFWDsFghWBqGSIcKcPwBcJkRCmcNJELA8KY26W8L5SkX8PaP7HeSzngX9SqH2EUL00QFwwYihFbhBCe1yndxOFZwwHgCiD6ygEbxD0EEWDKFyEUHz3UC0EWyEEWElXwyFFrBxkOhcnxDAC2OX0EFBCIKhFmU0BNFyi8TFHKE5Hu1iMsErQIXl0LAePwPmJz0o3zzyELxhwYkaz-ljBMhuiYOKjEXuNUybyMAyGbjGlylsHeMBljz0kpTu1RGMj9jz16yDTP2LjSzKQUheXs05TxVBLtSlmDEdAxEUFjBqFSEBWSGdhgkd3yFlyBJr1pLrRhX8jhV80RRZIxJD3MhJVUEsGUVX1A3SjkBZFSFRDlnmFCNnXDUjVZKcSfg5AMRUGqIxELU4h2GGjUVyWOBRJEjpLnXWmNIVOXzEPxw4Vwz3DHWFF7jsjECqHzngzekc3lICy9Pbm2BWFgiESqDyEbGBjUElXhwqFUDLzqEkxRhk1GRNMXHbhZGxOtzFEbH7hJlB0BkpUcFeONBT2dNrWhVKyyzs1lMjMaULO2i7D-xBAtHAhsD9n6jJWyVrP3h1G+ybIG0V2f0wG7IzXsGXkIKNFDLWEoNUBDFRDmDrOHTUA9z2znP+0B3YAXMSX2D4XGi7BsHUHXJh2SEhBWHyQezmEBLp2BJnM9yPNZzuW-DPImRsCzTXj1EWFkEmIQHjyHMpST2tFkAPL+29193oX-LhGNGbl4TBBMDSDdksjLxDHbDRCOGULFFTxPJQuMEcgYmNCMmxI3270skrFbHMkA07BPzFNHwHAv0iU4Gv2nhQuPHlmPUtNz1tG3DyBDDWAWEow3Fpw2KIXQIgKN2wPQlgPIptB+N3lSVC2hyKCNBsgH1sGP2GnM2nI+DULYI4PROjPwKZAyDBwBHkFyloJkMsmovKAPC70yFTmsHqNSKaPSMEKstqy9JWAFCFHbztB5NdlkJshMHUCFF3k5EYPYraB6M4H8rrhaKkjaPQnIuW19mFCyAjE4lsCixZAHmLOZGtCtBcBcCAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogC0AdgCsAZgB04gEyjhADnEA2GgoUAWJQBoQAT0QBGGuICckmoZkbTM42YWKAvk91oMOfAQDKYdgAJYLDByTm5aBiQQFjYwniiBBFtpGhlxDRphGg1ZURlhXQMEcRLDSVF5UwV84XEK8Rc3dCw8KElsCEwwAgBRXHYwACdAgGs-cgALCN4Yji540ETBGWVhSStlU2UtK0NDVY1CxBlTDUkcnOtDcRoqzcaQdxb8ds7uvoHh2DH2SapDSLMVhzbi8JbWGjnfaWURqG4KTJHBAZGSSWzCZSiDYKa445QPJ6eNodLq9PjsQYAVww0yisziYKEFTWJxook2og0ohxSL2sMkMgUygUplMsJsGg0hgJzSJr1JPT4LEG7FpQNi80ZCGW6gF1RRdgl3KRwmEZVWEg0mIR+S5Mo8rUk3h+k2IZEomGd4ym9BmwIZCSMhiF60ykoRCLMsl5wbKe3Uexuwe59uebS9vwmTpdEwAkm8CMgSGNAmAoABbMD9fwANyGnHIJEwaui-s1gYQVlMceqmgxmlSBX0RilUhuNFS9XySg0qblGcm2e9+dJRZLQQrVYCE1Qg2wAC9uOwmy36e3FkZbZJVEK2Xt8qsZLzxHtylysvsX2y8nPHQus-+K7dEQ3CwBSJB4P4O57oe-RNv4EDYGB7pgKebagh2VichYGhpLcM7duoSJpFsFgVLC2SiN21y-i8-5LpmQHEKB4GQXWKrYI2mAIUhx4UKhvp0uhCz8JewponkChYtsxiaE+w4IDI+RSHkUp9qaKycrR6Y5gxkxMSBuBgYMEG4P4ACCABC3j+AAGmhGoYRenaCqI5ziGIhg2C+JxpMRYpnGKqwIpOpi1A0riPLKf66YBBaGcZpkWdZ-gAJoOSCImJFYUkCrh+xyIY7LsvJRTwgokjCHIFTQo4kraXpAE5gZLEmZBZBQF0GUBs51w5NISi9vIOLCKYxGwiy3LyKa7KjWFDX0XFpIJaxZldPg7A+oCraOVlRglGsKjsrc1xpEVxHKMGlWbFKo3hiowgLbFzXxa1SVMEMH24Ih5CUpgJDDIhyH8d156iS5grnKKPkZMGqjKMROJnGaVRhVVkoaGIT3eo1LVGatUG7geR5Npgej+E22BQLgoNOeDGyolJmhSeknI0Mo4i8tJApiup+TsiU2OZrjr3421ZnsQ2pPk5T1O03tLmje5gqjdJZhYryyhyOUIqjUK1RVLUQuLktwFvZBsC4CQTD+OwqB2fLWrXNcAocxGYXVGYxHZKiSnssoAdso4SnG01y6i4lFtWzbdtpY7mEvlImQc4YpoecYhwKYaaycsHVGp1aOShyLy3m2ZYAAI6UvB61QJt8e9ScKleaaYVsnIHm8rUkI5CYE5spi9yRYSMU46bzFi+9AOk9QgnqplTuyGsqQrC+VHpAXvKmB5FilJdoqZGoojF+PK3i-4gxgOWqB1v45Bl+wsAN-T1gVZd1glZoRU6ApwYvhY+xbDZBKGoLWJ8XqkgAEpgEEGAPgIRKQDGftlOoUhriqCwsydkSItjKHKGjOoOITgZ3AeHBUVdsA2wADJ4DALbVAqBmxzx2gvTCIo8ESBUDYMU6QiIKSUG5Ca1g-ZWixNKYe0U6LPTIe8ChMcOpbmwPBAG5B6HIOOPsCq4gpIp0xIoVBMZLDXVvMNdIhdi7mQAO4QW3ETWCx5uJAz4pQfweAABmqACAQG4GAdouAayoDGJIGA7BBDQWJnBTAgh3GoHUYpG4ZxJTbFuLUUUadiJSnMFJQUZ1NhyFWBY6xHBCYwRJo43iKFXG4A8QQIYgxdySCYP9dgHjBjlmCX4MJdiynROqbE5hZ46aJDwm5PYkpExckFGFYi2jUTZHZhOOoD5xFNAdFInGVibG1nrJxeCTjKkxK8T4vxASgkhMEJLXZUSYlxLOqia4ih7CrEMOiYigopCODyHka4L4qqFK2ZcriPFgYuMOXUhpTSSAtN3O085gKmy9I8bcnykgETyHzmITQbzcLrEHqkbRvYlD-OKVZGytkqk1O8bgXxeBTm+POSQAARrAQQfBEX9O2oMhWuTroyAnH7Qh-ktbrAyFKbYsgtZGwkWsnSGyikBFJXZClnjwWDEac01psLOlMpZWym5AzhJajOmsHIBK6imDZFofy+xpDckxF+TGNhiUKpSqlZVRzqUnMCfS7VzLBB6HZcim1dR0VUSbsILkSIbirChiKWE3IbhaWlWmRqkhNkktde61V6qoWao6aEnV-rA0Gt2ka35FgHweRWBzMVUb9hnHZrgv2DyZDOopvgLo7qqU0v8d6-NggOpdGLZyw1HZjUpETF80UGss4VDwdvNklgip2tNG2wddCwWDHqWqyF0K2n9vXcOv0pax0vgqlkKUgorBqG7EOIohU1iTqyHIduBTk3zl0umgItdNpduObSvt5yf0TCPUJE9zkzpuUuGYW6uFBwXVyuzUotRLpmlbe+0ewsv3+GA1mrdEKNUwv7cB0D88ergx5cYEw3JNGY1KscbYqIA6v1OGIGa+IMPrKw-K-wH1BhfR+n9AGwLnEbr6R6ntdL+18YE5xITgxBD7P4qRlh5HhkrFRLzWQVolLCjkIjbW6crSYmnR3NtMmqyCf+oDCp-E8PbpzXurVoSLPfTk9ZxTtnKAqa5UajTEklDWC1isaoohiKmkOmaYzVExRmc47K4WNDqX0MYb0ORtsFH9CUdxFRaiS2sIg6aM4RUzATnUKjBGCk0buQ8o4LIWxi5JboXbRhkhcy4A4AQW5aQ8GDSxAiU4cgxoKWFGUNIIpSseVGmkRrtCUuYDax19gXWATHoKxR-IqJYRXpknyzYJolZWlQbYdkFq2SzeSy1hbAA5e2AAFVAeBH4EHMhACAgRjwql449-otyA6BQHlRXCCJthIgDuYHIYU26KEGhd5rDCbv3Z+890g-EmEjvA-TTQ5gTDjb5acJmCgTRGJsPvUogoObF3a51uJxgbVaHkCYVQeRbiZyKFYEo5xVha3hqkGSVOlsrYx+t7Kd5UUWotUdvllg2eXm7JVFmVoNjeQ46slN9EAAqmXODKMGKou2aXKSUP8E1+bf3JTuUyFJMU7N6NJCtJVKqaRGfsytI9eLqbKTfXtshFU-4ADyuAJNeqCeZbwGvBBe+8YIX37AA803y2p-a2jyjKWopKOoagkTckhFsF5ahMbaIOqHfwuB7ZuJIJQHwwRQgITABXv6ARIXUricsV8wZThTa0AcMUYOVioo5zkOaGInUe7INgcsULWj0N4-9alweANBPH5PgYgg7aCAr5QOJNV1gIkUPMleiIRuQx8iAqZEb1ANWX1P-AM+4G8Wn98b0C-e1L46yvmB6+n+ZjiVrNyfP8gqgioh87cz1rxVhtEthytMYFAXBIoy8MB4AogR58A1sk9tQEQyhch9EbxmZOZf5xIld1Ah88l0M1c5QSQwA0CwYlhtgKpZowptEuQ+wkQExyh4QSsOdLBTBQ5qChlEAoDzgpIsgVB25Wdxo3I88LVuR8dMgaIPdFoIEqCwMRcRwTAeYI1ptNBKgidf4XlitL1o0DoTAIpyDMNFxsNwl7E9kvMxMPE+CFY4YKpJQUlHArBTRUgZlkhWZxxwd8gVkooZVU1sN4VykQU7DUAHCnZ1B7lVBLBUEtZuw3l+RUg1IvIA4ao21FVyUYkoi2Ft4LAlAuwVA7AJxht71t4yguRgoMFmdqgsjM1ciVD0CO8ttBQchgwfYo12Y3I-YsEqgDY10O0Ii8jeo41rxxxTUqg8ht5xo1BUVxs51k5nc21cMmiyMaCjARQe5qNrQXkVAA4LoVBKpuxDZVhTgBZzNPpLN3NhMlNQU+lRisd2QTjMQC9sgtgShwscRKoXlrdl1RpVdAj1ddJTcrsnjhl7ALBwopIbB1BhRs8fjt4gDUhbhNJTDgSP0cYwSEdFsOAISNEsRoSShYSBiESRtkh9ga0jtJch4zCuNFwcTWsy82kmwCTFIbATU05WRIwlJicqipDychRZA4d5tJBbt-AHsnskCNj+COSJA9QXwdhccVB8CigMRfYcRExgwR8cQBd8TmjNjOw2RzBthOQIQi9uxZdOxYx1hgwtSkwmZi4td8BFFdd9dIjDS5S5BNBHdV4tZhDRReR25XYhRhRGcsQ5Bi4o8fdPs48cxA92TNFzAJBc4BYE0Ths8HcldbAuRZodES8y9-BN9lDZSFZlgMhUUJU2NMYC8wsFIuQzh40ztjBW5VIr938b8oAZ9m9SzVMjTPw0QMRJcxQ0N2Y+88ETB1AMRc54R3d6S2hr9OBb9Y578wJH8cwkywpKp-ZGdDQXxbBEZIRA5tiIQhRBQ4CnAgA */
     id: 'Modeling',
 
     tsTypes: {} as import('./modelingMachine.typegen').Typegen0,
@@ -166,12 +166,6 @@ export const modelingMachine = createMachine(
     states: {
       idle: {
         on: {
-          'Set selection': {
-            target: 'idle',
-            internal: true,
-            actions: 'Set selection',
-          },
-
           'Enter sketch': [
             {
               target: 'animating to existing sketch',
@@ -202,12 +196,6 @@ export const modelingMachine = createMachine(
         states: {
           SketchIdle: {
             on: {
-              'Set selection': {
-                target: 'SketchIdle',
-                internal: true,
-                actions: 'Set selection',
-              },
-
               'Make segment vertical': {
                 cond: 'Can make selection vertical',
                 target: 'SketchIdle',
@@ -411,12 +399,6 @@ export const modelingMachine = createMachine(
             exit: [],
 
             on: {
-              'Set selection': {
-                target: 'Line tool',
-                description: `This is just here to stop one of the higher level "Set selections" firing when we are just trying to set the IDE code without triggering a full engine-execute`,
-                internal: true,
-              },
-
               'Equip tangential arc to': {
                 target: 'Tangential arc to',
                 cond: 'is editing existing sketch',
@@ -435,14 +417,7 @@ export const modelingMachine = createMachine(
                 ],
               },
 
-              normal: {
-                on: {
-                  'Set selection': {
-                    target: 'normal',
-                    internal: true,
-                  },
-                },
-              },
+              normal: {},
 
               'No Points': {
                 entry: 'setup noPoints onClick listener',
@@ -475,11 +450,6 @@ export const modelingMachine = createMachine(
             entry: 'set up draft arc',
 
             on: {
-              'Set selection': {
-                target: 'Tangential arc to',
-                internal: true,
-              },
-
               'Equip Line tool': 'Line tool',
             },
           },
@@ -519,11 +489,6 @@ export const modelingMachine = createMachine(
             target: 'animating to plane',
             actions: ['reset sketch metadata'],
           },
-
-          'Set selection': {
-            target: 'Sketch no face',
-            internal: true,
-          },
         },
       },
 
@@ -534,13 +499,6 @@ export const modelingMachine = createMachine(
           onDone: {
             target: 'Sketch',
             actions: 'set new sketch metadata',
-          },
-        },
-
-        on: {
-          'Set selection': {
-            target: 'animating to plane',
-            internal: true,
           },
         },
 
