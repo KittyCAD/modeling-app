@@ -112,9 +112,10 @@ export const settingsMachine = createMachine(
           newSettings.app.onboardingStatus.user =
             context.app.onboardingStatus.user
         }
+        // We instead pass in the default directory since it's asynchronous
+        // to re-initialize, and that can be done by the caller.
         newSettings.app.projectDirectory.default = defaultDirectory
 
-        console.log('new app settings', newSettings)
         return newSettings
       }),
       setAllSettings: assign((_, event) => {
