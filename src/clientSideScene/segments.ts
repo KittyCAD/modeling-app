@@ -27,6 +27,7 @@ import {
   EXTRA_SEGMENT_OFFSET_PX,
   MIN_SEGMENT_LENGTH,
   PROFILE_START,
+  SEGMENT_WIDTH_PX,
   STRAIGHT_SEGMENT,
   STRAIGHT_SEGMENT_BODY,
   STRAIGHT_SEGMENT_DASH,
@@ -91,8 +92,8 @@ export function straightSegment({
   const group = new Group()
 
   const shape = new Shape()
-  shape.moveTo(0, -1.2 * scale)
-  shape.lineTo(0, 1.2 * scale)
+  shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale)
+  shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale)
 
   let geometry
   if (isDraftSegment) {
@@ -346,8 +347,8 @@ export function createArcGeometry({
     0
   )
   const shape = new Shape()
-  shape.moveTo(0, -1.2 * scale)
-  shape.lineTo(0, 1.2 * scale) // The width of the line
+  shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale)
+  shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale) // The width of the line
 
   if (!isDashed) {
     const points = arcStart.getPoints(50)

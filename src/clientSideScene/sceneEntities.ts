@@ -99,6 +99,7 @@ export const TANGENTIAL_ARC_TO__SEGMENT_DASH =
 export const TANGENTIAL_ARC_TO_SEGMENT = 'tangential-arc-to-segment'
 export const TANGENTIAL_ARC_TO_SEGMENT_BODY = 'tangential-arc-to-segment-body'
 export const MIN_SEGMENT_LENGTH = 60 // in pixels
+export const SEGMENT_WIDTH_PX = 1.6
 
 // This singleton Class is responsible for all of the things the user sees and interacts with.
 // That mostly mean sketch elements.
@@ -960,8 +961,8 @@ export class SceneEntities {
     group.userData.from = from
     group.userData.to = to
     const shape = new Shape()
-    shape.moveTo(0, -1.2 * scale) // The width of the line in px (2.4px in this case)
-    shape.lineTo(0, 1.2 * scale)
+    shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale) // The width of the line in px (2.4px in this case)
+    shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale)
     const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
 
     const length = Math.sqrt(
