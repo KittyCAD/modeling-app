@@ -71,7 +71,7 @@ base64 = "0.22.0"
 convert_case = "0.6.0"
 criterion = "0.5.1"
 expectorate = "1.1.0"
-image = "0.24.9"
+image = "0.25.1"
 insta = { version = "1.38.0", features = ["json"] }
 itertools = "0.12.1"
 pretty_assertions = "1.4.0"

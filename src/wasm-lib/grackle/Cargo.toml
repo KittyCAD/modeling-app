@@ -6,7 +6,7 @@ description = "A new executor for KCL which compiles to Execution Plans"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-image = { version = "0.24.7", default-features = false, features = ["png"] }
+image = { version = "0.25.1", default-features = false, features = ["png"] }
 kcl-lib = { path = "../kcl" }
 kittycad = { workspace = true }
 kittycad-execution-plan = { workspace = true }
