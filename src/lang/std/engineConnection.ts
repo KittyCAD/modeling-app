@@ -2,7 +2,7 @@ import { PathToNode, Program, SourceRange } from 'lang/wasm'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_CONNECTION_TIMEOUT_MS } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
-import { v4 as uuidv4 } from 'uuid'
+import { uuidv4 } from 'lib/utils'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { Themes, getThemeColorForEngine } from 'lib/theme'
 

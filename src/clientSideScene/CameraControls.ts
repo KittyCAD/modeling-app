@@ -21,7 +21,7 @@ import {
   Subscription,
   EngineCommandManager,
 } from 'lang/std/engineConnection'
-import { v4 as uuidv4 } from 'uuid'
+import { uuidv4 } from 'lib/utils'
 import { deg2Rad } from 'lib/utils2d'
 import { isReducedMotion, roundOff, throttle } from 'lib/utils'
 import * as TWEEN from '@tweenjs/tween.js'

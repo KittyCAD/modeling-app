@@ -49,7 +49,7 @@ web-sys = { version = "0.3.69", features = ["console"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 approx = "0.5"
-bson = { version = "2.9.0", features = ["uuid-1", "chrono"] }
+bson = { version = "2.10.0", features = ["uuid-1", "chrono"] }
 tokio = { version = "1.37.0", features = ["full"] }
 tokio-tungstenite = { version = "0.21.0", features = ["rustls-tls-native-roots"] }
 tower-lsp = { version = "0.20.0", features = ["proposed"] }
