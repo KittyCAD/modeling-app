@@ -333,6 +333,8 @@ pub struct TangentialArcInfoOutputWasm {
     pub end_angle: f64,
     /// Flag to determine if the arc is counter clockwise.
     pub ccw: i32,
+    /// The length of the arc.
+    pub arc_length: f64,
 }
 
 #[wasm_bindgen]
@@ -362,6 +364,7 @@ pub fn get_tangential_arc_to_info(
         start_angle: result.start_angle,
         end_angle: result.end_angle,
         ccw: result.ccw,
+        arc_length: result.arc_length,
     }
 }
 

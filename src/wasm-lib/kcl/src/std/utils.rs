@@ -576,6 +576,8 @@ pub struct TangentialArcInfoOutput {
     pub end_angle: f64,
     /// If the arc is counter-clockwise.
     pub ccw: i32,
+    /// The length of the arc.
+    pub arc_length: f64,
 }
 
 // tanPreviousPoint and arcStartPoint make up a straight segment leading into the arc (of which the arc should be tangential). The arc should start at arcStartPoint and end at, arcEndPoint
@@ -626,6 +628,17 @@ pub fn get_tangential_arc_to_info(input: TangentialArcInfoInput) -> TangentialAr
     let end_angle = (input.arc_end_point[1] - center[1]).atan2(input.arc_end_point[0] - center[0]);
     let ccw = is_points_ccw(&[input.arc_start_point, arc_mid_point, input.arc_end_point]);
 
+    let arc_mid_angle = (arc_mid_point[1] - center[1]).atan2(arc_mid_point[0] - center[0]);
+    let start_to_mid_arc_length = radius
+        * delta(Angle::from_radians(start_angle), Angle::from_radians(arc_mid_angle))
+            .radians()
+            .abs();
+    let mid_to_end_arc_length = radius
+        * delta(Angle::from_radians(arc_mid_angle), Angle::from_radians(end_angle))
+            .radians()
+            .abs();
+    let arc_length = start_to_mid_arc_length + mid_to_end_arc_length;
+
     TangentialArcInfoOutput {
         center,
         radius,
@@ -633,6 +646,7 @@ pub fn get_tangential_arc_to_info(input: TangentialArcInfoInput) -> TangentialAr
         start_angle,
         end_angle,
         ccw,
+        arc_length,
     }
 }
 
@@ -757,6 +771,58 @@ mod get_tangential_arc_to_info_tests {
         assert_relative_eq!(result.start_angle, 0.0);
         assert_relative_eq!(result.end_angle, -PI / 2.0);
         assert_eq!(result.ccw, 1);
+    }
+
+    #[test]
+    fn test_arc_length_obtuse_cw() {
+        let result = get_tangential_arc_to_info(TangentialArcInfoInput {
+            tan_previous_point: [-1.0, -1.0],
+            arc_start_point: [-1.0, 0.0],
+            arc_end_point: [0.0, -1.0],
+            obtuse: true,
+        });
+        let circumference = 2.0 * PI * result.radius;
+        let expected_length = circumference * 3.0 / 4.0; // 3 quarters of a circle circle
+        assert_relative_eq!(result.arc_length, expected_length);
+    }
+
+    #[test]
+    fn test_arc_length_acute_cw() {
+        let result = get_tangential_arc_to_info(TangentialArcInfoInput {
+            tan_previous_point: [-1.0, -1.0],
+            arc_start_point: [-1.0, 0.0],
+            arc_end_point: [0.0, 1.0],
+            obtuse: true,
+        });
+        let circumference = 2.0 * PI * result.radius;
+        let expected_length = circumference / 4.0; // 1 quarters of a circle circle
+        assert_relative_eq!(result.arc_length, expected_length);
+    }
+
+    #[test]
+    fn test_arc_length_obtuse_ccw() {
+        let result = get_tangential_arc_to_info(TangentialArcInfoInput {
+            tan_previous_point: [1.0, -1.0],
+            arc_start_point: [1.0, 0.0],
+            arc_end_point: [0.0, -1.0],
+            obtuse: true,
+        });
+        let circumference = 2.0 * PI * result.radius;
+        let expected_length = circumference * 3.0 / 4.0; // 1 quarters of a circle circle
+        assert_relative_eq!(result.arc_length, expected_length);
+    }
+
+    #[test]
+    fn test_arc_length_acute_ccw() {
+        let result = get_tangential_arc_to_info(TangentialArcInfoInput {
+            tan_previous_point: [1.0, -1.0],
+            arc_start_point: [1.0, 0.0],
+            arc_end_point: [0.0, 1.0],
+            obtuse: true,
+        });
+        let circumference = 2.0 * PI * result.radius;
+        let expected_length = circumference / 4.0; // 1 quarters of a circle circle
+        assert_relative_eq!(result.arc_length, expected_length);
     }
 }
 
