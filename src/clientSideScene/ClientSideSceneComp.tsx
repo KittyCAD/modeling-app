@@ -8,7 +8,11 @@ import { ARROWHEAD, DEBUG_SHOW_BOTH_SCENES } from './sceneInfra'
 import { ReactCameraProperties } from './CameraControls'
 import { throttle } from 'lib/utils'
 import { sceneInfra } from 'lib/singletons'
-import { EXTRA_SEGMENT_HANDLE, getParentGroup } from './sceneEntities'
+import {
+  EXTRA_SEGMENT_HANDLE,
+  PROFILE_START,
+  getParentGroup,
+} from './sceneEntities'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -81,13 +85,22 @@ export const ClientSideScene = ({
   if (state.matches('Sketch')) {
     if (
       context.mouseState.type === 'isHovering' &&
-      getParentGroup(context.mouseState.on, [ARROWHEAD, EXTRA_SEGMENT_HANDLE])
+      getParentGroup(context.mouseState.on, [
+        ARROWHEAD,
+        EXTRA_SEGMENT_HANDLE,
+        PROFILE_START,
+      ])
     ) {
       cursor = 'move'
     } else if (context.mouseState.type === 'isDragging') {
       cursor = 'grabbing'
-    } else {
+    } else if (
+      state.matches('Sketch.Line tool') ||
+      state.matches('Sketch.Tangential arc to')
+    ) {
       cursor = 'crosshair'
+    } else {
+      cursor = 'default'
     }
   }
 
