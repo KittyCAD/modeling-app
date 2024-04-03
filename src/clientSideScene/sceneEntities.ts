@@ -990,9 +990,6 @@ export class SceneEntities {
     if (hoveredParent && hoveredParent?.uuid === group?.uuid) {
       isHandlesVisible = !shouldHideHover
     }
-    if (isHandlesVisible) {
-      console.log('hoverGuy', hoveredParent, sceneInfra.hoveredObject, group)
-    }
 
     if (arrowGroup) {
       arrowGroup.position.set(to[0], to[1], 0)
@@ -1263,7 +1260,6 @@ export class SceneEntities {
           TANGENTIAL_ARC_TO_SEGMENT,
           PROFILE_START,
         ])
-        console.log('onMouseLeave', parent, selected, rest)
         if (parent) {
           const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
