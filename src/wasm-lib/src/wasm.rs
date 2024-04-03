@@ -19,6 +19,7 @@ pub async fn execute_wasm(
     units: &str,
     engine_manager: kcl_lib::engine::conn_wasm::EngineCommandManager,
     fs_manager: kcl_lib::fs::wasm::FileSystemManager,
+    is_mock: bool,
 ) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
     // deserialize the ast from a stringified json
@@ -37,9 +38,10 @@ pub async fn execute_wasm(
         fs,
         stdlib: std::sync::Arc::new(kcl_lib::std::StdLib::new()),
         units,
+        is_mock,
     };
 
-    let memory = kcl_lib::executor::execute(program, &mut mem, kcl_lib::executor::BodyType::Root, &ctx)
+    let memory = kcl_lib::executor::execute_outer(program, &mut mem, kcl_lib::executor::BodyType::Root, &ctx)
         .await
         .map_err(String::from)?;
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
@@ -331,6 +333,8 @@ pub struct TangentialArcInfoOutputWasm {
     pub end_angle: f64,
     /// Flag to determine if the arc is counter clockwise.
     pub ccw: i32,
+    /// The length of the arc.
+    pub arc_length: f64,
 }
 
 #[wasm_bindgen]
@@ -360,6 +364,7 @@ pub fn get_tangential_arc_to_info(
         start_angle: result.start_angle,
         end_angle: result.end_angle,
         ccw: result.ccw,
+        arc_length: result.arc_length,
     }
 }
 

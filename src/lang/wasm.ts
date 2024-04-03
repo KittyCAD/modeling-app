@@ -127,13 +127,15 @@ export interface ProgramMemory {
 export const executor = async (
   node: Program,
   programMemory: ProgramMemory = { root: {}, return: null },
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: EngineCommandManager,
+  isMock: boolean = false
 ): Promise<ProgramMemory> => {
   engineCommandManager.startNewSession()
   const _programMemory = await _executor(
     node,
     programMemory,
-    engineCommandManager
+    engineCommandManager,
+    isMock
   )
   await engineCommandManager.waitForAllCommands()
 
@@ -148,16 +150,19 @@ const getSettingsState = import('components/SettingsAuthProvider').then(
 export const _executor = async (
   node: Program,
   programMemory: ProgramMemory = { root: {}, return: null },
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: EngineCommandManager,
+  isMock: boolean
 ): Promise<ProgramMemory> => {
   try {
-    const baseUnit = (await getSettingsState)()?.baseUnit || 'mm'
+    const baseUnit =
+      (await getSettingsState)()?.modeling.defaultUnit.current || 'mm'
     const memory: ProgramMemory = await execute_wasm(
       JSON.stringify(node),
       JSON.stringify(programMemory),
       baseUnit,
       engineCommandManager,
-      fileSystemManager
+      fileSystemManager,
+      isMock
     )
     return memory
   } catch (e: any) {
@@ -247,6 +252,7 @@ export function getTangentialArcToInfo({
   startAngle: number
   endAngle: number
   ccw: boolean
+  arcLength: number
 } {
   const result = get_tangential_arc_to_info(
     arcStartPoint[0],
@@ -264,6 +270,7 @@ export function getTangentialArcToInfo({
     startAngle: result.start_angle,
     endAngle: result.end_angle,
     ccw: result.ccw > 0,
+    arcLength: result.arc_length,
   }
 }
 

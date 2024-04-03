@@ -67,3 +67,12 @@ echo "Versions has been bumped in relevant json files, a branch has been created
 echo ""
 echo "What's left for you to do is, push the branch and make the release PR."
 echo ""
+
+echo "Suggested changelog:"
+echo "\`\`\`"
+echo "## What's Changed"
+git log $(git describe --tags --abbrev=0)..HEAD --oneline --pretty=format:%s | grep -v Bump | grep -v 'Cut release v' | awk '{print "* "toupper(substr($0,0,1))substr($0,2)}'
+echo ""
+echo "**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/${latest_tag}...${new_version}"
+echo "\`\`\`"
+echo "and would recommend removing ones that aren't related to the product (eg. CI changes)"

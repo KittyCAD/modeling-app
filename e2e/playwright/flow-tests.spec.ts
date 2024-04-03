@@ -1,10 +1,11 @@
 import { test, expect } from '@playwright/test'
-import { secrets } from './secrets'
 import { getUtils } from './test-utils'
 import waitOn from 'wait-on'
-import { Themes } from '../../src/lib/theme'
-import { initialSettings } from '../../src/lib/settings/initialSettings'
 import { roundOff } from 'lib/utils'
+import { basicStorageState } from './storageStates'
+import * as TOML from '@iarna/toml'
+import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
+import { Themes } from 'lib/theme'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -30,31 +31,14 @@ test.beforeEach(async ({ context, page }) => {
     resources: ['tcp:3000'],
     timeout: 5000,
   })
-  await context.addInitScript(async (token) => {
-    localStorage.setItem('TOKEN_PERSIST_KEY', token)
-    localStorage.setItem('persistCode', ``)
-    localStorage.setItem(
-      'SETTINGS_PERSIST_KEY',
-      JSON.stringify({
-        baseUnit: 'in',
-        cameraControls: 'KittyCAD',
-        defaultDirectory: '',
-        defaultProjectName: 'project-$nnn',
-        onboardingStatus: 'dismissed',
-        showDebugPanel: true,
-        textWrapping: 'On',
-        theme: 'system',
-        unitSystem: 'imperial',
-      })
-    )
-  }, secrets.token)
+
   // kill animations, speeds up tests and reduced flakiness
   await page.emulateMedia({ reducedMotion: 'reduce' })
 })
 
 test.setTimeout(60000)
 
-test('Basic sketch', async ({ page }) => {
+test('Basic sketch', async ({ page, context }) => {
   const u = getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -529,96 +513,133 @@ test('Auto complete works', async ({ page }) => {
 })
 
 // Stored settings validation test
-test('Stored settings are validated and fall back to defaults', async ({
-  page,
-  context,
-}) => {
-  // Override beforeEach test setup
+test.describe('Settings persistence and validation tests', () => {
+  // Override test setup
   // with corrupted settings
-  await context.addInitScript(async () => {
-    const storedSettings = JSON.parse(
-      localStorage.getItem('SETTINGS_PERSIST_KEY') || '{}'
-    )
+  const storageState = structuredClone(basicStorageState)
+  const s = TOML.parse(storageState.origins[0].localStorage[2].value) as {
+    settings: SaveSettingsPayload
+  }
+  s.settings.app.theme = Themes.Dark
+  s.settings.app.projectDirectory = 123 as any
+  s.settings.modeling.defaultUnit = 'invalid' as any
+  s.settings.modeling.mouseControls = `() => alert('hack the planet')` as any
+  s.settings.projects.defaultProjectName = false as any
+  storageState.origins[0].localStorage[2].value = TOML.stringify(s)
 
-    // Corrupt the settings
-    storedSettings.baseUnit = 'invalid'
-    storedSettings.cameraControls = `() => alert('hack the planet')`
-    storedSettings.defaultDirectory = 123
-    storedSettings.defaultProjectName = false
+  test.use({ storageState })
 
-    localStorage.setItem('SETTINGS_PERSIST_KEY', JSON.stringify(storedSettings))
+  test('Stored settings are validated and fall back to defaults', async ({
+    page,
+  }) => {
+    const u = getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+
+    // Check the settings were reset
+    const storedSettings = TOML.parse(
+      await page.evaluate(() => localStorage.getItem('/user.toml') || '{}')
+    ) as { settings: SaveSettingsPayload }
+
+    expect(storedSettings.settings.app?.theme).toBe('dark')
+
+    // Check that the invalid settings were removed
+    expect(storedSettings.settings.modeling?.defaultUnit).toBe(undefined)
+    expect(storedSettings.settings.modeling?.mouseControls).toBe(undefined)
+    expect(storedSettings.settings.app?.projectDirectory).toBe(undefined)
+    expect(storedSettings.settings.projects?.defaultProjectName).toBe(undefined)
   })
 
-  await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/', { waitUntil: 'domcontentloaded' })
+  test('Project settings can be set and override user settings', async ({
+    page,
+  }) => {
+    const u = getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
 
-  // Check the toast appeared
-  await expect(
-    page.getByText(`Error validating persisted settings:`, {
-      exact: false,
-    })
-  ).toBeVisible()
+    // Open the settings modal with the browser keyboard shortcut
+    await page.keyboard.press('Meta+Shift+,')
 
-  // Check the settings were reset
-  const storedSettings = JSON.parse(
-    await page.evaluate(
-      () => localStorage.getItem('SETTINGS_PERSIST_KEY') || '{}'
-    )
-  )
-  await expect(storedSettings.baseUnit).toBe(initialSettings.baseUnit)
-  await expect(storedSettings.cameraControls).toBe(
-    initialSettings.cameraControls
-  )
-  await expect(storedSettings.defaultDirectory).toBe(
-    initialSettings.defaultDirectory
-  )
-  await expect(storedSettings.defaultProjectName).toBe(
-    initialSettings.defaultProjectName
-  )
+    await expect(
+      page.getByRole('heading', { name: 'Settings', exact: true })
+    ).toBeVisible()
+    await page
+      .locator('select[name="app-theme"]')
+      .selectOption({ value: 'light' })
+
+    // Verify the toast appeared
+    await expect(
+      page.getByText(`Set theme to "light" for this project`)
+    ).toBeVisible()
+    // Check that the theme changed
+    await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
+
+    // Check that the user setting was not changed
+    await page.getByRole('radio', { name: 'User' }).click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('dark')
+
+    // Roll back to default "system" theme
+    await page
+      .getByText(
+        'themeRoll back themeRoll back to match defaultThe overall appearance of the appl'
+      )
+      .hover()
+    await page
+      .getByRole('button', {
+        name: 'Roll back theme ; Has tooltip: Roll back to match default',
+      })
+      .click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+
+    // Check that the project setting did not change
+    await page.getByRole('radio', { name: 'Project' }).click()
+    await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
+  })
 })
 
 // Onboarding tests
-test('Onboarding redirects and code updating', async ({ page, context }) => {
-  const u = getUtils(page)
+test.describe('Onboarding tests', () => {
+  // Override test setup
+  const storageState = structuredClone(basicStorageState)
+  const s = TOML.parse(storageState.origins[0].localStorage[2].value) as {
+    settings: SaveSettingsPayload
+  }
+  s.settings.app.onboardingStatus = '/export'
+  storageState.origins[0].localStorage[2].value = TOML.stringify(s)
+  test.use({ storageState })
 
-  // Override beforeEach test setup
-  await context.addInitScript(async () => {
-    // Give some initial code, so we can test that it's cleared
-    localStorage.setItem('persistCode', 'const sigmaAllow = 15000')
+  test('Onboarding redirects and code updating', async ({ page, context }) => {
+    const u = getUtils(page)
 
-    const storedSettings = JSON.parse(
-      localStorage.getItem('SETTINGS_PERSIST_KEY') || '{}'
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+
+    // Test that the redirect happened
+    await expect(page.url().split(':3000').slice(-1)[0]).toBe(
+      `/file/%2Fbrowser%2Fmain.kcl/onboarding/export`
     )
-    storedSettings.onboardingStatus = '/export'
-    localStorage.setItem('SETTINGS_PERSIST_KEY', JSON.stringify(storedSettings))
+
+    // Test that you come back to this page when you refresh
+    await page.reload()
+    await expect(page.url().split(':3000').slice(-1)[0]).toBe(
+      `/file/%2Fbrowser%2Fmain.kcl/onboarding/export`
+    )
+
+    // Test that the onboarding pane loaded
+    const title = page.locator('[data-testid="onboarding-content"]')
+    await expect(title).toBeAttached()
+
+    // Test that the code changes when you advance to the next step
+    await page.locator('[data-testid="onboarding-next"]').click()
+    await expect(page.locator('.cm-content')).toHaveText('')
+
+    // Test that the code is not empty when you click on the next step
+    await page.locator('[data-testid="onboarding-next"]').click()
+    await expect(page.locator('.cm-content')).toHaveText(/.+/)
   })
-
-  await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
-  await u.waitForAuthSkipAppStart()
-
-  // Test that the redirect happened
-  await expect(page.url().split(':3000').slice(-1)[0]).toBe(
-    `/file/new/onboarding/export`
-  )
-
-  // Test that you come back to this page when you refresh
-  await page.reload()
-  await expect(page.url().split(':3000').slice(-1)[0]).toBe(
-    `/file/new/onboarding/export`
-  )
-
-  // Test that the onboarding pane loaded
-  const title = page.locator('[data-testid="onboarding-content"]')
-  await expect(title).toBeAttached()
-
-  // Test that the code changes when you advance to the next step
-  await page.locator('[data-testid="onboarding-next"]').click()
-  await expect(page.locator('.cm-content')).toHaveText('')
-
-  // Test that the code is not empty when you click on the next step
-  await page.locator('[data-testid="onboarding-next"]').click()
-  await expect(page.locator('.cm-content')).toHaveText(/.+/)
 })
 
 test('Selections work on fresh and edited sketch', async ({ page }) => {
@@ -779,129 +800,134 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   await selectionSequence()
 })
 
-test('Command bar works and can change a setting', async ({ page }) => {
-  // Brief boilerplate
-  const u = getUtils(page)
-  await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
-  await u.waitForAuthSkipAppStart()
+test.describe('Command bar tests', () => {
+  test('Command bar works and can change a setting', async ({ page }) => {
+    // Brief boilerplate
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/', { waitUntil: 'domcontentloaded' })
 
-  let cmdSearchBar = page.getByPlaceholder('Search commands')
+    let cmdSearchBar = page.getByPlaceholder('Search commands')
 
-  // First try opening the command bar and closing it
-  // It has a different label on mac and windows/linux, "Meta+K" and "Ctrl+/" respectively
-  await page
-    .getByRole('button', { name: 'Ctrl+/' })
-    .or(page.getByRole('button', { name: '⌘K' }))
-    .click()
-  await expect(cmdSearchBar).toBeVisible()
-  await page.keyboard.press('Escape')
-  await expect(cmdSearchBar).not.toBeVisible()
+    // First try opening the command bar and closing it
+    // It has a different label on mac and windows/linux, "Meta+K" and "Ctrl+/" respectively
+    await page
+      .getByRole('button', { name: 'Ctrl+/' })
+      .or(page.getByRole('button', { name: '⌘K' }))
+      .click()
+    await expect(cmdSearchBar).toBeVisible()
+    await page.keyboard.press('Escape')
+    await expect(cmdSearchBar).not.toBeVisible()
 
-  // Now try the same, but with the keyboard shortcut, check focus
-  await page.keyboard.press('Meta+K')
-  await expect(cmdSearchBar).toBeVisible()
-  await expect(cmdSearchBar).toBeFocused()
+    // Now try the same, but with the keyboard shortcut, check focus
+    await page.keyboard.press('Meta+K')
+    await expect(cmdSearchBar).toBeVisible()
+    await expect(cmdSearchBar).toBeFocused()
 
-  // Try typing in the command bar
-  await page.keyboard.type('theme')
-  const themeOption = page.getByRole('option', { name: 'Set Theme' })
-  await expect(themeOption).toBeVisible()
-  await themeOption.click()
-  const themeInput = page.getByPlaceholder('system')
-  await expect(themeInput).toBeVisible()
-  await expect(themeInput).toBeFocused()
-  // Select dark theme
-  await page.keyboard.press('ArrowDown')
-  await page.keyboard.press('ArrowUp')
-  await expect(page.getByRole('option', { name: Themes.Dark })).toHaveAttribute(
-    'data-headlessui-state',
-    'active'
-  )
-  await page.keyboard.press('Enter')
-
-  // Check the toast appeared
-  await expect(page.getByText(`Set Theme to "${Themes.Dark}"`)).toBeVisible()
-  // Check that the theme changed
-  await expect(page.locator('body')).toHaveClass(`body-bg ${Themes.Dark}`)
-})
-
-test('Can extrude from the command bar', async ({ page, context }) => {
-  await context.addInitScript(async (token) => {
-    localStorage.setItem(
-      'persistCode',
-      `
-      const distance = sqrt(20)
-      const part001 = startSketchOn('-XZ')
-        |> startProfileAt([-6.95, 4.98], %)
-        |> line([25.1, 0.41], %)
-        |> line([0.73, -14.93], %)
-        |> line([-23.44, 0.52], %)
-        |> close(%)
-      `
+    // Try typing in the command bar
+    await page.keyboard.type('theme')
+    const themeOption = page.getByRole('option', {
+      name: 'Settings · app · theme',
+    })
+    await expect(themeOption).toBeVisible()
+    await themeOption.click()
+    const themeInput = page.getByPlaceholder('Select an option')
+    await expect(themeInput).toBeVisible()
+    await expect(themeInput).toBeFocused()
+    // Select dark theme
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await expect(page.getByRole('option', { name: 'system' })).toHaveAttribute(
+      'data-headlessui-state',
+      'active'
     )
+    await page.keyboard.press('Enter')
+
+    // Check the toast appeared
+    await expect(
+      page.getByText(`Set theme to "system" for this project`)
+    ).toBeVisible()
+    // Check that the theme changed
+    await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
   })
 
-  const u = getUtils(page)
-  await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
-  await u.waitForAuthSkipAppStart()
-  await u.openDebugPanel()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
+  // Override test setup code
+  const storageState = structuredClone(basicStorageState)
+  storageState.origins[0].localStorage[1].value = `const distance = sqrt(20)
+  const part001 = startSketchOn('-XZ')
+    |> startProfileAt([-6.95, 4.98], %)
+    |> line([25.1, 0.41], %)
+    |> line([0.73, -14.93], %)
+    |> line([-23.44, 0.52], %)
+    |> close(%)
+  `
+  test.use({ storageState })
 
-  let cmdSearchBar = page.getByPlaceholder('Search commands')
-  await page.keyboard.press('Meta+K')
-  await expect(cmdSearchBar).toBeVisible()
+  test('Can extrude from the command bar', async ({ page, context }) => {
+    const u = getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
 
-  // Search for extrude command and choose it
-  await page.getByRole('option', { name: 'Extrude' }).click()
-  await expect(page.locator('#arg-form > label')).toContainText(
-    'Please select one face'
-  )
-  await expect(page.getByRole('button', { name: 'selection' })).toBeDisabled()
+    // Make sure the stream is up
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
 
-  // Click to select face and set distance
-  await page.getByText('|> startProfileAt([-6.95, 4.98], %)').click()
-  await page.getByRole('button', { name: 'Continue' }).click()
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+    await page.getByText('|> startProfileAt([-6.95, 4.98], %)').click()
+    await expect(
+      page.getByRole('button', { name: 'Extrude' })
+    ).not.toBeDisabled()
 
-  // Assert that we're on the distance step
-  await expect(page.getByRole('button', { name: 'distance' })).toBeDisabled()
+    let cmdSearchBar = page.getByPlaceholder('Search commands')
+    await page.keyboard.press('Meta+K')
+    await expect(cmdSearchBar).toBeVisible()
 
-  // Assert that the an alternative variable name is chosen,
-  // since the default variable name is already in use (distance)
-  await page.getByRole('button', { name: 'Create new variable' }).click()
-  await expect(page.getByPlaceholder('Variable name')).toHaveValue(
-    'distance001'
-  )
-  await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled()
-  await page.getByRole('button', { name: 'Continue' }).click()
+    // Search for extrude command and choose it
+    await page.getByRole('option', { name: 'Extrude' }).click()
 
-  // Review step and argument hotkeys
-  await expect(
-    page.getByRole('button', { name: 'Submit command' })
-  ).toBeEnabled()
-  await page.keyboard.press('Backspace')
-  await expect(
-    page.getByRole('button', { name: 'Distance 12', exact: false })
-  ).toBeDisabled()
-  await page.keyboard.press('Enter')
+    // Assert that we're on the distance step
+    await expect(page.getByRole('button', { name: 'distance' })).toBeDisabled()
 
-  await expect(page.getByText('Confirm Extrude')).toBeVisible()
+    // Assert that the an alternative variable name is chosen,
+    // since the default variable name is already in use (distance)
+    await page.getByRole('button', { name: 'Create new variable' }).click()
+    await expect(page.getByPlaceholder('Variable name')).toHaveValue(
+      'distance001'
+    )
+    await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled()
+    await page.getByRole('button', { name: 'Continue' }).click()
 
-  // Check that the code was updated
-  await page.keyboard.press('Enter')
-  // Unfortunately this indentation seems to matter for the test
-  await expect(page.locator('.cm-content')).toHaveText(
-    `const distance = sqrt(20)
+    // Review step and argument hotkeys
+    await expect(
+      page.getByRole('button', { name: 'Submit command' })
+    ).toBeEnabled()
+    await page.keyboard.press('Backspace')
+    await expect(
+      page.getByRole('button', { name: 'Distance 12', exact: false })
+    ).toBeDisabled()
+    await page.keyboard.press('Enter')
+
+    await expect(page.getByText('Confirm Extrude')).toBeVisible()
+
+    // Check that the code was updated
+    await page.keyboard.press('Enter')
+    // Unfortunately this indentation seems to matter for the test
+    await expect(page.locator('.cm-content')).toHaveText(
+      `const distance = sqrt(20)
 const distance001 = 5 + 7
 const part001 = startSketchOn('-XZ')
-  |> startProfileAt([-6.95, 4.98], %)
-  |> line([25.1, 0.41], %)
-  |> line([0.73, -14.93], %)
-  |> line([-23.44, 0.52], %)
-  |> close(%)
-  |> extrude(distance001, %)`.replace(/(\r\n|\n|\r)/gm, '') // remove newlines
-  )
+    |> startProfileAt([-6.95, 4.98], %)
+    |> line([25.1, 0.41], %)
+    |> line([0.73, -14.93], %)
+    |> line([-23.44, 0.52], %)
+    |> close(%)
+    |> extrude(distance001, %)`.replace(/(\r\n|\n|\r)/gm, '') // remove newlines
+    )
+  })
 })
 
 test('Can add multiple sketches', async ({ page }) => {
@@ -1470,9 +1496,13 @@ test('Sketch on face', async ({ page, context }) => {
   await page.getByText('startProfileAt([1.03, 1.03], %)').click()
   await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
   await page.getByRole('button', { name: 'Edit Sketch' }).click()
+  await page.setViewportSize({ width: 1200, height: 1200 })
+  await u.openAndClearDebugPanel()
+  await u.updateCamPosition([452, -152, 1166])
+  await u.closeDebugPanel()
   await page.waitForTimeout(200)
 
-  const pointToDragFirst = [691, 237]
+  const pointToDragFirst = [787, 565]
   await page.mouse.move(pointToDragFirst[0], pointToDragFirst[1])
   await page.mouse.down()
   await page.mouse.move(pointToDragFirst[0] - 20, pointToDragFirst[1], {
@@ -1486,7 +1516,9 @@ test('Sketch on face', async ({ page, context }) => {
   await expect(page.locator('.cm-content'))
     .toContainText(`const part002 = startSketchOn(part001, 'seg01')
 |> startProfileAt([1.03, 1.03], %)
-|> line([2.81, -0.33], %)
+|> line([${process?.env?.CI ? 2.74 : 2.93}, -${
+    process?.env?.CI ? 0.24 : 0.2
+  }], %)
 |> line([-4.44, -2.13], %)
 |> close(%)`)
 
@@ -1509,7 +1541,9 @@ test('Sketch on face', async ({ page, context }) => {
   await expect(page.locator('.cm-content'))
     .toContainText(`const part002 = startSketchOn(part001, 'seg01')
 |> startProfileAt([1.03, 1.03], %)
-|> line([2.81, -0.33], %)
+|> line([${process?.env?.CI ? 2.74 : 2.93}, -${
+    process?.env?.CI ? 0.24 : 0.2
+  }], %)
 |> line([-4.44, -2.13], %)
 |> close(%)
 |> extrude(5 + 7, %)`)

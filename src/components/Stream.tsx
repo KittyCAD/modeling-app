@@ -106,7 +106,9 @@ export const Stream = ({ className = '' }: { className?: string }) => {
         style={{ transitionDuration: '200ms', transitionProperty: 'filter' }}
         id="video-stream"
       />
-      <ClientSideScene cameraControls={settings.context?.cameraControls} />
+      <ClientSideScene
+        cameraControls={settings.context.modeling.mouseControls.current}
+      />
       {!isNetworkOkay && !isLoading && (
         <div className="text-center absolute inset-0">
           <Loading>

@@ -2,7 +2,12 @@ import { PathToNode, VariableDeclarator } from 'lang/wasm'
 import { Axis, Selection, Selections } from 'lib/selections'
 import { assign, createMachine } from 'xstate'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
-import { kclManager, sceneInfra, sceneEntitiesManager } from 'lib/singletons'
+import {
+  kclManager,
+  sceneInfra,
+  sceneEntitiesManager,
+  engineCommandManager,
+} from 'lib/singletons'
 import {
   horzVertInfo,
   applyConstraintHorzVert,
@@ -37,6 +42,7 @@ import { ModelingCommandSchema } from 'lib/commandBarConfigs/modelingCommandConf
 import { DefaultPlaneStr } from 'clientSideScene/sceneEntities'
 import { Vector3 } from 'three'
 import { quaternionFromUpNForward } from 'clientSideScene/helpers'
+import { uuidv4 } from 'lib/utils'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -165,12 +171,6 @@ export const modelingMachine = createMachine(
     states: {
       idle: {
         on: {
-          'Set selection': {
-            target: 'idle',
-            internal: true,
-            actions: 'Set selection',
-          },
-
           'Enter sketch': [
             {
               target: 'animating to existing sketch',
@@ -201,12 +201,6 @@ export const modelingMachine = createMachine(
         states: {
           SketchIdle: {
             on: {
-              'Set selection': {
-                target: 'SketchIdle',
-                internal: true,
-                actions: 'Set selection',
-              },
-
               'Make segment vertical': {
                 cond: 'Can make selection vertical',
                 target: 'SketchIdle',
@@ -412,12 +406,6 @@ export const modelingMachine = createMachine(
             exit: [],
 
             on: {
-              'Set selection': {
-                target: 'Line tool',
-                description: `This is just here to stop one of the higher level "Set selections" firing when we are just trying to set the IDE code without triggering a full engine-execute`,
-                internal: true,
-              },
-
               'Equip tangential arc to': {
                 target: 'Tangential arc to',
                 cond: 'is editing existing sketch',
@@ -436,14 +424,7 @@ export const modelingMachine = createMachine(
                 ],
               },
 
-              normal: {
-                on: {
-                  'Set selection': {
-                    target: 'normal',
-                    internal: true,
-                  },
-                },
-              },
+              normal: {},
 
               'No Points': {
                 entry: 'setup noPoints onClick listener',
@@ -476,11 +457,6 @@ export const modelingMachine = createMachine(
             entry: 'set up draft arc',
 
             on: {
-              'Set selection': {
-                target: 'Tangential arc to',
-                internal: true,
-              },
-
               'Equip Line tool': 'Line tool',
             },
           },
@@ -530,18 +506,13 @@ export const modelingMachine = createMachine(
       },
 
       'Sketch no face': {
-        entry: 'show default planes',
+        entry: ['show default planes', 'set selection filter to faces only'],
 
-        exit: 'hide default planes',
+        exit: ['hide default planes', 'set selection filter to defaults'],
         on: {
           'Select default plane': {
             target: 'animating to plane',
             actions: ['reset sketch metadata'],
-          },
-
-          'Set selection': {
-            target: 'Sketch no face',
-            internal: true,
           },
         },
       },
@@ -553,13 +524,6 @@ export const modelingMachine = createMachine(
           onDone: {
             target: 'Sketch',
             actions: 'set new sketch metadata',
-          },
-        },
-
-        on: {
-          'Set selection': {
-            target: 'animating to plane',
-            internal: true,
           },
         },
 
@@ -593,7 +557,6 @@ export const modelingMachine = createMachine(
       },
 
       'Set selection': {
-        target: '#Modeling',
         internal: true,
         actions: 'Set selection',
       },
@@ -855,6 +818,7 @@ export const modelingMachine = createMachine(
           if (Object.keys(sceneEntitiesManager.activeSegments).length > 0) {
             await sceneEntitiesManager.tearDownSketch({ removeAxis: false })
           }
+          sceneInfra.resetMouseListeners()
           await sceneEntitiesManager.setupSketch({
             sketchPathToNode: sketchDetails?.sketchPathToNode || [],
             forward: sketchDetails.zAxis,
@@ -862,9 +826,13 @@ export const modelingMachine = createMachine(
             position: sketchDetails.origin,
             maybeModdedAst: kclManager.ast,
           })
-          sceneEntitiesManager.setupSketchIdleCallbacks(
-            sketchDetails?.sketchPathToNode || []
-          )
+          sceneInfra.resetMouseListeners()
+          sceneEntitiesManager.setupSketchIdleCallbacks({
+            pathToNode: sketchDetails?.sketchPathToNode || [],
+            forward: sketchDetails.zAxis,
+            up: sketchDetails.yAxis,
+            position: sketchDetails.origin,
+          })
         })()
       },
       'animate after sketch': () => {
@@ -979,6 +947,24 @@ export const modelingMachine = createMachine(
       'engineToClient cam sync direction': () => {
         sceneInfra.camControls.syncDirection = 'engineToClient'
       },
+      'set selection filter to faces only': () =>
+        engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'set_selection_filter',
+            filter: ['face'],
+          },
+        }),
+      'set selection filter to defaults': () =>
+        engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'set_selection_filter',
+            filter: ['face', 'edge', 'solid2d'],
+          },
+        }),
     },
     // end actions
   }

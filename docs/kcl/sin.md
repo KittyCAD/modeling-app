@@ -12,6 +12,10 @@ Computes the sine of a number (in radians).
 sin(num: number) -> number
 ```
 
+### Tags
+
+* `math`
+
 ### Examples
 
 ```js

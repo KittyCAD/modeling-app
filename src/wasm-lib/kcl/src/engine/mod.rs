@@ -93,6 +93,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         } else {
             batched_requests
         };
+        // println!("Running batch: {final_req:#?}");
 
         // Create the map of original command IDs to source range.
         // This is for the wasm side, kurt needs it for selections.
@@ -134,6 +135,11 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 pub fn is_cmd_with_return_values(cmd: &kittycad::types::ModelingCmd) -> bool {
     let (kittycad::types::ModelingCmd::Export { .. }
     | kittycad::types::ModelingCmd::Extrude { .. }
+    | kittycad::types::ModelingCmd::DefaultCameraLookAt { .. }
+    | kittycad::types::ModelingCmd::DefaultCameraFocusOn { .. }
+    | kittycad::types::ModelingCmd::DefaultCameraGetSettings { .. }
+    | kittycad::types::ModelingCmd::DefaultCameraPerspectiveSettings { .. }
+    | kittycad::types::ModelingCmd::DefaultCameraZoom { .. }
     | kittycad::types::ModelingCmd::SketchModeDisable { .. }
     | kittycad::types::ModelingCmd::ObjectBringToFront { .. }
     | kittycad::types::ModelingCmd::SelectWithPoint { .. }
@@ -144,8 +150,6 @@ pub fn is_cmd_with_return_values(cmd: &kittycad::types::ModelingCmd) -> bool {
     | kittycad::types::ModelingCmd::EntityGetAllChildUuids { .. }
     | kittycad::types::ModelingCmd::CameraDragMove { .. }
     | kittycad::types::ModelingCmd::CameraDragEnd { .. }
-    | kittycad::types::ModelingCmd::DefaultCameraGetSettings { .. }
-    | kittycad::types::ModelingCmd::DefaultCameraZoom { .. }
     | kittycad::types::ModelingCmd::SelectGet { .. }
     | kittycad::types::ModelingCmd::Solid3DGetAllEdgeFaces { .. }
     | kittycad::types::ModelingCmd::Solid3DGetAllOppositeEdges { .. }

@@ -12,7 +12,13 @@ import { commandBarMachine } from 'machines/commandBarMachine'
 
 type Icon = CustomIconName
 const PLATFORMS = ['both', 'web', 'desktop'] as const
-const INPUT_TYPES = ['options', 'string', 'kcl', 'selection'] as const
+const INPUT_TYPES = [
+  'options',
+  'string',
+  'kcl',
+  'selection',
+  'boolean',
+] as const
 export interface KclExpression {
   valueAst: Value
   valueText: string
@@ -66,6 +72,7 @@ export type Command<
   args?: {
     [ArgName in keyof CommandSchema]: CommandArgument<CommandSchema[ArgName], T>
   }
+  displayName?: string
   description?: string
   icon?: Icon
   hide?: (typeof PLATFORMS)[number]
@@ -83,57 +90,70 @@ export type CommandConfig<
   args?: {
     [ArgName in keyof CommandSchema]: CommandArgumentConfig<
       CommandSchema[ArgName],
-      T
+      ContextFrom<T>
     >
   }
 }
 
 export type CommandArgumentConfig<
   OutputType,
-  T extends AnyStateMachine = AnyStateMachine
+  C = ContextFrom<AnyStateMachine>
 > =
   | {
       description?: string
       required:
         | boolean
         | ((
-            commandBarContext: { argumentsToSubmit: Record<string, unknown> } // Should be the commandbarMachine's context, but it creates a circular dependency
+            commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
+            machineContext?: C
           ) => boolean)
       skip?: boolean
     } & (
       | {
-          inputType: Extract<CommandInputType, 'options'>
+          inputType: 'options'
           options:
             | CommandArgumentOption<OutputType>[]
             | ((
                 commandBarContext: {
                   argumentsToSubmit: Record<string, unknown>
-                } // Should be the commandbarMachine's context, but it creates a circular dependency
+                }, // Should be the commandbarMachine's context, but it creates a circular dependency
+                machineContext?: C
               ) => CommandArgumentOption<OutputType>[])
           optionsFromContext?: (
-            context: ContextFrom<T>
+            context: C
           ) => CommandArgumentOption<OutputType>[]
           defaultValue?:
             | OutputType
             | ((
-                commandBarContext: ContextFrom<typeof commandBarMachine>
+                commandBarContext: ContextFrom<typeof commandBarMachine>,
+                machineContext?: C
               ) => OutputType)
-          defaultValueFromContext?: (context: ContextFrom<T>) => OutputType
+          defaultValueFromContext?: (context: C) => OutputType
         }
       | {
-          inputType: Extract<CommandInputType, 'selection'>
+          inputType: 'selection'
           selectionTypes: Selection['type'][]
           multiple: boolean
         }
-      | { inputType: Extract<CommandInputType, 'kcl'>; defaultValue?: string } // KCL expression inputs have simple strings as default values
+      | { inputType: 'kcl'; defaultValue?: string } // KCL expression inputs have simple strings as default values
       | {
-          inputType: Extract<CommandInputType, 'string'>
+          inputType: 'string'
+          defaultValue?:
+            | OutputType
+            | ((
+                commandBarContext: ContextFrom<typeof commandBarMachine>,
+                machineContext?: C
+              ) => OutputType)
+          defaultValueFromContext?: (context: C) => OutputType
+        }
+      | {
+          inputType: 'boolean'
           defaultValue?:
             | OutputType
             | ((
                 commandBarContext: ContextFrom<typeof commandBarMachine>
               ) => OutputType)
-          defaultValueFromContext?: (context: ContextFrom<T>) => OutputType
+          defaultValueFromContext?: (context: C) => OutputType
         }
     )
 
@@ -146,7 +166,8 @@ export type CommandArgument<
       required:
         | boolean
         | ((
-            commandBarContext: { argumentsToSubmit: Record<string, unknown> } // Should be the commandbarMachine's context, but it creates a circular dependency
+            commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
+            machineContext?: ContextFrom<T>
           ) => boolean)
       skip?: boolean
       machineActor: InterpreterFrom<T>
@@ -158,26 +179,38 @@ export type CommandArgument<
             | ((
                 commandBarContext: {
                   argumentsToSubmit: Record<string, unknown>
-                } // Should be the commandbarMachine's context, but it creates a circular dependency
+                }, // Should be the commandbarMachine's context, but it creates a circular dependency
+                machineContext?: ContextFrom<T>
               ) => CommandArgumentOption<OutputType>[])
           defaultValue?:
             | OutputType
             | ((
-                commandBarContext: ContextFrom<typeof commandBarMachine>
+                commandBarContext: ContextFrom<typeof commandBarMachine>,
+                machineContext?: ContextFrom<T>
               ) => OutputType)
         }
       | {
-          inputType: Extract<CommandInputType, 'selection'>
+          inputType: 'selection'
           selectionTypes: Selection['type'][]
           multiple: boolean
         }
-      | { inputType: Extract<CommandInputType, 'kcl'>; defaultValue?: string } // KCL expression inputs have simple strings as default values
+      | { inputType: 'kcl'; defaultValue?: string } // KCL expression inputs have simple strings as default value
       | {
-          inputType: Extract<CommandInputType, 'string'>
+          inputType: 'string'
           defaultValue?:
             | OutputType
             | ((
-                commandBarContext: ContextFrom<typeof commandBarMachine>
+                commandBarContext: ContextFrom<typeof commandBarMachine>,
+                machineContext?: ContextFrom<T>
+              ) => OutputType)
+        }
+      | {
+          inputType: 'boolean'
+          defaultValue?:
+            | OutputType
+            | ((
+                commandBarContext: ContextFrom<typeof commandBarMachine>,
+                machineContext?: ContextFrom<T>
               ) => OutputType)
         }
     )

@@ -1,7 +1,7 @@
 import { executeAst, executeCode } from 'useStore'
 import { Selections } from 'lib/selections'
 import { KCLError } from './errors'
-import { v4 as uuidv4 } from 'uuid'
+import { uuidv4 } from 'lib/utils'
 import { EngineCommandManager } from './std/engineConnection'
 
 import { deferExecution } from 'lib/utils'
@@ -88,7 +88,6 @@ export class KclManager {
       setTimeout(() => {
         // Wait one event loop to give a chance for params to be set
         // Save the file to disk
-        // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
         this._params.id &&
           writeTextFile(this._params.id, code).catch((err) => {
             // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
@@ -428,17 +427,15 @@ export class KclManager {
     return this?.engineCommandManager?.defaultPlanes
   }
 
-  getPlaneId(axis: 'xy' | 'xz' | 'yz'): string {
-    return this.defaultPlanes[axis]
-  }
-
   showPlanes() {
+    if (!this.defaultPlanes) return
     void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, false)
     void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, false)
     void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, false)
   }
 
   hidePlanes() {
+    if (!this.defaultPlanes) return
     void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, true)
     void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, true)
     void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, true)
@@ -464,11 +461,23 @@ function enterEditMode(
   ) as SketchGroup | ExtrudeGroup
   firstSketchOrExtrudeGroup &&
     engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'edit_mode_enter',
-        target: firstSketchOrExtrudeGroup.id,
-      },
+      type: 'modeling_cmd_batch_req',
+      batch_id: uuidv4(),
+      requests: [
+        {
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'edit_mode_enter',
+            target: firstSketchOrExtrudeGroup.id,
+          },
+        },
+        {
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'set_selection_filter',
+            filter: ['face', 'edge', 'solid2d'],
+          },
+        },
+      ],
     })
 }

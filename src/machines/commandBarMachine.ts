@@ -461,7 +461,10 @@ export const commandBarMachine = createMachine(
                 'options' in argConfig &&
                 !(
                   typeof argConfig.options === 'function'
-                    ? argConfig.options(context)
+                    ? argConfig.options(
+                        context,
+                        argConfig.machineActor.getSnapshot().context
+                      )
                     : argConfig.options
                 ).some((o) => o.value === argValue)
 
@@ -479,7 +482,12 @@ export const commandBarMachine = createMachine(
                 })
               }
 
-              if (!argValue && isRequired) {
+              if (
+                (argConfig.inputType !== 'boolean'
+                  ? !argValue
+                  : argValue === undefined) &&
+                isRequired
+              ) {
                 return reject({
                   message: 'Argument payload is falsy but is required',
                   arg: {

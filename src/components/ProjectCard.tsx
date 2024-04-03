@@ -9,7 +9,8 @@ import {
   faTrashAlt,
   faX,
 } from '@fortawesome/free-solid-svg-icons'
-import { FILE_EXT, getPartsCount, readProject } from '../lib/tauriFS'
+import { getPartsCount, readProject } from '../lib/tauriFS'
+import { FILE_EXT } from 'lib/constants'
 import { Dialog } from '@headlessui/react'
 import { useHotkeys } from 'react-hotkeys-hook'
 

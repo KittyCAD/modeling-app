@@ -2,7 +2,7 @@ import { PathToNode, Program, SourceRange } from 'lang/wasm'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_CONNECTION_TIMEOUT_MS } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
-import { v4 as uuidv4 } from 'uuid'
+import { uuidv4 } from 'lib/utils'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { Themes, getThemeColorForEngine } from 'lib/theme'
 
@@ -843,11 +843,7 @@ export class EngineCommandManager {
   outSequence = 1
   inSequence = 1
   engineConnection?: EngineConnection
-  defaultPlanes: { xy: string; yz: string; xz: string } = {
-    xy: '',
-    yz: '',
-    xz: '',
-  }
+  defaultPlanes: { xy: string; yz: string; xz: string } | null = null
   _commandLogs: CommandLog[] = []
   _commandLogCallBack: (command: CommandLog[]) => void = () => {}
   // Folks should realize that wait for ready does not get called _everytime_
@@ -1245,6 +1241,7 @@ export class EngineCommandManager {
   startNewSession() {
     this.lastArtifactMap = this.artifactMap
     this.artifactMap = {}
+    this.initPlanes()
   }
   subscribeTo<T extends ModelTypes>({
     event,
@@ -1289,40 +1286,15 @@ export class EngineCommandManager {
     this.callbacksEngineStateConnection.push(callback)
   }
   endSession() {
-    // TODO: instead of sending a single command with `object_ids: Object.keys(this.artifactMap)`
-    // we need to loop over them each individually because if the engine doesn't recognise a single
-    // id the whole command fails.
-    const artifactsToDelete: any = {}
-    Object.entries(this.artifactMap).forEach(([id, artifact]) => {
-      const artifactTypesToDelete: ArtifactMap[string]['commandType'][] = [
-        // 'start_path' creates a new scene object for the path, which is why it needs to be deleted,
-        // however all of the segments in the path are its children so there don't need to be deleted.
-        // this fact is very opaque in the api and docs (as to what should can be deleted).
-        // Using an array is the list is likely to grow.
-        'start_path',
-        'entity_linear_pattern',
-        'entity_circular_pattern',
-      ]
-      if (artifactTypesToDelete.includes(artifact.commandType)) {
-        artifactsToDelete[id] = artifact
-      }
-      if (artifact.commandType === 'import_files') {
-        // TODO why is this handled differently from other artifacts, i.e. why does it not use the id from the
-        // modeling command? We're having to do special clean up for this one special object.
-        artifactsToDelete[(artifact as any)?.data?.data?.object_id] = artifact
-      }
-    })
-    Object.keys(artifactsToDelete).forEach((id) => {
-      const deleteCmd: EngineCommand = {
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'remove_scene_objects',
-          object_ids: [id],
-        },
-      }
-      this.engineConnection?.send(deleteCmd)
-    })
+    const deleteCmd: EngineCommand = {
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'scene_clear_all',
+      },
+    }
+    this.defaultPlanes = null
+    this.engineConnection?.send(deleteCmd)
   }
   addCommandLog(message: CommandLog) {
     if (this._commandLogs.length > 500) {
@@ -1629,6 +1601,7 @@ export class EngineCommandManager {
     }
   }
   private async initPlanes() {
+    if (this.planesInitialized()) return
     const [xy, yz, xz] = [
       await this.createPlane({
         x_axis: { x: 1, y: 0, z: 0 },
@@ -1652,20 +1625,14 @@ export class EngineCommandManager {
       event: 'select_with_point',
       callback: ({ data }) => {
         if (!data?.entity_id) return
-        if (
-          ![
-            this.defaultPlanes.xy,
-            this.defaultPlanes.yz,
-            this.defaultPlanes.xz,
-          ].includes(data.entity_id)
-        )
-          return
+        if (![xy, yz, xz].includes(data.entity_id)) return
         this.onPlaneSelectCallback(data.entity_id)
       },
     })
   }
   planesInitialized(): boolean {
     return (
+      !!this.defaultPlanes &&
       this.defaultPlanes.xy !== '' &&
       this.defaultPlanes.yz !== '' &&
       this.defaultPlanes.xz !== ''
