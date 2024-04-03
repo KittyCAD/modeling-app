@@ -1906,18 +1906,18 @@ fn pentagon = (len) => {
   return sg
 }
 
-const p = pentagon(8)
-  |> extrude(5, %)
+const p = pentagon(32)
+  |> extrude(10, %)
 
-const plumbus0 = make_circle(p, 'a', [0, 0], 1.5)
-  |> extrude(3, %)
+const plumbus0 = make_circle(p, 'a', [0, 0], 2.5)
+  |> extrude(10, %)
   |> fillet({
        radius: 0.5,
        tags: ['arc-a', getOppositeEdge('arc-a', %)]
      }, %)
 
-// const plumbus1 = make_circle(p, 'b', [0, 0], 1.5)
-//   |> extrude(3, %)
+// const plumbus1 = make_circle(p, 'b', [0, 0], 2.5)
+//   |> extrude(10, %)
 //   |> fillet({
 //        radius: 0.5,
 //        tags: ['arc-b', getOppositeEdge('arc-b', %)]
