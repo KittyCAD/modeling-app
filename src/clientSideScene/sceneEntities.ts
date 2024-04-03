@@ -1254,6 +1254,30 @@ export class SceneEntities {
         scale
       )
     }
+    if (group.userData.pathToNode) {
+      const vector = new Vector3(0, 0, 0)
+
+      // Get the position of the object3D in world space
+      arrowGroup.getWorldPosition(vector)
+
+      // Project that position to screen space
+      vector.project(sceneInfra.camControls.camera)
+
+      const x = (vector.x * 0.5 + 0.5) * window.innerWidth
+      const y = (-vector.y * 0.5 + 0.5) * window.innerHeight
+      console.log('here', x, y)
+      sceneInfra.modelingSend({
+        type: 'Set Segment Overlays',
+        data: {
+          type: 'set-one',
+          pathToNodeString: JSON.stringify(group.userData.pathToNode),
+          seg: {
+            windowCoords: [x, y],
+            group,
+          },
+        },
+      })
+    }
   }
   async animateAfterSketch() {
     // if (isReducedMotion()) {

@@ -99,17 +99,45 @@ export const ClientSideScene = ({
   }
 
   return (
-    <div
-      ref={canvasRef}
-      style={{ cursor: cursor }}
-      className={`absolute inset-0 h-full w-full transition-all duration-300 ${
-        hideClient ? 'opacity-0' : 'opacity-100'
-      } ${hideServer ? 'bg-black' : ''} ${
-        !hideClient && !hideServer && state.matches('Sketch')
-          ? 'bg-black/80'
-          : ''
-      }`}
-    ></div>
+    <>
+      <div
+        ref={canvasRef}
+        style={{ cursor: cursor }}
+        className={`absolute inset-0 h-full w-full transition-all duration-300 ${
+          hideClient ? 'opacity-0' : 'opacity-100'
+        } ${hideServer ? 'bg-black' : ''} ${
+          !hideClient && !hideServer && state.matches('Sketch')
+            ? 'bg-black/80'
+            : ''
+        }`}
+      ></div>
+      <Overlays />
+    </>
+  )
+}
+
+const Overlays = () => {
+  const { context } = useModelingContext()
+  return (
+    <div className="absolute inset-0 pointer-events-none">
+      {Object.entries(context.segmentOverlays).map(
+        ([pathToNodeString, overlay]) => {
+          return (
+            <div className="absolute w-0 h-0">
+              <div
+                key={pathToNodeString}
+                className="relative inline-block px-2 bg-red-500 rounded-full -mt-12 -ml-2 pointer-events-auto hover:bg-red-900"
+                style={{
+                  transform: `translate3d(${overlay.windowCoords[0]}px, ${overlay.windowCoords[1]}px, 0)`,
+                }}
+              >
+                hello
+              </div>
+            </div>
+          )
+        }
+      )}
+    </div>
   )
 }
 

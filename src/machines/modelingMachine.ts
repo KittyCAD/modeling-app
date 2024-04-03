@@ -44,6 +44,7 @@ import { DefaultPlaneStr } from 'clientSideScene/sceneEntities'
 import { Vector3 } from 'three'
 import { quaternionFromUpNForward } from 'clientSideScene/helpers'
 import { uuidv4 } from 'lib/utils'
+import { Coords2d } from 'lang/std/sketch'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -83,6 +84,15 @@ export interface SketchDetails {
   zAxis: [number, number, number]
   yAxis: [number, number, number]
   origin: [number, number, number]
+}
+
+export interface SegmentOverlay {
+  windowCoords: Coords2d
+  group: any
+}
+
+export interface SegmentOverlays {
+  [pathToNodeString: string]: SegmentOverlay
 }
 
 export type ModelingMachineEvent =
@@ -150,6 +160,20 @@ export type ModelingMachineEvent =
       data: SketchDetails
     }
   | { type: 'Set mouse state'; data: MouseState }
+  | {
+      type: 'Set Segment Overlays'
+      data:
+        | {
+            type: 'set-one'
+            pathToNodeString: string
+            seg: SegmentOverlay
+          }
+        | { type: 'clear' }
+        | {
+            type: 'set-many'
+            overlays: SegmentOverlays
+          }
+    }
 
 export type MoveDesc = { line: number; snippet: string }
 
@@ -180,6 +204,7 @@ export const modelingMachine = createMachine(
       sketchEnginePathId: '' as string,
       moveDescs: [] as MoveDesc[],
       mouseState: { type: 'idle' } as MouseState,
+      segmentOverlays: {} as SegmentOverlays,
     },
 
     schema: {
@@ -589,6 +614,10 @@ export const modelingMachine = createMachine(
       'Set mouse state': {
         internal: true,
         actions: 'Set mouse state',
+      },
+      'Set Segment Overlays': {
+        internal: true,
+        actions: 'Set Segment Overlays',
       },
     },
   },

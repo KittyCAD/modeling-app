@@ -121,6 +121,18 @@ export const ModelingMachineProvider = ({
         'Set mouse state': assign({
           mouseState: (_, event) => event.data,
         }),
+        'Set Segment Overlays': assign({
+          segmentOverlays: ({ segmentOverlays }, { data }) => {
+            if (data.type === 'set-many') return data.overlays
+            if (data.type === 'set-one')
+              return {
+                ...segmentOverlays,
+                [data.pathToNodeString]: data.seg,
+              }
+            // data.type === 'clear
+            return {}
+          },
+        }),
         'Set selection': assign(({ selectionRanges }, event) => {
           if (event.type !== 'Set selection') return {} // this was needed for ts after adding 'Set selection' action to on done modal events
           const setSelections = event.data
