@@ -6,7 +6,7 @@ import {
 } from 'lib/singletons'
 import { CallExpression, SourceRange, parse, recast } from 'lang/wasm'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
-import { v4 as uuidv4 } from 'uuid'
+import { uuidv4 } from 'lib/utils'
 import { EditorSelection } from '@codemirror/state'
 import { SelectionRange } from '@uiw/react-codemirror'
 import { getNormalisedCoordinates, isOverlap } from 'lib/utils'
