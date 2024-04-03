@@ -162,6 +162,7 @@ export const line: SketchLineHelper = {
     replaceExisting,
     referencedSegment,
     createCallback,
+    spliceBetween,
   }) => {
     const _node = { ...node }
     const { node: pipe } = getNodeFromPath<PipeExpression | CallExpression>(
@@ -177,6 +178,30 @@ export const line: SketchLineHelper = {
 
     const newXVal = createLiteral(roundOff(to[0] - from[0], 2))
     const newYVal = createLiteral(roundOff(to[1] - from[1], 2))
+
+    if (spliceBetween && !createCallback && pipe.type === 'PipeExpression') {
+      const callExp = createCallExpression('line', [
+        createArrayExpression([newXVal, newYVal]),
+        createPipeSubstitution(),
+      ])
+      const pathToNodeIndex = pathToNode.findIndex(
+        (x) => x[1] === 'PipeExpression'
+      )
+      const pipeIndex = pathToNode[pathToNodeIndex + 1][0]
+      if (typeof pipeIndex === 'undefined' || typeof pipeIndex === 'string') {
+        throw new Error('pipeIndex is undefined')
+        // return
+      }
+      pipe.body = [
+        ...pipe.body.slice(0, pipeIndex),
+        callExp,
+        ...pipe.body.slice(pipeIndex),
+      ]
+      return {
+        modifiedAst: _node,
+        pathToNode,
+      }
+    }
 
     if (replaceExisting && createCallback && pipe.type !== 'CallExpression') {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
@@ -1023,15 +1048,6 @@ export function changeSketchArguments(
   throw new Error(`not a sketch line helper: ${callExpression?.callee?.name}`)
 }
 
-interface CreateLineFnCallArgs {
-  node: Program
-  programMemory: ProgramMemory
-  to: [number, number]
-  from: [number, number]
-  fnName: ToolTip
-  pathToNode: PathToNode
-}
-
 export function compareVec2Epsilon(
   vec1: [number, number],
   vec2: [number, number],
@@ -1056,6 +1072,16 @@ export function compareVec2Epsilon2(
   return distance < compareEpsilon
 }
 
+interface CreateLineFnCallArgs {
+  node: Program
+  programMemory: ProgramMemory
+  to: [number, number]
+  from: [number, number]
+  fnName: ToolTip
+  pathToNode: PathToNode
+  spliceBetween?: boolean
+}
+
 export function addNewSketchLn({
   node: _node,
   programMemory: previousProgramMemory,
@@ -1063,6 +1089,7 @@ export function addNewSketchLn({
   fnName,
   pathToNode,
   from,
+  spliceBetween = false,
 }: CreateLineFnCallArgs): {
   modifiedAst: Program
   pathToNode: PathToNode
@@ -1083,6 +1110,7 @@ export function addNewSketchLn({
     to,
     from,
     replaceExisting: false,
+    spliceBetween,
   })
 }
 
