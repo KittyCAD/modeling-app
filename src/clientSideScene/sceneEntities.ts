@@ -98,8 +98,9 @@ export const TANGENTIAL_ARC_TO__SEGMENT_DASH =
   'tangential-arc-to-segment-body-dashed'
 export const TANGENTIAL_ARC_TO_SEGMENT = 'tangential-arc-to-segment'
 export const TANGENTIAL_ARC_TO_SEGMENT_BODY = 'tangential-arc-to-segment-body'
-export const MIN_SEGMENT_LENGTH = 60 // in pixels
 export const SEGMENT_WIDTH_PX = 1.6
+export const HIDE_SEGMENT_LENGTH = 60 // in pixels
+export const HIDE_HOVER_SEGMENT_LENGTH = 35 // in pixels
 
 // This singleton Class is responsible for all of the things the user sees and interacts with.
 // That mostly mean sketch elements.
@@ -563,7 +564,7 @@ export class SceneEntities {
           },
         })
       },
-      ...mouseEnterLeaveCallbacks(),
+      ...this.mouseEnterLeaveCallbacks(),
     })
   }
   setupSketchIdleCallbacks = ({
@@ -685,7 +686,7 @@ export class SceneEntities {
         if (!event) return
         sceneInfra.modelingSend(event)
       },
-      ...mouseEnterLeaveCallbacks(),
+      ...this.mouseEnterLeaveCallbacks(),
     })
   }
   prepareTruncatedMemoryAndAst = (
@@ -882,7 +883,16 @@ export class SceneEntities {
     })
 
     const pxLength = arcInfo.arcLength / scale
-    const shouldHide = pxLength < MIN_SEGMENT_LENGTH
+    const shouldHideIdle = pxLength < HIDE_SEGMENT_LENGTH
+    const shouldHideHover = pxLength < HIDE_HOVER_SEGMENT_LENGTH
+
+    const hoveredParent =
+      sceneInfra.hoveredObject &&
+      getParentGroup(sceneInfra.hoveredObject, [TANGENTIAL_ARC_TO_SEGMENT])
+    let isHandlesVisible = !shouldHideIdle
+    if (hoveredParent && hoveredParent?.uuid === group?.uuid) {
+      isHandlesVisible = !shouldHideHover
+    }
 
     if (arrowGroup) {
       arrowGroup.position.set(to[0], to[1], 0)
@@ -894,7 +904,7 @@ export class SceneEntities {
         new Vector3(Math.cos(arrowheadAngle), Math.sin(arrowheadAngle), 0)
       )
       arrowGroup.scale.set(scale, scale, scale)
-      arrowGroup.visible = !shouldHide
+      arrowGroup.visible = isHandlesVisible
     }
 
     if (extraSegmentGroup) {
@@ -913,7 +923,7 @@ export class SceneEntities {
         0
       )
       extraSegmentGroup.scale.set(scale, scale, scale)
-      extraSegmentGroup.visible = !shouldHide
+      extraSegmentGroup.visible = isHandlesVisible
     }
 
     const tangentialArcToSegmentBody = group.children.find(
@@ -970,7 +980,19 @@ export class SceneEntities {
     )
 
     const pxLength = length / scale
-    const shouldHide = pxLength < MIN_SEGMENT_LENGTH
+    const shouldHideIdle = pxLength < HIDE_SEGMENT_LENGTH
+    const shouldHideHover = pxLength < HIDE_HOVER_SEGMENT_LENGTH
+
+    const hoveredParent =
+      sceneInfra.hoveredObject &&
+      getParentGroup(sceneInfra.hoveredObject, [STRAIGHT_SEGMENT])
+    let isHandlesVisible = !shouldHideIdle
+    if (hoveredParent && hoveredParent?.uuid === group?.uuid) {
+      isHandlesVisible = !shouldHideHover
+    }
+    if (isHandlesVisible) {
+      console.log('hoverGuy', hoveredParent, sceneInfra.hoveredObject, group)
+    }
 
     if (arrowGroup) {
       arrowGroup.position.set(to[0], to[1], 0)
@@ -983,7 +1005,7 @@ export class SceneEntities {
         .normalize()
       arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
       arrowGroup.scale.set(scale, scale, scale)
-      arrowGroup.visible = !shouldHide
+      arrowGroup.visible = isHandlesVisible
     }
 
     const extraSegmentGroup = group.getObjectByName(EXTRA_SEGMENT_HANDLE)
@@ -997,7 +1019,7 @@ export class SceneEntities {
         0
       )
       extraSegmentGroup.scale.set(scale, scale, scale)
-      extraSegmentGroup.visible = !shouldHide
+      extraSegmentGroup.visible = isHandlesVisible
     }
 
     const straightSegmentBody = group.children.find(
@@ -1174,6 +1196,120 @@ export class SceneEntities {
         })
       },
     })
+  }
+  mouseEnterLeaveCallbacks() {
+    return {
+      onMouseEnter: ({ selected, dragSelected }: OnMouseEnterLeaveArgs) => {
+        if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
+          const obj = selected as Mesh
+          const mat = obj.material as MeshBasicMaterial
+          mat.color.set(obj.userData.baseColor)
+          mat.color.offsetHSL(0, 0, 0.5)
+        }
+        const parent = getParentGroup(selected, [
+          STRAIGHT_SEGMENT,
+          TANGENTIAL_ARC_TO_SEGMENT,
+          PROFILE_START,
+        ])
+        if (parent?.userData?.pathToNode) {
+          const updatedAst = parse(recast(kclManager.ast))
+          const node = getNodeFromPath<CallExpression>(
+            updatedAst,
+            parent.userData.pathToNode,
+            'CallExpression'
+          ).node
+          sceneInfra.highlightCallback([node.start, node.end])
+          const yellow = 0xffff00
+          colorSegment(selected, yellow)
+          const extraSegmentGroup = parent.getObjectByName(EXTRA_SEGMENT_HANDLE)
+          if (extraSegmentGroup) {
+            extraSegmentGroup.traverse((child) => {
+              if (child instanceof Points || child instanceof Mesh) {
+                child.material.opacity = dragSelected ? 0 : 1
+              }
+            })
+          }
+          const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+
+          const factor =
+            (sceneInfra.camControls.camera instanceof OrthographicCamera
+              ? orthoFactor
+              : perspScale(sceneInfra.camControls.camera, parent)) /
+            sceneInfra._baseUnitMultiplier
+          if (parent.name === STRAIGHT_SEGMENT) {
+            this.updateStraightSegment({
+              from: parent.userData.from,
+              to: parent.userData.to,
+              group: parent,
+              scale: factor,
+            })
+          } else if (parent.name === TANGENTIAL_ARC_TO_SEGMENT) {
+            this.updateTangentialArcToSegment({
+              prevSegment: parent.userData.prevSegment,
+              from: parent.userData.from,
+              to: parent.userData.to,
+              group: parent,
+              scale: factor,
+            })
+          }
+          return
+        }
+        sceneInfra.highlightCallback([0, 0])
+      },
+      onMouseLeave: ({ selected, ...rest }: OnMouseEnterLeaveArgs) => {
+        sceneInfra.highlightCallback([0, 0])
+        const parent = getParentGroup(selected, [
+          STRAIGHT_SEGMENT,
+          TANGENTIAL_ARC_TO_SEGMENT,
+          PROFILE_START,
+        ])
+        console.log('onMouseLeave', parent, selected, rest)
+        if (parent) {
+          const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+
+          const factor =
+            (sceneInfra.camControls.camera instanceof OrthographicCamera
+              ? orthoFactor
+              : perspScale(sceneInfra.camControls.camera, parent)) /
+            sceneInfra._baseUnitMultiplier
+          if (parent.name === STRAIGHT_SEGMENT) {
+            this.updateStraightSegment({
+              from: parent.userData.from,
+              to: parent.userData.to,
+              group: parent,
+              scale: factor,
+            })
+          } else if (parent.name === TANGENTIAL_ARC_TO_SEGMENT) {
+            this.updateTangentialArcToSegment({
+              prevSegment: parent.userData.prevSegment,
+              from: parent.userData.from,
+              to: parent.userData.to,
+              group: parent,
+              scale: factor,
+            })
+          }
+        }
+        const isSelected = parent?.userData?.isSelected
+        colorSegment(
+          selected,
+          isSelected ? 0x0000ff : parent?.userData?.baseColor || 0xffffff
+        )
+        const extraSegmentGroup = parent?.getObjectByName(EXTRA_SEGMENT_HANDLE)
+        if (extraSegmentGroup) {
+          extraSegmentGroup.traverse((child) => {
+            if (child instanceof Points || child instanceof Mesh) {
+              child.material.opacity = 0
+            }
+          })
+        }
+        if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
+          const obj = selected as Mesh
+          const mat = obj.material as MeshBasicMaterial
+          mat.color.set(obj.userData.baseColor)
+          if (obj.userData.isSelected) mat.color.offsetHSL(0, 0, 0.2)
+        }
+      },
+    }
   }
 }
 
@@ -1416,70 +1552,4 @@ function massageFormats(a: any): Vector3 {
   return Array.isArray(a)
     ? new Vector3(a[0], a[1], a[2])
     : new Vector3(a.x, a.y, a.z)
-}
-
-function mouseEnterLeaveCallbacks() {
-  return {
-    onMouseEnter: ({ selected, dragSelected }: OnMouseEnterLeaveArgs) => {
-      if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
-        const obj = selected as Mesh
-        const mat = obj.material as MeshBasicMaterial
-        mat.color.set(obj.userData.baseColor)
-        mat.color.offsetHSL(0, 0, 0.5)
-      }
-      const parent = getParentGroup(selected, [
-        STRAIGHT_SEGMENT,
-        TANGENTIAL_ARC_TO_SEGMENT,
-        PROFILE_START,
-      ])
-      if (parent?.userData?.pathToNode) {
-        const updatedAst = parse(recast(kclManager.ast))
-        const node = getNodeFromPath<CallExpression>(
-          updatedAst,
-          parent.userData.pathToNode,
-          'CallExpression'
-        ).node
-        sceneInfra.highlightCallback([node.start, node.end])
-        const yellow = 0xffff00
-        colorSegment(selected, yellow)
-        const extraSegmentGroup = parent.getObjectByName(EXTRA_SEGMENT_HANDLE)
-        if (extraSegmentGroup) {
-          extraSegmentGroup.traverse((child) => {
-            if (child instanceof Points || child instanceof Mesh) {
-              child.material.opacity = dragSelected ? 0 : 1
-            }
-          })
-        }
-        return
-      }
-      sceneInfra.highlightCallback([0, 0])
-    },
-    onMouseLeave: ({ selected }: OnMouseEnterLeaveArgs) => {
-      sceneInfra.highlightCallback([0, 0])
-      const parent = getParentGroup(selected, [
-        STRAIGHT_SEGMENT,
-        TANGENTIAL_ARC_TO_SEGMENT,
-        PROFILE_START,
-      ])
-      const isSelected = parent?.userData?.isSelected
-      colorSegment(
-        selected,
-        isSelected ? 0x0000ff : parent?.userData?.baseColor || 0xffffff
-      )
-      const extraSegmentGroup = parent?.getObjectByName(EXTRA_SEGMENT_HANDLE)
-      if (extraSegmentGroup) {
-        extraSegmentGroup.traverse((child) => {
-          if (child instanceof Points || child instanceof Mesh) {
-            child.material.opacity = 0
-          }
-        })
-      }
-      if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
-        const obj = selected as Mesh
-        const mat = obj.material as MeshBasicMaterial
-        mat.color.set(obj.userData.baseColor)
-        if (obj.userData.isSelected) mat.color.offsetHSL(0, 0, 0.2)
-      }
-    },
-  }
 }

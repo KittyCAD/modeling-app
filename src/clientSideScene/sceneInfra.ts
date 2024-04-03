@@ -372,13 +372,12 @@ export class SceneInfra {
     if (intersects[0]) {
       const firstIntersectObject = intersects[0].object
       if (this.hoveredObject !== firstIntersectObject) {
-        if (this.hoveredObject) {
-          this.onMouseLeave({
-            selected: this.hoveredObject,
-            mouseEvent: mouseEvent,
-          })
-          if (!this.selected) this.updateMouseState({ type: 'idle' })
-        }
+        const hoveredObj = this.hoveredObject
+        this.hoveredObject = null
+        this.onMouseLeave({
+          selected: hoveredObj,
+          mouseEvent: mouseEvent,
+        })
         this.hoveredObject = firstIntersectObject
         this.onMouseEnter({
           selected: this.hoveredObject,
@@ -393,13 +392,14 @@ export class SceneInfra {
       }
     } else {
       if (this.hoveredObject) {
+        const hoveredObj = this.hoveredObject
+        this.hoveredObject = null
         this.onMouseLeave({
-          selected: this.hoveredObject,
+          selected: hoveredObj,
           dragSelected: this.selected?.object,
           mouseEvent: mouseEvent,
         })
         if (!this.selected) this.updateMouseState({ type: 'idle' })
-        this.hoveredObject = null
       }
     }
   }
