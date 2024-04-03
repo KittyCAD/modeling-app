@@ -32,6 +32,11 @@ export const settingsMachine = createMachine(
             internal: true,
             actions: ['setSettingAtLevel', 'persistSettings'], // No toast
           },
+          'set.app.themeColor': {
+            target: 'idle',
+            internal: true,
+            actions: ['setSettingAtLevel', 'persistSettings'], // No toast
+          },
 
           'set.modeling.defaultUnit': {
             target: 'idle',

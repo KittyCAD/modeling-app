@@ -132,6 +132,25 @@ export function createSettings() {
             })),
         },
       }),
+      themeColor: new Setting<string>({
+        defaultValue: '264.5',
+        description: 'The hue of the primary theme color for the app',
+        validate: (v) => Number(v) >= 0 && Number(v) < 360,
+        Component: ({ value, onChange }) => (
+          <div className="flex item-center gap-2 px-2">
+            <input
+              type="range"
+              onChange={onChange}
+              value={value}
+              min={0}
+              max={259}
+              step={1}
+              className="block flex-1"
+            />
+            <span className="text-xs block w-[6ch] text-right">{value}º</span>
+          </div>
+        ),
+      }),
       onboardingStatus: new Setting<string>({
         defaultValue: '',
         validate: (v) => typeof v === 'string',
