@@ -1,4 +1,8 @@
 :root {
+  --primary-hue: 264.48;
+  --_primary: 60% 0.2166580177682407 var(--primary-hue, 264.48);
+  --primary: oklch(60% 0.2166580177682407 var(var(--primary-hue, 264.48)) / var(--opacity, 1));
+
   /*
         Generated using Catmosphere Theme Builder
         by KittyCAD
