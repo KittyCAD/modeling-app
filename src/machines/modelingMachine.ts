@@ -42,7 +42,7 @@ import { ModelingCommandSchema } from 'lib/commandBarConfigs/modelingCommandConf
 import { DefaultPlaneStr } from 'clientSideScene/sceneEntities'
 import { Vector3 } from 'three'
 import { quaternionFromUpNForward } from 'clientSideScene/helpers'
-import { v4 as uuidv4 } from 'uuid'
+import { uuidv4 } from 'lib/utils'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
