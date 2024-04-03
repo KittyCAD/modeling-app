@@ -100,7 +100,7 @@ export const TANGENTIAL_ARC_TO_SEGMENT = 'tangential-arc-to-segment'
 export const TANGENTIAL_ARC_TO_SEGMENT_BODY = 'tangential-arc-to-segment-body'
 export const SEGMENT_WIDTH_PX = 1.6
 export const HIDE_SEGMENT_LENGTH = 60 // in pixels
-export const HIDE_HOVER_SEGMENT_LENGTH = 35 // in pixels
+export const HIDE_HOVER_SEGMENT_LENGTH = 40 // in pixels
 
 // This singleton Class is responsible for all of the things the user sees and interacts with.
 // That mostly mean sketch elements.
