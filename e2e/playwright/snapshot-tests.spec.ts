@@ -320,6 +320,22 @@ test('extrude on each default plane should be stable', async ({
   page,
   context,
 }) => {
+  await context.addInitScript(async () => {
+    localStorage.setItem(
+      'SETTINGS_PERSIST_KEY',
+      JSON.stringify({
+        baseUnit: 'in',
+        cameraControls: 'KittyCAD',
+        defaultDirectory: '',
+        defaultProjectName: 'project-$nnn',
+        onboardingStatus: 'dismissed',
+        showDebugPanel: true,
+        textWrapping: 'On',
+        theme: 'dark',
+        unitSystem: 'imperial',
+      })
+    )
+  })
   const u = getUtils(page)
   const makeCode = (plane = 'XY') => `const part001 = startSketchOn('${plane}')
   |> startProfileAt([7.00, 4.40], %)
