@@ -1533,6 +1533,7 @@ test('Sketch on face', async ({ page, context }) => {
   await page.getByRole('button', { name: 'Extrude' }).click()
 
   await expect(page.getByTestId('command-bar')).toBeVisible()
+  await page.waitForTimeout(100)
 
   await page.keyboard.press('Enter')
   await expect(page.getByText('Confirm Extrude')).toBeVisible()
