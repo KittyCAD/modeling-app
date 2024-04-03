@@ -38,10 +38,10 @@ export async function getInitialDefaultDir() {
   try {
     dir = await documentDir()
   } catch (e) {
-    dir = `${await homeDir()}Documents/` // for headless Linux (eg. Github Actions)
+    dir = await join(await homeDir(), 'Documents') // for headless Linux (eg. Github Actions)
   }
 
-  return dir + PROJECT_FOLDER
+  return await join(dir, PROJECT_FOLDER)
 }
 
 // Initializes the project directory and returns the path
