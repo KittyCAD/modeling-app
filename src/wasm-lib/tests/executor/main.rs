@@ -1929,3 +1929,35 @@ const plumbus0 = make_circle(p, 'a', [0, 0], 1.5)
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/plumbus_fillets.png", &result, 1.0);
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_member_expression_in_params() {
+    let code = r#"fn capScrew = (originStart, length, dia, capDia, capHeadLength) => {
+  const screwHead = startSketchOn({
+       plane: {
+         origin: {
+          x: originStart[0],
+          y: originStart[1],
+          z: originStart[2],
+         },
+         x_axis: { x: 0, y: 0, z: -1 },
+         y_axis: { x: 1, y: 0, z: 0 },
+         z_axis: { x: 0, y: 1, z: 0 }
+      }
+  })
+    |> circle([0, 0], capDia / 2, %)
+    |> extrude(capHeadLength, %)
+  const screw = startSketchOn(screwHead, "start")
+    |> circle([0, 0], dia / 2, %)
+    |> extrude(length, %)
+  return screw
+}
+
+capScrew([0, 0.5, 0], 50, 37.5, 50, 25)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/member_expression_in_params.png", &result, 1.0);
+}
