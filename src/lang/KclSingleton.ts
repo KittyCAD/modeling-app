@@ -1,7 +1,7 @@
 import { executeAst, executeCode } from 'useStore'
 import { Selections } from 'lib/selections'
 import { KCLError } from './errors'
-import { v4 as uuidv4 } from 'uuid'
+import { uuidv4 } from 'lib/utils'
 import { EngineCommandManager } from './std/engineConnection'
 
 import { deferExecution } from 'lib/utils'
