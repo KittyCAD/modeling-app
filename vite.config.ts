@@ -11,6 +11,9 @@ import version from 'vite-plugin-package-version'
 dns.setDefaultResultOrder('verbatim')
 
 const config = defineConfig({
+  define: {
+    global: 'window',
+  },
   server: {
     open: true,
     port: 3000,

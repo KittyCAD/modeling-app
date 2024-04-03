@@ -76,9 +76,9 @@ function CommandBarKclInput({
     },
     accessKey: 'command-bar',
     theme:
-      settings.context.theme === 'system'
+      settings.context.app.theme.current === 'system'
         ? getSystemTheme()
-        : settings.context.theme,
+        : settings.context.app.theme.current,
     extensions: [
       EditorView.domEventHandlers({
         keydown: (event) => {

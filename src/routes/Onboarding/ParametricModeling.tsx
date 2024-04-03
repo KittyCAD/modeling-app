@@ -4,6 +4,7 @@ import { useStore } from '../../useStore'
 import { useBackdropHighlight } from 'hooks/useBackdropHighlight'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { bracketThicknessCalculationLine } from 'lib/exampleKcl'
 
 export default function ParametricModeling() {
   const { buttonDownInStream } = useStore((s) => ({
@@ -11,7 +12,11 @@ export default function ParametricModeling() {
   }))
   const {
     settings: {
-      context: { theme },
+      context: {
+        app: {
+          theme: { current: theme },
+        },
+      },
     },
   } = useSettingsAuthContext()
   const getImageTheme = () =>
@@ -61,7 +66,10 @@ export default function ParametricModeling() {
           <p className="my-4">
             We are able to easily calculate the thickness of the material based
             on the width of the bracket to meet a set safety factor on{' '}
-            <em className="text-energy-60 dark:text-energy-20">line 14</em>.
+            <em className="text-energy-60 dark:text-energy-20">
+              line {bracketThicknessCalculationLine}
+            </em>
+            .
           </p>
         </section>
         <OnboardingButtons

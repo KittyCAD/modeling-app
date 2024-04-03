@@ -1861,16 +1861,11 @@ impl ObjectExpression {
                 Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, ctx).await?,
                 Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, ctx).await?,
                 Value::PipeExpression(pipe_expression) => pipe_expression.get_result(memory, pipe_info, ctx).await?,
+                Value::MemberExpression(member_expression) => member_expression.get_result(memory)?,
                 Value::PipeSubstitution(pipe_substitution) => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: format!("PipeSubstitution not implemented here: {:?}", pipe_substitution),
                         source_ranges: vec![pipe_substitution.into()],
-                    }));
-                }
-                Value::MemberExpression(member_expression) => {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!("MemberExpression not implemented here: {:?}", member_expression),
-                        source_ranges: vec![member_expression.into()],
                     }));
                 }
                 Value::FunctionExpression(function_expression) => {
@@ -2649,8 +2644,8 @@ async fn execute_pipe_body(
     source_range: SourceRange,
     ctx: &ExecutorContext,
 ) -> Result<MemoryItem, KclError> {
-    let mut body_iter = body.iter();
-    let first = body_iter.next().ok_or_else(|| {
+    let mut body = body.iter();
+    let first = body.next().ok_or_else(|| {
         KclError::Semantic(KclErrorDetails {
             message: "Pipe expressions cannot be empty".to_owned(),
             source_ranges: vec![source_range],

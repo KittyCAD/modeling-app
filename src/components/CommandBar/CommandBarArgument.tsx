@@ -51,7 +51,24 @@ function ArgumentInput({
     case 'options':
       return (
         <CommandArgOptionInput
-          options={arg.options}
+          arg={arg}
+          argName={arg.name}
+          stepBack={stepBack}
+          onSubmit={onSubmit}
+          placeholder="Select an option"
+        />
+      )
+    case 'boolean':
+      return (
+        <CommandArgOptionInput
+          arg={{
+            ...arg,
+            inputType: 'options',
+            options: [
+              { name: 'On', value: true },
+              { name: 'Off', value: false },
+            ],
+          }}
           argName={arg.name}
           stepBack={stepBack}
           onSubmit={onSubmit}

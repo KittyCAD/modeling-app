@@ -2,6 +2,7 @@ import { OnboardingButtons, kbdClasses, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useStore } from '../../useStore'
 import { useBackdropHighlight } from 'hooks/useBackdropHighlight'
+import { bracketWidthConstantLine } from 'lib/exampleKcl'
 
 export default function InteractiveNumbers() {
   const { buttonDownInStream } = useStore((s) => ({
@@ -26,11 +27,25 @@ export default function InteractiveNumbers() {
           <h2 className="text-3xl font-bold">Hybrid editing</h2>
 
           <p className="my-4">
-            Try changing the value of <code>width</code> on line 2 by holding
-            the <kbd className={kbdClasses}>Alt</kbd> (or{' '}
-            <kbd className={kbdClasses}>Option</kbd>) key and dragging the
-            number left and right. You can hold down different modifier keys to
-            change the value by different increments:
+            We believe editing in Modeling App should feel fluid between code
+            and point-and-click, so that you can work in the way that feels most
+            natural to you. Let's try something out that demonstrates this
+            principle, by editing numbers without typing.
+          </p>
+          <ol className="pl-6 my-4 list-decimal">
+            <li className="list-decimal">
+              Press and hold the <kbd className={kbdClasses}>Alt</kbd> (or{' '}
+              <kbd className={kbdClasses}>Option</kbd>) key
+            </li>
+            <li>
+              Hover over the number assigned to <code>width</code> on line{' '}
+              {bracketWidthConstantLine}
+            </li>
+            <li>Drag the number left and right to change its value</li>
+          </ol>
+          <p className="my-4">
+            You can hold down different modifier keys to change the value by
+            different increments:
           </p>
           <ul className="flex flex-col text-sm my-4 mx-12 divide-y divide-chalkboard-20 dark:divide-chalkboard-70">
             <li className="flex justify-between m-0 px-0 py-2">
@@ -70,10 +85,8 @@ export default function InteractiveNumbers() {
             lets you interact with numbers in your code by dragging them around.
           </p>
           <p className="my-4">
-            We believe editing in Modeling App should feel fluid between code
-            and point-and-click, so that you can work in the way that feels most
-            natural to you. We're going to keep extending the text editor, and
-            we'd love to hear your ideas for how to make it better.
+            We're going to keep extending the text editor, and we'd love to hear
+            your ideas for how to make it better.
           </p>
         </section>
         <OnboardingButtons

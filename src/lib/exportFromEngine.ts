@@ -1,6 +1,6 @@
 import { engineCommandManager } from 'lib/singletons'
 import { type Models } from '@kittycad/lib'
-import { v4 as uuidv4 } from 'uuid'
+import { uuidv4 } from 'lib/utils'
 
 // Isolating a function to call the engine to export the current scene.
 // Because it has given us trouble in automated testing environments.

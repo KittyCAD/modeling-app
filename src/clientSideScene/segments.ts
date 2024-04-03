@@ -12,15 +12,22 @@ import {
   Mesh,
   MeshBasicMaterial,
   NormalBufferAttributes,
+  Points,
+  PointsMaterial,
   Shape,
   SphereGeometry,
+  Texture,
   Vector2,
   Vector3,
 } from 'three'
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { PathToNode, SketchGroup, getTangentialArcToInfo } from 'lang/wasm'
 import {
+  EXTRA_SEGMENT_HANDLE,
+  EXTRA_SEGMENT_OFFSET_PX,
+  MIN_SEGMENT_LENGTH,
   PROFILE_START,
+  SEGMENT_WIDTH_PX,
   STRAIGHT_SEGMENT,
   STRAIGHT_SEGMENT_BODY,
   STRAIGHT_SEGMENT_DASH,
@@ -44,7 +51,7 @@ export function profileStart({
 }) {
   const group = new Group()
 
-  const geometry = new BoxGeometry(0.8, 0.8, 0.8)
+  const geometry = new BoxGeometry(12, 12, 12) // in pixels scaled later
   const body = new MeshBasicMaterial({ color: 0xffffff })
   const mesh = new Mesh(geometry, body)
 
@@ -71,6 +78,7 @@ export function straightSegment({
   isDraftSegment,
   scale = 1,
   callExpName,
+  texture,
 }: {
   from: Coords2d
   to: Coords2d
@@ -79,12 +87,13 @@ export function straightSegment({
   isDraftSegment?: boolean
   scale?: number
   callExpName: string
+  texture: Texture
 }): Group {
   const group = new Group()
 
   const shape = new Shape()
-  shape.moveTo(0, -0.08 * scale)
-  shape.lineTo(0, 0.08 * scale) // The width of the line
+  shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale)
+  shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale)
 
   let geometry
   if (isDraftSegment) {
@@ -122,24 +131,44 @@ export function straightSegment({
   }
   group.name = STRAIGHT_SEGMENT
 
+  const length = Math.sqrt(
+    Math.pow(to[0] - from[0], 2) + Math.pow(to[1] - from[1], 2)
+  )
   const arrowGroup = createArrowhead(scale)
   arrowGroup.position.set(to[0], to[1], 0)
   const dir = new Vector3()
     .subVectors(new Vector3(to[0], to[1], 0), new Vector3(from[0], from[1], 0))
     .normalize()
   arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
+  const pxLength = length / scale
+  const shouldHide = pxLength < MIN_SEGMENT_LENGTH
+  arrowGroup.visible = !shouldHide
 
   group.add(mesh)
   if (callExpName !== 'close') group.add(arrowGroup)
+
+  const extraSegmentGroup = createExtraSegmentHandle(scale, texture)
+  const offsetFromBase = new Vector2(to[0] - from[0], to[1] - from[1])
+    .normalize()
+    .multiplyScalar(EXTRA_SEGMENT_OFFSET_PX * scale)
+  extraSegmentGroup.position.set(
+    from[0] + offsetFromBase.x,
+    from[1] + offsetFromBase.y,
+    0
+  )
+  extraSegmentGroup.visible = !shouldHide
+  group.add(extraSegmentGroup)
 
   return group
 }
 
 function createArrowhead(scale = 1): Group {
   const arrowMaterial = new MeshBasicMaterial({ color: 0xffffff })
-  const arrowheadMesh = new Mesh(new ConeGeometry(0.31, 1.5, 12), arrowMaterial)
-  arrowheadMesh.position.set(0, -0.6, 0)
-  const sphereMesh = new Mesh(new SphereGeometry(0.27, 12, 12), arrowMaterial)
+  // specify the size of the geometry in pixels (i.e. cone height = 20px, cone radius = 4.5px)
+  // we'll scale the group to the correct size later to match these sizes in screen space
+  const arrowheadMesh = new Mesh(new ConeGeometry(4.5, 20, 12), arrowMaterial)
+  arrowheadMesh.position.set(0, -9, 0)
+  const sphereMesh = new Mesh(new SphereGeometry(4, 12, 12), arrowMaterial)
 
   const arrowGroup = new Group()
   arrowGroup.userData.type = ARROWHEAD
@@ -150,6 +179,36 @@ function createArrowhead(scale = 1): Group {
   return arrowGroup
 }
 
+function createExtraSegmentHandle(scale: number, texture: Texture): Group {
+  const particleMaterial = new PointsMaterial({
+    size: 12, // in pixels
+    map: texture,
+    transparent: true,
+    opacity: 0,
+    depthTest: false,
+  })
+  const mat = new MeshBasicMaterial({
+    transparent: true,
+    color: 0xffffff,
+    opacity: 0,
+  })
+  const particleGeometry = new BufferGeometry().setFromPoints([
+    new Vector3(0, 0, 0),
+  ])
+  const sphereMesh = new Mesh(new SphereGeometry(6, 12, 12), mat) // sphere radius in pixels
+  const particle = new Points(particleGeometry, particleMaterial)
+  particle.userData.ignoreColorChange = true
+  particle.userData.type = EXTRA_SEGMENT_HANDLE
+
+  const extraSegmentGroup = new Group()
+  extraSegmentGroup.userData.type = EXTRA_SEGMENT_HANDLE
+  extraSegmentGroup.name = EXTRA_SEGMENT_HANDLE
+  extraSegmentGroup.add(sphereMesh)
+  extraSegmentGroup.add(particle)
+  extraSegmentGroup.scale.set(scale, scale, scale)
+  return extraSegmentGroup
+}
+
 export function tangentialArcToSegment({
   prevSegment,
   from,
@@ -158,6 +217,7 @@ export function tangentialArcToSegment({
   pathToNode,
   isDraftSegment,
   scale = 1,
+  texture,
 }: {
   prevSegment: SketchGroup['value'][number]
   from: Coords2d
@@ -166,6 +226,7 @@ export function tangentialArcToSegment({
   pathToNode: PathToNode
   isDraftSegment?: boolean
   scale?: number
+  texture: Texture
 }): Group {
   const group = new Group()
 
@@ -178,12 +239,13 @@ export function tangentialArcToSegment({
         )
       : prevSegment.from
 
-  const { center, radius, startAngle, endAngle, ccw } = getTangentialArcToInfo({
-    arcStartPoint: from,
-    arcEndPoint: to,
-    tanPreviousPoint: previousPoint,
-    obtuse: true,
-  })
+  const { center, radius, startAngle, endAngle, ccw, arcLength } =
+    getTangentialArcToInfo({
+      arcStartPoint: from,
+      arcEndPoint: to,
+      tanPreviousPoint: previousPoint,
+      obtuse: true,
+    })
 
   const geometry = createArcGeometry({
     center,
@@ -219,8 +281,28 @@ export function tangentialArcToSegment({
     new Vector3(0, 1, 0),
     new Vector3(Math.cos(arrowheadAngle), Math.sin(arrowheadAngle), 0)
   )
+  const pxLength = arcLength / scale
+  const shouldHide = pxLength < MIN_SEGMENT_LENGTH
+  arrowGroup.visible = !shouldHide
 
-  group.add(mesh, arrowGroup)
+  const extraSegmentGroup = createExtraSegmentHandle(scale, texture)
+  const circumferenceInPx = (2 * Math.PI * radius) / scale
+  const extraSegmentAngleDelta =
+    (EXTRA_SEGMENT_OFFSET_PX / circumferenceInPx) * Math.PI * 2
+  const extraSegmentAngle = startAngle + (ccw ? 1 : -1) * extraSegmentAngleDelta
+  const extraSegmentOffset = new Vector2(
+    Math.cos(extraSegmentAngle) * radius,
+    Math.sin(extraSegmentAngle) * radius
+  )
+  extraSegmentGroup.position.set(
+    center[0] + extraSegmentOffset.x,
+    center[1] + extraSegmentOffset.y,
+    0
+  )
+
+  extraSegmentGroup.visible = !shouldHide
+
+  group.add(mesh, arrowGroup, extraSegmentGroup)
 
   return group
 }
@@ -242,8 +324,8 @@ export function createArcGeometry({
   isDashed?: boolean
   scale?: number
 }): BufferGeometry {
-  const dashSize = 1.2 * scale
-  const gapSize = 1.2 * scale
+  const dashSizePx = 18 * scale
+  const gapSizePx = 18 * scale
   const arcStart = new EllipseCurve(
     center[0],
     center[1],
@@ -265,8 +347,8 @@ export function createArcGeometry({
     0
   )
   const shape = new Shape()
-  shape.moveTo(0, -0.08 * scale)
-  shape.lineTo(0, 0.08 * scale) // The width of the line
+  shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale)
+  shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale) // The width of the line
 
   if (!isDashed) {
     const points = arcStart.getPoints(50)
@@ -281,7 +363,7 @@ export function createArcGeometry({
   }
 
   const length = arcStart.getLength()
-  const totalDashes = length / (dashSize + gapSize) // rounding makes the dashes jittery since the new dash is suddenly appears instead of growing into place
+  const totalDashes = length / (dashSizePx + gapSizePx) // rounding makes the dashes jittery since the new dash is suddenly appears instead of growing into place
   const dashesAtEachEnd = Math.min(100, totalDashes / 2) // Assuming we want 50 dashes total, 25 at each end
 
   const dashGeometries = []
@@ -289,8 +371,8 @@ export function createArcGeometry({
   // Function to create a dash at a specific t value (0 to 1 along the curve)
   const createDashAt = (t: number, curve: EllipseCurve) => {
     const startVec = curve.getPoint(t)
-    const endVec = curve.getPoint(Math.min(0.5, t + dashSize / length))
-    const midVec = curve.getPoint(Math.min(0.5, t + dashSize / length / 2))
+    const endVec = curve.getPoint(Math.min(0.5, t + dashSizePx / length))
+    const midVec = curve.getPoint(Math.min(0.5, t + dashSizePx / length / 2))
     const dashCurve = new CurvePath<Vector3>()
     dashCurve.add(
       new CatmullRomCurve3([
@@ -314,7 +396,8 @@ export function createArcGeometry({
   }
 
   // fill in the remaining arc
-  const remainingArcLength = length - dashesAtEachEnd * 2 * (dashSize + gapSize)
+  const remainingArcLength =
+    length - dashesAtEachEnd * 2 * (dashSizePx + gapSizePx)
   if (remainingArcLength > 0) {
     const remainingArcStartT = dashesAtEachEnd / totalDashes
     const remainingArcEndT = 1 - remainingArcStartT
@@ -359,8 +442,8 @@ export function dashedStraight(
   shape: Shape,
   scale = 1
 ): BufferGeometry<NormalBufferAttributes> {
-  const dashSize = 1.2 * scale
-  const gapSize = 1.2 * scale // todo: gabSize is not respected
+  const dashSize = 18 * scale
+  const gapSize = 18 * scale // TODO: gapSize is not respected
   const dashLine = new LineCurve3(
     new Vector3(from[0], from[1], 0),
     new Vector3(to[0], to[1], 0)

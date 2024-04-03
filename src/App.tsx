@@ -1,6 +1,6 @@
 import { useCallback, MouseEventHandler, useEffect } from 'react'
 import { DebugPanel } from './components/DebugPanel'
-import { v4 as uuidv4 } from 'uuid'
+import { uuidv4 } from 'lib/utils'
 import { PaneType, useStore } from './useStore'
 import { Logs, KCLErrors } from './components/Logs'
 import { CollapsiblePanel } from './components/CollapsiblePanel'
@@ -33,10 +33,10 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { isTauri } from 'lib/isTauri'
 import { useLspContext } from 'components/LspProvider'
-import { useValidateSettings } from 'hooks/useValidateSettings'
+import { useRefreshSettings } from 'hooks/useRefreshSettings'
 
 export function App() {
-  useValidateSettings()
+  useRefreshSettings(paths.FILE + 'SETTINGS')
   const { project, file } = useLoaderData() as IndexLoaderData
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
@@ -64,10 +64,14 @@ export function App() {
   }))
 
   const { settings } = useSettingsAuthContext()
-  const { showDebugPanel, onboardingStatus, theme } = settings?.context || {}
+  const {
+    modeling: { showDebugPanel },
+    app: { theme, onboardingStatus },
+  } = settings.context
   const { state, send } = useModelingContext()
 
-  const editorTheme = theme === Themes.System ? getSystemTheme() : theme
+  const editorTheme =
+    theme.current === Themes.System ? getSystemTheme() : theme.current
 
   // Pane toggling keyboard shortcuts
   const togglePane = useCallback(
@@ -95,7 +99,7 @@ export function App() {
   )
 
   const paneOpacity = [onboardingPaths.CAMERA, onboardingPaths.STREAMING].some(
-    (p) => p === onboardingStatus
+    (p) => p === onboardingStatus.current
   )
     ? 'opacity-20'
     : didDragInStream
@@ -163,7 +167,7 @@ export function App() {
         handleClasses={{
           right:
             'hover:bg-chalkboard-10/50 bg-transparent transition-colors duration-75 transition-ease-out delay-100 ' +
-            (buttonDownInStream || onboardingStatus === 'camera'
+            (buttonDownInStream || onboardingStatus.current === 'camera'
               ? 'pointer-events-none '
               : 'pointer-events-auto'),
         }}
@@ -204,7 +208,7 @@ export function App() {
         </div>
       </Resizable>
       <Stream className="absolute inset-0 z-0" />
-      {showDebugPanel && (
+      {showDebugPanel.current && (
         <DebugPanel
           title="Debug"
           className={

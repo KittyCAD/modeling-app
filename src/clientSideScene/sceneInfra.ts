@@ -18,6 +18,8 @@ import {
   Intersection,
   Object3D,
   Object3DEventMap,
+  TextureLoader,
+  Texture,
 } from 'three'
 import { compareVec2Epsilon2 } from 'lang/std/sketch'
 import { useModelingContext } from 'hooks/useModelingContext'
@@ -25,9 +27,9 @@ import * as TWEEN from '@tweenjs/tween.js'
 import { SourceRange } from 'lang/wasm'
 import { Axis } from 'lib/selections'
 import { type BaseUnit } from 'lib/settings/settingsTypes'
-import { SETTINGS_PERSIST_KEY } from 'lib/constants'
 import { CameraControls } from './CameraControls'
 import { EngineCommandManager } from 'lang/std/engineConnection'
+import { settings } from 'lib/settings/initialSettings'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -54,6 +56,7 @@ export const ARROWHEAD = 'arrowhead'
 
 export interface OnMouseEnterLeaveArgs {
   selected: Object3D<Object3DEventMap>
+  dragSelected?: Object3D<Object3DEventMap>
   mouseEvent: MouseEvent
 }
 
@@ -98,18 +101,25 @@ export class SceneInfra {
   isFovAnimationInProgress = false
   _baseUnit: BaseUnit = 'mm'
   _baseUnitMultiplier = 1
+  extraSegmentTexture: Texture
+  onDragStartCallback: (arg: OnDragCallbackArgs) => void = () => {}
+  onDragEndCallback: (arg: OnDragCallbackArgs) => void = () => {}
   onDragCallback: (arg: OnDragCallbackArgs) => void = () => {}
   onMoveCallback: (arg: OnMoveCallbackArgs) => void = () => {}
   onClickCallback: (arg: OnClickCallbackArgs) => void = () => {}
   onMouseEnter: (arg: OnMouseEnterLeaveArgs) => void = () => {}
   onMouseLeave: (arg: OnMouseEnterLeaveArgs) => void = () => {}
   setCallbacks = (callbacks: {
+    onDragStart?: (arg: OnDragCallbackArgs) => void
+    onDragEnd?: (arg: OnDragCallbackArgs) => void
     onDrag?: (arg: OnDragCallbackArgs) => void
     onMove?: (arg: OnMoveCallbackArgs) => void
     onClick?: (arg: OnClickCallbackArgs) => void
     onMouseEnter?: (arg: OnMouseEnterLeaveArgs) => void
     onMouseLeave?: (arg: OnMouseEnterLeaveArgs) => void
   }) => {
+    this.onDragStartCallback = callbacks.onDragStart || this.onDragStartCallback
+    this.onDragEndCallback = callbacks.onDragEnd || this.onDragEndCallback
     this.onDragCallback = callbacks.onDrag || this.onDragCallback
     this.onMoveCallback = callbacks.onMove || this.onMoveCallback
     this.onClickCallback = callbacks.onClick || this.onClickCallback
@@ -128,6 +138,8 @@ export class SceneInfra {
   }
   resetMouseListeners = () => {
     this.setCallbacks({
+      onDragStart: () => {},
+      onDragEnd: () => {},
       onDrag: () => {},
       onMove: () => {},
       onClick: () => {},
@@ -170,9 +182,7 @@ export class SceneInfra {
 
     // CAMERA
     const camHeightDistanceRatio = 0.5
-    const baseUnit: BaseUnit =
-      JSON.parse(localStorage?.getItem(SETTINGS_PERSIST_KEY) || ('{}' as any))
-        .baseUnit || 'mm'
+    const baseUnit: BaseUnit = settings.modeling.defaultUnit.current
     const baseRadius = 5.6
     const length = baseUnitTomm(baseUnit) * baseRadius
     const ang = Math.atan(camHeightDistanceRatio)
@@ -211,6 +221,13 @@ export class SceneInfra {
 
     const light = new AmbientLight(0x505050) // soft white light
     this.scene.add(light)
+
+    const textureLoader = new TextureLoader()
+    this.extraSegmentTexture = textureLoader.load(
+      '/clientSideSceneAssets/extra-segment-texture.png'
+    )
+    this.extraSegmentTexture.anisotropy =
+      this.renderer?.capabilities?.getMaxAnisotropy?.()
 
     SceneInfra.instance = this
   }
@@ -360,6 +377,7 @@ export class SceneInfra {
         this.hoveredObject = firstIntersectObject
         this.onMouseEnter({
           selected: this.hoveredObject,
+          dragSelected: this.selected?.object,
           mouseEvent: mouseEvent,
         })
       }
@@ -367,6 +385,7 @@ export class SceneInfra {
       if (this.hoveredObject) {
         this.onMouseLeave({
           selected: this.hoveredObject,
+          dragSelected: this.selected?.object,
           mouseEvent: mouseEvent,
         })
         this.hoveredObject = null
@@ -455,8 +474,16 @@ export class SceneInfra {
 
     if (this.selected) {
       if (this.selected.hasBeenDragged) {
-        // this is where we could fire a onDragEnd event
-        // console.log('onDragEnd', this.selected)
+        // TODO do the types properly here
+        this.onDragEndCallback({
+          intersectionPoint: {
+            twoD: planeIntersectPoint?.twoD as any,
+            threeD: planeIntersectPoint?.threeD as any,
+          },
+          intersects,
+          mouseEvent,
+          selected: this.selected as any,
+        })
       } else if (planeIntersectPoint?.twoD && planeIntersectPoint?.threeD) {
         // fire onClick event as there was no drags
         this.onClickCallback({

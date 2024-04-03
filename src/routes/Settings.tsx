@@ -1,90 +1,70 @@
-import { faArrowRotateBack, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../components/ActionButton'
-import { AppHeader } from '../components/AppHeader'
-import { open } from '@tauri-apps/api/dialog'
-import { DEFAULT_PROJECT_NAME, SETTINGS_PERSIST_KEY } from 'lib/constants'
 import {
-  type BaseUnit,
-  UnitSystem,
-  baseUnits,
+  SetEventTypes,
+  SettingsLevel,
+  WildcardSetEvent,
 } from 'lib/settings/settingsTypes'
 import { Toggle } from 'components/Toggle/Toggle'
-import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { type IndexLoaderData } from 'lib/types'
 import { paths } from 'lib/paths'
-import { Themes } from '../lib/theme'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import {
-  CameraSystem,
-  cameraSystems,
-  cameraMouseDragGuards,
-} from 'lib/cameraControls'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
 import {
   createNewProject,
+  getInitialDefaultDir,
   getNextProjectIndex,
   getProjectsInDir,
-  getSettingsFilePath,
-  initializeProjectDirectory,
+  getSettingsFolderPaths,
   interpolateProjectNameWithIndex,
 } from 'lib/tauriFS'
-import { initialSettings } from 'lib/settings/initialSettings'
 import { ONBOARDING_PROJECT_NAME } from './Onboarding'
 import { sep } from '@tauri-apps/api/path'
 import { bracket } from 'lib/exampleKcl'
 import { isTauri } from 'lib/isTauri'
 import { invoke } from '@tauri-apps/api'
 import toast from 'react-hot-toast'
+import React, { Fragment, useMemo, useRef, useState } from 'react'
+import { Setting } from 'lib/settings/initialSettings'
+import decamelize from 'decamelize'
+import { Event } from 'xstate'
+import { Dialog, RadioGroup, Transition } from '@headlessui/react'
+import { CustomIcon, CustomIconName } from 'components/CustomIcon'
+import Tooltip from 'components/Tooltip'
+import { shouldHideSetting } from 'lib/settings/settingsUtils'
 
 export const Settings = () => {
   const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
-  const loaderData =
-    (useRouteLoaderData(paths.FILE) as IndexLoaderData) || undefined
   const navigate = useNavigate()
+  const close = () => navigate(location.pathname.replace(paths.SETTINGS, ''))
   const location = useLocation()
   const isFileSettings = location.pathname.includes(paths.FILE)
+  const projectPath =
+    isFileSettings && isTauri()
+      ? decodeURI(
+          location.pathname
+            .replace(paths.FILE + '/', '')
+            .replace(paths.SETTINGS, '')
+            .slice(0, decodeURI(location.pathname).lastIndexOf(sep))
+        )
+      : undefined
+  const [settingsLevel, setSettingsLevel] = useState<SettingsLevel>(
+    isFileSettings ? 'project' : 'user'
+  )
+  const scrollRef = useRef<HTMLDivElement>(null)
   const dotDotSlash = useDotDotSlash()
   useHotkeys('esc', () => navigate(dotDotSlash()))
   const {
     settings: {
       send,
-      state: {
-        context: {
-          baseUnit,
-          cameraControls,
-          defaultDirectory,
-          defaultProjectName,
-          showDebugPanel,
-          theme,
-          unitSystem,
-        },
-      },
+      state: { context },
     },
   } = useSettingsAuthContext()
 
-  async function handleDirectorySelection() {
-    // the `recursive` property added following
-    // this advice for permissions: https://github.com/tauri-apps/tauri/issues/4851#issuecomment-1210711455
-    const newDirectory = await open({
-      directory: true,
-      recursive: true,
-      defaultPath: defaultDirectory || paths.INDEX,
-      title: 'Choose a new default directory',
-    })
-
-    if (newDirectory && newDirectory !== null && !Array.isArray(newDirectory)) {
-      send({
-        type: 'Set Default Directory',
-        data: { defaultDirectory: newDirectory },
-      })
-    }
-  }
-
   function restartOnboarding() {
     send({
-      type: 'Set Onboarding Status',
-      data: { onboardingStatus: '' },
+      type: `set.app.onboardingStatus`,
+      data: { level: 'user', value: '' },
     })
 
     if (isFileSettings) {
@@ -95,6 +75,7 @@ export const Settings = () => {
   }
 
   async function createAndOpenNewProject() {
+    const defaultDirectory = context.app.projectDirectory.current
     const projects = await getProjectsInDir(defaultDirectory)
     const nextIndex = await getNextProjectIndex(
       ONBOARDING_PROJECT_NAME,
@@ -112,276 +93,303 @@ export const Settings = () => {
   }
 
   return (
-    <div className="fixed inset-0 z-40 overflow-auto body-bg">
-      <AppHeader showToolbar={false} project={loaderData}>
-        <ActionButton
-          Element="link"
-          to={location.pathname.replace(paths.SETTINGS, '')}
-          icon={{
-            icon: faXmark,
-            bgClassName: 'bg-destroy-80',
-            iconClassName:
-              'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
-          }}
-          className="hover:border-destroy-40"
-          data-testid="close-button"
+    <Transition appear show={true} as={Fragment}>
+      <Dialog
+        as="div"
+        open={true}
+        onClose={close}
+        className="fixed inset-0 z-40 overflow-y-auto p-4 grid place-items-center"
+      >
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-75"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
         >
-          Close
-        </ActionButton>
-      </AppHeader>
-      <div className="max-w-4xl mx-5 lg:mx-auto my-24">
-        <h1 className="text-4xl font-bold">User Settings</h1>
-        <p className="max-w-2xl mt-6">
-          Don't see the feature you want? Check to see if it's on{' '}
-          <a
-            href="https://github.com/KittyCAD/modeling-app/discussions"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            our roadmap
-          </a>
-          , and start a discussion if you don't see it! Your feedback will help
-          us prioritize what to build next.
-        </p>
-        <SettingsSection
-          title="Camera Controls"
-          description="How you want to control the camera in the 3D view"
+          <Dialog.Overlay className="fixed inset-0 bg-chalkboard-110/30 dark:bg-chalkboard-110/50" />
+        </Transition.Child>
+
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-75"
+          enterFrom="opacity-0 scale-95"
+          enterTo="opacity-100 scale-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100 scale-100"
+          leaveTo="opacity-0 scale-95"
         >
-          <select
-            id="camera-controls"
-            className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
-            value={cameraControls}
-            onChange={(e) => {
-              send({
-                type: 'Set Camera Controls',
-                data: { cameraControls: e.target.value as CameraSystem },
-              })
-            }}
-          >
-            {cameraSystems.map((program) => (
-              <option key={program} value={program}>
-                {program}
-              </option>
-            ))}
-          </select>
-          <ul className="mx-4 my-2 text-sm leading-relaxed">
-            <li>
-              <strong>Pan:</strong>{' '}
-              {cameraMouseDragGuards[cameraControls].pan.description}
-            </li>
-            <li>
-              <strong>Zoom:</strong>{' '}
-              {cameraMouseDragGuards[cameraControls].zoom.description}
-            </li>
-            <li>
-              <strong>Rotate:</strong>{' '}
-              {cameraMouseDragGuards[cameraControls].rotate.description}
-            </li>
-          </ul>
-        </SettingsSection>
-        {(window as any).__TAURI__ && (
-          <>
-            <SettingsSection
-              title="Default Directory"
-              description="Where newly-created projects are saved on your local computer"
+          <Dialog.Panel className="rounded relative mx-auto bg-chalkboard-10 dark:bg-chalkboard-100 border dark:border-chalkboard-70 max-w-3xl w-full max-h-[66vh] shadow-lg flex flex-col gap-8 overflow-hidden">
+            <div className="p-5 pb-0 flex justify-between items-center">
+              <h1 className="text-2xl font-bold">Settings</h1>
+              <button
+                onClick={close}
+                className="p-0 m-0 focus:ring-0 focus:outline-none border-none hover:bg-destroy-10 focus:bg-destroy-10 dark:hover:bg-destroy-80/50 dark:focus:bg-destroy-80/50"
+                data-testid="settings-close-button"
+              >
+                <CustomIcon name="close" className="w-5 h-5" />
+              </button>
+            </div>
+            <RadioGroup
+              value={settingsLevel}
+              onChange={setSettingsLevel}
+              className="flex justify-start pl-4 pr-5 gap-5 border-0 border-b border-b-chalkboard-20 dark:border-b-chalkboard-90"
             >
-              <div className="flex w-full gap-4 p-1 border rounded border-chalkboard-30">
-                <input
-                  className="flex-1 px-2 bg-transparent"
-                  value={defaultDirectory}
-                  disabled
-                  data-testid="default-directory-input"
-                />
-                <ActionButton
-                  Element="button"
-                  onClick={handleDirectorySelection}
-                  icon={{
-                    icon: 'folder',
-                  }}
+              <RadioGroup.Option value="user">
+                {({ checked }) => (
+                  <SettingsTabButton
+                    checked={checked}
+                    icon="person"
+                    text="User"
+                  />
+                )}
+              </RadioGroup.Option>
+              {isFileSettings && (
+                <RadioGroup.Option value="project">
+                  {({ checked }) => (
+                    <SettingsTabButton
+                      checked={checked}
+                      icon="folder"
+                      text="This project"
+                    />
+                  )}
+                </RadioGroup.Option>
+              )}
+            </RadioGroup>
+            <div className="flex flex-grow overflow-hidden items-stretch pl-4 pr-5 pb-5 gap-4">
+              <div className="flex w-64 flex-col gap-3 pr-2 py-1 border-0 border-r border-r-chalkboard-20 dark:border-r-chalkboard-90">
+                {Object.entries(context)
+                  .filter(([_, categorySettings]) =>
+                    // Filter out categories that don't have any non-hidden settings
+                    Object.values(categorySettings).some(
+                      (setting: Setting) =>
+                        !shouldHideSetting(setting, settingsLevel)
+                    )
+                  )
+                  .map(([category]) => (
+                    <button
+                      key={category}
+                      onClick={() =>
+                        scrollRef.current
+                          ?.querySelector(`#category-${category}`)
+                          ?.scrollIntoView({
+                            block: 'nearest',
+                            behavior: 'smooth',
+                          })
+                      }
+                      className="capitalize text-left border-none px-1"
+                    >
+                      {decamelize(category, { separator: ' ' })}
+                    </button>
+                  ))}
+                <button
+                  onClick={() =>
+                    scrollRef.current
+                      ?.querySelector(`#settings-resets`)
+                      ?.scrollIntoView({
+                        block: 'nearest',
+                        behavior: 'smooth',
+                      })
+                  }
+                  className="capitalize text-left border-none px-1"
                 >
-                  Choose a folder
-                </ActionButton>
+                  Resets
+                </button>
+                <button
+                  onClick={() =>
+                    scrollRef.current
+                      ?.querySelector(`#settings-about`)
+                      ?.scrollIntoView({
+                        block: 'nearest',
+                        behavior: 'smooth',
+                      })
+                  }
+                  className="capitalize text-left border-none px-1"
+                >
+                  About
+                </button>
               </div>
-            </SettingsSection>
-            <SettingsSection
-              title="Default Project Name"
-              description="Name template for new projects. Use $n to include an incrementing index"
-            >
-              <input
-                className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
-                defaultValue={defaultProjectName}
-                onBlur={(e) => {
-                  const newValue = e.target.value.trim() || DEFAULT_PROJECT_NAME
-                  send({
-                    type: 'Set Default Project Name',
-                    data: {
-                      defaultProjectName: newValue,
-                    },
-                  })
-                  e.target.value = newValue
-                }}
-                autoCapitalize="off"
-                autoComplete="off"
-                data-testid="name-input"
-              />
-            </SettingsSection>
-          </>
-        )}
-        <SettingsSection
-          title="Unit System"
-          description="Which unit system to use by default"
-        >
-          <Toggle
-            offLabel="Imperial"
-            onLabel="Metric"
-            name="settings-units"
-            checked={unitSystem === UnitSystem.Metric}
-            onChange={(e) => {
-              const newUnitSystem = e.target.checked
-                ? UnitSystem.Metric
-                : UnitSystem.Imperial
-              send({
-                type: 'Set Unit System',
-                data: { unitSystem: newUnitSystem },
-              })
-            }}
-          />
-        </SettingsSection>
-        <SettingsSection
-          title="Base Unit"
-          description="Which base unit to use in dimensions by default"
-        >
-          <select
-            id="base-unit"
-            className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
-            value={baseUnit}
-            onChange={(e) => {
-              send({
-                type: 'Set Base Unit',
-                data: { baseUnit: e.target.value as BaseUnit },
-              })
-            }}
-          >
-            {baseUnits[unitSystem as keyof typeof baseUnits].map((unit) => (
-              <option key={unit} value={unit}>
-                {unit}
-              </option>
-            ))}
-          </select>
-        </SettingsSection>
-        <SettingsSection
-          title="Debug Panel"
-          description="Show the debug panel in the editor"
-        >
-          <Toggle
-            name="settings-debug-panel"
-            checked={showDebugPanel}
-            onChange={(e) => {
-              send('Toggle Debug Panel')
-            }}
-          />
-        </SettingsSection>
-        <SettingsSection
-          title="Editor Theme"
-          description="Apply a light or dark theme to the editor"
-        >
-          <select
-            id="settings-theme"
-            className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
-            value={theme}
-            onChange={(e) => {
-              send({
-                type: 'Set Theme',
-                data: { theme: e.target.value as Themes },
-              })
-            }}
-          >
-            {Object.entries(Themes).map(([label, value]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-        </SettingsSection>
-        <SettingsSection
-          title="Onboarding"
-          description="Replay the onboarding process"
-        >
-          <ActionButton
-            Element="button"
-            onClick={restartOnboarding}
-            icon={{ icon: faArrowRotateBack, size: 'sm', className: 'p-1' }}
-          >
-            Replay Onboarding
-          </ActionButton>
-        </SettingsSection>
-        <p className="font-mono my-6 leading-loose">
-          Your settings are saved in{' '}
-          {isTauri()
-            ? 'a file in the app data folder for your OS.'
-            : "your browser's local storage."}{' '}
-          {isTauri() ? (
-            <span className="flex gap-4 flex-wrap items-center">
-              <button
-                onClick={async () =>
-                  void invoke('show_in_folder', {
-                    path: await getSettingsFilePath(),
-                  })
-                }
-                className="text-base"
+              <div
+                ref={scrollRef}
+                className="flex flex-col gap-6 px-2 overflow-y-auto"
               >
-                Show settings.json in folder
-              </button>
-              <button
-                onClick={async () => {
-                  // We have to re-call initializeProjectDirectory
-                  // since we can't set that in the settings machine's
-                  // initial context due to it being async
-                  send({
-                    type: 'Set All Settings',
-                    data: {
-                      ...initialSettings,
-                      defaultDirectory:
-                        (await initializeProjectDirectory('')).path ?? '',
-                    },
-                  })
-                  toast.success('Settings restored to default')
-                }}
-                className="text-base"
-              >
-                Restore default settings
-              </button>
-            </span>
-          ) : (
-            <button
-              onClick={() => {
-                localStorage.removeItem(SETTINGS_PERSIST_KEY)
-                send({
-                  type: 'Set All Settings',
-                  data: initialSettings,
-                })
-                toast.success('Settings restored to default')
-              }}
-              className="text-base"
-            >
-              Restore default settings
-            </button>
-          )}
-        </p>
-        <p className="mt-24 text-sm font-mono">
-          {/* This uses a Vite plugin, set in vite.config.ts
-              to inject the version from package.json */}
-          App version {APP_VERSION}.{' '}
-          <a
-            href={`https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            View release on GitHub
-          </a>
-        </p>
-      </div>
-    </div>
+                {Object.entries(context)
+                  .filter(([_, categorySettings]) =>
+                    // Filter out categories that don't have any non-hidden settings
+                    Object.values(categorySettings).some(
+                      (setting) => !shouldHideSetting(setting, settingsLevel)
+                    )
+                  )
+                  .map(([category, categorySettings]) => (
+                    <Fragment key={category}>
+                      <h2
+                        id={`category-${category}`}
+                        className="text-2xl mt-6 first-of-type:mt-0 capitalize font-bold"
+                      >
+                        {decamelize(category, { separator: ' ' })}
+                      </h2>
+                      {Object.entries(categorySettings)
+                        .filter(
+                          // Filter out settings that don't have a Component or inputType
+                          // or are hidden on the current level or the current platform
+                          (item: [string, Setting<unknown>]) =>
+                            !shouldHideSetting(item[1], settingsLevel) &&
+                            (item[1].Component ||
+                              item[1].commandConfig?.inputType)
+                        )
+                        .map(([settingName, s]) => {
+                          const setting = s as Setting
+                          const parentValue =
+                            setting[setting.getParentLevel(settingsLevel)]
+                          return (
+                            <SettingsSection
+                              title={decamelize(settingName, {
+                                separator: ' ',
+                              })}
+                              key={`${category}-${settingName}-${settingsLevel}`}
+                              description={setting.description}
+                              settingHasChanged={
+                                setting[settingsLevel] !== undefined &&
+                                setting[settingsLevel] !==
+                                  setting.getFallback(settingsLevel)
+                              }
+                              parentLevel={setting.getParentLevel(
+                                settingsLevel
+                              )}
+                              onFallback={() =>
+                                send({
+                                  type: `set.${category}.${settingName}`,
+                                  data: {
+                                    level: settingsLevel,
+                                    value:
+                                      parentValue !== undefined
+                                        ? parentValue
+                                        : setting.getFallback(settingsLevel),
+                                  },
+                                } as SetEventTypes)
+                              }
+                            >
+                              <GeneratedSetting
+                                category={category}
+                                settingName={settingName}
+                                settingsLevel={settingsLevel}
+                                setting={setting}
+                              />
+                            </SettingsSection>
+                          )
+                        })}
+                    </Fragment>
+                  ))}
+                <h2 id="settings-resets" className="text-2xl mt-6 font-bold">
+                  Resets
+                </h2>
+                <SettingsSection
+                  title="Onboarding"
+                  description="Replay the onboarding process"
+                >
+                  <ActionButton
+                    Element="button"
+                    onClick={restartOnboarding}
+                    icon={{
+                      icon: 'refresh',
+                      size: 'sm',
+                      className: 'p-1',
+                    }}
+                  >
+                    Replay Onboarding
+                  </ActionButton>
+                </SettingsSection>
+                <SettingsSection
+                  title="Reset settings"
+                  description={`Restore settings to their default values. Your settings are saved in
+                    ${
+                      isTauri()
+                        ? ' a file in the app data folder for your OS.'
+                        : " your browser's local storage."
+                    }
+                  `}
+                >
+                  <div className="flex flex-col items-start gap-4">
+                    {isTauri() && (
+                      <ActionButton
+                        Element="button"
+                        onClick={async () => {
+                          const paths = await getSettingsFolderPaths(
+                            projectPath
+                              ? decodeURIComponent(projectPath)
+                              : undefined
+                          )
+                          void invoke('show_in_folder', {
+                            path: paths[settingsLevel],
+                          })
+                        }}
+                        icon={{
+                          icon: 'folder',
+                          size: 'sm',
+                          className: 'p-1',
+                        }}
+                      >
+                        Show in folder
+                      </ActionButton>
+                    )}
+                    <ActionButton
+                      Element="button"
+                      onClick={async () => {
+                        const defaultDirectory = await getInitialDefaultDir()
+                        send({
+                          type: 'Reset settings',
+                          defaultDirectory,
+                        })
+                        toast.success('Settings restored to default')
+                      }}
+                      icon={{
+                        icon: 'refresh',
+                        size: 'sm',
+                        className: 'p-1 text-chalkboard-10',
+                        bgClassName: 'bg-destroy-70',
+                      }}
+                    >
+                      Restore default settings
+                    </ActionButton>
+                  </div>
+                </SettingsSection>
+                <h2 id="settings-about" className="text-2xl mt-6 font-bold">
+                  About Modeling App
+                </h2>
+                <div className="text-sm mb-12">
+                  <p>
+                    {/* This uses a Vite plugin, set in vite.config.ts
+                  to inject the version from package.json */}
+                    App version {APP_VERSION}.{' '}
+                    <a
+                      href={`https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      View release on GitHub
+                    </a>
+                  </p>
+                  <p className="max-w-2xl mt-6">
+                    Don't see the feature you want? Check to see if it's on{' '}
+                    <a
+                      href="https://github.com/KittyCAD/modeling-app/discussions"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      our roadmap
+                    </a>
+                    , and start a discussion if you don't see it! Your feedback
+                    will help us prioritize what to build next.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Dialog.Panel>
+        </Transition.Child>
+      </Dialog>
+    </Transition>
   )
 }
 
@@ -389,6 +397,9 @@ interface SettingsSectionProps extends React.PropsWithChildren {
   title: string
   description?: string
   className?: string
+  parentLevel?: SettingsLevel | 'default'
+  onFallback?: () => void
+  settingHasChanged?: boolean
   headingClassName?: string
 }
 
@@ -397,20 +408,215 @@ export function SettingsSection({
   description,
   className,
   children,
-  headingClassName = 'text-2xl font-bold',
+  parentLevel,
+  settingHasChanged,
+  onFallback,
+  headingClassName = 'text-base font-normal capitalize tracking-wide',
 }: SettingsSectionProps) {
   return (
     <section
       className={
-        'my-16 last-of-type:mb-24 grid grid-cols-2 gap-12 items-start ' +
-        className
+        'group grid grid-cols-2 gap-6 items-start ' +
+        className +
+        (settingHasChanged
+          ? ' border-0 border-l-2 -ml-0.5 border-energy-50 dark:border-energy-20'
+          : '')
       }
     >
-      <div className="w-80">
-        <h2 className={headingClassName}>{title}</h2>
-        <p className="mt-2 text-sm">{description}</p>
+      <div className="ml-2">
+        <div className="flex items-center gap-2">
+          <h2 className={headingClassName}>{title}</h2>
+          {onFallback && parentLevel && settingHasChanged && (
+            <button
+              onClick={onFallback}
+              className="hidden group-hover:block group-focus-within:block border-none p-0 hover:bg-warn-10 dark:hover:bg-warn-80 focus:bg-warn-10 dark:focus:bg-warn-80 focus:outline-none"
+            >
+              <CustomIcon name="refresh" className="w-4 h-4" />
+              <span className="sr-only">Roll back {title}</span>
+              <Tooltip position="right">
+                Roll back to match {parentLevel}
+              </Tooltip>
+            </button>
+          )}
+        </div>
+        {description && (
+          <p className="mt-2 text-xs text-chalkboard-80 dark:text-chalkboard-30">
+            {description}
+          </p>
+        )}
       </div>
       <div>{children}</div>
     </section>
+  )
+}
+
+interface GeneratedSettingProps {
+  // We don't need the fancy types here,
+  // it doesn't help us with autocomplete or anything
+  category: string
+  settingName: string
+  settingsLevel: SettingsLevel
+  setting: Setting<unknown>
+}
+
+function GeneratedSetting({
+  category,
+  settingName,
+  settingsLevel,
+  setting,
+}: GeneratedSettingProps) {
+  const {
+    settings: { context, send },
+  } = useSettingsAuthContext()
+  const options = useMemo(() => {
+    return setting.commandConfig &&
+      'options' in setting.commandConfig &&
+      setting.commandConfig.options
+      ? setting.commandConfig.options instanceof Array
+        ? setting.commandConfig.options
+        : setting.commandConfig.options(
+            {
+              argumentsToSubmit: {
+                level: settingsLevel,
+              },
+            },
+            context
+          )
+      : []
+  }, [setting, settingsLevel, context])
+
+  if (setting.Component)
+    return (
+      <setting.Component
+        value={setting[settingsLevel] || setting.getFallback(settingsLevel)}
+        onChange={(e) => {
+          if ('value' in e.target) {
+            send({
+              type: `set.${category}.${settingName}`,
+              data: {
+                level: settingsLevel,
+                value: e.target.value,
+              },
+            } as unknown as Event<WildcardSetEvent>)
+          }
+        }}
+      />
+    )
+
+  switch (setting.commandConfig?.inputType) {
+    case 'boolean':
+      return (
+        <Toggle
+          offLabel="Off"
+          onLabel="On"
+          onChange={(e) =>
+            send({
+              type: `set.${category}.${settingName}`,
+              data: {
+                level: settingsLevel,
+                value: Boolean(e.target.checked),
+              },
+            } as SetEventTypes)
+          }
+          checked={Boolean(
+            setting[settingsLevel] !== undefined
+              ? setting[settingsLevel]
+              : setting.getFallback(settingsLevel)
+          )}
+          name={`${category}-${settingName}`}
+          data-testid={`${category}-${settingName}`}
+        />
+      )
+    case 'options':
+      return (
+        <select
+          name={`${category}-${settingName}`}
+          data-testid={`${category}-${settingName}`}
+          className="p-1 bg-transparent border rounded-sm border-chalkboard-30 w-full"
+          value={String(
+            setting[settingsLevel] || setting.getFallback(settingsLevel)
+          )}
+          onChange={(e) =>
+            send({
+              type: `set.${category}.${settingName}`,
+              data: {
+                level: settingsLevel,
+                value: e.target.value,
+              },
+            } as unknown as Event<WildcardSetEvent>)
+          }
+        >
+          {options &&
+            options.length > 0 &&
+            options.map((option) => (
+              <option key={option.name} value={String(option.value)}>
+                {option.name}
+              </option>
+            ))}
+        </select>
+      )
+    case 'string':
+      return (
+        <input
+          name={`${category}-${settingName}`}
+          data-testid={`${category}-${settingName}`}
+          type="text"
+          className="p-1 bg-transparent border rounded-sm border-chalkboard-30 w-full"
+          defaultValue={String(
+            setting[settingsLevel] || setting.getFallback(settingsLevel)
+          )}
+          onBlur={(e) => {
+            if (
+              setting[settingsLevel] === undefined
+                ? setting.getFallback(settingsLevel) !== e.target.value
+                : setting[settingsLevel] !== e.target.value
+            ) {
+              send({
+                type: `set.${category}.${settingName}`,
+                data: {
+                  level: settingsLevel,
+                  value: e.target.value,
+                },
+              } as unknown as Event<WildcardSetEvent>)
+            }
+          }}
+        />
+      )
+  }
+  return (
+    <p className="text-destroy-70 dark:text-destroy-20">
+      No component or input type found for setting {settingName} in category{' '}
+      {category}
+    </p>
+  )
+}
+
+interface SettingsTabButtonProps {
+  checked: boolean
+  icon: CustomIconName
+  text: string
+}
+
+function SettingsTabButton(props: SettingsTabButtonProps) {
+  const { checked, icon, text } = props
+  return (
+    <div
+      className={`cursor-pointer select-none flex items-center gap-1 p-1 pr-2 -mb-[1px] border-0 border-b ${
+        checked
+          ? 'border-energy-10 dark:border-energy-20'
+          : 'border-chalkboard-20 dark:border-chalkboard-30 hover:bg-energy-10/50 dark:hover:bg-energy-90/50'
+      }`}
+    >
+      <CustomIcon
+        name={icon}
+        className={
+          'w-5 h-5 ' +
+          (checked
+            ? 'bg-energy-10 dark:bg-energy-20 dark:text-chalkboard-110'
+            : '')
+        }
+      />
+      <span>{text}</span>
+    </div>
   )
 }

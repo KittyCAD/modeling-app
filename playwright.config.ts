@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test'
+import { basicStorageState } from './e2e/playwright/storageStates'
 
 /**
  * Read environment variables from file.
@@ -28,6 +29,9 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+
+    /* Use a common shared localStorage */
+    storageState: basicStorageState,
   },
 
   /* Configure projects for major browsers */
