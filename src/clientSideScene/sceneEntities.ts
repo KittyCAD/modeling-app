@@ -555,12 +555,27 @@ export class SceneEntities {
       ...mouseEnterLeaveCallbacks(),
     })
   }
+  setupRectangleOriginListener = () => {
+    sceneInfra.setCallbacks({
+      onClick: (args) => {
+        const twoD = args.intersectionPoint?.twoD
+        if (!twoD) {
+          console.warn(`This click didn't have a 2D intersection`, args)
+          return
+        }
+        sceneInfra.modelingSend({
+          type: 'Add rectangle origin',
+          data: [twoD.x, twoD.y],
+        })
+      },
+    })
+  }
   setupDraftRectangle = async (
     sketchPathToNode: PathToNode,
     forward: [number, number, number],
     up: [number, number, number],
-    origin: [number, number, number],
-    shouldTearDown = true
+    sketchOrigin: [number, number, number],
+    rectangleOrigin: [x: number, y: number]
   ) => {
     let _ast = JSON.parse(JSON.stringify(kclManager.ast))
 
@@ -570,9 +585,6 @@ export class SceneEntities {
         sketchPathToNode || [],
         'VariableDeclaration'
       )?.node?.declarations?.[0]?.id?.name || ''
-    const sg = kclManager.programMemory.root[
-      variableDeclarationName
-    ] as SketchGroup
 
     /**
      * We want to generate this kind of code mod:
@@ -586,7 +598,10 @@ export class SceneEntities {
     // Here is that kcl code as an array of call expressions
     const callExpressions = [
       createCallExpressionStdLib('startProfileAt', [
-        createArrayExpression([createLiteral(0), createLiteral(0)]),
+        createArrayExpression([
+          createLiteral(rectangleOrigin[0]),
+          createLiteral(rectangleOrigin[1]),
+        ]),
         createPipeSubstitution(),
       ]),
       createCallExpressionStdLib('angledLine', [
@@ -648,15 +663,14 @@ export class SceneEntities {
 
     // if (shouldTearDown) await this.tearDownSketch({ removeAxis: false })
     console.log('sketchPathToNode for setupSketch', sketchPathToNode)
-    const { truncatedAst, programMemoryOverride, sketchGroup } =
-      await this.setupSketch({
-        sketchPathToNode,
-        forward,
-        up,
-        position: origin,
-        maybeModdedAst: _ast,
-        draftExpressionsIndices: { start: 0, end: 3 },
-      })
+    const { programMemoryOverride } = await this.setupSketch({
+      sketchPathToNode,
+      forward,
+      up,
+      position: sketchOrigin,
+      maybeModdedAst: _ast,
+      draftExpressionsIndices: { start: 0, end: 3 },
+    })
 
     sceneInfra.setCallbacks({
       onMove: async (args) => {
@@ -670,27 +684,26 @@ export class SceneEntities {
           'VariableDeclaration'
         )?.node?.declarations?.[0]?.init
 
+        const x = (args.intersectionPoint.twoD.x || 0) - rectangleOrigin[0]
+        const y = (args.intersectionPoint.twoD.y || 0) - rectangleOrigin[1]
+
         if (sketchInit.type === 'PipeExpression') {
-          ;(
-            (sketchInit.body[2] as CallExpression)
-              .arguments[0] as ArrayExpression
-          ) = createArrayExpression([
-            createLiteral(args.intersectionPoint.twoD.x >= 0 ? 0 : 180),
-            createLiteral(Math.abs(args.intersectionPoint.twoD.x))
+          ;((sketchInit.body[2] as CallExpression)
+            .arguments[0] as ArrayExpression) = createArrayExpression([
+            createLiteral(x >= 0 ? 0 : 180),
+            createLiteral(Math.abs(x)),
           ])
-          ;(
-            (sketchInit.body[3] as CallExpression)
-              .arguments[0] as ArrayExpression
-          ) = createArrayExpression([
+          ;((sketchInit.body[3] as CallExpression)
+            .arguments[0] as ArrayExpression) = createArrayExpression([
             createBinaryExpression([
               createCallExpressionStdLib('segAng', [
                 createLiteral('a'),
                 createPipeSubstitution(),
               ]),
-              (Math.sign(args.intersectionPoint.twoD.y) === Math.sign(args.intersectionPoint.twoD.x)) ? '+' : '-',
+              Math.sign(y) === Math.sign(x) ? '+' : '-',
               createLiteral(90),
             ]), // 90 offset from the previous line
-            createLiteral(Math.abs(args.intersectionPoint.twoD.y)), // This will be the height of the rectangle
+            createLiteral(Math.abs(y)), // This will be the height of the rectangle
           ])
         }
         const { programMemory } = await executeAst({
@@ -705,17 +718,24 @@ export class SceneEntities {
         ] as SketchGroup
         const sgPaths = sketchGroup.value
         const orthoFactor = orthoScale(sceneInfra.camControls.camera)
-  
-        
-        this.updateSegment(sketchGroup.start, 0,0, _ast, orthoFactor, sketchGroup)
+
+        this.updateSegment(
+          sketchGroup.start,
+          0,
+          0,
+          _ast,
+          orthoFactor,
+          sketchGroup
+        )
         const yo: any[] = []
         sgPaths.forEach((seg, index) => {
           yo.push(seg.from, seg.to)
           this.updateSegment(seg, index, 0, _ast, orthoFactor, sketchGroup)
         })
-        console.log('from and to', JSON.stringify(yo))
       },
-      onClick: async (args) => {},
+      onClick: async (args) => {
+        // Commit the rectangle to the full AST/code and return to sketch.idle
+      },
     })
   }
   setupSketchIdleCallbacks = (pathToNode: PathToNode) => {
@@ -860,9 +880,24 @@ export class SceneEntities {
       const sgPaths = sketchGroup.value
       const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
-      
-      this.updateSegment(sketchGroup.start, 0,varDecIndex, modifiedAst, orthoFactor, sketchGroup)
-      sgPaths.forEach((group, index) => this.updateSegment(group, index, varDecIndex, modifiedAst, orthoFactor, sketchGroup))
+      this.updateSegment(
+        sketchGroup.start,
+        0,
+        varDecIndex,
+        modifiedAst,
+        orthoFactor,
+        sketchGroup
+      )
+      sgPaths.forEach((group, index) =>
+        this.updateSegment(
+          group,
+          index,
+          varDecIndex,
+          modifiedAst,
+          orthoFactor,
+          sketchGroup
+        )
+      )
     })()
   }
 
@@ -872,7 +907,7 @@ export class SceneEntities {
     varDecIndex: number,
     modifiedAst: Program,
     orthoFactor: number,
-    sketchGroup: SketchGroup,
+    sketchGroup: SketchGroup
   ) => {
     const segPathToNode = getNodePathFromSourceRange(
       modifiedAst,
