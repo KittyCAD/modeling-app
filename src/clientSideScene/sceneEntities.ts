@@ -68,7 +68,7 @@ import {
   changeSketchArguments,
   updateStartProfileAtArgs,
 } from 'lang/std/sketch'
-import { throttle } from 'lib/utils'
+import { roundOff, throttle } from 'lib/utils'
 import {
   createArrayExpression,
   createBinaryExpression,
@@ -358,7 +358,6 @@ export class SceneEntities {
       ) {
         const previousSegment =
           sketchGroup.value[index - 1] || sketchGroup.start
-        console.log('previousSegment', previousSegment)
         const previousSegmentPathToNode = getNodePathFromSourceRange(
           maybeModdedAst,
           previousSegment.__geoMeta.sourceRange
@@ -599,15 +598,15 @@ export class SceneEntities {
     const callExpressions = [
       createCallExpressionStdLib('startProfileAt', [
         createArrayExpression([
-          createLiteral(rectangleOrigin[0]),
-          createLiteral(rectangleOrigin[1]),
+          createLiteral(roundOff(rectangleOrigin[0])),
+          createLiteral(roundOff(rectangleOrigin[1])),
         ]),
         createPipeSubstitution(),
       ]),
       createCallExpressionStdLib('angledLine', [
         createArrayExpression([
           createLiteral(0), // 0 deg
-          createLiteral(10), // This will be the width of the rectangle
+          createLiteral(0), // This will be the width of the rectangle
         ]),
         createPipeSubstitution(),
         createLiteral('a'),
@@ -622,7 +621,7 @@ export class SceneEntities {
             '+',
             createLiteral(90),
           ]), // 90 offset from the previous line
-          createLiteral(5), // This will be the height of the rectangle
+          createLiteral(0), // This will be the height of the rectangle
         ]),
         createPipeSubstitution(),
         createLiteral('b'),
@@ -661,8 +660,6 @@ export class SceneEntities {
 
     _ast = parse(recast(_ast))
 
-    // if (shouldTearDown) await this.tearDownSketch({ removeAxis: false })
-    console.log('sketchPathToNode for setupSketch', sketchPathToNode)
     const { programMemoryOverride } = await this.setupSketch({
       sketchPathToNode,
       forward,
@@ -727,14 +724,51 @@ export class SceneEntities {
           orthoFactor,
           sketchGroup
         )
-        const yo: any[] = []
-        sgPaths.forEach((seg, index) => {
-          yo.push(seg.from, seg.to)
+        sgPaths.forEach((seg, index) =>
           this.updateSegment(seg, index, 0, _ast, orthoFactor, sketchGroup)
-        })
+        )
       },
       onClick: async (args) => {
         // Commit the rectangle to the full AST/code and return to sketch.idle
+        const cornerPoint = args.intersectionPoint?.twoD
+        if (!cornerPoint || args.mouseEvent.button !== 0) return
+
+        // Update the width and height of the draft rectangle
+        const pathToNodeTwo = JSON.parse(JSON.stringify(sketchPathToNode))
+        pathToNodeTwo[1][0] = 0
+
+        const sketchInit = getNodeFromPath<VariableDeclaration>(
+          _ast,
+          pathToNodeTwo || [],
+          'VariableDeclaration'
+        )?.node?.declarations?.[0]?.init
+
+        const x = roundOff((cornerPoint.x || 0) - rectangleOrigin[0])
+        const y = roundOff((cornerPoint.y || 0) - rectangleOrigin[1])
+
+        if (sketchInit.type === 'PipeExpression') {
+          ;((sketchInit.body[2] as CallExpression)
+            .arguments[0] as ArrayExpression) = createArrayExpression([
+            createLiteral(x >= 0 ? 0 : 180),
+            createLiteral(Math.abs(x)),
+          ])
+          ;((sketchInit.body[3] as CallExpression)
+            .arguments[0] as ArrayExpression) = createArrayExpression([
+            createBinaryExpression([
+              createCallExpressionStdLib('segAng', [
+                createLiteral('a'),
+                createPipeSubstitution(),
+              ]),
+              Math.sign(y) === Math.sign(x) ? '+' : '-',
+              createLiteral(90),
+            ]), // 90 offset from the previous line
+            createLiteral(Math.abs(y)), // This will be the height of the rectangle
+          ])
+
+          // Update the primary AST and unequip the rectangle tool
+          await kclManager.executeAstMock(_ast, { updates: 'code' })
+          sceneInfra.modelingSend({ type: 'CancelSketch' })
+        }
       },
     })
   }
@@ -917,8 +951,6 @@ export class SceneEntities {
     const originalPathToNodeStr = JSON.stringify(segPathToNode)
     segPathToNode[1][0] = varDecIndex
     const pathToNodeStr = JSON.stringify(segPathToNode)
-    console.log('newpathToNodeStr', pathToNodeStr)
-    console.log('originalPathToNodeStr', originalPathToNodeStr)
     // more hacks to hopefully be solved by proper pathToNode info in memory/sketchGroup segments
     const group =
       this.activeSegments[pathToNodeStr] ||
@@ -1039,8 +1071,6 @@ export class SceneEntities {
   }) {
     group.userData.from = from
     group.userData.to = to
-
-    console.log('updating the following', group, from, to)
 
     const shape = new Shape()
     shape.moveTo(0, -0.08 * scale)
