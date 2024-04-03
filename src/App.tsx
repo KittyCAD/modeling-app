@@ -166,7 +166,7 @@ export function App() {
         maxHeight={'auto'}
         handleClasses={{
           right:
-            'hover:bg-chalkboard-10/50 bg-transparent transition-colors duration-75 transition-ease-out delay-100 ' +
+            'hover:bg-chalkboard-10 hover:dark:bg-chalkboard-110 bg-transparent transition-colors duration-75 transition-ease-out delay-100 ' +
             (buttonDownInStream || onboardingStatus.current === 'camera'
               ? 'pointer-events-none '
               : 'pointer-events-auto'),

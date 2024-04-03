@@ -11,7 +11,7 @@
   @apply sticky top-0 z-10 cursor-pointer;
   @apply flex items-center justify-between gap-2 w-full p-2;
   @apply font-mono text-xs font-bold select-none text-chalkboard-90;
-  @apply bg-chalkboard-20;
+  @apply bg-chalkboard-10;
 }
 
 .header:not(:last-of-type) {

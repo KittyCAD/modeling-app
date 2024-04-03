@@ -53,7 +53,7 @@ export const AppHeader = ({
             className="text-sm self-center flex items-center w-fit gap-3"
           >
             Command Palette{' '}
-            <kbd className="bg-energy-10/50 dark:bg-chalkboard-100 dark:text-energy-10 inline-block px-1 py-0.5 border-energy-10 dark:border-chalkboard-90">
+            <kbd className="bg-primary/10 dark:bg-chalkboard-100 dark:text-primary inline-block px-1 py-0.5 border-primary dark:border-chalkboard-90">
               {platform === 'darwin' ? '⌘K' : 'Ctrl+/'}
             </kbd>
           </ActionButton>

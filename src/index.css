@@ -64,15 +64,15 @@ select {
 }
 
 button {
-  @apply border border-chalkboard-30 m-0.5 px-3 rounded text-xs focus-visible:ring-energy-10;
+  @apply border border-chalkboard-30 m-0.5 px-3 rounded text-xs focus-visible:ring-primary;
 }
 
 button:hover {
-  @apply border-chalkboard-40 bg-energy-10/20;
+  @apply border-chalkboard-40 bg-primary/10;
 }
 
 .dark button {
-  @apply border-chalkboard-70 focus-visible:ring-energy-10/50;
+  @apply border-chalkboard-70 focus-visible:ring-primary/50;
 }
 
 .dark button:hover {
@@ -80,7 +80,7 @@ button:hover {
 }
 
 button:disabled {
-  @apply cursor-not-allowed bg-chalkboard-20 text-chalkboard-60 border-chalkboard-20;
+  @apply cursor-not-allowed bg-chalkboard-20/50 text-chalkboard-60 border-chalkboard-20;
 }
 
 .dark button:disabled {
@@ -88,19 +88,19 @@ button:disabled {
 }
 
 a:not(.action-button) {
-  @apply text-energy-70 hover:text-energy-60 underline;
+  @apply text-primary underline hover:hue-rotate-15;
 }
 
 .dark a:not(.action-button) {
-  @apply text-energy-20 hover:text-energy-10;
+  @apply hover:brightness-110 hover:hue-rotate-0;
 }
 
 input {
-  @apply selection:bg-energy-10/50;
+  @apply selection:bg-primary/50;
 }
 
 .dark input {
-  @apply selection:bg-energy-10/40;
+  @apply selection:bg-primary/40;
 }
 
 .mono {

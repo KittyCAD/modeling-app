@@ -1,7 +1,13 @@
 :root {
   --primary-hue: 264.48;
-  --_primary: 60% 0.2166580177682407 var(--primary-hue, 264.48);
-  --primary: oklch(60% 0.2166580177682407 var(var(--primary-hue, 264.48)) / var(--opacity, 1));
+  --primary-chroma: 0.2167;
+  --primary-lightness: 60%;
+  --_primary: var(--primary-lightness) var(--primary-chroma)
+    var(--primary-hue, 264.48);
+  --primary: oklch(
+    var(--primary-lightness) var(--primary-chroma) var(--primary-hue, 264.48) /
+      var(--opacity, 1)
+  );
 
   /*
         Generated using Catmosphere Theme Builder
@@ -9,7 +15,7 @@
         https://catmosphere-theme-builder.vercel.app/?colors=%5B%7B%22from%22:%7B%22l%22:1,%22c%22:0.01,%22h%22:78%7D,%22to%22:%7B%22l%22:0.065,%22c%22:0.05,%22h%22:182.6%7D,%22stops%22:10,%22steps%22:12%7D,%7B%22from%22:%7B%22l%22:1,%22c%22:0.45,%22h%22:122.4%7D,%22to%22:%7B%22l%22:0.13,%22c%22:0.031,%22h%22:137.2%7D,%22stops%22:10,%22steps%22:12%7D,%7B%22from%22:%7B%22l%22:1,%22c%22:0.13,%22h%22:176%7D,%22to%22:%7B%22l%22:0.116,%22c%22:0.097,%22h%22:213.1%7D,%22stops%22:10,%22steps%22:12%7D,%7B%22from%22:%7B%22l%22:1,%22c%22:0.169,%22h%22:144.4%7D,%22to%22:%7B%22l%22:0.12,%22c%22:0.45,%22h%22:132.7%7D,%22steps%22:12%7D,%7B%22from%22:%7B%22l%22:1,%22c%22:0.087,%22h%22:261.6%7D,%22to%22:%7B%22l%22:0.22,%22c%22:0.084,%22h%22:275.5%7D,%22steps%22:12,%22uuid%22:%227tpx9pf1zd6%22%7D,%7B%22from%22:%7B%22l%22:0.954,%22c%22:0.108,%22h%22:280.6%7D,%22to%22:%7B%22l%22:0.166,%22c%22:0.188,%22h%22:263.8%7D,%22steps%22:12,%22uuid%22:%22vu652mebd3%22%7D,%7B%22from%22:%7B%22l%22:1,%22c%22:0.115,%22h%22:0%7D,%22to%22:%7B%22l%22:0.096,%22c%22:0.261,%22h%22:302%7D,%22steps%22:12%7D,%7B%22from%22:%7B%22l%22:1,%22c%22:0.185,%22h%22:19.8%7D,%22to%22:%7B%22l%22:0.368,%22c%22:0.45,%22h%22:9.4%7D,%22steps%22:8,%22uuid%22:%22g05inkd34l%22%7D,%7B%22from%22:%7B%22l%22:0.912,%22c%22:0.139,%22h%22:87%7D,%22to%22:%7B%22l%22:0.502,%22c%22:0.45,%22h%22:97.7%7D,%22steps%22:8,%22uuid%22:%22l892hcw4ef%22%7D,%7B%22from%22:%7B%22l%22:0.89,%22c%22:0.16,%22h%22:143.4%7D,%22to%22:%7B%22l%22:0.466,%22c%22:0.208,%22h%22:147.7%7D,%22steps%22:8,%22uuid%22:%22hkd09y9ov4h%22%7D%5D
     */
   /* Chalkboard */
-  --chalkboard-10: oklch(99.7% 0.008766 102.8deg);
+  --chalkboard-10: oklch(99.9% 0.003766 102.8deg);
   --chalkboard-20: oklch(91.34% 0.009353 109deg);
   --chalkboard-30: oklch(82.99% 0.00994 115.2deg);
   --chalkboard-40: oklch(74.63% 0.01053 121.4deg);

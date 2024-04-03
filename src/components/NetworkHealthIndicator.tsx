@@ -58,8 +58,8 @@ const hasIssueToIconColors: Record<string | number | symbol, IconColorConfig> =
 const overallConnectionStateColor: Record<NetworkHealthState, IconColorConfig> =
   {
     [NetworkHealthState.Ok]: {
-      icon: 'text-energy-80 dark:text-energy-10',
-      bg: 'bg-energy-10/30 dark:bg-energy-80/50',
+      icon: 'text-succeed-80 dark:text-succeed-10',
+      bg: 'bg-succeed-10/30 dark:bg-succeed-80/50',
     },
     [NetworkHealthState.Issue]: {
       icon: 'text-destroy-80 dark:text-destroy-10',
@@ -214,7 +214,7 @@ export const NetworkHealthIndicator = () => {
           'p-0 border-none bg-transparent dark:bg-transparent relative ' +
           (hasIssues
             ? 'focus-visible:outline-destroy-80'
-            : 'focus-visible:outline-energy-80')
+            : 'focus-visible:outline-succeed-80')
         }
         data-testid="network-toggle"
       >
@@ -227,7 +227,7 @@ export const NetworkHealthIndicator = () => {
             'rounded-sm ' + overallConnectionStateColor[overallState].bg
           }
         />
-        <Tooltip position="blockEnd" delay={750} className="ui-open:hidden">
+        <Tooltip position="left" delay={750} className="ui-open:hidden">
           Network Health ({NETWORK_HEALTH_TEXT[overallState]})
         </Tooltip>
       </Popover.Button>
