@@ -38,7 +38,7 @@ function CommandComboBox({
       <div className="flex items-center gap-2 px-4 pb-2 border-solid border-0 border-b border-b-chalkboard-20 dark:border-b-chalkboard-80">
         <CustomIcon
           name="search"
-          className="w-5 h-5 bg-primary/10 dark:bg-chalkboard-90 text-primary"
+          className="w-5 h-5 bg-primary/10 text-primary"
         />
         <Combobox.Input
           onChange={(event) => setQuery(event.target.value)}
@@ -75,10 +75,7 @@ function CommandComboBox({
             className="flex items-center gap-2 px-4 py-1 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90"
           >
             {'icon' in option && option.icon && (
-              <CustomIcon
-                name={option.icon}
-                className="w-5 h-5 dark:text-primary"
-              />
+              <CustomIcon name={option.icon} className="w-5 h-5" />
             )}
             <p className="flex-grow">{option.displayName || option.name} </p>
             {option.description && (

@@ -70,7 +70,7 @@ function ProjectCard({
   return (
     <li
       {...props}
-      className="group relative min-h-[5em] p-1 rounded-sm border border-chalkboard-20 dark:border-primary/50 hover:!border-primary"
+      className="group relative min-h-[5em] p-1 rounded-sm border border-chalkboard-20 dark:border-chalkboard-80 hover:!border-primary"
     >
       {isEditing ? (
         <form onSubmit={handleSave} className="flex gap-2 items-center">

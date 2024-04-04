@@ -195,7 +195,7 @@ export function createSettings() {
                     inputRef.current.value = newValue
                   }
                 }}
-                className="p-0 m-0 border-none hover:bg-energy-10 focus:bg-energy-10 dark:hover:bg-energy-80/50 dark:focus::bg-energy-80/50"
+                className="p-0 m-0 border-none hover:bg-primary/10 focus:bg-primary/10 dark:hover:bg-primary/20 dark:focus::bg-primary/20"
               >
                 <CustomIcon name="folder" className="w-5 h-5" />
                 <Tooltip position="inlineStart">Choose a folder</Tooltip>

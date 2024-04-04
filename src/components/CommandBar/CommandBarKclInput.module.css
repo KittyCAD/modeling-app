@@ -9,9 +9,9 @@
 .editor :global(.cm-line)::selection {
   @apply px-1;
   @apply text-chalkboard-100;
-  @apply bg-energy-10/50;
+  @apply bg-primary/40;
 }
 :global(.dark) .editor :global(.cm-line)::selection {
-  @apply text-energy-10;
-  @apply bg-energy-10/20;
+  @apply text-chalkboard-10;
+  @apply bg-primary/40;
 }

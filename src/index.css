@@ -68,7 +68,7 @@ button {
 }
 
 button:hover {
-  @apply border-chalkboard-40 bg-primary/10;
+  @apply border-chalkboard-40 bg-primary/5;
 }
 
 .dark button {

@@ -137,7 +137,7 @@ export default function Introduction() {
             alt={APP_NAME}
             className="h-20 max-w-full"
           />
-          <span className="px-3 py-1 text-base rounded-full bg-energy-10 text-energy-80">
+          <span className="px-3 py-1 text-base rounded-full bg-primary/10 text-primary">
             Alpha
           </span>
         </h1>
