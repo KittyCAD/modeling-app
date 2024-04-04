@@ -50,7 +50,7 @@ const hasIssueToIconColors: Record<string | number | symbol, IconColorConfig> =
       bg: 'bg-chalkboard-30 dark:bg-chalkboard-70',
     },
     false: {
-      icon: 'text-chalkboard-110 dark:!text-chalkboard-10',
+      icon: '!text-chalkboard-110 dark:!text-chalkboard-10',
       bg: 'bg-transparent dark:bg-transparent',
     },
   }
