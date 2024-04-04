@@ -281,7 +281,7 @@ https://github.com/KittyCAD/modeling-app/assets/29681384/6f5e8e85-1003-4fd9-be7f
 <details>
 
 <summary>
-Ps for the debug panel, the following JSON is useful for snapping the camera
+PS: for the debug panel, the following JSON is useful for snapping the camera
 </summary>
 
 ```JSON
