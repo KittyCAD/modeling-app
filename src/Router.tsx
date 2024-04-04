@@ -66,7 +66,7 @@ const router = createBrowserRouter([
                 <Outlet />
                 <App />
                 <CommandBar />
-                {!isTauri() && <DownloadAppBanner />}
+                {!isTauri() && import.meta.env.PROD && <DownloadAppBanner />}
               </ModelingMachineProvider>
               <WasmErrBanner />
             </FileMachineProvider>
