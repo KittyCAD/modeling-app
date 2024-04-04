@@ -3,6 +3,11 @@
   @apply bg-chalkboard-10/70 backdrop-blur-sm;
 }
 
+.header::before,
+.header::-webkit-details-marker {
+  display: none;
+}
+
 :global(.dark) .panel {
   @apply bg-chalkboard-110/50 backdrop-blur-0;
 }

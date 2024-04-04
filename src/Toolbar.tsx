@@ -22,6 +22,8 @@ export const Toolbar = () => {
     'group-disabled:text-chalkboard-50 group-enabled:group-hover:!text-chalkboard-10 group-pressed:!text-chalkboard-10'
   const bgClassName =
     'group-disabled:!bg-transparent group-enabled:group-hover:bg-primary group-pressed:bg-primary'
+  const buttonClassName =
+    'bg-chalkboard-10 dark:bg-chalkboard-100 hover:bg-chalkboard-10 dark:hover:bg-chalkboard-100'
   const pathId = useMemo(() => {
     if (!isSingleCursorInPipe(context.selectionRanges, kclManager.ast)) {
       return false
@@ -66,6 +68,7 @@ export const Toolbar = () => {
         {state.nextEvents.includes('Enter sketch') && (
           <li className="contents">
             <ActionButton
+              className={buttonClassName}
               Element="button"
               onClick={() =>
                 send({ type: 'Enter sketch', data: { forceNewSketch: true } })
@@ -84,6 +87,7 @@ export const Toolbar = () => {
         {state.nextEvents.includes('Enter sketch') && pathId && (
           <li className="contents">
             <ActionButton
+              className={buttonClassName}
               Element="button"
               onClick={() => send({ type: 'Enter sketch' })}
               icon={{
@@ -100,6 +104,7 @@ export const Toolbar = () => {
         {state.nextEvents.includes('Cancel') && !state.matches('idle') && (
           <li className="contents">
             <ActionButton
+              className={buttonClassName}
               Element="button"
               onClick={() => send({ type: 'Cancel' })}
               icon={{
@@ -117,6 +122,7 @@ export const Toolbar = () => {
           <>
             <li className="contents" key="line-button">
               <ActionButton
+                className={buttonClassName}
                 Element="button"
                 onClick={() =>
                   state?.matches('Sketch.Line tool')
@@ -124,7 +130,6 @@ export const Toolbar = () => {
                     : send('Equip Line tool')
                 }
                 aria-pressed={state?.matches('Sketch.Line tool')}
-                className="pressed:bg-primary/10"
                 icon={{
                   icon: 'line',
                   iconClassName,
@@ -137,6 +142,7 @@ export const Toolbar = () => {
             </li>
             <li className="contents" key="tangential-arc-button">
               <ActionButton
+                className={buttonClassName}
                 Element="button"
                 onClick={() =>
                   state.matches('Sketch.Tangential arc to')
@@ -144,7 +150,6 @@ export const Toolbar = () => {
                     : send('Equip tangential arc to')
                 }
                 aria-pressed={state.matches('Sketch.Tangential arc to')}
-                className="pressed:bg-primary/10"
                 icon={{
                   icon: 'arc',
                   iconClassName,
@@ -186,8 +191,8 @@ export const Toolbar = () => {
             .map((eventName) => (
               <li className="contents" key={eventName}>
                 <ActionButton
+                  className={buttonClassName}
                   Element="button"
-                  className="text-sm"
                   key={eventName}
                   onClick={() => send(eventName)}
                   disabled={
@@ -211,8 +216,8 @@ export const Toolbar = () => {
         {state.matches('idle') && (
           <li className="contents">
             <ActionButton
+              className={buttonClassName}
               Element="button"
-              className="text-sm"
               onClick={() =>
                 commandBarSend({
                   type: 'Find and select command',
@@ -240,8 +245,8 @@ export const Toolbar = () => {
   }
 
   return (
-    <div className="max-w-full flex items-stretch rounded-l-sm rounded-r-full bg-chalkboard-10 dark:bg-chalkboard-100 relative">
-      <menu className="flex-1 pl-1 pr-2 py-0 overflow-hidden rounded-l-sm whitespace-nowrap bg-chalkboard-10 dark:bg-chalkboard-100 border-solid border border-primary/30 dark:border-chalkboard-90 border-r-0">
+    <div className="max-w-full flex items-stretch rounded-l-sm rounded-r-full bg-chalkboard-10/80 dark:bg-chalkboard-110/70 relative">
+      <menu className="flex-1 pl-1 pr-2 py-0 overflow-hidden rounded-l-sm whitespace-nowrap border-solid border border-primary/30 dark:border-chalkboard-90 border-r-0">
         <ToolbarButtons />
       </menu>
       <ActionButton

@@ -30,7 +30,7 @@ export const ActionIcon = ({
   children,
 }: ActionIconProps) => {
   // By default, we reverse the icon color and background color in dark mode
-  const computedIconClassName = `h-auto text-primary !group-disabled:text-chalkboard-60 !group-disabled:text-chalkboard-60 ${iconClassName}`
+  const computedIconClassName = `h-auto text-primary dark:text-current !group-disabled:text-chalkboard-60 !group-disabled:text-chalkboard-60 ${iconClassName}`
 
   const computedBgClassName = `bg-primary/10 dark:bg-chalkboard-90 !group-disabled:bg-chalkboard-30 !dark:group-disabled:bg-chalkboard-80 ${bgClassName}`
 
