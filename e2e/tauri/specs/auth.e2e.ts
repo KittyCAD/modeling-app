@@ -54,6 +54,7 @@ describe('ZMA (Tauri, Linux)', () => {
     console.log(cr.status)
 
     // Now should be signed in
+    await new Promise((resolve) => setTimeout(resolve, 2000))
     const newFileButton = await $('[data-testid="home-new-file"]')
     expect(await newFileButton.getText()).toEqual('New file')
   })
