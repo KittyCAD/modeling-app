@@ -33,7 +33,7 @@ export const AppHeader = ({
       className={
         'w-full grid ' +
         styles.header +
-        ' overlaid-panes sticky top-0 z-20 py-1 px-2 items-center ' +
+        ' overlaid-panes sticky top-0 z-20 px-2 items-center ' +
         className
       }
     >
@@ -59,7 +59,7 @@ export const AppHeader = ({
           </ActionButton>
         )}
       </div>
-      <div className="flex items-center gap-1 ml-auto">
+      <div className="flex items-center gap-1 py-1 ml-auto">
         {/* If there are children, show them, otherwise show User menu */}
         {children || (
           <>

@@ -153,7 +153,7 @@ export function App() {
       <ModalContainer />
       <Resizable
         className={
-          'pointer-events-none h-full flex flex-col flex-1 z-10 my-4 ml-4 pr-1 transition-opacity transition-duration-75 ' +
+          'pointer-events-none h-full flex flex-col flex-1 z-10 my-2 ml-2 pr-1 transition-opacity transition-duration-75 ' +
           +paneOpacity
         }
         defaultSize={{

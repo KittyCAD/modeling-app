@@ -25,15 +25,15 @@ const ProjectSidebarMenu = ({
 }) => {
   const { onProjectClose } = useLspContext()
   return (
-    <div className="rounded-sm !no-underline h-9 mr-auto max-h-min min-w-max border-0 py-1 px-2 flex items-center gap-2">
+    <div className="!no-underline h-full mr-auto max-h-min min-w-max flex items-center gap-2">
       <Link
         onClick={() => {
           onProjectClose(file || null, project?.path || null, false)
         }}
         to={paths.HOME}
-        className="group"
+        className="relative h-full grid place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-2.5 before:z-[-1] before:bg-primary hover:before:brightness-110 before:rounded-b-sm"
       >
-        <Logo className="w-auto h-5 text-chalkboard-120 dark:text-chalkboard-10 group-hover:text-primary" />
+        <Logo className="w-auto h-4 text-chalkboard-10" />
       </Link>
       {renderAsLink ? (
         <>
