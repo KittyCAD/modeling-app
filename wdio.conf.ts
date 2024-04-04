@@ -11,7 +11,6 @@ export const config = {
   port: 4444,
   specs: ['./e2e/tauri/specs/**/*.ts'],
   maxInstances: 1,
-  connectionRetryTimeout: 200000,
   capabilities: [
     {
       maxInstances: 1,
