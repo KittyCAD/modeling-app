@@ -67,8 +67,15 @@ function ProjectMenuPopover({
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
 }) {
-  const { commandBarSend } = useCommandsContext()
+  const { commandBarState, commandBarSend } = useCommandsContext()
   const { onProjectClose } = useLspContext()
+  const exportCommandInfo = { name: 'Export', ownerMachine: 'modeling' }
+  const findCommand = (obj: { name: string; ownerMachine: string }) =>
+    Boolean(
+      commandBarState.context.commands.find(
+        (c) => c.name === obj.name && c.ownerMachine === obj.ownerMachine
+      )
+    )
 
   return (
     <Popover className="relative">
@@ -150,10 +157,11 @@ function ProjectMenuPopover({
                   Element="button"
                   icon={{ icon: 'exportFile', className: 'p-1' }}
                   className="border-transparent dark:border-transparent"
+                  disabled={!findCommand(exportCommandInfo)}
                   onClick={() =>
                     commandBarSend({
                       type: 'Find and select command',
-                      data: { name: 'Export', ownerMachine: 'modeling' },
+                      data: exportCommandInfo,
                     })
                   }
                 >
