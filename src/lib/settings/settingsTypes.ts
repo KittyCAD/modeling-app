@@ -96,7 +96,7 @@ export interface SettingProps<T = unknown> {
    */
   Component?: React.ComponentType<{
     value: T
-    onChange: ChangeEventHandler
+    updateValue: (newValue: T) => void
   }>
 }
 

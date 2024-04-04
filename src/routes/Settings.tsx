@@ -489,16 +489,14 @@ function GeneratedSetting({
     return (
       <setting.Component
         value={setting[settingsLevel] || setting.getFallback(settingsLevel)}
-        onChange={(e) => {
-          if ('value' in e.target) {
-            send({
-              type: `set.${category}.${settingName}`,
-              data: {
-                level: settingsLevel,
-                value: e.target.value,
-              },
-            } as unknown as Event<WildcardSetEvent>)
-          }
+        updateValue={(newValue) => {
+          send({
+            type: `set.${category}.${settingName}`,
+            data: {
+              level: settingsLevel,
+              value: newValue,
+            },
+          } as unknown as Event<WildcardSetEvent>)
         }}
       />
     )

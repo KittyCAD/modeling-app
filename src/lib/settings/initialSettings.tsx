@@ -13,7 +13,7 @@ import {
   cameraSystems,
 } from 'lib/cameraControls'
 import { isTauri } from 'lib/isTauri'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { open } from '@tauri-apps/api/dialog'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
@@ -142,14 +142,12 @@ export function createSettings() {
         hideOnLevel: 'project',
         hideOnPlatform: 'web',
         validate: (v) => typeof v === 'string' && (v.length > 0 || !isTauri()),
-        Component: ({ value, onChange }) => {
-          const inputRef = useRef<HTMLInputElement>(null)
+        Component: ({ value, updateValue }) => {
           return (
             <div className="flex gap-4 p-1 border rounded-sm border-chalkboard-30">
               <input
                 className="flex-grow text-xs px-2 bg-transparent"
                 value={value}
-                onBlur={onChange}
                 disabled
                 data-testid="default-directory-input"
               />
@@ -162,12 +160,12 @@ export function createSettings() {
                     title: 'Choose a new default directory',
                   })
                   if (
-                    inputRef.current &&
                     newValue &&
                     newValue !== null &&
+                    newValue !== value &&
                     !Array.isArray(newValue)
                   ) {
-                    inputRef.current.value = newValue
+                    updateValue(newValue)
                   }
                 }}
                 className="p-0 m-0 border-none hover:bg-energy-10 focus:bg-energy-10 dark:hover:bg-energy-80/50 dark:focus::bg-energy-80/50"
@@ -230,13 +228,13 @@ export function createSettings() {
                 ],
             })),
         },
-        Component: ({ value, onChange }) => (
+        Component: ({ value, updateValue }) => (
           <>
             <select
               id="camera-controls"
               className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
               value={value}
-              onChange={onChange}
+              onChange={(e) => updateValue(e.target.value as CameraSystem)}
             >
               {cameraSystems.map((program) => (
                 <option key={program} value={program}>
