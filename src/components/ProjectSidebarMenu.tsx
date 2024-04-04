@@ -143,7 +143,16 @@ function ProjectMenuPopover({
                   closePanel={close}
                 />
               ) : (
-                <div className="flex-1 overflow-hidden" />
+                <div className="flex-1 p-4 text-sm overflow-hidden">
+                  <p>
+                    In the browser version of Modeling App you can only have one
+                    part, and the code is stored in your browser's storage.
+                  </p>
+                  <p className="my-6">
+                    Please save any code you want to keep more permanently, as
+                    your browser's storage is not guaranteed to be permanent.
+                  </p>
+                </div>
               )}
               <div className="flex flex-col gap-2 p-4 dark:bg-chalkboard-90">
                 <ActionButton
