@@ -1,5 +1,4 @@
 import { Dialog } from '@headlessui/react'
-import { useStore } from '../useStore'
 import { ActionButton } from './ActionButton'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useState } from 'react'
