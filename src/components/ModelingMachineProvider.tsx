@@ -112,6 +112,9 @@ export const ModelingMachineProvider = ({
             kclManager.executeAst()
           }
         },
+        'Set mouse state': assign({
+          mouseState: (_, event) => event.data,
+        }),
         'Set selection': assign(({ selectionRanges }, event) => {
           if (event.type !== 'Set selection') return {} // this was needed for ts after adding 'Set selection' action to on done modal events
           const setSelections = event.data
