@@ -25,7 +25,7 @@ import { PathToNode, SketchGroup, getTangentialArcToInfo } from 'lang/wasm'
 import {
   EXTRA_SEGMENT_HANDLE,
   EXTRA_SEGMENT_OFFSET_PX,
-  MIN_SEGMENT_LENGTH,
+  HIDE_SEGMENT_LENGTH,
   PROFILE_START,
   SEGMENT_WIDTH_PX,
   STRAIGHT_SEGMENT,
@@ -141,7 +141,7 @@ export function straightSegment({
     .normalize()
   arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
   const pxLength = length / scale
-  const shouldHide = pxLength < MIN_SEGMENT_LENGTH
+  const shouldHide = pxLength < HIDE_SEGMENT_LENGTH
   arrowGroup.visible = !shouldHide
 
   group.add(mesh)
@@ -282,7 +282,7 @@ export function tangentialArcToSegment({
     new Vector3(Math.cos(arrowheadAngle), Math.sin(arrowheadAngle), 0)
   )
   const pxLength = arcLength / scale
-  const shouldHide = pxLength < MIN_SEGMENT_LENGTH
+  const shouldHide = pxLength < HIDE_SEGMENT_LENGTH
   arrowGroup.visible = !shouldHide
 
   const extraSegmentGroup = createExtraSegmentHandle(scale, texture)

@@ -145,7 +145,7 @@ export const homeLoader: LoaderFunction = async (): Promise<
   HomeLoaderData | Response
 > => {
   if (!isTauri()) {
-    return redirect(paths.FILE + '/' + BROWSER_PROJECT_NAME)
+    return redirect(paths.FILE + '/%2F' + BROWSER_PROJECT_NAME)
   }
   const settings = await loadAndValidateSettings()
 
