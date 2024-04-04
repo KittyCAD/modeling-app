@@ -136,7 +136,7 @@ impl EngineConnection {
                 match tcp_read.read().await {
                     Ok(ws_resp) => {
                         for e in ws_resp.errors.iter().flatten() {
-                            eprintln!("got error message: {e}");
+                            println!("got error message: {e}");
                         }
                         if let Some(id) = ws_resp.request_id {
                             responses_clone.insert(id, ws_resp.clone());
