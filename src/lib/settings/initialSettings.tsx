@@ -16,6 +16,7 @@ import { isTauri } from 'lib/isTauri'
 import { open } from '@tauri-apps/api/dialog'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
+import { useRef } from 'react'
 
 /**
  * A setting that can be set at the user or project level
