@@ -3,15 +3,21 @@ import { useModelingContext } from 'hooks/useModelingContext'
 
 import { cameraMouseDragGuards } from 'lib/cameraControls'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { ToolTip } from 'useStore'
 import { ARROWHEAD, DEBUG_SHOW_BOTH_SCENES } from './sceneInfra'
 import { ReactCameraProperties } from './CameraControls'
 import { throttle } from 'lib/utils'
-import { sceneInfra } from 'lib/singletons'
+import { sceneInfra, kclManager } from 'lib/singletons'
 import {
   EXTRA_SEGMENT_HANDLE,
   PROFILE_START,
   getParentGroup,
 } from './sceneEntities'
+import { SegmentOverlay } from 'machines/modelingMachine'
+import { ConstrainInfo, getConstraintInfo } from 'lang/std/sketchcombos'
+import { getNodeFromPath } from 'lang/queryAst'
+import { CallExpression } from 'lang/wasm'
+import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -122,22 +128,90 @@ const Overlays = () => {
     <div className="absolute inset-0 pointer-events-none">
       {Object.entries(context.segmentOverlays).map(
         ([pathToNodeString, overlay]) => {
-          return (
-            <div className="absolute w-0 h-0">
-              <div
-                key={pathToNodeString}
-                className="relative inline-block px-2 bg-red-500 rounded-full -mt-12 -ml-2 pointer-events-auto hover:bg-red-900"
-                style={{
-                  transform: `translate3d(${overlay.windowCoords[0]}px, ${overlay.windowCoords[1]}px, 0)`,
-                }}
-              >
-                hello
-              </div>
-            </div>
-          )
+          return <Overlay overlay={overlay} key={pathToNodeString} />
         }
       )}
     </div>
+  )
+}
+
+const Overlay = ({ overlay }: { overlay: SegmentOverlay }) => {
+  const { context } = useModelingContext()
+  // if (context.tool)
+
+  let xAlignment = overlay.angle < 0 ? '0%' : '-100%'
+  let yAlignment = overlay.angle < -90 || overlay.angle >= 90 ? '0%' : '-100%'
+
+  const callExpression = getNodeFromPath<CallExpression>(
+    kclManager.ast,
+    overlay.pathToNode,
+    'CallExpression'
+  ).node
+  const firstArg = callExpression.arguments?.[0]
+  const firstArgValues =
+    firstArg.type === 'ArrayExpression' ? firstArg.elements : (firstArg as any)
+  const constraints = getConstraintInfo(
+    firstArgValues,
+    callExpression.callee.name as ToolTip
+  )
+
+  const offset = 20 // px
+  // We could put a boolean in settings that
+  const offsetAngle = 90
+
+  const xOffset =
+    Math.cos(((overlay.angle + offsetAngle) * Math.PI) / 180) * offset
+  const yOffset =
+    Math.sin(((overlay.angle + offsetAngle) * Math.PI) / 180) * offset
+
+  return (
+    <div className={`absolute w-0 h-0`}>
+      <div
+        className="px-0 pointer-events-auto absolute flex gap-1"
+        style={{
+          transform: `translate3d(calc(${
+            overlay.windowCoords[0] + xOffset
+          }px + ${xAlignment}), calc(${
+            overlay.windowCoords[1] - yOffset
+          }px + ${yAlignment}), 0)`,
+        }}
+      >
+        {constraints &&
+          constraints.map((y, i) => (
+            <ConstraintSymbol constrainInfo={y} key={i} />
+          ))}
+      </div>
+    </div>
+  )
+}
+
+const ConstraintSymbol = ({
+  constrainInfo: { type: _type, isConstrained },
+}: {
+  constrainInfo: ConstrainInfo
+}) => {
+  let name: CustomIconName = 'dimension'
+  if (
+    _type === 'horizontal' ||
+    _type === 'vertical' ||
+    _type === 'yAbsolute' ||
+    _type === 'yRelative' ||
+    _type === 'angle' ||
+    _type === 'xAbsolute' ||
+    _type === 'xRelative'
+  )
+    name = _type
+  else if (_type === 'length') name = 'dimension'
+  return (
+    <span
+      className={`${
+        isConstrained
+          ? 'bg-gray-50/80 text-black border-2 border-gray-400'
+          : 'bg-blue-700/40 text-blue-700'
+      } w-8 h-8 rounded-sm`}
+    >
+      <CustomIcon name={name} />
+    </span>
   )
 }
 

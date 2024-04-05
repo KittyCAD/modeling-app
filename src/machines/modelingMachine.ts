@@ -88,7 +88,9 @@ export interface SketchDetails {
 
 export interface SegmentOverlay {
   windowCoords: Coords2d
+  angle: number
   group: any
+  pathToNode: PathToNode
 }
 
 export interface SegmentOverlays {

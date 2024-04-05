@@ -1263,6 +1263,58 @@ export function getConstraintType(
   return null
 }
 
+export interface ConstrainInfo {
+  type: LineInputsType | 'vertical' | 'horizontal'
+  isConstrained: boolean
+}
+
+export function getConstraintInfo(
+  val: Value | [Value, Value] | [Value, Value, Value],
+  fnName: ToolTip
+):
+  | [ConstrainInfo, ConstrainInfo]
+  | [ConstrainInfo, ConstrainInfo, ConstrainInfo]
+  | null {
+  // this function assumes that for two val sketch functions that one arg is locked down not both
+  // and for one val sketch functions that the arg is NOT locked down
+  // these conditions should have been checked previously.
+  // completely locked down or not locked down at all does not depend on the fnName so we can check that first
+  const ci = (
+    a: ConstrainInfo['type'],
+    b: ConstrainInfo['isConstrained']
+  ): ConstrainInfo => ({ type: a, isConstrained: b })
+  const isArr = Array.isArray(val)
+  if (!isArr) {
+    const constrained = isNotLiteralArrayOrStatic(val)
+    if (fnName === 'xLine')
+      return [ci('horizontal', true), ci('yRelative', constrained)]
+    if (fnName === 'yLine')
+      return [ci('vertical', true), ci('xRelative', constrained)]
+    if (fnName === 'xLineTo')
+      return [ci('horizontal', true), ci('yAbsolute', constrained)]
+    if (fnName === 'yLineTo')
+      return [ci('vertical', true), ci('xAbsolute', constrained)]
+  } else {
+    const constrained1st = isNotLiteralArrayOrStatic(val[0])
+    const constrained2nd = isNotLiteralArrayOrStatic(val[1])
+    if (fnName === 'line')
+      return [ci('xRelative', constrained1st), ci('yRelative', constrained2nd)]
+    if (fnName === 'lineTo')
+      return [ci('xAbsolute', constrained1st), ci('yAbsolute', constrained2nd)]
+    if (fnName === 'angledLine')
+      return [ci('angle', constrained1st), ci('length', constrained2nd)]
+    if (fnName === 'angledLineOfXLength')
+      return [ci('angle', constrained1st), ci('xRelative', constrained2nd)]
+    if (fnName === 'angledLineToX')
+      return [ci('angle', constrained1st), ci('xAbsolute', constrained2nd)]
+    if (fnName === 'angledLineOfYLength')
+      return [ci('angle', constrained1st), ci('yRelative', constrained2nd)]
+    if (fnName === 'angledLineToY')
+      return [ci('angle', constrained1st), ci('yAbsolute', constrained2nd)]
+  }
+  return null
+}
+
 export function getTransformInfos(
   selectionRanges: Selections,
   ast: Program,
