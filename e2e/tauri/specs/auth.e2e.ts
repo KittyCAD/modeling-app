@@ -94,9 +94,7 @@ describe('ZMA (Tauri, Linux)', () => {
     await click(projectDirButton)
     await new Promise((resolve) => setTimeout(resolve, 500))
     // This line is broken. I need a different way to grab the toast
-    await expect(
-      await $('[role=status]*=Set project directory to')
-    ).toBeDisplayed()
+    await expect(await $('div*=Set project directory to')).toBeDisplayed()
 
     const nameInput = await $('[data-testid="projects-defaultProjectName"]')
     expect(await nameInput.getValue()).toEqual('project-$nnn')
