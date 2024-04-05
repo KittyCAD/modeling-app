@@ -420,9 +420,7 @@ export function SettingsSection({
       className={
         'group grid grid-cols-2 gap-6 items-start ' +
         className +
-        (settingHasChanged
-          ? ' border-0 border-l-2 -ml-0.5 border-energy-50 dark:border-energy-20'
-          : '')
+        (settingHasChanged ? ' border-0 border-l-2 -ml-0.5 border-primary' : '')
       }
     >
       <div className="ml-2">
@@ -607,17 +605,14 @@ function SettingsTabButton(props: SettingsTabButtonProps) {
     <div
       className={`cursor-pointer select-none flex items-center gap-1 p-1 pr-2 -mb-[1px] border-0 border-b ${
         checked
-          ? 'border-energy-10 dark:border-energy-20'
-          : 'border-chalkboard-20 dark:border-chalkboard-30 hover:bg-energy-10/50 dark:hover:bg-energy-90/50'
+          ? 'border-primary'
+          : 'border-chalkboard-20 dark:border-chalkboard-30 hover:bg-primary/20 dark:hover:bg-primary/50'
       }`}
     >
       <CustomIcon
         name={icon}
         className={
-          'w-5 h-5 ' +
-          (checked
-            ? 'bg-energy-10 dark:bg-energy-20 dark:text-chalkboard-110'
-            : '')
+          'w-5 h-5 ' + (checked ? 'bg-primary !text-chalkboard-10' : '')
         }
       />
       <span>{text}</span>

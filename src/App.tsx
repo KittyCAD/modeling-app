@@ -153,7 +153,7 @@ export function App() {
       <ModalContainer />
       <Resizable
         className={
-          'pointer-events-none h-full flex flex-col flex-1 z-10 my-5 ml-5 pr-1 transition-opacity transition-duration-75 ' +
+          'pointer-events-none h-full flex flex-col flex-1 z-10 my-2 ml-2 pr-1 transition-opacity transition-duration-75 ' +
           +paneOpacity
         }
         defaultSize={{
@@ -166,7 +166,7 @@ export function App() {
         maxHeight={'auto'}
         handleClasses={{
           right:
-            'hover:bg-chalkboard-10/50 bg-transparent transition-colors duration-75 transition-ease-out delay-100 ' +
+            'hover:bg-chalkboard-10 hover:dark:bg-chalkboard-110 bg-transparent transition-colors duration-75 transition-ease-out delay-100 ' +
             (buttonDownInStream || onboardingStatus.current === 'camera'
               ? 'pointer-events-none '
               : 'pointer-events-auto'),
@@ -202,7 +202,7 @@ export function App() {
               theme={editorTheme}
               open={openPanes.includes('kclErrors')}
               title="KCL Errors"
-              iconClassNames={{ icon: 'group-open:text-destroy-30' }}
+              iconClassNames={{ bg: 'group-open:bg-destroy-70' }}
             />
           </section>
         </div>

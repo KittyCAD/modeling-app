@@ -25,15 +25,15 @@ const ProjectSidebarMenu = ({
 }) => {
   const { onProjectClose } = useLspContext()
   return (
-    <div className="rounded-sm !no-underline h-9 mr-auto max-h-min min-w-max border-0 py-1 px-2 flex items-center gap-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-energy-50 dark:hover:bg-chalkboard-90">
+    <div className="!no-underline h-full mr-auto max-h-min min-w-max flex items-center gap-2">
       <Link
         onClick={() => {
           onProjectClose(file || null, project?.path || null, false)
         }}
         to={paths.HOME}
-        className="group"
+        className="relative h-full grid place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-2.5 before:z-[-1] before:bg-primary hover:before:brightness-110 before:rounded-b-sm"
       >
-        <Logo className="w-auto h-5 text-chalkboard-120 dark:text-chalkboard-10 group-hover:text-energy-10" />
+        <Logo className="w-auto h-4 text-chalkboard-10" />
       </Link>
       {renderAsLink ? (
         <>
@@ -80,7 +80,7 @@ function ProjectMenuPopover({
   return (
     <Popover className="relative">
       <Popover.Button
-        className="rounded-sm h-9 mr-auto max-h-min min-w-max border-0 py-1 pl-0 pr-2 flex items-center focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-energy-50 dark:hover:bg-chalkboard-90"
+        className="rounded-sm h-9 mr-auto max-h-min min-w-max border-0 py-1 pl-0 pr-2 flex items-center focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary dark:hover:bg-chalkboard-90"
         data-testid="project-sidebar-toggle"
       >
         <CustomIcon name="three-dots" className="w-5 h-5 rotate-90" />
@@ -126,15 +126,12 @@ function ProjectMenuPopover({
             <>
               <div className="flex items-center gap-4 px-4 py-3">
                 <div>
-                  <p
-                    className="m-0 text-chalkboard-100 dark:text-energy-10 text-mono"
-                    data-testid="projectName"
-                  >
+                  <p className="m-0 text-mono" data-testid="projectName">
                     {project?.name ? project.name : APP_NAME}
                   </p>
                   {project?.entrypointMetadata && (
                     <p
-                      className="m-0 text-xs text-chalkboard-100 dark:text-energy-40"
+                      className="m-0 text-xs text-chalkboard-80 dark:text-chalkboard-40"
                       data-testid="createdAt"
                     >
                       Created{' '}
@@ -183,11 +180,10 @@ function ProjectMenuPopover({
                       onProjectClose(file || null, project?.path || null, true)
                     }}
                     icon={{
-                      icon: faHome,
+                      icon: 'arrowLeft',
                       className: 'p-1',
-                      size: 'sm',
                     }}
-                    className="border-transparent dark:border-transparent hover:bg-energy-10/20 dark:hover:bg-chalkboard-90"
+                    className="border-transparent dark:border-transparent"
                   >
                     Go to Home
                   </ActionButton>
