@@ -21,7 +21,7 @@ import {
 } from './tauriFS'
 import makeUrlPathRelative from './makeUrlPathRelative'
 import { join, sep } from '@tauri-apps/api/path'
-import { readDir, readTextFile, stat } from '@tauri-apps/plugin-fs'
+import { readTextFile, stat } from '@tauri-apps/plugin-fs'
 import { kclManager } from 'lib/singletons'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import { invoke } from '@tauri-apps/api/core'
