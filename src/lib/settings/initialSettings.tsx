@@ -13,7 +13,7 @@ import {
   cameraSystems,
 } from 'lib/cameraControls'
 import { isTauri } from 'lib/isTauri'
-import { CSSProperties, useRef } from 'react'
+import { useRef } from 'react'
 import { open } from '@tauri-apps/api/dialog'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
@@ -136,11 +136,11 @@ export function createSettings() {
         defaultValue: '264.5',
         description: 'The hue of the primary theme color for the app',
         validate: (v) => Number(v) >= 0 && Number(v) < 360,
-        Component: ({ value, onChange }) => (
+        Component: ({ value, updateValue }) => (
           <div className="flex item-center gap-2 px-2">
             <input
               type="range"
-              onChange={onChange}
+              onChange={(e) => updateValue(e.currentTarget.value)}
               value={value}
               min={0}
               max={259}
@@ -176,35 +176,41 @@ export function createSettings() {
         hideOnLevel: 'project',
         hideOnPlatform: 'web',
         validate: (v) => typeof v === 'string' && (v.length > 0 || !isTauri()),
-        Component: ({ value, onChange }) => {
+        Component: ({ value, updateValue }) => {
           const inputRef = useRef<HTMLInputElement>(null)
           return (
             <div className="flex gap-4 p-1 border rounded-sm border-chalkboard-30">
               <input
                 className="flex-grow text-xs px-2 bg-transparent"
                 value={value}
-                onBlur={onChange}
                 disabled
-                data-testid="default-directory-input"
+                data-testid="project-directory-input"
+                ref={inputRef}
               />
               <button
                 onClick={async () => {
-                  const newValue = await open({
-                    directory: true,
-                    recursive: true,
-                    defaultPath: value,
-                    title: 'Choose a new default directory',
-                  })
+                  // In Tauri end-to-end tests we can't control the file picker,
+                  // so we seed the new directory value in the element's dataset
+                  const newValue =
+                    inputRef.current && inputRef.current.dataset.testValue
+                      ? inputRef.current.dataset.testValue
+                      : await open({
+                          directory: true,
+                          recursive: true,
+                          defaultPath: value,
+                          title: 'Choose a new project directory',
+                        })
                   if (
-                    inputRef.current &&
                     newValue &&
                     newValue !== null &&
+                    newValue !== value &&
                     !Array.isArray(newValue)
                   ) {
-                    inputRef.current.value = newValue
+                    updateValue(newValue)
                   }
                 }}
                 className="p-0 m-0 border-none hover:bg-primary/10 focus:bg-primary/10 dark:hover:bg-primary/20 dark:focus::bg-primary/20"
+                data-testid="project-directory-button"
               >
                 <CustomIcon name="folder" className="w-5 h-5" />
                 <Tooltip position="inlineStart">Choose a folder</Tooltip>
@@ -264,13 +270,13 @@ export function createSettings() {
                 ],
             })),
         },
-        Component: ({ value, onChange }) => (
+        Component: ({ value, updateValue }) => (
           <>
             <select
               id="camera-controls"
               className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
               value={value}
-              onChange={onChange}
+              onChange={(e) => updateValue(e.target.value as CameraSystem)}
             >
               {cameraSystems.map((program) => (
                 <option key={program} value={program}>

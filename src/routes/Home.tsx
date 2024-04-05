@@ -172,8 +172,8 @@ const Home = () => {
       },
     })
   }, [
-    settings.app.projectDirectory,
-    settings.projects.defaultProjectName,
+    settings.app.projectDirectory.current,
+    settings.projects.defaultProjectName.current,
     send,
   ])
 
