@@ -31,7 +31,11 @@ import { Event } from 'xstate'
 import { Dialog, RadioGroup, Transition } from '@headlessui/react'
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
-import { shouldHideSetting } from 'lib/settings/settingsUtils'
+import {
+  getSettingInputType,
+  shouldHideSetting,
+  shouldShowSettingInput,
+} from 'lib/settings/settingsUtils'
 
 export const Settings = () => {
   const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
@@ -235,9 +239,7 @@ export const Settings = () => {
                           // Filter out settings that don't have a Component or inputType
                           // or are hidden on the current level or the current platform
                           (item: [string, Setting<unknown>]) =>
-                            !shouldHideSetting(item[1], settingsLevel) &&
-                            (item[1].Component ||
-                              item[1].commandConfig?.inputType)
+                            shouldShowSettingInput(item[1], settingsLevel)
                         )
                         .map(([settingName, s]) => {
                           const setting = s as Setting
@@ -484,24 +486,26 @@ function GeneratedSetting({
           )
       : []
   }, [setting, settingsLevel, context])
+  const inputType = getSettingInputType(setting)
 
-  if (setting.Component)
-    return (
-      <setting.Component
-        value={setting[settingsLevel] || setting.getFallback(settingsLevel)}
-        updateValue={(newValue) => {
-          send({
-            type: `set.${category}.${settingName}`,
-            data: {
-              level: settingsLevel,
-              value: newValue,
-            },
-          } as unknown as Event<WildcardSetEvent>)
-        }}
-      />
-    )
-
-  switch (setting.commandConfig?.inputType) {
+  switch (inputType) {
+    case 'component':
+      return (
+        setting.Component && (
+          <setting.Component
+            value={setting[settingsLevel] || setting.getFallback(settingsLevel)}
+            updateValue={(newValue) => {
+                  send({
+                type: `set.${category}.${settingName}`,
+                data: {
+                  level: settingsLevel,
+                  value: newValue,
+                },
+              } as unknown as Event<WildcardSetEvent>)
+                }}
+          />
+        )
+      )
     case 'boolean':
       return (
         <Toggle

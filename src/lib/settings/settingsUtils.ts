@@ -139,16 +139,14 @@ export function setSettingsAtLevel(
   Object.entries(newSettings).forEach(([category, settingsCategory]) => {
     const categoryKey = category as keyof typeof settings
     if (!allSettings[categoryKey]) return // ignore unrecognized categories
-    Object.entries(settingsCategory).forEach(
-      ([settingKey, settingValue]: [string, Setting]) => {
-        // TODO: How do you get a valid type for allSettings[categoryKey][settingKey]?
-        // it seems to always collapses to `never`, which is not correct
-        // @ts-ignore
-        if (!allSettings[categoryKey][settingKey]) return // ignore unrecognized settings
-        // @ts-ignore
-        allSettings[categoryKey][settingKey][level] = settingValue as unknown
-      }
-    )
+    Object.entries(settingsCategory).forEach(([settingKey, settingValue]) => {
+      // TODO: How do you get a valid type for allSettings[categoryKey][settingKey]?
+      // it seems to always collapses to `never`, which is not correct
+      // @ts-ignore
+      if (!allSettings[categoryKey][settingKey]) return // ignore unrecognized settings
+      // @ts-ignore
+      allSettings[categoryKey][settingKey][level] = settingValue as unknown
+    })
   })
 
   return allSettings
@@ -165,8 +163,42 @@ export function shouldHideSetting(
 ) {
   return (
     setting.hideOnLevel === settingsLevel ||
+    setting.hideOnPlatform === 'both' ||
     (setting.hideOnPlatform && isTauri()
       ? setting.hideOnPlatform === 'desktop'
       : setting.hideOnPlatform === 'web')
   )
+}
+
+/**
+ * Returns true if the setting meets the requirements
+ * to appear in the settings modal in this context
+ * based on its config, the current settings level,
+ * and the current platform
+ */
+export function shouldShowSettingInput(
+  setting: Setting<unknown>,
+  settingsLevel: SettingsLevel
+) {
+  return (
+    !shouldHideSetting(setting, settingsLevel) &&
+    (setting.Component ||
+      ['string', 'boolean'].some((t) => typeof setting.default === t) ||
+      (setting.commandConfig?.inputType &&
+        ['string', 'options', 'boolean'].some(
+          (t) => setting.commandConfig?.inputType === t
+        )))
+  )
+}
+
+/**
+ * Get the appropriate input type to show given a
+ * command's config. Highly dependent on the filtering logic from
+ * shouldShowSettingInput being applied
+ */
+export function getSettingInputType(setting: Setting) {
+  if (setting.Component) return 'component'
+  if (setting.commandConfig)
+    return setting.commandConfig.inputType as 'string' | 'options' | 'boolean'
+  return typeof setting.default as 'string' | 'boolean'
 }
