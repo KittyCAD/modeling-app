@@ -13,7 +13,6 @@ import {
   cameraSystems,
 } from 'lib/cameraControls'
 import { isTauri } from 'lib/isTauri'
-import { useRef, useState } from 'react'
 import { open } from '@tauri-apps/api/dialog'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
