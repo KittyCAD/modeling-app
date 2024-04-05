@@ -1,7 +1,10 @@
 import { browser, $, expect } from '@wdio/globals'
 import fs from 'fs/promises'
 
-const defaultDir = `${process.env.HOME}/Documents/zoo-modeling-app-projects`
+const documentsDir = `${process.env.HOME}/Documents`
+const userSettingsFile = `${process.env.HOME}/.config/dev.zoo.modeling-app/user.toml`
+const defaultProjectDir = `${documentsDir}/zoo-modeling-app-projects`
+const newProjectDir = `${documentsDir}/a-different-directory`
 const userCodeDir = '/tmp/kittycad_user_code'
 
 async function click(element: WebdriverIO.Element): Promise<void> {
@@ -10,12 +13,25 @@ async function click(element: WebdriverIO.Element): Promise<void> {
   await browser.execute('arguments[0].click();', element)
 }
 
+/* Shoutout to @Sheap on Github for a great workaround utility:
+ * https://github.com/tauri-apps/tauri/issues/6541#issue-1638944060
+ */
+async function setDatasetValue(
+  field: WebdriverIO.Element,
+  property: string,
+  value: string
+) {
+  await browser.execute(`arguments[0].dataset.${property} = "${value}"`, field)
+}
+
 describe('ZMA (Tauri, Linux)', () => {
   it('opens the auth page and signs in', async () => {
     // Clean up filesystem from previous tests
     await new Promise((resolve) => setTimeout(resolve, 100))
-    await fs.rm(defaultDir, { force: true, recursive: true })
+    await fs.rm(defaultProjectDir, { force: true, recursive: true })
     await fs.rm(userCodeDir, { force: true })
+    await fs.rm(userSettingsFile, { force: true })
+    await fs.mkdir(newProjectDir, { recursive: true })
 
     const signInButton = await $('[data-testid="sign-in-button"]')
     expect(await signInButton.getText()).toEqual('Sign in')
@@ -65,8 +81,15 @@ describe('ZMA (Tauri, Linux)', () => {
     const settingsButton = await $('[data-testid="settings-button"]')
     await click(settingsButton)
 
-    const defaultDirInput = await $('[data-testid="default-directory-input"]')
-    expect(await defaultDirInput.getValue()).toEqual(defaultDir)
+    const projectDirInput = await $('[data-testid="project-directory-input"]')
+    expect(await projectDirInput.getValue()).toEqual(defaultProjectDir)
+
+    await setDatasetValue(projectDirInput, 'testValue', newProjectDir)
+    const projectDirButton = await $('[data-testid="project-directory-button"]')
+    await click(projectDirButton)
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    // This line is broken. I need a different way to grab the toast
+    await expect(await $('con')).toBeDisplayed()
 
     const nameInput = await $('[data-testid="projects-defaultProjectName"]')
     expect(await nameInput.getValue()).toEqual('project-$nnn')

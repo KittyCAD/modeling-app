@@ -135,6 +135,7 @@ export const SettingsAuthProviderBase = ({
               : '')
           toast.success(message, {
             duration: message.split(' ').length * 100 + 1500,
+            id: `${event.type}.success`,
           })
         },
         'Execute AST': () => kclManager.executeAst(),
