@@ -153,7 +153,7 @@ function CommandBarKclInput({
           className={
             calcResult === 'NAN'
               ? 'text-destroy-80 dark:text-destroy-40'
-              : 'text-energy-60 dark:text-energy-20'
+              : 'text-succeed-80 dark:text-succeed-40'
           }
         >
           {calcResult === 'NAN'
@@ -173,7 +173,7 @@ function CommandBarKclInput({
             type="text"
             id="variable-name"
             name="variable-name"
-            className="flex-1 border-none bg-transparent"
+            className="flex-1 border-none bg-transparent focus:outline-none"
             placeholder="Variable name"
             value={newVariableName}
             autoCapitalize="off"
@@ -196,7 +196,7 @@ function CommandBarKclInput({
           <span
             className={
               isNewVariableNameUnique
-                ? 'text-energy-60 dark:text-energy-20'
+                ? 'text-succeed-60 dark:text-succeed-40'
                 : 'text-destroy-60 dark:text-destroy-40'
             }
           >

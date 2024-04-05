@@ -13,10 +13,10 @@ import {
   cameraSystems,
 } from 'lib/cameraControls'
 import { isTauri } from 'lib/isTauri'
+import { CSSProperties, useRef } from 'react'
 import { open } from '@tauri-apps/api/dialog'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
-import { useRef } from 'react'
 
 /**
  * A setting that can be set at the user or project level
@@ -132,6 +132,31 @@ export function createSettings() {
             })),
         },
       }),
+      themeColor: new Setting<string>({
+        defaultValue: '264.5',
+        description: 'The hue of the primary theme color for the app',
+        validate: (v) => Number(v) >= 0 && Number(v) < 360,
+        Component: ({ value, onChange }) => (
+          <div className="flex item-center gap-2 px-2">
+            <input
+              type="range"
+              onChange={onChange}
+              value={value}
+              min={0}
+              max={259}
+              step={1}
+              className="block flex-1"
+            />
+            <span className="text-xs block w-[6ch] text-right">{value}º</span>
+            <div
+              className="w-3 h-3 rounded-full bg-primary"
+              style={{
+                backgroundColor: `oklch(var(--primary-lightness) var(--primary-chroma) ${value})`,
+              }}
+            />
+          </div>
+        ),
+      }),
       onboardingStatus: new Setting<string>({
         defaultValue: '',
         validate: (v) => typeof v === 'string',
@@ -184,7 +209,7 @@ export function createSettings() {
                     updateValue(newValue)
                   }
                 }}
-                className="p-0 m-0 border-none hover:bg-energy-10 focus:bg-energy-10 dark:hover:bg-energy-80/50 dark:focus::bg-energy-80/50"
+                className="p-0 m-0 border-none hover:bg-primary/10 focus:bg-primary/10 dark:hover:bg-primary/20 dark:focus::bg-primary/20"
                 data-testid="project-directory-button"
               >
                 <CustomIcon name="folder" className="w-5 h-5" />
