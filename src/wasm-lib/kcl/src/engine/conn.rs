@@ -89,6 +89,16 @@ impl EngineConnection {
             };
             let _ = request_sent.send(res);
         }
+        let _ = Self::inner_close_engine(&mut tcp_write).await;
+    }
+
+    /// Send the given `request` to the engine via the WebSocket connection `tcp_write`.
+    async fn inner_close_engine(tcp_write: &mut WebSocketTcpWrite) -> Result<()> {
+        tcp_write
+            .send(WsMsg::Close(None))
+            .await
+            .map_err(|e| anyhow!("could not send close over websocket: {e}"))?;
+        Ok(())
     }
 
     /// Send the given `request` to the engine via the WebSocket connection `tcp_write`.
