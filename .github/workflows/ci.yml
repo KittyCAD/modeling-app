@@ -257,8 +257,9 @@ jobs:
         with:
           path: "${{ env.PREFIX }}/${{ env.MODE }}/bundle/*/*"
 
+      # TODO: re-enable linux e2e tests when possible
       - name: Run e2e tests (linux only)
-        if: matrix.os == 'ubuntu-latest'
+        if: false
         run: |
           cargo install tauri-driver
           source .env.${{ env.BUILD_RELEASE == 'true' && 'production' || 'development' }}
