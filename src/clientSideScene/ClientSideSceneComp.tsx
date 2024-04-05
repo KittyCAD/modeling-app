@@ -137,7 +137,7 @@ const Overlays = () => {
 
 const Overlay = ({ overlay }: { overlay: SegmentOverlay }) => {
   const { context } = useModelingContext()
-  // if (context.tool)
+  if (context.mouseState.type === 'isDragging') return null
 
   let xAlignment = overlay.angle < 0 ? '0%' : '-100%'
   let yAlignment = overlay.angle < -90 || overlay.angle >= 90 ? '0%' : '-100%'
@@ -180,6 +180,9 @@ const Overlay = ({ overlay }: { overlay: SegmentOverlay }) => {
           constraints.map((y, i) => (
             <ConstraintSymbol constrainInfo={y} key={i} />
           ))}
+        <span className="bg-gray-50/80 text-black border-2 border-gray-400 h-[20px] w-[20px] rounded-sm">
+          <CustomIcon name={'three-dots'} />
+        </span>
       </div>
     </div>
   )
@@ -208,7 +211,7 @@ const ConstraintSymbol = ({
         isConstrained
           ? 'bg-gray-50/80 text-black border-2 border-gray-400'
           : 'bg-blue-700/40 text-blue-700'
-      } w-8 h-8 rounded-sm`}
+      } h-[20px] w-[20px] rounded-sm`}
     >
       <CustomIcon name={name} />
     </span>
