@@ -160,6 +160,15 @@ export function createSettings() {
       onboardingStatus: new Setting<string>({
         defaultValue: '',
         validate: (v) => typeof v === 'string',
+        hideOnPlatform: 'both',
+      }),
+      /** Permanently dismiss the banner warning to download the desktop app. */
+      dismissWebBanner: new Setting<boolean>({
+        defaultValue: false,
+        description:
+          'Permanently dismiss the banner warning to download the desktop app.',
+        validate: (v) => typeof v === 'boolean',
+        hideOnPlatform: 'desktop',
       }),
       projectDirectory: new Setting<string>({
         defaultValue: '',
