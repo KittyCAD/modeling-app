@@ -173,8 +173,8 @@ const Home = () => {
       },
     })
   }, [
-    settings.app.projectDirectory,
-    settings.projects.defaultProjectName,
+    settings.app.projectDirectory.current,
+    settings.projects.defaultProjectName.current,
     send,
   ])
 
@@ -248,7 +248,7 @@ const Home = () => {
         <section data-testid="home-section">
           <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
             Loaded from{' '}
-            <span className="text-energy-70 dark:text-energy-40">
+            <span className="text-chalkboard-90 dark:text-chalkboard-20">
               {settings.app.projectDirectory.current}
             </span>
             .{' '}

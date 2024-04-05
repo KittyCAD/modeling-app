@@ -66,10 +66,10 @@ const router = createBrowserRouter([
                 <Outlet />
                 <App />
                 <CommandBar />
+                {!isTauri() && import.meta.env.PROD && <DownloadAppBanner />}
               </ModelingMachineProvider>
               <WasmErrBanner />
             </FileMachineProvider>
-            {!isTauri() && import.meta.env.PROD && <DownloadAppBanner />}
           </Auth>
         ),
         children: [
