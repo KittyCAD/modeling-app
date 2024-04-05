@@ -495,14 +495,14 @@ function GeneratedSetting({
           <setting.Component
             value={setting[settingsLevel] || setting.getFallback(settingsLevel)}
             updateValue={(newValue) => {
-                  send({
+              send({
                 type: `set.${category}.${settingName}`,
                 data: {
                   level: settingsLevel,
                   value: newValue,
                 },
               } as unknown as Event<WildcardSetEvent>)
-                }}
+            }}
           />
         )
       )
