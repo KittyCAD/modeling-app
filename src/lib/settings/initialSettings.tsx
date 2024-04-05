@@ -13,7 +13,7 @@ import {
   cameraSystems,
 } from 'lib/cameraControls'
 import { isTauri } from 'lib/isTauri'
-import { CSSProperties, useRef } from 'react'
+import { useRef } from 'react'
 import { open } from '@tauri-apps/api/dialog'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
@@ -136,11 +136,11 @@ export function createSettings() {
         defaultValue: '264.5',
         description: 'The hue of the primary theme color for the app',
         validate: (v) => Number(v) >= 0 && Number(v) < 360,
-        Component: ({ value, onChange }) => (
+        Component: ({ value, updateValue }) => (
           <div className="flex item-center gap-2 px-2">
             <input
               type="range"
-              onChange={onChange}
+              onChange={(e) => updateValue(e.currentTarget.value)}
               value={value}
               min={0}
               max={259}
