@@ -180,7 +180,7 @@ const Overlay = ({ overlay }: { overlay: SegmentOverlay }) => {
           constraints.map((y, i) => (
             <ConstraintSymbol constrainInfo={y} key={i} />
           ))}
-        <span className="bg-gray-50/80 text-black border-2 border-gray-400 h-[20px] w-[20px] rounded-sm">
+        <span className="bg-white/50 hover:bg-white/80 text-black border-2 border-transparent hover:border-gray-400 h-[20px] w-[20px] rounded-sm">
           <CustomIcon name={'three-dots'} />
         </span>
       </div>
@@ -209,8 +209,8 @@ const ConstraintSymbol = ({
     <span
       className={`${
         isConstrained
-          ? 'bg-gray-50/80 text-black border-2 border-gray-400'
-          : 'bg-blue-700/40 text-blue-700'
+          ? 'bg-white/50 hover:bg-white/80 text-black border-2 border-transparent hover:border-gray-400 h-[20px] w-[20px] rounded-sm'
+          : 'bg-primary/30 text-primary border-2 border-transparent hover:bg-primary/40 hover:border-primary/50 hover:brightness-125'
       } h-[20px] w-[20px] rounded-sm`}
     >
       <CustomIcon name={name} />
