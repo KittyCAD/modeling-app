@@ -3,7 +3,6 @@ import { useModelingContext } from 'hooks/useModelingContext'
 
 import { cameraMouseDragGuards } from 'lib/cameraControls'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import { ToolTip } from 'useStore'
 import { ARROWHEAD, DEBUG_SHOW_BOTH_SCENES } from './sceneInfra'
 import { ReactCameraProperties } from './CameraControls'
 import { throttle } from 'lib/utils'
@@ -201,6 +200,7 @@ const ConstraintSymbol = ({
     name = _type
   else if (_type === 'length') name = 'dimension'
   else if (_type === 'intersectionOffset') name = 'intersection-offset'
+  else if (_type === 'tangentialWithPrevious') name = 'tangent'
   return (
     <span
       className={`${

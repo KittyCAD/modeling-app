@@ -1264,7 +1264,6 @@ export function getConstraintType(
   return null
 }
 
-
 export function getTransformInfos(
   selectionRanges: Selections,
   ast: Program,
