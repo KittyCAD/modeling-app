@@ -14,10 +14,11 @@ import {
   getParentGroup,
 } from './sceneEntities'
 import { SegmentOverlay } from 'machines/modelingMachine'
-import { ConstrainInfo, getConstraintInfo } from 'lang/std/sketchcombos'
 import { getNodeFromPath } from 'lang/queryAst'
 import { CallExpression } from 'lang/wasm'
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
+import { ConstrainInfo } from 'lang/std/stdTypes'
+import { getConstraintInfo } from 'lang/std/sketch'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -147,13 +148,7 @@ const Overlay = ({ overlay }: { overlay: SegmentOverlay }) => {
     overlay.pathToNode,
     'CallExpression'
   ).node
-  const firstArg = callExpression.arguments?.[0]
-  const firstArgValues =
-    firstArg.type === 'ArrayExpression' ? firstArg.elements : (firstArg as any)
-  const constraints = getConstraintInfo(
-    firstArgValues,
-    callExpression.callee.name as ToolTip
-  )
+  const constraints = getConstraintInfo(callExpression)
 
   const offset = 20 // px
   // We could put a boolean in settings that
@@ -205,6 +200,7 @@ const ConstraintSymbol = ({
   )
     name = _type
   else if (_type === 'length') name = 'dimension'
+  else if (_type === 'intersectionOffset') name = 'intersection-offset'
   return (
     <span
       className={`${

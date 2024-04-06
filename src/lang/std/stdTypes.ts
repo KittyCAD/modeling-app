@@ -5,9 +5,11 @@ import {
   Program,
   Value,
   PathToNode,
+  CallExpression,
 } from '../wasm'
 import { ToolTip } from '../../useStore'
 import { EngineCommandManager } from './engineConnection'
+import { LineInputsType } from './sketchcombos'
 
 export interface InternalFirstArg {
   programMemory: ProgramMemory
@@ -56,6 +58,11 @@ export type SketchCallTransfromMap = {
   [key in ToolTip]: TransformCallback
 }
 
+export interface ConstrainInfo {
+  type: LineInputsType | 'vertical' | 'horizontal' | 'tangentialWithPrevious'
+  isConstrained: boolean
+}
+
 export interface SketchLineHelper {
   add: (a: addCall) => {
     modifiedAst: Program
@@ -70,4 +77,5 @@ export interface SketchLineHelper {
     modifiedAst: Program
     tag: string
   }
+  getConstraintInfo: (callExp: CallExpression) => ConstrainInfo[]
 }
