@@ -54,10 +54,6 @@ export type TransformCallback = (
   valueUsedInTransform?: number
 }
 
-export type SketchCallTransfromMap = {
-  [key in ToolTip]: TransformCallback
-}
-
 export interface ConstrainInfo {
   type: LineInputsType | 'vertical' | 'horizontal' | 'tangentialWithPrevious'
   isConstrained: boolean
