@@ -43,6 +43,7 @@ import {
 } from '../modifyAst'
 import { roundOff, getLength, getAngle } from '../../lib/utils'
 import { perpendicularDistance } from 'sketch-helpers'
+import { kclManager } from 'lib/singletons'
 
 export type Coords2d = [number, number]
 
@@ -95,8 +96,10 @@ export function createFirstArg(
 
 const constrainInfo = (
   a: ConstrainInfo['type'],
-  b: ConstrainInfo['isConstrained']
-): ConstrainInfo => ({ type: a, isConstrained: b })
+  b: ConstrainInfo['isConstrained'],
+  c: ConstrainInfo['value'],
+  d: ConstrainInfo['sourceRange']
+): ConstrainInfo => ({ type: a, isConstrained: b, value: c, sourceRange: d })
 
 const commonConstraintInfoHelper = (
   callExp: CallExpression,
@@ -105,14 +108,28 @@ const commonConstraintInfoHelper = (
   if (callExp.type !== 'CallExpression') return []
   const firstArg = callExp.arguments?.[0]
   if (firstArg.type !== 'ArrayExpression') return []
+  const sourceRange1: SourceRange = [
+    firstArg.elements[0].start,
+    firstArg.elements[0].end,
+  ]
+  const sourceRange2: SourceRange = [
+    firstArg.elements[1].start,
+    firstArg.elements[1].end,
+  ]
+  const val1 = kclManager.code.slice(sourceRange1[0], sourceRange1[1])
+  const val2 = kclManager.code.slice(sourceRange2[0], sourceRange2[1])
   return [
     constrainInfo(
       inputConstrainTypes[0],
-      isNotLiteralArrayOrStatic(firstArg.elements[0])
+      isNotLiteralArrayOrStatic(firstArg.elements[0]),
+      val1,
+      sourceRange1
     ),
     constrainInfo(
       inputConstrainTypes[1],
-      isNotLiteralArrayOrStatic(firstArg.elements[1])
+      isNotLiteralArrayOrStatic(firstArg.elements[1]),
+      val2,
+      sourceRange2
     ),
   ]
 }

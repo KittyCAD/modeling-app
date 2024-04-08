@@ -7,7 +7,6 @@ import {
   PathToNode,
   CallExpression,
 } from '../wasm'
-import { ToolTip } from '../../useStore'
 import { EngineCommandManager } from './engineConnection'
 import { LineInputsType } from './sketchcombos'
 
@@ -57,6 +56,10 @@ export type TransformCallback = (
 export interface ConstrainInfo {
   type: LineInputsType | 'vertical' | 'horizontal' | 'tangentialWithPrevious'
   isConstrained: boolean
+  sourceRange: SourceRange
+  value: string
+  calculatedValue?: any
+  // linked?: SourceRange
 }
 
 export interface SketchLineHelper {

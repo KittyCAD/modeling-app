@@ -18,6 +18,7 @@ import { CallExpression } from 'lang/wasm'
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import { ConstrainInfo } from 'lang/std/stdTypes'
 import { getConstraintInfo } from 'lang/std/sketch'
+import { Popover } from '@headlessui/react'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -171,22 +172,35 @@ const Overlay = ({ overlay }: { overlay: SegmentOverlay }) => {
         }}
       >
         {constraints &&
-          constraints.map((y, i) => (
-            <ConstraintSymbol constrainInfo={y} key={i} />
+          constraints.map((constraintInfo, i) => (
+            <ConstraintSymbol
+              constrainInfo={constraintInfo}
+              key={i}
+              verticalPosition={
+                overlay.windowCoords[1] > window.innerHeight / 2
+                  ? 'top'
+                  : 'bottom'
+              }
+            />
           ))}
-        <span className="bg-white/50 hover:bg-white/80 text-black border-2 border-transparent hover:border-gray-400 h-[20px] w-[20px] rounded-sm">
+        <button className="bg-white/50 hover:bg-white/80 text-black border-2 border-transparent hover:border-gray-400 h-[20px] w-[20px] rounded-sm p-0 m-0">
           <CustomIcon name={'three-dots'} />
-        </span>
+        </button>
       </div>
     </div>
   )
 }
 
 const ConstraintSymbol = ({
-  constrainInfo: { type: _type, isConstrained },
+  constrainInfo: { type: _type, isConstrained, value, sourceRange },
+  verticalPosition,
 }: {
   constrainInfo: ConstrainInfo
+  verticalPosition: 'top' | 'bottom'
 }) => {
+  const { setHighlightRange } = useStore((s) => ({
+    setHighlightRange: s.setHighlightRange,
+  }))
   let name: CustomIconName = 'dimension'
   if (
     _type === 'horizontal' ||
@@ -201,16 +215,38 @@ const ConstraintSymbol = ({
   else if (_type === 'length') name = 'dimension'
   else if (_type === 'intersectionOffset') name = 'intersection-offset'
   else if (_type === 'tangentialWithPrevious') name = 'tangent'
+  console.log('verticalPosition')
+
   return (
-    <span
-      className={`${
-        isConstrained
-          ? 'bg-white/50 hover:bg-white/80 text-black border-2 border-transparent hover:border-gray-400 h-[20px] w-[20px] rounded-sm'
-          : 'bg-primary/30 text-primary border-2 border-transparent hover:bg-primary/40 hover:border-primary/50 hover:brightness-125'
-      } h-[20px] w-[20px] rounded-sm`}
-    >
-      <CustomIcon name={name} />
-    </span>
+    <div className="relative group">
+      <button
+        className={`${
+          isConstrained
+            ? 'bg-white/50 group-hover:bg-white/80 text-black border-2 border-transparent group-hover:border-gray-400 h-[20px] w-[20px] rounded-sm'
+            : 'bg-primary/30 text-primary border-2 border-transparent group-hover:bg-primary/40 group-hover:border-primary/50 group-hover:brightness-125'
+        } h-[20px] w-[20px] rounded-sm relative m-0 p-0`}
+        onMouseEnter={() => {
+          sourceRange && setHighlightRange(sourceRange)
+        }}
+        onMouseLeave={() => {
+          setHighlightRange([0, 0])
+        }}
+      >
+        <CustomIcon name={name} />
+      </button>
+
+      <div
+        className={`absolute ${
+          verticalPosition === 'top'
+            ? 'top-0 -translate-y-full'
+            : 'bottom-0 translate-y-full'
+        } group-hover:block hidden -translate-x-1/2`}
+      >
+        <pre>
+          <code className="text-xs">{value}</code>
+        </pre>
+      </div>
+    </div>
   )
 }
 
