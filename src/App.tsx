@@ -1,22 +1,13 @@
-import { useCallback, MouseEventHandler, useEffect } from 'react'
+import { MouseEventHandler, useEffect } from 'react'
 import { DebugPanel } from './components/DebugPanel'
 import { uuidv4 } from 'lib/utils'
-import { PaneType, useStore } from './useStore'
-import { Logs, KCLErrors } from './components/Logs'
-import { CollapsiblePanel } from './components/CollapsiblePanel'
-import { MemoryPanel } from './components/MemoryPanel'
+import { useStore } from './useStore'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
 import { Stream } from './components/Stream'
 import ModalContainer from 'react-modal-promise'
 import { EngineCommand } from './lang/std/engineConnection'
 import { throttle } from './lib/utils'
 import { AppHeader } from './components/AppHeader'
-import { Resizable } from 're-resizable'
-import {
-  faCode,
-  faCodeCommit,
-  faSquareRootVariable,
-} from '@fortawesome/free-solid-svg-icons'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { getNormalisedCoordinates } from './lib/utils'
 import { useLoaderData, useNavigate } from 'react-router-dom'
@@ -24,9 +15,6 @@ import { type IndexLoaderData } from 'lib/types'
 import { paths } from 'lib/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { CodeMenu } from 'components/CodeMenu'
-import { TextEditor } from 'components/TextEditor'
-import { Themes, getSystemTheme } from 'lib/theme'
 import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
 import { engineCommandManager } from 'lib/singletons'
 import { useModelingContext } from 'hooks/useModelingContext'
@@ -34,6 +22,7 @@ import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { isTauri } from 'lib/isTauri'
 import { useLspContext } from 'components/LspProvider'
 import { useRefreshSettings } from 'hooks/useRefreshSettings'
+import { ModelingSidebar } from 'components/ModelingSidebar'
 
 export function App() {
   useRefreshSettings(paths.FILE + 'SETTINGS')
@@ -66,26 +55,10 @@ export function App() {
   const { settings } = useSettingsAuthContext()
   const {
     modeling: { showDebugPanel },
-    app: { theme, onboardingStatus },
+    app: { onboardingStatus },
   } = settings.context
   const { state, send } = useModelingContext()
 
-  const editorTheme =
-    theme.current === Themes.System ? getSystemTheme() : theme.current
-
-  // Pane toggling keyboard shortcuts
-  const togglePane = useCallback(
-    (newPane: PaneType) =>
-      openPanes.includes(newPane)
-        ? setOpenPanes(openPanes.filter((p) => p !== newPane))
-        : setOpenPanes([...openPanes, newPane]),
-    [openPanes, setOpenPanes]
-  )
-  useHotkeys('shift + c', () => togglePane('code'))
-  useHotkeys('shift + v', () => togglePane('variables'))
-  useHotkeys('shift + l', () => togglePane('logs'))
-  useHotkeys('shift + e', () => togglePane('kclErrors'))
-  useHotkeys('shift + d', () => togglePane('debug'))
   useHotkeys('esc', () => send('Cancel'))
   useHotkeys('backspace', (e) => {
     e.preventDefault()
@@ -151,62 +124,7 @@ export function App() {
         enableMenu={true}
       />
       <ModalContainer />
-      <Resizable
-        className={
-          'pointer-events-none h-full flex flex-col flex-1 z-10 my-2 ml-2 pr-1 transition-opacity transition-duration-75 ' +
-          +paneOpacity
-        }
-        defaultSize={{
-          width: '550px',
-          height: 'auto',
-        }}
-        minWidth={200}
-        maxWidth={800}
-        minHeight={'auto'}
-        maxHeight={'auto'}
-        handleClasses={{
-          right:
-            'hover:bg-chalkboard-10 hover:dark:bg-chalkboard-110 bg-transparent transition-colors duration-75 transition-ease-out delay-100 ' +
-            (buttonDownInStream || onboardingStatus.current === 'camera'
-              ? 'pointer-events-none '
-              : 'pointer-events-auto'),
-        }}
-      >
-        <div
-          id="code-pane"
-          className="h-full flex flex-col justify-between pointer-events-none"
-        >
-          <CollapsiblePanel
-            title="Code"
-            icon={faCode}
-            className="open:!mb-2"
-            open={openPanes.includes('code')}
-            menu={<CodeMenu />}
-          >
-            <TextEditor theme={editorTheme} />
-          </CollapsiblePanel>
-          <section className="flex flex-col">
-            <MemoryPanel
-              theme={editorTheme}
-              open={openPanes.includes('variables')}
-              title="Variables"
-              icon={faSquareRootVariable}
-            />
-            <Logs
-              theme={editorTheme}
-              open={openPanes.includes('logs')}
-              title="Logs"
-              icon={faCodeCommit}
-            />
-            <KCLErrors
-              theme={editorTheme}
-              open={openPanes.includes('kclErrors')}
-              title="KCL Errors"
-              iconClassNames={{ bg: 'group-open:bg-destroy-70' }}
-            />
-          </section>
-        </div>
-      </Resizable>
+      <ModelingSidebar paneOpacity={paneOpacity} />
       <Stream className="absolute inset-0 z-0" />
       {showDebugPanel.current && (
         <DebugPanel
