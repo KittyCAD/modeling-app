@@ -66,13 +66,16 @@ export const ModelingMachineProvider = ({
   const {
     auth,
     settings: {
-      context: { baseUnit, theme },
+      context: {
+        app: { theme },
+        modeling: { defaultUnit },
+      },
     },
   } = useSettingsAuthContext()
   const { code } = useKclContext()
   const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)
-  useSetupEngineManager(streamRef, token, theme)
+  useSetupEngineManager(streamRef, token, theme.current)
 
   const {
     isShiftDown,
@@ -109,6 +112,9 @@ export const ModelingMachineProvider = ({
             kclManager.executeAst()
           }
         },
+        'Set mouse state': assign({
+          mouseState: (_, event) => event.data,
+        }),
         'Set selection': assign(({ selectionRanges }, event) => {
           if (event.type !== 'Set selection') return {} // this was needed for ts after adding 'Set selection' action to on done modal events
           const setSelections = event.data
@@ -234,7 +240,7 @@ export const ModelingMachineProvider = ({
             format.type === 'stl' ||
             format.type === 'ply'
           ) {
-            format.units = baseUnit
+            format.units = defaultUnit.current
           }
 
           if (format.type === 'ply' || format.type === 'stl') {

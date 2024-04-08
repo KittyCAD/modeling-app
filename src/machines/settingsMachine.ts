@@ -1,148 +1,91 @@
 import { assign, createMachine } from 'xstate'
 import { Themes, getSystemTheme, setThemeClass } from 'lib/theme'
-import { CameraSystem } from 'lib/cameraControls'
-import { isTauri } from 'lib/isTauri'
-import { writeToSettingsFile } from 'lib/tauriFS'
-import { DEFAULT_PROJECT_NAME, SETTINGS_PERSIST_KEY } from 'lib/constants'
+import { createSettings, settings } from 'lib/settings/initialSettings'
 import {
-  UnitSystem,
-  type BaseUnit,
-  type SettingsMachineContext,
-  type Toggle,
+  BaseUnit,
+  SetEventTypes,
+  SettingsLevel,
+  SettingsPaths,
+  WildcardSetEvent,
 } from 'lib/settings/settingsTypes'
 
 export const settingsMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlTQAIBBY4qyrXWAbQAYBdRUABwHtYmLP2w8QAD0TsANCACe0gL5K5THHkIlylKgCEAhrDBUAqtmEduSEAKEixNqQgCM7AJz52AJgAsAVg8AZgAOEIA2fxd3XzlFBCCXf3xfdlS0kN9vGIiVNXRmTSJSCnQqAGEDAFswACcDCtE0Wv5iNi5xO2FMUXFnWQVlVRB1Fi0S3QARMAAzAwBXYmpJzFqwAGM0flr5K07Bbt6nRH9w-HcXcPcI8PYAdgu0oLiTu+98EPdQ0-8g8N8gu53HkRgUNARijoytM5otqAAFFoAKw21AActUwHsbF0HH1EFkvOxiSTScSXLFBggrsk7r4AuEQuxAd4oiEQaMitpStQAPLYABG-AMtQgGkYaAMaHm7WsfAOeOOCEC+HCiTevlu5JcYReCBCLhSFzc3m8SWJrJcHLBY0hPKoABUwBJqAB1eq8XgabHy+w9Rygfp69jWjDg8ZQ6gOgAWYBqPtsCv9+P17Hw3juIV+Pn87kiGeeVINIXwuf8rPC4WiVZcQVDhQh3N05mEjHksDQcYTuOTSrp+Du5ZC3g8bizbkp8QCaaelwep3YTP8vnr4btDv4UCgpCo0wF8ygVHhBmwYGI3aTR0DiFupfY-giQSC3iflZfepHvnwQV8Lge93cX4qxCO4VGGbB+AgOBxE5eAcUvANJEQABaXwQj1ZCQLvUkmXpFwzStYZYIjfY-SvJDXBHLxa01Stc0yIE7j1NwKW-NUAl8a4-DuZkwKUIA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlnXwFsB7CMYnKfAV20zVgG0AGAXUSgADrVidMtbEJAAPRABYAHAFZ8vAEwA2FVq0aNAZgCcARl0B2ADQgAnolO8LvfBYUXT+48YW+tCgF8Am1QMZgIiUgoqAENhYXw0AAswajA+QSQQUXEsKRl5BCM1DQUDMo0VQwVjJxt7BFMDJXwNWo0LFSU3c0DgkFCsXAiScgAlOHQAAkow4YyZHIl8rMKAWn18Q39q3ScVFQ1NFXqHXiVTfGNqhSdeXi1DJQ1TIJD0IbxCUbIAKgWsks8tJVopjFp8KZjEpqi9lKZDE0TnYzgZXO5PG0fH4+u85l9IuRQlMYsRiFNsGAAO4zD7hAEiMTLEGgda6fAKJoIiyIkwWYwWawoxpGFxaHkKFS1a7woL9bD0OAyQbhRZM4EFRBrUyOLY7SVafaHTSnBDGDqQiz6DRKbwqTxvAZ04bfUhq3KSFlyBxHdQIhR6HTQmoC02OUwKPW7GrPdy8QxygJAA */
     id: 'Settings',
     predictableActionArguments: true,
-    context: {} as SettingsMachineContext,
+    context: {} as ReturnType<typeof createSettings>,
     initial: 'idle',
     states: {
       idle: {
         entry: ['setThemeClass', 'setClientSideSceneUnits', 'persistSettings'],
+
         on: {
-          'Set All Settings': {
-            actions: [
-              assign((context, event) => {
-                return {
-                  ...context,
-                  ...event.data,
-                }
-              }),
-              'persistSettings',
-              'setThemeClass',
-            ],
+          '*': {
             target: 'idle',
             internal: true,
+            actions: ['setSettingAtLevel', 'toastSuccess', 'persistSettings'],
           },
-          'Set Base Unit': {
+
+          'set.app.onboardingStatus': {
+            target: 'idle',
+            internal: true,
+            actions: ['setSettingAtLevel', 'persistSettings'], // No toast
+          },
+          'set.app.themeColor': {
+            target: 'idle',
+            internal: true,
+            actions: ['setSettingAtLevel', 'persistSettings'], // No toast
+          },
+
+          'set.modeling.defaultUnit': {
+            target: 'idle',
+            internal: true,
             actions: [
-              assign({
-                baseUnit: (_, event) => event.data.baseUnit,
-              }),
-              'persistSettings',
+              'setSettingAtLevel',
               'toastSuccess',
               'setClientSideSceneUnits',
               'Execute AST',
-            ],
-            target: 'idle',
-            internal: true,
-          },
-          'Set Camera Controls': {
-            actions: [
-              assign({
-                cameraControls: (_, event) => event.data.cameraControls,
-              }),
-              'persistSettings',
-              'toastSuccess',
-            ],
-            target: 'idle',
-            internal: true,
-          },
-          'Set Default Directory': {
-            actions: [
-              assign({
-                defaultDirectory: (_, event) => event.data.defaultDirectory,
-              }),
-              'persistSettings',
-              'toastSuccess',
-            ],
-            target: 'idle',
-            internal: true,
-          },
-          'Set Default Project Name': {
-            actions: [
-              assign({
-                defaultProjectName: (_, event) =>
-                  event.data.defaultProjectName.trim() || DEFAULT_PROJECT_NAME,
-              }),
-              'persistSettings',
-              'toastSuccess',
-            ],
-            target: 'idle',
-            internal: true,
-          },
-          'Set Onboarding Status': {
-            actions: [
-              assign({
-                onboardingStatus: (_, event) => event.data.onboardingStatus,
-              }),
               'persistSettings',
             ],
+          },
+
+          'set.app.theme': {
             target: 'idle',
             internal: true,
-          },
-          'Set Text Wrapping': {
             actions: [
-              assign({
-                textWrapping: (_, event) => event.data.textWrapping,
-              }),
-              'persistSettings',
-              'toastSuccess',
-            ],
-            target: 'idle',
-            internal: true,
-          },
-          'Set Theme': {
-            actions: [
-              assign({
-                theme: (_, event) => event.data.theme,
-              }),
-              'persistSettings',
+              'setSettingAtLevel',
               'toastSuccess',
               'setThemeClass',
               'setEngineTheme',
+              'persistSettings',
             ],
+          },
+
+          'Reset settings': {
             target: 'idle',
             internal: true,
-          },
-          'Set Unit System': {
             actions: [
-              assign({
-                unitSystem: (_, event) => event.data.unitSystem,
-                baseUnit: (_, event) =>
-                  event.data.unitSystem === 'imperial' ? 'in' : 'mm',
-              }),
-              'persistSettings',
-              'toastSuccess',
+              'resetSettings',
+              'setThemeClass',
+              'setEngineTheme',
+              'setClientSideSceneUnits',
               'Execute AST',
-            ],
-            target: 'idle',
-            internal: true,
-          },
-          'Toggle Debug Panel': {
-            actions: [
-              assign({
-                showDebugPanel: (context) => {
-                  return !context.showDebugPanel
-                },
-              }),
               'persistSettings',
-              'toastSuccess',
             ],
+          },
+
+          'Set all settings': {
             target: 'idle',
             internal: true,
+            actions: [
+              'setAllSettings',
+              'setThemeClass',
+              'setEngineTheme',
+              'setClientSideSceneUnits',
+              'Execute AST',
+              'persistSettings',
+            ],
           },
         },
       },
@@ -150,44 +93,61 @@ export const settingsMachine = createMachine(
     tsTypes: {} as import('./settingsMachine.typegen').Typegen0,
     schema: {
       events: {} as
-        | { type: 'Set All Settings'; data: Partial<SettingsMachineContext> }
-        | { type: 'Set Base Unit'; data: { baseUnit: BaseUnit } }
+        | WildcardSetEvent<SettingsPaths>
+        | SetEventTypes
         | {
-            type: 'Set Camera Controls'
-            data: { cameraControls: CameraSystem }
+            type: 'set.app.theme'
+            data: { level: SettingsLevel; value: Themes }
           }
-        | { type: 'Set Default Directory'; data: { defaultDirectory: string } }
         | {
-            type: 'Set Default Project Name'
-            data: { defaultProjectName: string }
+            type: 'set.modeling.units'
+            data: { level: SettingsLevel; value: BaseUnit }
           }
-        | { type: 'Set Onboarding Status'; data: { onboardingStatus: string } }
-        | { type: 'Set Text Wrapping'; data: { textWrapping: Toggle } }
-        | { type: 'Set Theme'; data: { theme: Themes } }
-        | {
-            type: 'Set Unit System'
-            data: { unitSystem: UnitSystem }
-          }
-        | { type: 'Toggle Debug Panel' },
+        | { type: 'Reset settings'; defaultDirectory: string }
+        | { type: 'Set all settings'; settings: typeof settings },
     },
   },
   {
     actions: {
-      persistSettings: (context) => {
-        if (isTauri()) {
-          writeToSettingsFile(context).catch((err) => {
-            console.error('Error writing settings:', err)
-          })
+      resetSettings: assign((context, { defaultDirectory }) => {
+        // Reset everything except onboarding status,
+        // which should be preserved
+        const newSettings = createSettings()
+        if (context.app.onboardingStatus.user) {
+          newSettings.app.onboardingStatus.user =
+            context.app.onboardingStatus.user
         }
-        try {
-          localStorage.setItem(SETTINGS_PERSIST_KEY, JSON.stringify(context))
-        } catch (e) {
-          console.error(e)
+        // We instead pass in the default directory since it's asynchronous
+        // to re-initialize, and that can be done by the caller.
+        newSettings.app.projectDirectory.default = defaultDirectory
+
+        return newSettings
+      }),
+      setAllSettings: assign((_, event) => {
+        return event.settings
+      }),
+      setSettingAtLevel: assign((context, event) => {
+        const { level, value } = event.data
+        const [category, setting] = event.type
+          .replace(/^set./, '')
+          .split('.') as [keyof typeof settings, string]
+
+        // @ts-ignore
+        context[category][setting][level] = value
+
+        const newContext = {
+          ...context,
+          [category]: {
+            ...context[category],
+            // @ts-ignore
+            [setting]: context[category][setting],
+          },
         }
-      },
-      setThemeClass: (context, event) => {
-        const currentTheme =
-          event.type === 'Set Theme' ? event.data.theme : context.theme
+
+        return newContext
+      }),
+      setThemeClass: (context) => {
+        const currentTheme = context.app.theme.current ?? Themes.System
         setThemeClass(
           currentTheme === Themes.System ? getSystemTheme() : currentTheme
         )

@@ -1,5 +1,9 @@
 import { SourceRange } from '../lang/wasm'
 
+import { v4 } from 'uuid'
+
+export const uuidv4 = v4
+
 export function isOverlap(a: SourceRange, b: SourceRange) {
   const [startingRange, secondRange] = a[0] < b[0] ? [a, b] : [b, a]
   const [lastOfFirst, firstOfSecond] = [startingRange[1], secondRange[0]]

@@ -84,8 +84,6 @@ export interface StoreState {
 
   showHomeMenu: boolean
   setHomeShowMenu: (showMenu: boolean) => void
-  isBannerDismissed: boolean
-  setBannerDismissed: (isBannerDismissed: boolean) => void
   openPanes: PaneType[]
   setOpenPanes: (panes: PaneType[]) => void
   homeMenuItems: {
@@ -150,8 +148,6 @@ export const useStore = create<StoreState>()(
         defaultDir: {
           dir: '',
         },
-        isBannerDismissed: false,
-        setBannerDismissed: (isBannerDismissed) => set({ isBannerDismissed }),
         openPanes: ['code'],
         setOpenPanes: (openPanes) => set({ openPanes }),
         showHomeMenu: true,

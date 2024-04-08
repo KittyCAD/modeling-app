@@ -402,8 +402,8 @@ export const commandBarMachine = createMachine(
       'Initialize arguments to submit': assign({
         argumentsToSubmit: (c, e) => {
           const command =
-            'command' in e.data ? e.data.command : c.selectedCommand!
-          if (!command.args) return {}
+            'command' in e.data ? e.data.command : c.selectedCommand
+          if (!command?.args) return {}
           const args: { [x: string]: unknown } = {}
           for (const [argName, arg] of Object.entries(command.args)) {
             args[argName] =
@@ -461,7 +461,10 @@ export const commandBarMachine = createMachine(
                 'options' in argConfig &&
                 !(
                   typeof argConfig.options === 'function'
-                    ? argConfig.options(context)
+                    ? argConfig.options(
+                        context,
+                        argConfig.machineActor.getSnapshot().context
+                      )
                     : argConfig.options
                 ).some((o) => o.value === argValue)
 
@@ -479,7 +482,12 @@ export const commandBarMachine = createMachine(
                 })
               }
 
-              if (!argValue && isRequired) {
+              if (
+                (argConfig.inputType !== 'boolean'
+                  ? !argValue
+                  : argValue === undefined) &&
+                isRequired
+              ) {
                 return reject({
                   message: 'Argument payload is falsy but is required',
                   arg: {
