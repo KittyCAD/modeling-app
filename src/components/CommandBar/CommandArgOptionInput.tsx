@@ -1,29 +1,35 @@
 import { Combobox } from '@headlessui/react'
+import { useSelector } from '@xstate/react'
 import Fuse from 'fuse.js'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CommandArgument, CommandArgumentOption } from 'lib/commandTypes'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { AnyStateMachine, StateFrom } from 'xstate'
+
+const contextSelector = (snapshot: StateFrom<AnyStateMachine>) =>
+  snapshot.context
 
 function CommandArgOptionInput({
-  options,
+  arg,
   argName,
   stepBack,
   onSubmit,
   placeholder,
 }: {
-  options: (CommandArgument<unknown> & { inputType: 'options' })['options']
+  arg: CommandArgument<unknown> & { inputType: 'options' }
   argName: string
   stepBack: () => void
   onSubmit: (data: unknown) => void
   placeholder?: string
 }) {
+  const actorContext = useSelector(arg.machineActor, contextSelector)
   const { commandBarSend, commandBarState } = useCommandsContext()
   const resolvedOptions = useMemo(
     () =>
-      typeof options === 'function'
-        ? options(commandBarState.context)
-        : options,
-    [argName, options, commandBarState.context]
+      typeof arg.options === 'function'
+        ? arg.options(commandBarState.context, actorContext)
+        : arg.options,
+    [argName, arg, commandBarState.context, actorContext]
   )
   // The initial current option is either an already-input value or the configured default
   const currentOption = useMemo(
@@ -38,7 +44,7 @@ function CommandArgOptionInput({
   const [selectedOption, setSelectedOption] = useState<
     CommandArgumentOption<unknown>
   >(currentOption || resolvedOptions[0])
-  const initialQuery = useMemo(() => '', [options, argName])
+  const initialQuery = useMemo(() => '', [arg.options, argName])
   const [query, setQuery] = useState(initialQuery)
   const [filteredOptions, setFilteredOptions] =
     useState<typeof resolvedOptions>()
@@ -135,7 +141,7 @@ function CommandArgOptionInput({
             <Combobox.Option
               key={option.name}
               value={option}
-              className="flex items-center gap-2 px-4 py-1 first:mt-2 last:mb-2 ui-active:bg-energy-10/50 dark:ui-active:bg-chalkboard-90"
+              className="flex items-center gap-2 px-4 py-1 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90"
             >
               <p className="flex-grow">{option.name} </p>
               {option.value === currentOption?.value && (

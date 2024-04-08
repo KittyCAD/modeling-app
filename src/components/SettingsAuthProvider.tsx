@@ -6,12 +6,9 @@ import withBaseUrl from '../lib/withBaseURL'
 import React, { createContext, useEffect } from 'react'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
 import { settingsMachine } from 'machines/settingsMachine'
-import {
-  fallbackLoadedSettings,
-  validateSettings,
-} from 'lib/settings/settingsUtils'
 import { toast } from 'react-hot-toast'
 import { getThemeColorForEngine, setThemeClass, Themes } from 'lib/theme'
+import decamelize from 'decamelize'
 import {
   AnyStateMachine,
   ContextFrom,
@@ -20,10 +17,19 @@ import {
   StateFrom,
 } from 'xstate'
 import { isTauri } from 'lib/isTauri'
-import { settingsCommandBarConfig } from 'lib/commandBarConfigs/settingsCommandConfig'
 import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
 import { kclManager, sceneInfra, engineCommandManager } from 'lib/singletons'
-import { v4 as uuidv4 } from 'uuid'
+import { uuidv4 } from 'lib/utils'
+import { IndexLoaderData } from 'lib/types'
+import { settings } from 'lib/settings/initialSettings'
+import {
+  createSettingsCommand,
+  settingsWithCommandConfigs,
+} from 'lib/commandBarConfigs/settingsCommandConfig'
+import { useCommandsContext } from 'hooks/useCommandsContext'
+import { Command } from 'lib/commandTypes'
+import { BaseUnit } from 'lib/settings/settingsTypes'
+import { saveSettings } from 'lib/settings/settingsUtils'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -49,11 +55,13 @@ export const SettingsAuthProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const loadedSettings = useRouteLoaderData(paths.INDEX) as Awaited<
-    ReturnType<typeof validateSettings>
-  >
+  const loadedSettings = useRouteLoaderData(paths.INDEX) as typeof settings
+  const loadedProject = useRouteLoaderData(paths.FILE) as IndexLoaderData
   return (
-    <SettingsAuthProviderBase loadedSettings={loadedSettings}>
+    <SettingsAuthProviderBase
+      loadedSettings={loadedSettings}
+      loadedProject={loadedProject}
+    >
       {children}
     </SettingsAuthProviderBase>
   )
@@ -66,7 +74,7 @@ export const SettingsAuthProviderJest = ({
 }: {
   children: React.ReactNode
 }) => {
-  const loadedSettings = fallbackLoadedSettings
+  const loadedSettings = settings
   return (
     <SettingsAuthProviderBase loadedSettings={loadedSettings}>
       {children}
@@ -77,23 +85,25 @@ export const SettingsAuthProviderJest = ({
 export const SettingsAuthProviderBase = ({
   children,
   loadedSettings,
+  loadedProject,
 }: {
   children: React.ReactNode
-  loadedSettings: Awaited<ReturnType<typeof validateSettings>>
+  loadedSettings: typeof settings
+  loadedProject?: IndexLoaderData
 }) => {
-  const { settings: initialLoadedContext } = loadedSettings
   const navigate = useNavigate()
+  const { commandBarSend } = useCommandsContext()
 
   const [settingsState, settingsSend, settingsActor] = useMachine(
     settingsMachine,
     {
-      context: initialLoadedContext,
+      context: loadedSettings,
       actions: {
         setClientSideSceneUnits: (context, event) => {
           const newBaseUnit =
-            event.type === 'Set Base Unit'
-              ? event.data.baseUnit
-              : context.baseUnit
+            event.type === 'set.modeling.defaultUnit'
+              ? (event.data.value as BaseUnit)
+              : context.modeling.defaultUnit.current
           sceneInfra.baseUnit = newBaseUnit
         },
         setEngineTheme: (context) => {
@@ -102,39 +112,77 @@ export const SettingsAuthProviderBase = ({
             type: 'modeling_cmd_req',
             cmd: {
               type: 'set_background_color',
-              color: getThemeColorForEngine(context.theme),
+              color: getThemeColorForEngine(context.app.theme.current),
             },
           })
         },
         toastSuccess: (context, event) => {
-          const truncatedNewValue =
-            'data' in event && event.data instanceof Object
-              ? (context[Object.keys(event.data)[0] as keyof typeof context]
-                  .toString()
-                  .substring(0, 28) as any)
-              : undefined
-          toast.success(
-            event.type +
-              (truncatedNewValue
-                ? ` to "${truncatedNewValue}${
-                    truncatedNewValue.length === 28 ? '...' : ''
-                  }"`
-                : '')
-          )
+          const eventParts = event.type.replace(/^set./, '').split('.') as [
+            keyof typeof settings,
+            string
+          ]
+          const truncatedNewValue = event.data.value?.toString().slice(0, 28)
+          const message =
+            `Set ${decamelize(eventParts[1], { separator: ' ' })}` +
+            (truncatedNewValue
+              ? ` to "${truncatedNewValue}${
+                  truncatedNewValue.length === 28 ? '...' : ''
+                }"${
+                  event.data.level === 'project'
+                    ? ' for this project'
+                    : ' as a user default'
+                }`
+              : '')
+          toast.success(message, {
+            duration: message.split(' ').length * 100 + 1500,
+            id: `${event.type}.success`,
+          })
         },
         'Execute AST': () => kclManager.executeAst(),
+        persistSettings: (context) =>
+          saveSettings(context, loadedProject?.project?.path),
       },
     }
   )
   settingsStateRef = settingsState.context
 
-  useStateMachineCommands({
-    machineId: 'settings',
-    state: settingsState,
-    send: settingsSend,
-    commandBarConfig: settingsCommandBarConfig,
-    actor: settingsActor,
-  })
+  // Add settings commands to the command bar
+  // They're treated slightly differently than other commands
+  // Because their state machine doesn't have a meaningful .nextEvents,
+  // and they are configured statically in initialiSettings
+  useEffect(() => {
+    // If the user wants to hide the settings commands
+    //from the command bar don't add them.
+    if (settingsState.context.commandBar.includeSettings.current === false)
+      return
+
+    const commands = settingsWithCommandConfigs(settingsState.context)
+      .map((type) =>
+        createSettingsCommand({
+          type,
+          send: settingsSend,
+          context: settingsState.context,
+          actor: settingsActor,
+          isProjectAvailable: loadedProject !== undefined,
+        })
+      )
+      .filter((c) => c !== null) as Command[]
+
+    commandBarSend({ type: 'Add commands', data: { commands: commands } })
+
+    return () => {
+      commandBarSend({
+        type: 'Remove commands',
+        data: { commands },
+      })
+    }
+  }, [
+    settingsState,
+    settingsSend,
+    settingsActor,
+    commandBarSend,
+    settingsWithCommandConfigs,
+  ])
 
   // Listen for changes to the system theme and update the app theme accordingly
   // This is only done if the theme setting is set to 'system'.
@@ -144,13 +192,24 @@ export const SettingsAuthProviderBase = ({
   useEffect(() => {
     const matcher = window.matchMedia('(prefers-color-scheme: dark)')
     const listener = (e: MediaQueryListEvent) => {
-      if (settingsState.context.theme !== 'system') return
+      if (settingsState.context.app.theme.current !== 'system') return
       setThemeClass(e.matches ? Themes.Dark : Themes.Light)
     }
 
     matcher.addEventListener('change', listener)
     return () => matcher.removeEventListener('change', listener)
   }, [settingsState.context])
+
+  /**
+   * Update the --primary-hue CSS variable
+   * to match the setting app.themeColor.current
+   */
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      `--primary-hue`,
+      settingsState.context.app.themeColor.current
+    )
+  }, [settingsState.context.app.themeColor.current])
 
   // Auth machine setup
   const [authState, authSend, authActor] = useMachine(authMachine, {

@@ -953,20 +953,12 @@ impl ExtrudeSurface {
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct PipeInfo {
-    pub previous_results: Vec<MemoryItem>,
-    pub is_in_pipe: bool,
-    pub index: usize,
-    pub body: Vec<Value>,
+    pub previous_results: Option<MemoryItem>,
 }
 
 impl PipeInfo {
     pub fn new() -> Self {
-        Self {
-            previous_results: Vec::new(),
-            is_in_pipe: false,
-            index: 0,
-            body: Vec::new(),
-        }
+        Self { previous_results: None }
     }
 }
 
@@ -983,11 +975,13 @@ pub struct ExecutorContext {
     pub fs: FileManager,
     pub stdlib: Arc<StdLib>,
     pub units: kittycad::types::UnitLength,
+    /// Mock mode is only for the modeling app when they just want to mock engine calls and not
+    /// actually make them.
+    pub is_mock: bool,
 }
 
 impl ExecutorContext {
     /// Create a new default executor context.
-    #[cfg(not(test))]
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(ws: reqwest::Upgraded, units: kittycad::types::UnitLength) -> Result<Self> {
         Ok(Self {
@@ -995,13 +989,13 @@ impl ExecutorContext {
             fs: FileManager::new(),
             stdlib: Arc::new(StdLib::new()),
             units,
+            is_mock: false,
         })
     }
 }
 
-/// Execute a AST's program.
-#[async_recursion(?Send)]
-pub async fn execute(
+/// Execute an AST's program.
+pub async fn execute_outer(
     program: crate::ast::types::Program,
     memory: &mut ProgramMemory,
     _options: BodyType,
@@ -1018,15 +1012,25 @@ pub async fn execute(
             },
         )
         .await?;
+    execute(program, memory, _options, ctx).await
+}
 
-    let mut pipe_info = PipeInfo::default();
+/// Execute an AST's program.
+#[async_recursion(?Send)]
+pub(crate) async fn execute(
+    program: crate::ast::types::Program,
+    memory: &mut ProgramMemory,
+    _options: BodyType,
+    ctx: &ExecutorContext,
+) -> Result<ProgramMemory, KclError> {
+    let pipe_info = PipeInfo::default();
 
     // Iterate over the body of the program.
     for statement in &program.body {
         match statement {
             BodyItem::ExpressionStatement(expression_statement) => {
                 if let Value::PipeExpression(pipe_expr) = &expression_statement.expression {
-                    pipe_expr.get_result(memory, &mut pipe_info, ctx).await?;
+                    pipe_expr.get_result(memory, &pipe_info, ctx).await?;
                 } else if let Value::CallExpression(call_expr) = &expression_statement.expression {
                     let fn_name = call_expr.callee.name.to_string();
                     let mut args: Vec<MemoryItem> = Vec::new();
@@ -1038,23 +1042,23 @@ pub async fn execute(
                                 args.push(memory_item.clone());
                             }
                             Value::CallExpression(call_expr) => {
-                                let result = call_expr.execute(memory, &mut pipe_info, ctx).await?;
+                                let result = call_expr.execute(memory, &pipe_info, ctx).await?;
                                 args.push(result);
                             }
                             Value::BinaryExpression(binary_expression) => {
-                                let result = binary_expression.get_result(memory, &mut pipe_info, ctx).await?;
+                                let result = binary_expression.get_result(memory, &pipe_info, ctx).await?;
                                 args.push(result);
                             }
                             Value::UnaryExpression(unary_expression) => {
-                                let result = unary_expression.get_result(memory, &mut pipe_info, ctx).await?;
+                                let result = unary_expression.get_result(memory, &pipe_info, ctx).await?;
                                 args.push(result);
                             }
                             Value::ObjectExpression(object_expression) => {
-                                let result = object_expression.execute(memory, &mut pipe_info, ctx).await?;
+                                let result = object_expression.execute(memory, &pipe_info, ctx).await?;
                                 args.push(result);
                             }
                             Value::ArrayExpression(array_expression) => {
-                                let result = array_expression.execute(memory, &mut pipe_info, ctx).await?;
+                                let result = array_expression.execute(memory, &pipe_info, ctx).await?;
                                 args.push(result);
                             }
                             // We do nothing for the rest.
@@ -1105,7 +1109,7 @@ pub async fn execute(
                             memory.add(&var_name, value.clone(), source_range)?;
                         }
                         Value::BinaryExpression(binary_expression) => {
-                            let result = binary_expression.get_result(memory, &mut pipe_info, ctx).await?;
+                            let result = binary_expression.get_result(memory, &pipe_info, ctx).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::FunctionExpression(function_expression) => {
@@ -1142,11 +1146,11 @@ pub async fn execute(
                             )?;
                         }
                         Value::CallExpression(call_expression) => {
-                            let result = call_expression.execute(memory, &mut pipe_info, ctx).await?;
+                            let result = call_expression.execute(memory, &pipe_info, ctx).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::PipeExpression(pipe_expression) => {
-                            let result = pipe_expression.get_result(memory, &mut pipe_info, ctx).await?;
+                            let result = pipe_expression.get_result(memory, &pipe_info, ctx).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::PipeSubstitution(pipe_substitution) => {
@@ -1159,11 +1163,11 @@ pub async fn execute(
                             }));
                         }
                         Value::ArrayExpression(array_expression) => {
-                            let result = array_expression.execute(memory, &mut pipe_info, ctx).await?;
+                            let result = array_expression.execute(memory, &pipe_info, ctx).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::ObjectExpression(object_expression) => {
-                            let result = object_expression.execute(memory, &mut pipe_info, ctx).await?;
+                            let result = object_expression.execute(memory, &pipe_info, ctx).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::MemberExpression(member_expression) => {
@@ -1171,7 +1175,7 @@ pub async fn execute(
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::UnaryExpression(unary_expression) => {
-                            let result = unary_expression.get_result(memory, &mut pipe_info, ctx).await?;
+                            let result = unary_expression.get_result(memory, &pipe_info, ctx).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                     }
@@ -1179,11 +1183,11 @@ pub async fn execute(
             }
             BodyItem::ReturnStatement(return_statement) => match &return_statement.argument {
                 Value::BinaryExpression(bin_expr) => {
-                    let result = bin_expr.get_result(memory, &mut pipe_info, ctx).await?;
+                    let result = bin_expr.get_result(memory, &pipe_info, ctx).await?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::UnaryExpression(unary_expr) => {
-                    let result = unary_expr.get_result(memory, &mut pipe_info, ctx).await?;
+                    let result = unary_expr.get_result(memory, &pipe_info, ctx).await?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::Identifier(identifier) => {
@@ -1194,15 +1198,15 @@ pub async fn execute(
                     memory.return_ = Some(ProgramReturn::Value(literal.into()));
                 }
                 Value::ArrayExpression(array_expr) => {
-                    let result = array_expr.execute(memory, &mut pipe_info, ctx).await?;
+                    let result = array_expr.execute(memory, &pipe_info, ctx).await?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::ObjectExpression(obj_expr) => {
-                    let result = obj_expr.execute(memory, &mut pipe_info, ctx).await?;
+                    let result = obj_expr.execute(memory, &pipe_info, ctx).await?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::CallExpression(call_expr) => {
-                    let result = call_expr.execute(memory, &mut pipe_info, ctx).await?;
+                    let result = call_expr.execute(memory, &pipe_info, ctx).await?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::MemberExpression(member_expr) => {
@@ -1210,7 +1214,7 @@ pub async fn execute(
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::PipeExpression(pipe_expr) => {
-                    let result = pipe_expr.get_result(memory, &mut pipe_info, ctx).await?;
+                    let result = pipe_expr.get_result(memory, &pipe_info, ctx).await?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::PipeSubstitution(_) => {}
@@ -1302,8 +1306,9 @@ mod tests {
             fs: crate::fs::FileManager::new(),
             stdlib: Arc::new(crate::std::StdLib::new()),
             units: kittycad::types::UnitLength::Mm,
+            is_mock: false,
         };
-        let memory = execute(program, &mut mem, BodyType::Root, &ctx).await?;
+        let memory = execute_outer(program, &mut mem, BodyType::Root, &ctx).await?;
 
         Ok(memory)
     }

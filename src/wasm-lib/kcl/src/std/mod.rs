@@ -7,6 +7,7 @@ pub mod import;
 pub mod kcl_stdlib;
 pub mod math;
 pub mod patterns;
+pub mod revolve;
 pub mod segment;
 pub mod shapes;
 pub mod sketch;
@@ -81,6 +82,8 @@ lazy_static! {
         Box::new(crate::std::fillet::GetNextAdjacentEdge),
         Box::new(crate::std::fillet::GetPreviousAdjacentEdge),
         Box::new(crate::std::helix::Helix),
+        Box::new(crate::std::revolve::Revolve),
+        Box::new(crate::std::revolve::GetEdge),
         Box::new(crate::std::import::Import),
         Box::new(crate::std::math::Cos),
         Box::new(crate::std::math::Sin),
@@ -920,6 +923,7 @@ pub async fn leg_length(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "legLen",
+    tags = ["utilities"],
 }]
 fn inner_leg_length(hypotenuse: f64, leg: f64) -> f64 {
     (hypotenuse.powi(2) - f64::min(hypotenuse.abs(), leg.abs()).powi(2)).sqrt()
@@ -939,6 +943,7 @@ pub async fn leg_angle_x(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "legAngX",
+    tags = ["utilities"],
 }]
 fn inner_leg_angle_x(hypotenuse: f64, leg: f64) -> f64 {
     (leg.min(hypotenuse) / hypotenuse).acos().to_degrees()
@@ -958,6 +963,7 @@ pub async fn leg_angle_y(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 #[stdlib {
     name = "legAngY",
+    tags = ["utilities"],
 }]
 fn inner_leg_angle_y(hypotenuse: f64, leg: f64) -> f64 {
     (leg.min(hypotenuse) / hypotenuse).asin().to_degrees()
@@ -980,6 +986,8 @@ pub enum Primitive {
 
 #[cfg(test)]
 mod tests {
+    use base64::Engine;
+    use convert_case::Casing;
     use itertools::Itertools;
 
     use crate::std::StdLib;
@@ -1051,13 +1059,68 @@ layout: manual
             fn_docs.push_str(&signature);
             fn_docs.push_str("\n```\n\n");
 
+            // If the function has tags, we should add them to the docs.
+            let mut tags = internal_fn.tags().clone();
+            // Remove norun tag from the list of tags.
+            tags.retain(|tag| tag != "norun");
+            if !tags.is_empty() {
+                fn_docs.push_str("### Tags\n\n");
+                for tag in tags {
+                    fn_docs.push_str(&format!("* `{}`\n", tag));
+                }
+                fn_docs.push('\n');
+            }
+
             if !internal_fn.examples().is_empty() {
                 fn_docs.push_str("### Examples\n\n");
 
-                for example in internal_fn.examples() {
+                for (index, example) in internal_fn.examples().iter().enumerate() {
                     fn_docs.push_str("```js\n");
-                    fn_docs.push_str(&example);
+                    fn_docs.push_str(example);
                     fn_docs.push_str("\n```\n\n");
+
+                    // If this is not a "math" or "utilities" function,
+                    // we should add the image to the docs.
+                    if !internal_fn.tags().contains(&"math".to_string())
+                        && !internal_fn.tags().contains(&"utilities".to_string())
+                        && !internal_fn.tags().contains(&"norun".to_string())
+                    {
+                        // Get the path to this specific rust file.
+                        let dir = env!("CARGO_MANIFEST_DIR");
+
+                        // Convert from camel case to snake case.
+                        let mut fn_name = internal_fn.name().to_case(convert_case::Case::Snake);
+                        // Clean the fn name.
+                        if fn_name.starts_with("last_seg_") {
+                            fn_name = fn_name.replace("last_seg_", "last_segment_");
+                        } else if fn_name.contains("_2_d") {
+                            fn_name = fn_name.replace("_2_d", "_2d");
+                        } else if fn_name.contains("_3_d") {
+                            fn_name = fn_name.replace("_3_d", "_3d");
+                        } else if fn_name == "seg_ang" {
+                            fn_name = "segment_angle".to_string();
+                        } else if fn_name == "seg_len" {
+                            fn_name = "segment_length".to_string();
+                        } else if fn_name.starts_with("seg_") {
+                            fn_name = fn_name.replace("seg_", "segment_");
+                        }
+
+                        // Read the image file and encode as base64.
+                        let image_path = format!("{}/tests/outputs/serial_test_example_{}{}.png", dir, fn_name, index);
+
+                        let image_data = std::fs::read(&image_path)
+                            .unwrap_or_else(|_| panic!("Failed to read image file: {}", image_path));
+                        let encoded = base64::engine::general_purpose::STANDARD.encode(&image_data);
+
+                        fn_docs.push_str(&format!(
+                            r#"![Rendered example of {} {}](data:image/png;base64,{})
+
+"#,
+                            internal_fn.name(),
+                            index,
+                            encoded,
+                        ));
+                    }
                 }
             }
 

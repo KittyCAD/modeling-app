@@ -12,6 +12,10 @@ Computes the arccosine of a number (in radians).
 acos(num: number) -> number
 ```
 
+### Tags
+
+* `math`
+
 ### Examples
 
 ```js

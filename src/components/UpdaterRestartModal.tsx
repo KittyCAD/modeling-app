@@ -1,4 +1,3 @@
-import { UpdateManifest } from '@tauri-apps/api/updater'
 import { create, InstanceProps } from 'react-modal-promise'
 import { ActionButton } from './ActionButton'
 
@@ -8,8 +7,9 @@ type ModalResolve = {
 
 type ModalReject = boolean
 
-type UpdaterRestartModalProps = InstanceProps<ModalResolve, ModalReject> &
-  UpdateManifest
+type UpdaterRestartModalProps = InstanceProps<ModalResolve, ModalReject> & {
+  version: string
+}
 
 export const createUpdaterRestartModal = create<
   UpdaterRestartModalProps,

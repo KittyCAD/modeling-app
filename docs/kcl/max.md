@@ -12,6 +12,10 @@ Computes the maximum of the given arguments.
 max(args: [number]) -> number
 ```
 
+### Tags
+
+* `math`
+
 ### Examples
 
 ```js

@@ -1,4 +1,3 @@
-import { UpdateManifest } from '@tauri-apps/api/updater'
 import { create, InstanceProps } from 'react-modal-promise'
 import { ActionButton } from './ActionButton'
 import { Logo } from './Logo'
@@ -10,8 +9,11 @@ type ModalResolve = {
 
 type ModalReject = boolean
 
-type UpdaterModalProps = InstanceProps<ModalResolve, ModalReject> &
-  UpdateManifest
+type UpdaterModalProps = InstanceProps<ModalResolve, ModalReject> & {
+  version: string
+  date?: string
+  body?: string
+}
 
 export const createUpdaterModal = create<
   UpdaterModalProps,
@@ -41,16 +43,18 @@ export const UpdaterModal = ({
         <span className="ml-4 text-sm text-gray-400">Published on {date}</span>
       </div>
       {/* TODO: fix list bullets */}
-      <div
-        className="my-4 max-h-60 overflow-y-auto"
-        dangerouslySetInnerHTML={{
-          __html: Marked.parse(body, {
-            gfm: true,
-            breaks: true,
-            sanitize: true,
-          }),
-        }}
-      ></div>
+      {body && (
+        <div
+          className="my-4 max-h-60 overflow-y-auto"
+          dangerouslySetInnerHTML={{
+            __html: Marked.parse(body, {
+              gfm: true,
+              breaks: true,
+              sanitize: true,
+            }),
+          }}
+        ></div>
+      )}
       <div className="flex justify-between">
         <ActionButton
           Element="button"

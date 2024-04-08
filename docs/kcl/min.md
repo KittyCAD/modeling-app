@@ -12,6 +12,10 @@ Computes the minimum of the given arguments.
 min(args: [number]) -> number
 ```
 
+### Tags
+
+* `math`
+
 ### Examples
 
 ```js

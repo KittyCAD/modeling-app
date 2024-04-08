@@ -1,9 +1,5 @@
 import { assign, createMachine } from 'xstate'
-import { type ProjectWithEntryPointMetadata } from 'lib/types'
-import { FileEntry } from '@tauri-apps/api/fs'
-
-export const FILE_PERSIST_KEY = 'Last opened KCL files'
-export const DEFAULT_FILE_NAME = 'Untitled'
+import type { FileEntry, ProjectWithEntryPointMetadata } from 'lib/types'
 
 export const fileMachine = createMachine(
   {
