@@ -46,9 +46,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
         // If the batch only has this one command that expects a return value,
         // fire it right away, or if we want to flush batch queue.
-        let is_sending = (is_cmd_with_return_values(&cmd) && self.batch().lock().unwrap().len() == 1)
-            || flush_batch
-            || is_cmd_with_return_values(&cmd);
+        let is_sending = flush_batch || is_cmd_with_return_values(&cmd);
 
         // Return a fake modeling_request empty response.
         if !is_sending {
@@ -73,17 +71,21 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             });
         }
 
-        let batched_requests = WebSocketRequest::ModelingCmdBatchReq {
-            requests: self.batch().lock().unwrap().iter().fold(vec![], |mut acc, (val, _)| {
-                let WebSocketRequest::ModelingCmdReq { cmd, cmd_id } = val else {
-                    return acc;
-                };
-                acc.push(kittycad::types::ModelingCmdReq {
+        let requests = self
+            .batch()
+            .lock()
+            .unwrap()
+            .iter()
+            .filter_map(|(val, _)| match val {
+                WebSocketRequest::ModelingCmdReq { cmd, cmd_id } => Some(kittycad::types::ModelingCmdReq {
                     cmd: cmd.clone(),
                     cmd_id: *cmd_id,
-                });
-                acc
-            }),
+                }),
+                _ => None,
+            })
+            .collect();
+        let batched_requests = WebSocketRequest::ModelingCmdBatchReq {
+            requests,
             batch_id: uuid::Uuid::new_v4(),
         };
 
