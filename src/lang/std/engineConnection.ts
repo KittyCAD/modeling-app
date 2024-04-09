@@ -25,7 +25,8 @@ interface CommandInfo {
       }
 }
 
-type WebSocketResponse = Models['OkWebSocketResponseData_type']
+type WebSocketResponse = Models['WebSocketResponse_type']
+type OkWebSocketResponseData = Models['OkWebSocketResponseData_type']
 
 interface ResultCommand extends CommandInfo {
   type: 'result'
@@ -37,10 +38,19 @@ interface FailedCommand extends CommandInfo {
   type: 'failed'
   errors: Models['FailureWebSocketResponse_type']['errors']
 }
+interface ResolveCommand {
+  id: string
+  commandType: CommandTypes
+  range: SourceRange
+  // We ALWAYS need the raw response because we pass it back to the rust side.
+  raw: WebSocketResponse
+  data?: Models['OkModelingCmdResponse_type']
+  errors?: Models['FailureWebSocketResponse_type']['errors']
+}
 interface PendingCommand extends CommandInfo {
   type: 'pending'
   promise: Promise<any>
-  resolve: (val: any) => void
+  resolve: (val: ResolveCommand) => void
 }
 
 export interface ArtifactMap {
@@ -827,7 +837,7 @@ export type CommandLog =
     }
   | {
       type: 'receive-reliable'
-      data: WebSocketResponse
+      data: OkWebSocketResponseData
       id: string
       cmd_type?: string
     }
@@ -1020,7 +1030,11 @@ export class EngineCommandManager {
               message.resp.type === 'modeling' &&
               message.request_id
             ) {
-              this.handleModelingCommand(message.resp, message.request_id)
+              this.handleModelingCommand(
+                message.resp,
+                message.request_id,
+                message
+              )
             } else if (
               !message.success &&
               message.request_id &&
@@ -1069,7 +1083,11 @@ export class EngineCommandManager {
     }
     this.engineConnection?.send(resizeCmd)
   }
-  handleModelingCommand(message: WebSocketResponse, id: string) {
+  handleModelingCommand(
+    message: OkWebSocketResponseData,
+    id: string,
+    raw: WebSocketResponse
+  ) {
     if (message.type !== 'modeling') {
       return
     }
@@ -1081,7 +1099,7 @@ export class EngineCommandManager {
       command?.additionalData?.type === 'batch-ids'
     ) {
       command.additionalData.ids.forEach((id) => {
-        this.handleModelingCommand(message, id)
+        this.handleModelingCommand(message, id, raw)
       })
       // batch artifact is just a container, we don't need to keep it
       // once we process all the commands inside it
@@ -1092,7 +1110,7 @@ export class EngineCommandManager {
         commandType: command.commandType,
         range: command.range,
         data: modelingResponse,
-        raw: message,
+        raw,
       })
       return
     }
@@ -1116,7 +1134,7 @@ export class EngineCommandManager {
         commandType: command.commandType,
         parentId: command.parentId ? command.parentId : undefined,
         data: modelingResponse,
-        raw: message,
+        raw,
       } as const
       this.artifactMap[id] = artifact
       if (
@@ -1161,7 +1179,7 @@ export class EngineCommandManager {
         commandType: command.commandType,
         range: command.range,
         data: modelingResponse,
-        raw: message,
+        raw,
       })
     } else if (sceneCommand && sceneCommand.type === 'pending') {
       const resolve = sceneCommand.resolve
@@ -1172,7 +1190,7 @@ export class EngineCommandManager {
         commandType: sceneCommand.commandType,
         parentId: sceneCommand.parentId ? sceneCommand.parentId : undefined,
         data: modelingResponse,
-        raw: message,
+        raw,
       } as const
       this.sceneCommandArtifacts[id] = artifact
       resolve({
@@ -1180,6 +1198,7 @@ export class EngineCommandManager {
         commandType: sceneCommand.commandType,
         range: sceneCommand.range,
         data: modelingResponse,
+        raw,
       })
     } else if (command) {
       this.artifactMap[id] = {
@@ -1188,7 +1207,7 @@ export class EngineCommandManager {
         range: command?.range,
         pathToNode: command?.pathToNode,
         data: modelingResponse,
-        raw: message,
+        raw,
       }
     } else {
       this.sceneCommandArtifacts[id] = {
@@ -1197,15 +1216,14 @@ export class EngineCommandManager {
         range: sceneCommand?.range,
         pathToNode: sceneCommand?.pathToNode,
         data: modelingResponse,
-        raw: message,
+        raw,
       }
     }
   }
-  handleFailedModelingCommand({
-    request_id,
-    errors,
-  }: Models['FailureWebSocketResponse_type']) {
-    const id = request_id
+  handleFailedModelingCommand(raw: WebSocketResponse) {
+    const id = raw.request_id
+    const failed = raw as Models['FailureWebSocketResponse_type']
+    const errors = failed.errors
     if (!id) return
     const command = this.artifactMap[id]
     if (command && command.type === 'pending') {
@@ -1223,6 +1241,7 @@ export class EngineCommandManager {
         commandType: command.commandType,
         range: command.range,
         errors,
+        raw,
       })
     } else {
       this.artifactMap[id] = {
@@ -1573,7 +1592,14 @@ export class EngineCommandManager {
       command: commandStr,
       ast: this.getAst(),
       idToRangeMap,
-    }).then(({ raw }) => JSON.stringify(raw))
+    }).then(({ raw }: { raw: WebSocketResponse | undefined | null }) => {
+      if (raw === undefined || raw === null) {
+        throw new Error(
+          'returning modeling cmd response to the rust side is undefined or null'
+        )
+      }
+      return JSON.stringify(raw)
+    })
   }
   commandResult(id: string): Promise<any> {
     const command = this.artifactMap[id]
