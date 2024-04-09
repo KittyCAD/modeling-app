@@ -31,7 +31,7 @@ export class CoreDumpManager {
 
     // TODO: get more information about the browser.
     return new Promise((resolve, reject) => {
-      resolve('browser')
+      resolve(window.navigator.userAgent || 'unknown browser')
     })
   }
 
@@ -43,7 +43,7 @@ export class CoreDumpManager {
 
     // TODO: get more information about the browser.
     return new Promise((resolve, reject) => {
-      resolve('browser')
+      resolve(window.navigator.userAgent || 'unknown browser')
     })
   }
 
@@ -55,7 +55,7 @@ export class CoreDumpManager {
 
     // TODO: get more information about the browser.
     return new Promise((resolve, reject) => {
-      resolve('browser')
+      resolve(window.navigator.userAgent || 'unknown browser')
     })
   }
 
@@ -121,6 +121,7 @@ export class CoreDumpManager {
           pli_count: stats.rtc_pli_count,
           jitter: stats.rtc_jitter_sec,
         }
+        console.log(webrtcStats)
         return JSON.stringify(webrtcStats)
       })
   }
