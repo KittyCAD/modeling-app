@@ -119,6 +119,7 @@ class CoreDumpManager {
           freeze_count: stats.rtc_freeze_count,
           total_freezes_duration: stats.rtc_total_freezes_duration_sec,
           pli_count: stats.rtc_pli_count,
+          jitter: stats.rtc_jitter_sec,
         }
         return JSON.stringify(webrtcStats)
       })

@@ -98,4 +98,6 @@ pub struct WebrtcStats {
     pub total_freezes_duration: u32,
     /// The pli count.
     pub pli_count: u32,
+    /// Packet jitter for this synchronizing source, measured in seconds.
+    pub jitter: f32,
 }
