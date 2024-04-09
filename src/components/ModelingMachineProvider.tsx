@@ -48,7 +48,6 @@ import { EditorSelection } from '@uiw/react-codemirror'
 import { Vector3 } from 'three'
 import { quaternionFromUpNForward } from 'clientSideScene/helpers'
 import { CoreDumpManager } from 'lib/coredump'
-import { useHotKeyListener } from 'hooks/useHotKeyListener'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 type MachineContext<T extends AnyStateMachine> = {
