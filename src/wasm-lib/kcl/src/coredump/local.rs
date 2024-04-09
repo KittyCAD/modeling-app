@@ -25,6 +25,10 @@ impl CoreDump for LocalCoreDump {
         Ok(env!("CARGO_PKG_VERSION").to_string())
     }
 
+    async fn arch(&self) -> Result<String> {
+        Ok(std::env::consts::ARCH.to_string())
+    }
+
     async fn platform(&self) -> Result<String> {
         Ok(std::env::consts::OS.to_string())
     }

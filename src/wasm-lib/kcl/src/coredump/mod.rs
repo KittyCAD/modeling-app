@@ -13,6 +13,8 @@ use serde::{Deserialize, Serialize};
 pub trait CoreDump: Clone {
     fn version(&self) -> Result<String>;
 
+    async fn arch(&self) -> Result<String>;
+
     async fn platform(&self) -> Result<String>;
 
     fn is_tauri(&self) -> Result<bool>;
@@ -28,6 +30,7 @@ pub trait CoreDump: Clone {
             timestamp: chrono::Utc::now(),
             tauri: self.is_tauri()?,
             platform: self.platform().await?,
+            arch: self.arch().await?,
             webrtc_stats,
         })
     }
@@ -47,6 +50,8 @@ pub struct AppInfo {
     pub timestamp: chrono::DateTime<chrono::Utc>,
     /// If the app is running in tauri or the browser.
     pub tauri: bool,
+    /// The architecture the app is running on.
+    pub arch: String,
     /// The platform the app is running on.
     pub platform: String,
 

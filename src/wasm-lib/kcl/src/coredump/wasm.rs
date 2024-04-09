@@ -13,6 +13,9 @@ extern "C" {
     #[wasm_bindgen(method, js_name = version, catch)]
     fn version(this: &CoreDumpManager) -> Result<String, js_sys::Error>;
 
+    #[wasm_bindgen(method, js_name = arch, catch)]
+    fn arch(this: &CoreDumpManager) -> Result<js_sys::Promise, js_sys::Error>;
+
     #[wasm_bindgen(method, js_name = platform, catch)]
     fn platform(this: &CoreDumpManager) -> Result<js_sys::Promise, js_sys::Error>;
 
@@ -43,6 +46,24 @@ impl CoreDump for WasmCoreDump {
         self.manager
             .version()
             .map_err(|e| anyhow::anyhow!("Failed to get response from version: {:?}", e))
+    }
+
+    async fn arch(&self) -> Result<String> {
+        let promise = self
+            .manager
+            .arch()
+            .map_err(|e| anyhow::anyhow!("Failed to get promise from get arch: {:?}", e))?;
+
+        let value = JsFuture::from(promise)
+            .await
+            .map_err(|e| anyhow::anyhow!("Failed to get response from arch: {:?}", e))?;
+
+        // Parse the value as a string.
+        let s = value
+            .as_string()
+            .ok_or_else(|| anyhow::anyhow!("Failed to get string from response from arch: `{:?}`", value))?;
+
+        Ok(s)
     }
 
     async fn platform(&self) -> Result<String> {
