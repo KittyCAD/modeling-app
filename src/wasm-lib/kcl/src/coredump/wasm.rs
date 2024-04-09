@@ -24,21 +24,21 @@ extern "C" {
 }
 
 #[derive(Debug, Clone)]
-pub struct WasmCoreDump {
+pub struct CoreDumper {
     manager: CoreDumpManager,
 }
 
-impl WasmCoreDump {
+impl CoreDumper {
     pub fn new(manager: CoreDumpManager) -> Self {
-        WasmCoreDump { manager }
+        CoreDumper { manager }
     }
 }
 
-unsafe impl Send for WasmCoreDump {}
-unsafe impl Sync for WasmCoreDump {}
+unsafe impl Send for CoreDumper {}
+unsafe impl Sync for CoreDumper {}
 
 #[async_trait::async_trait]
-impl CoreDump for WasmCoreDump {
+impl CoreDump for CoreDumper {
     fn version(&self) -> Result<String> {
         self.manager
             .version()

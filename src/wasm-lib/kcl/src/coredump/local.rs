@@ -5,22 +5,22 @@ use anyhow::Result;
 use crate::coredump::CoreDump;
 
 #[derive(Debug, Clone)]
-pub struct LocalCoreDump {}
+pub struct CoreDumper {}
 
-impl LocalCoreDump {
+impl CoreDumper {
     pub fn new() -> Self {
-        LocalCoreDump {}
+        CoreDumper {}
     }
 }
 
-impl Default for LocalCoreDump {
+impl Default for CoreDumper {
     fn default() -> Self {
         Self::new()
     }
 }
 
 #[async_trait::async_trait]
-impl CoreDump for LocalCoreDump {
+impl CoreDump for CoreDumper {
     fn version(&self) -> Result<String> {
         Ok(env!("CARGO_PKG_VERSION").to_string())
     }

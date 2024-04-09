@@ -7,7 +7,7 @@ use std::{
 
 use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::engine::EngineManager;
+use kcl_lib::{coredump::CoreDump, engine::EngineManager};
 use tower_lsp::{LspService, Server};
 use wasm_bindgen::prelude::*;
 
@@ -378,4 +378,17 @@ pub fn program_memory_init() -> Result<JsValue, String> {
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
     JsValue::from_serde(&memory).map_err(|e| e.to_string())
+}
+
+/// Get a coredump.
+#[wasm_bindgen]
+pub async fn core_dump(core_dump_manager: kcl_lib::coredump::wasm::CoreDumpManager) -> Result<JsValue, String> {
+    console_error_panic_hook::set_once();
+
+    let core_dumper = kcl_lib::coredump::wasm::CoreDumper::new(core_dump_manager);
+    let dump = core_dumper.dump().await.map_err(|e| e.to_string())?;
+
+    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
+    // gloo-serialize crate instead.
+    JsValue::from_serde(&dump).map_err(|e| e.to_string())
 }
