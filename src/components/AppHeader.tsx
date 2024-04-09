@@ -54,7 +54,7 @@ export const AppHeader = ({
           >
             Command Palette{' '}
             <kbd className="bg-primary/10 dark:bg-chalkboard-100 dark:text-primary inline-block px-1 py-0.5 border-primary dark:border-chalkboard-90">
-              {platform === 'darwin' ? '⌘K' : 'Ctrl+/'}
+              {platform === 'macos' ? '⌘K' : 'Ctrl+/'}
             </kbd>
           </ActionButton>
         )}

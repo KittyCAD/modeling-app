@@ -14,7 +14,7 @@ import {
 } from 'lib/cameraControls'
 import { isTauri } from 'lib/isTauri'
 import { useRef } from 'react'
-import { open } from '@tauri-apps/api/dialog'
+import { open } from '@tauri-apps/plugin-dialog'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
 

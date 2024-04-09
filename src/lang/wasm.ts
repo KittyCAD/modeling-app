@@ -78,7 +78,7 @@ const initialise = async () => {
       : window.location.origin.includes('tauri://localhost')
       ? 'tauri://localhost' // custom protocol for macOS
       : window.location.origin.includes('tauri.localhost')
-      ? 'https://tauri.localhost' // fallback for Windows
+      ? 'http://tauri.localhost' // fallback for Windows
       : window.location.origin.includes('localhost')
       ? 'http://localhost:3000'
       : window.location.origin && window.location.origin !== 'null'

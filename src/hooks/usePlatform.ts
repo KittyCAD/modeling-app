@@ -1,4 +1,4 @@
-import { Platform, platform } from '@tauri-apps/api/os'
+import { Platform, platform } from '@tauri-apps/plugin-os'
 import { isTauri } from 'lib/isTauri'
 import { useEffect, useState } from 'react'
 
@@ -14,9 +14,9 @@ export default function usePlatform() {
       void getPlatform()
     } else {
       if (navigator.userAgent.indexOf('Mac') !== -1) {
-        setPlatformName('darwin')
+        setPlatformName('macos')
       } else if (navigator.userAgent.indexOf('Win') !== -1) {
-        setPlatformName('win32')
+        setPlatformName('windows')
       } else if (navigator.userAgent.indexOf('Linux') !== -1) {
         setPlatformName('linux')
       }
