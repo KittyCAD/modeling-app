@@ -5,6 +5,7 @@
 #![recursion_limit = "1024"]
 
 pub mod ast;
+pub mod coredump;
 pub mod docs;
 pub mod engine;
 pub mod errors;

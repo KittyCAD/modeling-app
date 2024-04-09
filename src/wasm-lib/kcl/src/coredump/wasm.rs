@@ -1,0 +1,62 @@
+//! Functions for getting core dump information via wasm.
+
+use anyhow::Result;
+use wasm_bindgen::prelude::wasm_bindgen;
+
+use crate::{coredump::CoreDump, wasm::JsFuture};
+
+#[wasm_bindgen(module = "/../../lib/coredump.ts")]
+extern "C" {
+    #[derive(Debug, Clone)]
+    pub type CoreDumpManager;
+
+    #[wasm_bindgen(method, js_name = isTauri, catch)]
+    fn is_tauri(this: &CoreDumpManager) -> Result<bool, js_sys::Error>;
+
+    #[wasm_bindgen(method, js_name = getWebrtcStats, catch)]
+    fn get_webrtc_stats(this: &CoreDumpManager) -> Result<js_sys::Promise, js_sys::Error>;
+}
+
+#[derive(Debug, Clone)]
+pub struct WasmCoreDump {
+    manager: CoreDumpManager,
+}
+
+impl WasmCoreDump {
+    pub fn new(manager: CoreDumpManager) -> Self {
+        WasmCoreDump { manager }
+    }
+}
+
+unsafe impl Send for WasmCoreDump {}
+unsafe impl Sync for WasmCoreDump {}
+
+#[async_trait::async_trait]
+impl CoreDump for WasmCoreDump {
+    fn is_tauri(&self) -> Result<bool> {
+        self.manager
+            .is_tauri()
+            .map_err(|e| anyhow::anyhow!("Failed to get response from is tauri: {:?}", e))
+    }
+
+    async fn get_webrtc_stats(&self) -> Result<crate::coredump::WebrtcStats> {
+        let promise = self
+            .manager
+            .get_webrtc_stats()
+            .map_err(|e| anyhow::anyhow!("Failed to get promise from get webrtc stats: {:?}", e))?;
+
+        let value = JsFuture::from(promise)
+            .await
+            .map_err(|e| anyhow::anyhow!("Failed to get response from webrtc stats: {:?}", e))?;
+
+        // Parse the value as a string.
+        let s = value
+            .as_string()
+            .ok_or_else(|| anyhow::anyhow!("Failed to get string from response from webrc stats: `{:?}`", value))?;
+
+        let stats: crate::coredump::WebrtcStats =
+            serde_json::from_str(&s).map_err(|e| anyhow::anyhow!("Failed to parse webrtc stats: {:?}", e))?;
+
+        Ok(stats)
+    }
+}
