@@ -11,7 +11,7 @@ import { APP_VERSION } from 'routes/Settings'
 
 // This is a class for getting all the values from the JS world to pass to the Rust world
 // for a core dump.
-class CoreDumpManager {
+export class CoreDumpManager {
   engineCommandManager: EngineCommandManager
 
   constructor(engineCommandManager: EngineCommandManager) {

@@ -382,7 +382,7 @@ pub fn program_memory_init() -> Result<JsValue, String> {
 
 /// Get a coredump.
 #[wasm_bindgen]
-pub async fn core_dump(core_dump_manager: kcl_lib::coredump::wasm::CoreDumpManager) -> Result<JsValue, String> {
+pub async fn coredump(core_dump_manager: kcl_lib::coredump::wasm::CoreDumpManager) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
 
     let core_dumper = kcl_lib::coredump::wasm::CoreDumper::new(core_dump_manager);
