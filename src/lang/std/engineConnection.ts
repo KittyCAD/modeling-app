@@ -1594,12 +1594,11 @@ export class EngineCommandManager {
       idToRangeMap,
     }).then(({ raw }: { raw: WebSocketResponse | undefined | null }) => {
       if (raw === undefined || raw === null) {
-        console.error(
+        throw new Error(
           'returning modeling cmd response to the rust side is undefined or null'
         )
-        return
       }
-      JSON.stringify(raw)
+      return JSON.stringify(raw)
     })
   }
   commandResult(id: string): Promise<any> {

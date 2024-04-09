@@ -108,9 +108,14 @@ impl crate::engine::EngineManager for EngineConnection {
 
         if let Some(data) = &ws_result.resp {
             Ok(data.clone())
+        } else if let Some(errors) = &ws_result.errors {
+            Err(KclError::Engine(KclErrorDetails {
+                message: format!("Modeling command failed: {:?}", errors),
+                source_ranges: vec![source_range],
+            }))
         } else {
             Err(KclError::Engine(KclErrorDetails {
-                message: format!("Modeling command failed: {:?}", ws_result.errors),
+                message: format!("Modeling command failed: {:?}", ws_result),
                 source_ranges: vec![source_range],
             }))
         }
