@@ -13,11 +13,8 @@ extern "C" {
     #[wasm_bindgen(method, js_name = version, catch)]
     fn version(this: &CoreDumpManager) -> Result<String, js_sys::Error>;
 
-    #[wasm_bindgen(method, js_name = arch, catch)]
-    fn arch(this: &CoreDumpManager) -> Result<js_sys::Promise, js_sys::Error>;
-
-    #[wasm_bindgen(method, js_name = platform, catch)]
-    fn platform(this: &CoreDumpManager) -> Result<js_sys::Promise, js_sys::Error>;
+    #[wasm_bindgen(method, js_name = getOsInfo, catch)]
+    fn get_os_info(this: &CoreDumpManager) -> Result<js_sys::Promise, js_sys::Error>;
 
     #[wasm_bindgen(method, js_name = isTauri, catch)]
     fn is_tauri(this: &CoreDumpManager) -> Result<bool, js_sys::Error>;
@@ -48,40 +45,25 @@ impl CoreDump for WasmCoreDump {
             .map_err(|e| anyhow::anyhow!("Failed to get response from version: {:?}", e))
     }
 
-    async fn arch(&self) -> Result<String> {
+    async fn os(&self) -> Result<crate::coredump::OsInfo> {
         let promise = self
             .manager
-            .arch()
-            .map_err(|e| anyhow::anyhow!("Failed to get promise from get arch: {:?}", e))?;
+            .get_os_info()
+            .map_err(|e| anyhow::anyhow!("Failed to get promise from get os info: {:?}", e))?;
 
         let value = JsFuture::from(promise)
             .await
-            .map_err(|e| anyhow::anyhow!("Failed to get response from arch: {:?}", e))?;
+            .map_err(|e| anyhow::anyhow!("Failed to get response from os info: {:?}", e))?;
 
         // Parse the value as a string.
         let s = value
             .as_string()
-            .ok_or_else(|| anyhow::anyhow!("Failed to get string from response from arch: `{:?}`", value))?;
+            .ok_or_else(|| anyhow::anyhow!("Failed to get string from response from os info: `{:?}`", value))?;
 
-        Ok(s)
-    }
+        let os: crate::coredump::OsInfo =
+            serde_json::from_str(&s).map_err(|e| anyhow::anyhow!("Failed to parse os info: {:?}", e))?;
 
-    async fn platform(&self) -> Result<String> {
-        let promise = self
-            .manager
-            .platform()
-            .map_err(|e| anyhow::anyhow!("Failed to get promise from get platform: {:?}", e))?;
-
-        let value = JsFuture::from(promise)
-            .await
-            .map_err(|e| anyhow::anyhow!("Failed to get response from platform: {:?}", e))?;
-
-        // Parse the value as a string.
-        let s = value
-            .as_string()
-            .ok_or_else(|| anyhow::anyhow!("Failed to get string from response from platform: `{:?}`", value))?;
-
-        Ok(s)
+        Ok(os)
     }
 
     fn is_tauri(&self) -> Result<bool> {

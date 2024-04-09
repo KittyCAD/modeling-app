@@ -1,9 +1,11 @@
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import { WebrtcStats } from 'wasm-lib/kcl/bindings/WebrtcStats'
+import { OsInfo } from 'wasm-lib/kcl/bindings/OsInfo'
 import { isTauri } from 'lib/isTauri'
 import {
   platform as tauriPlatform,
   arch as tauriArch,
+  version as tauriKernelVersion,
 } from '@tauri-apps/plugin-os'
 
 // This is a class for getting all the values from the JS world to pass to the Rust world
@@ -22,41 +24,67 @@ class CoreDumpManager {
   }
 
   // Get the arch of the app.
-  arch(): Promise<string> {
+  async arch(): Promise<string> {
     if (this.isTauri()) {
       return tauriArch()
-        .catch((error) => {
-          throw new Error(`Error getting arch: ${error}`)
-        })
-        .then((arch) => {
-          return arch
-        })
     }
 
+    // TODO: get more information about the browser.
     return new Promise((resolve, reject) => {
-      // Get the browser information.
-      // TODO: get more information about the browser.
-      return 'browser'
+      resolve('browser')
     })
   }
 
   // Get the platform of the app.
-  platform(): Promise<string> {
+  async platform(): Promise<string> {
     if (this.isTauri()) {
       return tauriPlatform()
-        .catch((error) => {
-          throw new Error(`Error getting platform: ${error}`)
-        })
-        .then((platform) => {
-          return platform
-        })
     }
 
+    // TODO: get more information about the browser.
     return new Promise((resolve, reject) => {
-      // Get the browser information.
-      // TODO: get more information about the browser.
-      return 'browser'
+      resolve('browser')
     })
+  }
+
+  // Get the kernel version.
+  async kernelVersion(): Promise<string> {
+    if (this.isTauri()) {
+      return tauriKernelVersion()
+    }
+
+    // TODO: get more information about the browser.
+    return new Promise((resolve, reject) => {
+      resolve('browser')
+    })
+  }
+
+  // Get the os information.
+  getOsInfo(): Promise<string> {
+    return this.arch()
+      .catch((error: any) => {
+        throw new Error(`Error getting arch: ${error}`)
+      })
+      .then((arch: string) => {
+        return this.platform()
+          .catch((error: any) => {
+            throw new Error(`Error getting platform: ${error}`)
+          })
+          .then((platform: string) => {
+            return this.kernelVersion()
+              .catch((error: any) => {
+                throw new Error(`Error getting kernel version: ${error}`)
+              })
+              .then((kernelVersion: string) => {
+                const osinfo: OsInfo = {
+                  platform,
+                  arch,
+                  version: kernelVersion,
+                }
+                return JSON.stringify(osinfo)
+              })
+          })
+      })
   }
 
   isTauri(): boolean {

@@ -13,9 +13,7 @@ use serde::{Deserialize, Serialize};
 pub trait CoreDump: Clone {
     fn version(&self) -> Result<String>;
 
-    async fn arch(&self) -> Result<String>;
-
-    async fn platform(&self) -> Result<String>;
+    async fn os(&self) -> Result<OsInfo>;
 
     fn is_tauri(&self) -> Result<bool>;
 
@@ -24,13 +22,13 @@ pub trait CoreDump: Clone {
     /// Dump the app info.
     async fn dump(&self) -> Result<AppInfo> {
         let webrtc_stats = self.get_webrtc_stats().await?;
+        let os = self.os().await?;
         Ok(AppInfo {
             version: self.version()?,
             git_rev: git_rev::try_revision_string!().map_or_else(|| "unknown".to_string(), |s| s.to_string()),
             timestamp: chrono::Utc::now(),
             tauri: self.is_tauri()?,
-            platform: self.platform().await?,
-            arch: self.arch().await?,
+            os,
             webrtc_stats,
         })
     }
@@ -50,13 +48,25 @@ pub struct AppInfo {
     pub timestamp: chrono::DateTime<chrono::Utc>,
     /// If the app is running in tauri or the browser.
     pub tauri: bool,
-    /// The architecture the app is running on.
-    pub arch: String,
-    /// The platform the app is running on.
-    pub platform: String,
+
+    /// The os info.
+    pub os: OsInfo,
 
     /// The webrtc stats.
     pub webrtc_stats: WebrtcStats,
+}
+
+/// The os info structure.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct OsInfo {
+    /// The platform the app is running on.
+    pub platform: String,
+    /// The architecture the app is running on.
+    pub arch: String,
+    /// The kernel version.
+    pub version: Option<String>,
 }
 
 /// The webrtc stats structure.

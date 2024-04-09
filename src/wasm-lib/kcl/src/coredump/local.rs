@@ -25,12 +25,12 @@ impl CoreDump for LocalCoreDump {
         Ok(env!("CARGO_PKG_VERSION").to_string())
     }
 
-    async fn arch(&self) -> Result<String> {
-        Ok(std::env::consts::ARCH.to_string())
-    }
-
-    async fn platform(&self) -> Result<String> {
-        Ok(std::env::consts::OS.to_string())
+    async fn os(&self) -> Result<crate::coredump::OsInfo> {
+        Ok(crate::coredump::OsInfo {
+            platform: std::env::consts::OS.to_string(),
+            arch: std::env::consts::ARCH.to_string(),
+            version: None,
+        })
     }
 
     fn is_tauri(&self) -> Result<bool> {
