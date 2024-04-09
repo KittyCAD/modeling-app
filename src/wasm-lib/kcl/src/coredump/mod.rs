@@ -70,7 +70,7 @@ impl AppInfo {
     /// Set the github issue url.
     pub fn set_github_issue_url(&mut self) -> Result<()> {
         let tauri_or_browser_label = if self.tauri { "tauri" } else { "browser" };
-        let labels = vec!["coredump", "bug", tauri_or_browser_label];
+        let labels = ["coredump", "bug", tauri_or_browser_label];
         let body = format!(
             r#"[Insert a description of the issue here]
 
