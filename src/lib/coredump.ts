@@ -7,6 +7,7 @@ import {
   arch as tauriArch,
   version as tauriKernelVersion,
 } from '@tauri-apps/plugin-os'
+import { APP_VERSION } from 'routes/Settings'
 
 // This is a class for getting all the values from the JS world to pass to the Rust world
 // for a core dump.
@@ -19,12 +20,11 @@ class CoreDumpManager {
 
   // Get the version of the app from the package.json.
   version(): string {
-    // TODO: fix me
-    return '0.0.1'
+    return APP_VERSION
   }
 
   // Get the arch of the app.
-  async arch(): Promise<string> {
+  arch(): Promise<string> {
     if (this.isTauri()) {
       return tauriArch()
     }
@@ -36,7 +36,7 @@ class CoreDumpManager {
   }
 
   // Get the platform of the app.
-  async platform(): Promise<string> {
+  platform(): Promise<string> {
     if (this.isTauri()) {
       return tauriPlatform()
     }
@@ -48,7 +48,7 @@ class CoreDumpManager {
   }
 
   // Get the kernel version.
-  async kernelVersion(): Promise<string> {
+  kernelVersion(): Promise<string> {
     if (this.isTauri()) {
       return tauriKernelVersion()
     }
