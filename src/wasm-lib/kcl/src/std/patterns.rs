@@ -235,7 +235,7 @@ pub struct CircularPattern2dData {
     /// This excludes the original entity. For example, if `repetitions` is 1,
     /// the original entity will be copied once.
     pub repetitions: u32,
-    /// The center about which to make th pattern. This is a 2D vector.
+    /// The center about which to make the pattern. This is a 2D vector.
     pub center: [f64; 2],
     /// The arc angle (in degrees) to place the repetitions. Must be greater than 0.
     pub arc_degrees: f64,
@@ -254,7 +254,7 @@ pub struct CircularPattern3dData {
     pub repetitions: u32,
     /// The axis around which to make the pattern. This is a 3D vector.
     pub axis: [f64; 3],
-    /// The center about which to make th pattern. This is a 3D vector.
+    /// The center about which to make the pattern. This is a 3D vector.
     pub center: [f64; 3],
     /// The arc angle (in degrees) to place the repetitions. Must be greater than 0.
     pub arc_degrees: f64,
