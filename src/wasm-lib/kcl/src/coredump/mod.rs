@@ -1,7 +1,8 @@
 //! Core dump related structures and functions.
 
+#[cfg(not(target_arch = "wasm32"))]
+pub mod local;
 #[cfg(target_arch = "wasm32")]
-#[cfg(not(test))]
 pub mod wasm;
 
 use anyhow::Result;
@@ -10,9 +11,24 @@ use serde::{Deserialize, Serialize};
 
 #[async_trait::async_trait]
 pub trait CoreDump: Clone {
+    fn version(&self) -> Result<String>;
+
     fn is_tauri(&self) -> Result<bool>;
 
     async fn get_webrtc_stats(&self) -> Result<WebrtcStats>;
+
+    /// Dump the app info.
+    async fn dump(&self) -> Result<AppInfo> {
+        let webrtc_stats = self.get_webrtc_stats().await?;
+        Ok(AppInfo {
+            version: self.version()?,
+            git_rev: git_rev::try_revision_string!().map_or_else(|| "unknown".to_string(), |s| s.to_string()),
+            timestamp: chrono::Utc::now(),
+            tauri: self.is_tauri()?,
+            platform: std::env::consts::OS.to_string(),
+            webrtc_stats,
+        })
+    }
 }
 
 /// The app info structure.
@@ -37,7 +53,7 @@ pub struct AppInfo {
 }
 
 /// The webrtc stats structure.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct WebrtcStats {

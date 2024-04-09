@@ -10,6 +10,9 @@ extern "C" {
     #[derive(Debug, Clone)]
     pub type CoreDumpManager;
 
+    #[wasm_bindgen(method, js_name = version, catch)]
+    fn version(this: &CoreDumpManager) -> Result<String, js_sys::Error>;
+
     #[wasm_bindgen(method, js_name = isTauri, catch)]
     fn is_tauri(this: &CoreDumpManager) -> Result<bool, js_sys::Error>;
 
@@ -33,6 +36,12 @@ unsafe impl Sync for WasmCoreDump {}
 
 #[async_trait::async_trait]
 impl CoreDump for WasmCoreDump {
+    fn version(&self) -> Result<String> {
+        self.manager
+            .version()
+            .map_err(|e| anyhow::anyhow!("Failed to get response from version: {:?}", e))
+    }
+
     fn is_tauri(&self) -> Result<bool> {
         self.manager
             .is_tauri()
