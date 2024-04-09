@@ -114,11 +114,11 @@ class CoreDumpManager {
           frame_rate: stats.rtc_frames_per_second,
           key_frames_decoded: stats.rtc_keyframes_decoded,
           frames_dropped: stats.rtc_frames_dropped,
-          pause_count: 0,
-          total_pauses_duration: 0,
+          pause_count: stats.rtc_pause_count,
+          total_pauses_duration: stats.rtc_total_pauses_duration_sec,
           freeze_count: stats.rtc_freeze_count,
           total_freezes_duration: stats.rtc_total_freezes_duration_sec,
-          pli_count: 0,
+          pli_count: stats.rtc_pli_count,
         }
         return JSON.stringify(webrtcStats)
       })

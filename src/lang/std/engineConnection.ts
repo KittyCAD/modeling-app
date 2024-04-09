@@ -73,6 +73,9 @@ interface WebRTCClientMetrics extends ClientMetrics {
   rtc_frame_height: number
   rtc_frame_width: number
   rtc_packets_lost: number
+  rtc_pli_count: number
+  rtc_pause_count: number
+  rtc_total_pauses_duration_sec: number
 }
 
 type Value<T, U> = U extends undefined
@@ -433,6 +436,9 @@ class EngineConnection {
                 rtc_frame_height: 0,
                 rtc_frame_width: 0,
                 rtc_packets_lost: 0,
+                rtc_pli_count: 0,
+                rtc_pause_count: 0,
+                rtc_total_pauses_duration_sec: 0.0,
               }
 
               // TODO(paultag): Since we can technically have multiple WebRTC
@@ -464,6 +470,7 @@ class EngineConnection {
                     videoTrackReport.frameWidth || 0
                   client_metrics.rtc_packets_lost =
                     videoTrackReport.packetsLost || 0
+                  client_metrics.rtc_pli_count = videoTrackReport.pliCount || 0
                 } else if (videoTrackReport.type === 'transport') {
                   // videoTrackReport.bytesReceived,
                   // videoTrackReport.bytesSent,
