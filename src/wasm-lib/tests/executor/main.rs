@@ -47,7 +47,6 @@ async fn execute_and_snapshot(code: &str, units: kittycad::types::UnitLength) ->
 
     ctx.engine
         .send_modeling_cmd(
-            false,
             uuid::Uuid::new_v4(),
             kcl_lib::executor::SourceRange::default(),
             kittycad::types::ModelingCmd::DefaultCameraLookAt {
@@ -63,7 +62,6 @@ async fn execute_and_snapshot(code: &str, units: kittycad::types::UnitLength) ->
     let resp = ctx
         .engine
         .send_modeling_cmd(
-            false,
             uuid::Uuid::new_v4(),
             kcl_lib::executor::SourceRange::default(),
             kittycad::types::ModelingCmd::TakeSnapshot {

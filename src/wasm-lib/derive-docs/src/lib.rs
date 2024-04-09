@@ -793,7 +793,6 @@ fn generate_code_block_test(
 
             ctx.engine
                 .send_modeling_cmd(
-                    false,
                     uuid::Uuid::new_v4(),
                     crate::executor::SourceRange::default(),
                     kittycad::types::ModelingCmd::DefaultCameraLookAt {
@@ -809,7 +808,6 @@ fn generate_code_block_test(
             let resp = ctx
                 .engine
                 .send_modeling_cmd(
-                    false,
                     uuid::Uuid::new_v4(),
                     crate::executor::SourceRange::default(),
                     kittycad::types::ModelingCmd::TakeSnapshot {
