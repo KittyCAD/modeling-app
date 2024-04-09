@@ -23,14 +23,19 @@ pub trait CoreDump: Clone {
     async fn dump(&self) -> Result<AppInfo> {
         let webrtc_stats = self.get_webrtc_stats().await?;
         let os = self.os().await?;
-        Ok(AppInfo {
+
+        let mut app_info = AppInfo {
             version: self.version()?,
             git_rev: git_rev::try_revision_string!().map_or_else(|| "unknown".to_string(), |s| s.to_string()),
             timestamp: chrono::Utc::now(),
             tauri: self.is_tauri()?,
             os,
             webrtc_stats,
-        })
+            github_issue_url: None,
+        };
+        app_info.set_github_issue_url()?;
+
+        Ok(app_info)
     }
 }
 
@@ -54,6 +59,38 @@ pub struct AppInfo {
 
     /// The webrtc stats.
     pub webrtc_stats: WebrtcStats,
+
+    /// A GitHub issue url to report the core dump.
+    /// This gets prepoulated with all the core dump info.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub github_issue_url: Option<String>,
+}
+
+impl AppInfo {
+    /// Set the github issue url.
+    pub fn set_github_issue_url(&mut self) -> Result<()> {
+        let tauri_or_browser_label = if self.tauri { "tauri" } else { "browser" };
+        let body = format!(
+            r#"[Insert a description of the issue here]
+
+<details>
+<summary><b>Core Dump</b></summary>
+
+```json
+{}
+```
+</details>
+"#,
+            serde_json::to_string_pretty(&self)?
+        );
+
+        self.github_issue_url = Some(format!(
+            r#"https://github.com/{}/{}/issues/new?body={}&labels[]=coredump&labels[]=bug&labels[]={}"#,
+            "KittyCAD", "modeling-app", body, tauri_or_browser_label,
+        ));
+
+        Ok(())
+    }
 }
 
 /// The os info structure.
@@ -62,12 +99,16 @@ pub struct AppInfo {
 #[serde(rename_all = "snake_case")]
 pub struct OsInfo {
     /// The platform the app is running on.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub platform: Option<String>,
     /// The architecture the app is running on.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub arch: Option<String>,
     /// The kernel version.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub version: Option<String>,
     /// Information about the browser.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub browser: Option<String>,
 }
 
