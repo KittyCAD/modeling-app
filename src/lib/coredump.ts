@@ -91,9 +91,36 @@ class CoreDumpManager {
     return isTauri()
   }
 
-  getWebrtcStats(): Promise<WebrtcStats | null> {
-    return new Promise((resolve, reject) => {
-      resolve(null)
-    })
+  getWebrtcStats(): Promise<string> {
+    if (!this.engineCommandManager.engineConnection) {
+      throw new Error('Engine connection not initialized')
+    }
+
+    if (!this.engineCommandManager.engineConnection.webrtcStatsCollector) {
+      throw new Error('Engine webrtcStatsCollector not initialized')
+    }
+
+    return this.engineCommandManager.engineConnection
+      .webrtcStatsCollector()
+      .catch((error: any) => {
+        throw new Error(`Error getting webrtc stats: ${error}`)
+      })
+      .then((stats: any) => {
+        const webrtcStats: WebrtcStats = {
+          packets_lost: stats.rtc_packets_lost,
+          frames_received: stats.rtc_frames_received,
+          frame_width: stats.rtc_frame_width,
+          frame_height: stats.rtc_frame_height,
+          frame_rate: stats.rtc_frames_per_second,
+          key_frames_decoded: stats.rtc_keyframes_decoded,
+          frames_dropped: stats.rtc_frames_dropped,
+          pause_count: 0,
+          total_pauses_duration: 0,
+          freeze_count: stats.rtc_freeze_count,
+          total_freezes_duration: stats.rtc_total_freezes_duration_sec,
+          pli_count: 0,
+        }
+        return JSON.stringify(webrtcStats)
+      })
   }
 }

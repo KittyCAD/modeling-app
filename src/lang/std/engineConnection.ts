@@ -69,6 +69,12 @@ type Timeout = ReturnType<typeof setTimeout>
 
 type ClientMetrics = Models['ClientMetrics_type']
 
+interface WebRTCClientMetrics extends ClientMetrics {
+  rtc_frame_height: number
+  rtc_frame_width: number
+  rtc_packets_lost: number
+}
+
 type Value<T, U> = U extends undefined
   ? { type: T; value: U }
   : U extends void
@@ -234,7 +240,7 @@ class EngineConnection {
   private onNewTrack: (track: NewTrackArgs) => void
 
   // TODO: actual type is ClientMetrics
-  private webrtcStatsCollector?: () => Promise<ClientMetrics>
+  public webrtcStatsCollector?: () => Promise<WebRTCClientMetrics>
   private engineCommandManager: EngineCommandManager
 
   constructor({
@@ -406,7 +412,7 @@ class EngineConnection {
           },
         }
 
-        this.webrtcStatsCollector = (): Promise<ClientMetrics> => {
+        this.webrtcStatsCollector = (): Promise<WebRTCClientMetrics> => {
           return new Promise((resolve, reject) => {
             if (mediaStream.getVideoTracks().length !== 1) {
               reject(new Error('too many video tracks to report'))
@@ -415,7 +421,7 @@ class EngineConnection {
 
             let videoTrack = mediaStream.getVideoTracks()[0]
             void this.pc?.getStats(videoTrack).then((videoTrackStats) => {
-              let client_metrics: ClientMetrics = {
+              let client_metrics: WebRTCClientMetrics = {
                 rtc_frames_decoded: 0,
                 rtc_frames_dropped: 0,
                 rtc_frames_received: 0,
@@ -424,6 +430,9 @@ class EngineConnection {
                 rtc_jitter_sec: 0.0,
                 rtc_keyframes_decoded: 0,
                 rtc_total_freezes_duration_sec: 0.0,
+                rtc_frame_height: 0,
+                rtc_frame_width: 0,
+                rtc_packets_lost: 0,
               }
 
               // TODO(paultag): Since we can technically have multiple WebRTC
@@ -449,6 +458,12 @@ class EngineConnection {
                     videoTrackReport.keyFramesDecoded || 0
                   client_metrics.rtc_total_freezes_duration_sec =
                     videoTrackReport.totalFreezesDuration || 0
+                  client_metrics.rtc_frame_height =
+                    videoTrackReport.frameHeight || 0
+                  client_metrics.rtc_frame_width =
+                    videoTrackReport.frameWidth || 0
+                  client_metrics.rtc_packets_lost =
+                    videoTrackReport.packetsLost || 0
                 } else if (videoTrackReport.type === 'transport') {
                   // videoTrackReport.bytesReceived,
                   // videoTrackReport.bytesSent,
