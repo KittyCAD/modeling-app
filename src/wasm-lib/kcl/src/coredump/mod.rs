@@ -79,9 +79,9 @@ pub struct WebrtcStats {
     /// The frames received.
     pub frames_received: u32,
     /// The frame width.
-    pub frame_width: u32,
+    pub frame_width: f32,
     /// The frame height.
-    pub frame_height: u32,
+    pub frame_height: f32,
     /// The frame rate.
     pub frame_rate: f32,
     /// The number of key frames decoded.
@@ -91,11 +91,11 @@ pub struct WebrtcStats {
     /// The pause count.
     pub pause_count: u32,
     /// The total pauses duration.
-    pub total_pauses_duration: u32,
+    pub total_pauses_duration: f32,
     /// The freeze count.
     pub freeze_count: u32,
     /// The total freezes duration.
-    pub total_freezes_duration: u32,
+    pub total_freezes_duration: f32,
     /// The pli count.
     pub pli_count: u32,
     /// Packet jitter for this synchronizing source, measured in seconds.

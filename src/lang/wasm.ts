@@ -318,7 +318,6 @@ export async function kclLspRun(config: ServerConfig, token: string) {
 export async function coreDump(
   coreDumpManager: CoreDumpManager
 ): Promise<AppInfo> {
-  console.log('WE ARE IN CORE DUMP')
   try {
     const dump: AppInfo = await coredump(coreDumpManager)
     console.log('dump', dump)

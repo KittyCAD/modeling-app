@@ -121,7 +121,6 @@ export class CoreDumpManager {
           pli_count: stats.rtc_pli_count,
           jitter: stats.rtc_jitter_sec,
         }
-        console.log(webrtcStats)
         return JSON.stringify(webrtcStats)
       })
   }
