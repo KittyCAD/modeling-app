@@ -62,11 +62,13 @@ pub struct AppInfo {
 #[serde(rename_all = "snake_case")]
 pub struct OsInfo {
     /// The platform the app is running on.
-    pub platform: String,
+    pub platform: Option<String>,
     /// The architecture the app is running on.
-    pub arch: String,
+    pub arch: Option<String>,
     /// The kernel version.
     pub version: Option<String>,
+    /// Information about the browser.
+    pub browser: Option<String>,
 }
 
 /// The webrtc stats structure.

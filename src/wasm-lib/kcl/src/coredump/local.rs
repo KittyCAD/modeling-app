@@ -27,9 +27,10 @@ impl CoreDump for CoreDumper {
 
     async fn os(&self) -> Result<crate::coredump::OsInfo> {
         Ok(crate::coredump::OsInfo {
-            platform: std::env::consts::OS.to_string(),
-            arch: std::env::consts::ARCH.to_string(),
+            platform: Some(std::env::consts::OS.to_string()),
+            arch: Some(std::env::consts::ARCH.to_string()),
             version: None,
+            browser: None,
         })
     }
 

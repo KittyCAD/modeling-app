@@ -8,6 +8,7 @@ import {
   version as tauriKernelVersion,
 } from '@tauri-apps/plugin-os'
 import { APP_VERSION } from 'routes/Settings'
+import { UAParser } from 'ua-parser-js'
 
 // This is a class for getting all the values from the JS world to pass to the Rust world
 // for a core dump.
@@ -23,68 +24,56 @@ export class CoreDumpManager {
     return APP_VERSION
   }
 
-  // Get the arch of the app.
-  arch(): Promise<string> {
-    if (this.isTauri()) {
-      return tauriArch()
-    }
-
-    // TODO: get more information about the browser.
-    return new Promise((resolve, reject) => {
-      resolve(window.navigator.userAgent || 'unknown browser')
-    })
-  }
-
-  // Get the platform of the app.
-  platform(): Promise<string> {
-    if (this.isTauri()) {
-      return tauriPlatform()
-    }
-
-    // TODO: get more information about the browser.
-    return new Promise((resolve, reject) => {
-      resolve(window.navigator.userAgent || 'unknown browser')
-    })
-  }
-
-  // Get the kernel version.
-  kernelVersion(): Promise<string> {
-    if (this.isTauri()) {
-      return tauriKernelVersion()
-    }
-
-    // TODO: get more information about the browser.
-    return new Promise((resolve, reject) => {
-      resolve(window.navigator.userAgent || 'unknown browser')
-    })
-  }
-
   // Get the os information.
   getOsInfo(): Promise<string> {
-    return this.arch()
-      .catch((error: any) => {
-        throw new Error(`Error getting arch: ${error}`)
-      })
-      .then((arch: string) => {
-        return this.platform()
-          .catch((error: any) => {
-            throw new Error(`Error getting platform: ${error}`)
-          })
-          .then((platform: string) => {
-            return this.kernelVersion()
-              .catch((error: any) => {
-                throw new Error(`Error getting kernel version: ${error}`)
-              })
-              .then((kernelVersion: string) => {
-                const osinfo: OsInfo = {
-                  platform,
-                  arch,
-                  version: kernelVersion,
-                }
-                return JSON.stringify(osinfo)
-              })
-          })
-      })
+    if (this.isTauri()) {
+      return tauriArch()
+        .catch((error: any) => {
+          throw new Error(`Error getting arch: ${error}`)
+        })
+        .then((arch: string) => {
+          return tauriPlatform()
+            .catch((error: any) => {
+              throw new Error(`Error getting platform: ${error}`)
+            })
+            .then((platform: string) => {
+              return tauriKernelVersion()
+                .catch((error: any) => {
+                  throw new Error(`Error getting kernel version: ${error}`)
+                })
+                .then((kernelVersion: string) => {
+                  const osinfo: OsInfo = {
+                    platform,
+                    arch,
+                    version: kernelVersion,
+                    browser: null,
+                  }
+                  return JSON.stringify(osinfo)
+                })
+            })
+        })
+    }
+
+    const userAgent = window.navigator.userAgent || 'unknown browser'
+    if (userAgent === 'unknown browser') {
+      const osinfo: OsInfo = {
+        platform: userAgent,
+        arch: userAgent,
+        version: userAgent,
+        browser: null,
+      }
+      return new Promise((resolve) => resolve(JSON.stringify(osinfo)))
+    }
+
+    const parser = new UAParser(userAgent)
+    const parserResults = parser.getResult()
+    const osinfo: OsInfo = {
+      platform: parserResults.os.name || null,
+      arch: parserResults.cpu.architecture || null,
+      version: parserResults.os.version || null,
+      browser: userAgent,
+    }
+    return new Promise((resolve) => resolve(JSON.stringify(osinfo)))
   }
 
   isTauri(): boolean {
