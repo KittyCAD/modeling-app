@@ -30,7 +30,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
     async fn send_modeling_cmd(
         &self,
-        flush_batch: bool,
         id: uuid::Uuid,
         source_range: crate::executor::SourceRange,
         cmd: kittycad::types::ModelingCmd,
@@ -40,13 +39,12 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             cmd_id: id,
         };
 
-        if !flush_batch {
-            self.batch().lock().unwrap().push((req.clone(), source_range));
-        }
+        // Add cmd to the batch.
+        self.batch().lock().unwrap().push((req, source_range));
 
         // If the batch only has this one command that expects a return value,
         // fire it right away, or if we want to flush batch queue.
-        let is_sending = flush_batch || is_cmd_with_return_values(&cmd);
+        let is_sending = is_cmd_with_return_values(&cmd);
 
         // Return a fake modeling_request empty response.
         if !is_sending {
