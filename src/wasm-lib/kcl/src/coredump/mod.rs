@@ -70,6 +70,7 @@ impl AppInfo {
     /// Set the github issue url.
     pub fn set_github_issue_url(&mut self) -> Result<()> {
         let tauri_or_browser_label = if self.tauri { "tauri" } else { "browser" };
+        let labels = vec!["coredump", "bug", tauri_or_browser_label];
         let body = format!(
             r#"[Insert a description of the issue here]
 
@@ -83,10 +84,14 @@ impl AppInfo {
 "#,
             serde_json::to_string_pretty(&self)?
         );
+        let urlencoded: String = form_urlencoded::byte_serialize(body.as_bytes()).collect();
 
         self.github_issue_url = Some(format!(
-            r#"https://github.com/{}/{}/issues/new?body={}&labels[]=coredump&labels[]=bug&labels[]={}"#,
-            "KittyCAD", "modeling-app", body, tauri_or_browser_label,
+            r#"https://github.com/{}/{}/issues/new?body={}&labels={}"#,
+            "KittyCAD",
+            "modeling-app",
+            urlencoded,
+            labels.join(",")
         ));
 
         Ok(())

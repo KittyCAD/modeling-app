@@ -1870,6 +1870,7 @@ dependencies = [
  "databake",
  "derive-docs",
  "expectorate",
+ "form_urlencoded",
  "futures",
  "git_rev",
  "gltf-json",
