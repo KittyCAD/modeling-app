@@ -99,13 +99,20 @@ impl crate::engine::EngineManager for EngineConnection {
             })
         })?;
 
-        let modeling_result: kittycad::types::OkWebSocketResponseData = serde_json::from_str(&s).map_err(|e| {
+        let ws_result: kittycad::types::WebSocketResponse = serde_json::from_str(&s).map_err(|e| {
             KclError::Engine(KclErrorDetails {
                 message: format!("Failed to deserialize response from engine: {:?}", e),
                 source_ranges: vec![source_range],
             })
         })?;
 
-        Ok(modeling_result)
+        if let Some(data) = &ws_result.resp {
+            Ok(data.clone())
+        } else {
+            Err(KclError::Engine(KclErrorDetails {
+                message: format!("Modeling command failed: {:?}", ws_result.errors),
+                source_ranges: vec![source_range],
+            }))
+        }
     }
 }

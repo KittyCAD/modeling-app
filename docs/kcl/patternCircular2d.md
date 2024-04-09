@@ -34,7 +34,7 @@ const part = startSketchOn('XY')
 {
 	// The arc angle (in degrees) to place the repetitions. Must be greater than 0.
 	arcDegrees: number,
-	// The center about which to make th pattern. This is a 2D vector.
+	// The center about which to make the pattern. This is a 2D vector.
 	center: [number, number],
 	// The number of repetitions. Must be greater than 0. This excludes the original entity. For example, if `repetitions` is 1, the original entity will be copied once.
 	repetitions: number,
