@@ -46,7 +46,6 @@ export class CoreDumpManager {
                     platform,
                     arch,
                     version: kernelVersion,
-                    browser: null,
                   }
                   return JSON.stringify(osinfo)
                 })
@@ -60,7 +59,6 @@ export class CoreDumpManager {
         platform: userAgent,
         arch: userAgent,
         version: userAgent,
-        browser: null,
       }
       return new Promise((resolve) => resolve(JSON.stringify(osinfo)))
     }
@@ -68,9 +66,9 @@ export class CoreDumpManager {
     const parser = new UAParser(userAgent)
     const parserResults = parser.getResult()
     const osinfo: OsInfo = {
-      platform: parserResults.os.name || null,
-      arch: parserResults.cpu.architecture || null,
-      version: parserResults.os.version || null,
+      platform: parserResults.os.name ,
+      arch: parserResults.cpu.architecture ,
+      version: parserResults.os.version ,
       browser: userAgent,
     }
     return new Promise((resolve) => resolve(JSON.stringify(osinfo)))
