@@ -24,6 +24,7 @@ import { fileSystemManager } from 'lang/std/fileSystemManager'
 import { DEV } from 'env'
 import { AppInfo } from 'wasm-lib/kcl/bindings/AppInfo'
 import { CoreDumpManager } from 'lib/coredump'
+import openWindow from 'lib/openWindow'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Value } from '../wasm-lib/kcl/bindings/Value'
@@ -316,11 +317,15 @@ export async function kclLspRun(config: ServerConfig, token: string) {
 }
 
 export async function coreDump(
-  coreDumpManager: CoreDumpManager
+  coreDumpManager: CoreDumpManager,
+    openGithubIssue: boolean = false
 ): Promise<AppInfo> {
   try {
     const dump: AppInfo = await coredump(coreDumpManager)
     console.log('dump', dump)
+    if (openGithubIssue && dump.github_issue_url) {
+        openWindow(dump.github_issue_url)
+    }
     return dump
   } catch (e: any) {
     throw new Error(`Error getting core dump: ${e}`)
