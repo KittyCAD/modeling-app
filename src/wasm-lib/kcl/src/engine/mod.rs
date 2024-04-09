@@ -10,7 +10,7 @@ pub mod conn_wasm;
 
 use std::sync::{Arc, Mutex};
 
-use kittycad::types::{OkWebSocketResponseData, WebSocketRequest};
+use kittycad::types::{OkWebSocketResponseData, WebSocketRequest, WebSocketResponse};
 
 use crate::errors::{KclError, KclErrorDetails};
 
@@ -27,6 +27,18 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         cmd: kittycad::types::WebSocketRequest,
         id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
     ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError>;
+
+    async fn push_to_batch(
+        &self,
+        cmd_id: uuid::Uuid,
+        source_range: crate::executor::SourceRange,
+        cmd: kittycad::types::ModelingCmd,
+    ) {
+        self.batch()
+            .lock()
+            .unwrap()
+            .push((WebSocketRequest::ModelingCmdReq { cmd, cmd_id }, source_range))
+    }
 
     async fn send_modeling_cmd(
         &self,
@@ -93,7 +105,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         } else {
             batched_requests
         };
-        // println!("Running batch: {final_req:#?}");
+        debug_batch(&final_req);
 
         // Create the map of original command IDs to source range.
         // This is for the wasm side, kurt needs it for selections.
@@ -185,4 +197,17 @@ pub fn is_cmd_with_return_values(cmd: &kittycad::types::ModelingCmd) -> bool {
     };
 
     true
+}
+
+fn debug_batch(msg: &WebSocketRequest) {
+    if let WebSocketRequest::ModelingCmdReq { cmd, .. } = msg {
+        println!("[ {:?} ]", cmd);
+        return;
+    }
+    let WebSocketRequest::ModelingCmdBatchReq { requests, .. } = msg else {
+        dbg!(&msg);
+        panic!("msg is not batch")
+    };
+    let names: Vec<_> = requests.iter().map(|req| format!("{:?}", req.cmd)).collect();
+    println!("[ {} ]", names.join(", "))
 }
