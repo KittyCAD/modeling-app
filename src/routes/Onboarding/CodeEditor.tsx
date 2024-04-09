@@ -24,8 +24,7 @@ export default function CodeEditor() {
       >
         <section className="flex-1">
           <h2 className="text-3xl font-bold">
-            Editing code with{' '}
-            <span className="text-energy-60 dark:text-energy-20">kcl</span>
+            Editing code with <span className="text-primary">kcl</span>
           </h2>
           <p className="my-4">
             kcl is our language for describing geometry. Building our own

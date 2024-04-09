@@ -141,7 +141,7 @@ function CommandArgOptionInput({
             <Combobox.Option
               key={option.name}
               value={option}
-              className="flex items-center gap-2 px-4 py-1 first:mt-2 last:mb-2 ui-active:bg-energy-10/50 dark:ui-active:bg-chalkboard-90"
+              className="flex items-center gap-2 px-4 py-1 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90"
             >
               <p className="flex-grow">{option.name} </p>
               {option.value === currentOption?.value && (

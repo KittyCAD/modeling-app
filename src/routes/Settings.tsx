@@ -19,11 +19,11 @@ import {
   interpolateProjectNameWithIndex,
 } from 'lib/tauriFS'
 import { ONBOARDING_PROJECT_NAME } from './Onboarding'
-import { sep } from '@tauri-apps/api/path'
+import { join, sep } from '@tauri-apps/api/path'
 import { bracket } from 'lib/exampleKcl'
 import { isTauri } from 'lib/isTauri'
-import { invoke } from '@tauri-apps/api'
 import toast from 'react-hot-toast'
+import { invoke } from '@tauri-apps/api/core'
 import React, { Fragment, useMemo, useRef, useState } from 'react'
 import { Setting } from 'lib/settings/initialSettings'
 import decamelize from 'decamelize'
@@ -31,7 +31,11 @@ import { Event } from 'xstate'
 import { Dialog, RadioGroup, Transition } from '@headlessui/react'
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
-import { shouldHideSetting } from 'lib/settings/settingsUtils'
+import {
+  getSettingInputType,
+  shouldHideSetting,
+  shouldShowSettingInput,
+} from 'lib/settings/settingsUtils'
 
 export const Settings = () => {
   const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
@@ -45,7 +49,7 @@ export const Settings = () => {
           location.pathname
             .replace(paths.FILE + '/', '')
             .replace(paths.SETTINGS, '')
-            .slice(0, decodeURI(location.pathname).lastIndexOf(sep))
+            .slice(0, decodeURI(location.pathname).lastIndexOf(sep()))
         )
       : undefined
   const [settingsLevel, setSettingsLevel] = useState<SettingsLevel>(
@@ -86,7 +90,7 @@ export const Settings = () => {
       nextIndex
     )
     const newFile = await createNewProject(
-      defaultDirectory + sep + name,
+      await join(defaultDirectory, name),
       bracket
     )
     navigate(`${paths.FILE}/${encodeURIComponent(newFile.path)}`)
@@ -235,9 +239,7 @@ export const Settings = () => {
                           // Filter out settings that don't have a Component or inputType
                           // or are hidden on the current level or the current platform
                           (item: [string, Setting<unknown>]) =>
-                            !shouldHideSetting(item[1], settingsLevel) &&
-                            (item[1].Component ||
-                              item[1].commandConfig?.inputType)
+                            shouldShowSettingInput(item[1], settingsLevel)
                         )
                         .map(([settingName, s]) => {
                           const setting = s as Setting
@@ -418,9 +420,7 @@ export function SettingsSection({
       className={
         'group grid grid-cols-2 gap-6 items-start ' +
         className +
-        (settingHasChanged
-          ? ' border-0 border-l-2 -ml-0.5 border-energy-50 dark:border-energy-20'
-          : '')
+        (settingHasChanged ? ' border-0 border-l-2 -ml-0.5 border-primary' : '')
       }
     >
       <div className="ml-2">
@@ -484,26 +484,26 @@ function GeneratedSetting({
           )
       : []
   }, [setting, settingsLevel, context])
+  const inputType = getSettingInputType(setting)
 
-  if (setting.Component)
-    return (
-      <setting.Component
-        value={setting[settingsLevel] || setting.getFallback(settingsLevel)}
-        onChange={(e) => {
-          if ('value' in e.target) {
-            send({
-              type: `set.${category}.${settingName}`,
-              data: {
-                level: settingsLevel,
-                value: e.target.value,
-              },
-            } as unknown as Event<WildcardSetEvent>)
-          }
-        }}
-      />
-    )
-
-  switch (setting.commandConfig?.inputType) {
+  switch (inputType) {
+    case 'component':
+      return (
+        setting.Component && (
+          <setting.Component
+            value={setting[settingsLevel] || setting.getFallback(settingsLevel)}
+            updateValue={(newValue) => {
+              send({
+                type: `set.${category}.${settingName}`,
+                data: {
+                  level: settingsLevel,
+                  value: newValue,
+                },
+              } as unknown as Event<WildcardSetEvent>)
+            }}
+          />
+        )
+      )
     case 'boolean':
       return (
         <Toggle
@@ -603,17 +603,14 @@ function SettingsTabButton(props: SettingsTabButtonProps) {
     <div
       className={`cursor-pointer select-none flex items-center gap-1 p-1 pr-2 -mb-[1px] border-0 border-b ${
         checked
-          ? 'border-energy-10 dark:border-energy-20'
-          : 'border-chalkboard-20 dark:border-chalkboard-30 hover:bg-energy-10/50 dark:hover:bg-energy-90/50'
+          ? 'border-primary'
+          : 'border-chalkboard-20 dark:border-chalkboard-30 hover:bg-primary/20 dark:hover:bg-primary/50'
       }`}
     >
       <CustomIcon
         name={icon}
         className={
-          'w-5 h-5 ' +
-          (checked
-            ? 'bg-energy-10 dark:bg-energy-20 dark:text-chalkboard-110'
-            : '')
+          'w-5 h-5 ' + (checked ? 'bg-primary !text-chalkboard-10' : '')
         }
       />
       <span>{text}</span>

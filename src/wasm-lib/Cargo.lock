@@ -927,7 +927,7 @@ dependencies = [
 
 [[package]]
 name = "derive-docs"
-version = "0.1.12"
+version = "0.1.13"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -939,23 +939,6 @@ dependencies = [
  "quote",
  "regex",
  "rustfmt-wrapper",
- "serde",
- "serde_tokenstream",
- "syn 2.0.58",
-]
-
-[[package]]
-name = "derive-docs"
-version = "0.1.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "138b94245509a9dd516008788b585c34847829cf37b40a758b4aa581cf94f147"
-dependencies = [
- "Inflector",
- "convert_case",
- "once_cell",
- "proc-macro2",
- "quote",
- "regex",
  "serde",
  "serde_tokenstream",
  "syn 2.0.58",
@@ -1460,9 +1443,9 @@ dependencies = [
 
 [[package]]
 name = "h2"
-version = "0.3.25"
+version = "0.3.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4fbd2820c5e49886948654ab546d0688ff24530286bdcf8fca3cefb16d4618eb"
+checksum = "81fe527a889e1532da5c525686d96d4c2e74cdd345badf8dfef9f6b39dd5f5e8"
 dependencies = [
  "bytes",
  "fnv",
@@ -1645,6 +1628,12 @@ dependencies = [
  "tokio",
  "tokio-native-tls",
 ]
+
+[[package]]
+name = "iai"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "71a816c97c42258aa5834d07590b718b4c9a598944cd39a52dc25b351185d678"
 
 [[package]]
 name = "iana-time-zone"
@@ -1873,10 +1862,11 @@ dependencies = [
  "criterion",
  "dashmap",
  "databake",
- "derive-docs 0.1.12 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive-docs",
  "expectorate",
  "futures",
  "gltf-json",
+ "iai",
  "image",
  "insta",
  "itertools 0.12.1",

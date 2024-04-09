@@ -86,7 +86,7 @@ export interface SettingProps<T = unknown> {
    * Whether to hide the setting on a certain platform.
    * This will be applied in both the settings panel and the command bar.
    */
-  hideOnPlatform?: 'web' | 'desktop'
+  hideOnPlatform?: 'web' | 'desktop' | 'both'
   /**
    * A React component to use for the setting in the settings panel.
    * If this is not provided but a commandConfig is, the `inputType`
@@ -96,7 +96,7 @@ export interface SettingProps<T = unknown> {
    */
   Component?: React.ComponentType<{
     value: T
-    onChange: ChangeEventHandler
+    updateValue: (newValue: T) => void
   }>
 }
 

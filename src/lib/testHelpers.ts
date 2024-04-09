@@ -6,7 +6,7 @@ import {
 import { Models } from '@kittycad/lib'
 import { Themes } from './theme'
 
-type WebSocketResponse = Models['OkWebSocketResponseData_type']
+type WebSocketResponse = Models['WebSocketResponse_type']
 
 class MockEngineCommandManager {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
@@ -27,9 +27,12 @@ class MockEngineCommandManager {
     command: EngineCommand
   }): Promise<any> {
     const response: WebSocketResponse = {
-      type: 'modeling',
-      data: {
-        modeling_response: { type: 'empty' },
+      success: true,
+      resp: {
+        type: 'modeling',
+        data: {
+          modeling_response: { type: 'empty' },
+        },
       },
     }
     return Promise.resolve(JSON.stringify(response))

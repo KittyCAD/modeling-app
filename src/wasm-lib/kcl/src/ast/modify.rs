@@ -75,7 +75,6 @@ pub async fn modify_ast_for_sketch(
     // Let's get the path info.
     let resp = engine
         .send_modeling_cmd(
-            false,
             uuid::Uuid::new_v4(),
             SourceRange::default(),
             ModelingCmd::PathGetInfo { path_id: sketch_id },
@@ -100,7 +99,6 @@ pub async fn modify_ast_for_sketch(
     for segment in &path_info.segments {
         if let Some(command_id) = &segment.command_id {
             let h = engine.send_modeling_cmd(
-                false,
                 uuid::Uuid::new_v4(),
                 SourceRange::default(),
                 ModelingCmd::CurveGetControlPoints { curve_id: *command_id },

@@ -27,7 +27,7 @@ export const BROWSER_PATH = `%2F${BROWSER_PROJECT_NAME}%2F${BROWSER_FILE_NAME}${
 
 export function getProjectMetaByRouteId(id?: string, defaultDir = '') {
   if (!id) return undefined
-  const s = isTauri() ? sep : '/'
+  const s = isTauri() ? sep() : '/'
 
   const decodedId = decodeURIComponent(id).replace(/\/$/, '') // remove trailing slash
   const projectAndFile =
