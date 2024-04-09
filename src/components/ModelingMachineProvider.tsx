@@ -79,7 +79,7 @@ export const ModelingMachineProvider = ({
   const streamRef = useRef<HTMLDivElement>(null)
   useSetupEngineManager(streamRef, token, theme.current)
   const coreDumpManager = new CoreDumpManager(engineCommandManager)
-  useHotkeys('meta + shift + .', () => coreDump(coreDumpManager))
+  useHotkeys('meta + shift + .', () => coreDump(coreDumpManager, true))
 
   const {
     isShiftDown,
