@@ -224,7 +224,7 @@ async fn inner_revolve(
     match data.axis {
         RevolveAxis::Axis(axis) => {
             let (axis, origin) = axis.axis_and_origin()?;
-            args.send_modeling_cmd(
+            args.push_to_batch(
                 id,
                 ModelingCmd::Revolve {
                     angle,
@@ -234,8 +234,7 @@ async fn inner_revolve(
                     tolerance: DEFAULT_TOLERANCE,
                     axis_is_2d: true,
                 },
-            )
-            .await?;
+            );
         }
         RevolveAxis::Edge(edge) => {
             let edge_id = match edge {
@@ -256,7 +255,7 @@ async fn inner_revolve(
                         .id
                 }
             };
-            args.send_modeling_cmd(
+            args.push_to_batch(
                 id,
                 ModelingCmd::RevolveAboutEdge {
                     angle,
@@ -264,8 +263,7 @@ async fn inner_revolve(
                     edge_id,
                     tolerance: DEFAULT_TOLERANCE,
                 },
-            )
-            .await?;
+            );
         }
     }
 
