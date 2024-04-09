@@ -13,6 +13,9 @@ extern "C" {
     #[wasm_bindgen(method, js_name = version, catch)]
     fn version(this: &CoreDumpManager) -> Result<String, js_sys::Error>;
 
+    #[wasm_bindgen(method, js_name = platform, catch)]
+    fn platform(this: &CoreDumpManager) -> Result<js_sys::Promise, js_sys::Error>;
+
     #[wasm_bindgen(method, js_name = isTauri, catch)]
     fn is_tauri(this: &CoreDumpManager) -> Result<bool, js_sys::Error>;
 
@@ -42,6 +45,24 @@ impl CoreDump for WasmCoreDump {
             .map_err(|e| anyhow::anyhow!("Failed to get response from version: {:?}", e))
     }
 
+    async fn platform(&self) -> Result<String> {
+        let promise = self
+            .manager
+            .platform()
+            .map_err(|e| anyhow::anyhow!("Failed to get promise from get platform: {:?}", e))?;
+
+        let value = JsFuture::from(promise)
+            .await
+            .map_err(|e| anyhow::anyhow!("Failed to get response from platform: {:?}", e))?;
+
+        // Parse the value as a string.
+        let s = value
+            .as_string()
+            .ok_or_else(|| anyhow::anyhow!("Failed to get string from response from platform: `{:?}`", value))?;
+
+        Ok(s)
+    }
+
     fn is_tauri(&self) -> Result<bool> {
         self.manager
             .is_tauri()
@@ -61,7 +82,7 @@ impl CoreDump for WasmCoreDump {
         // Parse the value as a string.
         let s = value
             .as_string()
-            .ok_or_else(|| anyhow::anyhow!("Failed to get string from response from webrc stats: `{:?}`", value))?;
+            .ok_or_else(|| anyhow::anyhow!("Failed to get string from response from webrtc stats: `{:?}`", value))?;
 
         let stats: crate::coredump::WebrtcStats =
             serde_json::from_str(&s).map_err(|e| anyhow::anyhow!("Failed to parse webrtc stats: {:?}", e))?;

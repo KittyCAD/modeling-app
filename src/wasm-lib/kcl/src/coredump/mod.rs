@@ -13,6 +13,8 @@ use serde::{Deserialize, Serialize};
 pub trait CoreDump: Clone {
     fn version(&self) -> Result<String>;
 
+    async fn platform(&self) -> Result<String>;
+
     fn is_tauri(&self) -> Result<bool>;
 
     async fn get_webrtc_stats(&self) -> Result<WebrtcStats>;
@@ -25,7 +27,7 @@ pub trait CoreDump: Clone {
             git_rev: git_rev::try_revision_string!().map_or_else(|| "unknown".to_string(), |s| s.to_string()),
             timestamp: chrono::Utc::now(),
             tauri: self.is_tauri()?,
-            platform: std::env::consts::OS.to_string(),
+            platform: self.platform().await?,
             webrtc_stats,
         })
     }
