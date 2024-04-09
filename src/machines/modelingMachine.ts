@@ -1,4 +1,4 @@
-import { PathToNode, VariableDeclarator } from 'lang/wasm'
+import { PathToNode, PipeExpression, VariableDeclarator } from 'lang/wasm'
 import { Axis, Selection, Selections } from 'lib/selections'
 import { assign, createMachine } from 'xstate'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
@@ -175,6 +175,10 @@ export type ModelingMachineEvent =
             type: 'set-many'
             overlays: SegmentOverlays
           }
+    }
+  | {
+      type: 'Delete segment'
+      data: PathToNode
     }
 
 export type MoveDesc = { line: number; snippet: string }
@@ -545,6 +549,11 @@ export const modelingMachine = createMachine(
 
         on: {
           CancelSketch: '.SketchIdle',
+
+          'Delete segment': {
+            internal: true,
+            actions: 'Delete segment',
+          },
         },
 
         exit: [
@@ -1065,6 +1074,33 @@ export const modelingMachine = createMachine(
           },
         }),
       'set selection filter to defaults': () => kclManager.enterEditMode(),
+      'Delete segment': ({ sketchDetails }, { data: pathToNode }) => {
+        // TODO this delete is not safe, it will delete segments that other segments might rely on
+        // fix this with a query that checks for this, maybe we need to through up
+        // a confirm if later segments rely on it.
+        const modifiedAst = JSON.parse(JSON.stringify(kclManager.ast))
+
+        const pipeExpression = getNodeFromPath<PipeExpression>(
+          modifiedAst,
+          pathToNode,
+          'PipeExpression'
+        ).node
+
+        const pipeInPathIndex = pathToNode.findIndex(
+          ([_, desc]) => desc === 'PipeExpression'
+        )
+        const segmentIndexInPipe = pathToNode[pipeInPathIndex + 1][0] as number
+        pipeExpression.body.splice(segmentIndexInPipe, 1)
+
+        if (!sketchDetails) return
+        sceneEntitiesManager.updateAstAndRejigSketch(
+          sketchDetails.sketchPathToNode,
+          modifiedAst,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin
+        )
+      },
     },
     // end actions
   }

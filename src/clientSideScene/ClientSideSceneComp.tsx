@@ -14,7 +14,7 @@ import {
 } from './sceneEntities'
 import { SegmentOverlay } from 'machines/modelingMachine'
 import { getNodeFromPath } from 'lang/queryAst'
-import { CallExpression } from 'lang/wasm'
+import { CallExpression, PathToNode } from 'lang/wasm'
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import { ConstrainInfo } from 'lang/std/stdTypes'
 import { getConstraintInfo } from 'lang/std/sketch'
@@ -138,7 +138,7 @@ const Overlays = () => {
 
 const Overlay = ({ overlay }: { overlay: SegmentOverlay }) => {
   const { context } = useModelingContext()
-  if (context.mouseState.type === 'isDragging') return null
+  // if (context.mouseState.type === 'isDragging') return null
 
   let xAlignment = overlay.angle < 0 ? '0%' : '-100%'
   let yAlignment = overlay.angle < -90 || overlay.angle >= 90 ? '0%' : '-100%'
@@ -183,11 +183,54 @@ const Overlay = ({ overlay }: { overlay: SegmentOverlay }) => {
               }
             />
           ))}
-        <button className="bg-white/50 hover:bg-white/80 text-black border-2 border-transparent hover:border-gray-400 h-[20px] w-[20px] rounded-sm p-0 m-0">
-          <CustomIcon name={'three-dots'} />
-        </button>
+        <SegmentMenu
+          verticalPosition={
+            overlay.windowCoords[1] > window.innerHeight / 2 ? 'top' : 'bottom'
+          }
+          pathToNode={overlay.pathToNode}
+        />
       </div>
     </div>
+  )
+}
+
+const SegmentMenu = ({
+  verticalPosition,
+  pathToNode,
+}: {
+  verticalPosition: 'top' | 'bottom'
+  pathToNode: PathToNode
+}) => {
+  const { send } = useModelingContext()
+  return (
+    <Popover className="relative">
+      {({ open }) => (
+        <>
+          <Popover.Button className="bg-white/50 hover:bg-white/80 text-black border-2 border-transparent hover:border-gray-400 h-[20px] w-[20px] rounded-sm p-0 m-0">
+            <CustomIcon name={'three-dots'} />
+          </Popover.Button>
+          <Popover.Panel
+            className={`absolute ${
+              verticalPosition === 'top' ? 'bottom-full' : 'top-full'
+            } z-10`}
+          >
+            <div className="text-black">
+              {/* <button className="hover:bg-white/80 bg-white/50 rounded p-1 text-nowrap">
+                Remove segment constraints
+              </button> */}
+              <button
+                className="hover:bg-white/80 bg-white/50 rounded p-1 text-nowrap"
+                onClick={() => {
+                  send({ type: 'Delete segment', data: pathToNode })
+                }}
+              >
+                Delete Segment
+              </button>
+            </div>
+          </Popover.Panel>
+        </>
+      )}
+    </Popover>
   )
 }
 
@@ -215,7 +258,6 @@ const ConstraintSymbol = ({
   else if (_type === 'length') name = 'dimension'
   else if (_type === 'intersectionOffset') name = 'intersection-offset'
   else if (_type === 'tangentialWithPrevious') name = 'tangent'
-  console.log('verticalPosition')
 
   return (
     <div className="relative group">
