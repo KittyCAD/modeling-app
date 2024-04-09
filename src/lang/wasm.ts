@@ -318,13 +318,13 @@ export async function kclLspRun(config: ServerConfig, token: string) {
 
 export async function coreDump(
   coreDumpManager: CoreDumpManager,
-    openGithubIssue: boolean = false
+  openGithubIssue: boolean = false
 ): Promise<AppInfo> {
   try {
     const dump: AppInfo = await coredump(coreDumpManager)
     console.log('dump', dump)
     if (openGithubIssue && dump.github_issue_url) {
-        openWindow(dump.github_issue_url)
+      openWindow(dump.github_issue_url)
     }
     return dump
   } catch (e: any) {
