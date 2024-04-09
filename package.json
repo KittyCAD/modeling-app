@@ -36,7 +36,7 @@
     "crypto-js": "^4.2.0",
     "debounce-promise": "^3.1.2",
     "decamelize": "^6.0.0",
-    "formik": "^2.4.3",
+    "formik": "^2.4.5",
     "fuse.js": "^7.0.0",
     "http-server": "^14.1.1",
     "json-rpc-2.0": "^1.6.0",
