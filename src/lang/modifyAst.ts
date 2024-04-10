@@ -255,14 +255,14 @@ export function extrudeSketch(
   )
   const isInPipeExpression = pipeExpression.type === 'PipeExpression'
 
-  const { node: variableDeclorator, shallowPath: pathToDecleration } =
+  const { node: variableDeclarator, shallowPath: pathToDecleration } =
     getNodeFromPath<VariableDeclarator>(_node, pathToNode, 'VariableDeclarator')
 
   const extrudeCall = createCallExpressionStdLib('extrude', [
     distance,
     shouldPipe
       ? createPipeSubstitution()
-      : createIdentifier(variableDeclorator.id.name),
+      : createIdentifier(variableDeclarator.id.name),
   ])
 
   if (shouldPipe) {
@@ -272,7 +272,7 @@ export function extrudeSketch(
         : [sketchExpression as any, extrudeCall]
     )
 
-    variableDeclorator.init = pipeChain
+    variableDeclarator.init = pipeChain
     const pathToExtrudeArg: PathToNode = [
       ...pathToDecleration,
       ['init', 'VariableDeclarator'],
