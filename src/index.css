@@ -46,6 +46,15 @@ select {
   @apply bg-chalkboard-90;
 }
 
+/* We hide the cursor if the user has turned off the textEditor.blinkingCursor setting
+ * any elements that could present a blinking cursor to the user
+*/
+input,
+textarea,
+*[contenteditable] {
+  caret-color: var(--cursor-color, auto);
+}
+
 ::-webkit-scrollbar {
   @apply w-2 h-2 rounded-sm;
   @apply bg-chalkboard-20;
@@ -137,7 +146,8 @@ code {
 
 .dark #code-mirror-override .cm-activeLine,
 .dark #code-mirror-override .cm-activeLineGutter {
-  @apply bg-liquid-80/50;
+  @apply bg-primary/20;
+  mix-blend-mode: lighten;
 }
 
 #code-mirror-override .cm-gutters {
@@ -154,13 +164,11 @@ code {
 #code-mirror-override .cm-cursor {
   display: block;
   width: 1ch;
-  @apply bg-liquid-40 mix-blend-multiply;
-
-  animation: blink 2s ease-out infinite;
+  @apply mix-blend-multiply;
 }
 
-.dark #code-mirror-override .cm-cursor {
-  @apply bg-liquid-50;
+#code-mirror-override.blink .cm-cursor {
+  animation: blink 1200ms ease-out infinite;
 }
 
 @keyframes blink {

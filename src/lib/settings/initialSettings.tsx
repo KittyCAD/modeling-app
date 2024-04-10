@@ -365,7 +365,7 @@ export function createSettings() {
       /**
        * Whether to make the cursor blink in the editor
        */
-      cursorBlinking: new Setting<boolean>({
+      blinkingCursor: new Setting<boolean>({
         defaultValue: true,
         description: 'Whether to make the cursor blink in the editor',
         validate: (v) => typeof v === 'boolean',
