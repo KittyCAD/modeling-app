@@ -135,13 +135,9 @@ code {
   overflow: auto;
 }
 
-#code-mirror-override .cm-scroller::-webkit-scrollbar {
-  @apply h-0;
-}
-
 #code-mirror-override .cm-activeLine,
 #code-mirror-override .cm-activeLineGutter {
-  @apply bg-liquid-10/50;
+  @apply bg-primary/20;
 }
 
 .dark #code-mirror-override .cm-activeLine,
@@ -158,6 +154,13 @@ code {
   @apply bg-chalkboard-110/50;
 }
 
+#code-mirror-override .cm-content {
+  @apply caret-primary;
+}
+.dark #code-mirror-override .cm-content {
+  @apply caret-chalkboard-10;
+}
+
 #code-mirror-override .cm-focused .cm-cursor {
   width: 0px;
 }
@@ -165,6 +168,11 @@ code {
   display: block;
   width: 1ch;
   @apply mix-blend-multiply;
+  @apply border-l-primary;
+}
+
+.dark #code-mirror-override .cm-cursor {
+  @apply border-l-chalkboard-10;
 }
 
 #code-mirror-override.blink .cm-cursor {
@@ -176,8 +184,8 @@ code {
   100% {
     opacity: 0;
   }
-  15% {
-    opacity: 0.75;
+  10% {
+    opacity: 1;
   }
 }
 
