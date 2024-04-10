@@ -1,15 +1,14 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { vi } from 'vitest'
 import { UpdaterModal } from './UpdaterModal'
-import { UpdateManifest } from '@tauri-apps/api/updater'
 
 describe('UpdaterModal tests', () => {
   test('Renders the modal', () => {
     const callback = vi.fn()
-    const data: UpdateManifest = {
-      version: 'version',
-      date: 'date',
-      body: 'body',
+    const data = {
+      version: '1.2.3',
+      date: '2021-22-23T21:22:23Z',
+      body: 'This is the body.',
     }
 
     render(
