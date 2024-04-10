@@ -1,5 +1,4 @@
 import { MouseEventHandler, useEffect } from 'react'
-import { DebugPanel } from './components/DebugPanel'
 import { uuidv4 } from 'lib/utils'
 import { useStore } from './useStore'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
@@ -38,23 +37,16 @@ export function App() {
   }, [projectName, projectPath])
 
   useHotKeyListener()
-  const {
-    buttonDownInStream,
-    openPanes,
-    setOpenPanes,
-    didDragInStream,
-    streamDimensions,
-  } = useStore((s) => ({
-    buttonDownInStream: s.buttonDownInStream,
-    openPanes: s.openPanes,
-    setOpenPanes: s.setOpenPanes,
-    didDragInStream: s.didDragInStream,
-    streamDimensions: s.streamDimensions,
-  }))
+  const { buttonDownInStream, didDragInStream, streamDimensions } = useStore(
+    (s) => ({
+      buttonDownInStream: s.buttonDownInStream,
+      didDragInStream: s.didDragInStream,
+      streamDimensions: s.streamDimensions,
+    })
+  )
 
   const { settings } = useSettingsAuthContext()
   const {
-    modeling: { showDebugPanel },
     app: { onboardingStatus },
   } = settings.context
   const { state, send } = useModelingContext()
@@ -126,17 +118,6 @@ export function App() {
       <ModalContainer />
       <ModelingSidebar paneOpacity={paneOpacity} />
       <Stream className="absolute inset-0 z-0" />
-      {showDebugPanel.current && (
-        <DebugPanel
-          title="Debug"
-          className={
-            'transition-opacity transition-duration-75 ' +
-            paneOpacity +
-            (buttonDownInStream ? ' pointer-events-none' : '')
-          }
-          open={openPanes.includes('debug')}
-        />
-      )}
       {/* <CamToggle /> */}
     </div>
   )
