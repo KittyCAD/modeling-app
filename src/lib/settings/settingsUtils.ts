@@ -6,9 +6,8 @@ import {
 import { Setting, createSettings, settings } from 'lib/settings/initialSettings'
 import { SaveSettingsPayload, SettingsLevel } from './settingsTypes'
 import { isTauri } from 'lib/isTauri'
-import { removeFile, writeTextFile } from '@tauri-apps/api/fs'
-import { exists } from 'tauri-plugin-fs-extra-api'
 import * as TOML from '@iarna/toml'
+import { remove, writeTextFile, exists } from '@tauri-apps/plugin-fs'
 
 /**
  * We expect the settings to be stored in a TOML file
@@ -91,7 +90,7 @@ async function writeOrClearPersistedSettings(
     )
   } else {
     if (isTauri() && (await exists(settingsFilePath))) {
-      await removeFile(settingsFilePath)
+      await remove(settingsFilePath)
     }
     localStorage.removeItem(settingsFilePath)
   }

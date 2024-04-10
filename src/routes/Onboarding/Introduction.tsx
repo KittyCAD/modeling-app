@@ -19,7 +19,7 @@ import { useNavigate } from 'react-router-dom'
 import { paths } from 'lib/paths'
 import { useEffect } from 'react'
 import { kclManager } from 'lib/singletons'
-import { sep } from '@tauri-apps/api/path'
+import { join } from '@tauri-apps/api/path'
 import { APP_NAME, PROJECT_ENTRYPOINT } from 'lib/constants'
 
 function OnboardingWithNewFile() {
@@ -45,12 +45,12 @@ function OnboardingWithNewFile() {
       nextIndex
     )
     const newFile = await createNewProject(
-      projectDirectory.current + sep + name,
+      await join(projectDirectory.current, name),
       bracket
     )
     navigate(
       `${paths.FILE}/${encodeURIComponent(
-        newFile.path + sep + PROJECT_ENTRYPOINT
+        await join(newFile.path, PROJECT_ENTRYPOINT)
       )}${paths.ONBOARDING.INDEX}`
     )
   }

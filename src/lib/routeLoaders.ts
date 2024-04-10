@@ -1,5 +1,10 @@
 import { ActionFunction, LoaderFunction, redirect } from 'react-router-dom'
-import { FileLoaderData, HomeLoaderData, IndexLoaderData } from './types'
+import {
+  FileEntry,
+  FileLoaderData,
+  HomeLoaderData,
+  IndexLoaderData,
+} from './types'
 import { isTauri } from './isTauri'
 import { getProjectMetaByRouteId, paths } from './paths'
 import { BROWSER_PATH } from 'lib/paths'
@@ -15,11 +20,11 @@ import {
   initializeProjectDirectory,
 } from './tauriFS'
 import makeUrlPathRelative from './makeUrlPathRelative'
-import { sep } from '@tauri-apps/api/path'
-import { readDir, readTextFile } from '@tauri-apps/api/fs'
-import { metadata } from 'tauri-plugin-fs-extra-api'
+import { join, sep } from '@tauri-apps/api/path'
+import { readTextFile, stat } from '@tauri-apps/plugin-fs'
 import { kclManager } from 'lib/singletons'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
+import { invoke } from '@tauri-apps/api/core'
 
 // The root loader simply resolves the settings and any errors that
 // occurred during the settings load
@@ -81,7 +86,7 @@ export const fileLoader: LoaderFunction = async ({
     if (!currentFileName || !currentFilePath) {
       return redirect(
         `${paths.FILE}/${encodeURIComponent(
-          `${params.id}${isTauri() ? sep : '/'}${PROJECT_ENTRYPOINT}`
+          `${params.id}${isTauri() ? sep() : '/'}${PROJECT_ENTRYPOINT}`
         )}`
       )
     }
@@ -89,10 +94,12 @@ export const fileLoader: LoaderFunction = async ({
     // TODO: PROJECT_ENTRYPOINT is hardcoded
     // until we support setting a project's entrypoint file
     const code = await readTextFile(currentFilePath)
-    const entrypointMetadata = await metadata(
-      projectPath + sep + PROJECT_ENTRYPOINT
+    const entrypointMetadata = await stat(
+      await join(projectPath, PROJECT_ENTRYPOINT)
     )
-    const children = await readDir(projectPath, { recursive: true })
+    const children = await invoke<FileEntry[]>('read_dir_recursive', {
+      path: projectPath,
+    })
     kclManager.setCodeAndExecute(code, false)
 
     // Set the file system manager to the project path

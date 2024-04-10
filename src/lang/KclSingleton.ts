@@ -20,7 +20,7 @@ import { bracket } from 'lib/exampleKcl'
 import { getNodeFromPath } from './queryAst'
 import { Params } from 'react-router-dom'
 import { isTauri } from 'lib/isTauri'
-import { writeTextFile } from '@tauri-apps/api/fs'
+import { writeTextFile } from '@tauri-apps/plugin-fs'
 import { toast } from 'react-hot-toast'
 
 const PERSIST_CODE_TOKEN = 'persistCode'

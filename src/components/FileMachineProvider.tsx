@@ -14,16 +14,10 @@ import {
 } from 'xstate'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { fileMachine } from 'machines/fileMachine'
-import {
-  createDir,
-  removeDir,
-  removeFile,
-  renameFile,
-  writeFile,
-} from '@tauri-apps/api/fs'
+import { mkdir, remove, rename, create } from '@tauri-apps/plugin-fs'
 import { readProject } from 'lib/tauriFS'
 import { isTauri } from 'lib/isTauri'
-import { sep } from '@tauri-apps/api/path'
+import { join, sep } from '@tauri-apps/api/path'
 import { DEFAULT_FILE_NAME, FILE_EXT } from 'lib/constants'
 
 type MachineContext<T extends AnyStateMachine> = {
@@ -56,7 +50,7 @@ export const FileMachineProvider = ({
           commandBarSend({ type: 'Close' })
           navigate(
             `${paths.FILE}/${encodeURIComponent(
-              context.selectedDirectory + sep + event.data.name
+              context.selectedDirectory + sep() + event.data.name
             )}`
           )
         }
@@ -79,14 +73,13 @@ export const FileMachineProvider = ({
         let name = event.data.name.trim() || DEFAULT_FILE_NAME
 
         if (event.data.makeDir) {
-          await createDir(context.selectedDirectory.path + sep + name)
+          await mkdir(await join(context.selectedDirectory.path, name))
         } else {
-          await writeFile(
+          await create(
             context.selectedDirectory.path +
-              sep +
+              sep() +
               name +
-              (name.endsWith(FILE_EXT) ? '' : FILE_EXT),
-            ''
+              (name.endsWith(FILE_EXT) ? '' : FILE_EXT)
           )
         }
 
@@ -99,12 +92,11 @@ export const FileMachineProvider = ({
         const { oldName, newName, isDir } = event.data
         let name = newName ? newName : DEFAULT_FILE_NAME
 
-        await renameFile(
-          context.selectedDirectory.path + sep + oldName,
-          context.selectedDirectory.path +
-            sep +
-            name +
-            (name.endsWith(FILE_EXT) || isDir ? '' : FILE_EXT)
+        await rename(
+          await join(context.selectedDirectory.path, oldName),
+          (await join(context.selectedDirectory.path, name)) +
+            (name.endsWith(FILE_EXT) || isDir ? '' : FILE_EXT),
+          {}
         )
         return (
           oldName !== name && `Successfully renamed "${oldName}" to "${name}"`
@@ -117,11 +109,11 @@ export const FileMachineProvider = ({
         const isDir = !!event.data.children
 
         if (isDir) {
-          await removeDir(event.data.path, {
+          await remove(event.data.path, {
             recursive: true,
           }).catch((e) => console.error('Error deleting directory', e))
         } else {
-          await removeFile(event.data.path).catch((e) =>
+          await remove(event.data.path).catch((e) =>
             console.error('Error deleting file', e)
           )
         }

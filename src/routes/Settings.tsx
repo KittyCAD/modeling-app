@@ -19,11 +19,11 @@ import {
   interpolateProjectNameWithIndex,
 } from 'lib/tauriFS'
 import { ONBOARDING_PROJECT_NAME } from './Onboarding'
-import { sep } from '@tauri-apps/api/path'
+import { join, sep } from '@tauri-apps/api/path'
 import { bracket } from 'lib/exampleKcl'
 import { isTauri } from 'lib/isTauri'
-import { invoke } from '@tauri-apps/api'
 import toast from 'react-hot-toast'
+import { invoke } from '@tauri-apps/api/core'
 import React, { Fragment, useMemo, useRef, useState } from 'react'
 import { Setting } from 'lib/settings/initialSettings'
 import decamelize from 'decamelize'
@@ -37,8 +37,9 @@ import {
   shouldShowSettingInput,
 } from 'lib/settings/settingsUtils'
 
+export const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
+
 export const Settings = () => {
-  const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
   const navigate = useNavigate()
   const close = () => navigate(location.pathname.replace(paths.SETTINGS, ''))
   const location = useLocation()
@@ -49,7 +50,7 @@ export const Settings = () => {
           location.pathname
             .replace(paths.FILE + '/', '')
             .replace(paths.SETTINGS, '')
-            .slice(0, decodeURI(location.pathname).lastIndexOf(sep))
+            .slice(0, decodeURI(location.pathname).lastIndexOf(sep()))
         )
       : undefined
   const [settingsLevel, setSettingsLevel] = useState<SettingsLevel>(
@@ -90,7 +91,7 @@ export const Settings = () => {
       nextIndex
     )
     const newFile = await createNewProject(
-      defaultDirectory + sep + name,
+      await join(defaultDirectory, name),
       bracket
     )
     navigate(`${paths.FILE}/${encodeURIComponent(newFile.path)}`)
