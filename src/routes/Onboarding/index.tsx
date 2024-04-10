@@ -5,7 +5,7 @@ import Camera from './Camera'
 import Sketching from './Sketching'
 import { useCallback } from 'react'
 import makeUrlPathRelative from '../../lib/makeUrlPathRelative'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import Streaming from './Streaming'
 import CodeEditor from './CodeEditor'
 import ParametricModeling from './ParametricModeling'
@@ -80,13 +80,13 @@ export function useNextClick(newStatus: string) {
   const filePath = useAbsoluteFilePath()
   const {
     settings: { send },
-  } = useGlobalStateContext()
+  } = useSettingsAuthContext()
   const navigate = useNavigate()
 
   return useCallback(() => {
     send({
-      type: 'Set Onboarding Status',
-      data: { onboardingStatus: newStatus },
+      type: 'set.app.onboardingStatus',
+      data: { level: 'user', value: newStatus },
     })
     navigate(filePath + paths.ONBOARDING.INDEX.slice(0, -1) + newStatus)
   }, [filePath, newStatus, send, navigate])
@@ -96,13 +96,13 @@ export function useDismiss() {
   const filePath = useAbsoluteFilePath()
   const {
     settings: { send },
-  } = useGlobalStateContext()
+  } = useSettingsAuthContext()
   const navigate = useNavigate()
 
   return useCallback(() => {
     send({
-      type: 'Set Onboarding Status',
-      data: { onboardingStatus: 'dismissed' },
+      type: 'set.app.onboardingStatus',
+      data: { level: 'user', value: 'dismissed' },
     })
     navigate(filePath)
   }, [send, navigate, filePath])

@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment, useState } from 'react'
 import { paths } from 'lib/paths'
 import { Models } from '@kittycad/lib'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 
 type User = Models['User_type']
@@ -17,7 +17,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   const displayedName = getDisplayName(user)
   const [imageLoadFailed, setImageLoadFailed] = useState(false)
   const navigate = useNavigate()
-  const send = useGlobalStateContext()?.auth?.send
+  const send = useSettingsAuthContext()?.auth?.send
 
   // Fallback logic for displaying user's "name":
   // 1. user.name
@@ -154,10 +154,9 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                   icon={{
                     icon: faSignOutAlt,
                     className: 'p-1',
-                    bgClassName: 'bg-destroy-80',
+                    bgClassName: '!bg-transparent',
                     size: 'sm',
-                    iconClassName:
-                      'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
+                    iconClassName: '!text-destroy-70',
                   }}
                   className="border-transparent dark:border-transparent hover:border-destroy-40 dark:hover:border-destroy-60 hover:bg-destroy-10/20 dark:hover:bg-destroy-80/20"
                   data-testid="user-sidebar-sign-out"

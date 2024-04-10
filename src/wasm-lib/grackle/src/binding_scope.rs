@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 
 use kcl_lib::ast::types::{LiteralIdentifier, LiteralValue};
+use kittycad_execution_plan::constants;
+use kittycad_execution_plan_traits::Primitive;
 
 use super::{native_functions, Address};
 use crate::{CompileError, KclFunction};
@@ -8,7 +10,7 @@ use crate::{CompileError, KclFunction};
 /// KCL values which can be written to KCEP memory.
 /// This is recursive. For example, the bound value might be an array, which itself contains bound values.
 #[derive(Debug, Clone)]
-#[cfg_attr(test, derive(Eq, PartialEq))]
+#[cfg_attr(test, derive(PartialEq))]
 pub enum EpBinding {
     /// A KCL value which gets stored in a particular address in KCEP memory.
     Single(Address),
@@ -23,7 +25,11 @@ pub enum EpBinding {
         properties: HashMap<String, EpBinding>,
     },
     /// Not associated with a KCEP address.
+    Constant(Primitive),
+    /// Not associated with a KCEP address.
     Function(KclFunction),
+    /// SketchGroups have their own storage.
+    SketchGroup { index: usize },
 }
 
 impl From<KclFunction> for EpBinding {
@@ -47,13 +53,17 @@ impl EpBinding {
                             .ok_or(CompileError::IndexOutOfBounds { i, len: elements.len() })
                     }
                     EpBinding::Map { .. } => Err(CompileError::CannotIndex),
+                    EpBinding::SketchGroup { .. } => Err(CompileError::CannotIndex),
                     EpBinding::Single(_) => Err(CompileError::CannotIndex),
                     EpBinding::Function(_) => Err(CompileError::CannotIndex),
+                    EpBinding::Constant(_) => Err(CompileError::CannotIndex),
                 },
                 // Objects can be indexed by string properties.
                 LiteralValue::String(property) => match self {
                     EpBinding::Single(_) => Err(CompileError::NoProperties),
                     EpBinding::Function(_) => Err(CompileError::NoProperties),
+                    EpBinding::Constant(_) => Err(CompileError::CannotIndex),
+                    EpBinding::SketchGroup { .. } => Err(CompileError::NoProperties),
                     EpBinding::Sequence { .. } => Err(CompileError::ArrayDoesNotHaveProperties),
                     EpBinding::Map {
                         properties,
@@ -99,8 +109,58 @@ impl BindingScope {
             // TODO: Actually put the stdlib prelude in here,
             // things like `startSketchAt` and `line`.
             ep_bindings: HashMap::from([
+                ("E".into(), EpBinding::Constant(constants::E)),
+                ("PI".into(), EpBinding::Constant(constants::PI)),
                 ("id".into(), EpBinding::from(KclFunction::Id(native_functions::Id))),
+                ("abs".into(), EpBinding::from(KclFunction::Abs(native_functions::Abs))),
+                (
+                    "acos".into(),
+                    EpBinding::from(KclFunction::Acos(native_functions::Acos)),
+                ),
+                (
+                    "asin".into(),
+                    EpBinding::from(KclFunction::Asin(native_functions::Asin)),
+                ),
+                (
+                    "atan".into(),
+                    EpBinding::from(KclFunction::Atan(native_functions::Atan)),
+                ),
+                (
+                    "ceil".into(),
+                    EpBinding::from(KclFunction::Ceil(native_functions::Ceil)),
+                ),
+                ("cos".into(), EpBinding::from(KclFunction::Cos(native_functions::Cos))),
+                (
+                    "floor".into(),
+                    EpBinding::from(KclFunction::Floor(native_functions::Floor)),
+                ),
+                ("ln".into(), EpBinding::from(KclFunction::Ln(native_functions::Ln))),
+                (
+                    "log10".into(),
+                    EpBinding::from(KclFunction::Log10(native_functions::Log10)),
+                ),
+                (
+                    "log2".into(),
+                    EpBinding::from(KclFunction::Log2(native_functions::Log2)),
+                ),
+                ("sin".into(), EpBinding::from(KclFunction::Sin(native_functions::Sin))),
+                (
+                    "sqrt".into(),
+                    EpBinding::from(KclFunction::Sqrt(native_functions::Sqrt)),
+                ),
+                ("tan".into(), EpBinding::from(KclFunction::Tan(native_functions::Tan))),
+                (
+                    "toDegrees".into(),
+                    EpBinding::from(KclFunction::ToDegrees(native_functions::ToDegrees)),
+                ),
+                (
+                    "toRadians".into(),
+                    EpBinding::from(KclFunction::ToRadians(native_functions::ToRadians)),
+                ),
                 ("add".into(), EpBinding::from(KclFunction::Add(native_functions::Add))),
+                ("log".into(), EpBinding::from(KclFunction::Log(native_functions::Log))),
+                ("max".into(), EpBinding::from(KclFunction::Max(native_functions::Max))),
+                ("min".into(), EpBinding::from(KclFunction::Min(native_functions::Min))),
                 (
                     "startSketchAt".into(),
                     EpBinding::from(KclFunction::StartSketchAt(native_functions::sketch::StartSketchAt)),
@@ -108,6 +168,38 @@ impl BindingScope {
                 (
                     "lineTo".into(),
                     EpBinding::from(KclFunction::LineTo(native_functions::sketch::LineTo)),
+                ),
+                (
+                    "line".into(),
+                    EpBinding::from(KclFunction::Line(native_functions::sketch::Line)),
+                ),
+                (
+                    "xLineTo".into(),
+                    EpBinding::from(KclFunction::XLineTo(native_functions::sketch::XLineTo)),
+                ),
+                (
+                    "xLine".into(),
+                    EpBinding::from(KclFunction::XLine(native_functions::sketch::XLine)),
+                ),
+                (
+                    "yLineTo".into(),
+                    EpBinding::from(KclFunction::YLineTo(native_functions::sketch::YLineTo)),
+                ),
+                (
+                    "yLine".into(),
+                    EpBinding::from(KclFunction::YLine(native_functions::sketch::YLine)),
+                ),
+                (
+                    "tangentialArcTo".into(),
+                    EpBinding::from(KclFunction::TangentialArcTo(native_functions::sketch::TangentialArcTo)),
+                ),
+                (
+                    "extrude".into(),
+                    EpBinding::from(KclFunction::Extrude(native_functions::sketch::Extrude)),
+                ),
+                (
+                    "close".into(),
+                    EpBinding::from(KclFunction::Close(native_functions::sketch::Close)),
                 ),
             ]),
             parent: None,

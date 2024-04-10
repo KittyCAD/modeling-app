@@ -1,11 +1,109 @@
+#[cfg(test)]
+mod test_examples_show {
+    #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
+    async fn serial_test_example_show0() {
+        let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
+        let http_client = reqwest::Client::builder()
+            .user_agent(user_agent)
+            .timeout(std::time::Duration::from_secs(600))
+            .connect_timeout(std::time::Duration::from_secs(60));
+        let ws_client = reqwest::Client::builder()
+            .user_agent(user_agent)
+            .timeout(std::time::Duration::from_secs(600))
+            .connect_timeout(std::time::Duration::from_secs(60))
+            .connection_verbose(true)
+            .tcp_keepalive(std::time::Duration::from_secs(600))
+            .http1_only();
+        let token = std::env::var("KITTYCAD_API_TOKEN").expect("KITTYCAD_API_TOKEN not set");
+        let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
+        if let Ok(addr) = std::env::var("LOCAL_ENGINE_ADDR") {
+            client.set_base_url(addr);
+        }
+
+        let ws = client
+            .modeling()
+            .commands_ws(None, None, None, None, None, Some(false))
+            .await
+            .unwrap();
+        let tokens = crate::token::lexer("This is code.\nIt does other shit.\nshow");
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+        let mut mem: crate::executor::ProgramMemory = Default::default();
+        let units = kittycad::types::UnitLength::Mm;
+        let ctx = crate::executor::ExecutorContext::new(ws, units.clone())
+            .await
+            .unwrap();
+        crate::executor::execute(program, &mut mem, crate::executor::BodyType::Root, &ctx)
+            .await
+            .unwrap();
+        let (x, y) = crate::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
+        ctx.engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                crate::executor::SourceRange::default(),
+                kittycad::types::ModelingCmd::DefaultCameraLookAt {
+                    center: kittycad::types::Point3D {
+                        x: 0.0,
+                        y: 0.0,
+                        z: 0.0,
+                    },
+                    up: kittycad::types::Point3D {
+                        x: 0.0,
+                        y: 0.0,
+                        z: 1.0,
+                    },
+                    vantage: kittycad::types::Point3D {
+                        x: 0.0,
+                        y: -x,
+                        z: y,
+                    },
+                    sequence: None,
+                },
+            )
+            .await
+            .unwrap();
+        let resp = ctx
+            .engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                crate::executor::SourceRange::default(),
+                kittycad::types::ModelingCmd::TakeSnapshot {
+                    format: kittycad::types::ImageFormat::Png,
+                },
+            )
+            .await
+            .unwrap();
+        let output_file =
+            std::env::temp_dir().join(format!("kcl_output_{}.png", uuid::Uuid::new_v4()));
+        if let kittycad::types::OkWebSocketResponseData::Modeling {
+            modeling_response: kittycad::types::OkModelingCmdResponse::TakeSnapshot { data },
+        } = &resp
+        {
+            std::fs::write(&output_file, &data.contents.0).unwrap();
+        } else {
+            panic!("Unexpected response from engine: {:?}", resp);
+        }
+
+        let actual = image::io::Reader::open(output_file)
+            .unwrap()
+            .decode()
+            .unwrap();
+        twenty_twenty::assert_image(
+            &format!("tests/outputs/{}.png", "serial_test_example_show0"),
+            &actual,
+            1.0,
+        );
+    }
+}
+
 #[allow(non_camel_case_types, missing_docs)]
-#[doc = "Std lib function: show"]
+#[doc = "Std lib function: show\nThis is some function.\nIt does shit."]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, schemars :: JsonSchema, ts_rs :: TS)]
 #[ts(export)]
 pub(crate) struct Show {}
 
 #[allow(non_upper_case_globals, missing_docs)]
-#[doc = "Std lib function: show"]
+#[doc = "Std lib function: show\nThis is some function.\nIt does shit."]
 pub(crate) const Show: Show = Show {};
 fn boxed_show(
     args: crate::std::Args,
@@ -25,11 +123,11 @@ impl crate::docs::StdLibFn for Show {
     }
 
     fn summary(&self) -> String {
-        "".to_string()
+        "This is some function.".to_string()
     }
 
     fn description(&self) -> String {
-        "".to_string()
+        "It does shit.".to_string()
     }
 
     fn tags(&self) -> Vec<String> {
@@ -52,7 +150,12 @@ impl crate::docs::StdLibFn for Show {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = true;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
-        None
+        Some(crate::docs::StdLibFnArg {
+            name: "".to_string(),
+            type_: "()".to_string(),
+            schema: <()>::json_schema(&mut generator),
+            required: true,
+        })
     }
 
     fn unpublished(&self) -> bool {
@@ -61,6 +164,21 @@ impl crate::docs::StdLibFn for Show {
 
     fn deprecated(&self) -> bool {
         false
+    }
+
+    fn examples(&self) -> Vec<String> {
+        let code_blocks = vec!["This is code.\nIt does other shit.\nshow"];
+        code_blocks
+            .iter()
+            .map(|cb| {
+                let tokens = crate::token::lexer(cb);
+                let parser = crate::parser::Parser::new(tokens);
+                let program = parser.ast().unwrap();
+                let mut options: crate::ast::types::FormatOptions = Default::default();
+                options.insert_final_newline = false;
+                program.recast(&options, 0)
+            })
+            .collect::<Vec<String>>()
     }
 
     fn std_lib_fn(&self) -> crate::std::StdFn {
@@ -72,4 +190,10 @@ impl crate::docs::StdLibFn for Show {
     }
 }
 
+#[doc = r" This is some function."]
+#[doc = r" It does shit."]
+#[doc = r""]
+#[doc = r"     This is code."]
+#[doc = r"     It does other shit."]
+#[doc = r"     show"]
 fn inner_show(#[doc = r" The args to do shit to."] _args: Vec<f64>) {}

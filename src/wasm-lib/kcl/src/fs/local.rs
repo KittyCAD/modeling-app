@@ -22,9 +22,9 @@ impl Default for FileManager {
     }
 }
 
-#[async_trait::async_trait(?Send)]
+#[async_trait::async_trait]
 impl FileSystem for FileManager {
-    async fn read<P: AsRef<std::path::Path>>(
+    async fn read<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
         &self,
         path: P,
         source_range: crate::executor::SourceRange,
@@ -37,7 +37,7 @@ impl FileSystem for FileManager {
         })
     }
 
-    async fn exists<P: AsRef<std::path::Path>>(
+    async fn exists<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
         &self,
         path: P,
         source_range: crate::executor::SourceRange,
@@ -54,7 +54,7 @@ impl FileSystem for FileManager {
         })
     }
 
-    async fn get_all_files<P: AsRef<std::path::Path>>(
+    async fn get_all_files<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
         &self,
         path: P,
         source_range: crate::executor::SourceRange,

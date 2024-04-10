@@ -7,8 +7,8 @@ import {
   createRoutesFromElements,
 } from 'react-router-dom'
 import { Models } from '@kittycad/lib'
-import { GlobalStateProvider } from './GlobalStateProvider'
-import CommandBarProvider from './CommandBar/CommandBar'
+import { SettingsAuthProviderJest } from './SettingsAuthProvider'
+import { CommandBarProvider } from './CommandBar/CommandBarProvider'
 
 type User = Models['User_type']
 
@@ -113,7 +113,7 @@ function TestWrap({ children }: { children: React.ReactNode }) {
         path="/file/:id"
         element={
           <CommandBarProvider>
-            <GlobalStateProvider>{children}</GlobalStateProvider>
+            <SettingsAuthProviderJest>{children}</SettingsAuthProviderJest>
           </CommandBarProvider>
         }
       />

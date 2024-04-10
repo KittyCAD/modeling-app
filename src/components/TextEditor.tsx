@@ -3,37 +3,29 @@ import ReactCodeMirror, {
   Extension,
   ViewUpdate,
   keymap,
+  SelectionRange,
 } from '@uiw/react-codemirror'
-import { FromServer, IntoServer } from 'editor/plugins/lsp/codec'
-import Server from '../editor/plugins/lsp/server'
-import Client from '../editor/plugins/lsp/client'
 import { TEST } from 'env'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
 import { Themes } from 'lib/theme'
 import { useEffect, useMemo, useRef } from 'react'
 import { linter, lintGutter } from '@codemirror/lint'
 import { useStore } from 'useStore'
 import { processCodeMirrorRanges } from 'lib/selections'
-import { LanguageServerClient } from 'editor/plugins/lsp'
-import kclLanguage from 'editor/plugins/lsp/kcl/language'
 import { EditorView, lineHighlightField } from 'editor/highlightextension'
 import { roundOff } from 'lib/utils'
 import { kclErrToDiagnostic } from 'lang/errors'
 import { CSSRuleObject } from 'tailwindcss/types/config'
 import { useModelingContext } from 'hooks/useModelingContext'
 import interact from '@replit/codemirror-interact'
-import { engineCommandManager } from '../lang/std/engineConnection'
-import { kclManager, useKclContext } from 'lang/KclSingleton'
-import { useFileContext } from 'hooks/useFileContext'
+import { engineCommandManager, sceneInfra, kclManager } from 'lib/singletons'
+import { useKclContext } from 'lang/KclProvider'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
-import { sceneInfra } from 'clientSideScene/sceneInfra'
-import { copilotPlugin } from 'editor/plugins/lsp/copilot'
-import { isTauri } from 'lib/isTauri'
-import type * as LSP from 'vscode-languageserver-protocol'
 import { NetworkHealthState, useNetworkStatus } from './NetworkHealthIndicator'
 import { useHotkeys } from 'react-hotkeys-hook'
+import { useLspContext } from './LspProvider'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -46,41 +38,21 @@ export const editorShortcutMeta = {
   },
 }
 
-function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
-  // We only use workspace folders in Tauri since that is where we use more than
-  // one file.
-  if (isTauri()) {
-    return [{ uri: 'file://', name: 'ProjectRoot' }]
-  }
-  return []
-}
-
 export const TextEditor = ({
   theme,
 }: {
   theme: Themes.Light | Themes.Dark
 }) => {
-  const {
-    editorView,
-    isKclLspServerReady,
-    isCopilotLspServerReady,
-    setEditorView,
-    setIsKclLspServerReady,
-    setIsCopilotLspServerReady,
-    isShiftDown,
-  } = useStore((s) => ({
+  const { editorView, setEditorView, isShiftDown } = useStore((s) => ({
     editorView: s.editorView,
-    isKclLspServerReady: s.isKclLspServerReady,
-    isCopilotLspServerReady: s.isCopilotLspServerReady,
     setEditorView: s.setEditorView,
-    setIsKclLspServerReady: s.setIsKclLspServerReady,
-    setIsCopilotLspServerReady: s.setIsCopilotLspServerReady,
     isShiftDown: s.isShiftDown,
   }))
   const { code, errors } = useKclContext()
   const lastEvent = useRef({ event: '', time: Date.now() })
   const { overallState } = useNetworkStatus()
   const isNetworkOkay = overallState === NetworkHealthState.Ok
+  const { copilotLSP, kclLSP } = useLspContext()
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -103,106 +75,43 @@ export const TextEditor = ({
   })
 
   const {
-    context: { selectionRanges, selectionRangeTypeMap },
+    context: { selectionRanges },
     send,
     state,
   } = useModelingContext()
 
-  const { settings, auth } = useGlobalStateContext()
-  const textWrapping = settings.context?.textWrapping ?? 'On'
+  const { settings } = useSettingsAuthContext()
+  const textWrapping = settings.context.textEditor.textWrapping
   const { commandBarSend } = useCommandsContext()
-  const {
-    context: { project },
-  } = useFileContext()
   const { enable: convertEnabled, handleClick: convertCallback } =
     useConvertToVariable()
-
-  // So this is a bit weird, we need to initialize the lsp server and client.
-  // But the server happens async so we break this into two parts.
-  // Below is the client and server promise.
-  const { lspClient: kclLspClient } = useMemo(() => {
-    const intoServer: IntoServer = new IntoServer()
-    const fromServer: FromServer = FromServer.create()
-    const client = new Client(fromServer, intoServer)
-    if (!TEST) {
-      Server.initialize(intoServer, fromServer).then((lspServer) => {
-        lspServer.start('kcl')
-        setIsKclLspServerReady(true)
-      })
-    }
-
-    const lspClient = new LanguageServerClient({ client, name: 'kcl' })
-    return { lspClient }
-  }, [setIsKclLspServerReady])
-
-  // Here we initialize the plugin which will start the client.
-  // Now that we have multi-file support the name of the file is a dep of
-  // this use memo, as well as the directory structure, which I think is
-  // a good setup because it will restart the client but not the server :)
-  // We do not want to restart the server, its just wasteful.
-  const kclLSP = useMemo(() => {
-    let plugin = null
-    if (isKclLspServerReady && !TEST) {
-      // Set up the lsp plugin.
-      const lsp = kclLanguage({
-        // When we have more than one file, we'll need to change this.
-        documentUri: `file:///we-just-have-one-file-for-now.kcl`,
-        workspaceFolders: getWorkspaceFolders(),
-        client: kclLspClient,
-      })
-
-      plugin = lsp
-    }
-    return plugin
-  }, [kclLspClient, isKclLspServerReady])
-
-  const { lspClient: copilotLspClient } = useMemo(() => {
-    const intoServer: IntoServer = new IntoServer()
-    const fromServer: FromServer = FromServer.create()
-    const client = new Client(fromServer, intoServer)
-    if (!TEST) {
-      Server.initialize(intoServer, fromServer).then((lspServer) => {
-        const token = auth?.context?.token
-        lspServer.start('copilot', token)
-        setIsCopilotLspServerReady(true)
-      })
-    }
-
-    const lspClient = new LanguageServerClient({ client, name: 'copilot' })
-    return { lspClient }
-  }, [setIsCopilotLspServerReady])
-
-  // Here we initialize the plugin which will start the client.
-  // When we have multi-file support the name of the file will be a dep of
-  // this use memo, as well as the directory structure, which I think is
-  // a good setup because it will restart the client but not the server :)
-  // We do not want to restart the server, its just wasteful.
-  const copilotLSP = useMemo(() => {
-    let plugin = null
-    if (isCopilotLspServerReady && !TEST) {
-      // Set up the lsp plugin.
-      const lsp = copilotPlugin({
-        // When we have more than one file, we'll need to change this.
-        documentUri: `file:///we-just-have-one-file-for-now.kcl`,
-        workspaceFolders: getWorkspaceFolders(),
-        client: copilotLspClient,
-        allowHTMLContent: true,
-      })
-
-      plugin = lsp
-    }
-    return plugin
-  }, [copilotLspClient, isCopilotLspServerReady, project])
 
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = async (newCode: string) => {
     if (isNetworkOkay) kclManager.setCodeAndExecute(newCode)
     else kclManager.setCode(newCode)
   } //, []);
+  const lastSelection = useRef('')
   const onUpdate = (viewUpdate: ViewUpdate) => {
     if (!editorView) {
       setEditorView(viewUpdate.view)
     }
+    const selString = stringifyRanges(
+      viewUpdate?.state?.selection?.ranges || []
+    )
+    if (selString === lastSelection.current) {
+      // onUpdate is noisy and is fired a lot by extensions
+      // since we're only interested in selections changes we can ignore most of these.
+      return
+    }
+    lastSelection.current = selString
+
+    if (
+      // TODO find a less lazy way of getting the last
+      Date.now() - useStore.getState().lastCodeMirrorSelectionUpdatedFromScene <
+      150
+    )
+      return // update triggered by scene selection
     if (sceneInfra.selected) return // mid drag
     const ignoreEvents: ModelingMachineEvent['type'][] = [
       'Equip Line tool',
@@ -212,7 +121,6 @@ export const TextEditor = ({
     const eventInfo = processCodeMirrorRanges({
       codeMirrorRanges: viewUpdate.state.selection.ranges,
       selectionRanges,
-      selectionRangeTypeMap,
       isShiftDown,
     })
     if (!eventInfo) return
@@ -310,11 +218,11 @@ export const TextEditor = ({
           ],
         })
       )
-      if (textWrapping === 'On') extensions.push(EditorView.lineWrapping)
+      if (textWrapping.current) extensions.push(EditorView.lineWrapping)
     }
 
     return extensions
-  }, [kclLSP, textWrapping, convertCallback])
+  }, [kclLSP, textWrapping.current, convertCallback])
 
   return (
     <div
@@ -333,4 +241,8 @@ export const TextEditor = ({
       />
     </div>
   )
+}
+
+function stringifyRanges(ranges: readonly SelectionRange[]): string {
+  return ranges.map(({ to, from }) => `${to}->${from}`).join('&')
 }

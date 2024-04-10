@@ -2,7 +2,7 @@ import { OnboardingButtons, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useStore } from '../../useStore'
 import { SettingsSection } from 'routes/Settings'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import {
   CameraSystem,
   cameraMouseDragGuards,
@@ -19,10 +19,12 @@ export default function Units() {
     settings: {
       send,
       state: {
-        context: { cameraControls },
+        context: {
+          modeling: { mouseControls },
+        },
       },
     },
-  } = useGlobalStateContext()
+  } = useSettingsAuthContext()
 
   return (
     <div className="fixed inset-0 z-50 grid items-end justify-start px-4 pointer-events-none">
@@ -41,11 +43,14 @@ export default function Units() {
           <select
             id="camera-controls"
             className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
-            value={cameraControls}
+            value={mouseControls.current}
             onChange={(e) => {
               send({
-                type: 'Set Camera Controls',
-                data: { cameraControls: e.target.value as CameraSystem },
+                type: 'set.modeling.mouseControls',
+                data: {
+                  level: 'user',
+                  value: e.target.value as CameraSystem,
+                },
               })
             }}
           >
@@ -58,15 +63,15 @@ export default function Units() {
           <ul className="mx-4 my-2 text-sm leading-relaxed">
             <li>
               <strong>Pan:</strong>{' '}
-              {cameraMouseDragGuards[cameraControls].pan.description}
+              {cameraMouseDragGuards[mouseControls.current].pan.description}
             </li>
             <li>
               <strong>Zoom:</strong>{' '}
-              {cameraMouseDragGuards[cameraControls].zoom.description}
+              {cameraMouseDragGuards[mouseControls.current].zoom.description}
             </li>
             <li>
               <strong>Rotate:</strong>{' '}
-              {cameraMouseDragGuards[cameraControls].rotate.description}
+              {cameraMouseDragGuards[mouseControls.current].rotate.description}
             </li>
           </ul>
         </SettingsSection>

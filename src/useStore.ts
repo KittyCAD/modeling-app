@@ -84,8 +84,6 @@ export interface StoreState {
 
   showHomeMenu: boolean
   setHomeShowMenu: (showMenu: boolean) => void
-  isBannerDismissed: boolean
-  setBannerDismissed: (isBannerDismissed: boolean) => void
   openPanes: PaneType[]
   setOpenPanes: (panes: PaneType[]) => void
   homeMenuItems: {
@@ -93,6 +91,8 @@ export interface StoreState {
     path: string
   }[]
   setHomeMenuItems: (items: { name: string; path: string }[]) => void
+  lastCodeMirrorSelectionUpdatedFromScene: number
+  setLastCodeMirrorSelectionUpdatedFromScene: (time: number) => void
 }
 
 export const useStore = create<StoreState>()(
@@ -148,14 +148,15 @@ export const useStore = create<StoreState>()(
         defaultDir: {
           dir: '',
         },
-        isBannerDismissed: false,
-        setBannerDismissed: (isBannerDismissed) => set({ isBannerDismissed }),
         openPanes: ['code'],
         setOpenPanes: (openPanes) => set({ openPanes }),
         showHomeMenu: true,
         setHomeShowMenu: (showHomeMenu) => set({ showHomeMenu }),
         homeMenuItems: [],
         setHomeMenuItems: (homeMenuItems) => set({ homeMenuItems }),
+        lastCodeMirrorSelectionUpdatedFromScene: Date.now(),
+        setLastCodeMirrorSelectionUpdatedFromScene: (time) =>
+          set({ lastCodeMirrorSelectionUpdatedFromScene: time }),
       }
     },
     {
@@ -258,7 +259,7 @@ export async function executeAst({
     }
     const programMemory = await (useFakeExecutor
       ? enginelessExecutor(ast, programMemoryOverride || programMemoryInit())
-      : _executor(ast, programMemoryInit(), engineCommandManager))
+      : _executor(ast, programMemoryInit(), engineCommandManager, false))
 
     await engineCommandManager.waitForAllCommands()
     return {

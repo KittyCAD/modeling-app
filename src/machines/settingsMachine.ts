@@ -1,174 +1,91 @@
 import { assign, createMachine } from 'xstate'
-import { Themes, getSystemTheme, setThemeClass } from '../lib/theme'
-import { CameraSystem } from 'lib/cameraControls'
-import { Models } from '@kittycad/lib'
-
-const kclManagerPromise = import('lang/KclSingleton').then(
-  (module) => module.kclManager
-)
-
-export const DEFAULT_PROJECT_NAME = 'project-$nnn'
-
-export enum UnitSystem {
-  Imperial = 'imperial',
-  Metric = 'metric',
-}
-
-export const baseUnits = {
-  imperial: ['in', 'ft', 'yd'],
-  metric: ['mm', 'cm', 'm'],
-} as const
-
-export type BaseUnit = Models['UnitLength_type']
-
-export const baseUnitsUnion = Object.values(baseUnits).flatMap((v) => v)
-
-export type Toggle = 'On' | 'Off'
-
-export const SETTINGS_PERSIST_KEY = 'SETTINGS_PERSIST_KEY'
-
-type SettingsMachineContext = {
-  baseUnit: BaseUnit
-  cameraControls: CameraSystem
-  defaultDirectory: string
-  defaultProjectName: string
-  onboardingStatus: string
-  showDebugPanel: boolean
-  textWrapping: Toggle
-  theme: Themes
-  unitSystem: UnitSystem
-}
+import { Themes, getSystemTheme, setThemeClass } from 'lib/theme'
+import { createSettings, settings } from 'lib/settings/initialSettings'
+import {
+  BaseUnit,
+  SetEventTypes,
+  SettingsLevel,
+  SettingsPaths,
+  WildcardSetEvent,
+} from 'lib/settings/settingsTypes'
 
 export const settingsMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlTQAIAVACzAFswBtABgF1FQAHAe1iYsfbNxAAPRAA42+AEwB2KQFYAzGznKAnADZli1QBoQAT2kBGKfm37lOned3nzqgL6vjlLLgJFSFdCoAETAAMwBDAFdiagAFACc+ACswAGNqADlw5nYuJBB+QWFRfMkEABY5fDYa2rra83LjMwQdLWV8BXLyuxlVLU1Ld090bzxCEnJKYLComODMeLS0PniTXLFCoUwRMTK7fC1zNql7NgUjtnKjU0RlBSqpLVUVPVUda60tYZAvHHG-FNAgBVbBCKjIEywNBMDb5LbFPaILqdfRSORsS4qcxXZqIHqyK6qY4XOxsGTKco-P4+Cb+aYAIXCsDAVFBQjhvAE212pWkskUKnUml0+gUNxaqkU+EccnKF1UCnucnMcjcHl+o3+vkmZBofCgUFIMwARpEoFRYuFsGBiJyCtzEXzWrJlGxlKdVFKvfY1XiEBjyvhVOVzBdzu13pYFNStbTAQFqAB5bAmvjheIQf4QtDhNCRWD2hE7EqgfayHTEh7lHQNSxSf1Scz4cpHHFyFVujTKczuDXYPgQOBiGl4TaOktIhAAWg6X3nC4Xp39050sYw2rpYHHRUnztVhPJqmUlIGbEriv9WhrLZ6uibHcqUr7riAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlnXwFsB7CMYnKfAV20zVgG0AGAXUSgADrVidMtbEJAAPRABYAHAFZ8vAEwA2FVq0aNAZgCcARl0B2ADQgAnolO8LvfBYUXT+48YW+tCgF8Am1QMZgIiUgoqAENhYXw0AAswajA+QSQQUXEsKRl5BCM1DQUDMo0VQwVjJxt7BFMDJXwNWo0LFSU3c0DgkFCsXAiScgAlOHQAAkow4YyZHIl8rMKAWn18Q39q3ScVFQ1NFXqHXiVTfGNqhSdeXi1DJQ1TIJD0IbxCUbIAKgWsks8tJVopjFp8KZjEpqi9lKZDE0TnYzgZXO5PG0fH4+u85l9IuRQlMYsRiFNsGAAO4zD7hAEiMTLEGgda6fAKJoIiyIkwWYwWawoxpGFxaHkKFS1a7woL9bD0OAyQbhRZM4EFRBrUyOLY7SVafaHTSnBDGDqQiz6DRKbwqTxvAZ04bfUhq3KSFlyBxHdQIhR6HTQmoC02OUwKPW7GrPdy8QxygJAA */
     id: 'Settings',
     predictableActionArguments: true,
-    context: {
-      baseUnit: 'mm',
-      cameraControls: 'KittyCAD',
-      defaultDirectory: '',
-      defaultProjectName: DEFAULT_PROJECT_NAME,
-      onboardingStatus: '',
-      showDebugPanel: false,
-      textWrapping: 'On',
-      theme: Themes.System,
-      unitSystem: UnitSystem.Metric,
-    } as SettingsMachineContext,
+    context: {} as ReturnType<typeof createSettings>,
     initial: 'idle',
     states: {
       idle: {
-        entry: ['setThemeClass'],
+        entry: ['setThemeClass', 'setClientSideSceneUnits', 'persistSettings'],
+
         on: {
-          'Set Base Unit': {
+          '*': {
+            target: 'idle',
+            internal: true,
+            actions: ['setSettingAtLevel', 'toastSuccess', 'persistSettings'],
+          },
+
+          'set.app.onboardingStatus': {
+            target: 'idle',
+            internal: true,
+            actions: ['setSettingAtLevel', 'persistSettings'], // No toast
+          },
+          'set.app.themeColor': {
+            target: 'idle',
+            internal: true,
+            actions: ['setSettingAtLevel', 'persistSettings'], // No toast
+          },
+
+          'set.modeling.defaultUnit': {
+            target: 'idle',
+            internal: true,
             actions: [
-              assign({
-                baseUnit: (_, event) => event.data.baseUnit,
-              }),
-              'persistSettings',
+              'setSettingAtLevel',
               'toastSuccess',
-              async () => {
-                ;(await kclManagerPromise).executeAst()
-              },
-            ],
-            target: 'idle',
-            internal: true,
-          },
-          'Set Camera Controls': {
-            actions: [
-              assign({
-                cameraControls: (_, event) => event.data.cameraControls,
-              }),
-              'persistSettings',
-              'toastSuccess',
-            ],
-            target: 'idle',
-            internal: true,
-          },
-          'Set Default Directory': {
-            actions: [
-              assign({
-                defaultDirectory: (_, event) => event.data.defaultDirectory,
-              }),
-              'persistSettings',
-              'toastSuccess',
-            ],
-            target: 'idle',
-            internal: true,
-          },
-          'Set Default Project Name': {
-            actions: [
-              assign({
-                defaultProjectName: (_, event) =>
-                  event.data.defaultProjectName.trim() || DEFAULT_PROJECT_NAME,
-              }),
-              'persistSettings',
-              'toastSuccess',
-            ],
-            target: 'idle',
-            internal: true,
-          },
-          'Set Onboarding Status': {
-            actions: [
-              assign({
-                onboardingStatus: (_, event) => event.data.onboardingStatus,
-              }),
+              'setClientSideSceneUnits',
+              'Execute AST',
               'persistSettings',
             ],
+          },
+
+          'set.app.theme': {
             target: 'idle',
             internal: true,
-          },
-          'Set Text Wrapping': {
             actions: [
-              assign({
-                textWrapping: (_, event) => event.data.textWrapping,
-              }),
-              'persistSettings',
-              'toastSuccess',
-            ],
-            target: 'idle',
-            internal: true,
-          },
-          'Set Theme': {
-            actions: [
-              assign({
-                theme: (_, event) => event.data.theme,
-              }),
-              'persistSettings',
+              'setSettingAtLevel',
               'toastSuccess',
               'setThemeClass',
-            ],
-            target: 'idle',
-            internal: true,
-          },
-          'Set Unit System': {
-            actions: [
-              assign({
-                unitSystem: (_, event) => event.data.unitSystem,
-                baseUnit: (_, event) =>
-                  event.data.unitSystem === 'imperial' ? 'in' : 'mm',
-              }),
+              'setEngineTheme',
               'persistSettings',
-              'toastSuccess',
-              async () => {
-                ;(await kclManagerPromise).executeAst()
-              },
             ],
-            target: 'idle',
-            internal: true,
           },
-          'Toggle Debug Panel': {
-            actions: [
-              assign({
-                showDebugPanel: (context) => {
-                  return !context.showDebugPanel
-                },
-              }),
-              'persistSettings',
-              'toastSuccess',
-            ],
+
+          'Reset settings': {
             target: 'idle',
             internal: true,
+            actions: [
+              'resetSettings',
+              'setThemeClass',
+              'setEngineTheme',
+              'setClientSideSceneUnits',
+              'Execute AST',
+              'persistSettings',
+            ],
+          },
+
+          'Set all settings': {
+            target: 'idle',
+            internal: true,
+            actions: [
+              'setAllSettings',
+              'setThemeClass',
+              'setEngineTheme',
+              'setClientSideSceneUnits',
+              'Execute AST',
+              'persistSettings',
+            ],
           },
         },
       },
@@ -176,38 +93,61 @@ export const settingsMachine = createMachine(
     tsTypes: {} as import('./settingsMachine.typegen').Typegen0,
     schema: {
       events: {} as
-        | { type: 'Set Base Unit'; data: { baseUnit: BaseUnit } }
+        | WildcardSetEvent<SettingsPaths>
+        | SetEventTypes
         | {
-            type: 'Set Camera Controls'
-            data: { cameraControls: CameraSystem }
+            type: 'set.app.theme'
+            data: { level: SettingsLevel; value: Themes }
           }
-        | { type: 'Set Default Directory'; data: { defaultDirectory: string } }
         | {
-            type: 'Set Default Project Name'
-            data: { defaultProjectName: string }
+            type: 'set.modeling.units'
+            data: { level: SettingsLevel; value: BaseUnit }
           }
-        | { type: 'Set Onboarding Status'; data: { onboardingStatus: string } }
-        | { type: 'Set Text Wrapping'; data: { textWrapping: Toggle } }
-        | { type: 'Set Theme'; data: { theme: Themes } }
-        | {
-            type: 'Set Unit System'
-            data: { unitSystem: UnitSystem }
-          }
-        | { type: 'Toggle Debug Panel' },
+        | { type: 'Reset settings'; defaultDirectory: string }
+        | { type: 'Set all settings'; settings: typeof settings },
     },
   },
   {
     actions: {
-      persistSettings: (context) => {
-        try {
-          localStorage.setItem(SETTINGS_PERSIST_KEY, JSON.stringify(context))
-        } catch (e) {
-          console.error(e)
+      resetSettings: assign((context, { defaultDirectory }) => {
+        // Reset everything except onboarding status,
+        // which should be preserved
+        const newSettings = createSettings()
+        if (context.app.onboardingStatus.user) {
+          newSettings.app.onboardingStatus.user =
+            context.app.onboardingStatus.user
         }
-      },
-      setThemeClass: (context, event) => {
-        const currentTheme =
-          event.type === 'Set Theme' ? event.data.theme : context.theme
+        // We instead pass in the default directory since it's asynchronous
+        // to re-initialize, and that can be done by the caller.
+        newSettings.app.projectDirectory.default = defaultDirectory
+
+        return newSettings
+      }),
+      setAllSettings: assign((_, event) => {
+        return event.settings
+      }),
+      setSettingAtLevel: assign((context, event) => {
+        const { level, value } = event.data
+        const [category, setting] = event.type
+          .replace(/^set./, '')
+          .split('.') as [keyof typeof settings, string]
+
+        // @ts-ignore
+        context[category][setting][level] = value
+
+        const newContext = {
+          ...context,
+          [category]: {
+            ...context[category],
+            // @ts-ignore
+            [setting]: context[category][setting],
+          },
+        }
+
+        return newContext
+      }),
+      setThemeClass: (context) => {
+        const currentTheme = context.app.theme.current ?? Themes.System
         setThemeClass(
           currentTheme === Themes.System ? getSystemTheme() : currentTheme
         )

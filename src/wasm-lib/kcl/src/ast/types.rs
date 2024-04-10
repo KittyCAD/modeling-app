@@ -159,9 +159,7 @@ impl Program {
     /// Returns a value that includes the given character position.
     /// This is a bit more recursive than `get_body_item_for_position`.
     pub fn get_value_for_position(&self, pos: usize) -> Option<&Value> {
-        let Some(item) = self.get_body_item_for_position(pos) else {
-            return None;
-        };
+        let item = self.get_body_item_for_position(pos)?;
 
         // Recurse over the item.
         match item {
@@ -177,9 +175,7 @@ impl Program {
         if self.non_code_meta.contains(pos) {
             return Some(&self.non_code_meta);
         }
-        let Some(item) = self.get_body_item_for_position(pos) else {
-            return None;
-        };
+        let item = self.get_body_item_for_position(pos)?;
 
         // Recurse over the item.
         let value = match item {
@@ -719,15 +715,9 @@ impl BinaryPart {
     pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
-        pipe_info: &mut PipeInfo,
+        pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
-        // We DO NOT set this globally because if we did and this was called inside a pipe it would
-        // stop the execution of the pipe.
-        // THIS IS IMPORTANT.
-        let mut new_pipe_info = pipe_info.clone();
-        new_pipe_info.is_in_pipe = false;
-
         match self {
             BinaryPart::Literal(literal) => Ok(literal.into()),
             BinaryPart::Identifier(identifier) => {
@@ -735,14 +725,10 @@ impl BinaryPart {
                 Ok(value.clone())
             }
             BinaryPart::BinaryExpression(binary_expression) => {
-                binary_expression.get_result(memory, &mut new_pipe_info, ctx).await
+                binary_expression.get_result(memory, pipe_info, ctx).await
             }
-            BinaryPart::CallExpression(call_expression) => {
-                call_expression.execute(memory, &mut new_pipe_info, ctx).await
-            }
-            BinaryPart::UnaryExpression(unary_expression) => {
-                unary_expression.get_result(memory, &mut new_pipe_info, ctx).await
-            }
+            BinaryPart::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, ctx).await,
+            BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, ctx).await,
             BinaryPart::MemberExpression(member_expression) => member_expression.get_result(memory),
         }
     }
@@ -990,6 +976,17 @@ impl CallExpression {
         })
     }
 
+    /// Is at least one argument the '%' i.e. the substitution operator?
+    pub fn has_substitution_arg(&self) -> bool {
+        self.arguments
+            .iter()
+            .any(|arg| matches!(arg, Value::PipeSubstitution(_)))
+    }
+
+    pub fn as_source_ranges(&self) -> Vec<SourceRange> {
+        vec![SourceRange([self.start, self.end])]
+    }
+
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
         for arg in &mut self.arguments {
             arg.replace_value(source_range, new_value.clone());
@@ -1012,7 +1009,7 @@ impl CallExpression {
     pub async fn execute(
         &self,
         memory: &mut ProgramMemory,
-        pipe_info: &mut PipeInfo,
+        pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
         let fn_name = self.callee.name.clone();
@@ -1030,14 +1027,7 @@ impl CallExpression {
                 Value::BinaryExpression(binary_expression) => {
                     binary_expression.get_result(memory, pipe_info, ctx).await?
                 }
-                Value::CallExpression(call_expression) => {
-                    // We DO NOT set this globally because if we did and this was called inside a pipe it would
-                    // stop the execution of the pipe.
-                    // THIS IS IMPORTANT.
-                    let mut new_pipe_info = pipe_info.clone();
-                    new_pipe_info.is_in_pipe = false;
-                    call_expression.execute(memory, &mut new_pipe_info, ctx).await?
-                }
+                Value::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, ctx).await?,
                 Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, ctx).await?,
                 Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, ctx).await?,
                 Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, ctx).await?,
@@ -1049,7 +1039,7 @@ impl CallExpression {
                 }
                 Value::PipeSubstitution(pipe_substitution) => pipe_info
                     .previous_results
-                    .get(&pipe_info.index - 1)
+                    .as_ref()
                     .ok_or_else(|| {
                         KclError::Semantic(KclErrorDetails {
                             message: format!("PipeSubstitution index out of bounds: {:?}", pipe_info),
@@ -1074,13 +1064,7 @@ impl CallExpression {
                 // Attempt to call the function.
                 let args = crate::std::Args::new(fn_args, self.into(), ctx.clone());
                 let result = func.std_lib_fn()(args).await?;
-                if pipe_info.is_in_pipe {
-                    pipe_info.index += 1;
-                    pipe_info.previous_results.push(result);
-                    execute_pipe_body(memory, &pipe_info.body.clone(), pipe_info, self.into(), ctx).await
-                } else {
-                    Ok(result)
-                }
+                Ok(result)
             }
             FunctionKind::Std(func) => {
                 let function_expression = func.function();
@@ -1128,7 +1112,14 @@ impl CallExpression {
 
                 // Call the stdlib function
                 let p = func.function().clone().body;
-                let results = crate::executor::execute(p, &mut fn_memory, BodyType::Block, ctx).await?;
+                let results = match crate::executor::execute(p, &mut fn_memory, BodyType::Block, ctx).await {
+                    Ok(results) => results,
+                    Err(err) => {
+                        // We need to override the source ranges so we don't get the embedded kcl
+                        // function from the stdlib.
+                        return Err(err.override_source_ranges(vec![self.into()]));
+                    }
+                };
                 let out = results.return_;
                 let result = out.ok_or_else(|| {
                     KclError::UndefinedValue(KclErrorDetails {
@@ -1138,14 +1129,7 @@ impl CallExpression {
                 })?;
                 let result = result.get_value()?;
 
-                if pipe_info.is_in_pipe {
-                    pipe_info.index += 1;
-                    pipe_info.previous_results.push(result);
-
-                    execute_pipe_body(memory, &pipe_info.body.clone(), pipe_info, self.into(), ctx).await
-                } else {
-                    Ok(result)
-                }
+                Ok(result)
             }
             FunctionKind::UserDefined => {
                 let func = memory.get(&fn_name, self.into())?;
@@ -1161,14 +1145,7 @@ impl CallExpression {
 
                 let result = result.get_value()?;
 
-                if pipe_info.is_in_pipe {
-                    pipe_info.index += 1;
-                    pipe_info.previous_results.push(result);
-
-                    execute_pipe_body(memory, &pipe_info.body.clone(), pipe_info, self.into(), ctx).await
-                } else {
-                    Ok(result)
-                }
+                Ok(result)
             }
         }
     }
@@ -1717,7 +1694,7 @@ impl ArrayExpression {
     pub async fn execute(
         &self,
         memory: &mut ProgramMemory,
-        pipe_info: &mut PipeInfo,
+        pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
         let mut results = Vec::with_capacity(self.elements.len());
@@ -1733,14 +1710,7 @@ impl ArrayExpression {
                 Value::BinaryExpression(binary_expression) => {
                     binary_expression.get_result(memory, pipe_info, ctx).await?
                 }
-                Value::CallExpression(call_expression) => {
-                    // We DO NOT set this globally because if we did and this was called inside a pipe it would
-                    // stop the execution of the pipe.
-                    // THIS IS IMPORTANT.
-                    let mut new_pipe_info = pipe_info.clone();
-                    new_pipe_info.is_in_pipe = false;
-                    call_expression.execute(memory, &mut new_pipe_info, ctx).await?
-                }
+                Value::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, ctx).await?,
                 Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, ctx).await?,
                 Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, ctx).await?,
                 Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, ctx).await?,
@@ -1871,7 +1841,7 @@ impl ObjectExpression {
     pub async fn execute(
         &self,
         memory: &mut ProgramMemory,
-        pipe_info: &mut PipeInfo,
+        pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
         let mut object = Map::new();
@@ -1886,28 +1856,16 @@ impl ObjectExpression {
                 Value::BinaryExpression(binary_expression) => {
                     binary_expression.get_result(memory, pipe_info, ctx).await?
                 }
-                Value::CallExpression(call_expression) => {
-                    // We DO NOT set this globally because if we did and this was called inside a pipe it would
-                    // stop the execution of the pipe.
-                    // THIS IS IMPORTANT.
-                    let mut new_pipe_info = pipe_info.clone();
-                    new_pipe_info.is_in_pipe = false;
-                    call_expression.execute(memory, &mut new_pipe_info, ctx).await?
-                }
+                Value::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, ctx).await?,
                 Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, ctx).await?,
                 Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, ctx).await?,
                 Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, ctx).await?,
                 Value::PipeExpression(pipe_expression) => pipe_expression.get_result(memory, pipe_info, ctx).await?,
+                Value::MemberExpression(member_expression) => member_expression.get_result(memory)?,
                 Value::PipeSubstitution(pipe_substitution) => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: format!("PipeSubstitution not implemented here: {:?}", pipe_substitution),
                         source_ranges: vec![pipe_substitution.into()],
-                    }));
-                }
-                Value::MemberExpression(member_expression) => {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!("MemberExpression not implemented here: {:?}", member_expression),
-                        source_ranges: vec![member_expression.into()],
                     }));
                 }
                 Value::FunctionExpression(function_expression) => {
@@ -2324,25 +2282,11 @@ impl BinaryExpression {
     pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
-        pipe_info: &mut PipeInfo,
+        pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
-        // We DO NOT set this globally because if we did and this was called inside a pipe it would
-        // stop the execution of the pipe.
-        // THIS IS IMPORTANT.
-        let mut new_pipe_info = pipe_info.clone();
-        new_pipe_info.is_in_pipe = false;
-
-        let left_json_value = self
-            .left
-            .get_result(memory, &mut new_pipe_info, ctx)
-            .await?
-            .get_json_value()?;
-        let right_json_value = self
-            .right
-            .get_result(memory, &mut new_pipe_info, ctx)
-            .await?
-            .get_json_value()?;
+        let left_json_value = self.left.get_result(memory, pipe_info, ctx).await?.get_json_value()?;
+        let right_json_value = self.right.get_result(memory, pipe_info, ctx).await?.get_json_value()?;
 
         // First check if we are doing string concatenation.
         if self.operator == BinaryOperator::Add {
@@ -2512,25 +2456,29 @@ impl UnaryExpression {
     }
 
     fn recast(&self, options: &FormatOptions) -> String {
-        format!("{}{}", &self.operator, self.argument.recast(options, 0))
+        match self.argument {
+            BinaryPart::Literal(_)
+            | BinaryPart::Identifier(_)
+            | BinaryPart::MemberExpression(_)
+            | BinaryPart::CallExpression(_) => {
+                format!("{}{}", &self.operator, self.argument.recast(options, 0))
+            }
+            BinaryPart::BinaryExpression(_) | BinaryPart::UnaryExpression(_) => {
+                format!("{}({})", &self.operator, self.argument.recast(options, 0))
+            }
+        }
     }
 
     pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
-        pipe_info: &mut PipeInfo,
+        pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
-        // We DO NOT set this globally because if we did and this was called inside a pipe it would
-        // stop the execution of the pipe.
-        // THIS IS IMPORTANT.
-        let mut new_pipe_info = pipe_info.clone();
-        new_pipe_info.is_in_pipe = false;
-
         let num = parse_json_number_as_f64(
             &self
                 .argument
-                .get_result(memory, &mut new_pipe_info, ctx)
+                .get_result(memory, pipe_info, ctx)
                 .await?
                 .get_json_value()?,
             self.into(),
@@ -2582,6 +2530,8 @@ pub enum UnaryOperator {
 pub struct PipeExpression {
     pub start: usize,
     pub end: usize,
+    // TODO: Only the first body expression can be any Value.
+    // The rest will be CallExpression, and the AST type should reflect this.
     pub body: Vec<Value>,
     pub non_code_meta: NonCodeMeta,
 }
@@ -2672,12 +2622,9 @@ impl PipeExpression {
     pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
-        pipe_info: &mut PipeInfo,
+        pipe_info: &PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
-        // Reset the previous results.
-        pipe_info.previous_results = vec![];
-        pipe_info.index = 0;
         execute_pipe_body(memory, &self.body, pipe_info, self.into(), ctx).await
     }
 
@@ -2693,51 +2640,94 @@ impl PipeExpression {
 async fn execute_pipe_body(
     memory: &mut ProgramMemory,
     body: &[Value],
-    pipe_info: &mut PipeInfo,
+    pipe_info: &PipeInfo,
     source_range: SourceRange,
     ctx: &ExecutorContext,
 ) -> Result<MemoryItem, KclError> {
-    if pipe_info.index == body.len() {
-        pipe_info.is_in_pipe = false;
-        return Ok(pipe_info
-            .previous_results
-            .last()
-            .ok_or_else(|| {
-                KclError::Semantic(KclErrorDetails {
-                    message: "Pipe body results should have at least one expression".to_string(),
-                    source_ranges: vec![source_range],
-                })
-            })?
-            .clone());
-    }
-
-    let expression = body.get(pipe_info.index).ok_or_else(|| {
+    let mut body = body.iter();
+    let first = body.next().ok_or_else(|| {
         KclError::Semantic(KclErrorDetails {
-            message: format!("Invalid index for pipe: {}", pipe_info.index),
+            message: "Pipe expressions cannot be empty".to_owned(),
             source_ranges: vec![source_range],
         })
     })?;
-
-    match expression {
-        Value::BinaryExpression(binary_expression) => {
-            let result = binary_expression.get_result(memory, pipe_info, ctx).await?;
-            pipe_info.previous_results.push(result);
-            pipe_info.index += 1;
-            execute_pipe_body(memory, body, pipe_info, source_range, ctx).await
-        }
-        Value::CallExpression(call_expression) => {
-            pipe_info.is_in_pipe = true;
-            pipe_info.body = body.to_vec();
-            call_expression.execute(memory, pipe_info, ctx).await
-        }
+    // Evaluate the first element in the pipeline.
+    // They use the `pipe_info` from some AST node above this, so that if pipe expression is nested in a larger pipe expression,
+    // they use the % from the parent. After all, this pipe expression hasn't been executed yet, so it doesn't have any % value
+    // of its own.
+    let output = match first {
+        Value::BinaryExpression(binary_expression) => binary_expression.get_result(memory, pipe_info, ctx).await?,
+        Value::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, ctx).await?,
+        Value::Identifier(identifier) => memory.get(&identifier.name, identifier.into())?.clone(),
         _ => {
             // Return an error this should not happen.
-            Err(KclError::Semantic(KclErrorDetails {
-                message: format!("PipeExpression not implemented here: {:?}", expression),
-                source_ranges: vec![expression.into()],
-            }))
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: format!("PipeExpression not implemented here: {:?}", first),
+                source_ranges: vec![first.into()],
+            }));
         }
+    };
+    // Now that we've evaluated the first child expression in the pipeline, following child expressions
+    // should use the previous child expression for %.
+    // This means there's no more need for the previous `pipe_info` from the parent AST node above this one.
+    let mut new_pipe_info = PipeInfo::new();
+    new_pipe_info.previous_results = Some(output);
+    // Evaluate remaining elements.
+    for expression in body {
+        let output = match expression {
+            Value::BinaryExpression(binary_expression) => {
+                binary_expression.get_result(memory, &new_pipe_info, ctx).await?
+            }
+            Value::CallExpression(call_expression) => call_expression.execute(memory, &new_pipe_info, ctx).await?,
+            Value::Identifier(identifier) => memory.get(&identifier.name, identifier.into())?.clone(),
+            _ => {
+                // Return an error this should not happen.
+                return Err(KclError::Semantic(KclErrorDetails {
+                    message: format!("PipeExpression not implemented here: {:?}", expression),
+                    source_ranges: vec![expression.into()],
+                }));
+            }
+        };
+        new_pipe_info.previous_results = Some(output);
     }
+    // Safe to unwrap here, because `newpipe_info` always has something pushed in when the `match first` executes.
+    let final_output = new_pipe_info.previous_results.unwrap();
+    Ok(final_output)
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, JsonSchema, Bake, FromStr, Display)]
+#[databake(path = kcl_lib::ast::types)]
+#[serde(tag = "type")]
+#[display(style = "snake_case")]
+pub enum FnArgPrimitive {
+    /// A string type.
+    String,
+    /// A number type.
+    Number,
+    /// A boolean type.
+    #[display("bool")]
+    #[serde(rename = "bool")]
+    Boolean,
+    /// A sketch group type.
+    SketchGroup,
+    /// A sketch surface type.
+    SketchSurface,
+    /// An extrude group type.
+    ExtrudeGroup,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
+#[serde(tag = "type")]
+pub enum FnArgType {
+    /// A primitive type.
+    Primitive(FnArgPrimitive),
+    // An array of a primitive type.
+    Array(FnArgPrimitive),
+    // An object type.
+    Object {
+        properties: Vec<Parameter>,
+    },
 }
 
 /// Parameter of a KCL function.
@@ -2748,6 +2738,10 @@ async fn execute_pipe_body(
 pub struct Parameter {
     /// The parameter's label or name.
     pub identifier: Identifier,
+    /// The type of the parameter.
+    /// This is optional if the user defines a type.
+    #[serde(skip)]
+    pub type_: Option<FnArgType>,
     /// Is the parameter optional?
     pub optional: bool,
 }
@@ -2761,6 +2755,8 @@ pub struct FunctionExpression {
     pub end: usize,
     pub params: Vec<Parameter>,
     pub body: Program,
+    #[serde(skip)]
+    pub return_type: Option<FnArgType>,
 }
 
 impl_value_meta!(FunctionExpression);
@@ -2796,6 +2792,7 @@ impl FunctionExpression {
             end,
             params,
             body,
+            return_type: _,
         } = self;
         let mut params_required = Vec::with_capacity(params.len());
         let mut params_optional = Vec::with_capacity(params.len());
@@ -3344,7 +3341,7 @@ const mySk1 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> lineTo([1, 1], %)
   // comment here
-  |> lineTo({ to: [0, 1], tag: 'myTag' }, %)
+  |> lineTo([0, 1], %, 'myTag')
   |> lineTo([1, 1], %)
   /* and
   here
@@ -3367,7 +3364,7 @@ const mySk1 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> lineTo([1, 1], %)
   // comment here
-  |> lineTo({ to: [0, 1], tag: 'myTag' }, %)
+  |> lineTo([0, 1], %, 'myTag')
   |> lineTo([1, 1], %)
   /* and
   here */
@@ -3385,7 +3382,7 @@ const mySk1 = startSketchOn('XY')
     fn test_recast_multiline_object() {
         let some_program_string = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([-0.01, -0.08], %)
-  |> line({ to: [0.62, 4.15], tag: 'seg01' }, %)
+  |> line([0.62, 4.15], %, 'seg01')
   |> line([2.77, -1.24], %)
   |> angledLineThatIntersects({
        angle: 201,
@@ -3475,7 +3472,7 @@ const myAng = 40
 const myAng2 = 134
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line({ to: [1, 3.82], tag: 'seg01' }, %) // ln-should-get-tag
+  |> line([1, 3.82], %, 'seg01') // ln-should-get-tag
   |> angledLineToX([
        -angleToMatchLengthX('seg01', myVar, %),
        myVar
@@ -3501,7 +3498,7 @@ const myAng = 40
 const myAng2 = 134
 const part001 = startSketchOn('XY')
    |> startProfileAt([0, 0], %)
-   |> line({ to: [1, 3.82], tag: 'seg01' }, %) // ln-should-get-tag
+   |> line([1, 3.82], %, 'seg01') // ln-should-get-tag
    |> angledLineToX([
          -angleToMatchLengthX('seg01', myVar, %),
          myVar
@@ -3768,6 +3765,185 @@ const firstExtrude = startSketchOn('XY')
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_type_args_on_functions() {
+        let some_program_string = r#"fn thing = (arg0: number, arg1: string, tag?: string) => {
+    return arg0
+}"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        // Check the program output for the types of the parameters.
+        let function = program.body.first().unwrap();
+        let BodyItem::VariableDeclaration(var_decl) = function else {
+            panic!("expected a variable declaration")
+        };
+        let Value::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+            panic!("expected a function expression")
+        };
+        let params = &func_expr.params;
+        assert_eq!(params.len(), 3);
+        assert_eq!(params[0].type_, Some(FnArgType::Primitive(FnArgPrimitive::Number)));
+        assert_eq!(params[1].type_, Some(FnArgType::Primitive(FnArgPrimitive::String)));
+        assert_eq!(params[2].type_, Some(FnArgType::Primitive(FnArgPrimitive::String)));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_type_args_array_on_functions() {
+        let some_program_string = r#"fn thing = (arg0: number[], arg1: string[], tag?: string) => {
+    return arg0
+}"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        // Check the program output for the types of the parameters.
+        let function = program.body.first().unwrap();
+        let BodyItem::VariableDeclaration(var_decl) = function else {
+            panic!("expected a variable declaration")
+        };
+        let Value::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+            panic!("expected a function expression")
+        };
+        let params = &func_expr.params;
+        assert_eq!(params.len(), 3);
+        assert_eq!(params[0].type_, Some(FnArgType::Array(FnArgPrimitive::Number)));
+        assert_eq!(params[1].type_, Some(FnArgType::Array(FnArgPrimitive::String)));
+        assert_eq!(params[2].type_, Some(FnArgType::Primitive(FnArgPrimitive::String)));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_type_args_object_on_functions() {
+        let some_program_string = r#"fn thing = (arg0: number[], arg1: {thing: number, things: string[], more?: string}, tag?: string) => {
+    return arg0
+}"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        // Check the program output for the types of the parameters.
+        let function = program.body.first().unwrap();
+        let BodyItem::VariableDeclaration(var_decl) = function else {
+            panic!("expected a variable declaration")
+        };
+        let Value::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+            panic!("expected a function expression")
+        };
+        let params = &func_expr.params;
+        assert_eq!(params.len(), 3);
+        assert_eq!(params[0].type_, Some(FnArgType::Array(FnArgPrimitive::Number)));
+        assert_eq!(
+            params[1].type_,
+            Some(FnArgType::Object {
+                properties: vec![
+                    Parameter {
+                        identifier: Identifier {
+                            start: 35,
+                            end: 40,
+                            name: "thing".to_owned()
+                        },
+                        type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
+                        optional: false
+                    },
+                    Parameter {
+                        identifier: Identifier {
+                            start: 50,
+                            end: 56,
+                            name: "things".to_owned()
+                        },
+                        type_: Some(FnArgType::Array(FnArgPrimitive::String)),
+                        optional: false
+                    },
+                    Parameter {
+                        identifier: Identifier {
+                            start: 68,
+                            end: 72,
+                            name: "more".to_owned()
+                        },
+                        type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
+                        optional: true
+                    }
+                ]
+            })
+        );
+        assert_eq!(params[2].type_, Some(FnArgType::Primitive(FnArgPrimitive::String)));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_return_type_on_functions() {
+        let some_program_string = r#"fn thing = () => {thing: number, things: string[], more?: string} {
+    return 1
+}"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        // Check the program output for the types of the parameters.
+        let function = program.body.first().unwrap();
+        let BodyItem::VariableDeclaration(var_decl) = function else {
+            panic!("expected a variable declaration")
+        };
+        let Value::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+            panic!("expected a function expression")
+        };
+        let params = &func_expr.params;
+        assert_eq!(params.len(), 0);
+        assert_eq!(
+            func_expr.return_type,
+            Some(FnArgType::Object {
+                properties: vec![
+                    Parameter {
+                        identifier: Identifier {
+                            start: 18,
+                            end: 23,
+                            name: "thing".to_owned()
+                        },
+                        type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
+                        optional: false
+                    },
+                    Parameter {
+                        identifier: Identifier {
+                            start: 33,
+                            end: 39,
+                            name: "things".to_owned()
+                        },
+                        type_: Some(FnArgType::Array(FnArgPrimitive::String)),
+                        optional: false
+                    },
+                    Parameter {
+                        identifier: Identifier {
+                            start: 51,
+                            end: 55,
+                            name: "more".to_owned()
+                        },
+                        type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
+                        optional: true
+                    }
+                ]
+            })
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_recast_math_negate_parens() {
+        let some_program_string = r#"const wallMountL = 3.82
+const thickness = 0.5
+
+startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, -(wallMountL - thickness)], %)
+  |> line([0, -(5 - thickness)], %)
+  |> line([0, -(5 - 1)], %)
+  |> line([0, -(-5 - 1)], %)"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted.trim(), some_program_string);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_recast_math_nested_parens() {
         let some_program_string = r#"const distance = 5
 const p = 3
@@ -3835,6 +4011,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                         body: Vec::new(),
                         non_code_meta: Default::default(),
                     },
+                    return_type: None,
                 },
             ),
             (
@@ -3849,6 +4026,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                             end: 0,
                             name: "foo".to_owned(),
                         },
+                        type_: None,
                         optional: false,
                     }],
                     body: Program {
@@ -3857,6 +4035,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                         body: Vec::new(),
                         non_code_meta: Default::default(),
                     },
+                    return_type: None,
                 },
             ),
             (
@@ -3871,6 +4050,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                             end: 0,
                             name: "foo".to_owned(),
                         },
+                        type_: None,
                         optional: true,
                     }],
                     body: Program {
@@ -3879,6 +4059,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                         body: Vec::new(),
                         non_code_meta: Default::default(),
                     },
+                    return_type: None,
                 },
             ),
             (
@@ -3894,6 +4075,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                                 end: 0,
                                 name: "foo".to_owned(),
                             },
+                            type_: None,
                             optional: false,
                         },
                         Parameter {
@@ -3902,6 +4084,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                                 end: 0,
                                 name: "bar".to_owned(),
                             },
+                            type_: None,
                             optional: true,
                         },
                     ],
@@ -3911,6 +4094,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                         body: Vec::new(),
                         non_code_meta: Default::default(),
                     },
+                    return_type: None,
                 },
             ),
         ]

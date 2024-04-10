@@ -24,8 +24,7 @@ export default function CodeEditor() {
       >
         <section className="flex-1">
           <h2 className="text-3xl font-bold">
-            Editing code with{' '}
-            <span className="text-energy-60 dark:text-energy-20">kcl</span>
+            Editing code with <span className="text-primary">kcl</span>
           </h2>
           <p className="my-4">
             kcl is our language for describing geometry. Building our own
@@ -40,7 +39,7 @@ export default function CodeEditor() {
             in kcl before they're available as point-and-click tools, so it's
             good to have a link to{' '}
             <a
-              href="https://github.com/KittyCAD/modeling-app/blob/main/docs/kcl/std.md"
+              href="https://zoo.dev/docs/kcl"
               rel="noreferrer noopener"
               target="_blank"
             >

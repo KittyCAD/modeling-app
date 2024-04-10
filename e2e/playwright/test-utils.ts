@@ -33,7 +33,7 @@ async function clearCommandLogs(page: Page) {
 }
 
 async function expectCmdLog(page: Page, locatorStr: string) {
-  await expect(page.locator(locatorStr)).toBeVisible()
+  await expect(page.locator(locatorStr).last()).toBeVisible()
 }
 
 async function waitForDefaultPlanesToBeVisible(page: Page) {

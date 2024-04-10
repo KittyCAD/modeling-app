@@ -29,6 +29,7 @@ pub struct EngineConnection {
     responses: Arc<DashMap<uuid::Uuid, WebSocketResponse>>,
     tcp_read_handle: Arc<TcpReadHandle>,
     socket_health: Arc<Mutex<SocketHealth>>,
+    batch: Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>,
 }
 
 pub struct TcpRead {
@@ -88,6 +89,16 @@ impl EngineConnection {
             };
             let _ = request_sent.send(res);
         }
+        let _ = Self::inner_close_engine(&mut tcp_write).await;
+    }
+
+    /// Send the given `request` to the engine via the WebSocket connection `tcp_write`.
+    async fn inner_close_engine(tcp_write: &mut WebSocketTcpWrite) -> Result<()> {
+        tcp_write
+            .send(WsMsg::Close(None))
+            .await
+            .map_err(|e| anyhow!("could not send close over websocket: {e}"))?;
+        Ok(())
     }
 
     /// Send the given `request` to the engine via the WebSocket connection `tcp_write`.
@@ -134,6 +145,9 @@ impl EngineConnection {
             loop {
                 match tcp_read.read().await {
                     Ok(ws_resp) => {
+                        for e in ws_resp.errors.iter().flatten() {
+                            println!("got error message: {e}");
+                        }
                         if let Some(id) = ws_resp.request_id {
                             responses_clone.insert(id, ws_resp.clone());
                         }
@@ -154,27 +168,30 @@ impl EngineConnection {
             }),
             responses,
             socket_health,
+            batch: Arc::new(Mutex::new(Vec::new())),
         })
     }
 }
 
-#[async_trait::async_trait(?Send)]
+#[async_trait::async_trait]
 impl EngineManager for EngineConnection {
-    async fn send_modeling_cmd(
+    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>> {
+        self.batch.clone()
+    }
+
+    async fn inner_send_modeling_cmd(
         &self,
         id: uuid::Uuid,
         source_range: crate::executor::SourceRange,
-        cmd: kittycad::types::ModelingCmd,
+        cmd: kittycad::types::WebSocketRequest,
+        _id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
     ) -> Result<OkWebSocketResponseData, KclError> {
         let (tx, rx) = oneshot::channel();
 
         // Send the request to the engine, via the actor.
         self.engine_req_tx
             .send(ToEngineReq {
-                req: WebSocketRequest::ModelingCmdReq {
-                    cmd: cmd.clone(),
-                    cmd_id: id,
-                },
+                req: cmd.clone(),
                 request_sent: tx,
             })
             .await

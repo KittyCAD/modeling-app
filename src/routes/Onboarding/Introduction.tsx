@@ -5,11 +5,10 @@ import {
   useNextClick,
 } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { bracket } from 'lib/exampleKcl'
 import {
-  PROJECT_ENTRYPOINT,
   createNewProject,
   getNextProjectIndex,
   getProjectsInDir,
@@ -19,9 +18,9 @@ import { isTauri } from 'lib/isTauri'
 import { useNavigate } from 'react-router-dom'
 import { paths } from 'lib/paths'
 import { useEffect } from 'react'
-import { kclManager } from 'lang/KclSingleton'
-import { sep } from '@tauri-apps/api/path'
-import { APP_NAME } from 'lib/constants'
+import { kclManager } from 'lib/singletons'
+import { join } from '@tauri-apps/api/path'
+import { APP_NAME, PROJECT_ENTRYPOINT } from 'lib/constants'
 
 function OnboardingWithNewFile() {
   const navigate = useNavigate()
@@ -29,12 +28,14 @@ function OnboardingWithNewFile() {
   const next = useNextClick(onboardingPaths.INDEX)
   const {
     settings: {
-      context: { defaultDirectory },
+      context: {
+        app: { projectDirectory },
+      },
     },
-  } = useGlobalStateContext()
+  } = useSettingsAuthContext()
 
   async function createAndOpenNewProject() {
-    const projects = await getProjectsInDir(defaultDirectory)
+    const projects = await getProjectsInDir(projectDirectory.current)
     const nextIndex = await getNextProjectIndex(
       ONBOARDING_PROJECT_NAME,
       projects
@@ -44,12 +45,12 @@ function OnboardingWithNewFile() {
       nextIndex
     )
     const newFile = await createNewProject(
-      defaultDirectory + sep + name,
+      await join(projectDirectory.current, name),
       bracket
     )
     navigate(
       `${paths.FILE}/${encodeURIComponent(
-        newFile.path + sep + PROJECT_ENTRYPOINT
+        await join(newFile.path, PROJECT_ENTRYPOINT)
       )}${paths.ONBOARDING.INDEX}`
     )
   }
@@ -108,13 +109,15 @@ export default function Introduction() {
   const {
     settings: {
       state: {
-        context: { theme },
+        context: {
+          app: { theme },
+        },
       },
     },
-  } = useGlobalStateContext()
+  } = useSettingsAuthContext()
   const getLogoTheme = () =>
-    theme === Themes.Light ||
-    (theme === Themes.System && getSystemTheme() === Themes.Light)
+    theme.current === Themes.Light ||
+    (theme.current === Themes.System && getSystemTheme() === Themes.Light)
       ? '-dark'
       : ''
   const dismiss = useDismiss()
@@ -134,17 +137,18 @@ export default function Introduction() {
             alt={APP_NAME}
             className="h-20 max-w-full"
           />
-          <span className="px-3 py-1 text-base rounded-full bg-energy-10 text-energy-80">
+          <span className="px-3 py-1 text-base rounded-full bg-primary/10 text-primary">
             Alpha
           </span>
         </h1>
         <section className="my-12">
           <p className="my-4">
             Welcome to {APP_NAME}! This is a hardware design tool that lets you
-            edit visually, with code, or both. It's powered by the first API
-            created for anyone to build hardware design tools. The 3D view is
-            not running on your computer, but is instead being streamed to you
-            from a remote GPU as video.
+            edit visually, with code, or both. It's powered by the KittyCAD
+            Design API, the first API created for anyone to build hardware
+            design tools. The 3D view is not running on your computer, but is
+            instead being streamed to you from an instance of our Geometry
+            Engine on a remote GPU as video.
           </p>
           <p className="my-4">
             This is an alpha release, so you will encounter bugs and missing
@@ -173,7 +177,7 @@ export default function Introduction() {
           className="mt-6"
           dismiss={dismiss}
           next={next}
-          nextText="Camera"
+          nextText="Mouse Controls"
         />
       </div>
     </div>

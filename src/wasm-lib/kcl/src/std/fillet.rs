@@ -13,6 +13,8 @@ use crate::{
     std::Args,
 };
 
+pub(crate) const DEFAULT_TOLERANCE: f64 = 0.0000001;
+
 /// Data for fillets.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -21,18 +23,18 @@ pub struct FilletData {
     /// The radius of the fillet.
     pub radius: f64,
     /// The tags of the paths you want to fillet.
-    pub tags: Vec<StringOrUuid>,
+    pub tags: Vec<EdgeReference>,
 }
 
 /// A string or a uuid.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Ord, PartialOrd, Eq, Hash)]
 #[ts(export)]
 #[serde(untagged)]
-pub enum StringOrUuid {
-    /// A uuid.
-    Uuid(Uuid),
-    /// A string.
-    String(String),
+pub enum EdgeReference {
+    /// A uuid of an edge.
+    Uuid(uuid::Uuid),
+    /// A tag name of an edge.
+    Tag(String),
 }
 
 /// Create fillets on tagged paths.
@@ -44,6 +46,17 @@ pub async fn fillet(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Create fillets on tagged paths.
+///
+/// ```no_run
+/// const part001 = startSketchOn('XY')
+///     |> startProfileAt([0,0], %)
+///     |> line([0, 10], %, "thing")
+///     |> line([10, 0], %)
+///     |> line([0, -10], %, "thing2")
+///     |> close(%)
+///     |> extrude(10, %)
+///     |> fillet({radius: 2, tags: ["thing", "thing2"]}, %)
+/// ```
 #[stdlib {
     name = "fillet",
 }]
@@ -65,8 +78,8 @@ async fn inner_fillet(
 
     for tag in data.tags {
         let edge_id = match tag {
-            StringOrUuid::Uuid(uuid) => uuid,
-            StringOrUuid::String(tag) => {
+            EdgeReference::Uuid(uuid) => uuid,
+            EdgeReference::Tag(tag) => {
                 extrude_group
                     .sketch_group_values
                     .iter()
@@ -89,7 +102,7 @@ async fn inner_fillet(
                 edge_id,
                 object_id: extrude_group.id,
                 radius: data.radius,
-                tolerance: 0.0000001, // We can let the user set this in the future.
+                tolerance: DEFAULT_TOLERANCE, // We can let the user set this in the future.
             },
         )
         .await?;
@@ -115,6 +128,17 @@ pub async fn get_opposite_edge(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Get the opposite edge to the edge given.
+///
+/// ```no_run
+/// const part001 = startSketchOn('XY')
+///     |> startProfileAt([0,0], %)
+///     |> line([0, 10], %, "thing")
+///     |> line([10, 0], %)
+///     |> line([0, -10], %, "thing2")
+///     |> close(%)
+///     |> extrude(10, %)
+///     |> fillet({radius: 2, tags: ["thing", getOppositeEdge("thing", %)]}, %)
+/// ```
 #[stdlib {
     name = "getOppositeEdge",
 }]
@@ -173,6 +197,17 @@ pub async fn get_next_adjacent_edge(args: Args) -> Result<MemoryItem, KclError> 
 }
 
 /// Get the next adjacent edge to the edge given.
+///
+/// ```no_run
+/// const part001 = startSketchOn('XY')
+///     |> startProfileAt([0,0], %)
+///     |> line([0, 10], %, "thing")
+///     |> line([10, 0], %, "thing1")
+///     |> line([0, -10], %, "thing2")
+///     |> close(%, "thing3")
+///     |> extrude(10, %)
+///     |> fillet({radius: 2, tags: [getNextAdjacentEdge("thing3", %)]}, %)
+/// ```
 #[stdlib {
     name = "getNextAdjacentEdge",
 }]
@@ -198,7 +233,7 @@ async fn inner_get_next_adjacent_edge(
     let resp = args
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
-            ModelingCmd::Solid3DGetNextAdjacentEdge {
+            ModelingCmd::Solid3DGetPrevAdjacentEdge {
                 edge_id: tagged_path.geo_meta.id,
                 object_id: extrude_group.id,
                 face_id,
@@ -206,7 +241,7 @@ async fn inner_get_next_adjacent_edge(
         )
         .await?;
     let kittycad::types::OkWebSocketResponseData::Modeling {
-        modeling_response: kittycad::types::OkModelingCmdResponse::Solid3DGetNextAdjacentEdge { data: ajacent_edge },
+        modeling_response: kittycad::types::OkModelingCmdResponse::Solid3DGetPrevAdjacentEdge { data: ajacent_edge },
     } = &resp
     else {
         return Err(KclError::Engine(KclErrorDetails {
@@ -240,6 +275,17 @@ pub async fn get_previous_adjacent_edge(args: Args) -> Result<MemoryItem, KclErr
 }
 
 /// Get the previous adjacent edge to the edge given.
+///
+/// ```no_run
+/// const part001 = startSketchOn('XY')
+///     |> startProfileAt([0,0], %)
+///     |> line([0, 10], %, "thing")
+///     |> line([10, 0], %, "thing1")
+///     |> line([0, -10], %, "thing2")
+///     |> close(%, "thing3")
+///     |> extrude(10, %)
+///     |> fillet({radius: 2, tags: [getPreviousAdjacentEdge("thing3", %)]}, %)
+/// ```
 #[stdlib {
     name = "getPreviousAdjacentEdge",
 }]
@@ -265,7 +311,7 @@ async fn inner_get_previous_adjacent_edge(
     let resp = args
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
-            ModelingCmd::Solid3DGetPrevAdjacentEdge {
+            ModelingCmd::Solid3DGetNextAdjacentEdge {
                 edge_id: tagged_path.geo_meta.id,
                 object_id: extrude_group.id,
                 face_id,
@@ -273,7 +319,7 @@ async fn inner_get_previous_adjacent_edge(
         )
         .await?;
     let kittycad::types::OkWebSocketResponseData::Modeling {
-        modeling_response: kittycad::types::OkModelingCmdResponse::Solid3DGetPrevAdjacentEdge { data: ajacent_edge },
+        modeling_response: kittycad::types::OkModelingCmdResponse::Solid3DGetNextAdjacentEdge { data: ajacent_edge },
     } = &resp
     else {
         return Err(KclError::Engine(KclErrorDetails {

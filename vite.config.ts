@@ -11,12 +11,22 @@ import version from 'vite-plugin-package-version'
 dns.setDefaultResultOrder('verbatim')
 
 const config = defineConfig({
+  define: {
+    global: 'window',
+  },
   server: {
     open: true,
     port: 3000,
   },
   test: {
     globals: true,
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        maxForks: 2,
+        minForks: 1,
+      }
+    },
     setupFiles: 'src/setupTests.ts',
     environment: 'happy-dom',
     coverage: {

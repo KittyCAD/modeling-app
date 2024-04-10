@@ -1,27 +1,38 @@
 //! Functions for setting up our WebSocket and WebRTC connections for communications with the
 //! engine.
 
+use std::sync::{Arc, Mutex};
+
 use anyhow::Result;
-use kittycad::types::OkWebSocketResponseData;
+use kittycad::types::{OkWebSocketResponseData, WebSocketRequest};
 
 use crate::errors::KclError;
 
 #[derive(Debug, Clone)]
-pub struct EngineConnection {}
+pub struct EngineConnection {
+    batch: Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>,
+}
 
 impl EngineConnection {
     pub async fn new() -> Result<EngineConnection> {
-        Ok(EngineConnection {})
+        Ok(EngineConnection {
+            batch: Arc::new(Mutex::new(Vec::new())),
+        })
     }
 }
 
-#[async_trait::async_trait(?Send)]
+#[async_trait::async_trait]
 impl crate::engine::EngineManager for EngineConnection {
-    async fn send_modeling_cmd(
+    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>> {
+        self.batch.clone()
+    }
+
+    async fn inner_send_modeling_cmd(
         &self,
         _id: uuid::Uuid,
         _source_range: crate::executor::SourceRange,
-        _cmd: kittycad::types::ModelingCmd,
+        _cmd: kittycad::types::WebSocketRequest,
+        _id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
     ) -> Result<OkWebSocketResponseData, KclError> {
         Ok(OkWebSocketResponseData::Modeling {
             modeling_response: kittycad::types::OkModelingCmdResponse::Empty {},

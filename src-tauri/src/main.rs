@@ -4,10 +4,15 @@
 use std::env;
 use std::fs;
 use std::io::Read;
+use std::path::Path;
+use std::path::PathBuf;
 
 use anyhow::Result;
 use oauth2::TokenResponse;
-use tauri::{InvokeError, Manager};
+use serde::Serialize;
+use std::process::Command;
+use tauri::ipc::InvokeError;
+use tauri_plugin_shell::ShellExt;
 const DEFAULT_HOST: &str = "https://api.kittycad.io";
 
 /// This command returns the a json string parse from a toml file at the path.
@@ -21,6 +26,56 @@ fn read_toml(path: &str) -> Result<String, InvokeError> {
         toml::from_str::<toml::Value>(&contents).map_err(|e| InvokeError::from_anyhow(e.into()))?;
     let value = serde_json::to_string(&value).map_err(|e| InvokeError::from_anyhow(e.into()))?;
     Ok(value)
+}
+
+/// From https://github.com/tauri-apps/tauri/blob/1.x/core/tauri/src/api/dir.rs#L51
+/// Removed from tauri v2
+#[derive(Debug, Serialize)]
+pub struct DiskEntry {
+    /// The path to the entry.
+    pub path: PathBuf,
+    /// The name of the entry (file name with extension or directory name).
+    pub name: Option<String>,
+    /// The children of this entry if it's a directory.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub children: Option<Vec<DiskEntry>>,
+}
+
+/// From https://github.com/tauri-apps/tauri/blob/1.x/core/tauri/src/api/dir.rs#L51
+/// Removed from tauri v2
+fn is_dir<P: AsRef<Path>>(path: P) -> Result<bool> {
+    std::fs::metadata(path)
+        .map(|md| md.is_dir())
+        .map_err(Into::into)
+}
+
+/// From https://github.com/tauri-apps/tauri/blob/1.x/core/tauri/src/api/dir.rs#L51
+/// Removed from tauri v2
+#[tauri::command]
+fn read_dir_recursive(path: &str) -> Result<Vec<DiskEntry>, InvokeError> {
+    let mut files_and_dirs: Vec<DiskEntry> = vec![];
+    // let path = path.as_ref();
+    for entry in fs::read_dir(path).map_err(|e| InvokeError::from_anyhow(e.into()))? {
+        let path = entry
+            .map_err(|e| InvokeError::from_anyhow(e.into()))?
+            .path();
+
+        if let Ok(flag) = is_dir(&path) {
+            files_and_dirs.push(DiskEntry {
+                path: path.clone(),
+                children: if flag {
+                    Some(read_dir_recursive(path.to_str().expect("No path"))?)
+                } else {
+                    None
+                },
+                name: path
+                    .file_name()
+                    .map(|name| name.to_string_lossy())
+                    .map(|name| name.to_string()),
+            });
+        }
+    }
+    Ok(files_and_dirs)
 }
 
 /// This command returns a string that is the contents of a file at the path.
@@ -84,7 +139,8 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
         fs::write("/tmp/kittycad_user_code", details.user_code().secret())
             .expect("Unable to write /tmp/kittycad_user_code file");
     } else {
-        tauri::api::shell::open(&app.shell_scope(), auth_uri.secret(), None)
+        app.shell()
+            .open(auth_uri.secret(), None)
             .map_err(|e| InvokeError::from_anyhow(e.into()))?;
     }
 
@@ -142,15 +198,37 @@ async fn get_user(
     Ok(user_info)
 }
 
+/// Open the selected path in the system file manager.
+/// From this GitHub comment: https://github.com/tauri-apps/tauri/issues/4062#issuecomment-1338048169
+/// But with the Linux support removed since we don't need it for now.
+#[tauri::command]
+fn show_in_folder(path: String) {
+    #[cfg(target_os = "windows")]
+    {
+        Command::new("explorer")
+            .args(["/select,", &path]) // The comma after select is not a typo
+            .spawn()
+            .unwrap();
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        Command::new("open").args(["-R", &path]).spawn().unwrap();
+    }
+}
+
 fn main() {
     tauri::Builder::default()
         .setup(|_app| {
-            #[cfg(debug_assertions)] // only include this code on debug builds
+            #[cfg(debug_assertions)]
             {
-                let window = _app.get_window("main").unwrap();
-                // comment out the below if you don't devtools to open everytime.
-                // it's useful because otherwise devtools shuts everytime rust code changes.
-                window.open_devtools();
+                use tauri::Manager;
+                _app.get_webview("main").unwrap().open_devtools();
+            }
+            #[cfg(not(debug_assertions))]
+            {
+                _app.handle()
+                    .plugin(tauri_plugin_updater::Builder::new().build())?;
             }
             Ok(())
         })
@@ -158,9 +236,15 @@ fn main() {
             get_user,
             login,
             read_toml,
-            read_txt_file
+            read_txt_file,
+            read_dir_recursive,
+            show_in_folder,
         ])
-        .plugin(tauri_plugin_fs_extra::init())
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_http::init())
+        .plugin(tauri_plugin_os::init())
+        .plugin(tauri_plugin_shell::init())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

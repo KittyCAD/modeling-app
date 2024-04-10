@@ -5,6 +5,7 @@
 #![recursion_limit = "1024"]
 
 pub mod ast;
+pub mod coredump;
 pub mod docs;
 pub mod engine;
 pub mod errors;
@@ -14,3 +15,5 @@ pub mod lsp;
 pub mod parser;
 pub mod std;
 pub mod token;
+#[cfg(target_arch = "wasm32")]
+pub mod wasm;

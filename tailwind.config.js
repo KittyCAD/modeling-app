@@ -32,6 +32,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        primary: `oklch(var(--_primary) / <alpha-value>)`,
         ...themeColors,
       },
       fontFamily: {

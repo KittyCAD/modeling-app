@@ -1,26 +1,29 @@
 import { ActionButton } from '../components/ActionButton'
 import { isTauri } from '../lib/isTauri'
-import { invoke } from '@tauri-apps/api/tauri'
+import { invoke } from '@tauri-apps/api/core'
 import { VITE_KC_SITE_BASE_URL, VITE_KC_API_BASE_URL } from '../env'
 import { Themes, getSystemTheme } from '../lib/theme'
 import { paths } from 'lib/paths'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { APP_NAME } from 'lib/constants'
 
 const SignIn = () => {
-  const getLogoTheme = () =>
-    theme === Themes.Light ||
-    (theme === Themes.System && getSystemTheme() === Themes.Light)
-      ? '-dark'
-      : ''
   const {
     auth: { send },
     settings: {
       state: {
-        context: { theme },
+        context: {
+          app: { theme },
+        },
       },
     },
-  } = useGlobalStateContext()
+  } = useSettingsAuthContext()
+
+  const getLogoTheme = () =>
+    theme.current === Themes.Light ||
+    (theme.current === Themes.System && getSystemTheme() === Themes.Light)
+      ? '-dark'
+      : ''
 
   const signInTauri = async () => {
     // We want to invoke our command to login via device auth.
@@ -30,7 +33,7 @@ const SignIn = () => {
       })
       send({ type: 'Log in', token })
     } catch (error) {
-      console.error('login button', error)
+      console.error('Error with login button', error)
     }
   }
 

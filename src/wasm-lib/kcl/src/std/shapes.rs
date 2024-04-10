@@ -1,151 +1,80 @@
+//! Standard library shapes.
+
+use anyhow::Result;
+use derive_docs::stdlib;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use super::kcl_stdlib::KclStdLibFn;
 use crate::{
-    ast::types::{FunctionExpression, Program},
-    docs::StdLibFn,
+    errors::KclError,
+    executor::MemoryItem,
+    std::{Args, SketchGroup, SketchSurface},
 };
 
-pub const CIRCLE_FN: &str = r#"
-(center, radius, surface, tag?) => {
-const sg = startProfileAt([center[0] + radius, center[1]], surface)
-    |> arc({
-       angle_end: 360,
-       angle_start: 0,
-       radius: radius,
-       tag: tag
-     }, %)
-    |> close(%)
-  return sg
-}
-    "#;
-
-#[derive(Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-pub struct Circle {
-    function: FunctionExpression,
-    program: Program,
+/// A sketch surface or a sketch group.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(untagged)]
+pub enum SketchSurfaceOrGroup {
+    SketchSurface(SketchSurface),
+    SketchGroup(Box<SketchGroup>),
 }
 
-impl Default for Circle {
-    fn default() -> Self {
-        // TODO in https://github.com/KittyCAD/modeling-app/issues/1018
-        // Don't unwrap here, parse it at compile-time.
-        let (src, function) = super::kcl_stdlib::extract_function(CIRCLE_FN).unwrap();
-        Self {
-            function: *function,
-            program: src,
-        }
-    }
+/// Sketch a circle.
+pub async fn circle(args: Args) -> Result<MemoryItem, KclError> {
+    let (center, radius, sketch_surface_or_group, tag): ([f64; 2], f64, SketchSurfaceOrGroup, Option<String>) =
+        args.get_circle_args()?;
+
+    let sketch_group = inner_circle(center, radius, tag, sketch_surface_or_group, args).await?;
+    Ok(MemoryItem::SketchGroup(sketch_group))
 }
 
-impl std::fmt::Debug for Circle {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        "circle".fmt(f)
-    }
-}
+/// Sketch a circle.
+///
+/// ```no_run
+/// const circles = startSketchOn('XY')
+///     |> circle([5, 5], 1, %)
+///     |> patternLinear2d({axis: [1,1], repetitions: 12, distance: 3}, %)
+///
+/// const rectangle = startSketchOn('XY')
+///     |> startProfileAt([0, 0], %)
+///     |> line([0, 50], %)
+///     |> line([50, 0], %)
+///     |> line([0, -50], %)
+///     |> close(%)
+///     |> hole(circles, %)
+/// ```
+#[stdlib {
+    name = "circle",
+}]
+async fn inner_circle(
+    center: [f64; 2],
+    radius: f64,
+    tag: Option<String>,
+    sketch_surface_or_group: SketchSurfaceOrGroup,
+    args: Args,
+) -> Result<Box<SketchGroup>, KclError> {
+    let sketch_surface = match sketch_surface_or_group {
+        SketchSurfaceOrGroup::SketchSurface(surface) => surface,
+        SketchSurfaceOrGroup::SketchGroup(group) => group.on,
+    };
+    let mut sketch_group =
+        crate::std::sketch::inner_start_profile_at([center[0] + radius, center[1]], sketch_surface, None, args.clone())
+            .await?;
 
-/// TODO: Parse the KCL in a macro and generate these
-impl StdLibFn for Circle {
-    fn name(&self) -> String {
-        "circle".to_owned()
-    }
+    // Call arc.
+    sketch_group = crate::std::sketch::inner_arc(
+        crate::std::sketch::ArcData::AnglesAndRadius {
+            angle_start: 0.0,
+            angle_end: 360.0,
+            radius,
+        },
+        sketch_group,
+        tag,
+        args.clone(),
+    )
+    .await?;
 
-    fn summary(&self) -> String {
-        "Sketch a circle on the given plane".to_owned()
-    }
-
-    fn description(&self) -> String {
-        String::new()
-    }
-
-    fn tags(&self) -> Vec<String> {
-        Vec::new()
-    }
-
-    fn args(&self) -> Vec<crate::docs::StdLibFnArg> {
-        let mut settings = schemars::gen::SchemaSettings::openapi3();
-        settings.inline_subschemas = true;
-        let mut generator = schemars::gen::SchemaGenerator::new(settings);
-        let mut args = Vec::new();
-        for parameter in &self.function.params {
-            match parameter.identifier.name.as_str() {
-                "center" => {
-                    args.push(crate::docs::StdLibFnArg {
-                        name: parameter.identifier.name.to_owned(),
-                        type_: "[number, number]".to_string(),
-                        schema: <[f64; 2]>::json_schema(&mut generator),
-                        required: true,
-                    });
-                }
-                "radius" => {
-                    args.push(crate::docs::StdLibFnArg {
-                        name: parameter.identifier.name.to_owned(),
-                        type_: "number".to_string(),
-                        schema: <f64>::json_schema(&mut generator),
-                        required: true,
-                    });
-                }
-                "surface" => {
-                    args.push(crate::docs::StdLibFnArg {
-                        name: parameter.identifier.name.to_owned(),
-                        type_: "SketchSurface".to_string(),
-                        schema: <crate::executor::SketchSurface>::json_schema(&mut generator),
-                        required: true,
-                    });
-                }
-                "tag" => {
-                    args.push(crate::docs::StdLibFnArg {
-                        name: parameter.identifier.name.to_owned(),
-                        type_: "String".to_string(),
-                        schema: <String>::json_schema(&mut generator),
-                        required: false,
-                    });
-                }
-                _ => panic!("Unknown parameter: {:?}", parameter.identifier.name),
-            }
-        }
-        args
-    }
-
-    fn return_value(&self) -> Option<crate::docs::StdLibFnArg> {
-        let mut settings = schemars::gen::SchemaSettings::openapi3();
-        settings.inline_subschemas = true;
-        let mut generator = schemars::gen::SchemaGenerator::new(settings);
-        Some(crate::docs::StdLibFnArg {
-            name: "SketchGroup".to_owned(),
-            type_: "SketchGroup".to_string(),
-            schema: <crate::executor::SketchGroup>::json_schema(&mut generator),
-            required: true,
-        })
-    }
-
-    fn unpublished(&self) -> bool {
-        false
-    }
-
-    fn deprecated(&self) -> bool {
-        false
-    }
-
-    fn std_lib_fn(&self) -> crate::std::StdFn {
-        todo!()
-    }
-
-    fn clone_box(&self) -> Box<dyn StdLibFn> {
-        Box::new(self.to_owned())
-    }
-}
-
-impl KclStdLibFn for Circle {
-    fn function(&self) -> &FunctionExpression {
-        &self.function
-    }
-    fn program(&self) -> &Program {
-        &self.program
-    }
-
-    fn kcl_clone_box(&self) -> Box<dyn KclStdLibFn> {
-        Box::new(self.clone())
-    }
+    // Call close.
+    crate::std::sketch::inner_close(sketch_group, None, args).await
 }

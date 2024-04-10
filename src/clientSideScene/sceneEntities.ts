@@ -5,7 +5,6 @@ import {
   Group,
   Intersection,
   LineCurve3,
-  Matrix4,
   Mesh,
   MeshBasicMaterial,
   Object3D,
@@ -13,6 +12,7 @@ import {
   OrthographicCamera,
   PerspectiveCamera,
   PlaneGeometry,
+  Points,
   Quaternion,
   Scene,
   Shape,
@@ -29,7 +29,6 @@ import {
   INTERSECTION_PLANE_LAYER,
   OnMouseEnterLeaveArgs,
   RAYCASTABLE_PLANE,
-  sceneInfra,
   SKETCH_GROUP_SEGMENTS,
   SKETCH_LAYER,
   X_AXIS,
@@ -37,7 +36,7 @@ import {
   Y_AXIS,
   YZ_PLANE,
 } from './sceneInfra'
-import { isQuaternionVertical } from './helpers'
+import { isQuaternionVertical, quaternionFromUpNForward } from './helpers'
 import {
   CallExpression,
   getTangentialArcToInfo,
@@ -53,10 +52,9 @@ import {
   VariableDeclaration,
   VariableDeclarator,
 } from 'lang/wasm'
-import { kclManager } from 'lang/KclSingleton'
+import { engineCommandManager, kclManager, sceneInfra } from 'lib/singletons'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
-import { executeAst } from 'useStore'
-import { engineCommandManager } from 'lang/std/engineConnection'
+import { executeAst, useStore } from 'useStore'
 import {
   createArcGeometry,
   dashedStraight,
@@ -70,43 +68,61 @@ import {
   changeSketchArguments,
   updateStartProfileAtArgs,
 } from 'lang/std/sketch'
-import { isReducedMotion, throttle } from 'lib/utils'
+import { throttle } from 'lib/utils'
 import {
   createArrayExpression,
   createCallExpressionStdLib,
   createLiteral,
   createPipeSubstitution,
 } from 'lang/modifyAst'
-import { getEventForSegmentSelection } from 'lib/selections'
+import {
+  getEventForSegmentSelection,
+  sendSelectEventToEngine,
+} from 'lib/selections'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import { createGridHelper, orthoScale, perspScale } from './helpers'
+import { Models } from '@kittycad/lib'
+import { uuidv4 } from 'lib/utils'
+import { SketchDetails } from 'machines/modelingMachine'
+import { EngineCommandManager } from 'lang/std/engineConnection'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
+export const EXTRA_SEGMENT_HANDLE = 'extraSegmentHandle'
+export const EXTRA_SEGMENT_OFFSET_PX = 8
+export const PROFILE_START = 'profile-start'
 export const STRAIGHT_SEGMENT = 'straight-segment'
 export const STRAIGHT_SEGMENT_BODY = 'straight-segment-body'
 export const STRAIGHT_SEGMENT_DASH = 'straight-segment-body-dashed'
-export const TANGENTIAL_ARC_TO_SEGMENT = 'tangential-arc-to-segment'
-export const TANGENTIAL_ARC_TO_SEGMENT_BODY = 'tangential-arc-to-segment-body'
 export const TANGENTIAL_ARC_TO__SEGMENT_DASH =
   'tangential-arc-to-segment-body-dashed'
-export const PROFILE_START = 'profile-start'
+export const TANGENTIAL_ARC_TO_SEGMENT = 'tangential-arc-to-segment'
+export const TANGENTIAL_ARC_TO_SEGMENT_BODY = 'tangential-arc-to-segment-body'
+export const SEGMENT_WIDTH_PX = 1.6
+export const HIDE_SEGMENT_LENGTH = 75 // in pixels
+export const HIDE_HOVER_SEGMENT_LENGTH = 60 // in pixels
 
 // This singleton Class is responsible for all of the things the user sees and interacts with.
 // That mostly mean sketch elements.
 // Cameras, controls, raycasters, etc are handled by sceneInfra
-class SceneEntities {
+export class SceneEntities {
+  engineCommandManager: EngineCommandManager
   scene: Scene
   sceneProgramMemory: ProgramMemory = { root: {}, return: null }
   activeSegments: { [key: string]: Group } = {}
   intersectionPlane: Mesh | null = null
   axisGroup: Group | null = null
   currentSketchQuaternion: Quaternion | null = null
-  constructor() {
+  constructor(engineCommandManager: EngineCommandManager) {
+    this.engineCommandManager = engineCommandManager
     this.scene = sceneInfra?.scene
     sceneInfra?.camControls.subscribeToCamChange(this.onCamChange)
+    window.addEventListener('resize', this.onWindowResize)
   }
 
+  onWindowResize = () => {
+    this.onCamChange()
+  }
   onCamChange = () => {
     const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
@@ -164,7 +180,7 @@ class SceneEntities {
       console.warn('createIntersectionPlane called when it already exists')
       return
     }
-    const hundredM = 1000000
+    const hundredM = 100_0000
     const planeGeometry = new PlaneGeometry(hundredM, hundredM)
     const planeMaterial = new MeshBasicMaterial({
       color: 0xff0000,
@@ -178,7 +194,12 @@ class SceneEntities {
     this.intersectionPlane.layers.set(INTERSECTION_PLANE_LAYER)
     this.scene.add(this.intersectionPlane)
   }
-  createSketchAxis(sketchPathToNode: PathToNode) {
+  createSketchAxis(
+    sketchPathToNode: PathToNode,
+    forward: [number, number, number],
+    up: [number, number, number],
+    sketchPosition?: [number, number, number]
+  ) {
     const orthoFactor = orthoScale(sceneInfra.camControls.camera)
     const baseXColor = 0x000055
     const baseYColor = 0x550000
@@ -238,14 +259,12 @@ class SceneEntities {
       child.layers.set(SKETCH_LAYER)
     })
 
-    const quat = quaternionFromSketchGroup(
-      sketchGroupFromPathToNode({
-        pathToNode: sketchPathToNode,
-        ast: kclManager.ast,
-        programMemory: kclManager.programMemory,
-      })
+    const quat = quaternionFromUpNForward(
+      new Vector3(...up),
+      new Vector3(...forward)
     )
     this.axisGroup.setRotationFromQuaternion(quat)
+    sketchPosition && this.axisGroup.position.set(...sketchPosition)
     this.scene.add(this.axisGroup)
   }
   removeIntersectionPlane() {
@@ -255,37 +274,49 @@ class SceneEntities {
 
   async setupSketch({
     sketchPathToNode,
-    ast,
-    // is draft line assumes the last segment is a draft line, and mods it as the user moves the mouse
-    draftSegment,
+    forward,
+    up,
+    position,
+    maybeModdedAst,
+    draftExpressionsIndices,
   }: {
     sketchPathToNode: PathToNode
-    ast?: Program
-    draftSegment?: DraftSegment
-  }) {
-    sceneInfra.resetMouseListeners()
+    maybeModdedAst: Program
+    draftExpressionsIndices?: { start: number; end: number }
+    forward: [number, number, number]
+    up: [number, number, number]
+    position?: [number, number, number]
+  }): Promise<{
+    truncatedAst: Program
+    programMemoryOverride: ProgramMemory
+    sketchGroup: SketchGroup
+    variableDeclarationName: string
+  }> {
     this.createIntersectionPlane()
 
     const { truncatedAst, programMemoryOverride, variableDeclarationName } =
-      this.prepareTruncatedMemoryAndAst(
-        sketchPathToNode || [],
-        kclManager.ast,
-        draftSegment
-      )
+      this.prepareTruncatedMemoryAndAst(sketchPathToNode || [], maybeModdedAst)
     const { programMemory } = await executeAst({
       ast: truncatedAst,
       useFakeExecutor: true,
-      engineCommandManager,
+      engineCommandManager: this.engineCommandManager,
       programMemoryOverride,
     })
     const sketchGroup = sketchGroupFromPathToNode({
       pathToNode: sketchPathToNode,
-      ast: kclManager.ast,
+      ast: maybeModdedAst,
       programMemory,
     })
-    if (!Array.isArray(sketchGroup?.value)) return
+    if (!Array.isArray(sketchGroup?.value))
+      return {
+        truncatedAst,
+        programMemoryOverride,
+        sketchGroup,
+        variableDeclarationName,
+      }
     this.sceneProgramMemory = programMemory
     const group = new Group()
+    position && group.position.set(...position)
     group.userData = {
       type: SKETCH_GROUP_SEGMENTS,
       pathToNode: sketchPathToNode,
@@ -325,7 +356,10 @@ class SceneEntities {
         kclManager.ast,
         segment.__geoMeta.sourceRange
       )
-      if (draftSegment && (sketchGroup.value[index - 1] || sketchGroup.start)) {
+      if (
+        draftExpressionsIndices &&
+        (sketchGroup.value[index - 1] || sketchGroup.start)
+      ) {
         const previousSegment =
           sketchGroup.value[index - 1] || sketchGroup.start
         const previousSegmentPathToNode = getNodePathFromSourceRange(
@@ -340,7 +374,9 @@ class SceneEntities {
         segPathToNode[1][0] = bodyIndex
       }
       const isDraftSegment =
-        draftSegment && index === sketchGroup.value.length - 1
+        draftExpressionsIndices &&
+        index <= draftExpressionsIndices.end &&
+        index >= draftExpressionsIndices.start
       let seg
       const callExpName = getNodeFromPath<CallExpression>(
         kclManager.ast,
@@ -356,6 +392,7 @@ class SceneEntities {
           pathToNode: segPathToNode,
           isDraftSegment,
           scale: factor,
+          texture: sceneInfra.extraSegmentTexture,
         })
       } else {
         seg = straightSegment({
@@ -366,6 +403,7 @@ class SceneEntities {
           isDraftSegment,
           scale: factor,
           callExpName,
+          texture: sceneInfra.extraSegmentTexture,
         })
       }
       seg.layers.set(SKETCH_LAYER)
@@ -377,122 +415,280 @@ class SceneEntities {
       this.activeSegments[JSON.stringify(segPathToNode)] = seg
     })
 
-    this.currentSketchQuaternion = quaternionFromSketchGroup(sketchGroup)
+    this.currentSketchQuaternion = quaternionFromUpNForward(
+      new Vector3(...up),
+      new Vector3(...forward)
+    )
     group.setRotationFromQuaternion(this.currentSketchQuaternion)
     this.intersectionPlane &&
       this.intersectionPlane.setRotationFromQuaternion(
         this.currentSketchQuaternion
       )
-
+    this.intersectionPlane &&
+      position &&
+      this.intersectionPlane.position.set(...position)
     this.scene.add(group)
-    if (!draftSegment) {
-      sceneInfra.setCallbacks({
-        onDrag: ({ selected, intersectionPoint, mouseEvent, intersects }) => {
-          if (mouseEvent.which !== 1) return
-          this.onDragSegment({
-            object: selected,
-            intersection2d: intersectionPoint.twoD,
-            intersects,
-            sketchPathToNode,
-          })
-        },
-        onMove: () => {},
-        onClick: (args) => {
-          if (args?.mouseEvent.which !== 1) return
-          if (!args || !args.selected) {
-            sceneInfra.modelingSend({
-              type: 'Set selection',
-              data: {
-                selectionType: 'singleCodeCursor',
-              },
-            })
-            return
-          }
-          const { selected } = args
-          const event = getEventForSegmentSelection(selected)
-          if (!event) return
-          sceneInfra.modelingSend(event)
-        },
-        ...mouseEnterLeaveCallbacks(),
-      })
-    } else {
-      sceneInfra.setCallbacks({
-        onClick: async (args) => {
-          if (!args) return
-          if (args.mouseEvent.which !== 1) return
-          const { intersectionPoint } = args
-          let intersection2d = intersectionPoint?.twoD
-          const profileStart = args.intersects
-            .map(({ object }) => getParentGroup(object, [PROFILE_START]))
-            .find((a) => a?.name === PROFILE_START)
-
-          let modifiedAst
-          if (profileStart) {
-            modifiedAst = addCloseToPipe({
-              node: kclManager.ast,
-              programMemory: kclManager.programMemory,
-              pathToNode: sketchPathToNode,
-            })
-          } else if (intersection2d) {
-            const lastSegment = sketchGroup.value.slice(-1)[0]
-            modifiedAst = addNewSketchLn({
-              node: kclManager.ast,
-              programMemory: kclManager.programMemory,
-              to: [intersection2d.x, intersection2d.y],
-              from: [lastSegment.to[0], lastSegment.to[1]],
-              fnName:
-                lastSegment.type === 'TangentialArcTo'
-                  ? 'tangentialArcTo'
-                  : 'line',
-              pathToNode: sketchPathToNode,
-            }).modifiedAst
-          } else {
-            // return early as we didn't modify the ast
-            return
-          }
-
-          kclManager.executeAstMock(modifiedAst, { updates: 'code' })
-          await this.tearDownSketch({ removeAxis: false })
-          this.setupSketch({ sketchPathToNode, draftSegment })
-        },
-        onMove: (args) => {
-          this.onDragSegment({
-            intersection2d: args.intersectionPoint.twoD,
-            object: Object.values(this.activeSegments).slice(-1)[0],
-            intersects: args.intersects,
-            sketchPathToNode,
-            draftInfo: {
-              draftSegment,
-              truncatedAst,
-              programMemoryOverride,
-              variableDeclarationName,
-            },
-          })
-        },
-        ...mouseEnterLeaveCallbacks(),
-      })
-    }
     sceneInfra.camControls.enableRotate = false
+
+    return {
+      truncatedAst,
+      programMemoryOverride,
+      sketchGroup,
+      variableDeclarationName,
+    }
   }
   updateAstAndRejigSketch = async (
     sketchPathToNode: PathToNode,
-    modifiedAst: Program
+    modifiedAst: Program,
+    forward: [number, number, number],
+    up: [number, number, number],
+    origin: [number, number, number]
   ) => {
     await kclManager.updateAst(modifiedAst, false)
     await this.tearDownSketch({ removeAxis: false })
-    this.setupSketch({ sketchPathToNode })
+    sceneInfra.resetMouseListeners()
+    await this.setupSketch({
+      sketchPathToNode,
+      forward,
+      up,
+      position: origin,
+      maybeModdedAst: kclManager.ast,
+    })
+    this.setupSketchIdleCallbacks({
+      forward,
+      up,
+      position: origin,
+      pathToNode: sketchPathToNode,
+    })
   }
-  setUpDraftArc = async (sketchPathToNode: PathToNode) => {
-    await this.tearDownSketch({ removeAxis: false })
-    await new Promise((resolve) => setTimeout(resolve, 100))
-    this.setupSketch({ sketchPathToNode, draftSegment: 'tangentialArcTo' })
+  setUpDraftSegment = async (
+    sketchPathToNode: PathToNode,
+    forward: [number, number, number],
+    up: [number, number, number],
+    origin: [number, number, number],
+    segmentName: 'line' | 'tangentialArcTo' = 'line',
+    shouldTearDown = true
+  ) => {
+    const _ast = JSON.parse(JSON.stringify(kclManager.ast))
+
+    const variableDeclarationName =
+      getNodeFromPath<VariableDeclaration>(
+        _ast,
+        sketchPathToNode || [],
+        'VariableDeclaration'
+      )?.node?.declarations?.[0]?.id?.name || ''
+    const sg = kclManager.programMemory.root[
+      variableDeclarationName
+    ] as SketchGroup
+    const lastSeg = sg.value.slice(-1)[0] || sg.start
+
+    const index = sg.value.length // because we've added a new segment that's not in the memory yet, no need for `-1`
+
+    const mod = addNewSketchLn({
+      node: _ast,
+      programMemory: kclManager.programMemory,
+      to: [lastSeg.to[0], lastSeg.to[1]],
+      from: [lastSeg.to[0], lastSeg.to[1]],
+      fnName: segmentName,
+      pathToNode: sketchPathToNode,
+    })
+    const modifiedAst = parse(recast(mod.modifiedAst))
+
+    const draftExpressionsIndices = { start: index, end: index }
+
+    if (shouldTearDown) await this.tearDownSketch({ removeAxis: false })
+    sceneInfra.resetMouseListeners()
+    const { truncatedAst, programMemoryOverride, sketchGroup } =
+      await this.setupSketch({
+        sketchPathToNode,
+        forward,
+        up,
+        position: origin,
+        maybeModdedAst: modifiedAst,
+        draftExpressionsIndices,
+      })
+    sceneInfra.setCallbacks({
+      onClick: async (args) => {
+        if (!args) return
+        if (args.mouseEvent.which !== 1) return
+        const { intersectionPoint } = args
+        let intersection2d = intersectionPoint?.twoD
+        const profileStart = args.intersects
+          .map(({ object }) => getParentGroup(object, [PROFILE_START]))
+          .find((a) => a?.name === PROFILE_START)
+
+        let modifiedAst
+        if (profileStart) {
+          modifiedAst = addCloseToPipe({
+            node: kclManager.ast,
+            programMemory: kclManager.programMemory,
+            pathToNode: sketchPathToNode,
+          })
+        } else if (intersection2d) {
+          const lastSegment = sketchGroup.value.slice(-1)[0]
+          modifiedAst = addNewSketchLn({
+            node: kclManager.ast,
+            programMemory: kclManager.programMemory,
+            to: [intersection2d.x, intersection2d.y],
+            from: [lastSegment.to[0], lastSegment.to[1]],
+            fnName:
+              lastSegment.type === 'TangentialArcTo'
+                ? 'tangentialArcTo'
+                : 'line',
+            pathToNode: sketchPathToNode,
+          }).modifiedAst
+        } else {
+          // return early as we didn't modify the ast
+          return
+        }
+
+        await kclManager.executeAstMock(modifiedAst, { updates: 'code' })
+        this.setUpDraftSegment(
+          sketchPathToNode,
+          forward,
+          up,
+          origin,
+          segmentName
+        )
+      },
+      onMove: (args) => {
+        this.onDragSegment({
+          intersection2d: args.intersectionPoint.twoD,
+          object: Object.values(this.activeSegments).slice(-1)[0],
+          intersects: args.intersects,
+          sketchPathToNode,
+          draftInfo: {
+            truncatedAst,
+            programMemoryOverride,
+            variableDeclarationName,
+          },
+        })
+      },
+      ...this.mouseEnterLeaveCallbacks(),
+    })
   }
-  setUpDraftLine = async (sketchPathToNode: PathToNode) => {
-    await this.tearDownSketch({ removeAxis: false })
-    await new Promise((resolve) => setTimeout(resolve, 100))
-    this.setupSketch({ sketchPathToNode, draftSegment: 'line' })
+  setupSketchIdleCallbacks = ({
+    pathToNode,
+    up,
+    forward,
+    position,
+  }: {
+    pathToNode: PathToNode
+    forward: [number, number, number]
+    up: [number, number, number]
+    position?: [number, number, number]
+  }) => {
+    let addingNewSegmentStatus: 'nothing' | 'pending' | 'added' = 'nothing'
+    sceneInfra.setCallbacks({
+      onDragEnd: async () => {
+        if (addingNewSegmentStatus !== 'nothing') {
+          await this.tearDownSketch({ removeAxis: false })
+          this.setupSketch({
+            sketchPathToNode: pathToNode,
+            maybeModdedAst: kclManager.ast,
+            up,
+            forward,
+            position,
+          })
+          // setting up the callbacks again resets value in closures
+          this.setupSketchIdleCallbacks({
+            pathToNode,
+            up,
+            forward,
+            position,
+          })
+        }
+      },
+      onDrag: async ({
+        selected,
+        intersectionPoint,
+        mouseEvent,
+        intersects,
+      }) => {
+        if (mouseEvent.which !== 1) return
+
+        const group = getParentGroup(selected, [EXTRA_SEGMENT_HANDLE])
+        if (group?.name === EXTRA_SEGMENT_HANDLE) {
+          const segGroup = getParentGroup(selected)
+          const pathToNode: PathToNode = segGroup?.userData?.pathToNode
+          const pathToNodeIndex = pathToNode.findIndex(
+            (x) => x[1] === 'PipeExpression'
+          )
+
+          const sketchGroup = sketchGroupFromPathToNode({
+            pathToNode,
+            ast: kclManager.ast,
+            programMemory: kclManager.programMemory,
+          })
+
+          const pipeIndex = pathToNode[pathToNodeIndex + 1][0] as number
+          if (addingNewSegmentStatus === 'nothing') {
+            const prevSegment = sketchGroup.value[pipeIndex - 2]
+            const mod = addNewSketchLn({
+              node: kclManager.ast,
+              programMemory: kclManager.programMemory,
+              to: [intersectionPoint.twoD.x, intersectionPoint.twoD.y],
+              from: [prevSegment.from[0], prevSegment.from[1]],
+              // TODO assuming it's always a straight segments being added
+              // as this is easiest, and we'll need to add "tabbing" behavior
+              // to support other segment types
+              fnName: 'line',
+              pathToNode: pathToNode,
+              spliceBetween: true,
+            })
+            addingNewSegmentStatus = 'pending'
+            await kclManager.executeAstMock(mod.modifiedAst, {
+              updates: 'code',
+            })
+            await this.tearDownSketch({ removeAxis: false })
+            this.setupSketch({
+              sketchPathToNode: pathToNode,
+              maybeModdedAst: kclManager.ast,
+              up,
+              forward,
+              position,
+            })
+            addingNewSegmentStatus = 'added'
+          } else if (addingNewSegmentStatus === 'added') {
+            const pathToNodeForNewSegment = pathToNode.slice(0, pathToNodeIndex)
+            pathToNodeForNewSegment.push([pipeIndex - 2, 'index'])
+            this.onDragSegment({
+              sketchPathToNode: pathToNodeForNewSegment,
+              object: selected,
+              intersection2d: intersectionPoint.twoD,
+              intersects,
+            })
+          }
+          return
+        }
+
+        this.onDragSegment({
+          object: selected,
+          intersection2d: intersectionPoint.twoD,
+          intersects,
+          sketchPathToNode: pathToNode,
+        })
+      },
+      onMove: () => {},
+      onClick: (args) => {
+        if (args?.mouseEvent.which !== 1) return
+        if (!args || !args.selected) {
+          sceneInfra.modelingSend({
+            type: 'Set selection',
+            data: {
+              selectionType: 'singleCodeCursor',
+            },
+          })
+          return
+        }
+        const { selected } = args
+        const event = getEventForSegmentSelection(selected)
+        if (!event) return
+        sceneInfra.modelingSend(event)
+      },
+      ...this.mouseEnterLeaveCallbacks(),
+    })
   }
-  onDraftLineMouseMove = () => {}
   prepareTruncatedMemoryAndAst = (
     sketchPathToNode: PathToNode,
     ast?: Program,
@@ -516,7 +712,6 @@ class SceneEntities {
     sketchPathToNode: PathToNode
     intersects: Intersection<Object3D<Object3DEventMap>>[]
     draftInfo?: {
-      draftSegment: DraftSegment
       truncatedAst: Program
       programMemoryOverride: ProgramMemory
       variableDeclarationName: string
@@ -595,7 +790,7 @@ class SceneEntities {
       const { programMemory } = await executeAst({
         ast: truncatedAst,
         useFakeExecutor: true,
-        engineCommandManager: engineCommandManager,
+        engineCommandManager: this.engineCommandManager,
         programMemoryOverride,
       })
       this.sceneProgramMemory = programMemory
@@ -669,8 +864,7 @@ class SceneEntities {
     group.userData.to = to
     group.userData.prevSegment = prevSegment
     const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
-
-    arrowGroup.position.set(to[0], to[1], 0)
+    const extraSegmentGroup = group.getObjectByName(EXTRA_SEGMENT_HANDLE)
 
     const previousPoint =
       prevSegment?.type === 'TangentialArcTo'
@@ -688,13 +882,49 @@ class SceneEntities {
       obtuse: true,
     })
 
-    const arrowheadAngle =
-      arcInfo.endAngle + (Math.PI / 2) * (arcInfo.ccw ? 1 : -1)
-    arrowGroup.quaternion.setFromUnitVectors(
-      new Vector3(0, 1, 0),
-      new Vector3(Math.cos(arrowheadAngle), Math.sin(arrowheadAngle), 0)
-    )
-    arrowGroup.scale.set(scale, scale, scale)
+    const pxLength = arcInfo.arcLength / scale
+    const shouldHideIdle = pxLength < HIDE_SEGMENT_LENGTH
+    const shouldHideHover = pxLength < HIDE_HOVER_SEGMENT_LENGTH
+
+    const hoveredParent =
+      sceneInfra.hoveredObject &&
+      getParentGroup(sceneInfra.hoveredObject, [TANGENTIAL_ARC_TO_SEGMENT])
+    let isHandlesVisible = !shouldHideIdle
+    if (hoveredParent && hoveredParent?.uuid === group?.uuid) {
+      isHandlesVisible = !shouldHideHover
+    }
+
+    if (arrowGroup) {
+      arrowGroup.position.set(to[0], to[1], 0)
+
+      const arrowheadAngle =
+        arcInfo.endAngle + (Math.PI / 2) * (arcInfo.ccw ? 1 : -1)
+      arrowGroup.quaternion.setFromUnitVectors(
+        new Vector3(0, 1, 0),
+        new Vector3(Math.cos(arrowheadAngle), Math.sin(arrowheadAngle), 0)
+      )
+      arrowGroup.scale.set(scale, scale, scale)
+      arrowGroup.visible = isHandlesVisible
+    }
+
+    if (extraSegmentGroup) {
+      const circumferenceInPx = (2 * Math.PI * arcInfo.radius) / scale
+      const extraSegmentAngleDelta =
+        (EXTRA_SEGMENT_OFFSET_PX / circumferenceInPx) * Math.PI * 2
+      const extraSegmentAngle =
+        arcInfo.startAngle + (arcInfo.ccw ? 1 : -1) * extraSegmentAngleDelta
+      const extraSegmentOffset = new Vector2(
+        Math.cos(extraSegmentAngle) * arcInfo.radius,
+        Math.sin(extraSegmentAngle) * arcInfo.radius
+      )
+      extraSegmentGroup.position.set(
+        arcInfo.center[0] + extraSegmentOffset.x,
+        arcInfo.center[1] + extraSegmentOffset.y,
+        0
+      )
+      extraSegmentGroup.scale.set(scale, scale, scale)
+      extraSegmentGroup.visible = isHandlesVisible
+    }
 
     const tangentialArcToSegmentBody = group.children.find(
       (child) => child.userData.type === TANGENTIAL_ARC_TO_SEGMENT_BODY
@@ -741,9 +971,25 @@ class SceneEntities {
     group.userData.from = from
     group.userData.to = to
     const shape = new Shape()
-    shape.moveTo(0, -0.08 * scale)
-    shape.lineTo(0, 0.08 * scale) // The width of the line
+    shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale) // The width of the line in px (2.4px in this case)
+    shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale)
     const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
+
+    const length = Math.sqrt(
+      Math.pow(to[0] - from[0], 2) + Math.pow(to[1] - from[1], 2)
+    )
+
+    const pxLength = length / scale
+    const shouldHideIdle = pxLength < HIDE_SEGMENT_LENGTH
+    const shouldHideHover = pxLength < HIDE_HOVER_SEGMENT_LENGTH
+
+    const hoveredParent =
+      sceneInfra.hoveredObject &&
+      getParentGroup(sceneInfra.hoveredObject, [STRAIGHT_SEGMENT])
+    let isHandlesVisible = !shouldHideIdle
+    if (hoveredParent && hoveredParent?.uuid === group?.uuid) {
+      isHandlesVisible = !shouldHideHover
+    }
 
     if (arrowGroup) {
       arrowGroup.position.set(to[0], to[1], 0)
@@ -756,6 +1002,21 @@ class SceneEntities {
         .normalize()
       arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
       arrowGroup.scale.set(scale, scale, scale)
+      arrowGroup.visible = isHandlesVisible
+    }
+
+    const extraSegmentGroup = group.getObjectByName(EXTRA_SEGMENT_HANDLE)
+    if (extraSegmentGroup) {
+      const offsetFromBase = new Vector2(to[0] - from[0], to[1] - from[1])
+        .normalize()
+        .multiplyScalar(EXTRA_SEGMENT_OFFSET_PX * scale)
+      extraSegmentGroup.position.set(
+        from[0] + offsetFromBase.x,
+        from[1] + offsetFromBase.y,
+        0
+      )
+      extraSegmentGroup.scale.set(scale, scale, scale)
+      extraSegmentGroup.visible = isHandlesVisible
     }
 
     const straightSegmentBody = group.children.find(
@@ -785,10 +1046,10 @@ class SceneEntities {
     }
   }
   async animateAfterSketch() {
-    if (isReducedMotion()) {
-      sceneInfra.camControls.usePerspectiveCamera()
-      return
-    }
+    // if (isReducedMotion()) {
+    //   sceneInfra.camControls.usePerspectiveCamera()
+    //   return
+    // }
     await sceneInfra.camControls.animateToPerspective()
   }
   removeSketchGrid() {
@@ -853,36 +1114,202 @@ class SceneEntities {
         const type: DefaultPlane = selected.userData.type
         selected.material.color = defaultPlaneColor(type)
       },
-      onClick: (args) => {
+      onClick: async (args) => {
+        const checkExtrudeFaceClick = async (): Promise<boolean> => {
+          const { streamDimensions } = useStore.getState()
+          const { entity_id } = await sendSelectEventToEngine(
+            args?.mouseEvent,
+            document.getElementById('video-stream') as HTMLVideoElement,
+            streamDimensions
+          )
+          if (!entity_id) return false
+          const artifact = this.engineCommandManager.artifactMap[entity_id]
+          if (artifact?.commandType !== 'solid3d_get_extrusion_face_info')
+            return false
+          const faceInfo: Models['FaceIsPlanar_type'] = (
+            await this.engineCommandManager.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: {
+                type: 'face_is_planar',
+                object_id: entity_id,
+              },
+            })
+          )?.data?.data
+          if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
+            return false
+          const { z_axis, origin, y_axis } = faceInfo
+          const pathToNode = getNodePathFromSourceRange(
+            kclManager.ast,
+            artifact.range
+          )
+
+          sceneInfra.modelingSend({
+            type: 'Select default plane',
+            data: {
+              type: 'extrudeFace',
+              zAxis: [z_axis.x, z_axis.y, z_axis.z],
+              yAxis: [y_axis.x, y_axis.y, y_axis.z],
+              position: [origin.x, origin.y, origin.z].map(
+                (num) => num / sceneInfra._baseUnitMultiplier
+              ) as [number, number, number],
+              extrudeSegmentPathToNode: pathToNode,
+              cap:
+                artifact?.additionalData?.type === 'cap'
+                  ? artifact.additionalData.info
+                  : 'none',
+            },
+          })
+          return true
+        }
+
+        if (await checkExtrudeFaceClick()) return
+
         if (!args || !args.intersects?.[0]) return
         if (args.mouseEvent.which !== 1) return
         const { intersects } = args
         const type = intersects?.[0].object.name || ''
         const posNorm = Number(intersects?.[0]?.normal?.z) > 0
         let planeString: DefaultPlaneStr = posNorm ? 'XY' : '-XY'
-        let normal: [number, number, number] = posNorm ? [0, 0, 1] : [0, 0, -1]
+        let zAxis: [number, number, number] = posNorm ? [0, 0, 1] : [0, 0, -1]
+        let yAxis: [number, number, number] = [0, 1, 0]
         if (type === YZ_PLANE) {
           planeString = posNorm ? 'YZ' : '-YZ'
-          normal = posNorm ? [1, 0, 0] : [-1, 0, 0]
+          zAxis = posNorm ? [1, 0, 0] : [-1, 0, 0]
+          yAxis = [0, 0, 1]
         } else if (type === XZ_PLANE) {
           planeString = posNorm ? 'XZ' : '-XZ'
-          normal = posNorm ? [0, 1, 0] : [0, -1, 0]
+          zAxis = posNorm ? [0, 1, 0] : [0, -1, 0]
+          yAxis = [0, 0, 1]
         }
         sceneInfra.modelingSend({
           type: 'Select default plane',
           data: {
+            type: 'defaultPlane',
             plane: planeString,
-            normal,
+            zAxis,
+            yAxis,
           },
         })
       },
     })
   }
+  mouseEnterLeaveCallbacks() {
+    return {
+      onMouseEnter: ({ selected, dragSelected }: OnMouseEnterLeaveArgs) => {
+        if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
+          const obj = selected as Mesh
+          const mat = obj.material as MeshBasicMaterial
+          mat.color.set(obj.userData.baseColor)
+          mat.color.offsetHSL(0, 0, 0.5)
+        }
+        const parent = getParentGroup(selected, [
+          STRAIGHT_SEGMENT,
+          TANGENTIAL_ARC_TO_SEGMENT,
+          PROFILE_START,
+        ])
+        if (parent?.userData?.pathToNode) {
+          const updatedAst = parse(recast(kclManager.ast))
+          const node = getNodeFromPath<CallExpression>(
+            updatedAst,
+            parent.userData.pathToNode,
+            'CallExpression'
+          ).node
+          sceneInfra.highlightCallback([node.start, node.end])
+          const yellow = 0xffff00
+          colorSegment(selected, yellow)
+          const extraSegmentGroup = parent.getObjectByName(EXTRA_SEGMENT_HANDLE)
+          if (extraSegmentGroup) {
+            extraSegmentGroup.traverse((child) => {
+              if (child instanceof Points || child instanceof Mesh) {
+                child.material.opacity = dragSelected ? 0 : 1
+              }
+            })
+          }
+          const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+
+          const factor =
+            (sceneInfra.camControls.camera instanceof OrthographicCamera
+              ? orthoFactor
+              : perspScale(sceneInfra.camControls.camera, parent)) /
+            sceneInfra._baseUnitMultiplier
+          if (parent.name === STRAIGHT_SEGMENT) {
+            this.updateStraightSegment({
+              from: parent.userData.from,
+              to: parent.userData.to,
+              group: parent,
+              scale: factor,
+            })
+          } else if (parent.name === TANGENTIAL_ARC_TO_SEGMENT) {
+            this.updateTangentialArcToSegment({
+              prevSegment: parent.userData.prevSegment,
+              from: parent.userData.from,
+              to: parent.userData.to,
+              group: parent,
+              scale: factor,
+            })
+          }
+          return
+        }
+        sceneInfra.highlightCallback([0, 0])
+      },
+      onMouseLeave: ({ selected, ...rest }: OnMouseEnterLeaveArgs) => {
+        sceneInfra.highlightCallback([0, 0])
+        const parent = getParentGroup(selected, [
+          STRAIGHT_SEGMENT,
+          TANGENTIAL_ARC_TO_SEGMENT,
+          PROFILE_START,
+        ])
+        if (parent) {
+          const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+
+          const factor =
+            (sceneInfra.camControls.camera instanceof OrthographicCamera
+              ? orthoFactor
+              : perspScale(sceneInfra.camControls.camera, parent)) /
+            sceneInfra._baseUnitMultiplier
+          if (parent.name === STRAIGHT_SEGMENT) {
+            this.updateStraightSegment({
+              from: parent.userData.from,
+              to: parent.userData.to,
+              group: parent,
+              scale: factor,
+            })
+          } else if (parent.name === TANGENTIAL_ARC_TO_SEGMENT) {
+            this.updateTangentialArcToSegment({
+              prevSegment: parent.userData.prevSegment,
+              from: parent.userData.from,
+              to: parent.userData.to,
+              group: parent,
+              scale: factor,
+            })
+          }
+        }
+        const isSelected = parent?.userData?.isSelected
+        colorSegment(
+          selected,
+          isSelected ? 0x0000ff : parent?.userData?.baseColor || 0xffffff
+        )
+        const extraSegmentGroup = parent?.getObjectByName(EXTRA_SEGMENT_HANDLE)
+        if (extraSegmentGroup) {
+          extraSegmentGroup.traverse((child) => {
+            if (child instanceof Points || child instanceof Mesh) {
+              child.material.opacity = 0
+            }
+          })
+        }
+        if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
+          const obj = selected as Mesh
+          const mat = obj.material as MeshBasicMaterial
+          mat.color.set(obj.userData.baseColor)
+          if (obj.userData.isSelected) mat.color.offsetHSL(0, 0, 0.2)
+        }
+      },
+    }
+  }
 }
 
 export type DefaultPlaneStr = 'XY' | 'XZ' | 'YZ' | '-XY' | '-XZ' | '-YZ'
-
-export const sceneEntitiesManager = new SceneEntities()
 
 // calculations/pure-functions/easy to test so no excuse not to
 
@@ -1005,30 +1432,6 @@ export function sketchGroupFromPathToNode({
   return programMemory.root[varDec?.id?.name || ''] as SketchGroup
 }
 
-export function quaternionFromSketchGroup(
-  sketchGroup: SketchGroup
-): Quaternion {
-  // TODO figure what is happening in the executor that it's some times returning
-  // [x,y,z] and sometimes {x,y,z}
-  if (!sketchGroup?.zAxis) {
-    // sometimes sketchGroup is undefined,
-    // I don't quiet understand the circumstances yet
-    // and it's very intermittent so leaving this here for now
-    console.log('no zAxis', sketchGroup)
-    console.trace('no zAxis')
-  }
-  const zAxisVec = massageFormats(sketchGroup?.zAxis)
-  const yAxisVec = massageFormats(sketchGroup?.yAxis)
-  const xAxisVec = new Vector3().crossVectors(yAxisVec, zAxisVec).normalize()
-
-  let yAxisVecNormalized = yAxisVec.clone().normalize()
-  let zAxisVecNormalized = zAxisVec.clone().normalize()
-
-  let rotationMatrix = new Matrix4()
-  rotationMatrix.makeBasis(xAxisVec, yAxisVecNormalized, zAxisVecNormalized)
-  return new Quaternion().setFromRotationMatrix(rotationMatrix)
-}
-
 function colorSegment(object: any, color: number) {
   const segmentHead = getParentGroup(object, [ARROWHEAD, PROFILE_START])
   if (segmentHead) {
@@ -1045,7 +1448,7 @@ function colorSegment(object: any, color: number) {
   ])
   if (straightSegmentBody) {
     straightSegmentBody.traverse((child) => {
-      if (child instanceof Mesh) {
+      if (child instanceof Mesh && !child.userData.ignoreColorChange) {
         child.material.color.set(color)
       }
     })
@@ -1063,10 +1466,68 @@ export function getSketchQuaternion(
     programMemory: kclManager.programMemory,
   })
   const zAxis = sketchGroup?.zAxis || sketchNormalBackUp
+  return getQuaternionFromZAxis(massageFormats(zAxis))
+}
+export async function getSketchOrientationDetails(
+  sketchPathToNode: PathToNode
+): Promise<{
+  quat: Quaternion
+  sketchDetails: SketchDetails
+}> {
+  const sketchGroup = sketchGroupFromPathToNode({
+    pathToNode: sketchPathToNode,
+    ast: kclManager.ast,
+    programMemory: kclManager.programMemory,
+  })
+  if (sketchGroup.on.type === 'plane') {
+    const zAxis = sketchGroup?.zAxis
+    return {
+      quat: getQuaternionFromZAxis(massageFormats(zAxis)),
+      sketchDetails: {
+        sketchPathToNode,
+        zAxis: [zAxis.x, zAxis.y, zAxis.z],
+        yAxis: [sketchGroup.yAxis.x, sketchGroup.yAxis.y, sketchGroup.yAxis.z],
+        origin: [0, 0, 0],
+      },
+    }
+  }
+  if (sketchGroup.on.type === 'face') {
+    const faceInfo: Models['FaceIsPlanar_type'] = (
+      await engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'face_is_planar',
+          object_id: sketchGroup.on.faceId,
+        },
+      })
+    )?.data?.data
+    if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
+      throw new Error('faceInfo')
+    const { z_axis, y_axis, origin } = faceInfo
+    const quaternion = quaternionFromUpNForward(
+      new Vector3(y_axis.x, y_axis.y, y_axis.z),
+      new Vector3(z_axis.x, z_axis.y, z_axis.z)
+    )
+    return {
+      quat: quaternion,
+      sketchDetails: {
+        sketchPathToNode,
+        zAxis: [z_axis.x, z_axis.y, z_axis.z],
+        yAxis: [y_axis.x, y_axis.y, y_axis.z],
+        origin: [origin.x, origin.y, origin.z],
+      },
+    }
+  }
+  throw new Error(
+    'sketchGroup.on.type not recognized, has a new type been added?'
+  )
+}
+
+export function getQuaternionFromZAxis(zAxis: Vector3): Quaternion {
   const dummyCam = new PerspectiveCamera()
   dummyCam.up.set(0, 0, 1)
-  const _zAxis = massageFormats(zAxis)
-  dummyCam.position.copy(_zAxis)
+  dummyCam.position.copy(zAxis)
   dummyCam.lookAt(0, 0, 0)
   dummyCam.updateMatrix()
   const quaternion = dummyCam.quaternion.clone()
@@ -1075,7 +1536,7 @@ export function getSketchQuaternion(
 
   // because vertical quaternions are a gimbal lock, for the orbit controls
   // it's best to set them explicitly to the vertical position with a known good camera up
-  if (isVert && _zAxis.z < 0) {
+  if (isVert && zAxis.z < 0) {
     quaternion.set(0, 1, 0, 0)
   } else if (isVert) {
     quaternion.set(0, 0, 0, 1)
@@ -1087,54 +1548,4 @@ function massageFormats(a: any): Vector3 {
   return Array.isArray(a)
     ? new Vector3(a[0], a[1], a[2])
     : new Vector3(a.x, a.y, a.z)
-}
-
-function mouseEnterLeaveCallbacks() {
-  return {
-    onMouseEnter: ({ selected }: OnMouseEnterLeaveArgs) => {
-      if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
-        const obj = selected as Mesh
-        const mat = obj.material as MeshBasicMaterial
-        mat.color.set(obj.userData.baseColor)
-        mat.color.offsetHSL(0, 0, 0.5)
-      }
-      const parent = getParentGroup(selected, [
-        STRAIGHT_SEGMENT,
-        TANGENTIAL_ARC_TO_SEGMENT,
-        PROFILE_START,
-      ])
-      if (parent?.userData?.pathToNode) {
-        const updatedAst = parse(recast(kclManager.ast))
-        const node = getNodeFromPath<CallExpression>(
-          updatedAst,
-          parent.userData.pathToNode,
-          'CallExpression'
-        ).node
-        sceneInfra.highlightCallback([node.start, node.end])
-        const yellow = 0xffff00
-        colorSegment(selected, yellow)
-        return
-      }
-      sceneInfra.highlightCallback([0, 0])
-    },
-    onMouseLeave: ({ selected }: OnMouseEnterLeaveArgs) => {
-      sceneInfra.highlightCallback([0, 0])
-      const parent = getParentGroup(selected, [
-        STRAIGHT_SEGMENT,
-        TANGENTIAL_ARC_TO_SEGMENT,
-        PROFILE_START,
-      ])
-      const isSelected = parent?.userData?.isSelected
-      colorSegment(
-        selected,
-        isSelected ? 0x0000ff : parent?.userData?.baseColor || 0xffffff
-      )
-      if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
-        const obj = selected as Mesh
-        const mat = obj.material as MeshBasicMaterial
-        mat.color.set(obj.userData.baseColor)
-        if (obj.userData.isSelected) mat.color.offsetHSL(0, 0, 0.2)
-      }
-    },
-  }
 }

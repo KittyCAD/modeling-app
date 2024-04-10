@@ -2,7 +2,7 @@ import { Completion } from '@codemirror/autocomplete'
 import { EditorState, EditorView, useCodeMirror } from '@uiw/react-codemirror'
 import { CustomIcon } from 'components/CustomIcon'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { CommandArgument, KclCommandValue } from 'lib/commandTypes'
 import { getSystemTheme } from 'lib/theme'
 import { useCalculateKclExpression } from 'lib/useCalculateKclExpression'
@@ -29,7 +29,7 @@ function CommandBarKclInput({
   const previouslySetValue = commandBarState.context.argumentsToSubmit[
     arg.name
   ] as KclCommandValue | undefined
-  const { settings } = useGlobalStateContext()
+  const { settings } = useSettingsAuthContext()
   const defaultValue = (arg.defaultValue as string) || ''
   const [value, setValue] = useState(
     previouslySetValue?.valueText || defaultValue || ''
@@ -76,9 +76,9 @@ function CommandBarKclInput({
     },
     accessKey: 'command-bar',
     theme:
-      settings.context.theme === 'system'
+      settings.context.app.theme.current === 'system'
         ? getSystemTheme()
-        : settings.context.theme,
+        : settings.context.app.theme.current,
     extensions: [
       EditorView.domEventHandlers({
         keydown: (event) => {
@@ -153,7 +153,7 @@ function CommandBarKclInput({
           className={
             calcResult === 'NAN'
               ? 'text-destroy-80 dark:text-destroy-40'
-              : 'text-energy-60 dark:text-energy-20'
+              : 'text-succeed-80 dark:text-succeed-40'
           }
         >
           {calcResult === 'NAN'
@@ -173,7 +173,7 @@ function CommandBarKclInput({
             type="text"
             id="variable-name"
             name="variable-name"
-            className="flex-1 border-none bg-transparent"
+            className="flex-1 border-none bg-transparent focus:outline-none"
             placeholder="Variable name"
             value={newVariableName}
             autoCapitalize="off"
@@ -196,7 +196,7 @@ function CommandBarKclInput({
           <span
             className={
               isNewVariableNameUnique
-                ? 'text-energy-60 dark:text-energy-20'
+                ? 'text-succeed-60 dark:text-succeed-40'
                 : 'text-destroy-60 dark:text-destroy-40'
             }
           >

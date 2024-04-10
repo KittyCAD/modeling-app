@@ -3,6 +3,7 @@
 use anyhow::Result;
 use derive_docs::stdlib;
 use schemars::JsonSchema;
+use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -20,11 +21,22 @@ pub async fn extrude(args: Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Extrudes by a given amount.
+///
+/// ```no_run
+/// startSketchOn('XY')
+///     |> startProfileAt([0, 0], %)
+///     |> line([0, 10], %)
+///     |> line([10, 0], %)
+///     |> line([0, -10], %)
+///     |> close(%)
+///     |> extrude(5, %)
+/// ```
 #[stdlib {
     name = "extrude"
 }]
 async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) -> Result<Box<ExtrudeGroup>, KclError> {
     let id = uuid::Uuid::new_v4();
+
     // Extrude the element.
     args.send_modeling_cmd(
         id,
@@ -36,6 +48,15 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
     )
     .await?;
 
+    do_post_extrude(sketch_group, length, id, args).await
+}
+
+pub(crate) async fn do_post_extrude(
+    sketch_group: Box<SketchGroup>,
+    length: f64,
+    id: Uuid,
+    args: Args,
+) -> Result<Box<ExtrudeGroup>, KclError> {
     // We need to do this after extrude for sketch on face.
     if let SketchSurface::Face(_) = sketch_group.on {
         // Disable the sketch mode.
@@ -103,8 +124,9 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
 
     // Create a hashmap for quick id lookup
     let mut face_id_map = std::collections::HashMap::new();
-    let mut start_cap_id = None;
-    let mut end_cap_id = None;
+    // creating fake ids for start and end caps is to make extrudes mock-execute safe
+    let mut start_cap_id = if args.ctx.is_mock { Some(Uuid::new_v4()) } else { None };
+    let mut end_cap_id = if args.ctx.is_mock { Some(Uuid::new_v4()) } else { None };
 
     for face_info in face_infos {
         match face_info.cap {
@@ -150,6 +172,19 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
                     new_value.push(extrude_surface);
                 }
             }
+        } else if args.ctx.is_mock {
+            // Only pre-populate the extrude surface if we are in mock mode.
+            new_value.push(ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
+                position: sketch_group.position, // TODO should be for the extrude surface
+                rotation: sketch_group.rotation, // TODO should be for the extrude surface
+                // pushing this values with a fake face_id to make extrudes mock-execute safe
+                face_id: Uuid::new_v4(),
+                name: path.get_base().name.clone(),
+                geo_meta: GeoMeta {
+                    id: path.get_base().geo_meta.id,
+                    metadata: path.get_base().geo_meta.metadata.clone(),
+                },
+            }));
         }
     }
 
@@ -180,6 +215,18 @@ pub async fn get_extrude_wall_transform(args: Args) -> Result<MemoryItem, KclErr
 }
 
 /// Returns the extrude wall transform.
+///
+/// ```no_run
+/// const box = startSketchOn('XY')
+///     |> startProfileAt([0, 0], %)
+///     |> line([0, 10], %)
+///     |> line([10, 0], %)
+///     |> line([0, -10], %, "surface")
+///     |> close(%)
+///     |> extrude(5, %)
+///
+/// const transform = getExtrudeWallTransform('surface', box)
+/// ```
 #[stdlib {
     name = "getExtrudeWallTransform"
 }]

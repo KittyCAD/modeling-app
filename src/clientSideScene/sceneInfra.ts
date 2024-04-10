@@ -18,14 +18,19 @@ import {
   Intersection,
   Object3D,
   Object3DEventMap,
+  TextureLoader,
+  Texture,
 } from 'three'
 import { compareVec2Epsilon2 } from 'lang/std/sketch'
 import { useModelingContext } from 'hooks/useModelingContext'
 import * as TWEEN from '@tweenjs/tween.js'
 import { SourceRange } from 'lang/wasm'
 import { Axis } from 'lib/selections'
-import { BaseUnit, SETTINGS_PERSIST_KEY } from 'machines/settingsMachine'
+import { type BaseUnit } from 'lib/settings/settingsTypes'
 import { CameraControls } from './CameraControls'
+import { EngineCommandManager } from 'lang/std/engineConnection'
+import { settings } from 'lib/settings/initialSettings'
+import { MouseState } from 'machines/modelingMachine'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -36,8 +41,10 @@ export const ZOOM_MAGIC_NUMBER = 63.5
 
 export const INTERSECTION_PLANE_LAYER = 1
 export const SKETCH_LAYER = 2
-export const DEBUG_SHOW_INTERSECTION_PLANE = false
-export const DEBUG_SHOW_BOTH_SCENES = false
+
+// redundant types so that it can be changed temporarily but CI will catch the wrong type
+export const DEBUG_SHOW_INTERSECTION_PLANE: false = false
+export const DEBUG_SHOW_BOTH_SCENES: false = false
 
 export const RAYCASTABLE_PLANE = 'raycastable-plane'
 export const DEFAULT_PLANES = 'default-planes'
@@ -50,6 +57,7 @@ export const ARROWHEAD = 'arrowhead'
 
 export interface OnMouseEnterLeaveArgs {
   selected: Object3D<Object3DEventMap>
+  dragSelected?: Object3D<Object3DEventMap>
   mouseEvent: MouseEvent
 }
 
@@ -83,7 +91,7 @@ interface OnMoveCallbackArgs {
 // This singleton class is responsible for all of the under the hood setup for the client side scene.
 // That is the cameras and switching between them, raycasters for click mouse events and their abstractions (onClick etc), setting up controls.
 // Anything that added the the scene for the user to interact with is probably in SceneEntities.ts
-class SceneInfra {
+export class SceneInfra {
   static instance: SceneInfra
   scene: Scene
   renderer: WebGLRenderer
@@ -94,18 +102,26 @@ class SceneInfra {
   isFovAnimationInProgress = false
   _baseUnit: BaseUnit = 'mm'
   _baseUnitMultiplier = 1
+  extraSegmentTexture: Texture
+  lastMouseState: MouseState = { type: 'idle' }
+  onDragStartCallback: (arg: OnDragCallbackArgs) => void = () => {}
+  onDragEndCallback: (arg: OnDragCallbackArgs) => void = () => {}
   onDragCallback: (arg: OnDragCallbackArgs) => void = () => {}
   onMoveCallback: (arg: OnMoveCallbackArgs) => void = () => {}
-  onClickCallback: (arg?: OnClickCallbackArgs) => void = () => {}
+  onClickCallback: (arg: OnClickCallbackArgs) => void = () => {}
   onMouseEnter: (arg: OnMouseEnterLeaveArgs) => void = () => {}
   onMouseLeave: (arg: OnMouseEnterLeaveArgs) => void = () => {}
   setCallbacks = (callbacks: {
+    onDragStart?: (arg: OnDragCallbackArgs) => void
+    onDragEnd?: (arg: OnDragCallbackArgs) => void
     onDrag?: (arg: OnDragCallbackArgs) => void
     onMove?: (arg: OnMoveCallbackArgs) => void
-    onClick?: (arg?: OnClickCallbackArgs) => void
+    onClick?: (arg: OnClickCallbackArgs) => void
     onMouseEnter?: (arg: OnMouseEnterLeaveArgs) => void
     onMouseLeave?: (arg: OnMouseEnterLeaveArgs) => void
   }) => {
+    this.onDragStartCallback = callbacks.onDragStart || this.onDragStartCallback
+    this.onDragEndCallback = callbacks.onDragEnd || this.onDragEndCallback
     this.onDragCallback = callbacks.onDrag || this.onDragCallback
     this.onMoveCallback = callbacks.onMove || this.onMoveCallback
     this.onClickCallback = callbacks.onClick || this.onClickCallback
@@ -123,7 +139,9 @@ class SceneInfra {
     )
   }
   resetMouseListeners = () => {
-    sceneInfra.setCallbacks({
+    this.setCallbacks({
+      onDragStart: () => {},
+      onDragEnd: () => {},
       onDrag: () => {},
       onMove: () => {},
       onClick: () => {},
@@ -152,7 +170,7 @@ class SceneInfra {
   } | null = null
   mouseDownVector: null | Vector2 = null
 
-  constructor() {
+  constructor(engineCommandManager: EngineCommandManager) {
     // SCENE
     this.scene = new Scene()
     this.scene.background = new Color(0x000000)
@@ -166,16 +184,18 @@ class SceneInfra {
 
     // CAMERA
     const camHeightDistanceRatio = 0.5
-    const baseUnit: BaseUnit =
-      JSON.parse(localStorage?.getItem(SETTINGS_PERSIST_KEY) || ('{}' as any))
-        .baseUnit || 'mm'
+    const baseUnit: BaseUnit = settings.modeling.defaultUnit.current
     const baseRadius = 5.6
     const length = baseUnitTomm(baseUnit) * baseRadius
     const ang = Math.atan(camHeightDistanceRatio)
     const x = Math.cos(ang) * length
     const y = Math.sin(ang) * length
 
-    this.camControls = new CameraControls(false, this.renderer.domElement)
+    this.camControls = new CameraControls(
+      false,
+      this.renderer.domElement,
+      engineCommandManager
+    )
     this.camControls.subscribeToCamChange(() => this.onCameraChange())
     this.camControls.camera.layers.enable(SKETCH_LAYER)
     this.camControls.camera.position.set(0, -x, y)
@@ -204,6 +224,13 @@ class SceneInfra {
     const light = new AmbientLight(0x505050) // soft white light
     this.scene.add(light)
 
+    const textureLoader = new TextureLoader()
+    this.extraSegmentTexture = textureLoader.load(
+      '/clientSideSceneAssets/extra-segment-texture.png'
+    )
+    this.extraSegmentTexture.anisotropy =
+      this.renderer?.capabilities?.getMaxAnisotropy?.()
+
     SceneInfra.instance = this
   }
 
@@ -218,9 +245,9 @@ class SceneInfra {
       ?.getObjectByName('gridHelper')
     planesGroup &&
       planesGroup.scale.set(
-        scale / sceneInfra._baseUnitMultiplier,
-        scale / sceneInfra._baseUnitMultiplier,
-        scale / sceneInfra._baseUnitMultiplier
+        scale / this._baseUnitMultiplier,
+        scale / this._baseUnitMultiplier,
+        scale / this._baseUnitMultiplier
       )
     axisGroup?.name === 'gridHelper' && axisGroup.scale.set(scale, scale, scale)
   }
@@ -252,7 +279,7 @@ class SceneInfra {
   } | null => {
     this.planeRaycaster.setFromCamera(
       this.currentMouseVector,
-      sceneInfra.camControls.camera
+      this.camControls.camera
     )
     const planeIntersects = this.planeRaycaster.intersectObjects(
       this.scene.children,
@@ -271,16 +298,19 @@ class SceneInfra {
     let transformedPoint = intersectPoint.clone()
     if (transformedPoint) {
       transformedPoint.applyQuaternion(inversePlaneQuaternion)
-      transformedPoint?.sub(
-        new Vector3(...planePosition).applyQuaternion(inversePlaneQuaternion)
-      )
     }
+    const twoD = new Vector2(
+      // I think the intersection plane doesn't get scale when nearly everything else does, maybe that should change
+      transformedPoint.x / this._baseUnitMultiplier,
+      transformedPoint.y / this._baseUnitMultiplier
+    ) // z should be 0
+    const planePositionCorrected = new Vector3(
+      ...planePosition
+    ).applyQuaternion(inversePlaneQuaternion)
+    twoD.sub(new Vector2(...planePositionCorrected))
 
     return {
-      twoD: new Vector2(
-        transformedPoint.x / this._baseUnitMultiplier,
-        transformedPoint.y / this._baseUnitMultiplier
-      ), // z should be 0
+      twoD,
       threeD: intersectPoint.divideScalar(this._baseUnitMultiplier),
       intersection: planeIntersects[0],
     }
@@ -310,8 +340,6 @@ class SceneInfra {
         planeIntersectPoint.twoD &&
         planeIntersectPoint.threeD
       ) {
-        // // console.log('onDrag', this.selected)
-
         this.onDragCallback({
           mouseEvent,
           intersectionPoint: {
@@ -320,6 +348,10 @@ class SceneInfra {
           },
           intersects,
           selected: this.selected.object,
+        })
+        this.updateMouseState({
+          type: 'isDragging',
+          on: this.selected.object,
         })
       }
     } else if (
@@ -340,25 +372,34 @@ class SceneInfra {
     if (intersects[0]) {
       const firstIntersectObject = intersects[0].object
       if (this.hoveredObject !== firstIntersectObject) {
-        if (this.hoveredObject) {
-          this.onMouseLeave({
-            selected: this.hoveredObject,
-            mouseEvent: mouseEvent,
-          })
-        }
+        const hoveredObj = this.hoveredObject
+        this.hoveredObject = null
+        this.onMouseLeave({
+          selected: hoveredObj,
+          mouseEvent: mouseEvent,
+        })
         this.hoveredObject = firstIntersectObject
         this.onMouseEnter({
           selected: this.hoveredObject,
+          dragSelected: this.selected?.object,
           mouseEvent: mouseEvent,
         })
+        if (!this.selected)
+          this.updateMouseState({
+            type: 'isHovering',
+            on: this.hoveredObject,
+          })
       }
     } else {
       if (this.hoveredObject) {
+        const hoveredObj = this.hoveredObject
+        this.hoveredObject = null
         this.onMouseLeave({
-          selected: this.hoveredObject,
+          selected: hoveredObj,
+          dragSelected: this.selected?.object,
           mouseEvent: mouseEvent,
         })
-        this.hoveredObject = null
+        if (!this.selected) this.updateMouseState({ type: 'idle' })
       }
     }
   }
@@ -415,6 +456,11 @@ class SceneInfra {
       (a, b) => a.distance - b.distance
     )
   }
+  updateMouseState(mouseState: MouseState) {
+    if (this.lastMouseState.type === mouseState.type) return
+    this.lastMouseState = mouseState
+    this.modelingSend({ type: 'Set mouse state', data: mouseState })
+  }
 
   onMouseDown = (event: MouseEvent) => {
     this.currentMouseVector.x = (event.clientX / window.innerWidth) * 2 - 1
@@ -444,8 +490,26 @@ class SceneInfra {
 
     if (this.selected) {
       if (this.selected.hasBeenDragged) {
-        // this is where we could fire a onDragEnd event
-        // console.log('onDragEnd', this.selected)
+        // TODO do the types properly here
+        this.onDragEndCallback({
+          intersectionPoint: {
+            twoD: planeIntersectPoint?.twoD as any,
+            threeD: planeIntersectPoint?.threeD as any,
+          },
+          intersects,
+          mouseEvent,
+          selected: this.selected as any,
+        })
+        if (intersects.length) {
+          this.updateMouseState({
+            type: 'isHovering',
+            on: intersects[0].object,
+          })
+        } else {
+          this.updateMouseState({
+            type: 'idle',
+          })
+        }
       } else if (planeIntersectPoint?.twoD && planeIntersectPoint?.threeD) {
         // fire onClick event as there was no drags
         this.onClickCallback({
@@ -463,7 +527,7 @@ class SceneInfra {
           intersects,
         })
       } else {
-        this.onClickCallback()
+        this.onClickCallback({ mouseEvent, intersects })
       }
       // Clear the selected state whether it was dragged or not
       this.selected = null
@@ -477,7 +541,7 @@ class SceneInfra {
         intersects,
       })
     } else {
-      this.onClickCallback()
+      this.onClickCallback({ mouseEvent, intersects })
     }
   }
   showDefaultPlanes() {
@@ -521,9 +585,9 @@ class SceneInfra {
       this.camControls.target
     )
     planesGroup.scale.set(
-      sceneScale / sceneInfra._baseUnitMultiplier,
-      sceneScale / sceneInfra._baseUnitMultiplier,
-      sceneScale / sceneInfra._baseUnitMultiplier
+      sceneScale / this._baseUnitMultiplier,
+      sceneScale / this._baseUnitMultiplier,
+      sceneScale / this._baseUnitMultiplier
     )
     this.scene.add(planesGroup)
   }
@@ -534,7 +598,7 @@ class SceneInfra {
     if (planesGroup) this.scene.remove(planesGroup)
   }
   updateOtherSelectionColors = (otherSelections: Axis[]) => {
-    const axisGroup = sceneInfra.scene.children.find(
+    const axisGroup = this.scene.children.find(
       ({ userData }) => userData?.type === AXIS_GROUP
     )
     const axisMap: { [key: string]: Axis } = {
@@ -555,8 +619,6 @@ class SceneInfra {
     })
   }
 }
-
-export const sceneInfra = new SceneInfra()
 
 export function getSceneScale(
   camera: PerspectiveCamera | OrthographicCamera,

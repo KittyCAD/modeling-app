@@ -7,6 +7,10 @@ import init, {
   is_points_ccw,
   get_tangential_arc_to_info,
   program_memory_init,
+  ServerConfig,
+  copilot_lsp_run,
+  kcl_lsp_run,
+  coredump,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
@@ -17,6 +21,10 @@ import type { Program } from '../wasm-lib/kcl/bindings/Program'
 import type { Token } from '../wasm-lib/kcl/bindings/Token'
 import { Coords2d } from './std/sketch'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
+import { DEV } from 'env'
+import { AppInfo } from 'wasm-lib/kcl/bindings/AppInfo'
+import { CoreDumpManager } from 'lib/coredump'
+import openWindow from 'lib/openWindow'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Value } from '../wasm-lib/kcl/bindings/Value'
@@ -62,6 +70,7 @@ export type { Position } from '../wasm-lib/kcl/bindings/Position'
 export type { Rotation } from '../wasm-lib/kcl/bindings/Rotation'
 export type { Path } from '../wasm-lib/kcl/bindings/Path'
 export type { SketchGroup } from '../wasm-lib/kcl/bindings/SketchGroup'
+export type { ExtrudeGroup } from '../wasm-lib/kcl/bindings/ExtrudeGroup'
 export type { MemoryItem } from '../wasm-lib/kcl/bindings/MemoryItem'
 export type { ExtrudeSurface } from '../wasm-lib/kcl/bindings/ExtrudeSurface'
 
@@ -73,7 +82,7 @@ const initialise = async () => {
       : window.location.origin.includes('tauri://localhost')
       ? 'tauri://localhost' // custom protocol for macOS
       : window.location.origin.includes('tauri.localhost')
-      ? 'https://tauri.localhost' // fallback for Windows
+      ? 'http://tauri.localhost' // fallback for Windows
       : window.location.origin.includes('localhost')
       ? 'http://localhost:3000'
       : window.location.origin && window.location.origin !== 'null'
@@ -122,13 +131,15 @@ export interface ProgramMemory {
 export const executor = async (
   node: Program,
   programMemory: ProgramMemory = { root: {}, return: null },
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: EngineCommandManager,
+  isMock: boolean = false
 ): Promise<ProgramMemory> => {
   engineCommandManager.startNewSession()
   const _programMemory = await _executor(
     node,
     programMemory,
-    engineCommandManager
+    engineCommandManager,
+    isMock
   )
   await engineCommandManager.waitForAllCommands()
 
@@ -136,23 +147,26 @@ export const executor = async (
   return _programMemory
 }
 
-const getSettingsState = import('components/GlobalStateProvider').then(
+const getSettingsState = import('components/SettingsAuthProvider').then(
   (module) => module.getSettingsState
 )
 
 export const _executor = async (
   node: Program,
   programMemory: ProgramMemory = { root: {}, return: null },
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: EngineCommandManager,
+  isMock: boolean
 ): Promise<ProgramMemory> => {
   try {
-    const baseUnit = (await getSettingsState)()?.baseUnit || 'mm'
+    const baseUnit =
+      (await getSettingsState)()?.modeling.defaultUnit.current || 'mm'
     const memory: ProgramMemory = await execute_wasm(
       JSON.stringify(node),
       JSON.stringify(programMemory),
       baseUnit,
       engineCommandManager,
-      fileSystemManager
+      fileSystemManager,
+      isMock
     )
     return memory
   } catch (e: any) {
@@ -242,6 +256,7 @@ export function getTangentialArcToInfo({
   startAngle: number
   endAngle: number
   ccw: boolean
+  arcLength: number
 } {
   const result = get_tangential_arc_to_info(
     arcStartPoint[0],
@@ -259,6 +274,7 @@ export function getTangentialArcToInfo({
     startAngle: result.start_angle,
     endAngle: result.end_angle,
     ccw: result.ccw > 0,
+    arcLength: result.arc_length,
   }
 }
 
@@ -277,5 +293,40 @@ export function programMemoryInit(): ProgramMemory {
 
     console.log(kclError)
     throw kclError
+  }
+}
+
+export async function copilotLspRun(config: ServerConfig, token: string) {
+  try {
+    console.log('starting copilot lsp')
+    await copilot_lsp_run(config, token, DEV)
+  } catch (e: any) {
+    console.log('copilot lsp failed', e)
+    // We can't restart here because a moved value, we should do this another way.
+  }
+}
+
+export async function kclLspRun(config: ServerConfig, token: string) {
+  try {
+    console.log('start kcl lsp')
+    await kcl_lsp_run(config, token, DEV)
+  } catch (e: any) {
+    console.log('kcl lsp failed', e)
+    // We can't restart here because a moved value, we should do this another way.
+  }
+}
+
+export async function coreDump(
+  coreDumpManager: CoreDumpManager,
+  openGithubIssue: boolean = false
+): Promise<AppInfo> {
+  try {
+    const dump: AppInfo = await coredump(coreDumpManager)
+    if (openGithubIssue && dump.github_issue_url) {
+      openWindow(dump.github_issue_url)
+    }
+    return dump
+  } catch (e: any) {
+    throw new Error(`Error getting core dump: ${e}`)
   }
 }

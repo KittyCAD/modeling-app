@@ -2,7 +2,7 @@ import { Toolbar } from '../Toolbar'
 import UserSidebarMenu from './UserSidebarMenu'
 import { type IndexLoaderData } from 'lib/types'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import styles from './AppHeader.module.css'
 import { NetworkHealthIndicator } from './NetworkHealthIndicator'
 import { useCommandsContext } from 'hooks/useCommandsContext'
@@ -25,7 +25,7 @@ export const AppHeader = ({
 }: AppHeaderProps) => {
   const platform = usePlatform()
   const { commandBarSend } = useCommandsContext()
-  const { auth } = useGlobalStateContext()
+  const { auth } = useSettingsAuthContext()
   const user = auth?.context?.user
 
   return (
@@ -33,7 +33,7 @@ export const AppHeader = ({
       className={
         'w-full grid ' +
         styles.header +
-        ' overlaid-panes sticky top-0 z-20 py-1 px-2 bg-chalkboard-10/70 dark:bg-chalkboard-100/50 border-b dark:border-b-2 border-chalkboard-30 dark:border-chalkboard-90 items-center ' +
+        ' overlaid-panes sticky top-0 z-20 px-2 items-center ' +
         className
       }
     >
@@ -53,13 +53,13 @@ export const AppHeader = ({
             className="text-sm self-center flex items-center w-fit gap-3"
           >
             Command Palette{' '}
-            <kbd className="bg-energy-10/50 dark:bg-chalkboard-100 dark:text-energy-10 inline-block px-1 py-0.5 border-energy-10 dark:border-chalkboard-90">
-              {platform === 'darwin' ? '⌘K' : 'Ctrl+/'}
+            <kbd className="bg-primary/10 dark:bg-chalkboard-100 dark:text-primary inline-block px-1 py-0.5 border-primary dark:border-chalkboard-90">
+              {platform === 'macos' ? '⌘K' : 'Ctrl+/'}
             </kbd>
           </ActionButton>
         )}
       </div>
-      <div className="flex items-center gap-1 ml-auto">
+      <div className="flex items-center gap-1 py-1 ml-auto">
         {/* If there are children, show them, otherwise show User menu */}
         {children || (
           <>

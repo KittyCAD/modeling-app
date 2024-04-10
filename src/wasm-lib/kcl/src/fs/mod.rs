@@ -8,29 +8,30 @@ pub use local::FileManager;
 #[cfg(target_arch = "wasm32")]
 #[cfg(not(test))]
 pub mod wasm;
+
 use anyhow::Result;
 #[cfg(target_arch = "wasm32")]
 #[cfg(not(test))]
 pub use wasm::FileManager;
 
-#[async_trait::async_trait(?Send)]
+#[async_trait::async_trait]
 pub trait FileSystem: Clone {
     /// Read a file from the local file system.
-    async fn read<P: AsRef<std::path::Path>>(
+    async fn read<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
         &self,
         path: P,
         source_range: crate::executor::SourceRange,
     ) -> Result<Vec<u8>, crate::errors::KclError>;
 
     /// Check if a file exists on the local file system.
-    async fn exists<P: AsRef<std::path::Path>>(
+    async fn exists<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
         &self,
         path: P,
         source_range: crate::executor::SourceRange,
     ) -> Result<bool, crate::errors::KclError>;
 
     /// Get all the files in a directory recursively.
-    async fn get_all_files<P: AsRef<std::path::Path>>(
+    async fn get_all_files<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
         &self,
         path: P,
         source_range: crate::executor::SourceRange,

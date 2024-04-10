@@ -1,12 +1,10 @@
 import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
-import { BaseUnit, baseUnits } from '../../machines/settingsMachine'
-import { ActionButton } from '../../components/ActionButton'
+import { type BaseUnit, baseUnitsUnion } from 'lib/settings/settingsTypes'
+import { ActionButton } from 'components/ActionButton'
 import { SettingsSection } from '../Settings'
-import { Toggle } from '../../components/Toggle/Toggle'
 import { useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
-import { UnitSystem } from 'machines/settingsMachine'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 
 export default function Units() {
   const dismiss = useDismiss()
@@ -14,50 +12,35 @@ export default function Units() {
   const {
     settings: {
       send,
-      context: { unitSystem, baseUnit },
+      context: {
+        modeling: { defaultUnit },
+      },
     },
-  } = useGlobalStateContext()
+  } = useSettingsAuthContext()
 
   return (
     <div className="fixed grid place-content-center inset-0 bg-chalkboard-110/50 z-50">
       <div className="max-w-3xl bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded">
         <h1 className="text-2xl font-bold">Set your units</h1>
         <SettingsSection
-          title="Unit System"
-          description="Which unit system to use by default"
-        >
-          <Toggle
-            offLabel="Imperial"
-            onLabel="Metric"
-            name="settings-units"
-            checked={unitSystem === UnitSystem.Metric}
-            onChange={(e) => {
-              const newUnitSystem = e.target.checked
-                ? UnitSystem.Metric
-                : UnitSystem.Imperial
-              send({
-                type: 'Set Unit System',
-                data: { unitSystem: newUnitSystem },
-              })
-            }}
-          />
-        </SettingsSection>
-        <SettingsSection
-          title="Base Unit"
-          description="Which base unit to use in dimensions by default"
+          title="Default Unit"
+          description="Which unit to use in modeling dimensions by default"
         >
           <select
             id="base-unit"
             className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
-            value={baseUnit}
+            value={defaultUnit.user}
             onChange={(e) => {
               send({
-                type: 'Set Base Unit',
-                data: { baseUnit: e.target.value as BaseUnit },
+                type: 'set.modeling.defaultUnit',
+                data: {
+                  level: 'user',
+                  value: e.target.value as BaseUnit,
+                },
               })
             }}
           >
-            {baseUnits[unitSystem].map((unit) => (
+            {baseUnitsUnion.map((unit) => (
               <option key={unit} value={unit}>
                 {unit}
               </option>

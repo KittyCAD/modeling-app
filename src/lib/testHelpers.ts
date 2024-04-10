@@ -4,8 +4,9 @@ import {
   EngineCommand,
 } from '../lang/std/engineConnection'
 import { Models } from '@kittycad/lib'
+import { Themes } from './theme'
 
-type WebSocketResponse = Models['OkWebSocketResponseData_type']
+type WebSocketResponse = Models['WebSocketResponse_type']
 
 class MockEngineCommandManager {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
@@ -26,9 +27,12 @@ class MockEngineCommandManager {
     command: EngineCommand
   }): Promise<any> {
     const response: WebSocketResponse = {
-      type: 'modeling',
-      data: {
-        modeling_response: { type: 'empty' },
+      success: true,
+      resp: {
+        type: 'modeling',
+        data: {
+          modeling_response: { type: 'empty' },
+        },
       },
     }
     return Promise.resolve(JSON.stringify(response))
@@ -65,7 +69,7 @@ export async function enginelessExecutor(
   }) as any as EngineCommandManager
   await mockEngineCommandManager.waitForReady
   mockEngineCommandManager.startNewSession()
-  const programMemory = await _executor(ast, pm, mockEngineCommandManager)
+  const programMemory = await _executor(ast, pm, mockEngineCommandManager, true)
   await mockEngineCommandManager.waitForAllCommands()
   return programMemory
 }
@@ -81,10 +85,11 @@ export async function executor(
     width: 0,
     height: 0,
     executeCode: () => {},
+    theme: Themes.Dark,
   })
   await engineCommandManager.waitForReady
   engineCommandManager.startNewSession()
-  const programMemory = await _executor(ast, pm, engineCommandManager)
+  const programMemory = await _executor(ast, pm, engineCommandManager, false)
   await engineCommandManager.waitForAllCommands()
   return programMemory
 }

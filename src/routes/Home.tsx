@@ -1,5 +1,5 @@
 import { FormEvent, useEffect } from 'react'
-import { removeDir, renameFile } from '@tauri-apps/api/fs'
+import { remove, rename } from '@tauri-apps/plugin-fs'
 import {
   createNewProject,
   getNextProjectIndex,
@@ -29,41 +29,33 @@ import {
   getSortIcon,
 } from '../lib/sorting'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
-import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { DEFAULT_PROJECT_NAME } from 'machines/settingsMachine'
-import { sep } from '@tauri-apps/api/path'
+import { join, sep } from '@tauri-apps/api/path'
 import { homeCommandBarConfig } from 'lib/commandBarConfigs/homeCommandConfig'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { isTauri } from 'lib/isTauri'
-import { kclManager } from 'lang/KclSingleton'
+import { kclManager } from 'lib/singletons'
+import { useLspContext } from 'components/LspProvider'
+import { useRefreshSettings } from 'hooks/useRefreshSettings'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
 const Home = () => {
+  useRefreshSettings(paths.HOME + 'SETTINGS')
   const { commandBarSend } = useCommandsContext()
   const navigate = useNavigate()
-  const { projects: loadedProjects, newDefaultDirectory } =
-    useLoaderData() as HomeLoaderData
+  const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
   const {
-    settings: {
-      context: { defaultDirectory, defaultProjectName },
-      send: sendToSettings,
-    },
-  } = useGlobalStateContext()
+    settings: { context: settings },
+  } = useSettingsAuthContext()
+  const { onProjectOpen } = useLspContext()
 
-  // Set the default directory if it's been updated
-  // during the loading of the home page. This is wrapped
-  // in a single-use effect to avoid a potential infinite loop.
+  // Cancel all KCL executions while on the home page
   useEffect(() => {
     kclManager.cancelAllExecutions()
-    if (newDefaultDirectory) {
-      sendToSettings({
-        type: 'Set Default Directory',
-        data: { defaultDirectory: newDefaultDirectory },
-      })
-    }
   }, [])
+
   useHotkeys(
     isTauri() ? 'mod+,' : 'shift+mod+,',
     () => navigate(paths.HOME + paths.SETTINGS),
@@ -75,8 +67,8 @@ const Home = () => {
   const [state, send, actor] = useMachine(homeMachine, {
     context: {
       projects: loadedProjects,
-      defaultProjectName,
-      defaultDirectory,
+      defaultProjectName: settings.projects.defaultProjectName.current,
+      defaultDirectory: settings.app.projectDirectory.current,
     },
     actions: {
       navigateToProject: (
@@ -84,12 +76,16 @@ const Home = () => {
         event: EventFrom<typeof homeMachine>
       ) => {
         if (event.data && 'name' in event.data) {
-          commandBarSend({ type: 'Close' })
-          navigate(
-            `${paths.FILE}/${encodeURIComponent(
-              context.defaultDirectory + sep + event.data.name
-            )}`
+          let projectPath = context.defaultDirectory + sep() + event.data.name
+          onProjectOpen(
+            {
+              name: event.data.name,
+              path: projectPath,
+            },
+            null
           )
+          commandBarSend({ type: 'Close' })
+          navigate(`${paths.FILE}/${encodeURIComponent(projectPath)}`)
         }
       },
       toastSuccess: (_, event) => toast.success((event.data || '') + ''),
@@ -105,29 +101,15 @@ const Home = () => {
         let name = (
           event.data && 'name' in event.data
             ? event.data.name
-            : defaultProjectName
+            : settings.projects.defaultProjectName.current
         ).trim()
-        let shouldUpdateDefaultProjectName = false
-
-        // If there is no default project name, flag it to be set to the default
-        if (!name) {
-          name = DEFAULT_PROJECT_NAME
-          shouldUpdateDefaultProjectName = true
-        }
 
         if (doesProjectNameNeedInterpolated(name)) {
           const nextIndex = await getNextProjectIndex(name, projects)
           name = interpolateProjectNameWithIndex(name, nextIndex)
         }
 
-        await createNewProject(context.defaultDirectory + sep + name)
-
-        if (shouldUpdateDefaultProjectName) {
-          sendToSettings({
-            type: 'Set Default Project Name',
-            data: { defaultProjectName: DEFAULT_PROJECT_NAME },
-          })
-        }
+        await createNewProject(await join(context.defaultDirectory, name))
 
         return `Successfully created "${name}"`
       },
@@ -142,9 +124,10 @@ const Home = () => {
           name = interpolateProjectNameWithIndex(name, nextIndex)
         }
 
-        await renameFile(
-          context.defaultDirectory + sep + oldName,
-          context.defaultDirectory + sep + name
+        await rename(
+          await join(context.defaultDirectory, oldName),
+          await join(context.defaultDirectory, name),
+          {}
         )
         return `Successfully renamed "${oldName}" to "${name}"`
       },
@@ -152,7 +135,7 @@ const Home = () => {
         context: ContextFrom<typeof homeMachine>,
         event: EventFrom<typeof homeMachine, 'Delete project'>
       ) => {
-        await removeDir(context.defaultDirectory + sep + event.data.name, {
+        await remove(await join(context.defaultDirectory, event.data.name), {
           recursive: true,
         })
         return `Successfully deleted "${event.data.name}"`
@@ -179,9 +162,21 @@ const Home = () => {
     actor,
   })
 
+  // Update the default project name and directory in the home machine
+  // when the settings change
   useEffect(() => {
-    send({ type: 'assign', data: { defaultProjectName, defaultDirectory } })
-  }, [defaultDirectory, defaultProjectName, send])
+    send({
+      type: 'assign',
+      data: {
+        defaultProjectName: settings.projects.defaultProjectName.current,
+        defaultDirectory: settings.app.projectDirectory.current,
+      },
+    })
+  }, [
+    settings.app.projectDirectory.current,
+    settings.projects.defaultProjectName.current,
+    send,
+  ])
 
   async function handleRenameProject(
     e: FormEvent<HTMLFormElement>,
@@ -253,8 +248,8 @@ const Home = () => {
         <section data-testid="home-section">
           <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
             Loaded from{' '}
-            <span className="text-energy-70 dark:text-energy-40">
-              {defaultDirectory}
+            <span className="text-chalkboard-90 dark:text-chalkboard-20">
+              {settings.app.projectDirectory.current}
             </span>
             .{' '}
             <Link to="settings" className="underline underline-offset-2">

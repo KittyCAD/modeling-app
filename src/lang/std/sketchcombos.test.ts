@@ -131,7 +131,7 @@ const myAng = 40
 const myAng2 = 134
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line({ to: [1, 3.82], tag: 'seg01' }, %) // ln-should-get-tag
+  |> line([1, 3.82], %, 'seg01') // ln-should-get-tag
   |> angledLineToX([
        -angleToMatchLengthX('seg01', myVar, %),
        myVar
@@ -485,8 +485,7 @@ const part001 = startSketchOn('XY')
   |> angledLine({
   angle: halfArmAngle,
   length: 2.45,
-  tag: 'seg01bing'
-}, %) // partial
+}, %, 'seg01bing') // partial
   |> xLine(4.4, %) // partial
   |> yLine(-1, %) // partial
   |> xLine(-4.2 + 0, %) // full
