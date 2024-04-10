@@ -12,7 +12,7 @@
     "@headlessui/tailwindcss": "^0.2.0",
     "@iarna/toml": "^2.2.5",
     "@kittycad/lib": "^0.0.56",
-    "@lezer/javascript": "^1.4.9",
+    "@lezer/javascript": "^1.4.14",
     "@open-rpc/client-js": "^1.8.1",
     "@react-hook/resize-observer": "^1.2.6",
     "@replit/codemirror-interact": "^6.3.0",
