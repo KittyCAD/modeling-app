@@ -113,18 +113,17 @@ code {
     monospace;
 }
 
-.full-height-subtract {
-  --height-subtract: 2.25rem;
-  height: 100%;
-  max-height: calc(100% - var(--height-subtract));
-}
-
+/*
+ * The first descendent of the CodeMirror wrapper is the theme,
+ * but its identifying class can change depending on the theme.
+*/
+#code-mirror-override > div,
 #code-mirror-override .cm-editor {
-  @apply h-full bg-transparent;
+  @apply bg-transparent h-full;
 }
 
 #code-mirror-override .cm-scroller {
-  @apply h-full;
+  overflow: auto;
 }
 
 #code-mirror-override .cm-scroller::-webkit-scrollbar {

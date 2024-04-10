@@ -16,7 +16,7 @@ export function AstExplorer() {
   const [filterKeys, setFilterKeys] = useState<string[]>(['start', 'end'])
 
   return (
-    <div className="relative" style={{ width: '300px' }}>
+    <div id="ast-explorer" className="relative">
       <div className="">
         filter out keys:<div className="w-2 inline-block"></div>
         {['start', 'end', 'type'].map((key) => {
@@ -45,7 +45,7 @@ export function AstExplorer() {
           setHighlightRange([0, 0])
         }}
       >
-        <pre className=" text-xs overflow-y-auto" style={{ width: '300px' }}>
+        <pre className="text-xs">
           <DisplayObj
             obj={kclManager.ast}
             filterKeys={filterKeys}
