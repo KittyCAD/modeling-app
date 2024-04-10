@@ -54,7 +54,6 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
     let plane_id = uuid::Uuid::new_v4();
     ctx.engine
         .send_modeling_cmd(
-            false,
             plane_id,
             SourceRange::default(),
             ModelingCmd::MakePlane {
@@ -73,7 +72,6 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
     // You can however get path info without sketch mode.
     ctx.engine
         .send_modeling_cmd(
-            false,
             uuid::Uuid::new_v4(),
             SourceRange::default(),
             ModelingCmd::SketchModeEnable {
@@ -89,7 +87,6 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
     // We can't get control points of an existing sketch without being in edit mode.
     ctx.engine
         .send_modeling_cmd(
-            false,
             uuid::Uuid::new_v4(),
             SourceRange::default(),
             ModelingCmd::EditModeEnter { target: sketch_id },
