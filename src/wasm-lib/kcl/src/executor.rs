@@ -1004,7 +1004,6 @@ pub async fn execute_outer(
     // Before we even start executing the program, set the units.
     ctx.engine
         .send_modeling_cmd(
-            false,
             uuid::Uuid::new_v4(),
             SourceRange::default(),
             kittycad::types::ModelingCmd::SetSceneUnits {

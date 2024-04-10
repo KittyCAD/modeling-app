@@ -364,7 +364,10 @@ test('extrude on each default plane should be stable', async ({
     await u.removeCurrentCode()
     // add makeCode('XZ')
     await u.openAndClearDebugPanel()
-    await page.locator('.cm-content').fill(makeCode(plane))
+    await u.doAndWaitForImageDiff(
+      () => page.locator('.cm-content').fill(makeCode(plane)),
+      200
+    )
     // wait for execution done
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.clearAndCloseDebugPanel()

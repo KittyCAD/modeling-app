@@ -40,7 +40,6 @@ mod test_examples_import {
         let (x, y) = crate::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
         ctx.engine
             .send_modeling_cmd(
-                false,
                 uuid::Uuid::new_v4(),
                 crate::executor::SourceRange::default(),
                 kittycad::types::ModelingCmd::DefaultCameraLookAt {
@@ -67,7 +66,6 @@ mod test_examples_import {
         let resp = ctx
             .engine
             .send_modeling_cmd(
-                false,
                 uuid::Uuid::new_v4(),
                 crate::executor::SourceRange::default(),
                 kittycad::types::ModelingCmd::TakeSnapshot {
@@ -138,7 +136,6 @@ mod test_examples_import {
         let (x, y) = crate::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
         ctx.engine
             .send_modeling_cmd(
-                false,
                 uuid::Uuid::new_v4(),
                 crate::executor::SourceRange::default(),
                 kittycad::types::ModelingCmd::DefaultCameraLookAt {
@@ -165,7 +162,6 @@ mod test_examples_import {
         let resp = ctx
             .engine
             .send_modeling_cmd(
-                false,
                 uuid::Uuid::new_v4(),
                 crate::executor::SourceRange::default(),
                 kittycad::types::ModelingCmd::TakeSnapshot {
