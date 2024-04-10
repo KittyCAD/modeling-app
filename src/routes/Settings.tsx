@@ -37,8 +37,9 @@ import {
   shouldShowSettingInput,
 } from 'lib/settings/settingsUtils'
 
+export const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
+
 export const Settings = () => {
-  const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
   const navigate = useNavigate()
   const close = () => navigate(location.pathname.replace(paths.SETTINGS, ''))
   const location = useLocation()
