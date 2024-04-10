@@ -6,11 +6,15 @@ pub mod local;
 pub mod wasm;
 
 use anyhow::Result;
+use base64::Engine;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-#[async_trait::async_trait]
+#[async_trait::async_trait(?Send)]
 pub trait CoreDump: Clone {
+    /// Return the authentication token.
+    fn token(&self) -> Result<String>;
+
     fn version(&self) -> Result<String>;
 
     async fn os(&self) -> Result<OsInfo>;
@@ -21,6 +25,32 @@ pub trait CoreDump: Clone {
 
     /// Return a screenshot of the app.
     async fn screenshot(&self) -> Result<String>;
+
+    /// Get a screenshot of the app and upload it to public cloud storage.
+    async fn upload_screenshot(&self) -> Result<String> {
+        let screenshot = self.screenshot().await?;
+        // Create the zoo client.
+        let zoo = kittycad::Client::new(self.token()?);
+        // Base64 decode the screenshot.
+        let data = base64::engine::general_purpose::STANDARD.decode(screenshot)?;
+        // Upload the screenshot.
+        let links = zoo
+            .meta()
+            .create_debug_uploads(vec![kittycad::types::multipart::Attachment {
+                name: "".to_string(),
+                filename: Some("modeling-app/core-dump-screenshot.png".to_string()),
+                content_type: None,
+                data,
+            }])
+            .await
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+
+        if links.is_empty() {
+            anyhow::bail!("Failed to upload screenshot");
+        }
+
+        Ok(links[0].clone())
+    }
 
     /// Dump the app info.
     async fn dump(&self) -> Result<AppInfo> {

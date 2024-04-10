@@ -10,6 +10,9 @@ extern "C" {
     #[derive(Debug, Clone)]
     pub type CoreDumpManager;
 
+    #[wasm_bindgen(method, js_name = authToken, catch)]
+    fn auth_token(this: &CoreDumpManager) -> Result<String, js_sys::Error>;
+
     #[wasm_bindgen(method, js_name = version, catch)]
     fn version(this: &CoreDumpManager) -> Result<String, js_sys::Error>;
 
@@ -40,8 +43,14 @@ impl CoreDumper {
 unsafe impl Send for CoreDumper {}
 unsafe impl Sync for CoreDumper {}
 
-#[async_trait::async_trait]
+#[async_trait::async_trait(?Send)]
 impl CoreDump for CoreDumper {
+    fn token(&self) -> Result<String> {
+        self.manager
+            .auth_token()
+            .map_err(|e| anyhow::anyhow!("Failed to get response from token: {:?}", e))
+    }
+
     fn version(&self) -> Result<String> {
         self.manager
             .version()

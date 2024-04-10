@@ -17,13 +17,24 @@ import React from 'react'
 export class CoreDumpManager {
   engineCommandManager: EngineCommandManager
   htmlRef: React.RefObject<HTMLDivElement> | null
+  token: string | undefined
 
   constructor(
     engineCommandManager: EngineCommandManager,
-    htmlRef: React.RefObject<HTMLDivElement> | null
+    htmlRef: React.RefObject<HTMLDivElement> | null,
+    token: string | undefined
   ) {
     this.engineCommandManager = engineCommandManager
     this.htmlRef = htmlRef
+    this.token = token
+  }
+
+  // Get the token.
+  authToken(): string {
+    if (!this.token) {
+      throw new Error('Token not set')
+    }
+    return this.token
   }
 
   // Get the version of the app from the package.json.

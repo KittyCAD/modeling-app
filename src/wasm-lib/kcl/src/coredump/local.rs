@@ -19,8 +19,12 @@ impl Default for CoreDumper {
     }
 }
 
-#[async_trait::async_trait]
+#[async_trait::async_trait(?Send)]
 impl CoreDump for CoreDumper {
+    fn token(&self) -> Result<String> {
+        Ok(std::env::var("KITTYCAD_API_TOKEN").unwrap_or_default())
+    }
+
     fn version(&self) -> Result<String> {
         Ok(env!("CARGO_PKG_VERSION").to_string())
     }

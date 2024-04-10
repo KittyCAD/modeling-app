@@ -81,7 +81,11 @@ export const ModelingMachineProvider = ({
   const { htmlRef } = useStore((s) => ({
     htmlRef: s.htmlRef,
   }))
-  const coreDumpManager = new CoreDumpManager(engineCommandManager, htmlRef)
+  const coreDumpManager = new CoreDumpManager(
+    engineCommandManager,
+    htmlRef,
+    token
+  )
   useHotkeys('meta + shift + .', () => coreDump(coreDumpManager, true))
 
   const {
