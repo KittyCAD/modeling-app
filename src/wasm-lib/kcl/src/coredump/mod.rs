@@ -28,7 +28,7 @@ pub trait CoreDump: Clone {
 
     /// Get a screenshot of the app and upload it to public cloud storage.
     async fn upload_screenshot(&self) -> Result<String> {
-        let screenshot = self.screenshot().await?;
+        let screenshot = self.screenshot().await?.trim_start_matches("data:image/png;base64,");
         // Create the zoo client.
         let zoo = kittycad::Client::new(self.token()?);
         // Base64 decode the screenshot.
