@@ -29,6 +29,7 @@ export const Stream = ({ className = '' }: { className?: string }) => {
   const { settings } = useSettingsAuthContext()
   const { state } = useModelingContext()
   const { overallState } = useNetworkStatus()
+
   const isNetworkOkay = overallState === NetworkHealthState.Ok
 
   useEffect(() => {
