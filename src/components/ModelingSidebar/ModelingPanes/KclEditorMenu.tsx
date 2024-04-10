@@ -8,7 +8,7 @@ import { editorShortcutMeta } from './KclEditorPane'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { kclManager } from 'lib/singletons'
 
-export const CodeMenu = ({ children }: PropsWithChildren) => {
+export const KclEditorMenu = ({ children }: PropsWithChildren) => {
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
     useConvertToVariable()
 

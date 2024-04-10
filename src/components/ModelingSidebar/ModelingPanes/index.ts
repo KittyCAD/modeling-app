@@ -4,10 +4,9 @@ import {
   faCode,
   faCodeCommit,
   faExclamationCircle,
-  faMagnifyingGlass,
   faSquareRootVariable,
 } from '@fortawesome/free-solid-svg-icons'
-import { CodeMenu } from 'components/ModelingSidebar/ModelingPanes/KclEditorMenu'
+import { KclEditorMenu } from 'components/ModelingSidebar/ModelingPanes/KclEditorMenu'
 import { CustomIconName } from 'components/CustomIcon'
 import { KclEditorPane } from 'components/ModelingSidebar/ModelingPanes/KclEditorPane'
 import { ReactNode } from 'react'
@@ -32,7 +31,7 @@ export const topPanes: Pane[] = [
     icon: faCode,
     Content: KclEditorPane,
     keybinding: 'shift + c',
-    Menu: CodeMenu,
+    Menu: KclEditorMenu,
   },
 ]
 
