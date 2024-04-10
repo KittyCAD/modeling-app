@@ -325,7 +325,11 @@ test('executes on load', async ({ page, context }) => {
   await u.waitForAuthSkipAppStart()
 
   // expand variables section
-  await page.getByText('Variables').click()
+  const variablesTabButton = page.getByRole('tab', {
+    name: 'Variables',
+    exact: false,
+  })
+  await variablesTabButton.click()
 
   // can find part001 in the variables summary (pretty-json-container, makes sure we're not looking in the code editor)
   // part001 only shows up in the variables summary if it's been executed
@@ -349,7 +353,11 @@ test('re-executes', async ({ page, context }) => {
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
 
-  await page.getByText('Variables').click()
+  const variablesTabButton = page.getByRole('tab', {
+    name: 'Variables',
+    exact: false,
+  })
+  await variablesTabButton.click()
   // expect to see "myVar:5"
   await expect(
     page.locator('.pretty-json-container >> text=myVar:5')
