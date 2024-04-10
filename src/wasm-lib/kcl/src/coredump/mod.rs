@@ -19,10 +19,14 @@ pub trait CoreDump: Clone {
 
     async fn get_webrtc_stats(&self) -> Result<WebrtcStats>;
 
+    /// Return a screenshot of the app.
+    async fn screenshot(&self) -> Result<String>;
+
     /// Dump the app info.
     async fn dump(&self) -> Result<AppInfo> {
         let webrtc_stats = self.get_webrtc_stats().await?;
         let os = self.os().await?;
+        let screenshot = self.screenshot().await?;
 
         let mut app_info = AppInfo {
             version: self.version()?,
@@ -33,7 +37,7 @@ pub trait CoreDump: Clone {
             webrtc_stats,
             github_issue_url: None,
         };
-        app_info.set_github_issue_url()?;
+        app_info.set_github_issue_url(&screenshot)?;
 
         Ok(app_info)
     }
@@ -68,11 +72,13 @@ pub struct AppInfo {
 
 impl AppInfo {
     /// Set the github issue url.
-    pub fn set_github_issue_url(&mut self) -> Result<()> {
+    pub fn set_github_issue_url(&mut self, screenshot: &str) -> Result<()> {
         let tauri_or_browser_label = if self.tauri { "tauri" } else { "browser" };
         let labels = ["coredump", "bug", tauri_or_browser_label];
         let body = format!(
             r#"[Insert a description of the issue here]
+
+<img src="{}" alt="Screenshot" />
 
 <details>
 <summary><b>Core Dump</b></summary>
@@ -82,6 +88,7 @@ impl AppInfo {
 ```
 </details>
 "#,
+            screenshot,
             serde_json::to_string_pretty(&self)?
         );
         let urlencoded: String = form_urlencoded::byte_serialize(body.as_bytes()).collect();

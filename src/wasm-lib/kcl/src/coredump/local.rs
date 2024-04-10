@@ -42,4 +42,9 @@ impl CoreDump for CoreDumper {
         // TODO: we could actually implement this.
         Ok(crate::coredump::WebrtcStats::default())
     }
+
+    async fn screenshot(&self) -> Result<String> {
+        // Take a screenshot of the engine.
+        todo!()
+    }
 }

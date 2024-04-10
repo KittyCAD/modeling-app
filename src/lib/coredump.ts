@@ -9,6 +9,7 @@ import {
 } from '@tauri-apps/plugin-os'
 import { APP_VERSION } from 'routes/Settings'
 import { UAParser } from 'ua-parser-js'
+import screenshot from 'lib/screenshot'
 
 // This is a class for getting all the values from the JS world to pass to the Rust world
 // for a core dump.
@@ -110,5 +111,10 @@ export class CoreDumpManager {
         }
         return JSON.stringify(webrtcStats)
       })
+  }
+
+  // Return a data URL (png format) of the screenshot of the current page.
+  screenshot(): Promise<string> {
+    return screenshot()
   }
 }
