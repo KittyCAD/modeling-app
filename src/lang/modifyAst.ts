@@ -241,7 +241,6 @@ export function extrudeSketch(
   pathToExtrudeArg: PathToNode
 } {
   const _node = { ...node }
-  const dumbyStartend = { start: 0, end: 0 }
   const { node: sketchExpression } = getNodeFromPath(
     _node,
     pathToNode,
@@ -263,11 +262,7 @@ export function extrudeSketch(
     distance,
     shouldPipe
       ? createPipeSubstitution()
-      : {
-          type: 'Identifier',
-          ...dumbyStartend,
-          name: variableDeclorator.id.name,
-        },
+      : createIdentifier(variableDeclorator.id.name),
   ])
 
   if (shouldPipe) {
