@@ -9,7 +9,7 @@ import { TEST } from 'env'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
-import { Themes } from 'lib/theme'
+import { Themes, getSystemTheme } from 'lib/theme'
 import { useEffect, useMemo, useRef } from 'react'
 import { linter, lintGutter } from '@codemirror/lint'
 import { useStore } from 'useStore'
@@ -17,15 +17,17 @@ import { processCodeMirrorRanges } from 'lib/selections'
 import { EditorView, lineHighlightField } from 'editor/highlightextension'
 import { roundOff } from 'lib/utils'
 import { kclErrToDiagnostic } from 'lang/errors'
-import { CSSRuleObject } from 'tailwindcss/types/config'
 import { useModelingContext } from 'hooks/useModelingContext'
 import interact from '@replit/codemirror-interact'
 import { engineCommandManager, sceneInfra, kclManager } from 'lib/singletons'
 import { useKclContext } from 'lang/KclProvider'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
-import { NetworkHealthState, useNetworkStatus } from './NetworkHealthIndicator'
+import {
+  NetworkHealthState,
+  useNetworkStatus,
+} from '../../NetworkHealthIndicator'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { useLspContext } from './LspProvider'
+import { useLspContext } from '../../LspProvider'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -38,11 +40,14 @@ export const editorShortcutMeta = {
   },
 }
 
-export const TextEditor = ({
-  theme,
-}: {
-  theme: Themes.Light | Themes.Dark
-}) => {
+export const KclEditorPane = () => {
+  const {
+    settings: { context },
+  } = useSettingsAuthContext()
+  const theme =
+    context.app.theme.current === Themes.System
+      ? getSystemTheme()
+      : context.app.theme.current
   const { editorView, setEditorView, isShiftDown } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
@@ -225,13 +230,8 @@ export const TextEditor = ({
   }, [kclLSP, textWrapping.current, convertCallback])
 
   return (
-    <div
-      id="code-mirror-override"
-      className="full-height-subtract"
-      style={{ '--height-subtract': '4.25rem' } as CSSRuleObject}
-    >
+    <div id="code-mirror-override" className="absolute inset-0">
       <ReactCodeMirror
-        className="h-full"
         value={code}
         extensions={editorExtensions}
         onChange={onChange}
