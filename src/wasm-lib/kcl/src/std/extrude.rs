@@ -173,6 +173,7 @@ pub(crate) async fn do_post_extrude(
         modeling_response: kittycad::types::OkModelingCmdResponse::Solid3DGetExtrusionFaceInfo { data },
     } = solid3d_info
     {
+        println!("Data: {data:?}");
         data.faces
     } else {
         vec![]
