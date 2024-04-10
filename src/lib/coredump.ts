@@ -10,14 +10,20 @@ import {
 import { APP_VERSION } from 'routes/Settings'
 import { UAParser } from 'ua-parser-js'
 import screenshot from 'lib/screenshot'
+import React from 'react'
 
 // This is a class for getting all the values from the JS world to pass to the Rust world
 // for a core dump.
 export class CoreDumpManager {
   engineCommandManager: EngineCommandManager
+  htmlRef: React.RefObject<HTMLDivElement> | null
 
-  constructor(engineCommandManager: EngineCommandManager) {
+  constructor(
+    engineCommandManager: EngineCommandManager,
+    htmlRef: React.RefObject<HTMLDivElement> | null
+  ) {
     this.engineCommandManager = engineCommandManager
+    this.htmlRef = htmlRef
   }
 
   // Get the version of the app from the package.json.
@@ -115,6 +121,6 @@ export class CoreDumpManager {
 
   // Return a data URL (png format) of the screenshot of the current page.
   screenshot(): Promise<string> {
-    return screenshot()
+    return screenshot(this.htmlRef)
   }
 }
