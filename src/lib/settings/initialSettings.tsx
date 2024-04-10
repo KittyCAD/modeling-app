@@ -362,6 +362,17 @@ export function createSettings() {
           inputType: 'boolean',
         },
       }),
+      /**
+       * Whether to make the cursor blink in the editor
+       */
+      cursorBlinking: new Setting<boolean>({
+        defaultValue: true,
+        description: 'Whether to make the cursor blink in the editor',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
     },
     /**
      * Settings that affect the behavior of project management.
