@@ -44,6 +44,27 @@ async function waitForDefaultPlanesToBeVisible(page: Page) {
   )
 }
 
+async function openKclCodePanel(page: Page) {
+  const paneLocator = page.getByRole('tab', { name: 'KCL Code', exact: false })
+  const isOpen = (await paneLocator?.getAttribute('aria-selected')) === 'true'
+
+  if (!isOpen) {
+    await paneLocator.click()
+    await paneLocator.and(page.locator('[aria-selected="true"]')).waitFor()
+  }
+}
+
+async function closeKclCodePanel(page: Page) {
+  const paneLocator = page.getByRole('tab', { name: 'KCL Code', exact: false })
+  const isOpen = (await paneLocator?.getAttribute('aria-selected')) === 'true'
+  if (isOpen) {
+    await paneLocator.click()
+    await paneLocator
+      .and(page.locator(':not([aria-selected="true"])'))
+      .waitFor()
+  }
+}
+
 async function openDebugPanel(page: Page) {
   const debugLocator = page.getByRole('tab', { name: 'Debug', exact: false })
   const isOpen = (await debugLocator?.getAttribute('aria-selected')) === 'true'
@@ -56,7 +77,7 @@ async function openDebugPanel(page: Page) {
 
 async function closeDebugPanel(page: Page) {
   const debugLocator = page.getByRole('tab', { name: 'Debug', exact: false })
-  const isOpen = (await debugLocator?.getAttribute('aria-selected')) === 'false'
+  const isOpen = (await debugLocator?.getAttribute('aria-selected')) === 'true'
   if (isOpen) {
     await debugLocator.click()
     await debugLocator
@@ -92,6 +113,8 @@ export function getUtils(page: Page) {
     },
     clearCommandLogs: () => clearCommandLogs(page),
     expectCmdLog: (locatorStr: string) => expectCmdLog(page, locatorStr),
+    openKclCodePanel: () => openKclCodePanel(page),
+    closeKclCodePanel: () => closeKclCodePanel(page),
     openDebugPanel: () => openDebugPanel(page),
     closeDebugPanel: () => closeDebugPanel(page),
     openAndClearDebugPanel: async () => {

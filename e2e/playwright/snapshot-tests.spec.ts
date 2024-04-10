@@ -372,11 +372,11 @@ test('extrude on each default plane should be stable', async ({
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.clearAndCloseDebugPanel()
 
-    await page.getByText('Code').click()
+    await u.closeKclCodePanel()
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
     })
-    await page.getByText('Code').click()
+    await u.openKclCodePanel()
   }
   await runSnapshotsForOtherPlanes('XY')
   await runSnapshotsForOtherPlanes('-XY')
