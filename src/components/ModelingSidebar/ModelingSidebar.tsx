@@ -96,10 +96,14 @@ function ModelingSidebarSection({
     ? panes
     : panes.filter((pane) => pane.id !== 'debug')
   useEffect(() => {
-    if (!showDebugPanel.current && currentPane === 'debug') {
+    if (
+      !showDebugPanel.current &&
+      currentPane === 'debug' &&
+      openPanes.includes('debug')
+    ) {
       togglePane('debug')
     }
-  }, [showDebugPanel.current, togglePane])
+  }, [showDebugPanel.current, togglePane, openPanes])
 
   return (
     <Tab.Group

@@ -21,7 +21,7 @@ import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { isTauri } from 'lib/isTauri'
 import { useLspContext } from 'components/LspProvider'
 import { useRefreshSettings } from 'hooks/useRefreshSettings'
-import { ModelingSidebar } from 'components/ModelingSidebar'
+import { ModelingSidebar } from 'components/ModelingSidebar/ModelingSidebar'
 
 export function App() {
   useRefreshSettings(paths.FILE + 'SETTINGS')
