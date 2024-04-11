@@ -777,7 +777,7 @@ fn generate_code_block_test(
             }
             let ws = client
                 .modeling()
-                .commands_ws(None, None, None, None, None, Some(false))
+                .commands_ws(None, None, None, None, None,None, Some(false))
                 .await.unwrap();
 
             let tokens = crate::token::lexer(#code_block);
