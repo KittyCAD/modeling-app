@@ -325,9 +325,9 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
   await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 })
 
-test('executes on load', async ({ page, context }) => {
+test('executes on load', async ({ page }) => {
   const u = getUtils(page)
-  await context.addInitScript(async () => {
+  await page.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
       `const part001 = startSketchOn('-XZ')
@@ -357,9 +357,9 @@ test('executes on load', async ({ page, context }) => {
   ).toBeVisible()
 })
 
-test('re-executes', async ({ page, context }) => {
+test('re-executes', async ({ page }) => {
   const u = getUtils(page)
-  await context.addInitScript(async (token) => {
+  await page.addInitScript(async () => {
     localStorage.setItem('persistCode', `const myVar = 5`)
   })
   await page.setViewportSize({ width: 1000, height: 500 })
@@ -531,11 +531,10 @@ test('Auto complete works', async ({ page }) => {
 
 test('Stored settings are validated and fall back to defaults', async ({
   page,
-  context,
 }) => {
   // Override beforeEach test setup
   // with corrupted settings
-  await context.addInitScript(
+  await page.addInitScript(
     async ({ settingsKey, settings }) => {
       localStorage.setItem(settingsKey, settings)
     },
@@ -613,11 +612,11 @@ test('Project settings can be set and override user settings', async ({
   await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
 })
 
-test('Onboarding redirects and code updating', async ({ page, context }) => {
+test('Onboarding redirects and code updating', async ({ page }) => {
   const u = getUtils(page)
 
   // Override beforeEach test setup
-  await context.addInitScript(
+  await page.addInitScript(
     async ({ settingsKey, settings }) => {
       // Give some initial code, so we can test that it's cleared
       localStorage.setItem('persistCode', 'const sigmaAllow = 15000')
@@ -866,8 +865,8 @@ test.describe('Command bar tests', () => {
     await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
   })
 
-  test('Can extrude from the command bar', async ({ page, context }) => {
-    await context.addInitScript(async () => {
+  test('Can extrude from the command bar', async ({ page }) => {
+    await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `
@@ -1073,9 +1072,9 @@ const part002 = startSketchOn('XY')
   )
 })
 
-test('ProgramMemory can be serialised', async ({ page, context }) => {
+test('ProgramMemory can be serialised', async ({ page }) => {
   const u = getUtils(page)
-  await context.addInitScript(async () => {
+  await page.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
       `const part = startSketchOn('XY')
@@ -1114,7 +1113,6 @@ test('ProgramMemory can be serialised', async ({ page, context }) => {
 
 test("Various pipe expressions should and shouldn't allow edit and or extrude", async ({
   page,
-  context,
 }) => {
   const u = getUtils(page)
   const selectionsSnippets = {
@@ -1123,7 +1121,7 @@ test("Various pipe expressions should and shouldn't allow edit and or extrude", 
     extrudeAndEditAllowed: '|> startProfileAt([15.72, 4.7], %)',
     editOnly: '|> startProfileAt([15.79, -14.6], %)',
   }
-  await context.addInitScript(
+  await page.addInitScript(
     async ({
       extrudeAndEditBlocked,
       extrudeAndEditBlockedInFunction,
@@ -1283,12 +1281,9 @@ test('Deselecting line tool should mean nothing happens on click', async ({
   previousCodeContent = await page.locator('.cm-content').innerText()
 })
 
-test('Can edit segments by dragging their handles', async ({
-  page,
-  context,
-}) => {
+test('Can edit segments by dragging their handles', async ({ page }) => {
   const u = getUtils(page)
-  await context.addInitScript(async () => {
+  await page.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
       `const part001 = startSketchOn('-XZ')
@@ -1440,9 +1435,9 @@ test('Snap to close works (at any scale)', async ({ page }) => {
   await doSnapAtDifferentScales([0, 10000, 10000], codeTemplate())
 })
 
-test('Sketch on face', async ({ page, context }) => {
+test('Sketch on face', async ({ page }) => {
   const u = getUtils(page)
-  await context.addInitScript(async () => {
+  await page.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
       `const part001 = startSketchOn('-XZ')
