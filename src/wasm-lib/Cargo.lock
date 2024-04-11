@@ -155,9 +155,9 @@ dependencies = [
 
 [[package]]
 name = "anyhow"
-version = "1.0.81"
+version = "1.0.82"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0952808a6c2afd1aa8947271f3a60f1a6763c7b912d210184c5149b5cf147247"
+checksum = "f538837af36e6f6a9be0faa67f9a314f8119e4e4b5867c6ab40ed60360142519"
 dependencies = [
  "backtrace",
 ]
@@ -1374,6 +1374,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4271d37baee1b8c7e4b708028c57d816cf9d2434acb33a549475f78c181f6253"
 
 [[package]]
+name = "git_rev"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "60884563ea313b5037683cd5d44f1e14e9cb07b08543756242a65887f9cff48e"
+
+[[package]]
 name = "gloo-utils"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1864,7 +1870,9 @@ dependencies = [
  "databake",
  "derive-docs",
  "expectorate",
+ "form_urlencoded",
  "futures",
+ "git_rev",
  "gltf-json",
  "iai",
  "image",
@@ -1912,9 +1920,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.2.63"
+version = "0.2.66"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "93a332250e08fd715ad3d5826e04d36da1c5bb42d0c1b1ff1f0598278b9ebf3c"
+checksum = "9e2897244f4600f863115561a0fd1cd7c87fca20253ffecfebc53ef642d0aceb"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1950,9 +1958,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-execution-plan"
-version = "0.1.3"
+version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e913f8e5f3ef7928cddca2e7b53c6582d7be6a8f900d18ce6c31c04083056270"
+checksum = "acf8ffb148bd09de8889a8a2b3075a23ee86446c3a6e1c6dcf66b40fdc778158"
 dependencies = [
  "bytes",
  "gltf-json",
@@ -1995,9 +2003,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.10"
+version = "0.2.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b41beb7d9b776df93fd449604de5c447e33c7bd3326fd590002dc18cf5f08166"
+checksum = "e94b75afb2ab9fe824bb483d2475d419bb15fbe850466c45962999b54456173a"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2035,9 +2043,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-session"
-version = "0.1.2"
+version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6ee3a24232a086ec12ae4cfee443485c22e6c6959936d861006fa13bebef0904"
+checksum = "bae9bc47fcc3cc30727b35e738c35666b97e1e5f48f3f4c60ddaeccb69b66559"
 dependencies = [
  "futures",
  "kittycad",
@@ -2815,9 +2823,9 @@ dependencies = [
 
 [[package]]
 name = "quote"
-version = "1.0.35"
+version = "1.0.36"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "291ec9ab5efd934aaf503a6466c5d5251535d108ee747472c3977cc5acc868ef"
+checksum = "0fa76aaf39101c457836aec0ce2316dbdc3ab723cdda1c6bd4e6ad4208acaca7"
 dependencies = [
  "proc-macro2",
 ]

@@ -95,6 +95,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         let batched_requests = WebSocketRequest::ModelingCmdBatchReq {
             requests,
             batch_id: uuid::Uuid::new_v4(),
+            responses: Some(false),
         };
 
         let final_req = if self.batch().lock().unwrap().len() == 1 {
@@ -128,7 +129,11 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
         // We pop off the responses to cleanup our mappings.
         let id_final = match final_req {
-            WebSocketRequest::ModelingCmdBatchReq { requests: _, batch_id } => batch_id,
+            WebSocketRequest::ModelingCmdBatchReq {
+                requests: _,
+                batch_id,
+                responses: _,
+            } => batch_id,
             WebSocketRequest::ModelingCmdReq { cmd: _, cmd_id } => cmd_id,
             _ => {
                 return Err(KclError::Engine(KclErrorDetails {

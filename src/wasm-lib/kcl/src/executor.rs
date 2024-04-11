@@ -1226,7 +1226,7 @@ pub(crate) async fn execute(
     }
 
     // Flush the batch queue.
-    ctx.engine.flush_batch(SourceRange::default()).await?;
+    ctx.engine.flush_batch(SourceRange([program.end, program.end])).await?;
 
     Ok(memory.clone())
 }

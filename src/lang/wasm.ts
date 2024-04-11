@@ -10,6 +10,7 @@ import init, {
   ServerConfig,
   copilot_lsp_run,
   kcl_lsp_run,
+  coredump,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
@@ -21,6 +22,9 @@ import type { Token } from '../wasm-lib/kcl/bindings/Token'
 import { Coords2d } from './std/sketch'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import { DEV } from 'env'
+import { AppInfo } from 'wasm-lib/kcl/bindings/AppInfo'
+import { CoreDumpManager } from 'lib/coredump'
+import openWindow from 'lib/openWindow'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Value } from '../wasm-lib/kcl/bindings/Value'
@@ -309,5 +313,20 @@ export async function kclLspRun(config: ServerConfig, token: string) {
   } catch (e: any) {
     console.log('kcl lsp failed', e)
     // We can't restart here because a moved value, we should do this another way.
+  }
+}
+
+export async function coreDump(
+  coreDumpManager: CoreDumpManager,
+  openGithubIssue: boolean = false
+): Promise<AppInfo> {
+  try {
+    const dump: AppInfo = await coredump(coreDumpManager)
+    if (openGithubIssue && dump.github_issue_url) {
+      openWindow(dump.github_issue_url)
+    }
+    return dump
+  } catch (e: any) {
+    throw new Error(`Error getting core dump: ${e}`)
   }
 }
