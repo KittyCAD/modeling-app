@@ -11,6 +11,7 @@ import {
   TEST_SETTINGS_CORRUPTED,
   TEST_SETTINGS_ONBOARDING,
 } from './storageStates'
+import { waitFor } from '@testing-library/react'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -539,10 +540,11 @@ test('Auto complete works', async ({ page }) => {
 
 test('Stored settings are validated and fall back to defaults', async ({
   page,
+  context,
 }) => {
   // Override beforeEach test setup
   // with corrupted settings
-  await page.addInitScript(
+  await context.addInitScript(
     async ({ settingsKey, settings }) => {
       localStorage.setItem(settingsKey, settings)
     },
@@ -553,7 +555,7 @@ test('Stored settings are validated and fall back to defaults', async ({
   )
 
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
+  await page.goto('/', { waitUntil: 'domcontentloaded' })
 
   // Check the settings were reset
   const storedSettings = TOML.parse(
