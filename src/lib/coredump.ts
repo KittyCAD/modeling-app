@@ -11,6 +11,7 @@ import { APP_VERSION } from 'routes/Settings'
 import { UAParser } from 'ua-parser-js'
 import screenshot from 'lib/screenshot'
 import React from 'react'
+import { VITE_KC_API_BASE_URL } from 'env'
 
 // This is a class for getting all the values from the JS world to pass to the Rust world
 // for a core dump.
@@ -18,6 +19,7 @@ export class CoreDumpManager {
   engineCommandManager: EngineCommandManager
   htmlRef: React.RefObject<HTMLDivElement> | null
   token: string | undefined
+  baseUrl: string = VITE_KC_API_BASE_URL
 
   constructor(
     engineCommandManager: EngineCommandManager,
@@ -35,6 +37,11 @@ export class CoreDumpManager {
       throw new Error('Token not set')
     }
     return this.token
+  }
+
+  // Get the base url.
+  baseApiUrl(): string {
+    return this.baseUrl
   }
 
   // Get the version of the app from the package.json.

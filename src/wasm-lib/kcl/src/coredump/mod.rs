@@ -15,6 +15,8 @@ pub trait CoreDump: Clone {
     /// Return the authentication token.
     fn token(&self) -> Result<String>;
 
+    fn base_api_url(&self) -> Result<String>;
+
     fn version(&self) -> Result<String>;
 
     async fn os(&self) -> Result<OsInfo>;
@@ -31,7 +33,9 @@ pub trait CoreDump: Clone {
         let screenshot = self.screenshot().await?;
         let cleaned = screenshot.trim_start_matches("data:image/png;base64,");
         // Create the zoo client.
-        let zoo = kittycad::Client::new(self.token()?);
+        let mut zoo = kittycad::Client::new(self.token()?);
+        zoo.set_base_url(&self.base_api_url()?);
+
         // Base64 decode the screenshot.
         let data = base64::engine::general_purpose::STANDARD.decode(cleaned)?;
         // Upload the screenshot.
@@ -40,7 +44,7 @@ pub trait CoreDump: Clone {
             .create_debug_uploads(vec![kittycad::types::multipart::Attachment {
                 name: "".to_string(),
                 filename: Some("modeling-app/core-dump-screenshot.png".to_string()),
-                content_type: None,
+                content_type: Some("image/png".to_string()),
                 data,
             }])
             .await

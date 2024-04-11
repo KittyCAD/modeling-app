@@ -13,6 +13,9 @@ extern "C" {
     #[wasm_bindgen(method, js_name = authToken, catch)]
     fn auth_token(this: &CoreDumpManager) -> Result<String, js_sys::Error>;
 
+    #[wasm_bindgen(method, js_name = baseApiUrl, catch)]
+    fn baseApiUrl(this: &CoreDumpManager) -> Result<String, js_sys::Error>;
+
     #[wasm_bindgen(method, js_name = version, catch)]
     fn version(this: &CoreDumpManager) -> Result<String, js_sys::Error>;
 
@@ -49,6 +52,12 @@ impl CoreDump for CoreDumper {
         self.manager
             .auth_token()
             .map_err(|e| anyhow::anyhow!("Failed to get response from token: {:?}", e))
+    }
+
+    fn base_api_url(&self) -> Result<String> {
+        self.manager
+            .baseApiUrl()
+            .map_err(|e| anyhow::anyhow!("Failed to get response from base api url: {:?}", e))
     }
 
     fn version(&self) -> Result<String> {

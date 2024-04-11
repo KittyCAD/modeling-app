@@ -25,6 +25,10 @@ impl CoreDump for CoreDumper {
         Ok(std::env::var("KITTYCAD_API_TOKEN").unwrap_or_default())
     }
 
+    fn base_api_url(&self) -> Result<String> {
+        Ok("https://api.zoo.dev".to_string())
+    }
+
     fn version(&self) -> Result<String> {
         Ok(env!("CARGO_PKG_VERSION").to_string())
     }
