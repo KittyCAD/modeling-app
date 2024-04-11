@@ -156,6 +156,6 @@
     "vite-tsconfig-paths": "^4.3.2",
     "vitest-webgl-canvas-mock": "^1.1.0",
     "wait-on": "^7.2.0",
-    "yarn": "^1.22.19"
+    "yarn": "^1.22.22"
   }
 }
