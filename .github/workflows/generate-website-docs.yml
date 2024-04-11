@@ -57,7 +57,7 @@ jobs:
               --body "Updating the generated kcl docs cc @jessfraz @franknoirot merge this" \
               --head "$NEW_BRANCH" \
               --reviewer jessfraz \
-              --reviewer irevdev \
+              --reviewer irev-dev \
               --reviewer franknoirot \
               --base main || true
         env:
