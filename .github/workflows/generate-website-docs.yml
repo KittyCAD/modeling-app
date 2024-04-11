@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   generate-website-docs:
-    name: generate-website-docs 
+    name: generate-website-docs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -56,6 +56,9 @@ jobs:
           gh pr create --title "Update KCL docs" \
               --body "Updating the generated kcl docs cc @jessfraz @franknoirot merge this" \
               --head "$NEW_BRANCH" \
+              --assignee jessfraz \
+              --assignee irevdev \
+              --assignee franknoirot \
               --base main || true
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
