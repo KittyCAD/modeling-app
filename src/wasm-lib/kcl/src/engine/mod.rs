@@ -85,7 +85,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         let batched_requests = WebSocketRequest::ModelingCmdBatchReq {
             requests,
             batch_id: uuid::Uuid::new_v4(),
-            responses: None,
+            responses: Some(false),
         };
 
         let final_req = if self.batch().lock().unwrap().len() == 1 {
