@@ -1,5 +1,4 @@
 import { defineConfig, devices } from '@playwright/test'
-import { basicStorageState } from './e2e/playwright/storageStates'
 
 /**
  * Read environment variables from file.
