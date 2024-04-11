@@ -1958,9 +1958,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-execution-plan"
-version = "0.1.3"
+version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e913f8e5f3ef7928cddca2e7b53c6582d7be6a8f900d18ce6c31c04083056270"
+checksum = "acf8ffb148bd09de8889a8a2b3075a23ee86446c3a6e1c6dcf66b40fdc778158"
 dependencies = [
  "bytes",
  "gltf-json",
