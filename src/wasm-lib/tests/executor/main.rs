@@ -111,6 +111,15 @@ const part002 = startSketchOn(part001, "here")
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn serial_test_three_cubes() {
+    let code = include_str!("inputs/three_cubes.kcl");
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/three_cubes.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_riddle_small() {
     let code = include_str!("inputs/riddle_small.kcl");
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)

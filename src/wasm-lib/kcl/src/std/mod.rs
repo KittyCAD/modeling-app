@@ -214,6 +214,10 @@ impl Args {
         self.ctx.engine.send_modeling_cmd(id, self.source_range, cmd).await
     }
 
+    pub fn push_to_batch(&self, id: uuid::Uuid, cmd: kittycad::types::ModelingCmd) {
+        self.ctx.engine.push_to_batch(id, self.source_range, cmd)
+    }
+
     fn make_user_val_from_json(&self, j: serde_json::Value) -> Result<MemoryItem, KclError> {
         Ok(MemoryItem::UserVal(crate::executor::UserVal {
             value: j,

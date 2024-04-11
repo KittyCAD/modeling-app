@@ -38,15 +38,14 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
     let id = uuid::Uuid::new_v4();
 
     // Extrude the element.
-    args.send_modeling_cmd(
+    args.push_to_batch(
         id,
         kittycad::types::ModelingCmd::Extrude {
             target: sketch_group.id,
             distance: length,
             cap: true,
         },
-    )
-    .await?;
+    );
 
     do_post_extrude(sketch_group, length, id, args).await
 }
@@ -66,13 +65,12 @@ pub(crate) async fn do_post_extrude(
 
     // Bring the object to the front of the scene.
     // See: https://github.com/KittyCAD/modeling-app/issues/806
-    args.send_modeling_cmd(
+    args.push_to_batch(
         uuid::Uuid::new_v4(),
         kittycad::types::ModelingCmd::ObjectBringToFront {
             object_id: sketch_group.id,
         },
-    )
-    .await?;
+    );
 
     if sketch_group.value.is_empty() {
         return Err(KclError::Type(KclErrorDetails {

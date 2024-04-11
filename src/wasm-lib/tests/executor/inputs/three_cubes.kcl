@@ -1,0 +1,18 @@
+const width = 20
+
+fn cube = (cx, cy) => {
+  let d = width/2
+  startSketchAt([cx-d, cy-d])
+    |> lineTo([cx+d, cy-d], %)
+    |> lineTo([cx+d, cy+d], %)
+    |> lineTo([cx-d, cy+d], %)
+    |> lineTo([cx-d, cy-d], %)
+    |> close(%)
+    |> extrude(width, %)
+}
+
+let interval = 30
+cube(interval,interval)
+cube(0,0)
+cube(-interval,interval)
+

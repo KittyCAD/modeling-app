@@ -28,6 +28,16 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
     ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError>;
 
+    fn push_to_batch(
+        &self,
+        cmd_id: uuid::Uuid,
+        source_range: crate::executor::SourceRange,
+        cmd: kittycad::types::ModelingCmd,
+    ) {
+        let req = WebSocketRequest::ModelingCmdReq { cmd, cmd_id };
+        self.batch().lock().unwrap().push((req, source_range))
+    }
+
     async fn send_modeling_cmd(
         &self,
         id: uuid::Uuid,
@@ -94,7 +104,8 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         } else {
             batched_requests
         };
-        // println!("Running batch: {final_req:#?}");
+        // TODO: Uncomment this.
+        debug_batch(&final_req);
 
         // Create the map of original command IDs to source range.
         // This is for the wasm side, kurt needs it for selections.
@@ -190,4 +201,19 @@ pub fn is_cmd_with_return_values(cmd: &kittycad::types::ModelingCmd) -> bool {
     };
 
     true
+}
+
+#[allow(dead_code)] // Only used in debugging.
+fn debug_batch(msg: &WebSocketRequest) {
+    match msg {
+        WebSocketRequest::ModelingCmdReq { cmd, .. } => {
+            println!("[ {:?} ]", cmd);
+        }
+
+        WebSocketRequest::ModelingCmdBatchReq { requests, .. } => {
+            let names: Vec<_> = requests.iter().map(|req| format!("{:?}", req.cmd)).collect();
+            println!("[ {} ]", names.join(", "))
+        }
+        other => panic!("this isn't a modeling command or batch: {other:?}"),
+    }
 }
