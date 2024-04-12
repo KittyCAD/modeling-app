@@ -132,7 +132,7 @@ export const TextEditor = ({
     // trigger stuff below that might cause the component to re-render.
     // We explicitly dont check HasPrevSnippetField because we always add
     // a ${} to the end of the function so that's fine.
-    if (editorView && hasNextSnippetField(viewUpdate.view.state)) {
+    if (hasNextSnippetField(viewUpdate.view.state)) {
       console.log('IN SNIPPET, on Update')
       return
     }
