@@ -925,23 +925,25 @@ test.describe('Command bar tests', () => {
     await expect(page.getByPlaceholder('Variable name')).toHaveValue(
       'distance001'
     )
-    await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled()
-    await page.getByRole('button', { name: 'Continue' }).click()
+
+    const continueButton = page.getByRole('button', { name: 'Continue' })
+    const submitButton = page.getByRole('button', { name: 'Submit command' })
+    await continueButton.click()
 
     // Review step and argument hotkeys
-    await expect(
-      page.getByRole('button', { name: 'Submit command' })
-    ).toBeEnabled()
+    await expect(submitButton).toBeEnabled()
     await page.keyboard.press('Backspace')
+
+    // Assert we're back on the distance step
     await expect(
       page.getByRole('button', { name: 'Distance 12', exact: false })
     ).toBeDisabled()
-    await page.keyboard.press('Enter')
 
-    await expect(page.getByText('Confirm Extrude')).toBeVisible()
+    await continueButton.click()
+    await submitButton.click()
 
     // Check that the code was updated
-    await page.keyboard.press('Enter')
+    await u.waitForCmdReceive('extrude')
     // Unfortunately this indentation seems to matter for the test
     await expect(page.locator('.cm-content')).toHaveText(
       `const distance = sqrt(20)
