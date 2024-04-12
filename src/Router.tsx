@@ -40,11 +40,11 @@ const router = createBrowserRouter([
     element: (
       <CommandBarProvider>
         <SettingsAuthProvider>
-          <KclContextProvider>
-            <LspProvider>
+          <LspProvider>
+            <KclContextProvider>
               <Outlet />
-            </LspProvider>
-          </KclContextProvider>
+            </KclContextProvider>
+          </LspProvider>
         </SettingsAuthProvider>
       </CommandBarProvider>
     ),
