@@ -146,6 +146,7 @@ test('Can moving camera', async ({ page, context }) => {
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
   await u.openAndClearDebugPanel()
+  await u.closeKclCodePanel()
 
   const camPos: [number, number, number] = [0, 85, 85]
   const bakeInRetries = async (
