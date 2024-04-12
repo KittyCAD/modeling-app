@@ -29,7 +29,6 @@ import { NetworkHealthState, useNetworkStatus } from './NetworkHealthIndicator'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useLspContext } from './LspProvider'
 import { Prec } from '@codemirror/state'
-import { hasNextSnippetField, snippetKeymap } from '@codemirror/autocomplete'
 
 export const editorShortcutMeta = {
   formatCode: {
