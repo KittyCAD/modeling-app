@@ -15,7 +15,7 @@
     "@lezer/javascript": "^1.4.9",
     "@open-rpc/client-js": "^1.8.1",
     "@react-hook/resize-observer": "^1.2.6",
-    "@replit/codemirror-interact": "^6.3.0",
+    "@replit/codemirror-interact": "^6.3.1",
     "@tauri-apps/api": "2.0.0-beta.7",
     "@tauri-apps/plugin-dialog": "^2.0.0-beta.2",
     "@tauri-apps/plugin-fs": "^2.0.0-beta.2",
