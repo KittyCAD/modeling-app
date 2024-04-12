@@ -22,7 +22,7 @@ mod test_examples_show {
 
         let ws = client
             .modeling()
-            .commands_ws(None, None, None, None, None, Some(false))
+            .commands_ws(None, None, None, None, None, None, Some(false))
             .await
             .unwrap();
         let tokens = crate::token::lexer("This is another code block.\nyes sirrr.\nshow");
@@ -117,7 +117,7 @@ mod test_examples_show {
 
         let ws = client
             .modeling()
-            .commands_ws(None, None, None, None, None, Some(false))
+            .commands_ws(None, None, None, None, None, None, Some(false))
             .await
             .unwrap();
         let tokens = crate::token::lexer("This is code.\nIt does other shit.\nshow");
