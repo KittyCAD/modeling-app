@@ -196,29 +196,33 @@ impl crate::lsp::backend::Backend for Backend {
         let ast = match result {
             Ok(ast) => ast,
             Err(err) => {
-                self.add_to_diagnostics(params, err).await;
+                self.add_to_diagnostics(&params, err).await;
                 return;
             }
         };
 
-        // Update the symbols map.
-        self.symbols_map
-            .insert(params.uri.to_string(), ast.get_lsp_symbols(&params.text));
+        // Check if the ast changed.
+        let ast_changed = match self.ast_map.get(&params.uri.to_string()) {
+            Some(old_ast) => {
+                // Check if the ast changed.
+                *old_ast.value() != ast
+            }
+            None => true,
+        };
 
-        self.ast_map.insert(params.uri.to_string(), ast.clone());
+        // If the ast changed update the map and symbols and execute if we need to.
+        if ast_changed {
+            // Update the symbols map.
+            self.symbols_map
+                .insert(params.uri.to_string(), ast.get_lsp_symbols(&params.text));
 
-        // Execute the code if we have an executor context.
-        /*if let Some(executor_ctx) = &self.executor_ctx {
-            let memory = match self.executor_ctx.run(ast, None).await {
-                Ok(memory) => memory,
-                Err(err) => {
-                    self.add_to_diagnostics(params, err).await;
+            self.ast_map.insert(params.uri.to_string(), ast.clone());
 
-                    return;
-                }
-            };
-            self.memory_map.insert(params.uri.to_string(), memory);
-        }*/
+            // Execute the code if we have an executor context.
+            // This function automatically executes if we should & updates the diagnostics if we got
+            // errors.
+            // self.execute(&params, ast.clone()).await;
+        }
 
         // Lets update the diagnostics, since we got no errors.
         self.diagnostics_map.insert(
@@ -239,7 +243,7 @@ impl crate::lsp::backend::Backend for Backend {
 }
 
 impl Backend {
-    async fn add_to_diagnostics(&self, params: TextDocumentItem, err: KclError) {
+    async fn add_to_diagnostics(&self, params: &TextDocumentItem, err: KclError) {
         let diagnostic = err.to_lsp_diagnostic(&params.text);
         // We got errors, update the diagnostics.
         self.diagnostics_map.insert(
@@ -256,8 +260,23 @@ impl Backend {
         // Publish the diagnostic.
         // If the client supports it.
         self.client
-            .publish_diagnostics(params.uri, vec![diagnostic], None)
+            .publish_diagnostics(params.uri.clone(), vec![diagnostic], None)
             .await;
+    }
+
+    async fn execute(&self, params: &TextDocumentItem, ast: crate::ast::types::Program) {
+        // Execute the code if we have an executor context.
+        if let Some(executor_ctx) = &self.executor_ctx {
+            let memory = match executor_ctx.run(ast, None).await {
+                Ok(memory) => memory,
+                Err(err) => {
+                    self.add_to_diagnostics(params, err).await;
+
+                    return;
+                }
+            };
+            self.memory_map.insert(params.uri.to_string(), memory);
+        }
     }
 
     fn get_semantic_token_type_index(&self, token_type: SemanticTokenType) -> Option<usize> {
