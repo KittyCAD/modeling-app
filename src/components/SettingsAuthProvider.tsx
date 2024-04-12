@@ -116,7 +116,7 @@ export const SettingsAuthProviderBase = ({
             },
           })
         },
-        toastSuccess: (context, event) => {
+        toastSuccess: (_, event) => {
           const eventParts = event.type.replace(/^set./, '').split('.') as [
             keyof typeof settings,
             string
@@ -210,6 +210,19 @@ export const SettingsAuthProviderBase = ({
       settingsState.context.app.themeColor.current
     )
   }, [settingsState.context.app.themeColor.current])
+
+  /**
+   * Update the --cursor-color CSS variable
+   * based on the setting textEditor.blinkingCursor.current
+   */
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      `--cursor-color`,
+      settingsState.context.textEditor.blinkingCursor.current
+        ? 'auto'
+        : 'transparent'
+    )
+  }, [settingsState.context.textEditor.blinkingCursor.current])
 
   // Auth machine setup
   const [authState, authSend, authActor] = useMachine(authMachine, {

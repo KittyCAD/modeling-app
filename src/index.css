@@ -46,6 +46,15 @@ select {
   @apply bg-chalkboard-90;
 }
 
+/* We hide the cursor if the user has turned off the textEditor.blinkingCursor setting
+ * any elements that could present a blinking cursor to the user
+*/
+input,
+textarea,
+*[contenteditable] {
+  caret-color: var(--cursor-color, auto);
+}
+
 ::-webkit-scrollbar {
   @apply w-2 h-2 rounded-sm;
   @apply bg-chalkboard-20;
@@ -126,18 +135,15 @@ code {
   overflow: auto;
 }
 
-#code-mirror-override .cm-scroller::-webkit-scrollbar {
-  @apply h-0;
-}
-
 #code-mirror-override .cm-activeLine,
 #code-mirror-override .cm-activeLineGutter {
-  @apply bg-liquid-10/50;
+  @apply bg-primary/20;
 }
 
 .dark #code-mirror-override .cm-activeLine,
 .dark #code-mirror-override .cm-activeLineGutter {
-  @apply bg-liquid-80/50;
+  @apply bg-primary/20;
+  mix-blend-mode: lighten;
 }
 
 #code-mirror-override .cm-gutters {
@@ -148,19 +154,29 @@ code {
   @apply bg-chalkboard-110/50;
 }
 
+#code-mirror-override .cm-content {
+  @apply caret-primary;
+}
+.dark #code-mirror-override .cm-content {
+  @apply caret-chalkboard-10;
+}
+
 #code-mirror-override .cm-focused .cm-cursor {
   width: 0px;
 }
 #code-mirror-override .cm-cursor {
   display: block;
   width: 1ch;
-  @apply bg-liquid-40 mix-blend-multiply;
-
-  animation: blink 2s ease-out infinite;
+  @apply mix-blend-multiply;
+  @apply border-l-primary;
 }
 
 .dark #code-mirror-override .cm-cursor {
-  @apply bg-liquid-50;
+  @apply border-l-chalkboard-10;
+}
+
+#code-mirror-override.blink .cm-cursor {
+  animation: blink 1200ms ease-out infinite;
 }
 
 @keyframes blink {
@@ -168,8 +184,8 @@ code {
   100% {
     opacity: 0;
   }
-  15% {
-    opacity: 0.75;
+  10% {
+    opacity: 1;
   }
 }
 

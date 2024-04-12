@@ -4,6 +4,7 @@ import ReactCodeMirror, {
   ViewUpdate,
   keymap,
   SelectionRange,
+  drawSelection,
 } from '@uiw/react-codemirror'
 import { TEST } from 'env'
 import { useCommandsContext } from 'hooks/useCommandsContext'
@@ -28,6 +29,10 @@ import {
 } from '../../NetworkHealthIndicator'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useLspContext } from '../../LspProvider'
+import { isTauri } from 'lib/isTauri'
+import { useNavigate } from 'react-router-dom'
+import { paths } from 'lib/paths'
+import makeUrlPathRelative from 'lib/makeUrlPathRelative'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -58,6 +63,7 @@ export const KclEditorPane = () => {
   const { overallState } = useNetworkStatus()
   const isNetworkOkay = overallState === NetworkHealthState.Ok
   const { copilotLSP, kclLSP } = useLspContext()
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -87,6 +93,7 @@ export const KclEditorPane = () => {
 
   const { settings } = useSettingsAuthContext()
   const textWrapping = settings.context.textEditor.textWrapping
+  const cursorBlinking = settings.context.textEditor.blinkingCursor
   const { commandBarSend } = useCommandsContext()
   const { enable: convertEnabled, handleClick: convertCallback } =
     useConvertToVariable()
@@ -151,12 +158,22 @@ export const KclEditorPane = () => {
 
   const editorExtensions = useMemo(() => {
     const extensions = [
+      drawSelection({
+        cursorBlinkRate: cursorBlinking.current ? 1200 : 0,
+      }),
       lineHighlightField,
       keymap.of([
         {
           key: 'Meta-k',
           run: () => {
             commandBarSend({ type: 'Open' })
+            return false
+          },
+        },
+        {
+          key: isTauri() ? 'Meta-,' : 'Meta-Shift-,',
+          run: () => {
+            navigate(makeUrlPathRelative(paths.SETTINGS))
             return false
           },
         },
@@ -227,10 +244,13 @@ export const KclEditorPane = () => {
     }
 
     return extensions
-  }, [kclLSP, textWrapping.current, convertCallback])
+  }, [kclLSP, textWrapping.current, cursorBlinking.current, convertCallback])
 
   return (
-    <div id="code-mirror-override" className="absolute inset-0">
+    <div
+      id="code-mirror-override"
+      className={'absolute inset-0 ' + (cursorBlinking.current ? 'blink' : '')}
+    >
       <ReactCodeMirror
         value={code}
         extensions={editorExtensions}
