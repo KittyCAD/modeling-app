@@ -835,7 +835,7 @@ mod tests {
 	center: [${2:3.14}, ${3:3.14}, ${4:3.14}],
 	repetitions: ${3:3.14},
 	rotateDuplicates: ${4:"string"},
-} ,${5:%})"#
+}, ${5:%})"#
         );
     }
 
