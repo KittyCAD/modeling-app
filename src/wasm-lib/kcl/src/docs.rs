@@ -57,9 +57,15 @@ impl StdLibFnArg {
         get_type_string_from_schema(&self.schema.clone())
     }
 
-    #[allow(dead_code)]
     pub fn get_autocomplete_string(&self) -> Result<String> {
         get_autocomplete_string_from_schema(&self.schema.clone())
+    }
+
+    pub fn get_autocomplete_snippet(&self, index: usize) -> Result<(usize, String)> {
+        if self.type_ == "SketchGroup" || self.type_ == "ExtrudeGroup" || self.type_ == "SketchSurface" {
+            return Ok((index, format!("${{{}:{}}}", index, "%")));
+        }
+        get_autocomplete_snippet_from_schema(&self.schema.clone(), index)
     }
 
     pub fn description(&self) -> Option<String> {
@@ -153,8 +159,8 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
         signature
     }
 
-    fn to_completion_item(&self) -> CompletionItem {
-        CompletionItem {
+    fn to_completion_item(&self) -> Result<CompletionItem> {
+        Ok(CompletionItem {
             label: self.name(),
             label_details: Some(CompletionItemLabelDetails {
                 detail: Some(self.fn_signature().replace(&self.name(), "")),
@@ -174,28 +180,7 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
             preselect: None,
             sort_text: None,
             filter_text: None,
-            insert_text: Some(format!(
-                "{}({})",
-                self.name(),
-                self.args()
-                    .iter()
-                    .enumerate()
-                    // It is okay to unwrap here since in the `kcl-lib` tests, we would have caught
-                    // any errors in the `self`'s signature.
-                    .map(|(index, item)| {
-                        let format = item.get_autocomplete_string().unwrap();
-                        if item.type_ == "SketchGroup" || item.type_ == "ExtrudeGroup" || item.type_ == "SketchSurface"
-                        {
-                            format!("${{{}:{}}}", index + 1, "%")
-                        } else if format.contains('{') {
-                            format.replace('{', "\\{").replace('}', "\\}").to_string()
-                        } else {
-                            format!("${{{}:{}}}", index + 1, format)
-                        }
-                    })
-                    .collect::<Vec<_>>()
-                    .join(",")
-            )),
+            insert_text: Some(self.to_autocomplete_snippet()?),
             insert_text_format: Some(InsertTextFormat::SNIPPET),
             insert_text_mode: None,
             text_edit: None,
@@ -204,7 +189,18 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
             commit_characters: None,
             data: None,
             tags: None,
+        })
+    }
+
+    fn to_autocomplete_snippet(&self) -> Result<String> {
+        let mut args = Vec::new();
+        let mut index = 0;
+        for arg in self.args().iter() {
+            let (i, arg_str) = arg.get_autocomplete_snippet(index)?;
+            index = i + 1;
+            args.push(arg_str);
         }
+        Ok(format!("{}({})", self.name(), args.join(",")))
     }
 
     fn to_signature_help(&self) -> SignatureHelp {
@@ -432,6 +428,139 @@ pub fn get_type_string_from_schema(schema: &schemars::schema::Schema) -> Result<
     }
 }
 
+pub fn get_autocomplete_snippet_from_schema(
+    schema: &schemars::schema::Schema,
+    index: usize,
+) -> Result<(usize, String)> {
+    match schema {
+        schemars::schema::Schema::Object(o) => {
+            if o.enum_values.is_some() {
+                let auto_str = get_autocomplete_string_from_schema(schema)?;
+                return Ok((index, format!("${{{}:{}}}", index, auto_str)));
+            }
+
+            if let Some(format) = &o.format {
+                if format == "uuid" {
+                    return Ok((index, format!(r#"${{{}:"tag_or_edge_fn"}}"#, index)));
+                } else if format == "double" || format == "uint" || format == "int64" || format == "uint32" {
+                    return Ok((index, format!(r#"${{{}:3.14}}"#, index)));
+                } else {
+                    anyhow::bail!("unknown format: {}", format);
+                }
+            }
+
+            if let Some(obj_val) = &o.object {
+                let mut fn_docs = String::new();
+                fn_docs.push_str("{\n");
+                // Let's print out the object's properties.
+                for (i, (prop_name, prop)) in obj_val.properties.iter().enumerate() {
+                    if prop_name.starts_with('_') {
+                        continue;
+                    }
+
+                    fn_docs.push_str(&format!(
+                        "\t{}: {},\n",
+                        prop_name,
+                        get_autocomplete_snippet_from_schema(prop, index + i)?.1,
+                    ));
+                }
+
+                fn_docs.push('}');
+
+                return Ok((index + obj_val.properties.len() - 1, fn_docs));
+            }
+
+            if let Some(array_val) = &o.array {
+                if let Some(schemars::schema::SingleOrVec::Single(items)) = &array_val.items {
+                    // Let's print out the object's properties.
+                    match array_val.max_items {
+                        Some(val) => {
+                            return Ok((
+                                index + (val as usize) - 1,
+                                format!(
+                                    "[{}]",
+                                    (0..val)
+                                        .map(|v| get_autocomplete_snippet_from_schema(items, index + (v as usize))
+                                            .unwrap()
+                                            .1)
+                                        .collect::<Vec<_>>()
+                                        .join(", ")
+                                ),
+                            ));
+                        }
+                        None => {
+                            return Ok((
+                                index,
+                                format!("[{}]", get_autocomplete_snippet_from_schema(items, index)?.1),
+                            ));
+                        }
+                    };
+                } else if let Some(items) = &array_val.contains {
+                    return Ok((
+                        index,
+                        format!("[{}]", get_autocomplete_snippet_from_schema(items, index)?.1),
+                    ));
+                }
+            }
+
+            if let Some(subschemas) = &o.subschemas {
+                let mut fn_docs = String::new();
+                if let Some(items) = &subschemas.one_of {
+                    let mut had_enum_string = false;
+                    let mut parsed_enum_values: Vec<String> = Vec::new();
+                    for item in items {
+                        if let schemars::schema::Schema::Object(o) = item {
+                            if let Some(enum_values) = &o.enum_values {
+                                for enum_value in enum_values {
+                                    if let serde_json::value::Value::String(enum_value) = enum_value {
+                                        had_enum_string = true;
+                                        parsed_enum_values.push(format!("\"{}\"", enum_value));
+                                    } else {
+                                        had_enum_string = false;
+                                        break;
+                                    }
+                                }
+                                if !had_enum_string {
+                                    break;
+                                }
+                            } else {
+                                had_enum_string = false;
+                                break;
+                            }
+                        } else {
+                            had_enum_string = false;
+                            break;
+                        }
+                    }
+
+                    if had_enum_string && !parsed_enum_values.is_empty() {
+                        return Ok((index, parsed_enum_values[0].to_string()));
+                    } else if let Some(item) = items.iter().next() {
+                        // Let's print out the object's properties.
+                        fn_docs.push_str(&get_autocomplete_snippet_from_schema(item, index)?.1);
+                    }
+                } else if let Some(items) = &subschemas.any_of {
+                    if let Some(item) = items.iter().next() {
+                        // Let's print out the object's properties.
+                        fn_docs.push_str(&get_autocomplete_snippet_from_schema(item, index)?.1);
+                    }
+                } else {
+                    anyhow::bail!("unknown subschemas: {:#?}", subschemas);
+                }
+
+                return Ok((index, fn_docs));
+            }
+
+            if let Some(schemars::schema::SingleOrVec::Single(_string)) = &o.instance_type {
+                return Ok((index, format!(r#"${{{}:"string"}}"#, index)));
+            }
+
+            anyhow::bail!("unknown type: {:#?}", o)
+        }
+        schemars::schema::Schema::Bool(_) => Ok((index, format!(r#"${{{}:false}}"#, index))),
+    }
+}
+
 pub fn get_autocomplete_string_from_schema(schema: &schemars::schema::Schema) -> Result<String> {
     match schema {
         schemars::schema::Schema::Object(o) => {
@@ -613,6 +742,8 @@ pub fn completion_item_from_enum_schema(
 mod tests {
     use pretty_assertions::assert_eq;
 
+    use super::StdLibFn;
+
     #[test]
     fn test_serialize_function() {
         let some_function = crate::ast::types::Function::StdLib {
@@ -632,6 +763,33 @@ mod tests {
             crate::ast::types::Function::StdLib {
                 func: Box::new(crate::std::sketch::Line),
             }
+        );
+    }
+
+    #[test]
+    fn get_autocomplete_snippet_line() {
+        let line_fn: Box<dyn StdLibFn> = Box::new(crate::std::sketch::Line);
+        let snippet = line_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(snippet, r#"line([${0:3.14}, ${1:3.14}],${2:%},${3:"string"})"#);
+    }
+
+    #[test]
+    fn get_autocomplete_snippet_extrude() {
+        let extrude_fn: Box<dyn StdLibFn> = Box::new(crate::std::extrude::Extrude);
+        let snippet = extrude_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(snippet, r#"extrude(${0:3.14},${1:%})"#);
+    }
+
+    #[test]
+    fn get_autocomplete_snippet_fillet() {
+        let fillet_fn: Box<dyn StdLibFn> = Box::new(crate::std::fillet::Fillet);
+        let snippet = fillet_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(
+            snippet,
+            r#"fillet({
+	radius: ${0:3.14},
+	tags: [${1:"tag_or_edge_fn"}],
+},${2:%})"#
         );
     }
 }
