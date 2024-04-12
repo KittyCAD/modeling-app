@@ -543,7 +543,7 @@ test('Auto complete works', async ({ page }) => {
 
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('XY')
-  |> startProfileAt([0,0], %)
+  |> startProfileAt([3.14, 3.14], %)
   |> xLine(5, %) // lin`)
 })
 
