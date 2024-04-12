@@ -9,15 +9,27 @@ updates:
       directory: '/' # Location of package manifests
       schedule:
           interval: 'daily'
+      reviewers:
+          - franknoirot 
+          - irev-dev
     - package-ecosystem: 'github-actions' # See documentation for possible values
       directory: '/' # Location of package manifests
       schedule:
           interval: 'daily'
+      reviewers:
+          - adamchalmers
+          - jessfraz
     - package-ecosystem: 'cargo' # See documentation for possible values
       directory: '/src/wasm-lib/' # Location of package manifests
       schedule:
           interval: 'daily'
+      reviewers:
+          - adamchalmers
+          - jessfraz
     - package-ecosystem: 'cargo' # See documentation for possible values
       directory: '/src-tauri/' # Location of package manifests
       schedule:
           interval: 'daily'
+      reviewers:
+          - adamchalmers
+          - jessfraz

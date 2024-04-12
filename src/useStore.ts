@@ -81,6 +81,8 @@ export interface StoreState {
     streamWidth: number
     streamHeight: number
   }) => void
+  setHtmlRef: (ref: React.RefObject<HTMLDivElement>) => void
+  htmlRef: React.RefObject<HTMLDivElement> | null
 
   showHomeMenu: boolean
   setHomeShowMenu: (showMenu: boolean) => void
@@ -132,6 +134,10 @@ export const useStore = create<StoreState>()(
         setButtonDownInStream: (buttonDownInStream) => {
           set({ buttonDownInStream })
         },
+        setHtmlRef: (htmlRef) => {
+          set({ htmlRef })
+        },
+        htmlRef: null,
         didDragInStream: false,
         setDidDragInStream: (didDragInStream) => {
           set({ didDragInStream })
