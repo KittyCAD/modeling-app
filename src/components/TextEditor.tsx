@@ -50,6 +50,8 @@ import {
   closeBrackets,
   closeBracketsKeymap,
   completionKeymap,
+  hasNextSnippetField,
+  hasPrevSnippetField,
 } from '@codemirror/autocomplete'
 
 export const editorShortcutMeta = {
@@ -121,6 +123,14 @@ export const TextEditor = ({
     if (!editorView) {
       setEditorView(viewUpdate.view)
     }
+    // If we are just fucking around in a snippet, return early and don't
+    // trigger stuff below that might cause the component to re-render.
+    if (
+      hasNextSnippetField(viewUpdate.view.state) ||
+      hasPrevSnippetField(viewUpdate.view.state)
+    ) {
+      return
+    }
     const selString = stringifyRanges(
       viewUpdate?.state?.selection?.ranges || []
     )
@@ -163,7 +173,7 @@ export const TextEditor = ({
     )
       return // don't repeat events
     lastEvent.current = { event: stringEvent, time: Date.now() }
-    //send(eventInfo.modelingEvent) // TODO: this is a hack to prevent the scene from updating
+    send(eventInfo.modelingEvent) // TODO: this is a hack to prevent the scene from updating
     eventInfo.engineEvents.forEach((event) =>
       engineCommandManager.sendSceneCommand(event)
     )
