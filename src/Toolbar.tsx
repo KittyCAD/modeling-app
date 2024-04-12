@@ -6,7 +6,6 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { ActionButton } from 'components/ActionButton'
 import usePlatform from 'hooks/usePlatform'
 import { isSingleCursorInPipe } from 'lang/queryAst'
-import { useKclContext } from 'lang/KclProvider'
 import {
   NetworkHealthState,
   useNetworkStatus,
@@ -34,12 +33,13 @@ export const Toolbar = () => {
     )
   }, [engineCommandManager.artifactMap, context.selectionRanges])
   const { overallState } = useNetworkStatus()
-  const { isExecuting } = useKclContext()
   const { isStreamReady } = useStore((s) => ({
     isStreamReady: s.isStreamReady,
   }))
   const disableAllButtons =
-    overallState !== NetworkHealthState.Ok || isExecuting || !isStreamReady
+    overallState !== NetworkHealthState.Ok ||
+    kclManager.isExecuting ||
+    !isStreamReady
 
   function handleToolbarButtonsWheelEvent(ev: WheelEvent<HTMLSpanElement>) {
     const span = toolbarButtonsRef.current

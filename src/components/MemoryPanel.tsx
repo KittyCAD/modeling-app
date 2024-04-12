@@ -3,7 +3,7 @@ import { CollapsiblePanel, CollapsiblePanelProps } from './CollapsiblePanel'
 import { useMemo } from 'react'
 import { ProgramMemory, Path, ExtrudeSurface } from '../lang/wasm'
 import { Themes } from '../lib/theme'
-import { useKclContext } from 'lang/KclProvider'
+import { kclManager } from 'lib/singletons'
 
 interface MemoryPanelProps extends CollapsiblePanelProps {
   theme?: Exclude<Themes, Themes.System>
@@ -13,10 +13,9 @@ export const MemoryPanel = ({
   theme = Themes.Light,
   ...props
 }: MemoryPanelProps) => {
-  const { programMemory } = useKclContext()
   const ProcessedMemory = useMemo(
-    () => processMemory(programMemory),
-    [programMemory]
+    () => processMemory(kclManager.programMemory),
+    [kclManager.programMemory]
   )
   return (
     <CollapsiblePanel {...props}>

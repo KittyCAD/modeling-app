@@ -61,13 +61,6 @@ export class KclManager {
     this.executeAst(ast)
   }, 600)
 
-  private _isExecutingCallback: (arg: boolean) => void = () => {}
-  private _codeCallBack: (arg: string) => void = () => {}
-  private _astCallBack: (arg: Program) => void = () => {}
-  private _programMemoryCallBack: (arg: ProgramMemory) => void = () => {}
-  private _logsCallBack: (arg: string[]) => void = () => {}
-  private _kclErrorsCallBack: (arg: KCLError[]) => void = () => {}
-  private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
   private _executeCallback: () => void = () => {}
 
   get ast() {
@@ -75,7 +68,6 @@ export class KclManager {
   }
   set ast(ast) {
     this._ast = ast
-    this._astCallBack(ast)
   }
 
   get code() {
@@ -83,7 +75,6 @@ export class KclManager {
   }
   set code(code) {
     this._code = code
-    this._codeCallBack(code)
     if (isTauri()) {
       setTimeout(() => {
         // Wait one event loop to give a chance for params to be set
@@ -105,7 +96,6 @@ export class KclManager {
   }
   set programMemory(programMemory) {
     this._programMemory = programMemory
-    this._programMemoryCallBack(programMemory)
   }
 
   get logs() {
@@ -113,7 +103,6 @@ export class KclManager {
   }
   set logs(logs) {
     this._logs = logs
-    this._logsCallBack(logs)
   }
 
   get kclErrors() {
@@ -121,7 +110,6 @@ export class KclManager {
   }
   set kclErrors(kclErrors) {
     this._kclErrors = kclErrors
-    this._kclErrorsCallBack(kclErrors)
   }
 
   get isExecuting() {
@@ -129,7 +117,6 @@ export class KclManager {
   }
   set isExecuting(isExecuting) {
     this._isExecuting = isExecuting
-    this._isExecutingCallback(isExecuting)
   }
 
   get wasmInitFailed() {
@@ -137,7 +124,6 @@ export class KclManager {
   }
   set wasmInitFailed(wasmInitFailed) {
     this._wasmInitFailed = wasmInitFailed
-    this._wasmInitFailedCallback(wasmInitFailed)
   }
 
   setParams(params: Params<string>) {
@@ -169,31 +155,6 @@ export class KclManager {
     this.ensureWasmInit().then(() => {
       this.ast = this.safeParse(this.code) || this.ast
     })
-  }
-  registerCallBacks({
-    setCode,
-    setProgramMemory,
-    setAst,
-    setLogs,
-    setKclErrors,
-    setIsExecuting,
-    setWasmInitFailed,
-  }: {
-    setCode: (arg: string) => void
-    setProgramMemory: (arg: ProgramMemory) => void
-    setAst: (arg: Program) => void
-    setLogs: (arg: string[]) => void
-    setKclErrors: (arg: KCLError[]) => void
-    setIsExecuting: (arg: boolean) => void
-    setWasmInitFailed: (arg: boolean) => void
-  }) {
-    this._codeCallBack = setCode
-    this._programMemoryCallBack = setProgramMemory
-    this._astCallBack = setAst
-    this._logsCallBack = setLogs
-    this._kclErrorsCallBack = setKclErrors
-    this._isExecutingCallback = setIsExecuting
-    this._wasmInitFailedCallback = setWasmInitFailed
   }
   registerExecuteCallback(callback: () => void) {
     this._executeCallback = callback
@@ -350,7 +311,6 @@ export class KclManager {
       return
     }
     this._code = code
-    this._codeCallBack(code)
   }
   setCodeAndExecute(code: string, shouldWriteFile = true) {
     this.setCode(code, shouldWriteFile)

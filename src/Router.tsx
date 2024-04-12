@@ -28,23 +28,22 @@ import {
 import { CommandBarProvider } from 'components/CommandBar/CommandBarProvider'
 import SettingsAuthProvider from 'components/SettingsAuthProvider'
 import LspProvider from 'components/LspProvider'
-import { KclContextProvider } from 'lang/KclProvider'
 import { BROWSER_PROJECT_NAME } from 'lib/constants'
 
 const router = createBrowserRouter([
   {
     loader: settingsLoader,
     id: paths.INDEX,
+    /* Make sure auth is the outermost provider or else we will have
+     * inefficient re-renders, use the react profiler to see. */
     element: (
-      <CommandBarProvider>
-        <KclContextProvider>
-          <SettingsAuthProvider>
-            <LspProvider>
-              <Outlet />
-            </LspProvider>
-          </SettingsAuthProvider>
-        </KclContextProvider>
-      </CommandBarProvider>
+      <SettingsAuthProvider>
+        <CommandBarProvider>
+          <LspProvider>
+            <Outlet />
+          </LspProvider>
+        </CommandBarProvider>
+      </SettingsAuthProvider>
     ),
     errorElement: <ErrorPage />,
     children: [

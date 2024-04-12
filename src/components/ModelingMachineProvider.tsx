@@ -13,7 +13,6 @@ import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { isCursorInSketchCommandRange } from 'lang/util'
 import { kclManager, sceneInfra, engineCommandManager } from 'lib/singletons'
-import { useKclContext } from 'lang/KclProvider'
 import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
 import {
   angleBetweenInfo,
@@ -74,7 +73,6 @@ export const ModelingMachineProvider = ({
       },
     },
   } = useSettingsAuthContext()
-  const { code } = useKclContext()
   const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)
   useSetupEngineManager(streamRef, token, theme.current)
@@ -270,7 +268,7 @@ export const ModelingMachineProvider = ({
           if (selectionRanges.codeBasedSelections.length < 1) return false
           const isPipe = isSketchPipe(selectionRanges)
 
-          if (isSelectionLastLine(selectionRanges, code)) return true
+          if (isSelectionLastLine(selectionRanges, kclManager.code)) return true
           if (!isPipe) return false
 
           return canExtrudeSelection(selectionRanges)

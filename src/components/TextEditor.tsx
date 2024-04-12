@@ -24,7 +24,8 @@ import {
   historyKeymap,
   history,
 } from '@codemirror/commands'
-import { linter, lintGutter, lintKeymap } from '@codemirror/lint'
+import { lintGutter, lintKeymap, linter } from '@codemirror/lint'
+import { kclErrToDiagnostic } from 'lang/errors'
 import {
   foldGutter,
   foldKeymap,
@@ -36,12 +37,10 @@ import { processCodeMirrorRanges } from 'lib/selections'
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
 import { lineHighlightField } from 'editor/highlightextension'
 import { roundOff } from 'lib/utils'
-import { kclErrToDiagnostic } from 'lang/errors'
 import { CSSRuleObject } from 'tailwindcss/types/config'
 import { useModelingContext } from 'hooks/useModelingContext'
 import interact from '@replit/codemirror-interact'
 import { engineCommandManager, sceneInfra, kclManager } from 'lib/singletons'
-import { useKclContext } from 'lang/KclProvider'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { NetworkHealthState, useNetworkStatus } from './NetworkHealthIndicator'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -74,7 +73,7 @@ export const TextEditor = ({
     setEditorView: s.setEditorView,
     isShiftDown: s.isShiftDown,
   }))
-  const { code, errors } = useKclContext()
+  const code = ''
   const lastEvent = useRef({ event: '', time: Date.now() })
   const { overallState } = useNetworkStatus()
   const isNetworkOkay = overallState === NetworkHealthState.Ok
@@ -116,7 +115,7 @@ export const TextEditor = ({
   const onChange = async (newCode: string) => {
     if (isNetworkOkay) kclManager.setCodeAndExecute(newCode)
     else kclManager.setCode(newCode)
-  } //, []);
+  }
   const lastSelection = useRef('')
   const onUpdate = (viewUpdate: ViewUpdate) => {
     if (!editorView) {
@@ -164,7 +163,7 @@ export const TextEditor = ({
     )
       return // don't repeat events
     lastEvent.current = { event: stringEvent, time: Date.now() }
-    send(eventInfo.modelingEvent)
+    //send(eventInfo.modelingEvent)
     eventInfo.engineEvents.forEach((event) =>
       engineCommandManager.sendSceneCommand(event)
     )
@@ -230,7 +229,7 @@ export const TextEditor = ({
         highlightSelectionMatches(),
         lintGutter(),
         linter((_view) => {
-          return kclErrToDiagnostic(errors)
+          return kclErrToDiagnostic(kclManager.kclErrors)
         }),
         interact({
           rules: [
