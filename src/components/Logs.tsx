@@ -2,7 +2,7 @@ import ReactJson from 'react-json-view'
 import { useEffect } from 'react'
 import { CollapsiblePanel, CollapsiblePanelProps } from './CollapsiblePanel'
 import { Themes } from '../lib/theme'
-import { useKclContext } from 'lang/KclProvider'
+import { kclManager } from 'lib/singletons'
 
 const ReactJsonTypeHack = ReactJson as any
 
@@ -11,19 +11,18 @@ interface LogPanelProps extends CollapsiblePanelProps {
 }
 
 export const Logs = ({ theme = Themes.Light, ...props }: LogPanelProps) => {
-  const { logs } = useKclContext()
   useEffect(() => {
     const element = document.querySelector('.console-tile')
     if (element) {
       element.scrollTop = element.scrollHeight - element.clientHeight
     }
-  }, [logs])
+  }, [kclManager.logs])
   return (
     <CollapsiblePanel {...props}>
       <div className="relative w-full">
         <div className="absolute inset-0 flex flex-col">
           <ReactJsonTypeHack
-            src={logs}
+            src={kclManager.logs}
             collapsed={1}
             collapseStringsAfterLength={60}
             enableClipboard={false}
@@ -45,19 +44,18 @@ export const KCLErrors = ({
   theme = Themes.Light,
   ...props
 }: LogPanelProps) => {
-  const { errors } = useKclContext()
   useEffect(() => {
     const element = document.querySelector('.console-tile')
     if (element) {
       element.scrollTop = element.scrollHeight - element.clientHeight
     }
-  }, [errors])
+  }, [kclManager.kclErrors])
   return (
     <CollapsiblePanel {...props}>
       <div className="h-full relative">
         <div className="absolute inset-0 flex flex-col">
           <ReactJsonTypeHack
-            src={errors}
+            src={kclManager.kclErrors}
             collapsed={1}
             collapseStringsAfterLength={60}
             enableClipboard={false}

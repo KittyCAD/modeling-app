@@ -41,7 +41,6 @@ import { CSSRuleObject } from 'tailwindcss/types/config'
 import { useModelingContext } from 'hooks/useModelingContext'
 import interact from '@replit/codemirror-interact'
 import { engineCommandManager, sceneInfra, kclManager } from 'lib/singletons'
-import { useKclContext } from 'lang/KclProvider'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { NetworkHealthState, useNetworkStatus } from './NetworkHealthIndicator'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -51,6 +50,8 @@ import {
   closeBrackets,
   closeBracketsKeymap,
   completionKeymap,
+  hasPrevSnippetField,
+  hasNextSnippetField,
 } from '@codemirror/autocomplete'
 
 export const editorShortcutMeta = {
@@ -74,7 +75,7 @@ export const TextEditor = ({
     setEditorView: s.setEditorView,
     isShiftDown: s.isShiftDown,
   }))
-  const { code, errors } = useKclContext()
+  const code = kclManager.code
   const lastEvent = useRef({ event: '', time: Date.now() })
   const { overallState } = useNetworkStatus()
   const isNetworkOkay = overallState === NetworkHealthState.Ok
@@ -116,11 +117,20 @@ export const TextEditor = ({
   const onChange = async (newCode: string) => {
     if (isNetworkOkay) kclManager.setCodeAndExecute(newCode)
     else kclManager.setCode(newCode)
-  } //, []);
+  }
   const lastSelection = useRef('')
   const onUpdate = (viewUpdate: ViewUpdate) => {
     if (!editorView) {
       setEditorView(viewUpdate.view)
+    }
+    // If we are just fucking around in a snippet, return early and don't
+    // trigger stuff below that might cause the component to re-render.
+    if (
+      hasNextSnippetField(viewUpdate.view.state) ||
+      hasPrevSnippetField(viewUpdate.view.state)
+    ) {
+      console.log('IN SNIPPET')
+      return
     }
     const selString = stringifyRanges(
       viewUpdate?.state?.selection?.ranges || []
@@ -164,7 +174,7 @@ export const TextEditor = ({
     )
       return // don't repeat events
     lastEvent.current = { event: stringEvent, time: Date.now() }
-    send(eventInfo.modelingEvent)
+    send(eventInfo.modelingEvent) // TODO: this is a hack to prevent the scene from updating
     eventInfo.engineEvents.forEach((event) =>
       engineCommandManager.sendSceneCommand(event)
     )
@@ -231,7 +241,7 @@ export const TextEditor = ({
         highlightSelectionMatches(),
         lintGutter(),
         linter((_view) => {
-          return kclErrToDiagnostic(errors)
+          return kclErrToDiagnostic(kclManager.kclErrors)
         }),
         interact({
           rules: [

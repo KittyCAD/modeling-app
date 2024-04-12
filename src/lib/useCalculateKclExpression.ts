@@ -1,6 +1,5 @@
 import { useModelingContext } from 'hooks/useModelingContext'
 import { kclManager, engineCommandManager } from 'lib/singletons'
-import { useKclContext } from 'lang/KclProvider'
 import { findUniqueName } from 'lang/modifyAst'
 import { PrevVariable, findAllPreviousVariables } from 'lang/queryAst'
 import { Value, parse } from 'lang/wasm'
@@ -31,7 +30,6 @@ export function useCalculateKclExpression({
   newVariableInsertIndex: number
   setNewVariableName: (a: string) => void
 } {
-  const { programMemory } = useKclContext()
   const { context } = useModelingContext()
   const selectionRange = context.selectionRanges.codeBasedSelections[0].range
   const inputRef = useRef<HTMLInputElement>(null)
@@ -57,7 +55,7 @@ export function useCalculateKclExpression({
   }, [])
 
   useEffect(() => {
-    const allVarNames = Object.keys(programMemory.root)
+    const allVarNames = Object.keys(kclManager.programMemory.root)
     if (
       allVarNames.includes(newVariableName) ||
       newVariableName === '' ||
@@ -70,7 +68,7 @@ export function useCalculateKclExpression({
   }, [newVariableName])
 
   useEffect(() => {
-    if (!programMemory || !selectionRange) return
+    if (!kclManager.programMemory || !selectionRange) return
     const varInfo = findAllPreviousVariables(
       kclManager.ast,
       kclManager.programMemory,

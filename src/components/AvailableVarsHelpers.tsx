@@ -8,7 +8,6 @@ import {
 } from '../lang/modifyAst'
 import { findAllPreviousVariables, PrevVariable } from '../lang/queryAst'
 import { engineCommandManager, kclManager } from 'lib/singletons'
-import { useKclContext } from 'lang/KclProvider'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { executeAst } from 'useStore'
 
@@ -93,7 +92,6 @@ export function useCalc({
   newVariableInsertIndex: number
   setNewVariableName: (a: string) => void
 } {
-  const { programMemory } = useKclContext()
   const { context } = useModelingContext()
   const selectionRange = context.selectionRanges.codeBasedSelections[0].range
   const inputRef = useRef<HTMLInputElement>(null)
@@ -119,7 +117,7 @@ export function useCalc({
   }, [])
 
   useEffect(() => {
-    const allVarNames = Object.keys(programMemory.root)
+    const allVarNames = Object.keys(kclManager.programMemory.root)
     if (allVarNames.includes(newVariableName)) {
       setIsNewVariableNameUnique(false)
     } else {
@@ -128,7 +126,7 @@ export function useCalc({
   }, [newVariableName])
 
   useEffect(() => {
-    if (!programMemory || !selectionRange) return
+    if (!kclManager.programMemory || !selectionRange) return
     const varInfo = findAllPreviousVariables(
       kclManager.ast,
       kclManager.programMemory,

@@ -11,8 +11,8 @@ import {
   NetworkHealthState,
   useNetworkStatus,
 } from 'components/NetworkHealthIndicator'
-import { useKclContext } from 'lang/KclProvider'
 import { useStore } from 'useStore'
+import { kclManager } from 'lib/singletons'
 
 // This might not be necessary, AnyStateMachine from xstate is working
 export type AllMachines =
@@ -48,14 +48,15 @@ export default function useStateMachineCommands<
 }: UseStateMachineCommandsArgs<T, S>) {
   const { commandBarSend } = useCommandsContext()
   const { overallState } = useNetworkStatus()
-  const { isExecuting } = useKclContext()
   const { isStreamReady } = useStore((s) => ({
     isStreamReady: s.isStreamReady,
   }))
 
   useEffect(() => {
     const disableAllButtons =
-      overallState !== NetworkHealthState.Ok || isExecuting || !isStreamReady
+      overallState !== NetworkHealthState.Ok ||
+      kclManager.isExecuting ||
+      !isStreamReady
     const newCommands = state.nextEvents
       .filter((_) => !allCommandsRequireNetwork || !disableAllButtons)
       .filter((e) => !['done.', 'error.'].some((n) => e.includes(n)))
@@ -80,5 +81,5 @@ export default function useStateMachineCommands<
         data: { commands: newCommands },
       })
     }
-  }, [state, overallState, isExecuting, isStreamReady])
+  }, [state, overallState, kclManager.isExecuting, isStreamReady])
 }

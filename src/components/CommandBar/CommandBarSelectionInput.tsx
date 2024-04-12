@@ -1,6 +1,5 @@
 import { useSelector } from '@xstate/react'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { useKclContext } from 'lang/KclProvider'
 import { CommandArgument } from 'lib/commandTypes'
 import {
   ResolvedSelectionType,
@@ -8,6 +7,7 @@ import {
   getSelectionType,
   getSelectionTypeDisplayText,
 } from 'lib/selections'
+import { kclManager } from 'lib/singletons'
 import { modelingMachine } from 'machines/modelingMachine'
 import { useEffect, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -25,7 +25,6 @@ function CommandBarSelectionInput({
   stepBack: () => void
   onSubmit: (data: unknown) => void
 }) {
-  const { code } = useKclContext()
   const inputRef = useRef<HTMLInputElement>(null)
   const { commandBarState, commandBarSend } = useCommandsContext()
   const [hasSubmitted, setHasSubmitted] = useState(false)
@@ -33,7 +32,7 @@ function CommandBarSelectionInput({
   const [selectionsByType, setSelectionsByType] = useState<
     'none' | ResolvedSelectionType[]
   >(
-    selection.codeBasedSelections[0]?.range[1] === code.length
+    selection.codeBasedSelections[0]?.range[1] === kclManager.code.length
       ? 'none'
       : getSelectionType(selection)
   )
@@ -53,7 +52,7 @@ function CommandBarSelectionInput({
 
   useEffect(() => {
     setSelectionsByType(
-      selection.codeBasedSelections[0]?.range[1] === code.length
+      selection.codeBasedSelections[0]?.range[1] === kclManager.code.length
         ? 'none'
         : getSelectionType(selection)
     )

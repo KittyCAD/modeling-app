@@ -28,7 +28,6 @@ import {
 import { CommandBarProvider } from 'components/CommandBar/CommandBarProvider'
 import SettingsAuthProvider from 'components/SettingsAuthProvider'
 import LspProvider from 'components/LspProvider'
-import { KclContextProvider } from 'lang/KclProvider'
 import { BROWSER_PROJECT_NAME } from 'lib/constants'
 
 const router = createBrowserRouter([
@@ -41,9 +40,7 @@ const router = createBrowserRouter([
       <CommandBarProvider>
         <SettingsAuthProvider>
           <LspProvider>
-            <KclContextProvider>
-              <Outlet />
-            </KclContextProvider>
+            <Outlet />
           </LspProvider>
         </SettingsAuthProvider>
       </CommandBarProvider>
