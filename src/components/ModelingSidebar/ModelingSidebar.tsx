@@ -15,10 +15,9 @@ interface ModelingSidebarProps {
 }
 
 export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
-  const { buttonDownInStream, openPanes, setOpenPanes } = useStore((s) => ({
+  const { buttonDownInStream, openPanes } = useStore((s) => ({
     buttonDownInStream: s.buttonDownInStream,
     openPanes: s.openPanes,
-    setOpenPanes: s.setOpenPanes,
   }))
   const { settings } = useSettingsAuthContext()
   const {
