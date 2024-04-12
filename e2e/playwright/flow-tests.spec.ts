@@ -180,6 +180,8 @@ test('Can moving camera', async ({ page, context }) => {
     }, 300)
 
     await u.openAndClearDebugPanel()
+    await page.getByTestId('cam-x-position').isVisible()
+    
     const vals = await Promise.all([
       page.getByTestId('cam-x-position').inputValue(),
       page.getByTestId('cam-y-position').inputValue(),
