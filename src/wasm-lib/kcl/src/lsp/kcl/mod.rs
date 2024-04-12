@@ -132,7 +132,7 @@ impl crate::lsp::backend::Backend for Backend {
         self.semantic_tokens_map.clear();
     }
 
-    async fn on_change(&self, params: TextDocumentItem) {
+    async fn inner_on_change(&self, params: TextDocumentItem) {
         // We already updated the code map in the shared backend.
 
         // Lets update the tokens.
@@ -209,7 +209,7 @@ impl crate::lsp::backend::Backend for Backend {
 
         // Execute the code if we have an executor context.
         /*if let Some(executor_ctx) = &self.executor_ctx {
-            let memory = match crate::executor::execute_outer(ast, &executor_ctx).await {
+            let memory = match self.executor_ctx.run(ast, None).await {
                 Ok(memory) => memory,
                 Err(err) => {
                     self.add_to_diagnostics(params, err).await;

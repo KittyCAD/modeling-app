@@ -37,10 +37,22 @@ pub trait Backend {
     fn clear_code_state(&self);
 
     /// On change event.
-    async fn on_change(&self, params: TextDocumentItem);
+    async fn inner_on_change(&self, params: TextDocumentItem);
 
-    async fn update_memory(&self, params: TextDocumentItem) {
-        self.insert_current_code_map(params.uri.to_string(), params.text.as_bytes().to_vec());
+    async fn on_change(&self, params: TextDocumentItem) {
+        // Check if the document is in the current code map and if it is the same as what we have
+        // stored.
+        let filename = params.uri.to_string();
+        if let Some(current_code) = self.current_code_map().get(&filename) {
+            if current_code.value() == params.text.as_bytes() {
+                return;
+            }
+        }
+
+        // Otherwise update the code map and call the inner on change.
+        self.insert_current_code_map(filename, params.text.as_bytes().to_vec());
+
+        self.inner_on_change(params).await;
     }
 
     async fn update_from_disk<P: AsRef<std::path::Path> + std::marker::Send>(&self, path: P) -> Result<()> {
@@ -171,7 +183,6 @@ pub trait Backend {
             version: params.text_document.version,
             language_id: params.text_document.language_id,
         };
-        self.update_memory(new_params.clone()).await;
         self.on_change(new_params).await;
     }
 
@@ -182,7 +193,6 @@ pub trait Backend {
             version: params.text_document.version,
             language_id: Default::default(),
         };
-        self.update_memory(new_params.clone()).await;
         self.on_change(new_params).await;
     }
 
@@ -194,7 +204,6 @@ pub trait Backend {
                 version: Default::default(),
                 language_id: Default::default(),
             };
-            self.update_memory(new_params.clone()).await;
             self.on_change(new_params).await;
         }
     }
