@@ -500,7 +500,7 @@ test('Auto complete works', async ({ page }) => {
   await expect(page.locator('.cm-completionLabel')).toHaveCount(3)
   await page.getByText('startSketchOn').click()
   await page.keyboard.type("'XY'")
-  await page.keyboard.press('ArrowRight')
+  await page.keyboard.press('Tab')
   await page.keyboard.press('Enter')
   await page.keyboard.type('  |> startProfi')
   // expect there be a single auto complete option that we can just hit enter on
