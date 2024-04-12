@@ -73,7 +73,7 @@ export const TextEditor = ({
     setEditorView: s.setEditorView,
     isShiftDown: s.isShiftDown,
   }))
-  const code = ''
+  const code = kclManager.code
   const lastEvent = useRef({ event: '', time: Date.now() })
   const { overallState } = useNetworkStatus()
   const isNetworkOkay = overallState === NetworkHealthState.Ok
@@ -163,7 +163,7 @@ export const TextEditor = ({
     )
       return // don't repeat events
     lastEvent.current = { event: stringEvent, time: Date.now() }
-    //send(eventInfo.modelingEvent)
+    //send(eventInfo.modelingEvent) // TODO: this is a hack to prevent the scene from updating
     eventInfo.engineEvents.forEach((event) =>
       engineCommandManager.sendSceneCommand(event)
     )
