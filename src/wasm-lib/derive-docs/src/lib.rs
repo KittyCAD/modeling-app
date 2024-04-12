@@ -786,7 +786,7 @@ fn generate_code_block_test(
             let units = kittycad::types::UnitLength::Mm;
             let ctx = crate::executor::ExecutorContext::new(ws, units.clone()).await.unwrap();
 
-            crate::executor::execute_outer(&ctx, program, None).await.unwrap();
+            ctx.run(program, None).await.unwrap();
 
             let (x, y) = crate::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
 

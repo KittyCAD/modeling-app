@@ -40,7 +40,7 @@ async fn execute_and_snapshot(code: &str, units: kittycad::types::UnitLength) ->
     let program = parser.ast()?;
     let ctx = kcl_lib::executor::ExecutorContext::new(ws, units.clone()).await?;
 
-    let _ = kcl_lib::executor::execute_outer(&ctx, program, None).await?;
+    let _ = ctx.run(program, None).await?;
 
     let (x, y) = kcl_lib::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
 

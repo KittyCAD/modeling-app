@@ -32,7 +32,7 @@ mod test_examples_min {
         let ctx = crate::executor::ExecutorContext::new(ws, units.clone())
             .await
             .unwrap();
-        crate::executor::execute_outer(program, &ctx).await.unwrap();
+        ctx.run(program, None).await.unwrap();
         let (x, y) = crate::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
         ctx.engine
             .send_modeling_cmd(
@@ -124,7 +124,7 @@ mod test_examples_min {
         let ctx = crate::executor::ExecutorContext::new(ws, units.clone())
             .await
             .unwrap();
-        crate::executor::execute_outer(program, &ctx).await.unwrap();
+        ctx.run(program, None).await.unwrap();
         let (x, y) = crate::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
         ctx.engine
             .send_modeling_cmd(

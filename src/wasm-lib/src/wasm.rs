@@ -41,9 +41,7 @@ pub async fn execute_wasm(
         is_mock,
     };
 
-    let memory = kcl_lib::executor::execute_outer(&ctx, program, Some(memory))
-        .await
-        .map_err(String::from)?;
+    let memory = ctx.run(program, Some(memory)).await.map_err(String::from)?;
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
     JsValue::from_serde(&memory).map_err(|e| e.to_string())
