@@ -882,14 +882,13 @@ test.describe('Command bar tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `
-        const distance = sqrt(20)
+        `const distance = sqrt(20)
         const part001 = startSketchOn('-XZ')
-          |> startProfileAt([-6.95, 4.98], %)
-          |> line([25.1, 0.41], %)
-          |> line([0.73, -14.93], %)
-          |> line([-23.44, 0.52], %)
-          |> close(%)
+  |> startProfileAt([-6.95, 4.98], %)
+  |> line([25.1, 0.41], %)
+  |> line([0.73, -14.93], %)
+  |> line([-23.44, 0.52], %)
+  |> close(%)
         `
       )
     })
@@ -902,15 +901,13 @@ test.describe('Command bar tests', () => {
     // Make sure the stream is up
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
 
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
     ).not.toBeDisabled()
+    await u.clearCommandLogs()
     await page.getByText('|> line([0.73, -14.93], %)').click()
-    await expect(
-      page.getByRole('button', { name: 'Extrude' })
-    ).not.toBeDisabled()
+    await page.getByRole('button', { name: 'Extrude' }).isEnabled()
 
     let cmdSearchBar = page.getByPlaceholder('Search commands')
     await page.keyboard.press('Meta+K')
