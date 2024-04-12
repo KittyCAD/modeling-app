@@ -1,4 +1,4 @@
-import { useCallback, MouseEventHandler, useEffect } from 'react'
+import { useCallback, MouseEventHandler, useEffect, useRef } from 'react'
 import { DebugPanel } from './components/DebugPanel'
 import { uuidv4 } from 'lib/utils'
 import { PaneType, useStore } from './useStore'
@@ -40,6 +40,9 @@ export function App() {
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
   const { onProjectOpen } = useLspContext()
+  // We need the ref for the outermost div so we can screenshot the app for
+  // the coredump.
+  const ref = useRef<HTMLDivElement>(null)
 
   const projectName = project?.name || null
   const projectPath = project?.path || null
@@ -54,13 +57,19 @@ export function App() {
     setOpenPanes,
     didDragInStream,
     streamDimensions,
+    setHtmlRef,
   } = useStore((s) => ({
     buttonDownInStream: s.buttonDownInStream,
     openPanes: s.openPanes,
     setOpenPanes: s.setOpenPanes,
     didDragInStream: s.didDragInStream,
     streamDimensions: s.streamDimensions,
+    setHtmlRef: s.setHtmlRef,
   }))
+
+  useEffect(() => {
+    setHtmlRef(ref)
+  }, [ref])
 
   const { settings } = useSettingsAuthContext()
   const {
@@ -139,6 +148,7 @@ export function App() {
     <div
       className="relative h-full flex flex-col"
       onMouseMove={handleMouseMove}
+      ref={ref}
     >
       <AppHeader
         className={
