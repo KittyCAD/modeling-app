@@ -36,6 +36,7 @@ export function kclPlugin(options: LanguageServerOptions): Extension {
       position: 'absolute',
     }),
     autocompletion({
+      defaultKeymap: true,
       override: [
         async (context) => {
           if (plugin == null) return null

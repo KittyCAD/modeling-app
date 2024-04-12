@@ -11,7 +11,9 @@ import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
 import { Themes } from 'lib/theme'
 import { useEffect, useMemo, useRef } from 'react'
+import { indentWithTab } from '@codemirror/commands'
 import { linter, lintGutter } from '@codemirror/lint'
+import { foldGutter } from '@codemirror/language'
 import { useStore } from 'useStore'
 import { processCodeMirrorRanges } from 'lib/selections'
 import { EditorView, lineHighlightField } from 'editor/highlightextension'
@@ -26,6 +28,8 @@ import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { NetworkHealthState, useNetworkStatus } from './NetworkHealthIndicator'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useLspContext } from './LspProvider'
+import { Prec } from '@codemirror/state'
+import { hasNextSnippetField, snippetKeymap } from '@codemirror/autocomplete'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -175,13 +179,18 @@ export const TextEditor = ({
       ]),
     ] as Extension[]
 
-    if (kclLSP) extensions.push(kclLSP)
+    if (kclLSP) extensions.push(Prec.highest(kclLSP))
     if (copilotLSP) extensions.push(copilotLSP)
+
+    // We do the tab keymap after the LSPs with the lowest precedence.
+    // Specifically, tab for in a completion.
+    extensions.push(Prec.lowest(keymap.of([indentWithTab])))
 
     // These extensions have proven to mess with vitest
     if (!TEST) {
       extensions.push(
         lintGutter(),
+        foldGutter(),
         linter((_view) => {
           return kclErrToDiagnostic(errors)
         }),
@@ -238,6 +247,7 @@ export const TextEditor = ({
         onUpdate={onUpdate}
         theme={theme}
         onCreateEditor={(_editorView) => setEditorView(_editorView)}
+        indentWithTab={false}
       />
     </div>
   )
