@@ -78,7 +78,14 @@ export const ModelingMachineProvider = ({
   const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)
   useSetupEngineManager(streamRef, token, theme.current)
-  const coreDumpManager = new CoreDumpManager(engineCommandManager)
+  const { htmlRef } = useStore((s) => ({
+    htmlRef: s.htmlRef,
+  }))
+  const coreDumpManager = new CoreDumpManager(
+    engineCommandManager,
+    htmlRef,
+    token
+  )
   useHotkeys('meta + shift + .', () => coreDump(coreDumpManager, true))
 
   const {

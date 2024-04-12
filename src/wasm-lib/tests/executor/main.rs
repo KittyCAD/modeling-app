@@ -29,7 +29,7 @@ async fn execute_and_snapshot(code: &str, units: kittycad::types::UnitLength) ->
 
     let ws = client
         .modeling()
-        .commands_ws(None, None, None, None, None, Some(false))
+        .commands_ws(None, None, None, None, None, None, Some(false))
         .await?;
 
     // Create a temporary file to write the output to.

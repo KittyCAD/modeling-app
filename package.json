@@ -23,7 +23,7 @@
     "@tauri-apps/plugin-os": "^2.0.0-beta.2",
     "@tauri-apps/plugin-shell": "^2.0.0-beta.2",
     "@testing-library/jest-dom": "^5.14.1",
-    "@testing-library/react": "^14.0.0",
+    "@testing-library/react": "^15.0.1",
     "@testing-library/user-event": "^14.5.2",
     "@ts-stack/markdown": "^1.5.0",
     "@tweenjs/tween.js": "^23.1.1",
@@ -38,6 +38,7 @@
     "decamelize": "^6.0.0",
     "formik": "^2.4.5",
     "fuse.js": "^7.0.0",
+    "html2canvas-pro": "^1.4.3",
     "http-server": "^14.1.1",
     "json-rpc-2.0": "^1.6.0",
     "jszip": "^3.10.1",
@@ -53,7 +54,7 @@
     "react-router-dom": "^6.22.3",
     "sketch-helpers": "^0.0.4",
     "swr": "^2.2.5",
-    "three": "^0.160.0",
+    "three": "^0.163.0",
     "toml": "^3.0.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.3",
@@ -123,7 +124,7 @@
     "@types/pixelmatch": "^5.2.6",
     "@types/pngjs": "^6.0.4",
     "@types/react-modal": "^3.16.3",
-    "@types/three": "^0.160.0",
+    "@types/three": "^0.163.0",
     "@types/ua-parser-js": "^0.7.39",
     "@types/uuid": "^9.0.8",
     "@types/wait-on": "^5.3.4",
@@ -155,6 +156,6 @@
     "vite-tsconfig-paths": "^4.3.2",
     "vitest-webgl-canvas-mock": "^1.1.0",
     "wait-on": "^7.2.0",
-    "yarn": "^1.22.19"
+    "yarn": "^1.22.22"
   }
 }
