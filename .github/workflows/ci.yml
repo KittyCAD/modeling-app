@@ -104,7 +104,7 @@ jobs:
         run: |
           VERSION=$(date +'%-y.%-m.%-d') yarn bump-jsons
           echo "$(jq --arg url 'https://dl.zoo.dev/releases/modeling-app/nightly/last_update.json' \
-            '.tauri.updater.endpoints[]=$url' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
+            '.plugins.updater.endpoints[]=$url' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
           echo "$(jq --arg id 'dev.zoo.modeling-app-nightly' \
             '.identifier=$id' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
           echo "$(jq --arg name 'Zoo Modeling App (Nightly)' \
