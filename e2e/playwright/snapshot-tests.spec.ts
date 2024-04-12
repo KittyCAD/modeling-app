@@ -458,7 +458,7 @@ test('Draft segments should look right', async ({ page, context }) => {
 })
 
 test.describe('Client side scene scale should match engine scale', () => {
-  test('Inch', async ({ page }) => {
+  test('Inch scale', async ({ page }) => {
     const u = getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -541,7 +541,7 @@ test.describe('Client side scene scale should match engine scale', () => {
     })
   })
 
-  test('Millimeters', async ({ page }) => {
+  test('Millimeter scale', async ({ page }) => {
     await page.addInitScript(
       async ({ settingsKey, settings }) => {
         localStorage.setItem(settingsKey, settings)
