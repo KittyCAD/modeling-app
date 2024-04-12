@@ -2,21 +2,39 @@ import { undo, redo } from '@codemirror/commands'
 import ReactCodeMirror, {
   Extension,
   ViewUpdate,
-  keymap,
   SelectionRange,
 } from '@uiw/react-codemirror'
+import {
+  lineNumbers,
+  highlightActiveLineGutter,
+  highlightSpecialChars,
+  highlightActiveLine,
+  keymap,
+  EditorView,
+} from '@codemirror/view'
 import { TEST } from 'env'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
 import { Themes } from 'lib/theme'
 import { useEffect, useMemo, useRef } from 'react'
-import { indentWithTab } from '@codemirror/commands'
-import { linter, lintGutter } from '@codemirror/lint'
-import { foldGutter } from '@codemirror/language'
+import {
+  indentWithTab,
+  defaultKeymap,
+  historyKeymap,
+  history,
+} from '@codemirror/commands'
+import { linter, lintGutter, lintKeymap } from '@codemirror/lint'
+import {
+  foldGutter,
+  foldKeymap,
+  bracketMatching,
+  indentOnInput,
+} from '@codemirror/language'
 import { useStore } from 'useStore'
 import { processCodeMirrorRanges } from 'lib/selections'
-import { EditorView, lineHighlightField } from 'editor/highlightextension'
+import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
+import { lineHighlightField } from 'editor/highlightextension'
 import { roundOff } from 'lib/utils'
 import { kclErrToDiagnostic } from 'lang/errors'
 import { CSSRuleObject } from 'tailwindcss/types/config'
@@ -28,7 +46,12 @@ import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { NetworkHealthState, useNetworkStatus } from './NetworkHealthIndicator'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useLspContext } from './LspProvider'
-import { Prec } from '@codemirror/state'
+import { Prec, EditorState } from '@codemirror/state'
+import {
+  closeBrackets,
+  closeBracketsKeymap,
+  completionKeymap,
+} from '@codemirror/autocomplete'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -150,7 +173,17 @@ export const TextEditor = ({
   const editorExtensions = useMemo(() => {
     const extensions = [
       lineHighlightField,
+      history(),
+      closeBrackets(),
       keymap.of([
+        ...closeBracketsKeymap,
+        ...defaultKeymap,
+        ...searchKeymap,
+        ...historyKeymap,
+        ...foldKeymap,
+        ...completionKeymap,
+        ...lintKeymap,
+        indentWithTab,
         {
           key: 'Meta-k',
           run: () => {
@@ -181,15 +214,21 @@ export const TextEditor = ({
     if (kclLSP) extensions.push(Prec.highest(kclLSP))
     if (copilotLSP) extensions.push(copilotLSP)
 
-    // We do the tab keymap after the LSPs with the lowest precedence.
-    // Specifically, tab for in a completion.
-    extensions.push(Prec.lowest(keymap.of([indentWithTab])))
-
     // These extensions have proven to mess with vitest
     if (!TEST) {
       extensions.push(
-        lintGutter(),
+        lineNumbers(),
+        highlightActiveLineGutter(),
+        highlightSpecialChars(),
+        history(),
         foldGutter(),
+        EditorState.allowMultipleSelections.of(true),
+        indentOnInput(),
+        bracketMatching(),
+        closeBrackets(),
+        highlightActiveLine(),
+        highlightSelectionMatches(),
+        lintGutter(),
         linter((_view) => {
           return kclErrToDiagnostic(errors)
         }),
