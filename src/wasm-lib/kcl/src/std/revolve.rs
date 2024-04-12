@@ -337,7 +337,7 @@ mod tests {
     fn test_deserialize_revolve_axis() {
         let data = RevolveAxis::Axis(RevolveAxisAndOrigin::X);
         let mut str_json = serde_json::to_string(&data).unwrap();
-        assert_eq!(str_json, "\"x\"");
+        assert_eq!(str_json, "\"X\"");
 
         str_json = "\"Y\"".to_string();
         let data: RevolveAxis = serde_json::from_str(&str_json).unwrap();
