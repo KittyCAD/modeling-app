@@ -25,11 +25,14 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
     app: { onboardingStatus },
   } = settings.context
 
+  const pointerEventsCssClass =
+    buttonDownInStream || onboardingStatus.current === 'camera'
+      ? 'pointer-events-none '
+      : 'pointer-events-auto'
+
   return (
     <Resizable
-      className={
-        'pointer-events-none flex-1 flex flex-col z-10 my-2 pr-1 ' + paneOpacity
-      }
+      className={`flex-1 flex flex-col z-10 my-2 pr-1 ${paneOpacity} ${pointerEventsCssClass}`}
       defaultSize={{
         width: '550px',
         height: 'auto',
@@ -40,12 +43,10 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
         right:
           (openPanes.length === 0 ? 'hidden ' : 'block ') +
           'translate-x-1/2 hover:bg-chalkboard-10 hover:dark:bg-chalkboard-110 bg-transparent transition-colors duration-75 transition-ease-out delay-100 ' +
-          (buttonDownInStream || onboardingStatus.current === 'camera'
-            ? 'pointer-events-none '
-            : 'pointer-events-auto'),
+          pointerEventsCssClass,
       }}
     >
-      <div className={styles.grid + ' flex-1 pointer-events-none'}>
+      <div className={styles.grid + ' flex-1'}>
         <ModelingSidebarSection panes={topPanes} />
         <ModelingSidebarSection panes={bottomPanes} alignButtons="end" />
       </div>
