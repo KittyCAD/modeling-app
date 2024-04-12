@@ -28,14 +28,11 @@ mod test_examples_min {
         let tokens = crate::token::lexer("This is another code block.\nyes sirrr.\nmin");
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
-        let mut mem: crate::executor::ProgramMemory = Default::default();
         let units = kittycad::types::UnitLength::Mm;
         let ctx = crate::executor::ExecutorContext::new(ws, units.clone())
             .await
             .unwrap();
-        crate::executor::execute(program, &mut mem, crate::executor::BodyType::Root, &ctx)
-            .await
-            .unwrap();
+        crate::executor::execute_outer(program, &ctx).await.unwrap();
         let (x, y) = crate::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
         ctx.engine
             .send_modeling_cmd(
@@ -123,14 +120,11 @@ mod test_examples_min {
         let tokens = crate::token::lexer("This is code.\nIt does other shit.\nmin");
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
-        let mut mem: crate::executor::ProgramMemory = Default::default();
         let units = kittycad::types::UnitLength::Mm;
         let ctx = crate::executor::ExecutorContext::new(ws, units.clone())
             .await
             .unwrap();
-        crate::executor::execute(program, &mut mem, crate::executor::BodyType::Root, &ctx)
-            .await
-            .unwrap();
+        crate::executor::execute_outer(program, &ctx).await.unwrap();
         let (x, y) = crate::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
         ctx.engine
             .send_modeling_cmd(

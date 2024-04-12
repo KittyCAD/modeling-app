@@ -996,10 +996,9 @@ impl ExecutorContext {
 
 /// Execute an AST's program.
 pub async fn execute_outer(
-    program: crate::ast::types::Program,
-    memory: &mut ProgramMemory,
-    _options: BodyType,
     ctx: &ExecutorContext,
+    program: crate::ast::types::Program,
+    memory: Option<ProgramMemory>,
 ) -> Result<ProgramMemory, KclError> {
     // Before we even start executing the program, set the units.
     ctx.engine
@@ -1011,7 +1010,12 @@ pub async fn execute_outer(
             },
         )
         .await?;
-    execute(program, memory, _options, ctx).await
+    let mut memory = if let Some(memory) = memory {
+        memory.clone()
+    } else {
+        Default::default()
+    };
+    execute(program, &mut memory, crate::executor::BodyType::Root, ctx).await
 }
 
 /// Execute an AST's program.
@@ -1019,7 +1023,7 @@ pub async fn execute_outer(
 pub(crate) async fn execute(
     program: crate::ast::types::Program,
     memory: &mut ProgramMemory,
-    _options: BodyType,
+    _body_type: BodyType,
     ctx: &ExecutorContext,
 ) -> Result<ProgramMemory, KclError> {
     let pipe_info = PipeInfo::default();
@@ -1299,7 +1303,6 @@ mod tests {
         let tokens = crate::token::lexer(code);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast()?;
-        let mut mem: ProgramMemory = Default::default();
         let ctx = ExecutorContext {
             engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await?)),
             fs: crate::fs::FileManager::new(),
@@ -1307,7 +1310,7 @@ mod tests {
             units: kittycad::types::UnitLength::Mm,
             is_mock: false,
         };
-        let memory = execute_outer(program, &mut mem, BodyType::Root, &ctx).await?;
+        let memory = execute_outer(&ctx, program, None).await?;
 
         Ok(memory)
     }

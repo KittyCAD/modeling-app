@@ -30,12 +30,14 @@ fn kcl_lsp_server() -> Result<crate::lsp::kcl::Backend> {
         token_types,
         token_map: Default::default(),
         ast_map: Default::default(),
+        memory_map: Default::default(),
         current_code_map: Default::default(),
         diagnostics_map: Default::default(),
         symbols_map: Default::default(),
         semantic_tokens_map: Default::default(),
         zoo_client,
         can_send_telemetry: true,
+        executor_ctx: Default::default(),
     });
     let server = service.inner();
 

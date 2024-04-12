@@ -783,11 +783,10 @@ fn generate_code_block_test(
             let tokens = crate::token::lexer(#code_block);
             let parser = crate::parser::Parser::new(tokens);
             let program = parser.ast().unwrap();
-            let mut mem: crate::executor::ProgramMemory = Default::default();
             let units = kittycad::types::UnitLength::Mm;
             let ctx = crate::executor::ExecutorContext::new(ws, units.clone()).await.unwrap();
 
-            crate::executor::execute(program, &mut mem, crate::executor::BodyType::Root, &ctx).await.unwrap();
+            crate::executor::execute_outer(&ctx, program, None).await.unwrap();
 
             let (x, y) = crate::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
 

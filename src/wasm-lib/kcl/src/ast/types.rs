@@ -2271,7 +2271,9 @@ impl BinaryExpression {
 
         if left_source_range.contains(pos) {
             return self.left.get_hover_value_for_position(pos, code);
-        } else if right_source_range.contains(pos) {
+        }
+
+        if right_source_range.contains(pos) {
             return self.right.get_hover_value_for_position(pos, code);
         }
 
@@ -2636,7 +2638,6 @@ impl PipeExpression {
     }
 }
 
-#[async_recursion::async_recursion(?Send)]
 async fn execute_pipe_body(
     memory: &mut ProgramMemory,
     body: &[Value],

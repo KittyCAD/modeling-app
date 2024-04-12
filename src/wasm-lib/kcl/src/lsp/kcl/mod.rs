@@ -29,7 +29,10 @@ use tower_lsp::{
     Client, LanguageServer,
 };
 
-use crate::{ast::types::VariableKind, executor::SourceRange, lsp::backend::Backend as _, parser::PIPE_OPERATOR};
+use crate::{
+    ast::types::VariableKind, errors::KclError, executor::SourceRange, lsp::backend::Backend as _,
+    parser::PIPE_OPERATOR,
+};
 
 /// A subcommand for running the server.
 #[derive(Clone, Debug)]
@@ -63,6 +66,8 @@ pub struct Backend {
     pub token_map: DashMap<String, Vec<crate::token::Token>>,
     /// AST maps.
     pub ast_map: DashMap<String, crate::ast::types::Program>,
+    /// Memory maps.
+    pub memory_map: DashMap<String, crate::executor::ProgramMemory>,
     /// Current code.
     pub current_code_map: DashMap<String, Vec<u8>>,
     /// Diagnostics.
@@ -75,6 +80,8 @@ pub struct Backend {
     pub zoo_client: kittycad::Client,
     /// If we can send telemetry for this user.
     pub can_send_telemetry: bool,
+    /// Optional executor context to use if we want to execute the code.
+    pub executor_ctx: Option<crate::executor::ExecutorContext>,
 }
 
 // Implement the shared backend trait for the language server.
@@ -188,26 +195,8 @@ impl crate::lsp::backend::Backend for Backend {
         let result = parser.ast();
         let ast = match result {
             Ok(ast) => ast,
-            Err(e) => {
-                let diagnostic = e.to_lsp_diagnostic(&params.text);
-                // We got errors, update the diagnostics.
-                self.diagnostics_map.insert(
-                    params.uri.to_string(),
-                    DocumentDiagnosticReport::Full(RelatedFullDocumentDiagnosticReport {
-                        related_documents: None,
-                        full_document_diagnostic_report: FullDocumentDiagnosticReport {
-                            result_id: None,
-                            items: vec![diagnostic.clone()],
-                        },
-                    }),
-                );
-
-                // Publish the diagnostic.
-                // If the client supports it.
-                self.client
-                    .publish_diagnostics(params.uri, vec![diagnostic], None)
-                    .await;
-
+            Err(err) => {
+                self.add_to_diagnostics(params, err).await;
                 return;
             }
         };
@@ -216,7 +205,21 @@ impl crate::lsp::backend::Backend for Backend {
         self.symbols_map
             .insert(params.uri.to_string(), ast.get_lsp_symbols(&params.text));
 
-        self.ast_map.insert(params.uri.to_string(), ast);
+        self.ast_map.insert(params.uri.to_string(), ast.clone());
+
+        // Execute the code if we have an executor context.
+        /*if let Some(executor_ctx) = &self.executor_ctx {
+            let memory = match crate::executor::execute_outer(ast, &executor_ctx).await {
+                Ok(memory) => memory,
+                Err(err) => {
+                    self.add_to_diagnostics(params, err).await;
+
+                    return;
+                }
+            };
+            self.memory_map.insert(params.uri.to_string(), memory);
+        }*/
+
         // Lets update the diagnostics, since we got no errors.
         self.diagnostics_map.insert(
             params.uri.to_string(),
@@ -236,6 +239,27 @@ impl crate::lsp::backend::Backend for Backend {
 }
 
 impl Backend {
+    async fn add_to_diagnostics(&self, params: TextDocumentItem, err: KclError) {
+        let diagnostic = err.to_lsp_diagnostic(&params.text);
+        // We got errors, update the diagnostics.
+        self.diagnostics_map.insert(
+            params.uri.to_string(),
+            DocumentDiagnosticReport::Full(RelatedFullDocumentDiagnosticReport {
+                related_documents: None,
+                full_document_diagnostic_report: FullDocumentDiagnosticReport {
+                    result_id: None,
+                    items: vec![diagnostic.clone()],
+                },
+            }),
+        );
+
+        // Publish the diagnostic.
+        // If the client supports it.
+        self.client
+            .publish_diagnostics(params.uri, vec![diagnostic], None)
+            .await;
+    }
+
     fn get_semantic_token_type_index(&self, token_type: SemanticTokenType) -> Option<usize> {
         self.token_types.iter().position(|x| *x == token_type)
     }
