@@ -57,7 +57,7 @@
     "three": "^0.163.0",
     "toml": "^3.0.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.3",
+    "typescript": "^5.4.5",
     "ua-parser-js": "^1.0.37",
     "uuid": "^9.0.1",
     "vitest": "^1.4.0",
