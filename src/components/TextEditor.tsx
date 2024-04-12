@@ -118,7 +118,7 @@ export const TextEditor = ({
     // If we are just fucking around in a snippet, return early and don't
     // trigger stuff below that might cause the component to re-render.
     // We explicitly dont check HasPrevSnippetField because we always add
-    // a ${} to the end of the function so thats fine.
+    // a ${} to the end of the function so that's fine.
     if (editorView && hasNextSnippetField(editorView.state)) {
       console.log('IN SNIPPET, onChange')
       return
@@ -131,7 +131,7 @@ export const TextEditor = ({
     // If we are just fucking around in a snippet, return early and don't
     // trigger stuff below that might cause the component to re-render.
     // We explicitly dont check HasPrevSnippetField because we always add
-    // a ${} to the end of the function so thats fine.
+    // a ${} to the end of the function so that's fine.
     if (editorView && hasNextSnippetField(viewUpdate.view.state)) {
       console.log('IN SNIPPET, on Update')
       return
