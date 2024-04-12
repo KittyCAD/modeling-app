@@ -49363,21 +49363,21 @@
                       "description": "X-axis.",
                       "type": "string",
                       "enum": [
-                        "x"
+                        "X"
                       ]
                     },
                     {
                       "description": "Y-axis.",
                       "type": "string",
                       "enum": [
-                        "y"
+                        "Y"
                       ]
                     },
                     {
                       "description": "Z-axis.",
                       "type": "string",
                       "enum": [
-                        "z"
+                        "Z"
                       ]
                     },
                     {

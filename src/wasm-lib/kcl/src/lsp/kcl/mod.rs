@@ -793,7 +793,7 @@ pub fn get_completions_from_stdlib(stdlib: &crate::std::StdLib) -> Result<HashMa
     let combined = stdlib.combined();
 
     for internal_fn in combined.values() {
-        completions.insert(internal_fn.name(), internal_fn.to_completion_item());
+        completions.insert(internal_fn.name(), internal_fn.to_completion_item()?);
     }
 
     let variable_kinds = VariableKind::to_completion_items()?;
