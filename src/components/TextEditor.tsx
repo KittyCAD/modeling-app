@@ -117,10 +117,10 @@ export const TextEditor = ({
   const onChange = async (newCode: string) => {
     // If we are just fucking around in a snippet, return early and don't
     // trigger stuff below that might cause the component to re-render.
+    // Otherwise we will not be able to tab thru the snippet portions.
     // We explicitly dont check HasPrevSnippetField because we always add
     // a ${} to the end of the function so that's fine.
     if (editorView && hasNextSnippetField(editorView.state)) {
-      console.log('IN SNIPPET, onChange')
       return
     }
     if (isNetworkOkay) kclManager.setCodeAndExecute(newCode)
@@ -130,10 +130,10 @@ export const TextEditor = ({
   const onUpdate = (viewUpdate: ViewUpdate) => {
     // If we are just fucking around in a snippet, return early and don't
     // trigger stuff below that might cause the component to re-render.
+    // Otherwise we will not be able to tab thru the snippet portions.
     // We explicitly dont check HasPrevSnippetField because we always add
     // a ${} to the end of the function so that's fine.
     if (hasNextSnippetField(viewUpdate.view.state)) {
-      console.log('IN SNIPPET, on Update')
       return
     }
     if (!editorView) {
