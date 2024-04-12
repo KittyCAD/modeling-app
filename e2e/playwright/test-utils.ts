@@ -106,10 +106,6 @@ export function getUtils(page: Page) {
       }
       await fillInput()
       await page.waitForTimeout(100)
-      await fillInput()
-      await page.waitForTimeout(100)
-      await fillInput()
-      await page.waitForTimeout(100)
     },
     clearCommandLogs: () => clearCommandLogs(page),
     expectCmdLog: (locatorStr: string) => expectCmdLog(page, locatorStr),
