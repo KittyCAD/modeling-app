@@ -542,6 +542,8 @@ test('Stored settings are validated and fall back to defaults', async ({
   page,
   context,
 }) => {
+  const u = getUtils(page)
+
   // Override beforeEach test setup
   // with corrupted settings
   await context.addInitScript(
@@ -555,7 +557,8 @@ test('Stored settings are validated and fall back to defaults', async ({
   )
 
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/', { waitUntil: 'domcontentloaded' })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
 
   // Check the settings were reset
   const storedSettings = TOML.parse(
@@ -904,7 +907,7 @@ test.describe('Command bar tests', () => {
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
     ).not.toBeDisabled()
-    await page.getByText('|> startProfileAt([-6.95, 4.98], %)').click()
+    await page.getByText('|> line([0.73, -14.93], %)').click()
     await expect(
       page.getByRole('button', { name: 'Extrude' })
     ).not.toBeDisabled()
