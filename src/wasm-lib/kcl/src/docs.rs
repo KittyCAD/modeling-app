@@ -201,7 +201,7 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
                 args.push(arg_str);
             }
         }
-        Ok(format!("{}({})", self.name(), args.join(",")))
+        Ok(format!("{}({})", self.name(), args.join(", ")))
     }
 
     fn to_signature_help(&self) -> SignatureHelp {
@@ -793,14 +793,14 @@ mod tests {
     fn get_autocomplete_snippet_line() {
         let line_fn: Box<dyn StdLibFn> = Box::new(crate::std::sketch::Line);
         let snippet = line_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(snippet, r#"line([${0:3.14}, ${1:3.14}],${2:%})"#);
+        assert_eq!(snippet, r#"line([${0:3.14}, ${1:3.14}], ${2:%})"#);
     }
 
     #[test]
     fn get_autocomplete_snippet_extrude() {
         let extrude_fn: Box<dyn StdLibFn> = Box::new(crate::std::extrude::Extrude);
         let snippet = extrude_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(snippet, r#"extrude(${0:3.14},${1:%})"#);
+        assert_eq!(snippet, r#"extrude(${0:3.14}, ${1:%})"#);
     }
 
     #[test]
@@ -812,7 +812,7 @@ mod tests {
             r#"fillet({
 	radius: ${0:3.14},
 	tags: [${1:"tag_or_edge_fn"}],
-},${2:%})"#
+}, ${2:%})"#
         );
     }
 
@@ -835,7 +835,7 @@ mod tests {
 	center: [${2:3.14}, ${3:3.14}, ${4:3.14}],
 	repetitions: ${3:3.14},
 	rotateDuplicates: ${4:"string"},
-},${5:%})"#
+} ,${5:%})"#
         );
     }
 
@@ -847,7 +847,7 @@ mod tests {
             snippet,
             r#"revolve({
 	axis: ${1:"X"},
-},${2:%})"#
+}, ${2:%})"#
         );
     }
 }
