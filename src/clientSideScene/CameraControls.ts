@@ -915,31 +915,11 @@ export class CameraControls {
     cb: (a: ReactCameraProperties) => void
   ) => {
     this.reactCameraPropertiesCallback = cb
-    cb(this.getReactCameraProperties()) // Run the callback once to set the initial values
   }
 
   deferReactUpdate = throttle((a: ReactCameraProperties) => {
     this.reactCameraPropertiesCallback(a)
   }, 200)
-
-  getReactCameraProperties = (): ReactCameraProperties => ({
-    type: this.isPerspective ? 'perspective' : 'orthographic',
-    [this.isPerspective ? 'fov' : 'zoom']:
-      this.camera instanceof PerspectiveCamera
-        ? this.camera.fov
-        : this.camera.zoom,
-    position: [
-      roundOff(this.camera.position.x, 2),
-      roundOff(this.camera.position.y, 2),
-      roundOff(this.camera.position.z, 2),
-    ],
-    quaternion: [
-      roundOff(this.camera.quaternion.x, 2),
-      roundOff(this.camera.quaternion.y, 2),
-      roundOff(this.camera.quaternion.z, 2),
-      roundOff(this.camera.quaternion.w, 2),
-    ],
-  })
 
   onCameraChange = (forceUpdate = false) => {
     const distance = this.target.distanceTo(this.camera.position)
@@ -957,7 +937,24 @@ export class CameraControls {
         isPerspective: this.isPerspective,
         target: this.target,
       })
-    this.deferReactUpdate(this.getReactCameraProperties())
+    this.deferReactUpdate({
+      type: this.isPerspective ? 'perspective' : 'orthographic',
+      [this.isPerspective ? 'fov' : 'zoom']:
+        this.camera instanceof PerspectiveCamera
+          ? this.camera.fov
+          : this.camera.zoom,
+      position: [
+        roundOff(this.camera.position.x, 2),
+        roundOff(this.camera.position.y, 2),
+        roundOff(this.camera.position.z, 2),
+      ],
+      quaternion: [
+        roundOff(this.camera.quaternion.x, 2),
+        roundOff(this.camera.quaternion.y, 2),
+        roundOff(this.camera.quaternion.z, 2),
+        roundOff(this.camera.quaternion.w, 2),
+      ],
+    })
     Object.values(this._camChangeCallbacks).forEach((cb) => cb())
   }
   getInteractionType = (event: any) =>
