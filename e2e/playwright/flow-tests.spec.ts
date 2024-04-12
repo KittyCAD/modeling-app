@@ -508,18 +508,10 @@ test('Auto complete works', async ({ page }) => {
   await page.waitForTimeout(100)
   await page.keyboard.press('Enter') // accepting the auto complete, not a new line
 
-  await page.keyboard.press('ArrowRight')
-  await page.keyboard.press('ArrowRight')
-  await page.keyboard.press('ArrowRight')
-  await page.keyboard.press('ArrowRight')
-  await page.keyboard.press('ArrowRight')
-  await page.keyboard.press('ArrowRight')
-  await page.keyboard.press('ArrowRight')
-  await page.keyboard.press('ArrowRight')
-  await page.keyboard.press('ArrowRight')
-  await page.keyboard.press('ArrowRight')
-  await page.keyboard.press('ArrowRight')
-  await page.keyboard.press('ArrowRight')
+  await page.keyboard.press('Tab')
+  await page.keyboard.press('Tab')
+  await page.keyboard.press('Tab')
+  await page.keyboard.press('Tab')
   await page.keyboard.press('Enter')
   await page.keyboard.type('  |> lin')
 
@@ -531,11 +523,8 @@ test('Auto complete works', async ({ page }) => {
   await page.keyboard.press('Enter')
   // finish line with comment
   await page.keyboard.type('5')
-  await page.keyboard.press('ArrowRight')
-  await page.keyboard.press('ArrowRight')
-  await page.keyboard.press('ArrowRight')
-  await page.keyboard.press('ArrowRight')
-  await page.keyboard.press('ArrowRight')
+  await page.keyboard.press('Tab')
+  await page.keyboard.press('Tab')
   await page.keyboard.type(' // lin')
   await page.waitForTimeout(100)
   // there shouldn't be any auto complete options for 'lin' in the comment
