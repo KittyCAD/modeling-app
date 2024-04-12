@@ -2,7 +2,6 @@ import { undo, redo } from '@codemirror/commands'
 import ReactCodeMirror, {
   Extension,
   ViewUpdate,
-  keymap,
   SelectionRange,
   drawSelection,
 } from '@uiw/react-codemirror'
@@ -12,14 +11,33 @@ import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { useEffect, useMemo, useRef } from 'react'
-import { indentWithTab } from '@codemirror/commands'
-import { linter, lintGutter } from '@codemirror/lint'
-import { foldGutter } from '@codemirror/language'
 import { useStore } from 'useStore'
 import { processCodeMirrorRanges } from 'lib/selections'
-import { EditorView, lineHighlightField } from 'editor/highlightextension'
+import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
+import { lineHighlightField } from 'editor/highlightextension'
 import { roundOff } from 'lib/utils'
+import {
+  lineNumbers,
+  highlightActiveLineGutter,
+  highlightSpecialChars,
+  highlightActiveLine,
+  keymap,
+  EditorView,
+} from '@codemirror/view'
+import {
+  indentWithTab,
+  defaultKeymap,
+  historyKeymap,
+  history,
+} from '@codemirror/commands'
+import { lintGutter, lintKeymap, linter } from '@codemirror/lint'
 import { kclErrToDiagnostic } from 'lang/errors'
+import {
+  foldGutter,
+  foldKeymap,
+  bracketMatching,
+  indentOnInput,
+} from '@codemirror/language'
 import { useModelingContext } from 'hooks/useModelingContext'
 import interact from '@replit/codemirror-interact'
 import { engineCommandManager, sceneInfra, kclManager } from 'lib/singletons'
@@ -30,12 +48,17 @@ import {
   useNetworkStatus,
 } from 'components/NetworkHealthIndicator'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { useLspContext } from 'components/LspProvider'
-import { Prec } from '@codemirror/state'
 import { isTauri } from 'lib/isTauri'
 import { useNavigate } from 'react-router-dom'
 import { paths } from 'lib/paths'
 import makeUrlPathRelative from 'lib/makeUrlPathRelative'
+import { useLspContext } from 'components/LspProvider'
+import { Prec, EditorState } from '@codemirror/state'
+import {
+  closeBrackets,
+  closeBracketsKeymap,
+  completionKeymap,
+} from '@codemirror/autocomplete'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -165,7 +188,17 @@ export const KclEditorPane = () => {
         cursorBlinkRate: cursorBlinking.current ? 1200 : 0,
       }),
       lineHighlightField,
+      history(),
+      closeBrackets(),
       keymap.of([
+        ...closeBracketsKeymap,
+        ...defaultKeymap,
+        ...searchKeymap,
+        ...historyKeymap,
+        ...foldKeymap,
+        ...completionKeymap,
+        ...lintKeymap,
+        indentWithTab,
         {
           key: 'Meta-k',
           run: () => {
@@ -203,15 +236,22 @@ export const KclEditorPane = () => {
     if (kclLSP) extensions.push(Prec.highest(kclLSP))
     if (copilotLSP) extensions.push(copilotLSP)
 
-    // We do the tab keymap after the LSPs with the lowest precedence.
-    // Specifically, tab for in a completion.
-    extensions.push(Prec.lowest(keymap.of([indentWithTab])))
-
     // These extensions have proven to mess with vitest
     if (!TEST) {
       extensions.push(
         lintGutter(),
+        lineNumbers(),
+        highlightActiveLineGutter(),
+        highlightSpecialChars(),
+        history(),
         foldGutter(),
+        EditorState.allowMultipleSelections.of(true),
+        indentOnInput(),
+        bracketMatching(),
+        closeBrackets(),
+        highlightActiveLine(),
+        highlightSelectionMatches(),
+        lintGutter(),
         linter((_view) => {
           return kclErrToDiagnostic(errors)
         }),
