@@ -129,6 +129,7 @@ export const TextEditor = ({
       hasNextSnippetField(viewUpdate.view.state) ||
       hasPrevSnippetField(viewUpdate.view.state)
     ) {
+      console.log('IN SNIPPET')
       return
     }
     const selString = stringifyRanges(
