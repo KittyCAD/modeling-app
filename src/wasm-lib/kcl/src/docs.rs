@@ -441,11 +441,9 @@ pub fn get_autocomplete_snippet_from_schema(
 ) -> Result<Option<(usize, String)>> {
     match schema {
         schemars::schema::Schema::Object(o) => {
-            if let Some(nullable) = o.extensions.get("nullable") {
-                if let serde_json::Value::Bool(nullable) = nullable {
-                    if *nullable {
-                        return Ok(None);
-                    }
+            if let Some(serde_json::Value::Bool(nullable)) = o.extensions.get("nullable") {
+                if *nullable {
+                    return Ok(None);
                 }
             }
             if o.enum_values.is_some() {
@@ -838,6 +836,18 @@ mod tests {
 	repetitions: ${3:3.14},
 	rotateDuplicates: ${4:"string"},
 },${5:%})"#
+        );
+    }
+
+    #[test]
+    fn get_autocomplete_snippet_revolve() {
+        let revolve_fn: Box<dyn StdLibFn> = Box::new(crate::std::revolve::Revolve);
+        let snippet = revolve_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(
+            snippet,
+            r#"revolve({
+	axis: ${1:"X"},
+},${2:%})"#
         );
     }
 }
