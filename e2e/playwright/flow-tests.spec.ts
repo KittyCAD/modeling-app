@@ -519,6 +519,7 @@ test('Auto complete works', async ({ page }) => {
   await page.keyboard.press('ArrowRight')
   await page.keyboard.press('ArrowRight')
   await page.keyboard.press('ArrowRight')
+  await page.keyboard.press('ArrowRight')
   await page.keyboard.press('Enter')
   await page.keyboard.type('  |> lin')
 
