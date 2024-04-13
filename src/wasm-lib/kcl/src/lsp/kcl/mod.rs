@@ -2,6 +2,8 @@
 
 use std::{collections::HashMap, io::Write, str::FromStr};
 
+pub mod custom_notifications;
+
 use anyhow::Result;
 #[cfg(feature = "cli")]
 use clap::Parser;
