@@ -37,23 +37,21 @@ pub trait Backend {
     fn clear_code_state(&self);
 
     /// On change event.
-    async fn inner_on_change(&self, params: TextDocumentItem, force_update: bool);
+    async fn inner_on_change(&self, params: TextDocumentItem);
 
-    async fn on_change(&self, params: TextDocumentItem, force_update: bool) {
+    async fn on_change(&self, params: TextDocumentItem) {
         // Check if the document is in the current code map and if it is the same as what we have
         // stored.
         let filename = params.uri.to_string();
-        if !force_update {
-            if let Some(current_code) = self.current_code_map().get(&filename) {
-                if current_code.value() == params.text.as_bytes() {
-                    return;
-                }
+        if let Some(current_code) = self.current_code_map().get(&filename) {
+            if current_code.value() == params.text.as_bytes() {
+                return;
             }
         }
 
         // Otherwise update the code map and call the inner on change.
         self.insert_current_code_map(filename, params.text.as_bytes().to_vec());
-        self.inner_on_change(params, force_update).await;
+        self.inner_on_change(params).await;
     }
 
     async fn update_from_disk<P: AsRef<std::path::Path> + std::marker::Send>(&self, path: P) -> Result<()> {
@@ -184,7 +182,7 @@ pub trait Backend {
             version: params.text_document.version,
             language_id: params.text_document.language_id,
         };
-        self.on_change(new_params, false).await;
+        self.on_change(new_params).await;
     }
 
     async fn do_did_change(&self, mut params: DidChangeTextDocumentParams) {
@@ -194,7 +192,7 @@ pub trait Backend {
             version: params.text_document.version,
             language_id: Default::default(),
         };
-        self.on_change(new_params, false).await;
+        self.on_change(new_params).await;
     }
 
     async fn do_did_save(&self, params: DidSaveTextDocumentParams) {
@@ -205,7 +203,7 @@ pub trait Backend {
                 version: Default::default(),
                 language_id: Default::default(),
             };
-            self.on_change(new_params, false).await;
+            self.on_change(new_params).await;
         }
     }
 

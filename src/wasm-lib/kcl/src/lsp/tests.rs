@@ -104,7 +104,7 @@ fn copilot_lsp_server() -> Result<crate::lsp::copilot::Backend> {
     Ok(server.clone())
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_updating_kcl_lsp_files() {
     let server = kcl_lsp_server(false).await.unwrap();
 
@@ -360,7 +360,7 @@ async fn test_updating_kcl_lsp_files() {
     );
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_updating_copilot_lsp_files() {
     let server = copilot_lsp_server().unwrap();
 
@@ -638,7 +638,7 @@ async fn test_updating_copilot_lsp_files() {
     assert_eq!(server.current_code_map.len(), 9);
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_create_zip() {
     let server = kcl_lsp_server(false).await.unwrap();
 
@@ -716,7 +716,7 @@ async fn test_kcl_lsp_create_zip() {
     assert_eq!(files.get("/test.kcl"), Some(&4));
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_completions() {
     let server = kcl_lsp_server(false).await.unwrap();
 
@@ -759,7 +759,7 @@ st"#
     }
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_on_hover() {
     let server = kcl_lsp_server(false).await.unwrap();
 
@@ -803,7 +803,7 @@ async fn test_kcl_lsp_on_hover() {
     }
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_signature_help() {
     let server = kcl_lsp_server(false).await.unwrap();
 
@@ -851,7 +851,7 @@ async fn test_kcl_lsp_signature_help() {
     }
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_semantic_tokens() {
     let server = kcl_lsp_server(false).await.unwrap();
 
@@ -893,7 +893,7 @@ async fn test_kcl_lsp_semantic_tokens() {
     }
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_document_symbol() {
     let server = kcl_lsp_server(false).await.unwrap();
 
@@ -933,7 +933,7 @@ startSketchOn('XY')"#
     }
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_formatting() {
     let server = kcl_lsp_server(false).await.unwrap();
 
@@ -980,7 +980,7 @@ async fn test_kcl_lsp_formatting() {
     );
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_rename() {
     let server = kcl_lsp_server(false).await.unwrap();
 
@@ -1027,7 +1027,7 @@ async fn test_kcl_lsp_rename() {
     );
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_diagnostic_no_errors() {
     let server = kcl_lsp_server(false).await.unwrap();
 
@@ -1069,7 +1069,7 @@ async fn test_kcl_lsp_diagnostic_no_errors() {
     }
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_diagnostic_has_errors() {
     let server = kcl_lsp_server(false).await.unwrap();
 
@@ -1115,7 +1115,7 @@ async fn test_kcl_lsp_diagnostic_has_errors() {
     }
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_copilot_lsp_set_editor_info() {
     let server = copilot_lsp_server().unwrap();
 
@@ -1145,7 +1145,7 @@ async fn test_copilot_lsp_set_editor_info() {
     assert_eq!(editor_info.editor_info.version, "1.0.0");
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 #[ignore] // Ignore til hosted model is faster (@jessfraz working on).
 async fn test_copilot_lsp_completions_raw() {
     let server = copilot_lsp_server().unwrap();
@@ -1199,7 +1199,7 @@ async fn test_copilot_lsp_completions_raw() {
     assert_eq!(completions, completions_hit_cache);
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 #[ignore] // Ignore til hosted model is faster (@jessfraz working on).
 async fn test_copilot_lsp_completions() {
     let server = copilot_lsp_server().unwrap();
@@ -1265,7 +1265,7 @@ async fn test_copilot_lsp_completions() {
         .await;
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_copilot_on_save() {
     let server = copilot_lsp_server().unwrap();
 
@@ -1287,7 +1287,7 @@ async fn test_copilot_on_save() {
     );
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_on_save() {
     let server = kcl_lsp_server(false).await.unwrap();
 
@@ -1309,7 +1309,7 @@ async fn test_kcl_on_save() {
     );
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_copilot_rename_not_exists() {
     let server = copilot_lsp_server().unwrap();
 
@@ -1331,7 +1331,7 @@ async fn test_copilot_rename_not_exists() {
     );
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_lsp_initialized() {
     let copilot_server = copilot_lsp_server().unwrap();
 
@@ -1369,7 +1369,7 @@ async fn test_lsp_initialized() {
     kcl_server.shutdown().await.unwrap();
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_on_change_update_ast() {
     let server = kcl_lsp_server(false).await.unwrap();
 
@@ -1431,7 +1431,7 @@ async fn test_kcl_lsp_on_change_update_ast() {
     assert!(server.memory_map.get("file:///test.kcl").is_none());
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_kcl_lsp_on_change_update_memory() {
     let server = kcl_lsp_server(true).await.unwrap();
 
@@ -1487,5 +1487,81 @@ async fn serial_test_kcl_lsp_on_change_update_memory() {
         })
         .await;
 
+    assert!(memory != server.memory_map.get("file:///test.kcl").unwrap().clone());
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 10)]
+async fn serial_test_kcl_lsp_update_units() {
+    let server = kcl_lsp_server(true).await.unwrap();
+
+    let same_text = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+const part001 = cube([0,0], 20)
+    |> close(%)
+    |> extrude(20, %)"#
+        .to_string();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: same_text.clone(),
+            },
+        })
+        .await;
+
+    // Get the memory.
+    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
+
+    // Send change file.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 1,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: same_text.clone(),
+            }],
+        })
+        .await;
+
+    // Make sure the memory is the same.
+    assert_eq!(memory, server.memory_map.get("file:///test.kcl").unwrap().clone());
+
+    let units = server.executor_ctx.read().await.clone().unwrap().units;
+
+    assert_eq!(units, kittycad::types::UnitLength::Mm);
+
+    // Update the units.
+    server
+        .update_units(crate::lsp::kcl::custom_notifications::UpdateUnitsParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            units: kittycad::types::UnitLength::M,
+        })
+        .await;
+
+    println!("updated units");
+
+    let units = server.executor_ctx.read().await.clone().unwrap().units;
+    assert_eq!(units, kittycad::types::UnitLength::M);
+
+    println!("units are correct");
+
+    // Make sure it forced a memory update.
     assert!(memory != server.memory_map.get("file:///test.kcl").unwrap().clone());
 }

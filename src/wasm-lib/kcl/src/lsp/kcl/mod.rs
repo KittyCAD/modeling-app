@@ -136,7 +136,7 @@ impl crate::lsp::backend::Backend for Backend {
         self.semantic_tokens_map.clear();
     }
 
-    async fn inner_on_change(&self, params: TextDocumentItem, force_update: bool) {
+    async fn inner_on_change(&self, params: TextDocumentItem) {
         // We already updated the code map in the shared backend.
 
         // Lets update the tokens.
@@ -215,7 +215,7 @@ impl crate::lsp::backend::Backend for Backend {
         };
 
         // If the ast changed update the map and symbols and execute if we need to.
-        if ast_changed || force_update {
+        if ast_changed {
             // Update the symbols map.
             self.symbols_map
                 .insert(params.uri.to_string(), ast.get_lsp_symbols(&params.text));
@@ -287,6 +287,8 @@ impl Backend {
                 return;
             }
         };
+        drop(executor_ctx); // Drop the lock here.
+
         self.memory_map.insert(params.uri.to_string(), memory.clone());
         // Send the notification to the client that the memory was updated.
         self.client
@@ -428,22 +430,26 @@ impl Backend {
     }
 
     pub async fn update_units(&self, params: custom_notifications::UpdateUnitsParams) {
-        let Some(mut executor_ctx) = self.executor_ctx.read().await.clone() else {
+        {
+            let Some(mut executor_ctx) = self.executor_ctx.read().await.clone() else {
+                self.client
+                    .log_message(MessageType::ERROR, "no executor context set to update units for")
+                    .await;
+                return;
+            };
+
             self.client
-                .log_message(MessageType::ERROR, "no executor context set to update units for")
+                .log_message(MessageType::INFO, format!("update units: {:?}", params))
                 .await;
-            return;
-        };
 
-        self.client
-            .log_message(MessageType::INFO, format!("update units: {:?}", params))
-            .await;
+            // Set the engine units.
+            executor_ctx.update_units(params.units);
 
-        // Set the engine units.
-        executor_ctx.update_units(params.units);
-
-        // Update the locked executor context.
-        *self.executor_ctx.write().await = Some(executor_ctx);
+            // Update the locked executor context.
+            *self.executor_ctx.write().await = Some(executor_ctx.clone());
+        }
+        // Lock is dropped here since nested.
+        // This is IMPORTANT.
 
         let filename = params.text_document.uri.to_string();
 
@@ -455,13 +461,17 @@ impl Backend {
             return;
         };
 
+        // Get the current ast.
+        let Some(ast) = self.ast_map.get(&filename) else {
+            return;
+        };
         let new_params = TextDocumentItem {
             uri: params.text_document.uri,
             text: std::mem::take(&mut current_code.to_string()),
             version: Default::default(),
             language_id: Default::default(),
         };
-        self.on_change(new_params, true).await;
+        self.execute(&new_params, ast.value().clone()).await;
     }
 }
 
