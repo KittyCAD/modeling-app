@@ -474,19 +474,17 @@ const completionRequester = (client: LanguageServerClient) => {
 }
 
 export const copilotPlugin = (options: LanguageServerOptions): Extension => {
-  let plugin: LanguageServerPlugin | null = null
-
   return [
     documentUri.of(options.documentUri),
     languageId.of('kcl'),
     workspaceFolders.of(options.workspaceFolders),
     ViewPlugin.define(
       (view) =>
-        (plugin = new LanguageServerPlugin(
+        new LanguageServerPlugin(
           options.client,
           view,
           options.allowHTMLContent
-        ))
+        )
     ),
     completionDecoration,
     Prec.highest(completionPlugin(options.client)),
