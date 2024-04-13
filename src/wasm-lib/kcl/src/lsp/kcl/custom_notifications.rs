@@ -4,18 +4,18 @@ use tower_lsp::lsp_types::notification::Notification;
 
 /// A notification that the AST has changed.
 #[derive(Debug)]
-pub enum AstChanged {}
+pub enum AstUpdated {}
 
-impl Notification for AstChanged {
+impl Notification for AstUpdated {
     type Params = crate::ast::types::Program;
-    const METHOD: &'static str = "kcl/astChanged";
+    const METHOD: &'static str = "kcl/astUpdated";
 }
 
 /// A notification that the Memory has changed.
 #[derive(Debug)]
-pub enum MemoryChanged {}
+pub enum MemoryUpdated {}
 
-impl Notification for MemoryChanged {
+impl Notification for MemoryUpdated {
     type Params = crate::executor::ProgramMemory;
-    const METHOD: &'static str = "kcl/memoryChanged";
+    const METHOD: &'static str = "kcl/memoryUpdated";
 }

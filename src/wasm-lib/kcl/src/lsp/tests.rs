@@ -7,18 +7,54 @@ use anyhow::Result;
 use pretty_assertions::assert_eq;
 use tower_lsp::LanguageServer;
 
+fn new_zoo_client() -> kittycad::Client {
+    let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
+    let http_client = reqwest::Client::builder()
+        .user_agent(user_agent)
+        // For file conversions we need this to be long.
+        .timeout(std::time::Duration::from_secs(600))
+        .connect_timeout(std::time::Duration::from_secs(60));
+    let ws_client = reqwest::Client::builder()
+        .user_agent(user_agent)
+        // For file conversions we need this to be long.
+        .timeout(std::time::Duration::from_secs(600))
+        .connect_timeout(std::time::Duration::from_secs(60))
+        .connection_verbose(true)
+        .tcp_keepalive(std::time::Duration::from_secs(600))
+        .http1_only();
+
+    let token = std::env::var("KITTYCAD_API_TOKEN").expect("KITTYCAD_API_TOKEN not set");
+
+    // Create the client.
+    let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
+    // Set a local engine address if it's set.
+    if let Ok(addr) = std::env::var("LOCAL_ENGINE_ADDR") {
+        client.set_base_url(addr);
+    }
+
+    client
+}
+
 // Create a fake kcl lsp server for testing.
-fn kcl_lsp_server() -> Result<crate::lsp::kcl::Backend> {
+async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
     let stdlib = crate::std::StdLib::new();
     let stdlib_completions = crate::lsp::kcl::get_completions_from_stdlib(&stdlib)?;
     let stdlib_signatures = crate::lsp::kcl::get_signatures_from_stdlib(&stdlib)?;
     // We can unwrap here because we know the tokeniser is valid, since
     // we have a test for it.
-    let token_types = crate::token::TokenType::all_semantic_token_types().unwrap();
+    let token_types = crate::token::TokenType::all_semantic_token_types()?;
 
-    // We don't actually need to authenticate to the backend for this test.
-    let mut zoo_client = kittycad::Client::new("");
-    zoo_client.set_base_url("https://api.dev.zoo.dev");
+    let zoo_client = new_zoo_client();
+
+    let executor_ctx = if execute {
+        let ws = zoo_client
+            .modeling()
+            .commands_ws(None, None, None, None, None, None, Some(false))
+            .await?;
+        Some(crate::executor::ExecutorContext::new(ws, kittycad::types::UnitLength::Mm).await?)
+    } else {
+        None
+    };
 
     // Create the backend.
     let (service, _) = tower_lsp::LspService::new(|client| crate::lsp::kcl::Backend {
@@ -37,7 +73,7 @@ fn kcl_lsp_server() -> Result<crate::lsp::kcl::Backend> {
         semantic_tokens_map: Default::default(),
         zoo_client,
         can_send_telemetry: true,
-        executor_ctx: Default::default(),
+        executor_ctx,
     });
     let server = service.inner();
 
@@ -67,7 +103,7 @@ fn copilot_lsp_server() -> Result<crate::lsp::copilot::Backend> {
 
 #[tokio::test]
 async fn test_updating_kcl_lsp_files() {
-    let server = kcl_lsp_server().unwrap();
+    let server = kcl_lsp_server(false).await.unwrap();
 
     assert_eq!(server.current_code_map.len(), 0);
 
@@ -601,7 +637,7 @@ async fn test_updating_copilot_lsp_files() {
 
 #[tokio::test]
 async fn test_kcl_lsp_create_zip() {
-    let server = kcl_lsp_server().unwrap();
+    let server = kcl_lsp_server(false).await.unwrap();
 
     assert_eq!(server.current_code_map.len(), 0);
 
@@ -679,7 +715,7 @@ async fn test_kcl_lsp_create_zip() {
 
 #[tokio::test]
 async fn test_kcl_lsp_completions() {
-    let server = kcl_lsp_server().unwrap();
+    let server = kcl_lsp_server(false).await.unwrap();
 
     // Send open file.
     server
@@ -722,7 +758,7 @@ st"#
 
 #[tokio::test]
 async fn test_kcl_lsp_on_hover() {
-    let server = kcl_lsp_server().unwrap();
+    let server = kcl_lsp_server(false).await.unwrap();
 
     // Send open file.
     server
@@ -766,7 +802,7 @@ async fn test_kcl_lsp_on_hover() {
 
 #[tokio::test]
 async fn test_kcl_lsp_signature_help() {
-    let server = kcl_lsp_server().unwrap();
+    let server = kcl_lsp_server(false).await.unwrap();
 
     // Send open file.
     server
@@ -814,7 +850,7 @@ async fn test_kcl_lsp_signature_help() {
 
 #[tokio::test]
 async fn test_kcl_lsp_semantic_tokens() {
-    let server = kcl_lsp_server().unwrap();
+    let server = kcl_lsp_server(false).await.unwrap();
 
     // Send open file.
     server
@@ -856,7 +892,7 @@ async fn test_kcl_lsp_semantic_tokens() {
 
 #[tokio::test]
 async fn test_kcl_lsp_document_symbol() {
-    let server = kcl_lsp_server().unwrap();
+    let server = kcl_lsp_server(false).await.unwrap();
 
     // Send open file.
     server
@@ -896,7 +932,7 @@ startSketchOn('XY')"#
 
 #[tokio::test]
 async fn test_kcl_lsp_formatting() {
-    let server = kcl_lsp_server().unwrap();
+    let server = kcl_lsp_server(false).await.unwrap();
 
     // Send open file.
     server
@@ -943,7 +979,7 @@ async fn test_kcl_lsp_formatting() {
 
 #[tokio::test]
 async fn test_kcl_lsp_rename() {
-    let server = kcl_lsp_server().unwrap();
+    let server = kcl_lsp_server(false).await.unwrap();
 
     // Send open file.
     server
@@ -990,7 +1026,7 @@ async fn test_kcl_lsp_rename() {
 
 #[tokio::test]
 async fn test_kcl_lsp_diagnostic_no_errors() {
-    let server = kcl_lsp_server().unwrap();
+    let server = kcl_lsp_server(false).await.unwrap();
 
     // Send open file.
     server
@@ -1032,7 +1068,7 @@ async fn test_kcl_lsp_diagnostic_no_errors() {
 
 #[tokio::test]
 async fn test_kcl_lsp_diagnostic_has_errors() {
-    let server = kcl_lsp_server().unwrap();
+    let server = kcl_lsp_server(false).await.unwrap();
 
     // Send open file.
     server
@@ -1250,7 +1286,7 @@ async fn test_copilot_on_save() {
 
 #[tokio::test]
 async fn test_kcl_on_save() {
-    let server = kcl_lsp_server().unwrap();
+    let server = kcl_lsp_server(false).await.unwrap();
 
     // Send save file.
     server
@@ -1311,7 +1347,7 @@ async fn test_lsp_initialized() {
     assert_eq!(copilot_server.current_code_map.len(), 0);
 
     // Now do the same for kcl.
-    let kcl_server = kcl_lsp_server().unwrap();
+    let kcl_server = kcl_lsp_server(false).await.unwrap();
 
     // Send initialize request.
     kcl_server

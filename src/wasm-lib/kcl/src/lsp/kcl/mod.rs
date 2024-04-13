@@ -220,6 +220,11 @@ impl crate::lsp::backend::Backend for Backend {
 
             self.ast_map.insert(params.uri.to_string(), ast.clone());
 
+            // Send the notification to the client that the ast was updated.
+            self.client
+                .send_notification::<custom_notifications::AstUpdated>(ast.clone())
+                .await;
+
             // Execute the code if we have an executor context.
             // This function automatically executes if we should & updates the diagnostics if we got
             // errors.
@@ -298,7 +303,11 @@ impl Backend {
                     return;
                 }
             };
-            self.memory_map.insert(params.uri.to_string(), memory);
+            self.memory_map.insert(params.uri.to_string(), memory.clone());
+            // Send the notification to the client that the memory was updated.
+            self.client
+                .send_notification::<custom_notifications::MemoryUpdated>(memory)
+                .await;
         }
     }
 
