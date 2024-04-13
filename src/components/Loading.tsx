@@ -1,14 +1,46 @@
 import { useEffect, useState } from 'react'
 
+// import {
+//   ConnectingType,
+//   ConnectingTypeGroup,
+//   DisconnectingType,
+//   EngineCommandManagerEvents,
+//   EngineConnectionEvents,
+//   EngineConnectionStateType,
+//   ErrorType,
+//   initialConnectingTypeGroupState,
+// } from '../lang/std/engineConnection'
+// import { engineCommandManager } from '../lib/singletons'
+
+// Sorted by severity
+enum Error {
+  Unset = 0,
+  LongLoadingTime,
+  BadAuthToken,
+  TooManyConnections,
+}
+
+const errorText: Record<Error, string> = {
+  [Error.Unset]: "",
+  [Error.LongLoadingTime]: "Loading is taking longer than expected...",
+  [Error.BadAuthToken]: "Your authorization token is not valid; please login again.",
+  [Error.TooManyConnections]: "There are too many connections.",
+}
+
 const Loading = ({ children }: React.PropsWithChildren) => {
-  const [hasLongLoadTime, setHasLongLoadTime] = useState(false)
+  const [error, setError] = useState<Error>(Error.Unset)
+
   useEffect(() => {
+    // Don't set long loading time if there's a more severe error
+    if (error > Error.LongLoadingTime) return
+
     const timer = setTimeout(() => {
-      setHasLongLoadTime(true)
+      setError(Error.LongLoadingTime)
     }, 4000)
 
     return () => clearTimeout(timer)
-  }, [setHasLongLoadTime])
+  }, [error, setError])
+
   return (
     <div
       className="body-bg flex flex-col items-center justify-center h-screen"
@@ -29,10 +61,10 @@ const Loading = ({ children }: React.PropsWithChildren) => {
       <p
         className={
           'text-sm mt-4 text-primary/60 transition-opacity duration-500' +
-          (hasLongLoadTime ? ' opacity-100' : ' opacity-0')
+          (error !== Error.Unset ? ' opacity-100' : ' opacity-0')
         }
       >
-        Loading is taking longer than expected.
+        { errorText[error] }
       </p>
     </div>
   )
