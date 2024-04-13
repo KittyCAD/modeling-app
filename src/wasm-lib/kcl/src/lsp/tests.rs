@@ -7,21 +7,57 @@ use anyhow::Result;
 use pretty_assertions::assert_eq;
 use tower_lsp::LanguageServer;
 
+fn new_zoo_client() -> kittycad::Client {
+    let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
+    let http_client = reqwest::Client::builder()
+        .user_agent(user_agent)
+        // For file conversions we need this to be long.
+        .timeout(std::time::Duration::from_secs(600))
+        .connect_timeout(std::time::Duration::from_secs(60));
+    let ws_client = reqwest::Client::builder()
+        .user_agent(user_agent)
+        // For file conversions we need this to be long.
+        .timeout(std::time::Duration::from_secs(600))
+        .connect_timeout(std::time::Duration::from_secs(60))
+        .connection_verbose(true)
+        .tcp_keepalive(std::time::Duration::from_secs(600))
+        .http1_only();
+
+    let token = std::env::var("KITTYCAD_API_TOKEN").expect("KITTYCAD_API_TOKEN not set");
+
+    // Create the client.
+    let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
+    // Set a local engine address if it's set.
+    if let Ok(addr) = std::env::var("LOCAL_ENGINE_ADDR") {
+        client.set_base_url(addr);
+    }
+
+    client
+}
+
 // Create a fake kcl lsp server for testing.
-fn kcl_lsp_server() -> Result<crate::lsp::kcl::Backend> {
+async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
     let stdlib = crate::std::StdLib::new();
     let stdlib_completions = crate::lsp::kcl::get_completions_from_stdlib(&stdlib)?;
     let stdlib_signatures = crate::lsp::kcl::get_signatures_from_stdlib(&stdlib)?;
     // We can unwrap here because we know the tokeniser is valid, since
     // we have a test for it.
-    let token_types = crate::token::TokenType::all_semantic_token_types().unwrap();
+    let token_types = crate::token::TokenType::all_semantic_token_types()?;
 
-    // We don't actually need to authenticate to the backend for this test.
-    let mut zoo_client = kittycad::Client::new("");
-    zoo_client.set_base_url("https://api.dev.zoo.dev");
+    let zoo_client = new_zoo_client();
+
+    let executor_ctx = if execute {
+        let ws = zoo_client
+            .modeling()
+            .commands_ws(None, None, None, None, None, None, Some(false))
+            .await?;
+        Some(crate::executor::ExecutorContext::new(ws, kittycad::types::UnitLength::Mm).await?)
+    } else {
+        None
+    };
 
     // Create the backend.
-    let (service, _) = tower_lsp::LspService::new(|client| crate::lsp::kcl::Backend {
+    let (service, _) = tower_lsp::LspService::build(|client| crate::lsp::kcl::Backend {
         client,
         fs: crate::fs::FileManager::new(),
         workspace_folders: Default::default(),
@@ -30,13 +66,18 @@ fn kcl_lsp_server() -> Result<crate::lsp::kcl::Backend> {
         token_types,
         token_map: Default::default(),
         ast_map: Default::default(),
+        memory_map: Default::default(),
         current_code_map: Default::default(),
         diagnostics_map: Default::default(),
         symbols_map: Default::default(),
         semantic_tokens_map: Default::default(),
         zoo_client,
         can_send_telemetry: true,
-    });
+        executor_ctx: Arc::new(tokio::sync::RwLock::new(executor_ctx)),
+    })
+    .custom_method("kcl/updateUnits", crate::lsp::kcl::Backend::update_units)
+    .finish();
+
     let server = service.inner();
 
     Ok(server.clone())
@@ -63,9 +104,9 @@ fn copilot_lsp_server() -> Result<crate::lsp::copilot::Backend> {
     Ok(server.clone())
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_updating_kcl_lsp_files() {
-    let server = kcl_lsp_server().unwrap();
+    let server = kcl_lsp_server(false).await.unwrap();
 
     assert_eq!(server.current_code_map.len(), 0);
 
@@ -96,7 +137,7 @@ async fn test_updating_kcl_lsp_files() {
         }
     );
 
-    assert_eq!(server.current_code_map.len(), 8);
+    assert_eq!(server.current_code_map.len(), 9);
 
     // Run open file.
     server
@@ -111,7 +152,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 9);
+    assert_eq!(server.current_code_map.len(), 10);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -127,7 +168,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 9);
+    assert_eq!(server.current_code_map.len(), 10);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -146,7 +187,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 10);
+    assert_eq!(server.current_code_map.len(), 11);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -172,7 +213,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 10);
+    assert_eq!(server.current_code_map.len(), 11);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -193,7 +234,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 10);
+    assert_eq!(server.current_code_map.len(), 11);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -213,7 +254,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 11);
+    assert_eq!(server.current_code_map.len(), 12);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -237,7 +278,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 10);
+    assert_eq!(server.current_code_map.len(), 11);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -271,7 +312,7 @@ async fn test_updating_kcl_lsp_files() {
     );
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 10);
+    assert_eq!(server.current_code_map.len(), 11);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -307,7 +348,7 @@ async fn test_updating_kcl_lsp_files() {
             name: "my-project2".to_string(),
         }
     );
-    assert_eq!(server.current_code_map.len(), 8);
+    assert_eq!(server.current_code_map.len(), 9);
     // Just make sure that one of the current files read from disk is accurate.
     assert_eq!(
         server
@@ -319,7 +360,7 @@ async fn test_updating_kcl_lsp_files() {
     );
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_updating_copilot_lsp_files() {
     let server = copilot_lsp_server().unwrap();
 
@@ -352,7 +393,7 @@ async fn test_updating_copilot_lsp_files() {
         }
     );
 
-    assert_eq!(server.current_code_map.len(), 8);
+    assert_eq!(server.current_code_map.len(), 9);
 
     // Run open file.
     server
@@ -367,7 +408,7 @@ async fn test_updating_copilot_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 9);
+    assert_eq!(server.current_code_map.len(), 10);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -383,7 +424,7 @@ async fn test_updating_copilot_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 9);
+    assert_eq!(server.current_code_map.len(), 10);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -402,7 +443,7 @@ async fn test_updating_copilot_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 10);
+    assert_eq!(server.current_code_map.len(), 11);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -428,7 +469,7 @@ async fn test_updating_copilot_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 10);
+    assert_eq!(server.current_code_map.len(), 11);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -449,7 +490,7 @@ async fn test_updating_copilot_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 10);
+    assert_eq!(server.current_code_map.len(), 11);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -469,7 +510,7 @@ async fn test_updating_copilot_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 11);
+    assert_eq!(server.current_code_map.len(), 12);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -493,7 +534,7 @@ async fn test_updating_copilot_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 10);
+    assert_eq!(server.current_code_map.len(), 11);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -527,7 +568,7 @@ async fn test_updating_copilot_lsp_files() {
     );
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 10);
+    assert_eq!(server.current_code_map.len(), 11);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -558,7 +599,7 @@ async fn test_updating_copilot_lsp_files() {
     );
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 10);
+    assert_eq!(server.current_code_map.len(), 11);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -594,12 +635,12 @@ async fn test_updating_copilot_lsp_files() {
             name: "my-project2".to_string(),
         }
     );
-    assert_eq!(server.current_code_map.len(), 8);
+    assert_eq!(server.current_code_map.len(), 9);
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_create_zip() {
-    let server = kcl_lsp_server().unwrap();
+    let server = kcl_lsp_server(false).await.unwrap();
 
     assert_eq!(server.current_code_map.len(), 0);
 
@@ -630,7 +671,7 @@ async fn test_kcl_lsp_create_zip() {
         }
     );
 
-    assert_eq!(server.current_code_map.len(), 8);
+    assert_eq!(server.current_code_map.len(), 9);
 
     // Run open file.
     server
@@ -645,7 +686,7 @@ async fn test_kcl_lsp_create_zip() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.current_code_map.len(), 9);
+    assert_eq!(server.current_code_map.len(), 10);
     assert_eq!(
         server.current_code_map.get("file:///test.kcl").unwrap().value(),
         "test".as_bytes()
@@ -669,15 +710,15 @@ async fn test_kcl_lsp_create_zip() {
         files.insert(file.name().to_string(), file.size());
     }
 
-    assert_eq!(files.len(), 9);
+    assert_eq!(files.len(), 10);
     let util_path = format!("{}/util.rs", string_path).replace("file://", "");
     assert!(files.get(&util_path).is_some());
     assert_eq!(files.get("/test.kcl"), Some(&4));
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_completions() {
-    let server = kcl_lsp_server().unwrap();
+    let server = kcl_lsp_server(false).await.unwrap();
 
     // Send open file.
     server
@@ -718,9 +759,9 @@ st"#
     }
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_on_hover() {
-    let server = kcl_lsp_server().unwrap();
+    let server = kcl_lsp_server(false).await.unwrap();
 
     // Send open file.
     server
@@ -762,9 +803,9 @@ async fn test_kcl_lsp_on_hover() {
     }
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_signature_help() {
-    let server = kcl_lsp_server().unwrap();
+    let server = kcl_lsp_server(false).await.unwrap();
 
     // Send open file.
     server
@@ -810,9 +851,9 @@ async fn test_kcl_lsp_signature_help() {
     }
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_semantic_tokens() {
-    let server = kcl_lsp_server().unwrap();
+    let server = kcl_lsp_server(false).await.unwrap();
 
     // Send open file.
     server
@@ -852,9 +893,9 @@ async fn test_kcl_lsp_semantic_tokens() {
     }
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_document_symbol() {
-    let server = kcl_lsp_server().unwrap();
+    let server = kcl_lsp_server(false).await.unwrap();
 
     // Send open file.
     server
@@ -892,9 +933,9 @@ startSketchOn('XY')"#
     }
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_formatting() {
-    let server = kcl_lsp_server().unwrap();
+    let server = kcl_lsp_server(false).await.unwrap();
 
     // Send open file.
     server
@@ -939,9 +980,9 @@ async fn test_kcl_lsp_formatting() {
     );
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_rename() {
-    let server = kcl_lsp_server().unwrap();
+    let server = kcl_lsp_server(false).await.unwrap();
 
     // Send open file.
     server
@@ -986,9 +1027,9 @@ async fn test_kcl_lsp_rename() {
     );
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_diagnostic_no_errors() {
-    let server = kcl_lsp_server().unwrap();
+    let server = kcl_lsp_server(false).await.unwrap();
 
     // Send open file.
     server
@@ -1028,9 +1069,9 @@ async fn test_kcl_lsp_diagnostic_no_errors() {
     }
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_diagnostic_has_errors() {
-    let server = kcl_lsp_server().unwrap();
+    let server = kcl_lsp_server(false).await.unwrap();
 
     // Send open file.
     server
@@ -1074,7 +1115,7 @@ async fn test_kcl_lsp_diagnostic_has_errors() {
     }
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_copilot_lsp_set_editor_info() {
     let server = copilot_lsp_server().unwrap();
 
@@ -1104,7 +1145,7 @@ async fn test_copilot_lsp_set_editor_info() {
     assert_eq!(editor_info.editor_info.version, "1.0.0");
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 #[ignore] // Ignore til hosted model is faster (@jessfraz working on).
 async fn test_copilot_lsp_completions_raw() {
     let server = copilot_lsp_server().unwrap();
@@ -1158,7 +1199,7 @@ async fn test_copilot_lsp_completions_raw() {
     assert_eq!(completions, completions_hit_cache);
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 #[ignore] // Ignore til hosted model is faster (@jessfraz working on).
 async fn test_copilot_lsp_completions() {
     let server = copilot_lsp_server().unwrap();
@@ -1224,7 +1265,7 @@ async fn test_copilot_lsp_completions() {
         .await;
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_copilot_on_save() {
     let server = copilot_lsp_server().unwrap();
 
@@ -1246,9 +1287,9 @@ async fn test_copilot_on_save() {
     );
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_on_save() {
-    let server = kcl_lsp_server().unwrap();
+    let server = kcl_lsp_server(false).await.unwrap();
 
     // Send save file.
     server
@@ -1268,7 +1309,7 @@ async fn test_kcl_on_save() {
     );
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_copilot_rename_not_exists() {
     let server = copilot_lsp_server().unwrap();
 
@@ -1290,7 +1331,7 @@ async fn test_copilot_rename_not_exists() {
     );
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread")]
 async fn test_lsp_initialized() {
     let copilot_server = copilot_lsp_server().unwrap();
 
@@ -1309,7 +1350,7 @@ async fn test_lsp_initialized() {
     assert_eq!(copilot_server.current_code_map.len(), 0);
 
     // Now do the same for kcl.
-    let kcl_server = kcl_lsp_server().unwrap();
+    let kcl_server = kcl_lsp_server(false).await.unwrap();
 
     // Send initialize request.
     kcl_server
@@ -1326,4 +1367,201 @@ async fn test_lsp_initialized() {
     // Now shut them down.
     copilot_server.shutdown().await.unwrap();
     kcl_server.shutdown().await.unwrap();
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_on_change_update_ast() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    let same_text = r#"const thing = 1"#.to_string();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: same_text.clone(),
+            },
+        })
+        .await;
+
+    // Get the ast.
+    let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
+
+    // Send change file.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 1,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: same_text.clone(),
+            }],
+        })
+        .await;
+
+    // Make sure the ast is the same.
+    assert_eq!(ast, server.ast_map.get("file:///test.kcl").unwrap().clone());
+
+    // Update the text.
+    let new_text = r#"const thing = 2"#.to_string();
+    // Send change file.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 2,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: new_text.clone(),
+            }],
+        })
+        .await;
+
+    assert!(ast != server.ast_map.get("file:///test.kcl").unwrap().clone());
+
+    // Make sure we never updated the memory since we aren't running the engine.
+    assert!(server.memory_map.get("file:///test.kcl").is_none());
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_kcl_lsp_on_change_update_memory() {
+    let server = kcl_lsp_server(true).await.unwrap();
+
+    let same_text = r#"const thing = 1"#.to_string();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: same_text.clone(),
+            },
+        })
+        .await;
+
+    // Get the memory.
+    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
+
+    // Send change file.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 1,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: same_text.clone(),
+            }],
+        })
+        .await;
+
+    // Make sure the memory is the same.
+    assert_eq!(memory, server.memory_map.get("file:///test.kcl").unwrap().clone());
+
+    // Update the text.
+    let new_text = r#"const thing = 2"#.to_string();
+    // Send change file.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 2,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: new_text.clone(),
+            }],
+        })
+        .await;
+
+    assert!(memory != server.memory_map.get("file:///test.kcl").unwrap().clone());
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 10)]
+async fn serial_test_kcl_lsp_update_units() {
+    let server = kcl_lsp_server(true).await.unwrap();
+
+    let same_text = r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+const part001 = cube([0,0], 20)
+    |> close(%)
+    |> extrude(20, %)"#
+        .to_string();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: same_text.clone(),
+            },
+        })
+        .await;
+
+    // Get the memory.
+    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
+
+    // Send change file.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 1,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: same_text.clone(),
+            }],
+        })
+        .await;
+
+    // Make sure the memory is the same.
+    assert_eq!(memory, server.memory_map.get("file:///test.kcl").unwrap().clone());
+
+    let units = server.executor_ctx.read().await.clone().unwrap().units;
+
+    assert_eq!(units, kittycad::types::UnitLength::Mm);
+
+    // Update the units.
+    server
+        .update_units(crate::lsp::kcl::custom_notifications::UpdateUnitsParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            units: kittycad::types::UnitLength::M,
+        })
+        .await;
+
+    println!("updated units");
+
+    let units = server.executor_ctx.read().await.clone().unwrap().units;
+    assert_eq!(units, kittycad::types::UnitLength::M);
+
+    println!("units are correct");
+
+    // Make sure it forced a memory update.
+    assert!(memory != server.memory_map.get("file:///test.kcl").unwrap().clone());
 }

@@ -711,7 +711,7 @@ impl BinaryPart {
         }
     }
 
-    #[async_recursion::async_recursion(?Send)]
+    #[async_recursion::async_recursion]
     pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
@@ -1005,7 +1005,7 @@ impl CallExpression {
         )
     }
 
-    #[async_recursion::async_recursion(?Send)]
+    #[async_recursion::async_recursion]
     pub async fn execute(
         &self,
         memory: &mut ProgramMemory,
@@ -1112,7 +1112,7 @@ impl CallExpression {
 
                 // Call the stdlib function
                 let p = func.function().clone().body;
-                let results = match crate::executor::execute(p, &mut fn_memory, BodyType::Block, ctx).await {
+                let results = match ctx.inner_execute(p, &mut fn_memory, BodyType::Block).await {
                     Ok(results) => results,
                     Err(err) => {
                         // We need to override the source ranges so we don't get the embedded kcl
@@ -1690,7 +1690,7 @@ impl ArrayExpression {
         None
     }
 
-    #[async_recursion::async_recursion(?Send)]
+    #[async_recursion::async_recursion]
     pub async fn execute(
         &self,
         memory: &mut ProgramMemory,
@@ -1837,7 +1837,7 @@ impl ObjectExpression {
         None
     }
 
-    #[async_recursion::async_recursion(?Send)]
+    #[async_recursion::async_recursion]
     pub async fn execute(
         &self,
         memory: &mut ProgramMemory,
@@ -2271,14 +2271,16 @@ impl BinaryExpression {
 
         if left_source_range.contains(pos) {
             return self.left.get_hover_value_for_position(pos, code);
-        } else if right_source_range.contains(pos) {
+        }
+
+        if right_source_range.contains(pos) {
             return self.right.get_hover_value_for_position(pos, code);
         }
 
         None
     }
 
-    #[async_recursion::async_recursion(?Send)]
+    #[async_recursion::async_recursion]
     pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
@@ -2636,7 +2638,6 @@ impl PipeExpression {
     }
 }
 
-#[async_recursion::async_recursion(?Send)]
 async fn execute_pipe_body(
     memory: &mut ProgramMemory,
     body: &[Value],

@@ -383,7 +383,7 @@ fn do_stdlib_inner(
         fn #boxed_fn_name_ident(
             args: crate::std::Args,
         ) -> std::pin::Pin<
-            Box<dyn std::future::Future<Output = anyhow::Result<crate::executor::MemoryItem, crate::errors::KclError>>>,
+            Box<dyn std::future::Future<Output = anyhow::Result<crate::executor::MemoryItem, crate::errors::KclError>> + Send>,
         > {
             Box::pin(#fn_name_ident(args))
         }
@@ -783,11 +783,10 @@ fn generate_code_block_test(
             let tokens = crate::token::lexer(#code_block);
             let parser = crate::parser::Parser::new(tokens);
             let program = parser.ast().unwrap();
-            let mut mem: crate::executor::ProgramMemory = Default::default();
             let units = kittycad::types::UnitLength::Mm;
             let ctx = crate::executor::ExecutorContext::new(ws, units.clone()).await.unwrap();
 
-            crate::executor::execute(program, &mut mem, crate::executor::BodyType::Root, &ctx).await.unwrap();
+            ctx.run(program, None).await.unwrap();
 
             let (x, y) = crate::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
 

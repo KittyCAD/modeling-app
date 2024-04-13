@@ -21,9 +21,12 @@ interface LSPRequestMap {
     LSP.SemanticTokensParams,
     LSP.SemanticTokens
   ]
-  getCompletions: [CopilotLspCompletionParams, CopilotCompletionResponse]
-  notifyAccepted: [CopilotAcceptCompletionParams, any]
-  notifyRejected: [CopilotRejectCompletionParams, any]
+  'copilot/getCompletions': [
+    CopilotLspCompletionParams,
+    CopilotCompletionResponse
+  ]
+  'copilot/notifyAccepted': [CopilotAcceptCompletionParams, any]
+  'copilot/notifyRejected': [CopilotRejectCompletionParams, any]
 }
 
 // Client to server
@@ -215,7 +218,7 @@ export class LanguageServerClient {
   }
 
   async getCompletion(params: CopilotLspCompletionParams) {
-    const response = await this.request('getCompletions', params)
+    const response = await this.request('copilot/getCompletions', params)
     //
     this.queuedUids = [...response.completions.map((c) => c.uuid)]
     return response
@@ -235,11 +238,11 @@ export class LanguageServerClient {
   }
 
   async acceptCompletion(params: CopilotAcceptCompletionParams) {
-    return await this.request('notifyAccepted', params)
+    return await this.request('copilot/notifyAccepted', params)
   }
 
   async rejectCompletions(params: CopilotRejectCompletionParams) {
-    return await this.request('notifyRejected', params)
+    return await this.request('copilot/notifyRejected', params)
   }
 
   private processNotifications(notification: LSP.NotificationMessage) {
