@@ -94,7 +94,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         } else {
             batched_requests
         };
-        // println!("Running batch: {final_req:#?}");
 
         // Create the map of original command IDs to source range.
         // This is for the wasm side, kurt needs it for selections.
