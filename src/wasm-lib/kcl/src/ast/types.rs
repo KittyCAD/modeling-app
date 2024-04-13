@@ -711,7 +711,7 @@ impl BinaryPart {
         }
     }
 
-    #[async_recursion::async_recursion(?Send)]
+    #[async_recursion::async_recursion]
     pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
@@ -1005,7 +1005,7 @@ impl CallExpression {
         )
     }
 
-    #[async_recursion::async_recursion(?Send)]
+    #[async_recursion::async_recursion]
     pub async fn execute(
         &self,
         memory: &mut ProgramMemory,
@@ -1690,7 +1690,7 @@ impl ArrayExpression {
         None
     }
 
-    #[async_recursion::async_recursion(?Send)]
+    #[async_recursion::async_recursion]
     pub async fn execute(
         &self,
         memory: &mut ProgramMemory,
@@ -1837,7 +1837,7 @@ impl ObjectExpression {
         None
     }
 
-    #[async_recursion::async_recursion(?Send)]
+    #[async_recursion::async_recursion]
     pub async fn execute(
         &self,
         memory: &mut ProgramMemory,
@@ -2280,7 +2280,7 @@ impl BinaryExpression {
         None
     }
 
-    #[async_recursion::async_recursion(?Send)]
+    #[async_recursion::async_recursion]
     pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,

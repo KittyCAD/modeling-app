@@ -230,28 +230,7 @@ impl crate::lsp::backend::Backend for Backend {
             // Execute the code if we have an executor context.
             // This function automatically executes if we should & updates the diagnostics if we got
             // errors.
-            // This needs to be spawn local since we can't get Send to work.
-            // TODO: fix
-            let be = self.clone();
-            let params = params.clone();
-            #[cfg(target_arch = "wasm32")]
-            {
-                wasm_bindgen_futures::spawn_local(async move {
-                    be.execute(&params, ast).await;
-                });
-            }
-            #[cfg(not(target_arch = "wasm32"))]
-            {
-                if let Err(err) = tokio::task::spawn_local(async move {
-                    be.execute(&params, ast).await;
-                })
-                .await
-                {
-                    self.client
-                        .log_message(MessageType::WARNING, format!("failed to execute: {}", err))
-                        .await;
-                }
-            }
+            self.execute(&params, ast).await;
         }
 
         // Lets update the diagnostics, since we got no errors.

@@ -383,7 +383,7 @@ fn do_stdlib_inner(
         fn #boxed_fn_name_ident(
             args: crate::std::Args,
         ) -> std::pin::Pin<
-            Box<dyn std::future::Future<Output = anyhow::Result<crate::executor::MemoryItem, crate::errors::KclError>>>,
+            Box<dyn std::future::Future<Output = anyhow::Result<crate::executor::MemoryItem, crate::errors::KclError>> + Send>,
         > {
             Box::pin(#fn_name_ident(args))
         }

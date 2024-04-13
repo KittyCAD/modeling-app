@@ -296,7 +296,7 @@ pub type MemoryFunction =
         expression: Box<FunctionExpression>,
         metadata: Vec<Metadata>,
         ctx: ExecutorContext,
-    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>>>>;
+    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>> + Send>>;
 
 fn force_memory_function<
     F: Fn(
@@ -305,7 +305,7 @@ fn force_memory_function<
         Box<FunctionExpression>,
         Vec<Metadata>,
         ExecutorContext,
-    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>>>>,
+    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>> + Send>>,
 >(
     f: F,
 ) -> F {
@@ -1021,7 +1021,7 @@ impl ExecutorContext {
     }
 
     /// Execute an AST's program.
-    #[async_recursion(?Send)]
+    #[async_recursion]
     pub(crate) async fn inner_execute(
         &self,
         program: crate::ast::types::Program,
