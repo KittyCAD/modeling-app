@@ -199,8 +199,8 @@ fn boxed_line_to(
 ) -> std::pin::Pin<
     Box<
         dyn std::future::Future<
-            Output = anyhow::Result<crate::executor::MemoryItem, crate::errors::KclError>,
-        >,
+                Output = anyhow::Result<crate::executor::MemoryItem, crate::errors::KclError>,
+            > + Send,
     >,
 > {
     Box::pin(line_to(args))
