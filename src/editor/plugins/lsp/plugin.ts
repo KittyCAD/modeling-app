@@ -43,7 +43,6 @@ const CompletionItemKindMap = Object.fromEntries(
   Object.entries(CompletionItemKind).map(([key, value]) => [value, key])
 ) as Record<CompletionItemKind, string>
 
-const changesDelay = 600
 
 export class LanguageServerPlugin implements PluginValue {
   public client: LanguageServerClient
@@ -52,19 +51,6 @@ export class LanguageServerPlugin implements PluginValue {
   public workspaceFolders: LSP.WorkspaceFolder[]
   private documentVersion: number
   private foldingRanges: LSP.FoldingRange[] | null = null
-  private _defferer = deferExecution((code: string) => {
-    try {
-      this.client.textDocumentDidChange({
-        textDocument: {
-          uri: this.documentUri,
-          version: this.documentVersion++,
-        },
-        contentChanges: [{ text: code }],
-      })
-    } catch (e) {
-      console.error(e)
-    }
-  }, changesDelay)
 
   constructor(
     client: LanguageServerClient,
@@ -134,7 +120,17 @@ export class LanguageServerPlugin implements PluginValue {
       documentText = ''
     }
 
-    this._defferer(documentText)
+    try {
+        this.client.textDocumentDidChange({
+          textDocument: {
+            uri: this.documentUri,
+            version: this.documentVersion++,
+          },
+          contentChanges: [{ text: documentText }],
+        })
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   requestDiagnostics(view: EditorView) {
@@ -380,10 +376,10 @@ export class LanguageServerPlugin implements PluginValue {
           const params = notification.params as PublishDiagnosticsParams
           this.processDiagnostics(params)
           // Update the kcl errors pane.
-          /*kclManager.kclErrors = lspDiagnosticsToKclErrors(
+          kclManager.kclErrors = lspDiagnosticsToKclErrors(
             this.view.state.doc,
             params.diagnostics
-          )*/
+          )
           break
         case 'window/logMessage':
           console.log(

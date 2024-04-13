@@ -21,6 +21,7 @@ import {
 } from './Toolbar/SetAngleBetween'
 import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
 import { pathMapToSelections } from 'lang/util'
+import { useLspContext } from 'components/LspProvider'
 import { useStore } from 'useStore'
 import {
   Selections,
@@ -86,6 +87,7 @@ export const ModelingMachineProvider = ({
     htmlRef,
     token
   )
+  const { lspClients } = useLspContext()
   useHotkeys('meta + shift + .', () => coreDump(coreDumpManager, true))
 
   const {
@@ -116,6 +118,24 @@ export const ModelingMachineProvider = ({
     modelingMachine,
     {
       actions: {
+        'disable lsp execution': async () => {
+          // Update the lsp server that we are in sketch mode, so we can turn off lsp execution.
+          for (const lspClient of lspClients) {
+            for (const plugin of lspClient.plugins) {
+              await plugin.updateCanExecute(false)
+            }
+          }
+          await kclManager.enterEditMode()
+          console.log('done with disabling lsp execution')
+        },
+        'enable lsp execution': async () => {
+          // Update the lsp server that we are done with sketch mode, so we can turn back on lsp execution.
+          for (const lspClient of lspClients) {
+            for (const plugin of lspClient.plugins) {
+              await plugin.updateCanExecute(true)
+            }
+          }
+        },
         'sketch exit execute': () => {
           try {
             kclManager.executeAst(parse(kclManager.code))

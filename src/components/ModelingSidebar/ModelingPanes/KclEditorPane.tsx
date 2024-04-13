@@ -5,7 +5,7 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
 import { Themes, getSystemTheme } from 'lib/theme'
-import { useEffect, useMemo, useRef } from 'react'
+import { useMemo, useRef } from 'react'
 import { useStore } from 'useStore'
 import { processCodeMirrorRanges } from 'lib/selections'
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
@@ -29,7 +29,7 @@ import {
   historyKeymap,
   history,
 } from '@codemirror/commands'
-import { lintGutter, lintKeymap, linter } from '@codemirror/lint'
+import { lintGutter, lintKeymap } from '@codemirror/lint'
 import {
   foldGutter,
   foldKeymap,
@@ -86,19 +86,10 @@ export const KclEditorPane = () => {
     setEditorView: s.setEditorView,
     isShiftDown: s.isShiftDown,
   }))
-  const { code, errors } = useKclContext()
+  const { code } = useKclContext()
   const lastEvent = useRef({ event: '', time: Date.now() })
   const { copilotLSP, kclLSP } = useLspContext()
-  const { overallState } = useNetworkStatus()
-  const isNetworkOkay = overallState === NetworkHealthState.Ok
   const navigate = useNavigate()
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    const onlineCallback = () => kclManager.setCodeAndExecute(kclManager.code)
-    window.addEventListener('online', onlineCallback)
-    return () => window.removeEventListener('online', onlineCallback)
-  }, [])
 
   useHotkeys('mod+z', (e) => {
     e.preventDefault()
@@ -136,8 +127,7 @@ export const KclEditorPane = () => {
       return
     }
 
-    if (isNetworkOkay) kclManager.setCodeAndExecute(newCode)
-    else kclManager.setCode(newCode)
+    kclManager.setCode(newCode)
   }
   const lastSelection = useRef('')
   const onUpdate = (viewUpdate: ViewUpdate) => {
@@ -252,9 +242,6 @@ export const KclEditorPane = () => {
     if (!TEST) {
       extensions.push(
         lintGutter(),
-        linter((_view: EditorView) => {
-          return kclErrorsToDiagnostics(errors)
-        }),
         lineNumbers(),
         highlightActiveLineGutter(),
         highlightSpecialChars(),

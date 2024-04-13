@@ -18,7 +18,7 @@ import {
 } from 'xstate'
 import { isTauri } from 'lib/isTauri'
 import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
-import { kclManager, sceneInfra, engineCommandManager } from 'lib/singletons'
+import { sceneInfra, engineCommandManager } from 'lib/singletons'
 import { uuidv4 } from 'lib/utils'
 import { IndexLoaderData } from 'lib/types'
 import { settings } from 'lib/settings/initialSettings'
@@ -138,7 +138,6 @@ export const SettingsAuthProviderBase = ({
             id: `${event.type}.success`,
           })
         },
-        'Execute AST': () => kclManager.executeAst(),
         persistSettings: (context) =>
           saveSettings(context, loadedProject?.project?.path),
       },

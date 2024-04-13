@@ -223,8 +223,7 @@ pub async fn kcl_lsp_run(
     let engine = kcl_lib::engine::conn_wasm::EngineConnection::new(engine_manager)
         .await
         .map_err(|e| format!("{:?}", e))?;
-    // Turn off lsp execute for now
-    let _executor_ctx = kcl_lib::executor::ExecutorContext {
+    let executor_ctx = kcl_lib::executor::ExecutorContext {
         engine: Arc::new(Box::new(engine)),
         fs: file_manager.clone(),
         stdlib: std::sync::Arc::new(stdlib),
@@ -266,8 +265,8 @@ pub async fn kcl_lsp_run(
         semantic_tokens_map: Default::default(),
         zoo_client,
         can_send_telemetry: privacy_settings.can_train_on_data,
-        executor_ctx: Default::default(),
-        can_execute: Default::default(),
+        executor_ctx: Arc::new(tokio::sync::RwLock::new(Some(executor_ctx))),
+        can_execute: Arc::new(tokio::sync::RwLock::new(true)),
 
         is_initialized: Default::default(),
         current_handle: Default::default(),

@@ -100,7 +100,7 @@ export const fileLoader: LoaderFunction = async ({
     const children = await invoke<FileEntry[]>('read_dir_recursive', {
       path: projectPath,
     })
-    kclManager.setCodeAndExecute(code, false)
+    kclManager.setCode(code, false)
 
     // Set the file system manager to the project path
     // So that WASM gets an updated path for operations

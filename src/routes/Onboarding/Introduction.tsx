@@ -70,7 +70,7 @@ function OnboardingWithNewFile() {
               className="mt-6"
               dismiss={dismiss}
               next={() => {
-                kclManager.setCodeAndExecute(bracket)
+                kclManager.setCode(bracket)
                 next()
               }}
               nextText="Overwrite code and continue"

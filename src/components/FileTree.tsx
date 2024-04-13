@@ -171,7 +171,7 @@ const FileTreeItem = ({
 
     if (fileOrDir.name?.endsWith(FILE_EXT) === false && project?.path) {
       // Import non-kcl files
-      kclManager.setCodeAndExecute(
+      kclManager.setCode(
         `import("${fileOrDir.path.replace(project.path, '.')}")\n` +
           kclManager.code
       )

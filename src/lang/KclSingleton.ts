@@ -1,10 +1,9 @@
-import { executeAst, executeCode } from 'useStore'
+import { executeAst } from 'useStore'
 import { Selections } from 'lib/selections'
 import { KCLError } from './errors'
 import { uuidv4 } from 'lib/utils'
 import { EngineCommandManager } from './std/engineConnection'
 
-import { deferExecution } from 'lib/utils'
 import {
   CallExpression,
   initPromise,
@@ -47,19 +46,6 @@ export class KclManager {
   private _params: Params<string> = {}
 
   engineCommandManager: EngineCommandManager
-  private _defferer = deferExecution((code: string) => {
-    const ast = this.safeParse(code)
-    if (!ast) return
-    try {
-      const fmtAndStringify = (ast: Program) =>
-        JSON.stringify(parse(recast(ast)))
-      const isAstTheSame = fmtAndStringify(ast) === fmtAndStringify(this._ast)
-      if (isAstTheSame) return
-    } catch (e) {
-      console.error(e)
-    }
-    this.executeAst(ast)
-  }, 600)
 
   private _isExecutingCallback: (arg: boolean) => void = () => {}
   private _codeCallBack: (arg: string) => void = () => {}
@@ -81,6 +67,9 @@ export class KclManager {
   get code() {
     return this._code
   }
+  // Calling set code will update the code in the codemirror editor.
+  // That will then trigger the lsp to update the ast and execute the code.
+  // DO NOT ALSO CALL execute/parseCode here, as that will cause the code to be executed twice.
   set code(code) {
     this._code = code
     this._codeCallBack(code)
@@ -106,6 +95,12 @@ export class KclManager {
   set programMemory(programMemory) {
     this._programMemory = programMemory
     this._programMemoryCallBack(programMemory)
+    // We only do this to help the playwright testes otherwise I would remove
+    // it. (@jessfraz wrote this comment)
+    this.engineCommandManager.addCommandLog({
+      type: 'execution-done',
+      data: null,
+    })
   }
 
   get logs() {
@@ -208,7 +203,6 @@ export class KclManager {
       console.error('error parsing code', e)
       if (e instanceof KCLError) {
         this.kclErrors = [e]
-        if (e.msg === 'file is empty') this.engineCommandManager?.endSession()
       }
       return null
     }
@@ -220,8 +214,9 @@ export class KclManager {
       if (this.wasmInitFailed) {
         this.wasmInitFailed = false
       }
-    } catch (e) {
+    } catch (e: any) {
       this.wasmInitFailed = true
+      throw new Error('error initializing wasm: ' + e.toString())
     }
   }
 
@@ -241,7 +236,7 @@ export class KclManager {
       ast,
       engineCommandManager: this.engineCommandManager,
     })
-    enterEditMode(programMemory, this.engineCommandManager)
+    await enterEditMode(programMemory, this.engineCommandManager)
     this.isExecuting = false
     // Check the cancellation token for this execution before applying side effects
     if (this._cancelTokens.get(currentExecutionId)) {
@@ -276,7 +271,7 @@ export class KclManager {
     if (!newAst) return
     await this?.engineCommandManager?.waitForReady
     if (updates !== 'none') {
-      this.setCode(recast(ast))
+      this.setCode(newCode)
     }
     this._ast = { ...newAst }
 
@@ -308,41 +303,14 @@ export class KclManager {
       }
     )
   }
-  executeCode = async (code?: string, executionId?: number) => {
-    const currentExecutionId = executionId || Date.now()
-    this._cancelTokens.set(currentExecutionId, false)
-    if (this._cancelTokens.get(currentExecutionId)) {
-      this._cancelTokens.delete(currentExecutionId)
-      return
-    }
-    await this.ensureWasmInit()
-    await this?.engineCommandManager?.waitForReady
-    const result = await executeCode({
-      engineCommandManager: this.engineCommandManager,
-      code: code || this._code,
-      lastAst: this._ast,
-      force: false,
-    })
-    // Check the cancellation token for this execution before applying side effects
-    if (this._cancelTokens.get(currentExecutionId)) {
-      this._cancelTokens.delete(currentExecutionId)
-      return
-    }
-    if (!result.isChange) return
-    const { logs, errors, programMemory, ast } = result
-    enterEditMode(programMemory, this.engineCommandManager)
-    this.logs = logs
-    this.kclErrors = errors
-    this.programMemory = programMemory
-    this.ast = ast
-    if (code) this.code = code
-    this._cancelTokens.delete(currentExecutionId)
-  }
   cancelAllExecutions() {
     this._cancelTokens.forEach((_, key) => {
       this._cancelTokens.set(key, true)
     })
   }
+  // Calling set code will update the code in the codemirror editor.
+  // That will then trigger the lsp to update the ast and execute the code.
+  // DO NOT ALSO CALL execute/parseCode here, as that will cause the code to be executed twice.
   setCode(code: string, shouldWriteFile = true) {
     if (shouldWriteFile) {
       // use the normal code setter
@@ -351,27 +319,6 @@ export class KclManager {
     }
     this._code = code
     this._codeCallBack(code)
-  }
-  setCodeAndExecute(code: string, shouldWriteFile = true) {
-    this.setCode(code, shouldWriteFile)
-    if (code.trim()) {
-      this._defferer(code)
-      return
-    }
-    this._ast = {
-      body: [],
-      start: 0,
-      end: 0,
-      nonCodeMeta: {
-        nonCodeNodes: {},
-        start: [],
-      },
-    }
-    this._programMemory = {
-      root: {},
-      return: null,
-    }
-    this.engineCommandManager.endSession()
   }
   format() {
     const ast = this.safeParse(this.code)
@@ -440,6 +387,10 @@ export class KclManager {
     void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, true)
     void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, true)
   }
+
+  async enterEditMode() {
+    await enterEditMode(this.programMemory, this.engineCommandManager)
+  }
 }
 
 function safeLSGetItem(key: string) {
@@ -452,7 +403,7 @@ function safteLSSetItem(key: string, value: string) {
   localStorage?.setItem(key, value)
 }
 
-function enterEditMode(
+async function enterEditMode(
   programMemory: ProgramMemory,
   engineCommandManager: EngineCommandManager
 ) {
@@ -460,7 +411,7 @@ function enterEditMode(
     (node) => node.type === 'ExtrudeGroup' || node.type === 'SketchGroup'
   ) as SketchGroup | ExtrudeGroup
   firstSketchOrExtrudeGroup &&
-    engineCommandManager.sendSceneCommand({
+    (await engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_batch_req',
       batch_id: uuidv4(),
       requests: [
@@ -479,5 +430,5 @@ function enterEditMode(
           },
         },
       ],
-    })
+    }))
 }

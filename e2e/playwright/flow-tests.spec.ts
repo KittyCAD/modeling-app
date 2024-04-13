@@ -1175,11 +1175,11 @@ const part003 = startSketchOn('-XZ')
 
 fn yohey = (pos) => {
   const part004 = startSketchOn('-XZ')
-  ${extrudeAndEditBlockedInFunction}
-  |> line([27.55, -1.65], %)
-  |> line([4.95, -10.53], %)
-  |> line([-20.38, -8], %)
-  |> line([-15.79, 17.08], %)
+    ${extrudeAndEditBlockedInFunction}
+    |> line([27.55, -1.65], %)
+    |> line([4.95, -10.53], %)
+    |> line([-20.38, -8], %)
+    |> line([-15.79, 17.08], %)
   return ''
 }
 
@@ -1189,7 +1189,7 @@ fn yohey = (pos) => {
     },
     selectionsSnippets
   )
-  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.setViewportSize({ width: 1200, height: 1000 })
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
 

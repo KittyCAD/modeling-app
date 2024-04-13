@@ -35,7 +35,7 @@ test('exports of each format should work', async ({ page, context }) => {
   // FYI this test doesn't work with only engine running locally
   // And you will need to have the KittyCAD CLI installed
   const u = getUtils(page)
-  await context.addInitScript(async () => {
+  await page.addInitScript(async () => {
     ;(window as any).playwrightSkipFilePicker = true
     localStorage.setItem(
       'persistCode',
@@ -79,6 +79,7 @@ const part001 = startSketchOn('-XZ')
   |> extrude(4, %)`
     )
   })
+
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/')
   await u.waitForAuthSkipAppStart()

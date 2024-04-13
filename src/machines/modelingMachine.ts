@@ -192,7 +192,11 @@ export const modelingMachine = createMachine(
           Extrude: {
             target: 'idle',
             cond: 'has valid extrude selection',
-            actions: ['AST extrude'],
+            actions: [
+              'disable lsp execution',
+              'AST extrude',
+              'enable lsp execution',
+            ],
             internal: true,
           },
 
@@ -490,13 +494,18 @@ export const modelingMachine = createMachine(
           'tear down client sketch',
           'remove sketch grid',
           'engineToClient cam sync direction',
+          'enable lsp execution',
         ],
 
         entry: ['add axis n grid', 'conditionally equip line tool'],
       },
 
       'Sketch no face': {
-        entry: ['show default planes', 'set selection filter to faces only'],
+        entry: [
+          'disable lsp execution',
+          'show default planes',
+          'set selection filter to faces only',
+        ],
 
         exit: ['hide default planes', 'set selection filter to defaults'],
         on: {
