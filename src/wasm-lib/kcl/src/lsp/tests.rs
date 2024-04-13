@@ -57,7 +57,7 @@ async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
     };
 
     // Create the backend.
-    let (service, _) = tower_lsp::LspService::new(|client| crate::lsp::kcl::Backend {
+    let (service, _) = tower_lsp::LspService::build(|client| crate::lsp::kcl::Backend {
         client,
         fs: crate::fs::FileManager::new(),
         workspace_folders: Default::default(),
@@ -73,8 +73,11 @@ async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
         semantic_tokens_map: Default::default(),
         zoo_client,
         can_send_telemetry: true,
-        executor_ctx,
-    });
+        executor_ctx: Arc::new(tokio::sync::RwLock::new(executor_ctx)),
+    })
+    .custom_method("kcl/updateUnits", crate::lsp::kcl::Backend::update_units)
+    .finish();
+
     let server = service.inner();
 
     Ok(server.clone())
@@ -1364,4 +1367,125 @@ async fn test_lsp_initialized() {
     // Now shut them down.
     copilot_server.shutdown().await.unwrap();
     kcl_server.shutdown().await.unwrap();
+}
+
+#[tokio::test]
+async fn test_kcl_lsp_on_change_update_ast() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    let same_text = r#"const thing = 1"#.to_string();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: same_text.clone(),
+            },
+        })
+        .await;
+
+    // Get the ast.
+    let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
+
+    // Send change file.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 1,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: same_text.clone(),
+            }],
+        })
+        .await;
+
+    // Make sure the ast is the same.
+    assert_eq!(ast, server.ast_map.get("file:///test.kcl").unwrap().clone());
+
+    // Update the text.
+    let new_text = r#"const thing = 2"#.to_string();
+    // Send change file.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 2,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: new_text.clone(),
+            }],
+        })
+        .await;
+
+    assert!(ast != server.ast_map.get("file:///test.kcl").unwrap().clone());
+
+    // Make sure we never updated the memory since we aren't running the engine.
+    assert!(server.memory_map.get("file:///test.kcl").is_none());
+}
+
+#[tokio::test]
+async fn serial_test_kcl_lsp_on_change_update_memory() {
+    let server = kcl_lsp_server(true).await.unwrap();
+
+    let same_text = r#"const thing = 1"#.to_string();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: same_text.clone(),
+            },
+        })
+        .await;
+
+    // Get the memory.
+    let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
+
+    // Send change file.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 1,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: same_text.clone(),
+            }],
+        })
+        .await;
+
+    // Make sure the memory is the same.
+    assert_eq!(memory, server.memory_map.get("file:///test.kcl").unwrap().clone());
+
+    // Update the text.
+    let new_text = r#"const thing = 2"#.to_string();
+    // Send change file.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 2,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: new_text.clone(),
+            }],
+        })
+        .await;
+
+    assert!(memory != server.memory_map.get("file:///test.kcl").unwrap().clone());
 }

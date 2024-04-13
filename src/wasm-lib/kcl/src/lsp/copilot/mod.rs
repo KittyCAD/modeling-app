@@ -103,7 +103,7 @@ impl crate::lsp::backend::Backend for Backend {
         self.current_code_map.clear();
     }
 
-    async fn inner_on_change(&self, _params: TextDocumentItem) {
+    async fn inner_on_change(&self, _params: TextDocumentItem, _force_update: bool) {
         // We don't need to do anything here.
     }
 }

@@ -208,7 +208,7 @@ pub async fn kcl_lsp_run(config: ServerConfig, token: String, is_dev: bool) -> R
         }
     };
 
-    let (service, socket) = LspService::new(|client| kcl_lib::lsp::kcl::Backend {
+    let (service, socket) = LspService::build(|client| kcl_lib::lsp::kcl::Backend {
         client,
         fs: kcl_lib::fs::FileManager::new(fs),
         workspace_folders: Default::default(),
@@ -225,7 +225,9 @@ pub async fn kcl_lsp_run(config: ServerConfig, token: String, is_dev: bool) -> R
         zoo_client,
         can_send_telemetry: privacy_settings.can_train_on_data,
         executor_ctx: Default::default(),
-    });
+    })
+    .custom_method("kcl/updateUnits", kcl_lib::lsp::kcl::Backend::update_units)
+    .finish();
 
     let input = wasm_bindgen_futures::stream::JsStream::from(into_server);
     let input = input

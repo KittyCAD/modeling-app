@@ -1238,6 +1238,11 @@ impl ExecutorContext {
 
         Ok(memory.clone())
     }
+
+    /// Update the units for the executor.
+    pub fn update_units(&mut self, units: kittycad::types::UnitLength) {
+        self.units = units;
+    }
 }
 
 /// For each argument given,

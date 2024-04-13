@@ -1,6 +1,8 @@
 //! Functions for the `kcl` lsp server.
 
-use std::{collections::HashMap, io::Write, str::FromStr};
+use std::{collections::HashMap, io::Write, str::FromStr, sync::Arc};
+
+use tokio::sync::RwLock;
 
 pub mod custom_notifications;
 
@@ -83,7 +85,7 @@ pub struct Backend {
     /// If we can send telemetry for this user.
     pub can_send_telemetry: bool,
     /// Optional executor context to use if we want to execute the code.
-    pub executor_ctx: Option<crate::executor::ExecutorContext>,
+    pub executor_ctx: Arc<RwLock<Option<crate::executor::ExecutorContext>>>,
 }
 
 // Implement the shared backend trait for the language server.
@@ -134,7 +136,7 @@ impl crate::lsp::backend::Backend for Backend {
         self.semantic_tokens_map.clear();
     }
 
-    async fn inner_on_change(&self, params: TextDocumentItem) {
+    async fn inner_on_change(&self, params: TextDocumentItem, force_update: bool) {
         // We already updated the code map in the shared backend.
 
         // Lets update the tokens.
@@ -213,7 +215,7 @@ impl crate::lsp::backend::Backend for Backend {
         };
 
         // If the ast changed update the map and symbols and execute if we need to.
-        if ast_changed {
+        if ast_changed || force_update {
             // Update the symbols map.
             self.symbols_map
                 .insert(params.uri.to_string(), ast.get_lsp_symbols(&params.text));
@@ -294,21 +296,23 @@ impl Backend {
 
     async fn execute(&self, params: &TextDocumentItem, ast: crate::ast::types::Program) {
         // Execute the code if we have an executor context.
-        if let Some(executor_ctx) = &self.executor_ctx {
-            let memory = match executor_ctx.run(ast, None).await {
-                Ok(memory) => memory,
-                Err(err) => {
-                    self.add_to_diagnostics(params, err).await;
+        let Some(executor_ctx) = self.executor_ctx.read().await.clone() else {
+            return;
+        };
 
-                    return;
-                }
-            };
-            self.memory_map.insert(params.uri.to_string(), memory.clone());
-            // Send the notification to the client that the memory was updated.
-            self.client
-                .send_notification::<custom_notifications::MemoryUpdated>(memory)
-                .await;
-        }
+        let memory = match executor_ctx.run(ast, None).await {
+            Ok(memory) => memory,
+            Err(err) => {
+                self.add_to_diagnostics(params, err).await;
+
+                return;
+            }
+        };
+        self.memory_map.insert(params.uri.to_string(), memory.clone());
+        // Send the notification to the client that the memory was updated.
+        self.client
+            .send_notification::<custom_notifications::MemoryUpdated>(memory)
+            .await;
     }
 
     fn get_semantic_token_type_index(&self, token_type: SemanticTokenType) -> Option<usize> {
@@ -442,6 +446,43 @@ impl Backend {
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         Ok(())
+    }
+
+    pub async fn update_units(&self, params: custom_notifications::UpdateUnitsParams) {
+        let Some(mut executor_ctx) = self.executor_ctx.read().await.clone() else {
+            self.client
+                .log_message(MessageType::ERROR, "no executor context set to update units for")
+                .await;
+            return;
+        };
+
+        self.client
+            .log_message(MessageType::INFO, format!("update units: {:?}", params))
+            .await;
+
+        // Set the engine units.
+        executor_ctx.update_units(params.units);
+
+        // Update the locked executor context.
+        *self.executor_ctx.write().await = Some(executor_ctx);
+
+        let filename = params.text_document.uri.to_string();
+
+        // Get the current code.
+        let Some(current_code) = self.current_code_map.get(&filename) else {
+            return;
+        };
+        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+            return;
+        };
+
+        let new_params = TextDocumentItem {
+            uri: params.text_document.uri,
+            text: std::mem::take(&mut current_code.to_string()),
+            version: Default::default(),
+            language_id: Default::default(),
+        };
+        self.on_change(new_params, true).await;
     }
 }
 
