@@ -45,6 +45,7 @@ export const Stream = ({ className = '' }: { className?: string }) => {
   }, [mediaStream])
 
   const handleMouseDown: MouseEventHandler<HTMLDivElement> = (e) => {
+    if (!isNetworkOkay) return
     if (!videoRef.current) return
     if (state.matches('Sketch')) return
     if (state.matches('Sketch no face')) return
@@ -60,6 +61,7 @@ export const Stream = ({ className = '' }: { className?: string }) => {
   }
 
   const handleMouseUp: MouseEventHandler<HTMLDivElement> = (e) => {
+    if (!isNetworkOkay) return
     if (!videoRef.current) return
     setButtonDownInStream(undefined)
     if (state.matches('Sketch')) return
@@ -74,6 +76,7 @@ export const Stream = ({ className = '' }: { className?: string }) => {
   }
 
   const handleMouseMove: MouseEventHandler<HTMLVideoElement> = (e) => {
+    if (!isNetworkOkay) return
     if (state.matches('Sketch')) return
     if (state.matches('Sketch no face')) return
     if (!clickCoords) return
