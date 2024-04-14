@@ -17,9 +17,11 @@ const Loading = ({ children }: React.PropsWithChildren) => {
   useEffect(() => {
     const onConnectionStateChange = ({ detail: state }: CustomEvent) => {
       if (
-        (state.type !== EngineConnectionStateType.Disconnected
-         || state.type !== EngineConnectionStateType.Disconnecting)
-          && state.value?.type !== DisconnectingType.Error) return
+        (state.type !== EngineConnectionStateType.Disconnected ||
+          state.type !== EngineConnectionStateType.Disconnecting) &&
+        state.value?.type !== DisconnectingType.Error
+      )
+        return
       setError(state.value.value.error)
     }
 
@@ -81,7 +83,7 @@ const Loading = ({ children }: React.PropsWithChildren) => {
           (error !== ConnectionError.Unset ? ' opacity-100' : ' opacity-0')
         }
       >
-        { CONNECTION_ERROR_TEXT[error] }
+        {CONNECTION_ERROR_TEXT[error]}
       </p>
     </div>
   )

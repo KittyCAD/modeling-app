@@ -75,7 +75,10 @@ export function useSetupEngineManager(
     }
   }
 
-  useLayoutEffect(startEngineInstance, [streamRef?.current?.offsetWidth, streamRef?.current?.offsetHeight])
+  useLayoutEffect(startEngineInstance, [
+    streamRef?.current?.offsetWidth,
+    streamRef?.current?.offsetHeight,
+  ])
 
   useEffect(() => {
     const handleResize = deferExecution(() => {

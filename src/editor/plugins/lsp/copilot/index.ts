@@ -480,11 +480,7 @@ export const copilotPlugin = (options: LanguageServerOptions): Extension => {
     workspaceFolders.of(options.workspaceFolders),
     ViewPlugin.define(
       (view) =>
-        new LanguageServerPlugin(
-          options.client,
-          view,
-          options.allowHTMLContent
-        )
+        new LanguageServerPlugin(options.client, view, options.allowHTMLContent)
     ),
     completionDecoration,
     Prec.highest(completionPlugin(options.client)),
