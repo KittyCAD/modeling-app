@@ -1,8 +1,11 @@
 import { PathToNode, Program, SourceRange } from 'lang/wasm'
-import { VITE_KC_API_WS_MODELING_URL } from 'env'
+import { invoke } from '@tauri-apps/api/core'
+import { VITE_KC_API_WS_MODELING_URL, VITE_KC_API_BASE_URL } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
 import { uuidv4 } from 'lib/utils'
+import withBaseURL from 'lib/withBaseURL'
+import { isTauri } from 'lib/isTauri'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { Themes, getThemeColorForEngine, getOppositeTheme } from 'lib/theme'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
@@ -140,7 +143,7 @@ export const CONNECTION_ERROR_TEXT: Record<ConnectionError, string> = {
   [ConnectionError.DataChannelError]: "The data channel signaled an error.",
   [ConnectionError.WebSocketError]: "The websocket signaled an error.",
   [ConnectionError.LocalDescriptionInvalid]: "The local description is invalid.",
-  [ConnectionError.BadAuthToken]: "Your authorization token is not valid; please login again.",
+  [ConnectionError.BadAuthToken]: "Your authorization token is invalid; please login again.",
   [ConnectionError.TooManyConnections]: "There are too many connections.",
   [ConnectionError.Unknown]: "An unexpected error occurred. Please report this to us.",
 }
@@ -150,7 +153,7 @@ export interface ErrorType {
   error: ConnectionError,
 
   // Additional context.
-  context?: string,
+  context?: any,
 
   // We assign this in the state setter because we may have not failed at
   // a Connecting state, which we check for there.
@@ -276,10 +279,11 @@ class EngineConnection extends EventTarget {
     if (next.type === EngineConnectionStateType.Disconnecting) {
       const sub = next.value
       if (sub.type === DisconnectingType.Error) {
+        console.log(sub)
+
         // Record the last step we failed at.
         // (Check the current state that we're about to override that
         // it was a Connecting state.)
-        console.log(sub)
         if (this._state.type === EngineConnectionStateType.Connecting) {
           if (!sub.value) sub.value = {}
           sub.value.lastConnectingValue = this._state.value
@@ -366,12 +370,17 @@ class EngineConnection extends EventTarget {
       return
     }
 
-    // Information on the connect transaction
-
     const createPeerConnection = () => {
       this.pc = new RTCPeerConnection({
         bundlePolicy: 'max-bundle',
       })
+
+      // Other parts of the application expect pc to be initialized when firing.
+      this.dispatchEvent(
+        new CustomEvent(EngineConnectionEvents.ConnectionStarted, {
+          detail: this,
+        })
+      )
 
       // Data channels MUST BE specified before SDP offers because requesting
       // them affects what our needs are!
@@ -440,7 +449,7 @@ class EngineConnection extends EventTarget {
                 type: DisconnectingType.Error,
                 value: {
                   error: ConnectionError.ICENegotiate,
-                  context: event.toString(),
+                  context: event,
                 },
               },
             }
@@ -566,7 +575,6 @@ class EngineConnection extends EventTarget {
         })
 
         this.unreliableDataChannel.addEventListener('close', (event) => {
-          console.log("data channel close")
 
           this.disconnectAll()
           this.finalizeIfAllConnectionsClosed()
@@ -581,7 +589,7 @@ class EngineConnection extends EventTarget {
               type: DisconnectingType.Error,
               value: {
                 error: ConnectionError.DataChannelError,
-                context: event.toString(),
+                context: event,
               },
             },
           }
@@ -619,278 +627,310 @@ class EngineConnection extends EventTarget {
       },
     }
 
-    this.websocket = new WebSocket(this.url, [])
-    this.websocket.binaryType = 'arraybuffer'
+    const createWebSocketConnection = () => {
+      this.websocket = new WebSocket(this.url, [])
+      this.websocket.binaryType = 'arraybuffer'
 
-    this.websocket.addEventListener('open', (event) => {
-      this.state = {
-        type: EngineConnectionStateType.Connecting,
-        value: {
-          type: ConnectingType.WebSocketOpen,
-        },
-      }
-
-      // Send an initial ping
-      this.send({ type: 'ping' })
-      this.pingPongSpan.ping = new Date()
-
-      // This is required for when KCMA is running stand-alone / within Tauri.
-      // Otherwise when run in a browser, the token is sent implicitly via
-      // the Cookie header.
-      if (this.token) {
-        this.send({
-          type: 'headers',
-          headers: { Authorization: `Bearer ${this.token}` },
-        })
-      }
-    })
-
-    this.websocket.addEventListener('close', (event) => {
-      console.log("websocket close")
-
-      this.disconnectAll()
-      this.finalizeIfAllConnectionsClosed()
-    })
-
-    this.websocket.addEventListener('error', (event) => {
-      this.disconnectAll()
-
-      this.state = {
-        type: EngineConnectionStateType.Disconnecting,
-        value: {
-          type: DisconnectingType.Error,
+      this.websocket.addEventListener('open', (event) => {
+        this.state = {
+          type: EngineConnectionStateType.Connecting,
           value: {
-            error: ConnectionError.WebSocketError,
-            context: event.toString(),
+            type: ConnectingType.WebSocketOpen,
           },
-        },
-      }
-    })
-
-    this.websocket.addEventListener('message', (event) => {
-      // In the EngineConnection, we're looking for messages to/from
-      // the server that relate to the ICE handshake, or WebRTC
-      // negotiation. There may be other messages (including ArrayBuffer
-      // messages) that are intended for the GUI itself, so be careful
-      // when assuming we're the only consumer or that all messages will
-      // be carefully formatted here.
-
-      console.log("websocket message", event)
-
-      if (typeof event.data !== 'string') {
-        return
-      }
-
-      const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
-
-      if (!message.success) {
-        const errorsString = message?.errors
-          ?.map((error) => {
-            return `  - ${error.error_code}: ${error.message}`
-          })
-          .join('\n')
-        if (message.request_id) {
-          const artifactThatFailed =
-            this.engineCommandManager.artifactMap[message.request_id] ||
-            this.engineCommandManager.lastArtifactMap[message.request_id]
-          console.error(
-            `Error in response to request ${message.request_id}:\n${errorsString}
-failed cmd type was ${artifactThatFailed?.commandType}`
-          )
-        } else {
-          console.error(`Error from server:\n${errorsString}`)
         }
-        return
-      }
 
-      let resp = message.resp
+        // Send an initial ping
+        this.send({ type: 'ping' })
+        this.pingPongSpan.ping = new Date()
 
-      // If there's no body to the response, we can bail here.
-      if (!resp || !resp.type) {
-        return
-      }
+        // This is required for when KCMA is running stand-alone / within Tauri.
+        // Otherwise when run in a browser, the token is sent implicitly via
+        // the Cookie header.
+        if (this.token) {
+          this.send({ headers: { Authorization: `Bearer ${this.token}` } })
+        }
+      })
 
-      switch (resp.type) {
-        case 'pong':
-          this.pingPongSpan.pong = new Date()
-          if (this.pingPongSpan.ping && this.pingPongSpan.pong) {
-            if (
-              Math.abs(
-                this.pingPongSpan.pong.valueOf() -
-                  this.pingPongSpan.ping.valueOf()
-              ) >= pingIntervalMs
-            ) {
-              this.dispatchEvent(
-                new CustomEvent(EngineConnectionEvents.PingPongChanged, {
-                  detail: 'TIMEOUT',
-                })
-              )
-            } else {
-              this.dispatchEvent(
-                new CustomEvent(EngineConnectionEvents.PingPongChanged, {
-                  detail: 'OK',
-                })
-              )
-            }
-          }
-          break
-        case 'ice_server_info':
-          let ice_servers = resp.data?.ice_servers
+      this.websocket.addEventListener('close', (event) => {
+        this.disconnectAll()
+        this.finalizeIfAllConnectionsClosed()
+      })
 
-          // Now that we have some ICE servers it makes sense
-          // to start initializing the RTCPeerConnection. RTCPeerConnection
-          // will begin the ICE process.
-          createPeerConnection()
+      this.websocket.addEventListener('error', (event) => {
+        this.disconnectAll()
 
-          this.state = {
-            type: EngineConnectionStateType.Connecting,
+        this.state = {
+          type: EngineConnectionStateType.Disconnecting,
+          value: {
+            type: DisconnectingType.Error,
             value: {
-              type: ConnectingType.PeerConnectionCreated,
+              error: ConnectionError.WebSocketError,
+              context: event,
             },
-          }
+          },
+        }
+      })
 
-          // No ICE servers can be valid in a local dev. env.
-          if (ice_servers?.length === 0) {
-            console.warn('No ICE servers')
-            this.pc?.setConfiguration({
-              bundlePolicy: 'max-bundle',
+      this.websocket.addEventListener('message', (event) => {
+        // In the EngineConnection, we're looking for messages to/from
+        // the server that relate to the ICE handshake, or WebRTC
+        // negotiation. There may be other messages (including ArrayBuffer
+        // messages) that are intended for the GUI itself, so be careful
+        // when assuming we're the only consumer or that all messages will
+        // be carefully formatted here.
+
+        if (typeof event.data !== 'string') {
+          return
+        }
+
+        const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
+
+        if (!message.success) {
+          const errorsString = message?.errors
+            ?.map((error) => {
+              return `  - ${error.error_code}: ${error.message}`
             })
+            .join('\n')
+          if (message.request_id) {
+            const artifactThatFailed =
+              this.engineCommandManager.artifactMap[message.request_id] ||
+              this.engineCommandManager.lastArtifactMap[message.request_id]
+            console.error(
+              `Error in response to request ${message.request_id}:\n${errorsString}
+  failed cmd type was ${artifactThatFailed?.commandType}`
+            )
+            console.log(artifactThatFailed)
           } else {
-            // When we set the Configuration, we want to always force
-            // iceTransportPolicy to 'relay', since we know the topology
-            // of the ICE/STUN/TUN server and the engine. We don't wish to
-            // talk to the engine in any configuration /other/ than relay
-            // from a infra POV.
-            this.pc?.setConfiguration({
-              bundlePolicy: 'max-bundle',
-              iceServers: ice_servers,
-              iceTransportPolicy: 'relay',
-            })
+            console.error(`Error from server:\n${errorsString}`)
           }
+          return
+        }
 
-          this.state = {
-            type: EngineConnectionStateType.Connecting,
-            value: {
-              type: ConnectingType.ICEServersSet,
-            },
-          }
+        let resp = message.resp
 
-          // We have an ICE Servers set now. We just setConfiguration, so let's
-          // start adding things we care about to the PeerConnection and let
-          // ICE negotiation happen in the background. Everything from here
-          // until the end of this function is setup of our end of the
-          // PeerConnection and waiting for events to fire our callbacks.
+        // If there's no body to the response, we can bail here.
+        if (!resp || !resp.type) {
+          return
+        }
 
-          // Add a transceiver to our SDP offer
-          this.pc?.addTransceiver('video', {
-            direction: 'recvonly',
-          })
-
-          // Create a session description offer based on our local environment
-          // that we will send to the remote end. The remote will send back
-          // what it supports via sdp_answer.
-          this.pc
-            ?.createOffer()
-            .then((offer: RTCSessionDescriptionInit) => {
-              console.log(offer)
-              this.state = {
-                type: EngineConnectionStateType.Connecting,
-                value: {
-                  type: ConnectingType.SetLocalDescription,
-                },
+        switch (resp.type) {
+          case 'pong':
+            this.pingPongSpan.pong = new Date()
+            if (this.pingPongSpan.ping && this.pingPongSpan.pong) {
+              if (
+                Math.abs(
+                  this.pingPongSpan.pong.valueOf() -
+                    this.pingPongSpan.ping.valueOf()
+                ) >= pingIntervalMs
+              ) {
+                this.dispatchEvent(
+                  new CustomEvent(EngineConnectionEvents.PingPongChanged, {
+                    detail: 'TIMEOUT',
+                  })
+                )
+              } else {
+                this.dispatchEvent(
+                  new CustomEvent(EngineConnectionEvents.PingPongChanged, {
+                    detail: 'OK',
+                  })
+                )
               }
-              return this.pc?.setLocalDescription(offer).then(() => {
-                this.send({
-                  type: 'sdp_offer',
-                  offer: {
-                    sdp: offer.sdp || '',
-                    type: offer.type,
-                  },
-                })
+            }
+            break
+          case 'ice_server_info':
+            let ice_servers = resp.data?.ice_servers
+
+            // Now that we have some ICE servers it makes sense
+            // to start initializing the RTCPeerConnection. RTCPeerConnection
+            // will begin the ICE process.
+            createPeerConnection()
+
+            this.state = {
+              type: EngineConnectionStateType.Connecting,
+              value: {
+                type: ConnectingType.PeerConnectionCreated,
+              },
+            }
+
+            // No ICE servers can be valid in a local dev. env.
+            if (ice_servers?.length === 0) {
+              console.warn('No ICE servers')
+              this.pc?.setConfiguration({
+                bundlePolicy: 'max-bundle',
+              })
+            } else {
+              // When we set the Configuration, we want to always force
+              // iceTransportPolicy to 'relay', since we know the topology
+              // of the ICE/STUN/TUN server and the engine. We don't wish to
+              // talk to the engine in any configuration /other/ than relay
+              // from a infra POV.
+              this.pc?.setConfiguration({
+                bundlePolicy: 'max-bundle',
+                iceServers: ice_servers,
+                iceTransportPolicy: 'relay',
+              })
+            }
+
+            this.state = {
+              type: EngineConnectionStateType.Connecting,
+              value: {
+                type: ConnectingType.ICEServersSet,
+              },
+            }
+
+            // We have an ICE Servers set now. We just setConfiguration, so let's
+            // start adding things we care about to the PeerConnection and let
+            // ICE negotiation happen in the background. Everything from here
+            // until the end of this function is setup of our end of the
+            // PeerConnection and waiting for events to fire our callbacks.
+
+            // Add a transceiver to our SDP offer
+            this.pc?.addTransceiver('video', {
+              direction: 'recvonly',
+            })
+
+            // Create a session description offer based on our local environment
+            // that we will send to the remote end. The remote will send back
+            // what it supports via sdp_answer.
+            this.pc
+              ?.createOffer()
+              .then((offer: RTCSessionDescriptionInit) => {
+                console.log(offer)
                 this.state = {
                   type: EngineConnectionStateType.Connecting,
                   value: {
-                    type: ConnectingType.OfferedSdp,
+                    type: ConnectingType.SetLocalDescription,
+                  },
+                }
+                return this.pc?.setLocalDescription(offer).then(() => {
+                  this.send({
+                    type: 'sdp_offer',
+                    offer,
+                  })
+                  this.state = {
+                    type: EngineConnectionStateType.Connecting,
+                    value: {
+                      type: ConnectingType.OfferedSdp,
+                    },
+                  }
+                })
+              })
+              .catch((err: Error) => {
+                // The local description is invalid, so there's no point continuing.
+                this.disconnectAll()
+                this.state = {
+                  type: EngineConnectionStateType.Disconnecting,
+                  value: {
+                    type: DisconnectingType.Error,
+                    value: {
+                      error: ConnectionError.LocalDescriptionInvalid,
+                      context: err,
+                    },
                   },
                 }
               })
+            break
+
+          case 'sdp_answer':
+            let answer = resp.data?.answer
+            if (!answer || answer.type === 'unspecified') {
+              return
+            }
+
+            this.state = {
+              type: EngineConnectionStateType.Connecting,
+              value: {
+                type: ConnectingType.ReceivedSdp,
+              },
+            }
+
+            // As soon as this is set, RTCPeerConnection tries to
+            // establish a connection.
+            // @ts-ignore
+            // Have to ignore because dom.ts doesn't have the right type
+            void this.pc?.setRemoteDescription(answer)
+
+            this.state = {
+              type: EngineConnectionStateType.Connecting,
+              value: {
+                type: ConnectingType.SetRemoteDescription,
+              },
+            }
+
+            this.state = {
+              type: EngineConnectionStateType.Connecting,
+              value: {
+                type: ConnectingType.WebRTCConnecting,
+              },
+            }
+            break
+
+          case 'trickle_ice':
+            let candidate = resp.data?.candidate
+            console.log('trickle_ice: using this candidate: ', candidate)
+            void this.pc?.addIceCandidate(candidate as RTCIceCandidateInit)
+            break
+
+          case 'metrics_request':
+            if (this.webrtcStatsCollector === undefined) {
+              // TODO: Error message here?
+              return
+            }
+            void this.webrtcStatsCollector().then((client_metrics) => {
+              this.send({
+                type: 'metrics_response',
+                metrics: client_metrics,
+              })
             })
-            .catch((err: Error) => {
-              // The local description is invalid, so there's no point continuing.
-              this.disconnectAll()
-              this.state = {
-                type: EngineConnectionStateType.Disconnecting,
-                value: {
-                  type: DisconnectingType.Error,
-                  value: {
-                    error: ConnectionError.LocalDescriptionInvalid,
-                    context: err.toString(),
-                  },
-                },
-              }
-            })
-          break
+            break
+        }
+      })
+    }
 
-        case 'sdp_answer':
-          let answer = resp.data?.answer
-          if (!answer || answer.type === 'unspecified') {
-            return
-          }
-
-          this.state = {
-            type: EngineConnectionStateType.Connecting,
-            value: {
-              type: ConnectingType.ReceivedSdp,
-            },
-          }
-
-          // As soon as this is set, RTCPeerConnection tries to
-          // establish a connection.
-          // @ts-ignore
-          // Have to ignore because dom.ts doesn't have the right type
-          void this.pc?.setRemoteDescription(answer)
-
-          this.state = {
-            type: EngineConnectionStateType.Connecting,
-            value: {
-              type: ConnectingType.SetRemoteDescription,
-            },
-          }
-
-          this.state = {
-            type: EngineConnectionStateType.Connecting,
-            value: {
-              type: ConnectingType.WebRTCConnecting,
-            },
-          }
-          break
-
-        case 'trickle_ice':
-          let candidate = resp.data?.candidate
-          console.log('trickle_ice: using this candidate: ', candidate)
-          void this.pc?.addIceCandidate(candidate as RTCIceCandidateInit)
-          break
-
-        case 'metrics_request':
-          if (this.webrtcStatsCollector === undefined) {
-            // TODO: Error message here?
-            return
-          }
-          void this.webrtcStatsCollector().then((client_metrics) => {
-            this.send({
-              type: 'metrics_response',
-              metrics: client_metrics,
-            })
+    // api-deux currently doesn't report if an auth token is invalid on the
+    // websocket. As a workaround we can invoke two endpoints: /user and 
+    // /user/session/{token} . Former for regular operations, latter for
+    // development.
+    // Resolver: https://github.com/KittyCAD/api-deux/issues/1628
+    const promiseIsAuthed = this.token
+      // We can't check tokens in localStorage, at least not yet.
+      // Resolver: https://github.com/KittyCAD/api-deux/issues/1629
+      ? Promise.resolve({ status: 200 })
+      : !isTauri()
+        ? fetch(withBaseURL('/user'))
+        : invoke<Models['User_type'] | Record<'error_code', unknown>>('get_user', {
+            token: this.token,
+            hostname: VITE_KC_API_BASE_URL,
           })
-          break
+
+    promiseIsAuthed
+    .then((e) => {
+      if (e.status >= 200 && e.status < 400) {
+        createWebSocketConnection()
+      } else if (e.status === 401) {
+        this.state = {
+          type: EngineConnectionStateType.Disconnected,
+          value: {
+            type: DisconnectingType.Error,
+            value: {
+              error: ConnectionError.BadAuthToken,
+              context: e,
+            },
+          },
+        }
+      } else {
+        this.state = {
+          type: EngineConnectionStateType.Disconnected,
+          value: {
+            type: DisconnectingType.Error,
+            value: {
+              error: ConnectionError.Unknown,
+              context: e,
+            },
+          },
+        }
       }
     })
-
-    this.dispatchEvent(
-      new CustomEvent(EngineConnectionEvents.ConnectionStarted, {
-        detail: this,
-      })
-    )
   }
   // Do not change this back to an object or any, we should only be sending the
   // WebSocketRequest type!
