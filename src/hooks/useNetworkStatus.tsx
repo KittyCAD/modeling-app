@@ -27,7 +27,9 @@ export function useNetworkStatus() {
   const [overallState, setOverallState] = useState<NetworkHealthState>(
     NetworkHealthState.Disconnected
   )
-  const [pingPongHealth, setPingPongHealth] = useState<undefined | 'OK' | 'TIMEOUT'>(undefined)
+  const [pingPongHealth, setPingPongHealth] = useState<
+    undefined | 'OK' | 'TIMEOUT'
+  >(undefined)
   const [hasCopied, setHasCopied] = useState<boolean>(false)
 
   const [error, setError] = useState<ErrorType | undefined>(undefined)

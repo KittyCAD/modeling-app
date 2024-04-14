@@ -137,23 +137,27 @@ export enum ConnectionError {
 }
 
 export const CONNECTION_ERROR_TEXT: Record<ConnectionError, string> = {
-  [ConnectionError.Unset]: "",
-  [ConnectionError.LongLoadingTime]: "Loading is taking longer than expected...",
-  [ConnectionError.ICENegotiate]: "ICE negotiation failed.",
-  [ConnectionError.DataChannelError]: "The data channel signaled an error.",
-  [ConnectionError.WebSocketError]: "The websocket signaled an error.",
-  [ConnectionError.LocalDescriptionInvalid]: "The local description is invalid.",
-  [ConnectionError.BadAuthToken]: "Your authorization token is invalid; please login again.",
-  [ConnectionError.TooManyConnections]: "There are too many connections.",
-  [ConnectionError.Unknown]: "An unexpected error occurred. Please report this to us.",
+  [ConnectionError.Unset]: '',
+  [ConnectionError.LongLoadingTime]:
+    'Loading is taking longer than expected...',
+  [ConnectionError.ICENegotiate]: 'ICE negotiation failed.',
+  [ConnectionError.DataChannelError]: 'The data channel signaled an error.',
+  [ConnectionError.WebSocketError]: 'The websocket signaled an error.',
+  [ConnectionError.LocalDescriptionInvalid]:
+    'The local description is invalid.',
+  [ConnectionError.BadAuthToken]:
+    'Your authorization token is invalid; please login again.',
+  [ConnectionError.TooManyConnections]: 'There are too many connections.',
+  [ConnectionError.Unknown]:
+    'An unexpected error occurred. Please report this to us.',
 }
 
 export interface ErrorType {
   // The error we've encountered.
-  error: ConnectionError,
+  error: ConnectionError
 
   // Additional context.
-  context?: any,
+  context?: any
 
   // We assign this in the state setter because we may have not failed at
   // a Connecting state, which we check for there.
@@ -575,7 +579,6 @@ class EngineConnection extends EventTarget {
         })
 
         this.unreliableDataChannel.addEventListener('close', (event) => {
-
           this.disconnectAll()
           this.finalizeIfAllConnectionsClosed()
         })
@@ -888,23 +891,25 @@ class EngineConnection extends EventTarget {
     }
 
     // api-deux currently doesn't report if an auth token is invalid on the
-    // websocket. As a workaround we can invoke two endpoints: /user and 
+    // websocket. As a workaround we can invoke two endpoints: /user and
     // /user/session/{token} . Former for regular operations, latter for
     // development.
     // Resolver: https://github.com/KittyCAD/api-deux/issues/1628
     const promiseIsAuthed = this.token
-      // We can't check tokens in localStorage, at least not yet.
-      // Resolver: https://github.com/KittyCAD/api-deux/issues/1629
-      ? Promise.resolve({ status: 200 })
+      ? // We can't check tokens in localStorage, at least not yet.
+        // Resolver: https://github.com/KittyCAD/api-deux/issues/1629
+        Promise.resolve({ status: 200 })
       : !isTauri()
-        ? fetch(withBaseURL('/user'))
-        : invoke<Models['User_type'] | Record<'error_code', unknown>>('get_user', {
+      ? fetch(withBaseURL('/user'))
+      : invoke<Models['User_type'] | Record<'error_code', unknown>>(
+          'get_user',
+          {
             token: this.token,
             hostname: VITE_KC_API_BASE_URL,
-          })
+          }
+        )
 
-    promiseIsAuthed
-    .then((e) => {
+    promiseIsAuthed.then((e) => {
       if (e.status >= 200 && e.status < 400) {
         createWebSocketConnection()
       } else if (e.status === 401) {
@@ -1252,7 +1257,7 @@ export class EngineCommandManager extends EventTarget {
 
     this.engineConnection.addEventListener(
       EngineConnectionEvents.ConnectionStarted,
-      (({ detail: engineConnection }: CustomEvent) => {
+      ({ detail: engineConnection }: CustomEvent) => {
         engineConnection?.pc?.addEventListener(
           'datachannel',
           (event: RTCDataChannelEvent) => {
@@ -1318,24 +1323,26 @@ export class EngineCommandManager extends EventTarget {
               this.handleFailedModelingCommand(message.request_id, message)
             }
           }
-      }) as EventListener)
+        }) as EventListener)
 
-    this.engineConnection.addEventListener(EngineConnectionEvents.NewTrack, (({
-      detail: { mediaStream },
-    }: CustomEvent) => {
-      console.log('received track', mediaStream)
+        this.engineConnection.addEventListener(
+          EngineConnectionEvents.NewTrack,
+          (({ detail: { mediaStream } }: CustomEvent) => {
+            console.log('received track', mediaStream)
 
-      mediaStream.getVideoTracks()[0].addEventListener('mute', () => {
-        console.log('peer is not sending video to us')
-        // this.engineConnection?.close()
-        // this.engineConnection?.connect()
-      })
+            mediaStream.getVideoTracks()[0].addEventListener('mute', () => {
+              console.log('peer is not sending video to us')
+              // this.engineConnection?.close()
+              // this.engineConnection?.connect()
+            })
 
-      setMediaStream(mediaStream)
-    }) as EventListener)
+            setMediaStream(mediaStream)
+          }) as EventListener
+        )
 
-    this.engineConnection?.connect()
-  }))
+        this.engineConnection?.connect()
+      }
+    )
   }
 
   handleResize({

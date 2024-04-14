@@ -159,7 +159,9 @@ const router = createBrowserRouter([
 export const Router = () => {
   const networkStatus = useNetworkStatus()
 
-  return <NetworkContext.Provider value={networkStatus}>
-    <RouterProvider router={router} />
-  </NetworkContext.Provider>
+  return (
+    <NetworkContext.Provider value={networkStatus}>
+      <RouterProvider router={router} />
+    </NetworkContext.Provider>
+  )
 }
