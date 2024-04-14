@@ -52,10 +52,6 @@ export default function useStateMachineCommands<
   }))
 
   useEffect(() => {
-    console.log("useStateMachineCommands initialized")
-  }, [])
-
-  useEffect(() => {
     const disableAllButtons =
       overallState !== NetworkHealthState.Ok || isExecuting || !isStreamReady
     const newCommands = state.nextEvents

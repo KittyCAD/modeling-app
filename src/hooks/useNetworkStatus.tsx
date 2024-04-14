@@ -64,11 +64,9 @@ export function useNetworkStatus() {
     }
     window.addEventListener('online', onlineCallback)
     window.addEventListener('offline', offlineCallback)
-    console.log("useNetworkStatus initialized")
     return () => {
       window.removeEventListener('online', onlineCallback)
       window.removeEventListener('offline', offlineCallback)
-      console.log("useNetworkStatus teardown")
     }
   }, [])
 
