@@ -5,8 +5,8 @@ import { CommandBarProvider } from './CommandBar/CommandBarProvider'
 import {
   NETWORK_HEALTH_TEXT,
   NetworkHealthIndicator,
-  NetworkHealthState,
 } from './NetworkHealthIndicator'
+import { NetworkHealthState } from 'hooks/useNetworkStatus'
 
 function TestWrap({ children }: { children: React.ReactNode }) {
   // wrap in router and xState context
