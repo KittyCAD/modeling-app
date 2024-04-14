@@ -7,12 +7,10 @@ import { authMachine } from 'machines/authMachine'
 import { settingsMachine } from 'machines/settingsMachine'
 import { homeMachine } from 'machines/homeMachine'
 import { Command, CommandSetConfig, CommandSetSchema } from 'lib/commandTypes'
-import {
-  NetworkHealthState,
-  useNetworkStatus,
-} from 'components/NetworkHealthIndicator'
 import { useKclContext } from 'lang/KclProvider'
 import { useStore } from 'useStore'
+import { useNetworkContext } from 'hooks/useNetworkContext'
+import { NetworkHealthState } from 'hooks/useNetworkStatus'
 
 // This might not be necessary, AnyStateMachine from xstate is working
 export type AllMachines =
@@ -47,11 +45,15 @@ export default function useStateMachineCommands<
   onCancel,
 }: UseStateMachineCommandsArgs<T, S>) {
   const { commandBarSend } = useCommandsContext()
-  const { overallState } = useNetworkStatus()
+  const { overallState } = useNetworkContext()
   const { isExecuting } = useKclContext()
   const { isStreamReady } = useStore((s) => ({
     isStreamReady: s.isStreamReady,
   }))
+
+  useEffect(() => {
+    console.log("useStateMachineCommands initialized")
+  }, [])
 
   useEffect(() => {
     const disableAllButtons =

@@ -4,8 +4,9 @@ import { getNormalisedCoordinates } from '../lib/utils'
 import Loading from './Loading'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useModelingContext } from 'hooks/useModelingContext'
+import { useNetworkContext } from 'hooks/useNetworkContext'
+import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
-import { NetworkHealthState, useNetworkStatus } from './NetworkHealthIndicator'
 import { butName } from 'lib/cameraControls'
 import { sendSelectEventToEngine } from 'lib/selections'
 
@@ -28,7 +29,7 @@ export const Stream = ({ className = '' }: { className?: string }) => {
   }))
   const { settings } = useSettingsAuthContext()
   const { state } = useModelingContext()
-  const { overallState } = useNetworkStatus()
+  const { overallState } = useNetworkContext()
 
   const isNetworkOkay = overallState === NetworkHealthState.Ok
 

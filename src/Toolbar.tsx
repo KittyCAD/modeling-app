@@ -3,13 +3,11 @@ import { isCursorInSketchCommandRange } from 'lang/util'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useCommandsContext } from 'hooks/useCommandsContext'
+import { useNetworkContext } from 'hooks/useNetworkContext'
+import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { ActionButton } from 'components/ActionButton'
 import { isSingleCursorInPipe } from 'lang/queryAst'
 import { useKclContext } from 'lang/KclProvider'
-import {
-  NetworkHealthState,
-  useNetworkStatus,
-} from 'components/NetworkHealthIndicator'
 import { useStore } from 'useStore'
 import { ActionButtonDropdown } from 'components/ActionButtonDropdown'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -38,8 +36,7 @@ export function Toolbar({
   }, [engineCommandManager.artifactMap, context.selectionRanges])
 
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
-
-  const { overallState } = useNetworkStatus()
+  const { overallState } = useNetworkContext()
   const { isExecuting } = useKclContext()
   const { isStreamReady } = useStore((s) => ({
     isStreamReady: s.isStreamReady,
