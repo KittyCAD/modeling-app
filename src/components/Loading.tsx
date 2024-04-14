@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 
 import {
+  EngineConnectionStateType,
+  DisconnectingType,
   EngineCommandManagerEvents,
   EngineConnectionEvents,
   ConnectionError,
@@ -13,8 +15,12 @@ const Loading = ({ children }: React.PropsWithChildren) => {
   const [error, setError] = useState<ConnectionError>(ConnectionError.Unset)
 
   useEffect(() => {
-    const onConnectionStateChange = (state: EngineConnectionState) => {
-      console.log("<Loading/>", state)
+    const onConnectionStateChange = ({ detail: state }: CustomEvent) => {
+      if (
+        (state.type !== EngineConnectionStateType.Disconnected
+         || state.type !== EngineConnectionStateType.Disconnecting)
+          && state.value?.type !== DisconnectingType.Error) return
+      setError(state.value.value.error)
     }
 
     const onEngineAvailable = ({ detail: engineConnection }: CustomEvent) => {

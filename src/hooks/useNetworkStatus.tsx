@@ -56,11 +56,11 @@ export function useNetworkStatus() {
 
   useEffect(() => {
     const onlineCallback = () => {
-      setSteps(initialConnectingTypeGroupState)
       setInternetConnected(true)
     }
     const offlineCallback = () => {
       setInternetConnected(false)
+      setSteps(structuredClone(initialConnectingTypeGroupState))
     }
     window.addEventListener('online', onlineCallback)
     window.addEventListener('offline', offlineCallback)
@@ -69,10 +69,6 @@ export function useNetworkStatus() {
       window.removeEventListener('offline', offlineCallback)
     }
   }, [])
-
-  useEffect(() => {
-    console.log("pingPongHealth", pingPongHealth)
-  }, [pingPongHealth])
 
   useEffect(() => {
     const issues = {
