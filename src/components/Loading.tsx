@@ -1,41 +1,52 @@
 import { useEffect, useState } from 'react'
 
-// import {
-//   ConnectingType,
-//   ConnectingTypeGroup,
-//   DisconnectingType,
-//   EngineCommandManagerEvents,
-//   EngineConnectionEvents,
-//   EngineConnectionStateType,
-//   ErrorType,
-//   initialConnectingTypeGroupState,
-// } from '../lang/std/engineConnection'
-// import { engineCommandManager } from '../lib/singletons'
+import {
+  EngineCommandManagerEvents,
+  EngineConnectionEvents,
+  ConnectionError,
+  CONNECTION_ERROR_TEXT,
+} from '../lang/std/engineConnection'
 
-// Sorted by severity
-enum Error {
-  Unset = 0,
-  LongLoadingTime,
-  BadAuthToken,
-  TooManyConnections,
-}
-
-const errorText: Record<Error, string> = {
-  [Error.Unset]: "",
-  [Error.LongLoadingTime]: "Loading is taking longer than expected...",
-  [Error.BadAuthToken]: "Your authorization token is not valid; please login again.",
-  [Error.TooManyConnections]: "There are too many connections.",
-}
+import { engineCommandManager } from '../lib/singletons'
 
 const Loading = ({ children }: React.PropsWithChildren) => {
-  const [error, setError] = useState<Error>(Error.Unset)
+  const [error, setError] = useState<ConnectionError>(ConnectionError.Unset)
+
+  useEffect(() => {
+    const onConnectionStateChange = (state: EngineConnectionState) => {
+      console.log("<Loading/>", state)
+    }
+
+    const onEngineAvailable = ({ detail: engineConnection }: CustomEvent) => {
+      engineConnection.addEventListener(
+        EngineConnectionEvents.ConnectionStateChanged,
+        onConnectionStateChange as EventListener
+      )
+    }
+
+    engineCommandManager.addEventListener(
+      EngineCommandManagerEvents.EngineAvailable,
+      onEngineAvailable as EventListener
+    )
+
+    return () => {
+      engineCommandManager.removeEventListener(
+        EngineCommandManagerEvents.EngineAvailable,
+        onEngineAvailable as EventListener
+      )
+      engineCommandManager.engineConnection?.removeEventListener(
+        EngineConnectionEvents.ConnectionStateChanged,
+        onConnectionStateChange as EventListener
+      )
+    }
+  }, [])
 
   useEffect(() => {
     // Don't set long loading time if there's a more severe error
-    if (error > Error.LongLoadingTime) return
+    if (error > ConnectionError.LongLoadingTime) return
 
     const timer = setTimeout(() => {
-      setError(Error.LongLoadingTime)
+      setError(ConnectionError.LongLoadingTime)
     }, 4000)
 
     return () => clearTimeout(timer)
@@ -61,10 +72,10 @@ const Loading = ({ children }: React.PropsWithChildren) => {
       <p
         className={
           'text-sm mt-4 text-primary/60 transition-opacity duration-500' +
-          (error !== Error.Unset ? ' opacity-100' : ' opacity-0')
+          (error !== ConnectionError.Unset ? ' opacity-100' : ' opacity-0')
         }
       >
-        { errorText[error] }
+        { CONNECTION_ERROR_TEXT[error] }
       </p>
     </div>
   )

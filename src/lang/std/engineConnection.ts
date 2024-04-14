@@ -113,9 +113,44 @@ export enum DisconnectingType {
   Quit = 'quit',
 }
 
+// Sorted by severity
+export enum ConnectionError {
+  Unset = 0,
+  LongLoadingTime,
+
+  ICENegotiate,
+  DataChannelError,
+  WebSocketError,
+  LocalDescriptionInvalid,
+
+  // These are more severe than protocol errors because they don't even allow
+  // the program to do any protocol messages in the first place if they occur.
+  BadAuthToken,
+  TooManyConnections,
+
+  // An unknown error is the most severe because it has not been classified
+  // or encountered before.
+  Unknown,
+}
+
+export const CONNECTION_ERROR_TEXT: Record<ConnectionError, string> = {
+  [ConnectionError.Unset]: "",
+  [ConnectionError.LongLoadingTime]: "Loading is taking longer than expected...",
+  [ConnectionError.ICENegotiate]: "ICE negotiation failed.",
+  [ConnectionError.DataChannelError]: "The data channel signaled an error.",
+  [ConnectionError.WebSocketError]: "The websocket signaled an error.",
+  [ConnectionError.LocalDescriptionInvalid]: "The local description is invalid.",
+  [ConnectionError.BadAuthToken]: "Your authorization token is not valid; please login again.",
+  [ConnectionError.TooManyConnections]: "There are too many connections.",
+  [ConnectionError.Unknown]: "An unexpected error occurred. Please report this to us.",
+}
+
 export interface ErrorType {
-  // We may not necessary have an error to assign.
-  error?: Error
+  // The error we've encountered.
+  error: ConnectionError,
+
+  // Additional context.
+  context?: string,
 
   // We assign this in the state setter because we may have not failed at
   // a Connecting state, which we check for there.
@@ -130,7 +165,7 @@ export type DisconnectingValue =
 // These are ordered by the expected sequence.
 export enum ConnectingType {
   WebSocketConnecting = 'websocket-connecting',
-  WebSocketEstablished = 'websocket-established',
+  WebSocketOpen = 'websocket-open',
   PeerConnectionCreated = 'peer-connection-created',
   ICEServersSet = 'ice-servers-set',
   SetLocalDescription = 'set-local-description',
@@ -157,7 +192,7 @@ export const initialConnectingTypeGroupState: Record<
 > = {
   [ConnectingTypeGroup.WebSocket]: [
     [ConnectingType.WebSocketConnecting, undefined],
-    [ConnectingType.WebSocketEstablished, undefined],
+    [ConnectingType.WebSocketOpen, undefined],
   ],
   [ConnectingTypeGroup.ICE]: [
     [ConnectingType.PeerConnectionCreated, undefined],
@@ -179,7 +214,7 @@ export const initialConnectingTypeGroupState: Record<
 
 export type ConnectingValue =
   | State<ConnectingType.WebSocketConnecting, void>
-  | State<ConnectingType.WebSocketEstablished, void>
+  | State<ConnectingType.WebSocketOpen, void>
   | State<ConnectingType.PeerConnectionCreated, void>
   | State<ConnectingType.ICEServersSet, void>
   | State<ConnectingType.SetLocalDescription, void>
@@ -200,7 +235,7 @@ export type EngineConnectionState =
   | State<EngineConnectionStateType.Disconnecting, DisconnectingValue>
   | State<EngineConnectionStateType.Disconnected, void>
 
-export type PingPongState = 'OK' | 'BAD'
+export type PingPongState = 'OK' | 'TIMEOUT'
 
 export enum EngineConnectionEvents {
   // Fires for each ping-pong success or failure.
@@ -404,9 +439,8 @@ class EngineConnection extends EventTarget {
               value: {
                 type: DisconnectingType.Error,
                 value: {
-                  error: new Error(
-                    'failed to negotiate ice connection; restarting'
-                  ),
+                  error: ConnectionError.ICENegotiate,
+                  context: event.toString(),
                 },
               },
             }
@@ -532,6 +566,8 @@ class EngineConnection extends EventTarget {
         })
 
         this.unreliableDataChannel.addEventListener('close', (event) => {
+          console.log("data channel close")
+
           this.disconnectAll()
           this.finalizeIfAllConnectionsClosed()
         })
@@ -544,7 +580,8 @@ class EngineConnection extends EventTarget {
             value: {
               type: DisconnectingType.Error,
               value: {
-                error: new Error(event.toString()),
+                error: ConnectionError.DataChannelError,
+                context: event.toString(),
               },
             },
           }
@@ -589,7 +626,7 @@ class EngineConnection extends EventTarget {
       this.state = {
         type: EngineConnectionStateType.Connecting,
         value: {
-          type: ConnectingType.WebSocketEstablished,
+          type: ConnectingType.WebSocketOpen,
         },
       }
 
@@ -609,6 +646,8 @@ class EngineConnection extends EventTarget {
     })
 
     this.websocket.addEventListener('close', (event) => {
+      console.log("websocket close")
+
       this.disconnectAll()
       this.finalizeIfAllConnectionsClosed()
     })
@@ -621,7 +660,8 @@ class EngineConnection extends EventTarget {
         value: {
           type: DisconnectingType.Error,
           value: {
-            error: new Error(event.toString()),
+            error: ConnectionError.WebSocketError,
+            context: event.toString(),
           },
         },
       }
@@ -634,6 +674,8 @@ class EngineConnection extends EventTarget {
       // messages) that are intended for the GUI itself, so be careful
       // when assuming we're the only consumer or that all messages will
       // be carefully formatted here.
+
+      console.log("websocket message", event)
 
       if (typeof event.data !== 'string') {
         return
@@ -680,7 +722,7 @@ failed cmd type was ${artifactThatFailed?.commandType}`
             ) {
               this.dispatchEvent(
                 new CustomEvent(EngineConnectionEvents.PingPongChanged, {
-                  detail: 'BAD',
+                  detail: 'TIMEOUT',
                 })
               )
             } else {
@@ -773,8 +815,7 @@ failed cmd type was ${artifactThatFailed?.commandType}`
                 }
               })
             })
-            .catch((error: Error) => {
-              console.error(error)
+            .catch((err: Error) => {
               // The local description is invalid, so there's no point continuing.
               this.disconnectAll()
               this.state = {
@@ -782,7 +823,8 @@ failed cmd type was ${artifactThatFailed?.commandType}`
                 value: {
                   type: DisconnectingType.Error,
                   value: {
-                    error,
+                    error: ConnectionError.LocalDescriptionInvalid,
+                    context: err.toString(),
                   },
                 },
               }
