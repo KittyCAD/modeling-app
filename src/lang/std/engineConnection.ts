@@ -5,6 +5,7 @@ import { exportSave } from 'lib/exportSave'
 import { uuidv4 } from 'lib/utils'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { Themes, getThemeColorForEngine } from 'lib/theme'
+import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 
 let lastMessage = ''
 
@@ -816,7 +817,6 @@ failed cmd type was ${artifactThatFailed?.commandType}`
     this.webrtcStatsCollector = undefined
   }
   finalizeIfAllConnectionsClosed() {
-    console.log(this.websocket, this.pc, this.unreliableDataChannel)
     const allClosed =
       this.websocket?.readyState === 3 &&
       this.pc?.connectionState === 'closed' &&
@@ -875,7 +875,7 @@ export class EngineCommandManager {
   outSequence = 1
   inSequence = 1
   engineConnection?: EngineConnection
-  defaultPlanes: { xy: string; yz: string; xz: string } | null = null
+  defaultPlanes: DefaultPlanes | null = null
   _commandLogs: CommandLog[] = []
   _commandLogCallBack: (command: CommandLog[]) => void = () => {}
   // Folks should realize that wait for ready does not get called _everytime_
@@ -914,24 +914,26 @@ export class EngineCommandManager {
   set getAstCb(cb: () => Program) {
     this.getAst = cb
   }
+  private makeDefaultPlanes: () => Promise<DefaultPlanes> | null = () => null
 
   start({
     setMediaStream,
     setIsStreamReady,
     width,
     height,
-    executeCode,
     token,
+    makeDefaultPlanes,
     theme = Themes.Dark,
   }: {
     setMediaStream: (stream: MediaStream) => void
     setIsStreamReady: (isStreamReady: boolean) => void
     width: number
     height: number
-    executeCode: (code?: string, force?: boolean) => void
     token?: string
+    makeDefaultPlanes: () => Promise<DefaultPlanes>
     theme?: Themes
   }) {
+    this.makeDefaultPlanes = makeDefaultPlanes
     if (width === 0 || height === 0) {
       return
     }
@@ -1001,7 +1003,6 @@ export class EngineCommandManager {
         this.initPlanes().then(() => {
           this.resolveReady()
           setIsStreamReady(true)
-          executeCode(undefined, true)
         })
       },
       onClose: () => {
@@ -1279,10 +1280,10 @@ export class EngineCommandManager {
   tearDown() {
     this.engineConnection?.tearDown()
   }
-  startNewSession() {
+  async startNewSession() {
     this.lastArtifactMap = this.artifactMap
     this.artifactMap = {}
-    this.initPlanes()
+    await this.initPlanes()
   }
   subscribeTo<T extends ModelTypes>({
     event,
@@ -1326,6 +1327,16 @@ export class EngineCommandManager {
   onConnectionStateChange(callback: (state: EngineConnectionState) => void) {
     this.callbacksEngineStateConnection.push(callback)
   }
+  // We make this a separate function so we can call it from wasm.
+  clearDefaultPlanes() {
+    this.defaultPlanes = null
+  }
+  async wasmGetDefaultPlanes(): Promise<string> {
+    if (this.defaultPlanes === null) {
+      await this.initPlanes()
+    }
+    return JSON.stringify(this.defaultPlanes)
+  }
   endSession() {
     const deleteCmd: EngineCommand = {
       type: 'modeling_cmd_req',
@@ -1334,7 +1345,7 @@ export class EngineCommandManager {
         type: 'scene_clear_all',
       },
     }
-    this.defaultPlanes = null
+    this.clearDefaultPlanes()
     this.engineConnection?.send(deleteCmd)
   }
   addCommandLog(message: CommandLog) {
@@ -1650,30 +1661,15 @@ export class EngineCommandManager {
   }
   private async initPlanes() {
     if (this.planesInitialized()) return
-    const [xy, yz, xz] = [
-      await this.createPlane({
-        x_axis: { x: 1, y: 0, z: 0 },
-        y_axis: { x: 0, y: 1, z: 0 },
-        color: { r: 0.7, g: 0.28, b: 0.28, a: 0.4 },
-      }),
-      await this.createPlane({
-        x_axis: { x: 0, y: 1, z: 0 },
-        y_axis: { x: 0, y: 0, z: 1 },
-        color: { r: 0.28, g: 0.7, b: 0.28, a: 0.4 },
-      }),
-      await this.createPlane({
-        x_axis: { x: 1, y: 0, z: 0 },
-        y_axis: { x: 0, y: 0, z: 1 },
-        color: { r: 0.28, g: 0.28, b: 0.7, a: 0.4 },
-      }),
-    ]
-    this.defaultPlanes = { xy, yz, xz }
+    const planes = await this.makeDefaultPlanes()
+    this.defaultPlanes = planes
 
     this.subscribeTo({
       event: 'select_with_point',
       callback: ({ data }) => {
         if (!data?.entity_id) return
-        if (![xy, yz, xz].includes(data.entity_id)) return
+        if (!planes) return
+        if (![planes.xy, planes.yz, planes.xz].includes(data.entity_id)) return
         this.onPlaneSelectCallback(data.entity_id)
       },
     })
@@ -1702,41 +1698,5 @@ export class EngineCommandManager {
         hidden: hidden,
       },
     })
-  }
-
-  private async createPlane({
-    x_axis,
-    y_axis,
-    color,
-  }: {
-    x_axis: Models['Point3d_type']
-    y_axis: Models['Point3d_type']
-    color: Models['Color_type']
-  }): Promise<string> {
-    const planeId = uuidv4()
-    await this.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'make_plane',
-        size: 100,
-        origin: { x: 0, y: 0, z: 0 },
-        x_axis,
-        y_axis,
-        clobber: false,
-        hide: true,
-      },
-      cmd_id: planeId,
-    })
-    await this.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'plane_set_color',
-        plane_id: planeId,
-        color,
-      },
-      cmd_id: uuidv4(),
-    })
-    await this.setPlaneHidden(planeId, true)
-    return planeId
   }
 }
