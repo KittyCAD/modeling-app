@@ -17,11 +17,11 @@ lineTo(to: [number], sketch_group: SketchGroup, tag?: String) -> SketchGroup
 ```js
 fn rectShape = (pos, w, l) => {
   const rr = startSketchOn('YZ')
-  |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
-  |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, "edge1")
-  |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, "edge2")
-  |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, "edge3")
-  |> close(%, "edge4")
+    |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
+    |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, "edge1")
+    |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, "edge2")
+    |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, "edge3")
+    |> close(%, "edge4")
   return rr
 }
 

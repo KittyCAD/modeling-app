@@ -10,6 +10,7 @@ import init, {
   ServerConfig,
   copilot_lsp_run,
   kcl_lsp_run,
+  make_default_planes,
   coredump,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
@@ -25,6 +26,7 @@ import { DEV } from 'env'
 import { AppInfo } from 'wasm-lib/kcl/bindings/AppInfo'
 import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
+import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Value } from '../wasm-lib/kcl/bindings/Value'
@@ -194,6 +196,21 @@ export const recast = (ast: Program): string => {
   }
 }
 
+export const makeDefaultPlanes = async (
+  engineCommandManager: EngineCommandManager
+): Promise<DefaultPlanes> => {
+  try {
+    const planes: DefaultPlanes = await make_default_planes(
+      engineCommandManager
+    )
+    return planes
+  } catch (e) {
+    // TODO: do something real with the error.
+    console.log('make default planes error', e)
+    throw e
+  }
+}
+
 export function lexer(str: string): Token[] {
   try {
     const tokens: Token[] = lexer_wasm(str)
@@ -306,10 +323,16 @@ export async function copilotLspRun(config: ServerConfig, token: string) {
   }
 }
 
-export async function kclLspRun(config: ServerConfig, token: string) {
+export async function kclLspRun(
+  config: ServerConfig,
+  engineCommandManager: EngineCommandManager,
+  token: string
+) {
   try {
     console.log('start kcl lsp')
-    await kcl_lsp_run(config, token, DEV)
+    const baseUnit =
+      (await getSettingsState)()?.modeling.defaultUnit.current || 'mm'
+    await kcl_lsp_run(config, engineCommandManager, baseUnit, token, DEV)
   } catch (e: any) {
     console.log('kcl lsp failed', e)
     // We can't restart here because a moved value, we should do this another way.

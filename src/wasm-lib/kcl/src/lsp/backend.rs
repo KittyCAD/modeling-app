@@ -1,57 +1,155 @@
 //! A shared backend trait for lsp servers memory and behavior.
 
+use std::sync::Arc;
+
 use anyhow::Result;
-use dashmap::DashMap;
+use tokio::sync::RwLock;
 use tower_lsp::lsp_types::{
     CreateFilesParams, DeleteFilesParams, DidChangeConfigurationParams, DidChangeTextDocumentParams,
     DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams,
-    DidOpenTextDocumentParams, DidSaveTextDocumentParams, InitializedParams, MessageType, RenameFilesParams,
-    TextDocumentItem, WorkspaceFolder,
+    DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentDiagnosticReport, InitializedParams, MessageType,
+    RenameFilesParams, TextDocumentItem, WorkspaceFolder,
 };
 
-use crate::fs::FileSystem;
+use crate::{
+    fs::FileSystem,
+    lsp::safemap::SafeMap,
+    thread::{JoinHandle, Thread},
+};
+
+#[derive(Clone)]
+pub struct InnerHandle(Arc<JoinHandle>);
+
+impl InnerHandle {
+    pub fn new(handle: JoinHandle) -> Self {
+        Self(Arc::new(handle))
+    }
+
+    pub fn is_finished(&self) -> bool {
+        self.0.is_finished()
+    }
+
+    pub fn cancel(&self) {
+        self.0.abort();
+    }
+}
+
+#[derive(Clone)]
+pub struct UpdateHandle(Arc<RwLock<Option<InnerHandle>>>);
+
+impl UpdateHandle {
+    pub fn new(handle: InnerHandle) -> Self {
+        Self(Arc::new(RwLock::new(Some(handle))))
+    }
+
+    pub async fn read(&self) -> Option<InnerHandle> {
+        self.0.read().await.clone()
+    }
+
+    pub async fn write(&self, handle: Option<InnerHandle>) {
+        *self.0.write().await = handle;
+    }
+}
+
+impl Default for UpdateHandle {
+    fn default() -> Self {
+        Self(Arc::new(RwLock::new(None)))
+    }
+}
 
 /// A trait for the backend of the language server.
 #[async_trait::async_trait]
-pub trait Backend {
+pub trait Backend: Clone + Send + Sync
+where
+    Self: 'static,
+{
     fn client(&self) -> tower_lsp::Client;
 
-    fn fs(&self) -> crate::fs::FileManager;
+    fn fs(&self) -> Arc<crate::fs::FileManager>;
 
-    fn workspace_folders(&self) -> Vec<WorkspaceFolder>;
+    async fn is_initialized(&self) -> bool;
 
-    fn add_workspace_folders(&self, folders: Vec<WorkspaceFolder>);
+    async fn set_is_initialized(&self, is_initialized: bool);
 
-    fn remove_workspace_folders(&self, folders: Vec<WorkspaceFolder>);
+    async fn current_handle(&self) -> Option<InnerHandle>;
+
+    async fn set_current_handle(&self, handle: Option<InnerHandle>);
+
+    async fn workspace_folders(&self) -> Vec<WorkspaceFolder>;
+
+    async fn add_workspace_folders(&self, folders: Vec<WorkspaceFolder>);
+
+    async fn remove_workspace_folders(&self, folders: Vec<WorkspaceFolder>);
 
     /// Get the current code map.
-    fn current_code_map(&self) -> DashMap<String, Vec<u8>>;
+    fn code_map(&self) -> SafeMap<String, Vec<u8>>;
 
     /// Insert a new code map.
-    fn insert_current_code_map(&self, uri: String, text: Vec<u8>);
+    async fn insert_code_map(&self, uri: String, text: Vec<u8>);
 
     // Remove from code map.
-    fn remove_from_code_map(&self, uri: String) -> Option<(String, Vec<u8>)>;
+    async fn remove_from_code_map(&self, uri: String) -> Option<Vec<u8>>;
 
     /// Clear the current code state.
-    fn clear_code_state(&self);
+    async fn clear_code_state(&self);
+
+    /// Get the current diagnostics map.
+    fn current_diagnostics_map(&self) -> SafeMap<String, DocumentDiagnosticReport>;
 
     /// On change event.
-    async fn inner_on_change(&self, params: TextDocumentItem);
+    async fn inner_on_change(&self, params: TextDocumentItem, force: bool);
+
+    /// Check if the file has diagnostics.
+    async fn has_diagnostics(&self, uri: &str) -> bool {
+        if let Some(tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics)) =
+            self.current_diagnostics_map().get(uri).await
+        {
+            !diagnostics.full_document_diagnostic_report.items.is_empty()
+        } else {
+            false
+        }
+    }
 
     async fn on_change(&self, params: TextDocumentItem) {
         // Check if the document is in the current code map and if it is the same as what we have
         // stored.
         let filename = params.uri.to_string();
-        if let Some(current_code) = self.current_code_map().get(&filename) {
-            if current_code.value() == params.text.as_bytes() {
+        if let Some(current_code) = self.code_map().get(&filename).await {
+            if current_code == params.text.as_bytes() && !self.has_diagnostics(&filename).await {
                 return;
             }
         }
 
-        // Otherwise update the code map and call the inner on change.
-        self.insert_current_code_map(filename, params.text.as_bytes().to_vec());
-        self.inner_on_change(params).await;
+        // Check if we already have a handle running.
+        if let Some(current_handle) = self.current_handle().await {
+            self.set_current_handle(None).await;
+            // Drop that handle to cancel it.
+            current_handle.cancel();
+        }
+
+        let cloned = self.clone();
+        let task = JoinHandle::new(async move {
+            cloned
+                .insert_code_map(params.uri.to_string(), params.text.as_bytes().to_vec())
+                .await;
+            cloned.inner_on_change(params, false).await;
+            cloned.set_current_handle(None).await;
+        });
+        let update_handle = InnerHandle::new(task);
+
+        // Set our new handle.
+        self.set_current_handle(Some(update_handle.clone())).await;
+    }
+
+    async fn wait_on_handle(&self) {
+        while let Some(handle) = self.current_handle().await {
+            if !handle.is_finished() {
+                tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+            } else {
+                break;
+            }
+        }
+        self.set_current_handle(None).await;
     }
 
     async fn update_from_disk<P: AsRef<std::path::Path> + std::marker::Send>(&self, path: P) -> Result<()> {
@@ -66,7 +164,7 @@ pub trait Backend {
                     .to_str()
                     .ok_or_else(|| anyhow::anyhow!("could not get name of file: {:?}", file))?
             );
-            self.insert_current_code_map(file_path, contents);
+            self.insert_code_map(file_path, contents).await;
         }
 
         Ok(())
@@ -76,6 +174,8 @@ pub trait Backend {
         self.client()
             .log_message(MessageType::INFO, format!("initialized: {:?}", params))
             .await;
+
+        self.set_is_initialized(true).await;
     }
 
     async fn do_shutdown(&self) -> tower_lsp::jsonrpc::Result<()> {
@@ -93,6 +193,7 @@ pub trait Backend {
             for folder in params.event.added.iter() {
                 if !self
                     .workspace_folders()
+                    .await
                     .iter()
                     .any(|f| f.uri == folder.uri && f.name == folder.name)
                 {
@@ -106,12 +207,12 @@ pub trait Backend {
             !(params.event.removed.is_empty() && params.event.added.is_empty())
         };
 
-        self.add_workspace_folders(params.event.added.clone());
-        self.remove_workspace_folders(params.event.removed);
+        self.add_workspace_folders(params.event.added.clone()).await;
+        self.remove_workspace_folders(params.event.removed).await;
         // Remove the code from the current code map.
         // We do this since it means the user is changing projects so let's refresh the state.
-        if !self.current_code_map().is_empty() && should_clear {
-            self.clear_code_state();
+        if !self.code_map().is_empty().await && should_clear {
+            self.clear_code_state().await;
         }
         for added in params.event.added {
             // Try to read all the files in the project.
@@ -145,7 +246,7 @@ pub trait Backend {
             .await;
         // Create each file in the code map.
         for file in params.files {
-            self.insert_current_code_map(file.uri.to_string(), Default::default());
+            self.insert_code_map(file.uri.to_string(), Default::default()).await;
         }
     }
 
@@ -155,12 +256,12 @@ pub trait Backend {
             .await;
         // Rename each file in the code map.
         for file in params.files {
-            if let Some((_, value)) = self.remove_from_code_map(file.old_uri) {
+            if let Some(value) = self.remove_from_code_map(file.old_uri).await {
                 // Rename the file if it exists.
-                self.insert_current_code_map(file.new_uri.to_string(), value);
+                self.insert_code_map(file.new_uri.to_string(), value).await;
             } else {
                 // Otherwise create it.
-                self.insert_current_code_map(file.new_uri.to_string(), Default::default());
+                self.insert_code_map(file.new_uri.to_string(), Default::default()).await;
             }
         }
     }
@@ -171,7 +272,7 @@ pub trait Backend {
             .await;
         // Delete each file in the map.
         for file in params.files {
-            self.remove_from_code_map(file.uri.to_string());
+            self.remove_from_code_map(file.uri.to_string()).await;
         }
     }
 

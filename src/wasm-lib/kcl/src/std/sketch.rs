@@ -961,54 +961,25 @@ async fn start_sketch_on_face(
 
 async fn start_sketch_on_plane(data: PlaneData, args: Args) -> Result<Box<Plane>, KclError> {
     let mut plane: Plane = data.clone().into();
-    let id = uuid::Uuid::new_v4();
-    let default_origin = Point3D { x: 0.0, y: 0.0, z: 0.0 };
 
-    let (x_axis, y_axis) = match data {
-        PlaneData::XY => (Point3D { x: 1.0, y: 0.0, z: 0.0 }, Point3D { x: 0.0, y: 1.0, z: 0.0 }),
-        PlaneData::NegXY => (
-            Point3D {
-                x: -1.0,
-                y: 0.0,
-                z: 0.0,
-            },
-            Point3D { x: 0.0, y: 1.0, z: 0.0 },
-        ),
-        PlaneData::XZ => (
-            Point3D {
-                x: -1.0,
-                y: 0.0,
-                z: 0.0,
-            },
-            Point3D { x: 0.0, y: 0.0, z: 1.0 },
-        ), // TODO x component for x_axis shouldn't be negative
-        PlaneData::NegXZ => (
-            Point3D {
-                x: 1.0, // TODO this should be -1.0
-                y: 0.0,
-                z: 0.0,
-            },
-            Point3D { x: 0.0, y: 0.0, z: 1.0 },
-        ),
-        PlaneData::YZ => (Point3D { x: 0.0, y: 1.0, z: 0.0 }, Point3D { x: 0.0, y: 0.0, z: 1.0 }),
-        PlaneData::NegYZ => (
-            Point3D {
-                x: 0.0,
-                y: -1.0,
-                z: 0.0,
-            },
-            Point3D { x: 0.0, y: 0.0, z: 1.0 },
-        ),
-        _ => (Point3D { x: 1.0, y: 0.0, z: 0.0 }, Point3D { x: 0.0, y: 1.0, z: 0.0 }),
-    };
+    // Get the default planes.
+    let default_planes = args.ctx.engine.default_planes(args.source_range).await?;
 
     plane.id = match data {
+        PlaneData::XY => default_planes.xy,
+        PlaneData::XZ => default_planes.xz,
+        PlaneData::YZ => default_planes.yz,
+        PlaneData::NegXY => default_planes.neg_xy,
+        PlaneData::NegXZ => default_planes.neg_xz,
+        PlaneData::NegYZ => default_planes.neg_yz,
         PlaneData::Plane {
             origin,
             x_axis,
             y_axis,
             z_axis: _,
         } => {
+            // Create the custom plane on the fly.
+            let id = uuid::Uuid::new_v4();
             args.send_modeling_cmd(
                 id,
                 ModelingCmd::MakePlane {
@@ -1021,21 +992,7 @@ async fn start_sketch_on_plane(data: PlaneData, args: Args) -> Result<Box<Plane>
                 },
             )
             .await?;
-            id
-        }
-        _ => {
-            args.send_modeling_cmd(
-                id,
-                ModelingCmd::MakePlane {
-                    clobber: false,
-                    origin: default_origin,
-                    size: 60.0,
-                    x_axis,
-                    y_axis,
-                    hide: Some(true),
-                },
-            )
-            .await?;
+
             id
         }
     };

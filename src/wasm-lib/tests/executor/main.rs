@@ -35,7 +35,7 @@ async fn execute_and_snapshot(code: &str, units: kittycad::types::UnitLength) ->
     // Create a temporary file to write the output to.
     let output_file = std::env::temp_dir().join(format!("kcl_output_{}.png", uuid::Uuid::new_v4()));
 
-    let tokens = kcl_lib::token::lexer(code);
+    let tokens = kcl_lib::token::lexer(code)?;
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
     let ctx = kcl_lib::executor::ExecutorContext::new(ws, units.clone()).await?;
@@ -1925,6 +1925,14 @@ const plumbus0 = make_circle(p, 'a', [0, 0], 2.5)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/plumbus_fillets.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_empty_file_is_ok() {
+    let code = r#""#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+    assert!(result.is_ok());
 }
 
 #[tokio::test(flavor = "multi_thread")]
