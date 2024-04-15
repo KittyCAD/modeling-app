@@ -229,9 +229,9 @@ export class CameraControls {
     this.mouseDownPosition = new Vector2()
     this.mouseNewPosition = new Vector2()
 
-    this.domElement.addEventListener('pointerdown', this.onMouseDown)
-    this.domElement.addEventListener('pointermove', this.onMouseMove)
-    this.domElement.addEventListener('pointerup', this.onMouseUp)
+    this.domElement.addEventListener('mousedown', this.onMouseDown)
+    this.domElement.addEventListener('mousemove', this.onMouseMove)
+    this.domElement.addEventListener('mouseup', this.onMouseUp)
     this.domElement.addEventListener('wheel', this.onMouseWheel)
 
     window.addEventListener('resize', this.onWindowResize)
