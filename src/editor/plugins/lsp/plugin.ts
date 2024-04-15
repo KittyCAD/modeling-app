@@ -380,10 +380,10 @@ export class LanguageServerPlugin implements PluginValue {
           const params = notification.params as PublishDiagnosticsParams
           this.processDiagnostics(params)
           // Update the kcl errors pane.
-          kclManager.kclErrors = lspDiagnosticsToKclErrors(
+          /*kclManager.kclErrors = lspDiagnosticsToKclErrors(
             this.view.state.doc,
             params.diagnostics
-          )
+          )*/
           break
         case 'window/logMessage':
           console.log(
