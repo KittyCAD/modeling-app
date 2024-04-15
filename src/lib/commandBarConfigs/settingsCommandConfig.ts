@@ -15,6 +15,7 @@ import { getPropertyByPath } from 'lib/objectPropertyByPath'
 import { buildCommandArgument } from 'lib/createMachineCommand'
 import decamelize from 'decamelize'
 import { isTauri } from 'lib/isTauri'
+import { Setting } from 'lib/settings/initialSettings'
 
 // An array of the paths to all of the settings that have commandConfigs
 export const settingsWithCommandConfigs = (
@@ -87,10 +88,33 @@ export function createSettingsCommand({
   )
     return null
 
-  const valueArgConfig = {
+  let valueArgConfig = {
     ...valueArgPartialConfig,
     required: true,
   } as CommandArgumentConfig<S['default']>
+
+  // If the setting is a boolean, we coerce it into an options input type
+  if (valueArgConfig.inputType === 'boolean') {
+    valueArgConfig = {
+      ...valueArgConfig,
+      inputType: 'options',
+      options: (cmdBarContext, machineContext) => {
+        const setting = getPropertyByPath(
+          machineContext,
+          type
+        ) as Setting<boolean>
+        const level = cmdBarContext.argumentsToSubmit.level as SettingsLevel
+        const isCurrent =
+          setting[level] === undefined
+            ? setting.getFallback(level) === true
+            : setting[level] === true
+        return [
+          { name: 'On', value: true, isCurrent },
+          { name: 'Off', value: false, isCurrent: !isCurrent },
+        ]
+      },
+    }
+  }
 
   // @ts-ignore - TODO figure out this typing for valueArgConfig
   const valueArg = buildCommandArgument(valueArgConfig, context, actor)

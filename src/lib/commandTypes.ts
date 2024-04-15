@@ -151,7 +151,8 @@ export type CommandArgumentConfig<
           defaultValue?:
             | OutputType
             | ((
-                commandBarContext: ContextFrom<typeof commandBarMachine>
+                commandBarContext: ContextFrom<typeof commandBarMachine>,
+                machineContext?: C
               ) => OutputType)
           defaultValueFromContext?: (context: C) => OutputType
         }

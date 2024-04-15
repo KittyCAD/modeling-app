@@ -1,6 +1,5 @@
 import { Popover, Transition } from '@headlessui/react'
 import { ActionButton } from './ActionButton'
-import { faHome } from '@fortawesome/free-solid-svg-icons'
 import { type IndexLoaderData } from 'lib/types'
 import { paths } from 'lib/paths'
 import { isTauri } from '../lib/isTauri'

@@ -1,14 +1,14 @@
 import { Menu } from '@headlessui/react'
 import { PropsWithChildren } from 'react'
 import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons'
-import { ActionIcon } from './ActionIcon'
-import styles from './CodeMenu.module.css'
+import { ActionIcon } from 'components/ActionIcon'
+import styles from './KclEditorMenu.module.css'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
-import { editorShortcutMeta } from './TextEditor'
+import { editorShortcutMeta } from './KclEditorPane'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { kclManager } from 'lib/singletons'
 
-export const CodeMenu = ({ children }: PropsWithChildren) => {
+export const KclEditorMenu = ({ children }: PropsWithChildren) => {
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
     useConvertToVariable()
 
@@ -30,7 +30,7 @@ export const CodeMenu = ({ children }: PropsWithChildren) => {
             className="p-1"
             size="sm"
             bgClassName={
-              '!bg-transparent hover:!bg-primary/10 hover:dark:!bg-chalkboard-100 ui-active:!bg-primary/10 dark:ui-active:!bg-chalkboard-100 rounded-sm'
+              '!bg-transparent hover:!bg-primary/10 hover:dark:!bg-chalkboard-100 ui-open:!bg-primary/10 dark:ui-open:!bg-chalkboard-100 rounded-sm'
             }
             iconClassName={'!text-chalkboard-90 dark:!text-chalkboard-40'}
           />
@@ -65,7 +65,7 @@ export const CodeMenu = ({ children }: PropsWithChildren) => {
             >
               <span>Read the KCL docs</span>
               <small>
-                On GitHub
+                zoo.dev
                 <FontAwesomeIcon
                   icon={faArrowUpRightFromSquare}
                   className="ml-1 align-text-top"
@@ -83,7 +83,7 @@ export const CodeMenu = ({ children }: PropsWithChildren) => {
             >
               <span>KCL samples</span>
               <small>
-                On GitHub
+                zoo.dev
                 <FontAwesomeIcon
                   icon={faArrowUpRightFromSquare}
                   className="ml-1 align-text-top"

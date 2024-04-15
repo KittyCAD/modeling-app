@@ -145,6 +145,7 @@ test('Can moving camera', async ({ page, context }) => {
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
   await u.openAndClearDebugPanel()
+  await u.closeKclCodePanel()
 
   const camPos: [number, number, number] = [0, 85, 85]
   const bakeInRetries = async (
@@ -178,6 +179,8 @@ test('Can moving camera', async ({ page, context }) => {
     }, 300)
 
     await u.openAndClearDebugPanel()
+    await page.getByTestId('cam-x-position').isVisible()
+
     const vals = await Promise.all([
       page.getByTestId('cam-x-position').inputValue(),
       page.getByTestId('cam-y-position').inputValue(),
@@ -342,7 +345,11 @@ test('executes on load', async ({ page }) => {
   await u.waitForAuthSkipAppStart()
 
   // expand variables section
-  await page.getByText('Variables').click()
+  const variablesTabButton = page.getByRole('tab', {
+    name: 'Variables',
+    exact: false,
+  })
+  await variablesTabButton.click()
 
   // can find part001 in the variables summary (pretty-json-container, makes sure we're not looking in the code editor)
   // part001 only shows up in the variables summary if it's been executed
@@ -366,7 +373,11 @@ test('re-executes', async ({ page }) => {
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
 
-  await page.getByText('Variables').click()
+  const variablesTabButton = page.getByRole('tab', {
+    name: 'Variables',
+    exact: false,
+  })
+  await variablesTabButton.click()
   // expect to see "myVar:5"
   await expect(
     page.locator('.pretty-json-container >> text=myVar:5')
@@ -538,10 +549,13 @@ test('Auto complete works', async ({ page }) => {
 
 test('Stored settings are validated and fall back to defaults', async ({
   page,
+  context,
 }) => {
+  const u = getUtils(page)
+
   // Override beforeEach test setup
   // with corrupted settings
-  await page.addInitScript(
+  await context.addInitScript(
     async ({ settingsKey, settings }) => {
       localStorage.setItem(settingsKey, settings)
     },
@@ -553,6 +567,7 @@ test('Stored settings are validated and fall back to defaults', async ({
 
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/')
+  await u.waitForAuthSkipAppStart()
 
   // Check the settings were reset
   const storedSettings = TOML.parse(
@@ -876,14 +891,13 @@ test.describe('Command bar tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `
-        const distance = sqrt(20)
+        `const distance = sqrt(20)
         const part001 = startSketchOn('-XZ')
-          |> startProfileAt([-6.95, 4.98], %)
-          |> line([25.1, 0.41], %)
-          |> line([0.73, -14.93], %)
-          |> line([-23.44, 0.52], %)
-          |> close(%)
+  |> startProfileAt([-6.95, 4.98], %)
+  |> line([25.1, 0.41], %)
+  |> line([0.73, -14.93], %)
+  |> line([-23.44, 0.52], %)
+  |> close(%)
         `
       )
     })
@@ -896,15 +910,13 @@ test.describe('Command bar tests', () => {
     // Make sure the stream is up
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
 
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
     ).not.toBeDisabled()
-    await page.getByText('|> startProfileAt([-6.95, 4.98], %)').click()
-    await expect(
-      page.getByRole('button', { name: 'Extrude' })
-    ).not.toBeDisabled()
+    await u.clearCommandLogs()
+    await page.getByText('|> line([0.73, -14.93], %)').click()
+    await page.getByRole('button', { name: 'Extrude' }).isEnabled()
 
     let cmdSearchBar = page.getByPlaceholder('Search commands')
     await page.keyboard.press('Meta+K')
@@ -922,23 +934,25 @@ test.describe('Command bar tests', () => {
     await expect(page.getByPlaceholder('Variable name')).toHaveValue(
       'distance001'
     )
-    await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled()
-    await page.getByRole('button', { name: 'Continue' }).click()
+
+    const continueButton = page.getByRole('button', { name: 'Continue' })
+    const submitButton = page.getByRole('button', { name: 'Submit command' })
+    await continueButton.click()
 
     // Review step and argument hotkeys
-    await expect(
-      page.getByRole('button', { name: 'Submit command' })
-    ).toBeEnabled()
+    await expect(submitButton).toBeEnabled()
     await page.keyboard.press('Backspace')
+
+    // Assert we're back on the distance step
     await expect(
       page.getByRole('button', { name: 'Distance 12', exact: false })
     ).toBeDisabled()
-    await page.keyboard.press('Enter')
 
-    await expect(page.getByText('Confirm Extrude')).toBeVisible()
+    await continueButton.click()
+    await submitButton.click()
 
     // Check that the code was updated
-    await page.keyboard.press('Enter')
+    await u.waitForCmdReceive('extrude')
     // Unfortunately this indentation seems to matter for the test
     await expect(page.locator('.cm-content')).toHaveText(
       `const distance = sqrt(20)

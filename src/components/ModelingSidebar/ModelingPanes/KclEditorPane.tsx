@@ -3,12 +3,13 @@ import ReactCodeMirror, {
   Extension,
   ViewUpdate,
   SelectionRange,
+  drawSelection,
 } from '@uiw/react-codemirror'
 import { TEST } from 'env'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
-import { Themes } from 'lib/theme'
+import { Themes, getSystemTheme } from 'lib/theme'
 import { useEffect, useMemo, useRef } from 'react'
 import { useStore } from 'useStore'
 import { processCodeMirrorRanges } from 'lib/selections'
@@ -37,15 +38,21 @@ import {
   bracketMatching,
   indentOnInput,
 } from '@codemirror/language'
-import { CSSRuleObject } from 'tailwindcss/types/config'
 import { useModelingContext } from 'hooks/useModelingContext'
 import interact from '@replit/codemirror-interact'
 import { engineCommandManager, sceneInfra, kclManager } from 'lib/singletons'
 import { useKclContext } from 'lang/KclProvider'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
-import { NetworkHealthState, useNetworkStatus } from './NetworkHealthIndicator'
+import {
+  NetworkHealthState,
+  useNetworkStatus,
+} from 'components/NetworkHealthIndicator'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { useLspContext } from './LspProvider'
+import { isTauri } from 'lib/isTauri'
+import { useNavigate } from 'react-router-dom'
+import { paths } from 'lib/paths'
+import makeUrlPathRelative from 'lib/makeUrlPathRelative'
+import { useLspContext } from 'components/LspProvider'
 import { Prec, EditorState } from '@codemirror/state'
 import {
   closeBrackets,
@@ -65,11 +72,14 @@ export const editorShortcutMeta = {
   },
 }
 
-export const TextEditor = ({
-  theme,
-}: {
-  theme: Themes.Light | Themes.Dark
-}) => {
+export const KclEditorPane = () => {
+  const {
+    settings: { context },
+  } = useSettingsAuthContext()
+  const theme =
+    context.app.theme.current === Themes.System
+      ? getSystemTheme()
+      : context.app.theme.current
   const { editorView, setEditorView, isShiftDown } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
@@ -80,6 +90,7 @@ export const TextEditor = ({
   const { overallState } = useNetworkStatus()
   const isNetworkOkay = overallState === NetworkHealthState.Ok
   const { copilotLSP, kclLSP } = useLspContext()
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -109,6 +120,7 @@ export const TextEditor = ({
 
   const { settings } = useSettingsAuthContext()
   const textWrapping = settings.context.textEditor.textWrapping
+  const cursorBlinking = settings.context.textEditor.blinkingCursor
   const { commandBarSend } = useCommandsContext()
   const { enable: convertEnabled, handleClick: convertCallback } =
     useConvertToVariable()
@@ -189,6 +201,9 @@ export const TextEditor = ({
 
   const editorExtensions = useMemo(() => {
     const extensions = [
+      drawSelection({
+        cursorBlinkRate: cursorBlinking.current ? 1200 : 0,
+      }),
       lineHighlightField,
       history(),
       closeBrackets(),
@@ -205,6 +220,13 @@ export const TextEditor = ({
           key: 'Meta-k',
           run: () => {
             commandBarSend({ type: 'Open' })
+            return false
+          },
+        },
+        {
+          key: isTauri() ? 'Meta-,' : 'Meta-Shift-,',
+          run: () => {
+            navigate(makeUrlPathRelative(paths.SETTINGS))
             return false
           },
         },
@@ -287,16 +309,14 @@ export const TextEditor = ({
     }
 
     return extensions
-  }, [kclLSP, textWrapping.current, convertCallback])
+  }, [kclLSP, textWrapping.current, cursorBlinking.current, convertCallback])
 
   return (
     <div
       id="code-mirror-override"
-      className="full-height-subtract"
-      style={{ '--height-subtract': '4.25rem' } as CSSRuleObject}
+      className={'absolute inset-0 ' + (cursorBlinking.current ? 'blink' : '')}
     >
       <ReactCodeMirror
-        className="h-full"
         value={code}
         extensions={editorExtensions}
         onChange={onChange}

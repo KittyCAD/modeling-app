@@ -1,0 +1,27 @@
+.panel {
+  @apply relative z-0 rounded-r max-w-full h-full flex-1;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  @apply bg-chalkboard-10/50 backdrop-blur-sm border border-chalkboard-20;
+  scroll-margin-block-start: 41px;
+}
+
+.header::before,
+.header::-webkit-details-marker {
+  display: none;
+}
+
+:global(.dark) .panel {
+  @apply bg-chalkboard-100/50 backdrop-blur-[3px] border-chalkboard-80;
+}
+
+.header {
+  @apply z-10 relative rounded-tr;
+  @apply flex h-[41px] items-center justify-between gap-2 px-2;
+  @apply font-mono text-xs font-bold select-none text-chalkboard-90;
+  @apply bg-chalkboard-10 border-b border-chalkboard-20;
+}
+
+:global(.dark) .header {
+  @apply bg-chalkboard-90 text-chalkboard-30 border-chalkboard-80;
+}

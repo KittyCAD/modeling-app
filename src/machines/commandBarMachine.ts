@@ -483,7 +483,8 @@ export const commandBarMachine = createMachine(
               }
 
               if (
-                (argConfig.inputType !== 'boolean'
+                (argConfig.inputType !== 'boolean' &&
+                argConfig.inputType !== 'options'
                   ? !argValue
                   : argValue === undefined) &&
                 isRequired
