@@ -99,13 +99,14 @@ export function getUtils(page: Page) {
     removeCurrentCode: () => removeCurrentCode(page),
     sendCustomCmd: (cmd: EngineCommand) => sendCustomCmd(page, cmd),
     updateCamPosition: async (xyz: [number, number, number]) => {
-      const fillInput = async () => {
-        await page.fill('[data-testid="cam-x-position"]', String(xyz[0]))
-        await page.fill('[data-testid="cam-y-position"]', String(xyz[1]))
-        await page.fill('[data-testid="cam-z-position"]', String(xyz[2]))
+      const fillInput = async (axis: 'x' | 'y' | 'z', value: number) => {
+        await page.fill(`[data-testid="cam-${axis}-position"]`, String(value))
+        await page.waitForTimeout(100)
       }
-      await fillInput()
-      await page.waitForTimeout(100)
+
+      await fillInput('x', xyz[0])
+      await fillInput('y', xyz[1])
+      await fillInput('z', xyz[2])
     },
     clearCommandLogs: () => clearCommandLogs(page),
     expectCmdLog: (locatorStr: string) => expectCmdLog(page, locatorStr),

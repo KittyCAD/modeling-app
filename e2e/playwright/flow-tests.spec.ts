@@ -11,7 +11,6 @@ import {
   TEST_SETTINGS_CORRUPTED,
   TEST_SETTINGS_ONBOARDING,
 } from './storageStates'
-import { waitFor } from '@testing-library/react'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
