@@ -19,11 +19,11 @@ import {
   interpolateProjectNameWithIndex,
 } from 'lib/tauriFS'
 import { ONBOARDING_PROJECT_NAME } from './Onboarding'
-import { sep } from '@tauri-apps/api/path'
+import { join, sep } from '@tauri-apps/api/path'
 import { bracket } from 'lib/exampleKcl'
 import { isTauri } from 'lib/isTauri'
-import { invoke } from '@tauri-apps/api'
 import toast from 'react-hot-toast'
+import { invoke } from '@tauri-apps/api/core'
 import React, { Fragment, useMemo, useRef, useState } from 'react'
 import { Setting } from 'lib/settings/initialSettings'
 import decamelize from 'decamelize'
@@ -31,10 +31,15 @@ import { Event } from 'xstate'
 import { Dialog, RadioGroup, Transition } from '@headlessui/react'
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
-import { shouldHideSetting } from 'lib/settings/settingsUtils'
+import {
+  getSettingInputType,
+  shouldHideSetting,
+  shouldShowSettingInput,
+} from 'lib/settings/settingsUtils'
+
+export const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
 
 export const Settings = () => {
-  const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
   const navigate = useNavigate()
   const close = () => navigate(location.pathname.replace(paths.SETTINGS, ''))
   const location = useLocation()
@@ -45,7 +50,7 @@ export const Settings = () => {
           location.pathname
             .replace(paths.FILE + '/', '')
             .replace(paths.SETTINGS, '')
-            .slice(0, decodeURI(location.pathname).lastIndexOf(sep))
+            .slice(0, decodeURI(location.pathname).lastIndexOf(sep()))
         )
       : undefined
   const [settingsLevel, setSettingsLevel] = useState<SettingsLevel>(
@@ -86,7 +91,7 @@ export const Settings = () => {
       nextIndex
     )
     const newFile = await createNewProject(
-      defaultDirectory + sep + name,
+      await join(defaultDirectory, name),
       bracket
     )
     navigate(`${paths.FILE}/${encodeURIComponent(newFile.path)}`)
@@ -121,7 +126,7 @@ export const Settings = () => {
           leaveFrom="opacity-100 scale-100"
           leaveTo="opacity-0 scale-95"
         >
-          <Dialog.Panel className="rounded relative mx-auto bg-chalkboard-10 dark:bg-chalkboard-100 border dark:border-chalkboard-70 max-w-3xl w-full max-h-[66vh] shadow-lg flex flex-col gap-8 overflow-hidden">
+          <Dialog.Panel className="rounded relative mx-auto bg-chalkboard-10 dark:bg-chalkboard-100 border dark:border-chalkboard-70 max-w-3xl w-full max-h-[66vh] shadow-lg flex flex-col gap-8">
             <div className="p-5 pb-0 flex justify-between items-center">
               <h1 className="text-2xl font-bold">Settings</h1>
               <button
@@ -158,8 +163,11 @@ export const Settings = () => {
                 </RadioGroup.Option>
               )}
             </RadioGroup>
-            <div className="flex flex-grow overflow-hidden items-stretch pl-4 pr-5 pb-5 gap-4">
-              <div className="flex w-64 flex-col gap-3 pr-2 py-1 border-0 border-r border-r-chalkboard-20 dark:border-r-chalkboard-90">
+            <div
+              className="flex-1 grid items-stretch pl-4 pr-5 pb-5 gap-4 overflow-hidden"
+              style={{ gridTemplateColumns: 'auto 1fr' }}
+            >
+              <div className="flex w-32 flex-col gap-3 pr-2 py-1 border-0 border-r border-r-chalkboard-20 dark:border-r-chalkboard-90">
                 {Object.entries(context)
                   .filter(([_, categorySettings]) =>
                     // Filter out categories that don't have any non-hidden settings
@@ -211,178 +219,175 @@ export const Settings = () => {
                   About
                 </button>
               </div>
-              <div
-                ref={scrollRef}
-                className="flex flex-col gap-6 px-2 overflow-y-auto"
-              >
-                {Object.entries(context)
-                  .filter(([_, categorySettings]) =>
-                    // Filter out categories that don't have any non-hidden settings
-                    Object.values(categorySettings).some(
-                      (setting) => !shouldHideSetting(setting, settingsLevel)
+              <div className="relative overflow-y-auto">
+                <div ref={scrollRef} className="flex flex-col gap-6 px-2">
+                  {Object.entries(context)
+                    .filter(([_, categorySettings]) =>
+                      // Filter out categories that don't have any non-hidden settings
+                      Object.values(categorySettings).some(
+                        (setting) => !shouldHideSetting(setting, settingsLevel)
+                      )
                     )
-                  )
-                  .map(([category, categorySettings]) => (
-                    <Fragment key={category}>
-                      <h2
-                        id={`category-${category}`}
-                        className="text-2xl mt-6 first-of-type:mt-0 capitalize font-bold"
-                      >
-                        {decamelize(category, { separator: ' ' })}
-                      </h2>
-                      {Object.entries(categorySettings)
-                        .filter(
-                          // Filter out settings that don't have a Component or inputType
-                          // or are hidden on the current level or the current platform
-                          (item: [string, Setting<unknown>]) =>
-                            !shouldHideSetting(item[1], settingsLevel) &&
-                            (item[1].Component ||
-                              item[1].commandConfig?.inputType)
-                        )
-                        .map(([settingName, s]) => {
-                          const setting = s as Setting
-                          const parentValue =
-                            setting[setting.getParentLevel(settingsLevel)]
-                          return (
-                            <SettingsSection
-                              title={decamelize(settingName, {
-                                separator: ' ',
-                              })}
-                              key={`${category}-${settingName}-${settingsLevel}`}
-                              description={setting.description}
-                              settingHasChanged={
-                                setting[settingsLevel] !== undefined &&
-                                setting[settingsLevel] !==
-                                  setting.getFallback(settingsLevel)
-                              }
-                              parentLevel={setting.getParentLevel(
-                                settingsLevel
-                              )}
-                              onFallback={() =>
-                                send({
-                                  type: `set.${category}.${settingName}`,
-                                  data: {
-                                    level: settingsLevel,
-                                    value:
-                                      parentValue !== undefined
-                                        ? parentValue
-                                        : setting.getFallback(settingsLevel),
-                                  },
-                                } as SetEventTypes)
-                              }
-                            >
-                              <GeneratedSetting
-                                category={category}
-                                settingName={settingName}
-                                settingsLevel={settingsLevel}
-                                setting={setting}
-                              />
-                            </SettingsSection>
+                    .map(([category, categorySettings]) => (
+                      <Fragment key={category}>
+                        <h2
+                          id={`category-${category}`}
+                          className="text-2xl mt-6 first-of-type:mt-0 capitalize font-bold"
+                        >
+                          {decamelize(category, { separator: ' ' })}
+                        </h2>
+                        {Object.entries(categorySettings)
+                          .filter(
+                            // Filter out settings that don't have a Component or inputType
+                            // or are hidden on the current level or the current platform
+                            (item: [string, Setting<unknown>]) =>
+                              shouldShowSettingInput(item[1], settingsLevel)
                           )
-                        })}
-                    </Fragment>
-                  ))}
-                <h2 id="settings-resets" className="text-2xl mt-6 font-bold">
-                  Resets
-                </h2>
-                <SettingsSection
-                  title="Onboarding"
-                  description="Replay the onboarding process"
-                >
-                  <ActionButton
-                    Element="button"
-                    onClick={restartOnboarding}
-                    icon={{
-                      icon: 'refresh',
-                      size: 'sm',
-                      className: 'p-1',
-                    }}
+                          .map(([settingName, s]) => {
+                            const setting = s as Setting
+                            const parentValue =
+                              setting[setting.getParentLevel(settingsLevel)]
+                            return (
+                              <SettingsSection
+                                title={decamelize(settingName, {
+                                  separator: ' ',
+                                })}
+                                key={`${category}-${settingName}-${settingsLevel}`}
+                                description={setting.description}
+                                settingHasChanged={
+                                  setting[settingsLevel] !== undefined &&
+                                  setting[settingsLevel] !==
+                                    setting.getFallback(settingsLevel)
+                                }
+                                parentLevel={setting.getParentLevel(
+                                  settingsLevel
+                                )}
+                                onFallback={() =>
+                                  send({
+                                    type: `set.${category}.${settingName}`,
+                                    data: {
+                                      level: settingsLevel,
+                                      value:
+                                        parentValue !== undefined
+                                          ? parentValue
+                                          : setting.getFallback(settingsLevel),
+                                    },
+                                  } as SetEventTypes)
+                                }
+                              >
+                                <GeneratedSetting
+                                  category={category}
+                                  settingName={settingName}
+                                  settingsLevel={settingsLevel}
+                                  setting={setting}
+                                />
+                              </SettingsSection>
+                            )
+                          })}
+                      </Fragment>
+                    ))}
+                  <h2 id="settings-resets" className="text-2xl mt-6 font-bold">
+                    Resets
+                  </h2>
+                  <SettingsSection
+                    title="Onboarding"
+                    description="Replay the onboarding process"
                   >
-                    Replay Onboarding
-                  </ActionButton>
-                </SettingsSection>
-                <SettingsSection
-                  title="Reset settings"
-                  description={`Restore settings to their default values. Your settings are saved in
+                    <ActionButton
+                      Element="button"
+                      onClick={restartOnboarding}
+                      icon={{
+                        icon: 'refresh',
+                        size: 'sm',
+                        className: 'p-1',
+                      }}
+                    >
+                      Replay Onboarding
+                    </ActionButton>
+                  </SettingsSection>
+                  <SettingsSection
+                    title="Reset settings"
+                    description={`Restore settings to their default values. Your settings are saved in
                     ${
                       isTauri()
                         ? ' a file in the app data folder for your OS.'
                         : " your browser's local storage."
                     }
                   `}
-                >
-                  <div className="flex flex-col items-start gap-4">
-                    {isTauri() && (
+                  >
+                    <div className="flex flex-col items-start gap-4">
+                      {isTauri() && (
+                        <ActionButton
+                          Element="button"
+                          onClick={async () => {
+                            const paths = await getSettingsFolderPaths(
+                              projectPath
+                                ? decodeURIComponent(projectPath)
+                                : undefined
+                            )
+                            void invoke('show_in_folder', {
+                              path: paths[settingsLevel],
+                            })
+                          }}
+                          icon={{
+                            icon: 'folder',
+                            size: 'sm',
+                            className: 'p-1',
+                          }}
+                        >
+                          Show in folder
+                        </ActionButton>
+                      )}
                       <ActionButton
                         Element="button"
                         onClick={async () => {
-                          const paths = await getSettingsFolderPaths(
-                            projectPath
-                              ? decodeURIComponent(projectPath)
-                              : undefined
-                          )
-                          void invoke('show_in_folder', {
-                            path: paths[settingsLevel],
+                          const defaultDirectory = await getInitialDefaultDir()
+                          send({
+                            type: 'Reset settings',
+                            defaultDirectory,
                           })
+                          toast.success('Settings restored to default')
                         }}
                         icon={{
-                          icon: 'folder',
+                          icon: 'refresh',
                           size: 'sm',
-                          className: 'p-1',
+                          className: 'p-1 text-chalkboard-10',
+                          bgClassName: 'bg-destroy-70',
                         }}
                       >
-                        Show in folder
+                        Restore default settings
                       </ActionButton>
-                    )}
-                    <ActionButton
-                      Element="button"
-                      onClick={async () => {
-                        const defaultDirectory = await getInitialDefaultDir()
-                        send({
-                          type: 'Reset settings',
-                          defaultDirectory,
-                        })
-                        toast.success('Settings restored to default')
-                      }}
-                      icon={{
-                        icon: 'refresh',
-                        size: 'sm',
-                        className: 'p-1 text-chalkboard-10',
-                        bgClassName: 'bg-destroy-70',
-                      }}
-                    >
-                      Restore default settings
-                    </ActionButton>
-                  </div>
-                </SettingsSection>
-                <h2 id="settings-about" className="text-2xl mt-6 font-bold">
-                  About Modeling App
-                </h2>
-                <div className="text-sm mb-12">
-                  <p>
-                    {/* This uses a Vite plugin, set in vite.config.ts
+                    </div>
+                  </SettingsSection>
+                  <h2 id="settings-about" className="text-2xl mt-6 font-bold">
+                    About Modeling App
+                  </h2>
+                  <div className="text-sm mb-12">
+                    <p>
+                      {/* This uses a Vite plugin, set in vite.config.ts
                   to inject the version from package.json */}
-                    App version {APP_VERSION}.{' '}
-                    <a
-                      href={`https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      View release on GitHub
-                    </a>
-                  </p>
-                  <p className="max-w-2xl mt-6">
-                    Don't see the feature you want? Check to see if it's on{' '}
-                    <a
-                      href="https://github.com/KittyCAD/modeling-app/discussions"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      our roadmap
-                    </a>
-                    , and start a discussion if you don't see it! Your feedback
-                    will help us prioritize what to build next.
-                  </p>
+                      App version {APP_VERSION}.{' '}
+                      <a
+                        href={`https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        View release on GitHub
+                      </a>
+                    </p>
+                    <p className="max-w-2xl mt-6">
+                      Don't see the feature you want? Check to see if it's on{' '}
+                      <a
+                        href="https://github.com/KittyCAD/modeling-app/discussions"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        our roadmap
+                      </a>
+                      , and start a discussion if you don't see it! Your
+                      feedback will help us prioritize what to build next.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -418,9 +423,7 @@ export function SettingsSection({
       className={
         'group grid grid-cols-2 gap-6 items-start ' +
         className +
-        (settingHasChanged
-          ? ' border-0 border-l-2 -ml-0.5 border-energy-50 dark:border-energy-20'
-          : '')
+        (settingHasChanged ? ' border-0 border-l-2 -ml-0.5 border-primary' : '')
       }
     >
       <div className="ml-2">
@@ -484,26 +487,26 @@ function GeneratedSetting({
           )
       : []
   }, [setting, settingsLevel, context])
+  const inputType = getSettingInputType(setting)
 
-  if (setting.Component)
-    return (
-      <setting.Component
-        value={setting[settingsLevel] || setting.getFallback(settingsLevel)}
-        onChange={(e) => {
-          if ('value' in e.target) {
-            send({
-              type: `set.${category}.${settingName}`,
-              data: {
-                level: settingsLevel,
-                value: e.target.value,
-              },
-            } as unknown as Event<WildcardSetEvent>)
-          }
-        }}
-      />
-    )
-
-  switch (setting.commandConfig?.inputType) {
+  switch (inputType) {
+    case 'component':
+      return (
+        setting.Component && (
+          <setting.Component
+            value={setting[settingsLevel] || setting.getFallback(settingsLevel)}
+            updateValue={(newValue) => {
+              send({
+                type: `set.${category}.${settingName}`,
+                data: {
+                  level: settingsLevel,
+                  value: newValue,
+                },
+              } as unknown as Event<WildcardSetEvent>)
+            }}
+          />
+        )
+      )
     case 'boolean':
       return (
         <Toggle
@@ -603,17 +606,14 @@ function SettingsTabButton(props: SettingsTabButtonProps) {
     <div
       className={`cursor-pointer select-none flex items-center gap-1 p-1 pr-2 -mb-[1px] border-0 border-b ${
         checked
-          ? 'border-energy-10 dark:border-energy-20'
-          : 'border-chalkboard-20 dark:border-chalkboard-30 hover:bg-energy-10/50 dark:hover:bg-energy-90/50'
+          ? 'border-primary'
+          : 'border-chalkboard-20 dark:border-chalkboard-30 hover:bg-primary/20 dark:hover:bg-primary/50'
       }`}
     >
       <CustomIcon
         name={icon}
         className={
-          'w-5 h-5 ' +
-          (checked
-            ? 'bg-energy-10 dark:bg-energy-20 dark:text-chalkboard-110'
-            : '')
+          'w-5 h-5 ' + (checked ? 'bg-primary !text-chalkboard-10' : '')
         }
       />
       <span>{text}</span>

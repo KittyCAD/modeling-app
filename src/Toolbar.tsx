@@ -18,8 +18,12 @@ export const Toolbar = () => {
   const { commandBarSend } = useCommandsContext()
   const { state, send, context } = useModelingContext()
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
+  const iconClassName =
+    'group-disabled:text-chalkboard-50 group-enabled:group-hover:!text-chalkboard-10 group-pressed:!text-chalkboard-10'
   const bgClassName =
-    'group-enabled:group-hover:bg-energy-10 group-pressed:bg-energy-10 dark:group-enabled:group-hover:bg-chalkboard-80 dark:group-pressed:bg-chalkboard-80'
+    'group-disabled:!bg-transparent group-enabled:group-hover:bg-primary group-pressed:bg-primary'
+  const buttonClassName =
+    'bg-chalkboard-10 dark:bg-chalkboard-100 hover:bg-chalkboard-10 dark:hover:bg-chalkboard-100'
   const pathId = useMemo(() => {
     if (!isSingleCursorInPipe(context.selectionRanges, kclManager.ast)) {
       return false
@@ -64,12 +68,14 @@ export const Toolbar = () => {
         {state.nextEvents.includes('Enter sketch') && (
           <li className="contents">
             <ActionButton
+              className={buttonClassName}
               Element="button"
               onClick={() =>
                 send({ type: 'Enter sketch', data: { forceNewSketch: true } })
               }
               icon={{
                 icon: 'sketch',
+                iconClassName,
                 bgClassName,
               }}
               disabled={disableAllButtons}
@@ -81,10 +87,12 @@ export const Toolbar = () => {
         {state.nextEvents.includes('Enter sketch') && pathId && (
           <li className="contents">
             <ActionButton
+              className={buttonClassName}
               Element="button"
               onClick={() => send({ type: 'Enter sketch' })}
               icon={{
                 icon: 'sketch',
+                iconClassName,
                 bgClassName,
               }}
               disabled={disableAllButtons}
@@ -96,10 +104,12 @@ export const Toolbar = () => {
         {state.nextEvents.includes('Cancel') && !state.matches('idle') && (
           <li className="contents">
             <ActionButton
+              className={buttonClassName}
               Element="button"
               onClick={() => send({ type: 'Cancel' })}
               icon={{
                 icon: 'arrowLeft',
+                iconClassName,
                 bgClassName,
               }}
               disabled={disableAllButtons}
@@ -114,17 +124,18 @@ export const Toolbar = () => {
             <>
               <li className="contents" key="line-button">
                 <ActionButton
-                  Element="button"
+                  className={buttonClassName}
+                Element="button"
                   onClick={() =>
                     state?.matches('Sketch.Line tool')
                       ? send('CancelSketch')
                       : send('Equip Line tool')
                   }
                   aria-pressed={state?.matches('Sketch.Line tool')}
-                  className="pressed:bg-energy-10/20 dark:pressed:bg-energy-80"
-                  icon={{
+                    icon={{
                     icon: 'line',
-                    bgClassName,
+                    iconClassName,
+                  bgClassName,
                   }}
                   disabled={disableAllButtons}
                 >
@@ -133,17 +144,18 @@ export const Toolbar = () => {
               </li>
               <li className="contents" key="tangential-arc-button">
                 <ActionButton
-                  Element="button"
+                  className={buttonClassName}
+                Element="button"
                   onClick={() =>
                     state.matches('Sketch.Tangential arc to')
                       ? send('CancelSketch')
                       : send('Equip tangential arc to')
                   }
                   aria-pressed={state.matches('Sketch.Tangential arc to')}
-                  className="pressed:bg-energy-10/20 dark:pressed:bg-energy-80"
-                  icon={{
+                    icon={{
                     icon: 'arc',
-                    bgClassName,
+                    iconClassName,
+                  bgClassName,
                   }}
                   disabled={
                     (!state.can('Equip tangential arc to') &&
@@ -204,8 +216,8 @@ export const Toolbar = () => {
             .map((eventName) => (
               <li className="contents" key={eventName}>
                 <ActionButton
+                  className={buttonClassName}
                   Element="button"
-                  className="text-sm"
                   key={eventName}
                   onClick={() => send(eventName)}
                   disabled={
@@ -216,6 +228,7 @@ export const Toolbar = () => {
                   title={eventName}
                   icon={{
                     icon: 'line',
+                    iconClassName,
                     bgClassName,
                   }}
                 >
@@ -228,8 +241,8 @@ export const Toolbar = () => {
         {state.matches('idle') && (
           <li className="contents">
             <ActionButton
+              className={buttonClassName}
               Element="button"
-              className="text-sm"
               onClick={() =>
                 commandBarSend({
                   type: 'Find and select command',
@@ -244,6 +257,7 @@ export const Toolbar = () => {
               }
               icon={{
                 icon: 'extrude',
+                iconClassName,
                 bgClassName,
               }}
             >
@@ -256,16 +270,16 @@ export const Toolbar = () => {
   }
 
   return (
-    <div className="max-w-full flex items-stretch rounded-l-sm rounded-r-full bg-chalkboard-10 dark:bg-chalkboard-100 relative">
-      <menu className="flex-1 pl-1 pr-2 py-0 overflow-hidden rounded-l-sm whitespace-nowrap bg-chalkboard-10 dark:bg-chalkboard-100 border-solid border border-energy-10 dark:border-chalkboard-90 border-r-0">
+    <div className="max-w-full flex items-stretch rounded-l-sm rounded-r-full bg-chalkboard-10/80 dark:bg-chalkboard-110/70 relative">
+      <menu className="flex-1 pl-1 pr-2 py-0 overflow-hidden rounded-l-sm whitespace-nowrap border-solid border border-primary/30 dark:border-chalkboard-90 border-r-0">
         <ToolbarButtons />
       </menu>
       <ActionButton
         Element="button"
         onClick={() => commandBarSend({ type: 'Open' })}
-        className="rounded-r-full pr-4 self-stretch border-energy-10 hover:border-energy-10 dark:border-chalkboard-80 bg-energy-10/50 hover:bg-energy-10 dark:bg-chalkboard-80 dark:text-energy-10"
+        className="rounded-r-full pr-4 self-stretch border-primary/30 hover:border-primary dark:border-chalkboard-80 dark:bg-chalkboard-80 text-primary"
       >
-        {platform === 'darwin' ? '⌘K' : 'Ctrl+/'}
+        {platform === 'macos' ? '⌘K' : 'Ctrl+/'}
       </ActionButton>
     </div>
   )

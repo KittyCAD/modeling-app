@@ -7,23 +7,23 @@ on:
       - '**/Cargo.toml'
       - '**/Cargo.lock'
       - '**/rust-toolchain.toml'
-      - .github/workflows/cargo-criterion.yml
+      - .github/workflows/cargo-bench.yml
   pull_request:
     paths:
       - '**.rs'
       - '**/Cargo.toml'
       - '**/Cargo.lock'
       - '**/rust-toolchain.toml'
-      - .github/workflows/cargo-criterion.yml
+      - .github/workflows/cargo-bench.yml
   workflow_dispatch:
 permissions: read-all
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
-name: cargo criterion
+name: cargo bench
 jobs:
-  cargocriterion:
-    name: cargo criterion
+  cargo-bench:
+    name: Benchmark with iai
     runs-on: ubuntu-latest-8-cores
     steps:
       - uses: actions/checkout@v4
@@ -31,10 +31,12 @@ jobs:
       - name: Install dependencies
         run: |
           cargo install cargo-criterion
+          sudo apt update
+          sudo apt install -y valgrind
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2.6.1
       - name: Benchmark kcl library
         shell: bash
         run: |-
-          cd src/wasm-lib/kcl; cargo criterion
+          cd src/wasm-lib/kcl; cargo bench -- iai
 

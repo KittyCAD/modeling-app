@@ -64,6 +64,19 @@ export type SetSelections =
       selection: Selections
     }
 
+export type MouseState =
+  | {
+      type: 'idle'
+    }
+  | {
+      type: 'isHovering'
+      on: any
+    }
+  | {
+      type: 'isDragging'
+      on: any
+    }
+
 export interface SketchDetails {
   sketchPathToNode: PathToNode
   zAxis: [number, number, number]
@@ -133,6 +146,7 @@ export type ModelingMachineEvent =
       type: 'done.invoke.animate-to-face' | 'done.invoke.animate-to-sketch'
       data: SketchDetails
     }
+  | { type: 'Set mouse state'; data: MouseState }
 
 export type MoveDesc = { line: number; snippet: string }
 
@@ -162,6 +176,7 @@ export const modelingMachine = createMachine(
       sketchPlaneId: '' as string,
       sketchEnginePathId: '' as string,
       moveDescs: [] as MoveDesc[],
+      mouseState: { type: 'idle' } as MouseState,
     },
 
     schema: {
@@ -559,6 +574,10 @@ export const modelingMachine = createMachine(
       'Set selection': {
         internal: true,
         actions: 'Set selection',
+      },
+      'Set mouse state': {
+        internal: true,
+        actions: 'Set mouse state',
       },
     },
   },

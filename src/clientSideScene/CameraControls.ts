@@ -110,14 +110,6 @@ export class CameraControls {
     }, 400) as any as number
   }
 
-  // reacts hooks into some of this singleton's properties
-  reactCameraProperties: ReactCameraProperties = {
-    type: 'perspective',
-    fov: 12,
-    position: [0, 0, 0],
-    quaternion: [0, 0, 0, 1],
-  }
-
   setCam = (camProps: ReactCameraProperties) => {
     if (
       camProps.type === 'perspective' &&
@@ -910,6 +902,26 @@ export class CameraControls {
         .start()
     })
 
+  get reactCameraProperties(): ReactCameraProperties {
+    return {
+      type: this.isPerspective ? 'perspective' : 'orthographic',
+      [this.isPerspective ? 'fov' : 'zoom']:
+        this.camera instanceof PerspectiveCamera
+          ? this.camera.fov
+          : this.camera.zoom,
+      position: [
+        roundOff(this.camera.position.x, 2),
+        roundOff(this.camera.position.y, 2),
+        roundOff(this.camera.position.z, 2),
+      ],
+      quaternion: [
+        roundOff(this.camera.quaternion.x, 2),
+        roundOff(this.camera.quaternion.y, 2),
+        roundOff(this.camera.quaternion.z, 2),
+        roundOff(this.camera.quaternion.w, 2),
+      ],
+    }
+  }
   reactCameraPropertiesCallback: (a: ReactCameraProperties) => void = () => {}
   setReactCameraPropertiesCallback = (
     cb: (a: ReactCameraProperties) => void
@@ -937,24 +949,7 @@ export class CameraControls {
         isPerspective: this.isPerspective,
         target: this.target,
       })
-    this.deferReactUpdate({
-      type: this.isPerspective ? 'perspective' : 'orthographic',
-      [this.isPerspective ? 'fov' : 'zoom']:
-        this.camera instanceof PerspectiveCamera
-          ? this.camera.fov
-          : this.camera.zoom,
-      position: [
-        roundOff(this.camera.position.x, 2),
-        roundOff(this.camera.position.y, 2),
-        roundOff(this.camera.position.z, 2),
-      ],
-      quaternion: [
-        roundOff(this.camera.quaternion.x, 2),
-        roundOff(this.camera.quaternion.y, 2),
-        roundOff(this.camera.quaternion.z, 2),
-        roundOff(this.camera.quaternion.w, 2),
-      ],
-    })
+    this.deferReactUpdate(this.reactCameraProperties)
     Object.values(this._camChangeCallbacks).forEach((cb) => cb())
   }
   getInteractionType = (event: any) =>

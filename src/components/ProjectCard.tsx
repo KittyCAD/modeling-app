@@ -13,6 +13,7 @@ import { getPartsCount, readProject } from '../lib/tauriFS'
 import { FILE_EXT } from 'lib/constants'
 import { Dialog } from '@headlessui/react'
 import { useHotkeys } from 'react-hotkeys-hook'
+import Tooltip from './Tooltip'
 
 function ProjectCard({
   project,
@@ -64,17 +65,17 @@ function ProjectCard({
       inputRef.current.focus()
       inputRef.current.select()
     }
-  }, [inputRef])
+  }, [inputRef.current])
 
   return (
     <li
       {...props}
-      className="group relative min-h-[5em] p-1 rounded-sm border border-chalkboard-20 dark:border-chalkboard-90 hover:border-energy-10 dark:hover:border-chalkboard-70 hover:bg-energy-10/20 dark:hover:bg-chalkboard-90"
+      className="group relative min-h-[5em] p-1 rounded-sm border border-chalkboard-20 dark:border-chalkboard-80 hover:!border-primary"
     >
       {isEditing ? (
         <form onSubmit={handleSave} className="flex gap-2 items-center">
           <input
-            className="dark:bg-chalkboard-80 dark:border-chalkboard-40 min-w-0 p-1 selection:bg-energy-10/20 focus:outline-none"
+            className="dark:bg-chalkboard-80 dark:border-chalkboard-40 min-w-0 p-1 focus:outline-none"
             type="text"
             id="newProjectName"
             name="newProjectName"
@@ -87,27 +88,41 @@ function ProjectCard({
             <ActionButton
               Element="button"
               type="submit"
-              icon={{ icon: faCheck, size: 'sm', className: 'p-1' }}
+              icon={{
+                icon: faCheck,
+                size: 'sm',
+                className: 'p-1',
+                bgClassName: '!bg-transparent',
+              }}
               className="!p-0"
-            ></ActionButton>
+            >
+              <Tooltip position="left" delay={1000}>
+                Rename project
+              </Tooltip>
+            </ActionButton>
             <ActionButton
               Element="button"
               icon={{
                 icon: faX,
                 size: 'sm',
                 iconClassName: 'dark:!text-chalkboard-20',
+                bgClassName: '!bg-transparent',
                 className: 'p-1',
               }}
               className="!p-0"
               onClick={() => setIsEditing(false)}
-            />
+            >
+              <Tooltip position="left" delay={1000}>
+                Cancel
+              </Tooltip>
+            </ActionButton>
           </div>
         </form>
       ) : (
         <>
           <div className="p-1 flex flex-col h-full gap-2">
             <Link
-              className="flex-1 !no-underline text-liquid-100 after:content-[''] after:absolute after:inset-0"
+              className="flex-1 !no-underline !text-chalkboard-110 dark:!text-chalkboard-10 after:content-[''] after:absolute after:inset-0"
               to={`${paths.FILE}/${encodeURIComponent(project.path)}`}
               data-testid="project-link"
             >
@@ -121,7 +136,10 @@ function ProjectCard({
                 }`}
             </span>
             <span className="text-chalkboard-60 text-xs">
-              Edited {getDisplayedTime(project.entrypointMetadata.modifiedAt)}
+              Edited{' '}
+              {project.entrypointMetadata.mtime
+                ? getDisplayedTime(project.entrypointMetadata.mtime)
+                : 'never'}
             </span>
             <div className="absolute z-10 bottom-2 right-2 flex gap-1 items-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
               <ActionButton
@@ -130,6 +148,7 @@ function ProjectCard({
                   icon: faPenAlt,
                   className: 'p-1',
                   iconClassName: 'dark:!text-chalkboard-20',
+                  bgClassName: '!bg-transparent',
                   size: 'xs',
                 }}
                 onClick={(e) => {
@@ -138,15 +157,19 @@ function ProjectCard({
                   setIsEditing(true)
                 }}
                 className="!p-0"
-              />
+              >
+                <Tooltip position="left" delay={1000}>
+                  Rename project
+                </Tooltip>
+              </ActionButton>
               <ActionButton
                 Element="button"
                 icon={{
                   icon: faTrashAlt,
                   className: 'p-1',
                   size: 'xs',
-                  bgClassName: 'bg-destroy-80',
-                  iconClassName: '!text-destroy-20 dark:!text-destroy-40',
+                  bgClassName: '!bg-transparent',
+                  iconClassName: '!text-destroy-70',
                 }}
                 className="!p-0 hover:border-destroy-40 dark:hover:border-destroy-40"
                 onClick={(e) => {
@@ -154,7 +177,11 @@ function ProjectCard({
                   e.nativeEvent.stopPropagation()
                   setIsConfirmingDelete(true)
                 }}
-              />
+              >
+                <Tooltip position="left" delay={1000}>
+                  Delete project
+                </Tooltip>
+              </ActionButton>
             </div>
           </div>
           <Dialog

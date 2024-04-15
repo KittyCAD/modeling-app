@@ -22,24 +22,20 @@ mod test_examples_show {
 
         let ws = client
             .modeling()
-            .commands_ws(None, None, None, None, None, Some(false))
+            .commands_ws(None, None, None, None, None, None, Some(false))
             .await
             .unwrap();
         let tokens = crate::token::lexer("This is another code block.\nyes sirrr.\nshow");
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
-        let mut mem: crate::executor::ProgramMemory = Default::default();
         let units = kittycad::types::UnitLength::Mm;
         let ctx = crate::executor::ExecutorContext::new(ws, units.clone())
             .await
             .unwrap();
-        crate::executor::execute(program, &mut mem, crate::executor::BodyType::Root, &ctx)
-            .await
-            .unwrap();
+        ctx.run(program, None).await.unwrap();
         let (x, y) = crate::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
         ctx.engine
             .send_modeling_cmd(
-                false,
                 uuid::Uuid::new_v4(),
                 crate::executor::SourceRange::default(),
                 kittycad::types::ModelingCmd::DefaultCameraLookAt {
@@ -66,7 +62,6 @@ mod test_examples_show {
         let resp = ctx
             .engine
             .send_modeling_cmd(
-                false,
                 uuid::Uuid::new_v4(),
                 crate::executor::SourceRange::default(),
                 kittycad::types::ModelingCmd::TakeSnapshot {
@@ -119,24 +114,20 @@ mod test_examples_show {
 
         let ws = client
             .modeling()
-            .commands_ws(None, None, None, None, None, Some(false))
+            .commands_ws(None, None, None, None, None, None, Some(false))
             .await
             .unwrap();
         let tokens = crate::token::lexer("This is code.\nIt does other shit.\nshow");
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
-        let mut mem: crate::executor::ProgramMemory = Default::default();
         let units = kittycad::types::UnitLength::Mm;
         let ctx = crate::executor::ExecutorContext::new(ws, units.clone())
             .await
             .unwrap();
-        crate::executor::execute(program, &mut mem, crate::executor::BodyType::Root, &ctx)
-            .await
-            .unwrap();
+        ctx.run(program, None).await.unwrap();
         let (x, y) = crate::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
         ctx.engine
             .send_modeling_cmd(
-                false,
                 uuid::Uuid::new_v4(),
                 crate::executor::SourceRange::default(),
                 kittycad::types::ModelingCmd::DefaultCameraLookAt {
@@ -163,7 +154,6 @@ mod test_examples_show {
         let resp = ctx
             .engine
             .send_modeling_cmd(
-                false,
                 uuid::Uuid::new_v4(),
                 crate::executor::SourceRange::default(),
                 kittycad::types::ModelingCmd::TakeSnapshot {
@@ -209,8 +199,8 @@ fn boxed_show(
 ) -> std::pin::Pin<
     Box<
         dyn std::future::Future<
-            Output = anyhow::Result<crate::executor::MemoryItem, crate::errors::KclError>,
-        >,
+                Output = anyhow::Result<crate::executor::MemoryItem, crate::errors::KclError>,
+            > + Send,
     >,
 > {
     Box::pin(show(args))

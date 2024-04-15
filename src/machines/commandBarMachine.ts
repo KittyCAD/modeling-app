@@ -402,8 +402,8 @@ export const commandBarMachine = createMachine(
       'Initialize arguments to submit': assign({
         argumentsToSubmit: (c, e) => {
           const command =
-            'command' in e.data ? e.data.command : c.selectedCommand!
-          if (!command.args) return {}
+            'command' in e.data ? e.data.command : c.selectedCommand
+          if (!command?.args) return {}
           const args: { [x: string]: unknown } = {}
           for (const [argName, arg] of Object.entries(command.args)) {
             args[argName] =
@@ -483,7 +483,8 @@ export const commandBarMachine = createMachine(
               }
 
               if (
-                (argConfig.inputType !== 'boolean'
+                (argConfig.inputType !== 'boolean' &&
+                argConfig.inputType !== 'options'
                   ? !argValue
                   : argValue === undefined) &&
                 isRequired

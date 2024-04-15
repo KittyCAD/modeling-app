@@ -14,7 +14,7 @@ import {
 } from 'lib/cameraControls'
 import { isTauri } from 'lib/isTauri'
 import { useRef } from 'react'
-import { open } from '@tauri-apps/api/dialog'
+import { open } from '@tauri-apps/plugin-dialog'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
 
@@ -132,9 +132,43 @@ export function createSettings() {
             })),
         },
       }),
+      themeColor: new Setting<string>({
+        defaultValue: '264.5',
+        description: 'The hue of the primary theme color for the app',
+        validate: (v) => Number(v) >= 0 && Number(v) < 360,
+        Component: ({ value, updateValue }) => (
+          <div className="flex item-center gap-2 px-2">
+            <input
+              type="range"
+              onChange={(e) => updateValue(e.currentTarget.value)}
+              value={value}
+              min={0}
+              max={259}
+              step={1}
+              className="block flex-1"
+            />
+            <span className="text-xs block w-[6ch] text-right">{value}º</span>
+            <div
+              className="w-3 h-3 rounded-full bg-primary"
+              style={{
+                backgroundColor: `oklch(var(--primary-lightness) var(--primary-chroma) ${value})`,
+              }}
+            />
+          </div>
+        ),
+      }),
       onboardingStatus: new Setting<string>({
         defaultValue: '',
         validate: (v) => typeof v === 'string',
+        hideOnPlatform: 'both',
+      }),
+      /** Permanently dismiss the banner warning to download the desktop app. */
+      dismissWebBanner: new Setting<boolean>({
+        defaultValue: false,
+        description:
+          'Permanently dismiss the banner warning to download the desktop app.',
+        validate: (v) => typeof v === 'boolean',
+        hideOnPlatform: 'desktop',
       }),
       projectDirectory: new Setting<string>({
         defaultValue: '',
@@ -142,35 +176,41 @@ export function createSettings() {
         hideOnLevel: 'project',
         hideOnPlatform: 'web',
         validate: (v) => typeof v === 'string' && (v.length > 0 || !isTauri()),
-        Component: ({ value, onChange }) => {
+        Component: ({ value, updateValue }) => {
           const inputRef = useRef<HTMLInputElement>(null)
           return (
             <div className="flex gap-4 p-1 border rounded-sm border-chalkboard-30">
               <input
                 className="flex-grow text-xs px-2 bg-transparent"
                 value={value}
-                onBlur={onChange}
                 disabled
-                data-testid="default-directory-input"
+                data-testid="project-directory-input"
+                ref={inputRef}
               />
               <button
                 onClick={async () => {
-                  const newValue = await open({
-                    directory: true,
-                    recursive: true,
-                    defaultPath: value,
-                    title: 'Choose a new default directory',
-                  })
+                  // In Tauri end-to-end tests we can't control the file picker,
+                  // so we seed the new directory value in the element's dataset
+                  const newValue =
+                    inputRef.current && inputRef.current.dataset.testValue
+                      ? inputRef.current.dataset.testValue
+                      : await open({
+                          directory: true,
+                          recursive: true,
+                          defaultPath: value,
+                          title: 'Choose a new project directory',
+                        })
                   if (
-                    inputRef.current &&
                     newValue &&
                     newValue !== null &&
+                    newValue !== value &&
                     !Array.isArray(newValue)
                   ) {
-                    inputRef.current.value = newValue
+                    updateValue(newValue)
                   }
                 }}
-                className="p-0 m-0 border-none hover:bg-energy-10 focus:bg-energy-10 dark:hover:bg-energy-80/50 dark:focus::bg-energy-80/50"
+                className="p-0 m-0 border-none hover:bg-primary/10 focus:bg-primary/10 dark:hover:bg-primary/20 dark:focus::bg-primary/20"
+                data-testid="project-directory-button"
               >
                 <CustomIcon name="folder" className="w-5 h-5" />
                 <Tooltip position="inlineStart">Choose a folder</Tooltip>
@@ -230,13 +270,13 @@ export function createSettings() {
                 ],
             })),
         },
-        Component: ({ value, onChange }) => (
+        Component: ({ value, updateValue }) => (
           <>
             <select
               id="camera-controls"
               className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
               value={value}
-              onChange={onChange}
+              onChange={(e) => updateValue(e.target.value as CameraSystem)}
             >
               {cameraSystems.map((program) => (
                 <option key={program} value={program}>
@@ -317,6 +357,17 @@ export function createSettings() {
         defaultValue: true,
         description:
           'Whether to wrap text in the editor or overflow with scroll',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
+      /**
+       * Whether to make the cursor blink in the editor
+       */
+      blinkingCursor: new Setting<boolean>({
+        defaultValue: true,
+        description: 'Whether to make the cursor blink in the editor',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',

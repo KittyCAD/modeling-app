@@ -1,6 +1,6 @@
-import { processMemory } from './MemoryPanel'
-import { enginelessExecutor } from '../lib/testHelpers'
-import { initPromise, parse } from '../lang/wasm'
+import { processMemory } from './MemoryPane'
+import { enginelessExecutor } from '../../../lib/testHelpers'
+import { initPromise, parse } from '../../../lang/wasm'
 
 beforeAll(() => initPromise)
 

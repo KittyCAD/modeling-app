@@ -19,7 +19,7 @@ import { useNavigate } from 'react-router-dom'
 import { paths } from 'lib/paths'
 import { useEffect } from 'react'
 import { kclManager } from 'lib/singletons'
-import { sep } from '@tauri-apps/api/path'
+import { join } from '@tauri-apps/api/path'
 import { APP_NAME, PROJECT_ENTRYPOINT } from 'lib/constants'
 
 function OnboardingWithNewFile() {
@@ -45,12 +45,12 @@ function OnboardingWithNewFile() {
       nextIndex
     )
     const newFile = await createNewProject(
-      projectDirectory.current + sep + name,
+      await join(projectDirectory.current, name),
       bracket
     )
     navigate(
       `${paths.FILE}/${encodeURIComponent(
-        newFile.path + sep + PROJECT_ENTRYPOINT
+        await join(newFile.path, PROJECT_ENTRYPOINT)
       )}${paths.ONBOARDING.INDEX}`
     )
   }
@@ -137,7 +137,7 @@ export default function Introduction() {
             alt={APP_NAME}
             className="h-20 max-w-full"
           />
-          <span className="px-3 py-1 text-base rounded-full bg-energy-10 text-energy-80">
+          <span className="px-3 py-1 text-base rounded-full bg-primary/10 text-primary">
             Alpha
           </span>
         </h1>

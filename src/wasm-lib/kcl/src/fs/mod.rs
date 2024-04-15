@@ -8,6 +8,7 @@ pub use local::FileManager;
 #[cfg(target_arch = "wasm32")]
 #[cfg(not(test))]
 pub mod wasm;
+
 use anyhow::Result;
 #[cfg(target_arch = "wasm32")]
 #[cfg(not(test))]

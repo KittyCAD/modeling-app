@@ -42165,7 +42165,7 @@
               "format": "double"
             },
             "center": {
-              "description": "The center about which to make th pattern. This is a 2D vector.",
+              "description": "The center about which to make the pattern. This is a 2D vector.",
               "type": "array",
               "items": {
                 "type": "number",
@@ -44168,7 +44168,7 @@
               "minItems": 3
             },
             "center": {
-              "description": "The center about which to make th pattern. This is a 3D vector.",
+              "description": "The center about which to make the pattern. This is a 3D vector.",
               "type": "array",
               "items": {
                 "type": "number",
@@ -49363,21 +49363,21 @@
                       "description": "X-axis.",
                       "type": "string",
                       "enum": [
-                        "x"
+                        "X"
                       ]
                     },
                     {
                       "description": "Y-axis.",
                       "type": "string",
                       "enum": [
-                        "y"
+                        "Y"
                       ]
                     },
                     {
                       "description": "Z-axis.",
                       "type": "string",
                       "enum": [
-                        "z"
+                        "Z"
                       ]
                     },
                     {

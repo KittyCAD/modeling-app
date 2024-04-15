@@ -104,7 +104,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                     key={argName}
                     className={`relative w-fit px-2 py-1 rounded-sm flex gap-2 items-center border ${
                       argName === currentArgument?.name
-                        ? 'disabled:bg-energy-10/50 dark:disabled:bg-energy-10/20 disabled:border-energy-10 dark:disabled:border-energy-10 disabled:text-chalkboard-100 dark:disabled:text-chalkboard-10'
+                        ? 'disabled:bg-primary/10 dark:disabled:bg-primary/20 disabled:border-primary dark:disabled:border-primary disabled:text-chalkboard-100 dark:disabled:text-chalkboard-10'
                         : 'bg-chalkboard-20/50 dark:bg-chalkboard-80/50 border-chalkboard-20 dark:border-chalkboard-80'
                     }`}
                   >
@@ -129,7 +129,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                       )
                     ) : null}
                     {showShortcuts && (
-                      <small className="absolute -top-[1px] right-full translate-x-1/2 px-0.5 rounded-sm bg-chalkboard-80 text-chalkboard-10 dark:bg-energy-10 dark:text-chalkboard-100">
+                      <small className="absolute -top-[1px] right-full translate-x-1/2 px-0.5 rounded-sm bg-chalkboard-80 text-chalkboard-10 dark:bg-primary dark:text-chalkboard-100">
                         <span className="sr-only">Hotkey: </span>
                         {i + 1}
                       </small>
@@ -174,12 +174,11 @@ function ReviewingButton() {
       autoFocus
       type="submit"
       form="review-form"
-      className="w-fit !p-0 rounded-sm border !border-chalkboard-100 dark:!border-energy-10 hover:shadow"
+      className="w-fit !p-0 rounded-sm border !border-primary hover:shadow"
       icon={{
         icon: 'checkmark',
-        bgClassName:
-          'p-1 rounded-sm !bg-chalkboard-100 hover:!bg-chalkboard-110 dark:!bg-energy-20 dark:hover:!bg-energy-10',
-        iconClassName: '!text-energy-10 dark:!text-chalkboard-100',
+        bgClassName: 'p-1 rounded-sm !bg-primary hover:brightness-110',
+        iconClassName: '!text-chalkboard-10',
       }}
     >
       <span className="sr-only">Submit command</span>
@@ -193,10 +192,11 @@ function GatheringArgsButton() {
       Element="button"
       type="submit"
       form="arg-form"
-      className="w-fit !p-0 rounded-sm"
+      className="w-fit !p-0 rounded-sm border !border-primary hover:shadow"
       icon={{
         icon: 'arrowRight',
-        bgClassName: 'p-1 rounded-sm',
+        bgClassName: 'p-1 rounded-sm !bg-primary hover:brightness-110',
+        iconClassName: '!text-chalkboard-10',
       }}
     >
       <span className="sr-only">Continue</span>

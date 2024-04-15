@@ -1,6 +1,5 @@
 import { Popover, Transition } from '@headlessui/react'
 import { ActionButton } from './ActionButton'
-import { faHome } from '@fortawesome/free-solid-svg-icons'
 import { type IndexLoaderData } from 'lib/types'
 import { paths } from 'lib/paths'
 import { isTauri } from '../lib/isTauri'
@@ -25,15 +24,15 @@ const ProjectSidebarMenu = ({
 }) => {
   const { onProjectClose } = useLspContext()
   return (
-    <div className="rounded-sm !no-underline h-9 mr-auto max-h-min min-w-max border-0 py-1 px-2 flex items-center gap-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-energy-50 dark:hover:bg-chalkboard-90">
+    <div className="!no-underline h-full mr-auto max-h-min min-w-max flex items-center gap-2">
       <Link
         onClick={() => {
           onProjectClose(file || null, project?.path || null, false)
         }}
         to={paths.HOME}
-        className="group"
+        className="relative h-full grid place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-2.5 before:z-[-1] before:bg-primary hover:before:brightness-110 before:rounded-b-sm"
       >
-        <Logo className="w-auto h-5 text-chalkboard-120 dark:text-chalkboard-10 group-hover:text-energy-10" />
+        <Logo className="w-auto h-4 text-chalkboard-10" />
       </Link>
       {renderAsLink ? (
         <>
@@ -67,20 +66,27 @@ function ProjectMenuPopover({
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
 }) {
-  const { commandBarSend } = useCommandsContext()
+  const { commandBarState, commandBarSend } = useCommandsContext()
   const { onProjectClose } = useLspContext()
+  const exportCommandInfo = { name: 'Export', ownerMachine: 'modeling' }
+  const findCommand = (obj: { name: string; ownerMachine: string }) =>
+    Boolean(
+      commandBarState.context.commands.find(
+        (c) => c.name === obj.name && c.ownerMachine === obj.ownerMachine
+      )
+    )
 
   return (
     <Popover className="relative">
       <Popover.Button
-        className="rounded-sm h-9 mr-auto max-h-min min-w-max border-0 py-1 pl-0 pr-2 flex items-center focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-energy-50 dark:hover:bg-chalkboard-90"
+        className="rounded-sm h-9 mr-auto max-h-min min-w-max border-0 py-1 pl-0 pr-2 flex items-center focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary dark:hover:bg-chalkboard-90"
         data-testid="project-sidebar-toggle"
       >
         <CustomIcon name="three-dots" className="w-5 h-5 rotate-90" />
         <div className="flex flex-col items-start py-0.5">
           <span className="hidden text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block">
             {isTauri() && file?.name
-              ? file.name.slice(file.name.lastIndexOf(sep) + 1)
+              ? file.name.slice(file.name.lastIndexOf(sep()) + 1)
               : APP_NAME}
           </span>
           {isTauri() && project?.name && (
@@ -119,19 +125,16 @@ function ProjectMenuPopover({
             <>
               <div className="flex items-center gap-4 px-4 py-3">
                 <div>
-                  <p
-                    className="m-0 text-chalkboard-100 dark:text-energy-10 text-mono"
-                    data-testid="projectName"
-                  >
+                  <p className="m-0 text-mono" data-testid="projectName">
                     {project?.name ? project.name : APP_NAME}
                   </p>
                   {project?.entrypointMetadata && (
                     <p
-                      className="m-0 text-xs text-chalkboard-100 dark:text-energy-40"
+                      className="m-0 text-xs text-chalkboard-80 dark:text-chalkboard-40"
                       data-testid="createdAt"
                     >
                       Created{' '}
-                      {project.entrypointMetadata.createdAt.toLocaleDateString()}
+                      {project.entrypointMetadata.birthtime?.toLocaleDateString()}
                     </p>
                   )}
                 </div>
@@ -143,17 +146,27 @@ function ProjectMenuPopover({
                   closePanel={close}
                 />
               ) : (
-                <div className="flex-1 overflow-hidden" />
+                <div className="flex-1 p-4 text-sm overflow-hidden">
+                  <p>
+                    In the browser version of Modeling App you can only have one
+                    part, and the code is stored in your browser's storage.
+                  </p>
+                  <p className="my-6">
+                    Please save any code you want to keep more permanently, as
+                    your browser's storage is not guaranteed to be permanent.
+                  </p>
+                </div>
               )}
               <div className="flex flex-col gap-2 p-4 dark:bg-chalkboard-90">
                 <ActionButton
                   Element="button"
                   icon={{ icon: 'exportFile', className: 'p-1' }}
                   className="border-transparent dark:border-transparent"
+                  disabled={!findCommand(exportCommandInfo)}
                   onClick={() =>
                     commandBarSend({
                       type: 'Find and select command',
-                      data: { name: 'Export', ownerMachine: 'modeling' },
+                      data: exportCommandInfo,
                     })
                   }
                 >
@@ -166,11 +179,10 @@ function ProjectMenuPopover({
                       onProjectClose(file || null, project?.path || null, true)
                     }}
                     icon={{
-                      icon: faHome,
+                      icon: 'arrowLeft',
                       className: 'p-1',
-                      size: 'sm',
                     }}
-                    className="border-transparent dark:border-transparent hover:bg-energy-10/20 dark:hover:bg-chalkboard-90"
+                    className="border-transparent dark:border-transparent"
                   >
                     Go to Home
                   </ActionButton>

@@ -81,11 +81,11 @@ export interface StoreState {
     streamWidth: number
     streamHeight: number
   }) => void
+  setHtmlRef: (ref: React.RefObject<HTMLDivElement>) => void
+  htmlRef: React.RefObject<HTMLDivElement> | null
 
   showHomeMenu: boolean
   setHomeShowMenu: (showMenu: boolean) => void
-  isBannerDismissed: boolean
-  setBannerDismissed: (isBannerDismissed: boolean) => void
   openPanes: PaneType[]
   setOpenPanes: (panes: PaneType[]) => void
   homeMenuItems: {
@@ -134,6 +134,10 @@ export const useStore = create<StoreState>()(
         setButtonDownInStream: (buttonDownInStream) => {
           set({ buttonDownInStream })
         },
+        setHtmlRef: (htmlRef) => {
+          set({ htmlRef })
+        },
+        htmlRef: null,
         didDragInStream: false,
         setDidDragInStream: (didDragInStream) => {
           set({ didDragInStream })
@@ -150,8 +154,6 @@ export const useStore = create<StoreState>()(
         defaultDir: {
           dir: '',
         },
-        isBannerDismissed: false,
-        setBannerDismissed: (isBannerDismissed) => set({ isBannerDismissed }),
         openPanes: ['code'],
         setOpenPanes: (openPanes) => set({ openPanes }),
         showHomeMenu: true,

@@ -4,10 +4,15 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { cameraMouseDragGuards } from 'lib/cameraControls'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useStore } from 'useStore'
-import { DEBUG_SHOW_BOTH_SCENES } from './sceneInfra'
+import { ARROWHEAD, DEBUG_SHOW_BOTH_SCENES } from './sceneInfra'
 import { ReactCameraProperties } from './CameraControls'
 import { throttle } from 'lib/utils'
 import { sceneInfra } from 'lib/singletons'
+import {
+  EXTRA_SEGMENT_HANDLE,
+  PROFILE_START,
+  getParentGroup,
+} from './sceneEntities'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -40,7 +45,7 @@ export const ClientSideScene = ({
   >['settings']['context']['modeling']['mouseControls']['current']
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null)
-  const { state, send } = useModelingContext()
+  const { state, send, context } = useModelingContext()
   const { hideClient, hideServer } = useShouldHideScene()
   const { setHighlightRange } = useStore((s) => ({
     setHighlightRange: s.setHighlightRange,
@@ -76,9 +81,33 @@ export const ClientSideScene = ({
     }
   }, [])
 
+  let cursor = 'default'
+  if (state.matches('Sketch')) {
+    if (
+      context.mouseState.type === 'isHovering' &&
+      getParentGroup(context.mouseState.on, [
+        ARROWHEAD,
+        EXTRA_SEGMENT_HANDLE,
+        PROFILE_START,
+      ])
+    ) {
+      cursor = 'move'
+    } else if (context.mouseState.type === 'isDragging') {
+      cursor = 'grabbing'
+    } else if (
+      state.matches('Sketch.Line tool') ||
+      state.matches('Sketch.Tangential arc to')
+    ) {
+      cursor = 'crosshair'
+    } else {
+      cursor = 'default'
+    }
+  }
+
   return (
     <div
       ref={canvasRef}
+      style={{ cursor: cursor }}
       className={`absolute inset-0 h-full w-full transition-all duration-300 ${
         hideClient ? 'opacity-0' : 'opacity-100'
       } ${hideServer ? 'bg-black' : ''} ${
@@ -97,12 +126,9 @@ const throttled = throttle((a: ReactCameraProperties) => {
 }, 1000 / 15)
 
 export const CamDebugSettings = () => {
-  const [camSettings, setCamSettings] = useState<ReactCameraProperties>({
-    type: 'perspective',
-    fov: 12,
-    position: [0, 0, 0],
-    quaternion: [0, 0, 0, 1],
-  })
+  const [camSettings, setCamSettings] = useState<ReactCameraProperties>(
+    sceneInfra.camControls.reactCameraProperties
+  )
   const [fov, setFov] = useState(12)
 
   useEffect(() => {

@@ -38,7 +38,7 @@ import {
   getSketchQuaternion,
 } from 'clientSideScene/sceneEntities'
 import { sketchOnExtrudedFace, startSketchOnDefault } from 'lang/modifyAst'
-import { Program, parse } from 'lang/wasm'
+import { Program, coreDump, parse } from 'lang/wasm'
 import { getNodePathFromSourceRange, isSingleCursorInPipe } from 'lang/queryAst'
 import { TEST } from 'env'
 import { exportFromEngine } from 'lib/exportFromEngine'
@@ -47,6 +47,8 @@ import toast from 'react-hot-toast'
 import { EditorSelection } from '@uiw/react-codemirror'
 import { Vector3 } from 'three'
 import { quaternionFromUpNForward } from 'clientSideScene/helpers'
+import { CoreDumpManager } from 'lib/coredump'
+import { useHotkeys } from 'react-hotkeys-hook'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -76,6 +78,15 @@ export const ModelingMachineProvider = ({
   const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)
   useSetupEngineManager(streamRef, token, theme.current)
+  const { htmlRef } = useStore((s) => ({
+    htmlRef: s.htmlRef,
+  }))
+  const coreDumpManager = new CoreDumpManager(
+    engineCommandManager,
+    htmlRef,
+    token
+  )
+  useHotkeys('meta + shift + .', () => coreDump(coreDumpManager, true))
 
   const {
     isShiftDown,
@@ -112,6 +123,9 @@ export const ModelingMachineProvider = ({
             kclManager.executeAst()
           }
         },
+        'Set mouse state': assign({
+          mouseState: (_, event) => event.data,
+        }),
         'Set selection': assign(({ selectionRanges }, event) => {
           if (event.type !== 'Set selection') return {} // this was needed for ts after adding 'Set selection' action to on done modal events
           const setSelections = event.data

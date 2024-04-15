@@ -1,12 +1,13 @@
 import { Dialog } from '@headlessui/react'
-import { useStore } from '../useStore'
 import { ActionButton } from './ActionButton'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { useState } from 'react'
 
 const DownloadAppBanner = () => {
-  const { isBannerDismissed, setBannerDismissed } = useStore((s) => ({
-    isBannerDismissed: s.isBannerDismissed,
-    setBannerDismissed: s.setBannerDismissed,
-  }))
+  const { settings } = useSettingsAuthContext()
+  const [isBannerDismissed, setIsBannerDismissed] = useState(
+    settings.context.app.dismissWebBanner.current
+  )
 
   return (
     <Dialog
@@ -23,7 +24,7 @@ const DownloadAppBanner = () => {
             </h2>
             <ActionButton
               Element="button"
-              onClick={() => setBannerDismissed(true)}
+              onClick={() => setIsBannerDismissed(true)}
               icon={{
                 icon: 'close',
                 className: 'p-1',
@@ -50,6 +51,24 @@ const DownloadAppBanner = () => {
               our website
             </a>{' '}
             to download the app for the best experience.
+          </p>
+          <p className="mt-6">
+            If you're on Linux and the browser is your only way to use the app,
+            you can permanently dismiss this banner by{' '}
+            <a
+              onClick={() => {
+                setIsBannerDismissed(true)
+                settings.send({
+                  type: 'set.app.dismissWebBanner',
+                  data: { level: 'user', value: true },
+                })
+              }}
+              href="/"
+              className="!text-warn-80 dark:!text-warn-80 dark:hover:!text-warn-70 underline"
+            >
+              toggling the App &gt; Dismiss Web Banner setting
+            </a>
+            .
           </p>
         </div>
       </Dialog.Panel>

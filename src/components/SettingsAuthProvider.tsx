@@ -116,7 +116,7 @@ export const SettingsAuthProviderBase = ({
             },
           })
         },
-        toastSuccess: (context, event) => {
+        toastSuccess: (_, event) => {
           const eventParts = event.type.replace(/^set./, '').split('.') as [
             keyof typeof settings,
             string
@@ -135,6 +135,7 @@ export const SettingsAuthProviderBase = ({
               : '')
           toast.success(message, {
             duration: message.split(' ').length * 100 + 1500,
+            id: `${event.type}.success`,
           })
         },
         'Execute AST': () => kclManager.executeAst(),
@@ -198,6 +199,30 @@ export const SettingsAuthProviderBase = ({
     matcher.addEventListener('change', listener)
     return () => matcher.removeEventListener('change', listener)
   }, [settingsState.context])
+
+  /**
+   * Update the --primary-hue CSS variable
+   * to match the setting app.themeColor.current
+   */
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      `--primary-hue`,
+      settingsState.context.app.themeColor.current
+    )
+  }, [settingsState.context.app.themeColor.current])
+
+  /**
+   * Update the --cursor-color CSS variable
+   * based on the setting textEditor.blinkingCursor.current
+   */
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      `--cursor-color`,
+      settingsState.context.textEditor.blinkingCursor.current
+        ? 'auto'
+        : 'transparent'
+    )
+  }, [settingsState.context.textEditor.blinkingCursor.current])
 
   // Auth machine setup
   const [authState, authSend, authActor] = useMachine(authMachine, {

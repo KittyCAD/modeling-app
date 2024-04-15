@@ -33,7 +33,8 @@ use crate::{
     std::{kcl_stdlib::KclStdLibFn, sketch::SketchOnFaceTag},
 };
 
-pub type StdFn = fn(Args) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<MemoryItem, KclError>>>>;
+pub type StdFn = fn(Args) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<MemoryItem, KclError>> + Send>>;
+
 pub type FnMap = HashMap<String, StdFn>;
 
 lazy_static! {
@@ -211,10 +212,7 @@ impl Args {
         id: uuid::Uuid,
         cmd: kittycad::types::ModelingCmd,
     ) -> Result<OkWebSocketResponseData, KclError> {
-        self.ctx
-            .engine
-            .send_modeling_cmd(false, id, self.source_range, cmd)
-            .await
+        self.ctx.engine.send_modeling_cmd(id, self.source_range, cmd).await
     }
 
     fn make_user_val_from_json(&self, j: serde_json::Value) -> Result<MemoryItem, KclError> {

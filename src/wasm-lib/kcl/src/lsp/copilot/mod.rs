@@ -103,7 +103,7 @@ impl crate::lsp::backend::Backend for Backend {
         self.current_code_map.clear();
     }
 
-    async fn on_change(&self, _params: TextDocumentItem) {
+    async fn inner_on_change(&self, _params: TextDocumentItem) {
         // We don't need to do anything here.
     }
 }
@@ -122,11 +122,11 @@ impl Backend {
             stop: Some(["unset".to_string()].to_vec()),
             nwo: None,
             // We haven't implemented streaming yet.
-            stream: None,
+            stream: false,
             extra: Some(kittycad::types::KclCodeCompletionParams {
                 language: Some(language.to_string()),
                 next_indent: None,
-                trim_by_indentation: Some(true),
+                trim_by_indentation: true,
                 prompt_tokens: Some(prompt.len() as u32),
                 suffix_tokens: Some(suffix.len() as u32),
             }),

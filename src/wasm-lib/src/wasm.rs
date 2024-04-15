@@ -7,7 +7,7 @@ use std::{
 
 use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::engine::EngineManager;
+use kcl_lib::{coredump::CoreDump, engine::EngineManager};
 use tower_lsp::{LspService, Server};
 use wasm_bindgen::prelude::*;
 
@@ -26,7 +26,7 @@ pub async fn execute_wasm(
 
     use kcl_lib::executor::ExecutorContext;
     let program: kcl_lib::ast::types::Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
-    let mut mem: kcl_lib::executor::ProgramMemory = serde_json::from_str(memory_str).map_err(|e| e.to_string())?;
+    let memory: kcl_lib::executor::ProgramMemory = serde_json::from_str(memory_str).map_err(|e| e.to_string())?;
     let units = kittycad::types::UnitLength::from_str(units).map_err(|e| e.to_string())?;
 
     let engine = kcl_lib::engine::conn_wasm::EngineConnection::new(engine_manager)
@@ -41,9 +41,7 @@ pub async fn execute_wasm(
         is_mock,
     };
 
-    let memory = kcl_lib::executor::execute_outer(program, &mut mem, kcl_lib::executor::BodyType::Root, &ctx)
-        .await
-        .map_err(String::from)?;
+    let memory = ctx.run(program, Some(memory)).await.map_err(String::from)?;
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
     JsValue::from_serde(&memory).map_err(|e| e.to_string())
@@ -210,7 +208,7 @@ pub async fn kcl_lsp_run(config: ServerConfig, token: String, is_dev: bool) -> R
         }
     };
 
-    let (service, socket) = LspService::new(|client| kcl_lib::lsp::kcl::Backend {
+    let (service, socket) = LspService::build(|client| kcl_lib::lsp::kcl::Backend {
         client,
         fs: kcl_lib::fs::FileManager::new(fs),
         workspace_folders: Default::default(),
@@ -219,13 +217,17 @@ pub async fn kcl_lsp_run(config: ServerConfig, token: String, is_dev: bool) -> R
         token_types,
         token_map: Default::default(),
         ast_map: Default::default(),
+        memory_map: Default::default(),
         current_code_map: Default::default(),
         diagnostics_map: Default::default(),
         symbols_map: Default::default(),
         semantic_tokens_map: Default::default(),
         zoo_client,
         can_send_telemetry: privacy_settings.can_train_on_data,
-    });
+        executor_ctx: Default::default(),
+    })
+    .custom_method("kcl/updateUnits", kcl_lib::lsp::kcl::Backend::update_units)
+    .finish();
 
     let input = wasm_bindgen_futures::stream::JsStream::from(into_server);
     let input = input
@@ -279,13 +281,19 @@ pub async fn copilot_lsp_run(config: ServerConfig, token: String, is_dev: bool) 
         telemetry: Default::default(),
         zoo_client,
     })
-    .custom_method("setEditorInfo", kcl_lib::lsp::copilot::Backend::set_editor_info)
+    .custom_method("copilot/setEditorInfo", kcl_lib::lsp::copilot::Backend::set_editor_info)
     .custom_method(
-        "getCompletions",
+        "copilot/getCompletions",
         kcl_lib::lsp::copilot::Backend::get_completions_cycling,
     )
-    .custom_method("notifyAccepted", kcl_lib::lsp::copilot::Backend::accept_completion)
-    .custom_method("notifyRejected", kcl_lib::lsp::copilot::Backend::reject_completions)
+    .custom_method(
+        "copilot/notifyAccepted",
+        kcl_lib::lsp::copilot::Backend::accept_completion,
+    )
+    .custom_method(
+        "copilot/notifyRejected",
+        kcl_lib::lsp::copilot::Backend::reject_completions,
+    )
     .finish();
 
     let input = wasm_bindgen_futures::stream::JsStream::from(into_server);
@@ -378,4 +386,17 @@ pub fn program_memory_init() -> Result<JsValue, String> {
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
     JsValue::from_serde(&memory).map_err(|e| e.to_string())
+}
+
+/// Get a coredump.
+#[wasm_bindgen]
+pub async fn coredump(core_dump_manager: kcl_lib::coredump::wasm::CoreDumpManager) -> Result<JsValue, String> {
+    console_error_panic_hook::set_once();
+
+    let core_dumper = kcl_lib::coredump::wasm::CoreDumper::new(core_dump_manager);
+    let dump = core_dumper.dump().await.map_err(|e| e.to_string())?;
+
+    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
+    // gloo-serialize crate instead.
+    JsValue::from_serde(&dump).map_err(|e| e.to_string())
 }

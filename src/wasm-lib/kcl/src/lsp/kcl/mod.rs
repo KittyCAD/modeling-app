@@ -1,6 +1,10 @@
 //! Functions for the `kcl` lsp server.
 
-use std::{collections::HashMap, io::Write, str::FromStr};
+use std::{collections::HashMap, io::Write, str::FromStr, sync::Arc};
+
+use tokio::sync::RwLock;
+
+pub mod custom_notifications;
 
 use anyhow::Result;
 #[cfg(feature = "cli")]
@@ -29,7 +33,10 @@ use tower_lsp::{
     Client, LanguageServer,
 };
 
-use crate::{ast::types::VariableKind, executor::SourceRange, lsp::backend::Backend as _, parser::PIPE_OPERATOR};
+use crate::{
+    ast::types::VariableKind, errors::KclError, executor::SourceRange, lsp::backend::Backend as _,
+    parser::PIPE_OPERATOR,
+};
 
 /// A subcommand for running the server.
 #[derive(Clone, Debug)]
@@ -63,6 +70,8 @@ pub struct Backend {
     pub token_map: DashMap<String, Vec<crate::token::Token>>,
     /// AST maps.
     pub ast_map: DashMap<String, crate::ast::types::Program>,
+    /// Memory maps.
+    pub memory_map: DashMap<String, crate::executor::ProgramMemory>,
     /// Current code.
     pub current_code_map: DashMap<String, Vec<u8>>,
     /// Diagnostics.
@@ -75,6 +84,8 @@ pub struct Backend {
     pub zoo_client: kittycad::Client,
     /// If we can send telemetry for this user.
     pub can_send_telemetry: bool,
+    /// Optional executor context to use if we want to execute the code.
+    pub executor_ctx: Arc<RwLock<Option<crate::executor::ExecutorContext>>>,
 }
 
 // Implement the shared backend trait for the language server.
@@ -125,7 +136,7 @@ impl crate::lsp::backend::Backend for Backend {
         self.semantic_tokens_map.clear();
     }
 
-    async fn on_change(&self, params: TextDocumentItem) {
+    async fn inner_on_change(&self, params: TextDocumentItem) {
         // We already updated the code map in the shared backend.
 
         // Lets update the tokens.
@@ -188,35 +199,40 @@ impl crate::lsp::backend::Backend for Backend {
         let result = parser.ast();
         let ast = match result {
             Ok(ast) => ast,
-            Err(e) => {
-                let diagnostic = e.to_lsp_diagnostic(&params.text);
-                // We got errors, update the diagnostics.
-                self.diagnostics_map.insert(
-                    params.uri.to_string(),
-                    DocumentDiagnosticReport::Full(RelatedFullDocumentDiagnosticReport {
-                        related_documents: None,
-                        full_document_diagnostic_report: FullDocumentDiagnosticReport {
-                            result_id: None,
-                            items: vec![diagnostic.clone()],
-                        },
-                    }),
-                );
-
-                // Publish the diagnostic.
-                // If the client supports it.
-                self.client
-                    .publish_diagnostics(params.uri, vec![diagnostic], None)
-                    .await;
-
+            Err(err) => {
+                self.add_to_diagnostics(&params, err).await;
                 return;
             }
         };
 
-        // Update the symbols map.
-        self.symbols_map
-            .insert(params.uri.to_string(), ast.get_lsp_symbols(&params.text));
+        // Check if the ast changed.
+        let ast_changed = match self.ast_map.get(&params.uri.to_string()) {
+            Some(old_ast) => {
+                // Check if the ast changed.
+                *old_ast.value() != ast
+            }
+            None => true,
+        };
 
-        self.ast_map.insert(params.uri.to_string(), ast);
+        // If the ast changed update the map and symbols and execute if we need to.
+        if ast_changed {
+            // Update the symbols map.
+            self.symbols_map
+                .insert(params.uri.to_string(), ast.get_lsp_symbols(&params.text));
+
+            self.ast_map.insert(params.uri.to_string(), ast.clone());
+
+            // Send the notification to the client that the ast was updated.
+            self.client
+                .send_notification::<custom_notifications::AstUpdated>(ast.clone())
+                .await;
+
+            // Execute the code if we have an executor context.
+            // This function automatically executes if we should & updates the diagnostics if we got
+            // errors.
+            self.execute(&params, ast).await;
+        }
+
         // Lets update the diagnostics, since we got no errors.
         self.diagnostics_map.insert(
             params.uri.to_string(),
@@ -236,6 +252,50 @@ impl crate::lsp::backend::Backend for Backend {
 }
 
 impl Backend {
+    async fn add_to_diagnostics(&self, params: &TextDocumentItem, err: KclError) {
+        let diagnostic = err.to_lsp_diagnostic(&params.text);
+        // We got errors, update the diagnostics.
+        self.diagnostics_map.insert(
+            params.uri.to_string(),
+            DocumentDiagnosticReport::Full(RelatedFullDocumentDiagnosticReport {
+                related_documents: None,
+                full_document_diagnostic_report: FullDocumentDiagnosticReport {
+                    result_id: None,
+                    items: vec![diagnostic.clone()],
+                },
+            }),
+        );
+
+        // Publish the diagnostic.
+        // If the client supports it.
+        self.client
+            .publish_diagnostics(params.uri.clone(), vec![diagnostic], None)
+            .await;
+    }
+
+    async fn execute(&self, params: &TextDocumentItem, ast: crate::ast::types::Program) {
+        // Execute the code if we have an executor context.
+        let Some(executor_ctx) = self.executor_ctx.read().await.clone() else {
+            return;
+        };
+
+        let memory = match executor_ctx.run(ast, None).await {
+            Ok(memory) => memory,
+            Err(err) => {
+                self.add_to_diagnostics(params, err).await;
+
+                return;
+            }
+        };
+        drop(executor_ctx); // Drop the lock here.
+
+        self.memory_map.insert(params.uri.to_string(), memory.clone());
+        // Send the notification to the client that the memory was updated.
+        self.client
+            .send_notification::<custom_notifications::MemoryUpdated>(memory)
+            .await;
+    }
+
     fn get_semantic_token_type_index(&self, token_type: SemanticTokenType) -> Option<usize> {
         self.token_types.iter().position(|x| *x == token_type)
     }
@@ -367,6 +427,51 @@ impl Backend {
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         Ok(())
+    }
+
+    pub async fn update_units(&self, params: custom_notifications::UpdateUnitsParams) {
+        {
+            let Some(mut executor_ctx) = self.executor_ctx.read().await.clone() else {
+                self.client
+                    .log_message(MessageType::ERROR, "no executor context set to update units for")
+                    .await;
+                return;
+            };
+
+            self.client
+                .log_message(MessageType::INFO, format!("update units: {:?}", params))
+                .await;
+
+            // Set the engine units.
+            executor_ctx.update_units(params.units);
+
+            // Update the locked executor context.
+            *self.executor_ctx.write().await = Some(executor_ctx.clone());
+        }
+        // Lock is dropped here since nested.
+        // This is IMPORTANT.
+
+        let filename = params.text_document.uri.to_string();
+
+        // Get the current code.
+        let Some(current_code) = self.current_code_map.get(&filename) else {
+            return;
+        };
+        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+            return;
+        };
+
+        // Get the current ast.
+        let Some(ast) = self.ast_map.get(&filename) else {
+            return;
+        };
+        let new_params = TextDocumentItem {
+            uri: params.text_document.uri,
+            text: std::mem::take(&mut current_code.to_string()),
+            version: Default::default(),
+            language_id: Default::default(),
+        };
+        self.execute(&new_params, ast.value().clone()).await;
     }
 }
 
@@ -793,7 +898,7 @@ pub fn get_completions_from_stdlib(stdlib: &crate::std::StdLib) -> Result<HashMa
     let combined = stdlib.combined();
 
     for internal_fn in combined.values() {
-        completions.insert(internal_fn.name(), internal_fn.to_completion_item());
+        completions.insert(internal_fn.name(), internal_fn.to_completion_item()?);
     }
 
     let variable_kinds = VariableKind::to_completion_items()?;
