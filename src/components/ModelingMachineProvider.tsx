@@ -53,10 +53,9 @@ import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
 import { EditorSelection } from '@uiw/react-codemirror'
-import { Vector3 } from 'three'
-import { quaternionFromUpNForward } from 'clientSideScene/helpers'
 import { CoreDumpManager } from 'lib/coredump'
 import { useHotkeys } from 'react-hotkeys-hook'
+import { isReducedMotion, uuidv4 } from 'lib/utils'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -324,17 +323,28 @@ export const ModelingMachineProvider = ({
               )
             await kclManager.executeAstMock(modifiedAst)
 
-            const forward = new Vector3(...data.zAxis)
-            const up = new Vector3(...data.yAxis)
-
-            let target = new Vector3(...data.position).multiplyScalar(
-              sceneInfra._baseUnitMultiplier
-            )
-            const quaternion = quaternionFromUpNForward(up, forward)
-            await sceneInfra.camControls.tweenCameraToQuaternion(
-              quaternion,
-              target
-            )
+            await engineCommandManager.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: {
+                type: 'enable_sketch_mode',
+                adjust_camera: true,
+                animated: !isReducedMotion(),
+                ortho: true,
+                entity_id: data.faceId,
+              },
+            })
+            // wait 600ms (animation takes 500, + 100 for safety)
+            await new Promise((resolve) => setTimeout(resolve, 600))
+            await engineCommandManager.sendSceneCommand({
+              // CameraControls subscribes to default_camera_get_settings response events
+              // firing this at connection ensure the camera's are synced initially
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: {
+                type: 'default_camera_get_settings',
+              },
+            })
 
             return {
               sketchPathToNode: pathToNewSketchNode,
@@ -364,10 +374,28 @@ export const ModelingMachineProvider = ({
             sourceRange
           )
           const info = await getSketchOrientationDetails(sketchPathToNode || [])
-          await sceneInfra.camControls.tweenCameraToQuaternion(
-            info.quat,
-            new Vector3(...info.sketchDetails.origin)
-          )
+          await engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'enable_sketch_mode',
+              adjust_camera: true,
+              animated: !isReducedMotion(),
+              ortho: true,
+              entity_id: info?.sketchDetails?.faceId || '',
+            },
+          })
+          // wait 600ms (animation takes 500, + 100 for safety)
+          await new Promise((resolve) => setTimeout(resolve, 600))
+          await engineCommandManager.sendSceneCommand({
+            // CameraControls subscribes to default_camera_get_settings response events
+            // firing this at connection ensure the camera's are synced initially
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'default_camera_get_settings',
+            },
+          })
           return {
             sketchPathToNode: sketchPathToNode || [],
             zAxis: info.sketchDetails.zAxis || null,

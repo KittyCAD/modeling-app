@@ -246,12 +246,20 @@ export class CameraControls {
         camSettings.center.y,
         camSettings.center.z
       )
+      this.camera.up.set(camSettings.up.x, camSettings.up.y, camSettings.up.z)
+      if (this.camera instanceof PerspectiveCamera && camSettings.ortho) {
+        this.useOrthographicCamera()
+      }
+      if (this.camera instanceof OrthographicCamera && !camSettings.ortho) {
+        this.usePerspectiveCamera()
+      }
       if (this.camera instanceof PerspectiveCamera && camSettings.fov_y) {
         this.camera.fov = camSettings.fov_y
       } else if (
         this.camera instanceof OrthographicCamera &&
         camSettings.ortho_scale
       ) {
+        // TODO something isn't quiet right here
         this.camera.zoom = camSettings.ortho_scale
       }
       this.onCameraChange()

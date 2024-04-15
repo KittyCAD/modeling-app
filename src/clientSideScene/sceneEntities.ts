@@ -1324,17 +1324,26 @@ export class SceneEntities {
         selected.material.color = defaultPlaneColor(type)
       },
       onClick: async (args) => {
-        const checkExtrudeFaceClick = async (): Promise<boolean> => {
+        const checkExtrudeFaceClick = async (): Promise<
+          'face' | 'plane' | 'other'
+        > => {
           const { streamDimensions } = useStore.getState()
           const { entity_id } = await sendSelectEventToEngine(
             args?.mouseEvent,
             document.getElementById('video-stream') as HTMLVideoElement,
             streamDimensions
           )
-          if (!entity_id) return false
+          if (!entity_id) return 'other'
+          if (
+            engineCommandManager.defaultPlanes?.xy === entity_id ||
+            engineCommandManager.defaultPlanes?.xz === entity_id ||
+            engineCommandManager.defaultPlanes?.yz === entity_id
+          ) {
+            return 'plane'
+          }
           const artifact = this.engineCommandManager.artifactMap[entity_id]
           if (artifact?.commandType !== 'solid3d_get_extrusion_face_info')
-            return false
+            return 'other'
           const faceInfo: Models['FaceIsPlanar_type'] = (
             await this.engineCommandManager.sendSceneCommand({
               type: 'modeling_cmd_req',
@@ -1346,7 +1355,7 @@ export class SceneEntities {
             })
           )?.data?.data
           if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
-            return false
+            return 'other'
           const { z_axis, origin, y_axis } = faceInfo
           const pathToNode = getNodePathFromSourceRange(
             kclManager.ast,
@@ -1367,12 +1376,14 @@ export class SceneEntities {
                 artifact?.additionalData?.type === 'cap'
                   ? artifact.additionalData.info
                   : 'none',
+              faceId: entity_id,
             },
           })
-          return true
+          return 'face'
         }
 
-        if (await checkExtrudeFaceClick()) return
+        const faceResult = await checkExtrudeFaceClick()
+        if (faceResult === 'face') return
 
         if (!args || !args.intersects?.[0]) return
         if (args.mouseEvent.which !== 1) return
@@ -1681,7 +1692,7 @@ export async function getSketchOrientationDetails(
   sketchPathToNode: PathToNode
 ): Promise<{
   quat: Quaternion
-  sketchDetails: SketchDetails
+  sketchDetails: SketchDetails & { faceId?: string }
 }> {
   const sketchGroup = sketchGroupFromPathToNode({
     pathToNode: sketchPathToNode,
@@ -1725,6 +1736,7 @@ export async function getSketchOrientationDetails(
         zAxis: [z_axis.x, z_axis.y, z_axis.z],
         yAxis: [y_axis.x, y_axis.y, y_axis.z],
         origin: [origin.x, origin.y, origin.z],
+        faceId: sketchGroup.on.faceId,
       },
     }
   }
