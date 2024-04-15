@@ -26,7 +26,7 @@ export function setThemeClass(theme: Themes) {
 export function getThemeColorForEngine(theme: Themes) {
   const resolvedTheme = theme === Themes.System ? getSystemTheme() : theme
   const dark = 28 / 255
-  const light = 242 / 255
+  const light = 249 / 255
   return resolvedTheme === Themes.Dark
     ? { r: dark, g: dark, b: dark, a: 1 }
     : { r: light, g: light, b: light, a: 1 }
