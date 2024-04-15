@@ -921,6 +921,7 @@ export class EngineCommandManager {
     setIsStreamReady,
     width,
     height,
+    executeCode,
     token,
     makeDefaultPlanes,
     theme = Themes.Dark,
@@ -929,6 +930,7 @@ export class EngineCommandManager {
     setIsStreamReady: (isStreamReady: boolean) => void
     width: number
     height: number
+    executeCode: (code?: string, force?: boolean) => void
     token?: string
     makeDefaultPlanes: () => Promise<DefaultPlanes>
     theme?: Themes
@@ -1003,6 +1005,7 @@ export class EngineCommandManager {
         this.initPlanes().then(() => {
           this.resolveReady()
           setIsStreamReady(true)
+          executeCode(undefined, true)
         })
       },
       onClose: () => {

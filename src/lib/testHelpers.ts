@@ -98,6 +98,7 @@ export async function executor(
     setMediaStream: () => {},
     width: 0,
     height: 0,
+    executeCode: () => {},
     theme: Themes.Dark,
     makeDefaultPlanes: () => {
       return new Promise((resolve) => resolve(defaultPlanes))
