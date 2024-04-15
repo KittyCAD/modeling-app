@@ -2455,3 +2455,50 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
         panic!("Expected full diagnostics");
     }
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_folding() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"startSketchOn('XY')
+                    |> startProfileAt([0,0], %)"#
+                    .to_string(),
+            },
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Send folding request.
+    let folding = server
+        .folding_range(tower_lsp::lsp_types::FoldingRangeParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            work_done_progress_params: Default::default(),
+            partial_result_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    // Check the folding.
+    assert_eq!(folding.len(), 1);
+    assert_eq!(
+        folding.first().unwrap().clone(),
+        tower_lsp::lsp_types::FoldingRange {
+            start_line: 19,
+            start_character: None,
+            end_line: 67,
+            end_character: None,
+            kind: Some(tower_lsp::lsp_types::FoldingRangeKind::Region),
+            collapsed_text: Some("startSketchOn('XY')".to_string()),
+        }
+    );
+}
