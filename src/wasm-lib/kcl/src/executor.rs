@@ -296,7 +296,7 @@ pub type MemoryFunction =
         expression: Box<FunctionExpression>,
         metadata: Vec<Metadata>,
         ctx: ExecutorContext,
-    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>>>>;
+    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>> + Send>>;
 
 fn force_memory_function<
     F: Fn(
@@ -305,7 +305,7 @@ fn force_memory_function<
         Box<FunctionExpression>,
         Vec<Metadata>,
         ExecutorContext,
-    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>>>>,
+    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>> + Send>>,
 >(
     f: F,
 ) -> F {
@@ -992,243 +992,257 @@ impl ExecutorContext {
             is_mock: false,
         })
     }
-}
 
-/// Execute an AST's program.
-pub async fn execute_outer(
-    program: crate::ast::types::Program,
-    memory: &mut ProgramMemory,
-    _options: BodyType,
-    ctx: &ExecutorContext,
-) -> Result<ProgramMemory, KclError> {
-    // Before we even start executing the program, set the units.
-    ctx.engine
-        .send_modeling_cmd(
-            uuid::Uuid::new_v4(),
-            SourceRange::default(),
-            kittycad::types::ModelingCmd::SetSceneUnits {
-                unit: ctx.units.clone(),
-            },
-        )
-        .await?;
-    execute(program, memory, _options, ctx).await
-}
-
-/// Execute an AST's program.
-#[async_recursion(?Send)]
-pub(crate) async fn execute(
-    program: crate::ast::types::Program,
-    memory: &mut ProgramMemory,
-    _options: BodyType,
-    ctx: &ExecutorContext,
-) -> Result<ProgramMemory, KclError> {
-    let pipe_info = PipeInfo::default();
-
-    // Iterate over the body of the program.
-    for statement in &program.body {
-        match statement {
-            BodyItem::ExpressionStatement(expression_statement) => {
-                if let Value::PipeExpression(pipe_expr) = &expression_statement.expression {
-                    pipe_expr.get_result(memory, &pipe_info, ctx).await?;
-                } else if let Value::CallExpression(call_expr) = &expression_statement.expression {
-                    let fn_name = call_expr.callee.name.to_string();
-                    let mut args: Vec<MemoryItem> = Vec::new();
-                    for arg in &call_expr.arguments {
-                        match arg {
-                            Value::Literal(literal) => args.push(literal.into()),
-                            Value::Identifier(identifier) => {
-                                let memory_item = memory.get(&identifier.name, identifier.into())?;
-                                args.push(memory_item.clone());
-                            }
-                            Value::CallExpression(call_expr) => {
-                                let result = call_expr.execute(memory, &pipe_info, ctx).await?;
-                                args.push(result);
-                            }
-                            Value::BinaryExpression(binary_expression) => {
-                                let result = binary_expression.get_result(memory, &pipe_info, ctx).await?;
-                                args.push(result);
-                            }
-                            Value::UnaryExpression(unary_expression) => {
-                                let result = unary_expression.get_result(memory, &pipe_info, ctx).await?;
-                                args.push(result);
-                            }
-                            Value::ObjectExpression(object_expression) => {
-                                let result = object_expression.execute(memory, &pipe_info, ctx).await?;
-                                args.push(result);
-                            }
-                            Value::ArrayExpression(array_expression) => {
-                                let result = array_expression.execute(memory, &pipe_info, ctx).await?;
-                                args.push(result);
-                            }
-                            // We do nothing for the rest.
-                            _ => (),
-                        }
-                    }
-                    match ctx.stdlib.get_either(&call_expr.callee.name) {
-                        FunctionKind::Core(func) => {
-                            let args = crate::std::Args::new(args, call_expr.into(), ctx.clone());
-                            let result = func.std_lib_fn()(args).await?;
-                            memory.return_ = Some(ProgramReturn::Value(result));
-                        }
-                        FunctionKind::Std(func) => {
-                            let mut newmem = memory.clone();
-                            let result = execute(func.program().to_owned(), &mut newmem, BodyType::Block, ctx).await?;
-                            memory.return_ = result.return_;
-                        }
-                        FunctionKind::UserDefined => {
-                            if let Some(func) = memory.clone().root.get(&fn_name) {
-                                let result = func.call_fn(args.clone(), memory.clone(), ctx.clone()).await?;
-
-                                memory.return_ = result;
-                            } else {
-                                return Err(KclError::Semantic(KclErrorDetails {
-                                    message: format!("No such name {} defined", fn_name),
-                                    source_ranges: vec![call_expr.into()],
-                                }));
-                            }
-                        }
-                    }
-                }
-            }
-            BodyItem::VariableDeclaration(variable_declaration) => {
-                for declaration in &variable_declaration.declarations {
-                    let var_name = declaration.id.name.to_string();
-                    let source_range: SourceRange = declaration.init.clone().into();
-                    let metadata = Metadata { source_range };
-
-                    match &declaration.init {
-                        Value::None(none) => {
-                            memory.add(&var_name, none.into(), source_range)?;
-                        }
-                        Value::Literal(literal) => {
-                            memory.add(&var_name, literal.into(), source_range)?;
-                        }
-                        Value::Identifier(identifier) => {
-                            let value = memory.get(&identifier.name, identifier.into())?;
-                            memory.add(&var_name, value.clone(), source_range)?;
-                        }
-                        Value::BinaryExpression(binary_expression) => {
-                            let result = binary_expression.get_result(memory, &pipe_info, ctx).await?;
-                            memory.add(&var_name, result, source_range)?;
-                        }
-                        Value::FunctionExpression(function_expression) => {
-                            let mem_func = force_memory_function(
-                                |args: Vec<MemoryItem>,
-                                 memory: ProgramMemory,
-                                 function_expression: Box<FunctionExpression>,
-                                 _metadata: Vec<Metadata>,
-                                 ctx: ExecutorContext| {
-                                    Box::pin(async move {
-                                        let mut fn_memory =
-                                            assign_args_to_params(&function_expression, args, memory.clone())?;
-
-                                        let result = execute(
-                                            function_expression.body.clone(),
-                                            &mut fn_memory,
-                                            BodyType::Block,
-                                            &ctx,
-                                        )
-                                        .await?;
-
-                                        Ok(result.return_)
-                                    })
-                                },
-                            );
-                            memory.add(
-                                &var_name,
-                                MemoryItem::Function {
-                                    expression: function_expression.clone(),
-                                    meta: vec![metadata],
-                                    func: Some(mem_func),
-                                },
-                                source_range,
-                            )?;
-                        }
-                        Value::CallExpression(call_expression) => {
-                            let result = call_expression.execute(memory, &pipe_info, ctx).await?;
-                            memory.add(&var_name, result, source_range)?;
-                        }
-                        Value::PipeExpression(pipe_expression) => {
-                            let result = pipe_expression.get_result(memory, &pipe_info, ctx).await?;
-                            memory.add(&var_name, result, source_range)?;
-                        }
-                        Value::PipeSubstitution(pipe_substitution) => {
-                            return Err(KclError::Semantic(KclErrorDetails {
-                                message: format!(
-                                    "pipe substitution not implemented for declaration of variable {}",
-                                    var_name
-                                ),
-                                source_ranges: vec![pipe_substitution.into()],
-                            }));
-                        }
-                        Value::ArrayExpression(array_expression) => {
-                            let result = array_expression.execute(memory, &pipe_info, ctx).await?;
-                            memory.add(&var_name, result, source_range)?;
-                        }
-                        Value::ObjectExpression(object_expression) => {
-                            let result = object_expression.execute(memory, &pipe_info, ctx).await?;
-                            memory.add(&var_name, result, source_range)?;
-                        }
-                        Value::MemberExpression(member_expression) => {
-                            let result = member_expression.get_result(memory)?;
-                            memory.add(&var_name, result, source_range)?;
-                        }
-                        Value::UnaryExpression(unary_expression) => {
-                            let result = unary_expression.get_result(memory, &pipe_info, ctx).await?;
-                            memory.add(&var_name, result, source_range)?;
-                        }
-                    }
-                }
-            }
-            BodyItem::ReturnStatement(return_statement) => match &return_statement.argument {
-                Value::BinaryExpression(bin_expr) => {
-                    let result = bin_expr.get_result(memory, &pipe_info, ctx).await?;
-                    memory.return_ = Some(ProgramReturn::Value(result));
-                }
-                Value::UnaryExpression(unary_expr) => {
-                    let result = unary_expr.get_result(memory, &pipe_info, ctx).await?;
-                    memory.return_ = Some(ProgramReturn::Value(result));
-                }
-                Value::Identifier(identifier) => {
-                    let value = memory.get(&identifier.name, identifier.into())?.clone();
-                    memory.return_ = Some(ProgramReturn::Value(value));
-                }
-                Value::Literal(literal) => {
-                    memory.return_ = Some(ProgramReturn::Value(literal.into()));
-                }
-                Value::ArrayExpression(array_expr) => {
-                    let result = array_expr.execute(memory, &pipe_info, ctx).await?;
-                    memory.return_ = Some(ProgramReturn::Value(result));
-                }
-                Value::ObjectExpression(obj_expr) => {
-                    let result = obj_expr.execute(memory, &pipe_info, ctx).await?;
-                    memory.return_ = Some(ProgramReturn::Value(result));
-                }
-                Value::CallExpression(call_expr) => {
-                    let result = call_expr.execute(memory, &pipe_info, ctx).await?;
-                    memory.return_ = Some(ProgramReturn::Value(result));
-                }
-                Value::MemberExpression(member_expr) => {
-                    let result = member_expr.get_result(memory)?;
-                    memory.return_ = Some(ProgramReturn::Value(result));
-                }
-                Value::PipeExpression(pipe_expr) => {
-                    let result = pipe_expr.get_result(memory, &pipe_info, ctx).await?;
-                    memory.return_ = Some(ProgramReturn::Value(result));
-                }
-                Value::PipeSubstitution(_) => {}
-                Value::FunctionExpression(_) => {}
-                Value::None(none) => {
-                    memory.return_ = Some(ProgramReturn::Value(MemoryItem::from(none)));
-                }
-            },
-        }
+    /// Perform the execution of a program.
+    /// You can optionally pass in some initialization memory.
+    /// Kurt uses this for partial execution.
+    pub async fn run(
+        &self,
+        program: crate::ast::types::Program,
+        memory: Option<ProgramMemory>,
+    ) -> Result<ProgramMemory, KclError> {
+        // Before we even start executing the program, set the units.
+        self.engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                SourceRange::default(),
+                kittycad::types::ModelingCmd::SetSceneUnits {
+                    unit: self.units.clone(),
+                },
+            )
+            .await?;
+        let mut memory = if let Some(memory) = memory {
+            memory.clone()
+        } else {
+            Default::default()
+        };
+        self.inner_execute(program, &mut memory, crate::executor::BodyType::Root)
+            .await
     }
 
-    // Flush the batch queue.
-    ctx.engine.flush_batch(SourceRange([program.end, program.end])).await?;
+    /// Execute an AST's program.
+    #[async_recursion]
+    pub(crate) async fn inner_execute(
+        &self,
+        program: crate::ast::types::Program,
+        memory: &mut ProgramMemory,
+        _body_type: BodyType,
+    ) -> Result<ProgramMemory, KclError> {
+        let pipe_info = PipeInfo::default();
 
-    Ok(memory.clone())
+        // Iterate over the body of the program.
+        for statement in &program.body {
+            match statement {
+                BodyItem::ExpressionStatement(expression_statement) => {
+                    if let Value::PipeExpression(pipe_expr) = &expression_statement.expression {
+                        pipe_expr.get_result(memory, &pipe_info, self).await?;
+                    } else if let Value::CallExpression(call_expr) = &expression_statement.expression {
+                        let fn_name = call_expr.callee.name.to_string();
+                        let mut args: Vec<MemoryItem> = Vec::new();
+                        for arg in &call_expr.arguments {
+                            match arg {
+                                Value::Literal(literal) => args.push(literal.into()),
+                                Value::Identifier(identifier) => {
+                                    let memory_item = memory.get(&identifier.name, identifier.into())?;
+                                    args.push(memory_item.clone());
+                                }
+                                Value::CallExpression(call_expr) => {
+                                    let result = call_expr.execute(memory, &pipe_info, self).await?;
+                                    args.push(result);
+                                }
+                                Value::BinaryExpression(binary_expression) => {
+                                    let result = binary_expression.get_result(memory, &pipe_info, self).await?;
+                                    args.push(result);
+                                }
+                                Value::UnaryExpression(unary_expression) => {
+                                    let result = unary_expression.get_result(memory, &pipe_info, self).await?;
+                                    args.push(result);
+                                }
+                                Value::ObjectExpression(object_expression) => {
+                                    let result = object_expression.execute(memory, &pipe_info, self).await?;
+                                    args.push(result);
+                                }
+                                Value::ArrayExpression(array_expression) => {
+                                    let result = array_expression.execute(memory, &pipe_info, self).await?;
+                                    args.push(result);
+                                }
+                                // We do nothing for the rest.
+                                _ => (),
+                            }
+                        }
+                        match self.stdlib.get_either(&call_expr.callee.name) {
+                            FunctionKind::Core(func) => {
+                                let args = crate::std::Args::new(args, call_expr.into(), self.clone());
+                                let result = func.std_lib_fn()(args).await?;
+                                memory.return_ = Some(ProgramReturn::Value(result));
+                            }
+                            FunctionKind::Std(func) => {
+                                let mut newmem = memory.clone();
+                                let result = self
+                                    .inner_execute(func.program().to_owned(), &mut newmem, BodyType::Block)
+                                    .await?;
+                                memory.return_ = result.return_;
+                            }
+                            FunctionKind::UserDefined => {
+                                if let Some(func) = memory.clone().root.get(&fn_name) {
+                                    let result = func.call_fn(args.clone(), memory.clone(), self.clone()).await?;
+
+                                    memory.return_ = result;
+                                } else {
+                                    return Err(KclError::Semantic(KclErrorDetails {
+                                        message: format!("No such name {} defined", fn_name),
+                                        source_ranges: vec![call_expr.into()],
+                                    }));
+                                }
+                            }
+                        }
+                    }
+                }
+                BodyItem::VariableDeclaration(variable_declaration) => {
+                    for declaration in &variable_declaration.declarations {
+                        let var_name = declaration.id.name.to_string();
+                        let source_range: SourceRange = declaration.init.clone().into();
+                        let metadata = Metadata { source_range };
+
+                        match &declaration.init {
+                            Value::None(none) => {
+                                memory.add(&var_name, none.into(), source_range)?;
+                            }
+                            Value::Literal(literal) => {
+                                memory.add(&var_name, literal.into(), source_range)?;
+                            }
+                            Value::Identifier(identifier) => {
+                                let value = memory.get(&identifier.name, identifier.into())?;
+                                memory.add(&var_name, value.clone(), source_range)?;
+                            }
+                            Value::BinaryExpression(binary_expression) => {
+                                let result = binary_expression.get_result(memory, &pipe_info, self).await?;
+                                memory.add(&var_name, result, source_range)?;
+                            }
+                            Value::FunctionExpression(function_expression) => {
+                                let mem_func = force_memory_function(
+                                    |args: Vec<MemoryItem>,
+                                     memory: ProgramMemory,
+                                     function_expression: Box<FunctionExpression>,
+                                     _metadata: Vec<Metadata>,
+                                     ctx: ExecutorContext| {
+                                        Box::pin(async move {
+                                            let mut fn_memory =
+                                                assign_args_to_params(&function_expression, args, memory.clone())?;
+
+                                            let result = ctx
+                                                .inner_execute(
+                                                    function_expression.body.clone(),
+                                                    &mut fn_memory,
+                                                    BodyType::Block,
+                                                )
+                                                .await?;
+
+                                            Ok(result.return_)
+                                        })
+                                    },
+                                );
+                                memory.add(
+                                    &var_name,
+                                    MemoryItem::Function {
+                                        expression: function_expression.clone(),
+                                        meta: vec![metadata],
+                                        func: Some(mem_func),
+                                    },
+                                    source_range,
+                                )?;
+                            }
+                            Value::CallExpression(call_expression) => {
+                                let result = call_expression.execute(memory, &pipe_info, self).await?;
+                                memory.add(&var_name, result, source_range)?;
+                            }
+                            Value::PipeExpression(pipe_expression) => {
+                                let result = pipe_expression.get_result(memory, &pipe_info, self).await?;
+                                memory.add(&var_name, result, source_range)?;
+                            }
+                            Value::PipeSubstitution(pipe_substitution) => {
+                                return Err(KclError::Semantic(KclErrorDetails {
+                                    message: format!(
+                                        "pipe substitution not implemented for declaration of variable {}",
+                                        var_name
+                                    ),
+                                    source_ranges: vec![pipe_substitution.into()],
+                                }));
+                            }
+                            Value::ArrayExpression(array_expression) => {
+                                let result = array_expression.execute(memory, &pipe_info, self).await?;
+                                memory.add(&var_name, result, source_range)?;
+                            }
+                            Value::ObjectExpression(object_expression) => {
+                                let result = object_expression.execute(memory, &pipe_info, self).await?;
+                                memory.add(&var_name, result, source_range)?;
+                            }
+                            Value::MemberExpression(member_expression) => {
+                                let result = member_expression.get_result(memory)?;
+                                memory.add(&var_name, result, source_range)?;
+                            }
+                            Value::UnaryExpression(unary_expression) => {
+                                let result = unary_expression.get_result(memory, &pipe_info, self).await?;
+                                memory.add(&var_name, result, source_range)?;
+                            }
+                        }
+                    }
+                }
+                BodyItem::ReturnStatement(return_statement) => match &return_statement.argument {
+                    Value::BinaryExpression(bin_expr) => {
+                        let result = bin_expr.get_result(memory, &pipe_info, self).await?;
+                        memory.return_ = Some(ProgramReturn::Value(result));
+                    }
+                    Value::UnaryExpression(unary_expr) => {
+                        let result = unary_expr.get_result(memory, &pipe_info, self).await?;
+                        memory.return_ = Some(ProgramReturn::Value(result));
+                    }
+                    Value::Identifier(identifier) => {
+                        let value = memory.get(&identifier.name, identifier.into())?.clone();
+                        memory.return_ = Some(ProgramReturn::Value(value));
+                    }
+                    Value::Literal(literal) => {
+                        memory.return_ = Some(ProgramReturn::Value(literal.into()));
+                    }
+                    Value::ArrayExpression(array_expr) => {
+                        let result = array_expr.execute(memory, &pipe_info, self).await?;
+                        memory.return_ = Some(ProgramReturn::Value(result));
+                    }
+                    Value::ObjectExpression(obj_expr) => {
+                        let result = obj_expr.execute(memory, &pipe_info, self).await?;
+                        memory.return_ = Some(ProgramReturn::Value(result));
+                    }
+                    Value::CallExpression(call_expr) => {
+                        let result = call_expr.execute(memory, &pipe_info, self).await?;
+                        memory.return_ = Some(ProgramReturn::Value(result));
+                    }
+                    Value::MemberExpression(member_expr) => {
+                        let result = member_expr.get_result(memory)?;
+                        memory.return_ = Some(ProgramReturn::Value(result));
+                    }
+                    Value::PipeExpression(pipe_expr) => {
+                        let result = pipe_expr.get_result(memory, &pipe_info, self).await?;
+                        memory.return_ = Some(ProgramReturn::Value(result));
+                    }
+                    Value::PipeSubstitution(_) => {}
+                    Value::FunctionExpression(_) => {}
+                    Value::None(none) => {
+                        memory.return_ = Some(ProgramReturn::Value(MemoryItem::from(none)));
+                    }
+                },
+            }
+        }
+
+        // Flush the batch queue.
+        self.engine.flush_batch(SourceRange([program.end, program.end])).await?;
+
+        Ok(memory.clone())
+    }
+
+    /// Update the units for the executor.
+    pub fn update_units(&mut self, units: kittycad::types::UnitLength) {
+        self.units = units;
+    }
 }
 
 /// For each argument given,
@@ -1299,7 +1313,6 @@ mod tests {
         let tokens = crate::token::lexer(code);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast()?;
-        let mut mem: ProgramMemory = Default::default();
         let ctx = ExecutorContext {
             engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await?)),
             fs: crate::fs::FileManager::new(),
@@ -1307,7 +1320,7 @@ mod tests {
             units: kittycad::types::UnitLength::Mm,
             is_mock: false,
         };
-        let memory = execute_outer(program, &mut mem, BodyType::Root, &ctx).await?;
+        let memory = ctx.run(program, None).await?;
 
         Ok(memory)
     }

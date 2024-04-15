@@ -285,6 +285,7 @@ jobs:
       NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Nightly build, commit {0}', github.sha) }}
       BUCKET_DIR: ${{ github.event_name == 'release' && 'dl.kittycad.io/releases/modeling-app' || 'dl.kittycad.io/releases/modeling-app/nightly' }}
       WEBSITE_DIR: ${{ github.event_name == 'release' && 'dl.zoo.dev/releases/modeling-app' || 'dl.zoo.dev/releases/modeling-app/nightly' }}
+      URL_CODED_NAME: ${{ github.event_name == 'schedule' && 'Zoo%20Modeling%20App%20%28Nightly%29' || 'Zoo%20Modeling%20App' }}
     steps:
       - uses: actions/download-artifact@v3
 
@@ -299,9 +300,9 @@ jobs:
             --arg pub_date "${PUB_DATE}" \
             --arg notes "${NOTES}" \
             --arg darwin_sig "$DARWIN_SIG" \
-            --arg darwin_url "$RELEASE_DIR/macos/Zoo%20Modeling%20App.app.tar.gz" \
+            --arg darwin_url "$RELEASE_DIR/macos/${{ env.URL_CODED_NAME }}.app.tar.gz" \
             --arg windows_sig "$WINDOWS_SIG" \
-            --arg windows_url "$RELEASE_DIR/msi/Zoo%20Modeling%20App_${VERSION_NO_V}_x64_en-US.msi.zip" \
+            --arg windows_url "$RELEASE_DIR/msi/${{ env.URL_CODED_NAME }}_${VERSION_NO_V}_x64_en-US.msi.zip" \
             '{
               "version": $version,
               "pub_date": $pub_date,
@@ -330,8 +331,8 @@ jobs:
             --arg version "${VERSION}" \
             --arg pub_date "${PUB_DATE}" \
             --arg notes "${NOTES}" \
-            --arg darwin_url "$RELEASE_DIR/dmg/Zoo%20Modeling%20App_${VERSION_NO_V}_universal.dmg" \
-            --arg windows_url "$RELEASE_DIR/msi/Zoo%20Modeling%20App_${VERSION_NO_V}_x64_en-US.msi" \
+            --arg darwin_url "$RELEASE_DIR/dmg/${{ env.URL_CODED_NAME }}_${VERSION_NO_V}_universal.dmg" \
+            --arg windows_url "$RELEASE_DIR/msi/${{ env.URL_CODED_NAME }}_${VERSION_NO_V}_x64_en-US.msi" \
             '{
               "version": $version,
               "pub_date": $pub_date,

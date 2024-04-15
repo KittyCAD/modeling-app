@@ -38,10 +38,9 @@ async fn execute_and_snapshot(code: &str, units: kittycad::types::UnitLength) ->
     let tokens = kcl_lib::token::lexer(code);
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
-    let mut mem: kcl_lib::executor::ProgramMemory = Default::default();
     let ctx = kcl_lib::executor::ExecutorContext::new(ws, units.clone()).await?;
 
-    let _ = kcl_lib::executor::execute_outer(program, &mut mem, kcl_lib::executor::BodyType::Root, &ctx).await?;
+    let _ = ctx.run(program, None).await?;
 
     let (x, y) = kcl_lib::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
 

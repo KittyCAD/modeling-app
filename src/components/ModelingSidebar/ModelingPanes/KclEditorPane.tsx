@@ -58,6 +58,7 @@ import {
   closeBrackets,
   closeBracketsKeymap,
   completionKeymap,
+  hasNextSnippetField,
 } from '@codemirror/autocomplete'
 
 export const editorShortcutMeta = {
@@ -126,11 +127,27 @@ export const KclEditorPane = () => {
 
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = async (newCode: string) => {
+    // If we are just fucking around in a snippet, return early and don't
+    // trigger stuff below that might cause the component to re-render.
+    // Otherwise we will not be able to tab thru the snippet portions.
+    // We explicitly dont check HasPrevSnippetField because we always add
+    // a ${} to the end of the function so that's fine.
+    if (editorView && hasNextSnippetField(editorView.state)) {
+      return
+    }
     if (isNetworkOkay) kclManager.setCodeAndExecute(newCode)
     else kclManager.setCode(newCode)
   } //, []);
   const lastSelection = useRef('')
   const onUpdate = (viewUpdate: ViewUpdate) => {
+    // If we are just fucking around in a snippet, return early and don't
+    // trigger stuff below that might cause the component to re-render.
+    // Otherwise we will not be able to tab thru the snippet portions.
+    // We explicitly dont check HasPrevSnippetField because we always add
+    // a ${} to the end of the function so that's fine.
+    if (hasNextSnippetField(viewUpdate.view.state)) {
+      return
+    }
     if (!editorView) {
       setEditorView(viewUpdate.view)
     }
