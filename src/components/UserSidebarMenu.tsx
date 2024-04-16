@@ -1,6 +1,6 @@
 import { Popover, Transition } from '@headlessui/react'
 import { ActionButton } from './ActionButton'
-import { faBars, faBug, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+import { faBug, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment, useState } from 'react'
@@ -8,6 +8,7 @@ import { paths } from 'lib/paths'
 import { Models } from '@kittycad/lib'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
+import Tooltip from './Tooltip'
 
 type User = Models['User_type']
 
@@ -54,11 +55,13 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
       ) : (
         <ActionButton
           Element={Popover.Button}
-          icon={{ icon: faBars }}
-          className="border-transparent"
+          icon={{ icon: 'menu' }}
+          className="border-transparent !px-0"
           data-testid="user-sidebar-toggle"
         >
-          Menu
+          <Tooltip position="left" delay={1000}>
+            User menu
+          </Tooltip>
         </ActionButton>
       )}
       <Transition
