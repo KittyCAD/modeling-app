@@ -654,7 +654,7 @@ test('Sketch on face with none z-up', async ({ page, context }) => {
   |> close(%)
   |> extrude(5 + 7, %)
 const part002 = startSketchOn(part001, 'seg01')
-  |> startProfileAt([-2.89, 1.82], %)
+  |> startProfileAt([8, 8], %)
   |> line([4.68, 3.05], %)
   |> line([0, -7.79], %, 'seg02')
   |> close(%)
@@ -666,6 +666,19 @@ const part002 = startSketchOn(part001, 'seg01')
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
+
+  await u.openDebugPanel()
+  // wait for execution done
+  await expect(
+    page.locator('[data-message-type="execution-done"]')
+  ).toHaveCount(2)
+  await u.closeDebugPanel()
+
+  // Wait for the second extrusion to appear
+  // TODO: Find a way to truly know that the objects have finished
+  // rendering, because an execution-done message is not sufficient.
+  await page.waitForTimeout(1000)
+
   await expect(
     page.getByRole('button', { name: 'Start Sketch' })
   ).not.toBeDisabled()
