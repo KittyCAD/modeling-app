@@ -10,10 +10,12 @@ import {
   faX,
 } from '@fortawesome/free-solid-svg-icons'
 import { getPartsCount, readProject } from '../lib/tauriFS'
-import { FILE_EXT } from 'lib/constants'
+import { FILE_EXT, PROJECT_IMAGE_NAME } from 'lib/constants'
 import { Dialog } from '@headlessui/react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import Tooltip from './Tooltip'
+import { join } from '@tauri-apps/api/path'
+import { exists, readFile } from '@tauri-apps/plugin-fs'
 
 function ProjectCard({
   project,
@@ -33,6 +35,7 @@ function ProjectCard({
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
   const [numberOfParts, setNumberOfParts] = useState(1)
   const [numberOfFolders, setNumberOfFolders] = useState(0)
+  const [imageUrl, setImageUrl] = useState('')
 
   let inputRef = useRef<HTMLInputElement>(null)
 
@@ -57,7 +60,19 @@ function ProjectCard({
       setNumberOfParts(kclFileCount)
       setNumberOfFolders(kclDirCount)
     }
+
+    async function setupImageUrl() {
+      const projectImagePath = await join(project.path, PROJECT_IMAGE_NAME)
+      if (await exists(projectImagePath)) {
+        const imageData = await readFile(projectImagePath)
+        const blob = new Blob([imageData], { type: 'image/jpg' })
+        const imageUrl = URL.createObjectURL(blob)
+        setImageUrl(imageUrl)
+      }
+    }
+
     void getNumberOfParts()
+    void setupImageUrl()
   }, [project.path])
 
   useEffect(() => {
@@ -70,8 +85,17 @@ function ProjectCard({
   return (
     <li
       {...props}
-      className="group relative min-h-[5em] p-1 rounded-sm border border-chalkboard-20 dark:border-chalkboard-80 hover:!border-primary"
+      className="group relative min-h-[5em] rounded-sm border border-primary/40 dark:border-chalkboard-80 hover:!border-primary divide-y divide-primary/40 dark:divide-chalkboard-80 hover:!divide-primary"
     >
+      <div className="h-36 relative grid place-content-center overflow-hidden bg-gradient-to-b from-transparent to-primary/10 rounded-t-sm">
+        {imageUrl && (
+          <img
+            src={imageUrl}
+            alt=""
+            className="w-full transition-transform group-hover:scale-105 h-full object-cover"
+          />
+        )}
+      </div>
       {isEditing ? (
         <form onSubmit={handleSave} className="flex gap-2 items-center">
           <input
@@ -120,22 +144,22 @@ function ProjectCard({
         </form>
       ) : (
         <>
-          <div className="p-1 flex flex-col h-full gap-2">
+          <div className="pb-2 flex flex-col flex-auto gap-2 rounded-b-sm">
             <Link
-              className="flex-1 !no-underline !text-chalkboard-110 dark:!text-chalkboard-10 after:content-[''] after:absolute after:inset-0"
+              className="p-2 flex-1 !no-underline !text-chalkboard-110 dark:!text-chalkboard-10 group-hover:!hue-rotate-0 after:content-[''] after:absolute after:inset-0"
               to={`${paths.FILE}/${encodeURIComponent(project.path)}`}
               data-testid="project-link"
             >
               {project.name?.replace(FILE_EXT, '')}
             </Link>
-            <span className="text-chalkboard-60 text-xs">
+            <span className="px-2 text-chalkboard-60 text-xs">
               {numberOfParts} part{numberOfParts === 1 ? '' : 's'}{' '}
               {numberOfFolders > 0 &&
                 `/ ${numberOfFolders} folder${
                   numberOfFolders === 1 ? '' : 's'
                 }`}
             </span>
-            <span className="text-chalkboard-60 text-xs">
+            <span className="px-2 text-chalkboard-60 text-xs">
               Edited{' '}
               {project.entrypointMetadata.mtime
                 ? getDisplayedTime(project.entrypointMetadata.mtime)
