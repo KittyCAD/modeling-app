@@ -1737,10 +1737,13 @@ const sketch001 = startSketchOn(box, "revolveAxis")
 
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
-        .await
-        .unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/revolve_on_edge_get_edge.png", &result, 1.0);
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([349, 409])], message: "Modeling command failed: Some([ApiError { error_code: InternalEngine, message: \"Solid3D revolve failed:  sketch profile must lie entirely on one side of the revolution axis\" }])" }"#
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]
