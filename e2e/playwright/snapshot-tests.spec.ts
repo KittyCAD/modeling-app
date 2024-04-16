@@ -27,6 +27,16 @@ test.beforeEach(async ({ page }) => {
       settings: TOML.stringify({ settings: TEST_SETTINGS }),
     }
   )
+
+  // Make the user avatar image always 404
+  // so we see the fallback menu icon for all snapshot tests
+  await page.route('https://lh3.googleusercontent.com/**', async (route) => {
+    await route.fulfill({
+      status: 404,
+      contentType: 'text/plain',
+      body: 'Not Found!',
+    })
+  })
 })
 
 test.setTimeout(60_000)
