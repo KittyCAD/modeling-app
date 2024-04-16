@@ -1,10 +1,5 @@
 import { undo, redo } from '@codemirror/commands'
-import ReactCodeMirror, {
-  Extension,
-  ViewUpdate,
-  SelectionRange,
-  drawSelection,
-} from '@uiw/react-codemirror'
+import ReactCodeMirror from '@uiw/react-codemirror'
 import { TEST } from 'env'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
@@ -18,11 +13,15 @@ import { lineHighlightField } from 'editor/highlightextension'
 import { roundOff } from 'lib/utils'
 import {
   lineNumbers,
+  rectangularSelection,
   highlightActiveLineGutter,
   highlightSpecialChars,
   highlightActiveLine,
   keymap,
   EditorView,
+  dropCursor,
+  drawSelection,
+  ViewUpdate,
 } from '@codemirror/view'
 import {
   indentWithTab,
@@ -31,39 +30,41 @@ import {
   history,
 } from '@codemirror/commands'
 import { lintGutter, lintKeymap, linter } from '@codemirror/lint'
-import { kclErrToDiagnostic } from 'lang/errors'
 import {
   foldGutter,
   foldKeymap,
   bracketMatching,
   indentOnInput,
+  codeFolding,
+  syntaxHighlighting,
+  defaultHighlightStyle,
 } from '@codemirror/language'
 import { useModelingContext } from 'hooks/useModelingContext'
 import interact from '@replit/codemirror-interact'
 import { engineCommandManager, sceneInfra, kclManager } from 'lib/singletons'
 import { useKclContext } from 'lang/KclProvider'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
-import {
-  NetworkHealthState,
-  useNetworkStatus,
-} from 'components/NetworkHealthIndicator'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { isTauri } from 'lib/isTauri'
 import { useNavigate } from 'react-router-dom'
 import { paths } from 'lib/paths'
 import makeUrlPathRelative from 'lib/makeUrlPathRelative'
 import { useLspContext } from 'components/LspProvider'
-import { Prec, EditorState } from '@codemirror/state'
+import { Prec, EditorState, Extension, SelectionRange } from '@codemirror/state'
 import {
   closeBrackets,
   closeBracketsKeymap,
   completionKeymap,
   hasNextSnippetField,
 } from '@codemirror/autocomplete'
+import {
+  NetworkHealthState,
+  useNetworkStatus,
+} from 'components/NetworkHealthIndicator'
+import { kclErrorsToDiagnostics } from 'lang/errors'
 
 export const editorShortcutMeta = {
   formatCode: {
-    codeMirror: 'Alt-Shift-f',
     display: 'Alt + Shift + F',
   },
   convertToVariable: {
@@ -87,9 +88,9 @@ export const KclEditorPane = () => {
   }))
   const { code, errors } = useKclContext()
   const lastEvent = useRef({ event: '', time: Date.now() })
+  const { copilotLSP, kclLSP } = useLspContext()
   const { overallState } = useNetworkStatus()
   const isNetworkOkay = overallState === NetworkHealthState.Ok
-  const { copilotLSP, kclLSP } = useLspContext()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -125,7 +126,6 @@ export const KclEditorPane = () => {
   const { enable: convertEnabled, handleClick: convertCallback } =
     useConvertToVariable()
 
-  // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = async (newCode: string) => {
     // If we are just fucking around in a snippet, return early and don't
     // trigger stuff below that might cause the component to re-render.
@@ -135,9 +135,10 @@ export const KclEditorPane = () => {
     if (editorView && hasNextSnippetField(editorView.state)) {
       return
     }
+
     if (isNetworkOkay) kclManager.setCodeAndExecute(newCode)
     else kclManager.setCode(newCode)
-  } //, []);
+  }
   const lastSelection = useRef('')
   const onUpdate = (viewUpdate: ViewUpdate) => {
     // If we are just fucking around in a snippet, return early and don't
@@ -207,6 +208,7 @@ export const KclEditorPane = () => {
       lineHighlightField,
       history(),
       closeBrackets(),
+      codeFolding(),
       keymap.of([
         ...closeBracketsKeymap,
         ...defaultKeymap,
@@ -231,13 +233,6 @@ export const KclEditorPane = () => {
           },
         },
         {
-          key: editorShortcutMeta.formatCode.codeMirror,
-          run: () => {
-            kclManager.format()
-            return true
-          },
-        },
-        {
           key: editorShortcutMeta.convertToVariable.codeMirror,
           run: () => {
             if (convertEnabled) {
@@ -257,6 +252,9 @@ export const KclEditorPane = () => {
     if (!TEST) {
       extensions.push(
         lintGutter(),
+        linter((_view: EditorView) => {
+          return kclErrorsToDiagnostics(errors)
+        }),
         lineNumbers(),
         highlightActiveLineGutter(),
         highlightSpecialChars(),
@@ -268,10 +266,10 @@ export const KclEditorPane = () => {
         closeBrackets(),
         highlightActiveLine(),
         highlightSelectionMatches(),
-        lintGutter(),
-        linter((_view) => {
-          return kclErrToDiagnostic(errors)
-        }),
+        syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+        rectangularSelection(),
+        drawSelection(),
+        dropCursor(),
         interact({
           rules: [
             // a rule for a number dragger
@@ -324,6 +322,7 @@ export const KclEditorPane = () => {
         theme={theme}
         onCreateEditor={(_editorView) => setEditorView(_editorView)}
         indentWithTab={false}
+        basicSetup={false}
       />
     </div>
   )

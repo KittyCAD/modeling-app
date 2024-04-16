@@ -7,12 +7,13 @@ use anyhow::{anyhow, Result};
 use dashmap::DashMap;
 use futures::{SinkExt, StreamExt};
 use kittycad::types::{OkWebSocketResponseData, WebSocketRequest, WebSocketResponse};
-use tokio::sync::{mpsc, oneshot};
+use tokio::sync::{mpsc, oneshot, RwLock};
 use tokio_tungstenite::tungstenite::Message as WsMsg;
 
 use crate::{
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
+    executor::DefaultPlanes,
 };
 
 #[derive(Debug, PartialEq)]
@@ -30,6 +31,9 @@ pub struct EngineConnection {
     tcp_read_handle: Arc<TcpReadHandle>,
     socket_health: Arc<Mutex<SocketHealth>>,
     batch: Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>,
+
+    /// The default planes for the scene.
+    default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
 }
 
 pub struct TcpRead {
@@ -169,6 +173,7 @@ impl EngineConnection {
             responses,
             socket_health,
             batch: Arc::new(Mutex::new(Vec::new())),
+            default_planes: Default::default(),
         })
     }
 }
@@ -177,6 +182,28 @@ impl EngineConnection {
 impl EngineManager for EngineConnection {
     fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>> {
         self.batch.clone()
+    }
+
+    async fn default_planes(&self, source_range: crate::executor::SourceRange) -> Result<DefaultPlanes, KclError> {
+        {
+            let opt = self.default_planes.read().await.as_ref().cloned();
+            if let Some(planes) = opt {
+                return Ok(planes);
+            }
+        } // drop the read lock
+
+        let new_planes = self.new_default_planes(source_range).await?;
+        *self.default_planes.write().await = Some(new_planes.clone());
+
+        Ok(new_planes)
+    }
+
+    async fn clear_scene_post_hook(&self, source_range: crate::executor::SourceRange) -> Result<(), KclError> {
+        // Remake the default planes, since they would have been removed after the scene was cleared.
+        let new_planes = self.new_default_planes(source_range).await?;
+        *self.default_planes.write().await = Some(new_planes);
+
+        Ok(())
     }
 
     async fn inner_send_modeling_cmd(

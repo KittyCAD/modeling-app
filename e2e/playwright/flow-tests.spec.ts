@@ -1105,7 +1105,7 @@ test('ProgramMemory can be serialised', async ({ page }) => {
   |> line([0, -1], %)
   |> close(%)
   |> extrude(1, %)
-  |> patternLinear({
+  |> patternLinear3d({
         axis: [1, 0, 1],
         repetitions: 3,
         distance: 6

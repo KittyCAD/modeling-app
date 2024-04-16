@@ -166,7 +166,7 @@ fn do_stdlib_inner(
         quote! {
             let code_blocks = vec![#(#cb),*];
             code_blocks.iter().map(|cb| {
-                let tokens = crate::token::lexer(cb);
+                let tokens = crate::token::lexer(cb).unwrap();
                 let parser = crate::parser::Parser::new(tokens);
                 let program = parser.ast().unwrap();
 
@@ -780,7 +780,7 @@ fn generate_code_block_test(
                 .commands_ws(None, None, None, None, None,None, Some(false))
                 .await.unwrap();
 
-            let tokens = crate::token::lexer(#code_block);
+            let tokens = crate::token::lexer(#code_block).unwrap();
             let parser = crate::parser::Parser::new(tokens);
             let program = parser.ast().unwrap();
             let units = kittycad::types::UnitLength::Mm;

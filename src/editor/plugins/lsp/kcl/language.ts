@@ -19,37 +19,43 @@ export interface LanguageOptions {
   client: LanguageServerClient
 }
 
-export default function kclLanguage(options: LanguageOptions): LanguageSupport {
-  // For now let's use the javascript parser.
-  // It works really well and has good syntax highlighting.
-  // We can use our lsp for the rest.
-  const lang = new Language(
-    data,
-    jsParser,
-    [
-      EditorState.languageData.of(() => [
-        {
-          // https://codemirror.net/docs/ref/#commands.CommentTokens
-          commentTokens: {
-            line: '//',
-            block: {
-              open: '/*',
-              close: '*/',
+class KclLanguage extends Language {
+  constructor(options: LanguageOptions) {
+    const plugin = kclPlugin({
+      documentUri: options.documentUri,
+      workspaceFolders: options.workspaceFolders,
+      allowHTMLContent: true,
+      client: options.client,
+    })
+
+    super(
+      data,
+      // For now let's use the javascript parser.
+      // It works really well and has good syntax highlighting.
+      // We can use our lsp for the rest.
+      jsParser,
+      [
+        plugin,
+        EditorState.languageData.of(() => [
+          {
+            // https://codemirror.net/docs/ref/#commands.CommentTokens
+            commentTokens: {
+              line: '//',
+              block: {
+                open: '/*',
+                close: '*/',
+              },
             },
           },
-        },
-      ]),
-    ],
-    'kcl'
-  )
+        ]),
+      ],
+      'kcl'
+    )
+  }
+}
 
-  // Create our supporting extension.
-  const kclLsp = kclPlugin({
-    documentUri: options.documentUri,
-    workspaceFolders: options.workspaceFolders,
-    allowHTMLContent: true,
-    client: options.client,
-  })
+export default function kclLanguage(options: LanguageOptions): LanguageSupport {
+  const lang = new KclLanguage(options)
 
-  return new LanguageSupport(lang, [kclLsp])
+  return new LanguageSupport(lang)
 }

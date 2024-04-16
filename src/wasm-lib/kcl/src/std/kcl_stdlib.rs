@@ -72,7 +72,7 @@ impl Serialize for Box<dyn KclStdLibFn> {
 /// Return the program and its single function.
 /// Return None if those expectations aren't met.
 pub fn extract_function(source: &str) -> Option<(Program, Box<FunctionExpression>)> {
-    let tokens = lexer(source);
+    let tokens = lexer(source).unwrap();
     let src = crate::parser::Parser::new(tokens).ast().ok()?;
     assert_eq!(src.body.len(), 1);
     let BodyItem::ExpressionStatement(expr) = src.body.last()? else {

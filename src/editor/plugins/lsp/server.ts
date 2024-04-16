@@ -2,6 +2,7 @@ import { InitOutput, ServerConfig } from 'wasm-lib/pkg/wasm_lib'
 import { FromServer, IntoServer } from './codec'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import { copilotLspRun, initPromise, kclLspRun } from 'lang/wasm'
+import { engineCommandManager } from 'lib/singletons'
 
 export default class Server {
   readonly initOutput: InitOutput
@@ -41,7 +42,7 @@ export default class Server {
     if (type_ === 'copilot') {
       await copilotLspRun(config, token)
     } else if (type_ === 'kcl') {
-      await kclLspRun(config, token || '')
+      await kclLspRun(config, engineCommandManager, token || '')
     }
   }
 }
