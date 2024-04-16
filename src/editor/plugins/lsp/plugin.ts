@@ -43,7 +43,6 @@ const CompletionItemKindMap = Object.fromEntries(
   Object.entries(CompletionItemKind).map(([key, value]) => [value, key])
 ) as Record<CompletionItemKind, string>
 
-
 export class LanguageServerPlugin implements PluginValue {
   public client: LanguageServerClient
   public documentUri: string
@@ -121,13 +120,13 @@ export class LanguageServerPlugin implements PluginValue {
     }
 
     try {
-        this.client.textDocumentDidChange({
-          textDocument: {
-            uri: this.documentUri,
-            version: this.documentVersion++,
-          },
-          contentChanges: [{ text: documentText }],
-        })
+      this.client.textDocumentDidChange({
+        textDocument: {
+          uri: this.documentUri,
+          version: this.documentVersion++,
+        },
+        contentChanges: [{ text: documentText }],
+      })
     } catch (e) {
       console.error(e)
     }
