@@ -24,7 +24,7 @@ const ProjectSidebarMenu = ({
 }) => {
   const { onProjectClose } = useLspContext()
   return (
-    <div className="!no-underline h-full mr-auto max-h-min min-w-max flex items-center gap-2">
+    <div className="!no-underline h-full mr-auto max-h-min min-h-12 min-w-max flex items-center gap-2">
       <Link
         onClick={() => {
           onProjectClose(file || null, project?.path || null, false)
