@@ -17,6 +17,9 @@ const config = defineConfig({
   server: {
     open: true,
     port: 3000,
+    watch: {
+      ignored: ['**/target/**'],
+    },
   },
   test: {
     globals: true,
