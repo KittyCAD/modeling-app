@@ -3,7 +3,7 @@
   "version": "0.17.3",
   "private": true,
   "dependencies": {
-    "@codemirror/autocomplete": "^6.15.0",
+    "@codemirror/autocomplete": "^6.16.0",
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
     "@fortawesome/free-brands-svg-icons": "^6.5.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
