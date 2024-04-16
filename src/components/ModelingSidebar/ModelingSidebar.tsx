@@ -15,19 +15,18 @@ interface ModelingSidebarProps {
 }
 
 export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
-  const { buttonDownInStream, openPanes } = useStore((s) => ({
+  const { settings } = useSettingsAuthContext()
+  const onboardingStatus = settings.context.app.onboardingStatus
+  const { openPanes, buttonDownInStream } = useStore((s) => ({
     buttonDownInStream: s.buttonDownInStream,
     openPanes: s.openPanes,
   }))
-  const { settings } = useSettingsAuthContext()
-  const {
-    app: { onboardingStatus },
-  } = settings.context
-
   const pointerEventsCssClass =
-    buttonDownInStream || onboardingStatus.current === 'camera'
+    buttonDownInStream ||
+    onboardingStatus.current === 'camera' ||
+    openPanes.length === 0
       ? 'pointer-events-none '
-      : 'pointer-events-auto'
+      : 'pointer-events-auto '
 
   return (
     <Resizable
@@ -41,8 +40,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       handleClasses={{
         right:
           (openPanes.length === 0 ? 'hidden ' : 'block ') +
-          'translate-x-1/2 hover:bg-chalkboard-10 hover:dark:bg-chalkboard-110 bg-transparent transition-colors duration-75 transition-ease-out delay-100 ' +
-          pointerEventsCssClass,
+          'translate-x-1/2 hover:bg-chalkboard-10 hover:dark:bg-chalkboard-110 bg-transparent transition-colors duration-75 transition-ease-out delay-100 ',
       }}
     >
       <div className={styles.grid + ' flex-1'}>
@@ -118,6 +116,7 @@ function ModelingSidebarSection({
     >
       <Tab.List
         className={
+          'pointer-events-auto ' +
           (alignButtons === 'start'
             ? 'justify-start self-start'
             : 'justify-end self-end') +

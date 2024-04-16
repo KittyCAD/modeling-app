@@ -135,9 +135,13 @@ code {
   overflow: auto;
 }
 
+#code-mirror-override .cm-gutter {
+  @apply select-none;
+}
+
 #code-mirror-override .cm-activeLine,
 #code-mirror-override .cm-activeLineGutter {
-  @apply bg-primary/20;
+  @apply bg-primary/10;
 }
 
 .dark #code-mirror-override .cm-activeLine,
