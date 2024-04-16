@@ -876,7 +876,7 @@ export class EngineCommandManager {
   inSequence = 1
   engineConnection?: EngineConnection
   defaultPlanes: DefaultPlanes | null = null
-  _commandLogs: CommandLog[] = []
+  commandLogs: CommandLog[] = []
   _commandLogCallBack: (command: CommandLog[]) => void = () => {}
   // Folks should realize that wait for ready does not get called _everytime_
   // the connection resets and restarts, it only gets called the first time.
@@ -1352,16 +1352,16 @@ export class EngineCommandManager {
     this.engineConnection?.send(deleteCmd)
   }
   addCommandLog(message: CommandLog) {
-    if (this._commandLogs.length > 500) {
-      this._commandLogs.shift()
+    if (this.commandLogs.length > 500) {
+      this.commandLogs.shift()
     }
-    this._commandLogs.push(message)
+    this.commandLogs.push(message)
 
-    this._commandLogCallBack([...this._commandLogs])
+    this._commandLogCallBack([...this.commandLogs])
   }
   clearCommandLogs() {
-    this._commandLogs = []
-    this._commandLogCallBack(this._commandLogs)
+    this.commandLogs = []
+    this._commandLogCallBack(this.commandLogs)
   }
   registerCommandLogCallback(callback: (command: CommandLog[]) => void) {
     this._commandLogCallBack = callback
