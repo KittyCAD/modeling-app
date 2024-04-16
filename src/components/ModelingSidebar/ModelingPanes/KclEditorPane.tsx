@@ -46,6 +46,7 @@ import {
   closeBracketsKeymap,
   completionKeymap,
 } from '@codemirror/autocomplete'
+import { kclErrorsToDiagnostics } from 'lang/errors'
 
 export const editorShortcutMeta = {
   formatCode: {
