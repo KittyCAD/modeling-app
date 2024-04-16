@@ -1,4 +1,4 @@
-import { kclErrToDiagnostic, KCLError } from './errors'
+import { kclErrorsToDiagnostics, KCLError } from './errors'
 
 describe('test kclErrToDiagnostic', () => {
   it('converts KCL errors to CodeMirror diagnostics', () => {
@@ -20,7 +20,7 @@ describe('test kclErrToDiagnostic', () => {
         ],
       },
     ]
-    const diagnostics = kclErrToDiagnostic(errors)
+    const diagnostics = kclErrorsToDiagnostics(errors)
     expect(diagnostics).toEqual([
       {
         from: 0,

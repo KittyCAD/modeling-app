@@ -26,13 +26,6 @@ impl Parser {
 
     /// Run the parser
     pub fn ast(&self) -> Result<Program, KclError> {
-        if self.tokens.is_empty() {
-            return Err(KclError::Syntax(KclErrorDetails {
-                source_ranges: vec![],
-                message: "file is empty".to_string(),
-            }));
-        }
-
         if !self.unknown_tokens.is_empty() {
             let source_ranges = self.unknown_tokens.iter().map(SourceRange::from).collect();
             let token_list = self.unknown_tokens.iter().map(|t| t.value.as_str()).collect::<Vec<_>>();
@@ -42,6 +35,21 @@ impl Parser {
                 format!("found unknown tokens [{}]", token_list.join(", "))
             };
             return Err(KclError::Lexical(KclErrorDetails { source_ranges, message }));
+        }
+
+        // Important, to not call this before the unknown tokens check.
+        if self.tokens.is_empty() {
+            // Empty file should just do nothing.
+            return Ok(Program::default());
+        }
+
+        // Check all the tokens are whitespace or comments.
+        if self
+            .tokens
+            .iter()
+            .all(|t| t.token_type.is_whitespace() || t.token_type.is_comment())
+        {
+            return Ok(Program::default());
         }
 
         parser_impl::run_parser(&mut self.tokens.as_slice())

@@ -225,6 +225,18 @@ pub struct Plane {
     pub meta: Vec<Metadata>,
 }
 
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct DefaultPlanes {
+    pub xy: uuid::Uuid,
+    pub xz: uuid::Uuid,
+    pub yz: uuid::Uuid,
+    pub neg_xy: uuid::Uuid,
+    pub neg_xz: uuid::Uuid,
+    pub neg_yz: uuid::Uuid,
+}
+
 /// A face.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -655,10 +667,15 @@ impl SourceRange {
     }
 
     pub fn end_to_lsp_position(&self, code: &str) -> LspPosition {
+        let lines = code[..self.end()].lines();
+        if lines.clone().count() == 0 {
+            return LspPosition { line: 0, character: 0 };
+        }
+
         // Calculate the line and column of the error from the source range.
         // Lines are zero indexed in vscode so we need to subtract 1.
-        let line = code[..self.end()].lines().count() - 1;
-        let column = code[..self.end()].lines().last().map(|l| l.len()).unwrap_or_default();
+        let line = lines.clone().count() - 1;
+        let column = lines.last().map(|l| l.len()).unwrap_or_default();
 
         LspPosition {
             line: line as u32,
@@ -972,7 +989,7 @@ impl Default for PipeInfo {
 #[derive(Debug, Clone)]
 pub struct ExecutorContext {
     pub engine: Arc<Box<dyn EngineManager>>,
-    pub fs: FileManager,
+    pub fs: Arc<FileManager>,
     pub stdlib: Arc<StdLib>,
     pub units: kittycad::types::UnitLength,
     /// Mock mode is only for the modeling app when they just want to mock engine calls and not
@@ -986,7 +1003,7 @@ impl ExecutorContext {
     pub async fn new(ws: reqwest::Upgraded, units: kittycad::types::UnitLength) -> Result<Self> {
         Ok(Self {
             engine: Arc::new(Box::new(crate::engine::conn::EngineConnection::new(ws).await?)),
-            fs: FileManager::new(),
+            fs: Arc::new(FileManager::new()),
             stdlib: Arc::new(StdLib::new()),
             units,
             is_mock: false,
@@ -1310,12 +1327,12 @@ mod tests {
     use crate::ast::types::{Identifier, Parameter};
 
     pub async fn parse_execute(code: &str) -> Result<ProgramMemory> {
-        let tokens = crate::token::lexer(code);
+        let tokens = crate::token::lexer(code)?;
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast()?;
         let ctx = ExecutorContext {
             engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await?)),
-            fs: crate::fs::FileManager::new(),
+            fs: Arc::new(crate::fs::FileManager::new()),
             stdlib: Arc::new(crate::std::StdLib::new()),
             units: kittycad::types::UnitLength::Mm,
             is_mock: false,
