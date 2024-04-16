@@ -198,71 +198,93 @@ const Home = () => {
   return (
     <div className="relative flex flex-col h-screen overflow-hidden">
       <AppHeader showToolbar={false} />
-      <div className="w-full max-w-5xl px-4 mx-auto my-24 overflow-y-auto lg:px-0">
-        <section className="flex justify-between">
-          <h1 className="text-3xl font-bold">Your Projects</h1>
-          <div className="flex gap-2 items-center">
-            <small>Sort by</small>
-            <ActionButton
-              Element="button"
-              className={
-                'text-sm ' +
-                (!sort.includes('name')
-                  ? 'text-chalkboard-80 dark:text-chalkboard-40'
-                  : '')
-              }
-              onClick={() => setSearchParams(getNextSearchParams(sort, 'name'))}
-              icon={{
-                icon: getSortIcon(sort, 'name'),
-                className: 'p-1.5',
-                iconClassName: !sort.includes('name')
-                  ? '!text-chalkboard-40'
-                  : '',
-                size: 'sm',
-              }}
-            >
-              Name
-            </ActionButton>
-            <ActionButton
-              Element="button"
-              className={
-                'text-sm ' +
-                (!isSortByModified
-                  ? 'text-chalkboard-80 dark:text-chalkboard-40'
-                  : '')
-              }
-              onClick={() =>
-                setSearchParams(getNextSearchParams(sort, 'modified'))
-              }
-              icon={{
-                icon: sort ? getSortIcon(sort, 'modified') : faArrowDown,
-                className: 'p-1.5',
-                iconClassName: !isSortByModified ? '!text-chalkboard-40' : '',
-                size: 'sm',
-              }}
-            >
-              Last Modified
-            </ActionButton>
+      <div className="w-full flex flex-col overflow-hidden max-w-5xl px-4 mx-auto mt-24 lg:px-2">
+        <section>
+          <div className="flex justify-between items-baseline select-none">
+            <div className="flex gap-8 items-baseline">
+              <h1 className="text-3xl font-bold">Your Projects</h1>
+              <ActionButton
+                Element="button"
+                onClick={() => send('Create project')}
+                className="group !bg-primary !text-chalkboard-10 !border-primary hover:shadow-inner"
+                icon={{
+                  icon: 'plus',
+                  bgClassName:
+                    '!bg-transparent group-hover:!bg-chalkboard-10 group-active:!bg-chalkboard-10 rounded-sm group-hover:shadow-sm',
+                  iconClassName:
+                    '!text-chalkboard-10 group-hover:!text-primary transition-transform group-active:rotate-90',
+                }}
+                data-testid="home-new-file"
+              >
+                New project
+              </ActionButton>
+            </div>
+            <div className="flex gap-2 items-center">
+              <small>Sort by</small>
+              <ActionButton
+                Element="button"
+                className={
+                  'text-xs border-primary/10 ' +
+                  (!sort.includes('name')
+                    ? 'text-chalkboard-80 dark:text-chalkboard-40'
+                    : '')
+                }
+                onClick={() =>
+                  setSearchParams(getNextSearchParams(sort, 'name'))
+                }
+                icon={{
+                  icon: getSortIcon(sort, 'name'),
+                  bgClassName: 'bg-transparent',
+                  iconClassName: !sort.includes('name')
+                    ? '!text-chalkboard-90 dark:!text-chalkboard-30'
+                    : '',
+                  size: 'sm',
+                }}
+              >
+                Name
+              </ActionButton>
+              <ActionButton
+                Element="button"
+                className={
+                  'text-xs border-primary/10 ' +
+                  (!isSortByModified
+                    ? 'text-chalkboard-80 dark:text-chalkboard-40'
+                    : '')
+                }
+                onClick={() =>
+                  setSearchParams(getNextSearchParams(sort, 'modified'))
+                }
+                icon={{
+                  icon: sort ? getSortIcon(sort, 'modified') : 'arrowDown',
+                  bgClassName: 'bg-transparent',
+                  iconClassName: !isSortByModified
+                    ? '!text-chalkboard-90 dark:!text-chalkboard-30'
+                    : '',
+                  size: 'sm',
+                }}
+              >
+                Last Modified
+              </ActionButton>
+            </div>
           </div>
-        </section>
-        <section data-testid="home-section">
           <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
             Loaded from{' '}
             <span className="text-chalkboard-90 dark:text-chalkboard-20">
               {settings.app.projectDirectory.current}
             </span>
-            .{' '}
-            <Link to="settings" className="underline underline-offset-2">
-              Edit in settings
-            </Link>
             .
           </p>
+        </section>
+        <section
+          data-testid="home-section"
+          className="flex-1 overflow-y-auto pr-2 pb-24"
+        >
           {state.matches('Reading projects') ? (
             <Loading>Loading your Projects...</Loading>
           ) : (
             <>
               {projects.length > 0 ? (
-                <ul className="grid w-full grid-cols-4 gap-4 my-8">
+                <ul className="grid w-full grid-cols-4 gap-4">
                   {projects.sort(getSortFunction(sort)).map((project) => (
                     <ProjectCard
                       key={project.name}
@@ -277,14 +299,6 @@ const Home = () => {
                   No Projects found, ready to make your first one?
                 </p>
               )}
-              <ActionButton
-                Element="button"
-                onClick={() => send('Create project')}
-                icon={{ icon: faPlus, iconClassName: 'p-1 w-4' }}
-                data-testid="home-new-file"
-              >
-                New file
-              </ActionButton>
             </>
           )}
         </section>
