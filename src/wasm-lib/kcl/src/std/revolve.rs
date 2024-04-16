@@ -299,8 +299,8 @@ pub async fn get_edge(args: Args) -> Result<MemoryItem, KclError> {
 ///     |> close(%)
 ///     |> extrude(10, %)
 ///
-/// const sketch001 = startSketchOn(box, "revolveAxis")
-///     |> startProfileAt([5, 10], %)
+/// const sketch001 = startSketchOn('XY')
+///     |> startProfileAt([0, -10], %)
 ///     |> line([0, -10], %)
 ///     |> line([2, 0], %)
 ///     |> line([0, 10], %)
