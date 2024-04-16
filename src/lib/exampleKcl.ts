@@ -29,11 +29,11 @@ const bracket = startSketchOn('XY')
   |> extrude(width, %)
   |> fillet({
        radius: filletR,
-       tags: [getNextAdjacentEdge('innerEdge', %)]
+       tags: [getPreviousAdjacentEdge('innerEdge', %)]
      }, %)
   |> fillet({
        radius: filletR + thickness,
-       tags: [getNextAdjacentEdge('outerEdge', %)]
+       tags: [getPreviousAdjacentEdge('outerEdge', %)]
      }, %)`
 
 function findLineInExampleCode({

@@ -29,19 +29,18 @@ async fn execute_and_snapshot(code: &str, units: kittycad::types::UnitLength) ->
 
     let ws = client
         .modeling()
-        .commands_ws(None, None, None, None, None, Some(false))
+        .commands_ws(None, None, None, None, None, None, Some(false))
         .await?;
 
     // Create a temporary file to write the output to.
     let output_file = std::env::temp_dir().join(format!("kcl_output_{}.png", uuid::Uuid::new_v4()));
 
-    let tokens = kcl_lib::token::lexer(code);
+    let tokens = kcl_lib::token::lexer(code)?;
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
-    let mut mem: kcl_lib::executor::ProgramMemory = Default::default();
     let ctx = kcl_lib::executor::ExecutorContext::new(ws, units.clone()).await?;
 
-    let _ = kcl_lib::executor::execute_outer(program, &mut mem, kcl_lib::executor::BodyType::Root, &ctx).await?;
+    let _ = ctx.run(program, None).await?;
 
     let (x, y) = kcl_lib::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
 
@@ -1738,10 +1737,13 @@ const sketch001 = startSketchOn(box, "revolveAxis")
 
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
-        .await
-        .unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/revolve_on_edge_get_edge.png", &result, 1.0);
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([349, 409])], message: "Modeling command failed: Some([ApiError { error_code: InternalEngine, message: \"Solid3D revolve failed:  sketch profile must lie entirely on one side of the revolution axis\" }])" }"#
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -1929,6 +1931,14 @@ const plumbus0 = make_circle(p, 'a', [0, 0], 2.5)
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn serial_test_empty_file_is_ok() {
+    let code = r#""#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+    assert!(result.is_ok());
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_member_expression_in_params() {
     let code = r#"fn capScrew = (originStart, length, dia, capDia, capHeadLength) => {
   const screwHead = startSketchOn({
@@ -1958,4 +1968,53 @@ capScrew([0, 0.5, 0], 50, 37.5, 50, 25)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/member_expression_in_params.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_bracket_with_fillets_ensure_fail_on_flush_source_ranges() {
+    let code = r#"// Shelf Bracket
+// This is a shelf bracket made out of 6061-T6 aluminum sheet metal. The required thickness is calculated based on a point load of 300 lbs applied to the end of the shelf. There are two brackets holding up the shelf, so the moment experienced is divided by 2. The shelf is 1 foot long from the wall.
+
+const sigmaAllow = 35000 // psi
+const width = 6 // inch
+const p = 300 // Force on shelf - lbs
+const distance = 12 // inches
+const M = 12 * 300 / 2 // Moment experienced at fixed end of bracket
+const FOS = 2 // Factor of safety of 2
+const shelfMountL = 8 // The length of the bracket holding up the shelf is 6 inches
+const wallMountL = 8 // the length of the bracket
+
+
+// Calculate the thickness off the allowable bending stress and factor of safety
+const thickness = sqrt(6 * M * FOS / (width * sigmaAllow))
+
+// 0.25 inch fillet radius
+const filletR = 0.25
+
+// Sketch the bracket and extrude with fillets
+const bracket = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, wallMountL], %, 'outerEdge')
+  |> line([-shelfMountL, 0], %)
+  |> line([0, -thickness], %)
+  |> line([shelfMountL - thickness, 0], %, 'innerEdge')
+  |> line([0, -wallMountL + thickness], %)
+  |> close(%)
+  |> extrude(width, %)
+  |> fillet({
+       radius: filletR,
+       tags: [getNextAdjacentEdge('innerEdge', %)]
+     }, %)
+  |> fillet({
+       radius: filletR + thickness,
+       tags: [getNextAdjacentEdge('outerEdge', %)]
+     }, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([1443, 1443])], message: "Modeling command failed: Some([ApiError { error_code: BadRequest, message: \"Fillet failed\" }])" }"#
+    );
 }

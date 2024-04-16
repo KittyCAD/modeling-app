@@ -6,7 +6,10 @@ use anyhow::Result;
 use kittycad::types::WebSocketRequest;
 use wasm_bindgen::prelude::*;
 
-use crate::errors::{KclError, KclErrorDetails};
+use crate::{
+    errors::{KclError, KclErrorDetails},
+    executor::DefaultPlanes,
+};
 
 #[wasm_bindgen(module = "/../../lang/std/engineConnection.ts")]
 extern "C" {
@@ -21,6 +24,15 @@ extern "C" {
         cmdStr: String,
         idToRangeStr: String,
     ) -> Result<js_sys::Promise, js_sys::Error>;
+
+    #[wasm_bindgen(method, js_name = wasmGetDefaultPlanes, catch)]
+    fn get_default_planes(this: &EngineCommandManager) -> Result<js_sys::Promise, js_sys::Error>;
+
+    #[wasm_bindgen(method, js_name = clearDefaultPlanes, catch)]
+    fn clear_default_planes(this: &EngineCommandManager) -> Result<(), js_sys::Error>;
+
+    #[wasm_bindgen(method, js_name = startNewSession, catch)]
+    fn start_new_session(this: &EngineCommandManager) -> Result<js_sys::Promise, js_sys::Error>;
 }
 
 #[derive(Debug, Clone)]
@@ -46,6 +58,70 @@ impl EngineConnection {
 impl crate::engine::EngineManager for EngineConnection {
     fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>> {
         self.batch.clone()
+    }
+
+    async fn default_planes(&self, source_range: crate::executor::SourceRange) -> Result<DefaultPlanes, KclError> {
+        // Get the default planes.
+        let promise = self.manager.get_default_planes().map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: e.to_string().into(),
+                source_ranges: vec![source_range],
+            })
+        })?;
+
+        let value = crate::wasm::JsFuture::from(promise).await.map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: format!("Failed to wait for promise from get default planes: {:?}", e),
+                source_ranges: vec![source_range],
+            })
+        })?;
+
+        // Parse the value as a string.
+        let s = value.as_string().ok_or_else(|| {
+            KclError::Engine(KclErrorDetails {
+                message: format!(
+                    "Failed to get string from response from get default planes: `{:?}`",
+                    value
+                ),
+                source_ranges: vec![source_range],
+            })
+        })?;
+
+        // Deserialize the response.
+        let default_planes: DefaultPlanes = serde_json::from_str(&s).map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: format!("Failed to deserialize default planes: {:?}", e),
+                source_ranges: vec![source_range],
+            })
+        })?;
+
+        Ok(default_planes)
+    }
+
+    async fn clear_scene_post_hook(&self, source_range: crate::executor::SourceRange) -> Result<(), KclError> {
+        self.manager.clear_default_planes().map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: e.to_string().into(),
+                source_ranges: vec![source_range],
+            })
+        })?;
+
+        // Start a new session.
+        let promise = self.manager.start_new_session().map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: e.to_string().into(),
+                source_ranges: vec![source_range],
+            })
+        })?;
+
+        crate::wasm::JsFuture::from(promise).await.map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: format!("Failed to wait for promise from start new session: {:?}", e),
+                source_ranges: vec![source_range],
+            })
+        })?;
+
+        Ok(())
     }
 
     async fn inner_send_modeling_cmd(

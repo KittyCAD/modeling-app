@@ -15,18 +15,20 @@
         https://catmosphere-theme-builder.vercel.app/?colors=%5B%7B%22from%22:%7B%22l%22:1,%22c%22:0.01,%22h%22:78%7D,%22to%22:%7B%22l%22:0.065,%22c%22:0.05,%22h%22:182.6%7D,%22stops%22:10,%22steps%22:12%7D,%7B%22from%22:%7B%22l%22:1,%22c%22:0.45,%22h%22:122.4%7D,%22to%22:%7B%22l%22:0.13,%22c%22:0.031,%22h%22:137.2%7D,%22stops%22:10,%22steps%22:12%7D,%7B%22from%22:%7B%22l%22:1,%22c%22:0.13,%22h%22:176%7D,%22to%22:%7B%22l%22:0.116,%22c%22:0.097,%22h%22:213.1%7D,%22stops%22:10,%22steps%22:12%7D,%7B%22from%22:%7B%22l%22:1,%22c%22:0.169,%22h%22:144.4%7D,%22to%22:%7B%22l%22:0.12,%22c%22:0.45,%22h%22:132.7%7D,%22steps%22:12%7D,%7B%22from%22:%7B%22l%22:1,%22c%22:0.087,%22h%22:261.6%7D,%22to%22:%7B%22l%22:0.22,%22c%22:0.084,%22h%22:275.5%7D,%22steps%22:12,%22uuid%22:%227tpx9pf1zd6%22%7D,%7B%22from%22:%7B%22l%22:0.954,%22c%22:0.108,%22h%22:280.6%7D,%22to%22:%7B%22l%22:0.166,%22c%22:0.188,%22h%22:263.8%7D,%22steps%22:12,%22uuid%22:%22vu652mebd3%22%7D,%7B%22from%22:%7B%22l%22:1,%22c%22:0.115,%22h%22:0%7D,%22to%22:%7B%22l%22:0.096,%22c%22:0.261,%22h%22:302%7D,%22steps%22:12%7D,%7B%22from%22:%7B%22l%22:1,%22c%22:0.185,%22h%22:19.8%7D,%22to%22:%7B%22l%22:0.368,%22c%22:0.45,%22h%22:9.4%7D,%22steps%22:8,%22uuid%22:%22g05inkd34l%22%7D,%7B%22from%22:%7B%22l%22:0.912,%22c%22:0.139,%22h%22:87%7D,%22to%22:%7B%22l%22:0.502,%22c%22:0.45,%22h%22:97.7%7D,%22steps%22:8,%22uuid%22:%22l892hcw4ef%22%7D,%7B%22from%22:%7B%22l%22:0.89,%22c%22:0.16,%22h%22:143.4%7D,%22to%22:%7B%22l%22:0.466,%22c%22:0.208,%22h%22:147.7%7D,%22steps%22:8,%22uuid%22:%22hkd09y9ov4h%22%7D%5D
     */
   /* Chalkboard */
-  --chalkboard-10: oklch(99.9% 0.003766 102.8deg);
-  --chalkboard-20: oklch(91.34% 0.009353 109deg);
-  --chalkboard-30: oklch(82.99% 0.00994 115.2deg);
-  --chalkboard-40: oklch(74.63% 0.01053 121.4deg);
-  --chalkboard-50: oklch(66.27% 0.01111 127.6deg);
-  --chalkboard-60: oklch(57.92% 0.0117 133.9deg);
-  --chalkboard-70: oklch(49.56% 0.01229 140.1deg);
-  --chalkboard-80: oklch(41.21% 0.01288 146.3deg);
-  --chalkboard-90: oklch(32.85% 0.01346 152.5deg);
-  --chalkboard-100: oklch(24.49% 0.01405 158.7deg);
-  --chalkboard-110: oklch(16.14% 0.01464 164.9deg);
-  --chalkboard-120: oklch(7.783% 0.01522 171.1deg);
+
+  /* Chalkboard */
+  --chalkboard-10: oklch(99.11% 0 var(--primary-hue));
+  --chalkboard-20: oklch(95.51% 0 var(--primary-hue));
+  --chalkboard-30: oklch(88.48% 0 var(--primary-hue));
+  --chalkboard-40: oklch(82.01% 0 var(--primary-hue));
+  --chalkboard-50: oklch(72.41% 0 var(--primary-hue));
+  --chalkboard-60: oklch(68.19% 0 var(--primary-hue));
+  --chalkboard-70: oklch(48.19% 0 var(--primary-hue));
+  --chalkboard-80: oklch(39.04% 0 var(--primary-hue));
+  --chalkboard-90: oklch(30.12% 0 var(--primary-hue));
+  --chalkboard-100: oklch(22.64% 0 var(--primary-hue));
+  --chalkboard-110: oklch(18.22% 0 var(--primary-hue));
+  --chalkboard-120: oklch(0% 0 var(--primary-hue));
 
   /* Energy  */
   --energy-10: oklch(93.31% 0.227 122.3deg);
@@ -144,18 +146,18 @@
 
   /* Base values for use with Tailwind. */
   /* Chalkboard */
-  --_chalkboard-10: 99.7% 0.008766 102.8deg;
-  --_chalkboard-20: 91.34% 0.009353 109deg;
-  --_chalkboard-30: 82.99% 0.00994 115.2deg;
-  --_chalkboard-40: 74.63% 0.01053 121.4deg;
-  --_chalkboard-50: 66.27% 0.01111 127.6deg;
-  --_chalkboard-60: 57.92% 0.0117 133.9deg;
-  --_chalkboard-70: 49.56% 0.01229 140.1deg;
-  --_chalkboard-80: 41.21% 0.01288 146.3deg;
-  --_chalkboard-90: 32.85% 0.01346 152.5deg;
-  --_chalkboard-100: 24.49% 0.01405 158.7deg;
-  --_chalkboard-110: 16.14% 0.01464 164.9deg;
-  --_chalkboard-120: 7.783% 0.01522 171.1deg;
+  --_chalkboard-10: 99.11% 0 var(--primary-hue);
+  --_chalkboard-20: 95.51% 0 var(--primary-hue);
+  --_chalkboard-30: 88.48% 0 var(--primary-hue);
+  --_chalkboard-40: 82.01% 0 var(--primary-hue);
+  --_chalkboard-50: 72.41% 0 var(--primary-hue);
+  --_chalkboard-60: 68.19% 0 var(--primary-hue);
+  --_chalkboard-70: 48.19% 0 var(--primary-hue);
+  --_chalkboard-80: 39.04% 0 var(--primary-hue);
+  --_chalkboard-90: 30.12% 0 var(--primary-hue);
+  --_chalkboard-100: 22.64% 0 var(--primary-hue);
+  --_chalkboard-110: 18.22% 0 var(--primary-hue);
+  --_chalkboard-120: 0% 0 var(--primary-hue);
 
   /* Energy  */
   --_energy-10: 93.31% 0.227 122.3deg;

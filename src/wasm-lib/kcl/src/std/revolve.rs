@@ -45,13 +45,13 @@ pub enum RevolveAxis {
 #[serde(rename_all = "camelCase")]
 pub enum RevolveAxisAndOrigin {
     /// X-axis.
-    #[serde(alias = "X")]
+    #[serde(rename = "X", alias = "x")]
     X,
     /// Y-axis.
-    #[serde(alias = "Y")]
+    #[serde(rename = "Y", alias = "y")]
     Y,
     /// Z-axis.
-    #[serde(alias = "Z")]
+    #[serde(rename = "Z", alias = "z")]
     Z,
     /// Flip the X-axis.
     #[serde(rename = "-X", alias = "-x")]
@@ -299,8 +299,8 @@ pub async fn get_edge(args: Args) -> Result<MemoryItem, KclError> {
 ///     |> close(%)
 ///     |> extrude(10, %)
 ///
-/// const sketch001 = startSketchOn(box, "revolveAxis")
-///     |> startProfileAt([5, 10], %)
+/// const sketch001 = startSketchOn('XY')
+///     |> startProfileAt([0, -10], %)
 ///     |> line([0, -10], %)
 ///     |> line([2, 0], %)
 ///     |> line([0, 10], %)
@@ -337,7 +337,7 @@ mod tests {
     fn test_deserialize_revolve_axis() {
         let data = RevolveAxis::Axis(RevolveAxisAndOrigin::X);
         let mut str_json = serde_json::to_string(&data).unwrap();
-        assert_eq!(str_json, "\"x\"");
+        assert_eq!(str_json, "\"X\"");
 
         str_json = "\"Y\"".to_string();
         let data: RevolveAxis = serde_json::from_str(&str_json).unwrap();

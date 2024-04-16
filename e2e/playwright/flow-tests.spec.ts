@@ -2,10 +2,15 @@ import { test, expect } from '@playwright/test'
 import { getUtils } from './test-utils'
 import waitOn from 'wait-on'
 import { roundOff } from 'lib/utils'
-import { basicStorageState } from './storageStates'
 import * as TOML from '@iarna/toml'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
-import { Themes } from 'lib/theme'
+import { secrets } from './secrets'
+import {
+  TEST_SETTINGS,
+  TEST_SETTINGS_KEY,
+  TEST_SETTINGS_CORRUPTED,
+  TEST_SETTINGS_ONBOARDING,
+} from './storageStates'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -32,13 +37,25 @@ test.beforeEach(async ({ context, page }) => {
     timeout: 5000,
   })
 
+  await context.addInitScript(
+    async ({ token, settingsKey, settings }) => {
+      localStorage.setItem('TOKEN_PERSIST_KEY', token)
+      localStorage.setItem('persistCode', ``)
+      localStorage.setItem(settingsKey, settings)
+    },
+    {
+      token: secrets.token,
+      settingsKey: TEST_SETTINGS_KEY,
+      settings: TOML.stringify({ settings: TEST_SETTINGS }),
+    }
+  )
   // kill animations, speeds up tests and reduced flakiness
   await page.emulateMedia({ reducedMotion: 'reduce' })
 })
 
 test.setTimeout(60000)
 
-test('Basic sketch', async ({ page, context }) => {
+test('Basic sketch', async ({ page }) => {
   const u = getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -128,6 +145,7 @@ test('Can moving camera', async ({ page, context }) => {
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
   await u.openAndClearDebugPanel()
+  await u.closeKclCodePanel()
 
   const camPos: [number, number, number] = [0, 85, 85]
   const bakeInRetries = async (
@@ -161,6 +179,8 @@ test('Can moving camera', async ({ page, context }) => {
     }, 300)
 
     await u.openAndClearDebugPanel()
+    await page.getByTestId('cam-x-position').isVisible()
+
     const vals = await Promise.all([
       page.getByTestId('cam-x-position').inputValue(),
       page.getByTestId('cam-y-position').inputValue(),
@@ -308,9 +328,9 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
   await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 })
 
-test('executes on load', async ({ page, context }) => {
+test('executes on load', async ({ page }) => {
   const u = getUtils(page)
-  await context.addInitScript(async () => {
+  await page.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
       `const part001 = startSketchOn('-XZ')
@@ -325,7 +345,11 @@ test('executes on load', async ({ page, context }) => {
   await u.waitForAuthSkipAppStart()
 
   // expand variables section
-  await page.getByText('Variables').click()
+  const variablesTabButton = page.getByRole('tab', {
+    name: 'Variables',
+    exact: false,
+  })
+  await variablesTabButton.click()
 
   // can find part001 in the variables summary (pretty-json-container, makes sure we're not looking in the code editor)
   // part001 only shows up in the variables summary if it's been executed
@@ -340,16 +364,20 @@ test('executes on load', async ({ page, context }) => {
   ).toBeVisible()
 })
 
-test('re-executes', async ({ page, context }) => {
+test('re-executes', async ({ page }) => {
   const u = getUtils(page)
-  await context.addInitScript(async (token) => {
+  await page.addInitScript(async () => {
     localStorage.setItem('persistCode', `const myVar = 5`)
   })
   await page.setViewportSize({ width: 1000, height: 500 })
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
 
-  await page.getByText('Variables').click()
+  const variablesTabButton = page.getByRole('tab', {
+    name: 'Variables',
+    exact: false,
+  })
+  await variablesTabButton.click()
   // expect to see "myVar:5"
   await expect(
     page.locator('.pretty-json-container >> text=myVar:5')
@@ -482,7 +510,8 @@ test('Auto complete works', async ({ page }) => {
   // expect there to be three auto complete options
   await expect(page.locator('.cm-completionLabel')).toHaveCount(3)
   await page.getByText('startSketchOn').click()
-  await page.keyboard.type("('XY')")
+  await page.keyboard.type("'XY'")
+  await page.keyboard.press('Tab')
   await page.keyboard.press('Enter')
   await page.keyboard.type('  |> startProfi')
   // expect there be a single auto complete option that we can just hit enter on
@@ -490,7 +519,10 @@ test('Auto complete works', async ({ page }) => {
   await page.waitForTimeout(100)
   await page.keyboard.press('Enter') // accepting the auto complete, not a new line
 
-  await page.keyboard.type('([0,0], %)')
+  await page.keyboard.press('Tab')
+  await page.keyboard.press('Tab')
+  await page.keyboard.press('Tab')
+  await page.keyboard.press('Tab')
   await page.keyboard.press('Enter')
   await page.keyboard.type('  |> lin')
 
@@ -501,145 +533,149 @@ test('Auto complete works', async ({ page }) => {
   await page.keyboard.press('ArrowDown')
   await page.keyboard.press('Enter')
   // finish line with comment
-  await page.keyboard.type('(5, %) // lin')
+  await page.keyboard.type('5')
+  await page.keyboard.press('Tab')
+  await page.keyboard.press('Tab')
+  await page.keyboard.type(' // lin')
   await page.waitForTimeout(100)
   // there shouldn't be any auto complete options for 'lin' in the comment
   await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('XY')
-  |> startProfileAt([0,0], %)
+  |> startProfileAt([3.14, 3.14], %)
   |> xLine(5, %) // lin`)
 })
 
-// Stored settings validation test
-test.describe('Settings persistence and validation tests', () => {
-  // Override test setup
+test('Stored settings are validated and fall back to defaults', async ({
+  page,
+  context,
+}) => {
+  const u = getUtils(page)
+
+  // Override beforeEach test setup
   // with corrupted settings
-  const storageState = structuredClone(basicStorageState)
-  const s = TOML.parse(storageState.origins[0].localStorage[2].value) as {
-    settings: SaveSettingsPayload
-  }
-  s.settings.app.theme = Themes.Dark
-  s.settings.app.projectDirectory = 123 as any
-  s.settings.modeling.defaultUnit = 'invalid' as any
-  s.settings.modeling.mouseControls = `() => alert('hack the planet')` as any
-  s.settings.projects.defaultProjectName = false as any
-  storageState.origins[0].localStorage[2].value = TOML.stringify(s)
+  await context.addInitScript(
+    async ({ settingsKey, settings }) => {
+      localStorage.setItem(settingsKey, settings)
+    },
+    {
+      settingsKey: TEST_SETTINGS_KEY,
+      settings: TOML.stringify({ settings: TEST_SETTINGS_CORRUPTED }),
+    }
+  )
 
-  test.use({ storageState })
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
 
-  test('Stored settings are validated and fall back to defaults', async ({
-    page,
-  }) => {
-    const u = getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
-    await page.goto('/')
-    await u.waitForAuthSkipAppStart()
+  // Check the settings were reset
+  const storedSettings = TOML.parse(
+    await page.evaluate(
+      ({ settingsKey }) => localStorage.getItem(settingsKey) || '{}',
+      { settingsKey: TEST_SETTINGS_KEY }
+    )
+  ) as { settings: SaveSettingsPayload }
 
-    // Check the settings were reset
-    const storedSettings = TOML.parse(
-      await page.evaluate(() => localStorage.getItem('/user.toml') || '{}')
-    ) as { settings: SaveSettingsPayload }
+  expect(storedSettings.settings.app?.theme).toBe('dark')
 
-    expect(storedSettings.settings.app?.theme).toBe('dark')
-
-    // Check that the invalid settings were removed
-    expect(storedSettings.settings.modeling?.defaultUnit).toBe(undefined)
-    expect(storedSettings.settings.modeling?.mouseControls).toBe(undefined)
-    expect(storedSettings.settings.app?.projectDirectory).toBe(undefined)
-    expect(storedSettings.settings.projects?.defaultProjectName).toBe(undefined)
-  })
-
-  test('Project settings can be set and override user settings', async ({
-    page,
-  }) => {
-    const u = getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
-    await page.goto('/')
-    await u.waitForAuthSkipAppStart()
-
-    // Open the settings modal with the browser keyboard shortcut
-    await page.keyboard.press('Meta+Shift+,')
-
-    await expect(
-      page.getByRole('heading', { name: 'Settings', exact: true })
-    ).toBeVisible()
-    await page
-      .locator('select[name="app-theme"]')
-      .selectOption({ value: 'light' })
-
-    // Verify the toast appeared
-    await expect(
-      page.getByText(`Set theme to "light" for this project`)
-    ).toBeVisible()
-    // Check that the theme changed
-    await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
-
-    // Check that the user setting was not changed
-    await page.getByRole('radio', { name: 'User' }).click()
-    await expect(page.locator('select[name="app-theme"]')).toHaveValue('dark')
-
-    // Roll back to default "system" theme
-    await page
-      .getByText(
-        'themeRoll back themeRoll back to match defaultThe overall appearance of the appl'
-      )
-      .hover()
-    await page
-      .getByRole('button', {
-        name: 'Roll back theme ; Has tooltip: Roll back to match default',
-      })
-      .click()
-    await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
-
-    // Check that the project setting did not change
-    await page.getByRole('radio', { name: 'Project' }).click()
-    await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
-  })
+  // Check that the invalid settings were removed
+  expect(storedSettings.settings.modeling?.defaultUnit).toBe(undefined)
+  expect(storedSettings.settings.modeling?.mouseControls).toBe(undefined)
+  expect(storedSettings.settings.app?.projectDirectory).toBe(undefined)
+  expect(storedSettings.settings.projects?.defaultProjectName).toBe(undefined)
 })
 
-// Onboarding tests
-test.describe('Onboarding tests', () => {
-  // Override test setup
-  const storageState = structuredClone(basicStorageState)
-  const s = TOML.parse(storageState.origins[0].localStorage[2].value) as {
-    settings: SaveSettingsPayload
-  }
-  s.settings.app.onboardingStatus = '/export'
-  storageState.origins[0].localStorage[2].value = TOML.stringify(s)
-  test.use({ storageState })
+test('Project settings can be set and override user settings', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/', { waitUntil: 'domcontentloaded' })
+  await page
+    .getByRole('button', { name: 'Start Sketch' })
+    .waitFor({ state: 'visible' })
 
-  test('Onboarding redirects and code updating', async ({ page, context }) => {
-    const u = getUtils(page)
+  // Open the settings modal with the browser keyboard shortcut
+  await page.keyboard.press('Meta+Shift+,')
 
-    await page.setViewportSize({ width: 1200, height: 500 })
-    await page.goto('/')
-    await u.waitForAuthSkipAppStart()
+  await expect(
+    page.getByRole('heading', { name: 'Settings', exact: true })
+  ).toBeVisible()
+  await page
+    .locator('select[name="app-theme"]')
+    .selectOption({ value: 'light' })
 
-    // Test that the redirect happened
-    await expect(page.url().split(':3000').slice(-1)[0]).toBe(
-      `/file/%2Fbrowser%2Fmain.kcl/onboarding/export`
+  // Verify the toast appeared
+  await expect(
+    page.getByText(`Set theme to "light" for this project`)
+  ).toBeVisible()
+  // Check that the theme changed
+  await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
+
+  // Check that the user setting was not changed
+  await page.getByRole('radio', { name: 'User' }).click()
+  await expect(page.locator('select[name="app-theme"]')).toHaveValue('dark')
+
+  // Roll back to default "system" theme
+  await page
+    .getByText(
+      'themeRoll back themeRoll back to match defaultThe overall appearance of the appl'
     )
+    .hover()
+  await page
+    .getByRole('button', {
+      name: 'Roll back theme ; Has tooltip: Roll back to match default',
+    })
+    .click()
+  await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
 
-    // Test that you come back to this page when you refresh
-    await page.reload()
-    await expect(page.url().split(':3000').slice(-1)[0]).toBe(
-      `/file/%2Fbrowser%2Fmain.kcl/onboarding/export`
-    )
+  // Check that the project setting did not change
+  await page.getByRole('radio', { name: 'Project' }).click()
+  await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
+})
 
-    // Test that the onboarding pane loaded
-    const title = page.locator('[data-testid="onboarding-content"]')
-    await expect(title).toBeAttached()
+test('Onboarding redirects and code updating', async ({ page }) => {
+  const u = getUtils(page)
 
-    // Test that the code changes when you advance to the next step
-    await page.locator('[data-testid="onboarding-next"]').click()
-    await expect(page.locator('.cm-content')).toHaveText('')
+  // Override beforeEach test setup
+  await page.addInitScript(
+    async ({ settingsKey, settings }) => {
+      // Give some initial code, so we can test that it's cleared
+      localStorage.setItem('persistCode', 'const sigmaAllow = 15000')
+      localStorage.setItem(settingsKey, settings)
+    },
+    {
+      settingsKey: TEST_SETTINGS_KEY,
+      settings: TOML.stringify({ settings: TEST_SETTINGS_ONBOARDING }),
+    }
+  )
 
-    // Test that the code is not empty when you click on the next step
-    await page.locator('[data-testid="onboarding-next"]').click()
-    await expect(page.locator('.cm-content')).toHaveText(/.+/)
-  })
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+
+  // Test that the redirect happened
+  await expect(page.url().split(':3000').slice(-1)[0]).toBe(
+    `/file/%2Fbrowser%2Fmain.kcl/onboarding/export`
+  )
+
+  // Test that you come back to this page when you refresh
+  await page.reload()
+  await expect(page.url().split(':3000').slice(-1)[0]).toBe(
+    `/file/%2Fbrowser%2Fmain.kcl/onboarding/export`
+  )
+
+  // Test that the onboarding pane loaded
+  const title = page.locator('[data-testid="onboarding-content"]')
+  await expect(title).toBeAttached()
+
+  // Test that the code changes when you advance to the next step
+  await page.locator('[data-testid="onboarding-next"]').click()
+  await expect(page.locator('.cm-content')).toHaveText('')
+
+  // Test that the code is not empty when you click on the next step
+  await page.locator('[data-testid="onboarding-next"]').click()
+  await expect(page.locator('.cm-content')).toHaveText(/.+/)
 })
 
 test('Selections work on fresh and edited sketch', async ({ page }) => {
@@ -851,19 +887,21 @@ test.describe('Command bar tests', () => {
     await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
   })
 
-  // Override test setup code
-  const storageState = structuredClone(basicStorageState)
-  storageState.origins[0].localStorage[1].value = `const distance = sqrt(20)
-  const part001 = startSketchOn('-XZ')
-    |> startProfileAt([-6.95, 4.98], %)
-    |> line([25.1, 0.41], %)
-    |> line([0.73, -14.93], %)
-    |> line([-23.44, 0.52], %)
-    |> close(%)
-  `
-  test.use({ storageState })
+  test('Can extrude from the command bar', async ({ page }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const distance = sqrt(20)
+        const part001 = startSketchOn('-XZ')
+  |> startProfileAt([-6.95, 4.98], %)
+  |> line([25.1, 0.41], %)
+  |> line([0.73, -14.93], %)
+  |> line([-23.44, 0.52], %)
+  |> close(%)
+        `
+      )
+    })
 
-  test('Can extrude from the command bar', async ({ page, context }) => {
     const u = getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     await page.goto('/')
@@ -872,15 +910,13 @@ test.describe('Command bar tests', () => {
     // Make sure the stream is up
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
 
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
     ).not.toBeDisabled()
-    await page.getByText('|> startProfileAt([-6.95, 4.98], %)').click()
-    await expect(
-      page.getByRole('button', { name: 'Extrude' })
-    ).not.toBeDisabled()
+    await u.clearCommandLogs()
+    await page.getByText('|> line([0.73, -14.93], %)').click()
+    await page.getByRole('button', { name: 'Extrude' }).isEnabled()
 
     let cmdSearchBar = page.getByPlaceholder('Search commands')
     await page.keyboard.press('Meta+K')
@@ -898,23 +934,25 @@ test.describe('Command bar tests', () => {
     await expect(page.getByPlaceholder('Variable name')).toHaveValue(
       'distance001'
     )
-    await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled()
-    await page.getByRole('button', { name: 'Continue' }).click()
+
+    const continueButton = page.getByRole('button', { name: 'Continue' })
+    const submitButton = page.getByRole('button', { name: 'Submit command' })
+    await continueButton.click()
 
     // Review step and argument hotkeys
-    await expect(
-      page.getByRole('button', { name: 'Submit command' })
-    ).toBeEnabled()
+    await expect(submitButton).toBeEnabled()
     await page.keyboard.press('Backspace')
+
+    // Assert we're back on the distance step
     await expect(
       page.getByRole('button', { name: 'Distance 12', exact: false })
     ).toBeDisabled()
-    await page.keyboard.press('Enter')
 
-    await expect(page.getByText('Confirm Extrude')).toBeVisible()
+    await continueButton.click()
+    await submitButton.click()
 
     // Check that the code was updated
-    await page.keyboard.press('Enter')
+    await u.waitForCmdReceive('extrude')
     // Unfortunately this indentation seems to matter for the test
     await expect(page.locator('.cm-content')).toHaveText(
       `const distance = sqrt(20)
@@ -1055,9 +1093,9 @@ const part002 = startSketchOn('XY')
   )
 })
 
-test('ProgramMemory can be serialised', async ({ page, context }) => {
+test('ProgramMemory can be serialised', async ({ page }) => {
   const u = getUtils(page)
-  await context.addInitScript(async () => {
+  await page.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
       `const part = startSketchOn('XY')
@@ -1067,7 +1105,7 @@ test('ProgramMemory can be serialised', async ({ page, context }) => {
   |> line([0, -1], %)
   |> close(%)
   |> extrude(1, %)
-  |> patternLinear({
+  |> patternLinear3d({
         axis: [1, 0, 1],
         repetitions: 3,
         distance: 6
@@ -1096,7 +1134,6 @@ test('ProgramMemory can be serialised', async ({ page, context }) => {
 
 test("Various pipe expressions should and shouldn't allow edit and or extrude", async ({
   page,
-  context,
 }) => {
   const u = getUtils(page)
   const selectionsSnippets = {
@@ -1105,7 +1142,7 @@ test("Various pipe expressions should and shouldn't allow edit and or extrude", 
     extrudeAndEditAllowed: '|> startProfileAt([15.72, 4.7], %)',
     editOnly: '|> startProfileAt([15.79, -14.6], %)',
   }
-  await context.addInitScript(
+  await page.addInitScript(
     async ({
       extrudeAndEditBlocked,
       extrudeAndEditBlockedInFunction,
@@ -1265,12 +1302,9 @@ test('Deselecting line tool should mean nothing happens on click', async ({
   previousCodeContent = await page.locator('.cm-content').innerText()
 })
 
-test('Can edit segments by dragging their handles', async ({
-  page,
-  context,
-}) => {
+test('Can edit segments by dragging their handles', async ({ page }) => {
   const u = getUtils(page)
-  await context.addInitScript(async () => {
+  await page.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
       `const part001 = startSketchOn('-XZ')
@@ -1422,9 +1456,9 @@ test('Snap to close works (at any scale)', async ({ page }) => {
   await doSnapAtDifferentScales([0, 10000, 10000], codeTemplate())
 })
 
-test('Sketch on face', async ({ page, context }) => {
+test('Sketch on face', async ({ page }) => {
   const u = getUtils(page)
-  await context.addInitScript(async () => {
+  await page.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
       `const part001 = startSketchOn('-XZ')

@@ -1,35 +1,70 @@
 import { undo, redo } from '@codemirror/commands'
-import ReactCodeMirror, {
-  Extension,
-  ViewUpdate,
-  keymap,
-  SelectionRange,
-} from '@uiw/react-codemirror'
+import ReactCodeMirror from '@uiw/react-codemirror'
 import { TEST } from 'env'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
-import { Themes } from 'lib/theme'
+import { Themes, getSystemTheme } from 'lib/theme'
 import { useEffect, useMemo, useRef } from 'react'
-import { linter, lintGutter } from '@codemirror/lint'
 import { useStore } from 'useStore'
 import { processCodeMirrorRanges } from 'lib/selections'
-import { EditorView, lineHighlightField } from 'editor/highlightextension'
+import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
+import { lineHighlightField } from 'editor/highlightextension'
 import { roundOff } from 'lib/utils'
-import { kclErrToDiagnostic } from 'lang/errors'
-import { CSSRuleObject } from 'tailwindcss/types/config'
+import {
+  lineNumbers,
+  rectangularSelection,
+  highlightActiveLineGutter,
+  highlightSpecialChars,
+  highlightActiveLine,
+  keymap,
+  EditorView,
+  dropCursor,
+  drawSelection,
+  ViewUpdate,
+} from '@codemirror/view'
+import {
+  indentWithTab,
+  defaultKeymap,
+  historyKeymap,
+  history,
+} from '@codemirror/commands'
+import { lintGutter, lintKeymap, linter } from '@codemirror/lint'
+import {
+  foldGutter,
+  foldKeymap,
+  bracketMatching,
+  indentOnInput,
+  codeFolding,
+  syntaxHighlighting,
+  defaultHighlightStyle,
+} from '@codemirror/language'
 import { useModelingContext } from 'hooks/useModelingContext'
 import interact from '@replit/codemirror-interact'
 import { engineCommandManager, sceneInfra, kclManager } from 'lib/singletons'
 import { useKclContext } from 'lang/KclProvider'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
-import { NetworkHealthState, useNetworkStatus } from './NetworkHealthIndicator'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { useLspContext } from './LspProvider'
+import { isTauri } from 'lib/isTauri'
+import { useNavigate } from 'react-router-dom'
+import { paths } from 'lib/paths'
+import makeUrlPathRelative from 'lib/makeUrlPathRelative'
+import { useLspContext } from 'components/LspProvider'
+import { Prec, EditorState, Extension, SelectionRange } from '@codemirror/state'
+import {
+  closeBrackets,
+  closeBracketsKeymap,
+  completionKeymap,
+  hasNextSnippetField,
+} from '@codemirror/autocomplete'
+import {
+  NetworkHealthState,
+  useNetworkStatus,
+} from 'components/NetworkHealthIndicator'
+import { kclErrorsToDiagnostics } from 'lang/errors'
 
 export const editorShortcutMeta = {
   formatCode: {
-    codeMirror: 'Alt-Shift-f',
     display: 'Alt + Shift + F',
   },
   convertToVariable: {
@@ -38,11 +73,14 @@ export const editorShortcutMeta = {
   },
 }
 
-export const TextEditor = ({
-  theme,
-}: {
-  theme: Themes.Light | Themes.Dark
-}) => {
+export const KclEditorPane = () => {
+  const {
+    settings: { context },
+  } = useSettingsAuthContext()
+  const theme =
+    context.app.theme.current === Themes.System
+      ? getSystemTheme()
+      : context.app.theme.current
   const { editorView, setEditorView, isShiftDown } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
@@ -50,9 +88,10 @@ export const TextEditor = ({
   }))
   const { code, errors } = useKclContext()
   const lastEvent = useRef({ event: '', time: Date.now() })
+  const { copilotLSP, kclLSP } = useLspContext()
   const { overallState } = useNetworkStatus()
   const isNetworkOkay = overallState === NetworkHealthState.Ok
-  const { copilotLSP, kclLSP } = useLspContext()
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -82,17 +121,34 @@ export const TextEditor = ({
 
   const { settings } = useSettingsAuthContext()
   const textWrapping = settings.context.textEditor.textWrapping
+  const cursorBlinking = settings.context.textEditor.blinkingCursor
   const { commandBarSend } = useCommandsContext()
   const { enable: convertEnabled, handleClick: convertCallback } =
     useConvertToVariable()
 
-  // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = async (newCode: string) => {
+    // If we are just fucking around in a snippet, return early and don't
+    // trigger stuff below that might cause the component to re-render.
+    // Otherwise we will not be able to tab thru the snippet portions.
+    // We explicitly dont check HasPrevSnippetField because we always add
+    // a ${} to the end of the function so that's fine.
+    if (editorView && hasNextSnippetField(editorView.state)) {
+      return
+    }
+
     if (isNetworkOkay) kclManager.setCodeAndExecute(newCode)
     else kclManager.setCode(newCode)
-  } //, []);
+  }
   const lastSelection = useRef('')
   const onUpdate = (viewUpdate: ViewUpdate) => {
+    // If we are just fucking around in a snippet, return early and don't
+    // trigger stuff below that might cause the component to re-render.
+    // Otherwise we will not be able to tab thru the snippet portions.
+    // We explicitly dont check HasPrevSnippetField because we always add
+    // a ${} to the end of the function so that's fine.
+    if (hasNextSnippetField(viewUpdate.view.state)) {
+      return
+    }
     if (!editorView) {
       setEditorView(viewUpdate.view)
     }
@@ -146,8 +202,22 @@ export const TextEditor = ({
 
   const editorExtensions = useMemo(() => {
     const extensions = [
+      drawSelection({
+        cursorBlinkRate: cursorBlinking.current ? 1200 : 0,
+      }),
       lineHighlightField,
+      history(),
+      closeBrackets(),
+      codeFolding(),
       keymap.of([
+        ...closeBracketsKeymap,
+        ...defaultKeymap,
+        ...searchKeymap,
+        ...historyKeymap,
+        ...foldKeymap,
+        ...completionKeymap,
+        ...lintKeymap,
+        indentWithTab,
         {
           key: 'Meta-k',
           run: () => {
@@ -156,10 +226,10 @@ export const TextEditor = ({
           },
         },
         {
-          key: editorShortcutMeta.formatCode.codeMirror,
+          key: isTauri() ? 'Meta-,' : 'Meta-Shift-,',
           run: () => {
-            kclManager.format()
-            return true
+            navigate(makeUrlPathRelative(paths.SETTINGS))
+            return false
           },
         },
         {
@@ -175,16 +245,31 @@ export const TextEditor = ({
       ]),
     ] as Extension[]
 
-    if (kclLSP) extensions.push(kclLSP)
+    if (kclLSP) extensions.push(Prec.highest(kclLSP))
     if (copilotLSP) extensions.push(copilotLSP)
 
     // These extensions have proven to mess with vitest
     if (!TEST) {
       extensions.push(
         lintGutter(),
-        linter((_view) => {
-          return kclErrToDiagnostic(errors)
+        linter((_view: EditorView) => {
+          return kclErrorsToDiagnostics(errors)
         }),
+        lineNumbers(),
+        highlightActiveLineGutter(),
+        highlightSpecialChars(),
+        history(),
+        foldGutter(),
+        EditorState.allowMultipleSelections.of(true),
+        indentOnInput(),
+        bracketMatching(),
+        closeBrackets(),
+        highlightActiveLine(),
+        highlightSelectionMatches(),
+        syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+        rectangularSelection(),
+        drawSelection(),
+        dropCursor(),
         interact({
           rules: [
             // a rule for a number dragger
@@ -222,22 +307,22 @@ export const TextEditor = ({
     }
 
     return extensions
-  }, [kclLSP, textWrapping.current, convertCallback])
+  }, [kclLSP, textWrapping.current, cursorBlinking.current, convertCallback])
 
   return (
     <div
       id="code-mirror-override"
-      className="full-height-subtract"
-      style={{ '--height-subtract': '4.25rem' } as CSSRuleObject}
+      className={'absolute inset-0 ' + (cursorBlinking.current ? 'blink' : '')}
     >
       <ReactCodeMirror
-        className="h-full"
         value={code}
         extensions={editorExtensions}
         onChange={onChange}
         onUpdate={onUpdate}
         theme={theme}
         onCreateEditor={(_editorView) => setEditorView(_editorView)}
+        indentWithTab={false}
+        basicSetup={false}
       />
     </div>
   )

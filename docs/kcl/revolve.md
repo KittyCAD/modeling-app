@@ -121,9 +121,9 @@ const sketch001 = startSketchOn(box, "END")
 	// Angle to revolve (in degrees). Default is 360.
 	angle: number,
 	// Axis of revolution.
-	axis: "x" |
-"y" |
-"z" |
+	axis: "X" |
+"Y" |
+"Z" |
 "-X" |
 "-Y" |
 "-Z" |

@@ -16,7 +16,7 @@ export const lineHighlightField = StateField.define({
       if (e.is(addLineHighlight)) {
         lines = Decoration.none
         const [from, to] = e.value || [0, 0]
-        if (!(from === to && from === 0)) {
+        if (from && to && !(from === to && from === 0)) {
           lines = lines.update({ add: [matchDeco.range(from, to)] })
           deco.push(matchDeco.range(from, to))
         }

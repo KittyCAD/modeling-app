@@ -14,7 +14,7 @@ pub fn bench_parse(c: &mut Criterion) {
         ("math", MATH_PROGRAM),
         ("mike_stress_test", MIKE_STRESS_TEST_PROGRAM),
     ] {
-        let tokens = kcl_lib::token::lexer(file);
+        let tokens = kcl_lib::token::lexer(file).unwrap();
         c.bench_function(&format!("parse_{name}"), move |b| {
             let tok = tokens.clone();
             b.iter(move || {
@@ -26,7 +26,7 @@ pub fn bench_parse(c: &mut Criterion) {
 }
 
 fn lex(program: &str) {
-    black_box(kcl_lib::token::lexer(program));
+    black_box(kcl_lib::token::lexer(program).unwrap());
 }
 
 criterion_group!(benches, bench_lex, bench_parse);

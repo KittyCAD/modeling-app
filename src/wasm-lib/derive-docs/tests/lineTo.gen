@@ -22,20 +22,18 @@ mod test_examples_line_to {
 
         let ws = client
             .modeling()
-            .commands_ws(None, None, None, None, None, Some(false))
+            .commands_ws(None, None, None, None, None, None, Some(false))
             .await
             .unwrap();
-        let tokens = crate::token::lexer("This is another code block.\nyes sirrr.\nlineTo");
+        let tokens =
+            crate::token::lexer("This is another code block.\nyes sirrr.\nlineTo").unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
-        let mut mem: crate::executor::ProgramMemory = Default::default();
         let units = kittycad::types::UnitLength::Mm;
         let ctx = crate::executor::ExecutorContext::new(ws, units.clone())
             .await
             .unwrap();
-        crate::executor::execute(program, &mut mem, crate::executor::BodyType::Root, &ctx)
-            .await
-            .unwrap();
+        ctx.run(program, None).await.unwrap();
         let (x, y) = crate::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
         ctx.engine
             .send_modeling_cmd(
@@ -117,20 +115,17 @@ mod test_examples_line_to {
 
         let ws = client
             .modeling()
-            .commands_ws(None, None, None, None, None, Some(false))
+            .commands_ws(None, None, None, None, None, None, Some(false))
             .await
             .unwrap();
-        let tokens = crate::token::lexer("This is code.\nIt does other shit.\nlineTo");
+        let tokens = crate::token::lexer("This is code.\nIt does other shit.\nlineTo").unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
-        let mut mem: crate::executor::ProgramMemory = Default::default();
         let units = kittycad::types::UnitLength::Mm;
         let ctx = crate::executor::ExecutorContext::new(ws, units.clone())
             .await
             .unwrap();
-        crate::executor::execute(program, &mut mem, crate::executor::BodyType::Root, &ctx)
-            .await
-            .unwrap();
+        ctx.run(program, None).await.unwrap();
         let (x, y) = crate::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
         ctx.engine
             .send_modeling_cmd(
@@ -205,8 +200,8 @@ fn boxed_line_to(
 ) -> std::pin::Pin<
     Box<
         dyn std::future::Future<
-            Output = anyhow::Result<crate::executor::MemoryItem, crate::errors::KclError>,
-        >,
+                Output = anyhow::Result<crate::executor::MemoryItem, crate::errors::KclError>,
+            > + Send,
     >,
 > {
     Box::pin(line_to(args))
@@ -277,7 +272,7 @@ impl crate::docs::StdLibFn for LineTo {
         code_blocks
             .iter()
             .map(|cb| {
-                let tokens = crate::token::lexer(cb);
+                let tokens = crate::token::lexer(cb).unwrap();
                 let parser = crate::parser::Parser::new(tokens);
                 let program = parser.ast().unwrap();
                 let mut options: crate::ast::types::FormatOptions = Default::default();

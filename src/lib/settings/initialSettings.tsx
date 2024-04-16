@@ -137,7 +137,13 @@ export function createSettings() {
         description: 'The hue of the primary theme color for the app',
         validate: (v) => Number(v) >= 0 && Number(v) < 360,
         Component: ({ value, updateValue }) => (
-          <div className="flex item-center gap-2 px-2">
+          <div className="flex item-center gap-4 px-2 m-0 py-0">
+            <div
+              className="w-4 h-4 rounded-full bg-primary border border-solid border-chalkboard-100 dark:border-chalkboard-30"
+              style={{
+                backgroundColor: `oklch(var(--primary-lightness) var(--primary-chroma) ${value})`,
+              }}
+            />
             <input
               type="range"
               onChange={(e) => updateValue(e.currentTarget.value)}
@@ -146,13 +152,6 @@ export function createSettings() {
               max={259}
               step={1}
               className="block flex-1"
-            />
-            <span className="text-xs block w-[6ch] text-right">{value}º</span>
-            <div
-              className="w-3 h-3 rounded-full bg-primary"
-              style={{
-                backgroundColor: `oklch(var(--primary-lightness) var(--primary-chroma) ${value})`,
-              }}
             />
           </div>
         ),
@@ -357,6 +356,17 @@ export function createSettings() {
         defaultValue: true,
         description:
           'Whether to wrap text in the editor or overflow with scroll',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
+      /**
+       * Whether to make the cursor blink in the editor
+       */
+      blinkingCursor: new Setting<boolean>({
+        defaultValue: true,
+        description: 'Whether to make the cursor blink in the editor',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
