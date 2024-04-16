@@ -12,7 +12,6 @@ import {
   CompletionTriggerKind,
 } from 'vscode-languageserver-protocol'
 
-import { deferExecution } from 'lib/utils'
 import type {
   Completion,
   CompletionContext,
