@@ -84,7 +84,7 @@ export class LanguageServerPlugin implements PluginValue {
 
     const newCode = this.view.state.doc.toString()
     // Update the state (not the editor) with the new code.
-    codeManager.updateCodeState(newCode)
+    codeManager.code = newCode
     kclManager.executeCode()
 
     codeManager.writeToFile()

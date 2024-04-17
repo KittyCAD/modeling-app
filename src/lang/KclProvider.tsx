@@ -40,8 +40,10 @@ export function KclContextProvider({
   const [wasmInitFailed, setWasmInitFailed] = useState(false)
 
   useEffect(() => {
-    codeManager.updateCodeState = setCode
-    codeManager.updateEditor = setEditorCode
+    codeManager.registerCallBacks({
+      setCode,
+      setEditorCode,
+    })
     kclManager.registerCallBacks({
       setProgramMemory,
       setAst,

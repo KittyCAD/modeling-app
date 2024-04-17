@@ -45,12 +45,15 @@ export default class CodeManager {
     return this._code
   }
 
-  set updateState(updateState: (arg: string) => void) {
-    this._updateState = updateState
-  }
-
-  set updateEditor(updateEditor: (arg: string) => void) {
-    this._updateEditor = updateEditor
+  registerCallBacks({
+    setCode,
+    setEditorCode,
+  }: {
+    setCode: (arg: string) => void
+    setEditorCode: (arg: string) => void
+  }) {
+    this._updateState = setCode
+    this._updateEditor = setEditorCode
   }
 
   setParams(params: Params<string>) {
