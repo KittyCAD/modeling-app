@@ -93,7 +93,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   // But the server happens async so we break this into two parts.
   // Below is the client and server promise.
   const { lspClient: kclLspClient } = useMemo(() => {
-    if (!token || token === '') {
+    if (!token || token === '' || TEST) {
       return { lspClient: null }
     }
 
@@ -167,7 +167,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   ])
 
   const { lspClient: copilotLspClient } = useMemo(() => {
-    if (!token || token === '') {
+    if (!token || token === '' || TEST) {
       return { lspClient: null }
     }
 
