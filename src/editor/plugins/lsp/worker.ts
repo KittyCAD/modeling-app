@@ -63,7 +63,6 @@ onmessage = function (event) {
       let { wasmUrl }: KclWorkerOptions | CopilotWorkerOptions = eventData as
         | KclWorkerOptions
         | CopilotWorkerOptions
-      console.log('Worker: Initialising', worker, wasmUrl)
       initialise(wasmUrl)
         .then((instantiatedModule) => {
           console.log('Worker: WASM module loaded', worker, instantiatedModule)
