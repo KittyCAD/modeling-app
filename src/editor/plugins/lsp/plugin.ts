@@ -320,7 +320,6 @@ export class LanguageServerPlugin implements PluginValue {
         triggerCharacter,
       },
     })
-    console.log('[lsp] completion result', result)
 
     if (!result) return null
 
@@ -377,11 +376,6 @@ export class LanguageServerPlugin implements PluginValue {
     try {
       switch (notification.method) {
         case 'textDocument/publishDiagnostics':
-          console.log(
-            '[lsp]: publishDiagnostics',
-            this.client.getName(),
-            notification.params
-          )
           const params = notification.params as PublishDiagnosticsParams
           this.processDiagnostics(params)
           // Update the kcl errors pane.
