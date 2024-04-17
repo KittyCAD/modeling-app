@@ -4,6 +4,7 @@ import withBaseURL from '../lib/withBaseURL'
 import { isTauri } from 'lib/isTauri'
 import { invoke } from '@tauri-apps/api/core'
 import { VITE_KC_API_BASE_URL } from 'env'
+import Cookies from 'js-cookie'
 
 const SKIP_AUTH =
   import.meta.env.VITE_KC_SKIP_AUTH === 'true' && import.meta.env.DEV
@@ -170,6 +171,8 @@ function getCookie(cname: string): string | null {
   if (isTauri()) {
     return null
   }
+
+  console.log('cookies', Cookies.get())
 
   let name = cname + '='
   let decodedCookie = decodeURIComponent(document.cookie)
