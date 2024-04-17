@@ -25,6 +25,7 @@ import { codeManager, kclManager } from 'lib/singletons'
 import type { UnitLength } from 'wasm-lib/kcl/bindings/UnitLength'
 import { UpdateUnitsResponse } from 'wasm-lib/kcl/bindings/UpdateUnitsResponse'
 import { UpdateCanExecuteResponse } from 'wasm-lib/kcl/bindings/UpdateCanExecuteResponse'
+import { kclErrorsToDiagnostics, lspDiagnosticsToKclErrors } from 'lang/errors'
 
 const useLast = (values: readonly any[]) => values.reduce((_, v) => v, '')
 export const documentUri = Facet.define<string, string>({ combine: useLast })
@@ -85,8 +86,6 @@ export class LanguageServerPlugin implements PluginValue {
     const newCode = this.view.state.doc.toString()
     // Update the state (not the editor) with the new code.
     codeManager.code = newCode
-    kclManager.executeCode()
-
     codeManager.writeToFile()
 
     this.sendChange({
@@ -114,17 +113,6 @@ export class LanguageServerPlugin implements PluginValue {
 
   async sendChange({ documentText }: { documentText: string }) {
     if (!this.client.ready) return
-
-    if (documentText.length > 5000) {
-      // Clear out the text it thinks we have, large documents will throw a stack error.
-      // This is obviously not a good fix but it works for now til we figure
-      // out the stack limits in wasm and also rewrite the parser.
-      // Since this is only for hover and completions it will be fine,
-      // completions will still work for stdlib but hover will not.
-      // That seems like a fine trade-off for a working editor for the time
-      // being.
-      documentText = ''
-    }
 
     this._defferer(documentText)
   }
@@ -365,17 +353,19 @@ export class LanguageServerPlugin implements PluginValue {
     return completeFromList(options)(context)
   }
 
-  processNotification(notification: LSP.NotificationMessage) {
+  async processNotification(notification: LSP.NotificationMessage) {
     try {
       switch (notification.method) {
         case 'textDocument/publishDiagnostics':
           const params = notification.params as PublishDiagnosticsParams
           this.processDiagnostics(params)
           // Update the kcl errors pane.
-          /*kclManager.kclErrors = lspDiagnosticsToKclErrors(
-            this.view.state.doc,
-            params.diagnostics
-          )*/
+          if (!kclManager.isExecuting) {
+            kclManager.kclErrors = lspDiagnosticsToKclErrors(
+              this.view.state.doc,
+              params.diagnostics
+            )
+          }
           break
         case 'window/logMessage':
           console.log(
@@ -395,9 +385,16 @@ export class LanguageServerPlugin implements PluginValue {
           // The server has updated the AST, we should update elsewhere.
           let updatedAst = notification.params as Program
           console.log('[lsp]: Updated AST', updatedAst)
-          // Since we aren't using the lsp server for executing the program
-          // we don't update the ast here.
-          //kclManager.ast = updatedAst
+          // Update the ast when we are not already executing.
+          if (!kclManager.isExecuting) {
+            kclManager.ast = updatedAst
+            // Execute the ast.
+            console.log('[lsp]: executing ast')
+            await kclManager.executeAst(updatedAst)
+            let diagnostics = kclErrorsToDiagnostics(kclManager.kclErrors)
+
+            this.view.dispatch(setDiagnostics(this.view.state, diagnostics))
+          }
 
           // Update the folding ranges, since the AST has changed.
           // This is a hack since codemirror does not support async foldService.
