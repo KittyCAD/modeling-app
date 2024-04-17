@@ -268,6 +268,10 @@ export async function executeAst({
       : _executor(ast, programMemoryInit(), engineCommandManager, false))
 
     await engineCommandManager.waitForAllCommands()
+    engineCommandManager.addCommandLog({
+      type: 'execution-done',
+      data: null,
+    })
     return {
       logs: [],
       errors: [],
