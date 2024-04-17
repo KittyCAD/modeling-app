@@ -141,10 +141,11 @@ async function getUser(context: UserContext) {
   return {
     user,
     token:
-      context.token ||
-      getCookie(COOKIE_NAME) ||
-      localStorage?.getItem(TOKEN_PERSIST_KEY) ||
-      '',
+      context.token && context.token !== ''
+        ? context.token
+        : getCookie(COOKIE_NAME) ||
+          localStorage?.getItem(TOKEN_PERSIST_KEY) ||
+          '',
   }
 }
 
