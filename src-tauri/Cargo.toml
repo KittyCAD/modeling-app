@@ -21,12 +21,13 @@ oauth2 = "4.4.2"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 tauri = { version = "2.0.0-beta.15", features = [ "devtools", "unstable"] }
-tauri-plugin-dialog = { version = "2.0.0-beta.0" }
-tauri-plugin-fs = { version = "2.0.0-beta.0" }
-tauri-plugin-http = { version = "2.0.0-beta.0" }
-tauri-plugin-os = { version = "2.0.0-beta.0" }
-tauri-plugin-shell = { version = "2.0.0-beta.0" }
-tauri-plugin-updater = { version = "2.0.0-beta.0" }
+tauri-plugin-dialog = { version = "2.0.0-beta.2" }
+tauri-plugin-fs = { version = "2.0.0-beta.2" }
+tauri-plugin-http = { version = "2.0.0-beta.2" }
+tauri-plugin-os = { version = "2.0.0-beta.2" }
+tauri-plugin-process = { version = "2.0.0-beta.2" }
+tauri-plugin-shell = { version = "2.0.0-beta.2" }
+tauri-plugin-updater = { version = "2.0.0-beta.2" }
 tokio = { version = "1.37.0", features = ["time"] }
 toml = "0.8.2"
 
