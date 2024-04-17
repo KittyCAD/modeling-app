@@ -172,7 +172,7 @@ export class KclManager {
   private _cancelTokens: Map<number, boolean> = new Map()
 
   // This NEVER updates the code, if you want to update the code DO NOT add to
-  // this funciton, too many other things that don't want it exist.
+  // this function, too many other things that don't want it exist.
   // just call to codeManager from wherever you want in other files.
   private async executeAst(ast: Program = this._ast, executionId?: number) {
     if (!this.engineCommandManager.engineConnection?.isReady()) return
