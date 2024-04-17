@@ -39,7 +39,7 @@ const CompletionItemKindMap = Object.fromEntries(
   Object.entries(CompletionItemKind).map(([key, value]) => [value, key])
 ) as Record<CompletionItemKind, string>
 
-const changesDelay = 100
+const changesDelay = 600
 
 export class LanguageServerPlugin implements PluginValue {
   public client: LanguageServerClient
@@ -50,6 +50,8 @@ export class LanguageServerPlugin implements PluginValue {
   private foldingRanges: LSP.FoldingRange[] | null = null
   private _defferer = deferExecution((code: string) => {
     try {
+      // Update the state (not the editor) with the new code.
+      codeManager.code = code
       this.client.textDocumentDidChange({
         textDocument: {
           uri: this.documentUri,
@@ -57,6 +59,8 @@ export class LanguageServerPlugin implements PluginValue {
         },
         contentChanges: [{ text: code }],
       })
+      codeManager.writeToFile()
+      kclManager.executeCode()
     } catch (e) {
       console.error(e)
     }
@@ -84,10 +88,6 @@ export class LanguageServerPlugin implements PluginValue {
     if (!docChanged) return
 
     const newCode = this.view.state.doc.toString()
-    // Update the state (not the editor) with the new code.
-    codeManager.code = newCode
-    codeManager.writeToFile()
-    kclManager.executeCode()
 
     this.sendChange({
       documentText: newCode,
