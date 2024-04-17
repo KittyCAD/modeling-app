@@ -175,7 +175,7 @@ export class KclManager {
   // this function, too many other things that don't want it exist.
   // just call to codeManager from wherever you want in other files.
   async executeAst(ast: Program = this._ast, executionId?: number) {
-    if (!this.engineCommandManager.engineConnection?.isReady()) return
+    await this?.engineCommandManager?.waitForReady
     const currentExecutionId = executionId || Date.now()
     this._cancelTokens.set(currentExecutionId, false)
 

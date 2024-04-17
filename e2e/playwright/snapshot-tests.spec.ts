@@ -45,7 +45,7 @@ test('exports of each format should work', async ({ page, context }) => {
   // FYI this test doesn't work with only engine running locally
   // And you will need to have the KittyCAD CLI installed
   const u = getUtils(page)
-  await context.addInitScript(async () => {
+  await page.addInitScript(async () => {
     ;(window as any).playwrightSkipFilePicker = true
     localStorage.setItem(
       'persistCode',
@@ -340,7 +340,7 @@ test('extrude on each default plane should be stable', async ({
   page,
   context,
 }) => {
-  await context.addInitScript(async () => {
+  await page.addInitScript(async () => {
     localStorage.setItem(
       'SETTINGS_PERSIST_KEY',
       JSON.stringify({
@@ -366,7 +366,7 @@ test('extrude on each default plane should be stable', async ({
   |> close(%)
   |> extrude(10.00, %)
 `
-  await context.addInitScript(async (code) => {
+  await page.addInitScript(async (code) => {
     localStorage.setItem('persistCode', code)
   }, makeCode('XY'))
   await page.setViewportSize({ width: 1200, height: 500 })
@@ -653,7 +653,7 @@ test.describe('Client side scene scale should match engine scale', () => {
 
 test('Sketch on face with none z-up', async ({ page, context }) => {
   const u = getUtils(page)
-  await context.addInitScript(async () => {
+  await page.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
       `const part001 = startSketchOn('-XZ')
