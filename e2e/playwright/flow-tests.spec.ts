@@ -10,7 +10,7 @@ import {
   TEST_SETTINGS_CORRUPTED,
   TEST_SETTINGS_ONBOARDING,
 } from './storageStates'
-import { initPromise, tomlParse, tomlStringify } from 'lang/wasm'
+import * as TOML from '@iarna/toml'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -37,8 +37,6 @@ test.beforeEach(async ({ context, page }) => {
     timeout: 5000,
   })
 
-  await initPromise
-
   await context.addInitScript(
     async ({ token, settingsKey, settings }) => {
       localStorage.setItem('TOKEN_PERSIST_KEY', token)
@@ -48,7 +46,7 @@ test.beforeEach(async ({ context, page }) => {
     {
       token: secrets.token,
       settingsKey: TEST_SETTINGS_KEY,
-      settings: tomlStringify({ settings: TEST_SETTINGS }),
+      settings: TOML.stringify({ settings: TEST_SETTINGS }),
     }
   )
   // kill animations, speeds up tests and reduced flakiness
@@ -563,7 +561,7 @@ test('Stored settings are validated and fall back to defaults', async ({
     },
     {
       settingsKey: TEST_SETTINGS_KEY,
-      settings: tomlStringify({ settings: TEST_SETTINGS_CORRUPTED }),
+      settings: TOML.stringify({ settings: TEST_SETTINGS_CORRUPTED }),
     }
   )
 
@@ -572,7 +570,7 @@ test('Stored settings are validated and fall back to defaults', async ({
   await u.waitForAuthSkipAppStart()
 
   // Check the settings were reset
-  const storedSettings = tomlParse(
+  const storedSettings = TOML.parse(
     await page.evaluate(
       ({ settingsKey }) => localStorage.getItem(settingsKey) || '{}',
       { settingsKey: TEST_SETTINGS_KEY }
@@ -648,7 +646,7 @@ test('Onboarding redirects and code updating', async ({ page }) => {
     },
     {
       settingsKey: TEST_SETTINGS_KEY,
-      settings: tomlStringify({ settings: TEST_SETTINGS_ONBOARDING }),
+      settings: TOML.stringify({ settings: TEST_SETTINGS_ONBOARDING }),
     }
   )
 
