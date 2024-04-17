@@ -41,9 +41,7 @@ export type Events =
 const COOKIE_NAME = '__Secure-next-auth.session-token'
 export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
 const persistedToken =
-  localStorage?.getItem(TOKEN_PERSIST_KEY) ||
-  getCookie(COOKIE_NAME) ||
-  ''
+  localStorage?.getItem(TOKEN_PERSIST_KEY) || getCookie(COOKIE_NAME) || ''
 
 export const authMachine = createMachine<UserContext, Events>(
   {
@@ -142,9 +140,8 @@ async function getUser(context: UserContext) {
 
   return {
     user,
-    token: localStorage?.getItem(TOKEN_PERSIST_KEY) ||
-  getCookie(COOKIE_NAME) ||
-  '',
+    token:
+      localStorage?.getItem(TOKEN_PERSIST_KEY) || getCookie(COOKIE_NAME) || '',
   }
 }
 
