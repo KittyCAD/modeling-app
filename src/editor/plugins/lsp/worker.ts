@@ -109,8 +109,6 @@ onmessage = function (event) {
         .catch((error) => {
           console.error('Worker: Error loading wasm module', worker, error)
         })
-      // Initialize the wasm module.
-      // Even though we start on millimeters we upate the units later on.
       break
     case LspWorkerEventType.Call:
       const data = eventData as Uint8Array
