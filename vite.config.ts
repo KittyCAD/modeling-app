@@ -19,6 +19,7 @@ const config = defineConfig({
     },
   },
   test: {
+    globals: true,
     pool: 'forks',
     poolOptions: {
       forks: {
