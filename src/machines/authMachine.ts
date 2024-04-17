@@ -41,7 +41,7 @@ export type Events =
 const COOKIE_NAME = '__Secure-next-auth.session-token'
 export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
 const persistedToken =
-  localStorage?.getItem(TOKEN_PERSIST_KEY) || getCookie(COOKIE_NAME) || ''
+  getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
 
 export const authMachine = createMachine<UserContext, Events>(
   {
@@ -138,16 +138,24 @@ async function getUser(context: UserContext) {
 
   if ('error_code' in user) throw new Error(user.message)
 
+  console.log('context.token "', context.token, '"')
+  console.log('cookie "', getCookie(COOKIE_NAME), '"')
+  console.log(
+    'localStorage.getItem(TOKEN_PERSIST_KEY) "',
+    localStorage?.getItem(TOKEN_PERSIST_KEY),
+    '"'
+  )
+
   return {
     user,
     token:
-      localStorage?.getItem(TOKEN_PERSIST_KEY) || getCookie(COOKIE_NAME) || '',
+      getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY) || '',
   }
 }
 
-function getCookie(cname: string): string {
+function getCookie(cname: string): string | null {
   if (isTauri()) {
-    return ''
+    return null
   }
 
   let name = cname + '='
@@ -162,5 +170,5 @@ function getCookie(cname: string): string {
       return c.substring(name.length, c.length)
     }
   }
-  return ''
+  return null
 }
