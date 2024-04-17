@@ -27,12 +27,12 @@ startSketchOn('XY')
 ```js
 fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
-  |> startProfileAt(pos, %)
-  |> line([0, scale], %)
-  |> line([scale, 0], %)
-  |> line([0, -scale], %)
-  |> close(%)
-  |> extrude(scale, %)
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+    |> close(%)
+    |> extrude(scale, %)
 
   return sg
 }

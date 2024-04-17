@@ -1,7 +1,6 @@
 import { type Models } from '@kittycad/lib'
 import { Setting, settings } from './initialSettings'
 import { AtLeast, PathValue, Paths } from 'lib/types'
-import { ChangeEventHandler } from 'react'
 import { CommandArgumentConfig } from 'lib/commandTypes'
 
 export enum UnitSystem {

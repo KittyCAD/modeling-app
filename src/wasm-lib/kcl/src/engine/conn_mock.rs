@@ -6,7 +6,7 @@ use std::sync::{Arc, Mutex};
 use anyhow::Result;
 use kittycad::types::{OkWebSocketResponseData, WebSocketRequest};
 
-use crate::errors::KclError;
+use crate::{errors::KclError, executor::DefaultPlanes};
 
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
@@ -25,6 +25,14 @@ impl EngineConnection {
 impl crate::engine::EngineManager for EngineConnection {
     fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>> {
         self.batch.clone()
+    }
+
+    async fn default_planes(&self, _source_range: crate::executor::SourceRange) -> Result<DefaultPlanes, KclError> {
+        Ok(DefaultPlanes::default())
+    }
+
+    async fn clear_scene_post_hook(&self, _source_range: crate::executor::SourceRange) -> Result<(), KclError> {
+        Ok(())
     }
 
     async fn inner_send_modeling_cmd(

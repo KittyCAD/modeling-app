@@ -94,9 +94,13 @@
   position: relative;
 }
 
-:is(:hover, :focus-visible, :active) > .tooltip {
+:is(:hover, :active) > .tooltip {
   opacity: 1;
   transition-delay: var(--_delay);
+}
+
+:is(:focus-visible) > .tooltip.withFocus {
+  opacity: 1;
 }
 
 :is(:focus, :focus-visible, :focus-within) > .tooltip {

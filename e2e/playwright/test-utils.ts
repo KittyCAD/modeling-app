@@ -44,26 +44,44 @@ async function waitForDefaultPlanesToBeVisible(page: Page) {
   )
 }
 
-async function openDebugPanel(page: Page) {
-  const isOpen =
-    (await page
-      .locator('[data-testid="debug-panel"]')
-      ?.getAttribute('open')) === ''
+async function openKclCodePanel(page: Page) {
+  const paneLocator = page.getByRole('tab', { name: 'KCL Code', exact: false })
+  const isOpen = (await paneLocator?.getAttribute('aria-selected')) === 'true'
 
   if (!isOpen) {
-    await page.getByText('Debug').click()
-    await page.getByTestId('debug-panel').and(page.locator('[open]')).waitFor()
+    await paneLocator.click()
+    await paneLocator.and(page.locator('[aria-selected="true"]')).waitFor()
+  }
+}
+
+async function closeKclCodePanel(page: Page) {
+  const paneLocator = page.getByRole('tab', { name: 'KCL Code', exact: false })
+  const isOpen = (await paneLocator?.getAttribute('aria-selected')) === 'true'
+  if (isOpen) {
+    await paneLocator.click()
+    await paneLocator
+      .and(page.locator(':not([aria-selected="true"])'))
+      .waitFor()
+  }
+}
+
+async function openDebugPanel(page: Page) {
+  const debugLocator = page.getByRole('tab', { name: 'Debug', exact: false })
+  const isOpen = (await debugLocator?.getAttribute('aria-selected')) === 'true'
+
+  if (!isOpen) {
+    await debugLocator.click()
+    await debugLocator.and(page.locator('[aria-selected="true"]')).waitFor()
   }
 }
 
 async function closeDebugPanel(page: Page) {
-  const isOpen =
-    (await page.getByTestId('debug-panel')?.getAttribute('open')) === ''
+  const debugLocator = page.getByRole('tab', { name: 'Debug', exact: false })
+  const isOpen = (await debugLocator?.getAttribute('aria-selected')) === 'true'
   if (isOpen) {
-    await page.getByText('Debug').click()
-    await page
-      .getByTestId('debug-panel')
-      .and(page.locator(':not([open])'))
+    await debugLocator.click()
+    await debugLocator
+      .and(page.locator(':not([aria-selected="true"])'))
       .waitFor()
   }
 }
@@ -81,20 +99,19 @@ export function getUtils(page: Page) {
     removeCurrentCode: () => removeCurrentCode(page),
     sendCustomCmd: (cmd: EngineCommand) => sendCustomCmd(page, cmd),
     updateCamPosition: async (xyz: [number, number, number]) => {
-      const fillInput = async () => {
-        await page.fill('[data-testid="cam-x-position"]', String(xyz[0]))
-        await page.fill('[data-testid="cam-y-position"]', String(xyz[1]))
-        await page.fill('[data-testid="cam-z-position"]', String(xyz[2]))
+      const fillInput = async (axis: 'x' | 'y' | 'z', value: number) => {
+        await page.fill(`[data-testid="cam-${axis}-position"]`, String(value))
+        await page.waitForTimeout(100)
       }
-      await fillInput()
-      await page.waitForTimeout(100)
-      await fillInput()
-      await page.waitForTimeout(100)
-      await fillInput()
-      await page.waitForTimeout(100)
+
+      await fillInput('x', xyz[0])
+      await fillInput('y', xyz[1])
+      await fillInput('z', xyz[2])
     },
     clearCommandLogs: () => clearCommandLogs(page),
     expectCmdLog: (locatorStr: string) => expectCmdLog(page, locatorStr),
+    openKclCodePanel: () => openKclCodePanel(page),
+    closeKclCodePanel: () => closeKclCodePanel(page),
     openDebugPanel: () => openDebugPanel(page),
     closeDebugPanel: () => closeDebugPanel(page),
     openAndClearDebugPanel: async () => {

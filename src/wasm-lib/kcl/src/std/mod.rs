@@ -33,7 +33,8 @@ use crate::{
     std::{kcl_stdlib::KclStdLibFn, sketch::SketchOnFaceTag},
 };
 
-pub type StdFn = fn(Args) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<MemoryItem, KclError>>>>;
+pub type StdFn = fn(Args) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<MemoryItem, KclError>> + Send>>;
+
 pub type FnMap = HashMap<String, StdFn>;
 
 lazy_static! {

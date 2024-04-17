@@ -25,17 +25,14 @@ mod test_examples_min {
             .commands_ws(None, None, None, None, None, None, Some(false))
             .await
             .unwrap();
-        let tokens = crate::token::lexer("This is another code block.\nyes sirrr.\nmin");
+        let tokens = crate::token::lexer("This is another code block.\nyes sirrr.\nmin").unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
-        let mut mem: crate::executor::ProgramMemory = Default::default();
         let units = kittycad::types::UnitLength::Mm;
         let ctx = crate::executor::ExecutorContext::new(ws, units.clone())
             .await
             .unwrap();
-        crate::executor::execute(program, &mut mem, crate::executor::BodyType::Root, &ctx)
-            .await
-            .unwrap();
+        ctx.run(program, None).await.unwrap();
         let (x, y) = crate::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
         ctx.engine
             .send_modeling_cmd(
@@ -120,17 +117,14 @@ mod test_examples_min {
             .commands_ws(None, None, None, None, None, None, Some(false))
             .await
             .unwrap();
-        let tokens = crate::token::lexer("This is code.\nIt does other shit.\nmin");
+        let tokens = crate::token::lexer("This is code.\nIt does other shit.\nmin").unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
-        let mut mem: crate::executor::ProgramMemory = Default::default();
         let units = kittycad::types::UnitLength::Mm;
         let ctx = crate::executor::ExecutorContext::new(ws, units.clone())
             .await
             .unwrap();
-        crate::executor::execute(program, &mut mem, crate::executor::BodyType::Root, &ctx)
-            .await
-            .unwrap();
+        ctx.run(program, None).await.unwrap();
         let (x, y) = crate::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
         ctx.engine
             .send_modeling_cmd(
@@ -205,8 +199,8 @@ fn boxed_min(
 ) -> std::pin::Pin<
     Box<
         dyn std::future::Future<
-            Output = anyhow::Result<crate::executor::MemoryItem, crate::errors::KclError>,
-        >,
+                Output = anyhow::Result<crate::executor::MemoryItem, crate::errors::KclError>,
+            > + Send,
     >,
 > {
     Box::pin(min(args))
@@ -269,7 +263,7 @@ impl crate::docs::StdLibFn for Min {
         code_blocks
             .iter()
             .map(|cb| {
-                let tokens = crate::token::lexer(cb);
+                let tokens = crate::token::lexer(cb).unwrap();
                 let parser = crate::parser::Parser::new(tokens);
                 let program = parser.ast().unwrap();
                 let mut options: crate::ast::types::FormatOptions = Default::default();

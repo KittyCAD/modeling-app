@@ -19,7 +19,7 @@ use kittycad_execution_plan_traits as ept;
 use kittycad_execution_plan_traits::{Address, NumericPrimitive};
 use kittycad_modeling_session::Session;
 
-use self::{
+use crate::{
     binding_scope::{BindingScope, EpBinding, GetFnResult},
     error::{CompileError, Error},
     kcl_value_group::SingleValue,

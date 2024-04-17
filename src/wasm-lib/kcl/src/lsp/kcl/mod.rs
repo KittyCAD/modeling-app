@@ -1,11 +1,14 @@
 //! Functions for the `kcl` lsp server.
 
-use std::{collections::HashMap, io::Write, str::FromStr};
+use std::{collections::HashMap, io::Write, str::FromStr, sync::Arc};
+
+use tokio::sync::RwLock;
+
+pub mod custom_notifications;
 
 use anyhow::Result;
 #[cfg(feature = "cli")]
 use clap::Parser;
-use dashmap::DashMap;
 use sha2::Digest;
 use tower_lsp::{
     jsonrpc::Result as RpcResult,
@@ -15,21 +18,29 @@ use tower_lsp::{
         DidChangeTextDocumentParams, DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams,
         DidCloseTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentDiagnosticParams,
         DocumentDiagnosticReport, DocumentDiagnosticReportResult, DocumentFilter, DocumentFormattingParams,
-        DocumentSymbol, DocumentSymbolParams, DocumentSymbolResponse, Documentation, FullDocumentDiagnosticReport,
-        Hover, HoverContents, HoverParams, HoverProviderCapability, InitializeParams, InitializeResult,
-        InitializedParams, InlayHint, InlayHintParams, InsertTextFormat, MarkupContent, MarkupKind, MessageType, OneOf,
-        Position, RelatedFullDocumentDiagnosticReport, RenameFilesParams, RenameParams, SemanticToken,
-        SemanticTokenType, SemanticTokens, SemanticTokensFullOptions, SemanticTokensLegend, SemanticTokensOptions,
-        SemanticTokensParams, SemanticTokensRegistrationOptions, SemanticTokensResult,
-        SemanticTokensServerCapabilities, ServerCapabilities, SignatureHelp, SignatureHelpOptions, SignatureHelpParams,
-        StaticRegistrationOptions, TextDocumentItem, TextDocumentRegistrationOptions, TextDocumentSyncCapability,
-        TextDocumentSyncKind, TextDocumentSyncOptions, TextEdit, WorkDoneProgressOptions, WorkspaceEdit,
-        WorkspaceFolder, WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities,
+        DocumentSymbol, DocumentSymbolParams, DocumentSymbolResponse, Documentation, FoldingRange, FoldingRangeParams,
+        FoldingRangeProviderCapability, FullDocumentDiagnosticReport, Hover, HoverContents, HoverParams,
+        HoverProviderCapability, InitializeParams, InitializeResult, InitializedParams, InlayHint, InlayHintParams,
+        InsertTextFormat, MarkupContent, MarkupKind, MessageType, OneOf, Position, RelatedFullDocumentDiagnosticReport,
+        RenameFilesParams, RenameParams, SemanticToken, SemanticTokenType, SemanticTokens, SemanticTokensFullOptions,
+        SemanticTokensLegend, SemanticTokensOptions, SemanticTokensParams, SemanticTokensRegistrationOptions,
+        SemanticTokensResult, SemanticTokensServerCapabilities, ServerCapabilities, SignatureHelp,
+        SignatureHelpOptions, SignatureHelpParams, StaticRegistrationOptions, TextDocumentItem,
+        TextDocumentRegistrationOptions, TextDocumentSyncCapability, TextDocumentSyncKind, TextDocumentSyncOptions,
+        TextEdit, WorkDoneProgressOptions, WorkspaceEdit, WorkspaceFolder, WorkspaceFoldersServerCapabilities,
+        WorkspaceServerCapabilities,
     },
     Client, LanguageServer,
 };
 
-use crate::{ast::types::VariableKind, executor::SourceRange, lsp::backend::Backend as _, parser::PIPE_OPERATOR};
+use super::backend::{InnerHandle, UpdateHandle};
+use crate::{
+    ast::types::VariableKind,
+    errors::KclError,
+    executor::SourceRange,
+    lsp::{backend::Backend as _, safemap::SafeMap},
+    parser::PIPE_OPERATOR,
+};
 
 /// A subcommand for running the server.
 #[derive(Clone, Debug)]
@@ -50,9 +61,9 @@ pub struct Backend {
     /// The client for the backend.
     pub client: Client,
     /// The file system client to use.
-    pub fs: crate::fs::FileManager,
+    pub fs: Arc<crate::fs::FileManager>,
     /// The workspace folders.
-    pub workspace_folders: DashMap<String, WorkspaceFolder>,
+    pub workspace_folders: SafeMap<String, WorkspaceFolder>,
     /// The stdlib completions for the language.
     pub stdlib_completions: HashMap<String, CompletionItem>,
     /// The stdlib signatures for the language.
@@ -60,21 +71,30 @@ pub struct Backend {
     /// The types of tokens the server supports.
     pub token_types: Vec<SemanticTokenType>,
     /// Token maps.
-    pub token_map: DashMap<String, Vec<crate::token::Token>>,
+    pub token_map: SafeMap<String, Vec<crate::token::Token>>,
     /// AST maps.
-    pub ast_map: DashMap<String, crate::ast::types::Program>,
+    pub ast_map: SafeMap<String, crate::ast::types::Program>,
+    /// Memory maps.
+    pub memory_map: SafeMap<String, crate::executor::ProgramMemory>,
     /// Current code.
-    pub current_code_map: DashMap<String, Vec<u8>>,
+    pub code_map: SafeMap<String, Vec<u8>>,
     /// Diagnostics.
-    pub diagnostics_map: DashMap<String, DocumentDiagnosticReport>,
+    pub diagnostics_map: SafeMap<String, DocumentDiagnosticReport>,
     /// Symbols map.
-    pub symbols_map: DashMap<String, Vec<DocumentSymbol>>,
+    pub symbols_map: SafeMap<String, Vec<DocumentSymbol>>,
     /// Semantic tokens map.
-    pub semantic_tokens_map: DashMap<String, Vec<SemanticToken>>,
+    pub semantic_tokens_map: SafeMap<String, Vec<SemanticToken>>,
     /// The Zoo API client.
     pub zoo_client: kittycad::Client,
     /// If we can send telemetry for this user.
     pub can_send_telemetry: bool,
+    /// Optional executor context to use if we want to execute the code.
+    pub executor_ctx: Arc<RwLock<Option<crate::executor::ExecutorContext>>>,
+    /// If we are currently allowed to execute the ast.
+    pub can_execute: Arc<RwLock<bool>>,
+
+    pub is_initialized: Arc<RwLock<bool>>,
+    pub current_handle: UpdateHandle,
 }
 
 // Implement the shared backend trait for the language server.
@@ -84,54 +104,182 @@ impl crate::lsp::backend::Backend for Backend {
         self.client.clone()
     }
 
-    fn fs(&self) -> crate::fs::FileManager {
+    fn fs(&self) -> Arc<crate::fs::FileManager> {
         self.fs.clone()
     }
 
-    fn workspace_folders(&self) -> Vec<WorkspaceFolder> {
-        self.workspace_folders.iter().map(|v| v.value().clone()).collect()
+    async fn is_initialized(&self) -> bool {
+        *self.is_initialized.read().await
     }
 
-    fn add_workspace_folders(&self, folders: Vec<WorkspaceFolder>) {
+    async fn set_is_initialized(&self, is_initialized: bool) {
+        *self.is_initialized.write().await = is_initialized;
+    }
+
+    async fn current_handle(&self) -> Option<InnerHandle> {
+        self.current_handle.read().await
+    }
+
+    async fn set_current_handle(&self, handle: Option<InnerHandle>) {
+        self.current_handle.write(handle).await;
+    }
+
+    async fn workspace_folders(&self) -> Vec<WorkspaceFolder> {
+        self.workspace_folders.inner().await.values().cloned().collect()
+    }
+
+    async fn add_workspace_folders(&self, folders: Vec<WorkspaceFolder>) {
         for folder in folders {
-            self.workspace_folders.insert(folder.name.to_string(), folder);
+            self.workspace_folders.insert(folder.name.to_string(), folder).await;
         }
     }
 
-    fn remove_workspace_folders(&self, folders: Vec<WorkspaceFolder>) {
+    async fn remove_workspace_folders(&self, folders: Vec<WorkspaceFolder>) {
         for folder in folders {
-            self.workspace_folders.remove(&folder.name);
+            self.workspace_folders.remove(&folder.name).await;
         }
     }
 
-    fn current_code_map(&self) -> DashMap<String, Vec<u8>> {
-        self.current_code_map.clone()
+    fn code_map(&self) -> SafeMap<String, Vec<u8>> {
+        self.code_map.clone()
     }
 
-    fn insert_current_code_map(&self, uri: String, text: Vec<u8>) {
-        self.current_code_map.insert(uri, text);
+    async fn insert_code_map(&self, uri: String, text: Vec<u8>) {
+        self.code_map.insert(uri, text).await;
     }
 
-    fn remove_from_code_map(&self, uri: String) -> Option<(String, Vec<u8>)> {
-        self.current_code_map.remove(&uri)
+    async fn remove_from_code_map(&self, uri: String) -> Option<Vec<u8>> {
+        self.code_map.remove(&uri).await
     }
 
-    fn clear_code_state(&self) {
-        self.current_code_map.clear();
-        self.token_map.clear();
-        self.ast_map.clear();
-        self.diagnostics_map.clear();
-        self.symbols_map.clear();
-        self.semantic_tokens_map.clear();
+    async fn clear_code_state(&self) {
+        self.code_map.clear().await;
+        self.token_map.clear().await;
+        self.ast_map.clear().await;
+        self.diagnostics_map.clear().await;
+        self.symbols_map.clear().await;
+        self.semantic_tokens_map.clear().await;
     }
 
-    async fn on_change(&self, params: TextDocumentItem) {
+    fn current_diagnostics_map(&self) -> SafeMap<String, DocumentDiagnosticReport> {
+        self.diagnostics_map.clone()
+    }
+
+    async fn inner_on_change(&self, params: TextDocumentItem, force: bool) {
         // We already updated the code map in the shared backend.
 
         // Lets update the tokens.
-        let tokens = crate::token::lexer(&params.text);
-        self.token_map.insert(params.uri.to_string(), tokens.clone());
+        let tokens = match crate::token::lexer(&params.text) {
+            Ok(tokens) => tokens,
+            Err(err) => {
+                self.add_to_diagnostics(&params, err).await;
+                return;
+            }
+        };
 
+        // Get the previous tokens.
+        let previous_tokens = self.token_map.get(&params.uri.to_string()).await;
+
+        // Try to get the memory for the current code.
+        let has_memory = if let Some(memory) = self.memory_map.get(&params.uri.to_string()).await {
+            memory != crate::executor::ProgramMemory::default()
+        } else {
+            false
+        };
+
+        let tokens_changed = if let Some(previous_tokens) = previous_tokens.clone() {
+            previous_tokens != tokens
+        } else {
+            true
+        };
+
+        // Check if the tokens are the same.
+        if !tokens_changed && !force && has_memory && !self.has_diagnostics(params.uri.as_ref()).await {
+            // We return early here because the tokens are the same.
+            return;
+        }
+
+        if tokens_changed {
+            // Update our token map.
+            self.token_map.insert(params.uri.to_string(), tokens.clone()).await;
+            // Update our semantic tokens.
+            self.update_semantic_tokens(tokens.clone(), &params).await;
+        }
+
+        // Lets update the ast.
+        let parser = crate::parser::Parser::new(tokens);
+        let result = parser.ast();
+        let ast = match result {
+            Ok(ast) => ast,
+            Err(err) => {
+                self.add_to_diagnostics(&params, err).await;
+                return;
+            }
+        };
+
+        // Check if the ast changed.
+        let ast_changed = match self.ast_map.get(&params.uri.to_string()).await {
+            Some(old_ast) => {
+                // Check if the ast changed.
+                old_ast != ast
+            }
+            None => true,
+        };
+
+        if !ast_changed && !force && has_memory && !self.has_diagnostics(params.uri.as_ref()).await {
+            // Return early if the ast did not change and we don't need to force.
+            return;
+        }
+
+        if ast_changed {
+            self.ast_map.insert(params.uri.to_string(), ast.clone()).await;
+            // Update the symbols map.
+            self.symbols_map
+                .insert(params.uri.to_string(), ast.get_lsp_symbols(&params.text))
+                .await;
+        }
+
+        // Send the notification to the client that the ast was updated.
+        if self.can_execute().await || self.executor_ctx().await.is_none() {
+            // Only send the notification if we can execute.
+            // Otherwise it confuses the client.
+            self.client
+                .send_notification::<custom_notifications::AstUpdated>(ast.clone())
+                .await;
+        }
+
+        // Execute the code if we have an executor context.
+        // This function automatically executes if we should & updates the diagnostics if we got
+        // errors.
+        let result = self.execute(&params, ast).await;
+        if result.is_err() {
+            // We return early because we got errors, and we don't want to clear the diagnostics.
+            return;
+        }
+
+        // Lets update the diagnostics, since we got no errors.
+        self.clear_diagnostics(&params.uri).await;
+    }
+}
+
+impl Backend {
+    pub async fn can_execute(&self) -> bool {
+        *self.can_execute.read().await
+    }
+
+    async fn set_can_execute(&self, can_execute: bool) {
+        *self.can_execute.write().await = can_execute;
+    }
+
+    pub async fn executor_ctx(&self) -> Option<crate::executor::ExecutorContext> {
+        self.executor_ctx.read().await.clone()
+    }
+
+    async fn set_executor_ctx(&self, executor_ctx: crate::executor::ExecutorContext) {
+        *self.executor_ctx.write().await = Some(executor_ctx);
+    }
+
+    async fn update_semantic_tokens(&self, tokens: Vec<crate::token::Token>, params: &TextDocumentItem) {
         // Update the semantic tokens map.
         let mut semantic_tokens = vec![];
         let mut last_position = Position::new(0, 0);
@@ -181,61 +329,94 @@ impl crate::lsp::backend::Backend for Backend {
 
             last_position = position;
         }
-        self.semantic_tokens_map.insert(params.uri.to_string(), semantic_tokens);
+        self.semantic_tokens_map
+            .insert(params.uri.to_string(), semantic_tokens)
+            .await;
+    }
 
-        // Lets update the ast.
-        let parser = crate::parser::Parser::new(tokens);
-        let result = parser.ast();
-        let ast = match result {
-            Ok(ast) => ast,
-            Err(e) => {
-                let diagnostic = e.to_lsp_diagnostic(&params.text);
-                // We got errors, update the diagnostics.
-                self.diagnostics_map.insert(
-                    params.uri.to_string(),
-                    DocumentDiagnosticReport::Full(RelatedFullDocumentDiagnosticReport {
-                        related_documents: None,
-                        full_document_diagnostic_report: FullDocumentDiagnosticReport {
-                            result_id: None,
-                            items: vec![diagnostic.clone()],
-                        },
-                    }),
-                );
+    async fn add_to_diagnostics(&self, params: &TextDocumentItem, err: KclError) {
+        let diagnostic = err.to_lsp_diagnostic(&params.text);
+        // We got errors, update the diagnostics.
+        self.diagnostics_map
+            .insert(
+                params.uri.to_string(),
+                DocumentDiagnosticReport::Full(RelatedFullDocumentDiagnosticReport {
+                    related_documents: None,
+                    full_document_diagnostic_report: FullDocumentDiagnosticReport {
+                        result_id: None,
+                        items: vec![diagnostic.clone()],
+                    },
+                }),
+            )
+            .await;
 
-                // Publish the diagnostic.
-                // If the client supports it.
-                self.client
-                    .publish_diagnostics(params.uri, vec![diagnostic], None)
-                    .await;
+        // Publish the diagnostic.
+        // If the client supports it.
+        self.client
+            .publish_diagnostics(params.uri.clone(), vec![diagnostic], None)
+            .await;
+    }
 
-                return;
-            }
-        };
-
-        // Update the symbols map.
-        self.symbols_map
-            .insert(params.uri.to_string(), ast.get_lsp_symbols(&params.text));
-
-        self.ast_map.insert(params.uri.to_string(), ast);
-        // Lets update the diagnostics, since we got no errors.
-        self.diagnostics_map.insert(
-            params.uri.to_string(),
-            DocumentDiagnosticReport::Full(RelatedFullDocumentDiagnosticReport {
-                related_documents: None,
-                full_document_diagnostic_report: FullDocumentDiagnosticReport {
-                    result_id: None,
-                    items: vec![],
-                },
-            }),
-        );
+    async fn clear_diagnostics(&self, uri: &url::Url) {
+        self.diagnostics_map
+            .insert(
+                uri.to_string(),
+                DocumentDiagnosticReport::Full(RelatedFullDocumentDiagnosticReport {
+                    related_documents: None,
+                    full_document_diagnostic_report: FullDocumentDiagnosticReport {
+                        result_id: None,
+                        items: vec![],
+                    },
+                }),
+            )
+            .await;
 
         // Publish the diagnostic, we reset it here so the client knows the code compiles now.
         // If the client supports it.
-        self.client.publish_diagnostics(params.uri.clone(), vec![], None).await;
+        self.client.publish_diagnostics(uri.clone(), vec![], None).await;
     }
-}
 
-impl Backend {
+    async fn execute(&self, params: &TextDocumentItem, ast: crate::ast::types::Program) -> Result<()> {
+        // Check if we can execute.
+        if !self.can_execute().await {
+            return Ok(());
+        }
+
+        // Execute the code if we have an executor context.
+        let Some(executor_ctx) = self.executor_ctx().await else {
+            return Ok(());
+        };
+
+        if !self.is_initialized().await {
+            // We are not initialized yet.
+            return Ok(());
+        }
+
+        // Clear the scene, before we execute so it's not fugly as shit.
+        executor_ctx.engine.clear_scene(SourceRange::default()).await?;
+
+        let memory = match executor_ctx.run(ast, None).await {
+            Ok(memory) => memory,
+            Err(err) => {
+                self.add_to_diagnostics(params, err).await;
+
+                // Since we already published the diagnostics we don't really care about the error
+                // string.
+                return Err(anyhow::anyhow!("failed to execute code"));
+            }
+        };
+        drop(executor_ctx);
+
+        self.memory_map.insert(params.uri.to_string(), memory.clone()).await;
+
+        // Send the notification to the client that the memory was updated.
+        self.client
+            .send_notification::<custom_notifications::MemoryUpdated>(memory)
+            .await;
+
+        Ok(())
+    }
+
     fn get_semantic_token_type_index(&self, token_type: SemanticTokenType) -> Option<usize> {
         self.token_types.iter().position(|x| *x == token_type)
     }
@@ -243,7 +424,7 @@ impl Backend {
     async fn completions_get_variables_from_ast(&self, file_name: &str) -> Vec<CompletionItem> {
         let mut completions = vec![];
 
-        let ast = match self.ast_map.get(file_name) {
+        let ast = match self.ast_map.get(file_name).await {
             Some(ast) => ast,
             None => return completions,
         };
@@ -288,16 +469,16 @@ impl Backend {
         completions
     }
 
-    pub fn create_zip(&self) -> Result<Vec<u8>> {
+    pub async fn create_zip(&self) -> Result<Vec<u8>> {
         // Collect all the file data we know.
         let mut buf = vec![];
         let mut zip = zip::ZipWriter::new(std::io::Cursor::new(&mut buf));
-        for entry in self.current_code_map.iter() {
-            let file_name = entry.key().replace("file://", "").to_string();
+        for (entry, value) in self.code_map.inner().await.iter() {
+            let file_name = entry.replace("file://", "").to_string();
 
             let options = zip::write::FileOptions::default().compression_method(zip::CompressionMethod::Stored);
             zip.start_file(file_name, options)?;
-            zip.write_all(entry.value())?;
+            zip.write_all(value)?;
         }
         // Apply the changes you've made.
         // Dropping the `ZipWriter` will have the same effect, but may silently fail
@@ -328,7 +509,7 @@ impl Backend {
 
         // Get the workspace folders.
         // The key of the workspace folder is the project name.
-        let workspace_folders = self.workspace_folders();
+        let workspace_folders = self.workspace_folders().await;
         let project_names: Vec<String> = workspace_folders.iter().map(|v| v.name.clone()).collect::<Vec<_>>();
         // Get the first name.
         let project_name = project_names
@@ -345,7 +526,7 @@ impl Backend {
                     name: "attachment".to_string(),
                     filename: Some("attachment.zip".to_string()),
                     content_type: Some("application/x-zip".to_string()),
-                    data: self.create_zip()?,
+                    data: self.create_zip().await?,
                 }],
                 &kittycad::types::Event {
                     // This gets generated server side so leave empty for now.
@@ -367,6 +548,91 @@ impl Backend {
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         Ok(())
+    }
+
+    pub async fn update_units(
+        &self,
+        params: custom_notifications::UpdateUnitsParams,
+    ) -> RpcResult<Option<custom_notifications::UpdateUnitsResponse>> {
+        let filename = params.text_document.uri.to_string();
+
+        {
+            let Some(mut executor_ctx) = self.executor_ctx().await else {
+                self.client
+                    .log_message(MessageType::ERROR, "no executor context set to update units for")
+                    .await;
+                return Ok(None);
+            };
+
+            self.client
+                .log_message(MessageType::INFO, format!("update units: {:?}", params))
+                .await;
+
+            // Try to get the memory for the current code.
+            let has_memory = if let Some(memory) = self.memory_map.get(&filename).await {
+                memory != crate::executor::ProgramMemory::default()
+            } else {
+                false
+            };
+
+            let units: kittycad::types::UnitLength = params.units.into();
+            if executor_ctx.units == units
+                && !self.has_diagnostics(params.text_document.uri.as_ref()).await
+                && has_memory
+            {
+                // Return early the units are the same.
+                return Ok(None);
+            }
+
+            // Set the engine units.
+            executor_ctx.update_units(units);
+
+            // Update the locked executor context.
+            self.set_executor_ctx(executor_ctx.clone()).await;
+            drop(executor_ctx);
+        }
+        // Lock is dropped here since nested.
+        // This is IMPORTANT.
+
+        let new_params = TextDocumentItem {
+            uri: params.text_document.uri.clone(),
+            text: std::mem::take(&mut params.text.to_string()),
+            version: Default::default(),
+            language_id: Default::default(),
+        };
+
+        // Force re-execution.
+        self.inner_on_change(new_params, true).await;
+
+        // Check if we have diagnostics.
+        // If we do we return early, since we failed in some way.
+        if self.has_diagnostics(params.text_document.uri.as_ref()).await {
+            return Ok(None);
+        }
+
+        Ok(Some(custom_notifications::UpdateUnitsResponse {}))
+    }
+
+    pub async fn update_can_execute(
+        &self,
+        params: custom_notifications::UpdateCanExecuteParams,
+    ) -> RpcResult<custom_notifications::UpdateCanExecuteResponse> {
+        let can_execute = self.can_execute().await;
+
+        if can_execute == params.can_execute {
+            return Ok(custom_notifications::UpdateCanExecuteResponse {});
+        }
+
+        if !params.can_execute {
+            // Kill any in progress executions.
+            if let Some(current_handle) = self.current_handle().await {
+                current_handle.cancel();
+            }
+        }
+
+        self.set_can_execute(params.can_execute).await;
+
+        Ok(custom_notifications::UpdateCanExecuteResponse {})
     }
 }
 
@@ -390,7 +656,7 @@ impl LanguageServer for Backend {
                     ..Default::default()
                 })),
                 document_formatting_provider: Some(OneOf::Left(true)),
-                document_symbol_provider: Some(OneOf::Left(true)),
+                folding_range_provider: Some(FoldingRangeProviderCapability::Simple(true)),
                 hover_provider: Some(HoverProviderCapability::Simple(true)),
                 inlay_hint_provider: Some(OneOf::Left(true)),
                 rename_provider: Some(OneOf::Left(true)),
@@ -516,7 +782,7 @@ impl LanguageServer for Backend {
     async fn hover(&self, params: HoverParams) -> RpcResult<Option<Hover>> {
         let filename = params.text_document_position_params.text_document.uri.to_string();
 
-        let Some(current_code) = self.current_code_map.get(&filename) else {
+        let Some(current_code) = self.code_map.get(&filename).await else {
             return Ok(None);
         };
         let Ok(current_code) = std::str::from_utf8(&current_code) else {
@@ -526,7 +792,7 @@ impl LanguageServer for Backend {
         let pos = position_to_char_index(params.text_document_position_params.position, current_code);
 
         // Let's iterate over the AST and find the node that contains the cursor.
-        let Some(ast) = self.ast_map.get(&filename) else {
+        let Some(ast) = self.ast_map.get(&filename).await else {
             return Ok(None);
         };
 
@@ -614,7 +880,7 @@ impl LanguageServer for Backend {
         let filename = params.text_document.uri.to_string();
 
         // Get the current diagnostics for this file.
-        let Some(diagnostic) = self.diagnostics_map.get(&filename) else {
+        let Some(diagnostic) = self.diagnostics_map.get(&filename).await else {
             // Send an empty report.
             return Ok(DocumentDiagnosticReportResult::Report(DocumentDiagnosticReport::Full(
                 RelatedFullDocumentDiagnosticReport {
@@ -633,7 +899,7 @@ impl LanguageServer for Backend {
     async fn signature_help(&self, params: SignatureHelpParams) -> RpcResult<Option<SignatureHelp>> {
         let filename = params.text_document_position_params.text_document.uri.to_string();
 
-        let Some(current_code) = self.current_code_map.get(&filename) else {
+        let Some(current_code) = self.code_map.get(&filename).await else {
             return Ok(None);
         };
         let Ok(current_code) = std::str::from_utf8(&current_code) else {
@@ -643,7 +909,7 @@ impl LanguageServer for Backend {
         let pos = position_to_char_index(params.text_document_position_params.position, current_code);
 
         // Let's iterate over the AST and find the node that contains the cursor.
-        let Some(ast) = self.ast_map.get(&filename) else {
+        let Some(ast) = self.ast_map.get(&filename).await else {
             return Ok(None);
         };
 
@@ -691,7 +957,7 @@ impl LanguageServer for Backend {
     async fn semantic_tokens_full(&self, params: SemanticTokensParams) -> RpcResult<Option<SemanticTokensResult>> {
         let filename = params.text_document.uri.to_string();
 
-        let Some(semantic_tokens) = self.semantic_tokens_map.get(&filename) else {
+        let Some(semantic_tokens) = self.semantic_tokens_map.get(&filename).await else {
             return Ok(None);
         };
 
@@ -704,7 +970,7 @@ impl LanguageServer for Backend {
     async fn document_symbol(&self, params: DocumentSymbolParams) -> RpcResult<Option<DocumentSymbolResponse>> {
         let filename = params.text_document.uri.to_string();
 
-        let Some(symbols) = self.symbols_map.get(&filename) else {
+        let Some(symbols) = self.symbols_map.get(&filename).await else {
             return Ok(None);
         };
 
@@ -714,7 +980,7 @@ impl LanguageServer for Backend {
     async fn formatting(&self, params: DocumentFormattingParams) -> RpcResult<Option<Vec<TextEdit>>> {
         let filename = params.text_document.uri.to_string();
 
-        let Some(current_code) = self.current_code_map.get(&filename) else {
+        let Some(current_code) = self.code_map.get(&filename).await else {
             return Ok(None);
         };
         let Ok(current_code) = std::str::from_utf8(&current_code) else {
@@ -724,7 +990,9 @@ impl LanguageServer for Backend {
         // Parse the ast.
         // I don't know if we need to do this again since it should be updated in the context.
         // But I figure better safe than sorry since this will write back out to the file.
-        let tokens = crate::token::lexer(current_code);
+        let Ok(tokens) = crate::token::lexer(current_code) else {
+            return Ok(None);
+        };
         let parser = crate::parser::Parser::new(tokens);
         let Ok(ast) = parser.ast() else {
             return Ok(None);
@@ -749,7 +1017,7 @@ impl LanguageServer for Backend {
     async fn rename(&self, params: RenameParams) -> RpcResult<Option<WorkspaceEdit>> {
         let filename = params.text_document_position.text_document.uri.to_string();
 
-        let Some(current_code) = self.current_code_map.get(&filename) else {
+        let Some(current_code) = self.code_map.get(&filename).await else {
             return Ok(None);
         };
         let Ok(current_code) = std::str::from_utf8(&current_code) else {
@@ -759,7 +1027,9 @@ impl LanguageServer for Backend {
         // Parse the ast.
         // I don't know if we need to do this again since it should be updated in the context.
         // But I figure better safe than sorry since this will write back out to the file.
-        let tokens = crate::token::lexer(current_code);
+        let Ok(tokens) = crate::token::lexer(current_code) else {
+            return Ok(None);
+        };
         let parser = crate::parser::Parser::new(tokens);
         let Ok(mut ast) = parser.ast() else {
             return Ok(None);
@@ -785,6 +1055,24 @@ impl LanguageServer for Backend {
             change_annotations: None,
         }))
     }
+
+    async fn folding_range(&self, params: FoldingRangeParams) -> RpcResult<Option<Vec<FoldingRange>>> {
+        let filename = params.text_document.uri.to_string();
+
+        // Get the ast.
+        let Some(ast) = self.ast_map.get(&filename).await else {
+            return Ok(None);
+        };
+
+        // Get the folding ranges.
+        let folding_ranges = ast.get_lsp_folding_ranges();
+
+        if folding_ranges.is_empty() {
+            return Ok(None);
+        }
+
+        Ok(Some(folding_ranges))
+    }
 }
 
 /// Get completions from our stdlib.
@@ -793,7 +1081,7 @@ pub fn get_completions_from_stdlib(stdlib: &crate::std::StdLib) -> Result<HashMa
     let combined = stdlib.combined();
 
     for internal_fn in combined.values() {
-        completions.insert(internal_fn.name(), internal_fn.to_completion_item());
+        completions.insert(internal_fn.name(), internal_fn.to_completion_item()?);
     }
 
     let variable_kinds = VariableKind::to_completion_items()?;

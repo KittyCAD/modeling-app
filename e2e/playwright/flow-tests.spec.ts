@@ -2,7 +2,6 @@ import { test, expect } from '@playwright/test'
 import { getUtils } from './test-utils'
 import waitOn from 'wait-on'
 import { roundOff } from 'lib/utils'
-import * as TOML from '@iarna/toml'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { secrets } from './secrets'
 import {
@@ -11,6 +10,7 @@ import {
   TEST_SETTINGS_CORRUPTED,
   TEST_SETTINGS_ONBOARDING,
 } from './storageStates'
+import * as TOML from '@iarna/toml'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -145,6 +145,7 @@ test('Can moving camera', async ({ page, context }) => {
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
   await u.openAndClearDebugPanel()
+  await u.closeKclCodePanel()
 
   const camPos: [number, number, number] = [0, 85, 85]
   const bakeInRetries = async (
@@ -178,6 +179,8 @@ test('Can moving camera', async ({ page, context }) => {
     }, 300)
 
     await u.openAndClearDebugPanel()
+    await page.getByTestId('cam-x-position').isVisible()
+
     const vals = await Promise.all([
       page.getByTestId('cam-x-position').inputValue(),
       page.getByTestId('cam-y-position').inputValue(),
@@ -342,7 +345,11 @@ test('executes on load', async ({ page }) => {
   await u.waitForAuthSkipAppStart()
 
   // expand variables section
-  await page.getByText('Variables').click()
+  const variablesTabButton = page.getByRole('tab', {
+    name: 'Variables',
+    exact: false,
+  })
+  await variablesTabButton.click()
 
   // can find part001 in the variables summary (pretty-json-container, makes sure we're not looking in the code editor)
   // part001 only shows up in the variables summary if it's been executed
@@ -366,7 +373,11 @@ test('re-executes', async ({ page }) => {
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
 
-  await page.getByText('Variables').click()
+  const variablesTabButton = page.getByRole('tab', {
+    name: 'Variables',
+    exact: false,
+  })
+  await variablesTabButton.click()
   // expect to see "myVar:5"
   await expect(
     page.locator('.pretty-json-container >> text=myVar:5')
@@ -499,7 +510,8 @@ test('Auto complete works', async ({ page }) => {
   // expect there to be three auto complete options
   await expect(page.locator('.cm-completionLabel')).toHaveCount(3)
   await page.getByText('startSketchOn').click()
-  await page.keyboard.type("('XY')")
+  await page.keyboard.type("'XY'")
+  await page.keyboard.press('Tab')
   await page.keyboard.press('Enter')
   await page.keyboard.type('  |> startProfi')
   // expect there be a single auto complete option that we can just hit enter on
@@ -507,7 +519,10 @@ test('Auto complete works', async ({ page }) => {
   await page.waitForTimeout(100)
   await page.keyboard.press('Enter') // accepting the auto complete, not a new line
 
-  await page.keyboard.type('([0,0], %)')
+  await page.keyboard.press('Tab')
+  await page.keyboard.press('Tab')
+  await page.keyboard.press('Tab')
+  await page.keyboard.press('Tab')
   await page.keyboard.press('Enter')
   await page.keyboard.type('  |> lin')
 
@@ -518,23 +533,29 @@ test('Auto complete works', async ({ page }) => {
   await page.keyboard.press('ArrowDown')
   await page.keyboard.press('Enter')
   // finish line with comment
-  await page.keyboard.type('(5, %) // lin')
+  await page.keyboard.type('5')
+  await page.keyboard.press('Tab')
+  await page.keyboard.press('Tab')
+  await page.keyboard.type(' // lin')
   await page.waitForTimeout(100)
   // there shouldn't be any auto complete options for 'lin' in the comment
   await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('XY')
-  |> startProfileAt([0,0], %)
+  |> startProfileAt([3.14, 3.14], %)
   |> xLine(5, %) // lin`)
 })
 
 test('Stored settings are validated and fall back to defaults', async ({
   page,
+  context,
 }) => {
+  const u = getUtils(page)
+
   // Override beforeEach test setup
   // with corrupted settings
-  await page.addInitScript(
+  await context.addInitScript(
     async ({ settingsKey, settings }) => {
       localStorage.setItem(settingsKey, settings)
     },
@@ -546,6 +567,7 @@ test('Stored settings are validated and fall back to defaults', async ({
 
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/')
+  await u.waitForAuthSkipAppStart()
 
   // Check the settings were reset
   const storedSettings = TOML.parse(
@@ -869,14 +891,13 @@ test.describe('Command bar tests', () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `
-        const distance = sqrt(20)
+        `const distance = sqrt(20)
         const part001 = startSketchOn('-XZ')
-          |> startProfileAt([-6.95, 4.98], %)
-          |> line([25.1, 0.41], %)
-          |> line([0.73, -14.93], %)
-          |> line([-23.44, 0.52], %)
-          |> close(%)
+  |> startProfileAt([-6.95, 4.98], %)
+  |> line([25.1, 0.41], %)
+  |> line([0.73, -14.93], %)
+  |> line([-23.44, 0.52], %)
+  |> close(%)
         `
       )
     })
@@ -889,15 +910,13 @@ test.describe('Command bar tests', () => {
     // Make sure the stream is up
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
 
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
     ).not.toBeDisabled()
-    await page.getByText('|> startProfileAt([-6.95, 4.98], %)').click()
-    await expect(
-      page.getByRole('button', { name: 'Extrude' })
-    ).not.toBeDisabled()
+    await u.clearCommandLogs()
+    await page.getByText('|> line([0.73, -14.93], %)').click()
+    await page.getByRole('button', { name: 'Extrude' }).isEnabled()
 
     let cmdSearchBar = page.getByPlaceholder('Search commands')
     await page.keyboard.press('Meta+K')
@@ -915,23 +934,25 @@ test.describe('Command bar tests', () => {
     await expect(page.getByPlaceholder('Variable name')).toHaveValue(
       'distance001'
     )
-    await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled()
-    await page.getByRole('button', { name: 'Continue' }).click()
+
+    const continueButton = page.getByRole('button', { name: 'Continue' })
+    const submitButton = page.getByRole('button', { name: 'Submit command' })
+    await continueButton.click()
 
     // Review step and argument hotkeys
-    await expect(
-      page.getByRole('button', { name: 'Submit command' })
-    ).toBeEnabled()
+    await expect(submitButton).toBeEnabled()
     await page.keyboard.press('Backspace')
+
+    // Assert we're back on the distance step
     await expect(
       page.getByRole('button', { name: 'Distance 12', exact: false })
     ).toBeDisabled()
-    await page.keyboard.press('Enter')
 
-    await expect(page.getByText('Confirm Extrude')).toBeVisible()
+    await continueButton.click()
+    await submitButton.click()
 
     // Check that the code was updated
-    await page.keyboard.press('Enter')
+    await u.waitForCmdReceive('extrude')
     // Unfortunately this indentation seems to matter for the test
     await expect(page.locator('.cm-content')).toHaveText(
       `const distance = sqrt(20)
@@ -1084,7 +1105,7 @@ test('ProgramMemory can be serialised', async ({ page }) => {
   |> line([0, -1], %)
   |> close(%)
   |> extrude(1, %)
-  |> patternLinear({
+  |> patternLinear3d({
         axis: [1, 0, 1],
         repetitions: 3,
         distance: 6

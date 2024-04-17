@@ -77,7 +77,4 @@ export function applyConstraintEqualLength({
     programMemory: kclManager.programMemory,
   })
   return { modifiedAst, pathToNodeMap }
-  // kclManager.updateAst(modifiedAst, true, {
-  //   // callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
-  // })
 }

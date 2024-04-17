@@ -126,12 +126,9 @@ const throttled = throttle((a: ReactCameraProperties) => {
 }, 1000 / 15)
 
 export const CamDebugSettings = () => {
-  const [camSettings, setCamSettings] = useState<ReactCameraProperties>({
-    type: 'perspective',
-    fov: 12,
-    position: [0, 0, 0],
-    quaternion: [0, 0, 0, 1],
-  })
+  const [camSettings, setCamSettings] = useState<ReactCameraProperties>(
+    sceneInfra.camControls.reactCameraProperties
+  )
   const [fov, setFov] = useState(12)
 
   useEffect(() => {

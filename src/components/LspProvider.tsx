@@ -1,10 +1,9 @@
 import { LanguageServerClient } from 'editor/plugins/lsp'
 import type * as LSP from 'vscode-languageserver-protocol'
-import React, { createContext, useMemo, useContext } from 'react'
+import React, { createContext, useMemo, useEffect, useContext } from 'react'
 import { FromServer, IntoServer } from 'editor/plugins/lsp/codec'
-import Server from '../editor/plugins/lsp/server'
 import Client from '../editor/plugins/lsp/client'
-import { TEST } from 'env'
+import { DEV, TEST } from 'env'
 import kclLanguage from 'editor/plugins/lsp/kcl/language'
 import { copilotPlugin } from 'editor/plugins/lsp/copilot'
 import { useStore } from 'useStore'
@@ -14,6 +13,15 @@ import { LanguageSupport } from '@codemirror/language'
 import { useNavigate } from 'react-router-dom'
 import { paths } from 'lib/paths'
 import { FileEntry } from 'lib/types'
+import { NetworkHealthState, useNetworkStatus } from './NetworkHealthIndicator'
+import Worker from 'editor/plugins/lsp/worker.ts?worker'
+import {
+  LspWorkerEventType,
+  KclWorkerOptions,
+  CopilotWorkerOptions,
+  LspWorker,
+} from 'editor/plugins/lsp/types'
+import { wasmUrl } from 'lang/wasm'
 
 const DEFAULT_FILE_NAME: string = 'main.kcl'
 
@@ -60,34 +68,64 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     isCopilotLspServerReady,
     setIsKclLspServerReady,
     setIsCopilotLspServerReady,
+    isStreamReady,
   } = useStore((s) => ({
     isKclLspServerReady: s.isKclLspServerReady,
     isCopilotLspServerReady: s.isCopilotLspServerReady,
     setIsKclLspServerReady: s.setIsKclLspServerReady,
     setIsCopilotLspServerReady: s.setIsCopilotLspServerReady,
+    isStreamReady: s.isStreamReady,
   }))
 
-  const { auth } = useSettingsAuthContext()
+  const {
+    auth,
+    settings: {
+      context: {
+        modeling: { defaultUnit },
+      },
+    },
+  } = useSettingsAuthContext()
   const token = auth?.context?.token
   const navigate = useNavigate()
+  const { overallState } = useNetworkStatus()
+  const isNetworkOkay = overallState === NetworkHealthState.Ok
 
   // So this is a bit weird, we need to initialize the lsp server and client.
   // But the server happens async so we break this into two parts.
   // Below is the client and server promise.
   const { lspClient: kclLspClient } = useMemo(() => {
-    const intoServer: IntoServer = new IntoServer()
-    const fromServer: FromServer = FromServer.create()
-    const client = new Client(fromServer, intoServer)
-    if (!TEST) {
-      Server.initialize(intoServer, fromServer).then((lspServer) => {
-        lspServer.start('kcl', token)
-        setIsKclLspServerReady(true)
-      })
+    if (!token || token === '' || TEST) {
+      return { lspClient: null }
     }
 
-    const lspClient = new LanguageServerClient({ client, name: 'kcl' })
+    const lspWorker = new Worker({ name: 'kcl' })
+    const initEvent: KclWorkerOptions = {
+      wasmUrl: wasmUrl(),
+      token: token,
+      baseUnit: defaultUnit.current,
+      devMode: DEV,
+    }
+    lspWorker.postMessage({
+      worker: LspWorker.Kcl,
+      eventType: LspWorkerEventType.Init,
+      eventData: initEvent,
+    })
+    lspWorker.onmessage = function (e) {
+      fromServer.add(e.data)
+    }
+
+    const intoServer: IntoServer = new IntoServer(LspWorker.Kcl, lspWorker)
+    const fromServer: FromServer = FromServer.create()
+    const client = new Client(fromServer, intoServer)
+
+    setIsKclLspServerReady(true)
+
+    const lspClient = new LanguageServerClient({ client, name: LspWorker.Kcl })
     return { lspClient }
-  }, [setIsKclLspServerReady, token])
+  }, [
+    // We need a token for authenticating the server.
+    token,
+  ])
 
   // Here we initialize the plugin which will start the client.
   // Now that we have multi-file support the name of the file is a dep of
@@ -96,7 +134,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   // We do not want to restart the server, its just wasteful.
   const kclLSP = useMemo(() => {
     let plugin = null
-    if (isKclLspServerReady && !TEST) {
+    if (isKclLspServerReady && !TEST && kclLspClient) {
       // Set up the lsp plugin.
       const lsp = kclLanguage({
         documentUri: `file:///${DEFAULT_FILE_NAME}`,
@@ -109,20 +147,59 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     return plugin
   }, [kclLspClient, isKclLspServerReady])
 
+  // Re-execute the scene when the units change.
+  useEffect(() => {
+    if (kclLspClient) {
+      let plugins = kclLspClient.plugins
+      for (let plugin of plugins) {
+        if (plugin.updateUnits && isStreamReady && isNetworkOkay) {
+          plugin.updateUnits(defaultUnit.current)
+        }
+      }
+    }
+  }, [
+    kclLspClient,
+    defaultUnit.current,
+
+    // We want to re-execute the scene if the network comes back online.
+    // The lsp server will only re-execute if there were previous errors or
+    // changes, so it's fine to send it thru here.
+    isStreamReady,
+    isNetworkOkay,
+  ])
+
   const { lspClient: copilotLspClient } = useMemo(() => {
-    const intoServer: IntoServer = new IntoServer()
-    const fromServer: FromServer = FromServer.create()
-    const client = new Client(fromServer, intoServer)
-    if (!TEST) {
-      Server.initialize(intoServer, fromServer).then((lspServer) => {
-        lspServer.start('copilot', token)
-        setIsCopilotLspServerReady(true)
-      })
+    if (!token || token === '' || TEST) {
+      return { lspClient: null }
     }
 
-    const lspClient = new LanguageServerClient({ client, name: 'copilot' })
+    const lspWorker = new Worker({ name: 'copilot' })
+    const initEvent: CopilotWorkerOptions = {
+      wasmUrl: wasmUrl(),
+      token: token,
+      devMode: DEV,
+    }
+    lspWorker.postMessage({
+      worker: LspWorker.Copilot,
+      eventType: LspWorkerEventType.Init,
+      eventData: initEvent,
+    })
+    lspWorker.onmessage = function (e) {
+      fromServer.add(e.data)
+    }
+
+    const intoServer: IntoServer = new IntoServer(LspWorker.Copilot, lspWorker)
+    const fromServer: FromServer = FromServer.create()
+    const client = new Client(fromServer, intoServer)
+
+    setIsCopilotLspServerReady(true)
+
+    const lspClient = new LanguageServerClient({
+      client,
+      name: LspWorker.Copilot,
+    })
     return { lspClient }
-  }, [setIsCopilotLspServerReady, token])
+  }, [token])
 
   // Here we initialize the plugin which will start the client.
   // When we have multi-file support the name of the file will be a dep of
@@ -131,7 +208,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   // We do not want to restart the server, its just wasteful.
   const copilotLSP = useMemo(() => {
     let plugin = null
-    if (isCopilotLspServerReady && !TEST) {
+    if (isCopilotLspServerReady && !TEST && copilotLspClient) {
       // Set up the lsp plugin.
       const lsp = copilotPlugin({
         documentUri: `file:///${DEFAULT_FILE_NAME}`,
@@ -145,7 +222,13 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     return plugin
   }, [copilotLspClient, isCopilotLspServerReady])
 
-  const lspClients = [kclLspClient, copilotLspClient]
+  let lspClients: LanguageServerClient[] = []
+  if (kclLspClient) {
+    lspClients.push(kclLspClient)
+  }
+  if (copilotLspClient) {
+    lspClients.push(copilotLspClient)
+  }
 
   const onProjectClose = (
     file: FileEntry | null,

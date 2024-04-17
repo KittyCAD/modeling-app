@@ -35,13 +35,12 @@ async fn execute_and_snapshot(code: &str, units: kittycad::types::UnitLength) ->
     // Create a temporary file to write the output to.
     let output_file = std::env::temp_dir().join(format!("kcl_output_{}.png", uuid::Uuid::new_v4()));
 
-    let tokens = kcl_lib::token::lexer(code);
+    let tokens = kcl_lib::token::lexer(code)?;
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
-    let mut mem: kcl_lib::executor::ProgramMemory = Default::default();
     let ctx = kcl_lib::executor::ExecutorContext::new(ws, units.clone()).await?;
 
-    let _ = kcl_lib::executor::execute_outer(program, &mut mem, kcl_lib::executor::BodyType::Root, &ctx).await?;
+    let _ = ctx.run(program, None).await?;
 
     let (x, y) = kcl_lib::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
 
@@ -1738,10 +1737,13 @@ const sketch001 = startSketchOn(box, "revolveAxis")
 
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
-        .await
-        .unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/revolve_on_edge_get_edge.png", &result, 1.0);
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([349, 409])], message: "Modeling command failed: Some([ApiError { error_code: InternalEngine, message: \"Solid3D revolve failed:  sketch profile must lie entirely on one side of the revolution axis\" }])" }"#
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -1926,6 +1928,14 @@ const plumbus0 = make_circle(p, 'a', [0, 0], 2.5)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/plumbus_fillets.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_empty_file_is_ok() {
+    let code = r#""#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+    assert!(result.is_ok());
 }
 
 #[tokio::test(flavor = "multi_thread")]

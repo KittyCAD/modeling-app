@@ -1,9 +1,9 @@
 import { useLayoutEffect, useEffect, useRef } from 'react'
-import { parse } from '../lang/wasm'
 import { useStore } from '../useStore'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { deferExecution } from 'lib/utils'
 import { Themes } from 'lib/theme'
+import { makeDefaultPlanes, parse } from 'lang/wasm'
 
 export function useSetupEngineManager(
   streamRef: React.RefObject<HTMLDivElement>,
@@ -46,6 +46,9 @@ export function useSetupEngineManager(
         },
         token,
         theme,
+        makeDefaultPlanes: () => {
+          return makeDefaultPlanes(kclManager.engineCommandManager)
+        },
       })
       setStreamDimensions({
         streamWidth: quadWidth,

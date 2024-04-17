@@ -15,6 +15,7 @@ interface TooltipProps extends React.PropsWithChildren {
     | 'inlineEnd'
   className?: string
   delay?: number
+  hoverOnly?: boolean
 }
 
 export default function Tooltip({
@@ -22,13 +23,16 @@ export default function Tooltip({
   position = 'top',
   className,
   delay = 200,
+  hoverOnly = false,
 }: TooltipProps) {
   return (
     <div
       // @ts-ignore while awaiting merge of this PR for support of "inert" https://github.com/DefinitelyTyped/DefinitelyTyped/pull/60822
       inert="true"
       role="tooltip"
-      className={styles.tooltip + ' ' + styles[position] + ' ' + className}
+      className={`${styles.tooltip} ${hoverOnly ? '' : styles.withFocus} ${
+        styles[position]
+      } ${className}`}
       style={{ '--_delay': delay + 'ms' } as React.CSSProperties}
     >
       {children}
