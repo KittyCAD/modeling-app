@@ -1240,7 +1240,7 @@ fn yohey = (pos) => {
     },
     selectionsSnippets
   )
-  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.setViewportSize({ width: 1200, height: 1000 })
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
 
