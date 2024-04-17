@@ -76,8 +76,7 @@ export type { ExtrudeGroup } from '../wasm-lib/kcl/bindings/ExtrudeGroup'
 export type { MemoryItem } from '../wasm-lib/kcl/bindings/MemoryItem'
 export type { ExtrudeSurface } from '../wasm-lib/kcl/bindings/ExtrudeSurface'
 
-// Initialise the wasm module.
-const initialise = async () => {
+export const wasmUrl = () => {
   const baseUrl =
     typeof window === 'undefined'
       ? 'http://127.0.0.1:3000'
@@ -92,6 +91,13 @@ const initialise = async () => {
       : 'http://localhost:3000'
   const fullUrl = baseUrl + '/wasm_lib_bg.wasm'
   console.log(`Full URL for WASM: ${fullUrl}`)
+
+  return fullUrl
+}
+
+// Initialise the wasm module.
+const initialise = async () => {
+  const fullUrl = wasmUrl()
   const input = await fetch(fullUrl)
   const buffer = await input.arrayBuffer()
   return init(buffer)
@@ -325,13 +331,12 @@ export async function copilotLspRun(config: ServerConfig, token: string) {
 
 export async function kclLspRun(
   config: ServerConfig,
-  engineCommandManager: EngineCommandManager,
-  token: string
+  engineCommandManager: EngineCommandManager | null,
+  token: string,
+  baseUnit: string
 ) {
   try {
     console.log('start kcl lsp')
-    const baseUnit =
-      (await getSettingsState)()?.modeling.defaultUnit.current || 'mm'
     await kcl_lsp_run(config, engineCommandManager, baseUnit, token, DEV)
   } catch (e: any) {
     console.log('kcl lsp failed', e)

@@ -75,7 +75,7 @@ export default class Client extends jsrpc.JSONRPCServerAndClient {
         intoServer.enqueue(encoded)
         if (null != json.id) {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const response = await fromServer.responses.get(json.id)!
+          const response = await fromServer.responses.get(json.id)
           this.client.receive(response as jsrpc.JSONRPCResponse)
         }
       })

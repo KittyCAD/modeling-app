@@ -192,7 +192,7 @@ impl ServerConfig {
 #[wasm_bindgen]
 pub async fn kcl_lsp_run(
     config: ServerConfig,
-    engine_manager: kcl_lib::engine::conn_wasm::EngineCommandManager,
+    engine_manager: Option<kcl_lib::engine::conn_wasm::EngineCommandManager>,
     units: &str,
     token: String,
     is_dev: bool,
@@ -219,17 +219,20 @@ pub async fn kcl_lsp_run(
 
     let file_manager = Arc::new(kcl_lib::fs::FileManager::new(fs));
 
-    let units = kittycad::types::UnitLength::from_str(units).map_err(|e| e.to_string())?;
-    let engine = kcl_lib::engine::conn_wasm::EngineConnection::new(engine_manager)
-        .await
-        .map_err(|e| format!("{:?}", e))?;
-    // Turn off lsp execute for now
-    let _executor_ctx = kcl_lib::executor::ExecutorContext {
-        engine: Arc::new(Box::new(engine)),
-        fs: file_manager.clone(),
-        stdlib: std::sync::Arc::new(stdlib),
-        units,
-        is_mock: false,
+    let executor_ctx = if let Some(engine_manager) = engine_manager {
+        let units = kittycad::types::UnitLength::from_str(units).map_err(|e| e.to_string())?;
+        let engine = kcl_lib::engine::conn_wasm::EngineConnection::new(engine_manager)
+            .await
+            .map_err(|e| format!("{:?}", e))?;
+        Some(kcl_lib::executor::ExecutorContext {
+            engine: Arc::new(Box::new(engine)),
+            fs: file_manager.clone(),
+            stdlib: std::sync::Arc::new(stdlib),
+            units,
+            is_mock: false,
+        })
+    } else {
+        None
     };
 
     // Check if we can send telememtry for this user.
@@ -266,8 +269,8 @@ pub async fn kcl_lsp_run(
         semantic_tokens_map: Default::default(),
         zoo_client,
         can_send_telemetry: privacy_settings.can_train_on_data,
-        executor_ctx: Default::default(),
-        can_execute: Default::default(),
+        can_execute: Arc::new(tokio::sync::RwLock::new(executor_ctx.is_some())),
+        executor_ctx: Arc::new(tokio::sync::RwLock::new(executor_ctx)),
 
         is_initialized: Default::default(),
         current_handle: Default::default(),
