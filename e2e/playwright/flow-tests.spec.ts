@@ -560,7 +560,7 @@ test('Auto complete works', async ({ page }) => {
   // expect there to be three auto complete options
   await expect(page.locator('.cm-completionLabel')).toHaveCount(3)
   await page.getByText('startSketchOn').click()
-  await page.keyboard.type("'XY'")
+  await page.keyboard.type("'XZ'")
   await page.keyboard.press('Tab')
   await page.keyboard.press('Enter')
   await page.keyboard.type('  |> startProfi')
@@ -570,6 +570,7 @@ test('Auto complete works', async ({ page }) => {
   await page.keyboard.press('Enter') // accepting the auto complete, not a new line
 
   await page.keyboard.press('Tab')
+  await page.keyboard.type('12')
   await page.keyboard.press('Tab')
   await page.keyboard.press('Tab')
   await page.keyboard.press('Tab')
@@ -592,8 +593,8 @@ test('Auto complete works', async ({ page }) => {
   await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XY')
-  |> startProfileAt([3.14, 3.14], %)
+    .toHaveText(`const part001 = startSketchOn('XZ')
+  |> startProfileAt([3.14, 12], %)
   |> xLine(5, %) // lin`)
 })
 
