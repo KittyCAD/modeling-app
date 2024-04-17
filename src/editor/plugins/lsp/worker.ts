@@ -18,29 +18,9 @@ import { EngineCommandManager } from 'lang/std/engineConnection'
 const intoServer: IntoServer = new IntoServer()
 const fromServer: FromServer = FromServer.create()
 
-export const wasmUrl = () => {
-  const baseUrl =
-    typeof window === 'undefined'
-      ? 'http://localhost:3000'
-      : window.location.origin.includes('tauri://localhost')
-      ? 'tauri://localhost' // custom protocol for macOS
-      : window.location.origin.includes('tauri.localhost')
-      ? 'http://tauri.localhost' // fallback for Windows
-      : window.location.origin.includes('localhost')
-      ? 'http://localhost:3000'
-      : window.location.origin && window.location.origin !== 'null'
-      ? window.location.origin
-      : 'http://localhost:3000'
-  const fullUrl = baseUrl + '/wasm_lib_bg.wasm'
-  console.log(`Worker full URL for WASM: ${fullUrl}`)
-
-  return fullUrl
-}
-
 // Initialise the wasm module.
-const initialise = async () => {
-  const fullUrl = wasmUrl()
-  const input = await fetch(fullUrl)
+const initialise = async (wasmUrl: string) => {
+  const input = await fetch(wasmUrl)
   const buffer = await input.arrayBuffer()
   return init(buffer)
 }
@@ -80,7 +60,10 @@ onmessage = function (event) {
 
   switch (eventType) {
     case LspWorkerEventType.Init:
-      initialise()
+      let { wasmUrl }: KclWorkerOptions | CopilotWorkerOptions = eventData as
+        | KclWorkerOptions
+        | CopilotWorkerOptions
+      initialise(wasmUrl)
         .then((instantiatedModule) => {
           console.log('Worker: WASM module loaded', worker, instantiatedModule)
           const config = new ServerConfig(

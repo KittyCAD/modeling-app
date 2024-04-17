@@ -5,12 +5,14 @@ export enum LspWorker {
   Copilot = 'copilot',
 }
 export interface KclWorkerOptions {
+  wasmUrl: string
   token: string
   baseUnit: UnitLength
   devMode: boolean
 }
 
 export interface CopilotWorkerOptions {
+  wasmUrl: string
   token: string
   devMode: boolean
 }
