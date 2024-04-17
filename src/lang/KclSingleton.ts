@@ -232,6 +232,7 @@ export class KclManager {
     updateCode = false,
     executionId?: number
   ) {
+    if (!this.engineCommandManager.engineConnection?.isReady()) return
     const currentExecutionId = executionId || Date.now()
     this._cancelTokens.set(currentExecutionId, false)
 
