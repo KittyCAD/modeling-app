@@ -120,7 +120,7 @@ export const KclEditorPane = () => {
     useConvertToVariable()
 
   const lastSelection = useRef('')
-  /*const onUpdate = (viewUpdate: ViewUpdate) => {
+  const onUpdate = (viewUpdate: ViewUpdate) => {
     // If we are just fucking around in a snippet, return early and don't
     // trigger stuff below that might cause the component to re-render.
     // Otherwise we will not be able to tab thru the snippet portions.
@@ -178,7 +178,7 @@ export const KclEditorPane = () => {
     eventInfo.engineEvents.forEach((event) =>
       engineCommandManager.sendSceneCommand(event)
     )
-  }*/
+  }
 
   const editorExtensions = useMemo(() => {
     const extensions = [
@@ -300,7 +300,7 @@ export const KclEditorPane = () => {
       <ReactCodeMirror
         value={editorCode}
         extensions={editorExtensions}
-        //onUpdate={onUpdate}
+        onUpdate={onUpdate}
         theme={theme}
         onCreateEditor={(_editorView) => setEditorView(_editorView)}
         indentWithTab={false}

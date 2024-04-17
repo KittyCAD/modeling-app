@@ -391,9 +391,10 @@ export class LanguageServerPlugin implements PluginValue {
             // Execute the ast.
             console.log('[lsp]: executing ast')
             await kclManager.executeAst(updatedAst)
+            console.log('[lsp]: executed ast', kclManager.kclErrors)
             let diagnostics = kclErrorsToDiagnostics(kclManager.kclErrors)
-
             this.view.dispatch(setDiagnostics(this.view.state, diagnostics))
+            console.log('[lsp]: updated diagnostics')
           }
 
           // Update the folding ranges, since the AST has changed.
