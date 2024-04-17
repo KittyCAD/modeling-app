@@ -39,6 +39,7 @@
     "fuse.js": "^7.0.0",
     "html2canvas-pro": "^1.4.3",
     "http-server": "^14.1.1",
+    "js-cookie": "^3.0.5",
     "json-rpc-2.0": "^1.6.0",
     "jszip": "^3.10.1",
     "node-fetch": "^3.3.2",
