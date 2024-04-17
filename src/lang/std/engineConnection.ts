@@ -1068,7 +1068,7 @@ export class EngineCommandManager {
               message.request_id &&
               this.artifactMap[message.request_id]
             ) {
-              this.handleFailedModelingCommand(message)
+              this.handleFailedModelingCommand(message.request_id, message)
             }
           }
         })
@@ -1247,14 +1247,12 @@ export class EngineCommandManager {
       }
     }
   }
-  handleFailedModelingCommand(raw: WebSocketResponse) {
-    const id = raw.request_id
+  handleFailedModelingCommand(id: string, raw: WebSocketResponse) {
     const failed = raw as Models['FailureWebSocketResponse_type']
     const errors = failed.errors
     if (!id) return
     const command = this.artifactMap[id]
     if (command && command.type === 'pending') {
-      const resolve = command.resolve
       this.artifactMap[id] = {
         type: 'failed',
         range: command.range,
@@ -1263,6 +1261,19 @@ export class EngineCommandManager {
         parentId: command.parentId ? command.parentId : undefined,
         errors,
       }
+      if (
+        command?.type === 'pending' &&
+        command.commandType === 'batch' &&
+        command?.additionalData?.type === 'batch-ids'
+      ) {
+        command.additionalData.ids.forEach((id) => {
+          this.handleFailedModelingCommand(id, raw)
+        })
+      }
+      // batch artifact is just a container, we don't need to keep it
+      // once we process all the commands inside it
+      const resolve = command.resolve
+      delete this.artifactMap[id]
       resolve({
         id,
         commandType: command.commandType,

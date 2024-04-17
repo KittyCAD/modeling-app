@@ -328,6 +328,56 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
   await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 })
 
+test('if your kcl gets an error from the engine it is inlined', async ({
+  page,
+}) => {
+  const u = getUtils(page)
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const box = startSketchOn('XY')
+|> startProfileAt([0, 0], %)
+|> line([0, 10], %)
+|> line([10, 0], %)
+|> line([0, -10], %, 'revolveAxis')
+|> close(%)
+|> extrude(10, %)
+
+const sketch001 = startSketchOn(box, "revolveAxis")
+|> startProfileAt([5, 10], %)
+|> line([0, -10], %)
+|> line([2, 0], %)
+|> line([0, 10], %)
+|> close(%)
+|> revolve({
+axis: getEdge('revolveAxis', box),
+angle: 90
+}, %)
+    `
+    )
+  })
+
+  await page.setViewportSize({ width: 1000, height: 500 })
+  await page.goto('/')
+
+  await u.waitForAuthSkipAppStart()
+
+  u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
+
+  // error in guter
+  await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+
+  // error text on hover
+  await page.hover('.cm-lint-marker-error')
+  await expect(
+    page.getByText(
+      'sketch profile must lie entirely on one side of the revolution axis'
+    )
+  ).toBeVisible()
+})
+
 test('executes on load', async ({ page }) => {
   const u = getUtils(page)
   await page.addInitScript(async () => {
