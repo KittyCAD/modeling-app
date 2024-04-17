@@ -82,7 +82,7 @@ export const KclEditorPane = () => {
     setEditorView: s.setEditorView,
     isShiftDown: s.isShiftDown,
   }))
-  const { editorCode } = useKclContext()
+  const { editorCode, errors } = useKclContext()
   const lastEvent = useRef({ event: '', time: Date.now() })
   const { copilotLSP, kclLSP } = useLspContext()
   const navigate = useNavigate()
@@ -234,7 +234,7 @@ export const KclEditorPane = () => {
       extensions.push(
         lintGutter(),
         linter((_view: EditorView) => {
-          return kclErrorsToDiagnostics(kclManager.kclErrors)
+          return kclErrorsToDiagnostics(errors)
         }),
         lineNumbers(),
         highlightActiveLineGutter(),

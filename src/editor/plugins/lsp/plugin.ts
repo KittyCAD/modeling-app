@@ -25,7 +25,6 @@ import { codeManager, kclManager } from 'lib/singletons'
 import type { UnitLength } from 'wasm-lib/kcl/bindings/UnitLength'
 import { UpdateUnitsResponse } from 'wasm-lib/kcl/bindings/UpdateUnitsResponse'
 import { UpdateCanExecuteResponse } from 'wasm-lib/kcl/bindings/UpdateCanExecuteResponse'
-import { lspDiagnosticsToKclErrors } from 'lang/errors'
 
 const useLast = (values: readonly any[]) => values.reduce((_, v) => v, '')
 export const documentUri = Facet.define<string, string>({ combine: useLast })
@@ -361,12 +360,12 @@ export class LanguageServerPlugin implements PluginValue {
           const params = notification.params as PublishDiagnosticsParams
           this.processDiagnostics(params)
           // Update the kcl errors pane.
-          if (!kclManager.isExecuting) {
+          /*if (!kclManager.isExecuting) {
             kclManager.kclErrors = lspDiagnosticsToKclErrors(
               this.view.state.doc,
               params.diagnostics
             )
-          }
+          }*/
           break
         case 'window/logMessage':
           console.log(
