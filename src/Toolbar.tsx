@@ -125,17 +125,17 @@ export const Toolbar = () => {
               <li className="contents" key="line-button">
                 <ActionButton
                   className={buttonClassName}
-                Element="button"
+                  Element="button"
                   onClick={() =>
                     state?.matches('Sketch.Line tool')
                       ? send('CancelSketch')
                       : send('Equip Line tool')
                   }
                   aria-pressed={state?.matches('Sketch.Line tool')}
-                    icon={{
+                  icon={{
                     icon: 'line',
                     iconClassName,
-                  bgClassName,
+                    bgClassName,
                   }}
                   disabled={disableAllButtons}
                 >
@@ -145,17 +145,17 @@ export const Toolbar = () => {
               <li className="contents" key="tangential-arc-button">
                 <ActionButton
                   className={buttonClassName}
-                Element="button"
+                  Element="button"
                   onClick={() =>
                     state.matches('Sketch.Tangential arc to')
                       ? send('CancelSketch')
                       : send('Equip tangential arc to')
                   }
                   aria-pressed={state.matches('Sketch.Tangential arc to')}
-                    icon={{
+                  icon={{
                     icon: 'arc',
                     iconClassName,
-                  bgClassName,
+                    bgClassName,
                   }}
                   disabled={
                     (!state.can('Equip tangential arc to') &&
