@@ -134,7 +134,21 @@ async function getUser(context: UserContext) {
         hostname: VITE_KC_API_BASE_URL,
       }).catch((err) => console.error('error from Tauri getUser', err))
 
+  const tokenPromise = !isTauri()
+    ? fetch(withBaseURL('/user/api-tokens?limit=1'), {
+        method: 'GET',
+        credentials: 'include',
+        headers,
+      })
+        .then(async (res) => {
+          const result: Models['ApiTokenResultsPage_type'] = await res.json()
+          return result.items[0].token
+        })
+        .catch((err) => console.error('error from Browser getUser', err))
+    : context.token
+
   const user = await userPromise
+  const token = await tokenPromise
 
   if ('error_code' in user) throw new Error(user.message)
 
@@ -148,8 +162,7 @@ async function getUser(context: UserContext) {
 
   return {
     user,
-    token:
-      getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY) || '',
+    token,
   }
 }
 
