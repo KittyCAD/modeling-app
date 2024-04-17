@@ -89,6 +89,7 @@ import { Models } from '@kittycad/lib'
 import { uuidv4 } from 'lib/utils'
 import { SketchDetails } from 'machines/modelingMachine'
 import { EngineCommandManager } from 'lang/std/engineConnection'
+import { generateKclTag } from 'lib/generateKclTag'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -613,6 +614,10 @@ export class SceneEntities {
      *  |> close(%)
      */
     // Here is that kcl code as an array of call expressions
+    const tagA = generateKclTag()
+    const tagB = generateKclTag()
+    const tagC = generateKclTag()
+
     const callExpressions = [
       createCallExpressionStdLib('startProfileAt', [
         createArrayExpression([
@@ -627,13 +632,13 @@ export class SceneEntities {
           createLiteral(0), // This will be the width of the rectangle
         ]),
         createPipeSubstitution(),
-        createLiteral('a'),
+        createLiteral(tagA),
       ]),
       createCallExpressionStdLib('angledLine', [
         createArrayExpression([
           createBinaryExpression([
             createCallExpressionStdLib('segAng', [
-              createLiteral('a'),
+              createLiteral(tagA),
               createPipeSubstitution(),
             ]),
             '+',
@@ -642,24 +647,24 @@ export class SceneEntities {
           createLiteral(0), // This will be the height of the rectangle
         ]),
         createPipeSubstitution(),
-        createLiteral('b'),
+        createLiteral(tagB),
       ]),
       createCallExpressionStdLib('angledLine', [
         createArrayExpression([
           createCallExpressionStdLib('segAng', [
-            createLiteral('a'),
+            createLiteral(tagA),
             createPipeSubstitution(),
           ]), // same angle as the first line
           createUnaryExpression(
             createCallExpressionStdLib('segLen', [
-              createLiteral('a'),
+              createLiteral(tagA),
               createPipeSubstitution(),
             ]),
             '-'
           ), // negative height
         ]),
         createPipeSubstitution(),
-        createLiteral('c'),
+        createLiteral(tagC),
       ]),
       createCallExpressionStdLib('close', [createPipeSubstitution()]),
     ]
@@ -678,7 +683,7 @@ export class SceneEntities {
 
     _ast = parse(recast(_ast))
 
-    const { programMemoryOverride } = await this.setupSketch({
+    const { programMemoryOverride, truncatedAst } = await this.setupSketch({
       sketchPathToNode,
       forward,
       up,
@@ -694,7 +699,7 @@ export class SceneEntities {
         pathToNodeTwo[1][0] = 0
 
         const sketchInit = getNodeFromPath<VariableDeclaration>(
-          _ast,
+          truncatedAst,
           pathToNodeTwo || [],
           'VariableDeclaration'
         )?.node?.declarations?.[0]?.init
@@ -712,7 +717,7 @@ export class SceneEntities {
             .arguments[0] as ArrayExpression) = createArrayExpression([
             createBinaryExpression([
               createCallExpressionStdLib('segAng', [
-                createLiteral('a'),
+                createLiteral(tagA),
                 createPipeSubstitution(),
               ]),
               Math.sign(y) === Math.sign(x) ? '+' : '-',
@@ -721,8 +726,9 @@ export class SceneEntities {
             createLiteral(Math.abs(y)), // This will be the height of the rectangle
           ])
         }
+
         const { programMemory } = await executeAst({
-          ast: _ast,
+          ast: truncatedAst,
           useFakeExecutor: true,
           engineCommandManager: this.engineCommandManager,
           programMemoryOverride,
@@ -751,18 +757,14 @@ export class SceneEntities {
         const cornerPoint = args.intersectionPoint?.twoD
         if (!cornerPoint || args.mouseEvent.button !== 0) return
 
-        // Update the width and height of the draft rectangle
-        const pathToNodeTwo = JSON.parse(JSON.stringify(sketchPathToNode))
-        pathToNodeTwo[1][0] = 0
+        const x = roundOff((cornerPoint.x || 0) - rectangleOrigin[0])
+        const y = roundOff((cornerPoint.y || 0) - rectangleOrigin[1])
 
         const sketchInit = getNodeFromPath<VariableDeclaration>(
           _ast,
-          pathToNodeTwo || [],
+          sketchPathToNode || [],
           'VariableDeclaration'
         )?.node?.declarations?.[0]?.init
-
-        const x = roundOff((cornerPoint.x || 0) - rectangleOrigin[0])
-        const y = roundOff((cornerPoint.y || 0) - rectangleOrigin[1])
 
         if (sketchInit.type === 'PipeExpression') {
           ;((sketchInit.body[2] as CallExpression)
@@ -774,7 +776,7 @@ export class SceneEntities {
             .arguments[0] as ArrayExpression) = createArrayExpression([
             createBinaryExpression([
               createCallExpressionStdLib('segAng', [
-                createLiteral('a'),
+                createLiteral(tagA),
                 createPipeSubstitution(),
               ]),
               Math.sign(y) === Math.sign(x) ? '+' : '-',
@@ -783,9 +785,45 @@ export class SceneEntities {
             createLiteral(Math.abs(y)), // This will be the height of the rectangle
           ])
 
+          _ast = parse(recast(_ast))
+
+          console.log('onClick', {
+            sketchInit: sketchInit,
+            _ast,
+            x,
+            y,
+            truncatedAst,
+          })
+
           // Update the primary AST and unequip the rectangle tool
           await kclManager.executeAstMock(_ast, { updates: 'code' })
           sceneInfra.modelingSend({ type: 'CancelSketch' })
+
+          const { programMemory } = await executeAst({
+            ast: _ast,
+            useFakeExecutor: true,
+            engineCommandManager: this.engineCommandManager,
+            programMemoryOverride,
+          })
+
+          this.sceneProgramMemory = programMemory
+          const sketchGroup = programMemory.root[
+            variableDeclarationName
+          ] as SketchGroup
+          const sgPaths = sketchGroup.value
+          const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+
+          this.updateSegment(
+            sketchGroup.start,
+            0,
+            0,
+            _ast,
+            orthoFactor,
+            sketchGroup
+          )
+          sgPaths.forEach((seg, index) =>
+            this.updateSegment(seg, index, 0, _ast, orthoFactor, sketchGroup)
+          )
         }
       },
     })
