@@ -21,6 +21,7 @@ import {
   CopilotWorkerOptions,
   LspWorker,
 } from 'editor/plugins/lsp/types'
+import { wasmUrl } from 'lang/wasm'
 
 const DEFAULT_FILE_NAME: string = 'main.kcl'
 
@@ -99,6 +100,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
 
     const lspWorker = new Worker({ name: 'kcl' })
     const initEvent: KclWorkerOptions = {
+      wasmUrl: wasmUrl(),
       token: token,
       baseUnit: defaultUnit.current,
       devMode: DEV,
@@ -173,6 +175,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
 
     const lspWorker = new Worker({ name: 'copilot' })
     const initEvent: CopilotWorkerOptions = {
+      wasmUrl: wasmUrl(),
       token: token,
       devMode: DEV,
     }
