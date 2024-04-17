@@ -7,10 +7,12 @@ export enum LspWorker {
 export interface KclWorkerOptions {
   token: string
   baseUnit: UnitLength
+  devMode: boolean
 }
 
 export interface CopilotWorkerOptions {
   token: string
+  devMode: boolean
 }
 
 export enum LspWorkerEventType {

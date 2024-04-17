@@ -8,7 +8,7 @@ import { APP_NAME } from 'lib/constants'
 import JSZip from 'jszip'
 import path from 'path'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from './storageStates'
-import * as TOML from '@iarna/toml'
+import { initPromise, tomlStringify } from 'lang/wasm'
 
 test.beforeEach(async ({ page }) => {
   // reducedMotion kills animations, which speeds up tests and reduces flakiness
@@ -24,9 +24,10 @@ test.beforeEach(async ({ page }) => {
     {
       token: secrets.token,
       settingsKey: TEST_SETTINGS_KEY,
-      settings: TOML.stringify({ settings: TEST_SETTINGS }),
+      settings: tomlStringify({ settings: TEST_SETTINGS }),
     }
   )
+  await initPromise
 
   // Make the user avatar image always 404
   // so we see the fallback menu icon for all snapshot tests
@@ -558,7 +559,7 @@ test.describe('Client side scene scale should match engine scale', () => {
       },
       {
         settingsKey: TEST_SETTINGS_KEY,
-        settings: TOML.stringify({
+        settings: tomlStringify({
           settings: {
             ...TEST_SETTINGS,
             modeling: {

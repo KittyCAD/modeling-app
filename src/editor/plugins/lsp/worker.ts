@@ -16,6 +16,7 @@ const fromServer: FromServer = FromServer.create()
 
 onmessage = function (event) {
   const { worker, eventType, eventData }: LspWorkerEvent = event.data
+  console.log('Worker: Received message', worker, eventType)
 
   switch (eventType) {
     case LspWorkerEventType.Init:
@@ -30,11 +31,17 @@ onmessage = function (event) {
           switch (worker) {
             case LspWorker.Kcl:
               const kclData = eventData as KclWorkerOptions
-              kclLspRun(config, null, kclData.token, kclData.baseUnit)
+              kclLspRun(
+                config,
+                null,
+                kclData.token,
+                kclData.baseUnit,
+                kclData.devMode
+              )
               break
             case LspWorker.Copilot:
               let copilotData = eventData as CopilotWorkerOptions
-              copilotLspRun(config, copilotData.token)
+              copilotLspRun(config, copilotData.token, copilotData.devMode)
               break
           }
         })

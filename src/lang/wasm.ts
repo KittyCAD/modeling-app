@@ -12,6 +12,8 @@ import init, {
   kcl_lsp_run,
   make_default_planes,
   coredump,
+  toml_stringify,
+  toml_parse,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
@@ -22,7 +24,6 @@ import type { Program } from '../wasm-lib/kcl/bindings/Program'
 import type { Token } from '../wasm-lib/kcl/bindings/Token'
 import { Coords2d } from './std/sketch'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
-import { DEV } from 'env'
 import { AppInfo } from 'wasm-lib/kcl/bindings/AppInfo'
 import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
@@ -319,10 +320,14 @@ export function programMemoryInit(): ProgramMemory {
   }
 }
 
-export async function copilotLspRun(config: ServerConfig, token: string) {
+export async function copilotLspRun(
+  config: ServerConfig,
+  token: string,
+  devMode: boolean = false
+) {
   try {
     console.log('starting copilot lsp')
-    await copilot_lsp_run(config, token, DEV)
+    await copilot_lsp_run(config, token, devMode)
   } catch (e: any) {
     console.log('copilot lsp failed', e)
     // We can't restart here because a moved value, we should do this another way.
@@ -333,11 +338,12 @@ export async function kclLspRun(
   config: ServerConfig,
   engineCommandManager: EngineCommandManager | null,
   token: string,
-  baseUnit: string
+  baseUnit: string,
+  devMode: boolean = false
 ) {
   try {
     console.log('start kcl lsp')
-    await kcl_lsp_run(config, engineCommandManager, baseUnit, token, DEV)
+    await kcl_lsp_run(config, engineCommandManager, baseUnit, token, devMode)
   } catch (e: any) {
     console.log('kcl lsp failed', e)
     // We can't restart here because a moved value, we should do this another way.
@@ -356,5 +362,23 @@ export async function coreDump(
     return dump
   } catch (e: any) {
     throw new Error(`Error getting core dump: ${e}`)
+  }
+}
+
+export function tomlStringify(toml: any): string {
+  try {
+    const s: string = toml_stringify(JSON.stringify(toml))
+    return s
+  } catch (e: any) {
+    throw new Error(`Error stringifying toml: ${e}`)
+  }
+}
+
+export function tomlParse(toml: string): any {
+  try {
+    const parsed: any = toml_parse(toml)
+    return parsed
+  } catch (e: any) {
+    throw new Error(`Error parsing toml: ${e}`)
   }
 }

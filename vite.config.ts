@@ -11,9 +11,6 @@ import version from 'vite-plugin-package-version'
 dns.setDefaultResultOrder('verbatim')
 
 const config = defineConfig({
-  define: {
-   global: 'globalThis || window',
-  },
   server: {
     open: true,
     port: 3000,
@@ -22,7 +19,6 @@ const config = defineConfig({
     },
   },
   test: {
-    globals: true,
     pool: 'forks',
     poolOptions: {
       forks: {

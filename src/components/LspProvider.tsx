@@ -3,7 +3,7 @@ import type * as LSP from 'vscode-languageserver-protocol'
 import React, { createContext, useMemo, useEffect, useContext } from 'react'
 import { FromServer, IntoServer } from 'editor/plugins/lsp/codec'
 import Client from '../editor/plugins/lsp/client'
-import { TEST } from 'env'
+import { DEV, TEST } from 'env'
 import kclLanguage from 'editor/plugins/lsp/kcl/language'
 import { copilotPlugin } from 'editor/plugins/lsp/copilot'
 import { useStore } from 'useStore'
@@ -93,10 +93,15 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   // But the server happens async so we break this into two parts.
   // Below is the client and server promise.
   const { lspClient: kclLspClient } = useMemo(() => {
+    if (!token || token === '') {
+      return { lspClient: null }
+    }
+
     const lspWorker = new Worker({ name: 'kcl' })
     const initEvent: KclWorkerOptions = {
-      token: token || '',
+      token: token,
       baseUnit: defaultUnit.current,
+      devMode: DEV,
     }
     lspWorker.postMessage({
       worker: LspWorker.Kcl,
@@ -127,7 +132,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   // We do not want to restart the server, its just wasteful.
   const kclLSP = useMemo(() => {
     let plugin = null
-    if (isKclLspServerReady && !TEST) {
+    if (isKclLspServerReady && !TEST && kclLspClient) {
       // Set up the lsp plugin.
       const lsp = kclLanguage({
         documentUri: `file:///${DEFAULT_FILE_NAME}`,
@@ -142,10 +147,12 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Re-execute the scene when the units change.
   useEffect(() => {
-    let plugins = kclLspClient.plugins
-    for (let plugin of plugins) {
-      if (plugin.updateUnits && isStreamReady && isNetworkOkay) {
-        plugin.updateUnits(defaultUnit.current)
+    if (kclLspClient) {
+      let plugins = kclLspClient.plugins
+      for (let plugin of plugins) {
+        if (plugin.updateUnits && isStreamReady && isNetworkOkay) {
+          plugin.updateUnits(defaultUnit.current)
+        }
       }
     }
   }, [
@@ -160,9 +167,14 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   ])
 
   const { lspClient: copilotLspClient } = useMemo(() => {
+    if (!token || token === '') {
+      return { lspClient: null }
+    }
+
     const lspWorker = new Worker({ name: 'copilot' })
     const initEvent: CopilotWorkerOptions = {
-      token: token || '',
+      token: token,
+      devMode: DEV,
     }
     lspWorker.postMessage({
       worker: LspWorker.Copilot,
@@ -193,7 +205,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   // We do not want to restart the server, its just wasteful.
   const copilotLSP = useMemo(() => {
     let plugin = null
-    if (isCopilotLspServerReady && !TEST) {
+    if (isCopilotLspServerReady && !TEST && copilotLspClient) {
       // Set up the lsp plugin.
       const lsp = copilotPlugin({
         documentUri: `file:///${DEFAULT_FILE_NAME}`,
@@ -207,7 +219,13 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     return plugin
   }, [copilotLspClient, isCopilotLspServerReady])
 
-  const lspClients = [kclLspClient, copilotLspClient]
+  let lspClients: LanguageServerClient[] = []
+  if (kclLspClient) {
+    lspClients.push(kclLspClient)
+  }
+  if (copilotLspClient) {
+    lspClients.push(copilotLspClient)
+  }
 
   const onProjectClose = (
     file: FileEntry | null,

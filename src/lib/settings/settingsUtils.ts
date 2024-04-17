@@ -6,8 +6,8 @@ import {
 import { Setting, createSettings, settings } from 'lib/settings/initialSettings'
 import { SaveSettingsPayload, SettingsLevel } from './settingsTypes'
 import { isTauri } from 'lib/isTauri'
-import * as TOML from '@iarna/toml'
 import { remove, writeTextFile, exists } from '@tauri-apps/plugin-fs'
+import { initPromise, tomlParse, tomlStringify } from 'lang/wasm'
 
 /**
  * We expect the settings to be stored in a TOML file
@@ -19,7 +19,7 @@ import { remove, writeTextFile, exists } from '@tauri-apps/plugin-fs'
 function getSettingsFromStorage(path: string) {
   return isTauri()
     ? readSettingsFile(path)
-    : (TOML.parse(localStorage.getItem(path) ?? '')
+    : (tomlParse(localStorage.getItem(path) ?? '')
         .settings as Partial<SaveSettingsPayload>)
 }
 
@@ -31,6 +31,7 @@ export async function loadAndValidateSettings(projectPath?: string) {
 
   // Load the settings from the files
   if (settingsFilePaths.user) {
+    await initPromise
     const userSettings = await getSettingsFromStorage(settingsFilePaths.user)
     if (userSettings) {
       setSettingsAtLevel(settings, 'user', userSettings)
@@ -77,16 +78,17 @@ async function writeOrClearPersistedSettings(
   settingsFilePath: string,
   changedSettings: Partial<SaveSettingsPayload>
 ) {
+  await initPromise
   if (changedSettings && Object.keys(changedSettings).length) {
     if (isTauri()) {
       await writeTextFile(
         settingsFilePath,
-        TOML.stringify({ settings: changedSettings })
+        tomlStringify({ settings: changedSettings })
       )
     }
     localStorage.setItem(
       settingsFilePath,
-      TOML.stringify({ settings: changedSettings })
+      tomlStringify({ settings: changedSettings })
     )
   } else {
     if (isTauri() && (await exists(settingsFilePath))) {
