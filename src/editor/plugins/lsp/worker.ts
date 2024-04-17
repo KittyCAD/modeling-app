@@ -77,7 +77,6 @@ export async function kclLspRun(
 
 onmessage = function (event) {
   const { worker, eventType, eventData }: LspWorkerEvent = event.data
-  console.log('Worker: Received message', worker, eventType)
 
   switch (eventType) {
     case LspWorkerEventType.Init:
