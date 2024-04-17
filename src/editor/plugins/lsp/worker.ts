@@ -134,7 +134,9 @@ new Promise<void>(async (resolve) => {
   }
 })
 
-for await (const notification of fromServer.notifications) {
-  const encoded = Codec.encode(notification as jsrpc.JSONRPCRequest)
-  postMessage(encoded)
-}
+new Promise<void>(async (resolve) => {
+  for await (const notification of fromServer.notifications) {
+    const encoded = Codec.encode(notification as jsrpc.JSONRPCRequest)
+    postMessage(encoded)
+  }
+})
