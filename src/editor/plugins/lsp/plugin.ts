@@ -39,7 +39,7 @@ const CompletionItemKindMap = Object.fromEntries(
   Object.entries(CompletionItemKind).map(([key, value]) => [value, key])
 ) as Record<CompletionItemKind, string>
 
-const changesDelay = 600
+const changesDelay = 100
 
 export class LanguageServerPlugin implements PluginValue {
   public client: LanguageServerClient
