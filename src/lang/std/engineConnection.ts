@@ -560,7 +560,10 @@ class EngineConnection {
       // Otherwise when run in a browser, the token is sent implicitly via
       // the Cookie header.
       if (this.token) {
-        this.send({ type: 'headers', headers: { Authorization: `Bearer ${this.token}` } })
+        this.send({
+          type: 'headers',
+          headers: { Authorization: `Bearer ${this.token}` },
+        })
       }
     })
 
