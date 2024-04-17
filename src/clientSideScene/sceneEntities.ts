@@ -90,6 +90,10 @@ import { uuidv4 } from 'lib/utils'
 import { SketchDetails } from 'machines/modelingMachine'
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import { generateKclTag } from 'lib/generateKclTag'
+import {
+  getRectangleCallExpressions,
+  updateRectangleSketch,
+} from 'lib/rectangleTool'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -604,69 +608,10 @@ export class SceneEntities {
         'VariableDeclaration'
       )?.node?.declarations?.[0]?.id?.name || ''
 
-    /**
-     * We want to generate this kind of code mod:
-     * const yo = startSketchOn('XY')
-     *  |> startProfileAt([0, 0], %)
-     *  |> angledLine([0, 0], %, 'a')
-     *  |> angledLine([segAng('a', %) - 90, 0], %, 'b')
-     *  |> angledLine([segAng('a', %), -segLen('a', %)], %, 'c')
-     *  |> close(%)
-     */
-    // Here is that kcl code as an array of call expressions
-    const tagA = generateKclTag()
-    const tagB = generateKclTag()
-    const tagC = generateKclTag()
-
-    const callExpressions = [
-      createCallExpressionStdLib('startProfileAt', [
-        createArrayExpression([
-          createLiteral(roundOff(rectangleOrigin[0])),
-          createLiteral(roundOff(rectangleOrigin[1])),
-        ]),
-        createPipeSubstitution(),
-      ]),
-      createCallExpressionStdLib('angledLine', [
-        createArrayExpression([
-          createLiteral(0), // 0 deg
-          createLiteral(0), // This will be the width of the rectangle
-        ]),
-        createPipeSubstitution(),
-        createLiteral(tagA),
-      ]),
-      createCallExpressionStdLib('angledLine', [
-        createArrayExpression([
-          createBinaryExpression([
-            createCallExpressionStdLib('segAng', [
-              createLiteral(tagA),
-              createPipeSubstitution(),
-            ]),
-            '+',
-            createLiteral(90),
-          ]), // 90 offset from the previous line
-          createLiteral(0), // This will be the height of the rectangle
-        ]),
-        createPipeSubstitution(),
-        createLiteral(tagB),
-      ]),
-      createCallExpressionStdLib('angledLine', [
-        createArrayExpression([
-          createCallExpressionStdLib('segAng', [
-            createLiteral(tagA),
-            createPipeSubstitution(),
-          ]), // same angle as the first line
-          createUnaryExpression(
-            createCallExpressionStdLib('segLen', [
-              createLiteral(tagA),
-              createPipeSubstitution(),
-            ]),
-            '-'
-          ), // negative height
-        ]),
-        createPipeSubstitution(),
-        createLiteral(tagC),
-      ]),
-      createCallExpressionStdLib('close', [createPipeSubstitution()]),
+    const tags: [string, string, string] = [
+      generateKclTag(),
+      generateKclTag(),
+      generateKclTag(),
     ]
 
     const startSketchOn = getNodeFromPath<VariableDeclaration>(
@@ -678,7 +623,7 @@ export class SceneEntities {
     const startSketchOnInit = startSketchOn?.[0]?.init
     startSketchOn[0].init = createPipeExpression([
       startSketchOnInit,
-      ...callExpressions,
+      ...getRectangleCallExpressions(rectangleOrigin, tags),
     ])
 
     _ast = parse(recast(_ast))
@@ -708,23 +653,7 @@ export class SceneEntities {
         const y = (args.intersectionPoint.twoD.y || 0) - rectangleOrigin[1]
 
         if (sketchInit.type === 'PipeExpression') {
-          ;((sketchInit.body[2] as CallExpression)
-            .arguments[0] as ArrayExpression) = createArrayExpression([
-            createLiteral(x >= 0 ? 0 : 180),
-            createLiteral(Math.abs(x)),
-          ])
-          ;((sketchInit.body[3] as CallExpression)
-            .arguments[0] as ArrayExpression) = createArrayExpression([
-            createBinaryExpression([
-              createCallExpressionStdLib('segAng', [
-                createLiteral(tagA),
-                createPipeSubstitution(),
-              ]),
-              Math.sign(y) === Math.sign(x) ? '+' : '-',
-              createLiteral(90),
-            ]), // 90 offset from the previous line
-            createLiteral(Math.abs(y)), // This will be the height of the rectangle
-          ])
+          updateRectangleSketch(sketchInit, x, y, tags[0])
         }
 
         const { programMemory } = await executeAst({
@@ -767,23 +696,7 @@ export class SceneEntities {
         )?.node?.declarations?.[0]?.init
 
         if (sketchInit.type === 'PipeExpression') {
-          ;((sketchInit.body[2] as CallExpression)
-            .arguments[0] as ArrayExpression) = createArrayExpression([
-            createLiteral(x >= 0 ? 0 : 180),
-            createLiteral(Math.abs(x)),
-          ])
-          ;((sketchInit.body[3] as CallExpression)
-            .arguments[0] as ArrayExpression) = createArrayExpression([
-            createBinaryExpression([
-              createCallExpressionStdLib('segAng', [
-                createLiteral(tagA),
-                createPipeSubstitution(),
-              ]),
-              Math.sign(y) === Math.sign(x) ? '+' : '-',
-              createLiteral(90),
-            ]), // 90 offset from the previous line
-            createLiteral(Math.abs(y)), // This will be the height of the rectangle
-          ])
+          updateRectangleSketch(sketchInit, x, y, tags[0])
 
           _ast = parse(recast(_ast))
 
