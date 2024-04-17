@@ -72,12 +72,10 @@ import {
 import { roundOff, throttle } from 'lib/utils'
 import {
   createArrayExpression,
-  createBinaryExpression,
   createCallExpressionStdLib,
   createLiteral,
   createPipeExpression,
   createPipeSubstitution,
-  createUnaryExpression,
 } from 'lang/modifyAst'
 import {
   getEventForSegmentSelection,
