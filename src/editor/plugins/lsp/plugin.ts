@@ -87,6 +87,7 @@ export class LanguageServerPlugin implements PluginValue {
     // Update the state (not the editor) with the new code.
     codeManager.code = newCode
     codeManager.writeToFile()
+    kclManager.executeCode()
 
     this.sendChange({
       documentText: newCode,
@@ -386,7 +387,7 @@ export class LanguageServerPlugin implements PluginValue {
           let updatedAst = notification.params as Program
           console.log('[lsp]: Updated AST', updatedAst)
           // Update the ast when we are not already executing.
-          if (!kclManager.isExecuting) {
+          /* if (!kclManager.isExecuting) {
             kclManager.ast = updatedAst
             // Execute the ast.
             console.log('[lsp]: executing ast')
@@ -395,7 +396,7 @@ export class LanguageServerPlugin implements PluginValue {
             let diagnostics = kclErrorsToDiagnostics(kclManager.kclErrors)
             this.view.dispatch(setDiagnostics(this.view.state, diagnostics))
             console.log('[lsp]: updated diagnostics')
-          }
+          }*/
 
           // Update the folding ranges, since the AST has changed.
           // This is a hack since codemirror does not support async foldService.
