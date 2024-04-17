@@ -176,7 +176,8 @@ const FileTreeItem = ({
         `import("${fileOrDir.path.replace(project.path, '.')}")\n` +
           codeManager.code
       )
-      kclManager.executeCode()
+      codeManager.writeToFile()
+      kclManager.executeCode(true)
     } else {
       // Let the lsp servers know we closed a file.
       onFileClose(currentFile?.path || null, project?.path || null)

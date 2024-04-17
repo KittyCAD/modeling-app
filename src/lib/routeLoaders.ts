@@ -102,7 +102,7 @@ export const fileLoader: LoaderFunction = async ({
     })
     // Update both the state and the editor's code.
     codeManager.updateCodeStateEditor(code)
-    kclManager.executeCode()
+    kclManager.executeCode(true)
 
     // Set the file system manager to the project path
     // So that WASM gets an updated path for operations

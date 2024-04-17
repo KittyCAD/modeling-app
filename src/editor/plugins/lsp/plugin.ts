@@ -25,7 +25,7 @@ import { codeManager, kclManager } from 'lib/singletons'
 import type { UnitLength } from 'wasm-lib/kcl/bindings/UnitLength'
 import { UpdateUnitsResponse } from 'wasm-lib/kcl/bindings/UpdateUnitsResponse'
 import { UpdateCanExecuteResponse } from 'wasm-lib/kcl/bindings/UpdateCanExecuteResponse'
-import { kclErrorsToDiagnostics, lspDiagnosticsToKclErrors } from 'lang/errors'
+import { lspDiagnosticsToKclErrors } from 'lang/errors'
 
 const useLast = (values: readonly any[]) => values.reduce((_, v) => v, '')
 export const documentUri = Facet.define<string, string>({ combine: useLast })
@@ -51,7 +51,6 @@ export class LanguageServerPlugin implements PluginValue {
   private _defferer = deferExecution((code: string) => {
     try {
       // Update the state (not the editor) with the new code.
-      codeManager.code = code
       this.client.textDocumentDidChange({
         textDocument: {
           uri: this.documentUri,
@@ -59,8 +58,6 @@ export class LanguageServerPlugin implements PluginValue {
         },
         contentChanges: [{ text: code }],
       })
-      codeManager.writeToFile()
-      kclManager.executeCode()
     } catch (e) {
       console.error(e)
     }
@@ -89,6 +86,9 @@ export class LanguageServerPlugin implements PluginValue {
 
     const newCode = this.view.state.doc.toString()
 
+    codeManager.code = newCode
+    codeManager.writeToFile()
+    kclManager.executeCode()
     this.sendChange({
       documentText: newCode,
     })
