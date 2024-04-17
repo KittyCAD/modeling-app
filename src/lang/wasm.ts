@@ -7,11 +7,10 @@ import init, {
   is_points_ccw,
   get_tangential_arc_to_info,
   program_memory_init,
-  ServerConfig,
-  copilot_lsp_run,
-  kcl_lsp_run,
   make_default_planes,
   coredump,
+  toml_stringify,
+  toml_parse,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
@@ -22,7 +21,6 @@ import type { Program } from '../wasm-lib/kcl/bindings/Program'
 import type { Token } from '../wasm-lib/kcl/bindings/Token'
 import { Coords2d } from './std/sketch'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
-import { DEV } from 'env'
 import { AppInfo } from 'wasm-lib/kcl/bindings/AppInfo'
 import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
@@ -76,8 +74,7 @@ export type { ExtrudeGroup } from '../wasm-lib/kcl/bindings/ExtrudeGroup'
 export type { MemoryItem } from '../wasm-lib/kcl/bindings/MemoryItem'
 export type { ExtrudeSurface } from '../wasm-lib/kcl/bindings/ExtrudeSurface'
 
-// Initialise the wasm module.
-const initialise = async () => {
+export const wasmUrl = () => {
   const baseUrl =
     typeof window === 'undefined'
       ? 'http://127.0.0.1:3000'
@@ -92,6 +89,13 @@ const initialise = async () => {
       : 'http://localhost:3000'
   const fullUrl = baseUrl + '/wasm_lib_bg.wasm'
   console.log(`Full URL for WASM: ${fullUrl}`)
+
+  return fullUrl
+}
+
+// Initialise the wasm module.
+const initialise = async () => {
+  const fullUrl = wasmUrl()
   const input = await fetch(fullUrl)
   const buffer = await input.arrayBuffer()
   return init(buffer)
@@ -313,32 +317,6 @@ export function programMemoryInit(): ProgramMemory {
   }
 }
 
-export async function copilotLspRun(config: ServerConfig, token: string) {
-  try {
-    console.log('starting copilot lsp')
-    await copilot_lsp_run(config, token, DEV)
-  } catch (e: any) {
-    console.log('copilot lsp failed', e)
-    // We can't restart here because a moved value, we should do this another way.
-  }
-}
-
-export async function kclLspRun(
-  config: ServerConfig,
-  engineCommandManager: EngineCommandManager,
-  token: string
-) {
-  try {
-    console.log('start kcl lsp')
-    const baseUnit =
-      (await getSettingsState)()?.modeling.defaultUnit.current || 'mm'
-    await kcl_lsp_run(config, engineCommandManager, baseUnit, token, DEV)
-  } catch (e: any) {
-    console.log('kcl lsp failed', e)
-    // We can't restart here because a moved value, we should do this another way.
-  }
-}
-
 export async function coreDump(
   coreDumpManager: CoreDumpManager,
   openGithubIssue: boolean = false
@@ -351,5 +329,23 @@ export async function coreDump(
     return dump
   } catch (e: any) {
     throw new Error(`Error getting core dump: ${e}`)
+  }
+}
+
+export function tomlStringify(toml: any): string {
+  try {
+    const s: string = toml_stringify(JSON.stringify(toml))
+    return s
+  } catch (e: any) {
+    throw new Error(`Error stringifying toml: ${e}`)
+  }
+}
+
+export function tomlParse(toml: string): any {
+  try {
+    const parsed: any = toml_parse(toml)
+    return parsed
+  } catch (e: any) {
+    throw new Error(`Error parsing toml: ${e}`)
   }
 }

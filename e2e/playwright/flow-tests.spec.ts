@@ -2,7 +2,6 @@ import { test, expect } from '@playwright/test'
 import { getUtils } from './test-utils'
 import waitOn from 'wait-on'
 import { roundOff } from 'lib/utils'
-import * as TOML from '@iarna/toml'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { secrets } from './secrets'
 import {
@@ -11,6 +10,7 @@ import {
   TEST_SETTINGS_CORRUPTED,
   TEST_SETTINGS_ONBOARDING,
 } from './storageStates'
+import * as TOML from '@iarna/toml'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places

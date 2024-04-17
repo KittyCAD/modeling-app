@@ -4657,6 +4657,7 @@ dependencies = [
  "reqwest",
  "serde_json",
  "tokio",
+ "toml",
  "tower-lsp",
  "twenty-twenty",
  "uuid",

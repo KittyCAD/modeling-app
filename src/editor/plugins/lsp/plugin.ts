@@ -27,7 +27,6 @@ import { posToOffset } from 'editor/plugins/lsp/util'
 import { Program, ProgramMemory } from 'lang/wasm'
 import { kclManager } from 'lib/singletons'
 import type { UnitLength } from 'wasm-lib/kcl/bindings/UnitLength'
-import { lspDiagnosticsToKclErrors } from 'lang/errors'
 import { UpdateUnitsResponse } from 'wasm-lib/kcl/bindings/UpdateUnitsResponse'
 import { UpdateCanExecuteResponse } from 'wasm-lib/kcl/bindings/UpdateCanExecuteResponse'
 
@@ -403,7 +402,9 @@ export class LanguageServerPlugin implements PluginValue {
           // The server has updated the AST, we should update elsewhere.
           let updatedAst = notification.params as Program
           console.log('[lsp]: Updated AST', updatedAst)
-          kclManager.ast = updatedAst
+          // Since we aren't using the lsp server for executing the program
+          // we don't update the ast here.
+          //kclManager.ast = updatedAst
 
           // Update the folding ranges, since the AST has changed.
           // This is a hack since codemirror does not support async foldService.

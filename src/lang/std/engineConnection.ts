@@ -611,7 +611,6 @@ class EngineConnection {
             `Error in response to request ${message.request_id}:\n${errorsString}
 failed cmd type was ${artifactThatFailed?.commandType}`
           )
-          console.log(artifactThatFailed)
         } else {
           console.error(`Error from server:\n${errorsString}`)
         }
@@ -1178,7 +1177,6 @@ export class EngineCommandManager {
         command?.commandType === 'solid3d_get_extrusion_face_info' &&
         modelingResponse.type === 'solid3d_get_extrusion_face_info'
       ) {
-        console.log('modelingResposne', modelingResponse)
         const parent = this.artifactMap[command?.parentId || '']
         modelingResponse.data.faces.forEach((face) => {
           if (face.cap !== 'none' && face.face_id && parent) {
