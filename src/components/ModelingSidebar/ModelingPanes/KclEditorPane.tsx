@@ -29,7 +29,7 @@ import {
   historyKeymap,
   history,
 } from '@codemirror/commands'
-import { lintGutter, lintKeymap } from '@codemirror/lint'
+import { lintGutter, lintKeymap, linter } from '@codemirror/lint'
 import {
   foldGutter,
   foldKeymap,
@@ -57,6 +57,7 @@ import {
   completionKeymap,
   hasNextSnippetField,
 } from '@codemirror/autocomplete'
+import { kclErrorsToDiagnostics } from 'lang/errors'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -232,6 +233,9 @@ export const KclEditorPane = () => {
     if (!TEST) {
       extensions.push(
         lintGutter(),
+        linter((_view: EditorView) => {
+          return kclErrorsToDiagnostics(kclManager.kclErrors)
+        }),
         lineNumbers(),
         highlightActiveLineGutter(),
         highlightSpecialChars(),
