@@ -29,7 +29,7 @@ import {
   historyKeymap,
   history,
 } from '@codemirror/commands'
-import { lintGutter, lintKeymap, linter } from '@codemirror/lint'
+import { lintGutter, lintKeymap } from '@codemirror/lint'
 import {
   foldGutter,
   foldKeymap,
@@ -57,11 +57,6 @@ import {
   completionKeymap,
   hasNextSnippetField,
 } from '@codemirror/autocomplete'
-import {
-  NetworkHealthState,
-  useNetworkStatus,
-} from 'components/NetworkHealthIndicator'
-import { kclErrorsToDiagnostics } from 'lang/errors'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -86,16 +81,14 @@ export const KclEditorPane = () => {
     setEditorView: s.setEditorView,
     isShiftDown: s.isShiftDown,
   }))
-  const { code, errors } = useKclContext()
+  const { editorCode } = useKclContext()
   const lastEvent = useRef({ event: '', time: Date.now() })
   const { copilotLSP, kclLSP } = useLspContext()
-  const { overallState } = useNetworkStatus()
-  const isNetworkOkay = overallState === NetworkHealthState.Ok
   const navigate = useNavigate()
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    const onlineCallback = () => kclManager.setCodeAndExecute(kclManager.code)
+    const onlineCallback = () => kclManager.executeCode()
     window.addEventListener('online', onlineCallback)
     return () => window.removeEventListener('online', onlineCallback)
   }, [])
@@ -126,19 +119,6 @@ export const KclEditorPane = () => {
   const { enable: convertEnabled, handleClick: convertCallback } =
     useConvertToVariable()
 
-  const onChange = async (newCode: string) => {
-    // If we are just fucking around in a snippet, return early and don't
-    // trigger stuff below that might cause the component to re-render.
-    // Otherwise we will not be able to tab thru the snippet portions.
-    // We explicitly dont check HasPrevSnippetField because we always add
-    // a ${} to the end of the function so that's fine.
-    if (editorView && hasNextSnippetField(editorView.state)) {
-      return
-    }
-
-    if (isNetworkOkay) kclManager.setCodeAndExecute(newCode)
-    else kclManager.setCode(newCode)
-  }
   const lastSelection = useRef('')
   const onUpdate = (viewUpdate: ViewUpdate) => {
     // If we are just fucking around in a snippet, return early and don't
@@ -252,9 +232,6 @@ export const KclEditorPane = () => {
     if (!TEST) {
       extensions.push(
         lintGutter(),
-        linter((_view: EditorView) => {
-          return kclErrorsToDiagnostics(errors)
-        }),
         lineNumbers(),
         highlightActiveLineGutter(),
         highlightSpecialChars(),
@@ -307,7 +284,13 @@ export const KclEditorPane = () => {
     }
 
     return extensions
-  }, [kclLSP, textWrapping.current, cursorBlinking.current, convertCallback])
+  }, [
+    kclLSP,
+    copilotLSP,
+    textWrapping.current,
+    cursorBlinking.current,
+    convertCallback,
+  ])
 
   return (
     <div
@@ -315,9 +298,8 @@ export const KclEditorPane = () => {
       className={'absolute inset-0 ' + (cursorBlinking.current ? 'blink' : '')}
     >
       <ReactCodeMirror
-        value={code}
+        value={editorCode}
         extensions={editorExtensions}
-        onChange={onChange}
         onUpdate={onUpdate}
         theme={theme}
         onCreateEditor={(_editorView) => setEditorView(_editorView)}

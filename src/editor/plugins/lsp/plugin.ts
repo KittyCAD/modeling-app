@@ -1,8 +1,4 @@
-import {
-  completeFromList,
-  hasNextSnippetField,
-  snippetCompletion,
-} from '@codemirror/autocomplete'
+import { completeFromList, snippetCompletion } from '@codemirror/autocomplete'
 import { setDiagnostics } from '@codemirror/lint'
 import { Facet } from '@codemirror/state'
 import { EditorView, Tooltip } from '@codemirror/view'
@@ -25,7 +21,7 @@ import { LanguageServerClient } from 'editor/plugins/lsp'
 import { Marked } from '@ts-stack/markdown'
 import { posToOffset } from 'editor/plugins/lsp/util'
 import { Program, ProgramMemory } from 'lang/wasm'
-import { kclManager } from 'lib/singletons'
+import { codeManager, kclManager } from 'lib/singletons'
 import type { UnitLength } from 'wasm-lib/kcl/bindings/UnitLength'
 import { UpdateUnitsResponse } from 'wasm-lib/kcl/bindings/UpdateUnitsResponse'
 import { UpdateCanExecuteResponse } from 'wasm-lib/kcl/bindings/UpdateCanExecuteResponse'
@@ -83,21 +79,18 @@ export class LanguageServerPlugin implements PluginValue {
     })
   }
 
-  update({ docChanged, state }: ViewUpdate) {
+  update({ docChanged }: ViewUpdate) {
     if (!docChanged) return
 
-    // If we are just fucking around in a snippet, return early and don't
-    // trigger stuff below that might cause the component to re-render.
-    // Otherwise we will not be able to tab thru the snippet portions.
-    // We explicitly dont check HasPrevSnippetField because we always add
-    // a ${} to the end of the function so that's fine.
-    // We only care about this for the 'kcl' plugin.
-    if (this.client.name === 'kcl' && hasNextSnippetField(state)) {
-      return
-    }
+    const newCode = this.view.state.doc.toString()
+    // Update the state (not the editor) with the new code.
+    codeManager.updateCodeState(newCode)
+    kclManager.executeCode()
+
+    codeManager.writeToFile()
 
     this.sendChange({
-      documentText: this.view.state.doc.toString(),
+      documentText: newCode,
     })
   }
 
