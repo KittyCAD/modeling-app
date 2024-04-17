@@ -26,7 +26,8 @@ mod test_examples_import {
             .commands_ws(None, None, None, None, None, None, Some(false))
             .await
             .unwrap();
-        let tokens = crate::token::lexer("This is another code block.\nyes sirrr.\nimport");
+        let tokens =
+            crate::token::lexer("This is another code block.\nyes sirrr.\nimport").unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
         let units = kittycad::types::UnitLength::Mm;
@@ -119,7 +120,7 @@ mod test_examples_import {
             .commands_ws(None, None, None, None, None, None, Some(false))
             .await
             .unwrap();
-        let tokens = crate::token::lexer("This is code.\nIt does other shit.\nimport");
+        let tokens = crate::token::lexer("This is code.\nIt does other shit.\nimport").unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
         let units = kittycad::types::UnitLength::Mm;
@@ -265,7 +266,7 @@ impl crate::docs::StdLibFn for Import {
         code_blocks
             .iter()
             .map(|cb| {
-                let tokens = crate::token::lexer(cb);
+                let tokens = crate::token::lexer(cb).unwrap();
                 let parser = crate::parser::Parser::new(tokens);
                 let program = parser.ast().unwrap();
                 let mut options: crate::ast::types::FormatOptions = Default::default();

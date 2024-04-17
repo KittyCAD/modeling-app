@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::SemanticTokenType;
 use winnow::stream::ContainsToken;
 
-use crate::{ast::types::VariableKind, executor::SourceRange};
+use crate::{ast::types::VariableKind, errors::KclError, executor::SourceRange};
 
 mod tokeniser;
 
@@ -125,6 +125,14 @@ impl TokenType {
 
         Ok(semantic_tokens)
     }
+
+    pub fn is_whitespace(&self) -> bool {
+        matches!(self, Self::Whitespace)
+    }
+
+    pub fn is_comment(&self) -> bool {
+        matches!(self, Self::LineComment | Self::BlockComment)
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Clone, ts_rs::TS)]
@@ -204,8 +212,8 @@ impl From<&Token> for SourceRange {
     }
 }
 
-pub fn lexer(s: &str) -> Vec<Token> {
-    tokeniser::lexer(s).unwrap_or_default()
+pub fn lexer(s: &str) -> Result<Vec<Token>, KclError> {
+    tokeniser::lexer(s).map_err(From::from)
 }
 
 #[cfg(test)]

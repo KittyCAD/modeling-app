@@ -1,7 +1,11 @@
-use winnow::error::{ErrorKind, ParseError, StrContext};
+use winnow::{
+    error::{ErrorKind, ParseError, StrContext},
+    Located,
+};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
+    executor::SourceRange,
     token::Token,
 };
 
@@ -13,6 +17,22 @@ use crate::{
 pub struct ContextError<C = StrContext> {
     pub context: Vec<C>,
     pub cause: Option<KclError>,
+}
+
+impl From<ParseError<Located<&str>, winnow::error::ContextError>> for KclError {
+    fn from(err: ParseError<Located<&str>, winnow::error::ContextError>) -> Self {
+        let (input, offset): (Vec<char>, usize) = (err.input().chars().collect(), err.offset());
+
+        // TODO: Add the Winnow tokenizer context to the error.
+        // See https://github.com/KittyCAD/modeling-app/issues/784
+        let bad_token = &input[offset];
+        // TODO: Add the Winnow parser context to the error.
+        // See https://github.com/KittyCAD/modeling-app/issues/784
+        KclError::Lexical(KclErrorDetails {
+            source_ranges: vec![SourceRange([offset, offset + 1])],
+            message: format!("found unknown token '{}'", bad_token),
+        })
+    }
 }
 
 impl From<ParseError<&[Token], ContextError>> for KclError {
@@ -47,7 +67,7 @@ impl From<ParseError<&[Token], ContextError>> for KclError {
         // See https://github.com/KittyCAD/modeling-app/issues/784
         KclError::Syntax(KclErrorDetails {
             source_ranges: bad_token.as_source_ranges(),
-            message: "Unexpected token".to_owned(),
+            message: "Unexpected token".to_string(),
         })
     }
 }

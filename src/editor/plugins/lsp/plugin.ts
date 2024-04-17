@@ -1,4 +1,8 @@
-import { completeFromList, snippetCompletion } from '@codemirror/autocomplete'
+import {
+  completeFromList,
+  hasNextSnippetField,
+  snippetCompletion,
+} from '@codemirror/autocomplete'
 import { setDiagnostics } from '@codemirror/lint'
 import { Facet } from '@codemirror/state'
 import { EditorView, Tooltip } from '@codemirror/view'
@@ -7,8 +11,8 @@ import {
   CompletionItemKind,
   CompletionTriggerKind,
 } from 'vscode-languageserver-protocol'
-import debounce from 'debounce-promise'
 
+import { deferExecution } from 'lib/utils'
 import type {
   Completion,
   CompletionContext,
@@ -20,6 +24,11 @@ import type * as LSP from 'vscode-languageserver-protocol'
 import { LanguageServerClient } from 'editor/plugins/lsp'
 import { Marked } from '@ts-stack/markdown'
 import { posToOffset } from 'editor/plugins/lsp/util'
+import { Program, ProgramMemory } from 'lang/wasm'
+import { kclManager } from 'lib/singletons'
+import type { UnitLength } from 'wasm-lib/kcl/bindings/UnitLength'
+import { UpdateUnitsResponse } from 'wasm-lib/kcl/bindings/UpdateUnitsResponse'
+import { UpdateCanExecuteResponse } from 'wasm-lib/kcl/bindings/UpdateCanExecuteResponse'
 
 const useLast = (values: readonly any[]) => values.reduce((_, v) => v, '')
 export const documentUri = Facet.define<string, string>({ combine: useLast })
@@ -29,11 +38,11 @@ export const workspaceFolders = Facet.define<
   LSP.WorkspaceFolder[]
 >({ combine: useLast })
 
-const changesDelay = 500
-
 const CompletionItemKindMap = Object.fromEntries(
   Object.entries(CompletionItemKind).map(([key, value]) => [value, key])
 ) as Record<CompletionItemKind, string>
+
+const changesDelay = 600
 
 export class LanguageServerPlugin implements PluginValue {
   public client: LanguageServerClient
@@ -41,6 +50,20 @@ export class LanguageServerPlugin implements PluginValue {
   public languageId: string
   public workspaceFolders: LSP.WorkspaceFolder[]
   private documentVersion: number
+  private foldingRanges: LSP.FoldingRange[] | null = null
+  private _defferer = deferExecution((code: string) => {
+    try {
+      this.client.textDocumentDidChange({
+        textDocument: {
+          uri: this.documentUri,
+          version: this.documentVersion++,
+        },
+        contentChanges: [{ text: code }],
+      })
+    } catch (e) {
+      console.error(e)
+    }
+  }, changesDelay)
 
   constructor(
     client: LanguageServerClient,
@@ -60,8 +83,18 @@ export class LanguageServerPlugin implements PluginValue {
     })
   }
 
-  update({ docChanged }: ViewUpdate) {
+  update({ docChanged, state }: ViewUpdate) {
     if (!docChanged) return
+
+    // If we are just fucking around in a snippet, return early and don't
+    // trigger stuff below that might cause the component to re-render.
+    // Otherwise we will not be able to tab thru the snippet portions.
+    // We explicitly dont check HasPrevSnippetField because we always add
+    // a ${} to the end of the function so that's fine.
+    // We only care about this for the 'kcl' plugin.
+    if (this.client.name === 'kcl' && hasNextSnippetField(state)) {
+      return
+    }
 
     this.sendChange({
       documentText: this.view.state.doc.toString(),
@@ -100,23 +133,7 @@ export class LanguageServerPlugin implements PluginValue {
       documentText = ''
     }
 
-    try {
-      debounce(
-        () => {
-          return this.client.textDocumentDidChange({
-            textDocument: {
-              uri: this.documentUri,
-              version: this.documentVersion++,
-            },
-            contentChanges: [{ text: documentText }],
-          })
-        },
-        changesDelay,
-        { leading: true }
-      )
-    } catch (e) {
-      console.error(e)
-    }
+    this._defferer(documentText)
   }
 
   requestDiagnostics(view: EditorView) {
@@ -152,6 +169,126 @@ export class LanguageServerPlugin implements PluginValue {
     if (this.allowHTMLContent) dom.innerHTML = formatContents(contents)
     else dom.textContent = formatContents(contents)
     return { pos, end, create: (view) => ({ dom }), above: true }
+  }
+
+  async getFoldingRanges(): Promise<LSP.FoldingRange[] | null> {
+    if (
+      !this.client.ready ||
+      !this.client.getServerCapabilities().foldingRangeProvider
+    )
+      return null
+    const result = await this.client.textDocumentFoldingRange({
+      textDocument: { uri: this.documentUri },
+    })
+
+    return result || null
+  }
+
+  async updateFoldingRanges() {
+    const foldingRanges = await this.getFoldingRanges()
+    if (foldingRanges === null) return
+    // Update the folding ranges.
+    this.foldingRanges = foldingRanges
+  }
+
+  // In the future if codemirrors foldService accepts async folding ranges
+  // then we will not have to store these and we can call getFoldingRanges
+  // here.
+  foldingRange(
+    lineStart: number,
+    lineEnd: number
+  ): { from: number; to: number } | null {
+    if (this.foldingRanges === null) {
+      return null
+    }
+
+    for (let i = 0; i < this.foldingRanges.length; i++) {
+      const { startLine, endLine } = this.foldingRanges[i]
+      if (startLine === lineEnd) {
+        const range = {
+          // Set the fold start to the end of the first line
+          // With this, the fold will not include the first line
+          from: startLine,
+          to: endLine,
+        }
+
+        return range
+      }
+    }
+
+    return null
+  }
+
+  async updateUnits(units: UnitLength): Promise<UpdateUnitsResponse | null> {
+    if (this.client.name !== 'kcl') return null
+    if (!this.client.ready) return null
+
+    return await this.client.updateUnits({
+      textDocument: {
+        uri: this.documentUri,
+      },
+      text: this.view.state.doc.toString(),
+      units,
+    })
+  }
+  async updateCanExecute(
+    canExecute: boolean
+  ): Promise<UpdateCanExecuteResponse | null> {
+    if (this.client.name !== 'kcl') return null
+    if (!this.client.ready) return null
+
+    let response = await this.client.updateCanExecute({
+      canExecute,
+    })
+
+    if (!canExecute && response.isExecuting) {
+      // We want to wait until the server is not busy before we reply to the
+      // caller.
+      while (response.isExecuting) {
+        await new Promise((resolve) => setTimeout(resolve, 100))
+        response = await this.client.updateCanExecute({
+          canExecute,
+        })
+      }
+    }
+    console.log('[lsp] kcl: updated canExecute', canExecute, response)
+    return response
+  }
+
+  async requestFormatting() {
+    if (
+      !this.client.ready ||
+      !this.client.getServerCapabilities().documentFormattingProvider
+    )
+      return null
+
+    this.sendChange({
+      documentText: this.view.state.doc.toString(),
+    })
+
+    const result = await this.client.textDocumentFormatting({
+      textDocument: { uri: this.documentUri },
+      options: {
+        tabSize: 2,
+        insertSpaces: true,
+        insertFinalNewline: true,
+      },
+    })
+
+    if (!result) return null
+
+    for (let i = 0; i < result.length; i++) {
+      const { range, newText } = result[i]
+      this.view.dispatch({
+        changes: [
+          {
+            from: posToOffset(this.view.state.doc, range.start)!,
+            to: posToOffset(this.view.state.doc, range.end)!,
+            insert: newText,
+          },
+        ],
+      })
+    }
   }
 
   async requestCompletion(
@@ -239,9 +376,13 @@ export class LanguageServerPlugin implements PluginValue {
     try {
       switch (notification.method) {
         case 'textDocument/publishDiagnostics':
-          this.processDiagnostics(
-            notification.params as PublishDiagnosticsParams
-          )
+          const params = notification.params as PublishDiagnosticsParams
+          this.processDiagnostics(params)
+          // Update the kcl errors pane.
+          /*kclManager.kclErrors = lspDiagnosticsToKclErrors(
+            this.view.state.doc,
+            params.diagnostics
+          )*/
           break
         case 'window/logMessage':
           console.log(
@@ -256,6 +397,25 @@ export class LanguageServerPlugin implements PluginValue {
             this.client.getName(),
             notification.params
           )
+          break
+        case 'kcl/astUpdated':
+          // The server has updated the AST, we should update elsewhere.
+          let updatedAst = notification.params as Program
+          console.log('[lsp]: Updated AST', updatedAst)
+          // Since we aren't using the lsp server for executing the program
+          // we don't update the ast here.
+          //kclManager.ast = updatedAst
+
+          // Update the folding ranges, since the AST has changed.
+          // This is a hack since codemirror does not support async foldService.
+          // When they do we can delete this.
+          this.updateFoldingRanges()
+          break
+        case 'kcl/memoryUpdated':
+          // The server has updated the memory, we should update elsewhere.
+          let updatedMemory = notification.params as ProgramMemory
+          console.log('[lsp]: Updated Memory', updatedMemory)
+          kclManager.programMemory = updatedMemory
           break
       }
     } catch (error) {

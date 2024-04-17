@@ -4,6 +4,7 @@ import withBaseURL from '../lib/withBaseURL'
 import { isTauri } from 'lib/isTauri'
 import { invoke } from '@tauri-apps/api/core'
 import { VITE_KC_API_BASE_URL } from 'env'
+import Cookies from 'js-cookie'
 
 const SKIP_AUTH =
   import.meta.env.VITE_KC_SKIP_AUTH === 'true' && import.meta.env.DEV
@@ -38,11 +39,10 @@ export type Events =
       token?: string
     }
 
+const COOKIE_NAME = '__Secure-next-auth.session-token'
 export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
 const persistedToken =
-  localStorage?.getItem(TOKEN_PERSIST_KEY) ||
-  getCookie('__Secure-next-auth.session-token') ||
-  ''
+  getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
 
 export const authMachine = createMachine<UserContext, Events>(
   {
@@ -134,6 +134,7 @@ async function getUser(context: UserContext) {
         token: context.token,
         hostname: VITE_KC_API_BASE_URL,
       }).catch((err) => console.error('error from Tauri getUser', err))
+
   const tokenPromise = !isTauri()
     ? fetch(withBaseURL('/user/api-tokens?limit=1'), {
         method: 'GET',
@@ -152,16 +153,26 @@ async function getUser(context: UserContext) {
 
   if ('error_code' in user) throw new Error(user.message)
 
+  console.log('context.token "', context.token, '"')
+  console.log('cookie "', getCookie(COOKIE_NAME), '"')
+  console.log(
+    'localStorage.getItem(TOKEN_PERSIST_KEY) "',
+    localStorage?.getItem(TOKEN_PERSIST_KEY),
+    '"'
+  )
+
   return {
     user,
     token,
   }
 }
 
-function getCookie(cname: string): string {
+function getCookie(cname: string): string | null {
   if (isTauri()) {
-    return ''
+    return null
   }
+
+  console.log('cookies', Cookies.get())
 
   let name = cname + '='
   let decodedCookie = decodeURIComponent(document.cookie)
@@ -175,5 +186,5 @@ function getCookie(cname: string): string {
       return c.substring(name.length, c.length)
     }
   }
-  return ''
+  return null
 }

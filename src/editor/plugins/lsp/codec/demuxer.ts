@@ -4,6 +4,7 @@ import Bytes from './bytes'
 import PromiseMap from './map'
 import Queue from './queue'
 import Tracer from '../tracer'
+import { Codec } from '../codec'
 
 export default class StreamDemuxer extends Queue<Uint8Array> {
   readonly responses: PromiseMap<number | string, vsrpc.ResponseMessage> =
@@ -77,6 +78,22 @@ export default class StreamDemuxer extends Queue<Uint8Array> {
           continue
         }
       }
+    }
+  }
+
+  add(bytes: Uint8Array): void {
+    const message = Codec.decode(bytes) as vsrpc.Message
+    Tracer.server(message)
+
+    // demux the message stream
+    if (vsrpc.Message.isResponse(message) && null != message.id) {
+      this.responses.set(message.id, message)
+    }
+    if (vsrpc.Message.isNotification(message)) {
+      this.notifications.enqueue(message)
+    }
+    if (vsrpc.Message.isRequest(message)) {
+      this.requests.enqueue(message)
     }
   }
 }

@@ -6,6 +6,7 @@ import StreamDemuxer from './codec/demuxer'
 import Headers from './codec/headers'
 import Queue from './codec/queue'
 import Tracer from './tracer'
+import { LspWorkerEventType, LspWorker } from './types'
 
 export const encoder = new TextEncoder()
 export const decoder = new TextDecoder()
@@ -31,9 +32,26 @@ export class IntoServer
   extends Queue<Uint8Array>
   implements AsyncGenerator<Uint8Array, never, void>
 {
+  private worker: Worker | null = null
+  private type_: LspWorker | null = null
+  constructor(type_?: LspWorker, worker?: Worker) {
+    super()
+    if (worker && type_) {
+      this.worker = worker
+      this.type_ = type_
+    }
+  }
   enqueue(item: Uint8Array): void {
     Tracer.client(Headers.remove(decoder.decode(item)))
-    super.enqueue(item)
+    if (this.worker) {
+      this.worker.postMessage({
+        worker: this.type_,
+        eventType: LspWorkerEventType.Call,
+        eventData: item,
+      })
+    } else {
+      super.enqueue(item)
+    }
   }
 }
 
@@ -43,6 +61,8 @@ export interface FromServer extends WritableStream<Uint8Array> {
   }
   readonly notifications: AsyncGenerator<vsrpc.NotificationMessage, never, void>
   readonly requests: AsyncGenerator<vsrpc.RequestMessage, never, void>
+
+  add(item: Uint8Array): void
 }
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
