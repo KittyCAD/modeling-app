@@ -1,8 +1,11 @@
 import { Codec, FromServer, IntoServer } from 'editor/plugins/lsp/codec'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
-import { ServerConfig } from 'wasm-lib/pkg/wasm_lib'
+import init, {
+  ServerConfig,
+  copilot_lsp_run,
+  kcl_lsp_run,
+} from 'wasm-lib/pkg/wasm_lib'
 import * as jsrpc from 'json-rpc-2.0'
-import { copilotLspRun, initPromise, kclLspRun } from 'lang/wasm'
 import {
   LspWorkerEventType,
   LspWorkerEvent,
@@ -10,9 +13,67 @@ import {
   KclWorkerOptions,
   CopilotWorkerOptions,
 } from 'editor/plugins/lsp/types'
+import { EngineCommandManager } from 'lang/std/engineConnection'
 
 const intoServer: IntoServer = new IntoServer()
 const fromServer: FromServer = FromServer.create()
+
+export const wasmUrl = () => {
+  const baseUrl =
+    typeof window === 'undefined'
+      ? 'http://localhost:3000'
+      : window.location.origin.includes('tauri://localhost')
+      ? 'tauri://localhost' // custom protocol for macOS
+      : window.location.origin.includes('tauri.localhost')
+      ? 'http://tauri.localhost' // fallback for Windows
+      : window.location.origin.includes('localhost')
+      ? 'http://localhost:3000'
+      : window.location.origin && window.location.origin !== 'null'
+      ? window.location.origin
+      : 'http://localhost:3000'
+  const fullUrl = baseUrl + '/wasm_lib_bg.wasm'
+  console.log(`Worker full URL for WASM: ${fullUrl}`)
+
+  return fullUrl
+}
+
+// Initialise the wasm module.
+const initialise = async () => {
+  const fullUrl = wasmUrl()
+  const input = await fetch(fullUrl)
+  const buffer = await input.arrayBuffer()
+  return init(buffer)
+}
+
+export async function copilotLspRun(
+  config: ServerConfig,
+  token: string,
+  devMode: boolean = false
+) {
+  try {
+    console.log('starting copilot lsp')
+    await copilot_lsp_run(config, token, devMode)
+  } catch (e: any) {
+    console.log('copilot lsp failed', e)
+    // We can't restart here because a moved value, we should do this another way.
+  }
+}
+
+export async function kclLspRun(
+  config: ServerConfig,
+  engineCommandManager: EngineCommandManager | null,
+  token: string,
+  baseUnit: string,
+  devMode: boolean = false
+) {
+  try {
+    console.log('start kcl lsp')
+    await kcl_lsp_run(config, engineCommandManager, baseUnit, token, devMode)
+  } catch (e: any) {
+    console.log('kcl lsp failed', e)
+    // We can't restart here because a moved value, we should do this another way.
+  }
+}
 
 onmessage = function (event) {
   const { worker, eventType, eventData }: LspWorkerEvent = event.data
@@ -20,8 +81,9 @@ onmessage = function (event) {
 
   switch (eventType) {
     case LspWorkerEventType.Init:
-      initPromise
+      initialise()
         .then((instantiatedModule) => {
+          console.log('Worker: WASM module loaded', worker, instantiatedModule)
           const config = new ServerConfig(
             intoServer,
             fromServer,
