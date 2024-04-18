@@ -36,7 +36,6 @@ import {
 } from '@codemirror/language'
 import interact from '@replit/codemirror-interact'
 import { kclManager, editorManager, codeManager } from 'lib/singletons'
-import { useKclContext } from 'lang/KclProvider'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { isTauri } from 'lib/isTauri'
 import { useNavigate } from 'react-router-dom'
