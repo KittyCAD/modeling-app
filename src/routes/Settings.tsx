@@ -53,7 +53,9 @@ export const Settings = () => {
             .slice(0, decodeURI(location.pathname).lastIndexOf(sep()))
         )
       : undefined
-  const [settingsLevel, setSettingsLevel] = useState<SettingsLevel>('user')
+  const [settingsLevel, setSettingsLevel] = useState<SettingsLevel>(
+    isFileSettings ? 'project' : 'user'
+  )
   const scrollRef = useRef<HTMLDivElement>(null)
   const dotDotSlash = useDotDotSlash()
   useHotkeys('esc', () => navigate(dotDotSlash()))
