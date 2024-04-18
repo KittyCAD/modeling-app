@@ -407,6 +407,13 @@ export class SceneEntities {
           scale: factor,
           texture: sceneInfra.extraSegmentTexture,
         })
+        this.updateTangentialArcToSegment({
+          prevSegment: sketchGroup.value[index - 1],
+          from: segment.from,
+          to: segment.to,
+          group: seg,
+          scale: factor,
+        })
       } else {
         seg = straightSegment({
           from: segment.from,
@@ -417,6 +424,12 @@ export class SceneEntities {
           scale: factor,
           callExpName,
           texture: sceneInfra.extraSegmentTexture,
+        })
+        this.updateStraightSegment({
+          from: segment.from,
+          to: segment.to,
+          group: seg,
+          scale: factor,
         })
       }
       seg.layers.set(SKETCH_LAYER)
@@ -1579,6 +1592,14 @@ export class SceneEntities {
         }
       },
     }
+  }
+  resetOverlays() {
+    sceneInfra.modelingSend({
+      type: 'Set Segment Overlays',
+      data: {
+        type: 'clear',
+      },
+    })
   }
 }
 

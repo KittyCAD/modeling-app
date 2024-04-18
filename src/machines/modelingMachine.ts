@@ -562,6 +562,7 @@ export const modelingMachine = createMachine(
           'tear down client sketch',
           'remove sketch grid',
           'engineToClient cam sync direction',
+          'Reset Segment Overlays',
         ],
 
         entry: [
@@ -1101,6 +1102,7 @@ export const modelingMachine = createMachine(
           sketchDetails.origin
         )
       },
+      'Reset Segment Overlays': () => sceneEntitiesManager.resetOverlays(),
     },
     // end actions
   }
