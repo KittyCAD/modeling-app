@@ -467,6 +467,67 @@ test('Draft segments should look right', async ({ page, context }) => {
   })
 })
 
+test('Rectangles should look right', async ({ page, context }) => {
+  const u = getUtils(page)
+  await page.setViewportSize({ width: 1200, height: 500 })
+  const PUR = 400 / 37.5 //pixeltoUnitRatio
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await u.openDebugPanel()
+
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled()
+  await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
+
+  // click on "Start Sketch" button
+  await u.clearCommandLogs()
+  await u.doAndWaitForImageDiff(
+    () => page.getByRole('button', { name: 'Start Sketch' }).click(),
+    200
+  )
+
+  // select a plane
+  await page.mouse.click(700, 200)
+
+  await expect(page.locator('.cm-content')).toHaveText(
+    `const part001 = startSketchOn('-XZ')`
+  )
+
+  await page.waitForTimeout(300) // TODO detect animation ending, or disable animation
+
+  const startXPx = 600
+
+  // Equip the rectangle tool
+  await page.getByRole('button', { name: 'Line' }).click()
+  await page.getByRole('button', { name: 'Rectangle' }).click()
+
+  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 30)
+  await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
+  await page.waitForTimeout(100)
+
+  await u.closeDebugPanel()
+
+  await expect(page.locator('.cm-content')).toHaveText(
+    `const part001 = startSketchOn('-XZ')
+      |> startProfileAt([18.2, 5.98], %)
+      |> angledLine([180, 9.14], %, 'rectangleSegmentA001')
+      |> angledLine([
+          segAng('rectangleSegmentA001', %) + 90,
+          18.2
+        ], %, 'rectangleSegmentB001')
+      |> angledLine([
+          segAng('rectangleSegmentA001', %),
+          -segLen('rectangleSegmentA001', %)
+        ], %, 'rectangleSegmentC001')
+      |> close(%)`
+  )
+
+  await expect(page).toHaveScreenshot({
+    maxDiffPixels: 100,
+  })
+})
+
 test.describe('Client side scene scale should match engine scale', () => {
   test('Inch scale', async ({ page }) => {
     const u = getUtils(page)
