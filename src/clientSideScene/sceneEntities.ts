@@ -1186,19 +1186,29 @@ export class SceneEntities {
 
       const x = (vector.x * 0.5 + 0.5) * window.innerWidth
       const y = (-vector.y * 0.5 + 0.5) * window.innerHeight
-      sceneInfra.modelingSend({
-        type: 'Set Segment Overlays',
-        data: {
-          type: 'set-one',
-          pathToNodeString: JSON.stringify(group.userData.pathToNode),
-          seg: {
-            windowCoords: [x, y],
-            angle,
-            group,
-            pathToNode: group.userData.pathToNode,
+      if (isHandlesVisible) {
+        sceneInfra.modelingSend({
+          type: 'Set Segment Overlays',
+          data: {
+            type: 'set-one',
+            pathToNodeString: JSON.stringify(group.userData.pathToNode),
+            seg: {
+              windowCoords: [x, y],
+              angle,
+              group,
+              pathToNode: group.userData.pathToNode,
+            },
           },
-        },
-      })
+        })
+      } else {
+        sceneInfra.modelingSend({
+          type: 'Set Segment Overlays',
+          data: {
+            type: 'delete-one',
+            pathToNodeString: JSON.stringify(group.userData.pathToNode),
+          },
+        })
+      }
     }
   }
   throttledUpdateDashedArcGeo = throttle(
@@ -1311,19 +1321,29 @@ export class SceneEntities {
 
       const x = (vector.x * 0.5 + 0.5) * window.innerWidth
       const y = (-vector.y * 0.5 + 0.5) * window.innerHeight
-      sceneInfra.modelingSend({
-        type: 'Set Segment Overlays',
-        data: {
-          type: 'set-one',
-          pathToNodeString: JSON.stringify(group.userData.pathToNode),
-          seg: {
-            windowCoords: [x, y],
-            angle,
-            group,
-            pathToNode: group.userData.pathToNode,
+      if (isHandlesVisible) {
+        sceneInfra.modelingSend({
+          type: 'Set Segment Overlays',
+          data: {
+            type: 'set-one',
+            pathToNodeString: JSON.stringify(group.userData.pathToNode),
+            seg: {
+              windowCoords: [x, y],
+              angle,
+              group,
+              pathToNode: group.userData.pathToNode,
+            },
           },
-        },
-      })
+        })
+      } else {
+        sceneInfra.modelingSend({
+          type: 'Set Segment Overlays',
+          data: {
+            type: 'delete-one',
+            pathToNodeString: JSON.stringify(group.userData.pathToNode),
+          },
+        })
+      }
     }
   }
   async animateAfterSketch() {

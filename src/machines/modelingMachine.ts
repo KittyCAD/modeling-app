@@ -170,6 +170,10 @@ export type ModelingMachineEvent =
             pathToNodeString: string
             seg: SegmentOverlay
           }
+        | {
+            type: 'delete-one'
+            pathToNodeString: string
+          }
         | { type: 'clear' }
         | {
             type: 'set-many'

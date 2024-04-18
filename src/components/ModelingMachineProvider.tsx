@@ -129,6 +129,11 @@ export const ModelingMachineProvider = ({
                 ...segmentOverlays,
                 [data.pathToNodeString]: data.seg,
               }
+            if (data.type === 'delete-one') {
+              const copy = { ...segmentOverlays }
+              delete copy[data.pathToNodeString]
+              return copy
+            }
             // data.type === 'clear
             return {}
           },
