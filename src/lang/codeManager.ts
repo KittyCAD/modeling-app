@@ -75,6 +75,8 @@ export default class CodeManager {
       this._updateEditor(code)
     }
     this._updateEditor(code)
+    // we could call out to code mirror here versus react.
+    // cm.dispatch({changes: { from, to, insert: code }});
   }
 
   // Update the code, state, and the code the code mirror editor sees.

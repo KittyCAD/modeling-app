@@ -1,14 +1,9 @@
 import { useEffect } from 'react'
-import { useStore } from 'useStore'
-import { engineCommandManager } from 'lib/singletons'
+import { editorManager, engineCommandManager } from 'lib/singletons'
 import { useModelingContext } from './useModelingContext'
 import { getEventForSelectWithPoint } from 'lib/selections'
 
 export function useEngineConnectionSubscriptions() {
-  const { setHighlightRange, highlightRange } = useStore((s) => ({
-    setHighlightRange: s.setHighlightRange,
-    highlightRange: s.highlightRange,
-  }))
   const { send, context } = useModelingContext()
 
   useEffect(() => {
@@ -21,12 +16,13 @@ export function useEngineConnectionSubscriptions() {
         if (data?.entity_id) {
           const sourceRange =
             engineCommandManager.artifactMap?.[data.entity_id]?.range
-          setHighlightRange(sourceRange)
+          editorManager.setHighlightRange(sourceRange)
         } else if (
-          !highlightRange ||
-          (highlightRange[0] !== 0 && highlightRange[1] !== 0)
+          !editorManager.highlightRange ||
+          (editorManager.highlightRange[0] !== 0 &&
+            editorManager.highlightRange[1] !== 0)
         ) {
-          setHighlightRange([0, 0])
+          editorManager.setHighlightRange([0, 0])
         }
       },
     })
@@ -43,10 +39,5 @@ export function useEngineConnectionSubscriptions() {
       unSubHover()
       unSubClick()
     }
-  }, [
-    engineCommandManager,
-    setHighlightRange,
-    highlightRange,
-    context?.sketchEnginePathId,
-  ])
+  }, [engineCommandManager, context?.sketchEnginePathId])
 }
