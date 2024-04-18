@@ -6,7 +6,7 @@ import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { ARROWHEAD, DEBUG_SHOW_BOTH_SCENES } from './sceneInfra'
 import { ReactCameraProperties } from './CameraControls'
 import { throttle } from 'lib/utils'
-import { sceneInfra, kclManager } from 'lib/singletons'
+import { sceneInfra, kclManager, codeManager } from 'lib/singletons'
 import {
   EXTRA_SEGMENT_HANDLE,
   PROFILE_START,
@@ -148,7 +148,7 @@ const Overlay = ({ overlay }: { overlay: SegmentOverlay }) => {
     overlay.pathToNode,
     'CallExpression'
   ).node
-  const constraints = getConstraintInfo(callExpression)
+  const constraints = getConstraintInfo(callExpression, codeManager.code)
 
   const offset = 20 // px
   // We could put a boolean in settings that

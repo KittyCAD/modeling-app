@@ -11,16 +11,16 @@ import {
   Value,
   Literal,
   VariableDeclaration,
-} from '../wasm'
+} from 'lang/wasm'
 import {
   getNodeFromPath,
   getNodeFromPathCurry,
   getNodePathFromSourceRange,
-} from '../queryAst'
+} from 'lang/queryAst'
 import {
   isLiteralArrayOrStatic,
   isNotLiteralArrayOrStatic,
-} from './sketchcombos'
+} from 'lang/std/sketchcombos'
 import { toolTips, ToolTip } from '../../useStore'
 import { createPipeExpression, splitPathAtPipeExpression } from '../modifyAst'
 
@@ -29,7 +29,7 @@ import {
   ModifyAstBase,
   TransformCallback,
   ConstrainInfo,
-} from './stdTypes'
+} from 'lang/std/stdTypes'
 
 import {
   createLiteral,
@@ -40,10 +40,9 @@ import {
   mutateArrExp,
   mutateObjExpProp,
   findUniqueName,
-} from '../modifyAst'
-import { roundOff, getLength, getAngle } from '../../lib/utils'
+} from 'lang/modifyAst'
+import { roundOff, getLength, getAngle } from 'lib/utils'
 import { perpendicularDistance } from 'sketch-helpers'
-import { kclManager } from 'lib/singletons'
 
 export type Coords2d = [number, number]
 
@@ -103,7 +102,8 @@ const constrainInfo = (
 
 const commonConstraintInfoHelper = (
   callExp: CallExpression,
-  inputConstrainTypes: [ConstrainInfo['type'], ConstrainInfo['type']]
+  inputConstrainTypes: [ConstrainInfo['type'], ConstrainInfo['type']],
+  code: string
 ) => {
   if (callExp.type !== 'CallExpression') return []
   const firstArg = callExp.arguments?.[0]
@@ -116,8 +116,8 @@ const commonConstraintInfoHelper = (
     firstArg.elements[1].start,
     firstArg.elements[1].end,
   ]
-  const val1 = kclManager.code.slice(sourceRange1[0], sourceRange1[1])
-  const val2 = kclManager.code.slice(sourceRange2[0], sourceRange2[1])
+  const val1 = code.slice(sourceRange1[0], sourceRange1[1])
+  const val2 = code.slice(sourceRange2[0], sourceRange2[1])
   return [
     constrainInfo(
       inputConstrainTypes[0],
@@ -136,16 +136,23 @@ const commonConstraintInfoHelper = (
 
 const horzVertConstraintInfoHelper = (
   callExp: CallExpression,
-  inputConstrainTypes: [ConstrainInfo['type'], ConstrainInfo['type']]
+  inputConstrainTypes: [ConstrainInfo['type'], ConstrainInfo['type']],
+  code: string
 ) => {
   if (callExp.type !== 'CallExpression') return []
   const firstArg = callExp.arguments?.[0]
   if (firstArg.type !== 'ArrayExpression') return []
+  const callee = callExp.callee
   return [
-    constrainInfo(inputConstrainTypes[0], true),
+    constrainInfo(inputConstrainTypes[0], true, callee.name, [
+      callee.start,
+      callee.end,
+    ]),
     constrainInfo(
       inputConstrainTypes[1],
-      isNotLiteralArrayOrStatic(callExp.arguments?.[0])
+      isNotLiteralArrayOrStatic(callExp.arguments?.[0]),
+      code.slice(firstArg.start, firstArg.end),
+      [firstArg.start, firstArg.end]
     ),
   ]
 }
@@ -215,8 +222,8 @@ export const lineTo: SketchLineHelper = {
     }
   },
   addTag: addTag(),
-  getConstraintInfo: (callExp) =>
-    commonConstraintInfoHelper(callExp, ['xAbsolute', 'yAbsolute']),
+  getConstraintInfo: (callExp, code) =>
+    commonConstraintInfoHelper(callExp, ['xAbsolute', 'yAbsolute'], code),
 }
 
 export const line: SketchLineHelper = {
@@ -333,8 +340,8 @@ export const line: SketchLineHelper = {
     }
   },
   addTag: addTag(),
-  getConstraintInfo: (callExp) =>
-    commonConstraintInfoHelper(callExp, ['xRelative', 'yRelative']),
+  getConstraintInfo: (callExp, code) =>
+    commonConstraintInfoHelper(callExp, ['xRelative', 'yRelative'], code),
 }
 
 export const xLineTo: SketchLineHelper = {
@@ -383,8 +390,8 @@ export const xLineTo: SketchLineHelper = {
     }
   },
   addTag: addTag(),
-  getConstraintInfo: (callExp) =>
-    horzVertConstraintInfoHelper(callExp, ['horizontal', 'xAbsolute']),
+  getConstraintInfo: (callExp, code) =>
+    horzVertConstraintInfoHelper(callExp, ['horizontal', 'xAbsolute'], code),
 }
 
 export const yLineTo: SketchLineHelper = {
@@ -433,8 +440,8 @@ export const yLineTo: SketchLineHelper = {
     }
   },
   addTag: addTag(),
-  getConstraintInfo: (callExp) =>
-    horzVertConstraintInfoHelper(callExp, ['vertical', 'yAbsolute']),
+  getConstraintInfo: (callExp, code) =>
+    horzVertConstraintInfoHelper(callExp, ['vertical', 'yAbsolute'], code),
 }
 
 export const xLine: SketchLineHelper = {
@@ -485,8 +492,8 @@ export const xLine: SketchLineHelper = {
     }
   },
   addTag: addTag(),
-  getConstraintInfo: (callExp) =>
-    horzVertConstraintInfoHelper(callExp, ['horizontal', 'xRelative']),
+  getConstraintInfo: (callExp, code) =>
+    horzVertConstraintInfoHelper(callExp, ['horizontal', 'xRelative'], code),
 }
 
 export const yLine: SketchLineHelper = {
@@ -531,8 +538,8 @@ export const yLine: SketchLineHelper = {
     }
   },
   addTag: addTag(),
-  getConstraintInfo: (callExp) =>
-    horzVertConstraintInfoHelper(callExp, ['vertical', 'yRelative']),
+  getConstraintInfo: (callExp, code) =>
+    horzVertConstraintInfoHelper(callExp, ['vertical', 'yRelative'], code),
 }
 
 export const tangentialArcTo: SketchLineHelper = {
@@ -612,19 +619,27 @@ export const tangentialArcTo: SketchLineHelper = {
     }
   },
   addTag: addTag(),
-  getConstraintInfo: (callExp: CallExpression) => {
+  getConstraintInfo: (callExp: CallExpression, code) => {
     if (callExp.type !== 'CallExpression') return []
     const firstArg = callExp.arguments?.[0]
     if (firstArg.type !== 'ArrayExpression') return []
+    const callee = callExp.callee
     return [
-      constrainInfo('tangentialWithPrevious', true),
+      constrainInfo('tangentialWithPrevious', true, callee.name, [
+        callee.start,
+        callee.end,
+      ]),
       constrainInfo(
         'xAbsolute',
-        isNotLiteralArrayOrStatic(firstArg.elements[0])
+        isNotLiteralArrayOrStatic(firstArg.elements[0]),
+        code.slice(firstArg.elements[0].start, firstArg.elements[0].end),
+        [firstArg.elements[0].start, firstArg.elements[0].end]
       ),
       constrainInfo(
         'yAbsolute',
-        isNotLiteralArrayOrStatic(firstArg.elements[1])
+        isNotLiteralArrayOrStatic(firstArg.elements[1]),
+        code.slice(firstArg.elements[1].start, firstArg.elements[1].end),
+        [firstArg.elements[1].start, firstArg.elements[1].end]
       ),
     ]
   },
@@ -694,8 +709,8 @@ export const angledLine: SketchLineHelper = {
     }
   },
   addTag: addTag(),
-  getConstraintInfo: (callExp) =>
-    commonConstraintInfoHelper(callExp, ['angle', 'length']),
+  getConstraintInfo: (callExp, code) =>
+    commonConstraintInfoHelper(callExp, ['angle', 'length'], code),
 }
 
 export const angledLineOfXLength: SketchLineHelper = {
@@ -769,8 +784,8 @@ export const angledLineOfXLength: SketchLineHelper = {
     }
   },
   addTag: addTag(),
-  getConstraintInfo: (callExp) =>
-    commonConstraintInfoHelper(callExp, ['angle', 'xRelative']),
+  getConstraintInfo: (callExp, code) =>
+    commonConstraintInfoHelper(callExp, ['angle', 'xRelative'], code),
 }
 
 export const angledLineOfYLength: SketchLineHelper = {
@@ -845,8 +860,8 @@ export const angledLineOfYLength: SketchLineHelper = {
     }
   },
   addTag: addTag(),
-  getConstraintInfo: (callExp) =>
-    commonConstraintInfoHelper(callExp, ['angle', 'yRelative']),
+  getConstraintInfo: (callExp, code) =>
+    commonConstraintInfoHelper(callExp, ['angle', 'yRelative'], code),
 }
 
 export const angledLineToX: SketchLineHelper = {
@@ -916,8 +931,8 @@ export const angledLineToX: SketchLineHelper = {
     }
   },
   addTag: addTag(),
-  getConstraintInfo: (callExp) =>
-    commonConstraintInfoHelper(callExp, ['angle', 'xAbsolute']),
+  getConstraintInfo: (callExp, code) =>
+    commonConstraintInfoHelper(callExp, ['angle', 'xAbsolute'], code),
 }
 
 export const angledLineToY: SketchLineHelper = {
@@ -988,8 +1003,8 @@ export const angledLineToY: SketchLineHelper = {
     }
   },
   addTag: addTag(),
-  getConstraintInfo: (callExp) =>
-    commonConstraintInfoHelper(callExp, ['angle', 'yAbsolute']),
+  getConstraintInfo: (callExp, code) =>
+    commonConstraintInfoHelper(callExp, ['angle', 'yAbsolute'], code),
 }
 
 export const angledLineThatIntersects: SketchLineHelper = {
@@ -1079,7 +1094,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
     }
   },
   addTag: addTag(),
-  getConstraintInfo: (callExp: CallExpression) => {
+  getConstraintInfo: (callExp: CallExpression, code) => {
     if (callExp.type !== 'CallExpression') return []
     const firstArg = callExp.arguments?.[0]
     if (firstArg.type !== 'ObjectExpression') return []
@@ -1089,10 +1104,22 @@ export const angledLineThatIntersects: SketchLineHelper = {
     )?.value
     const returnVal = []
     angle &&
-      returnVal.push(constrainInfo('angle', isNotLiteralArrayOrStatic(angle)))
+      returnVal.push(
+        constrainInfo(
+          'angle',
+          isNotLiteralArrayOrStatic(angle),
+          code.slice(angle.start, angle.end),
+          [angle.start, angle.end]
+        )
+      )
     offset &&
       returnVal.push(
-        constrainInfo('intersectionOffset', isNotLiteralArrayOrStatic(offset))
+        constrainInfo(
+          'intersectionOffset',
+          isNotLiteralArrayOrStatic(offset),
+          code.slice(offset.start, offset.end),
+          [offset.start, offset.end]
+        )
       )
     return returnVal
   },
@@ -1168,11 +1195,12 @@ export function changeSketchArguments(
 }
 
 export function getConstraintInfo(
-  callExpression: CallExpression
+  callExpression: CallExpression,
+  code: string
 ): ConstrainInfo[] {
   const fnName = callExpression?.callee?.name || ''
   if (!(fnName in sketchLineHelperMap)) return []
-  return sketchLineHelperMap[fnName].getConstraintInfo(callExpression)
+  return sketchLineHelperMap[fnName].getConstraintInfo(callExpression, code)
 }
 
 export function compareVec2Epsilon(

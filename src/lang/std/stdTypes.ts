@@ -76,5 +76,5 @@ export interface SketchLineHelper {
     modifiedAst: Program
     tag: string
   }
-  getConstraintInfo: (callExp: CallExpression) => ConstrainInfo[]
+  getConstraintInfo: (callExp: CallExpression, code: string) => ConstrainInfo[]
 }
