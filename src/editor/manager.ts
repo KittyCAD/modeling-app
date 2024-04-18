@@ -9,7 +9,6 @@ import { CommandBarMachineEvent } from 'machines/commandBarMachine'
 import { addLineHighlight } from './highlightextension'
 import { setDiagnostics, Diagnostic } from '@codemirror/lint'
 
-// TODO: move highlight out of use store.
 export default class EditorManager {
   private _editorView: EditorView | null = null
 
