@@ -336,11 +336,13 @@ const part001 = startSketchOn('-XZ')
   }
 })
 
-test('extrude on each default plane should be stable', async ({
-  page,
-  context,
-}) => {
-  const runSnapshotsForOtherPlanes = async (plane = 'XY') => {
+const defaultPlanes = ['XY', 'XZ', 'YZ', '-XY', '-XZ', '-YZ']
+
+for (const plane of defaultPlanes) {
+  test('extrude on default plane ${plane} should be stable', async ({
+    page,
+    context,
+  }) => {
     await context.addInitScript(async () => {
       localStorage.setItem(
         'SETTINGS_PERSIST_KEY',
@@ -357,10 +359,8 @@ test('extrude on each default plane should be stable', async ({
         })
       )
     })
-    const u = getUtils(page)
-    const makeCode = (
-      plane = 'XY'
-    ) => `const part001 = startSketchOn('${plane}')
+
+    const code = `const part001 = startSketchOn('${plane}')
   |> startProfileAt([7.00, 4.40], %)
   |> line([6.60, -0.20], %)
   |> line([2.80, 5.00], %)
@@ -369,10 +369,11 @@ test('extrude on each default plane should be stable', async ({
   |> close(%)
   |> extrude(10.00, %)
 `
-    await page.addInitScript(async (code) => {
+    await page.addInitScript(async () => {
       localStorage.setItem('persistCode', code)
-    }, makeCode('XY'))
+    })
 
+    const u = getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     await page.goto('/')
     await u.waitForAuthSkipAppStart()
@@ -384,10 +385,9 @@ test('extrude on each default plane should be stable', async ({
     await page.waitForTimeout(200)
     // clear code
     await u.removeCurrentCode()
-    // add makeCode('XZ')
     await u.openAndClearDebugPanel()
     await u.doAndWaitForImageDiff(
-      () => page.locator('.cm-content').fill(makeCode(plane)),
+      () => page.locator('.cm-content').fill(code),
       200
     )
     // wait for execution done
@@ -399,16 +399,8 @@ test('extrude on each default plane should be stable', async ({
       maxDiffPixels: 100,
     })
     await u.openKclCodePanel()
-  }
-  await runSnapshotsForOtherPlanes('XY')
-  await runSnapshotsForOtherPlanes('-XY')
-
-  await runSnapshotsForOtherPlanes('XZ')
-  await runSnapshotsForOtherPlanes('-XZ')
-
-  await runSnapshotsForOtherPlanes('YZ')
-  await runSnapshotsForOtherPlanes('-YZ')
-})
+  })
+}
 
 test('Draft segments should look right', async ({ page, context }) => {
   const u = getUtils(page)
