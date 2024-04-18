@@ -928,7 +928,7 @@ export class EngineCommandManager {
     makeDefaultPlanes,
     settings = {
       theme: Themes.Dark,
-      highlightEdges: true
+      highlightEdges: true,
     },
   }: {
     setMediaStream: (stream: MediaStream) => void
