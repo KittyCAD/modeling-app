@@ -76,6 +76,7 @@ import {
   createLiteral,
   createPipeExpression,
   createPipeSubstitution,
+  findUniqueName,
 } from 'lang/modifyAst'
 import {
   getEventForSegmentSelection,
@@ -87,7 +88,6 @@ import { Models } from '@kittycad/lib'
 import { uuidv4 } from 'lib/utils'
 import { SketchDetails } from 'machines/modelingMachine'
 import { EngineCommandManager } from 'lang/std/engineConnection'
-import { generateKclTag } from 'lib/generateKclTag'
 import {
   getRectangleCallExpressions,
   updateRectangleSketch,
@@ -607,9 +607,9 @@ export class SceneEntities {
       )?.node?.declarations?.[0]?.id?.name || ''
 
     const tags: [string, string, string] = [
-      generateKclTag(),
-      generateKclTag(),
-      generateKclTag(),
+      findUniqueName(_ast, 'rectangleSegmentA'),
+      findUniqueName(_ast, 'rectangleSegmentB'),
+      findUniqueName(_ast, 'rectangleSegmentC'),
     ]
 
     const startSketchOn = getNodeFromPath<VariableDeclaration>(
