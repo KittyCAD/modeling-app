@@ -175,10 +175,6 @@ export const ModelingMachineProvider = ({
               )
             updateSceneObjectColors()
 
-            // Set it for the code editor.
-            // We do this so we don't have to refresh the code editor
-            // when we change the Selections.
-            editorManager.selectionRanges = selections
             return {
               selectionRanges: selections,
             }
@@ -516,6 +512,7 @@ export const ModelingMachineProvider = ({
     })
   }, [modelingSend])
 
+    // Give the state back to the editorManager.
   useEffect(() => {
     editorManager.modelingSend = modelingSend
   }, [modelingSend])
@@ -523,6 +520,10 @@ export const ModelingMachineProvider = ({
   useEffect(() => {
     editorManager.modelingEvent = modelingState.event
   }, [modelingState.event])
+
+  useEffect(() => {
+    editorManager.selectionRanges = modelingState.context.selectionRanges
+  }, [modelingState.context.selectionRanges])
 
   useStateMachineCommands({
     machineId: 'modeling',
