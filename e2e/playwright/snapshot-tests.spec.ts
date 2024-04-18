@@ -340,24 +340,27 @@ test('extrude on each default plane should be stable', async ({
   page,
   context,
 }) => {
-  await context.addInitScript(async () => {
-    localStorage.setItem(
-      'SETTINGS_PERSIST_KEY',
-      JSON.stringify({
-        baseUnit: 'in',
-        cameraControls: 'KittyCAD',
-        defaultDirectory: '',
-        defaultProjectName: 'project-$nnn',
-        onboardingStatus: 'dismissed',
-        showDebugPanel: true,
-        textWrapping: 'On',
-        theme: 'dark',
-        unitSystem: 'imperial',
-      })
-    )
-  })
-  const u = getUtils(page)
-  const makeCode = (plane = 'XY') => `const part001 = startSketchOn('${plane}')
+  const runSnapshotsForOtherPlanes = async (plane = 'XY') => {
+    await context.addInitScript(async () => {
+      localStorage.setItem(
+        'SETTINGS_PERSIST_KEY',
+        JSON.stringify({
+          baseUnit: 'in',
+          cameraControls: 'KittyCAD',
+          defaultDirectory: '',
+          defaultProjectName: 'project-$nnn',
+          onboardingStatus: 'dismissed',
+          showDebugPanel: true,
+          textWrapping: 'On',
+          theme: 'dark',
+          unitSystem: 'imperial',
+        })
+      )
+    })
+    const u = getUtils(page)
+    const makeCode = (
+      plane = 'XY'
+    ) => `const part001 = startSketchOn('${plane}')
   |> startProfileAt([7.00, 4.40], %)
   |> line([6.60, -0.20], %)
   |> line([2.80, 5.00], %)
@@ -366,20 +369,19 @@ test('extrude on each default plane should be stable', async ({
   |> close(%)
   |> extrude(10.00, %)
 `
-  await context.addInitScript(async (code) => {
-    localStorage.setItem('persistCode', code)
-  }, makeCode('XY'))
-  await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
-  await u.waitForAuthSkipAppStart()
+    await page.addInitScript(async (code) => {
+      localStorage.setItem('persistCode', code)
+    }, makeCode('XY'))
 
-  // wait for execution done
-  await u.openDebugPanel()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-  await u.clearAndCloseDebugPanel()
-  await page.waitForTimeout(200)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
 
-  const runSnapshotsForOtherPlanes = async (plane = 'XY') => {
+    // wait for execution done
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.clearAndCloseDebugPanel()
+    await page.waitForTimeout(200)
     // clear code
     await u.removeCurrentCode()
     // add makeCode('XZ')
