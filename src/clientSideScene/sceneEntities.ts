@@ -364,7 +364,6 @@ export class SceneEntities {
     this.activeSegments[JSON.stringify(segPathToNode)] = _profileStart
 
     sketchGroup.value.forEach((segment, index) => {
-      // problem here
       let segPathToNode = getNodePathFromSourceRange(
         kclManager.ast,
         segment.__geoMeta.sourceRange
@@ -376,7 +375,7 @@ export class SceneEntities {
         const previousSegment =
           sketchGroup.value[index - 1] || sketchGroup.start
         const previousSegmentPathToNode = getNodePathFromSourceRange(
-          maybeModdedAst,
+          kclManager.ast,
           previousSegment.__geoMeta.sourceRange
         )
         const bodyIndex = previousSegmentPathToNode[1][0]
@@ -712,7 +711,7 @@ export class SceneEntities {
           })
 
           // Update the primary AST and unequip the rectangle tool
-          await kclManager.executeAstMock(_ast, { updates: 'code' })
+          await kclManager.executeAstMock(_ast)
           sceneInfra.modelingSend({ type: 'CancelSketch' })
 
           const { programMemory } = await executeAst({
@@ -722,6 +721,7 @@ export class SceneEntities {
             programMemoryOverride,
           })
 
+          // Prepare to update the THREEjs scene
           this.sceneProgramMemory = programMemory
           const sketchGroup = programMemory.root[
             variableDeclarationName
@@ -729,6 +729,7 @@ export class SceneEntities {
           const sgPaths = sketchGroup.value
           const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
+          // Update the starting segment of the THREEjs scene
           this.updateSegment(
             sketchGroup.start,
             0,
@@ -737,6 +738,7 @@ export class SceneEntities {
             orthoFactor,
             sketchGroup
           )
+          // Update the rest of the segments of the THREEjs scene
           sgPaths.forEach((seg, index) =>
             this.updateSegment(seg, index, 0, _ast, orthoFactor, sketchGroup)
           )
@@ -996,6 +998,16 @@ export class SceneEntities {
     })()
   }
 
+  /**
+   * Update the THREEjs sketch entities with new segment data
+   * mapping them back to the AST
+   * @param segment
+   * @param index
+   * @param varDecIndex
+   * @param modifiedAst
+   * @param orthoFactor
+   * @param sketchGroup
+   */
   updateSegment = (
     segment: Path | SketchGroup['start'],
     index: number,
@@ -1167,7 +1179,6 @@ export class SceneEntities {
   }) {
     group.userData.from = from
     group.userData.to = to
-
     const shape = new Shape()
     shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale) // The width of the line in px (2.4px in this case)
     shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale)

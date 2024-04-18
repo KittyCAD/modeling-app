@@ -514,12 +514,14 @@ test('Rectangles should look right', async ({ page, context }) => {
   await page.getByRole('button', { name: 'Line' }).click()
   await page.getByRole('button', { name: 'Rectangle' }).click()
 
+  // Draw the rectangle
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 30)
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   await page.waitForTimeout(100)
 
   await u.closeDebugPanel()
 
+  // Ensure the rectangle is drawn by checking the KCL code
   await expect(page.locator('.cm-content')).toHaveText(
     `const part001 = startSketchOn('-XZ')
       |> startProfileAt([18.2, 5.98], %)
