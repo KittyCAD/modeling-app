@@ -10,8 +10,10 @@ export function useSetupEngineManager(
   token?: string,
   settings = {
     theme: Themes.System,
+    highlightEdges: true,
   } as {
     theme: Themes
+    highlightEdges: boolean
   }
 ) {
   const {

@@ -928,6 +928,7 @@ export class EngineCommandManager {
     makeDefaultPlanes,
     settings = {
       theme: Themes.Dark,
+      highlightEdges: true
     },
   }: {
     setMediaStream: (stream: MediaStream) => void
@@ -939,6 +940,7 @@ export class EngineCommandManager {
     makeDefaultPlanes: () => Promise<DefaultPlanes>
     settings?: {
       theme: Themes
+      highlightEdges: boolean
     }
   }) {
     this.makeDefaultPlanes = makeDefaultPlanes
@@ -975,14 +977,15 @@ export class EngineCommandManager {
             color: getThemeColorForEngine(settings.theme),
           },
         })
-        // this.sendSceneCommand({
-        //   type: 'modeling_cmd_req',
-        //   cmd_id: uuidv4(),
-        //   cmd: {
-        //     type: 'edge_lines_visible' as any, // TODO: update kittycad.ts to use the correct type
-        //     hidden: !settings.highlightEdges,
-        //   },
-        // })
+        // Set the edge lines visibility
+        this.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'edge_lines_visible' as any, // TODO: update kittycad.ts to use the correct type
+            hidden: !settings.highlightEdges,
+          },
+        })
 
         // Make the axis gizmo.
         // We do this after the connection opened to avoid a race condition.

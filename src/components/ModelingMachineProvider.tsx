@@ -82,7 +82,7 @@ export const ModelingMachineProvider = ({
   const streamRef = useRef<HTMLDivElement>(null)
   useSetupEngineManager(streamRef, token, {
     theme: theme.current,
-    // highlightEdges: highlightEdges.current,
+    highlightEdges: highlightEdges.current,
   })
   const { htmlRef } = useStore((s) => ({
     htmlRef: s.htmlRef,
