@@ -347,7 +347,7 @@ export class SceneEntities {
       sceneInfra._baseUnitMultiplier
 
     const segPathToNode = getNodePathFromSourceRange(
-      kclManager.ast,
+      maybeModdedAst,
       sketchGroup.start.__geoMeta.sourceRange
     )
     const _profileStart = profileStart({
@@ -365,7 +365,7 @@ export class SceneEntities {
 
     sketchGroup.value.forEach((segment, index) => {
       let segPathToNode = getNodePathFromSourceRange(
-        kclManager.ast,
+        maybeModdedAst,
         segment.__geoMeta.sourceRange
       )
       if (
@@ -375,7 +375,7 @@ export class SceneEntities {
         const previousSegment =
           sketchGroup.value[index - 1] || sketchGroup.start
         const previousSegmentPathToNode = getNodePathFromSourceRange(
-          kclManager.ast,
+          maybeModdedAst,
           previousSegment.__geoMeta.sourceRange
         )
         const bodyIndex = previousSegmentPathToNode[1][0]
@@ -391,7 +391,7 @@ export class SceneEntities {
         index >= draftExpressionsIndices.start
       let seg
       const callExpName = getNodeFromPath<CallExpression>(
-        kclManager.ast,
+        maybeModdedAst,
         segPathToNode,
         'CallExpression'
       )?.node?.callee?.name
