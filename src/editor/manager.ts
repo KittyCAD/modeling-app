@@ -1,6 +1,6 @@
 import { hasNextSnippetField } from '@codemirror/autocomplete'
 import { EditorView, ViewUpdate } from '@codemirror/view'
-import { SelectionRange } from '@codemirror/state'
+import { EditorSelection, SelectionRange } from '@codemirror/state'
 import { engineCommandManager, sceneInfra } from 'lib/singletons'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { Selections, processCodeMirrorRanges, Selection } from 'lib/selections'
@@ -118,6 +118,32 @@ export default class EditorManager {
       return true
     }
     return false
+  }
+
+  selectRange(selections: Selections) {
+    if (selections.codeBasedSelections.length === 0) {
+      return
+    }
+    if (!this.editorView) {
+      return
+    }
+    let codeBasedSelections = []
+    for (const selection of selections.codeBasedSelections) {
+      codeBasedSelections.push(
+        EditorSelection.range(selection.range[0], selection.range[1])
+      )
+    }
+
+    codeBasedSelections.push(
+      EditorSelection.cursor(
+        selections.codeBasedSelections[
+          selections.codeBasedSelections.length - 1
+        ].range[1]
+      )
+    )
+    this.editorView.dispatch({
+      selection: EditorSelection.create(codeBasedSelections, 1),
+    })
   }
 
   handleOnViewUpdate(viewUpdate: ViewUpdate): void {

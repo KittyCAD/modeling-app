@@ -7,6 +7,7 @@ import {
   sceneInfra,
   sceneEntitiesManager,
   engineCommandManager,
+  editorManager,
 } from 'lib/singletons'
 import {
   horzVertInfo,
@@ -800,7 +801,7 @@ export const modelingMachine = createMachine(
           sketchDetails.origin
         )
       },
-      'AST extrude': (_, event) => {
+      'AST extrude': async (_, event) => {
         if (!event.data) return
         const { selection, distance } = event.data
         let ast = kclManager.ast
@@ -829,10 +830,10 @@ export const modelingMachine = createMachine(
             ? distance.variableIdentifierAst
             : distance.valueAst
         )
-        // TODO not handling focusPath correctly I think
-        kclManager.updateAst(modifiedAst, true, {
+        const selections = await kclManager.updateAst(modifiedAst, true, {
           focusPath: pathToExtrudeArg,
         })
+        editorManager.selectRange(selections)
       },
       'conditionally equip line tool': (_, { type }) => {
         if (type === 'done.invoke.animate-to-face') {
