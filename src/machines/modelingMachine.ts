@@ -833,7 +833,9 @@ export const modelingMachine = createMachine(
         const selections = await kclManager.updateAst(modifiedAst, true, {
           focusPath: pathToExtrudeArg,
         })
-        editorManager.selectRange(selections)
+        if (selections) {
+          editorManager.selectRange(selections)
+        }
       },
       'conditionally equip line tool': (_, { type }) => {
         if (type === 'done.invoke.animate-to-face') {

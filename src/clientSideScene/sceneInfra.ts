@@ -149,10 +149,6 @@ export class SceneInfra {
       onMouseLeave: () => {},
     })
   }
-  highlightCallback: (a: SourceRange) => void = () => {}
-  setHighlightCallback(cb: (a: SourceRange) => void) {
-    this.highlightCallback = cb
-  }
 
   modelingSend: SendType = (() => {}) as any
   setSend(send: SendType) {
