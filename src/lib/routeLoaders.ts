@@ -22,7 +22,7 @@ import {
 import makeUrlPathRelative from './makeUrlPathRelative'
 import { join, sep } from '@tauri-apps/api/path'
 import { readTextFile, stat } from '@tauri-apps/plugin-fs'
-import { kclManager } from 'lib/singletons'
+import { codeManager, kclManager } from 'lib/singletons'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import { invoke } from '@tauri-apps/api/core'
 
@@ -100,7 +100,9 @@ export const fileLoader: LoaderFunction = async ({
     const children = await invoke<FileEntry[]>('read_dir_recursive', {
       path: projectPath,
     })
-    kclManager.setCodeAndExecute(code, false)
+    // Update both the state and the editor's code.
+    codeManager.updateCodeStateEditor(code)
+    kclManager.executeCode(true)
 
     // Set the file system manager to the project path
     // So that WASM gets an updated path for operations

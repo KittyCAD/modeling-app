@@ -18,7 +18,7 @@ import { isTauri } from 'lib/isTauri'
 import { useNavigate } from 'react-router-dom'
 import { paths } from 'lib/paths'
 import { useEffect } from 'react'
-import { kclManager } from 'lib/singletons'
+import { codeManager, kclManager } from 'lib/singletons'
 import { join } from '@tauri-apps/api/path'
 import { APP_NAME, PROJECT_ENTRYPOINT } from 'lib/constants'
 
@@ -70,7 +70,9 @@ function OnboardingWithNewFile() {
               className="mt-6"
               dismiss={dismiss}
               next={() => {
-                kclManager.setCodeAndExecute(bracket)
+                // We do want to update both the state and editor here.
+                codeManager.updateCodeStateEditor(bracket)
+                kclManager.executeCode(true)
                 next()
               }}
               nextText="Overwrite code and continue"
@@ -93,7 +95,7 @@ function OnboardingWithNewFile() {
               dismiss={dismiss}
               next={() => {
                 void createAndOpenNewProject()
-                kclManager.setCode(bracket, false)
+                codeManager.updateCodeStateEditor(bracket)
                 dismiss()
               }}
               nextText="Make a new project"
@@ -122,10 +124,11 @@ export default function Introduction() {
       : ''
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.CAMERA)
-  const isStarterCode = kclManager.code === '' || kclManager.code === bracket
+  const currentCode = codeManager.code
+  const isStarterCode = currentCode === '' || currentCode === bracket
 
   useEffect(() => {
-    if (kclManager.code === '') kclManager.setCode(bracket)
+    if (codeManager.code === '') codeManager.updateCodeStateEditor(bracket)
   }, [])
 
   return isStarterCode ? (

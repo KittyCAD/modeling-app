@@ -2,7 +2,6 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { addLineHighlight, EditorView } from './editor/highlightextension'
 import {
-  parse,
   Program,
   _executor,
   ProgramMemory,
@@ -175,74 +174,6 @@ export const useStore = create<StoreState>()(
   )
 )
 
-export async function executeCode({
-  engineCommandManager,
-  code,
-  lastAst,
-  force,
-}: {
-  code: string
-  lastAst: Program
-  engineCommandManager: EngineCommandManager
-  force?: boolean
-}): Promise<
-  | {
-      logs: string[]
-      errors: KCLError[]
-      programMemory: ProgramMemory
-      ast: Program
-      isChange: true
-    }
-  | { isChange: false }
-> {
-  let ast: Program
-  try {
-    ast = parse(code)
-  } catch (e) {
-    let errors: KCLError[] = []
-    let logs: string[] = [JSON.stringify(e)]
-    if (e instanceof KCLError) {
-      errors = [e]
-      logs = []
-      if (e.msg === 'file is empty') engineCommandManager.endSession()
-    }
-    return {
-      isChange: true,
-      logs,
-      errors,
-      programMemory: {
-        root: {},
-        return: null,
-      },
-      ast: {
-        start: 0,
-        end: 0,
-        body: [],
-        nonCodeMeta: {
-          nonCodeNodes: {},
-          start: [],
-        },
-      },
-    }
-  }
-  // Check if the ast we have is equal to the ast in the storage.
-  // If it is, we don't need to update the ast.
-  if (JSON.stringify(ast) === JSON.stringify(lastAst) && !force)
-    return { isChange: false }
-
-  const { logs, errors, programMemory } = await executeAst({
-    ast,
-    engineCommandManager,
-  })
-  return {
-    ast,
-    logs,
-    errors,
-    programMemory,
-    isChange: true,
-  }
-}
-
 export async function executeAst({
   ast,
   engineCommandManager,
@@ -268,10 +199,6 @@ export async function executeAst({
       : _executor(ast, programMemoryInit(), engineCommandManager, false))
 
     await engineCommandManager.waitForAllCommands()
-    engineCommandManager.addCommandLog({
-      type: 'execution-done',
-      data: null,
-    })
     return {
       logs: [],
       errors: [],

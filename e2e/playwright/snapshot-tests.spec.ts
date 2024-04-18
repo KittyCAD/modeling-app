@@ -336,10 +336,7 @@ const part001 = startSketchOn('-XZ')
   }
 })
 
-test('extrude on each default plane should be stable', async ({
-  page,
-  context,
-}) => {
+const extrudeDefaultPlane = async (context: any, page: any, plane: string) => {
   await context.addInitScript(async () => {
     localStorage.setItem(
       'SETTINGS_PERSIST_KEY',
@@ -356,8 +353,8 @@ test('extrude on each default plane should be stable', async ({
       })
     )
   })
-  const u = getUtils(page)
-  const makeCode = (plane = 'XY') => `const part001 = startSketchOn('${plane}')
+
+  const code = `const part001 = startSketchOn('${plane}')
   |> startProfileAt([7.00, 4.40], %)
   |> line([6.60, -0.20], %)
   |> line([2.80, 5.00], %)
@@ -366,9 +363,11 @@ test('extrude on each default plane should be stable', async ({
   |> close(%)
   |> extrude(10.00, %)
 `
-  await context.addInitScript(async (code) => {
+  await page.addInitScript(async (code: string) => {
     localStorage.setItem('persistCode', code)
-  }, makeCode('XY'))
+  })
+
+  const u = getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
@@ -378,34 +377,47 @@ test('extrude on each default plane should be stable', async ({
   await u.expectCmdLog('[data-message-type="execution-done"]')
   await u.clearAndCloseDebugPanel()
   await page.waitForTimeout(200)
+  // clear code
+  await u.removeCurrentCode()
+  await u.openAndClearDebugPanel()
+  await u.doAndWaitForImageDiff(
+    () => page.locator('.cm-content').fill(code),
+    200
+  )
+  // wait for execution done
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.clearAndCloseDebugPanel()
 
-  const runSnapshotsForOtherPlanes = async (plane = 'XY') => {
-    // clear code
-    await u.removeCurrentCode()
-    // add makeCode('XZ')
-    await u.openAndClearDebugPanel()
-    await u.doAndWaitForImageDiff(
-      () => page.locator('.cm-content').fill(makeCode(plane)),
-      200
-    )
-    // wait for execution done
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.clearAndCloseDebugPanel()
+  await u.closeKclCodePanel()
+  await expect(page).toHaveScreenshot({
+    maxDiffPixels: 100,
+  })
+  await u.openKclCodePanel()
+}
+test.describe('extrude on default planes should be stable', () => {
+  test('XY', async ({ page, context }) => {
+    await extrudeDefaultPlane(context, page, 'XY')
+  })
 
-    await u.closeKclCodePanel()
-    await expect(page).toHaveScreenshot({
-      maxDiffPixels: 100,
-    })
-    await u.openKclCodePanel()
-  }
-  await runSnapshotsForOtherPlanes('XY')
-  await runSnapshotsForOtherPlanes('-XY')
+  test('XZ', async ({ page, context }) => {
+    await extrudeDefaultPlane(context, page, 'XZ')
+  })
 
-  await runSnapshotsForOtherPlanes('XZ')
-  await runSnapshotsForOtherPlanes('-XZ')
+  test('YZ', async ({ page, context }) => {
+    await extrudeDefaultPlane(context, page, 'YZ')
+  })
 
-  await runSnapshotsForOtherPlanes('YZ')
-  await runSnapshotsForOtherPlanes('-YZ')
+  test('-XY', async ({ page, context }) => {
+    await extrudeDefaultPlane(context, page, '-XY')
+  })
+
+  test('-XZ', async ({ page, context }) => {
+    await extrudeDefaultPlane(context, page, '-XZ')
+  })
+
+  test('-YZ', async ({ page, context }) => {
+    await extrudeDefaultPlane(context, page, '-YZ')
+  })
 })
 
 test('Draft segments should look right', async ({ page, context }) => {
