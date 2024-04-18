@@ -6,7 +6,7 @@ import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { ARROWHEAD, DEBUG_SHOW_BOTH_SCENES } from './sceneInfra'
 import { ReactCameraProperties } from './CameraControls'
 import { throttle } from 'lib/utils'
-import { editorManager, sceneInfra } from 'lib/singletons'
+import {  sceneInfra } from 'lib/singletons'
 import {
   EXTRA_SEGMENT_HANDLE,
   PROFILE_START,
