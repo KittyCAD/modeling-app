@@ -118,79 +118,83 @@ export const Toolbar = () => {
             </ActionButton>
           </li>
         )}
-        {state.matches('Sketch') &&
-          !state.matches('idle') &&
-          !state.matches('Sketch.Rectangle tool') && (
-            <>
-              <li className="contents" key="line-button">
-                <ActionButton
-                  className={buttonClassName}
-                  Element="button"
-                  onClick={() =>
-                    state?.matches('Sketch.Line tool')
-                      ? send('CancelSketch')
-                      : send('Equip Line tool')
-                  }
-                  aria-pressed={state?.matches('Sketch.Line tool')}
-                  icon={{
-                    icon: 'line',
-                    iconClassName,
-                    bgClassName,
-                  }}
-                  disabled={disableAllButtons}
-                >
-                  Line
-                </ActionButton>
-              </li>
-              <li className="contents" key="tangential-arc-button">
-                <ActionButton
-                  className={buttonClassName}
-                  Element="button"
-                  onClick={() =>
-                    state.matches('Sketch.Tangential arc to')
-                      ? send('CancelSketch')
-                      : send('Equip tangential arc to')
-                  }
-                  aria-pressed={state.matches('Sketch.Tangential arc to')}
-                  icon={{
-                    icon: 'arc',
-                    iconClassName,
-                    bgClassName,
-                  }}
-                  disabled={
-                    (!state.can('Equip tangential arc to') &&
-                      !state.matches('Sketch.Tangential arc to')) ||
-                    disableAllButtons
-                  }
-                >
-                  Tangential Arc
-                </ActionButton>
-              </li>
-              <li className="contents" key="rectangle-button">
-                <ActionButton
-                  Element="button"
-                  onClick={() =>
-                    state.matches('Sketch.Rectangle tool')
-                      ? send('CancelSketch')
-                      : send('Equip rectangle tool')
-                  }
-                  aria-pressed={state.matches('Sketch.Rectangle tool')}
-                  className="pressed:bg-energy-10/20 dark:pressed:bg-energy-80"
-                  icon={{
-                    icon: 'rectangle',
-                    bgClassName,
-                  }}
-                  disabled={
-                    (!state.can('Equip rectangle tool') &&
-                      !state.matches('Sketch.Rectangle tool')) ||
-                    disableAllButtons
-                  }
-                >
-                  Rectangle
-                </ActionButton>
-              </li>
-            </>
-          )}
+        {state.matches('Sketch') && !state.matches('idle') && (
+          <>
+            <li className="contents" key="line-button">
+              <ActionButton
+                className={buttonClassName}
+                Element="button"
+                onClick={() =>
+                  state?.matches('Sketch.Line tool')
+                    ? send('CancelSketch')
+                    : send('Equip Line tool')
+                }
+                aria-pressed={state?.matches('Sketch.Line tool')}
+                icon={{
+                  icon: 'line',
+                  iconClassName,
+                  bgClassName,
+                }}
+                disabled={disableAllButtons}
+              >
+                Line
+              </ActionButton>
+            </li>
+            <li className="contents" key="tangential-arc-button">
+              <ActionButton
+                className={buttonClassName}
+                Element="button"
+                onClick={() =>
+                  state.matches('Sketch.Tangential arc to')
+                    ? send('CancelSketch')
+                    : send('Equip tangential arc to')
+                }
+                aria-pressed={state.matches('Sketch.Tangential arc to')}
+                icon={{
+                  icon: 'arc',
+                  iconClassName,
+                  bgClassName,
+                }}
+                disabled={
+                  (!state.can('Equip tangential arc to') &&
+                    !state.matches('Sketch.Tangential arc to')) ||
+                  disableAllButtons
+                }
+              >
+                Tangential Arc
+              </ActionButton>
+            </li>
+            <li className="contents" key="rectangle-button">
+              <ActionButton
+                className={buttonClassName}
+                Element="button"
+                onClick={() =>
+                  state.matches('Sketch.Rectangle tool')
+                    ? send('CancelSketch')
+                    : send('Equip rectangle tool')
+                }
+                aria-pressed={state.matches('Sketch.Rectangle tool')}
+                icon={{
+                  icon: 'rectangle',
+                  iconClassName,
+                  bgClassName,
+                }}
+                disabled={
+                  (!state.can('Equip rectangle tool') &&
+                    !state.matches('Sketch.Rectangle tool')) ||
+                  disableAllButtons
+                }
+                title={
+                  state.can('Equip rectangle tool')
+                    ? 'Rectangle'
+                    : 'Can only be used when a sketch is empty currently'
+                }
+              >
+                Rectangle
+              </ActionButton>
+            </li>
+          </>
+        )}
         {state.matches('Sketch.SketchIdle') &&
           state.nextEvents
             .filter(
