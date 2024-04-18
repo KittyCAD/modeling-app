@@ -33,7 +33,9 @@ export function useCalculateKclExpression({
 } {
   const { programMemory } = useKclContext()
   const { context } = useModelingContext()
-  const selectionRange = context.selectionRanges.codeBasedSelections[0].range
+  // TODO why is context undefined
+  const selectionRange =
+    context?.selectionRanges?.codeBasedSelections?.[0]?.range
   const inputRef = useRef<HTMLInputElement>(null)
   const [availableVarInfo, setAvailableVarInfo] = useState<
     ReturnType<typeof findAllPreviousVariables>

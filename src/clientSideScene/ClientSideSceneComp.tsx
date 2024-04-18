@@ -138,7 +138,7 @@ const Overlays = () => {
 
 const Overlay = ({ overlay }: { overlay: SegmentOverlay }) => {
   const { context } = useModelingContext()
-  // if (context.mouseState.type === 'isDragging') return null
+  if (context.mouseState.type === 'isDragging') return null
 
   let xAlignment = overlay.angle < 0 ? '0%' : '-100%'
   let yAlignment = overlay.angle < -90 || overlay.angle >= 90 ? '0%' : '-100%'
@@ -206,7 +206,7 @@ const SegmentMenu = ({
     <Popover className="relative">
       {({ open }) => (
         <>
-          <Popover.Button className="bg-white/50 hover:bg-white/80 text-black border-2 border-transparent hover:border-gray-400 h-[20px] w-[20px] rounded-sm p-0 m-0">
+          <Popover.Button className="bg-white/50 hover:bg-white/80 text-black border-2 border-transparent hover:border-gray-400 h-[26px] w-[26px] rounded-sm p-0 m-0">
             <CustomIcon name={'three-dots'} />
           </Popover.Button>
           <Popover.Panel
@@ -264,9 +264,9 @@ const ConstraintSymbol = ({
       <button
         className={`${
           isConstrained
-            ? 'bg-white/50 group-hover:bg-white/80 text-black border-2 border-transparent group-hover:border-gray-400 h-[20px] w-[20px] rounded-sm'
+            ? 'bg-white/50 group-hover:bg-white/80 text-black border-2 border-transparent group-hover:border-gray-400 rounded-sm'
             : 'bg-primary/30 text-primary border-2 border-transparent group-hover:bg-primary/40 group-hover:border-primary/50 group-hover:brightness-125'
-        } h-[20px] w-[20px] rounded-sm relative m-0 p-0`}
+        } h-[26px] w-[26px] rounded-sm relative m-0 p-0`}
         onMouseEnter={() => {
           sourceRange && setHighlightRange(sourceRange)
         }}

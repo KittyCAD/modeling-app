@@ -141,7 +141,6 @@ const horzVertConstraintInfoHelper = (
 ) => {
   if (callExp.type !== 'CallExpression') return []
   const firstArg = callExp.arguments?.[0]
-  if (firstArg.type !== 'ArrayExpression') return []
   const callee = callExp.callee
   return [
     constrainInfo(inputConstrainTypes[0], true, callee.name, [
