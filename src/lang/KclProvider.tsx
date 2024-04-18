@@ -2,7 +2,6 @@ import { KCLError } from './errors'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { type IndexLoaderData } from 'lib/types'
 import { useLoaderData } from 'react-router-dom'
-import { useParams } from 'react-router-dom'
 import { codeManager, kclManager } from 'lib/singletons'
 
 const KclContext = createContext({
@@ -51,10 +50,6 @@ export function KclContextProvider({
     })
   }, [])
 
-  const params = useParams()
-  useEffect(() => {
-    codeManager.setParams(params)
-  }, [params])
   return (
     <KclContext.Provider
       value={{

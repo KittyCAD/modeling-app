@@ -5,7 +5,6 @@ import { bracket } from 'lib/exampleKcl'
 import { isTauri } from 'lib/isTauri'
 import { writeTextFile } from '@tauri-apps/plugin-fs'
 import toast from 'react-hot-toast'
-import { Params } from 'react-router-dom'
 import { editorManager } from 'lib/singletons'
 
 const PERSIST_CODE_TOKEN = 'persistCode'
@@ -14,7 +13,7 @@ export default class CodeManager {
   private _code: string = bracket
   private _updateState: (arg: string) => void = () => {}
   private _updateEditor: (arg: string) => void = () => {}
-  private _params: Params<string> = {}
+  private _currentFilePath: string | null = null
 
   constructor() {
     if (isTauri()) {
@@ -50,8 +49,8 @@ export default class CodeManager {
     this._updateState = setCode
   }
 
-  setParams(params: Params<string>) {
-    this._params = params
+  updateCurrentFilePath(path: string) {
+    this._currentFilePath = path
   }
 
   // This updates the code state and calls the updateState function.
@@ -88,8 +87,8 @@ export default class CodeManager {
       setTimeout(() => {
         // Wait one event loop to give a chance for params to be set
         // Save the file to disk
-        this._params.id &&
-          writeTextFile(this._params.id, this.code).catch((err) => {
+        this._currentFilePath &&
+          writeTextFile(this._currentFilePath, this.code).catch((err) => {
             // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
             console.error('error saving file', err)
             toast.error('Error saving file, please check file permissions')
