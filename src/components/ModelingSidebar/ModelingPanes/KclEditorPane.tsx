@@ -213,7 +213,8 @@ export const KclEditorPane = () => {
           editorManager.setEditorView(_editorView)
         }
         onUpdate={(view: ViewUpdate) => {
-          // debounce the view update
+          // debounce the view update.
+          // otherwise it is laggy for typing.
           if (debounceTimer) {
             clearTimeout(debounceTimer)
           }
