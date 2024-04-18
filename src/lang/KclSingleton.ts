@@ -92,6 +92,7 @@ export class KclManager {
     this._kclErrors = kclErrors
     let diagnostics = kclErrorsToDiagnostics(kclErrors)
     editorManager.setDiagnostics(diagnostics)
+    this._kclErrorsCallBack(kclErrors)
   }
 
   get isExecuting() {
