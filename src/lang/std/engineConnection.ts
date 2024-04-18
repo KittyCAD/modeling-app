@@ -926,7 +926,9 @@ export class EngineCommandManager {
     executeCode,
     token,
     makeDefaultPlanes,
-    theme = Themes.Dark,
+    settings = {
+      theme: Themes.Dark,
+    },
   }: {
     setMediaStream: (stream: MediaStream) => void
     setIsStreamReady: (isStreamReady: boolean) => void
@@ -935,7 +937,9 @@ export class EngineCommandManager {
     executeCode: (code?: string, force?: boolean) => void
     token?: string
     makeDefaultPlanes: () => Promise<DefaultPlanes>
-    theme?: Themes
+    settings?: {
+      theme: Themes
+    }
   }) {
     this.makeDefaultPlanes = makeDefaultPlanes
     if (width === 0 || height === 0) {
@@ -963,17 +967,22 @@ export class EngineCommandManager {
       },
       onEngineConnectionOpen: () => {
         // Set the stream background color
-        // This takes RGBA values from 0-1
-        // So we convert from the conventional 0-255 found in Figma
-
         this.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
             type: 'set_background_color',
-            color: getThemeColorForEngine(theme),
+            color: getThemeColorForEngine(settings.theme),
           },
         })
+        // this.sendSceneCommand({
+        //   type: 'modeling_cmd_req',
+        //   cmd_id: uuidv4(),
+        //   cmd: {
+        //     type: 'edge_lines_visible' as any, // TODO: update kittycad.ts to use the correct type
+        //     hidden: !settings.highlightEdges,
+        //   },
+        // })
 
         // Make the axis gizmo.
         // We do this after the connection opened to avoid a race condition.
