@@ -37,7 +37,7 @@ test.beforeEach(async ({ context, page }) => {
     timeout: 5000,
   })
 
-  await page.addInitScript(
+  await context.addInitScript(
     async ({ token, settingsKey, settings }) => {
       localStorage.setItem('TOKEN_PERSIST_KEY', token)
       localStorage.setItem('persistCode', ``)
@@ -606,7 +606,7 @@ test('Stored settings are validated and fall back to defaults', async ({
 
   // Override beforeEach test setup
   // with corrupted settings
-  await page.addInitScript(
+  await context.addInitScript(
     async ({ settingsKey, settings }) => {
       localStorage.setItem(settingsKey, settings)
     },
