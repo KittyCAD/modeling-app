@@ -4,7 +4,7 @@
     "paths": {
       "/*": ["src/*"]
     },
-    "types": ["vite/client", "@types/wicg-file-system-access", "node", "@wdio/globals/types"],
+    "types": ["vite/client", "@types/wicg-file-system-access", "node", "@wdio/globals/types", "mocha"],
     "target": "esnext",
     "lib": [
       "dom",
