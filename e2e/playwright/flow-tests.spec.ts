@@ -444,9 +444,11 @@ test('re-executes', async ({ page }) => {
   ).toBeVisible()
 })
 
-test('Can create sketches on all planes and their back sides', async ({
-  page,
-}) => {
+const sketchOnPlaneAndBackSideTest = async (
+  page: any,
+  plane: string,
+  clickCoords: { x: number; y: number }
+) => {
   const u = getUtils(page)
   const PUR = 400 / 37.5 //pixeltoUnitRatio
   await page.setViewportSize({ width: 1200, height: 500 })
@@ -454,81 +456,72 @@ test('Can create sketches on all planes and their back sides', async ({
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
 
-  const camPos: [number, number, number] = [100, 100, 100]
-
-  const TestSinglePlane = async ({
-    viewCmd,
-    expectedCode,
-    clickCoords,
-  }: {
-    viewCmd: [number, number, number]
-    expectedCode: string
-    clickCoords: { x: number; y: number }
-  }) => {
-    await u.openDebugPanel()
-
-    await u.clearCommandLogs()
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
-    await u.updateCamPosition(viewCmd)
-
-    await u.closeDebugPanel()
-    await page.mouse.click(clickCoords.x, clickCoords.y)
-    await page.waitForTimeout(300) // wait for animation
-
-    await expect(page.getByRole('button', { name: 'Line' })).toBeVisible()
-
-    // draw a line
-    const startXPx = 600
-
-    await u.closeDebugPanel()
-    await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-
-    await expect(page.locator('.cm-content')).toHaveText(expectedCode)
-
-    await page.getByRole('button', { name: 'Line' }).click()
-    await u.openAndClearDebugPanel()
-    await page.getByRole('button', { name: 'Exit Sketch' }).click()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-
-    await u.clearCommandLogs()
-    await u.removeCurrentCode()
+  const camCmdBackSide: [number, number, number] = [-100, -100, -100]
+  let camPos: [number, number, number] = [100, 100, 100]
+  if (plane === '-XY' || plane === '-YZ' || plane === '-XZ') {
+    camPos = camCmdBackSide
   }
 
-  const codeTemplate = (
-    plane = 'XY'
-  ) => `const part001 = startSketchOn('${plane}')
+  const code = `const part001 = startSketchOn('${plane}')
   |> startProfileAt([1.14, -1.54], %)`
-  await TestSinglePlane({
-    viewCmd: camPos,
-    expectedCode: codeTemplate('XY'),
-    clickCoords: { x: 600, y: 388 }, // red plane
-    // clickCoords: { x: 600, y: 400 }, // red plane // clicks grid helper and that causes problems, should fix so that these coords work too.
+
+  await u.openDebugPanel()
+
+  await u.clearCommandLogs()
+  await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await u.updateCamPosition(camPos)
+
+  await u.closeDebugPanel()
+  await page.mouse.click(clickCoords.x, clickCoords.y)
+  await page.waitForTimeout(300) // wait for animation
+
+  await expect(page.getByRole('button', { name: 'Line' })).toBeVisible()
+
+  // draw a line
+  const startXPx = 600
+
+  await u.closeDebugPanel()
+  await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
+
+  await expect(page.locator('.cm-content')).toHaveText(code)
+
+  await page.getByRole('button', { name: 'Line' }).click()
+  await u.openAndClearDebugPanel()
+  await page.getByRole('button', { name: 'Exit Sketch' }).click()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+
+  await u.clearCommandLogs()
+  await u.removeCurrentCode()
+}
+
+test.describe('Can create sketches on all planes and their back sides', () => {
+  test('XY', async ({ page }) => {
+    sketchOnPlaneAndBackSideTest(
+      page,
+      'XY',
+      { x: 600, y: 388 } // red plane
+      // { x: 600, y: 400 }, // red plane // clicks grid helper and that causes problems, should fix so that these coords work too.
+    )
   })
-  await TestSinglePlane({
-    viewCmd: camPos,
-    expectedCode: codeTemplate('YZ'),
-    clickCoords: { x: 700, y: 250 }, // green plane
+
+  test('YZ', async ({ page }) => {
+    sketchOnPlaneAndBackSideTest(page, 'YZ', { x: 700, y: 250 }) // green plane
   })
-  await TestSinglePlane({
-    viewCmd: camPos,
-    expectedCode: codeTemplate('XZ'),
-    clickCoords: { x: 700, y: 80 }, // blue plane
+
+  test('XZ', async ({ page }) => {
+    sketchOnPlaneAndBackSideTest(page, 'XZ', { x: 700, y: 80 }) // blue plane
   })
-  const camCmdBackSide: [number, number, number] = [-100, -100, -100]
-  await TestSinglePlane({
-    viewCmd: camCmdBackSide,
-    expectedCode: codeTemplate('-XY'),
-    clickCoords: { x: 601, y: 118 }, // back of red plane
+
+  test('-XY', async ({ page }) => {
+    sketchOnPlaneAndBackSideTest(page, '-XY', { x: 600, y: 118 }) // back of red plane
   })
-  await TestSinglePlane({
-    viewCmd: camCmdBackSide,
-    expectedCode: codeTemplate('-YZ'),
-    clickCoords: { x: 730, y: 219 }, // back of green plane
+
+  test('-YZ', async ({ page }) => {
+    sketchOnPlaneAndBackSideTest(page, '-YZ', { x: 700, y: 219 }) // back of green plane
   })
-  await TestSinglePlane({
-    viewCmd: camCmdBackSide,
-    expectedCode: codeTemplate('-XZ'),
-    clickCoords: { x: 680, y: 427 }, // back of blue plane
+
+  test('-XZ', async ({ page }) => {
+    sketchOnPlaneAndBackSideTest(page, '-XZ', { x: 700, y: 427 }) // back of blue plane
   })
 })
 
@@ -1424,87 +1417,90 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
   |> tangentialArcTo([27.6, -3.25], %)`)
 })
 
-test('Snap to close works (at any scale)', async ({ page }) => {
+const doSnapAtDifferentScales = async (
+  page: any,
+  camPos: [number, number, number],
+  scale = 1,
+  fudge = 0
+) => {
   const u = getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
 
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled()
-  await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
-
-  const doSnapAtDifferentScales = async (
-    camPos: [number, number, number],
-    expectedCode: string
-  ) => {
-    await u.clearCommandLogs()
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
-    await page.waitForTimeout(100)
-
-    await u.openAndClearDebugPanel()
-    await u.updateCamPosition(camPos)
-    await u.closeDebugPanel()
-
-    // select a plane
-    await page.mouse.click(700, 200)
-    await expect(page.locator('.cm-content')).toHaveText(
-      `const part001 = startSketchOn('XZ')`
-    )
-
-    let prevContent = await page.locator('.cm-content').innerText()
-
-    const pointA = [700, 200]
-    const pointB = [900, 200]
-    const pointC = [900, 400]
-
-    // draw three lines
-    await page.mouse.click(pointA[0], pointA[1])
-    await page.waitForTimeout(100)
-    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-    prevContent = await page.locator('.cm-content').innerText()
-
-    await page.mouse.click(pointB[0], pointB[1])
-    await page.waitForTimeout(100)
-    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-    prevContent = await page.locator('.cm-content').innerText()
-
-    await page.mouse.click(pointC[0], pointC[1])
-    await page.waitForTimeout(100)
-    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-    prevContent = await page.locator('.cm-content').innerText()
-
-    await page.mouse.move(pointA[0] - 12, pointA[1] + 12)
-    const pointNotQuiteA = [pointA[0] - 7, pointA[1] + 7]
-    await page.mouse.move(pointNotQuiteA[0], pointNotQuiteA[1], { steps: 10 })
-
-    await page.mouse.click(pointNotQuiteA[0], pointNotQuiteA[1])
-    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-    prevContent = await page.locator('.cm-content').innerText()
-
-    await expect(page.locator('.cm-content')).toHaveText(expectedCode)
-
-    // exit sketch
-    await u.openAndClearDebugPanel()
-    await page.getByRole('button', { name: 'Exit Sketch' }).click()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.removeCurrentCode()
-  }
-
-  const codeTemplate = (
-    scale = 1,
-    fudge = 0
-  ) => `const part001 = startSketchOn('XZ')
+  const code = `const part001 = startSketchOn('XZ')
 |> startProfileAt([${roundOff(scale * 87.68)}, ${roundOff(scale * 43.84)}], %)
 |> line([${roundOff(scale * 175.36)}, 0], %)
 |> line([0, -${roundOff(scale * 175.36) + fudge}], %)
 |> close(%)`
 
-  await doSnapAtDifferentScales([0, 100, 100], codeTemplate(0.01, 0.01))
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled()
+  await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
 
-  await doSnapAtDifferentScales([0, 10000, 10000], codeTemplate())
+  await u.clearCommandLogs()
+  await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await page.waitForTimeout(100)
+
+  await u.openAndClearDebugPanel()
+  await u.updateCamPosition(camPos)
+  await u.closeDebugPanel()
+
+  // select a plane
+  await page.mouse.click(700, 200)
+  await expect(page.locator('.cm-content')).toHaveText(
+    `const part001 = startSketchOn('XZ')`
+  )
+
+  let prevContent = await page.locator('.cm-content').innerText()
+
+  const pointA = [700, 200]
+  const pointB = [900, 200]
+  const pointC = [900, 400]
+
+  // draw three lines
+  await page.mouse.click(pointA[0], pointA[1])
+  await page.waitForTimeout(100)
+  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+  prevContent = await page.locator('.cm-content').innerText()
+
+  await page.mouse.click(pointB[0], pointB[1])
+  await page.waitForTimeout(100)
+  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+  prevContent = await page.locator('.cm-content').innerText()
+
+  await page.mouse.click(pointC[0], pointC[1])
+  await page.waitForTimeout(100)
+  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+  prevContent = await page.locator('.cm-content').innerText()
+
+  await page.mouse.move(pointA[0] - 12, pointA[1] + 12)
+  const pointNotQuiteA = [pointA[0] - 7, pointA[1] + 7]
+  await page.mouse.move(pointNotQuiteA[0], pointNotQuiteA[1], { steps: 10 })
+
+  await page.mouse.click(pointNotQuiteA[0], pointNotQuiteA[1])
+  await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+  prevContent = await page.locator('.cm-content').innerText()
+
+  await expect(page.locator('.cm-content')).toHaveText(code)
+
+  // exit sketch
+  await u.openAndClearDebugPanel()
+  await page.getByRole('button', { name: 'Exit Sketch' }).click()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.removeCurrentCode()
+}
+
+test.describe('Snap to close works (at any scale)', () => {
+  test('[0, 100, 100]', async ({ page }) => {
+    await doSnapAtDifferentScales(page, [0, 100, 100], 0.01, 0.01)
+  })
+
+  test('[0, 10000, 10000]', async ({ page }) => {
+    await doSnapAtDifferentScales(page, [0, 10000, 10000])
+  })
 })
 
 test('Sketch on face', async ({ page }) => {
