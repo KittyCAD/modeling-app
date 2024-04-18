@@ -7,6 +7,7 @@ import { Selections, processCodeMirrorRanges, Selection } from 'lib/selections'
 import { undo, redo } from '@codemirror/commands'
 import { CommandBarMachineEvent } from 'machines/commandBarMachine'
 import { addLineHighlight } from './highlightextension'
+import { setDiagnostics, Diagnostic } from '@codemirror/lint'
 
 // TODO: move highlight out of use store.
 export default class EditorManager {
@@ -89,6 +90,11 @@ export default class EditorManager {
         effects: addLineHighlight.of([selection[0], safeEnd]),
       })
     }
+  }
+
+  setDiagnostics(diagnostics: Diagnostic[]): void {
+    if (!this.editorView) return
+    this.editorView.dispatch(setDiagnostics(this.editorView.state, diagnostics))
   }
 
   undo() {

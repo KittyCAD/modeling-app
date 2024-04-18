@@ -24,7 +24,7 @@ import {
   historyKeymap,
   history,
 } from '@codemirror/commands'
-import { lintGutter, lintKeymap, linter } from '@codemirror/lint'
+import { lintGutter, lintKeymap } from '@codemirror/lint'
 import {
   foldGutter,
   foldKeymap,
@@ -49,7 +49,6 @@ import {
   closeBracketsKeymap,
   completionKeymap,
 } from '@codemirror/autocomplete'
-import { kclErrorsToDiagnostics } from 'lang/errors'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -69,7 +68,7 @@ export const KclEditorPane = () => {
     context.app.theme.current === Themes.System
       ? getSystemTheme()
       : context.app.theme.current
-  const { editorCode, errors } = useKclContext()
+  const { editorCode } = useKclContext()
   const { copilotLSP, kclLSP } = useLspContext()
   const navigate = useNavigate()
 
@@ -140,9 +139,6 @@ export const KclEditorPane = () => {
     if (!TEST) {
       extensions.push(
         lintGutter(),
-        linter((_view: EditorView) => {
-          return kclErrorsToDiagnostics(errors)
-        }),
         lineNumbers(),
         highlightActiveLineGutter(),
         highlightSpecialChars(),

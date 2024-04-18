@@ -362,13 +362,6 @@ export class LanguageServerPlugin implements PluginValue {
         case 'textDocument/publishDiagnostics':
           const params = notification.params as PublishDiagnosticsParams
           this.processDiagnostics(params)
-          // Update the kcl errors pane.
-          /*if (!kclManager.isExecuting) {
-            kclManager.kclErrors = lspDiagnosticsToKclErrors(
-              this.view.state.doc,
-              params.diagnostics
-            )
-          }*/
           break
         case 'window/logMessage':
           console.log(
@@ -388,17 +381,6 @@ export class LanguageServerPlugin implements PluginValue {
           // The server has updated the AST, we should update elsewhere.
           let updatedAst = notification.params as Program
           console.log('[lsp]: Updated AST', updatedAst)
-          // Update the ast when we are not already executing.
-          /* if (!kclManager.isExecuting) {
-            kclManager.ast = updatedAst
-            // Execute the ast.
-            console.log('[lsp]: executing ast')
-            await kclManager.executeAst(updatedAst)
-            console.log('[lsp]: executed ast', kclManager.kclErrors)
-            let diagnostics = kclErrorsToDiagnostics(kclManager.kclErrors)
-            this.view.dispatch(setDiagnostics(this.view.state, diagnostics))
-            console.log('[lsp]: updated diagnostics')
-          }*/
 
           // Update the folding ranges, since the AST has changed.
           // This is a hack since codemirror does not support async foldService.
