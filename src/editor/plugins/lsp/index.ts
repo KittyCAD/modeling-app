@@ -10,6 +10,7 @@ import { UpdateUnitsParams } from 'wasm-lib/kcl/bindings/UpdateUnitsParams'
 import { UpdateCanExecuteParams } from 'wasm-lib/kcl/bindings/UpdateCanExecuteParams'
 import { UpdateUnitsResponse } from 'wasm-lib/kcl/bindings/UpdateUnitsResponse'
 import { UpdateCanExecuteResponse } from 'wasm-lib/kcl/bindings/UpdateCanExecuteResponse'
+import { LspWorker } from './types'
 
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/
 
@@ -54,7 +55,7 @@ interface LSPNotifyMap {
 
 export interface LanguageServerClientOptions {
   client: Client
-  name: string
+  name: LspWorker
 }
 
 export interface LanguageServerOptions {
@@ -217,7 +218,8 @@ export class LanguageServerClient {
     if (!serverCapabilities.completionProvider) {
       return
     }
-    return await this.request('textDocument/completion', params)
+    const response = await this.request('textDocument/completion', params)
+    return response
   }
 
   attachPlugin(plugin: LanguageServerPlugin) {

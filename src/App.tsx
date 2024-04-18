@@ -3,7 +3,6 @@ import { uuidv4 } from 'lib/utils'
 import { useStore } from './useStore'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
 import { Stream } from './components/Stream'
-import ModalContainer from 'react-modal-promise'
 import { EngineCommand } from './lang/std/engineConnection'
 import { throttle } from './lib/utils'
 import { AppHeader } from './components/AppHeader'
@@ -123,7 +122,6 @@ export function App() {
         project={{ project, file }}
         enableMenu={true}
       />
-      <ModalContainer />
       <ModelingSidebar paneOpacity={paneOpacity} />
       <Stream className="absolute inset-0 z-0" />
       {/* <CamToggle /> */}

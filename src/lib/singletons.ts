@@ -1,7 +1,10 @@
 import { SceneEntities } from 'clientSideScene/sceneEntities'
 import { SceneInfra } from 'clientSideScene/sceneInfra'
 import { KclManager } from 'lang/KclSingleton'
+import CodeManager from 'lang/codeManager'
 import { EngineCommandManager } from 'lang/std/engineConnection'
+
+export const codeManager = new CodeManager()
 
 export const engineCommandManager = new EngineCommandManager()
 

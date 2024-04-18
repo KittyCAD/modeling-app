@@ -1,5 +1,6 @@
 import { Models } from '@kittycad/lib'
 import {
+  codeManager,
   engineCommandManager,
   kclManager,
   sceneEntitiesManager,
@@ -142,7 +143,7 @@ export function getEventForSegmentSelection(
   // previous drags don't update ast for efficiency reasons
   // So we want to make sure we have and updated ast with
   // accurate source ranges
-  const updatedAst = parse(kclManager.code)
+  const updatedAst = parse(codeManager.code)
   const node = getNodeFromPath<CallExpression>(
     updatedAst,
     pathToNode,
@@ -192,7 +193,7 @@ export function handleSelectionBatch({
 
   return {
     codeMirrorSelection: EditorSelection.create(
-      [EditorSelection.cursor(kclManager.code.length)],
+      [EditorSelection.cursor(codeManager.code.length)],
       0
     ),
     engineEvents,

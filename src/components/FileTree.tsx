@@ -13,7 +13,7 @@ import styles from './FileTree.module.css'
 import { sortProject } from 'lib/tauriFS'
 import { FILE_EXT } from 'lib/constants'
 import { CustomIcon } from './CustomIcon'
-import { kclManager } from 'lib/singletons'
+import { codeManager, kclManager } from 'lib/singletons'
 import { useDocumentHasFocus } from 'hooks/useDocumentHasFocus'
 import { useLspContext } from './LspProvider'
 
@@ -171,10 +171,13 @@ const FileTreeItem = ({
 
     if (fileOrDir.name?.endsWith(FILE_EXT) === false && project?.path) {
       // Import non-kcl files
-      kclManager.setCodeAndExecute(
+      // We want to update both the state and editor here.
+      codeManager.updateCodeStateEditor(
         `import("${fileOrDir.path.replace(project.path, '.')}")\n` +
-          kclManager.code
+          codeManager.code
       )
+      codeManager.writeToFile()
+      kclManager.executeCode(true)
     } else {
       // Let the lsp servers know we closed a file.
       onFileClose(currentFile?.path || null, project?.path || null)

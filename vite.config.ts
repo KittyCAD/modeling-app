@@ -5,18 +5,18 @@ import dns from 'dns'
 import { defineConfig, configDefaults } from 'vitest/config'
 import version from 'vite-plugin-package-version'
 
-// Only needed because we run Node < 17 
+// Only needed because we run Node < 17
 // and we want to open `localhost` not `127.0.0.1` on server start
 // reference: https://vitejs.dev/config/server-options.html#server-host
 dns.setDefaultResultOrder('verbatim')
 
 const config = defineConfig({
-  define: {
-    global: 'window',
-  },
   server: {
     open: true,
     port: 3000,
+    watch: {
+      ignored: ['**/target/**'],
+    },
   },
   test: {
     globals: true,
@@ -46,6 +46,11 @@ const config = defineConfig({
     eslint(),
     version(),
   ],
+  worker: {
+    plugins: () =>  [
+      viteTsconfigPaths(),
+    ],
+  }
 })
 
 export default config

@@ -1,8 +1,4 @@
-import {
-  completeFromList,
-  hasNextSnippetField,
-  snippetCompletion,
-} from '@codemirror/autocomplete'
+import { completeFromList, snippetCompletion } from '@codemirror/autocomplete'
 import { setDiagnostics } from '@codemirror/lint'
 import { Facet } from '@codemirror/state'
 import { EditorView, Tooltip } from '@codemirror/view'
@@ -25,9 +21,8 @@ import { LanguageServerClient } from 'editor/plugins/lsp'
 import { Marked } from '@ts-stack/markdown'
 import { posToOffset } from 'editor/plugins/lsp/util'
 import { Program, ProgramMemory } from 'lang/wasm'
-import { kclManager } from 'lib/singletons'
+import { codeManager, kclManager } from 'lib/singletons'
 import type { UnitLength } from 'wasm-lib/kcl/bindings/UnitLength'
-import { lspDiagnosticsToKclErrors } from 'lang/errors'
 import { UpdateUnitsResponse } from 'wasm-lib/kcl/bindings/UpdateUnitsResponse'
 import { UpdateCanExecuteResponse } from 'wasm-lib/kcl/bindings/UpdateCanExecuteResponse'
 
@@ -54,6 +49,7 @@ export class LanguageServerPlugin implements PluginValue {
   private foldingRanges: LSP.FoldingRange[] | null = null
   private _defferer = deferExecution((code: string) => {
     try {
+      // Update the state (not the editor) with the new code.
       this.client.textDocumentDidChange({
         textDocument: {
           uri: this.documentUri,
@@ -84,21 +80,16 @@ export class LanguageServerPlugin implements PluginValue {
     })
   }
 
-  update({ docChanged, state }: ViewUpdate) {
+  update({ docChanged }: ViewUpdate) {
     if (!docChanged) return
 
-    // If we are just fucking around in a snippet, return early and don't
-    // trigger stuff below that might cause the component to re-render.
-    // Otherwise we will not be able to tab thru the snippet portions.
-    // We explicitly dont check HasPrevSnippetField because we always add
-    // a ${} to the end of the function so that's fine.
-    // We only care about this for the 'kcl' plugin.
-    if (this.client.name === 'kcl' && hasNextSnippetField(state)) {
-      return
-    }
+    const newCode = this.view.state.doc.toString()
 
+    codeManager.code = newCode
+    codeManager.writeToFile()
+    kclManager.executeCode()
     this.sendChange({
-      documentText: this.view.state.doc.toString(),
+      documentText: newCode,
     })
   }
 
@@ -122,17 +113,6 @@ export class LanguageServerPlugin implements PluginValue {
 
   async sendChange({ documentText }: { documentText: string }) {
     if (!this.client.ready) return
-
-    if (documentText.length > 5000) {
-      // Clear out the text it thinks we have, large documents will throw a stack error.
-      // This is obviously not a good fix but it works for now til we figure
-      // out the stack limits in wasm and also rewrite the parser.
-      // Since this is only for hover and completions it will be fine,
-      // completions will still work for stdlib but hover will not.
-      // That seems like a fine trade-off for a working editor for the time
-      // being.
-      documentText = ''
-    }
 
     this._defferer(documentText)
   }
@@ -373,17 +353,19 @@ export class LanguageServerPlugin implements PluginValue {
     return completeFromList(options)(context)
   }
 
-  processNotification(notification: LSP.NotificationMessage) {
+  async processNotification(notification: LSP.NotificationMessage) {
     try {
       switch (notification.method) {
         case 'textDocument/publishDiagnostics':
           const params = notification.params as PublishDiagnosticsParams
           this.processDiagnostics(params)
           // Update the kcl errors pane.
-          /*kclManager.kclErrors = lspDiagnosticsToKclErrors(
-            this.view.state.doc,
-            params.diagnostics
-          )*/
+          /*if (!kclManager.isExecuting) {
+            kclManager.kclErrors = lspDiagnosticsToKclErrors(
+              this.view.state.doc,
+              params.diagnostics
+            )
+          }*/
           break
         case 'window/logMessage':
           console.log(
@@ -403,7 +385,17 @@ export class LanguageServerPlugin implements PluginValue {
           // The server has updated the AST, we should update elsewhere.
           let updatedAst = notification.params as Program
           console.log('[lsp]: Updated AST', updatedAst)
-          kclManager.ast = updatedAst
+          // Update the ast when we are not already executing.
+          /* if (!kclManager.isExecuting) {
+            kclManager.ast = updatedAst
+            // Execute the ast.
+            console.log('[lsp]: executing ast')
+            await kclManager.executeAst(updatedAst)
+            console.log('[lsp]: executed ast', kclManager.kclErrors)
+            let diagnostics = kclErrorsToDiagnostics(kclManager.kclErrors)
+            this.view.dispatch(setDiagnostics(this.view.state, diagnostics))
+            console.log('[lsp]: updated diagnostics')
+          }*/
 
           // Update the folding ranges, since the AST has changed.
           // This is a hack since codemirror does not support async foldService.

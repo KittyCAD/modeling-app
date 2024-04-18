@@ -560,7 +560,10 @@ class EngineConnection {
       // Otherwise when run in a browser, the token is sent implicitly via
       // the Cookie header.
       if (this.token) {
-        this.send({ headers: { Authorization: `Bearer ${this.token}` } })
+        this.send({
+          type: 'headers',
+          headers: { Authorization: `Bearer ${this.token}` },
+        })
       }
     })
 
@@ -611,7 +614,6 @@ class EngineConnection {
             `Error in response to request ${message.request_id}:\n${errorsString}
 failed cmd type was ${artifactThatFailed?.commandType}`
           )
-          console.log(artifactThatFailed)
         } else {
           console.error(`Error from server:\n${errorsString}`)
         }
@@ -930,7 +932,7 @@ export class EngineCommandManager {
     setIsStreamReady: (isStreamReady: boolean) => void
     width: number
     height: number
-    executeCode: (code?: string, force?: boolean) => void
+    executeCode: () => void
     token?: string
     makeDefaultPlanes: () => Promise<DefaultPlanes>
     theme?: Themes
@@ -1005,7 +1007,7 @@ export class EngineCommandManager {
         this.initPlanes().then(() => {
           this.resolveReady()
           setIsStreamReady(true)
-          executeCode(undefined, true)
+          executeCode()
         })
       },
       onClose: () => {
@@ -1066,7 +1068,7 @@ export class EngineCommandManager {
               message.request_id &&
               this.artifactMap[message.request_id]
             ) {
-              this.handleFailedModelingCommand(message)
+              this.handleFailedModelingCommand(message.request_id, message)
             }
           }
         })
@@ -1178,7 +1180,6 @@ export class EngineCommandManager {
         command?.commandType === 'solid3d_get_extrusion_face_info' &&
         modelingResponse.type === 'solid3d_get_extrusion_face_info'
       ) {
-        console.log('modelingResposne', modelingResponse)
         const parent = this.artifactMap[command?.parentId || '']
         modelingResponse.data.faces.forEach((face) => {
           if (face.cap !== 'none' && face.face_id && parent) {
@@ -1246,14 +1247,12 @@ export class EngineCommandManager {
       }
     }
   }
-  handleFailedModelingCommand(raw: WebSocketResponse) {
-    const id = raw.request_id
+  handleFailedModelingCommand(id: string, raw: WebSocketResponse) {
     const failed = raw as Models['FailureWebSocketResponse_type']
     const errors = failed.errors
     if (!id) return
     const command = this.artifactMap[id]
     if (command && command.type === 'pending') {
-      const resolve = command.resolve
       this.artifactMap[id] = {
         type: 'failed',
         range: command.range,
@@ -1262,6 +1261,19 @@ export class EngineCommandManager {
         parentId: command.parentId ? command.parentId : undefined,
         errors,
       }
+      if (
+        command?.type === 'pending' &&
+        command.commandType === 'batch' &&
+        command?.additionalData?.type === 'batch-ids'
+      ) {
+        command.additionalData.ids.forEach((id) => {
+          this.handleFailedModelingCommand(id, raw)
+        })
+      }
+      // batch artifact is just a container, we don't need to keep it
+      // once we process all the commands inside it
+      const resolve = command.resolve
+      delete this.artifactMap[id]
       resolve({
         id,
         commandType: command.commandType,
