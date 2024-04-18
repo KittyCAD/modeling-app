@@ -259,7 +259,11 @@ export class KclManager {
   executeCode(force?: boolean) {
     // If we want to force it we don't want to defer it.
     if (!force) return this._defferer(codeManager.code)
-    return this.executeAst()
+
+    const ast = this.safeParse(codeManager.code)
+    if (!ast) return
+    this.ast = { ...ast }
+    return this.executeAst(ast)
   }
   format() {
     const originalCode = codeManager.code

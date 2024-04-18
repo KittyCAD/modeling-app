@@ -12,6 +12,7 @@ import { APP_NAME } from 'lib/constants'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CustomIcon } from './CustomIcon'
 import { useLspContext } from './LspProvider'
+import { engineCommandManager } from 'lib/singletons'
 
 const ProjectSidebarMenu = ({
   project,
@@ -28,6 +29,8 @@ const ProjectSidebarMenu = ({
       <Link
         onClick={() => {
           onProjectClose(file || null, project?.path || null, false)
+          // Clear the scene and end the session.
+          engineCommandManager.endSession()
         }}
         to={paths.HOME}
         className="relative h-full grid place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-2.5 before:z-[-1] before:bg-primary hover:before:brightness-110 before:rounded-b-sm"
@@ -39,6 +42,8 @@ const ProjectSidebarMenu = ({
           <Link
             onClick={() => {
               onProjectClose(file || null, project?.path || null, false)
+              // Clear the scene and end the session.
+              engineCommandManager.endSession()
             }}
             to={paths.HOME}
             className="!no-underline"
@@ -177,6 +182,8 @@ function ProjectMenuPopover({
                     Element="button"
                     onClick={() => {
                       onProjectClose(file || null, project?.path || null, true)
+                      // Clear the scene and end the session.
+                      engineCommandManager.endSession()
                     }}
                     icon={{
                       icon: 'arrowLeft',
