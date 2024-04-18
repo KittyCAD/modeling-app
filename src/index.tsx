@@ -4,6 +4,15 @@ import reportWebVitals from './reportWebVitals'
 import { Toaster } from 'react-hot-toast'
 import { Router } from './Router'
 import { HotkeysProvider } from 'react-hotkeys-hook'
+import ModalContainer from 'react-modal-promise'
+import { UpdaterModal, createUpdaterModal } from 'components/UpdaterModal'
+import { isTauri } from 'lib/isTauri'
+import { relaunch } from '@tauri-apps/plugin-process'
+import { check } from '@tauri-apps/plugin-updater'
+import {
+  UpdaterRestartModal,
+  createUpdaterRestartModal,
+} from 'components/UpdaterRestartModal'
 
 // uncomment for xstate inspector
 // import { DEV } from 'env'
@@ -35,6 +44,7 @@ root.render(
         },
       }}
     />
+    <ModalContainer />
   </HotkeysProvider>
 )
 
@@ -42,3 +52,30 @@ root.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals()
+
+const runTauriUpdater = async () => {
+  try {
+    const update = await check()
+    if (update && update.available) {
+      const { date, version, body } = update
+      const modal = createUpdaterModal(UpdaterModal)
+      const { wantUpdate } = await modal({ date, version, body })
+      if (wantUpdate) {
+        await update.downloadAndInstall()
+        // On macOS and Linux, the restart needs to be manually triggered
+        const isNotWindows = navigator.userAgent.indexOf('Win') === -1
+        if (isNotWindows) {
+          const relaunchModal = createUpdaterRestartModal(UpdaterRestartModal)
+          const { wantRestart } = await relaunchModal({ version })
+          if (wantRestart) {
+            await relaunch()
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+isTauri() && runTauriUpdater()

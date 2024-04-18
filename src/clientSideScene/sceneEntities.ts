@@ -52,7 +52,12 @@ import {
   VariableDeclaration,
   VariableDeclarator,
 } from 'lang/wasm'
-import { engineCommandManager, kclManager, sceneInfra } from 'lib/singletons'
+import {
+  engineCommandManager,
+  kclManager,
+  sceneInfra,
+  codeManager,
+} from 'lib/singletons'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 import { executeAst, useStore } from 'useStore'
 import {
@@ -542,7 +547,7 @@ export class SceneEntities {
           return
         }
 
-        await kclManager.executeAstMock(modifiedAst, { updates: 'code' })
+        await kclManager.executeAstMock(modifiedAst)
         this.setUpDraftSegment(
           sketchPathToNode,
           forward,
@@ -637,9 +642,7 @@ export class SceneEntities {
               spliceBetween: true,
             })
             addingNewSegmentStatus = 'pending'
-            await kclManager.executeAstMock(mod.modifiedAst, {
-              updates: 'code',
-            })
+            await kclManager.executeAstMock(mod.modifiedAst)
             await this.tearDownSketch({ removeAxis: false })
             this.setupSketch({
               sketchPathToNode: pathToNode,
@@ -784,9 +787,9 @@ export class SceneEntities {
     ;(async () => {
       const code = recast(modifiedAst)
       if (!draftInfo)
-        // don't want to mode the user's code yet as they have't committed to the change yet
+        // don't want to mod the user's code yet as they have't committed to the change yet
         // plus this would be the truncated ast being recast, it would be wrong
-        kclManager.setCode(code, false)
+        codeManager.updateCodeStateEditor(code)
       const { programMemory } = await executeAst({
         ast: truncatedAst,
         useFakeExecutor: true,

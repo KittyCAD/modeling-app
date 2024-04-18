@@ -25,7 +25,7 @@ import {
   SETTINGS_FILE_EXT,
 } from 'lib/constants'
 import { SaveSettingsPayload, SettingsLevel } from './settings/settingsTypes'
-import * as TOML from '@iarna/toml'
+import { initPromise, tomlParse } from 'lang/wasm'
 
 type PathWithPossibleError = {
   path: string | null
@@ -395,9 +395,10 @@ export async function readSettingsFile(
   }
 
   try {
+    await initPromise
     const settings = await readTextFile(path)
     // We expect the settings to be under a top-level [settings] key
-    return TOML.parse(settings).settings as Partial<SaveSettingsPayload>
+    return tomlParse(settings).settings as Partial<SaveSettingsPayload>
   } catch (e) {
     console.error('Error reading settings file:', e)
     return {}

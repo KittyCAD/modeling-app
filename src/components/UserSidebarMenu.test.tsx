@@ -98,7 +98,9 @@ describe('UserSidebarMenu tests', () => {
       </TestWrap>
     )
 
-    expect(screen.getByTestId('user-sidebar-toggle')).toHaveTextContent('Menu')
+    expect(screen.getByTestId('user-sidebar-toggle')).toHaveTextContent(
+      'User menu'
+    )
   })
 })
 

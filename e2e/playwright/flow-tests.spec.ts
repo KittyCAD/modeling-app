@@ -2,7 +2,6 @@ import { test, expect } from '@playwright/test'
 import { getUtils } from './test-utils'
 import waitOn from 'wait-on'
 import { roundOff } from 'lib/utils'
-import * as TOML from '@iarna/toml'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { secrets } from './secrets'
 import {
@@ -11,6 +10,7 @@ import {
   TEST_SETTINGS_CORRUPTED,
   TEST_SETTINGS_ONBOARDING,
 } from './storageStates'
+import * as TOML from '@iarna/toml'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -328,6 +328,56 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
   await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 })
 
+test('if your kcl gets an error from the engine it is inlined', async ({
+  page,
+}) => {
+  const u = getUtils(page)
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const box = startSketchOn('XY')
+|> startProfileAt([0, 0], %)
+|> line([0, 10], %)
+|> line([10, 0], %)
+|> line([0, -10], %, 'revolveAxis')
+|> close(%)
+|> extrude(10, %)
+
+const sketch001 = startSketchOn(box, "revolveAxis")
+|> startProfileAt([5, 10], %)
+|> line([0, -10], %)
+|> line([2, 0], %)
+|> line([0, 10], %)
+|> close(%)
+|> revolve({
+axis: getEdge('revolveAxis', box),
+angle: 90
+}, %)
+    `
+    )
+  })
+
+  await page.setViewportSize({ width: 1000, height: 500 })
+  await page.goto('/')
+
+  await u.waitForAuthSkipAppStart()
+
+  u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
+
+  // error in guter
+  await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+
+  // error text on hover
+  await page.hover('.cm-lint-marker-error')
+  await expect(
+    page.getByText(
+      'sketch profile must lie entirely on one side of the revolution axis'
+    )
+  ).toBeVisible()
+})
+
 test('executes on load', async ({ page }) => {
   const u = getUtils(page)
   await page.addInitScript(async () => {
@@ -510,7 +560,7 @@ test('Auto complete works', async ({ page }) => {
   // expect there to be three auto complete options
   await expect(page.locator('.cm-completionLabel')).toHaveCount(3)
   await page.getByText('startSketchOn').click()
-  await page.keyboard.type("'XY'")
+  await page.keyboard.type("'XZ'")
   await page.keyboard.press('Tab')
   await page.keyboard.press('Enter')
   await page.keyboard.type('  |> startProfi')
@@ -520,6 +570,7 @@ test('Auto complete works', async ({ page }) => {
   await page.keyboard.press('Enter') // accepting the auto complete, not a new line
 
   await page.keyboard.press('Tab')
+  await page.keyboard.type('12')
   await page.keyboard.press('Tab')
   await page.keyboard.press('Tab')
   await page.keyboard.press('Tab')
@@ -542,8 +593,8 @@ test('Auto complete works', async ({ page }) => {
   await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XY')
-  |> startProfileAt([3.14, 3.14], %)
+    .toHaveText(`const part001 = startSketchOn('XZ')
+  |> startProfileAt([3.14, 12], %)
   |> xLine(5, %) // lin`)
 })
 
@@ -1189,7 +1240,7 @@ fn yohey = (pos) => {
     },
     selectionsSnippets
   )
-  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.setViewportSize({ width: 1200, height: 1000 })
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
 

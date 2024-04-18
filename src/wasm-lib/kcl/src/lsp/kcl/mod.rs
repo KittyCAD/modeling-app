@@ -240,7 +240,7 @@ impl crate::lsp::backend::Backend for Backend {
         }
 
         // Send the notification to the client that the ast was updated.
-        if self.can_execute().await {
+        if self.can_execute().await || self.executor_ctx().await.is_none() {
             // Only send the notification if we can execute.
             // Otherwise it confuses the client.
             self.client
