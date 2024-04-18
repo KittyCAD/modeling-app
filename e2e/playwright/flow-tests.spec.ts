@@ -496,7 +496,7 @@ const sketchOnPlaneAndBackSideTest = async (
 
 test.describe('Can create sketches on all planes and their back sides', () => {
   test('XY', async ({ page }) => {
-    sketchOnPlaneAndBackSideTest(
+    await sketchOnPlaneAndBackSideTest(
       page,
       'XY',
       { x: 600, y: 388 } // red plane
@@ -505,23 +505,23 @@ test.describe('Can create sketches on all planes and their back sides', () => {
   })
 
   test('YZ', async ({ page }) => {
-    sketchOnPlaneAndBackSideTest(page, 'YZ', { x: 700, y: 250 }) // green plane
+    await sketchOnPlaneAndBackSideTest(page, 'YZ', { x: 700, y: 250 }) // green plane
   })
 
   test('XZ', async ({ page }) => {
-    sketchOnPlaneAndBackSideTest(page, 'XZ', { x: 700, y: 80 }) // blue plane
+    await sketchOnPlaneAndBackSideTest(page, 'XZ', { x: 700, y: 80 }) // blue plane
   })
 
   test('-XY', async ({ page }) => {
-    sketchOnPlaneAndBackSideTest(page, '-XY', { x: 600, y: 118 }) // back of red plane
+    await sketchOnPlaneAndBackSideTest(page, '-XY', { x: 600, y: 118 }) // back of red plane
   })
 
   test('-YZ', async ({ page }) => {
-    sketchOnPlaneAndBackSideTest(page, '-YZ', { x: 700, y: 219 }) // back of green plane
+    await sketchOnPlaneAndBackSideTest(page, '-YZ', { x: 700, y: 219 }) // back of green plane
   })
 
   test('-XZ', async ({ page }) => {
-    sketchOnPlaneAndBackSideTest(page, '-XZ', { x: 700, y: 427 }) // back of blue plane
+    await sketchOnPlaneAndBackSideTest(page, '-XZ', { x: 700, y: 427 }) // back of blue plane
   })
 })
 
