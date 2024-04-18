@@ -414,7 +414,7 @@ export async function getSettingsFilePaths(
     user: user + 'user' + SETTINGS_FILE_EXT,
     project:
       project !== undefined
-        ? project + (isTauri() ? sep : '/') + 'project' + SETTINGS_FILE_EXT
+        ? project + (isTauri() ? sep() : '/') + 'project' + SETTINGS_FILE_EXT
         : undefined,
   }
 }
