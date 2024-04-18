@@ -512,7 +512,7 @@ export const ModelingMachineProvider = ({
     })
   }, [modelingSend])
 
-    // Give the state back to the editorManager.
+  // Give the state back to the editorManager.
   useEffect(() => {
     editorManager.modelingSend = modelingSend
   }, [modelingSend])
