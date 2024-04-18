@@ -471,6 +471,7 @@ export const ModelingMachineProvider = ({
         'Get ABS X info': async ({
           selectionRanges,
         }): Promise<SetSelections> => {
+          console.log('abs x selectionRanges', selectionRanges)
           const { modifiedAst, pathToNodeMap } =
             await applyConstraintAbsDistance({
               constraint: 'xAbs',

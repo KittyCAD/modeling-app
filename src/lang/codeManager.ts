@@ -6,6 +6,7 @@ import { isTauri } from 'lib/isTauri'
 import { writeTextFile } from '@tauri-apps/plugin-fs'
 import toast from 'react-hot-toast'
 import { Params } from 'react-router-dom'
+import { editorManager } from 'lib/singletons'
 
 const PERSIST_CODE_TOKEN = 'persistCode'
 
@@ -45,15 +46,8 @@ export default class CodeManager {
     return this._code
   }
 
-  registerCallBacks({
-    setCode,
-    setEditorCode,
-  }: {
-    setCode: (arg: string) => void
-    setEditorCode: (arg: string) => void
-  }) {
+  registerCallBacks({ setCode }: { setCode: (arg: string) => void }) {
     this._updateState = setCode
-    this._updateEditor = setEditorCode
   }
 
   setParams(params: Params<string>) {
@@ -70,13 +64,14 @@ export default class CodeManager {
 
   // Update the code in the editor.
   updateCodeEditor(code: string): void {
-    if (this._code !== code) {
-      this.code = code
-      this._updateEditor(code)
-    }
+    const lastCode = this._code
+    this.code = code
     this._updateEditor(code)
-    // we could call out to code mirror here versus react.
-    // cm.dispatch({changes: { from, to, insert: code }});
+    if (editorManager.editorView) {
+      editorManager.editorView.dispatch({
+        changes: { from: 0, to: lastCode.length, insert: code },
+      })
+    }
   }
 
   // Update the code, state, and the code the code mirror editor sees.

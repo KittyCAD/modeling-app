@@ -35,7 +35,7 @@ import {
   defaultHighlightStyle,
 } from '@codemirror/language'
 import interact from '@replit/codemirror-interact'
-import { kclManager, editorManager } from 'lib/singletons'
+import { kclManager, editorManager, codeManager } from 'lib/singletons'
 import { useKclContext } from 'lang/KclProvider'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { isTauri } from 'lib/isTauri'
@@ -68,7 +68,6 @@ export const KclEditorPane = () => {
     context.app.theme.current === Themes.System
       ? getSystemTheme()
       : context.app.theme.current
-  const { editorCode } = useKclContext()
   const { copilotLSP, kclLSP } = useLspContext()
   const navigate = useNavigate()
 
@@ -202,7 +201,7 @@ export const KclEditorPane = () => {
       className={'absolute inset-0 ' + (cursorBlinking.current ? 'blink' : '')}
     >
       <ReactCodeMirror
-        value={editorCode}
+        value={codeManager.code}
         extensions={editorExtensions}
         theme={theme}
         onCreateEditor={(_editorView) =>

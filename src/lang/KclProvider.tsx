@@ -7,7 +7,6 @@ import { codeManager, kclManager } from 'lib/singletons'
 
 const KclContext = createContext({
   code: codeManager?.code || '',
-  editorCode: codeManager?.code || '',
   programMemory: kclManager?.programMemory,
   ast: kclManager?.ast,
   isExecuting: kclManager?.isExecuting,
@@ -30,7 +29,6 @@ export function KclContextProvider({
   const { code: loadedCode } = useLoaderData() as IndexLoaderData
   // Both the code state and the editor state start off with the same code.
   const [code, setCode] = useState(loadedCode || codeManager.code)
-  const [editorCode, setEditorCode] = useState(code)
 
   const [programMemory, setProgramMemory] = useState(kclManager.programMemory)
   const [ast, setAst] = useState(kclManager.ast)
@@ -42,7 +40,6 @@ export function KclContextProvider({
   useEffect(() => {
     codeManager.registerCallBacks({
       setCode,
-      setEditorCode,
     })
     kclManager.registerCallBacks({
       setProgramMemory,
@@ -62,7 +59,6 @@ export function KclContextProvider({
     <KclContext.Provider
       value={{
         code,
-        editorCode,
         programMemory,
         ast,
         isExecuting,
