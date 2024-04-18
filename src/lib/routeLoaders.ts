@@ -101,6 +101,8 @@ export const fileLoader: LoaderFunction = async ({
       path: projectPath,
     })
     // Update both the state and the editor's code.
+    // We explicitly do not write to the file here since we are loading from
+    // the file system and not the editor.
     codeManager.updateCodeStateEditor(code)
     kclManager.executeCode(true)
 
