@@ -934,7 +934,7 @@ export class EngineCommandManager {
     setIsStreamReady: (isStreamReady: boolean) => void
     width: number
     height: number
-    executeCode: (code?: string, force?: boolean) => void
+    executeCode: () => void
     token?: string
     makeDefaultPlanes: () => Promise<DefaultPlanes>
     settings?: {
@@ -1016,7 +1016,7 @@ export class EngineCommandManager {
         this.initPlanes().then(() => {
           this.resolveReady()
           setIsStreamReady(true)
-          executeCode(undefined, true)
+          executeCode()
         })
       },
       onClose: () => {
