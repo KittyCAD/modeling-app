@@ -23,6 +23,12 @@ export function setThemeClass(theme: Themes) {
   }
 }
 
+/**
+ * The engine takes RGBA values from 0-1
+ * So we convert from the conventional 0-255 found in Figma
+ * @param theme
+ * @returns { r: number, g: number, b: number, a: number }
+ */
 export function getThemeColorForEngine(theme: Themes) {
   const resolvedTheme = theme === Themes.System ? getSystemTheme() : theme
   const dark = 28 / 255
