@@ -23,8 +23,6 @@ import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { normaliseAngle } from '../../lib/utils'
 import { kclManager } from 'lib/singletons'
 
-const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
-
 export function angleLengthInfo({
   selectionRanges,
   angleOrLength = 'setLength',
@@ -102,6 +100,7 @@ export async function applyConstraintAngleLength({
       forceVal =
         Math.abs(forceVal) > 90 ? normaliseAngle(forceVal - 180) : forceVal
     }
+    const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
     const { valueNode, variableName, newVariableInsertIndex, sign } =
       await getModalInfo({
         value: forceVal,

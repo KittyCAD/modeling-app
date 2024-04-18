@@ -21,8 +21,6 @@ import {
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { kclManager } from 'lib/singletons'
 
-const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
-
 type Constraint = 'xAbs' | 'yAbs' | 'snapToYAxis' | 'snapToXAxis'
 
 export function absDistanceInfo({
@@ -93,6 +91,7 @@ export async function applyConstraintAbsDistance({
     referenceSegName: '',
   })
   let forceVal = valueUsedInTransform || 0
+  const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
   const { valueNode, variableName, newVariableInsertIndex, sign } =
     await getModalInfo({
       value: forceVal,
