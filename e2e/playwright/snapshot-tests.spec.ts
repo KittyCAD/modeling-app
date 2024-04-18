@@ -340,7 +340,7 @@ test('extrude on each default plane should be stable', async ({
   page,
   context,
 }) => {
-  await page.addInitScript(async () => {
+  await context.addInitScript(async () => {
     localStorage.setItem(
       'SETTINGS_PERSIST_KEY',
       JSON.stringify({
