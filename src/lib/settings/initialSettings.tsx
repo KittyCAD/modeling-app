@@ -307,6 +307,18 @@ export function createSettings() {
         ),
       }),
       /**
+       * Whether to highlight edges of 3D objects
+       */
+      highlightEdges: new Setting<boolean>({
+        defaultValue: true,
+        description: 'Whether to highlight edges of 3D objects',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+        hideOnLevel: 'project',
+      }),
+      /**
        * Whether to show the debug panel, which lets you see
        * various states of the app to aid in development
        */

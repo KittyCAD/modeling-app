@@ -99,7 +99,6 @@ export async function executor(
     width: 0,
     height: 0,
     executeCode: () => {},
-    theme: Themes.Dark,
     makeDefaultPlanes: () => {
       return new Promise((resolve) => resolve(defaultPlanes))
     },

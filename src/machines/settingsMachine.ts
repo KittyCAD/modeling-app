@@ -62,6 +62,17 @@ export const settingsMachine = createMachine(
             ],
           },
 
+          'set.modeling.highlightEdges': {
+            target: 'idle',
+            internal: true,
+            actions: [
+              'setSettingAtLevel',
+              'toastSuccess',
+              'setEngineEdges',
+              'persistSettings',
+            ],
+          },
+
           'Reset settings': {
             target: 'idle',
             internal: true,
