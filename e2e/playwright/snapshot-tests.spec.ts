@@ -479,7 +479,7 @@ test('Draft segments should look right', async ({ page, context }) => {
   })
 })
 
-test('Rectangles should look right', async ({ page, context }) => {
+test('Draft rectangles should look right', async ({ page, context }) => {
   const u = getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -507,6 +507,7 @@ test('Rectangles should look right', async ({ page, context }) => {
   )
 
   await page.waitForTimeout(300) // TODO detect animation ending, or disable animation
+  await u.closeDebugPanel()
 
   const startXPx = 600
 
@@ -516,27 +517,9 @@ test('Rectangles should look right', async ({ page, context }) => {
 
   // Draw the rectangle
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 30)
-  await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  await page.waitForTimeout(100)
+  await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 10, { steps: 5 })
 
-  await u.closeDebugPanel()
-
-  // Ensure the rectangle is drawn by checking the KCL code
-  await expect(page.locator('.cm-content')).toHaveText(
-    `const part001 = startSketchOn('-XZ')
-      |> startProfileAt([18.2, 5.98], %)
-      |> angledLine([180, 9.14], %, 'rectangleSegmentA001')
-      |> angledLine([
-          segAng('rectangleSegmentA001', %) + 90,
-          18.2
-        ], %, 'rectangleSegmentB001')
-      |> angledLine([
-          segAng('rectangleSegmentA001', %),
-          -segLen('rectangleSegmentA001', %)
-        ], %, 'rectangleSegmentC001')
-      |> close(%)`
-  )
-
+  // Ensure the draft rectangle looks the same as it usually does
   await expect(page).toHaveScreenshot({
     maxDiffPixels: 100,
   })
