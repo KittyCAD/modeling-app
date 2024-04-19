@@ -4,6 +4,7 @@ import Tooltip from 'components/Tooltip'
 import makeUrlPathRelative from 'lib/makeUrlPathRelative'
 import { paths } from 'lib/paths'
 import { NetworkHealthIndicator } from 'components/NetworkHealthIndicator'
+import { HelpMenu } from './HelpMenu'
 import { Link, useLocation } from 'react-router-dom'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 
@@ -50,6 +51,7 @@ export function LowerRightControls(props: React.PropsWithChildren) {
           <Tooltip position="top">Settings</Tooltip>
         </Link>
         <NetworkHealthIndicator />
+        <HelpMenu />
       </menu>
     </section>
   )
