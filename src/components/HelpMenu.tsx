@@ -19,7 +19,7 @@ export function HelpMenu(props: React.PropsWithChildren) {
           name="questionMark"
           className="w-7 h-7 rounded-full bg-chalkboard-110 dark:bg-chalkboard-80 text-chalkboard-10"
         />
-        <Tooltip position="top" className="ui-open:hidden">
+        <Tooltip position="top-right" className="ui-open:hidden">
           Help and resources
         </Tooltip>
       </Popover.Button>

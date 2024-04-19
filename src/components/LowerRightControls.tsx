@@ -15,7 +15,7 @@ export function LowerRightControls(props: React.PropsWithChildren) {
     '!text-chalkboard-70 hover:!text-chalkboard-80 dark:!text-chalkboard-40 dark:hover:!text-chalkboard-30'
 
   return (
-    <section className="fixed bottom-3 right-3">
+    <section className="fixed bottom-2 right-2">
       {props.children}
       <menu className="flex items-center justify-end gap-3">
         <a

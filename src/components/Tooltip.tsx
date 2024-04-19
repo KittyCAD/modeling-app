@@ -3,16 +3,13 @@
 // eslint-disable-next-line css-modules/no-unused-class
 import styles from './Tooltip.module.css'
 
+type TopOrBottom = 'top' | 'bottom'
+type LeftOrRight = 'left' | 'right'
+type Corner = `${TopOrBottom}-${LeftOrRight}`
+type TooltipPosition = TopOrBottom | LeftOrRight | Corner
+
 interface TooltipProps extends React.PropsWithChildren {
-  position?:
-    | 'top'
-    | 'bottom'
-    | 'left'
-    | 'right'
-    | 'blockStart'
-    | 'blockEnd'
-    | 'inlineStart'
-    | 'inlineEnd'
+  position?: TooltipPosition
   className?: string
   delay?: number
   hoverOnly?: boolean
