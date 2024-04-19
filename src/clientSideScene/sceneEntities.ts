@@ -38,7 +38,6 @@ import {
 } from './sceneInfra'
 import { isQuaternionVertical, quaternionFromUpNForward } from './helpers'
 import {
-  ArrayExpression,
   CallExpression,
   getTangentialArcToInfo,
   parse,

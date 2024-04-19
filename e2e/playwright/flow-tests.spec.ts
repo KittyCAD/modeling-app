@@ -328,9 +328,10 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
   await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 })
 
-/* THIS test crashes the engine, comment it out for now
+
+/* Ignore this test for now since its causing engine to crash
  *
-test('if your kcl gets an error from the engine it is inlined', async ({
+ * test('if your kcl gets an error from the engine it is inlined', async ({
   page,
 }) => {
   const u = getUtils(page)

@@ -1699,6 +1699,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "h2"
+version = "0.4.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "816ec7294445779408f36fe57bc5b7fc1cf59664059096c65f905c1c61f58069"
+dependencies = [
+ "bytes",
+ "fnv",
+ "futures-core",
+ "futures-sink",
+ "futures-util",
+ "http 1.1.0",
+ "indexmap 2.2.5",
+ "slab",
+ "tokio",
+ "tokio-util",
+ "tracing",
+]
+
+[[package]]
 name = "hashbrown"
 version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1838,7 +1857,7 @@ dependencies = [
  "futures-channel",
  "futures-core",
  "futures-util",
- "h2",
+ "h2 0.3.26",
  "http 0.2.9",
  "http-body 0.4.5",
  "httparse",
@@ -1861,6 +1880,7 @@ dependencies = [
  "bytes",
  "futures-channel",
  "futures-util",
+ "h2 0.4.4",
  "http 1.1.0",
  "http-body 1.0.0",
  "httparse",
@@ -3467,7 +3487,7 @@ dependencies = [
  "encoding_rs",
  "futures-core",
  "futures-util",
- "h2",
+ "h2 0.3.26",
  "http 0.2.9",
  "http-body 0.4.5",
  "hyper 0.14.27",
@@ -3505,8 +3525,10 @@ checksum = "2d66674f2b6fb864665eea7a3c1ac4e3dfacd2fda83cf6f935a612e01b0e3338"
 dependencies = [
  "base64 0.21.2",
  "bytes",
+ "encoding_rs",
  "futures-core",
  "futures-util",
+ "h2 0.4.4",
  "http 1.1.0",
  "http-body 1.0.0",
  "http-body-util",
@@ -3527,6 +3549,7 @@ dependencies = [
  "serde_json",
  "serde_urlencoded",
  "sync_wrapper",
+ "system-configuration",
  "tokio",
  "tokio-rustls 0.25.0",
  "tokio-util",
@@ -4637,14 +4660,14 @@ dependencies = [
 
 [[package]]
 name = "tauri-plugin-http"
-version = "2.0.0-beta.4"
+version = "2.0.0-beta.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0f7f516a45d008e21ead191fa24f50ec38e9719caa7ab7758dcada1ad08aa887"
+checksum = "f27b2c90ed5473e1c068f523927fa0024212bc3a3f3a47c2a9c0b10b4b2e3ee4"
 dependencies = [
  "data-url",
- "http 0.2.9",
+ "http 1.1.0",
  "regex",
- "reqwest 0.11.22",
+ "reqwest 0.12.2",
  "schemars",
  "serde",
  "serde_json",

@@ -360,6 +360,7 @@ function enterEditMode(
     engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_batch_req',
       batch_id: uuidv4(),
+      responses: false,
       requests: [
         {
           cmd_id: uuidv4(),
