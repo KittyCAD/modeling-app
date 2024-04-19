@@ -21,7 +21,7 @@ import { LanguageServerClient } from 'editor/plugins/lsp'
 import { Marked } from '@ts-stack/markdown'
 import { posToOffset } from 'editor/plugins/lsp/util'
 import { Program, ProgramMemory } from 'lang/wasm'
-import { codeManager, kclManager } from 'lib/singletons'
+import { codeManager, editorManager, kclManager } from 'lib/singletons'
 import type { UnitLength } from 'wasm-lib/kcl/bindings/UnitLength'
 import { UpdateUnitsResponse } from 'wasm-lib/kcl/bindings/UpdateUnitsResponse'
 import { UpdateCanExecuteResponse } from 'wasm-lib/kcl/bindings/UpdateCanExecuteResponse'
@@ -57,6 +57,9 @@ export class LanguageServerPlugin implements PluginValue {
         },
         contentChanges: [{ text: code }],
       })
+      if (editorManager.editorView) {
+        //editorManager.handleOnViewUpdate(editorManager.editorView)
+      }
     } catch (e) {
       console.error(e)
     }
@@ -357,15 +360,9 @@ export class LanguageServerPlugin implements PluginValue {
     try {
       switch (notification.method) {
         case 'textDocument/publishDiagnostics':
-          const params = notification.params as PublishDiagnosticsParams
-          this.processDiagnostics(params)
-          // Update the kcl errors pane.
-          /*if (!kclManager.isExecuting) {
-            kclManager.kclErrors = lspDiagnosticsToKclErrors(
-              this.view.state.doc,
-              params.diagnostics
-            )
-          }*/
+          //const params = notification.params as PublishDiagnosticsParams
+          // this is sometimes slower than our actual typing.
+          //this.processDiagnostics(params)
           break
         case 'window/logMessage':
           console.log(
@@ -385,17 +382,6 @@ export class LanguageServerPlugin implements PluginValue {
           // The server has updated the AST, we should update elsewhere.
           let updatedAst = notification.params as Program
           console.log('[lsp]: Updated AST', updatedAst)
-          // Update the ast when we are not already executing.
-          /* if (!kclManager.isExecuting) {
-            kclManager.ast = updatedAst
-            // Execute the ast.
-            console.log('[lsp]: executing ast')
-            await kclManager.executeAst(updatedAst)
-            console.log('[lsp]: executed ast', kclManager.kclErrors)
-            let diagnostics = kclErrorsToDiagnostics(kclManager.kclErrors)
-            this.view.dispatch(setDiagnostics(this.view.state, diagnostics))
-            console.log('[lsp]: updated diagnostics')
-          }*/
 
           // Update the folding ranges, since the AST has changed.
           // This is a hack since codemirror does not support async foldService.

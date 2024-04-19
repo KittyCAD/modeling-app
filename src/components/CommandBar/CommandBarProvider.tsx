@@ -1,6 +1,7 @@
 import { useMachine } from '@xstate/react'
+import { editorManager } from 'lib/singletons'
 import { commandBarMachine } from 'machines/commandBarMachine'
-import { createContext } from 'react'
+import { createContext, useEffect } from 'react'
 import { EventFrom, StateFrom } from 'xstate'
 
 type CommandsContextType = {
@@ -28,6 +29,10 @@ export const CommandBarProvider = ({
         )
       },
     },
+  })
+
+  useEffect(() => {
+    editorManager.setCommandBarSend(commandBarSend)
   })
 
   return (

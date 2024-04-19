@@ -1,6 +1,8 @@
 import { lexer, initPromise } from './wasm'
 
-beforeAll(() => initPromise)
+beforeAll(async () => {
+  await initPromise
+})
 
 describe('testing lexer', () => {
   it('async lexer works too', async () => {

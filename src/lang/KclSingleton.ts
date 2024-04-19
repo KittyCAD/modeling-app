@@ -1,6 +1,6 @@
 import { executeAst } from 'useStore'
 import { Selections } from 'lib/selections'
-import { KCLError } from './errors'
+import { KCLError, kclErrorsToDiagnostics } from './errors'
 import { uuidv4 } from 'lib/utils'
 import { EngineCommandManager } from './std/engineConnection'
 
@@ -17,7 +17,7 @@ import {
   ExtrudeGroup,
 } from 'lang/wasm'
 import { getNodeFromPath } from './queryAst'
-import { codeManager } from 'lib/singletons'
+import { codeManager, editorManager } from 'lib/singletons'
 
 export class KclManager {
   private _ast: Program = {
@@ -90,6 +90,8 @@ export class KclManager {
   }
   set kclErrors(kclErrors) {
     this._kclErrors = kclErrors
+    let diagnostics = kclErrorsToDiagnostics(kclErrors)
+    editorManager.setDiagnostics(diagnostics)
     this._kclErrorsCallBack(kclErrors)
   }
 

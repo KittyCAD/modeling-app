@@ -17,6 +17,7 @@ import {
   sceneInfra,
   engineCommandManager,
   codeManager,
+  editorManager,
 } from 'lib/singletons'
 import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
 import {
@@ -98,17 +99,6 @@ export const ModelingMachineProvider = ({
   )
   useHotkeys('meta + shift + .', () => coreDump(coreDumpManager, true))
 
-  const {
-    isShiftDown,
-    editorView,
-    setLastCodeMirrorSelectionUpdatedFromScene,
-  } = useStore((s) => ({
-    isShiftDown: s.isShiftDown,
-    editorView: s.editorView,
-    setLastCodeMirrorSelectionUpdatedFromScene:
-      s.setLastCodeMirrorSelectionUpdatedFromScene,
-  }))
-
   // Settings machine setup
   // const retrievedSettings = useRef(
   // localStorage?.getItem(MODELING_PERSIST_KEY) || '{}'
@@ -135,29 +125,33 @@ export const ModelingMachineProvider = ({
         'Set selection': assign(({ selectionRanges }, event) => {
           if (event.type !== 'Set selection') return {} // this was needed for ts after adding 'Set selection' action to on done modal events
           const setSelections = event.data
-          if (!editorView) return {}
+          if (!editorManager.editorView) return {}
           const dispatchSelection = (selection?: EditorSelection) => {
             if (!selection) return // TODO less of hack for the below please
-            setLastCodeMirrorSelectionUpdatedFromScene(Date.now())
-            setTimeout(() => editorView.dispatch({ selection }))
+            editorManager.lastSelectionEvent = Date.now()
+            setTimeout(() => {
+              if (editorManager.editorView) {
+                editorManager.editorView.dispatch({ selection })
+              }
+            })
           }
           let selections: Selections = {
             codeBasedSelections: [],
             otherSelections: [],
           }
           if (setSelections.selectionType === 'singleCodeCursor') {
-            if (!setSelections.selection && isShiftDown) {
-            } else if (!setSelections.selection && !isShiftDown) {
+            if (!setSelections.selection && editorManager.isShiftDown) {
+            } else if (!setSelections.selection && !editorManager.isShiftDown) {
               selections = {
                 codeBasedSelections: [],
                 otherSelections: [],
               }
-            } else if (setSelections.selection && !isShiftDown) {
+            } else if (setSelections.selection && !editorManager.isShiftDown) {
               selections = {
                 codeBasedSelections: [setSelections.selection],
                 otherSelections: [],
               }
-            } else if (setSelections.selection && isShiftDown) {
+            } else if (setSelections.selection && editorManager.isShiftDown) {
               selections = {
                 codeBasedSelections: [
                   ...selectionRanges.codeBasedSelections,
@@ -180,6 +174,7 @@ export const ModelingMachineProvider = ({
                 engineCommandManager.sendSceneCommand(event)
               )
             updateSceneObjectColors()
+
             return {
               selectionRanges: selections,
             }
@@ -192,7 +187,7 @@ export const ModelingMachineProvider = ({
           }
 
           if (setSelections.selectionType === 'otherSelection') {
-            if (isShiftDown) {
+            if (editorManager.isShiftDown) {
               selections = {
                 codeBasedSelections: selectionRanges.codeBasedSelections,
                 otherSelections: [setSelections.selection],
@@ -515,6 +510,19 @@ export const ModelingMachineProvider = ({
       modelingSend({ type: 'Re-execute' })
     })
   }, [modelingSend])
+
+  // Give the state back to the editorManager.
+  useEffect(() => {
+    editorManager.modelingSend = modelingSend
+  }, [modelingSend])
+
+  useEffect(() => {
+    editorManager.modelingEvent = modelingState.event
+  }, [modelingState.event])
+
+  useEffect(() => {
+    editorManager.selectionRanges = modelingState.context.selectionRanges
+  }, [modelingState.context.selectionRanges])
 
   useStateMachineCommands({
     machineId: 'modeling',

@@ -25,6 +25,7 @@ import { AppInfo } from 'wasm-lib/kcl/bindings/AppInfo'
 import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
+import { TEST } from 'env'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Value } from '../wasm-lib/kcl/bindings/Value'
@@ -95,10 +96,15 @@ export const wasmUrl = () => {
 
 // Initialise the wasm module.
 const initialise = async () => {
-  const fullUrl = wasmUrl()
-  const input = await fetch(fullUrl)
-  const buffer = await input.arrayBuffer()
-  return init(buffer)
+  try {
+    const fullUrl = wasmUrl()
+    const input = await fetch(fullUrl)
+    const buffer = await input.arrayBuffer()
+    return await init(buffer)
+  } catch (e) {
+    console.log('Error initialising WASM', e)
+    throw e
+  }
 }
 
 export const initPromise = initialise()
@@ -153,10 +159,6 @@ export const executor = async (
   return _programMemory
 }
 
-const getSettingsState = import('components/SettingsAuthProvider').then(
-  (module) => module.getSettingsState
-)
-
 export const _executor = async (
   node: Program,
   programMemory: ProgramMemory = { root: {}, return: null },
@@ -164,8 +166,14 @@ export const _executor = async (
   isMock: boolean
 ): Promise<ProgramMemory> => {
   try {
-    const baseUnit =
-      (await getSettingsState)()?.modeling.defaultUnit.current || 'mm'
+    let baseUnit = 'mm'
+    if (!TEST) {
+      const getSettingsState = import('components/SettingsAuthProvider').then(
+        (module) => module.getSettingsState
+      )
+      baseUnit =
+        (await getSettingsState)()?.modeling.defaultUnit.current || 'mm'
+    }
     const memory: ProgramMemory = await execute_wasm(
       JSON.stringify(node),
       JSON.stringify(programMemory),

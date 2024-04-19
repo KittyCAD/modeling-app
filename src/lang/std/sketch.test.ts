@@ -25,7 +25,9 @@ const eachQuad: [number, [number, number]][] = [
   [675, [1, -1]],
 ]
 
-beforeAll(() => initPromise)
+beforeAll(async () => {
+  await initPromise
+})
 
 describe('testing getYComponent', () => {
   it('should return the vertical component of a vector correctly when given angles in each quadrant (and with angles < 0, or > 360)', () => {
