@@ -96,7 +96,6 @@ export const wasmUrl = () => {
 
 // Initialise the wasm module.
 const initialise = async () => {
-  console.log('Initialising WASM')
   try {
     const fullUrl = wasmUrl()
     const input = await fetch(fullUrl)
