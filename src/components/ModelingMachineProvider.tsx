@@ -330,12 +330,33 @@ export const ModelingMachineProvider = ({
                 type: 'enable_sketch_mode',
                 adjust_camera: true,
                 animated: !isReducedMotion(),
-                ortho: true,
+                ortho: false,
                 entity_id: data.faceId,
               },
             })
             // wait 600ms (animation takes 500, + 100 for safety)
             await new Promise((resolve) => setTimeout(resolve, 600))
+            await engineCommandManager.sendSceneCommand({
+              // CameraControls subscribes to default_camera_get_settings response events
+              // firing this at connection ensure the camera's are synced initially
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: {
+                type: 'default_camera_get_settings',
+              },
+            })
+            await engineCommandManager.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: {
+                type: 'enable_sketch_mode',
+                adjust_camera: true,
+                animated: false,
+                ortho: true,
+                entity_id: data.faceId,
+              },
+            })
+            await new Promise((resolve) => setTimeout(resolve, 50))
             await engineCommandManager.sendSceneCommand({
               // CameraControls subscribes to default_camera_get_settings response events
               // firing this at connection ensure the camera's are synced initially
@@ -358,6 +379,7 @@ export const ModelingMachineProvider = ({
             data.plane
           )
           await kclManager.updateAst(modifiedAst, false)
+          sceneInfra.camControls.syncDirection = 'clientToEngine'
           const quat = await getSketchQuaternion(pathToNode, data.zAxis)
           await sceneInfra.camControls.tweenCameraToQuaternion(quat)
           return {
@@ -381,7 +403,7 @@ export const ModelingMachineProvider = ({
               type: 'enable_sketch_mode',
               adjust_camera: true,
               animated: !isReducedMotion(),
-              ortho: true,
+              ortho: false,
               entity_id: info?.sketchDetails?.faceId || '',
             },
           })
@@ -396,6 +418,29 @@ export const ModelingMachineProvider = ({
               type: 'default_camera_get_settings',
             },
           })
+          await engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'enable_sketch_mode',
+              adjust_camera: true,
+              animated: false,
+              ortho: true,
+              entity_id: info?.sketchDetails?.faceId || '',
+            },
+          })
+          await new Promise((resolve) => setTimeout(resolve, 50))
+          await engineCommandManager.sendSceneCommand({
+            // CameraControls subscribes to default_camera_get_settings response events
+            // firing this at connection ensure the camera's are synced initially
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'default_camera_get_settings',
+            },
+          })
+          // sceneInfra.camControls.syncDirection = 'clientToEngine'
+          // await sceneInfra.camControls.animateToOrthographic()
           return {
             sketchPathToNode: sketchPathToNode || [],
             zAxis: info.sketchDetails.zAxis || null,

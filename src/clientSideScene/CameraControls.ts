@@ -259,8 +259,18 @@ export class CameraControls {
         this.camera instanceof OrthographicCamera &&
         camSettings.ortho_scale
       ) {
-        // TODO something isn't quiet right here
-        this.camera.zoom = camSettings.ortho_scale
+        const distanceToTarget = new Vector3(
+          camSettings.pos.x,
+          camSettings.pos.y,
+          camSettings.pos.z
+        ).distanceTo(
+          new Vector3(
+            camSettings.center.x,
+            camSettings.center.y,
+            camSettings.center.z
+          )
+        )
+        this.camera.zoom = (camSettings.ortho_scale * 40) / distanceToTarget
       }
       this.onCameraChange()
     }
@@ -975,8 +985,8 @@ export class CameraControls {
 function calculateNearFarFromFOV(fov: number) {
   const nearFarRatio = (fov - 3) / (45 - 3)
   // const z_near = 0.1 + nearFarRatio * (5 - 0.1)
-  const z_far = 1000 + nearFarRatio * (100000 - 1000)
-  return { z_near: 0.1, z_far }
+  // const z_far = 1000 + nearFarRatio * (100000 - 1000)
+  return { z_near: 0.1, z_far: 1000 }
 }
 
 function convertThreeCamValuesToEngineCam({

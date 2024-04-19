@@ -101,6 +101,7 @@ export type ModelingMachineEvent =
         | {
             type: 'defaultPlane'
             plane: DefaultPlaneStr
+            planeId: string
           }
         | {
             type: 'extrudeFace'
@@ -869,12 +870,37 @@ export const modelingMachine = createMachine(
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
             cmd: {
-              type: 'sketch_mode_disable',
+              type: 'default_camera_disable_sketch_mode',
             },
           })
           .then(async () => {
-            await new Promise((resolve) => setTimeout(resolve, 600))
-            console.log('getting fresh cam shit')
+            // there doesn't appear to be an animation, but if there was one we could add a wait here
+
+            await engineCommandManager.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: {
+                type: 'default_camera_set_perspective',
+              },
+            })
+            sceneInfra.camControls.syncDirection = 'engineToClient'
+            await engineCommandManager.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: {
+                type: 'default_camera_set_perspective',
+              },
+            })
+            await engineCommandManager.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: {
+                type: 'default_camera_look_at',
+                center: { x: 0, y: 0, z: 0 },
+                vantage: sceneInfra.camControls.camera.position,
+                up: { x: 0, y: 0, z: 1 },
+              },
+            })
             await engineCommandManager.sendSceneCommand({
               // CameraControls subscribes to default_camera_get_settings response events
               // firing this at connection ensure the camera's are synced initially
@@ -1001,18 +1027,10 @@ export const modelingMachine = createMachine(
           cmd_id: uuidv4(),
           cmd: {
             type: 'set_selection_filter',
-            filter: ['face'],
+            filter: ['face', 'plane'],
           },
         }),
-      'set selection filter to defaults': () =>
-        engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'set_selection_filter',
-            filter: ['face', 'edge', 'solid2d'],
-          },
-        }),
+      'set selection filter to defaults': () => kclManager.enterEditMode(),
     },
     // end actions
   }

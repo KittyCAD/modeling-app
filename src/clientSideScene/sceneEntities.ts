@@ -1325,7 +1325,7 @@ export class SceneEntities {
       },
       onClick: async (args) => {
         const checkExtrudeFaceClick = async (): Promise<
-          'face' | 'plane' | 'other'
+          ['face' | 'plane' | 'other', string]
         > => {
           const { streamDimensions } = useStore.getState()
           const { entity_id } = await sendSelectEventToEngine(
@@ -1333,30 +1333,45 @@ export class SceneEntities {
             document.getElementById('video-stream') as HTMLVideoElement,
             streamDimensions
           )
-          if (!entity_id) return 'other'
+          if (!entity_id) return ['other', '']
           if (
             engineCommandManager.defaultPlanes?.xy === entity_id ||
             engineCommandManager.defaultPlanes?.xz === entity_id ||
             engineCommandManager.defaultPlanes?.yz === entity_id
           ) {
-            return 'plane'
+            return ['plane', entity_id]
           }
           const artifact = this.engineCommandManager.artifactMap[entity_id]
           if (artifact?.commandType !== 'solid3d_get_extrusion_face_info')
-            return 'other'
-          const faceInfo: Models['FaceIsPlanar_type'] = (
-            await this.engineCommandManager.sendSceneCommand({
-              type: 'modeling_cmd_req',
-              cmd_id: uuidv4(),
-              cmd: {
-                type: 'face_is_planar',
-                object_id: entity_id,
-              },
-            })
-          )?.data?.data
+            return ['other', entity_id]
+          await this.engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'enable_sketch_mode',
+              adjust_camera: false,
+              animated: false,
+              ortho: false,
+              entity_id,
+            },
+          })
+          const faceInfo: Models['FaceIsPlanar_type'] =
+            // TODO change typing to get_sketch_mode_plane once lib is updated
+            (
+              await this.engineCommandManager.sendSceneCommand({
+                type: 'modeling_cmd_req',
+                cmd_id: uuidv4(),
+                cmd: { type: 'get_sketch_mode_plane' },
+              })
+            )?.data?.data
+          await this.engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: { type: 'sketch_mode_disable' },
+          })
           if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
-            return 'other'
-          const { z_axis, origin, y_axis } = faceInfo
+            return ['other', entity_id]
+          const { z_axis, y_axis, origin } = faceInfo
           const pathToNode = getNodePathFromSourceRange(
             kclManager.ast,
             artifact.range
@@ -1379,11 +1394,12 @@ export class SceneEntities {
               faceId: entity_id,
             },
           })
-          return 'face'
+          return ['face', entity_id]
         }
 
         const faceResult = await checkExtrudeFaceClick()
-        if (faceResult === 'face') return
+        console.log('faceResult', faceResult)
+        if (faceResult[0] === 'face') return
 
         if (!args || !args.intersects?.[0]) return
         if (args.mouseEvent.which !== 1) return
@@ -1409,6 +1425,7 @@ export class SceneEntities {
             plane: planeString,
             zAxis,
             yAxis,
+            planeId: faceResult[1],
           },
         })
       },
@@ -1708,20 +1725,37 @@ export async function getSketchOrientationDetails(
         zAxis: [zAxis.x, zAxis.y, zAxis.z],
         yAxis: [sketchGroup.yAxis.x, sketchGroup.yAxis.y, sketchGroup.yAxis.z],
         origin: [0, 0, 0],
+        faceId: sketchGroup.on.id,
       },
     }
   }
   if (sketchGroup.on.type === 'face') {
-    const faceInfo: Models['FaceIsPlanar_type'] = (
-      await engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'face_is_planar',
-          object_id: sketchGroup.on.faceId,
-        },
-      })
-    )?.data?.data
+    await engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'enable_sketch_mode',
+        adjust_camera: false,
+        animated: false,
+        ortho: false,
+        entity_id: sketchGroup.on.faceId,
+      },
+    })
+    const faceInfo: Models['FaceIsPlanar_type'] =
+      // TODO change typing to get_sketch_mode_plane once lib is updated
+      (
+        await engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: { type: 'get_sketch_mode_plane' },
+        })
+      )?.data?.data
+    engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: { type: 'sketch_mode_disable' },
+    })
+
     if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
       throw new Error('faceInfo')
     const { z_axis, y_axis, origin } = faceInfo
