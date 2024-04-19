@@ -1630,3 +1630,71 @@ test('Sketch on face', async ({ page }) => {
 |> close(%)
 |> extrude(5 + 7, %)`)
 })
+
+test('Can code mod a line length', async ({ page }) => {
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> xLine(-20, %)
+    `
+    )
+  })
+
+  const u = getUtils(page)
+  const PUR = 400 / 37.5 //pixeltoUnitRatio
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
+
+  // Click the line of code for xLine.
+  await page.getByText(`xLine(-20, %)`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
+  await page.waitForTimeout(100)
+
+  // enter sketch again
+  await page.getByRole('button', { name: 'Edit Sketch' }).click()
+  await page.waitForTimeout(300) // wait for animation
+  const startXPx = 600
+  await page.mouse.click(startXPx + PUR * 10, 1000 - PUR * 10)
+})
+
+/*test('Extrude from command bar selects extrude line after', async ({ page }) => {
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> xLine(-20, %)
+  |> close(%)
+    `
+    )
+  })
+
+  const u = getUtils(page)
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
+
+  // Click the line of code for xLine.
+  await page.getByText(`close(%)`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
+  await page.waitForTimeout(100)
+
+  await page.getByRole('button', { name: 'Extrude' }).click()
+  await page.waitForTimeout(100)
+  await page.keyboard.press('Enter')
+  await page.waitForTimeout(100)
+  await page.keyboard.press('Enter')
+  await page.waitForTimeout(100)
+
+})*/
