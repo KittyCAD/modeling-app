@@ -8,7 +8,13 @@ import { makeDefaultPlanes } from 'lang/wasm'
 export function useSetupEngineManager(
   streamRef: React.RefObject<HTMLDivElement>,
   token?: string,
-  theme = Themes.System
+  settings = {
+    theme: Themes.System,
+    highlightEdges: true,
+  } as {
+    theme: Themes
+    highlightEdges: boolean
+  }
 ) {
   const {
     setMediaStream,
@@ -46,7 +52,7 @@ export function useSetupEngineManager(
           return kclManager.executeCode(true)
         },
         token,
-        theme,
+        settings,
         makeDefaultPlanes: () => {
           return makeDefaultPlanes(kclManager.engineCommandManager)
         },

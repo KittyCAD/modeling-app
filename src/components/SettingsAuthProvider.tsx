@@ -116,6 +116,16 @@ export const SettingsAuthProviderBase = ({
             },
           })
         },
+        setEngineEdges: (context) => {
+          engineCommandManager.sendSceneCommand({
+            cmd_id: uuidv4(),
+            type: 'modeling_cmd_req',
+            cmd: {
+              type: 'edge_lines_visible' as any, // TODO update kittycad.ts to get this new command type
+              hidden: !context.modeling.highlightEdges.current,
+            },
+          })
+        },
         toastSuccess: (_, event) => {
           const eventParts = event.type.replace(/^set./, '').split('.') as [
             keyof typeof settings,

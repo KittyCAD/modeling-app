@@ -78,13 +78,16 @@ export const ModelingMachineProvider = ({
     settings: {
       context: {
         app: { theme },
-        modeling: { defaultUnit },
+        modeling: { defaultUnit, highlightEdges },
       },
     },
   } = useSettingsAuthContext()
   const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)
-  useSetupEngineManager(streamRef, token, theme.current)
+  useSetupEngineManager(streamRef, token, {
+    theme: theme.current,
+    highlightEdges: highlightEdges.current,
+  })
   const { htmlRef } = useStore((s) => ({
     htmlRef: s.htmlRef,
   }))

@@ -142,7 +142,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                             name="make-variable"
                             className="w-4 h-4"
                           />
-                          <Tooltip position="blockEnd">
+                          <Tooltip position="bottom">
                             New variable:{' '}
                             {
                               (

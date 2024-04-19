@@ -11,16 +11,11 @@ import { paths } from 'lib/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
 import {
-  createNewProject,
+  createAndOpenNewProject,
   getInitialDefaultDir,
-  getNextProjectIndex,
-  getProjectsInDir,
   getSettingsFolderPaths,
-  interpolateProjectNameWithIndex,
 } from 'lib/tauriFS'
-import { ONBOARDING_PROJECT_NAME } from './Onboarding'
-import { join, sep } from '@tauri-apps/api/path'
-import { bracket } from 'lib/exampleKcl'
+import { sep } from '@tauri-apps/api/path'
 import { isTauri } from 'lib/isTauri'
 import toast from 'react-hot-toast'
 import { invoke } from '@tauri-apps/api/core'
@@ -75,26 +70,8 @@ export const Settings = () => {
     if (isFileSettings) {
       navigate(dotDotSlash(1) + paths.ONBOARDING.INDEX)
     } else {
-      createAndOpenNewProject()
+      createAndOpenNewProject(context.app.projectDirectory.current, navigate)
     }
-  }
-
-  async function createAndOpenNewProject() {
-    const defaultDirectory = context.app.projectDirectory.current
-    const projects = await getProjectsInDir(defaultDirectory)
-    const nextIndex = await getNextProjectIndex(
-      ONBOARDING_PROJECT_NAME,
-      projects
-    )
-    const name = interpolateProjectNameWithIndex(
-      ONBOARDING_PROJECT_NAME,
-      nextIndex
-    )
-    const newFile = await createNewProject(
-      await join(defaultDirectory, name),
-      bracket
-    )
-    navigate(`${paths.FILE}/${encodeURIComponent(newFile.path)}`)
   }
 
   return (

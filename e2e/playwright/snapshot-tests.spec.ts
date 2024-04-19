@@ -394,6 +394,7 @@ const extrudeDefaultPlane = async (context: any, page: any, plane: string) => {
   })
   await u.openKclCodePanel()
 }
+
 test.describe('extrude on default planes should be stable', () => {
   test('XY', async ({ page, context }) => {
     await extrudeDefaultPlane(context, page, 'XY')

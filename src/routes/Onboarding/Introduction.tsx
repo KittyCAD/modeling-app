@@ -1,9 +1,4 @@
-import {
-  ONBOARDING_PROJECT_NAME,
-  OnboardingButtons,
-  useDismiss,
-  useNextClick,
-} from '.'
+import { OnboardingButtons, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
@@ -20,7 +15,11 @@ import { paths } from 'lib/paths'
 import { useEffect } from 'react'
 import { codeManager, kclManager } from 'lib/singletons'
 import { join } from '@tauri-apps/api/path'
-import { APP_NAME, PROJECT_ENTRYPOINT } from 'lib/constants'
+import {
+  APP_NAME,
+  ONBOARDING_PROJECT_NAME,
+  PROJECT_ENTRYPOINT,
+} from 'lib/constants'
 
 function OnboardingWithNewFile() {
   const navigate = useNavigate()

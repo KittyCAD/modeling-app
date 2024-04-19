@@ -227,11 +227,11 @@ export const NetworkHealthIndicator = () => {
             'rounded-sm ' + overallConnectionStateColor[overallState].bg
           }
         />
-        <Tooltip position="left" delay={750} className="ui-open:hidden">
+        <Tooltip position="top-right" className="ui-open:hidden">
           Network Health ({NETWORK_HEALTH_TEXT[overallState]})
         </Tooltip>
       </Popover.Button>
-      <Popover.Panel className="absolute right-0 left-auto top-full mt-1 w-64 flex flex-col gap-1 align-stretch bg-chalkboard-10 dark:bg-chalkboard-90 rounded shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50 text-sm">
+      <Popover.Panel className="absolute right-0 left-auto bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch bg-chalkboard-10 dark:bg-chalkboard-90 rounded shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50 text-sm">
         <div
           className={`flex items-center justify-between p-2 rounded-t-sm ${overallConnectionStateColor[overallState].bg} ${overallConnectionStateColor[overallState].icon}`}
         >
