@@ -1,17 +1,17 @@
 /* Adapted from https://github.com/argyleink/gui-challenges/blob/main/tooltips/tool-tip.css */
 
 .tooltip {
-  /* internal CSS vars */
-  --_delay: 200ms;
-  --_p-inline: 1ch;
-  --_p-block: 4px;
-  --_triangle-size: 7px;
-  /* --_bg: hsl(0 0% 20%); */
-  --_bg: var(--chalkboard-10);
-  --_shadow-alpha: 10%;
-
   /* Used to power spacing and layout for RTL languages */
   --isRTL: -1;
+
+  /* internal CSS vars */
+  --_delay: 200ms;
+  --_triangle-width: 8px;
+  --_triangle-height: 12px;
+  --_p-inline: calc(50% + calc(var(--isRTL) * var(--_triangle-width) / 2));
+  --_p-block: 4px;
+  --_bg: var(--chalkboard-10);
+  --_shadow-alpha: 10%;
 
   pointer-events: none;
   user-select: none;
@@ -39,12 +39,35 @@
   @apply text-chalkboard-110;
   will-change: filter;
   filter: drop-shadow(0 1px 3px hsl(0 0% 0% / var(--_shadow-alpha)))
-    drop-shadow(0 6px 12px hsl(0 0% 0% / var(--_shadow-alpha)));
+    drop-shadow(0 4px 8px hsl(0 0% 0% / var(--_shadow-alpha)));
 }
 
 :global(.dark) .tooltip {
   --_bg: var(--chalkboard-110);
+  --_shadow-alpha: 40%;
   @apply text-chalkboard-10;
+  filter: drop-shadow(
+      0 1px 0
+        oklch(
+          var(--primary-lightness) var(--primary-chroma) var(--primary-hue) /
+            var(--_shadow-alpha)
+        )
+    )
+    drop-shadow(
+      0 -1px 0 oklch(var(--primary-lightness) var(--primary-chroma)
+            var(--primary-hue) / var(--_shadow-alpha))
+    )
+    drop-shadow(
+      1px 0 0
+        oklch(
+          var(--primary-lightness) var(--primary-chroma) var(--primary-hue) /
+            var(--_shadow-alpha)
+        )
+    )
+    drop-shadow(
+      -1px 0 0 oklch(var(--primary-lightness) var(--primary-chroma)
+            var(--primary-hue) / var(--_shadow-alpha))
+    );
 }
 
 .tooltip:dir(rtl) {
@@ -89,6 +112,15 @@
   content: 'Tooltip:';
 }
 
+.caret {
+  width: 8px;
+  height: var(--_triangle-height);
+  position: absolute;
+  z-index: -1;
+  transform-origin: center center;
+  color: var(--_bg);
+}
+
 .top,
 .bottom {
   text-align: center;
@@ -96,46 +128,94 @@
 
 .tooltip.top {
   inset-inline-start: 50%;
-  inset-block-end: calc(100% + var(--_p-block) + var(--_triangle-size));
+  inset-block-end: calc(100% + var(--_p-block) + var(--_triangle-height));
   --_x: calc(50% * var(--isRTL));
 }
 
+.top .caret {
+  inset-block-start: calc(100% - 1px);
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+}
+
 .tooltip.top-right {
+  inset-inline-end: var(--_p-inline);
+  inset-block-end: calc(100% + var(--_p-block) + var(--_triangle-height));
+}
+
+/* The corner caret SVG is bottom-right oriented by default */
+.top-right .caret {
+  inset-block-start: calc(100% - 1px);
   inset-inline-end: 0;
-  inset-block-end: calc(100% + var(--_p-block) + var(--_triangle-size));
 }
 
 .tooltip.right {
-  inset-inline-start: calc(100% + var(--_p-inline) + var(--_triangle-size));
+  inset-inline-start: calc(100% + var(--_p-inline) + var(--_triangle-height));
   inset-block-end: 50%;
   --_y: 50%;
 }
 
+.right .caret {
+  inset-inline-end: calc(100% - 1px);
+  inset-block-start: 50%;
+  transform: translateY(-50%) rotate(90deg);
+}
+
 .tooltip.bottom-right {
+  inset-inline-end: var(--_p-inline);
+  inset-block-start: calc(100% + var(--_p-block) + var(--_triangle-height));
+}
+
+.bottom-right .caret {
+  inset-block-end: calc(100% - 1px);
   inset-inline-end: 0;
-  inset-block-start: calc(100% + var(--_p-block) + var(--_triangle-size));
+  transform: rotate(180deg) scaleX(-1);
 }
 
 .tooltip.bottom {
   --_x: calc(50% * var(--isRTL));
   inset-inline-start: 50%;
-  inset-block-start: calc(100% + var(--_p-block) + var(--_triangle-size));
+  inset-block-start: calc(100% + var(--_p-block) + var(--_triangle-height));
+}
+
+.bottom .caret {
+  inset-block-end: calc(100% - 1px);
+  inset-inline-start: 50%;
+  transform: translateX(-50%) scaleY(-1);
 }
 
 .tooltip.bottom-left {
+  inset-inline-start: var(--_p-inline);
+  inset-block-start: calc(100% + var(--_p-block) + var(--_triangle-height));
+}
+
+.bottom-left .caret {
+  inset-block-end: calc(100% - 1px);
   inset-inline-start: 0;
-  inset-block-start: calc(100% + var(--_p-block) + var(--_triangle-size));
+  transform: rotate(180deg);
 }
 
 .tooltip.left {
-  inset-inline-end: calc(100% + var(--_p-inline) + var(--_triangle-size));
+  inset-inline-end: calc(100% + var(--_p-inline) + var(--_triangle-height));
   inset-block-end: 50%;
   --_y: 50%;
 }
 
+.left .caret {
+  inset-inline-start: calc(100% - 1px);
+  inset-block-start: 50%;
+  transform: translateY(-50%) rotate(-90deg);
+}
+
 .tooltip.top-left {
+  inset-inline-start: var(--_p-inline);
+  inset-block-end: calc(100% + var(--_p-block) + var(--_triangle-height));
+}
+
+.top-left .caret {
+  inset-block-start: calc(100% - 1px);
   inset-inline-start: 0;
-  inset-block-end: calc(100% + var(--_p-block) + var(--_triangle-size));
+  transform: rotate(-90deg);
 }
 
 @media (prefers-reduced-motion: no-preference) {

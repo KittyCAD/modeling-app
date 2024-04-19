@@ -3,6 +3,7 @@
 // eslint-disable-next-line css-modules/no-unused-class
 import styles from './Tooltip.module.css'
 
+const SIDES = ['top', 'bottom', 'left', 'right'] as const
 type TopOrBottom = 'top' | 'bottom'
 type LeftOrRight = 'left' | 'right'
 type Corner = `${TopOrBottom}-${LeftOrRight}`
@@ -33,6 +34,31 @@ export default function Tooltip({
       style={{ '--_delay': delay + 'ms' } as React.CSSProperties}
     >
       {children}
+      <div className={styles.caret}>
+        {SIDES.includes(position as any) ? (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 8 12"
+          >
+            <path
+              fill="currentColor"
+              d="M3.0513 9.154c.304.9116 1.5935.9116 1.8974 0L8 0H0l3.0513 9.154Z"
+            />
+          </svg>
+        ) : (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 8 10"
+          >
+            <path
+              fill="currentColor"
+              d="m0 0 6.168 9.252C6.7168 10.0751 8 9.6865 8 8.6971V0H0Z"
+            />
+          </svg>
+        )}
+      </div>
     </div>
   )
 }
