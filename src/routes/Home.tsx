@@ -38,6 +38,7 @@ import { isTauri } from 'lib/isTauri'
 import { kclManager } from 'lib/singletons'
 import { useLspContext } from 'components/LspProvider'
 import { useRefreshSettings } from 'hooks/useRefreshSettings'
+import { LowerRightControls } from 'components/LowerRightControls'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
@@ -288,6 +289,7 @@ const Home = () => {
             </>
           )}
         </section>
+        <LowerRightControls />
       </div>
     </div>
   )

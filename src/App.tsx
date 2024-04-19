@@ -21,6 +21,7 @@ import { isTauri } from 'lib/isTauri'
 import { useLspContext } from 'components/LspProvider'
 import { useRefreshSettings } from 'hooks/useRefreshSettings'
 import { ModelingSidebar } from 'components/ModelingSidebar/ModelingSidebar'
+import { LowerRightControls } from 'components/LowerRightControls'
 import ModalContainer from 'react-modal-promise'
 
 export function App() {
@@ -127,6 +128,7 @@ export function App() {
       <ModelingSidebar paneOpacity={paneOpacity} />
       <Stream className="absolute inset-0 z-0" />
       {/* <CamToggle /> */}
+      <LowerRightControls />
     </div>
   )
 }

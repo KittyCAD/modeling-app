@@ -362,8 +362,8 @@ export const FileTree = ({
           className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
           onClick={createFile}
         >
-          <Tooltip position="inlineStart" delay={750}>
-            Create File
+          <Tooltip position="bottom-right" delay={750}>
+            Create file
           </Tooltip>
         </ActionButton>
 
@@ -377,8 +377,8 @@ export const FileTree = ({
           className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
           onClick={createFolder}
         >
-          <Tooltip position="inlineStart" delay={750}>
-            Create Folder
+          <Tooltip position="bottom-right" delay={750}>
+            Create folder
           </Tooltip>
         </ActionButton>
       </div>

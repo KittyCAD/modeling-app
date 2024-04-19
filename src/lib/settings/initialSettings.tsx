@@ -212,7 +212,7 @@ export function createSettings() {
                 data-testid="project-directory-button"
               >
                 <CustomIcon name="folder" className="w-5 h-5" />
-                <Tooltip position="inlineStart">Choose a folder</Tooltip>
+                <Tooltip position="top-right">Choose a folder</Tooltip>
               </button>
             </div>
           )
