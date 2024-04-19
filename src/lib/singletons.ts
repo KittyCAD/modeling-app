@@ -15,3 +15,10 @@ export const sceneInfra = new SceneInfra(engineCommandManager)
 engineCommandManager.camControlsCameraChange = sceneInfra.onCameraChange
 
 export const sceneEntitiesManager = new SceneEntities(engineCommandManager)
+
+if (typeof window !== 'undefined') {
+  ;(window as any).engineCommandManager = engineCommandManager
+  ;(window as any).kclManager = kclManager
+  ;(window as any).sceneInfra = sceneInfra
+  ;(window as any).sceneEntitiesManager = sceneEntitiesManager
+}
