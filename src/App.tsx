@@ -21,6 +21,7 @@ import { isTauri } from 'lib/isTauri'
 import { useLspContext } from 'components/LspProvider'
 import { useRefreshSettings } from 'hooks/useRefreshSettings'
 import { ModelingSidebar } from 'components/ModelingSidebar/ModelingSidebar'
+import ModalContainer from 'react-modal-promise'
 
 export function App() {
   useRefreshSettings(paths.FILE + 'SETTINGS')
@@ -122,6 +123,7 @@ export function App() {
         project={{ project, file }}
         enableMenu={true}
       />
+      <ModalContainer />
       <ModelingSidebar paneOpacity={paneOpacity} />
       <Stream className="absolute inset-0 z-0" />
       {/* <CamToggle /> */}
