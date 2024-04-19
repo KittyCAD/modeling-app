@@ -1,6 +1,6 @@
 {
   "name": "untitled-app",
-  "version": "21.7.1",
+  "version": "0.17.3",
   "private": true,
   "dependencies": {
     "@codemirror/autocomplete": "^6.16.0",
