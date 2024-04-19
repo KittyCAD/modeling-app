@@ -1,7 +1,8 @@
-
+import { KCLError } from 'lang/errors'
+import { Program } from 'lang/wasm'
 
 export enum WasmWorker {
-    Parser = 'parser',
+  Parser = 'parser',
 }
 export enum WasmWorkerEventType {
   Init = 'init',
@@ -13,10 +14,10 @@ export interface WasmWorkerOptions {
 }
 
 export interface ParserWorkerCall {
-    code: string
+  code: string
 }
 
-
+export type ParserWorkerResponse = Program | KCLError
 
 export interface WasmWorkerEvent {
   eventType: WasmWorkerEventType
@@ -24,4 +25,5 @@ export interface WasmWorkerEvent {
   worker: WasmWorker
 }
 
-
+export const rangeTypeFix = (ranges: number[][]): [number, number][] =>
+  ranges.map(([start, end]) => [start, end])

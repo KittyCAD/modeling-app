@@ -25,6 +25,7 @@ import { AppInfo } from 'wasm-lib/kcl/bindings/AppInfo'
 import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
+import { rangeTypeFix } from 'lang/workers/types'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Value } from '../wasm-lib/kcl/bindings/Value'
@@ -102,9 +103,6 @@ const initialise = async () => {
 }
 
 export const initPromise = initialise()
-
-export const rangeTypeFix = (ranges: number[][]): [number, number][] =>
-  ranges.map(([start, end]) => [start, end])
 
 export const parse = (code: string): Program => {
   try {
