@@ -42,3 +42,5 @@ export const RELEVANT_FILE_TYPES = [
   'step',
   'stl',
 ] as const
+/** The default name for a tutorial project */
+export const ONBOARDING_PROJECT_NAME = 'Tutorial Project $nn'

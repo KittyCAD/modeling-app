@@ -2,13 +2,16 @@ import { Popover } from '@headlessui/react'
 import Tooltip from './Tooltip'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { CustomIcon } from './CustomIcon'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { createAndOpenNewProject } from 'lib/tauriFS'
 
 const HelpMenuDivider = () => (
   <div className="h-[1px] bg-chalkboard-110 dark:bg-chalkboard-80" />
 )
 
 export function HelpMenu(props: React.PropsWithChildren) {
+  const location = useLocation()
+  const isInProject = location.pathname.includes('project')
   const navigate = useNavigate()
   const { settings } = useSettingsAuthContext()
 
@@ -87,7 +90,14 @@ export function HelpMenu(props: React.PropsWithChildren) {
                 level: 'user',
               },
             })
-            navigate('onboarding')
+            if (isInProject) {
+              navigate('onboarding')
+            } else {
+              createAndOpenNewProject(
+                settings.context.app.projectDirectory.current,
+                navigate
+              )
+            }
           }}
         >
           Reset onboarding

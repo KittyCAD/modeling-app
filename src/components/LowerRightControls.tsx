@@ -1,7 +1,6 @@
 import { APP_VERSION } from 'routes/Settings'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
-import makeUrlPathRelative from 'lib/makeUrlPathRelative'
 import { paths } from 'lib/paths'
 import { NetworkHealthIndicator } from 'components/NetworkHealthIndicator'
 import { HelpMenu } from './HelpMenu'
