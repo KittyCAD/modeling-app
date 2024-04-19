@@ -1665,7 +1665,7 @@ test('Can code mod a line length', async ({ page }) => {
   await page.mouse.move(startXPx + PUR * 15, 250 - PUR * 10)
   await page.mouse.click(615, 133)
   await page.getByRole('button', { name: 'length', exact: true }).click()
-    await page.getByText('Add constraining value').click()
+  await page.getByText('Add constraining value').click()
 
   await expect(page.locator('.cm-content')).toHaveText(`const length001 = 20
 const part001 = startSketchOn('XY')
