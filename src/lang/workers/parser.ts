@@ -1,22 +1,11 @@
-import { Codec, FromServer, IntoServer } from 'editor/plugins/lsp/codec'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
-import init, {
-  ServerConfig,
-  copilot_lsp_run,
-  kcl_lsp_run,
+import init, {parse_wasm
 } from 'wasm-lib/pkg/wasm_lib'
 import * as jsrpc from 'json-rpc-2.0'
-import {
-  LspWorkerEventType,
-  LspWorkerEvent,
-  LspWorker,
-  KclWorkerOptions,
-  CopilotWorkerOptions,
-} from 'editor/plugins/lsp/types'
-import { EngineCommandManager } from 'lang/std/engineConnection'
-
-const intoServer: IntoServer = new IntoServer()
-const fromServer: FromServer = FromServer.create()
+import { Program } from 'lang/wasm'
+import { KclError as RustKclError } from 'wasm-lib/kcl/bindings/KclError'
+import { KCLError } from 'lang/errors'
+import { WasmWorkerEventType, WasmWorkerEvent, WasmWorkerOptions } from './types'
 
 // Initialise the wasm module.
 const initialise = async (wasmUrl: string) => {
@@ -25,75 +14,40 @@ const initialise = async (wasmUrl: string) => {
   return init(buffer)
 }
 
-export async function copilotLspRun(
-  config: ServerConfig,
-  token: string,
-  devMode: boolean = false
-) {
+export const rangeTypeFix = (ranges: number[][]): [number, number][] =>
+  ranges.map(([start, end]) => [start, end])
+
+export const parse = (code: string): Program => {
   try {
-    console.log('starting copilot lsp')
-    await copilot_lsp_run(config, token, devMode)
+    const program: Program = parse_wasm(code)
+    return program
   } catch (e: any) {
-    console.log('copilot lsp failed', e)
-    // We can't restart here because a moved value, we should do this another way.
+    const parsed: RustKclError = JSON.parse(e.toString())
+    const kclError = new KCLError(
+      parsed.kind,
+      parsed.msg,
+      rangeTypeFix(parsed.sourceRanges)
+    )
+
+    console.log(kclError)
+    throw kclError
   }
 }
-
-export async function kclLspRun(
-  config: ServerConfig,
-  engineCommandManager: EngineCommandManager | null,
-  token: string,
-  baseUnit: string,
-  devMode: boolean = false
-) {
-  try {
-    console.log('start kcl lsp')
-    await kcl_lsp_run(config, engineCommandManager, baseUnit, token, devMode)
-  } catch (e: any) {
-    console.log('kcl lsp failed', e)
-    // We can't restart here because a moved value, we should do this another way.
-  }
-}
-
 onmessage = function (event) {
-  const { worker, eventType, eventData }: LspWorkerEvent = event.data
+  const { worker, eventType, eventData }: WasmWorkerEvent = event.data
 
   switch (eventType) {
-    case LspWorkerEventType.Init:
-      let { wasmUrl }: KclWorkerOptions | CopilotWorkerOptions = eventData as
-        | KclWorkerOptions
-        | CopilotWorkerOptions
+    case WasmWorkerEventType.Init:
+      let { wasmUrl }: WasmWorkerOptions = eventData as WasmWorkerOptions
       initialise(wasmUrl)
         .then((instantiatedModule) => {
           console.log('Worker: WASM module loaded', worker, instantiatedModule)
-          const config = new ServerConfig(
-            intoServer,
-            fromServer,
-            fileSystemManager
-          )
-          console.log('Starting worker', worker)
-          switch (worker) {
-            case LspWorker.Kcl:
-              const kclData = eventData as KclWorkerOptions
-              kclLspRun(
-                config,
-                null,
-                kclData.token,
-                kclData.baseUnit,
-                kclData.devMode
-              )
-              break
-            case LspWorker.Copilot:
-              let copilotData = eventData as CopilotWorkerOptions
-              copilotLspRun(config, copilotData.token, copilotData.devMode)
-              break
-          }
         })
         .catch((error) => {
           console.error('Worker: Error loading wasm module', worker, error)
         })
       break
-    case LspWorkerEventType.Call:
+    case WasmWorkerEventType.Call:
       const data = eventData as Uint8Array
       intoServer.enqueue(data)
       const json: jsrpc.JSONRPCRequest = Codec.decode(data)
@@ -110,16 +64,3 @@ onmessage = function (event) {
   }
 }
 
-new Promise<void>(async (resolve) => {
-  for await (const requests of fromServer.requests) {
-    const encoded = Codec.encode(requests as jsrpc.JSONRPCRequest)
-    postMessage(encoded)
-  }
-})
-
-new Promise<void>(async (resolve) => {
-  for await (const notification of fromServer.notifications) {
-    const encoded = Codec.encode(notification as jsrpc.JSONRPCRequest)
-    postMessage(encoded)
-  }
-})
