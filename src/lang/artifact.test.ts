@@ -14,9 +14,7 @@ const mySketch001 = startSketchOn('XY')
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)
   // |> rx(45, %)`
-    console.log('code', code)
     const programMemory = await enginelessExecutor(parse(code))
-    console.log('programMemory', programMemory)
     // @ts-ignore
     const sketch001 = programMemory?.root?.mySketch001
     expect(sketch001).toEqual({

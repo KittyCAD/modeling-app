@@ -27,6 +27,7 @@ const config = defineConfig({
         minForks: 1,
       }
     },
+      poolMatchGlobs: [["**/?(*.)test.?(c|m)[jt]s?(x)","forks"]],
     setupFiles: 'src/setupTests.ts',
     environment: 'happy-dom',
     coverage: {
