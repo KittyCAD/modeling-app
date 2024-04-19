@@ -42,8 +42,12 @@ import {
   getSketchQuaternion,
 } from 'clientSideScene/sceneEntities'
 import { sketchOnExtrudedFace, startSketchOnDefault } from 'lang/modifyAst'
-import { Program, coreDump } from 'lang/wasm'
-import { getNodePathFromSourceRange, isSingleCursorInPipe } from 'lang/queryAst'
+import { Program, VariableDeclaration, coreDump } from 'lang/wasm'
+import {
+  getNodeFromPath,
+  getNodePathFromSourceRange,
+  isSingleCursorInPipe,
+} from 'lang/queryAst'
 import { TEST } from 'env'
 import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
@@ -278,6 +282,12 @@ export const ModelingMachineProvider = ({
 
           return canExtrudeSelection(selectionRanges)
         },
+        'Sketch is empty': ({ sketchDetails }) =>
+          getNodeFromPath<VariableDeclaration>(
+            kclManager.ast,
+            sketchDetails?.sketchPathToNode || [],
+            'VariableDeclaration'
+          )?.node?.declarations[0]?.init.type !== 'PipeExpression',
         'Selection is on face': ({ selectionRanges }, { data }) => {
           if (data?.forceNewSketch) return false
           if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))
