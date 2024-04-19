@@ -25,8 +25,7 @@ import { AppInfo } from 'wasm-lib/kcl/bindings/AppInfo'
 import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
-import { WasmWorker, WasmWorkerEventType, WasmWorkerOptions, rangeTypeFix } from 'lang/workers/types'
-import ParserWorker from 'lang/workers/parser?worker'
+import { parser } from 'lib/singletons'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Value } from '../wasm-lib/kcl/bindings/Value'
@@ -105,20 +104,21 @@ const initialise = async () => {
 
 export const initPromise = initialise()
 
+export type PathToNode = [string | number, string][]
+
+interface Memory {
+  [key: string]: MemoryItem
+}
+
+export interface ProgramMemory {
+  root: Memory
+  return: ProgramReturn | null
+}
+
 export const parse = (code: string): Program => {
   try {
-    const parserWorker = new ParserWorker({ name: 'parse' })
-    const initEvent: WasmWorkerOptions = {
-      wasmUrl: wasmUrl(),
-    }
-    parserWorker.postMessage({
-      worker: WasmWorker.Parser,
-      eventType: WasmWorkerEventType.Init,
-      eventData: initEvent,
-    })
-parserWorker.onmessage = function (e) {
-      fromServer.add(e.data)
-    }
+    const program: Program = parse_wasm(code)
+    return program
   } catch (e: any) {
     const parsed: RustKclError = JSON.parse(e.toString())
     const kclError = new KCLError(
@@ -132,16 +132,9 @@ parserWorker.onmessage = function (e) {
   }
 }
 
-export type PathToNode = [string | number, string][]
-
-interface Memory {
-  [key: string]: MemoryItem
-}
-
-export interface ProgramMemory {
-  root: Memory
-  return: ProgramReturn | null
-}
+/*export const parse = async (code: string): Promise<Program> => {
+    return parser.parse(code)
+}*/
 
 export const executor = async (
   node: Program,

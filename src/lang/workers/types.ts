@@ -14,10 +14,14 @@ export interface WasmWorkerOptions {
 }
 
 export interface ParserWorkerCall {
+  uuid: string
   code: string
 }
 
-export type ParserWorkerResponse = Program | KCLError
+export interface ParserWorkerResponse {
+  uuid: string
+  response: Program | KCLError
+}
 
 export interface WasmWorkerEvent {
   eventType: WasmWorkerEventType
