@@ -8,7 +8,9 @@ import { getSketchSegmentFromSourceRange } from './sketchConstraints'
 import { Selection } from 'lib/selections'
 import { enginelessExecutor } from '../../lib/testHelpers'
 
-beforeAll(() => initPromise)
+beforeAll(async () => {
+  await initPromise
+})
 
 // testing helper function
 async function testingSwapSketchFnCall({
