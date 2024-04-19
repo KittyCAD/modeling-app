@@ -4,6 +4,7 @@ import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { CustomIcon } from './CustomIcon'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { createAndOpenNewProject } from 'lib/tauriFS'
+import { paths } from 'lib/paths'
 
 const HelpMenuDivider = () => (
   <div className="h-[1px] bg-chalkboard-110 dark:bg-chalkboard-80" />
@@ -11,7 +12,7 @@ const HelpMenuDivider = () => (
 
 export function HelpMenu(props: React.PropsWithChildren) {
   const location = useLocation()
-  const isInProject = location.pathname.includes('project')
+  const isInProject = location.pathname.includes(paths.FILE)
   const navigate = useNavigate()
   const { settings } = useSettingsAuthContext()
 
