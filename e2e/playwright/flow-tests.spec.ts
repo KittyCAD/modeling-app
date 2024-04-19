@@ -1640,7 +1640,7 @@ test('Can code mod a line length', async ({ page }) => {
   |> line([20, 0], %)
   |> line([0, 20], %)
   |> xLine(-20, %)
-    `
+`
     )
   })
 
@@ -1660,41 +1660,18 @@ test('Can code mod a line length', async ({ page }) => {
   // enter sketch again
   await page.getByRole('button', { name: 'Edit Sketch' }).click()
   await page.waitForTimeout(300) // wait for animation
-  const startXPx = 600
-  await page.mouse.click(startXPx + PUR * 10, 1000 - PUR * 10)
-})
 
-/*test('Extrude from command bar selects extrude line after', async ({ page }) => {
-  await page.addInitScript(async () => {
-    localStorage.setItem(
-      'persistCode',
-      `const part001 = startSketchOn('XY')
+  const startXPx = 500
+  await page.mouse.move(startXPx + PUR * 15, 250 - PUR * 10)
+  await page.mouse.click(615, 133)
+  await page.getByRole('button', { name: 'length', exact: true }).click()
+    await page.getByText('Add constraining value').click()
+
+  await expect(page.locator('.cm-content')).toHaveText(`const length001 = 20
+const part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
-  |> xLine(-20, %)
-  |> close(%)
-    `
-    )
-  })
-
-  const u = getUtils(page)
-  await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
-  await u.waitForAuthSkipAppStart()
-  await u.openDebugPanel()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-  await u.closeDebugPanel()
-
-  // Click the line of code for xLine.
-  await page.getByText(`close(%)`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
-  await page.waitForTimeout(100)
-
-  await page.getByRole('button', { name: 'Extrude' }).click()
-  await page.waitForTimeout(100)
-  await page.keyboard.press('Enter')
-  await page.waitForTimeout(100)
-  await page.keyboard.press('Enter')
-  await page.waitForTimeout(100)
-
-})*/
+  |> xLine(-length001, %)
+`)
+})
