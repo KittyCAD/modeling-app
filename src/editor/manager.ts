@@ -209,8 +209,6 @@ export default class EditorManager {
       return
     }
 
-    console.log('eventInfo', eventInfo)
-
     const deterministicEventInfo = {
       ...eventInfo,
       engineEvents: eventInfo.engineEvents.map((e) => ({
