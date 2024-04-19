@@ -362,7 +362,7 @@ angle: 90
 
   await u.waitForAuthSkipAppStart()
 
-  u.openDebugPanel()
+  await u.openDebugPanel()
   await u.expectCmdLog('[data-message-type="execution-done"]')
   await u.closeDebugPanel()
 
