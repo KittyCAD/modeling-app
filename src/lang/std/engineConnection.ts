@@ -365,7 +365,12 @@ class EngineConnection {
         // Request a candidate to use
         this.send({
           type: 'trickle_ice',
-          candidate: event.candidate.toJSON(),
+          candidate: {
+            candidate: event.candidate.candidate,
+            sdpMid: event.candidate.sdpMid || undefined,
+            sdpMLineIndex: event.candidate.sdpMLineIndex || undefined,
+            usernameFragment: event.candidate.usernameFragment || undefined,
+          },
         })
       })
 
@@ -694,7 +699,10 @@ failed cmd type was ${artifactThatFailed?.commandType}`
               return this.pc?.setLocalDescription(offer).then(() => {
                 this.send({
                   type: 'sdp_offer',
-                  offer,
+                  offer: {
+                    sdp: offer.sdp || '',
+                    type: offer.type,
+                  },
                 })
                 this.state = {
                   type: EngineConnectionStateType.Connecting,
@@ -797,14 +805,18 @@ failed cmd type was ${artifactThatFailed?.commandType}`
 
     this.onConnectionStarted(this)
   }
-  unreliableSend(message: object | string) {
+  // Do not change this back to an object or any, we should only be sending the
+  // WebSocketRequest type!
+  unreliableSend(message: Models['WebSocketRequest_type']) {
     // TODO(paultag): Add in logic to determine the connection state and
     // take actions if needed?
     this.unreliableDataChannel?.send(
       typeof message === 'string' ? message : JSON.stringify(message)
     )
   }
-  send(message: object | string) {
+  // Do not change this back to an object or any, we should only be sending the
+  // WebSocketRequest type!
+  send(message: Models['WebSocketRequest_type']) {
     // TODO(paultag): Add in logic to determine the connection state and
     // take actions if needed?
     this.websocket?.send(
@@ -1482,7 +1494,7 @@ export class EngineCommandManager {
   }: {
     id: string
     range: SourceRange
-    command: EngineCommand | string
+    command: EngineCommand
     ast: Program
     idToRangeMap?: { [key: string]: SourceRange }
   }): Promise<any> {
@@ -1645,11 +1657,13 @@ export class EngineCommandManager {
     const idToRangeMap: { [key: string]: SourceRange } =
       JSON.parse(idToRangeStr)
 
+    const command: EngineCommand = JSON.parse(commandStr)
+
     // We only care about the modeling command response.
     return this.sendModelingCommand({
       id,
       range,
-      command: commandStr,
+      command,
       ast: this.getAst(),
       idToRangeMap,
     }).then(({ raw }: { raw: WebSocketResponse | undefined | null }) => {
