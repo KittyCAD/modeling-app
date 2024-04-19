@@ -429,10 +429,10 @@ export const modelingMachine = createMachine(
                 cond: 'is editing existing sketch',
               },
 
-              "Equip rectangle tool": {
-                target: "Rectangle tool",
-                cond: "Sketch is empty"
-              }
+              'Equip rectangle tool': {
+                target: 'Rectangle tool',
+                cond: 'Sketch is empty',
+              },
             },
 
             states: {
