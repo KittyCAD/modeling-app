@@ -18,9 +18,19 @@ export interface ParserWorkerCall {
   code: string
 }
 
-export interface ParserWorkerResponse {
+export interface ParserWorkerInitResponse {
+  worker: WasmWorker
+  initialized: boolean
+}
+
+export interface ParserWorkerCallResponse {
   uuid: string
   response: Program | KCLError
+}
+
+export interface ParserWorkerResponse {
+  eventType: WasmWorkerEventType
+  response: ParserWorkerInitResponse | ParserWorkerCallResponse
 }
 
 export interface WasmWorkerEvent {

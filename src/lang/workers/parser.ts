@@ -26,6 +26,10 @@ onmessage = function (event) {
       initialise(wasmUrl)
         .then((instantiatedModule) => {
           console.log('Worker: WASM module loaded', worker, instantiatedModule)
+          postMessage({
+            eventType: WasmWorkerEventType.Init,
+            response: { worker: worker, initialized: true },
+          })
         })
         .catch((error) => {
           console.error('Worker: Error loading wasm module', worker, error)
@@ -35,7 +39,7 @@ onmessage = function (event) {
       const data = eventData as ParserWorkerCall
       try {
         const program: Program = parse_wasm(data.code)
-        postMessage(program)
+        postMessage({ uuid: data.uuid, response: program })
       } catch (e: any) {
         const parsed: RustKclError = JSON.parse(e.toString())
         const kclError = new KCLError(
@@ -44,7 +48,10 @@ onmessage = function (event) {
           rangeTypeFix(parsed.sourceRanges)
         )
 
-        postMessage(kclError)
+        postMessage({
+          eventType: WasmWorkerEventType.Call,
+          response: { uuid: data.uuid, response: kclError },
+        })
       }
       break
     default:

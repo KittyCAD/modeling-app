@@ -2,18 +2,19 @@ import {
   ParserWorkerResponse,
   WasmWorker,
   WasmWorkerEventType,
+  ParserWorkerCallResponse,
 } from 'lang/workers/types'
-import ParserWorker from 'lang/workers/parser?worker'
-import { wasmUrl } from 'lang/wasm'
+import Worker from 'lang/workers/parser?worker'
+import { Program, wasmUrl } from 'lang/wasm'
 import { KCLError } from 'lang/errors'
 import { v4 as uuidv4 } from 'uuid'
-export type { Program } from 'wasm-lib/kcl/bindings/Program'
 
 export default class Parser {
-  worker: ParserWorker | null = null
+  worker: any = new Worker({ name: 'parse' })
+  intitalized: boolean = false
   mappings: Map<string, Program | KCLError> = new Map()
 
-  async parse(code: string): Program {
+  async parse(code: string): Promise<Program> {
     this.ensureWorker()
     const uuid = uuidv4()
     this.worker.postMessage({
@@ -46,14 +47,17 @@ export default class Parser {
   }
 
   ensureWorker() {
-    if (!this.worker) {
+    if (!this.intitalized) {
       this.start()
     }
   }
 
   // Start the worker.
   start() {
-    this.worker = new ParserWorker({ name: 'parse' })
+    if (this.intitalized) {
+      console.log('Worker already initialized')
+      return
+    }
     this.worker.postMessage({
       worker: WasmWorker.Parser,
       eventType: WasmWorkerEventType.Init,
@@ -62,9 +66,16 @@ export default class Parser {
       },
     })
 
-    this.worker.onmessage = function (e) {
-      const { uuid, response } = e.data as ParserWorkerResponse
-      this.mappings.set(uuid, response)
+    this.worker.onmessage = function (r: ParserWorkerResponse) {
+      switch (r.eventType) {
+        case WasmWorkerEventType.Init:
+          this.intitalized = true
+          break
+        case WasmWorkerEventType.Call:
+          const c = r.response as ParserWorkerCallResponse
+          this.mappings.set(c.uuid, c.response)
+          break
+      }
     }
   }
 }
