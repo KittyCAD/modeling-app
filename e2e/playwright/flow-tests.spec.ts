@@ -1667,11 +1667,7 @@ test('Can code mod a line length', async ({ page }) => {
   await page.getByRole('button', { name: 'length', exact: true }).click()
   await page.getByText('Add constraining value').click()
 
-  await expect(page.locator('.cm-content')).toHaveText(`const length001 = 20
-const part001 = startSketchOn('XY')
-  |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> xLine(-length001, %)
-`)
+  await expect(page.locator('.cm-content')).toHaveText(
+    `const length001 = 20const part001 = startSketchOn('XY')  |> startProfileAt([-10, -10], %)  |> line([20, 0], %)  |> line([0, 20], %)  |> xLine(-length001, %)`
+  )
 })
