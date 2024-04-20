@@ -11,7 +11,9 @@ import { ToolTip } from '../../useStore'
 import { Selections } from 'lib/selections'
 import { enginelessExecutor } from '../../lib/testHelpers'
 
-beforeAll(() => initPromise)
+beforeAll(async () => {
+  await initPromise
+})
 
 describe('testing getConstraintType', () => {
   const helper = getConstraintTypeFromSourceHelper

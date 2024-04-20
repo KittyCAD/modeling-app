@@ -328,9 +328,7 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
   await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 })
 
-/* Ignore this test for now since its causing engine to crash
- *
- * test('if your kcl gets an error from the engine it is inlined', async ({
+test('if your kcl gets an error from the engine it is inlined', async ({
   page,
 }) => {
   const u = getUtils(page)
@@ -349,7 +347,7 @@ const sketch001 = startSketchOn(box, "revolveAxis")
 |> startProfileAt([5, 10], %)
 |> line([0, -10], %)
 |> line([2, 0], %)
-|> line([0, 10], %)
+|> line([0, -10], %)
 |> close(%)
 |> revolve({
 axis: getEdge('revolveAxis', box),
@@ -378,7 +376,7 @@ angle: 90
       'sketch profile must lie entirely on one side of the revolution axis'
     )
   ).toBeVisible()
-})*/
+})
 
 test('executes on load', async ({ page }) => {
   const u = getUtils(page)
@@ -1671,5 +1669,44 @@ test('Can code mod a line length', async ({ page }) => {
 
   await expect(page.locator('.cm-content')).toHaveText(
     `const length001 = 20const part001 = startSketchOn('XY')  |> startProfileAt([-10, -10], %)  |> line([20, 0], %)  |> line([0, 20], %)  |> xLine(-length001, %)`
+  )
+})
+
+test('Extrude from command bar selects extrude line after', async ({
+  page,
+}) => {
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> xLine(-20, %)
+  |> close(%)
+    `
+    )
+  })
+
+  const u = getUtils(page)
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
+
+  // Click the line of code for xLine.
+  await page.getByText(`close(%)`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
+  await page.waitForTimeout(100)
+
+  await page.getByRole('button', { name: 'Extrude' }).click()
+  await page.waitForTimeout(100)
+  await page.keyboard.press('Enter')
+  await page.waitForTimeout(100)
+  await page.keyboard.press('Enter')
+  await page.waitForTimeout(100)
+  await expect(page.locator('.cm-activeLine')).toHaveText(
+    `  |> extrude(5 + 7, %)`
   )
 })

@@ -1,11 +1,9 @@
 import { useModelingContext } from 'hooks/useModelingContext'
-import { kclManager } from 'lib/singletons'
+import { editorManager, kclManager } from 'lib/singletons'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 import { useEffect, useRef, useState } from 'react'
-import { useStore } from 'useStore'
 
 export function AstExplorer() {
-  const setHighlightRange = useStore((s) => s.setHighlightRange)
   const { context } = useModelingContext()
   const pathToNode = getNodePathFromSourceRange(
     // TODO maybe need to have callback to make sure it stays in sync
@@ -42,7 +40,7 @@ export function AstExplorer() {
       <div
         className="h-full relative"
         onMouseLeave={(e) => {
-          setHighlightRange([0, 0])
+          editorManager.setHighlightRange([0, 0])
         }}
       >
         <pre className="text-xs">
@@ -88,7 +86,6 @@ function DisplayObj({
   filterKeys: string[]
   node: any
 }) {
-  const setHighlightRange = useStore((s) => s.setHighlightRange)
   const { send } = useModelingContext()
   const ref = useRef<HTMLPreElement>(null)
   const [hasCursor, setHasCursor] = useState(false)
@@ -112,12 +109,12 @@ function DisplayObj({
         hasCursor ? 'bg-violet-100/80 dark:bg-violet-100/25' : ''
       }`}
       onMouseEnter={(e) => {
-        setHighlightRange([obj?.start || 0, obj.end])
+        editorManager.setHighlightRange([obj?.start || 0, obj.end])
         e.stopPropagation()
       }}
       onMouseMove={(e) => {
         e.stopPropagation()
-        setHighlightRange([obj?.start || 0, obj.end])
+        editorManager.setHighlightRange([obj?.start || 0, obj.end])
       }}
       onClick={(e) => {
         send({

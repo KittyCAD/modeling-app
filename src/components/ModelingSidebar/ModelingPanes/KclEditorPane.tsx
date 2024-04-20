@@ -1,13 +1,8 @@
-import { undo, redo } from '@codemirror/commands'
 import ReactCodeMirror from '@uiw/react-codemirror'
 import { TEST } from 'env'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import { useConvertToVariable } from 'hooks/useToolbarGuards'
 import { Themes, getSystemTheme } from 'lib/theme'
-import { useEffect, useMemo, useRef } from 'react'
-import { useStore } from 'useStore'
-import { processCodeMirrorRanges } from 'lib/selections'
+import { useEffect, useMemo } from 'react'
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
 import { lineHighlightField } from 'editor/highlightextension'
 import { roundOff } from 'lib/utils'
@@ -29,7 +24,7 @@ import {
   historyKeymap,
   history,
 } from '@codemirror/commands'
-import { lintGutter, lintKeymap, linter } from '@codemirror/lint'
+import { lintGutter, lintKeymap } from '@codemirror/lint'
 import {
   foldGutter,
   foldKeymap,
@@ -39,25 +34,20 @@ import {
   syntaxHighlighting,
   defaultHighlightStyle,
 } from '@codemirror/language'
-import { useModelingContext } from 'hooks/useModelingContext'
 import interact from '@replit/codemirror-interact'
-import { engineCommandManager, sceneInfra, kclManager } from 'lib/singletons'
-import { useKclContext } from 'lang/KclProvider'
-import { ModelingMachineEvent } from 'machines/modelingMachine'
+import { kclManager, editorManager, codeManager } from 'lib/singletons'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { isTauri } from 'lib/isTauri'
 import { useNavigate } from 'react-router-dom'
 import { paths } from 'lib/paths'
 import makeUrlPathRelative from 'lib/makeUrlPathRelative'
 import { useLspContext } from 'components/LspProvider'
-import { Prec, EditorState, Extension, SelectionRange } from '@codemirror/state'
+import { Prec, EditorState, Extension } from '@codemirror/state'
 import {
   closeBrackets,
   closeBracketsKeymap,
   completionKeymap,
-  hasNextSnippetField,
 } from '@codemirror/autocomplete'
-import { kclErrorsToDiagnostics } from 'lang/errors'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -77,13 +67,6 @@ export const KclEditorPane = () => {
     context.app.theme.current === Themes.System
       ? getSystemTheme()
       : context.app.theme.current
-  const { editorView, setEditorView, isShiftDown } = useStore((s) => ({
-    editorView: s.editorView,
-    setEditorView: s.setEditorView,
-    isShiftDown: s.isShiftDown,
-  }))
-  const { editorCode, errors } = useKclContext()
-  const lastEvent = useRef({ event: '', time: Date.now() })
   const { copilotLSP, kclLSP } = useLspContext()
   const navigate = useNavigate()
 
@@ -96,90 +79,15 @@ export const KclEditorPane = () => {
 
   useHotkeys('mod+z', (e) => {
     e.preventDefault()
-    if (editorView) {
-      undo(editorView)
-    }
+    editorManager.undo()
   })
   useHotkeys('mod+shift+z', (e) => {
     e.preventDefault()
-    if (editorView) {
-      redo(editorView)
-    }
+    editorManager.redo()
   })
 
-  const {
-    context: { selectionRanges },
-    send,
-    state,
-  } = useModelingContext()
-
-  const { settings } = useSettingsAuthContext()
-  const textWrapping = settings.context.textEditor.textWrapping
-  const cursorBlinking = settings.context.textEditor.blinkingCursor
-  const { commandBarSend } = useCommandsContext()
-  const { enable: convertEnabled, handleClick: convertCallback } =
-    useConvertToVariable()
-
-  const lastSelection = useRef('')
-  const onUpdate = (viewUpdate: ViewUpdate) => {
-    // If we are just fucking around in a snippet, return early and don't
-    // trigger stuff below that might cause the component to re-render.
-    // Otherwise we will not be able to tab thru the snippet portions.
-    // We explicitly dont check HasPrevSnippetField because we always add
-    // a ${} to the end of the function so that's fine.
-    if (hasNextSnippetField(viewUpdate.view.state)) {
-      return
-    }
-    if (!editorView) {
-      setEditorView(viewUpdate.view)
-    }
-    const selString = stringifyRanges(
-      viewUpdate?.state?.selection?.ranges || []
-    )
-    if (selString === lastSelection.current) {
-      // onUpdate is noisy and is fired a lot by extensions
-      // since we're only interested in selections changes we can ignore most of these.
-      return
-    }
-    lastSelection.current = selString
-
-    if (
-      // TODO find a less lazy way of getting the last
-      Date.now() - useStore.getState().lastCodeMirrorSelectionUpdatedFromScene <
-      150
-    )
-      return // update triggered by scene selection
-    if (sceneInfra.selected) return // mid drag
-    const ignoreEvents: ModelingMachineEvent['type'][] = [
-      'Equip Line tool',
-      'Equip tangential arc to',
-    ]
-    if (ignoreEvents.includes(state.event.type)) return
-    const eventInfo = processCodeMirrorRanges({
-      codeMirrorRanges: viewUpdate.state.selection.ranges,
-      selectionRanges,
-      isShiftDown,
-    })
-    if (!eventInfo) return
-    const deterministicEventInfo = {
-      ...eventInfo,
-      engineEvents: eventInfo.engineEvents.map((e) => ({
-        ...e,
-        cmd_id: 'static',
-      })),
-    }
-    const stringEvent = JSON.stringify(deterministicEventInfo)
-    if (
-      stringEvent === lastEvent.current.event &&
-      Date.now() - lastEvent.current.time < 500
-    )
-      return // don't repeat events
-    lastEvent.current = { event: stringEvent, time: Date.now() }
-    send(eventInfo.modelingEvent)
-    eventInfo.engineEvents.forEach((event) =>
-      engineCommandManager.sendSceneCommand(event)
-    )
-  }
+  const textWrapping = context.textEditor.textWrapping
+  const cursorBlinking = context.textEditor.blinkingCursor
 
   const editorExtensions = useMemo(() => {
     const extensions = [
@@ -202,7 +110,7 @@ export const KclEditorPane = () => {
         {
           key: 'Meta-k',
           run: () => {
-            commandBarSend({ type: 'Open' })
+            editorManager.commandBarSend({ type: 'Open' })
             return false
           },
         },
@@ -216,11 +124,7 @@ export const KclEditorPane = () => {
         {
           key: editorShortcutMeta.convertToVariable.codeMirror,
           run: () => {
-            if (convertEnabled) {
-              convertCallback()
-              return true
-            }
-            return false
+            return editorManager.convertToVariable()
           },
         },
       ]),
@@ -233,9 +137,6 @@ export const KclEditorPane = () => {
     if (!TEST) {
       extensions.push(
         lintGutter(),
-        linter((_view: EditorView) => {
-          return kclErrorsToDiagnostics(errors)
-        }),
         lineNumbers(),
         highlightActiveLineGutter(),
         highlightSpecialChars(),
@@ -288,13 +189,10 @@ export const KclEditorPane = () => {
     }
 
     return extensions
-  }, [
-    kclLSP,
-    copilotLSP,
-    textWrapping.current,
-    cursorBlinking.current,
-    convertCallback,
-  ])
+  }, [kclLSP, copilotLSP, textWrapping.current, cursorBlinking.current])
+
+  let debounceTimer: ReturnType<typeof setTimeout> | null = null
+  const updateDelay = 100
 
   return (
     <div
@@ -302,18 +200,26 @@ export const KclEditorPane = () => {
       className={'absolute inset-0 ' + (cursorBlinking.current ? 'blink' : '')}
     >
       <ReactCodeMirror
-        value={editorCode}
+        value={codeManager.code}
         extensions={editorExtensions}
-        onUpdate={onUpdate}
         theme={theme}
-        onCreateEditor={(_editorView) => setEditorView(_editorView)}
+        onCreateEditor={(_editorView) =>
+          editorManager.setEditorView(_editorView)
+        }
+        onUpdate={(view: ViewUpdate) => {
+          // debounce the view update.
+          // otherwise it is laggy for typing.
+          if (debounceTimer) {
+            clearTimeout(debounceTimer)
+          }
+
+          debounceTimer = setTimeout(() => {
+            editorManager.handleOnViewUpdate(view)
+          }, updateDelay)
+        }}
         indentWithTab={false}
         basicSetup={false}
       />
     </div>
   )
-}
-
-function stringifyRanges(ranges: readonly SelectionRange[]): string {
-  return ranges.map(({ to, from }) => `${to}->${from}`).join('&')
 }

@@ -4,7 +4,9 @@ import { parse, ProgramMemory, SketchGroup, initPromise } from './wasm'
 import { enginelessExecutor } from '../lib/testHelpers'
 import { KCLError } from './errors'
 
-beforeAll(() => initPromise)
+beforeAll(async () => {
+  await initPromise
+})
 
 describe('test executor', () => {
   it('test assigning two variables, the second summing with the first', async () => {
