@@ -27,4 +27,9 @@ if (typeof window !== 'undefined') {
   ;(window as any).sceneInfra = sceneInfra
   ;(window as any).sceneEntitiesManager = sceneEntitiesManager
   ;(window as any).editorManager = editorManager
+  ;(window as any).enableMousePositionLogs = () => {
+    document.addEventListener('mousemove', (e) =>
+      console.log(`await page.mouse.click(${e.clientX}, ${e.clientY})`)
+    )
+  }
 }

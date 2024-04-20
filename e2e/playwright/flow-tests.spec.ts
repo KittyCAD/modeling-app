@@ -104,6 +104,7 @@ test('Basic sketch', async ({ page }) => {
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([0, ${commonPoints.num1}], %)`)
+  await page.waitForTimeout(100)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
@@ -759,6 +760,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${commonPoints.startAt}, %)`)
 
+  await page.waitForTimeout(100)
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
 
   await expect(page.locator('.cm-content'))
@@ -766,12 +768,14 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)`)
 
+  await page.waitForTimeout(100)
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([0, ${commonPoints.num1}], %)`)
+  await page.waitForTimeout(100)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
@@ -784,20 +788,28 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   await page.getByRole('button', { name: 'Line' }).click()
 
   await u.closeDebugPanel()
-  const selectionSequence = async () => {
+  const selectionSequence = async (isSecondTime = false) => {
     await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
 
-    await page.mouse.move(startXPx + PUR * 15, 500 - PUR * 10)
+    await page.waitForTimeout(100)
+    await page.mouse.move(
+      startXPx + PUR * 15,
+      isSecondTime ? 430 : 500 - PUR * 10
+    )
 
     await expect(page.getByTestId('hover-highlight')).toBeVisible()
     // bg-yellow-200 is more brittle than hover-highlight, but is closer to the user experience
     // and will be an easy fix if it breaks because we change the colour
     await expect(page.locator('.bg-yellow-200')).toBeVisible()
 
+    console.log('yo', startXPx + PUR * 10, 500 - PUR * 20)
     // check mousing off, than mousing onto another line
     await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 15) // mouse off
     await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
-    await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 20) // mouse onto another line
+    await page.mouse.move(
+      startXPx + PUR * 10,
+      isSecondTime ? 295 : 500 - PUR * 20
+    ) // mouse onto another line
     await expect(page.getByTestId('hover-highlight')).toBeVisible()
 
     // now check clicking works including axis
@@ -877,7 +889,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   await page.waitForTimeout(300) // wait for animation
 
   // hover again and check it works
-  await selectionSequence()
+  await selectionSequence(true)
 })
 
 test.describe('Command bar tests', () => {
@@ -1337,10 +1349,12 @@ test('Deselecting line tool should mean nothing happens on click', async ({
   await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
   previousCodeContent = await page.locator('.cm-content').innerText()
 
+  await page.waitForTimeout(100)
   await page.mouse.click(700, 300)
   await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
   previousCodeContent = await page.locator('.cm-content').innerText()
 
+  await page.waitForTimeout(100)
   await page.mouse.click(750, 300)
   await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
   previousCodeContent = await page.locator('.cm-content').innerText()
@@ -1365,16 +1379,16 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
     page.getByRole('button', { name: 'Start Sketch' })
   ).not.toBeDisabled()
 
-  const startPX = [652, 418]
-  const lineEndPX = [794, 416]
-  const arcEndPX = [893, 318]
+  const startPX = [665, 458]
+  const lineEndPX = [842, 458]
+  const arcEndPX = [971, 342]
 
   const dragPX = 30
 
   await page.getByText('startProfileAt([4.61, -14.01], %)').click()
   await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
   await page.getByRole('button', { name: 'Edit Sketch' }).click()
-  await page.waitForTimeout(100)
+  await page.waitForTimeout(300)
   let prevContent = await page.locator('.cm-content').innerText()
 
   const step5 = { steps: 5 }
@@ -1384,7 +1398,7 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
   await page.mouse.down()
   await page.mouse.move(startPX[0] + dragPX, startPX[1] - dragPX, step5)
   await page.mouse.up()
-  await page.waitForTimeout(100)
+
   await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
   prevContent = await page.locator('.cm-content').innerText()
 
@@ -1412,9 +1426,9 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
   // expect the code to have changed
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt([7.01, -11.79], %)
-  |> line([14.69, 2.73], %)
-  |> tangentialArcTo([27.6, -3.25], %)`)
+  |> startProfileAt([6.44, -12.07], %)
+  |> line([14.04, 2.03], %)
+  |> tangentialArcTo([27.19, -4.2], %)`)
 })
 
 const doSnapAtDifferentScales = async (
@@ -1533,6 +1547,7 @@ test('Sketch on face', async ({ page }) => {
   ).not.toBeDisabled()
 
   await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await page.waitForTimeout(300)
 
   let previousCodeContent = await page.locator('.cm-content').innerText()
 
@@ -1542,8 +1557,7 @@ test('Sketch on face', async ({ page }) => {
   const secondClickPosition = [661, 242]
   const thirdClickPosition = [609, 267]
 
-  await page.waitForTimeout(300)
-
+  await page.waitForTimeout(500)
   await page.mouse.click(firstClickPosition[0], firstClickPosition[1])
   await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
   previousCodeContent = await page.locator('.cm-content').innerText()
@@ -1562,9 +1576,9 @@ test('Sketch on face', async ({ page }) => {
 
   await expect(page.locator('.cm-content'))
     .toContainText(`const part002 = startSketchOn(part001, 'seg01')
-  |> startProfileAt([1.03, 1.03], %)
-  |> line([4.18, -0.35], %)
-  |> line([-4.44, -2.13], %)
+  |> startProfileAt([-12.83, 6.7], %)
+  |> line([2.87, -0.23], %)
+  |> line([-3.05, -1.47], %)
   |> close(%)`)
 
   await u.openAndClearDebugPanel()
@@ -1574,7 +1588,7 @@ test('Sketch on face', async ({ page }) => {
   await u.updateCamPosition([1049, 239, 686])
   await u.closeDebugPanel()
 
-  await page.getByText('startProfileAt([1.03, 1.03], %)').click()
+  await page.getByText('startProfileAt([-12.83, 6.7], %)').click()
   await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
   await page.getByRole('button', { name: 'Edit Sketch' }).click()
   await page.setViewportSize({ width: 1200, height: 1200 })
@@ -1596,11 +1610,11 @@ test('Sketch on face', async ({ page }) => {
 
   await expect(page.locator('.cm-content'))
     .toContainText(`const part002 = startSketchOn(part001, 'seg01')
-|> startProfileAt([1.03, 1.03], %)
-|> line([${process?.env?.CI ? 2.74 : 2.93}, -${
-    process?.env?.CI ? 0.24 : 0.2
+|> startProfileAt([-12.83, 6.7], %)
+|> line([${process?.env?.CI ? 2.74 : 2.87}, -${
+    process?.env?.CI ? 0.24 : 0.23
   }], %)
-|> line([-4.44, -2.13], %)
+|> line([-3.05, -1.47], %)
 |> close(%)`)
 
   // exit sketch
@@ -1608,7 +1622,7 @@ test('Sketch on face', async ({ page }) => {
   await page.getByRole('button', { name: 'Exit Sketch' }).click()
   await u.expectCmdLog('[data-message-type="execution-done"]')
 
-  await page.getByText('startProfileAt([1.03, 1.03], %)').click()
+  await page.getByText('startProfileAt([-12.83, 6.7], %)').click()
 
   await expect(page.getByRole('button', { name: 'Extrude' })).not.toBeDisabled()
   await page.getByRole('button', { name: 'Extrude' }).click()
@@ -1622,11 +1636,11 @@ test('Sketch on face', async ({ page }) => {
 
   await expect(page.locator('.cm-content'))
     .toContainText(`const part002 = startSketchOn(part001, 'seg01')
-|> startProfileAt([1.03, 1.03], %)
-|> line([${process?.env?.CI ? 2.74 : 2.93}, -${
-    process?.env?.CI ? 0.24 : 0.2
+|> startProfileAt([-12.83, 6.7], %)
+|> line([${process?.env?.CI ? 2.74 : 2.87}, -${
+    process?.env?.CI ? 0.24 : 0.23
   }], %)
-|> line([-4.44, -2.13], %)
+|> line([-3.05, -1.47], %)
 |> close(%)
 |> extrude(5 + 7, %)`)
 })

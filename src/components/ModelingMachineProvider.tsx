@@ -330,7 +330,9 @@ export const ModelingMachineProvider = ({
               },
             })
             // wait 600ms (animation takes 500, + 100 for safety)
-            await new Promise((resolve) => setTimeout(resolve, 600))
+            await new Promise((resolve) =>
+              setTimeout(resolve, isReducedMotion() ? 100 : 600)
+            )
             await engineCommandManager.sendSceneCommand({
               // CameraControls subscribes to default_camera_get_settings response events
               // firing this at connection ensure the camera's are synced initially
@@ -403,7 +405,9 @@ export const ModelingMachineProvider = ({
             },
           })
           // wait 600ms (animation takes 500, + 100 for safety)
-          await new Promise((resolve) => setTimeout(resolve, 600))
+          await new Promise((resolve) =>
+            setTimeout(resolve, isReducedMotion() ? 100 : 600)
+          )
           await engineCommandManager.sendSceneCommand({
             // CameraControls subscribes to default_camera_get_settings response events
             // firing this at connection ensure the camera's are synced initially
