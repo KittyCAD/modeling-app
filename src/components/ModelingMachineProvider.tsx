@@ -57,6 +57,7 @@ import { EditorSelection } from '@uiw/react-codemirror'
 import { CoreDumpManager } from 'lib/coredump'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { isReducedMotion, uuidv4 } from 'lib/utils'
+import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -318,51 +319,10 @@ export const ModelingMachineProvider = ({
               )
             await kclManager.executeAstMock(modifiedAst)
 
-            await engineCommandManager.sendSceneCommand({
-              type: 'modeling_cmd_req',
-              cmd_id: uuidv4(),
-              cmd: {
-                type: 'enable_sketch_mode',
-                adjust_camera: true,
-                animated: !isReducedMotion(),
-                ortho: false,
-                entity_id: data.faceId,
-              },
-            })
-            // wait 600ms (animation takes 500, + 100 for safety)
-            await new Promise((resolve) =>
-              setTimeout(resolve, isReducedMotion() ? 100 : 600)
+            await letEngineAnimateAndSyncCamAfter(
+              engineCommandManager,
+              data.faceId
             )
-            await engineCommandManager.sendSceneCommand({
-              // CameraControls subscribes to default_camera_get_settings response events
-              // firing this at connection ensure the camera's are synced initially
-              type: 'modeling_cmd_req',
-              cmd_id: uuidv4(),
-              cmd: {
-                type: 'default_camera_get_settings',
-              },
-            })
-            await engineCommandManager.sendSceneCommand({
-              type: 'modeling_cmd_req',
-              cmd_id: uuidv4(),
-              cmd: {
-                type: 'enable_sketch_mode',
-                adjust_camera: true,
-                animated: false,
-                ortho: true,
-                entity_id: data.faceId,
-              },
-            })
-            await new Promise((resolve) => setTimeout(resolve, 50))
-            await engineCommandManager.sendSceneCommand({
-              // CameraControls subscribes to default_camera_get_settings response events
-              // firing this at connection ensure the camera's are synced initially
-              type: 'modeling_cmd_req',
-              cmd_id: uuidv4(),
-              cmd: {
-                type: 'default_camera_get_settings',
-              },
-            })
 
             return {
               sketchPathToNode: pathToNewSketchNode,
@@ -393,53 +353,10 @@ export const ModelingMachineProvider = ({
             sourceRange
           )
           const info = await getSketchOrientationDetails(sketchPathToNode || [])
-          await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'enable_sketch_mode',
-              adjust_camera: true,
-              animated: !isReducedMotion(),
-              ortho: false,
-              entity_id: info?.sketchDetails?.faceId || '',
-            },
-          })
-          // wait 600ms (animation takes 500, + 100 for safety)
-          await new Promise((resolve) =>
-            setTimeout(resolve, isReducedMotion() ? 100 : 600)
+          await letEngineAnimateAndSyncCamAfter(
+            engineCommandManager,
+            info?.sketchDetails?.faceId || ''
           )
-          await engineCommandManager.sendSceneCommand({
-            // CameraControls subscribes to default_camera_get_settings response events
-            // firing this at connection ensure the camera's are synced initially
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'default_camera_get_settings',
-            },
-          })
-          await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'enable_sketch_mode',
-              adjust_camera: true,
-              animated: false,
-              ortho: true,
-              entity_id: info?.sketchDetails?.faceId || '',
-            },
-          })
-          await new Promise((resolve) => setTimeout(resolve, 50))
-          await engineCommandManager.sendSceneCommand({
-            // CameraControls subscribes to default_camera_get_settings response events
-            // firing this at connection ensure the camera's are synced initially
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'default_camera_get_settings',
-            },
-          })
-          // sceneInfra.camControls.syncDirection = 'clientToEngine'
-          // await sceneInfra.camControls.animateToOrthographic()
           return {
             sketchPathToNode: sketchPathToNode || [],
             zAxis: info.sketchDetails.zAxis || null,

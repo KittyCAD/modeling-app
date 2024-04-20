@@ -1061,3 +1061,62 @@ function _getInteractionType(
   if (enableZoom && interactionGuards.zoom.dragCallback(event)) return 'zoom'
   return state
 }
+
+/**
+ * Tells the engine to fire it's animation waits for it to finish and then requests camera settings
+ * to ensure the client-side camera is synchronized with the engine's camera state.
+ *
+ * @param engineCommandManager Our websocket singleton
+ * @param entityId - The ID of face or sketchPlane.
+ */
+
+export async function letEngineAnimateAndSyncCamAfter(
+  engineCommandManager: EngineCommandManager,
+  entityId: string
+) {
+  await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'enable_sketch_mode',
+      adjust_camera: true,
+      animated: !isReducedMotion(),
+      ortho: false,
+      entity_id: entityId,
+    },
+  })
+  // wait 600ms (animation takes 500, + 100 for safety)
+  await new Promise((resolve) =>
+    setTimeout(resolve, isReducedMotion() ? 100 : 600)
+  )
+  await engineCommandManager.sendSceneCommand({
+    // CameraControls subscribes to default_camera_get_settings response events
+    // firing this at connection ensure the camera's are synced initially
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_get_settings',
+    },
+  })
+  await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'enable_sketch_mode',
+      adjust_camera: true,
+      animated: false,
+      ortho: true,
+      entity_id: entityId,
+    },
+  })
+  await new Promise((resolve) => setTimeout(resolve, 50))
+  await engineCommandManager.sendSceneCommand({
+    // CameraControls subscribes to default_camera_get_settings response events
+    // firing this at connection ensure the camera's are synced initially
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_get_settings',
+    },
+  })
+}

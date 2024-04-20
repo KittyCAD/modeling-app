@@ -1344,31 +1344,8 @@ export class SceneEntities {
           const artifact = this.engineCommandManager.artifactMap[entity_id]
           if (artifact?.commandType !== 'solid3d_get_extrusion_face_info')
             return ['other', entity_id]
-          await this.engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'enable_sketch_mode',
-              adjust_camera: false,
-              animated: false,
-              ortho: false,
-              entity_id,
-            },
-          })
-          const faceInfo: Models['FaceIsPlanar_type'] =
-            // TODO change typing to get_sketch_mode_plane once lib is updated
-            (
-              await this.engineCommandManager.sendSceneCommand({
-                type: 'modeling_cmd_req',
-                cmd_id: uuidv4(),
-                cmd: { type: 'get_sketch_mode_plane' },
-              })
-            )?.data?.data
-          await this.engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: { type: 'sketch_mode_disable' },
-          })
+
+          const faceInfo = await getFaceDetails(entity_id)
           if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
             return ['other', entity_id]
           const { z_axis, y_axis, origin } = faceInfo
@@ -1730,31 +1707,7 @@ export async function getSketchOrientationDetails(
     }
   }
   if (sketchGroup.on.type === 'face') {
-    await engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'enable_sketch_mode',
-        adjust_camera: false,
-        animated: false,
-        ortho: false,
-        entity_id: sketchGroup.on.faceId,
-      },
-    })
-    const faceInfo: Models['FaceIsPlanar_type'] =
-      // TODO change typing to get_sketch_mode_plane once lib is updated
-      (
-        await engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: { type: 'get_sketch_mode_plane' },
-        })
-      )?.data?.data
-    engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: { type: 'sketch_mode_disable' },
-    })
+    const faceInfo = await getFaceDetails(sketchGroup.on.faceId)
 
     if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
       throw new Error('faceInfo')
@@ -1777,6 +1730,46 @@ export async function getSketchOrientationDetails(
   throw new Error(
     'sketchGroup.on.type not recognized, has a new type been added?'
   )
+}
+
+/**
+ * Retrieves orientation details for a given entity representing a face (brep face or default plane).
+ * This function asynchronously fetches and returns the origin, x-axis, y-axis, and z-axis details
+ * for a specified entity ID. It is primarily used to obtain the orientation of a face in the scene,
+ * which is essential for calculating the correct positioning and alignment of the client side sketch.
+ *
+ * @param  entityId - The ID of the entity for which orientation details are being fetched.
+ * @returns A promise that resolves with the orientation details of the face.
+ */
+async function getFaceDetails(
+  entityId: string
+): Promise<Models['FaceIsPlanar_type']> {
+  // TODO mode engine connection to allow batching returns and batch the following
+  await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'enable_sketch_mode',
+      adjust_camera: false,
+      animated: false,
+      ortho: false,
+      entity_id: entityId,
+    },
+  })
+  // TODO change typing to get_sketch_mode_plane once lib is updated
+  const faceInfo: Models['FaceIsPlanar_type'] = (
+    await engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: { type: 'get_sketch_mode_plane' },
+    })
+  )?.data?.data
+  await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: { type: 'sketch_mode_disable' },
+  })
+  return faceInfo
 }
 
 export function getQuaternionFromZAxis(zAxis: Vector3): Quaternion {
