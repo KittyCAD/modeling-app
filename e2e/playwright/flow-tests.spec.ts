@@ -1095,7 +1095,7 @@ test('Can add multiple sketches', async ({ page }) => {
   // start a new sketch
   await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await page.waitForTimeout(100)
+  await page.waitForTimeout(250)
   await page.mouse.click(673, 384)
 
   await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
@@ -1611,8 +1611,8 @@ test('Sketch on face', async ({ page }) => {
   await expect(page.locator('.cm-content'))
     .toContainText(`const part002 = startSketchOn(part001, 'seg01')
 |> startProfileAt([-12.83, 6.7], %)
-|> line([${process?.env?.CI ? 2.74 : 2.87}, -${
-    process?.env?.CI ? 0.24 : 0.23
+|> line([${process?.env?.CI ? 2.28 : 2.87}, -${
+    process?.env?.CI ? 0.07 : 0.23
   }], %)
 |> line([-3.05, -1.47], %)
 |> close(%)`)
@@ -1637,8 +1637,8 @@ test('Sketch on face', async ({ page }) => {
   await expect(page.locator('.cm-content'))
     .toContainText(`const part002 = startSketchOn(part001, 'seg01')
 |> startProfileAt([-12.83, 6.7], %)
-|> line([${process?.env?.CI ? 2.74 : 2.87}, -${
-    process?.env?.CI ? 0.24 : 0.23
+|> line([${process?.env?.CI ? 2.28 : 2.87}, -${
+    process?.env?.CI ? 0.07 : 0.23
   }], %)
 |> line([-3.05, -1.47], %)
 |> close(%)
