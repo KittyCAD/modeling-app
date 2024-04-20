@@ -802,7 +802,6 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     // and will be an easy fix if it breaks because we change the colour
     await expect(page.locator('.bg-yellow-200')).toBeVisible()
 
-    console.log('yo', startXPx + PUR * 10, 500 - PUR * 20)
     // check mousing off, than mousing onto another line
     await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 15) // mouse off
     await expect(page.getByTestId('hover-highlight')).not.toBeVisible()

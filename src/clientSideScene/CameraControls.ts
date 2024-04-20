@@ -983,7 +983,7 @@ export class CameraControls {
 // Pure function helpers
 
 function calculateNearFarFromFOV(fov: number) {
-  const nearFarRatio = (fov - 3) / (45 - 3)
+  // const nearFarRatio = (fov - 3) / (45 - 3)
   // const z_near = 0.1 + nearFarRatio * (5 - 0.1)
   // const z_far = 1000 + nearFarRatio * (100000 - 1000)
   return { z_near: 0.1, z_far: 1000 }
