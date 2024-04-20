@@ -43,14 +43,16 @@ export class KclManager {
     const ast = this.safeParse(code)
     if (!ast) return
     try {
+        parse(recast(ast)).then((newAst) => {
       const fmtAndStringify = (ast: Program) =>
-        JSON.stringify(parse(recast(ast)))
+        JSON.stringify(newAst)
       const isAstTheSame = fmtAndStringify(ast) === fmtAndStringify(this._ast)
       if (isAstTheSame) return
+      this.executeAst(ast)
+        })
     } catch (e) {
       console.error(e)
     }
-    this.executeAst(ast)
   }, 600)
 
   private _isExecutingCallback: (arg: boolean) => void = () => {}
@@ -143,9 +145,9 @@ export class KclManager {
     this._executeCallback = callback
   }
 
-  safeParse(code: string): Program | null {
+  async safeParse(code: string): Promise<Program | null> {
     try {
-      const ast = parse(code)
+      const ast = await parse(code)
       this.kclErrors = []
       return ast
     } catch (e) {

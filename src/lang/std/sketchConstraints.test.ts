@@ -28,7 +28,7 @@ async function testingSwapSketchFnCall({
     type: 'default',
     range: [startIndex, startIndex + callToSwap.length],
   }
-  const ast = parse(inputCode)
+  const ast = await parse(inputCode)
   const programMemory = await enginelessExecutor(ast)
   const selections = {
     codeBasedSelections: [range],
@@ -351,7 +351,7 @@ const part001 = startSketchOn('XY')
   |> line([2.14, 1.35], %) // normal-segment
   |> xLine(3.54, %)`
   it('normal case works', async () => {
-    const programMemory = await enginelessExecutor(parse(code))
+    const programMemory = await enginelessExecutor(await parse(code))
     const index = code.indexOf('// normal-segment') - 7
     const { __geoMeta, ...segment } = getSketchSegmentFromSourceRange(
       programMemory.root['part001'] as SketchGroup,
@@ -365,7 +365,7 @@ const part001 = startSketchOn('XY')
     })
   })
   it('verify it works when the segment is in the `start` property', async () => {
-    const programMemory = await enginelessExecutor(parse(code))
+    const programMemory = await enginelessExecutor(await parse(code))
     const index = code.indexOf('// segment-in-start') - 7
     const { __geoMeta, ...segment } = getSketchSegmentFromSourceRange(
       programMemory.root['part001'] as SketchGroup,

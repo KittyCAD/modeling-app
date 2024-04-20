@@ -26,6 +26,7 @@ import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import { rangeTypeFix } from './workers/types'
+import { parser } from 'lib/singletons'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Value } from '../wasm-lib/kcl/bindings/Value'
@@ -115,7 +116,7 @@ export interface ProgramMemory {
   return: ProgramReturn | null
 }
 
-export const parse = (code: string): Program => {
+/*export const parse = (code: string): Program => {
   try {
     const program: Program = parse_wasm(code)
     return program
@@ -130,11 +131,11 @@ export const parse = (code: string): Program => {
     console.log(kclError)
     throw kclError
   }
-}
-
-/*export const parse = async (code: string): Promise<Program> => {
-    return parser.parse(code)
 }*/
+
+export const parse = async (code: string): Promise<Program> => {
+  return parser.parse(code)
+}
 
 export const executor = async (
   node: Program,

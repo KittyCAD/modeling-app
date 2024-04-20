@@ -104,7 +104,7 @@ describe('testing changeSketchArguments', () => {
 `
     const code = genCode(lineToChange)
     const expectedCode = genCode(lineAfterChange)
-    const ast = parse(code)
+    const ast = await parse(code)
     const programMemory = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(lineToChange)
     const { modifiedAst } = changeSketchArguments(
@@ -128,7 +128,7 @@ const mySketch001 = startSketchOn('XY')
   // |> rx(45, %)
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)`
-    const ast = parse(code)
+    const ast = await parse(code)
     const programMemory = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(lineToChange)
     expect(sourceStart).toBe(95)
@@ -190,7 +190,7 @@ describe('testing addTagForSketchOnFace', () => {
   |> lineTo([0.46, -5.82], %)
 `
     const code = genCode(originalLine)
-    const ast = parse(code)
+    const ast = await parse(code)
     const programMemory = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(originalLine)
     const sourceRange: [number, number] = [

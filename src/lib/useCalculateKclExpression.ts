@@ -82,7 +82,7 @@ export function useCalculateKclExpression({
   useEffect(() => {
     const execAstAndSetResult = async () => {
       const code = `const __result__ = ${value}`
-      const ast = parse(code)
+      const ast = await parse(code)
       const _programMem: any = { root: {}, return: null }
       availableVarInfo.variables.forEach(({ key, value }) => {
         _programMem.root[key] = { type: 'userVal', value, __meta: [] }

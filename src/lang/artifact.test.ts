@@ -12,7 +12,7 @@ const mySketch001 = startSketchOn('XY')
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)
   // |> rx(45, %)`
-    const programMemory = await enginelessExecutor(parse(code))
+    const programMemory = await enginelessExecutor(await parse(code))
     // @ts-ignore
     const sketch001 = programMemory?.root?.mySketch001
     expect(sketch001).toEqual({
@@ -68,7 +68,7 @@ const mySketch001 = startSketchOn('XY')
   |> lineTo([0.46, -5.82], %)
   // |> rx(45, %)
   |> extrude(2, %)`
-    const programMemory = await enginelessExecutor(parse(code))
+    const programMemory = await enginelessExecutor(await parse(code))
     // @ts-ignore
     const sketch001 = programMemory?.root?.mySketch001
     expect(sketch001).toEqual({
@@ -150,7 +150,7 @@ const sk2 = startSketchOn('XY')
   |> extrude(2, %)
 
 `
-    const programMemory = await enginelessExecutor(parse(code))
+    const programMemory = await enginelessExecutor(await parse(code))
     // @ts-ignore
     const geos = [programMemory?.root?.theExtrude, programMemory?.root?.sk2]
     expect(geos).toEqual([

@@ -398,7 +398,7 @@ async function exe(
   code: string,
   programMemory: ProgramMemory = { root: {}, return: null }
 ) {
-  const ast = parse(code)
+  const ast = await parse(code)
 
   const result = await enginelessExecutor(ast, programMemory)
   return result

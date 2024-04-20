@@ -119,9 +119,9 @@ export async function getEventForSelectWithPoint(
   }
 }
 
-export function getEventForSegmentSelection(
+export async function getEventForSegmentSelection(
   obj: Object3D<Object3DEventMap>
-): ModelingMachineEvent | null {
+): Promise<ModelingMachineEvent | null> {
   const group = getParentGroup(obj, [
     STRAIGHT_SEGMENT,
     TANGENTIAL_ARC_TO_SEGMENT,
@@ -143,7 +143,7 @@ export function getEventForSegmentSelection(
   // previous drags don't update ast for efficiency reasons
   // So we want to make sure we have and updated ast with
   // accurate source ranges
-  const updatedAst = parse(codeManager.code)
+  const updatedAst = await parse(codeManager.code)
   const node = getNodeFromPath<CallExpression>(
     updatedAst,
     pathToNode,
@@ -254,10 +254,10 @@ export function processCodeMirrorRanges({
   }
 }
 
-function updateSceneObjectColors(codeBasedSelections: Selection[]) {
+async function updateSceneObjectColors(codeBasedSelections: Selection[]) {
   let updated: Program
   try {
-    updated = parse(recast(kclManager.ast))
+    updated = await parse(recast(kclManager.ast))
   } catch (e) {
     console.error('error parsing code in processCodeMirrorRanges', e)
     return

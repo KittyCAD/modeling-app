@@ -15,53 +15,53 @@ beforeAll(() => initPromise)
 
 describe('testing getConstraintType', () => {
   const helper = getConstraintTypeFromSourceHelper
-  it('testing line', () => {
-    expect(helper(`line([5, myVar], %)`)).toBe('yRelative')
-    expect(helper(`line([myVar, 5], %)`)).toBe('xRelative')
+  it('testing line', async () => {
+    expect(await helper(`line([5, myVar], %)`)).toBe('yRelative')
+    expect(await helper(`line([myVar, 5], %)`)).toBe('xRelative')
   })
-  it('testing lineTo', () => {
-    expect(helper(`lineTo([5, myVar], %)`)).toBe('yAbsolute')
-    expect(helper(`lineTo([myVar, 5], %)`)).toBe('xAbsolute')
+  it('testing lineTo', async () => {
+    expect(await helper(`lineTo([5, myVar], %)`)).toBe('yAbsolute')
+    expect(await helper(`lineTo([myVar, 5], %)`)).toBe('xAbsolute')
   })
-  it('testing angledLine', () => {
-    expect(helper(`angledLine([5, myVar], %)`)).toBe('length')
-    expect(helper(`angledLine([myVar, 5], %)`)).toBe('angle')
+  it('testing angledLine', async () => {
+    expect(await helper(`angledLine([5, myVar], %)`)).toBe('length')
+    expect(await helper(`angledLine([myVar, 5], %)`)).toBe('angle')
   })
-  it('testing angledLineOfXLength', () => {
-    expect(helper(`angledLineOfXLength([5, myVar], %)`)).toBe('xRelative')
-    expect(helper(`angledLineOfXLength([myVar, 5], %)`)).toBe('angle')
+  it('testing angledLineOfXLength', async () => {
+    expect(await helper(`angledLineOfXLength([5, myVar], %)`)).toBe('xRelative')
+    expect(await helper(`angledLineOfXLength([myVar, 5], %)`)).toBe('angle')
   })
-  it('testing angledLineToX', () => {
-    expect(helper(`angledLineToX([5, myVar], %)`)).toBe('xAbsolute')
-    expect(helper(`angledLineToX([myVar, 5], %)`)).toBe('angle')
+  it('testing angledLineToX', async () => {
+    expect(await helper(`angledLineToX([5, myVar], %)`)).toBe('xAbsolute')
+    expect(await helper(`angledLineToX([myVar, 5], %)`)).toBe('angle')
   })
-  it('testing angledLineOfYLength', () => {
-    expect(helper(`angledLineOfYLength([5, myVar], %)`)).toBe('yRelative')
-    expect(helper(`angledLineOfYLength([myVar, 5], %)`)).toBe('angle')
+  it('testing angledLineOfYLength', async () => {
+    expect(await helper(`angledLineOfYLength([5, myVar], %)`)).toBe('yRelative')
+    expect(await helper(`angledLineOfYLength([myVar, 5], %)`)).toBe('angle')
   })
-  it('testing angledLineToY', () => {
-    expect(helper(`angledLineToY([5, myVar], %)`)).toBe('yAbsolute')
-    expect(helper(`angledLineToY([myVar, 5], %)`)).toBe('angle')
+  it('testing angledLineToY', async () => {
+    expect(await helper(`angledLineToY([5, myVar], %)`)).toBe('yAbsolute')
+    expect(await helper(`angledLineToY([myVar, 5], %)`)).toBe('angle')
   })
   const helper2 = getConstraintTypeFromSourceHelper2
-  it('testing xLine', () => {
-    expect(helper2(`xLine(5, %)`)).toBe('yRelative')
+  it('testing xLine', async () => {
+    expect(await helper2(`xLine(5, %)`)).toBe('yRelative')
   })
-  it('testing yLine', () => {
-    expect(helper2(`yLine(5, %)`)).toBe('xRelative')
+  it('testing yLine', async () => {
+    expect(await helper2(`yLine(5, %)`)).toBe('xRelative')
   })
-  it('testing xLineTo', () => {
-    expect(helper2(`xLineTo(5, %)`)).toBe('yAbsolute')
+  it('testing xLineTo', async () => {
+    expect(await helper2(`xLineTo(5, %)`)).toBe('yAbsolute')
   })
-  it('testing yLineTo', () => {
-    expect(helper2(`yLineTo(5, %)`)).toBe('xAbsolute')
+  it('testing yLineTo', async () => {
+    expect(await helper2(`yLineTo(5, %)`)).toBe('xAbsolute')
   })
 })
 
-function getConstraintTypeFromSourceHelper(
+async function getConstraintTypeFromSourceHelper(
   code: string
-): ReturnType<typeof getConstraintType> {
-  const ast = parse(code)
+): Promise<ReturnType<typeof getConstraintType>> {
+  const ast = await parse(code)
   const args = (ast.body[0] as any).expression.arguments[0].elements as [
     Value,
     Value
@@ -69,10 +69,10 @@ function getConstraintTypeFromSourceHelper(
   const fnName = (ast.body[0] as any).expression.callee.name as ToolTip
   return getConstraintType(args, fnName)
 }
-function getConstraintTypeFromSourceHelper2(
+async function getConstraintTypeFromSourceHelper2(
   code: string
-): ReturnType<typeof getConstraintType> {
-  const ast = parse(code)
+): Promise<ReturnType<typeof getConstraintType>> {
+  const ast = await parse(code)
   const arg = (ast.body[0] as any).expression.arguments[0] as Value
   const fnName = (ast.body[0] as any).expression.callee.name as ToolTip
   return getConstraintType(arg, fnName)
@@ -197,7 +197,7 @@ const part001 = startSketchOn('XY')
   |> yLine(segLen('seg01', %), %) // ln-yLineTo-free should convert to yLine
 `
   it('should transform the ast', async () => {
-    const ast = parse(inputScript)
+    const ast = await parse(inputScript)
     const selectionRanges: Selections['codeBasedSelections'] = inputScript
       .split('\n')
       .filter((ln) => ln.includes('//'))
@@ -284,7 +284,7 @@ const part001 = startSketchOn('XY')
   |> xLineTo(myVar3, %) // select for horizontal constraint 10
   |> angledLineToY([301, myVar], %) // select for vertical constraint 10
 `
-    const ast = parse(inputScript)
+    const ast = await parse(inputScript)
     const selectionRanges: Selections['codeBasedSelections'] = inputScript
       .split('\n')
       .filter((ln) => ln.includes('// select for horizontal constraint'))
@@ -342,7 +342,7 @@ const part001 = startSketchOn('XY')
   |> angledLineToX([333, myVar3], %) // select for horizontal constraint 10
   |> yLineTo(myVar, %) // select for vertical constraint 10
 `
-    const ast = parse(inputScript)
+    const ast = await parse(inputScript)
     const selectionRanges: Selections['codeBasedSelections'] = inputScript
       .split('\n')
       .filter((ln) => ln.includes('// select for vertical constraint'))
@@ -433,7 +433,7 @@ async function helperThing(
   linesOfInterest: string[],
   constraint: ConstraintType
 ): Promise<string> {
-  const ast = parse(inputScript)
+  const ast = await parse(inputScript)
   const selectionRanges: Selections['codeBasedSelections'] = inputScript
     .split('\n')
     .filter((ln) =>
@@ -465,7 +465,7 @@ async function helperThing(
 }
 
 describe('testing getConstraintLevelFromSourceRange', () => {
-  it('should divide up lines into free, partial and fully contrained', () => {
+  it('should divide up lines into free, partial and fully contrained', async () => {
     const code = `const baseLength = 3
 const baseThick = 1
 const armThick = 0.5
@@ -495,7 +495,7 @@ const part001 = startSketchOn('XY')
   |> line([-1.49, 1.06], %) // free
   |> xLine(-3.43 + 0, %) // full
   |> angledLineOfXLength([243 + 0, 1.2 + 0], %) // full`
-    const ast = parse(code)
+    const ast = await parse(code)
     const constraintLevels: ReturnType<
       typeof getConstraintLevelFromSourceRange
     >['level'][] = ['full', 'partial', 'free']

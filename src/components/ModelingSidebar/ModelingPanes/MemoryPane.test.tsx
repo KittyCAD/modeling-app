@@ -26,7 +26,7 @@ describe('processMemory', () => {
     |> lineTo([0.98, 5.16], %)
     |> lineTo([2.15, 4.32], %)
     // |> rx(90, %)`
-    const ast = parse(code)
+    const ast = await parse(code)
     const programMemory = await enginelessExecutor(ast, {
       root: {},
       return: null,

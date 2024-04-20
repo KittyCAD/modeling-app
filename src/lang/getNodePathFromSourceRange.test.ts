@@ -4,7 +4,7 @@ import { Identifier, parse, initPromise, Parameter } from './wasm'
 beforeAll(() => initPromise)
 
 describe('testing getNodePathFromSourceRange', () => {
-  it('test it gets the right path for a `lineTo` CallExpression within a SketchExpression', () => {
+  it('test it gets the right path for a `lineTo` CallExpression within a SketchExpression', async () => {
     const code = `
 const myVar = 5
 const sk3 = startSketchAt([0, 0])
@@ -19,14 +19,14 @@ const sk3 = startSketchAt([0, 0])
       lineToSubstringIndex + subStr.length,
     ]
 
-    const ast = parse(code)
+    const ast = await parse(code)
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
     const { node } = getNodeFromPath<any>(ast, nodePath)
 
     expect([node.start, node.end]).toEqual(sourceRange)
     expect(node.type).toBe('CallExpression')
   })
-  it('gets path right for function definition params', () => {
+  it('gets path right for function definition params', async () => {
     const code = `fn cube = (pos, scale) => {
   const sg = startSketchAt(pos)
     |> line([0, scale], %)
@@ -44,7 +44,7 @@ const b1 = cube([0,0], 10)`
       subStrIndex + 'pos'.length,
     ]
 
-    const ast = parse(code)
+    const ast = await parse(code)
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
     const node = getNodeFromPath<Parameter>(ast, nodePath).node
 
@@ -60,7 +60,7 @@ const b1 = cube([0,0], 10)`
     expect(node.type).toBe('Parameter')
     expect(node.identifier.name).toBe('pos')
   })
-  it('gets path right for deep within function definition body', () => {
+  it('gets path right for deep within function definition body', async () => {
     const code = `fn cube = (pos, scale) => {
   const sg = startSketchAt(pos)
     |> line([0, scale], %)
@@ -78,7 +78,7 @@ const b1 = cube([0,0], 10)`
       subStrIndex + 'scale'.length,
     ]
 
-    const ast = parse(code)
+    const ast = await parse(code)
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
     const node = getNodeFromPath<Identifier>(ast, nodePath).node
     expect(nodePath).toEqual([

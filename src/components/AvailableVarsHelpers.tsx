@@ -137,33 +137,34 @@ export function useCalc({
     setAvailableVarInfo(varInfo)
   }, [kclManager.ast, kclManager.programMemory, selectionRange])
 
-  useEffect(() => {
+  useEffect(async () => {
     try {
       const code = `const __result__ = ${value}`
-      const ast = parse(code)
-      const _programMem: any = { root: {}, return: null }
-      availableVarInfo.variables.forEach(({ key, value }) => {
-        _programMem.root[key] = { type: 'userVal', value, __meta: [] }
-      })
-      executeAst({
-        ast,
-        engineCommandManager,
-        useFakeExecutor: true,
-        programMemoryOverride: JSON.parse(
-          JSON.stringify(kclManager.programMemory)
-        ),
-      }).then(({ programMemory }) => {
-        const resultDeclaration = ast.body.find(
-          (a) =>
-            a.type === 'VariableDeclaration' &&
-            a.declarations?.[0]?.id?.name === '__result__'
-        )
-        const init =
-          resultDeclaration?.type === 'VariableDeclaration' &&
-          resultDeclaration?.declarations?.[0]?.init
-        const result = programMemory?.root?.__result__?.value
-        setCalcResult(typeof result === 'number' ? String(result) : 'NAN')
-        init && setValueNode(init)
+      parse(code).then((ast) => {
+        const _programMem: any = { root: {}, return: null }
+        availableVarInfo.variables.forEach(({ key, value }) => {
+          _programMem.root[key] = { type: 'userVal', value, __meta: [] }
+        })
+        executeAst({
+          ast,
+          engineCommandManager,
+          useFakeExecutor: true,
+          programMemoryOverride: JSON.parse(
+            JSON.stringify(kclManager.programMemory)
+          ),
+        }).then(({ programMemory }) => {
+          const resultDeclaration = ast.body.find(
+            (a) =>
+              a.type === 'VariableDeclaration' &&
+              a.declarations?.[0]?.id?.name === '__result__'
+          )
+          const init =
+            resultDeclaration?.type === 'VariableDeclaration' &&
+            resultDeclaration?.declarations?.[0]?.init
+          const result = programMemory?.root?.__result__?.value
+          setCalcResult(typeof result === 'number' ? String(result) : 'NAN')
+          init && setValueNode(init)
+        })
       })
     } catch (e) {
       setCalcResult('NAN')
