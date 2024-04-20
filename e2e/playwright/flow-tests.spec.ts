@@ -1677,7 +1677,7 @@ test('Can code mod a line length', async ({ page }) => {
 
   const startXPx = 500
   await page.mouse.move(startXPx + PUR * 15, 250 - PUR * 10)
-  await page.mouse.click(615, 133)
+  await page.mouse.click(615, 102)
   await page.getByRole('button', { name: 'length', exact: true }).click()
   await page.getByText('Add constraining value').click()
 
