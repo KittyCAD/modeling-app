@@ -1387,7 +1387,7 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
   await page.getByText('startProfileAt([4.61, -14.01], %)').click()
   await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
   await page.getByRole('button', { name: 'Edit Sketch' }).click()
-  await page.waitForTimeout(300)
+  await page.waitForTimeout(400)
   let prevContent = await page.locator('.cm-content').innerText()
 
   const step5 = { steps: 5 }
@@ -1550,13 +1550,18 @@ test('Sketch on face', async ({ page }) => {
 
   let previousCodeContent = await page.locator('.cm-content').innerText()
 
-  await page.mouse.click(793, 133)
+  await u.openAndClearDebugPanel()
+  await u.doAndWaitForCmd(
+    () => page.mouse.click(793, 133),
+    'default_camera_get_settings',
+    true
+  )
+  await page.waitForTimeout(150)
 
   const firstClickPosition = [612, 238]
   const secondClickPosition = [661, 242]
   const thirdClickPosition = [609, 267]
 
-  await page.waitForTimeout(500)
   await page.mouse.click(firstClickPosition[0], firstClickPosition[1])
   await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
   previousCodeContent = await page.locator('.cm-content').innerText()
@@ -1569,6 +1574,7 @@ test('Sketch on face', async ({ page }) => {
   await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
   previousCodeContent = await page.locator('.cm-content').innerText()
 
+  await page.waitForTimeout(100)
   await page.mouse.click(firstClickPosition[0], firstClickPosition[1])
   await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
   previousCodeContent = await page.locator('.cm-content').innerText()
@@ -1589,7 +1595,12 @@ test('Sketch on face', async ({ page }) => {
 
   await page.getByText('startProfileAt([-12.83, 6.7], %)').click()
   await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
-  await page.getByRole('button', { name: 'Edit Sketch' }).click()
+  await u.doAndWaitForCmd(
+    () => page.getByRole('button', { name: 'Edit Sketch' }).click(),
+    'default_camera_get_settings',
+    true
+  )
+  await page.waitForTimeout(150)
   await page.setViewportSize({ width: 1200, height: 1200 })
   await u.openAndClearDebugPanel()
   await u.updateCamPosition([452, -152, 1166])
@@ -1610,8 +1621,8 @@ test('Sketch on face', async ({ page }) => {
   await expect(page.locator('.cm-content'))
     .toContainText(`const part002 = startSketchOn(part001, 'seg01')
 |> startProfileAt([-12.83, 6.7], %)
-|> line([${process?.env?.CI ? 2.28 : 2.87}, -${
-    process?.env?.CI ? 0.07 : 0.23
+|> line([${process?.env?.CI ? 2.28 : 2.28}, -${
+    process?.env?.CI ? 0.07 : 0.07
   }], %)
 |> line([-3.05, -1.47], %)
 |> close(%)`)
@@ -1636,8 +1647,8 @@ test('Sketch on face', async ({ page }) => {
   await expect(page.locator('.cm-content'))
     .toContainText(`const part002 = startSketchOn(part001, 'seg01')
 |> startProfileAt([-12.83, 6.7], %)
-|> line([${process?.env?.CI ? 2.28 : 2.87}, -${
-    process?.env?.CI ? 0.07 : 0.23
+|> line([${process?.env?.CI ? 2.28 : 2.28}, -${
+    process?.env?.CI ? 0.07 : 0.07
   }], %)
 |> line([-3.05, -1.47], %)
 |> close(%)
