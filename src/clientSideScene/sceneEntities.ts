@@ -215,8 +215,9 @@ export class SceneEntities {
     const orthoFactor = orthoScale(sceneInfra.camControls.camera)
     const baseXColor = 0x000055
     const baseYColor = 0x550000
-    const xAxisGeometry = new BoxGeometry(100000, 0.3, 0.01)
-    const yAxisGeometry = new BoxGeometry(0.3, 100000, 0.01)
+    const axisPixelWidth = 1.6
+    const xAxisGeometry = new BoxGeometry(100000, axisPixelWidth, 0.01)
+    const yAxisGeometry = new BoxGeometry(axisPixelWidth, 100000, 0.01)
     const xAxisMaterial = new MeshBasicMaterial({
       color: baseXColor,
       depthTest: false,
