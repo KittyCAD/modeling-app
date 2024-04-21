@@ -1672,7 +1672,7 @@ test('Can code mod a line length', async ({ page }) => {
 
   // enter sketch again
   await page.getByRole('button', { name: 'Edit Sketch' }).click()
-  await page.waitForTimeout(300) // wait for animation
+  await page.waitForTimeout(350) // wait for animation
 
   const startXPx = 500
   await page.mouse.move(startXPx + PUR * 15, 250 - PUR * 10)
