@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, Geometries, Geometry, MemoryItem, SketchGroup},
+    executor::{ExtrudeGroup, ExtrudeSurface, Geometries, Geometry, MemoryItem, SketchGroup},
     std::Args,
 };
 
@@ -156,6 +156,7 @@ async fn inner_pattern_linear_3d(
     extrude_group: Box<ExtrudeGroup>,
     args: Args,
 ) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
+    println!("extrude_group: {:#?}", extrude_group);
     let geometries = pattern_linear(
         LinearPattern::ThreeD(data),
         Geometry::ExtrudeGroup(extrude_group),
