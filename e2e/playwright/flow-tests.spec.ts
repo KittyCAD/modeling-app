@@ -1111,13 +1111,14 @@ test('Can add multiple sketches', async ({ page }) => {
   await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
   await u.clearAndCloseDebugPanel()
 
-  const plane = 'XZ'
-  // const plane = process.platform === 'darwin' ? 'XZ' : 'XY'
+  // const plane = 'XZ'
+  const plane = process.platform === 'darwin' ? 'XZ' : 'XY'
 
   await page.waitForTimeout(100)
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   // await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  const startAt2 = '[9.75, -13.16]'
+  const startAt2 =
+    process.platform === 'darwin' ? '[9.75, -13.16]' : '[0.93, -1.25]'
   await expect(
     (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
   ).toBe(
@@ -1131,7 +1132,7 @@ const part002 = startSketchOn('${plane}')
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
   await page.waitForTimeout(100)
 
-  const num2 = 9.84
+  const num2 = process.platform === 'darwin' ? 9.84 : 0.94
   await expect(
     (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
   ).toBe(
@@ -1149,7 +1150,9 @@ const part002 = startSketchOn('${plane}')
 const part002 = startSketchOn('${plane}')
   |> startProfileAt(${startAt2}, %)
   |> line([${num2}, 0], %)
-  |> line([0, ${roundOff(num2 + 0.01)}], %)`.replace(/\s/g, '')
+  |> line([0, ${roundOff(
+    num2 + (process.platform === 'darwin' ? 0.01 : -0.01)
+  )}], %)`.replace(/\s/g, '')
   )
   await page.waitForTimeout(100)
   await page.mouse.click(startXPx, 500 - PUR * 20)
@@ -1160,8 +1163,13 @@ const part002 = startSketchOn('${plane}')
 const part002 = startSketchOn('${plane}')
   |> startProfileAt(${startAt2}, %)
   |> line([${num2}, 0], %)
-  |> line([0, ${roundOff(num2 + 0.01)}], %)
-  |> line([-19.59, 0], %)`.replace(/\s/g, '')
+  |> line([0, ${roundOff(
+    num2 + (process.platform === 'darwin' ? 0.01 : -0.01)
+  )}], %)
+  |> line([-${process.platform === 'darwin' ? 19.59 : 1.87}, 0], %)`.replace(
+      /\s/g,
+      ''
+    )
   )
 })
 
