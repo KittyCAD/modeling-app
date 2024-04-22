@@ -44,7 +44,7 @@
     "json-rpc-2.0": "^1.6.0",
     "jszip": "^3.10.1",
     "node-fetch": "^3.3.2",
-    "re-resizable": "^6.9.11",
+    "re-resizable": "^6.9.14",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.1",
