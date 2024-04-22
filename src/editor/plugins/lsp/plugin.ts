@@ -39,6 +39,8 @@ const CompletionItemKindMap = Object.fromEntries(
 ) as Record<CompletionItemKind, string>
 
 const changesDelay = 600
+let debounceTimer: ReturnType<typeof setTimeout> | null = null
+const updateDelay = 100
 
 export class LanguageServerPlugin implements PluginValue {
   public client: LanguageServerClient
@@ -87,7 +89,18 @@ export class LanguageServerPlugin implements PluginValue {
 
   update(viewUpdate: ViewUpdate) {
     this.viewUpdate = viewUpdate
-    if (!viewUpdate.docChanged) return
+    if (!viewUpdate.docChanged) {
+      // debounce the view update.
+      // otherwise it is laggy for typing.
+      if (debounceTimer) {
+        clearTimeout(debounceTimer)
+      }
+
+      debounceTimer = setTimeout(() => {
+        editorManager.handleOnViewUpdate(viewUpdate)
+      }, updateDelay)
+      return
+    }
 
     const newCode = this.view.state.doc.toString()
 
