@@ -1864,7 +1864,13 @@ impl ObjectExpression {
             "{{ {} }}",
             self.properties
                 .iter()
-                .map(|prop| { format!("{}: {}", prop.key.name, prop.value.recast(options, 0, false)) })
+                .map(|prop| {
+                    format!(
+                        "{}: {}",
+                        prop.key.name,
+                        prop.value.recast(options, indentation_level + 1, is_in_pipe)
+                    )
+                })
                 .collect::<Vec<String>>()
                 .join(", ")
         );
@@ -1880,7 +1886,13 @@ impl ObjectExpression {
                 inner_indentation,
                 self.properties
                     .iter()
-                    .map(|prop| { format!("{}: {}", prop.key.name, prop.value.recast(options, 0, false)) })
+                    .map(|prop| {
+                        format!(
+                            "{}: {}",
+                            prop.key.name,
+                            prop.value.recast(options, indentation_level + 1, is_in_pipe)
+                        )
+                    })
                     .collect::<Vec<String>>()
                     .join(format!(",\n{}", inner_indentation).as_str()),
                 if is_in_pipe {
@@ -2657,7 +2669,12 @@ impl PipeExpression {
                 let non_code_meta = self.non_code_meta.clone();
                 if let Some(non_code_meta_value) = non_code_meta.non_code_nodes.get(&index) {
                     for val in non_code_meta_value {
-                        let formatted = val.format(&indentation).trim_end_matches('\n').to_string();
+                        let formatted = if val.end == self.end {
+                            let indentation = options.get_indentation(indentation_level);
+                            val.format(&indentation).trim_end_matches('\n').to_string()
+                        } else {
+                            val.format(&indentation).trim_end_matches('\n').to_string()
+                        };
                         if let NonCodeValue::BlockComment { .. } = val.value {
                             s += "\n";
                             s += &formatted;
@@ -3257,6 +3274,244 @@ fn ghi = (x) => {
     }
 
     #[test]
+    fn test_recast_large_file() {
+        let some_program_string = r#"// define constants
+const radius = 6.0
+const width = 144.0
+const length = 83.0
+const depth = 45.0
+const thk = 5
+const hole_diam = 5
+// define a rectangular shape func
+fn rectShape = (pos, w, l) => {
+  const rr = startSketchOn('xy')
+    |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
+    |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, "edge1")
+    |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, "edge2")
+    |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, "edge3")
+    |> close(%, "edge4")
+  return rr
+}
+// build the body of the focusrite scarlett solo gen 4
+// only used for visualization
+const scarlett_body = rectShape([0, 0], width, length)
+  |> extrude(depth, %)
+  |> fillet({
+       radius: radius,
+       tags: [
+  getEdge("edge2", %),
+  getEdge("edge4", %),
+  getOppositeEdge("edge2", %),
+  getOppositeEdge("edge4", %)
+]
+     }, %)
+  // build the bracket sketch around the body
+fn bracketSketch = (w, d, t) => {
+  const s = startSketchOn({
+         plane: {
+  origin: { x: 0, y: length / 2 + thk, z: 0 },
+  x_axis: { x: 1, y: 0, z: 0 },
+  y_axis: { x: 0, y: 0, z: 1 },
+  z_axis: { x: 0, y: 1, z: 0 }
+}
+       })
+    |> startProfileAt([-w / 2 - t, d + t], %)
+    |> lineTo([-w / 2 - t, -t], %, "edge1")
+    |> lineTo([w / 2 + t, -t], %, "edge2")
+    |> lineTo([w / 2 + t, d + t], %, "edge3")
+    |> lineTo([w / 2, d + t], %, "edge4")
+    |> lineTo([w / 2, 0], %, "edge5")
+    |> lineTo([-w / 2, 0], %, "edge6")
+    |> lineTo([-w / 2, d + t], %, "edge7")
+    |> close(%, "edge8")
+  return s
+}
+// build the body of the bracket
+const bracket_body = bracketSketch(width, depth, thk)
+  |> extrude(length + 10, %)
+  |> fillet({
+       radius: radius,
+       tags: [
+  getNextAdjacentEdge("edge7", %),
+  getNextAdjacentEdge("edge2", %),
+  getNextAdjacentEdge("edge3", %),
+  getNextAdjacentEdge("edge6", %)
+]
+     }, %)
+  // build the tabs of the mounting bracket (right side)
+const tabs_r = startSketchOn({
+       plane: {
+  origin: { x: 0, y: 0, z: depth + thk },
+  x_axis: { x: 1, y: 0, z: 0 },
+  y_axis: { x: 0, y: 1, z: 0 },
+  z_axis: { x: 0, y: 0, z: 1 }
+}
+     })
+  |> startProfileAt([width / 2 + thk, length / 2 + thk], %)
+  |> line([10, -5], %)
+  |> line([0, -10], %)
+  |> line([-10, -5], %)
+  |> close(%)
+  |> hole(circle([
+       width / 2 + thk + hole_diam,
+       length / 2 - hole_diam
+     ], hole_diam / 2, %), %)
+  |> extrude(-thk, %)
+  |> patternLinear3d({
+       axis: [0, -1, 0],
+       repetitions: 1,
+       distance: length - 10
+     }, %)
+  // build the tabs of the mounting bracket (left side)
+const tabs_l = startSketchOn({
+       plane: {
+  origin: { x: 0, y: 0, z: depth + thk },
+  x_axis: { x: 1, y: 0, z: 0 },
+  y_axis: { x: 0, y: 1, z: 0 },
+  z_axis: { x: 0, y: 0, z: 1 }
+}
+     })
+  |> startProfileAt([-width / 2 - thk, length / 2 + thk], %)
+  |> line([-10, -5], %)
+  |> line([0, -10], %)
+  |> line([10, -5], %)
+  |> close(%)
+  |> hole(circle([
+       -width / 2 - thk - hole_diam,
+       length / 2 - hole_diam
+     ], hole_diam / 2, %), %)
+  |> extrude(-thk, %)
+  |> patternLinear3d({
+       axis: [0, -1, 0],
+       repetitions: 1,
+       distance: length - 10
+     }, %)
+"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+        println!("{:#?}", program);
+
+        let recasted = program.recast(&Default::default(), 0);
+        // Its VERY important this comes back with zero new lines.
+        assert_eq!(
+            recasted,
+            r#"// define constants
+const radius = 6.0
+const width = 144.0
+const length = 83.0
+const depth = 45.0
+const thk = 5
+const hole_diam = 5
+// define a rectangular shape func
+fn rectShape = (pos, w, l) => {
+  const rr = startSketchOn('xy')
+    |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
+    |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, "edge1")
+    |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, "edge2")
+    |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, "edge3")
+    |> close(%, "edge4")
+  return rr
+}
+// build the body of the focusrite scarlett solo gen 4
+// only used for visualization
+const scarlett_body = rectShape([0, 0], width, length)
+  |> extrude(depth, %)
+  |> fillet({
+       radius: radius,
+       tags: [
+         getEdge("edge2", %),
+         getEdge("edge4", %),
+         getOppositeEdge("edge2", %),
+         getOppositeEdge("edge4", %)
+       ]
+     }, %)
+// build the bracket sketch around the body
+fn bracketSketch = (w, d, t) => {
+  const s = startSketchOn({
+         plane: {
+           origin: { x: 0, y: length / 2 + thk, z: 0 },
+           x_axis: { x: 1, y: 0, z: 0 },
+           y_axis: { x: 0, y: 0, z: 1 },
+           z_axis: { x: 0, y: 1, z: 0 }
+         }
+       })
+    |> startProfileAt([-w / 2 - t, d + t], %)
+    |> lineTo([-w / 2 - t, -t], %, "edge1")
+    |> lineTo([w / 2 + t, -t], %, "edge2")
+    |> lineTo([w / 2 + t, d + t], %, "edge3")
+    |> lineTo([w / 2, d + t], %, "edge4")
+    |> lineTo([w / 2, 0], %, "edge5")
+    |> lineTo([-w / 2, 0], %, "edge6")
+    |> lineTo([-w / 2, d + t], %, "edge7")
+    |> close(%, "edge8")
+  return s
+}
+// build the body of the bracket
+const bracket_body = bracketSketch(width, depth, thk)
+  |> extrude(length + 10, %)
+  |> fillet({
+       radius: radius,
+       tags: [
+         getNextAdjacentEdge("edge7", %),
+         getNextAdjacentEdge("edge2", %),
+         getNextAdjacentEdge("edge3", %),
+         getNextAdjacentEdge("edge6", %)
+       ]
+     }, %)
+// build the tabs of the mounting bracket (right side)
+const tabs_r = startSketchOn({
+       plane: {
+         origin: { x: 0, y: 0, z: depth + thk },
+         x_axis: { x: 1, y: 0, z: 0 },
+         y_axis: { x: 0, y: 1, z: 0 },
+         z_axis: { x: 0, y: 0, z: 1 }
+       }
+     })
+  |> startProfileAt([width / 2 + thk, length / 2 + thk], %)
+  |> line([10, -5], %)
+  |> line([0, -10], %)
+  |> line([-10, -5], %)
+  |> close(%)
+  |> hole(circle([
+       width / 2 + thk + hole_diam,
+       length / 2 - hole_diam
+     ], hole_diam / 2, %), %)
+  |> extrude(-thk, %)
+  |> patternLinear3d({
+       axis: [0, -1, 0],
+       repetitions: 1,
+       distance: length - 10
+     }, %)
+// build the tabs of the mounting bracket (left side)
+const tabs_l = startSketchOn({
+       plane: {
+         origin: { x: 0, y: 0, z: depth + thk },
+         x_axis: { x: 1, y: 0, z: 0 },
+         y_axis: { x: 0, y: 1, z: 0 },
+         z_axis: { x: 0, y: 0, z: 1 }
+       }
+     })
+  |> startProfileAt([-width / 2 - thk, length / 2 + thk], %)
+  |> line([-10, -5], %)
+  |> line([0, -10], %)
+  |> line([10, -5], %)
+  |> close(%)
+  |> hole(circle([
+       -width / 2 - thk - hole_diam,
+       length / 2 - hole_diam
+     ], hole_diam / 2, %), %)
+  |> extrude(-thk, %)
+  |> patternLinear3d({
+       axis: [0, -1, 0],
+       repetitions: 1,
+       distance: length - 10
+     }, %)
+"#
+        );
+    }
+
+    #[test]
     fn test_recast_nested_var_declaration_in_fn_body() {
         let some_program_string = r#"fn cube = (pos, scale) => {
    const sg = startSketchOn('XY')
@@ -3543,7 +3798,7 @@ const mySk1 = startSketchOn('XY')
   // and another with just white space between others below
   |> ry(45, %)
   |> rx(45, %)
-  // one more for good measure
+// one more for good measure
 "#
         );
     }
