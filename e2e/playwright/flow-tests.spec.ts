@@ -1577,10 +1577,12 @@ test('Sketch on face', async ({ page }) => {
   await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
   previousCodeContent = await page.locator('.cm-content').innerText()
 
+  await page.waitForTimeout(100)
   await page.mouse.click(secondClickPosition[0], secondClickPosition[1])
   await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
   previousCodeContent = await page.locator('.cm-content').innerText()
 
+  await page.waitForTimeout(100)
   await page.mouse.click(thirdClickPosition[0], thirdClickPosition[1])
   await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
   previousCodeContent = await page.locator('.cm-content').innerText()
