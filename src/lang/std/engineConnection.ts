@@ -1171,7 +1171,10 @@ export class EngineCommandManager {
       type: 'receive-reliable',
       data: message,
       id,
-      cmd_type: command?.commandType || this.lastArtifactMap[id]?.commandType,
+      cmd_type:
+        command?.commandType ||
+        this.lastArtifactMap[id]?.commandType ||
+        sceneCommand?.commandType,
     })
     Object.values(this.subscriptions[modelingResponse.type] || {}).forEach(
       (callback) => callback(modelingResponse)
