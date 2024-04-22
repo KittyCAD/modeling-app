@@ -735,7 +735,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   await u.openDebugPanel()
 
   const xAxisClick = () =>
-    page.mouse.click(700, 250).then(() => page.waitForTimeout(100))
+    page.mouse.click(700, 253).then(() => page.waitForTimeout(100))
   const emptySpaceClick = () =>
     page.mouse.click(728, 343).then(() => page.waitForTimeout(100))
   const topHorzSegmentClick = () =>
@@ -818,6 +818,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     await page.keyboard.down('Shift')
     const absYButton = page.getByRole('button', { name: 'ABS Y' })
     await expect(absYButton).toBeDisabled()
+    await page.waitForTimeout(100)
     await xAxisClick()
     await page.keyboard.up('Shift')
     await absYButton.and(page.locator(':not([disabled])')).waitFor()
@@ -826,10 +827,12 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     // clear selection by clicking on nothing
     await emptySpaceClick()
 
+    await page.waitForTimeout(100)
     // same selection but click the axis first
     await xAxisClick()
     await expect(absYButton).toBeDisabled()
     await page.keyboard.down('Shift')
+    await page.waitForTimeout(100)
     await topHorzSegmentClick()
 
     await page.keyboard.up('Shift')
@@ -842,6 +845,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     await page.getByText(`  |> line([-${commonPoints.num2}, 0], %)`).click()
     await page.keyboard.down('Shift')
     await expect(absYButton).toBeDisabled()
+    await page.waitForTimeout(100)
     await xAxisClick()
     await page.keyboard.up('Shift')
     await expect(absYButton).not.toBeDisabled()
@@ -884,7 +888,12 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   await page.waitForTimeout(100)
 
   // enter sketch again
-  await page.getByRole('button', { name: 'Edit Sketch' }).click()
+  await u.doAndWaitForCmd(
+    () => page.getByRole('button', { name: 'Edit Sketch' }).click(),
+    'default_camera_get_settings'
+  )
+  await page.waitForTimeout(150)
+
   await page.waitForTimeout(300) // wait for animation
 
   // hover again and check it works
