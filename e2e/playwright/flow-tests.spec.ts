@@ -1111,12 +1111,14 @@ test('Can add multiple sketches', async ({ page }) => {
   await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
   await u.clearAndCloseDebugPanel()
 
-  // const plane = 'XZ'
+  // on mock os there are issues with getting the camera to update
+  // it should not be selecting the 'XZ' plane here if the camera updated
+  // properly, but if we just role with it we can still verify everything
+  // in the rest of the test
   const plane = process.platform === 'darwin' ? 'XZ' : 'XY'
 
   await page.waitForTimeout(100)
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  // await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   const startAt2 =
     process.platform === 'darwin' ? '[9.75, -13.16]' : '[0.93, -1.25]'
   await expect(

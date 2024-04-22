@@ -56,7 +56,6 @@ import toast from 'react-hot-toast'
 import { EditorSelection } from '@uiw/react-codemirror'
 import { CoreDumpManager } from 'lib/coredump'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { isReducedMotion, uuidv4 } from 'lib/utils'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 
 type MachineContext<T extends AnyStateMachine> = {
