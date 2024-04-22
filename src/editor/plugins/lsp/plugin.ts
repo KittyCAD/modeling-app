@@ -47,6 +47,7 @@ export class LanguageServerPlugin implements PluginValue {
   public workspaceFolders: LSP.WorkspaceFolder[]
   private documentVersion: number
   private foldingRanges: LSP.FoldingRange[] | null = null
+  private viewUpdate: ViewUpdate | null = null
   private _defferer = deferExecution((code: string) => {
     try {
       // Update the state (not the editor) with the new code.
@@ -57,8 +58,9 @@ export class LanguageServerPlugin implements PluginValue {
         },
         contentChanges: [{ text: code }],
       })
-      if (editorManager.editorView) {
-        //editorManager.handleOnViewUpdate(editorManager.editorView)
+
+      if (this.viewUpdate) {
+        editorManager.handleOnViewUpdate(this.viewUpdate)
       }
     } catch (e) {
       console.error(e)
@@ -83,14 +85,16 @@ export class LanguageServerPlugin implements PluginValue {
     })
   }
 
-  update({ docChanged }: ViewUpdate) {
-    if (!docChanged) return
+  update(viewUpdate: ViewUpdate) {
+    this.viewUpdate = viewUpdate
+    if (!viewUpdate.docChanged) return
 
     const newCode = this.view.state.doc.toString()
 
     codeManager.code = newCode
     codeManager.writeToFile()
     kclManager.executeCode()
+
     this.sendChange({
       documentText: newCode,
     })
