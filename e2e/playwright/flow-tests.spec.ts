@@ -565,7 +565,9 @@ test('Auto complete works', async ({ page }) => {
 
   await page.keyboard.press('Tab')
   await page.keyboard.type('12')
+  await page.waitForTimeout(100)
   await page.keyboard.press('Tab')
+  await page.waitForTimeout(100)
   await page.keyboard.press('Tab')
   await page.keyboard.press('Tab')
   await page.keyboard.press('Enter')
