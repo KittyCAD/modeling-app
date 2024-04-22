@@ -6,7 +6,7 @@ import { PNG } from 'pngjs'
 
 async function waitForPageLoad(page: Page) {
   // wait for 'Loading stream...' spinner
-  await page.getByTestId('loading-stream').waitFor()
+  // await page.getByTestId('loading-stream').waitFor()
   // wait for all spinners to be gone
   await page.getByTestId('loading').waitFor({ state: 'detached' })
 
