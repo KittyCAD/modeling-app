@@ -365,6 +365,7 @@ pub fn is_cmd_with_return_values(cmd: &kittycad::types::ModelingCmd) -> bool {
     | kittycad::types::ModelingCmd::EntityGetDistance { .. }
     | kittycad::types::ModelingCmd::EntityLinearPattern { .. }
     | kittycad::types::ModelingCmd::EntityCircularPattern { .. }
+    | kittycad::types::ModelingCmd::ZoomToFit { .. }
     | kittycad::types::ModelingCmd::Solid3DGetExtrusionFaceInfo { .. }) = cmd
     else {
         return false;
