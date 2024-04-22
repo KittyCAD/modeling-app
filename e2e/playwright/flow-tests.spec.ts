@@ -1099,24 +1099,30 @@ test('Can add multiple sketches', async ({ page }) => {
 
   await u.expectCmdLog('[data-message-type="execution-done"]')
 
-  await u.updateCamPosition([0, 100, 100])
+  await u.updateCamPosition([100, 100, 100])
+  await page.waitForTimeout(250)
 
   // start a new sketch
   await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await page.waitForTimeout(250)
-  await page.mouse.click(673, 384)
+  await page.waitForTimeout(400)
+  await page.mouse.click(650, 450)
 
   await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
   await u.clearAndCloseDebugPanel()
 
+  const plane = 'XZ'
+  // const plane = process.platform === 'darwin' ? 'XZ' : 'XY'
+
+  await page.waitForTimeout(100)
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  const startAt2 = '[0.93,-1.25]'
+  // await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
+  const startAt2 = '[9.75, -13.16]'
   await expect(
     (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
   ).toBe(
     `${finalCodeFirstSketch}
-const part002 = startSketchOn('XY')
+const part002 = startSketchOn('${plane}')
   |> startProfileAt(${startAt2}, %)`.replace(/\s/g, '')
   )
   await page.waitForTimeout(100)
@@ -1125,12 +1131,12 @@ const part002 = startSketchOn('XY')
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
   await page.waitForTimeout(100)
 
-  const num2 = 0.94
+  const num2 = 9.84
   await expect(
     (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
   ).toBe(
     `${finalCodeFirstSketch}
-const part002 = startSketchOn('XY')
+const part002 = startSketchOn('${plane}')
   |> startProfileAt(${startAt2}, %)
   |> line([${num2}, 0], %)`.replace(/\s/g, '')
   )
@@ -1140,10 +1146,10 @@ const part002 = startSketchOn('XY')
     (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
   ).toBe(
     `${finalCodeFirstSketch}
-const part002 = startSketchOn('XY')
+const part002 = startSketchOn('${plane}')
   |> startProfileAt(${startAt2}, %)
   |> line([${num2}, 0], %)
-  |> line([0, ${roundOff(num2 - 0.01)}], %)`.replace(/\s/g, '')
+  |> line([0, ${roundOff(num2 + 0.01)}], %)`.replace(/\s/g, '')
   )
   await page.waitForTimeout(100)
   await page.mouse.click(startXPx, 500 - PUR * 20)
@@ -1151,11 +1157,11 @@ const part002 = startSketchOn('XY')
     (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
   ).toBe(
     `${finalCodeFirstSketch}
-const part002 = startSketchOn('XY')
+const part002 = startSketchOn('${plane}')
   |> startProfileAt(${startAt2}, %)
   |> line([${num2}, 0], %)
-  |> line([0, ${roundOff(num2 - 0.01)}], %)
-  |> line([-1.87, 0], %)`.replace(/\s/g, '')
+  |> line([0, ${roundOff(num2 + 0.01)}], %)
+  |> line([-19.59, 0], %)`.replace(/\s/g, '')
   )
 })
 
