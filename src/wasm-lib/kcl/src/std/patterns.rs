@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, ExtrudeSurface, Geometries, Geometry, MemoryItem, SketchGroup},
+    executor::{ExtrudeGroup, Geometries, Geometry, MemoryItem, SketchGroup, SketchGroupSet},
     std::Args,
 };
 
@@ -72,7 +72,7 @@ impl LinearPattern {
 
 /// A linear pattern on a 2D sketch.
 pub async fn pattern_linear_2d(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (LinearPattern2dData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
+    let (data, sketch_group_set): (LinearPattern2dData, SketchGroupSet) = args.get_data_and_sketch_group_set()?;
 
     if data.axis == [0.0, 0.0] {
         return Err(KclError::Semantic(KclErrorDetails {
@@ -83,7 +83,7 @@ pub async fn pattern_linear_2d(args: Args) -> Result<MemoryItem, KclError> {
         }));
     }
 
-    let sketch_groups = inner_pattern_linear_2d(data, sketch_group, args).await?;
+    let sketch_groups = inner_pattern_linear_2d(data, sketch_group_set, args).await?;
     Ok(MemoryItem::SketchGroups { value: sketch_groups })
 }
 
@@ -99,22 +99,32 @@ pub async fn pattern_linear_2d(args: Args) -> Result<MemoryItem, KclError> {
 }]
 async fn inner_pattern_linear_2d(
     data: LinearPattern2dData,
-    sketch_group: Box<SketchGroup>,
+    sketch_group_set: SketchGroupSet,
     args: Args,
 ) -> Result<Vec<Box<SketchGroup>>, KclError> {
-    let geometries = pattern_linear(
-        LinearPattern::TwoD(data),
-        Geometry::SketchGroup(sketch_group),
-        args.clone(),
-    )
-    .await?;
-
-    let Geometries::SketchGroups(sketch_groups) = geometries else {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: "Expected a vec of sketch groups".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
+    let starting_sketch_groups = match sketch_group_set {
+        SketchGroupSet::SketchGroup(sketch_group) => vec![sketch_group],
+        SketchGroupSet::SketchGroups(sketch_groups) => sketch_groups,
     };
+
+    let mut sketch_groups = Vec::new();
+    for sketch_group in starting_sketch_groups.iter() {
+        let geometries = pattern_linear(
+            LinearPattern::TwoD(data.clone()),
+            Geometry::SketchGroup(sketch_group.clone()),
+            args.clone(),
+        )
+        .await?;
+
+        let Geometries::SketchGroups(new_sketch_groups) = geometries else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "Expected a vec of sketch groups".to_string(),
+                source_ranges: vec![args.source_range],
+            }));
+        };
+
+        sketch_groups.extend(new_sketch_groups);
+    }
 
     Ok(sketch_groups)
 }
@@ -156,7 +166,6 @@ async fn inner_pattern_linear_3d(
     extrude_group: Box<ExtrudeGroup>,
     args: Args,
 ) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
-    println!("extrude_group: {:#?}", extrude_group);
     let geometries = pattern_linear(
         LinearPattern::ThreeD(data),
         Geometry::ExtrudeGroup(extrude_group),
