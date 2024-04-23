@@ -6,17 +6,12 @@ use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 /// Application wide settings.
-#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Validate)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct AppSettings {
-    /// The overall appearance of the app.
-    pub theme: AppTheme,
-    /// The hue of the primary theme color for the app.
-    #[validate(range(min = 0.0, max = 360.0))]
-    pub theme_color: f64,
-    /// The directory to save and load projects from.
-    pub project_directory: std::path::PathBuf,
+    /// The settings for the appearance of the app.
+    pub appearance: AppearanceSettings,
     /// Settings that affect the behavior while modeling.
     pub modeling: ModelingSettings,
     /// Settings that affect the behavior of the KCL text editor.
@@ -25,18 +20,27 @@ pub struct AppSettings {
     pub project: ProjectSettings,
     /// Settings that affect the behavior of the command bar.
     pub command_bar: CommandBarSettings,
+    /// The onboarding status of the app.
+    pub onboarding: OnboardingStatus,
 }
 
-impl Default for AppSettings {
+/// The settings for the theme of the app.
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Validate)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct AppearanceSettings {
+    /// The overall theme of the app.
+    pub theme: AppTheme,
+    /// The hue of the primary theme color for the app.
+    #[validate(range(min = 0.0, max = 360.0))]
+    pub color: f64,
+}
+
+impl Default for AppearanceSettings {
     fn default() -> Self {
         Self {
             theme: Default::default(),
-            theme_color: 264.5,
-            project_directory: Default::default(),
-            modeling: Default::default(),
-            text_editor: Default::default(),
-            project: Default::default(),
-            command_bar: Default::default(),
+            color: 264.5,
         }
     }
 }
@@ -205,6 +209,8 @@ impl Default for TextEditorSettings {
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct ProjectSettings {
+    /// The directory to save and load projects from.
+    pub default_directory: std::path::PathBuf,
     /// The default project name to use when creating a new project.
     pub default_project_name: String,
 }
@@ -213,6 +219,8 @@ impl Default for ProjectSettings {
     fn default() -> Self {
         Self {
             default_project_name: "project-$nnn".to_string(),
+            // TODO: set to the tauri directory.
+            default_directory: Default::default(),
         }
     }
 }
@@ -230,4 +238,19 @@ impl Default for CommandBarSettings {
     fn default() -> Self {
         Self { include_settings: true }
     }
+}
+
+/// The types of onboarding status.
+#[derive(Debug, Default, Eq, PartialEq, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Display, FromStr)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+#[display(style = "snake_case")]
+pub enum OnboardingStatus {
+    /// The user has completed onboarding.
+    Completed,
+    /// The user has not completed onboarding.
+    #[default]
+    Incomplete,
+    /// The user has dismissed onboarding.
+    Dismissed,
 }
