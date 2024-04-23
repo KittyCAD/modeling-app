@@ -651,16 +651,17 @@ class EngineConnection extends EventTarget {
           },
         }
 
-        // Send an initial ping
-        this.send({ type: 'ping' })
-        this.pingPongSpan.ping = new Date()
-
         // This is required for when KCMA is running stand-alone / within Tauri.
         // Otherwise when run in a browser, the token is sent implicitly via
         // the Cookie header.
         if (this.token) {
           this.send({ headers: { Authorization: `Bearer ${this.token}` } })
         }
+
+        // Send an initial ping
+        this.send({ type: 'ping' })
+        this.pingPongSpan.ping = new Date()
+
       })
 
       this.websocket.addEventListener('close', (event) => {
