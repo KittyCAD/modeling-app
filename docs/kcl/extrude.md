@@ -9,7 +9,7 @@ Extrudes by a given amount.
 
 
 ```js
-extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
+extrude(length: number, sketch_group_set: SketchGroupSet) -> ExtrudeGroupSet
 ```
 
 ### Examples
@@ -29,7 +29,7 @@ startSketchOn('XY')
 ### Arguments
 
 * `length`: `number` (REQUIRED)
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
+* `sketch_group_set`: `SketchGroupSet` - A sketch group or a group of sketch groups. (REQUIRED)
 ```js
 {
 	// The plane id or face id of the sketch group.
@@ -110,6 +110,7 @@ startSketchOn('XY')
 	// The to point.
 	to: [number, number],
 },
+	type: "sketchGroup",
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
@@ -193,12 +194,15 @@ startSketchOn('XY')
 	y: number,
 	z: number,
 },
+} |
+{
+	type: "sketchGroups",
 }
 ```
 
 ### Returns
 
-`ExtrudeGroup` - An extrude group is a collection of extrude surfaces.
+`ExtrudeGroupSet` - A extrude group or a group of extrude groups.
 ```js
 {
 	// The id of the extrusion end cap
@@ -278,6 +282,7 @@ startSketchOn('XY')
 }],
 	// The id of the extrusion start cap
 	startCapId: uuid,
+	type: "extrudeGroup",
 	// The extrude surfaces.
 	value: [{
 	// The face id for the extrude plane.
@@ -327,6 +332,9 @@ startSketchOn('XY')
 	y: number,
 	z: number,
 },
+} |
+{
+	type: "extrudeGroups",
 }
 ```
 

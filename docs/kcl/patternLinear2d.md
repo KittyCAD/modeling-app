@@ -9,7 +9,7 @@ A linear pattern on a 2D sketch.
 
 
 ```js
-patternLinear2d(data: LinearPattern2dData, sketch_group: SketchGroup) -> [SketchGroup]
+patternLinear2d(data: LinearPattern2dData, sketch_group_set: SketchGroupSet) -> [SketchGroup]
 ```
 
 ### Examples
@@ -39,7 +39,7 @@ const part = startSketchOn('XY')
 	repetitions: number,
 }
 ```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths. (REQUIRED)
+* `sketch_group_set`: `SketchGroupSet` - A sketch group or a group of sketch groups. (REQUIRED)
 ```js
 {
 	// The plane id or face id of the sketch group.
@@ -120,6 +120,7 @@ const part = startSketchOn('XY')
 	// The to point.
 	to: [number, number],
 },
+	type: "sketchGroup",
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
@@ -203,6 +204,9 @@ const part = startSketchOn('XY')
 	y: number,
 	z: number,
 },
+} |
+{
+	type: "sketchGroups",
 }
 ```
 
