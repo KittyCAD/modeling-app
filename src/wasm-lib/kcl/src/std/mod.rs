@@ -11,6 +11,7 @@ pub mod revolve;
 pub mod segment;
 pub mod shapes;
 pub mod sketch;
+pub mod types;
 pub mod utils;
 
 use std::collections::HashMap;

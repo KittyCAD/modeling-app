@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{ExtrudeGroup, Geometries, Geometry, MemoryItem, SketchGroup, SketchGroupSet},
-    std::Args,
+    std::{types::Uint, Args},
 };
 
 /// Data for a linear pattern on a 2D sketch.
@@ -20,7 +20,7 @@ pub struct LinearPattern2dData {
     /// The number of repetitions. Must be greater than 0.
     /// This excludes the original entity. For example, if `repetitions` is 1,
     /// the original entity will be copied once.
-    pub repetitions: u32,
+    pub repetitions: Uint,
     /// The distance between each repetition. This can also be referred to as spacing.
     pub distance: f64,
     /// The axis of the pattern. This is a 2D vector.
@@ -35,7 +35,7 @@ pub struct LinearPattern3dData {
     /// The number of repetitions. Must be greater than 0.
     /// This excludes the original entity. For example, if `repetitions` is 1,
     /// the original entity will be copied once.
-    pub repetitions: u32,
+    pub repetitions: Uint,
     /// The distance between each repetition. This can also be referred to as spacing.
     pub distance: f64,
     /// The axis of the pattern.
@@ -57,8 +57,8 @@ impl LinearPattern {
 
     pub fn repetitions(&self) -> u32 {
         match self {
-            LinearPattern::TwoD(lp) => lp.repetitions,
-            LinearPattern::ThreeD(lp) => lp.repetitions,
+            LinearPattern::TwoD(lp) => lp.repetitions.u32(),
+            LinearPattern::ThreeD(lp) => lp.repetitions.u32(),
         }
     }
 
@@ -185,6 +185,19 @@ async fn inner_pattern_linear_3d(
 
 async fn pattern_linear(data: LinearPattern, geometry: Geometry, args: Args) -> Result<Geometries, KclError> {
     let id = uuid::Uuid::new_v4();
+    println!(
+        "id: {:#?}",
+        ModelingCmd::EntityLinearPattern {
+            axis: kittycad::types::Point3D {
+                x: data.axis()[0],
+                y: data.axis()[1],
+                z: data.axis()[2],
+            },
+            entity_id: geometry.id(),
+            num_repetitions: data.repetitions(),
+            spacing: data.distance(),
+        }
+    );
 
     let resp = args
         .send_modeling_cmd(
@@ -244,7 +257,7 @@ pub struct CircularPattern2dData {
     /// The number of repetitions. Must be greater than 0.
     /// This excludes the original entity. For example, if `repetitions` is 1,
     /// the original entity will be copied once.
-    pub repetitions: u32,
+    pub repetitions: Uint,
     /// The center about which to make the pattern. This is a 2D vector.
     pub center: [f64; 2],
     /// The arc angle (in degrees) to place the repetitions. Must be greater than 0.
@@ -261,7 +274,7 @@ pub struct CircularPattern3dData {
     /// The number of repetitions. Must be greater than 0.
     /// This excludes the original entity. For example, if `repetitions` is 1,
     /// the original entity will be copied once.
-    pub repetitions: u32,
+    pub repetitions: Uint,
     /// The axis around which to make the pattern. This is a 3D vector.
     pub axis: [f64; 3],
     /// The center about which to make the pattern. This is a 3D vector.
@@ -294,8 +307,8 @@ impl CircularPattern {
 
     pub fn repetitions(&self) -> u32 {
         match self {
-            CircularPattern::TwoD(lp) => lp.repetitions,
-            CircularPattern::ThreeD(lp) => lp.repetitions,
+            CircularPattern::TwoD(lp) => lp.repetitions.u32(),
+            CircularPattern::ThreeD(lp) => lp.repetitions.u32(),
         }
     }
 
