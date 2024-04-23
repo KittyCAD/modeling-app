@@ -42,17 +42,14 @@ async fn execute_and_snapshot(code: &str, units: kittycad::types::UnitLength) ->
 
     let _ = ctx.run(program, None).await?;
 
-    let (x, y) = kcl_lib::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
-
+    // Zoom to fit.
     ctx.engine
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             kcl_lib::executor::SourceRange::default(),
-            kittycad::types::ModelingCmd::DefaultCameraLookAt {
-                center: kittycad::types::Point3D { x: 0.0, y: 0.0, z: 0.0 },
-                up: kittycad::types::Point3D { x: 0.0, y: 0.0, z: 1.0 },
-                vantage: kittycad::types::Point3D { x: 0.0, y: -x, z: y },
-                sequence: None,
+            kittycad::types::ModelingCmd::ZoomToFit {
+                object_ids: Default::default(),
+                padding: 0.1,
             },
         )
         .await?;

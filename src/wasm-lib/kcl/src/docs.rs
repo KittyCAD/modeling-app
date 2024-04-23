@@ -736,10 +736,12 @@ pub fn completion_item_from_enum_schema(
         anyhow::bail!("expected at least one enum value: {:#?}", o);
     }
 
-    let label = enum_values[0].to_string();
+    let serde_json::Value::String(ref enum_value) = enum_values[0] else {
+        anyhow::bail!("expected string enum value: {:#?}", enum_values[0]);
+    };
 
     Ok(CompletionItem {
-        label,
+        label: enum_value.to_string(),
         label_details: None,
         kind: Some(kind),
         detail: Some(description.to_string()),
