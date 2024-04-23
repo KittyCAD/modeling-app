@@ -691,6 +691,8 @@ class EngineConnection extends EventTarget {
         // when assuming we're the only consumer or that all messages will
         // be carefully formatted here.
 
+        console.log(event)
+
         if (typeof event.data !== 'string') {
           return
         }
