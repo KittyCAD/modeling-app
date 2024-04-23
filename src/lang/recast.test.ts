@@ -266,9 +266,9 @@ const mySk1 = startSketchAt([0, 0])
 
 
   |> rx(45, %)
-  /*
-  one more for good measure
-  */
+/*
+one more for good measure
+*/
 `
     const { ast } = code2ast(code)
     const recasted = recast(ast)
@@ -285,7 +285,7 @@ const mySk1 = startSketchAt([0, 0])
   // and another with just white space between others below
   |> ry(45, %)
   |> rx(45, %)
-  /* one more for good measure */
+/* one more for good measure */
 `)
   })
 })
