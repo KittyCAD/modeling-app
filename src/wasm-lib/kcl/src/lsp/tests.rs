@@ -1663,7 +1663,7 @@ const part001 = cube([0,0], 20)
             text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
                 uri: "file:///test.kcl".try_into().unwrap(),
             },
-            units: crate::lsp::kcl::custom_notifications::UnitLength::M,
+            units: crate::settings::types::UnitLength::M,
             text: same_text.clone(),
         })
         .await
@@ -2219,7 +2219,7 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_re
             text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
                 uri: "file:///test.kcl".try_into().unwrap(),
             },
-            units: crate::lsp::kcl::custom_notifications::UnitLength::Mm,
+            units: crate::settings::types::UnitLength::Mm,
             text: code.to_string(),
         })
         .await
@@ -2304,7 +2304,7 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecu
             text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
                 uri: "file:///test.kcl".try_into().unwrap(),
             },
-            units: crate::lsp::kcl::custom_notifications::UnitLength::Mm,
+            units: crate::settings::types::UnitLength::Mm,
             text: code.to_string(),
         })
         .await
@@ -2388,7 +2388,7 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
             text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
                 uri: "file:///test.kcl".try_into().unwrap(),
             },
-            units: crate::lsp::kcl::custom_notifications::UnitLength::Mm,
+            units: crate::settings::types::UnitLength::Mm,
             text: code.to_string(),
         })
         .await
@@ -2438,7 +2438,7 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
             text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
                 uri: "file:///test.kcl".try_into().unwrap(),
             },
-            units: crate::lsp::kcl::custom_notifications::UnitLength::Mm,
+            units: crate::settings::types::UnitLength::Mm,
             text: code.to_string(),
         })
         .await
@@ -2479,7 +2479,7 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
             text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
                 uri: "file:///test.kcl".try_into().unwrap(),
             },
-            units: crate::lsp::kcl::custom_notifications::UnitLength::Mm,
+            units: crate::settings::types::UnitLength::Mm,
             text: code.to_string(),
         })
         .await
