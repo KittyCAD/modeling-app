@@ -5,26 +5,38 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 /// Application wide settings.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct AppSettings {
     /// The overall appearance of the app.
     pub theme: AppTheme,
+    /// The hue of the primary theme color for the app.
+    pub theme_color: f64,
     /// The directory to save and load projects from.
     pub project_directory: std::path::PathBuf,
     /// Settings that affect the behavior while modeling.
-    #[serde(default)]
     pub modeling: ModelingSettings,
     /// Settings that affect the behavior of the KCL text editor.
-    #[serde(default)]
     pub text_editor: TextEditorSettings,
     /// Settings that affect the behavior of project management.
-    #[serde(default)]
     pub project: ProjectSettings,
     /// Settings that affect the behavior of the command bar.
-    #[serde(default)]
     pub command_bar: CommandBarSettings,
+}
+
+impl Default for AppSettings {
+    fn default() -> Self {
+        Self {
+            theme: Default::default(),
+            theme_color: 264.5,
+            project_directory: Default::default(),
+            modeling: Default::default(),
+            text_editor: Default::default(),
+            project: Default::default(),
+            command_bar: Default::default(),
+        }
+    }
 }
 
 /// The overall appearance of the app.
