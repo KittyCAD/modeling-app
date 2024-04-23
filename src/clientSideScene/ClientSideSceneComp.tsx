@@ -158,6 +158,7 @@ const Overlay = ({
   overlayIndex: number
   pathToNodeString: string
 }) => {
+  const { context, send } = useModelingContext()
   let xAlignment = overlay.angle < 0 ? '0%' : '-100%'
   let yAlignment = overlay.angle < -90 || overlay.angle >= 90 ? '0%' : '-100%'
 
@@ -177,6 +178,10 @@ const Overlay = ({
   const yOffset =
     Math.sin(((overlay.angle + offsetAngle) * Math.PI) / 180) * offset
 
+  const shouldShow =
+    overlay.visible &&
+    typeof context?.segmentHoverMap?.[pathToNodeString] === 'number'
+
   return (
     <div className={`absolute w-0 h-0`}>
       <div
@@ -189,7 +194,7 @@ const Overlay = ({
           transform: `translate3d(${overlay.windowCoords[0]}px, ${overlay.windowCoords[1]}px, 0)`,
         }}
       ></div>
-      {overlay.visible && (
+      {shouldShow && (
         <div
           className="px-0 pointer-events-auto absolute flex gap-1"
           style={{
@@ -199,6 +204,21 @@ const Overlay = ({
               overlay.windowCoords[1] - yOffset
             }px + ${yAlignment}), 0)`,
           }}
+          onMouseEnter={() =>
+            send({
+              type: 'Set mouse state',
+              data: {
+                type: 'isHovering',
+                on: overlay.group,
+              },
+            })
+          }
+          onMouseLeave={() =>
+            send({
+              type: 'Set mouse state',
+              data: { type: 'idle' },
+            })
+          }
         >
           {constraints &&
             constraints.map((constraintInfo, i) => (

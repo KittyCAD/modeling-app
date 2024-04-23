@@ -39,6 +39,9 @@ import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
 import useStateMachineCommands from 'hooks/useStateMachineCommands'
 import { modelingMachineConfig } from 'lib/commandBarConfigs/modelingCommandConfig'
 import {
+  STRAIGHT_SEGMENT,
+  TANGENTIAL_ARC_TO_SEGMENT,
+  getParentGroup,
   getSketchOrientationDetails,
   getSketchQuaternion,
 } from 'clientSideScene/sceneEntities'
@@ -120,6 +123,55 @@ export const ModelingMachineProvider = ({
         },
         'Set mouse state': assign({
           mouseState: (_, event) => event.data,
+          segmentHoverMap: ({ mouseState, segmentHoverMap }, event) => {
+            if (event.data.type === 'isHovering') {
+              const parent = getParentGroup(event.data.on, [
+                STRAIGHT_SEGMENT,
+                TANGENTIAL_ARC_TO_SEGMENT,
+                // PROFILE_START,
+              ])
+              const pathToNode = parent?.userData?.pathToNode
+              const pathToNodeString = JSON.stringify(pathToNode)
+              if (!parent || !pathToNode) return {}
+              if (segmentHoverMap[pathToNodeString] !== undefined)
+                clearTimeout(segmentHoverMap[JSON.stringify(pathToNode)])
+              return {
+                ...segmentHoverMap,
+                [pathToNodeString]: 0,
+              }
+            } else if (
+              event.data.type === 'idle' &&
+              mouseState.type === 'isHovering'
+            ) {
+              const mouseOnParent = getParentGroup(mouseState.on, [
+                STRAIGHT_SEGMENT,
+                TANGENTIAL_ARC_TO_SEGMENT,
+              ])
+              if (!mouseOnParent || !mouseOnParent?.userData?.pathToNode)
+                return segmentHoverMap
+              const pathToNodeString = JSON.stringify(
+                mouseOnParent?.userData?.pathToNode
+              )
+              const timeoutId = setTimeout(() => {
+                sceneInfra.modelingSend({
+                  type: 'Set mouse state',
+                  data: {
+                    type: 'timeoutEnd',
+                    pathToNodeString,
+                  },
+                })
+              }, 800) as unknown as number
+              return {
+                ...segmentHoverMap,
+                [pathToNodeString]: timeoutId,
+              }
+            } else if (event.data.type === 'timeoutEnd') {
+              const copy = { ...segmentHoverMap }
+              delete copy[event.data.pathToNodeString]
+              return copy
+            }
+            return {}
+          },
         }),
         'Set Segment Overlays': assign({
           segmentOverlays: ({ segmentOverlays }, { data }) => {
