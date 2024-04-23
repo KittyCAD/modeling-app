@@ -62,7 +62,11 @@ impl StdLibFnArg {
     }
 
     pub fn get_autocomplete_snippet(&self, index: usize) -> Result<Option<(usize, String)>> {
-        if self.type_ == "SketchGroup" || self.type_ == "ExtrudeGroup" || self.type_ == "SketchSurface" {
+        if self.type_ == "SketchGroup"
+            || self.type_ == "ExtrudeGroup"
+            || self.type_ == "SketchSurface"
+            || self.type_ == "SketchGroupSet"
+        {
             return Ok(Some((index, format!("${{{}:{}}}", index, "%"))));
         }
         get_autocomplete_snippet_from_schema(&self.schema.clone(), index)
