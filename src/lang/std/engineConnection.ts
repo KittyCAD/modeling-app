@@ -4,7 +4,7 @@ import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
 import { uuidv4 } from 'lib/utils'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
-import { Themes, getThemeColorForEngine } from 'lib/theme'
+import { Themes, getThemeColorForEngine, getOppositeTheme } from 'lib/theme'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 
 let lastMessage = ''
@@ -941,6 +941,7 @@ export class EngineCommandManager {
     settings = {
       theme: Themes.Dark,
       highlightEdges: true,
+      enableSSAO: true,
     },
   }: {
     setMediaStream: (stream: MediaStream) => void
@@ -953,6 +954,7 @@ export class EngineCommandManager {
     settings?: {
       theme: Themes
       highlightEdges: boolean
+      enableSSAO: boolean
     }
   }) {
     this.makeDefaultPlanes = makeDefaultPlanes
@@ -969,7 +971,8 @@ export class EngineCommandManager {
       return
     }
 
-    const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}`
+    const additionalSettings = settings.enableSSAO ? '&post_effect=ssao' : ''
+    const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}${additionalSettings}`
     this.engineConnection = new EngineConnection({
       engineCommandManager: this,
       url,
@@ -989,6 +992,18 @@ export class EngineCommandManager {
             color: getThemeColorForEngine(settings.theme),
           },
         })
+
+        // Sets the default line colors
+        const opposingTheme = getOppositeTheme(settings.theme)
+        this.sendSceneCommand({
+          cmd_id: uuidv4(),
+          type: 'modeling_cmd_req',
+          cmd: {
+            type: 'set_default_system_properties',
+            color: getThemeColorForEngine(opposingTheme),
+          },
+        })
+
         // Set the edge lines visibility
         this.sendSceneCommand({
           type: 'modeling_cmd_req',

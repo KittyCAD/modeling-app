@@ -7,6 +7,7 @@ export const TEST_SETTINGS = {
     theme: Themes.Dark,
     onboardingStatus: 'dismissed',
     projectDirectory: '',
+    enableSSAO: false,
   },
   modeling: {
     defaultUnit: 'in',
