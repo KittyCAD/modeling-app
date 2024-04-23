@@ -1063,6 +1063,15 @@ export class EngineCommandManager {
         })
         this._camControlsCameraChange()
         this.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'zoom_to_fit',
+            object_ids: [], // leave empty to zoom to all objects
+            padding: 0.1, // padding around the objects
+          },
+        })
+        this.sendSceneCommand({
           // CameraControls subscribes to default_camera_get_settings response events
           // firing this at connection ensure the camera's are synced initially
           type: 'modeling_cmd_req',
