@@ -33,9 +33,6 @@ import {
   syntaxHighlighting,
   defaultHighlightStyle,
 } from '@codemirror/language'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { useNetworkContext } from 'hooks/useNetworkContext'
-import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import interact from '@replit/codemirror-interact'
 import { kclManager, editorManager, codeManager } from 'lib/singletons'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -46,7 +43,6 @@ import {
   closeBracketsKeymap,
   completionKeymap,
 } from '@codemirror/autocomplete'
-import { kclErrorsToDiagnostics } from 'lang/errors'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -67,8 +63,6 @@ export const KclEditorPane = () => {
       ? getSystemTheme()
       : context.app.theme.current
   const { copilotLSP, kclLSP } = useLspContext()
-  const { overallState } = useNetworkContext()
-  const isNetworkOkay = overallState === NetworkHealthState.Ok
   const navigate = useNavigate()
 
   useEffect(() => {

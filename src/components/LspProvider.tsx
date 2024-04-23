@@ -98,15 +98,6 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   const { lspClient: kclLspClient } = useMemo(() => {
     if (!token || token === '' || TEST) {
       return { lspClient: null }
-
-    const intoServer: IntoServer = new IntoServer()
-    const fromServer: FromServer = FromServer.create()
-    const client = new Client(fromServer, intoServer)
-    if (!TEST) {
-      Server.initialize(intoServer, fromServer).then((lspServer) => {
-        void lspServer.start('kcl', token)
-        setIsKclLspServerReady(true)
-      })
     }
 
     const lspWorker = new Worker({ name: 'kcl' })
@@ -182,15 +173,6 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   const { lspClient: copilotLspClient } = useMemo(() => {
     if (!token || token === '' || TEST) {
       return { lspClient: null }
-
-    const intoServer: IntoServer = new IntoServer()
-    const fromServer: FromServer = FromServer.create()
-    const client = new Client(fromServer, intoServer)
-    if (!TEST) {
-      Server.initialize(intoServer, fromServer).then((lspServer) => {
-        void lspServer.start('copilot', token)
-        setIsCopilotLspServerReady(true)
-      })
     }
 
     const lspWorker = new Worker({ name: 'copilot' })
