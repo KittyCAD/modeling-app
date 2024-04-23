@@ -21,7 +21,7 @@ import {
   TextureLoader,
   Texture,
 } from 'three'
-import { compareVec2Epsilon2 } from 'lang/std/sketch'
+import { Coords2d, compareVec2Epsilon2 } from 'lang/std/sketch'
 import { useModelingContext } from 'hooks/useModelingContext'
 import * as TWEEN from '@tweenjs/tween.js'
 import { Axis } from 'lib/selections'
@@ -30,6 +30,7 @@ import { CameraControls } from './CameraControls'
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import { settings } from 'lib/settings/initialSettings'
 import { MouseState } from 'machines/modelingMachine'
+import { getAngle } from 'lib/utils'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -152,6 +153,68 @@ export class SceneInfra {
   modelingSend: SendType = (() => {}) as any
   setSend(send: SendType) {
     this.modelingSend = send
+  }
+
+  overlayThrottleMap: { [pathToNodeString: string]: number } = {}
+  private _updateOverlayDetails({
+    arrowGroup,
+    group,
+    isHandlesVisible,
+    from,
+    to,
+    angle,
+  }: {
+    arrowGroup: Group
+    group: Group
+    isHandlesVisible: boolean
+    from: Coords2d
+    to: Coords2d
+    angle?: number
+  }) {
+    if (group.userData.pathToNode && arrowGroup) {
+      const vector = new Vector3(0, 0, 0)
+
+      // Get the position of the object3D in world space
+      // console.log('arrowGroup', arrowGroup)
+      arrowGroup.getWorldPosition(vector)
+
+      // Project that position to screen space
+      vector.project(this.camControls.camera)
+
+      const _angle = typeof angle === 'number' ? angle : getAngle(from, to)
+
+      const x = (vector.x * 0.5 + 0.5) * window.innerWidth
+      const y = (-vector.y * 0.5 + 0.5) * window.innerHeight
+      const pathToNodeString = JSON.stringify(group.userData.pathToNode)
+      this.modelingSend({
+        type: 'Set Segment Overlays',
+        data: {
+          type: 'set-one',
+          pathToNodeString,
+          seg: {
+            windowCoords: [x, y],
+            angle: _angle,
+            group,
+            pathToNode: group.userData.pathToNode,
+            visible: isHandlesVisible,
+          },
+        },
+      })
+    }
+  }
+
+  /**
+   adds details of where the segment overlays should be located to Xstate so that they
+   can be absolutely positioned into place. The function is debounced.
+   */
+  updateOverlayDetails(args: Parameters<typeof this._updateOverlayDetails>[0]) {
+    const throttleId = JSON.stringify(args.group.userData.pathToNode)
+    if (this.overlayThrottleMap[throttleId])
+      clearTimeout(this.overlayThrottleMap[throttleId])
+    this.overlayThrottleMap[throttleId] = setTimeout(() => {
+      this._updateOverlayDetails(args)
+      delete this.overlayThrottleMap[throttleId]
+    }, 100) as unknown as number
   }
 
   hoveredObject: null | any = null

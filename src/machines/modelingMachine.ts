@@ -91,6 +91,7 @@ export interface SegmentOverlay {
   angle: number
   group: any
   pathToNode: PathToNode
+  visible: boolean
 }
 
 export interface SegmentOverlays {

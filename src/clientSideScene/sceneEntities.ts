@@ -1170,46 +1170,17 @@ export class SceneEntities {
         scale,
       })
     }
-    if (group.userData.pathToNode && arrowGroup) {
-      const vector = new Vector3(0, 0, 0)
-
-      // Get the position of the object3D in world space
-      // console.log('arrowGroup', arrowGroup)
-      arrowGroup.getWorldPosition(vector)
-
-      // Project that position to screen space
-      vector.project(sceneInfra.camControls.camera)
-
-      const angle = normaliseAngle(
-        (arcInfo.endAngle * 180) / Math.PI + (arcInfo.ccw ? 90 : -90)
-      )
-
-      const x = (vector.x * 0.5 + 0.5) * window.innerWidth
-      const y = (-vector.y * 0.5 + 0.5) * window.innerHeight
-      if (isHandlesVisible) {
-        sceneInfra.modelingSend({
-          type: 'Set Segment Overlays',
-          data: {
-            type: 'set-one',
-            pathToNodeString: JSON.stringify(group.userData.pathToNode),
-            seg: {
-              windowCoords: [x, y],
-              angle,
-              group,
-              pathToNode: group.userData.pathToNode,
-            },
-          },
-        })
-      } else {
-        sceneInfra.modelingSend({
-          type: 'Set Segment Overlays',
-          data: {
-            type: 'delete-one',
-            pathToNodeString: JSON.stringify(group.userData.pathToNode),
-          },
-        })
-      }
-    }
+    const angle = normaliseAngle(
+      (arcInfo.endAngle * 180) / Math.PI + (arcInfo.ccw ? 90 : -90)
+    )
+    sceneInfra.updateOverlayDetails({
+      arrowGroup,
+      group,
+      isHandlesVisible,
+      from,
+      to,
+      angle,
+    })
   }
   throttledUpdateDashedArcGeo = throttle(
     (
@@ -1307,44 +1278,13 @@ export class SceneEntities {
         scale
       )
     }
-    if (group.userData.pathToNode && arrowGroup) {
-      const vector = new Vector3(0, 0, 0)
-
-      // Get the position of the object3D in world space
-      // console.log('arrowGroup', arrowGroup)
-      arrowGroup.getWorldPosition(vector)
-
-      // Project that position to screen space
-      vector.project(sceneInfra.camControls.camera)
-
-      const angle = getAngle(from, to)
-
-      const x = (vector.x * 0.5 + 0.5) * window.innerWidth
-      const y = (-vector.y * 0.5 + 0.5) * window.innerHeight
-      if (isHandlesVisible) {
-        sceneInfra.modelingSend({
-          type: 'Set Segment Overlays',
-          data: {
-            type: 'set-one',
-            pathToNodeString: JSON.stringify(group.userData.pathToNode),
-            seg: {
-              windowCoords: [x, y],
-              angle,
-              group,
-              pathToNode: group.userData.pathToNode,
-            },
-          },
-        })
-      } else {
-        sceneInfra.modelingSend({
-          type: 'Set Segment Overlays',
-          data: {
-            type: 'delete-one',
-            pathToNodeString: JSON.stringify(group.userData.pathToNode),
-          },
-        })
-      }
-    }
+    sceneInfra.updateOverlayDetails({
+      arrowGroup,
+      group,
+      isHandlesVisible,
+      from,
+      to,
+    })
   }
   async animateAfterSketch() {
     // if (isReducedMotion()) {

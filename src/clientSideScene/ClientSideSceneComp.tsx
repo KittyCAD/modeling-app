@@ -6,7 +6,12 @@ import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { ARROWHEAD, DEBUG_SHOW_BOTH_SCENES } from './sceneInfra'
 import { ReactCameraProperties } from './CameraControls'
 import { throttle } from 'lib/utils'
-import { sceneInfra, kclManager, codeManager } from 'lib/singletons'
+import {
+  sceneInfra,
+  kclManager,
+  codeManager,
+  editorManager,
+} from 'lib/singletons'
 import {
   EXTRA_SEGMENT_HANDLE,
   PROFILE_START,
@@ -125,21 +130,34 @@ export const ClientSideScene = ({
 
 const Overlays = () => {
   const { context } = useModelingContext()
+  if (context.mouseState.type === 'isDragging') return null
   return (
     <div className="absolute inset-0 pointer-events-none">
-      {Object.entries(context.segmentOverlays).map(
-        ([pathToNodeString, overlay]) => {
-          return <Overlay overlay={overlay} key={pathToNodeString} />
-        }
-      )}
+      {Object.entries(context.segmentOverlays)
+        .filter((a) => a[1].visible)
+        .map(([pathToNodeString, overlay], index) => {
+          return (
+            <Overlay
+              overlay={overlay}
+              key={pathToNodeString}
+              pathToNodeString={pathToNodeString}
+              overlayIndex={index}
+            />
+          )
+        })}
     </div>
   )
 }
 
-const Overlay = ({ overlay }: { overlay: SegmentOverlay }) => {
-  const { context } = useModelingContext()
-  if (context.mouseState.type === 'isDragging') return null
-
+const Overlay = ({
+  overlay,
+  overlayIndex,
+  pathToNodeString,
+}: {
+  overlay: SegmentOverlay
+  overlayIndex: number
+  pathToNodeString: string
+}) => {
   let xAlignment = overlay.angle < 0 ? '0%' : '-100%'
   let yAlignment = overlay.angle < -90 || overlay.angle >= 90 ? '0%' : '-100%'
 
@@ -162,34 +180,48 @@ const Overlay = ({ overlay }: { overlay: SegmentOverlay }) => {
   return (
     <div className={`absolute w-0 h-0`}>
       <div
-        className="px-0 pointer-events-auto absolute flex gap-1"
+        data-testid="segment-overlay"
+        data-path-to-node={pathToNodeString}
+        data-overlay-index={overlayIndex}
+        data-overlay-angle={overlay.angle}
+        className="pointer-events-auto absolute w-0 h-0"
         style={{
-          transform: `translate3d(calc(${
-            overlay.windowCoords[0] + xOffset
-          }px + ${xAlignment}), calc(${
-            overlay.windowCoords[1] - yOffset
-          }px + ${yAlignment}), 0)`,
+          transform: `translate3d(${overlay.windowCoords[0]}px, ${overlay.windowCoords[1]}px, 0)`,
         }}
-      >
-        {constraints &&
-          constraints.map((constraintInfo, i) => (
-            <ConstraintSymbol
-              constrainInfo={constraintInfo}
-              key={i}
-              verticalPosition={
-                overlay.windowCoords[1] > window.innerHeight / 2
-                  ? 'top'
-                  : 'bottom'
-              }
-            />
-          ))}
-        <SegmentMenu
-          verticalPosition={
-            overlay.windowCoords[1] > window.innerHeight / 2 ? 'top' : 'bottom'
-          }
-          pathToNode={overlay.pathToNode}
-        />
-      </div>
+      ></div>
+      {overlay.visible && (
+        <div
+          className="px-0 pointer-events-auto absolute flex gap-1"
+          style={{
+            transform: `translate3d(calc(${
+              overlay.windowCoords[0] + xOffset
+            }px + ${xAlignment}), calc(${
+              overlay.windowCoords[1] - yOffset
+            }px + ${yAlignment}), 0)`,
+          }}
+        >
+          {constraints &&
+            constraints.map((constraintInfo, i) => (
+              <ConstraintSymbol
+                constrainInfo={constraintInfo}
+                key={i}
+                verticalPosition={
+                  overlay.windowCoords[1] > window.innerHeight / 2
+                    ? 'top'
+                    : 'bottom'
+                }
+              />
+            ))}
+          <SegmentMenu
+            verticalPosition={
+              overlay.windowCoords[1] > window.innerHeight / 2
+                ? 'top'
+                : 'bottom'
+            }
+            pathToNode={overlay.pathToNode}
+          />
+        </div>
+      )}
     </div>
   )
 }
@@ -241,9 +273,6 @@ const ConstraintSymbol = ({
   constrainInfo: ConstrainInfo
   verticalPosition: 'top' | 'bottom'
 }) => {
-  const { setHighlightRange } = useStore((s) => ({
-    setHighlightRange: s.setHighlightRange,
-  }))
   let name: CustomIconName = 'dimension'
   if (
     _type === 'horizontal' ||
@@ -268,10 +297,10 @@ const ConstraintSymbol = ({
             : 'bg-primary/30 text-primary border-2 border-transparent group-hover:bg-primary/40 group-hover:border-primary/50 group-hover:brightness-125'
         } h-[26px] w-[26px] rounded-sm relative m-0 p-0`}
         onMouseEnter={() => {
-          sourceRange && setHighlightRange(sourceRange)
+          sourceRange && editorManager.setHighlightRange(sourceRange)
         }}
         onMouseLeave={() => {
-          setHighlightRange([0, 0])
+          editorManager.setHighlightRange([0, 0])
         }}
       >
         <CustomIcon name={name} />

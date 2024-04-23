@@ -1406,8 +1406,6 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
   ).not.toBeDisabled()
 
   const startPX = [665, 458]
-  const lineEndPX = [842, 458]
-  const arcEndPX = [971, 342]
 
   const dragPX = 30
 
@@ -1419,6 +1417,8 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
 
   const step5 = { steps: 5 }
 
+  await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
+
   // drag startProfieAt handle
   await page.mouse.move(startPX[0], startPX[1])
   await page.mouse.down()
@@ -1429,22 +1429,22 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
   prevContent = await page.locator('.cm-content').innerText()
 
   // drag line handle
-  await page.mouse.move(lineEndPX[0] + dragPX, lineEndPX[1] - dragPX)
+  await page.waitForTimeout(100)
+
+  const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
+  await page.mouse.move(lineEnd.x - 5, lineEnd.y)
   await page.mouse.down()
-  await page.mouse.move(
-    lineEndPX[0] + dragPX * 2,
-    lineEndPX[1] - dragPX * 2,
-    step5
-  )
+  await page.mouse.move(lineEnd.x + dragPX, lineEnd.y - dragPX, step5)
   await page.mouse.up()
   await page.waitForTimeout(100)
   await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
   prevContent = await page.locator('.cm-content').innerText()
 
   // drag tangentialArcTo handle
-  await page.mouse.move(arcEndPX[0], arcEndPX[1])
+  const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
+  await page.mouse.move(tangentEnd.x, tangentEnd.y - 5)
   await page.mouse.down()
-  await page.mouse.move(arcEndPX[0] + dragPX, arcEndPX[1] - dragPX, step5)
+  await page.mouse.move(tangentEnd.x + dragPX, tangentEnd.y - dragPX, step5)
   await page.mouse.up()
   await page.waitForTimeout(100)
   await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
@@ -1453,8 +1453,8 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt([6.44, -12.07], %)
-  |> line([14.04, 2.03], %)
-  |> tangentialArcTo([27.19, -4.2], %)`)
+  |> line([14.72, 1.97], %)
+  |> tangentialArcTo([26.92, -3.32], %)`)
 })
 
 const doSnapAtDifferentScales = async (
