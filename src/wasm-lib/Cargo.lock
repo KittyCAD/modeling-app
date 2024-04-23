@@ -927,7 +927,7 @@ dependencies = [
 
 [[package]]
 name = "derive-docs"
-version = "0.1.15"
+version = "0.1.16"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -1854,7 +1854,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.1.48"
+version = "0.1.49"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -1921,9 +1921,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.2.69"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f14a17cc3c056804ad287f698ba54e569e0133b8e728fb18ec73e23a8bdad951"
+checksum = "ddc922f0da3abc22661bf49423c9bfcc02ce6ae92dae007ede6990874789545b"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1959,9 +1959,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-execution-plan"
-version = "0.1.4"
+version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "acf8ffb148bd09de8889a8a2b3075a23ee86446c3a6e1c6dcf66b40fdc778158"
+checksum = "ae99665cd699f8800da8ea4b01889c0c9c61619d2a9dc62d1d5028f1b21110bd"
 dependencies = [
  "bytes",
  "gltf-json",
@@ -2044,9 +2044,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-session"
-version = "0.1.3"
+version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bae9bc47fcc3cc30727b35e738c35666b97e1e5f48f3f4c60ddaeccb69b66559"
+checksum = "241d45ca828af2953bf538f312a3e9d6fa7fe83055c90f6b6b9ffa76f53b6285"
 dependencies = [
  "futures",
  "kittycad",

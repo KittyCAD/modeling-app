@@ -794,7 +794,7 @@ fn generate_code_block_test(
                     uuid::Uuid::new_v4(),
                     crate::executor::SourceRange::default(),
                     kittycad::types::ModelingCmd::ZoomToFit {
-                        object_ids: Some(Default::default()),
+                        object_ids: Default::default(),
                         padding: 0.1,
                     },
                 )

@@ -48,7 +48,7 @@ async fn execute_and_snapshot(code: &str, units: kittycad::types::UnitLength) ->
             uuid::Uuid::new_v4(),
             kcl_lib::executor::SourceRange::default(),
             kittycad::types::ModelingCmd::ZoomToFit {
-                object_ids: Some(Default::default()),
+                object_ids: Default::default(),
                 padding: 0.1,
             },
         )
