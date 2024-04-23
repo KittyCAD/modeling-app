@@ -1517,12 +1517,12 @@ async fn inner_bezier_curve(
         ModelingCmd::ExtendPath {
             path: sketch_group.id,
             segment: kittycad::types::PathSegment::Bezier {
-                control1: Point3D {
+                control_1: Point3D {
                     x: data.control1[0],
                     y: data.control1[1],
                     z: 0.0,
                 },
-                control2: Point3D {
+                control_2: Point3D {
                     x: data.control2[0],
                     y: data.control2[1],
                     z: 0.0,
