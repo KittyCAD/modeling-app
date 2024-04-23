@@ -97,6 +97,7 @@ import {
   getRectangleCallExpressions,
   updateRectangleSketch,
 } from 'lib/rectangleTool'
+import { circleAsCallExpressions, updateCircleSketch } from 'lib/circleTool'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -580,7 +581,7 @@ export class SceneEntities {
       ...this.mouseEnterLeaveCallbacks(),
     })
   }
-  setupRectangleOriginListener = () => {
+  setupOriginListener = (type: 'circle' | 'rectangle') => {
     sceneInfra.setCallbacks({
       onClick: (args) => {
         const twoD = args.intersectionPoint?.twoD
@@ -589,7 +590,7 @@ export class SceneEntities {
           return
         }
         sceneInfra.modelingSend({
-          type: 'Add rectangle origin',
+          type: `Add ${type} origin`,
           data: [twoD.x, twoD.y],
         })
       },
@@ -700,6 +701,154 @@ export class SceneEntities {
 
         if (sketchInit.type === 'PipeExpression') {
           updateRectangleSketch(sketchInit, x, y, tags[0])
+
+          _ast = parse(recast(_ast))
+
+          console.log('onClick', {
+            sketchInit: sketchInit,
+            _ast,
+            x,
+            y,
+            truncatedAst,
+          })
+
+          // Update the primary AST and unequip the rectangle tool
+          await kclManager.executeAstMock(_ast)
+          sceneInfra.modelingSend({ type: 'CancelSketch' })
+
+          const { programMemory } = await executeAst({
+            ast: _ast,
+            useFakeExecutor: true,
+            engineCommandManager: this.engineCommandManager,
+            programMemoryOverride,
+          })
+
+          // Prepare to update the THREEjs scene
+          this.sceneProgramMemory = programMemory
+          const sketchGroup = programMemory.root[
+            variableDeclarationName
+          ] as SketchGroup
+          const sgPaths = sketchGroup.value
+          const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+
+          // Update the starting segment of the THREEjs scene
+          this.updateSegment(
+            sketchGroup.start,
+            0,
+            0,
+            _ast,
+            orthoFactor,
+            sketchGroup
+          )
+          // Update the rest of the segments of the THREEjs scene
+          sgPaths.forEach((seg, index) =>
+            this.updateSegment(seg, index, 0, _ast, orthoFactor, sketchGroup)
+          )
+        }
+      },
+    })
+  }
+  setupDraftCircle = async (
+    sketchPathToNode: PathToNode,
+    forward: [number, number, number],
+    up: [number, number, number],
+    sketchOrigin: [number, number, number],
+    circleOrigin: [x: number, y: number]
+  ) => {
+    let _ast = JSON.parse(JSON.stringify(kclManager.ast))
+
+    const variableDeclarationName =
+      getNodeFromPath<VariableDeclaration>(
+        _ast,
+        sketchPathToNode || [],
+        'VariableDeclaration'
+      )?.node?.declarations?.[0]?.id?.name || ''
+
+    const tags: [string] = [findUniqueName(_ast, 'circle')]
+
+    const startSketchOn = getNodeFromPath<VariableDeclaration>(
+      _ast,
+      sketchPathToNode || [],
+      'VariableDeclaration'
+    )?.node?.declarations
+
+    const startSketchOnInit = startSketchOn?.[0]?.init
+    startSketchOn[0].init = createPipeExpression([
+      startSketchOnInit,
+      ...circleAsCallExpressions(circleOrigin, tags),
+    ])
+
+    _ast = parse(recast(_ast))
+
+    const { programMemoryOverride, truncatedAst } = await this.setupSketch({
+      sketchPathToNode,
+      forward,
+      up,
+      position: sketchOrigin,
+      maybeModdedAst: _ast,
+      draftExpressionsIndices: { start: 0, end: 1 },
+    })
+
+    sceneInfra.setCallbacks({
+      onMove: async (args) => {
+        // Update the radius of the draft rectangle
+        const pathToNodeTwo = JSON.parse(JSON.stringify(sketchPathToNode))
+        pathToNodeTwo[1][0] = 0
+
+        const sketchInit = getNodeFromPath<VariableDeclaration>(
+          truncatedAst,
+          pathToNodeTwo || [],
+          'VariableDeclaration'
+        )?.node?.declarations?.[0]?.init
+
+        const x = (args.intersectionPoint.twoD.x || 0) - circleOrigin[0]
+        const y = (args.intersectionPoint.twoD.y || 0) - circleOrigin[1]
+
+        if (sketchInit.type === 'PipeExpression') {
+          updateCircleSketch(sketchInit, x, y, tags[0])
+        }
+
+        const { programMemory } = await executeAst({
+          ast: truncatedAst,
+          useFakeExecutor: true,
+          engineCommandManager: this.engineCommandManager,
+          programMemoryOverride,
+        })
+        this.sceneProgramMemory = programMemory
+        const sketchGroup = programMemory.root[
+          variableDeclarationName
+        ] as SketchGroup
+        const sgPaths = sketchGroup.value
+        const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+
+        this.updateSegment(
+          sketchGroup.start,
+          0,
+          0,
+          _ast,
+          orthoFactor,
+          sketchGroup
+        )
+        sgPaths.forEach((seg, index) =>
+          this.updateSegment(seg, index, 0, _ast, orthoFactor, sketchGroup)
+        )
+      },
+      onClick: async (args) => {
+        // Commit the circle to the full AST/code and return to sketch.idle
+        const radiusPoint = args.intersectionPoint?.twoD
+        if (!radiusPoint || args.mouseEvent.button !== 0) return
+
+        const x = roundOff((radiusPoint.x || 0) - circleOrigin[0])
+        const y = roundOff((radiusPoint.y || 0) - circleOrigin[1])
+
+        const sketchInit = getNodeFromPath<VariableDeclaration>(
+          _ast,
+          sketchPathToNode || [],
+          'VariableDeclaration'
+        )?.node?.declarations?.[0]?.init
+
+        if (sketchInit.type === 'PipeExpression') {
+          updateCircleSketch(sketchInit, x, y, tags[0])
 
           _ast = parse(recast(_ast))
 

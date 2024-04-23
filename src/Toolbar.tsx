@@ -193,6 +193,35 @@ export const Toolbar = () => {
                 Rectangle
               </ActionButton>
             </li>
+            <li className="contents" key="circle-button">
+              <ActionButton
+                className={buttonClassName}
+                Element="button"
+                onClick={() =>
+                  state.matches('Sketch.Circle tool')
+                    ? send('CancelSketch')
+                    : send('Equip circle tool')
+                }
+                aria-pressed={state.matches('Sketch.Circle tool')}
+                icon={{
+                  icon: 'circle',
+                  iconClassName,
+                  bgClassName,
+                }}
+                disabled={
+                  (!state.can('Equip circle tool') &&
+                    !state.matches('Sketch.Circle tool')) ||
+                  disableAllButtons
+                }
+                title={
+                  state.can('Equip circle tool')
+                    ? 'Circle'
+                    : 'Can only be used when a sketch is empty currently'
+                }
+              >
+                Circle
+              </ActionButton>
+            </li>
           </>
         )}
         {state.matches('Sketch.SketchIdle') &&
