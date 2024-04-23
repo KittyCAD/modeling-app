@@ -7,7 +7,12 @@ import React, { createContext, useEffect } from 'react'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
 import { settingsMachine } from 'machines/settingsMachine'
 import { toast } from 'react-hot-toast'
-import { getThemeColorForEngine, getOppositeTheme, setThemeClass, Themes } from 'lib/theme'
+import {
+  getThemeColorForEngine,
+  getOppositeTheme,
+  setThemeClass,
+  Themes,
+} from 'lib/theme'
 import decamelize from 'decamelize'
 import {
   AnyStateMachine,
@@ -99,9 +104,9 @@ export const SettingsAuthProviderBase = ({
     {
       context: loadedSettings,
       actions: {
-        //TODO: batch all these and if that's difficult to do from tsx, 
+        //TODO: batch all these and if that's difficult to do from tsx,
         // make it easy to do
-        
+
         setClientSideSceneUnits: (context, event) => {
           const newBaseUnit =
             event.type === 'set.modeling.defaultUnit'

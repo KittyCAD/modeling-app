@@ -158,7 +158,8 @@ export function createSettings() {
       }),
       enableSSAO: new Setting<boolean>({
         defaultValue: true,
-        description: 'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled',
+        description:
+          'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled',
         validate: (v) => typeof v === 'boolean',
         hideOnPlatform: 'both', //for now
       }),
