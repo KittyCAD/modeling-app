@@ -3,15 +3,17 @@
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
 /// Application wide settings.
-#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Validate)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct AppSettings {
     /// The overall appearance of the app.
     pub theme: AppTheme,
     /// The hue of the primary theme color for the app.
+    #[validate(range(min = 0.0, max = 360.0))]
     pub theme_color: f64,
     /// The directory to save and load projects from.
     pub project_directory: std::path::PathBuf,
