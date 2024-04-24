@@ -24,6 +24,7 @@ jobs:
           fetch-depth: 0 # Fetches all history for all branches and tags
 
       - name: Check for changes in src/wasm-lib
+        id: set-output
         run: |
           if git diff --quiet origin/main...HEAD -- src/wasm-lib; then
             echo "url=https://app.zoo.dev" >> $GITHUB_OUTPUT
