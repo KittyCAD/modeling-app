@@ -65,7 +65,7 @@ kittycad = { version = "0.3.0", default-features = false, features = ["js", "req
 kittycad-execution-plan = "0.1.5"
 kittycad-execution-plan-macros = "0.1.9"
 kittycad-execution-plan-traits = "0.1.14"
-kittycad-modeling-cmds = "0.2.20"
+kittycad-modeling-cmds = "0.2.21"
 kittycad-modeling-session = "0.1.4"
 
 [[test]]
