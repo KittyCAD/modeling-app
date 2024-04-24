@@ -420,7 +420,13 @@ export function getSelectionTypeDisplayText(
   const selectionsByType = getSelectionType(selection)
 
   return (selectionsByType as Exclude<typeof selectionsByType, 'none'>)
-    .map(([type, count]) => `${count} ${type}${count > 1 ? 's' : ''}`)
+    .map(
+      // Hack for showing "face" instead of "extrude-wall" in command bar text
+      ([type, count]) =>
+        `${count} ${type.replace('extrude-wall', 'face')}${
+          count > 1 ? 's' : ''
+        }`
+    )
     .join(', ')
 }
 
