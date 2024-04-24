@@ -1,10 +1,5 @@
 import { mkdir, exists, writeTextFile, stat } from '@tauri-apps/plugin-fs'
-import { invoke } from '@tauri-apps/api/core'
-import {
-  appConfigDir,
-  join,
-  sep,
-} from '@tauri-apps/api/path'
+import { appConfigDir, join, sep } from '@tauri-apps/api/path'
 import { isTauri } from './isTauri'
 import type { FileEntry, ProjectWithEntryPointMetadata } from 'lib/types'
 import {
@@ -18,7 +13,7 @@ import {
 } from 'lib/constants'
 import { bracket } from './exampleKcl'
 import { paths } from './paths'
-import { getInitialDefaultDir } from './tauri'
+import { getInitialDefaultDir, readDirRecursive } from './tauri'
 
 type PathWithPossibleError = {
   path: string | null
@@ -114,9 +109,9 @@ export function isProjectDirectory(fileOrDir: Partial<FileEntry>) {
 // Read the contents of a directory
 // and return the valid projects
 export async function getProjectsInDir(projectDir: string) {
-  const readProjects = (
-    await invoke<FileEntry[]>('read_dir_recursive', { path: projectDir })
-  ).filter(isProjectDirectory)
+  const readProjects = (await readDirRecursive(projectDir)).filter(
+    isProjectDirectory
+  )
 
   const projectsWithMetadata = await Promise.all(
     readProjects.map(async (p) => ({
@@ -180,9 +175,7 @@ export function deepFileFilterFlat(
 // Read the contents of a project directory
 // and return all relevant files and sub-directories recursively
 export async function readProject(projectDir: string) {
-  const readFiles = await invoke<FileEntry[]>('read_dir_recursive', {
-    path: projectDir,
-  })
+  const readFiles = await readDirRecursive(projectDir)
 
   return deepFileFilter(readFiles, isRelevantFileOrDir)
 }

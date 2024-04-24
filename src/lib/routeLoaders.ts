@@ -1,10 +1,5 @@
 import { ActionFunction, LoaderFunction, redirect } from 'react-router-dom'
-import {
-  FileEntry,
-  FileLoaderData,
-  HomeLoaderData,
-  IndexLoaderData,
-} from './types'
+import { FileLoaderData, HomeLoaderData, IndexLoaderData } from './types'
 import { isTauri } from './isTauri'
 import { getProjectMetaByRouteId, paths } from './paths'
 import { BROWSER_PATH } from 'lib/paths'
@@ -20,8 +15,7 @@ import { join, sep } from '@tauri-apps/api/path'
 import { readTextFile, stat } from '@tauri-apps/plugin-fs'
 import { codeManager, kclManager } from 'lib/singletons'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
-import { invoke } from '@tauri-apps/api/core'
-import { getInitialDefaultDir } from './tauri'
+import { getInitialDefaultDir, readDirRecursive } from './tauri'
 
 // The root loader simply resolves the settings and any errors that
 // occurred during the settings load
@@ -94,9 +88,8 @@ export const fileLoader: LoaderFunction = async ({
     const entrypointMetadata = await stat(
       await join(projectPath, PROJECT_ENTRYPOINT)
     )
-    const children = await invoke<FileEntry[]>('read_dir_recursive', {
-      path: projectPath,
-    })
+    const children = await readDirRecursive(projectPath)
+
     // Update both the state and the editor's code.
     // We explicitly do not write to the file here since we are loading from
     // the file system and not the editor.

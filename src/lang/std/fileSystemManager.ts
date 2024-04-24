@@ -1,8 +1,7 @@
 import { readFile, exists as tauriExists } from '@tauri-apps/plugin-fs'
 import { isTauri } from 'lib/isTauri'
 import { join } from '@tauri-apps/api/path'
-import { invoke } from '@tauri-apps/api/core'
-import { FileEntry } from 'lib/types'
+import { readDirRecursive } from 'lib/tauri'
 
 /// FileSystemManager is a class that provides a way to read files from the local file system.
 /// It assumes that you are in a project since it is solely used by the std lib
@@ -69,9 +68,7 @@ class FileSystemManager {
         throw new Error(`Error joining dir: ${error}`)
       })
       .then((p) => {
-        invoke<FileEntry[]>('read_dir_recursive', {
-          path: p,
-        })
+        readDirRecursive(p)
           .catch((error) => {
             throw new Error(`Error reading dir: ${error}`)
           })

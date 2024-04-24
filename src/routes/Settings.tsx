@@ -14,7 +14,6 @@ import { createAndOpenNewProject, getSettingsFolderPaths } from 'lib/tauriFS'
 import { sep } from '@tauri-apps/api/path'
 import { isTauri } from 'lib/isTauri'
 import toast from 'react-hot-toast'
-import { invoke } from '@tauri-apps/api/core'
 import React, { Fragment, useMemo, useRef, useState } from 'react'
 import { Setting } from 'lib/settings/initialSettings'
 import decamelize from 'decamelize'
@@ -27,7 +26,7 @@ import {
   shouldHideSetting,
   shouldShowSettingInput,
 } from 'lib/settings/settingsUtils'
-import { getInitialDefaultDir } from 'lib/tauri'
+import { getInitialDefaultDir, showInFolder } from 'lib/tauri'
 
 export const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
 
@@ -299,9 +298,7 @@ export const Settings = () => {
                                 ? decodeURIComponent(projectPath)
                                 : undefined
                             )
-                            void invoke('show_in_folder', {
-                              path: paths[settingsLevel],
-                            })
+                            showInFolder(paths[settingsLevel])
                           }}
                           icon={{
                             icon: 'folder',
