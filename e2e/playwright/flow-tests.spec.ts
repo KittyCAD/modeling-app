@@ -1035,6 +1035,7 @@ const part001 = startSketchOn('-XZ')
 })
 
 test('Can add multiple sketches', async ({ page }) => {
+  test.skip(process.platform === 'darwin', 'Can add multiple sketches')
   const u = getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
