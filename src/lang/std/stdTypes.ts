@@ -57,6 +57,7 @@ export interface ConstrainInfo {
   type: LineInputsType | 'vertical' | 'horizontal' | 'tangentialWithPrevious'
   isConstrained: boolean
   sourceRange: SourceRange
+  pathToNode: PathToNode
   value: string
   calculatedValue?: any
   // linked?: SourceRange
@@ -76,5 +77,9 @@ export interface SketchLineHelper {
     modifiedAst: Program
     tag: string
   }
-  getConstraintInfo: (callExp: CallExpression, code: string) => ConstrainInfo[]
+  getConstraintInfo: (
+    callExp: CallExpression,
+    code: string,
+    pathToNode: PathToNode
+  ) => ConstrainInfo[]
 }

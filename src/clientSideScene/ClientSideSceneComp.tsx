@@ -19,7 +19,7 @@ import {
 } from './sceneEntities'
 import { SegmentOverlay } from 'machines/modelingMachine'
 import { getNodeFromPath } from 'lang/queryAst'
-import { CallExpression, PathToNode } from 'lang/wasm'
+import { CallExpression, PathToNode, Value, parse, recast } from 'lang/wasm'
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import { ConstrainInfo } from 'lang/std/stdTypes'
 import { getConstraintInfo } from 'lang/std/sketch'
@@ -167,7 +167,11 @@ const Overlay = ({
     overlay.pathToNode,
     'CallExpression'
   ).node
-  const constraints = getConstraintInfo(callExpression, codeManager.code)
+  const constraints = getConstraintInfo(
+    callExpression,
+    codeManager.code,
+    overlay.pathToNode
+  )
 
   const offset = 20 // px
   // We could put a boolean in settings that
@@ -292,7 +296,7 @@ const SegmentMenu = ({
 }
 
 const ConstraintSymbol = ({
-  constrainInfo: { type: _type, isConstrained, value, sourceRange },
+  constrainInfo: { type: _type, isConstrained, value, pathToNode },
   verticalPosition,
 }: {
   constrainInfo: ConstrainInfo
@@ -322,7 +326,11 @@ const ConstraintSymbol = ({
             : 'bg-primary/30 text-primary border-2 border-transparent group-hover:bg-primary/40 group-hover:border-primary/50 group-hover:brightness-125'
         } h-[26px] w-[26px] rounded-sm relative m-0 p-0`}
         onMouseEnter={() => {
-          sourceRange && editorManager.setHighlightRange(sourceRange)
+          const { node } = getNodeFromPath<Value>(
+            parse(recast(kclManager.ast)),
+            pathToNode
+          )
+          node && editorManager.setHighlightRange([node.start, node.end])
         }}
         onMouseLeave={() => {
           editorManager.setHighlightRange([0, 0])
