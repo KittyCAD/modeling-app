@@ -72,6 +72,52 @@ async fn write_app_settings_file(app: tauri::AppHandle, configuration: Configura
     Ok(())
 }
 
+fn get_project_settings_file_path(app_settings: Configuration, project_name: &str) -> Result<PathBuf, InvokeError> {
+    Ok(app_settings
+        .settings
+        .project
+        .directory
+        .join(project_name)
+        .join(SETTINGS_FILE_NAME))
+}
+
+#[tauri::command]
+async fn read_project_settings_file(
+    app_settings: Configuration,
+    project_name: &str,
+) -> Result<Configuration, InvokeError> {
+    let settings_path = get_project_settings_file_path(app_settings, project_name)?;
+
+    // Check if this file exists.
+    if !settings_path.exists() {
+        // Return the default configuration.
+        return Ok(Configuration::default());
+    }
+
+    let contents = tokio::fs::read_to_string(&settings_path)
+        .await
+        .map_err(|e| InvokeError::from_anyhow(e.into()))?;
+    let parsed =
+        Configuration::backwards_compatible_toml_parse(&contents).map_err(|e| InvokeError::from_anyhow(e.into()))?;
+
+    Ok(parsed)
+}
+
+#[tauri::command]
+async fn write_project_settings_file(
+    app_settings: Configuration,
+    project_name: &str,
+    configuration: Configuration,
+) -> Result<(), InvokeError> {
+    let settings_path = get_project_settings_file_path(app_settings, project_name)?;
+    let contents = toml::to_string_pretty(&configuration).map_err(|e| InvokeError::from_anyhow(e.into()))?;
+    tokio::fs::write(settings_path, contents.as_bytes())
+        .await
+        .map_err(|e| InvokeError::from_anyhow(e.into()))?;
+
+    Ok(())
+}
+
 /// This command returns the a json string parse from a toml file at the path.
 #[tauri::command]
 async fn read_toml(path: &str) -> Result<String, InvokeError> {
@@ -287,6 +333,8 @@ fn main() {
             show_in_folder,
             read_app_settings_file,
             write_app_settings_file,
+            read_project_settings_file,
+            write_project_settings_file,
         ])
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())

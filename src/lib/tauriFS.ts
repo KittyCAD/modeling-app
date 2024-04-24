@@ -1,10 +1,4 @@
-import {
-  mkdir,
-  exists,
-  readTextFile,
-  writeTextFile,
-  stat,
-} from '@tauri-apps/plugin-fs'
+import { mkdir, exists, writeTextFile, stat } from '@tauri-apps/plugin-fs'
 import { invoke } from '@tauri-apps/api/core'
 import {
   appConfigDir,
@@ -25,8 +19,6 @@ import {
   RELEVANT_FILE_TYPES,
   SETTINGS_FILE_EXT,
 } from 'lib/constants'
-import { SaveSettingsPayload, SettingsLevel } from './settings/settingsTypes'
-import { initPromise, tomlParse } from 'lang/wasm'
 import { bracket } from './exampleKcl'
 import { paths } from './paths'
 
@@ -378,48 +370,6 @@ export async function getUserSettingsFilePath(
 ) {
   const dir = await appConfigDir()
   return await join(dir, filename)
-}
-
-export async function readSettingsFile(
-  path: string
-): Promise<Partial<SaveSettingsPayload>> {
-  const dir = path.slice(0, path.lastIndexOf(sep()))
-
-  const dirExists = await exists(dir)
-  if (!dirExists) {
-    await mkdir(dir, { recursive: true })
-  }
-
-  const settingsExist = dirExists ? await exists(path) : false
-
-  if (!settingsExist) {
-    console.log(`Settings file does not exist at ${path}`)
-    return {}
-  }
-
-  try {
-    await initPromise
-    const settings = await readTextFile(path)
-    // We expect the settings to be under a top-level [settings] key
-    return tomlParse(settings).settings as Partial<SaveSettingsPayload>
-  } catch (e) {
-    console.error('Error reading settings file:', e)
-    return {}
-  }
-}
-
-export async function getSettingsFilePaths(
-  projectPath?: string
-): Promise<Partial<Record<SettingsLevel, string>>> {
-  const { user, project } = await getSettingsFolderPaths(projectPath)
-
-  return {
-    user: user + 'user' + SETTINGS_FILE_EXT,
-    project:
-      project !== undefined
-        ? project + (isTauri() ? sep() : '/') + 'project' + SETTINGS_FILE_EXT
-        : undefined,
-  }
 }
 
 export async function getSettingsFolderPaths(projectPath?: string) {

@@ -12,7 +12,6 @@ import init, {
   toml_stringify,
   default_app_settings,
   parse_app_settings,
-  toml_parse,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
@@ -349,15 +348,6 @@ export function tomlStringify(toml: any): string {
     return s
   } catch (e: any) {
     throw new Error(`Error stringifying toml: ${e}`)
-  }
-}
-
-export function tomlParse(toml: string): any {
-  try {
-    const parsed: any = toml_parse(toml)
-    return parsed
-  } catch (e: any) {
-    throw new Error(`Error parsing toml: ${e}`)
   }
 }
 

@@ -39,8 +39,8 @@ export const settingsLoader: LoaderFunction = async ({
     const defaultDir = settings.app.projectDirectory.current || ''
     const projectPathData = getProjectMetaByRouteId(params.id, defaultDir)
     if (projectPathData) {
-      const { projectPath } = projectPathData
-      settings = await loadAndValidateSettings(projectPath)
+      const { projectName } = projectPathData
+      settings = await loadAndValidateSettings(projectName)
     }
   }
 

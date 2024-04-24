@@ -1,23 +1,22 @@
-import {
-  getInitialDefaultDir,
-  getSettingsFilePaths,
-  readSettingsFile,
-} from '../tauriFS'
+import { getInitialDefaultDir } from '../tauriFS'
 import { Setting, createSettings, settings } from 'lib/settings/initialSettings'
 import { SaveSettingsPayload, SettingsLevel } from './settingsTypes'
 import { isTauri } from 'lib/isTauri'
-import { remove, writeTextFile, exists } from '@tauri-apps/plugin-fs'
 import {
   defaultAppSettings,
   initPromise,
   parseAppSettings,
-  tomlParse,
   tomlStringify,
 } from 'lang/wasm'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { mouseControlsToCameraSystem } from 'lib/cameraControls'
 import { appThemeToTheme } from 'lib/theme'
-import { readAppSettingsFile } from 'lib/tauri'
+import {
+  readAppSettingsFile,
+  readProjectSettingsFile,
+  writeAppSettingsFile,
+  writeProjectSettingsFile,
+} from 'lib/tauri'
 
 /**
  * Convert from a rust settings struct into the JS settings struct.
@@ -56,22 +55,12 @@ function configurationToSettingsPayload(
   }
 }
 
-/**
- * We expect the settings to be stored in a TOML file
- * or TOML-formatted string in localStorage
- * under a top-level [settings] key.
- * @param path
- * @returns
- */
-function getSettingsFromStorage(path: string) {
-  return isTauri()
-    ? readSettingsFile(path)
-    : (tomlParse(localStorage.getItem(path) ?? '')
-        .settings as Partial<SaveSettingsPayload>)
-}
-
 function localStorageAppSettingsPath() {
   return '/settings.toml'
+}
+
+function localStorageProjectSettingsPath() {
+  return '/project.toml'
 }
 
 function readLocalStorageAppSettingsFile(): Configuration {
@@ -88,15 +77,30 @@ function readLocalStorageAppSettingsFile(): Configuration {
   return parseAppSettings(stored)
 }
 
-export async function loadAndValidateSettings(projectPath?: string) {
-  console.log(projectPath)
+function readLocalStorageProjectSettingsFile(): Configuration {
+  // TODO: Remove backwards compatibility after a few releases.
+  let stored =
+    localStorage.getItem(localStorageProjectSettingsPath()) ??
+    localStorage.getItem('/browser') ??
+    ''
+
+  if (stored === '') {
+    return defaultAppSettings()
+  }
+
+  return parseAppSettings(stored)
+}
+
+export async function loadAndValidateSettings(projectName?: string) {
   const settings = createSettings()
   settings.app.projectDirectory.default = await getInitialDefaultDir()
-  // First, get the settings data at the user and project level
-  const settingsFilePaths = await getSettingsFilePaths(projectPath)
   const inTauri = isTauri()
 
-  await initPromise
+  if (!inTauri) {
+    // Make sure we have wasm initialized.
+    await initPromise
+  }
+
   // Load the app settings from the file system or localStorage.
   const appSettings = inTauri
     ? await readAppSettingsFile()
@@ -106,13 +110,14 @@ export async function loadAndValidateSettings(projectPath?: string) {
   setSettingsAtLevel(settings, 'user', appSettingsPayload)
 
   // Load the project settings if they exist
-  if (settingsFilePaths.project) {
-    const projectSettings = await getSettingsFromStorage(
-      settingsFilePaths.project
-    )
-    if (projectSettings) {
-      setSettingsAtLevel(settings, 'project', projectSettings)
-    }
+  if (projectName) {
+    const projectSettings = inTauri
+      ? await readProjectSettingsFile(appSettings, projectName)
+      : readLocalStorageProjectSettingsFile()
+
+    const projectSettingsPayload =
+      configurationToSettingsPayload(projectSettings)
+    setSettingsAtLevel(settings, 'project', projectSettingsPayload)
   }
 
   // Return the settings object
@@ -121,47 +126,44 @@ export async function loadAndValidateSettings(projectPath?: string) {
 
 export async function saveSettings(
   allSettings: typeof settings,
-  projectPath?: string
+  projectName?: string
 ) {
-  const settingsFilePaths = await getSettingsFilePaths(projectPath)
-
-  if (settingsFilePaths.user) {
-    const changedSettings = getChangedSettingsAtLevel(allSettings, 'user')
-
-    await writeOrClearPersistedSettings(settingsFilePaths.user, changedSettings)
-  }
-
-  if (settingsFilePaths.project) {
-    const changedSettings = getChangedSettingsAtLevel(allSettings, 'project')
-
-    await writeOrClearPersistedSettings(
-      settingsFilePaths.project,
-      changedSettings
-    )
-  }
-}
-
-async function writeOrClearPersistedSettings(
-  settingsFilePath: string,
-  changedSettings: Partial<SaveSettingsPayload>
-) {
+  // Make sure we have wasm initialized.
   await initPromise
-  if (changedSettings && Object.keys(changedSettings).length) {
-    if (isTauri()) {
-      await writeTextFile(
-        settingsFilePath,
-        tomlStringify({ settings: changedSettings })
-      )
-    }
-    localStorage.setItem(
-      settingsFilePath,
-      tomlStringify({ settings: changedSettings })
-    )
+  const inTauri = isTauri()
+
+  // Get the user settings.
+  const jsAppSettings = getChangedSettingsAtLevel(allSettings, 'user')
+  const tomlString = tomlStringify({ settings: jsAppSettings })
+  // Parse this as a Configuration.
+  const appSettings = parseAppSettings(tomlString)
+
+  // Write the app settings.
+  if (inTauri) {
+    await writeAppSettingsFile(appSettings)
   } else {
-    if (isTauri() && (await exists(settingsFilePath))) {
-      await remove(settingsFilePath)
-    }
-    localStorage.removeItem(settingsFilePath)
+    localStorage.setItem(
+      localStorageAppSettingsPath(),
+      tomlStringify(appSettings)
+    )
+  }
+
+  if (!projectName) {
+    // If we're not saving project settings, we're done.
+    return
+  }
+
+  // Get the project settings.
+  const jsProjectSettings = getChangedSettingsAtLevel(allSettings, 'project')
+  const projectTomlString = tomlStringify({ settings: jsProjectSettings })
+  // Parse this as a Configuration.
+  const projectSettings = parseAppSettings(projectTomlString)
+
+  // Write the project settings.
+  if (inTauri) {
+    await writeProjectSettingsFile(appSettings, projectName, projectSettings)
+  } else {
+    localStorage.setItem(localStorageProjectSettingsPath(), projectTomlString)
   }
 }
 
