@@ -7,10 +7,17 @@ import { Setting, createSettings, settings } from 'lib/settings/initialSettings'
 import { SaveSettingsPayload, SettingsLevel } from './settingsTypes'
 import { isTauri } from 'lib/isTauri'
 import { remove, writeTextFile, exists } from '@tauri-apps/plugin-fs'
-import { initPromise, tomlParse, tomlStringify } from 'lang/wasm'
+import {
+  defaultAppSettings,
+  initPromise,
+  parseAppSettings,
+  tomlParse,
+  tomlStringify,
+} from 'lang/wasm'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { mouseControlsToCameraSystem } from 'lib/cameraControls'
 import { appThemeToTheme } from 'lib/theme'
+import { readAppSettingsFile } from 'lib/tauri'
 
 /**
  * Convert from a rust settings struct into the JS settings struct.
@@ -63,20 +70,40 @@ function getSettingsFromStorage(path: string) {
         .settings as Partial<SaveSettingsPayload>)
 }
 
+function localStorageAppSettingsPath() {
+  return '/settings.toml'
+}
+
+function readLocalStorageAppSettingsFile(): Configuration {
+  // TODO: Remove backwards compatibility after a few releases.
+  let stored =
+    localStorage.getItem(localStorageAppSettingsPath()) ??
+    localStorage.getItem('/user.toml') ??
+    ''
+
+  if (stored === '') {
+    return defaultAppSettings()
+  }
+
+  return parseAppSettings(stored)
+}
+
 export async function loadAndValidateSettings(projectPath?: string) {
+  console.log(projectPath)
   const settings = createSettings()
   settings.app.projectDirectory.default = await getInitialDefaultDir()
   // First, get the settings data at the user and project level
   const settingsFilePaths = await getSettingsFilePaths(projectPath)
+  const inTauri = isTauri()
 
-  // Load the settings from the files
-  if (settingsFilePaths.user) {
-    await initPromise
-    const userSettings = await getSettingsFromStorage(settingsFilePaths.user)
-    if (userSettings) {
-      setSettingsAtLevel(settings, 'user', userSettings)
-    }
-  }
+  await initPromise
+  // Load the app settings from the file system or localStorage.
+  const appSettings = inTauri
+    ? await readAppSettingsFile()
+    : readLocalStorageAppSettingsFile()
+  // Convert the app settings to the JS settings format.
+  const appSettingsPayload = configurationToSettingsPayload(appSettings)
+  setSettingsAtLevel(settings, 'user', appSettingsPayload)
 
   // Load the project settings if they exist
   if (settingsFilePaths.project) {

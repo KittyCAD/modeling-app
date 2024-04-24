@@ -10,6 +10,8 @@ import init, {
   make_default_planes,
   coredump,
   toml_stringify,
+  default_app_settings,
+  parse_app_settings,
   toml_parse,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
@@ -26,6 +28,7 @@ import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import { TEST } from 'env'
+import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Value } from '../wasm-lib/kcl/bindings/Value'
@@ -355,5 +358,23 @@ export function tomlParse(toml: string): any {
     return parsed
   } catch (e: any) {
     throw new Error(`Error parsing toml: ${e}`)
+  }
+}
+
+export function defaultAppSettings(): Configuration {
+  try {
+    const settings: Configuration = default_app_settings()
+    return settings
+  } catch (e: any) {
+    throw new Error(`Error getting default app settings: ${e}`)
+  }
+}
+
+export function parseAppSettings(toml: string): Configuration {
+  try {
+    const settings: Configuration = parse_app_settings(toml)
+    return settings
+  } catch (e: any) {
+    throw new Error(`Error parsing app settings: ${e}`)
   }
 }
