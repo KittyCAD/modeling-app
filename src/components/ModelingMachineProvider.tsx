@@ -77,7 +77,7 @@ export const ModelingMachineProvider = ({
     auth,
     settings: {
       context: {
-        app: { theme },
+        app: { theme, enableSSAO },
         modeling: { defaultUnit, highlightEdges },
       },
     },
@@ -87,6 +87,7 @@ export const ModelingMachineProvider = ({
   useSetupEngineManager(streamRef, token, {
     theme: theme.current,
     highlightEdges: highlightEdges.current,
+    enableSSAO: enableSSAO.current,
   })
   const { htmlRef } = useStore((s) => ({
     htmlRef: s.htmlRef,
