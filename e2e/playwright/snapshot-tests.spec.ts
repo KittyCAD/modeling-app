@@ -429,15 +429,13 @@ test('Draft segments should look right', async ({ page, context }) => {
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
 
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled()
-  await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Sketch' })).not.toBeDisabled()
+  await expect(page.getByRole('button', { name: 'Sketch' })).toBeVisible()
 
-  // click on "Start Sketch" button
+  // click on "Sketch" button
   await u.clearCommandLogs()
   await u.doAndWaitForImageDiff(
-    () => page.getByRole('button', { name: 'Start Sketch' }).click(),
+    () => page.getByRole('button', { name: 'Sketch' }).click(),
     200
   )
 
@@ -488,15 +486,13 @@ test('Draft rectangles should look right', async ({ page, context }) => {
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
 
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled()
-  await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Sketch' })).not.toBeDisabled()
+  await expect(page.getByRole('button', { name: 'Sketch' })).toBeVisible()
 
-  // click on "Start Sketch" button
+  // click on "Sketch" button
   await u.clearCommandLogs()
   await u.doAndWaitForImageDiff(
-    () => page.getByRole('button', { name: 'Start Sketch' }).click(),
+    () => page.getByRole('button', { name: 'Sketch' }).click(),
     200
   )
 
@@ -536,16 +532,14 @@ test.describe('Client side scene scale should match engine scale', () => {
     await u.openDebugPanel()
 
     await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
+      page.getByRole('button', { name: 'Sketch' })
     ).not.toBeDisabled()
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Sketch' })).toBeVisible()
 
-    // click on "Start Sketch" button
+    // click on "Sketch" button
     await u.clearCommandLogs()
     await u.doAndWaitForImageDiff(
-      () => page.getByRole('button', { name: 'Start Sketch' }).click(),
+      () => page.getByRole('button', { name: 'Sketch' }).click(),
       200
     )
 
@@ -636,16 +630,14 @@ test.describe('Client side scene scale should match engine scale', () => {
     await u.openDebugPanel()
 
     await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
+      page.getByRole('button', { name: 'Sketch' })
     ).not.toBeDisabled()
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Sketch' })).toBeVisible()
 
-    // click on "Start Sketch" button
+    // click on "Sketch" button
     await u.clearCommandLogs()
     await u.doAndWaitForImageDiff(
-      () => page.getByRole('button', { name: 'Start Sketch' }).click(),
+      () => page.getByRole('button', { name: 'Sketch' }).click(),
       200
     )
 
@@ -747,11 +739,9 @@ const part002 = startSketchOn(part001, 'seg01')
   // rendering, because an execution-done message is not sufficient.
   await page.waitForTimeout(1000)
 
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled()
+  await expect(page.getByRole('button', { name: 'Sketch' })).not.toBeDisabled()
 
-  await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await page.getByRole('button', { name: 'Sketch' }).click()
   let previousCodeContent = await page.locator('.cm-content').innerText()
 
   // click at 641, 135
