@@ -24,8 +24,8 @@ impl Configuration {
         let mut settings = toml::from_str::<Self>(toml_str)?;
 
         if let Some(project_directory) = &settings.settings.app.project_directory {
-            if settings.settings.project.default_directory.to_string_lossy().is_empty() {
-                settings.settings.project.default_directory = project_directory.clone();
+            if settings.settings.project.directory.to_string_lossy().is_empty() {
+                settings.settings.project.directory = project_directory.clone();
                 settings.settings.app.project_directory = None;
             }
         }
@@ -315,7 +315,7 @@ impl Default for TextEditorSettings {
 pub struct ProjectSettings {
     /// The directory to save and load projects from.
     #[serde(default)]
-    pub default_directory: std::path::PathBuf,
+    pub directory: std::path::PathBuf,
     /// The default project name to use when creating a new project.
     #[serde(default, alias = "defaultProjectName")]
     pub default_project_name: String,
@@ -326,7 +326,7 @@ impl Default for ProjectSettings {
         Self {
             default_project_name: "project-$nnn".to_string(),
             // TODO: set to the tauri directory.
-            default_directory: Default::default(),
+            directory: Default::default(),
         }
     }
 }
@@ -366,12 +366,11 @@ pub enum OnboardingStatus {
 mod tests {
     use pretty_assertions::assert_eq;
 
-    use crate::settings::types::{OnboardingStatus, DEFAULT_THEME_COLOR};
-
     use super::{
         AppSettings, AppTheme, AppearanceSettings, CommandBarSettings, Configuration, ModelingSettings,
         ProjectSettings, Settings, TextEditorSettings, UnitLength,
     };
+    use crate::settings::types::{OnboardingStatus, DEFAULT_THEME_COLOR};
 
     #[test]
     // Test that we can deserialize a project file from the old format.
@@ -482,7 +481,7 @@ defaultProjectName = "projects-$nnn"
                         blinking_cursor: false,
                     },
                     project: ProjectSettings {
-                        default_directory: "/Users/macinatormax/Documents/kittycad-modeling-projects".into(),
+                        directory: "/Users/macinatormax/Documents/kittycad-modeling-projects".into(),
                         default_project_name: "projects-$nnn".to_string(),
                     },
                     command_bar: CommandBarSettings {
@@ -527,7 +526,7 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                         blinking_cursor: true,
                     },
                     project: ProjectSettings {
-                        default_directory: "/Users/macinatormax/Documents/kittycad-modeling-projects".into(),
+                        directory: "/Users/macinatormax/Documents/kittycad-modeling-projects".into(),
                         default_project_name: "project-$nnn".to_string(),
                     },
                     command_bar: CommandBarSettings { include_settings: true },
@@ -557,7 +556,7 @@ text_wrapping = true
 blinking_cursor = true
 
 [settings.project]
-default_directory = "/Users/macinatormax/Documents/kittycad-modeling-projects"
+directory = "/Users/macinatormax/Documents/kittycad-modeling-projects"
 default_project_name = "project-$nnn"
 
 [settings.command_bar]
@@ -595,7 +594,7 @@ text_wrapping = true
 blinking_cursor = true
 
 [settings.project]
-default_directory = ""
+directory = ""
 default_project_name = "project-$nnn"
 
 [settings.command_bar]

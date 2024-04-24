@@ -8,6 +8,46 @@ import { SaveSettingsPayload, SettingsLevel } from './settingsTypes'
 import { isTauri } from 'lib/isTauri'
 import { remove, writeTextFile, exists } from '@tauri-apps/plugin-fs'
 import { initPromise, tomlParse, tomlStringify } from 'lang/wasm'
+import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
+import { mouseControlsToCameraSystem } from 'lib/cameraControls'
+import { appThemeToTheme } from 'lib/theme'
+
+/**
+ * Convert from a rust settings struct into the JS settings struct.
+ * We do this because the JS settings type has all the fancy shit
+ * for hiding and showing settings.
+ **/
+function configurationToSettingsPayload(
+  configuration: Configuration
+): Partial<SaveSettingsPayload> {
+  return {
+    app: {
+      theme: appThemeToTheme(configuration.settings.app.appearance.theme),
+      themeColor: configuration.settings.app.appearance.color.toString(),
+      onboardingStatus: configuration.settings.app.onboarding_status,
+      dismissWebBanner: configuration.settings.app.dismiss_web_banner,
+      projectDirectory: configuration.settings.project.directory,
+    },
+    modeling: {
+      defaultUnit: configuration.settings.modeling.base_unit,
+      mouseControls: mouseControlsToCameraSystem(
+        configuration.settings.modeling.mouse_controls
+      ),
+      highlightEdges: configuration.settings.modeling.highlight_edges,
+      showDebugPanel: configuration.settings.modeling.show_debug_panel,
+    },
+    textEditor: {
+      textWrapping: configuration.settings.text_editor.text_wrapping,
+      blinkingCursor: configuration.settings.text_editor.blinking_cursor,
+    },
+    projects: {
+      defaultProjectName: configuration.settings.project.default_project_name,
+    },
+    commandBar: {
+      includeSettings: configuration.settings.command_bar.include_settings,
+    },
+  }
+}
 
 /**
  * We expect the settings to be stored in a TOML file

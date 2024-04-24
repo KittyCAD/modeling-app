@@ -1,29 +1,84 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::env;
-use std::fs;
-use std::io::Read;
-use std::path::Path;
-use std::path::PathBuf;
+use std::{
+    env, fs,
+    io::Read,
+    path::{Path, PathBuf},
+    process::Command,
+};
 
 use anyhow::Result;
+use kcl_lib::settings::types::Configuration;
 use oauth2::TokenResponse;
 use serde::Serialize;
-use std::process::Command;
-use tauri::ipc::InvokeError;
+use tauri::{ipc::InvokeError, Manager};
 use tauri_plugin_shell::ShellExt;
-const DEFAULT_HOST: &str = "https://api.kittycad.io";
+use tokio::io::AsyncReadExt;
+
+const DEFAULT_HOST: &str = "https://api.zoo.dev";
+const SETTINGS_FILE_NAME: &str = "settings.toml";
+
+#[tauri::command]
+async fn read_app_settings_file(app: tauri::AppHandle) -> Result<Configuration, InvokeError> {
+    let app_config_dir = app.path().app_config_dir()?;
+    let mut settings_path = app_config_dir.join(SETTINGS_FILE_NAME);
+    let mut needs_migration = false;
+
+    // Check if this file exists.
+    if !settings_path.exists() {
+        // Try the backwards compatible path.
+        // TODO: Remove this after a few releases.
+        settings_path = format!("{}user.toml", app_config_dir.display()).into();
+        needs_migration = true;
+        // Check if this path exists.
+        if !settings_path.exists() {
+            // Return the default configuration.
+            return Ok(Configuration::default());
+        }
+    }
+
+    let contents = tokio::fs::read_to_string(&settings_path)
+        .await
+        .map_err(|e| InvokeError::from_anyhow(e.into()))?;
+    let parsed =
+        Configuration::backwards_compatible_toml_parse(&contents).map_err(|e| InvokeError::from_anyhow(e.into()))?;
+
+    // TODO: Remove this after a few releases.
+    if needs_migration {
+        write_app_settings_file(app, parsed.clone()).await?;
+        // Delete the old file.
+        tokio::fs::remove_file(settings_path)
+            .await
+            .map_err(|e| InvokeError::from_anyhow(e.into()))?;
+    }
+
+    Ok(parsed)
+}
+
+#[tauri::command]
+async fn write_app_settings_file(app: tauri::AppHandle, configuration: Configuration) -> Result<(), InvokeError> {
+    let app_config_dir = app.path().app_config_dir()?;
+    let settings_path = app_config_dir.join(SETTINGS_FILE_NAME);
+    let contents = toml::to_string_pretty(&configuration).map_err(|e| InvokeError::from_anyhow(e.into()))?;
+    tokio::fs::write(settings_path, contents.as_bytes())
+        .await
+        .map_err(|e| InvokeError::from_anyhow(e.into()))?;
+
+    Ok(())
+}
 
 /// This command returns the a json string parse from a toml file at the path.
 #[tauri::command]
-fn read_toml(path: &str) -> Result<String, InvokeError> {
-    let mut file = std::fs::File::open(path).map_err(|e| InvokeError::from_anyhow(e.into()))?;
+async fn read_toml(path: &str) -> Result<String, InvokeError> {
+    let mut file = tokio::fs::File::open(path)
+        .await
+        .map_err(|e| InvokeError::from_anyhow(e.into()))?;
     let mut contents = String::new();
     file.read_to_string(&mut contents)
+        .await
         .map_err(|e| InvokeError::from_anyhow(e.into()))?;
-    let value =
-        toml::from_str::<toml::Value>(&contents).map_err(|e| InvokeError::from_anyhow(e.into()))?;
+    let value = toml::from_str::<toml::Value>(&contents).map_err(|e| InvokeError::from_anyhow(e.into()))?;
     let value = serde_json::to_string(&value).map_err(|e| InvokeError::from_anyhow(e.into()))?;
     Ok(value)
 }
@@ -44,9 +99,7 @@ pub struct DiskEntry {
 /// From https://github.com/tauri-apps/tauri/blob/1.x/core/tauri/src/api/dir.rs#L51
 /// Removed from tauri v2
 fn is_dir<P: AsRef<Path>>(path: P) -> Result<bool> {
-    std::fs::metadata(path)
-        .map(|md| md.is_dir())
-        .map_err(Into::into)
+    std::fs::metadata(path).map(|md| md.is_dir()).map_err(Into::into)
 }
 
 /// From https://github.com/tauri-apps/tauri/blob/1.x/core/tauri/src/api/dir.rs#L51
@@ -56,9 +109,7 @@ fn read_dir_recursive(path: &str) -> Result<Vec<DiskEntry>, InvokeError> {
     let mut files_and_dirs: Vec<DiskEntry> = vec![];
     // let path = path.as_ref();
     for entry in fs::read_dir(path).map_err(|e| InvokeError::from_anyhow(e.into()))? {
-        let path = entry
-            .map_err(|e| InvokeError::from_anyhow(e.into()))?
-            .path();
+        let path = entry.map_err(|e| InvokeError::from_anyhow(e.into()))?.path();
 
         if let Ok(flag) = is_dir(&path) {
             files_and_dirs.push(DiskEntry {
@@ -103,8 +154,7 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
     let auth_client = oauth2::basic::BasicClient::new(
         oauth2::ClientId::new(client_id),
         None,
-        oauth2::AuthUrl::new(format!("{host}/authorize"))
-            .map_err(|e| InvokeError::from_anyhow(e.into()))?,
+        oauth2::AuthUrl::new(format!("{host}/authorize")).map_err(|e| InvokeError::from_anyhow(e.into()))?,
         Some(
             oauth2::TokenUrl::new(format!("{host}/oauth2/device/token"))
                 .map_err(|e| InvokeError::from_anyhow(e.into()))?,
@@ -132,10 +182,7 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
     // and bypass the shell::open call as it fails on GitHub Actions.
     let e2e_tauri_enabled = env::var("E2E_TAURI_ENABLED").is_ok();
     if e2e_tauri_enabled {
-        println!(
-            "E2E_TAURI_ENABLED is set, won't open {} externally",
-            auth_uri.secret()
-        );
+        println!("E2E_TAURI_ENABLED is set, won't open {} externally", auth_uri.secret());
         fs::write("/tmp/kittycad_user_code", details.user_code().secret())
             .expect("Unable to write /tmp/kittycad_user_code file");
     } else {
@@ -160,10 +207,7 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
 ///This command returns the KittyCAD user info given a token.
 /// The string returned from this method is the user info as a json string.
 #[tauri::command]
-async fn get_user(
-    token: Option<String>,
-    hostname: &str,
-) -> Result<kittycad::types::User, InvokeError> {
+async fn get_user(token: Option<String>, hostname: &str) -> Result<kittycad::types::User, InvokeError> {
     // Use the host passed in if it's set.
     // Otherwise, use the default host.
     let host = if hostname.is_empty() {
@@ -222,13 +266,11 @@ fn main() {
         .setup(|_app| {
             #[cfg(debug_assertions)]
             {
-                use tauri::Manager;
                 _app.get_webview("main").unwrap().open_devtools();
             }
             #[cfg(not(debug_assertions))]
             {
-                _app.handle()
-                    .plugin(tauri_plugin_updater::Builder::new().build())?;
+                _app.handle().plugin(tauri_plugin_updater::Builder::new().build())?;
             }
             Ok(())
         })
@@ -239,6 +281,8 @@ fn main() {
             read_txt_file,
             read_dir_recursive,
             show_in_folder,
+            read_app_settings_file,
+            write_app_settings_file,
         ])
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
