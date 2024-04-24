@@ -113,7 +113,7 @@ function readLocalStorageProjectSettingsFile(): ProjectConfiguration {
   // TODO: Remove backwards compatibility after a few releases.
   let stored =
     localStorage.getItem(localStorageProjectSettingsPath()) ??
-    localStorage.getItem('/browser') ??
+    localStorage.getItem('/browser/project.toml') ??
     ''
 
   if (stored === '') {
@@ -194,7 +194,10 @@ export async function saveSettings(
   if (inTauri) {
     await writeProjectSettingsFile(appSettings, projectName, projectSettings)
   } else {
-    localStorage.setItem(localStorageProjectSettingsPath(), projectTomlString)
+    localStorage.setItem(
+      localStorageProjectSettingsPath(),
+      tomlStringify(projectSettings)
+    )
   }
 }
 
