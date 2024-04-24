@@ -72,7 +72,7 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'yarn serve',
+    command: 'VITE_KC_WASM_OVERRIDE_URL=$WASM_OVERRIDE yarn serve',
     // url: 'http://127.0.0.1:3000',
     reuseExistingServer: !process.env.CI,
   },

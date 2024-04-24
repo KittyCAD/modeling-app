@@ -14,9 +14,30 @@ permissions:
   pull-requests: write
 
 jobs:
+  check-wasm-lib-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      url: ${{ steps.set-output.outputs.url }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Check for changes in src/wasm-lib
+        id: check-changes
+        run: |
+          git diff --quiet origin/main...HEAD -- src/wasm-lib || echo "changes detected" >> $GITHUB_ENV
+      - name: Set output
+        id: set-output
+        run: |
+          if [ -z "${{ env.changes_detected }}" ]; then
+            echo "::set-output name=url::"
+          else
+            echo "::set-output name=url::https://app.zoo.dev"
+          fi
+
+
   playwright-ubuntu:
     timeout-minutes: 60
     runs-on: ubuntu-latest-8-cores
+    needs: check-wasm-lib-changes
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
@@ -29,12 +50,15 @@ jobs:
     - name: Install Playwright Browsers
       run: yarn playwright install --with-deps
     - name: Setup Rust
+      if: steps.check-wasm-lib-changes.outputs.url == ''
       uses: dtolnay/rust-toolchain@stable
     - name: Cache wasm
+      if: steps.check-wasm-lib-changes.outputs.url == ''
       uses: Swatinem/rust-cache@v2
       with:
         workspaces: './src/wasm-lib'
     - name: build wasm
+      if: steps.check-wasm-lib-changes.outputs.url == ''
       run: yarn build:wasm
     - name: build web
       run: yarn build:local
@@ -44,6 +68,7 @@ jobs:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
         snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
+        WASM_OVERRIDE: ${{ steps.check-wasm-lib-changes.outputs.url }}
     - uses: actions/upload-artifact@v3
       if: always()
       with:
@@ -79,6 +104,7 @@ jobs:
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+        WASM_OVERRIDE: ${{ steps.check-wasm-lib-changes.outputs.url }}
     - uses: actions/upload-artifact@v3
       if: always()
       with:
@@ -89,6 +115,7 @@ jobs:
   playwright-macos:
     timeout-minutes: 60
     runs-on: macos-14
+    needs: check-wasm-lib-changes
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
@@ -100,12 +127,15 @@ jobs:
     - name: Install Playwright Browsers
       run: yarn playwright install --with-deps
     - name: Setup Rust
+      if: steps.check-wasm-lib-changes.outputs.url == ''
       uses: dtolnay/rust-toolchain@stable
     - name: Cache wasm
+      if: steps.check-wasm-lib-changes.outputs.url == ''
       uses: Swatinem/rust-cache@v2
       with:
         workspaces: './src/wasm-lib'
     - name: build wasm
+      if: steps.check-wasm-lib-changes.outputs.url == ''
       run: yarn build:wasm
     - name: build web
       run: yarn build:local
@@ -116,6 +146,7 @@ jobs:
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+        WASM_OVERRIDE: ${{ steps.check-wasm-lib-changes.outputs.url }}
     - uses: actions/upload-artifact@v3
       if: always()
       with:

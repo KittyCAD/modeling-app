@@ -25,7 +25,7 @@ import { AppInfo } from 'wasm-lib/kcl/bindings/AppInfo'
 import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
-import { TEST } from 'env'
+import { TEST, VITE_KC_WASM_OVERRIDE_URL } from 'env'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Value } from '../wasm-lib/kcl/bindings/Value'
@@ -76,18 +76,19 @@ export type { MemoryItem } from '../wasm-lib/kcl/bindings/MemoryItem'
 export type { ExtrudeSurface } from '../wasm-lib/kcl/bindings/ExtrudeSurface'
 
 export const wasmUrl = () => {
-  const baseUrl =
-    typeof window === 'undefined'
-      ? 'http://127.0.0.1:3000'
-      : window.location.origin.includes('tauri://localhost')
-      ? 'tauri://localhost' // custom protocol for macOS
-      : window.location.origin.includes('tauri.localhost')
-      ? 'http://tauri.localhost' // fallback for Windows
-      : window.location.origin.includes('localhost')
-      ? 'http://localhost:3000'
-      : window.location.origin && window.location.origin !== 'null'
-      ? window.location.origin
-      : 'http://localhost:3000'
+  const baseUrl = VITE_KC_WASM_OVERRIDE_URL
+    ? VITE_KC_WASM_OVERRIDE_URL
+    : typeof window === 'undefined'
+    ? 'http://127.0.0.1:3000'
+    : window.location.origin.includes('tauri://localhost')
+    ? 'tauri://localhost' // custom protocol for macOS
+    : window.location.origin.includes('tauri.localhost')
+    ? 'http://tauri.localhost' // fallback for Windows
+    : window.location.origin.includes('localhost')
+    ? 'http://localhost:3000'
+    : window.location.origin && window.location.origin !== 'null'
+    ? window.location.origin
+    : 'http://localhost:3000'
   const fullUrl = baseUrl + '/wasm_lib_bg.wasm'
   console.log(`Full URL for WASM: ${fullUrl}`)
 
