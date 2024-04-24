@@ -2,8 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::{
-    env, fs,
-    io::Read,
+    env,
     path::{Path, PathBuf},
     process::Command,
 };
@@ -14,7 +13,6 @@ use oauth2::TokenResponse;
 use serde::Serialize;
 use tauri::{ipc::InvokeError, Manager};
 use tauri_plugin_shell::ShellExt;
-use tokio::io::AsyncReadExt;
 
 const DEFAULT_HOST: &str = "https://api.zoo.dev";
 const SETTINGS_FILE_NAME: &str = "settings.toml";
@@ -118,21 +116,6 @@ async fn write_project_settings_file(
     Ok(())
 }
 
-/// This command returns the a json string parse from a toml file at the path.
-#[tauri::command]
-async fn read_toml(path: &str) -> Result<String, InvokeError> {
-    let mut file = tokio::fs::File::open(path)
-        .await
-        .map_err(|e| InvokeError::from_anyhow(e.into()))?;
-    let mut contents = String::new();
-    file.read_to_string(&mut contents)
-        .await
-        .map_err(|e| InvokeError::from_anyhow(e.into()))?;
-    let value = toml::from_str::<toml::Value>(&contents).map_err(|e| InvokeError::from_anyhow(e.into()))?;
-    let value = serde_json::to_string(&value).map_err(|e| InvokeError::from_anyhow(e.into()))?;
-    Ok(value)
-}
-
 /// From https://github.com/tauri-apps/tauri/blob/1.x/core/tauri/src/api/dir.rs#L51
 /// Removed from tauri v2
 #[derive(Debug, Serialize)]
@@ -158,7 +141,7 @@ fn is_dir<P: AsRef<Path>>(path: P) -> Result<bool> {
 fn read_dir_recursive(path: &str) -> Result<Vec<DiskEntry>, InvokeError> {
     let mut files_and_dirs: Vec<DiskEntry> = vec![];
     // let path = path.as_ref();
-    for entry in fs::read_dir(path).map_err(|e| InvokeError::from_anyhow(e.into()))? {
+    for entry in std::fs::read_dir(path).map_err(|e| InvokeError::from_anyhow(e.into()))? {
         let path = entry.map_err(|e| InvokeError::from_anyhow(e.into()))?.path();
 
         if let Ok(flag) = is_dir(&path) {
@@ -177,16 +160,6 @@ fn read_dir_recursive(path: &str) -> Result<Vec<DiskEntry>, InvokeError> {
         }
     }
     Ok(files_and_dirs)
-}
-
-/// This command returns a string that is the contents of a file at the path.
-#[tauri::command]
-fn read_txt_file(path: &str) -> Result<String, InvokeError> {
-    let mut file = std::fs::File::open(path).map_err(|e| InvokeError::from_anyhow(e.into()))?;
-    let mut contents = String::new();
-    file.read_to_string(&mut contents)
-        .map_err(|e| InvokeError::from_anyhow(e.into()))?;
-    Ok(contents)
 }
 
 /// This command instantiates a new window with auth.
@@ -233,7 +206,7 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
     let e2e_tauri_enabled = env::var("E2E_TAURI_ENABLED").is_ok();
     if e2e_tauri_enabled {
         println!("E2E_TAURI_ENABLED is set, won't open {} externally", auth_uri.secret());
-        fs::write("/tmp/kittycad_user_code", details.user_code().secret())
+        std::fs::write("/tmp/kittycad_user_code", details.user_code().secret())
             .expect("Unable to write /tmp/kittycad_user_code file");
     } else {
         app.shell()
@@ -327,8 +300,6 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             get_user,
             login,
-            read_toml,
-            read_txt_file,
             read_dir_recursive,
             show_in_folder,
             read_app_settings_file,
