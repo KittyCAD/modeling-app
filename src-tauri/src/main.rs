@@ -93,7 +93,7 @@ async fn read_project_settings_file(
     // Check if this file exists.
     if !settings_path.exists() {
         // Return the default configuration.
-        return Ok(Configuration::default());
+        return Ok(ProjectConfiguration::default());
     }
 
     let contents = tokio::fs::read_to_string(&settings_path)
