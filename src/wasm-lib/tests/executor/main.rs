@@ -116,6 +116,15 @@ async fn serial_test_riddle_small() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn serial_test_lego() {
+    let code = include_str!("inputs/lego.kcl");
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/lego.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_pentagon_fillet_desugar() {
     let code = include_str!("inputs/pentagon_fillet_desugar.kcl");
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Cm)
@@ -931,10 +940,31 @@ async fn serial_test_top_level_expression() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn serial_test_patterns_linear_basic_with_math() {
+    let code = r#"const num = 12
+const distance = 5
+const part =  startSketchOn('XY')
+    |> circle([0,0], 2, %)
+    |> patternLinear2d({axis: [0,1], repetitions: num -1, distance: distance - 1}, %)
+    |> extrude(1, %)
+"#;
+
+    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/patterns_linear_basic_with_math.png",
+        &result,
+        0.999,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_patterns_linear_basic() {
     let code = r#"const part =  startSketchOn('XY')
     |> circle([0,0], 2, %)
-    |> patternLinear2d({axis: [0,1], repetitions: 12, distance: 2}, %)
+    |> patternLinear2d({axis: [0,1], repetitions: 12, distance: 4}, %)
+    |> extrude(1, %)
 "#;
 
     let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
