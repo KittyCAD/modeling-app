@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState, useMemo } from 'react'
 import { useModelingContext } from 'hooks/useModelingContext'
 
 import { cameraMouseDragGuards } from 'lib/cameraControls'
@@ -19,11 +19,21 @@ import {
 } from './sceneEntities'
 import { SegmentOverlay } from 'machines/modelingMachine'
 import { getNodeFromPath } from 'lang/queryAst'
-import { CallExpression, PathToNode, Value, parse, recast } from 'lang/wasm'
+import {
+  CallExpression,
+  PathToNode,
+  SourceRange,
+  Value,
+  parse,
+  recast,
+} from 'lang/wasm'
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import { ConstrainInfo } from 'lang/std/stdTypes'
 import { getConstraintInfo } from 'lang/std/sketch'
 import { Popover } from '@headlessui/react'
+import { useConvertToVariable } from 'hooks/useToolbarGuards'
+import { useKclContext } from 'lang/KclProvider'
+import { LineInputsType } from 'lang/std/sketchcombos'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -302,20 +312,85 @@ const ConstraintSymbol = ({
   constrainInfo: ConstrainInfo
   verticalPosition: 'top' | 'bottom'
 }) => {
-  let name: CustomIconName = 'dimension'
-  if (
-    _type === 'horizontal' ||
-    _type === 'vertical' ||
-    _type === 'yAbsolute' ||
-    _type === 'yRelative' ||
-    _type === 'angle' ||
-    _type === 'xAbsolute' ||
-    _type === 'xRelative'
+  const varNameMap: {
+    [key in ConstrainInfo['type']]: {
+      varName: string
+      displayName: string
+      iconName: CustomIconName
+      implicitConstraintDesc?: string
+      // implicitConstraintDesc?: (props: {value:string}) => React.ReactNode
+    }
+  } = {
+    xRelative: {
+      varName: 'xRel',
+      displayName: 'X Relative',
+      iconName: 'xRelative',
+    },
+    xAbsolute: {
+      varName: 'xAbs',
+      displayName: 'X Absolute',
+      iconName: 'xAbsolute',
+    },
+    yRelative: {
+      varName: 'yRel',
+      displayName: 'Y Relative',
+      iconName: 'yRelative',
+    },
+    yAbsolute: {
+      varName: 'yAbs',
+      displayName: 'Y Absolute',
+      iconName: 'yAbsolute',
+    },
+    angle: {
+      varName: 'angle',
+      displayName: 'Angle',
+      iconName: 'angle',
+    },
+    length: {
+      varName: 'len',
+      displayName: 'Length',
+      iconName: 'dimension',
+    },
+    intersectionOffset: {
+      varName: 'perpDist',
+      displayName: 'Intersection Offset',
+      iconName: 'intersection-offset',
+    },
+    // implicit constraints
+    vertical: {
+      varName: '',
+      displayName: '',
+      iconName: 'vertical',
+      implicitConstraintDesc: 'vertically',
+    },
+    horizontal: {
+      varName: '',
+      displayName: '',
+      iconName: 'horizontal',
+      implicitConstraintDesc: 'horizontally',
+    },
+    tangentialWithPrevious: {
+      varName: '',
+      displayName: '',
+      iconName: 'tangent',
+      implicitConstraintDesc: 'tangential to previous segment',
+    },
+  }
+  const varName =
+    _type in varNameMap ? varNameMap[_type as LineInputsType].varName : 'var'
+  const name: CustomIconName = varNameMap[_type as LineInputsType].iconName
+  const displayName = varNameMap[_type as LineInputsType]?.displayName
+  const implicitDesc =
+    varNameMap[_type as LineInputsType]?.implicitConstraintDesc
+  const { ast } = useKclContext()
+
+  const node = useMemo(
+    () => getNodeFromPath<Value>(parse(recast(ast)), pathToNode).node,
+    [ast, pathToNode]
   )
-    name = _type
-  else if (_type === 'length') name = 'dimension'
-  else if (_type === 'intersectionOffset') name = 'intersection-offset'
-  else if (_type === 'tangentialWithPrevious') name = 'tangent'
+  const range: SourceRange = node ? [node.start, node.end] : [0, 0]
+  const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
+    useConvertToVariable(range)
 
   return (
     <div className="relative group">
@@ -326,14 +401,22 @@ const ConstraintSymbol = ({
             : 'bg-primary/30 text-primary border-2 border-transparent group-hover:bg-primary/40 group-hover:border-primary/50 group-hover:brightness-125'
         } h-[26px] w-[26px] rounded-sm relative m-0 p-0`}
         onMouseEnter={() => {
-          const { node } = getNodeFromPath<Value>(
-            parse(recast(kclManager.ast)),
-            pathToNode
-          )
-          node && editorManager.setHighlightRange([node.start, node.end])
+          editorManager.setHighlightRange(range)
         }}
         onMouseLeave={() => {
           editorManager.setHighlightRange([0, 0])
+        }}
+        // disabled={isConstrained || !convertToVarEnabled}
+        onClick={() => {
+          console.log(
+            'isConstrained && convertToVarEnabled',
+            isConstrained,
+            convertToVarEnabled,
+            range
+          )
+          if (!isConstrained && convertToVarEnabled) {
+            handleConvertToVarClick(varName)
+          }
         }}
       >
         <CustomIcon name={name} />
@@ -344,11 +427,52 @@ const ConstraintSymbol = ({
           verticalPosition === 'top'
             ? 'top-0 -translate-y-full'
             : 'bottom-0 translate-y-full'
-        } group-hover:block hidden -translate-x-1/2`}
+        } group-hover:block hidden w-[2px] h-2 translate-x-[12px] bg-white/40`}
+      ></div>
+      <div
+        className={`absolute ${
+          verticalPosition === 'top' ? 'top-0' : 'bottom-0'
+        } group-hover:block hidden`}
+        style={{
+          transform: `translate3d(calc(-50% + 13px), ${
+            verticalPosition === 'top' ? '-100%' : '100%'
+          }, 0)`,
+        }}
       >
-        <pre>
-          <code className="text-xs">{value}</code>
-        </pre>
+        <div className="bg-gray-800 p-2 px-3 rounded-sm">
+          {implicitDesc ? (
+            <div className="min-w-48">
+              <pre className="inline-block">
+                <code className="text-primary">{value}</code>
+              </pre>{' '}
+              <span>is implicitly constrained {implicitDesc}</span>
+            </div>
+          ) : (
+            <>
+              <div className="flex mb-1">
+                <span className="text-nowrap">
+                  <span className="font-bold">
+                    {isConstrained ? 'Constrained' : 'Unconstrained'}
+                  </span>
+                  <span className="text-white/80 text-sm pl-2">
+                    {displayName}
+                  </span>
+                </span>
+              </div>
+              <div className="flex mb-1">
+                <span className="pr-2 whitespace-nowrap">Set to</span>
+                <pre>
+                  <code className="text-primary">{value}</code>
+                </pre>
+              </div>
+              <div className="text-sm text-white/70 text-nowrap">
+                {isConstrained
+                  ? 'Click to unconstrain with raw number'
+                  : 'Click to constrain with variable'}
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   )

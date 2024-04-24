@@ -1152,6 +1152,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
       const pathToAngleProp: PathToNode = [
         ...pathToObjectExp,
         [angleIndex, 'index'],
+        ['value', 'Property'],
       ]
       returnVal.push(
         constrainInfo(
@@ -1168,6 +1169,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
       const pathToOffsetProp: PathToNode = [
         ...pathToObjectExp,
         [offsetIndex, 'index'],
+        ['value', 'Property'],
       ]
       returnVal.push(
         constrainInfo(
