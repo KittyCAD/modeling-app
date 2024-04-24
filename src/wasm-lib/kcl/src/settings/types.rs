@@ -362,7 +362,7 @@ pub enum OnboardingStatus {
 mod tests {
     use pretty_assertions::assert_eq;
 
-    use crate::settings::types::OnboardingStatus;
+    use crate::settings::types::{OnboardingStatus, DEFAULT_THEME_COLOR};
 
     use super::{
         AppSettings, AppTheme, AppearanceSettings, CommandBarSettings, InnerSettings, ModelingSettings,
@@ -484,6 +484,78 @@ defaultProjectName = "projects-$nnn"
                     },
                 }
             }
+        );
+    }
+
+    #[test]
+    fn test_settings_backwards_compat_partial() {
+        let partial_settings_file = r#"[settings.app]
+onboardingStatus = "dismissed"
+projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
+
+        //let parsed = toml::from_str::<Settings>(partial_settings_file).unwrap();
+        let parsed = Settings::backwards_compatible_toml_parse(partial_settings_file).unwrap();
+        assert_eq!(
+            parsed,
+            Settings {
+                settings: InnerSettings {
+                    app: AppSettings {
+                        appearance: AppearanceSettings {
+                            theme: AppTheme::System,
+                            color: DEFAULT_THEME_COLOR,
+                        },
+                        onboarding_status: OnboardingStatus::Dismissed,
+                        project_directory: None,
+                        theme: None,
+                        theme_color: None,
+                    },
+                    modeling: ModelingSettings {
+                        base_unit: UnitLength::Mm,
+                        mouse_controls: Default::default(),
+                        highlight_edges: true,
+                        show_debug_panel: false,
+                    },
+                    text_editor: TextEditorSettings {
+                        text_wrapping: true,
+                        blinking_cursor: true,
+                    },
+                    project: ProjectSettings {
+                        default_directory: "/Users/macinatormax/Documents/kittycad-modeling-projects".into(),
+                        default_project_name: "project-$nnn".to_string(),
+                    },
+                    command_bar: CommandBarSettings { include_settings: true },
+                }
+            }
+        );
+
+        // Write the file back out.
+        let serialized = toml::to_string(&parsed).unwrap();
+        assert_eq!(
+            serialized,
+            r#"[settings.app]
+onboarding_status = "dismissed"
+
+[settings.app.appearance]
+theme = "system"
+color = 264.5
+
+[settings.modeling]
+base_unit = "mm"
+mouse_controls = "kittycad"
+highlight_edges = true
+show_debug_panel = false
+
+[settings.text_editor]
+text_wrapping = true
+blinking_cursor = true
+
+[settings.project]
+default_directory = "/Users/macinatormax/Documents/kittycad-modeling-projects"
+default_project_name = "project-$nnn"
+
+[settings.command_bar]
+include_settings = true
+"#
         );
     }
 
