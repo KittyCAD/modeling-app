@@ -1326,6 +1326,17 @@ export class EngineCommandManager {
     this.lastArtifactMap = this.artifactMap
     this.artifactMap = {}
     await this.initPlanes()
+    await this.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'make_axes_gizmo',
+        clobber: false,
+        // If true, axes gizmo will be placed in the corner of the screen.
+        // If false, it will be placed at the origin of the scene.
+        gizmo_mode: true,
+      },
+    })
   }
   subscribeTo<T extends ModelTypes>({
     event,
