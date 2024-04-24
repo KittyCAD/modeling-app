@@ -63,14 +63,12 @@ test('Basic sketch', async ({ page }) => {
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
 
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled()
-  await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Sketch' })).not.toBeDisabled()
+  await expect(page.getByRole('button', { name: 'Sketch' })).toBeVisible()
 
-  // click on "Start Sketch" button
+  // click on "Sketch" button
   await u.clearCommandLogs()
-  await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await page.getByRole('button', { name: 'Sketch' }).click()
   await page.waitForTimeout(100)
 
   // select a plane
@@ -166,7 +164,7 @@ test('Can moving camera', async ({ page, context }) => {
 
     // rotate
     await u.closeDebugPanel()
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
+    await page.getByRole('button', { name: 'Sketch' }).click()
     await page.waitForTimeout(100)
     // const yo = page.getByTestId('cam-x-position').inputValue()
 
@@ -228,7 +226,7 @@ test('Can moving camera', async ({ page, context }) => {
   await u.clearCommandLogs()
   await u.closeDebugPanel()
 
-  await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await page.getByRole('button', { name: 'Sketch' }).click()
   await page.waitForTimeout(200)
 
   // zoom
@@ -469,7 +467,7 @@ const sketchOnPlaneAndBackSideTest = async (
   await u.openDebugPanel()
 
   await u.clearCommandLogs()
-  await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await page.getByRole('button', { name: 'Sketch' }).click()
   await u.updateCamPosition(camPos)
 
   await u.closeDebugPanel()
@@ -639,7 +637,7 @@ test('Project settings can be set and override user settings', async ({
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/', { waitUntil: 'domcontentloaded' })
   await page
-    .getByRole('button', { name: 'Start Sketch' })
+    .getByRole('button', { name: 'Sketch' })
     .waitFor({ state: 'visible' })
 
   // Open the settings modal with the browser keyboard shortcut
@@ -746,10 +744,8 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     page.mouse.click(767, 396).then(() => page.waitForTimeout(100))
 
   await u.clearCommandLogs()
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled()
-  await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await expect(page.getByRole('button', { name: 'Sketch' })).not.toBeDisabled()
+  await page.getByRole('button', { name: 'Sketch' }).click()
 
   // select a plane
   await page.mouse.click(700, 200)
@@ -978,7 +974,7 @@ test.describe('Command bar tests', () => {
     await u.expectCmdLog('[data-message-type="execution-done"]')
 
     await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
+      page.getByRole('button', { name: 'Sketch' })
     ).not.toBeDisabled()
     await u.clearCommandLogs()
     await page.getByText('|> line([0.73, -14.93], %)').click()
@@ -1043,15 +1039,13 @@ test('Can add multiple sketches', async ({ page }) => {
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
 
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled()
-  await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Sketch' })).not.toBeDisabled()
+  await expect(page.getByRole('button', { name: 'Sketch' })).toBeVisible()
 
-  // click on "Start Sketch" button
+  // click on "Sketch" button
   await u.clearCommandLogs()
   await u.doAndWaitForImageDiff(
-    () => page.getByRole('button', { name: 'Start Sketch' }).click(),
+    () => page.getByRole('button', { name: 'Sketch' }).click(),
     200
   )
 
@@ -1107,7 +1101,7 @@ test('Can add multiple sketches', async ({ page }) => {
 
   // start a new sketch
   await u.clearCommandLogs()
-  await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await page.getByRole('button', { name: 'Sketch' }).click()
   await page.waitForTimeout(400)
   await page.mouse.click(650, 450)
 
@@ -1284,9 +1278,7 @@ fn yohey = (pos) => {
   await u.closeDebugPanel()
 
   // wait for start sketch as a proxy for the stream being ready
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled()
+  await expect(page.getByRole('button', { name: 'Sketch' })).not.toBeDisabled()
 
   await page.getByText(selectionsSnippets.extrudeAndEditBlocked).click()
   await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
@@ -1316,7 +1308,7 @@ fn yohey = (pos) => {
 
   // selecting an editable sketch but clicking "start sktech" should start a new sketch and not edit the existing one
   await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
-  await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await page.getByRole('button', { name: 'Sketch' }).click()
   await page.mouse.click(700, 200)
   // expect main content to contain `part005` i.e. started a new sketch
   await expect(page.locator('.cm-content')).toHaveText(
@@ -1333,15 +1325,13 @@ test('Deselecting line tool should mean nothing happens on click', async ({
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
 
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled()
-  await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Sketch' })).not.toBeDisabled()
+  await expect(page.getByRole('button', { name: 'Sketch' })).toBeVisible()
 
-  // click on "Start Sketch" button
+  // click on "Sketch" button
   await u.clearCommandLogs()
   await u.doAndWaitForImageDiff(
-    () => page.getByRole('button', { name: 'Start Sketch' }).click(),
+    () => page.getByRole('button', { name: 'Sketch' }).click(),
     200
   )
 
@@ -1404,9 +1394,7 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled()
+  await expect(page.getByRole('button', { name: 'Sketch' })).not.toBeDisabled()
 
   const startPX = [665, 458]
   const lineEndPX = [842, 458]
@@ -1478,13 +1466,11 @@ const doSnapAtDifferentScales = async (
 |> line([0, -${roundOff(scale * 175.36) + fudge}], %)
 |> close(%)`
 
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled()
-  await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Sketch' })).not.toBeDisabled()
+  await expect(page.getByRole('button', { name: 'Sketch' })).toBeVisible()
 
   await u.clearCommandLogs()
-  await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await page.getByRole('button', { name: 'Sketch' }).click()
   await page.waitForTimeout(100)
 
   await u.openAndClearDebugPanel()
@@ -1571,11 +1557,9 @@ test('Sketch on face', async ({ page }) => {
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
-  await expect(
-    page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled()
+  await expect(page.getByRole('button', { name: 'Sketch' })).not.toBeDisabled()
 
-  await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await page.getByRole('button', { name: 'Sketch' }).click()
   await page.waitForTimeout(300)
 
   let previousCodeContent = await page.locator('.cm-content').innerText()
