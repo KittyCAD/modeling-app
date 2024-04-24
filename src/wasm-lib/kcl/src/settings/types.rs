@@ -1,27 +1,117 @@
 //! Types for kcl project and modeling-app settings.
 
+use anyhow::Result;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
+const DEFAULT_THEME_COLOR: f64 = 264.5;
+
+/// Global settings.
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct Settings {
+    /// The settings for the modeling app.
+    #[serde(default)]
+    pub settings: InnerSettings,
+}
+
+impl Settings {
+    // TODO: remove this when we remove backwards compatibility with the old settings file.
+    pub fn backwards_compatible_toml_parse(toml_str: &str) -> Result<Self> {
+        let mut settings = toml::from_str::<Self>(toml_str)?;
+
+        if let Some(project_directory) = &settings.settings.app.project_directory {
+            if settings.settings.project.default_directory.to_string_lossy().is_empty() {
+                settings.settings.project.default_directory = project_directory.clone();
+                settings.settings.app.project_directory = None;
+            }
+        }
+
+        if let Some(theme) = &settings.settings.app.theme {
+            if settings.settings.app.appearance.theme == AppTheme::default() {
+                settings.settings.app.appearance.theme = *theme;
+                settings.settings.app.theme = None;
+            }
+        }
+
+        if let Some(theme_color) = &settings.settings.app.theme_color {
+            if settings.settings.app.appearance.color == DEFAULT_THEME_COLOR {
+                settings.settings.app.appearance.color = theme_color.clone().into();
+                settings.settings.app.theme_color = None;
+            }
+        }
+
+        Ok(settings)
+    }
+}
+
+/// Inner settings.
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct InnerSettings {
+    /// The settings for the modeling app.
+    #[serde(default)]
+    pub app: AppSettings,
+    /// Settings that affect the behavior while modeling.
+    #[serde(default)]
+    pub modeling: ModelingSettings,
+    /// Settings that affect the behavior of the KCL text editor.
+    #[serde(default, alias = "textEditor")]
+    pub text_editor: TextEditorSettings,
+    /// Settings that affect the behavior of project management.
+    #[serde(default, alias = "projects")]
+    pub project: ProjectSettings,
+    /// Settings that affect the behavior of the command bar.
+    #[serde(default, alias = "commandBar")]
+    pub command_bar: CommandBarSettings,
+}
+
 /// Application wide settings.
+// TODO: When we remove backwards compatibility with the old settings file, we can remove the
+// aliases to camelCase (and projects plural) from everywhere.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct AppSettings {
     /// The settings for the appearance of the app.
+    #[serde(default)]
     pub appearance: AppearanceSettings,
-    /// Settings that affect the behavior while modeling.
-    pub modeling: ModelingSettings,
-    /// Settings that affect the behavior of the KCL text editor.
-    pub text_editor: TextEditorSettings,
-    /// Settings that affect the behavior of project management.
-    pub project: ProjectSettings,
-    /// Settings that affect the behavior of the command bar.
-    pub command_bar: CommandBarSettings,
     /// The onboarding status of the app.
+    #[serde(default, alias = "onboardingStatus")]
     pub onboarding_status: OnboardingStatus,
+    /// Backwards compatible project directory setting.
+    #[serde(default, alias = "projectDirectory", skip_serializing_if = "Option::is_none")]
+    pub project_directory: Option<std::path::PathBuf>,
+    /// Backwards compatible theme setting.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub theme: Option<AppTheme>,
+    /// The hue of the primary theme color for the app.
+    #[serde(default, skip_serializing_if = "Option::is_none", alias = "themeColor")]
+    pub theme_color: Option<FloatOrInt>,
+}
+
+// TODO: When we remove backwards compatibility with the old settings file, we can remove this.
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
+#[ts(export)]
+#[serde(untagged)]
+pub enum FloatOrInt {
+    String(String),
+    Float(f64),
+    Int(i64),
+}
+
+impl From<FloatOrInt> for f64 {
+    fn from(float_or_int: FloatOrInt) -> Self {
+        match float_or_int {
+            FloatOrInt::String(s) => s.parse().unwrap(),
+            FloatOrInt::Float(f) => f,
+            FloatOrInt::Int(i) => i as f64,
+        }
+    }
 }
 
 /// The settings for the theme of the app.
@@ -30,8 +120,10 @@ pub struct AppSettings {
 #[serde(rename_all = "snake_case")]
 pub struct AppearanceSettings {
     /// The overall theme of the app.
+    #[serde(default)]
     pub theme: AppTheme,
     /// The hue of the primary theme color for the app.
+    #[serde(default)]
     #[validate(range(min = 0.0, max = 360.0))]
     pub color: f64,
 }
@@ -40,7 +132,7 @@ impl Default for AppearanceSettings {
     fn default() -> Self {
         Self {
             theme: Default::default(),
-            color: 264.5,
+            color: DEFAULT_THEME_COLOR,
         }
     }
 }
@@ -92,13 +184,17 @@ impl From<AppTheme> for kittycad::types::Color {
 #[ts(export)]
 pub struct ModelingSettings {
     /// The default unit to use in modeling dimensions.
+    #[serde(default, alias = "defaultUnit")]
     pub base_unit: UnitLength,
     /// The controls for how to navigate the 3D view.
+    #[serde(default, alias = "mouseControls")]
     pub mouse_controls: MouseControlType,
     /// Highlight edges of 3D objects?
+    #[serde(default, alias = "highlightEdges")]
     pub highlight_edges: bool,
     /// Whether to show the debug panel, which lets you see various states
     /// of the app to aid in development.
+    #[serde(default, alias = "showDebugPanel")]
     pub show_debug_panel: bool,
 }
 
@@ -192,8 +288,10 @@ pub enum MouseControlType {
 #[ts(export)]
 pub struct TextEditorSettings {
     /// Whether to wrap text in the editor or overflow with scroll.
+    #[serde(default, alias = "textWrapping")]
     pub text_wrapping: bool,
     /// Whether to make the cursor blink in the editor.
+    #[serde(default, alias = "blinkingCursor")]
     pub blinking_cursor: bool,
 }
 
@@ -212,8 +310,10 @@ impl Default for TextEditorSettings {
 #[ts(export)]
 pub struct ProjectSettings {
     /// The directory to save and load projects from.
+    #[serde(default)]
     pub default_directory: std::path::PathBuf,
     /// The default project name to use when creating a new project.
+    #[serde(default, alias = "defaultProjectName")]
     pub default_project_name: String,
 }
 
@@ -233,6 +333,7 @@ impl Default for ProjectSettings {
 #[ts(export)]
 pub struct CommandBarSettings {
     /// Whether to include settings in the command bar.
+    #[serde(default, alias = "includeSettings")]
     pub include_settings: bool,
 }
 
@@ -264,14 +365,14 @@ mod tests {
     use crate::settings::types::OnboardingStatus;
 
     use super::{
-        AppSettings, AppTheme, AppearanceSettings, CommandBarSettings, ModelingSettings, ProjectSettings,
-        TextEditorSettings, UnitLength,
+        AppSettings, AppTheme, AppearanceSettings, CommandBarSettings, InnerSettings, ModelingSettings,
+        ProjectSettings, Settings, TextEditorSettings, UnitLength,
     };
 
     #[test]
     // Test that we can deserialize a project file from the old format.
     // TODO: We can remove this functionality after a few versions.
-    fn test_backwards_compatible_project_file() {
+    fn test_backwards_compatible_project_settings_file() {
         let old_project_file = r#"[settings.app]
 theme = "dark"
 themeColor = "138"
@@ -288,29 +389,37 @@ blinkingCursor = false
 includeSettings = false
 #"#;
 
-        let parsed = toml::from_str::<AppSettings>(old_project_file).unwrap();
+        //let parsed = toml::from_str::<Settings>(old_project_file).unwrap();
+        let parsed = Settings::backwards_compatible_toml_parse(old_project_file).unwrap();
         assert_eq!(
             parsed,
-            AppSettings {
-                appearance: AppearanceSettings {
-                    theme: AppTheme::Dark,
-                    color: 138.0,
-                },
-                modeling: ModelingSettings {
-                    base_unit: UnitLength::Yd,
-                    mouse_controls: Default::default(),
-                    highlight_edges: Default::default(),
-                    show_debug_panel: true,
-                },
-                text_editor: TextEditorSettings {
-                    text_wrapping: false,
-                    blinking_cursor: false,
-                },
-                project: Default::default(),
-                command_bar: CommandBarSettings {
-                    include_settings: false,
-                },
-                onboarding_status: Default::default(),
+            Settings {
+                settings: InnerSettings {
+                    app: AppSettings {
+                        appearance: AppearanceSettings {
+                            theme: AppTheme::Dark,
+                            color: 138.0,
+                        },
+                        onboarding_status: Default::default(),
+                        project_directory: None,
+                        theme: None,
+                        theme_color: None,
+                    },
+                    modeling: ModelingSettings {
+                        base_unit: UnitLength::Yd,
+                        mouse_controls: Default::default(),
+                        highlight_edges: Default::default(),
+                        show_debug_panel: true,
+                    },
+                    text_editor: TextEditorSettings {
+                        text_wrapping: false,
+                        blinking_cursor: false,
+                    },
+                    project: Default::default(),
+                    command_bar: CommandBarSettings {
+                        include_settings: false,
+                    },
+                }
             }
         );
     }
@@ -340,33 +449,82 @@ includeSettings = false
 defaultProjectName = "projects-$nnn"
 #"#;
 
-        let parsed = toml::from_str::<AppSettings>(old_app_settings_file).unwrap();
+        //let parsed = toml::from_str::<Settings>(old_app_settings_file).unwrap();
+        let parsed = Settings::backwards_compatible_toml_parse(old_app_settings_file).unwrap();
         assert_eq!(
             parsed,
-            AppSettings {
-                appearance: AppearanceSettings {
-                    theme: AppTheme::Dark,
-                    color: 138.0,
-                },
-                modeling: ModelingSettings {
-                    base_unit: UnitLength::Yd,
-                    mouse_controls: Default::default(),
-                    highlight_edges: Default::default(),
-                    show_debug_panel: true,
-                },
-                text_editor: TextEditorSettings {
-                    text_wrapping: false,
-                    blinking_cursor: false,
-                },
-                project: ProjectSettings {
-                    default_directory: "/Users/macinatormax/Documents/kittycad-modeling-projects".into(),
-                    default_project_name: "projects-$nnn".to_string(),
-                },
-                command_bar: CommandBarSettings {
-                    include_settings: false,
-                },
-                onboarding_status: OnboardingStatus::Dismissed,
+            Settings {
+                settings: InnerSettings {
+                    app: AppSettings {
+                        appearance: AppearanceSettings {
+                            theme: AppTheme::Dark,
+                            color: 138.0,
+                        },
+                        onboarding_status: OnboardingStatus::Dismissed,
+                        project_directory: None,
+                        theme: None,
+                        theme_color: None,
+                    },
+                    modeling: ModelingSettings {
+                        base_unit: UnitLength::Yd,
+                        mouse_controls: Default::default(),
+                        highlight_edges: Default::default(),
+                        show_debug_panel: true,
+                    },
+                    text_editor: TextEditorSettings {
+                        text_wrapping: false,
+                        blinking_cursor: false,
+                    },
+                    project: ProjectSettings {
+                        default_directory: "/Users/macinatormax/Documents/kittycad-modeling-projects".into(),
+                        default_project_name: "projects-$nnn".to_string(),
+                    },
+                    command_bar: CommandBarSettings {
+                        include_settings: false,
+                    },
+                }
             }
         );
+    }
+
+    #[test]
+    fn test_settings_empty_file_parses() {
+        let empty_settings_file = r#""#;
+
+        let parsed = toml::from_str::<Settings>(empty_settings_file).unwrap();
+        assert_eq!(parsed, Settings::default());
+
+        // Write the file back out.
+        let serialized = toml::to_string(&parsed).unwrap();
+        assert_eq!(
+            serialized,
+            r#"[settings.app]
+onboarding_status = "incomplete"
+
+[settings.app.appearance]
+theme = "system"
+color = 264.5
+
+[settings.modeling]
+base_unit = "mm"
+mouse_controls = "kittycad"
+highlight_edges = true
+show_debug_panel = false
+
+[settings.text_editor]
+text_wrapping = true
+blinking_cursor = true
+
+[settings.project]
+default_directory = ""
+default_project_name = "project-$nnn"
+
+[settings.command_bar]
+include_settings = true
+"#
+        );
+
+        let parsed = Settings::backwards_compatible_toml_parse(empty_settings_file).unwrap();
+        assert_eq!(parsed, Settings::default());
     }
 }
