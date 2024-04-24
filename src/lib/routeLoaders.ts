@@ -14,17 +14,14 @@ import {
   PROJECT_ENTRYPOINT,
 } from 'lib/constants'
 import { loadAndValidateSettings } from './settings/settingsUtils'
-import {
-  getInitialDefaultDir,
-  getProjectsInDir,
-  initializeProjectDirectory,
-} from './tauriFS'
+import { getProjectsInDir, initializeProjectDirectory } from './tauriFS'
 import makeUrlPathRelative from './makeUrlPathRelative'
 import { join, sep } from '@tauri-apps/api/path'
 import { readTextFile, stat } from '@tauri-apps/plugin-fs'
 import { codeManager, kclManager } from 'lib/singletons'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import { invoke } from '@tauri-apps/api/core'
+import { getInitialDefaultDir } from './tauri'
 
 // The root loader simply resolves the settings and any errors that
 // occurred during the settings load

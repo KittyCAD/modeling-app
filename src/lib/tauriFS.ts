@@ -2,8 +2,6 @@ import { mkdir, exists, writeTextFile, stat } from '@tauri-apps/plugin-fs'
 import { invoke } from '@tauri-apps/api/core'
 import {
   appConfigDir,
-  documentDir,
-  homeDir,
   join,
   sep,
 } from '@tauri-apps/api/path'
@@ -15,12 +13,12 @@ import {
   MAX_PADDING,
   ONBOARDING_PROJECT_NAME,
   PROJECT_ENTRYPOINT,
-  PROJECT_FOLDER,
   RELEVANT_FILE_TYPES,
   SETTINGS_FILE_EXT,
 } from 'lib/constants'
 import { bracket } from './exampleKcl'
 import { paths } from './paths'
+import { getInitialDefaultDir } from './tauri'
 
 type PathWithPossibleError = {
   path: string | null

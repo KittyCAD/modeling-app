@@ -1,4 +1,3 @@
-import { getInitialDefaultDir } from '../tauriFS'
 import { Setting, createSettings, settings } from 'lib/settings/initialSettings'
 import { SaveSettingsPayload, SettingsLevel } from './settingsTypes'
 import { isTauri } from 'lib/isTauri'

@@ -2,6 +2,11 @@ import { invoke } from '@tauri-apps/api/core'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 
+// Get the initial default dir for holding all projects.
+export async function getInitialDefaultDir(): Promise<string> {
+  return invoke<string>('get_initial_default_dir')
+}
+
 // Read the contents of the app settings.
 export async function readAppSettingsFile(): Promise<Configuration> {
   const settings = await invoke<Configuration>('read_app_settings_file')

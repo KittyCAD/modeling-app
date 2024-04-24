@@ -10,11 +10,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { paths } from 'lib/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
-import {
-  createAndOpenNewProject,
-  getInitialDefaultDir,
-  getSettingsFolderPaths,
-} from 'lib/tauriFS'
+import { createAndOpenNewProject, getSettingsFolderPaths } from 'lib/tauriFS'
 import { sep } from '@tauri-apps/api/path'
 import { isTauri } from 'lib/isTauri'
 import toast from 'react-hot-toast'
@@ -31,6 +27,7 @@ import {
   shouldHideSetting,
   shouldShowSettingInput,
 } from 'lib/settings/settingsUtils'
+import { getInitialDefaultDir } from 'lib/tauri'
 
 export const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
 

@@ -18,7 +18,8 @@ const DEFAULT_HOST: &str = "https://api.zoo.dev";
 const SETTINGS_FILE_NAME: &str = "settings.toml";
 const PROJECT_FOLDER: &str = "zoo-modeling-app-projects";
 
-fn get_initial_default_dir(app: &tauri::AppHandle) -> Result<PathBuf, InvokeError> {
+#[tauri::command]
+fn get_initial_default_dir(app: tauri::AppHandle) -> Result<PathBuf, InvokeError> {
     let dir = match app.path().document_dir() {
         Ok(dir) => dir,
         Err(_) => {
@@ -55,7 +56,7 @@ async fn read_app_settings_file(app: tauri::AppHandle) -> Result<Configuration, 
         // Check if this path exists.
         if !settings_path.exists() {
             let mut default = Configuration::default();
-            default.settings.project.directory = get_initial_default_dir(&app)?;
+            default.settings.project.directory = get_initial_default_dir(app.clone())?;
             // Return the default configuration.
             return Ok(default);
         }
@@ -67,7 +68,7 @@ async fn read_app_settings_file(app: tauri::AppHandle) -> Result<Configuration, 
     let mut parsed =
         Configuration::backwards_compatible_toml_parse(&contents).map_err(|e| InvokeError::from_anyhow(e.into()))?;
     if parsed.settings.project.directory == PathBuf::new() {
-        parsed.settings.project.directory = get_initial_default_dir(&app)?;
+        parsed.settings.project.directory = get_initial_default_dir(app.clone())?;
     }
 
     // TODO: Remove this after a few releases.
@@ -321,6 +322,7 @@ fn main() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            get_initial_default_dir,
             get_user,
             login,
             read_dir_recursive,
