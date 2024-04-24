@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 /// Application wide settings.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct AppSettings {
@@ -21,11 +21,11 @@ pub struct AppSettings {
     /// Settings that affect the behavior of the command bar.
     pub command_bar: CommandBarSettings,
     /// The onboarding status of the app.
-    pub onboarding: OnboardingStatus,
+    pub onboarding_status: OnboardingStatus,
 }
 
 /// The settings for the theme of the app.
-#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Validate)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Validate, PartialEq)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct AppearanceSettings {
@@ -46,7 +46,9 @@ impl Default for AppearanceSettings {
 }
 
 /// The overall appearance of the app.
-#[derive(Debug, Default, Copy, Clone, Deserialize, Serialize, JsonSchema, Display, FromStr, ts_rs::TS)]
+#[derive(
+    Debug, Default, Copy, Clone, Deserialize, Serialize, JsonSchema, Display, FromStr, ts_rs::TS, PartialEq, Eq,
+)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
@@ -85,7 +87,7 @@ impl From<AppTheme> for kittycad::types::Color {
 }
 
 /// Settings that affect the behavior while modeling.
-#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct ModelingSettings {
@@ -185,7 +187,7 @@ pub enum MouseControlType {
 }
 
 /// Settings that affect the behavior of the KCL text editor.
-#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct TextEditorSettings {
@@ -205,7 +207,7 @@ impl Default for TextEditorSettings {
 }
 
 /// Settings that affect the behavior of project management.
-#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct ProjectSettings {
@@ -226,7 +228,7 @@ impl Default for ProjectSettings {
 }
 
 /// Settings that affect the behavior of the command bar.
-#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct CommandBarSettings {
@@ -253,4 +255,118 @@ pub enum OnboardingStatus {
     Incomplete,
     /// The user has dismissed onboarding.
     Dismissed,
+}
+
+#[cfg(test)]
+mod tests {
+    use pretty_assertions::assert_eq;
+
+    use crate::settings::types::OnboardingStatus;
+
+    use super::{
+        AppSettings, AppTheme, AppearanceSettings, CommandBarSettings, ModelingSettings, ProjectSettings,
+        TextEditorSettings, UnitLength,
+    };
+
+    #[test]
+    // Test that we can deserialize a project file from the old format.
+    // TODO: We can remove this functionality after a few versions.
+    fn test_backwards_compatible_project_file() {
+        let old_project_file = r#"[settings.app]
+theme = "dark"
+themeColor = "138"
+
+[settings.modeling]
+defaultUnit = "yd"
+showDebugPanel = true
+
+[settings.textEditor]
+textWrapping = false
+blinkingCursor = false
+
+[settings.commandBar]
+includeSettings = false
+#"#;
+
+        let parsed = toml::from_str::<AppSettings>(old_project_file).unwrap();
+        assert_eq!(
+            parsed,
+            AppSettings {
+                appearance: AppearanceSettings {
+                    theme: AppTheme::Dark,
+                    color: 138.0,
+                },
+                modeling: ModelingSettings {
+                    base_unit: UnitLength::Yd,
+                    mouse_controls: Default::default(),
+                    highlight_edges: Default::default(),
+                    show_debug_panel: true,
+                },
+                text_editor: TextEditorSettings {
+                    text_wrapping: false,
+                    blinking_cursor: false,
+                },
+                project: Default::default(),
+                command_bar: CommandBarSettings {
+                    include_settings: false,
+                },
+                onboarding_status: Default::default(),
+            }
+        );
+    }
+
+    #[test]
+    // Test that we can deserialize a app settings file from the old format.
+    // TODO: We can remove this functionality after a few versions.
+    fn test_backwards_compatible_app_settings_file() {
+        let old_app_settings_file = r#"[settings.app]
+onboardingStatus = "dismissed"
+projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects"
+theme = "dark"
+themeColor = "138"
+
+[settings.modeling]
+defaultUnit = "yd"
+showDebugPanel = true
+
+[settings.textEditor]
+textWrapping = false
+blinkingCursor = false
+
+[settings.commandBar]
+includeSettings = false
+
+[settings.projects]
+defaultProjectName = "projects-$nnn"
+#"#;
+
+        let parsed = toml::from_str::<AppSettings>(old_app_settings_file).unwrap();
+        assert_eq!(
+            parsed,
+            AppSettings {
+                appearance: AppearanceSettings {
+                    theme: AppTheme::Dark,
+                    color: 138.0,
+                },
+                modeling: ModelingSettings {
+                    base_unit: UnitLength::Yd,
+                    mouse_controls: Default::default(),
+                    highlight_edges: Default::default(),
+                    show_debug_panel: true,
+                },
+                text_editor: TextEditorSettings {
+                    text_wrapping: false,
+                    blinking_cursor: false,
+                },
+                project: ProjectSettings {
+                    default_directory: "/Users/macinatormax/Documents/kittycad-modeling-projects".into(),
+                    default_project_name: "projects-$nnn".to_string(),
+                },
+                command_bar: CommandBarSettings {
+                    include_settings: false,
+                },
+                onboarding_status: OnboardingStatus::Dismissed,
+            }
+        );
+    }
 }
