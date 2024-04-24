@@ -52,17 +52,17 @@ jobs:
       run: yarn playwright install --with-deps
     - name: Print WASM Lib Changes URL
       run: |
-        echo "WASM Lib Changes URL: ${{ steps.check-wasm-lib-changes.outputs.url }}"
+        echo "WASM Lib Changes URL: ${{ needs.check-wasm-lib-changes.outputs.url }}"
     - name: Setup Rust
-      if: ${{ steps.check-wasm-lib-changes.outputs.url }} == ''
+      if: ${{ needs.check-wasm-lib-changes.outputs.url }} == ''
       uses: dtolnay/rust-toolchain@stable
     - name: Cache wasm
-      if: ${{ steps.check-wasm-lib-changes.outputs.url }} == ''
+      if: ${{ needs.check-wasm-lib-changes.outputs.url }} == ''
       uses: Swatinem/rust-cache@v2
       with:
         workspaces: './src/wasm-lib'
     - name: build wasm
-      if: ${{ steps.check-wasm-lib-changes.outputs.url }} == ''
+      if: ${{ needs.check-wasm-lib-changes.outputs.url }} == ''
       run: yarn build:wasm
     - name: build web
       run: yarn build:local
