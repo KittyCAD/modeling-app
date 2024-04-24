@@ -34,11 +34,11 @@ jobs:
         id: set-output
         run: |
           if [ -z "${{ env.CHANGES_DETECTED }}" ]; then
-            echo "url=" >> $GITHUB_OUTPUT
-            echo "No changes detected in src/wasm-lib"
-          else
             echo "url=https://app.zoo.dev" >> $GITHUB_OUTPUT
             echo "Changes detected in src/wasm-lib"
+          else
+            echo "url=" >> $GITHUB_OUTPUT
+            echo "No changes detected in src/wasm-lib"
           fi
 
 
