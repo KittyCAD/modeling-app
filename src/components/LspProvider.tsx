@@ -3,7 +3,7 @@ import type * as LSP from 'vscode-languageserver-protocol'
 import React, { createContext, useMemo, useEffect, useContext } from 'react'
 import { FromServer, IntoServer } from 'editor/plugins/lsp/codec'
 import Client from '../editor/plugins/lsp/client'
-import { DEV, TEST, VITE_KC_DEV_TOKEN } from 'env'
+import { DEV, TEST } from 'env'
 import kclLanguage from 'editor/plugins/lsp/kcl/language'
 import { copilotPlugin } from 'editor/plugins/lsp/copilot'
 import { useStore } from 'useStore'
@@ -85,7 +85,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       },
     },
   } = useSettingsAuthContext()
-  const token = !DEV ? auth.context.token : VITE_KC_DEV_TOKEN || 'dev'
+  const token = auth?.context.token
   const navigate = useNavigate()
   const { overallState } = useNetworkStatus()
   const isNetworkOkay = overallState === NetworkHealthState.Ok

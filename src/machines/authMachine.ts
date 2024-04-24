@@ -3,7 +3,7 @@ import { Models } from '@kittycad/lib'
 import withBaseURL from '../lib/withBaseURL'
 import { isTauri } from 'lib/isTauri'
 import { invoke } from '@tauri-apps/api/core'
-import { VITE_KC_API_BASE_URL } from 'env'
+import { VITE_KC_API_BASE_URL, VITE_KC_DEV_TOKEN } from 'env'
 
 const SKIP_AUTH =
   import.meta.env.VITE_KC_SKIP_AUTH === 'true' && import.meta.env.DEV
@@ -112,14 +112,25 @@ export const authMachine = createMachine<UserContext, Events>(
 )
 
 async function getUser(context: UserContext) {
+  const token =
+    context.token && context.token !== ''
+      ? context.token
+      : getCookie(COOKIE_NAME) ||
+        localStorage?.getItem(TOKEN_PERSIST_KEY) ||
+        VITE_KC_DEV_TOKEN
   const url = withBaseURL('/user')
   const headers: { [key: string]: string } = {
     'Content-Type': 'application/json',
   }
 
-  if (!context.token && isTauri()) throw new Error('No token found')
-  if (context.token) headers['Authorization'] = `Bearer ${context.token}`
-  if (SKIP_AUTH) return LOCAL_USER
+  if (!token && isTauri()) throw new Error('No token found')
+  if (token) headers['Authorization'] = `Bearer ${context.token}`
+
+  if (SKIP_AUTH)
+    return {
+      user: LOCAL_USER,
+      token,
+    }
 
   const userPromise = !isTauri()
     ? fetch(url, {
@@ -139,13 +150,8 @@ async function getUser(context: UserContext) {
   if ('error_code' in user) throw new Error(user.message)
 
   return {
-    user,
-    token:
-      context.token && context.token !== ''
-        ? context.token
-        : getCookie(COOKIE_NAME) ||
-          localStorage?.getItem(TOKEN_PERSIST_KEY) ||
-          '',
+    user: user as Models['User_type'],
+    token,
   }
 }
 
