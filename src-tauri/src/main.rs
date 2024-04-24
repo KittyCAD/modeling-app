@@ -19,16 +19,21 @@ use tokio::io::AsyncReadExt;
 const DEFAULT_HOST: &str = "https://api.zoo.dev";
 const SETTINGS_FILE_NAME: &str = "settings.toml";
 
+fn get_app_settings_file_path(app: tauri::AppHandle) -> Result<PathBuf, InvokeError> {
+    let app_config_dir = app.path().app_config_dir()?;
+    Ok(app_config_dir.join(SETTINGS_FILE_NAME))
+}
+
 #[tauri::command]
 async fn read_app_settings_file(app: tauri::AppHandle) -> Result<Configuration, InvokeError> {
-    let app_config_dir = app.path().app_config_dir()?;
-    let mut settings_path = app_config_dir.join(SETTINGS_FILE_NAME);
+    let mut settings_path = get_app_settings_file_path(app.clone())?;
     let mut needs_migration = false;
 
     // Check if this file exists.
     if !settings_path.exists() {
         // Try the backwards compatible path.
         // TODO: Remove this after a few releases.
+        let app_config_dir = app.path().app_config_dir()?;
         settings_path = format!("{}user.toml", app_config_dir.display()).into();
         needs_migration = true;
         // Check if this path exists.
@@ -58,8 +63,7 @@ async fn read_app_settings_file(app: tauri::AppHandle) -> Result<Configuration, 
 
 #[tauri::command]
 async fn write_app_settings_file(app: tauri::AppHandle, configuration: Configuration) -> Result<(), InvokeError> {
-    let app_config_dir = app.path().app_config_dir()?;
-    let settings_path = app_config_dir.join(SETTINGS_FILE_NAME);
+    let settings_path = get_app_settings_file_path(app)?;
     let contents = toml::to_string_pretty(&configuration).map_err(|e| InvokeError::from_anyhow(e.into()))?;
     tokio::fs::write(settings_path, contents.as_bytes())
         .await
