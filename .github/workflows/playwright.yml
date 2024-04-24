@@ -49,6 +49,8 @@ jobs:
       run: yarn
     - name: Install Playwright Browsers
       run: yarn playwright install --with-deps
+    - name: Print WASM Lib Changes URL
+      run: echo "WASM Lib Changes URL: ${{ steps.check-wasm-lib-changes.outputs.url }}"
     - name: Setup Rust
       if: steps.check-wasm-lib-changes.outputs.url == ''
       uses: dtolnay/rust-toolchain@stable
