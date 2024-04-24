@@ -15,19 +15,17 @@ jobs:
     # if: contains(github.event.head_commit.message, 'Cut release v')
     steps:
       - uses: actions/github-script@v7
-        name: Get PR data from Cut release commit
-        id: get_pr_data
+        name: Create Release
         with:
           script: |
-              return (
-                await github.rest.repos.listPullRequestsAssociatedWithCommit({
-                  // commit_sha: context.sha,
-                  commit_sha: '0b235dc1cde26b4321cee105ae02906eacc586bf',
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                })
-              ).data[0];
-      - name: Pull Request data
-        run: |
-          echo '${{ fromJson(steps.get_pr_data.outputs.result).title }}'
-          echo '${{ fromJson(steps.get_pr_data.outputs.result).body }}'
+            const pulls = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                // commit_sha: context.sha,
+                commit_sha: '0b235dc1cde26b4321cee105ae02906eacc586bf',
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+              })
+            const { title, body } = pulls.data[0]
+            console.log(title)
+            console.log(body)
+            const version = title.split('Cut release ')[1]
+            console.log(version)
