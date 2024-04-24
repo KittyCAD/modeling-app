@@ -8,17 +8,17 @@ use validator::Validate;
 
 const DEFAULT_THEME_COLOR: f64 = 264.5;
 
-/// Global settings.
+/// High level configuration.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
-pub struct Settings {
+pub struct Configuration {
     /// The settings for the modeling app.
     #[serde(default)]
-    pub settings: InnerSettings,
+    pub settings: Settings,
 }
 
-impl Settings {
+impl Configuration {
     // TODO: remove this when we remove backwards compatibility with the old settings file.
     pub fn backwards_compatible_toml_parse(toml_str: &str) -> Result<Self> {
         let mut settings = toml::from_str::<Self>(toml_str)?;
@@ -48,11 +48,11 @@ impl Settings {
     }
 }
 
-/// Inner settings.
+/// High level settings.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
-pub struct InnerSettings {
+pub struct Settings {
     /// The settings for the modeling app.
     #[serde(default)]
     pub app: AppSettings,
@@ -365,7 +365,7 @@ mod tests {
     use crate::settings::types::{OnboardingStatus, DEFAULT_THEME_COLOR};
 
     use super::{
-        AppSettings, AppTheme, AppearanceSettings, CommandBarSettings, InnerSettings, ModelingSettings,
+        AppSettings, AppTheme, AppearanceSettings, CommandBarSettings, Configuration, ModelingSettings,
         ProjectSettings, Settings, TextEditorSettings, UnitLength,
     };
 
@@ -389,12 +389,12 @@ blinkingCursor = false
 includeSettings = false
 #"#;
 
-        //let parsed = toml::from_str::<Settings>(old_project_file).unwrap();
-        let parsed = Settings::backwards_compatible_toml_parse(old_project_file).unwrap();
+        //let parsed = toml::from_str::<Configuration(old_project_file).unwrap();
+        let parsed = Configuration::backwards_compatible_toml_parse(old_project_file).unwrap();
         assert_eq!(
             parsed,
-            Settings {
-                settings: InnerSettings {
+            Configuration {
+                settings: Settings {
                     app: AppSettings {
                         appearance: AppearanceSettings {
                             theme: AppTheme::Dark,
@@ -449,12 +449,12 @@ includeSettings = false
 defaultProjectName = "projects-$nnn"
 #"#;
 
-        //let parsed = toml::from_str::<Settings>(old_app_settings_file).unwrap();
-        let parsed = Settings::backwards_compatible_toml_parse(old_app_settings_file).unwrap();
+        //let parsed = toml::from_str::<Configuration>(old_app_settings_file).unwrap();
+        let parsed = Configuration::backwards_compatible_toml_parse(old_app_settings_file).unwrap();
         assert_eq!(
             parsed,
-            Settings {
-                settings: InnerSettings {
+            Configuration {
+                settings: Settings {
                     app: AppSettings {
                         appearance: AppearanceSettings {
                             theme: AppTheme::Dark,
@@ -493,12 +493,12 @@ defaultProjectName = "projects-$nnn"
 onboardingStatus = "dismissed"
 projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
 
-        //let parsed = toml::from_str::<Settings>(partial_settings_file).unwrap();
-        let parsed = Settings::backwards_compatible_toml_parse(partial_settings_file).unwrap();
+        //let parsed = toml::from_str::<Configuration>(partial_settings_file).unwrap();
+        let parsed = Configuration::backwards_compatible_toml_parse(partial_settings_file).unwrap();
         assert_eq!(
             parsed,
-            Settings {
-                settings: InnerSettings {
+            Configuration {
+                settings: Settings {
                     app: AppSettings {
                         appearance: AppearanceSettings {
                             theme: AppTheme::System,
@@ -563,8 +563,8 @@ include_settings = true
     fn test_settings_empty_file_parses() {
         let empty_settings_file = r#""#;
 
-        let parsed = toml::from_str::<Settings>(empty_settings_file).unwrap();
-        assert_eq!(parsed, Settings::default());
+        let parsed = toml::from_str::<Configuration>(empty_settings_file).unwrap();
+        assert_eq!(parsed, Configuration::default());
 
         // Write the file back out.
         let serialized = toml::to_string(&parsed).unwrap();
@@ -596,7 +596,7 @@ include_settings = true
 "#
         );
 
-        let parsed = Settings::backwards_compatible_toml_parse(empty_settings_file).unwrap();
-        assert_eq!(parsed, Settings::default());
+        let parsed = Configuration::backwards_compatible_toml_parse(empty_settings_file).unwrap();
+        assert_eq!(parsed, Configuration::default());
     }
 }
