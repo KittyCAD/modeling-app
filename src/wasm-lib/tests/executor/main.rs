@@ -957,7 +957,7 @@ const part =  startSketchOn('XY')
     |> extrude(1, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image(
