@@ -16,15 +16,29 @@ use tauri_plugin_shell::ShellExt;
 
 const DEFAULT_HOST: &str = "https://api.zoo.dev";
 const SETTINGS_FILE_NAME: &str = "settings.toml";
+const PROJECT_FOLDER: &str = "zoo-modeling-app-projects";
 
-fn get_app_settings_file_path(app: tauri::AppHandle) -> Result<PathBuf, InvokeError> {
+fn get_initial_default_dir(app: &tauri::AppHandle) -> Result<PathBuf, InvokeError> {
+    let dir = match app.path().document_dir() {
+        Ok(dir) => dir,
+        Err(_) => {
+            // for headless Linux (eg. Github Actions)
+            let home_dir = app.path().home_dir()?;
+            home_dir.join("Documents")
+        }
+    };
+
+    Ok(dir.join(PROJECT_FOLDER))
+}
+
+fn get_app_settings_file_path(app: &tauri::AppHandle) -> Result<PathBuf, InvokeError> {
     let app_config_dir = app.path().app_config_dir()?;
     Ok(app_config_dir.join(SETTINGS_FILE_NAME))
 }
 
 #[tauri::command]
 async fn read_app_settings_file(app: tauri::AppHandle) -> Result<Configuration, InvokeError> {
-    let mut settings_path = get_app_settings_file_path(app.clone())?;
+    let mut settings_path = get_app_settings_file_path(&app)?;
     let mut needs_migration = false;
 
     // Check if this file exists.
@@ -40,16 +54,21 @@ async fn read_app_settings_file(app: tauri::AppHandle) -> Result<Configuration, 
         needs_migration = true;
         // Check if this path exists.
         if !settings_path.exists() {
+            let mut default = Configuration::default();
+            default.settings.project.directory = get_initial_default_dir(&app)?;
             // Return the default configuration.
-            return Ok(Configuration::default());
+            return Ok(default);
         }
     }
 
     let contents = tokio::fs::read_to_string(&settings_path)
         .await
         .map_err(|e| InvokeError::from_anyhow(e.into()))?;
-    let parsed =
+    let mut parsed =
         Configuration::backwards_compatible_toml_parse(&contents).map_err(|e| InvokeError::from_anyhow(e.into()))?;
+    if parsed.settings.project.directory == PathBuf::new() {
+        parsed.settings.project.directory = get_initial_default_dir(&app)?;
+    }
 
     // TODO: Remove this after a few releases.
     if needs_migration {
@@ -65,7 +84,7 @@ async fn read_app_settings_file(app: tauri::AppHandle) -> Result<Configuration, 
 
 #[tauri::command]
 async fn write_app_settings_file(app: tauri::AppHandle, configuration: Configuration) -> Result<(), InvokeError> {
-    let settings_path = get_app_settings_file_path(app)?;
+    let settings_path = get_app_settings_file_path(&app)?;
     let contents = toml::to_string_pretty(&configuration).map_err(|e| InvokeError::from_anyhow(e.into()))?;
     tokio::fs::write(settings_path, contents.as_bytes())
         .await

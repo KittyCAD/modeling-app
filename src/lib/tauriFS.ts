@@ -27,18 +27,6 @@ type PathWithPossibleError = {
   error: Error | null
 }
 
-export async function getInitialDefaultDir() {
-  if (!isTauri()) return ''
-  let dir
-  try {
-    dir = await documentDir()
-  } catch (e) {
-    dir = await join(await homeDir(), 'Documents') // for headless Linux (eg. Github Actions)
-  }
-
-  return await join(dir, PROJECT_FOLDER)
-}
-
 // Initializes the project directory and returns the path
 // with any Errors that occurred
 export async function initializeProjectDirectory(

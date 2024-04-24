@@ -126,7 +126,6 @@ function readLocalStorageProjectSettingsFile(): ProjectConfiguration {
 
 export async function loadAndValidateSettings(projectName?: string) {
   const settings = createSettings()
-  settings.app.projectDirectory.default = await getInitialDefaultDir()
   const inTauri = isTauri()
 
   if (!inTauri) {
