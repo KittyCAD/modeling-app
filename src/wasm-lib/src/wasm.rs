@@ -7,7 +7,7 @@ use std::{
 
 use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::{coredump::CoreDump, engine::EngineManager};
+use kcl_lib::{coredump::CoreDump, engine::EngineManager, executor::ExecutorSettings};
 use tower_lsp::{LspService, Server};
 use wasm_bindgen::prelude::*;
 
@@ -26,7 +26,7 @@ pub async fn execute_wasm(
 
     let program: kcl_lib::ast::types::Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
     let memory: kcl_lib::executor::ProgramMemory = serde_json::from_str(memory_str).map_err(|e| e.to_string())?;
-    let units = kittycad::types::UnitLength::from_str(units).map_err(|e| e.to_string())?;
+    let units = kcl_lib::settings::types::UnitLength::from_str(units).map_err(|e| e.to_string())?;
 
     let engine = kcl_lib::engine::conn_wasm::EngineConnection::new(engine_manager)
         .await
@@ -36,7 +36,10 @@ pub async fn execute_wasm(
         engine: Arc::new(Box::new(engine)),
         fs,
         stdlib: std::sync::Arc::new(kcl_lib::std::StdLib::new()),
-        units,
+        settings: ExecutorSettings {
+            units,
+            ..Default::default()
+        },
         is_mock,
     };
 
