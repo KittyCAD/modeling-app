@@ -199,52 +199,54 @@ const Overlay = ({
           transform: `translate3d(${overlay.windowCoords[0]}px, ${overlay.windowCoords[1]}px, 0)`,
         }}
       ></div>
-      <div
-        className={`px-0 pointer-events-auto absolute flex gap-1 transition-opacity duration-300 ${
-          shouldShow ? 'opacity-100' : 'opacity-0'
-        }`}
-        style={{
-          transform: `translate3d(calc(${
-            overlay.windowCoords[0] + xOffset
-          }px + ${xAlignment}), calc(${
-            overlay.windowCoords[1] - yOffset
-          }px + ${yAlignment}), 0)`,
-        }}
-        onMouseEnter={() =>
-          send({
-            type: 'Set mouse state',
-            data: {
-              type: 'isHovering',
-              on: overlay.group,
-            },
-          })
-        }
-        onMouseLeave={() =>
-          send({
-            type: 'Set mouse state',
-            data: { type: 'idle' },
-          })
-        }
-      >
-        {constraints &&
-          constraints.map((constraintInfo, i) => (
-            <ConstraintSymbol
-              constrainInfo={constraintInfo}
-              key={i}
-              verticalPosition={
-                overlay.windowCoords[1] > window.innerHeight / 2
-                  ? 'top'
-                  : 'bottom'
-              }
-            />
-          ))}
-        <SegmentMenu
-          verticalPosition={
-            overlay.windowCoords[1] > window.innerHeight / 2 ? 'top' : 'bottom'
+      {shouldShow && (
+        <div
+          className={`px-0 pointer-events-auto absolute flex gap-1`}
+          style={{
+            transform: `translate3d(calc(${
+              overlay.windowCoords[0] + xOffset
+            }px + ${xAlignment}), calc(${
+              overlay.windowCoords[1] - yOffset
+            }px + ${yAlignment}), 0)`,
+          }}
+          onMouseEnter={() =>
+            send({
+              type: 'Set mouse state',
+              data: {
+                type: 'isHovering',
+                on: overlay.group,
+              },
+            })
           }
-          pathToNode={overlay.pathToNode}
-        />
-      </div>
+          onMouseLeave={() =>
+            send({
+              type: 'Set mouse state',
+              data: { type: 'idle' },
+            })
+          }
+        >
+          {constraints &&
+            constraints.map((constraintInfo, i) => (
+              <ConstraintSymbol
+                constrainInfo={constraintInfo}
+                key={i}
+                verticalPosition={
+                  overlay.windowCoords[1] > window.innerHeight / 2
+                    ? 'top'
+                    : 'bottom'
+                }
+              />
+            ))}
+          <SegmentMenu
+            verticalPosition={
+              overlay.windowCoords[1] > window.innerHeight / 2
+                ? 'top'
+                : 'bottom'
+            }
+            pathToNode={overlay.pathToNode}
+          />
+        </div>
+      )}
     </div>
   )
 }

@@ -29,8 +29,8 @@ import { type BaseUnit } from 'lib/settings/settingsTypes'
 import { CameraControls } from './CameraControls'
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import { settings } from 'lib/settings/initialSettings'
-import { MouseState } from 'machines/modelingMachine'
-import { getAngle } from 'lib/utils'
+import { MouseState, SegmentOverlayPayload } from 'machines/modelingMachine'
+import { getAngle, throttle } from 'lib/utils'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -151,12 +151,46 @@ export class SceneInfra {
   }
 
   modelingSend: SendType = (() => {}) as any
+  throttledModelingSend: any = (() => {}) as any
   setSend(send: SendType) {
     this.modelingSend = send
+    this.throttledModelingSend = throttle(send, 100)
+  }
+  overlayTimeout = 0
+  callbacks: (() => SegmentOverlayPayload | null)[] = []
+  _overlayCallbacks(callbacks: (() => SegmentOverlayPayload | null)[]) {
+    const segmentOverlayPayload: SegmentOverlayPayload = {
+      type: 'set-many',
+      overlays: {},
+    }
+    callbacks.forEach((cb) => {
+      const overlay = cb()
+      if (overlay?.type === 'set-one') {
+        segmentOverlayPayload.overlays[overlay.pathToNodeString] = overlay.seg
+      }
+    })
+    this.modelingSend({
+      type: 'Set Segment Overlays',
+      data: segmentOverlayPayload,
+    })
+  }
+  overlayCallbacks(
+    callbacks: (() => SegmentOverlayPayload | null)[],
+    instant = false
+  ) {
+    if (instant) {
+      this._overlayCallbacks(callbacks)
+      return
+    }
+    this.callbacks = callbacks
+    if (this.overlayTimeout) clearTimeout(this.overlayTimeout)
+    this.overlayTimeout = setTimeout(() => {
+      this._overlayCallbacks(this.callbacks)
+    }, 100) as unknown as number
   }
 
   overlayThrottleMap: { [pathToNodeString: string]: number } = {}
-  private _updateOverlayDetails({
+  updateOverlayDetails({
     arrowGroup,
     group,
     isHandlesVisible,
@@ -170,7 +204,7 @@ export class SceneInfra {
     from: Coords2d
     to: Coords2d
     angle?: number
-  }) {
+  }): SegmentOverlayPayload | null {
     if (group.userData.pathToNode && arrowGroup) {
       const vector = new Vector3(0, 0, 0)
 
@@ -186,35 +220,19 @@ export class SceneInfra {
       const x = (vector.x * 0.5 + 0.5) * window.innerWidth
       const y = (-vector.y * 0.5 + 0.5) * window.innerHeight
       const pathToNodeString = JSON.stringify(group.userData.pathToNode)
-      this.modelingSend({
-        type: 'Set Segment Overlays',
-        data: {
-          type: 'set-one',
-          pathToNodeString,
-          seg: {
-            windowCoords: [x, y],
-            angle: _angle,
-            group,
-            pathToNode: group.userData.pathToNode,
-            visible: isHandlesVisible,
-          },
+      return {
+        type: 'set-one',
+        pathToNodeString,
+        seg: {
+          windowCoords: [x, y],
+          angle: _angle,
+          group,
+          pathToNode: group.userData.pathToNode,
+          visible: isHandlesVisible,
         },
-      })
+      }
     }
-  }
-
-  /**
-   adds details of where the segment overlays should be located to Xstate so that they
-   can be absolutely positioned into place. The function is debounced.
-   */
-  updateOverlayDetails(args: Parameters<typeof this._updateOverlayDetails>[0]) {
-    const throttleId = JSON.stringify(args.group.userData.pathToNode)
-    if (this.overlayThrottleMap[throttleId])
-      clearTimeout(this.overlayThrottleMap[throttleId])
-    this.overlayThrottleMap[throttleId] = setTimeout(() => {
-      this._updateOverlayDetails(args)
-      delete this.overlayThrottleMap[throttleId]
-    }, 100) as unknown as number
+    return null
   }
 
   hoveredObject: null | any = null

@@ -102,6 +102,22 @@ export interface SegmentOverlays {
   [pathToNodeString: string]: SegmentOverlay
 }
 
+export type SegmentOverlayPayload =
+  | {
+      type: 'set-one'
+      pathToNodeString: string
+      seg: SegmentOverlay
+    }
+  | {
+      type: 'delete-one'
+      pathToNodeString: string
+    }
+  | { type: 'clear' }
+  | {
+      type: 'set-many'
+      overlays: SegmentOverlays
+    }
+
 export type ModelingMachineEvent =
   | {
       type: 'Enter sketch'
@@ -169,21 +185,7 @@ export type ModelingMachineEvent =
   | { type: 'Set mouse state'; data: MouseState }
   | {
       type: 'Set Segment Overlays'
-      data:
-        | {
-            type: 'set-one'
-            pathToNodeString: string
-            seg: SegmentOverlay
-          }
-        | {
-            type: 'delete-one'
-            pathToNodeString: string
-          }
-        | { type: 'clear' }
-        | {
-            type: 'set-many'
-            overlays: SegmentOverlays
-          }
+      data: SegmentOverlayPayload
     }
   | {
       type: 'Delete segment'
