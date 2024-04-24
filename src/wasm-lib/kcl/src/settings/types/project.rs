@@ -15,7 +15,7 @@ use crate::settings::types::{
 pub struct ProjectConfiguration {
     /// The settings for the project.
     #[serde(default)]
-    pub settings: ProjectSettings,
+    pub settings: PerProjectSettings,
 }
 
 impl ProjectConfiguration {
@@ -53,7 +53,7 @@ impl ProjectConfiguration {
 #[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
-pub struct ProjectSettings {
+pub struct PerProjectSettings {
     /// The settings for the modeling app.
     #[serde(default)]
     pub app: AppSettings,
@@ -73,7 +73,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::{
-        AppSettings, AppTheme, CommandBarSettings, ModelingSettings, ProjectConfiguration, ProjectSettings,
+        AppSettings, AppTheme, CommandBarSettings, ModelingSettings, PerProjectSettings, ProjectConfiguration,
         TextEditorSettings,
     };
     use crate::settings::types::{AppearanceSettings, UnitLength};
@@ -103,7 +103,7 @@ includeSettings = false
         assert_eq!(
             parsed,
             ProjectConfiguration {
-                settings: ProjectSettings {
+                settings: PerProjectSettings {
                     app: AppSettings {
                         appearance: AppearanceSettings {
                             theme: AppTheme::Dark,
