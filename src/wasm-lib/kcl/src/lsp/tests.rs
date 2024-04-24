@@ -53,7 +53,7 @@ async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
             .modeling()
             .commands_ws(None, None, None, None, None, None, Some(false))
             .await?;
-        Some(crate::executor::ExecutorContext::new(ws, kittycad::types::UnitLength::Mm).await?)
+        Some(crate::executor::ExecutorContext::new(ws, Default::default()).await?)
     } else {
         None
     };
@@ -1654,8 +1654,8 @@ const part001 = cube([0,0], 20)
     // Make sure the memory is the same.
     assert_eq!(memory, server.memory_map.get("file:///test.kcl").await.unwrap().clone());
 
-    let units = server.executor_ctx.read().await.clone().unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx.read().await.clone().unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Update the units.
     server
@@ -1670,8 +1670,8 @@ const part001 = cube([0,0], 20)
         .unwrap();
     server.wait_on_handle().await;
 
-    let units = server.executor_ctx().await.unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::M);
+    let units = server.executor_ctx().await.unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::M);
 
     // Make sure it forced a memory update.
     assert!(memory != server.memory_map.get("file:///test.kcl").await.unwrap().clone());
@@ -2210,8 +2210,8 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_re
     let memory = server.memory_map.get("file:///test.kcl").await.unwrap().clone();
     assert_eq!(memory, ProgramMemory::default());
 
-    let units = server.executor_ctx().await.unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx().await.unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Update the units to the _same_ units.
     server
@@ -2226,8 +2226,8 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_re
         .unwrap();
     server.wait_on_handle().await;
 
-    let units = server.executor_ctx().await.unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx().await.unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();
@@ -2295,8 +2295,8 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecu
     let memory = server.memory_map.get("file:///test.kcl").await.unwrap().clone();
     assert_eq!(memory, ProgramMemory::default());
 
-    let units = server.executor_ctx().await.unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx().await.unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Update the units to the _same_ units.
     server
@@ -2311,8 +2311,8 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecu
         .unwrap();
     server.wait_on_handle().await;
 
-    let units = server.executor_ctx().await.unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx().await.unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();
@@ -2381,8 +2381,8 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
     assert_eq!(memory, ProgramMemory::default());
 
     // Update the units to the _same_ units.
-    let units = server.executor_ctx().await.unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx().await.unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
     server
         .update_units(crate::lsp::kcl::custom_notifications::UpdateUnitsParams {
             text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
@@ -2394,8 +2394,8 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
         .await
         .unwrap();
     server.wait_on_handle().await;
-    let units = server.executor_ctx().await.unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx().await.unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();
@@ -2431,8 +2431,8 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
     assert_eq!(server.can_execute().await, false);
 
     // Update the units to the _same_ units.
-    let units = server.executor_ctx().await.unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx().await.unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
     server
         .update_units(crate::lsp::kcl::custom_notifications::UpdateUnitsParams {
             text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
@@ -2444,8 +2444,8 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
         .await
         .unwrap();
     server.wait_on_handle().await;
-    let units = server.executor_ctx().await.unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx().await.unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();
@@ -2472,8 +2472,8 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
     assert_eq!(server.can_execute().await, true);
 
     // Update the units to the _same_ units.
-    let units = server.executor_ctx.read().await.clone().unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx.read().await.clone().unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
     server
         .update_units(crate::lsp::kcl::custom_notifications::UpdateUnitsParams {
             text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
@@ -2485,8 +2485,8 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
         .await
         .unwrap();
     server.wait_on_handle().await;
-    let units = server.executor_ctx.read().await.clone().unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx.read().await.clone().unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();
