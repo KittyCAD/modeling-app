@@ -68,7 +68,11 @@ finally, to run the web app only, run:
 yarn start
 ```
 
-## Developing in Chrome
+### Development environment variables
+
+The Copilot LSP plugin in the editor requires a Zoo API token to run. In production, we authenticate this with a token via cookie in the browser and device auth token in the desktop environment, but this token is inaccessible in the dev browser version because the cookie is considered "cross-site" (from `localhost` to `dev.zoo.dev`). There is an optional environment variable called `VITE_KC_DEV_TOKEN` that you can populate with a dev token in a `.env.development.local` file to not check it into Git, which will use that token instead of other methods for the LSP service.
+
+### Developing in Chrome
 
 Chrome is in the process of rolling out a new default which
 [blocks Third-Party Cookies](https://developer.chrome.com/en/docs/privacy-sandbox/third-party-cookie-phase-out/).
