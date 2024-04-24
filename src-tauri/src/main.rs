@@ -32,7 +32,11 @@ async fn read_app_settings_file(app: tauri::AppHandle) -> Result<Configuration, 
         // Try the backwards compatible path.
         // TODO: Remove this after a few releases.
         let app_config_dir = app.path().app_config_dir()?;
-        settings_path = format!("{}user.toml", app_config_dir.display()).into();
+        settings_path = format!(
+            "{}user.toml",
+            app_config_dir.display().to_string().trim_end_matches('/')
+        )
+        .into();
         needs_migration = true;
         // Check if this path exists.
         if !settings_path.exists() {
