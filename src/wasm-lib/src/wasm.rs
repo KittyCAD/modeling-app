@@ -223,7 +223,7 @@ pub async fn kcl_lsp_run(
     let file_manager = Arc::new(kcl_lib::fs::FileManager::new(fs));
 
     let executor_ctx = if let Some(engine_manager) = engine_manager {
-        let units = kittycad::types::UnitLength::from_str(units).map_err(|e| e.to_string())?;
+        let units = kcl_lib::settings::types::UnitLength::from_str(units).map_err(|e| e.to_string())?;
         let engine = kcl_lib::engine::conn_wasm::EngineConnection::new(engine_manager)
             .await
             .map_err(|e| format!("{:?}", e))?;
@@ -231,7 +231,10 @@ pub async fn kcl_lsp_run(
             engine: Arc::new(Box::new(engine)),
             fs: file_manager.clone(),
             stdlib: std::sync::Arc::new(stdlib),
-            units,
+            settings: ExecutorSettings {
+                units,
+                ..Default::default()
+            },
             is_mock: false,
         })
     } else {
