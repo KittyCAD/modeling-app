@@ -20,10 +20,16 @@ jobs:
       url: ${{ steps.set-output.outputs.url }}
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Fetches all history for all branches and tags
+
       - name: Check for changes in src/wasm-lib
-        id: check-changes
         run: |
-          git diff --quiet origin/main...HEAD -- src/wasm-lib || echo "changes detected" >> $GITHUB_ENV
+          if git diff --quiet origin/main...HEAD -- src/wasm-lib; then
+            echo "CHANGES_DETECTED=''" >> $GITHUB_ENV
+          else
+            echo "CHANGES_DETECTED='changes detected'" >> $GITHUB_ENV
+          fi
       - name: Set output
         id: set-output
         run: |
