@@ -92,6 +92,10 @@ pub struct AppSettings {
     /// The hue of the primary theme color for the app.
     #[serde(default, skip_serializing_if = "Option::is_none", alias = "themeColor")]
     pub theme_color: Option<FloatOrInt>,
+    /// Permanently dismiss the banner warning to download the desktop app.
+    /// This setting only applies to the web app. And is temporary until we have Linux support.
+    #[serde(default, alias = "dismissWebBanner")]
+    pub dismiss_web_banner: bool,
 }
 
 // TODO: When we remove backwards compatibility with the old settings file, we can remove this.
@@ -404,6 +408,7 @@ includeSettings = false
                         project_directory: None,
                         theme: None,
                         theme_color: None,
+                        dismiss_web_banner: false,
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
@@ -464,6 +469,7 @@ defaultProjectName = "projects-$nnn"
                         project_directory: None,
                         theme: None,
                         theme_color: None,
+                        dismiss_web_banner: false,
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
@@ -508,6 +514,7 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                         project_directory: None,
                         theme: None,
                         theme_color: None,
+                        dismiss_web_banner: false,
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Mm,
