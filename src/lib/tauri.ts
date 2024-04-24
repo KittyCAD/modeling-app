@@ -1,5 +1,6 @@
 import { invoke } from '@tauri-apps/api/core'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
+import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 
 // Read the contents of the app settings.
 export async function readAppSettingsFile(): Promise<Configuration> {
@@ -19,11 +20,14 @@ export async function writeAppSettingsFile(
 export async function readProjectSettingsFile(
   appSettings: Configuration,
   projectName: string
-): Promise<Configuration> {
-  const settings = await invoke<Configuration>('read_project_settings_file', {
-    app_settings: appSettings,
-    project_name: projectName,
-  })
+): Promise<ProjectConfiguration> {
+  const settings = await invoke<ProjectConfiguration>(
+    'read_project_settings_file',
+    {
+      app_settings: appSettings,
+      project_name: projectName,
+    }
+  )
 
   return settings
 }
@@ -32,7 +36,7 @@ export async function readProjectSettingsFile(
 export async function writeProjectSettingsFile(
   appSettings: Configuration,
   projectName: string,
-  settings: Configuration
+  settings: ProjectConfiguration
 ): Promise<void> {
   await invoke('write_project_settings_file', {
     app_settings: appSettings,

@@ -4,8 +4,10 @@ import { SaveSettingsPayload, SettingsLevel } from './settingsTypes'
 import { isTauri } from 'lib/isTauri'
 import {
   defaultAppSettings,
+  defaultProjectSettings,
   initPromise,
   parseAppSettings,
+  parseProjectSettings,
   tomlStringify,
 } from 'lang/wasm'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
@@ -17,6 +19,7 @@ import {
   writeAppSettingsFile,
   writeProjectSettingsFile,
 } from 'lib/tauri'
+import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 
 /**
  * Convert from a rust settings struct into the JS settings struct.
@@ -33,6 +36,7 @@ function configurationToSettingsPayload(
       onboardingStatus: configuration.settings.app.onboarding_status,
       dismissWebBanner: configuration.settings.app.dismiss_web_banner,
       projectDirectory: configuration.settings.project.directory,
+      enableSSAO: configuration.settings.modeling.enable_ssao,
     },
     modeling: {
       defaultUnit: configuration.settings.modeling.base_unit,
@@ -48,6 +52,35 @@ function configurationToSettingsPayload(
     },
     projects: {
       defaultProjectName: configuration.settings.project.default_project_name,
+    },
+    commandBar: {
+      includeSettings: configuration.settings.command_bar.include_settings,
+    },
+  }
+}
+
+function projectConfigurationToSettingsPayload(
+  configuration: ProjectConfiguration
+): Partial<SaveSettingsPayload> {
+  return {
+    app: {
+      theme: appThemeToTheme(configuration.settings.app.appearance.theme),
+      themeColor: configuration.settings.app.appearance.color.toString(),
+      onboardingStatus: configuration.settings.app.onboarding_status,
+      dismissWebBanner: configuration.settings.app.dismiss_web_banner,
+      enableSSAO: configuration.settings.modeling.enable_ssao,
+    },
+    modeling: {
+      defaultUnit: configuration.settings.modeling.base_unit,
+      mouseControls: mouseControlsToCameraSystem(
+        configuration.settings.modeling.mouse_controls
+      ),
+      highlightEdges: configuration.settings.modeling.highlight_edges,
+      showDebugPanel: configuration.settings.modeling.show_debug_panel,
+    },
+    textEditor: {
+      textWrapping: configuration.settings.text_editor.text_wrapping,
+      blinkingCursor: configuration.settings.text_editor.blinking_cursor,
     },
     commandBar: {
       includeSettings: configuration.settings.command_bar.include_settings,
@@ -77,7 +110,7 @@ function readLocalStorageAppSettingsFile(): Configuration {
   return parseAppSettings(stored)
 }
 
-function readLocalStorageProjectSettingsFile(): Configuration {
+function readLocalStorageProjectSettingsFile(): ProjectConfiguration {
   // TODO: Remove backwards compatibility after a few releases.
   let stored =
     localStorage.getItem(localStorageProjectSettingsPath()) ??
@@ -85,10 +118,10 @@ function readLocalStorageProjectSettingsFile(): Configuration {
     ''
 
   if (stored === '') {
-    return defaultAppSettings()
+    return defaultProjectSettings()
   }
 
-  return parseAppSettings(stored)
+  return parseProjectSettings(stored)
 }
 
 export async function loadAndValidateSettings(projectName?: string) {
@@ -116,7 +149,7 @@ export async function loadAndValidateSettings(projectName?: string) {
       : readLocalStorageProjectSettingsFile()
 
     const projectSettingsPayload =
-      configurationToSettingsPayload(projectSettings)
+      projectConfigurationToSettingsPayload(projectSettings)
     setSettingsAtLevel(settings, 'project', projectSettingsPayload)
   }
 

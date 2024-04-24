@@ -8,7 +8,7 @@ use std::{
 };
 
 use anyhow::Result;
-use kcl_lib::settings::types::Configuration;
+use kcl_lib::settings::types::{project::ProjectConfiguration, Configuration};
 use oauth2::TokenResponse;
 use serde::Serialize;
 use tauri::{ipc::InvokeError, Manager};
@@ -87,7 +87,7 @@ fn get_project_settings_file_path(app_settings: Configuration, project_name: &st
 async fn read_project_settings_file(
     app_settings: Configuration,
     project_name: &str,
-) -> Result<Configuration, InvokeError> {
+) -> Result<ProjectConfiguration, InvokeError> {
     let settings_path = get_project_settings_file_path(app_settings, project_name)?;
 
     // Check if this file exists.
@@ -99,8 +99,8 @@ async fn read_project_settings_file(
     let contents = tokio::fs::read_to_string(&settings_path)
         .await
         .map_err(|e| InvokeError::from_anyhow(e.into()))?;
-    let parsed =
-        Configuration::backwards_compatible_toml_parse(&contents).map_err(|e| InvokeError::from_anyhow(e.into()))?;
+    let parsed = ProjectConfiguration::backwards_compatible_toml_parse(&contents)
+        .map_err(|e| InvokeError::from_anyhow(e.into()))?;
 
     Ok(parsed)
 }
@@ -109,7 +109,7 @@ async fn read_project_settings_file(
 async fn write_project_settings_file(
     app_settings: Configuration,
     project_name: &str,
-    configuration: Configuration,
+    configuration: ProjectConfiguration,
 ) -> Result<(), InvokeError> {
     let settings_path = get_project_settings_file_path(app_settings, project_name)?;
     let contents = toml::to_string_pretty(&configuration).map_err(|e| InvokeError::from_anyhow(e.into()))?;

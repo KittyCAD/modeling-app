@@ -1,5 +1,7 @@
 //! Types for kcl project and modeling-app settings.
 
+pub mod project;
+
 use anyhow::Result;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
@@ -41,6 +43,13 @@ impl Configuration {
             if settings.settings.app.appearance.color == DEFAULT_THEME_COLOR {
                 settings.settings.app.appearance.color = theme_color.clone().into();
                 settings.settings.app.theme_color = None;
+            }
+        }
+
+        if let Some(enable_ssao) = settings.settings.app.enable_ssao {
+            if settings.settings.modeling.enable_ssao {
+                settings.settings.modeling.enable_ssao = enable_ssao;
+                settings.settings.app.enable_ssao = None;
             }
         }
 
@@ -92,6 +101,9 @@ pub struct AppSettings {
     /// The hue of the primary theme color for the app.
     #[serde(default, skip_serializing_if = "Option::is_none", alias = "themeColor")]
     pub theme_color: Option<FloatOrInt>,
+    /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
+    #[serde(default, alias = "enableSSAO", skip_serializing_if = "Option::is_none")]
+    pub enable_ssao: Option<bool>,
     /// Permanently dismiss the banner warning to download the desktop app.
     /// This setting only applies to the web app. And is temporary until we have Linux support.
     #[serde(default, alias = "dismissWebBanner")]
@@ -200,6 +212,9 @@ pub struct ModelingSettings {
     /// of the app to aid in development.
     #[serde(default, alias = "showDebugPanel")]
     pub show_debug_panel: bool,
+    /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
+    #[serde(default)]
+    pub enable_ssao: bool,
 }
 
 impl Default for ModelingSettings {
@@ -209,6 +224,7 @@ impl Default for ModelingSettings {
             mouse_controls: Default::default(),
             highlight_edges: true,
             show_debug_panel: false,
+            enable_ssao: true,
         }
     }
 }
@@ -408,12 +424,14 @@ includeSettings = false
                         theme: None,
                         theme_color: None,
                         dismiss_web_banner: false,
+                        enable_ssao: None,
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
+                        enable_ssao: false,
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: false,
@@ -469,12 +487,14 @@ defaultProjectName = "projects-$nnn"
                         theme: None,
                         theme_color: None,
                         dismiss_web_banner: false,
+                        enable_ssao: None,
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
+                        enable_ssao: false,
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: false,
@@ -514,12 +534,14 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                         theme: None,
                         theme_color: None,
                         dismiss_web_banner: false,
+                        enable_ssao: None,
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Mm,
                         mouse_controls: Default::default(),
                         highlight_edges: true,
                         show_debug_panel: false,
+                        enable_ssao: true,
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: true,
@@ -540,6 +562,7 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
             serialized,
             r#"[settings.app]
 onboarding_status = "dismissed"
+dismiss_web_banner = false
 
 [settings.app.appearance]
 theme = "system"
@@ -550,6 +573,7 @@ base_unit = "mm"
 mouse_controls = "kittycad"
 highlight_edges = true
 show_debug_panel = false
+enable_ssao = true
 
 [settings.text_editor]
 text_wrapping = true
@@ -578,6 +602,7 @@ include_settings = true
             serialized,
             r#"[settings.app]
 onboarding_status = "incomplete"
+dismiss_web_banner = false
 
 [settings.app.appearance]
 theme = "system"
@@ -588,6 +613,7 @@ base_unit = "mm"
 mouse_controls = "kittycad"
 highlight_edges = true
 show_debug_panel = false
+enable_ssao = true
 
 [settings.text_editor]
 text_wrapping = true

@@ -486,3 +486,28 @@ pub fn parse_app_settings(toml_str: &str) -> Result<JsValue, String> {
     // gloo-serialize crate instead.
     JsValue::from_serde(&settings).map_err(|e| e.to_string())
 }
+
+/// Get the default project settings.
+#[wasm_bindgen]
+pub fn default_project_settings() -> Result<JsValue, String> {
+    console_error_panic_hook::set_once();
+
+    let settings = kcl_lib::settings::types::project::ProjectConfiguration::default();
+
+    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
+    // gloo-serialize crate instead.
+    JsValue::from_serde(&settings).map_err(|e| e.to_string())
+}
+
+/// Parse the project settings.
+#[wasm_bindgen]
+pub fn parse_project_settings(toml_str: &str) -> Result<JsValue, String> {
+    console_error_panic_hook::set_once();
+
+    let settings = kcl_lib::settings::types::project::ProjectConfiguration::backwards_compatible_toml_parse(&toml_str)
+        .map_err(|e| e.to_string())?;
+
+    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
+    // gloo-serialize crate instead.
+    JsValue::from_serde(&settings).map_err(|e| e.to_string())
+}

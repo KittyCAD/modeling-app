@@ -12,6 +12,8 @@ import init, {
   toml_stringify,
   default_app_settings,
   parse_app_settings,
+  parse_project_settings,
+  default_project_settings,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
@@ -28,6 +30,7 @@ import openWindow from 'lib/openWindow'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import { TEST } from 'env'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
+import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Value } from '../wasm-lib/kcl/bindings/Value'
@@ -363,6 +366,24 @@ export function defaultAppSettings(): Configuration {
 export function parseAppSettings(toml: string): Configuration {
   try {
     const settings: Configuration = parse_app_settings(toml)
+    return settings
+  } catch (e: any) {
+    throw new Error(`Error parsing app settings: ${e}`)
+  }
+}
+
+export function defaultProjectSettings(): ProjectConfiguration {
+  try {
+    const settings: ProjectConfiguration = default_project_settings()
+    return settings
+  } catch (e: any) {
+    throw new Error(`Error getting default app settings: ${e}`)
+  }
+}
+
+export function parseProjectSettings(toml: string): ProjectConfiguration {
+  try {
+    const settings: ProjectConfiguration = parse_project_settings(toml)
     return settings
   } catch (e: any) {
     throw new Error(`Error parsing app settings: ${e}`)
