@@ -1080,7 +1080,7 @@ export class SceneEntities {
       group.position.set(segment.from[0], segment.from[1], 0)
       group.scale.set(factor, factor, factor)
     }
-    return null
+    return () => null
   }
 
   updateTangentialArcToSegment({
