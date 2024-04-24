@@ -887,7 +887,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
 
   // enter sketch again
   await u.doAndWaitForCmd(
-    () => page.getByRole('button', { name: 'Edit Sketch' }).click(),
+    () => page.getByRole('button', { name: 'Sketch' }).click(),
     'default_camera_get_settings'
   )
   await page.waitForTimeout(150)
@@ -1282,29 +1282,21 @@ fn yohey = (pos) => {
 
   await page.getByText(selectionsSnippets.extrudeAndEditBlocked).click()
   await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
-  await expect(
-    page.getByRole('button', { name: 'Edit Sketch' })
-  ).not.toBeVisible()
+  await expect(page.getByRole('button', { name: 'Sketch' })).not.toBeVisible()
 
   await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
   await expect(page.getByRole('button', { name: 'Extrude' })).not.toBeDisabled()
-  await expect(
-    page.getByRole('button', { name: 'Edit Sketch' })
-  ).not.toBeDisabled()
+  await expect(page.getByRole('button', { name: 'Sketch' })).not.toBeDisabled()
 
   await page.getByText(selectionsSnippets.editOnly).click()
   await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
-  await expect(
-    page.getByRole('button', { name: 'Edit Sketch' })
-  ).not.toBeDisabled()
+  await expect(page.getByRole('button', { name: 'Sketch' })).not.toBeDisabled()
 
   await page
     .getByText(selectionsSnippets.extrudeAndEditBlockedInFunction)
     .click()
   await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
-  await expect(
-    page.getByRole('button', { name: 'Edit Sketch' })
-  ).not.toBeVisible()
+  await expect(page.getByRole('button', { name: 'Sketch' })).not.toBeVisible()
 
   // selecting an editable sketch but clicking "start sktech" should start a new sketch and not edit the existing one
   await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
@@ -1403,8 +1395,8 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
   const dragPX = 30
 
   await page.getByText('startProfileAt([4.61, -14.01], %)').click()
-  await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
-  await page.getByRole('button', { name: 'Edit Sketch' }).click()
+  await expect(page.getByRole('button', { name: 'Sketch' })).toBeVisible()
+  await page.getByRole('button', { name: 'Sketch' }).click()
   await page.waitForTimeout(400)
   let prevContent = await page.locator('.cm-content').innerText()
 
@@ -1610,9 +1602,9 @@ test('Sketch on face', async ({ page }) => {
   await u.closeDebugPanel()
 
   await page.getByText('startProfileAt([-12.83, 6.7], %)').click()
-  await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Sketch' })).toBeVisible()
   await u.doAndWaitForCmd(
-    () => page.getByRole('button', { name: 'Edit Sketch' }).click(),
+    () => page.getByRole('button', { name: 'Sketch' }).click(),
     'default_camera_get_settings',
     true
   )
@@ -1698,7 +1690,7 @@ test('Can code mod a line length', async ({ page }) => {
   await page.waitForTimeout(100)
 
   // enter sketch again
-  await page.getByRole('button', { name: 'Edit Sketch' }).click()
+  await page.getByRole('button', { name: 'Sketch' }).click()
   await page.waitForTimeout(350) // wait for animation
 
   const startXPx = 500
