@@ -65,13 +65,17 @@ export const Toolbar = () => {
         }
         style={{ scrollbarWidth: 'thin' }}
       >
-        {state.nextEvents.includes('Enter sketch') && (
+        {state.nextEvents.includes('Sketch') && (
           <li className="contents">
             <ActionButton
               className={buttonClassName}
               Element="button"
               onClick={() =>
-                send({ type: 'Enter sketch', data: { forceNewSketch: true } })
+                send(
+                  pathId
+                    ? { type: 'Sketch' }
+                    : { type: 'Sketch', data: { forceNewSketch: true } }
+                )
               }
               icon={{
                 icon: 'sketch',
@@ -80,24 +84,7 @@ export const Toolbar = () => {
               }}
               disabled={disableAllButtons}
             >
-              <span data-testid="start-sketch">Start Sketch</span>
-            </ActionButton>
-          </li>
-        )}
-        {state.nextEvents.includes('Enter sketch') && pathId && (
-          <li className="contents">
-            <ActionButton
-              className={buttonClassName}
-              Element="button"
-              onClick={() => send({ type: 'Enter sketch' })}
-              icon={{
-                icon: 'sketch',
-                iconClassName,
-                bgClassName,
-              }}
-              disabled={disableAllButtons}
-            >
-              Edit Sketch
+              <span data-testid="start-sketch">Sketch</span>
             </ActionButton>
           </li>
         )}

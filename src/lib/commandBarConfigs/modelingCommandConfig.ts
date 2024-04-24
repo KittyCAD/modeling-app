@@ -16,7 +16,7 @@ export const EXTRUSION_RESULTS = [
 ] as const
 
 export type ModelingCommandSchema = {
-  'Enter sketch': {}
+  Sketch: {}
   Export: {
     type: OutputTypeKey
     storage?: StorageUnion
@@ -32,7 +32,7 @@ export const modelingMachineConfig: CommandSetConfig<
   typeof modelingMachine,
   ModelingCommandSchema
 > = {
-  'Enter sketch': {
+  Sketch: {
     description: 'Enter sketch mode.',
     icon: 'sketch',
   },
