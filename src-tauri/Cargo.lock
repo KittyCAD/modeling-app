@@ -107,7 +107,6 @@ dependencies = [
  "kcl-lib",
  "kittycad",
  "oauth2",
- "serde",
  "serde_json",
  "tauri",
  "tauri-build",

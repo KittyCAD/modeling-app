@@ -8,9 +8,12 @@ use std::{
 };
 
 use anyhow::Result;
-use kcl_lib::settings::types::{file::Project, project::ProjectConfiguration, Configuration};
+use kcl_lib::settings::types::{
+    file::{FileEntry, Project},
+    project::ProjectConfiguration,
+    Configuration,
+};
 use oauth2::TokenResponse;
-use serde::Serialize;
 use tauri::{ipc::InvokeError, Manager};
 use tauri_plugin_shell::ShellExt;
 
@@ -172,50 +175,20 @@ async fn list_projects(configuration: Configuration) -> Result<Vec<Project>, Inv
         .map_err(|e| InvokeError::from_anyhow(e.into()))
 }
 
-/// From https://github.com/tauri-apps/tauri/blob/1.x/core/tauri/src/api/dir.rs#L51
-/// Removed from tauri v2
-#[derive(Debug, Serialize)]
-pub struct DiskEntry {
-    /// The path to the entry.
-    pub path: PathBuf,
-    /// The name of the entry (file name with extension or directory name).
-    pub name: Option<String>,
-    /// The children of this entry if it's a directory.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub children: Option<Vec<DiskEntry>>,
-}
-
-/// From https://github.com/tauri-apps/tauri/blob/1.x/core/tauri/src/api/dir.rs#L51
-/// Removed from tauri v2
-fn is_dir<P: AsRef<Path>>(path: P) -> Result<bool> {
-    std::fs::metadata(path).map(|md| md.is_dir()).map_err(Into::into)
-}
-
-/// From https://github.com/tauri-apps/tauri/blob/1.x/core/tauri/src/api/dir.rs#L51
-/// Removed from tauri v2
+/// Get information about a project.
 #[tauri::command]
-fn read_dir_recursive(path: &str) -> Result<Vec<DiskEntry>, InvokeError> {
-    let mut files_and_dirs: Vec<DiskEntry> = vec![];
-    // let path = path.as_ref();
-    for entry in std::fs::read_dir(path).map_err(|e| InvokeError::from_anyhow(e.into()))? {
-        let path = entry.map_err(|e| InvokeError::from_anyhow(e.into()))?.path();
+async fn get_project_info(configuration: Configuration, project_name: &str) -> Result<Project, InvokeError> {
+    configuration
+        .get_project_info(project_name)
+        .await
+        .map_err(|e| InvokeError::from_anyhow(e.into()))
+}
 
-        if let Ok(flag) = is_dir(&path) {
-            files_and_dirs.push(DiskEntry {
-                path: path.clone(),
-                children: if flag {
-                    Some(read_dir_recursive(path.to_str().expect("No path"))?)
-                } else {
-                    None
-                },
-                name: path
-                    .file_name()
-                    .map(|name| name.to_string_lossy())
-                    .map(|name| name.to_string()),
-            });
-        }
-    }
-    Ok(files_and_dirs)
+#[tauri::command]
+async fn read_dir_recursive(path: &str) -> Result<FileEntry, InvokeError> {
+    kcl_lib::settings::utils::walk_dir(&Path::new(path).to_path_buf())
+        .await
+        .map_err(|e| InvokeError::from_anyhow(e.into()))
 }
 
 /// This command instantiates a new window with auth.
@@ -358,6 +331,7 @@ fn main() {
             initialize_project_directory,
             create_new_project_directory,
             list_projects,
+            get_project_info,
             get_user,
             login,
             read_dir_recursive,

@@ -2,12 +2,10 @@ import { appConfigDir } from '@tauri-apps/api/path'
 import { isTauri } from './isTauri'
 import type { FileEntry } from 'lib/types'
 import {
-  FILE_EXT,
   INDEX_IDENTIFIER,
   MAX_PADDING,
   ONBOARDING_PROJECT_NAME,
   PROJECT_ENTRYPOINT,
-  RELEVANT_FILE_TYPES,
 } from 'lib/constants'
 import { bracket } from './exampleKcl'
 import { paths } from './paths'
@@ -15,7 +13,6 @@ import {
   createNewProjectDirectory,
   listProjects,
   readAppSettingsFile,
-  readDirRecursive,
 } from './tauri'
 
 export function isProjectDirectory(fileOrDir: Partial<FileEntry>) {
@@ -30,95 +27,6 @@ export const isHidden = (fileOrDir: FileEntry) =>
 
 export const isDir = (fileOrDir: FileEntry) =>
   'children' in fileOrDir && fileOrDir.children !== undefined
-
-export function deepFileFilter(
-  entries: FileEntry[],
-  filterFn: (f: FileEntry) => boolean
-): FileEntry[] {
-  const filteredEntries: FileEntry[] = []
-  for (const fileOrDir of entries) {
-    if ('children' in fileOrDir && fileOrDir.children !== undefined) {
-      const filteredChildren = deepFileFilter(fileOrDir.children, filterFn)
-      if (filterFn(fileOrDir)) {
-        filteredEntries.push({
-          ...fileOrDir,
-          children: filteredChildren,
-        })
-      }
-    } else if (filterFn(fileOrDir)) {
-      filteredEntries.push(fileOrDir)
-    }
-  }
-  return filteredEntries
-}
-
-export function deepFileFilterFlat(
-  entries: FileEntry[],
-  filterFn: (f: FileEntry) => boolean
-): FileEntry[] {
-  const filteredEntries: FileEntry[] = []
-  for (const fileOrDir of entries) {
-    if ('children' in fileOrDir && fileOrDir.children !== undefined) {
-      const filteredChildren = deepFileFilterFlat(fileOrDir.children, filterFn)
-      if (filterFn(fileOrDir)) {
-        filteredEntries.push({
-          ...fileOrDir,
-          children: filteredChildren,
-        })
-      }
-      filteredEntries.push(...filteredChildren)
-    } else if (filterFn(fileOrDir)) {
-      filteredEntries.push(fileOrDir)
-    }
-  }
-  return filteredEntries
-}
-
-// Read the contents of a project directory
-// and return all relevant files and sub-directories recursively
-export async function readProject(projectDir: string) {
-  const readFiles = await readDirRecursive(projectDir)
-
-  return deepFileFilter(readFiles, isRelevantFileOrDir)
-}
-
-// Given a read project, return the number of .kcl files,
-// both in the root directory and in sub-directories,
-// and folders that contain at least one .kcl file
-export function getPartsCount(project: FileEntry[]) {
-  const flatProject = deepFileFilterFlat(project, isRelevantFileOrDir)
-
-  const kclFileCount = flatProject.filter((f) =>
-    f.name?.endsWith(FILE_EXT)
-  ).length
-  const kclDirCount = flatProject.filter((f) => f.children !== undefined).length
-
-  return {
-    kclFileCount,
-    kclDirCount,
-  }
-}
-
-// Determines if a file or directory is relevant to the project
-// i.e. not a hidden file or directory, and is a relevant file type
-// or contains at least one relevant file (even if it's nested)
-// or is a completely empty directory
-export function isRelevantFileOrDir(fileOrDir: FileEntry) {
-  let isRelevantDir = false
-  if ('children' in fileOrDir && fileOrDir.children !== undefined) {
-    isRelevantDir =
-      !isHidden(fileOrDir) &&
-      (fileOrDir.children.some(isRelevantFileOrDir) ||
-        fileOrDir.children.length === 0)
-  }
-  const isRelevantFile =
-    !isHidden(fileOrDir) &&
-    RELEVANT_FILE_TYPES.some((ext) => fileOrDir.name?.endsWith(ext))
-
-  return (
-    (isDir(fileOrDir) && isRelevantDir) || (!isDir(fileOrDir) && isRelevantFile)
-  )
-}
 
 // Deeply sort the files and directories in a project like VS Code does:
 // The main.kcl file is always first, then files, then directories

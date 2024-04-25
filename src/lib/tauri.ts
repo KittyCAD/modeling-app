@@ -52,6 +52,19 @@ export async function listProjects(
   return await invoke<Project[]>('list_projects', { configuration })
 }
 
+export async function getProjectInfo(
+  projectName: string,
+  configuration?: Configuration
+): Promise<Project> {
+  if (!configuration) {
+    configuration = await readAppSettingsFile()
+  }
+  return await invoke<Project>('get_project_info', {
+    configuration,
+    projectName,
+  })
+}
+
 export async function login(host: string): Promise<string> {
   return await invoke('login', { host })
 }

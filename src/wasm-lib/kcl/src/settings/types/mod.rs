@@ -106,6 +106,8 @@ impl Configuration {
                 children: None,
             },
             metadata: Some(tokio::fs::metadata(&project_dir).await?.into()),
+            kcl_file_count: 1,
+            directory_count: 0,
         })
     }
 
@@ -123,15 +125,41 @@ impl Configuration {
                 continue;
             }
 
-            let project = crate::settings::types::file::Project {
-                file: crate::settings::utils::walk_dir(e.path()).await?,
-                metadata: Some(tokio::fs::metadata(&e.path()).await?.into()),
-            };
-
-            projects.push(project);
+            projects.push(self.get_project_info(&e.file_name().to_string_lossy()).await?);
         }
 
         Ok(projects)
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    /// Get information about a project.
+    pub async fn get_project_info(&self, project_name: &str) -> Result<crate::settings::types::file::Project> {
+        let main_dir = &self.ensure_project_directory_exists().await?;
+
+        if project_name.is_empty() {
+            return Err(anyhow::anyhow!("Project name cannot be empty."));
+        }
+
+        // Check the directory.
+        let project_dir = main_dir.join(project_name);
+        if !project_dir.exists() {
+            return Err(anyhow::anyhow!("Project directory does not exist."));
+        }
+
+        let mut project = crate::settings::types::file::Project {
+            file: crate::settings::utils::walk_dir(&project_dir).await?,
+            metadata: Some(tokio::fs::metadata(&project_dir).await?.into()),
+            kcl_file_count: 0,
+            directory_count: 0,
+        };
+
+        // Populate the number of KCL files in the project.
+        project.populate_kcl_file_count()?;
+
+        //Populate the number of directories in the project.
+        project.populate_directory_count()?;
+
+        Ok(project)
     }
 }
 

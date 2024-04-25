@@ -22,6 +22,8 @@ const projectWellFormed = {
     modified: now.toISOString(),
     size: 32,
   },
+  kcl_file_count: 1,
+  directory_count: 0,
 } satisfies Project
 
 describe('ProjectSidebarMenu tests', () => {

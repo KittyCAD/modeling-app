@@ -8,7 +8,6 @@ import {
   faTrashAlt,
   faX,
 } from '@fortawesome/free-solid-svg-icons'
-import { getPartsCount, readProject } from '../lib/tauriFS'
 import { FILE_EXT } from 'lib/constants'
 import { Dialog } from '@headlessui/react'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -31,7 +30,7 @@ function ProjectCard({
   useHotkeys('esc', () => setIsEditing(false))
   const [isEditing, setIsEditing] = useState(false)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
-  const [numberOfParts, setNumberOfParts] = useState(1)
+  const [numberOfFiles, setNumberOfFiles] = useState(1)
   const [numberOfFolders, setNumberOfFolders] = useState(0)
 
   let inputRef = useRef<HTMLInputElement>(null)
@@ -51,15 +50,12 @@ function ProjectCard({
   }
 
   useEffect(() => {
-    async function getNumberOfParts() {
-      const { kclFileCount, kclDirCount } = getPartsCount(
-        await readProject(project.path)
-      )
-      setNumberOfParts(kclFileCount)
-      setNumberOfFolders(kclDirCount)
+    async function getNumberOfFiles() {
+      setNumberOfFiles(project.kcl_file_count)
+      setNumberOfFolders(project.directory_count)
     }
-    void getNumberOfParts()
-  }, [project.path])
+    void getNumberOfFiles()
+  }, [project.kcl_file_count, project.directory_count])
 
   useEffect(() => {
     if (inputRef.current) {
@@ -130,7 +126,7 @@ function ProjectCard({
               {project.name?.replace(FILE_EXT, '')}
             </Link>
             <span className="text-chalkboard-60 text-xs">
-              {numberOfParts} file{numberOfParts === 1 ? '' : 's'}{' '}
+              {numberOfFiles} file{numberOfFiles === 1 ? '' : 's'}{' '}
               {numberOfFolders > 0 &&
                 `/ ${numberOfFolders} folder${
                   numberOfFolders === 1 ? '' : 's'

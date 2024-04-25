@@ -1,5 +1,7 @@
 //! Types for interacting with files in projects.
 
+use anyhow::Result;
+
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -13,6 +15,44 @@ pub struct Project {
     pub file: FileEntry,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub metadata: Option<FileMetadata>,
+    #[serde(default)]
+    #[ts(type = "number")]
+    pub kcl_file_count: u64,
+    #[serde(default)]
+    #[ts(type = "number")]
+    pub directory_count: u64,
+}
+
+impl Project {
+    /// Populate the number of KCL files in the project.
+    pub fn populate_kcl_file_count(&mut self) -> Result<()> {
+        let mut count = 0;
+        if let Some(children) = &self.file.children {
+            for entry in children.iter() {
+                if entry.name.ends_with(".kcl") {
+                    count += 1;
+                } else {
+                    count += entry.kcl_file_count();
+                }
+            }
+        }
+
+        self.kcl_file_count = count;
+        Ok(())
+    }
+
+    /// Populate the number of directories in the project.
+    pub fn populate_directory_count(&mut self) -> Result<()> {
+        let mut count = 0;
+        if let Some(children) = &self.file.children {
+            for entry in children.iter() {
+                count += entry.directory_count();
+            }
+        }
+
+        self.directory_count = count;
+        Ok(())
+    }
 }
 
 /// Information about a file or directory.
@@ -24,6 +64,36 @@ pub struct FileEntry {
     pub name: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub children: Option<Vec<FileEntry>>,
+}
+
+impl FileEntry {
+    /// Recursively get the number of kcl files in the file entry.
+    pub fn kcl_file_count(&self) -> u64 {
+        let mut count = 0;
+        if let Some(children) = &self.children {
+            for entry in children.iter() {
+                if entry.name.ends_with(".kcl") {
+                    count += 1;
+                } else {
+                    count += entry.kcl_file_count();
+                }
+            }
+        }
+        count
+    }
+
+    /// Recursively get the number of directories in the file entry.
+    pub fn directory_count(&self) -> u64 {
+        let mut count = 0;
+        if let Some(children) = &self.children {
+            for entry in children.iter() {
+                if entry.children.is_some() {
+                    count += 1;
+                }
+            }
+        }
+        count
+    }
 }
 
 /// Metadata about a file or directory.

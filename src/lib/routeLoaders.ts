@@ -15,9 +15,9 @@ import { readTextFile } from '@tauri-apps/plugin-fs'
 import { codeManager, kclManager } from 'lib/singletons'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import {
+  getProjectInfo,
   initializeProjectDirectory,
   listProjects,
-  readDirRecursive,
 } from './tauri'
 import { createSettings } from './settings/initialSettings'
 
@@ -90,7 +90,6 @@ export const fileLoader: LoaderFunction = async ({
     // TODO: PROJECT_ENTRYPOINT is hardcoded
     // until we support setting a project's entrypoint file
     const code = await readTextFile(currentFilePath)
-    const children = await readDirRecursive(projectPath)
 
     // Update both the state and the editor's code.
     // We explicitly do not write to the file here since we are loading from
@@ -105,11 +104,15 @@ export const fileLoader: LoaderFunction = async ({
 
     const projectData: IndexLoaderData = {
       code,
-      project: {
-        name: projectName,
-        path: projectPath,
-        children,
-      },
+      project: isTauri()
+        ? await getProjectInfo(projectName)
+        : {
+            name: projectName,
+            path: projectPath,
+            children: [],
+            kcl_file_count: 0,
+            directory_count: 0,
+          },
       file: {
         name: currentFileName,
         path: currentFilePath,
