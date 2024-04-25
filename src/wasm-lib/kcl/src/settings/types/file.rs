@@ -1,7 +1,5 @@
 //! Types for interacting with files in projects.
 
-use std::path::Path;
-
 use anyhow::Result;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
@@ -34,8 +32,9 @@ pub struct Project {
 }
 
 impl Project {
+    #[cfg(not(target_arch = "wasm32"))]
     /// Populate a project from a path.
-    pub async fn from_path<P: AsRef<Path>>(path: P) -> Result<Self> {
+    pub async fn from_path<P: AsRef<std::path::Path>>(path: P) -> Result<Self> {
         // Make sure the path exists.
         if !path.as_ref().exists() {
             return Err(anyhow::anyhow!("Path does not exist"));

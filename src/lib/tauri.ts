@@ -6,6 +6,12 @@ import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 import { Project } from 'wasm-lib/kcl/bindings/Project'
 import { FileEntry } from 'wasm-lib/kcl/bindings/FileEntry'
+import { ProjectState } from 'wasm-lib/kcl/bindings/ProjectState'
+
+// Get the app state from tauri.
+export async function getState(): Promise<ProjectState | undefined> {
+  return await invoke<string>('get__state')
+}
 
 // Get the initial default dir for holding all projects.
 export async function getInitialDefaultDir(): Promise<string> {
