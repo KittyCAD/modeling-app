@@ -49,11 +49,7 @@ async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
     let zoo_client = new_zoo_client();
 
     let executor_ctx = if execute {
-        let ws = zoo_client
-            .modeling()
-            .commands_ws(None, None, None, None, None, None, Some(false))
-            .await?;
-        Some(crate::executor::ExecutorContext::new(ws, kittycad::types::UnitLength::Mm).await?)
+        Some(crate::executor::ExecutorContext::new(&zoo_client, Default::default()).await?)
     } else {
         None
     };
@@ -788,6 +784,56 @@ st"#
     // Check the completions.
     if let tower_lsp::lsp_types::CompletionResponse::Array(completions) = completions {
         assert!(completions.len() > 10);
+    } else {
+        panic!("Expected array of completions");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_completions_const_raw() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"con"#.to_string(),
+            },
+        })
+        .await;
+
+    // Send completion request.
+    let completions = server
+        .completion(tower_lsp::lsp_types::CompletionParams {
+            text_document_position: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 0, character: 2 },
+            },
+            context: None,
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    // Check the completions.
+    if let tower_lsp::lsp_types::CompletionResponse::Array(completions) = completions {
+        assert!(completions.len() > 10);
+        // Find the one with label "const".
+        let const_completion = completions
+            .iter()
+            .find(|completion| completion.label == "const")
+            .unwrap();
+        assert_eq!(
+            const_completion.kind,
+            Some(tower_lsp::lsp_types::CompletionItemKind::KEYWORD)
+        );
     } else {
         panic!("Expected array of completions");
     }
@@ -1604,8 +1650,8 @@ const part001 = cube([0,0], 20)
     // Make sure the memory is the same.
     assert_eq!(memory, server.memory_map.get("file:///test.kcl").await.unwrap().clone());
 
-    let units = server.executor_ctx.read().await.clone().unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx.read().await.clone().unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Update the units.
     server
@@ -1613,15 +1659,15 @@ const part001 = cube([0,0], 20)
             text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
                 uri: "file:///test.kcl".try_into().unwrap(),
             },
-            units: crate::lsp::kcl::custom_notifications::UnitLength::M,
+            units: crate::settings::types::UnitLength::M,
             text: same_text.clone(),
         })
         .await
         .unwrap();
     server.wait_on_handle().await;
 
-    let units = server.executor_ctx().await.unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::M);
+    let units = server.executor_ctx().await.unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::M);
 
     // Make sure it forced a memory update.
     assert!(memory != server.memory_map.get("file:///test.kcl").await.unwrap().clone());
@@ -2160,8 +2206,8 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_re
     let memory = server.memory_map.get("file:///test.kcl").await.unwrap().clone();
     assert_eq!(memory, ProgramMemory::default());
 
-    let units = server.executor_ctx().await.unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx().await.unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Update the units to the _same_ units.
     server
@@ -2169,15 +2215,15 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_re
             text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
                 uri: "file:///test.kcl".try_into().unwrap(),
             },
-            units: crate::lsp::kcl::custom_notifications::UnitLength::Mm,
+            units: crate::settings::types::UnitLength::Mm,
             text: code.to_string(),
         })
         .await
         .unwrap();
     server.wait_on_handle().await;
 
-    let units = server.executor_ctx().await.unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx().await.unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();
@@ -2245,8 +2291,8 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecu
     let memory = server.memory_map.get("file:///test.kcl").await.unwrap().clone();
     assert_eq!(memory, ProgramMemory::default());
 
-    let units = server.executor_ctx().await.unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx().await.unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Update the units to the _same_ units.
     server
@@ -2254,15 +2300,15 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecu
             text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
                 uri: "file:///test.kcl".try_into().unwrap(),
             },
-            units: crate::lsp::kcl::custom_notifications::UnitLength::Mm,
+            units: crate::settings::types::UnitLength::Mm,
             text: code.to_string(),
         })
         .await
         .unwrap();
     server.wait_on_handle().await;
 
-    let units = server.executor_ctx().await.unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx().await.unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();
@@ -2331,21 +2377,21 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
     assert_eq!(memory, ProgramMemory::default());
 
     // Update the units to the _same_ units.
-    let units = server.executor_ctx().await.unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx().await.unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
     server
         .update_units(crate::lsp::kcl::custom_notifications::UpdateUnitsParams {
             text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
                 uri: "file:///test.kcl".try_into().unwrap(),
             },
-            units: crate::lsp::kcl::custom_notifications::UnitLength::Mm,
+            units: crate::settings::types::UnitLength::Mm,
             text: code.to_string(),
         })
         .await
         .unwrap();
     server.wait_on_handle().await;
-    let units = server.executor_ctx().await.unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx().await.unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();
@@ -2381,21 +2427,21 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
     assert_eq!(server.can_execute().await, false);
 
     // Update the units to the _same_ units.
-    let units = server.executor_ctx().await.unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx().await.unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
     server
         .update_units(crate::lsp::kcl::custom_notifications::UpdateUnitsParams {
             text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
                 uri: "file:///test.kcl".try_into().unwrap(),
             },
-            units: crate::lsp::kcl::custom_notifications::UnitLength::Mm,
+            units: crate::settings::types::UnitLength::Mm,
             text: code.to_string(),
         })
         .await
         .unwrap();
     server.wait_on_handle().await;
-    let units = server.executor_ctx().await.unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx().await.unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();
@@ -2422,21 +2468,21 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
     assert_eq!(server.can_execute().await, true);
 
     // Update the units to the _same_ units.
-    let units = server.executor_ctx.read().await.clone().unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx.read().await.clone().unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
     server
         .update_units(crate::lsp::kcl::custom_notifications::UpdateUnitsParams {
             text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
                 uri: "file:///test.kcl".try_into().unwrap(),
             },
-            units: crate::lsp::kcl::custom_notifications::UnitLength::Mm,
+            units: crate::settings::types::UnitLength::Mm,
             text: code.to_string(),
         })
         .await
         .unwrap();
     server.wait_on_handle().await;
-    let units = server.executor_ctx.read().await.clone().unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx.read().await.clone().unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();

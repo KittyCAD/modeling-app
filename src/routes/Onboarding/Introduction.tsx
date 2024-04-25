@@ -4,9 +4,7 @@ import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { bracket } from 'lib/exampleKcl'
 import {
-  createNewProject,
   getNextProjectIndex,
-  getProjectsInDir,
   interpolateProjectNameWithIndex,
 } from 'lib/tauriFS'
 import { isTauri } from 'lib/isTauri'
@@ -20,33 +18,21 @@ import {
   ONBOARDING_PROJECT_NAME,
   PROJECT_ENTRYPOINT,
 } from 'lib/constants'
+import { createNewProjectDirectory, listProjects } from 'lib/tauri'
 
 function OnboardingWithNewFile() {
   const navigate = useNavigate()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.INDEX)
-  const {
-    settings: {
-      context: {
-        app: { projectDirectory },
-      },
-    },
-  } = useSettingsAuthContext()
 
   async function createAndOpenNewProject() {
-    const projects = await getProjectsInDir(projectDirectory.current)
-    const nextIndex = await getNextProjectIndex(
-      ONBOARDING_PROJECT_NAME,
-      projects
-    )
+    const projects = await listProjects()
+    const nextIndex = getNextProjectIndex(ONBOARDING_PROJECT_NAME, projects)
     const name = interpolateProjectNameWithIndex(
       ONBOARDING_PROJECT_NAME,
       nextIndex
     )
-    const newFile = await createNewProject(
-      await join(projectDirectory.current, name),
-      bracket
-    )
+    const newFile = await createNewProjectDirectory(name, bracket)
     navigate(
       `${paths.FILE}/${encodeURIComponent(
         await join(newFile.path, PROJECT_ENTRYPOINT)
