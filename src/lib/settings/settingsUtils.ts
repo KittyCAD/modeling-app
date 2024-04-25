@@ -101,7 +101,7 @@ function localStorageProjectSettingsPath() {
   return '/' + BROWSER_PROJECT_NAME + '/project.toml'
 }
 
-function readLocalStorageAppSettingsFile(): Configuration {
+export function readLocalStorageAppSettingsFile(): Configuration {
   // TODO: Remove backwards compatibility after a few releases.
   let stored =
     localStorage.getItem(localStorageAppSettingsPath()) ??

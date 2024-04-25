@@ -775,15 +775,11 @@ fn generate_code_block_test(
             if let Ok(addr) = std::env::var("LOCAL_ENGINE_ADDR") {
                 client.set_base_url(addr);
             }
-            let ws = client
-                .modeling()
-                .commands_ws(None, None, None, None, None,None, Some(false))
-                .await.unwrap();
 
             let tokens = crate::token::lexer(#code_block).unwrap();
             let parser = crate::parser::Parser::new(tokens);
             let program = parser.ast().unwrap();
-            let ctx = crate::executor::ExecutorContext::new(ws, Default::default()).await.unwrap();
+            let ctx = crate::executor::ExecutorContext::new(&client, Default::default()).await.unwrap();
 
             ctx.run(program, None).await.unwrap();
 
