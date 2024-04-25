@@ -150,7 +150,7 @@ impl Configuration {
         }
 
         let mut project = crate::settings::types::file::Project {
-            file: crate::settings::utils::walk_dir(&project_dir).await?,
+            file: crate::settings::utils::walk_dir(project_dir).await?,
             metadata: Some(tokio::fs::metadata(&project_dir).await?.into()),
             kcl_file_count: 0,
             directory_count: 0,
