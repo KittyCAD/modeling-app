@@ -130,13 +130,25 @@ jobs:
       run: yarn
     - name: Install Playwright Browsers
       run: yarn playwright install --with-deps
+    - name: download wasm
+      if: needs.check-rust-changes.outputs.rust-changed == 'false'
+      uses: actions/download-artifact@v2
+      with:
+        name: wasm-bundle
+        path: src/wasm-lib/pkg
+    - name: copy wasm blob
+      if: needs.check-rust-changes.outputs.rust-changed == 'false'
+      run: cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
     - name: Setup Rust
+      if: needs.check-rust-changes.outputs.rust-changed == 'true'
       uses: dtolnay/rust-toolchain@stable
     - name: Cache wasm
+      if: needs.check-rust-changes.outputs.rust-changed == 'true'
       uses: Swatinem/rust-cache@v2
       with:
         workspaces: './src/wasm-lib'
     - name: build wasm
+      if: needs.check-rust-changes.outputs.rust-changed == 'true'
       run: yarn build:wasm
     - name: build web
       run: yarn build:local
