@@ -138,7 +138,8 @@ function ProjectMenuPopover({
                       className="m-0 text-xs text-chalkboard-80 dark:text-chalkboard-40"
                       data-testid="createdAt"
                     >
-                      Created {project.metadata.created}
+                      Created{' '}
+                      {new Date(project.metadata.created).toLocaleDateString()}
                     </p>
                   )}
                 </div>
