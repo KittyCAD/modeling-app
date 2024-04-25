@@ -18,18 +18,22 @@
         <array>
             <dict>
                 <key>UTTypeIdentifier</key>
-                <string>dev.zoo.app-kcl</string>
+                <string>dev.zoo.kcl</string>
                 <key>UTTypeConformsTo</key>
                 <array>
-                    <string>public.plain-text</string>
+                    <string>public.source-code</string>
                 </array>
                 <key>UTTypeDescription</key>
-                <string>KCL Code</string>
+                <string>KCL (KittyCAD Language) document</string>
                 <key>UTTypeTagSpecification</key>
                 <dict>
                     <key>public.filename-extension</key>
                     <array>
                         <string>kcl</string>
+                    </array>
+                    <key>public.mime-type</key>
+                    <array>
+                        <string>text/vnd.zoo-kcl</string>
                     </array>
                 </dict>
             </dict>
