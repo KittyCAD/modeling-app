@@ -1,9 +1,20 @@
 //! Types for interacting with files in projects.
 
+use std::path::Path;
+
 use anyhow::Result;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+
+/// State management for the application.
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct ProjectState {
+    pub project: Project,
+    pub current_file: Option<String>,
+}
 
 /// Information about project.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
@@ -23,6 +34,26 @@ pub struct Project {
 }
 
 impl Project {
+    /// Populate a project from a path.
+    pub async fn from_path<P: AsRef<Path>>(path: P) -> Result<Self> {
+        // Make sure the path exists.
+        if !path.as_ref().exists() {
+            return Err(anyhow::anyhow!("Path does not exist"));
+        }
+
+        let file = crate::settings::utils::walk_dir(&path.as_ref()).await?;
+        let metadata = std::fs::metadata(path).ok().map(|m| m.into());
+        let mut project = Self {
+            file,
+            metadata,
+            kcl_file_count: 0,
+            directory_count: 0,
+        };
+        project.populate_kcl_file_count()?;
+        project.populate_directory_count()?;
+        Ok(project)
+    }
+
     /// Populate the number of KCL files in the project.
     pub fn populate_kcl_file_count(&mut self) -> Result<()> {
         let mut count = 0;

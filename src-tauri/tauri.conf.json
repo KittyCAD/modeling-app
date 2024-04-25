@@ -50,6 +50,22 @@
   },
   "identifier": "dev.zoo.modeling-app",
   "plugins": {
+    "cli": {
+      "description": "Zoo Modeling App CLI",
+      "args": [
+        {
+          "short": "v",
+          "name": "verbose",
+          "description": "Verbosity level"
+        },
+        {
+      "name": "source",
+      "index": 1,
+      "takesValue": true
+    }
+      ],
+      "subcommands": {}
+    },
     "shell": {
       "open": true
     }
