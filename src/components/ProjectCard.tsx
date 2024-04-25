@@ -130,7 +130,7 @@ function ProjectCard({
               {project.name?.replace(FILE_EXT, '')}
             </Link>
             <span className="text-chalkboard-60 text-xs">
-              {numberOfParts} part{numberOfParts === 1 ? '' : 's'}{' '}
+              {numberOfParts} file{numberOfParts === 1 ? '' : 's'}{' '}
               {numberOfFolders > 0 &&
                 `/ ${numberOfFolders} folder${
                   numberOfFolders === 1 ? '' : 's'
