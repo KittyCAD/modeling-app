@@ -31,30 +31,31 @@ function configurationToSettingsPayload(
 ): Partial<SaveSettingsPayload> {
   return {
     app: {
-      theme: appThemeToTheme(configuration.settings.app.appearance.theme),
-      themeColor: configuration.settings.app.appearance.color.toString(),
-      onboardingStatus: configuration.settings.app.onboarding_status,
-      dismissWebBanner: configuration.settings.app.dismiss_web_banner,
-      projectDirectory: configuration.settings.project.directory,
-      enableSSAO: configuration.settings.modeling.enable_ssao,
+      theme: appThemeToTheme(configuration?.settings?.app?.appearance?.theme),
+      themeColor: configuration?.settings?.app?.appearance?.color.toString(),
+      onboardingStatus: configuration?.settings?.app?.onboarding_status,
+      dismissWebBanner: configuration?.settings?.app?.dismiss_web_banner,
+      projectDirectory: configuration?.settings?.project?.directory,
+      enableSSAO: configuration?.settings?.modeling?.enable_ssao,
     },
     modeling: {
-      defaultUnit: configuration.settings.modeling.base_unit,
+      defaultUnit: configuration?.settings?.modeling?.base_unit,
       mouseControls: mouseControlsToCameraSystem(
-        configuration.settings.modeling.mouse_controls
+        configuration?.settings?.modeling?.mouse_controls
       ),
-      highlightEdges: configuration.settings.modeling.highlight_edges,
-      showDebugPanel: configuration.settings.modeling.show_debug_panel,
+      highlightEdges: configuration?.settings?.modeling?.highlight_edges,
+      showDebugPanel: configuration?.settings?.modeling?.show_debug_panel,
     },
     textEditor: {
-      textWrapping: configuration.settings.text_editor.text_wrapping,
-      blinkingCursor: configuration.settings.text_editor.blinking_cursor,
+      textWrapping: configuration?.settings?.text_editor?.text_wrapping,
+      blinkingCursor: configuration?.settings?.text_editor?.blinking_cursor,
     },
     projects: {
-      defaultProjectName: configuration.settings.project.default_project_name,
+      defaultProjectName:
+        configuration?.settings?.project?.default_project_name,
     },
     commandBar: {
-      includeSettings: configuration.settings.command_bar.include_settings,
+      includeSettings: configuration?.settings?.command_bar?.include_settings,
     },
   }
 }
@@ -64,26 +65,26 @@ function projectConfigurationToSettingsPayload(
 ): Partial<SaveSettingsPayload> {
   return {
     app: {
-      theme: appThemeToTheme(configuration.settings.app.appearance.theme),
-      themeColor: configuration.settings.app.appearance.color.toString(),
-      onboardingStatus: configuration.settings.app.onboarding_status,
-      dismissWebBanner: configuration.settings.app.dismiss_web_banner,
-      enableSSAO: configuration.settings.modeling.enable_ssao,
+      theme: appThemeToTheme(configuration?.settings?.app?.appearance?.theme),
+      themeColor: configuration?.settings?.app?.appearance?.color.toString(),
+      onboardingStatus: configuration?.settings?.app?.onboarding_status,
+      dismissWebBanner: configuration?.settings?.app?.dismiss_web_banner,
+      enableSSAO: configuration?.settings?.modeling?.enable_ssao,
     },
     modeling: {
-      defaultUnit: configuration.settings.modeling.base_unit,
+      defaultUnit: configuration?.settings?.modeling?.base_unit,
       mouseControls: mouseControlsToCameraSystem(
-        configuration.settings.modeling.mouse_controls
+        configuration?.settings?.modeling?.mouse_controls
       ),
-      highlightEdges: configuration.settings.modeling.highlight_edges,
-      showDebugPanel: configuration.settings.modeling.show_debug_panel,
+      highlightEdges: configuration?.settings?.modeling?.highlight_edges,
+      showDebugPanel: configuration?.settings?.modeling?.show_debug_panel,
     },
     textEditor: {
-      textWrapping: configuration.settings.text_editor.text_wrapping,
-      blinkingCursor: configuration.settings.text_editor.blinking_cursor,
+      textWrapping: configuration?.settings?.text_editor?.text_wrapping,
+      blinkingCursor: configuration?.settings?.text_editor?.blinking_cursor,
     },
     commandBar: {
-      includeSettings: configuration.settings.command_bar.include_settings,
+      includeSettings: configuration?.settings?.command_bar?.include_settings,
     },
   }
 }

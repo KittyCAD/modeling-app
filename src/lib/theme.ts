@@ -6,13 +6,15 @@ export enum Themes {
   System = 'system',
 }
 
-export function appThemeToTheme(theme: AppTheme): Themes {
+export function appThemeToTheme(theme: AppTheme | undefined): Themes {
   switch (theme) {
     case 'light':
       return Themes.Light
     case 'dark':
       return Themes.Dark
     case 'system':
+      return Themes.System
+    default:
       return Themes.System
   }
 }
