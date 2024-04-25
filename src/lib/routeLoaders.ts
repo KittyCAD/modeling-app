@@ -87,9 +87,6 @@ export const fileLoader: LoaderFunction = async ({
     // TODO: PROJECT_ENTRYPOINT is hardcoded
     // until we support setting a project's entrypoint file
     const code = await readTextFile(currentFilePath)
-    const entrypointMetadata = await stat(
-      await join(projectPath, PROJECT_ENTRYPOINT)
-    )
     const children = await readDirRecursive(projectPath)
 
     // Update both the state and the editor's code.
