@@ -43,6 +43,7 @@ jobs:
             libwebkit2gtk-4.1-dev \
             at-spi2-core \
             xvfb
+          yarn install
           yarn build:wasm
           yarn build:local
 
