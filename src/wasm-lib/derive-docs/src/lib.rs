@@ -783,8 +783,7 @@ fn generate_code_block_test(
             let tokens = crate::token::lexer(#code_block).unwrap();
             let parser = crate::parser::Parser::new(tokens);
             let program = parser.ast().unwrap();
-            let units = kittycad::types::UnitLength::Mm;
-            let ctx = crate::executor::ExecutorContext::new(ws, units.clone()).await.unwrap();
+            let ctx = crate::executor::ExecutorContext::new(ws, Default::default()).await.unwrap();
 
             ctx.run(program, None).await.unwrap();
 

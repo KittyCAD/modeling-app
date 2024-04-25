@@ -73,7 +73,7 @@ describe('ZMA (Tauri, Linux)', () => {
 
     // Now should be signed in
     const newFileButton = await $('[data-testid="home-new-file"]')
-    expect(await newFileButton.getText()).toEqual('New file')
+    expect(await newFileButton.getText()).toEqual('New project')
   })
 
   it('opens the settings page, checks filesystem settings, and closes the settings page', async () => {

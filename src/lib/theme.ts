@@ -1,7 +1,24 @@
+import { AppTheme } from 'wasm-lib/kcl/bindings/AppTheme'
+
 export enum Themes {
   Light = 'light',
   Dark = 'dark',
   System = 'system',
+}
+
+export function appThemeToTheme(
+  theme: AppTheme | undefined
+): Themes | undefined {
+  switch (theme) {
+    case 'light':
+      return Themes.Light
+    case 'dark':
+      return Themes.Dark
+    case 'system':
+      return Themes.System
+    default:
+      return undefined
+  }
 }
 
 // Get the theme from the system settings manually
