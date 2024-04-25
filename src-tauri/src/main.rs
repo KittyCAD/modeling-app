@@ -13,7 +13,7 @@ use anyhow::Result;
 use kcl_lib::settings::types::{
     file::{FileEntry, Project, ProjectState},
     project::ProjectConfiguration,
-    Configuration,
+    Configuration, DEFAULT_PROJECT_KCL_FILE,
 };
 use oauth2::TokenResponse;
 use tauri::{ipc::InvokeError, Manager};
@@ -420,9 +420,14 @@ fn main() -> Result<()> {
                             println!("Project loaded from path: {}", source_path.display());
                         }
 
+                        // Create the defaut file in the project.
+                        // Write the initial project file.
+                        let project_file = source_path.join(DEFAULT_PROJECT_KCL_FILE);
+                        tokio::fs::write(&project_file, vec![]).await?;
+
                         return Ok(ProjectState {
                             project,
-                            current_file: None,
+                            current_file: Some(project_file.display().to_string()),
                         });
                     }
 

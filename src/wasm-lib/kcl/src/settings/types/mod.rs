@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 use validator::{Validate, ValidateRange};
 
 const DEFAULT_THEME_COLOR: f64 = 264.5;
-const DEFAULT_PROJECT_KCL_FILE: &str = "main.kcl";
+pub const DEFAULT_PROJECT_KCL_FILE: &str = "main.kcl";
 const DEFAULT_PROJECT_NAME_TEMPLATE: &str = "project-$nnn";
 
 /// High level configuration.
