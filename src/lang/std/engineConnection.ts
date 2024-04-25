@@ -4,7 +4,7 @@ import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
 import { uuidv4 } from 'lib/utils'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
-import { Themes, getThemeColorForEngine } from 'lib/theme'
+import { Themes, getThemeColorForEngine, getOppositeTheme } from 'lib/theme'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 
 let lastMessage = ''
@@ -365,7 +365,12 @@ class EngineConnection {
         // Request a candidate to use
         this.send({
           type: 'trickle_ice',
-          candidate: event.candidate.toJSON(),
+          candidate: {
+            candidate: event.candidate.candidate,
+            sdpMid: event.candidate.sdpMid || undefined,
+            sdpMLineIndex: event.candidate.sdpMLineIndex || undefined,
+            usernameFragment: event.candidate.usernameFragment || undefined,
+          },
         })
       })
 
@@ -694,7 +699,10 @@ failed cmd type was ${artifactThatFailed?.commandType}`
               return this.pc?.setLocalDescription(offer).then(() => {
                 this.send({
                   type: 'sdp_offer',
-                  offer,
+                  offer: {
+                    sdp: offer.sdp || '',
+                    type: offer.type,
+                  },
                 })
                 this.state = {
                   type: EngineConnectionStateType.Connecting,
@@ -797,14 +805,18 @@ failed cmd type was ${artifactThatFailed?.commandType}`
 
     this.onConnectionStarted(this)
   }
-  unreliableSend(message: object | string) {
+  // Do not change this back to an object or any, we should only be sending the
+  // WebSocketRequest type!
+  unreliableSend(message: Models['WebSocketRequest_type']) {
     // TODO(paultag): Add in logic to determine the connection state and
     // take actions if needed?
     this.unreliableDataChannel?.send(
       typeof message === 'string' ? message : JSON.stringify(message)
     )
   }
-  send(message: object | string) {
+  // Do not change this back to an object or any, we should only be sending the
+  // WebSocketRequest type!
+  send(message: Models['WebSocketRequest_type']) {
     // TODO(paultag): Add in logic to determine the connection state and
     // take actions if needed?
     this.websocket?.send(
@@ -926,7 +938,11 @@ export class EngineCommandManager {
     executeCode,
     token,
     makeDefaultPlanes,
-    theme = Themes.Dark,
+    settings = {
+      theme: Themes.Dark,
+      highlightEdges: true,
+      enableSSAO: true,
+    },
   }: {
     setMediaStream: (stream: MediaStream) => void
     setIsStreamReady: (isStreamReady: boolean) => void
@@ -935,7 +951,11 @@ export class EngineCommandManager {
     executeCode: () => void
     token?: string
     makeDefaultPlanes: () => Promise<DefaultPlanes>
-    theme?: Themes
+    settings?: {
+      theme: Themes
+      highlightEdges: boolean
+      enableSSAO: boolean
+    }
   }) {
     this.makeDefaultPlanes = makeDefaultPlanes
     if (width === 0 || height === 0) {
@@ -951,7 +971,8 @@ export class EngineCommandManager {
       return
     }
 
-    const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}`
+    const additionalSettings = settings.enableSSAO ? '&post_effect=ssao' : ''
+    const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}${additionalSettings}`
     this.engineConnection = new EngineConnection({
       engineCommandManager: this,
       url,
@@ -963,15 +984,33 @@ export class EngineCommandManager {
       },
       onEngineConnectionOpen: () => {
         // Set the stream background color
-        // This takes RGBA values from 0-1
-        // So we convert from the conventional 0-255 found in Figma
-
         this.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
             type: 'set_background_color',
-            color: getThemeColorForEngine(theme),
+            color: getThemeColorForEngine(settings.theme),
+          },
+        })
+
+        // Sets the default line colors
+        const opposingTheme = getOppositeTheme(settings.theme)
+        this.sendSceneCommand({
+          cmd_id: uuidv4(),
+          type: 'modeling_cmd_req',
+          cmd: {
+            type: 'set_default_system_properties',
+            color: getThemeColorForEngine(opposingTheme),
+          },
+        })
+
+        // Set the edge lines visibility
+        this.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'edge_lines_visible' as any, // TODO: update kittycad.ts to use the correct type
+            hidden: !settings.highlightEdges,
           },
         })
 
@@ -1147,7 +1186,10 @@ export class EngineCommandManager {
       type: 'receive-reliable',
       data: message,
       id,
-      cmd_type: command?.commandType || this.lastArtifactMap[id]?.commandType,
+      cmd_type:
+        command?.commandType ||
+        this.lastArtifactMap[id]?.commandType ||
+        sceneCommand?.commandType,
     })
     Object.values(this.subscriptions[modelingResponse.type] || {}).forEach(
       (callback) => callback(modelingResponse)
@@ -1299,6 +1341,17 @@ export class EngineCommandManager {
     this.lastArtifactMap = this.artifactMap
     this.artifactMap = {}
     await this.initPlanes()
+    await this.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'make_axes_gizmo',
+        clobber: false,
+        // If true, axes gizmo will be placed in the corner of the screen.
+        // If false, it will be placed at the origin of the scene.
+        gizmo_mode: true,
+      },
+    })
   }
   subscribeTo<T extends ModelTypes>({
     event,
@@ -1470,7 +1523,7 @@ export class EngineCommandManager {
   }: {
     id: string
     range: SourceRange
-    command: EngineCommand | string
+    command: EngineCommand
     ast: Program
     idToRangeMap?: { [key: string]: SourceRange }
   }): Promise<any> {
@@ -1633,11 +1686,13 @@ export class EngineCommandManager {
     const idToRangeMap: { [key: string]: SourceRange } =
       JSON.parse(idToRangeStr)
 
+    const command: EngineCommand = JSON.parse(commandStr)
+
     // We only care about the modeling command response.
     return this.sendModelingCommand({
       id,
       range,
-      command: commandStr,
+      command,
       ast: this.getAst(),
       idToRangeMap,
     }).then(({ raw }: { raw: WebSocketResponse | undefined | null }) => {

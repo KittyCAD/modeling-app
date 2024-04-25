@@ -7,17 +7,23 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, ExtrudeSurface, ExtrudeTransform, GeoMeta, MemoryItem, Path, SketchGroup, SketchSurface},
+    executor::{
+        ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, ExtrudeTransform, GeoMeta, MemoryItem, Path, SketchGroup,
+        SketchGroupSet, SketchSurface,
+    },
     std::Args,
 };
 
 /// Extrudes by a given amount.
 pub async fn extrude(args: Args) -> Result<MemoryItem, KclError> {
-    let (length, sketch_group) = args.get_number_sketch_group()?;
+    let (length, sketch_group_set) = args.get_number_sketch_group_set()?;
 
-    let result = inner_extrude(length, sketch_group, args).await?;
+    let result = inner_extrude(length, sketch_group_set, args).await?;
 
-    Ok(MemoryItem::ExtrudeGroup(result))
+    match result {
+        ExtrudeGroupSet::ExtrudeGroup(extrude_group) => Ok(MemoryItem::ExtrudeGroup(extrude_group)),
+        ExtrudeGroupSet::ExtrudeGroups(extrude_groups) => Ok(MemoryItem::ExtrudeGroups { value: extrude_groups }),
+    }
 }
 
 /// Extrudes by a given amount.
@@ -34,21 +40,33 @@ pub async fn extrude(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "extrude"
 }]
-async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) -> Result<Box<ExtrudeGroup>, KclError> {
+async fn inner_extrude(length: f64, sketch_group_set: SketchGroupSet, args: Args) -> Result<ExtrudeGroupSet, KclError> {
     let id = uuid::Uuid::new_v4();
 
-    // Extrude the element.
-    args.send_modeling_cmd(
-        id,
-        kittycad::types::ModelingCmd::Extrude {
-            target: sketch_group.id,
-            distance: length,
-            cap: true,
-        },
-    )
-    .await?;
+    // Extrude the element(s).
+    let sketch_groups = match sketch_group_set {
+        SketchGroupSet::SketchGroup(sketch_group) => vec![sketch_group],
+        SketchGroupSet::SketchGroups(sketch_groups) => sketch_groups,
+    };
+    let mut extrude_groups = Vec::new();
+    for sketch_group in sketch_groups.iter() {
+        args.send_modeling_cmd(
+            id,
+            kittycad::types::ModelingCmd::Extrude {
+                target: sketch_group.id,
+                distance: length,
+                cap: true,
+            },
+        )
+        .await?;
+        extrude_groups.push(do_post_extrude(sketch_group.clone(), length, id, args.clone()).await?);
+    }
 
-    do_post_extrude(sketch_group, length, id, args).await
+    if extrude_groups.len() == 1 {
+        Ok(ExtrudeGroupSet::ExtrudeGroup(extrude_groups.pop().unwrap()))
+    } else {
+        Ok(ExtrudeGroupSet::ExtrudeGroups(extrude_groups))
+    }
 }
 
 pub(crate) async fn do_post_extrude(

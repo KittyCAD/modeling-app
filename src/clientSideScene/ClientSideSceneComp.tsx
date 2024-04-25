@@ -3,7 +3,6 @@ import { useModelingContext } from 'hooks/useModelingContext'
 
 import { cameraMouseDragGuards } from 'lib/cameraControls'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import { useStore } from 'useStore'
 import { ARROWHEAD, DEBUG_SHOW_BOTH_SCENES } from './sceneInfra'
 import { ReactCameraProperties } from './CameraControls'
 import { throttle } from 'lib/utils'
@@ -47,10 +46,6 @@ export const ClientSideScene = ({
   const canvasRef = useRef<HTMLDivElement>(null)
   const { state, send, context } = useModelingContext()
   const { hideClient, hideServer } = useShouldHideScene()
-  const { setHighlightRange } = useStore((s) => ({
-    setHighlightRange: s.setHighlightRange,
-    highlightRange: s.highlightRange,
-  }))
 
   // Listen for changes to the camera controls setting
   // and update the client-side scene's controls accordingly.
@@ -69,7 +64,6 @@ export const ClientSideScene = ({
     const canvas = canvasRef.current
     canvas.appendChild(sceneInfra.renderer.domElement)
     sceneInfra.animate()
-    sceneInfra.setHighlightCallback(setHighlightRange)
     canvas.addEventListener('mousemove', sceneInfra.onMouseMove, false)
     canvas.addEventListener('mousedown', sceneInfra.onMouseDown, false)
     canvas.addEventListener('mouseup', sceneInfra.onMouseUp, false)

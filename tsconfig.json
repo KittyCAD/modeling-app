@@ -4,13 +4,15 @@
     "paths": {
       "/*": ["src/*"]
     },
-    "types": ["vite/client", "@types/wicg-file-system-access", "node", "@wdio/globals/types", "mocha"],
-    "target": "esnext",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
+    "types": [
+      "vite/client",
+      "@types/wicg-file-system-access",
+      "node",
+      "@wdio/globals/types",
+      "mocha"
     ],
+    "target": "esnext",
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -25,10 +27,6 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": [
-    "src",
-    "e2e",
-    "./*.ts"
-  ],
+  "include": ["src", "e2e", "./*.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

@@ -21,7 +21,7 @@ import { LanguageServerClient } from 'editor/plugins/lsp'
 import { Marked } from '@ts-stack/markdown'
 import { posToOffset } from 'editor/plugins/lsp/util'
 import { Program, ProgramMemory } from 'lang/wasm'
-import { codeManager, kclManager } from 'lib/singletons'
+import { codeManager, editorManager, kclManager } from 'lib/singletons'
 import type { UnitLength } from 'wasm-lib/kcl/bindings/UnitLength'
 import { UpdateUnitsResponse } from 'wasm-lib/kcl/bindings/UpdateUnitsResponse'
 import { UpdateCanExecuteResponse } from 'wasm-lib/kcl/bindings/UpdateCanExecuteResponse'
@@ -39,6 +39,8 @@ const CompletionItemKindMap = Object.fromEntries(
 ) as Record<CompletionItemKind, string>
 
 const changesDelay = 600
+let debounceTimer: ReturnType<typeof setTimeout> | null = null
+const updateDelay = 100
 
 export class LanguageServerPlugin implements PluginValue {
   public client: LanguageServerClient
@@ -47,6 +49,7 @@ export class LanguageServerPlugin implements PluginValue {
   public workspaceFolders: LSP.WorkspaceFolder[]
   private documentVersion: number
   private foldingRanges: LSP.FoldingRange[] | null = null
+  private viewUpdate: ViewUpdate | null = null
   private _defferer = deferExecution((code: string) => {
     try {
       // Update the state (not the editor) with the new code.
@@ -57,6 +60,10 @@ export class LanguageServerPlugin implements PluginValue {
         },
         contentChanges: [{ text: code }],
       })
+
+      if (this.viewUpdate) {
+        editorManager.handleOnViewUpdate(this.viewUpdate)
+      }
     } catch (e) {
       console.error(e)
     }
@@ -80,14 +87,27 @@ export class LanguageServerPlugin implements PluginValue {
     })
   }
 
-  update({ docChanged }: ViewUpdate) {
-    if (!docChanged) return
+  update(viewUpdate: ViewUpdate) {
+    this.viewUpdate = viewUpdate
+    if (!viewUpdate.docChanged) {
+      // debounce the view update.
+      // otherwise it is laggy for typing.
+      if (debounceTimer) {
+        clearTimeout(debounceTimer)
+      }
+
+      debounceTimer = setTimeout(() => {
+        editorManager.handleOnViewUpdate(viewUpdate)
+      }, updateDelay)
+      return
+    }
 
     const newCode = this.view.state.doc.toString()
 
     codeManager.code = newCode
     codeManager.writeToFile()
     kclManager.executeCode()
+
     this.sendChange({
       documentText: newCode,
     })
@@ -357,15 +377,9 @@ export class LanguageServerPlugin implements PluginValue {
     try {
       switch (notification.method) {
         case 'textDocument/publishDiagnostics':
-          const params = notification.params as PublishDiagnosticsParams
-          this.processDiagnostics(params)
-          // Update the kcl errors pane.
-          /*if (!kclManager.isExecuting) {
-            kclManager.kclErrors = lspDiagnosticsToKclErrors(
-              this.view.state.doc,
-              params.diagnostics
-            )
-          }*/
+          //const params = notification.params as PublishDiagnosticsParams
+          // this is sometimes slower than our actual typing.
+          //this.processDiagnostics(params)
           break
         case 'window/logMessage':
           console.log(
@@ -385,17 +399,6 @@ export class LanguageServerPlugin implements PluginValue {
           // The server has updated the AST, we should update elsewhere.
           let updatedAst = notification.params as Program
           console.log('[lsp]: Updated AST', updatedAst)
-          // Update the ast when we are not already executing.
-          /* if (!kclManager.isExecuting) {
-            kclManager.ast = updatedAst
-            // Execute the ast.
-            console.log('[lsp]: executing ast')
-            await kclManager.executeAst(updatedAst)
-            console.log('[lsp]: executed ast', kclManager.kclErrors)
-            let diagnostics = kclErrorsToDiagnostics(kclManager.kclErrors)
-            this.view.dispatch(setDiagnostics(this.view.state, diagnostics))
-            console.log('[lsp]: updated diagnostics')
-          }*/
 
           // Update the folding ranges, since the AST has changed.
           // This is a hack since codemirror does not support async foldService.

@@ -1,6 +1,6 @@
 import { executeAst } from 'useStore'
 import { Selections } from 'lib/selections'
-import { KCLError } from './errors'
+import { KCLError, kclErrorsToDiagnostics } from './errors'
 import { uuidv4 } from 'lib/utils'
 import { EngineCommandManager } from './std/engineConnection'
 
@@ -17,7 +17,7 @@ import {
   ExtrudeGroup,
 } from 'lang/wasm'
 import { getNodeFromPath } from './queryAst'
-import { codeManager } from 'lib/singletons'
+import { codeManager, editorManager } from 'lib/singletons'
 
 export class KclManager {
   private _ast: Program = {
@@ -90,6 +90,8 @@ export class KclManager {
   }
   set kclErrors(kclErrors) {
     this._kclErrors = kclErrors
+    let diagnostics = kclErrorsToDiagnostics(kclErrors)
+    editorManager.setDiagnostics(diagnostics)
     this._kclErrorsCallBack(kclErrors)
   }
 
@@ -259,7 +261,11 @@ export class KclManager {
   executeCode(force?: boolean) {
     // If we want to force it we don't want to defer it.
     if (!force) return this._defferer(codeManager.code)
-    return this.executeAst()
+
+    const ast = this.safeParse(codeManager.code)
+    if (!ast) return
+    this.ast = { ...ast }
+    return this.executeAst(ast)
   }
   format() {
     const originalCode = codeManager.code
@@ -341,6 +347,16 @@ export class KclManager {
     void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, true)
     void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, true)
   }
+  enterEditMode() {
+    enterEditMode(this.programMemory, this.engineCommandManager)
+  }
+  exitEditMode() {
+    this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: { type: 'edit_mode_exit' },
+    })
+  }
 }
 
 function enterEditMode(
@@ -354,6 +370,7 @@ function enterEditMode(
     engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_batch_req',
       batch_id: uuidv4(),
+      responses: false,
       requests: [
         {
           cmd_id: uuidv4(),

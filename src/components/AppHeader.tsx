@@ -4,7 +4,6 @@ import { type IndexLoaderData } from 'lib/types'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import styles from './AppHeader.module.css'
-import { NetworkHealthIndicator } from './NetworkHealthIndicator'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { ActionButton } from './ActionButton'
 import usePlatform from 'hooks/usePlatform'
@@ -61,12 +60,7 @@ export const AppHeader = ({
       </div>
       <div className="flex items-center gap-1 py-1 ml-auto">
         {/* If there are children, show them, otherwise show User menu */}
-        {children || (
-          <>
-            <NetworkHealthIndicator />
-            <UserSidebarMenu user={user} />
-          </>
-        )}
+        {children || <UserSidebarMenu user={user} />}
       </div>
     </header>
   )

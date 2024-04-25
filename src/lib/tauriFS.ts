@@ -19,6 +19,7 @@ import {
   FILE_EXT,
   INDEX_IDENTIFIER,
   MAX_PADDING,
+  ONBOARDING_PROJECT_NAME,
   PROJECT_ENTRYPOINT,
   PROJECT_FOLDER,
   RELEVANT_FILE_TYPES,
@@ -26,6 +27,8 @@ import {
 } from 'lib/constants'
 import { SaveSettingsPayload, SettingsLevel } from './settings/settingsTypes'
 import { initPromise, tomlParse } from 'lang/wasm'
+import { bracket } from './exampleKcl'
+import { paths } from './paths'
 
 type PathWithPossibleError = {
   path: string | null
@@ -414,7 +417,7 @@ export async function getSettingsFilePaths(
     user: user + 'user' + SETTINGS_FILE_EXT,
     project:
       project !== undefined
-        ? project + (isTauri() ? sep : '/') + 'project' + SETTINGS_FILE_EXT
+        ? project + (isTauri() ? sep() : '/') + 'project' + SETTINGS_FILE_EXT
         : undefined,
   }
 }
@@ -427,4 +430,21 @@ export async function getSettingsFolderPaths(projectPath?: string) {
     user,
     project,
   }
+}
+
+export async function createAndOpenNewProject(
+  projectDirectory: string,
+  navigate: (path: string) => void
+) {
+  const projects = await getProjectsInDir(projectDirectory)
+  const nextIndex = await getNextProjectIndex(ONBOARDING_PROJECT_NAME, projects)
+  const name = interpolateProjectNameWithIndex(
+    ONBOARDING_PROJECT_NAME,
+    nextIndex
+  )
+  const newFile = await createNewProject(
+    await join(projectDirectory, name),
+    bracket
+  )
+  navigate(`${paths.FILE}/${encodeURIComponent(newFile.path)}`)
 }

@@ -2,7 +2,9 @@ import { processMemory } from './MemoryPane'
 import { enginelessExecutor } from '../../../lib/testHelpers'
 import { initPromise, parse } from '../../../lang/wasm'
 
-beforeAll(() => initPromise)
+beforeAll(async () => {
+  await initPromise
+})
 
 describe('processMemory', () => {
   it('should grab the values and remove and geo data', async () => {

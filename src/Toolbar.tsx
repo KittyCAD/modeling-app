@@ -164,6 +164,35 @@ export const Toolbar = () => {
                 Tangential Arc
               </ActionButton>
             </li>
+            <li className="contents" key="rectangle-button">
+              <ActionButton
+                className={buttonClassName}
+                Element="button"
+                onClick={() =>
+                  state.matches('Sketch.Rectangle tool')
+                    ? send('CancelSketch')
+                    : send('Equip rectangle tool')
+                }
+                aria-pressed={state.matches('Sketch.Rectangle tool')}
+                icon={{
+                  icon: 'rectangle',
+                  iconClassName,
+                  bgClassName,
+                }}
+                disabled={
+                  (!state.can('Equip rectangle tool') &&
+                    !state.matches('Sketch.Rectangle tool')) ||
+                  disableAllButtons
+                }
+                title={
+                  state.can('Equip rectangle tool')
+                    ? 'Rectangle'
+                    : 'Can only be used when a sketch is empty currently'
+                }
+              >
+                Rectangle
+              </ActionButton>
+            </li>
           </>
         )}
         {state.matches('Sketch.SketchIdle') &&

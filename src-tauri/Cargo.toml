@@ -12,22 +12,22 @@ rust-version = "1.70"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "2.0.0-beta.12", features = [] }
+tauri-build = { version = "2.0.0-beta.13", features = [] }
 
 [dependencies]
 anyhow = "1"
-kittycad = "0.2.67"
+kittycad = "0.3.0"
 oauth2 = "4.4.2"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 tauri = { version = "2.0.0-beta.15", features = [ "devtools", "unstable"] }
-tauri-plugin-dialog = { version = "2.0.0-beta.2" }
-tauri-plugin-fs = { version = "2.0.0-beta.2" }
-tauri-plugin-http = { version = "2.0.0-beta.2" }
+tauri-plugin-dialog = { version = "2.0.0-beta.6" }
+tauri-plugin-fs = { version = "2.0.0-beta.6" }
+tauri-plugin-http = { version = "2.0.0-beta.6" }
 tauri-plugin-os = { version = "2.0.0-beta.2" }
 tauri-plugin-process = { version = "2.0.0-beta.2" }
 tauri-plugin-shell = { version = "2.0.0-beta.2" }
-tauri-plugin-updater = { version = "2.0.0-beta.2" }
+tauri-plugin-updater = { version = "2.0.0-beta.4" }
 tokio = { version = "1.37.0", features = ["time"] }
 toml = "0.8.2"
 

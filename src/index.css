@@ -96,12 +96,17 @@ button:disabled {
   @apply bg-chalkboard-90 text-chalkboard-40 border-chalkboard-70;
 }
 
-a:not(.action-button) {
+a {
   @apply text-primary underline hover:hue-rotate-15;
 }
 
-.dark a:not(.action-button) {
+.dark a {
   @apply hover:brightness-110 hover:hue-rotate-0;
+}
+
+a.action-button,
+.dark a.action-button {
+  @apply text-inherit no-underline hover:hue-rotate-0;
 }
 
 input {

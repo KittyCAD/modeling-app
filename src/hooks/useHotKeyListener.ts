@@ -1,4 +1,4 @@
-import { useStore } from '../useStore'
+import { editorManager } from 'lib/singletons'
 import { useEffect } from 'react'
 
 // Kurt's note: codeMirror styling overrides were needed to make this work
@@ -6,20 +6,17 @@ import { useEffect } from 'react'
 // search for code-mirror-override in the repo to find the relevant styles
 
 export function useHotKeyListener() {
-  const { setIsShiftDown } = useStore((s) => ({
-    setIsShiftDown: s.setIsShiftDown,
-  }))
   const keyName = 'Shift'
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) =>
-      event.key === keyName && setIsShiftDown(true)
+      event.key === keyName && editorManager.setIsShiftDown(true)
     const handleKeyUp = (event: KeyboardEvent) =>
-      event.key === keyName && setIsShiftDown(false)
+      event.key === keyName && editorManager.setIsShiftDown(false)
     window.addEventListener('keydown', handleKeyDown)
     window.addEventListener('keyup', handleKeyUp)
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('keyup', handleKeyUp)
     }
-  }, [setIsShiftDown])
+  })
 }

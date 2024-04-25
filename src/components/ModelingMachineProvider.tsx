@@ -17,6 +17,7 @@ import {
   sceneInfra,
   engineCommandManager,
   codeManager,
+  editorManager,
 } from 'lib/singletons'
 import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
 import {
@@ -42,17 +43,20 @@ import {
   getSketchQuaternion,
 } from 'clientSideScene/sceneEntities'
 import { sketchOnExtrudedFace, startSketchOnDefault } from 'lang/modifyAst'
-import { Program, coreDump } from 'lang/wasm'
-import { getNodePathFromSourceRange, isSingleCursorInPipe } from 'lang/queryAst'
+import { Program, VariableDeclaration, coreDump } from 'lang/wasm'
+import {
+  getNodeFromPath,
+  getNodePathFromSourceRange,
+  isSingleCursorInPipe,
+} from 'lang/queryAst'
 import { TEST } from 'env'
 import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
 import { EditorSelection } from '@uiw/react-codemirror'
-import { Vector3 } from 'three'
-import { quaternionFromUpNForward } from 'clientSideScene/helpers'
 import { CoreDumpManager } from 'lib/coredump'
 import { useHotkeys } from 'react-hotkeys-hook'
+import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -73,14 +77,18 @@ export const ModelingMachineProvider = ({
     auth,
     settings: {
       context: {
-        app: { theme },
-        modeling: { defaultUnit },
+        app: { theme, enableSSAO },
+        modeling: { defaultUnit, highlightEdges },
       },
     },
   } = useSettingsAuthContext()
   const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)
-  useSetupEngineManager(streamRef, token, theme.current)
+  useSetupEngineManager(streamRef, token, {
+    theme: theme.current,
+    highlightEdges: highlightEdges.current,
+    enableSSAO: enableSSAO.current,
+  })
   const { htmlRef } = useStore((s) => ({
     htmlRef: s.htmlRef,
   }))
@@ -90,17 +98,6 @@ export const ModelingMachineProvider = ({
     token
   )
   useHotkeys('meta + shift + .', () => coreDump(coreDumpManager, true))
-
-  const {
-    isShiftDown,
-    editorView,
-    setLastCodeMirrorSelectionUpdatedFromScene,
-  } = useStore((s) => ({
-    isShiftDown: s.isShiftDown,
-    editorView: s.editorView,
-    setLastCodeMirrorSelectionUpdatedFromScene:
-      s.setLastCodeMirrorSelectionUpdatedFromScene,
-  }))
 
   // Settings machine setup
   // const retrievedSettings = useRef(
@@ -128,29 +125,33 @@ export const ModelingMachineProvider = ({
         'Set selection': assign(({ selectionRanges }, event) => {
           if (event.type !== 'Set selection') return {} // this was needed for ts after adding 'Set selection' action to on done modal events
           const setSelections = event.data
-          if (!editorView) return {}
+          if (!editorManager.editorView) return {}
           const dispatchSelection = (selection?: EditorSelection) => {
             if (!selection) return // TODO less of hack for the below please
-            setLastCodeMirrorSelectionUpdatedFromScene(Date.now())
-            setTimeout(() => editorView.dispatch({ selection }))
+            editorManager.lastSelectionEvent = Date.now()
+            setTimeout(() => {
+              if (editorManager.editorView) {
+                editorManager.editorView.dispatch({ selection })
+              }
+            })
           }
           let selections: Selections = {
             codeBasedSelections: [],
             otherSelections: [],
           }
           if (setSelections.selectionType === 'singleCodeCursor') {
-            if (!setSelections.selection && isShiftDown) {
-            } else if (!setSelections.selection && !isShiftDown) {
+            if (!setSelections.selection && editorManager.isShiftDown) {
+            } else if (!setSelections.selection && !editorManager.isShiftDown) {
               selections = {
                 codeBasedSelections: [],
                 otherSelections: [],
               }
-            } else if (setSelections.selection && !isShiftDown) {
+            } else if (setSelections.selection && !editorManager.isShiftDown) {
               selections = {
                 codeBasedSelections: [setSelections.selection],
                 otherSelections: [],
               }
-            } else if (setSelections.selection && isShiftDown) {
+            } else if (setSelections.selection && editorManager.isShiftDown) {
               selections = {
                 codeBasedSelections: [
                   ...selectionRanges.codeBasedSelections,
@@ -173,6 +174,7 @@ export const ModelingMachineProvider = ({
                 engineCommandManager.sendSceneCommand(event)
               )
             updateSceneObjectColors()
+
             return {
               selectionRanges: selections,
             }
@@ -185,7 +187,7 @@ export const ModelingMachineProvider = ({
           }
 
           if (setSelections.selectionType === 'otherSelection') {
-            if (isShiftDown) {
+            if (editorManager.isShiftDown) {
               selections = {
                 codeBasedSelections: selectionRanges.codeBasedSelections,
                 otherSelections: [setSelections.selection],
@@ -266,15 +268,23 @@ export const ModelingMachineProvider = ({
         'has valid extrude selection': ({ selectionRanges }) => {
           // A user can begin extruding if they either have 1+ faces selected or nothing selected
           // TODO: I believe this guard only allows for extruding a single face at a time
-          if (selectionRanges.codeBasedSelections.length < 1) return false
           const isPipe = isSketchPipe(selectionRanges)
 
-          if (isSelectionLastLine(selectionRanges, codeManager.code))
+          if (
+            selectionRanges.codeBasedSelections.length === 0 ||
+            isSelectionLastLine(selectionRanges, codeManager.code)
+          )
             return true
           if (!isPipe) return false
 
           return canExtrudeSelection(selectionRanges)
         },
+        'Sketch is empty': ({ sketchDetails }) =>
+          getNodeFromPath<VariableDeclaration>(
+            kclManager.ast,
+            sketchDetails?.sketchPathToNode || [],
+            'VariableDeclaration'
+          )?.node?.declarations[0]?.init.type !== 'PipeExpression',
         'Selection is on face': ({ selectionRanges }, { data }) => {
           if (data?.forceNewSketch) return false
           if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))
@@ -311,16 +321,9 @@ export const ModelingMachineProvider = ({
               )
             await kclManager.executeAstMock(modifiedAst)
 
-            const forward = new Vector3(...data.zAxis)
-            const up = new Vector3(...data.yAxis)
-
-            let target = new Vector3(...data.position).multiplyScalar(
-              sceneInfra._baseUnitMultiplier
-            )
-            const quaternion = quaternionFromUpNForward(up, forward)
-            await sceneInfra.camControls.tweenCameraToQuaternion(
-              quaternion,
-              target
+            await letEngineAnimateAndSyncCamAfter(
+              engineCommandManager,
+              data.faceId
             )
 
             return {
@@ -335,6 +338,7 @@ export const ModelingMachineProvider = ({
             data.plane
           )
           await kclManager.updateAst(modifiedAst, false)
+          sceneInfra.camControls.syncDirection = 'clientToEngine'
           const quat = await getSketchQuaternion(pathToNode, data.zAxis)
           await sceneInfra.camControls.tweenCameraToQuaternion(quat)
           return {
@@ -351,9 +355,9 @@ export const ModelingMachineProvider = ({
             sourceRange
           )
           const info = await getSketchOrientationDetails(sketchPathToNode || [])
-          await sceneInfra.camControls.tweenCameraToQuaternion(
-            info.quat,
-            new Vector3(...info.sketchDetails.origin)
+          await letEngineAnimateAndSyncCamAfter(
+            engineCommandManager,
+            info?.sketchDetails?.faceId || ''
           )
           return {
             sketchPathToNode: sketchPathToNode || [],
@@ -502,6 +506,19 @@ export const ModelingMachineProvider = ({
       modelingSend({ type: 'Re-execute' })
     })
   }, [modelingSend])
+
+  // Give the state back to the editorManager.
+  useEffect(() => {
+    editorManager.modelingSend = modelingSend
+  }, [modelingSend])
+
+  useEffect(() => {
+    editorManager.modelingEvent = modelingState.event
+  }, [modelingState.event])
+
+  useEffect(() => {
+    editorManager.selectionRanges = modelingState.context.selectionRanges
+  }, [modelingState.context.selectionRanges])
 
   useStateMachineCommands({
     machineId: 'modeling',
