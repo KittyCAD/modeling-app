@@ -1068,7 +1068,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const part001 = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([1, 3.82], %, 'seg01')\n  |> angledLineToX([\n       -angleToMatchLengthX('seg01', 10, %),\n       5\n     ], %)\n  |> close(%)"
+      "const part001 = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([1, 3.82], %, 'seg01')\n  |> angledLineToX([\n       -angleToMatchLengthX('seg01', 10, %),\n       5\n     ], %)\n  |> close(%)\n  |> extrude(5, %)"
     ]
   },
   {
@@ -2074,7 +2074,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const part001 = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([1, 3.82], %, 'seg01')\n  |> angledLineToX([\n       -angleToMatchLengthY('seg01', 10, %),\n       5\n     ], %)\n  |> close(%)"
+      "const part001 = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([1, 3.82], %, 'seg01')\n  |> angledLineToX([\n       -angleToMatchLengthY('seg01', 10, %),\n       5\n     ], %)\n  |> close(%)\n  |> extrude(5, %)"
     ]
   },
   {
