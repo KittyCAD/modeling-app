@@ -1974,6 +1974,7 @@ dependencies = [
  "bigdecimal",
  "bytes",
  "chrono",
+ "clap",
  "data-encoding",
  "format_serde_error",
  "futures",
@@ -4726,6 +4727,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "bson",
+ "clap",
  "console_error_panic_hook",
  "futures",
  "gloo-utils",
