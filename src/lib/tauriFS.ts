@@ -1,4 +1,4 @@
-import { appConfigDir} from '@tauri-apps/api/path'
+import { appConfigDir } from '@tauri-apps/api/path'
 import { isTauri } from './isTauri'
 import type { FileEntry } from 'lib/types'
 import {
@@ -216,12 +216,11 @@ export async function getSettingsFolderPaths(projectPath?: string) {
 }
 
 export async function createAndOpenNewProject(
-  projectDirectory: string,
   navigate: (path: string) => void
 ) {
   const configuration = await readAppSettingsFile()
   const projects = await listProjects(configuration)
-  const nextIndex = await getNextProjectIndex(ONBOARDING_PROJECT_NAME, projects)
+  const nextIndex = getNextProjectIndex(ONBOARDING_PROJECT_NAME, projects)
   const name = interpolateProjectNameWithIndex(
     ONBOARDING_PROJECT_NAME,
     nextIndex

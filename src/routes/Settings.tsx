@@ -66,7 +66,7 @@ export const Settings = () => {
     if (isFileSettings) {
       navigate(dotDotSlash(1) + paths.ONBOARDING.INDEX)
     } else {
-      createAndOpenNewProject(context.app.projectDirectory.current, navigate)
+      createAndOpenNewProject(navigate)
     }
   }
 
