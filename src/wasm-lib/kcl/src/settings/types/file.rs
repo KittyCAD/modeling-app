@@ -21,10 +21,13 @@ pub struct ProjectState {
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct ProjectRoute {
-    pub project_name: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub project_name: Option<String>,
     pub project_path: String,
-    pub current_file_name: String,
-    pub current_file_path: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub current_file_name: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub current_file_path: Option<String>,
 }
 
 impl ProjectRoute {
@@ -36,49 +39,72 @@ impl ProjectRoute {
             && configuration.settings.project.directory != std::path::PathBuf::default()
         {
             // Get the project name.
-            let project_name = path
+            if let Some(project_name) = path
                 .strip_prefix(&configuration.settings.project.directory)
                 .unwrap()
                 .iter()
                 .next()
-                .ok_or_else(|| anyhow::anyhow!("Project name not found: {}", path.display()))?
-                .to_string_lossy()
-                .to_string();
-            (
-                configuration
-                    .settings
-                    .project
-                    .directory
-                    .join(&project_name)
-                    .display()
-                    .to_string(),
-                project_name,
-            )
+            {
+                (
+                    configuration
+                        .settings
+                        .project
+                        .directory
+                        .join(project_name)
+                        .display()
+                        .to_string(),
+                    Some(project_name.to_string_lossy().to_string()),
+                )
+            } else {
+                (configuration.settings.project.directory.display().to_string(), None)
+            }
         } else {
             // Assume the project path is the parent directory of the file.
             let project_dir = path
                 .parent()
                 .ok_or_else(|| anyhow::anyhow!("Parent directory not found: {}", path.display()))?;
-            let project_name = project_dir
-                .file_name()
-                .ok_or_else(|| anyhow::anyhow!("Project name not found: {}", path.display()))?;
-            (
-                project_dir.display().to_string(),
-                project_name.to_string_lossy().to_string(),
-            )
+
+            if project_dir == std::path::Path::new("/") {
+                (
+                    path.display().to_string(),
+                    Some(
+                        path.file_name()
+                            .ok_or_else(|| anyhow::anyhow!("File name not found: {}", path.display()))?
+                            .to_string_lossy()
+                            .to_string(),
+                    ),
+                )
+            } else {
+                if let Some(project_name) = project_dir.file_name() {
+                    (
+                        project_dir.display().to_string(),
+                        Some(project_name.to_string_lossy().to_string()),
+                    )
+                } else {
+                    (project_dir.display().to_string(), None)
+                }
+            }
         };
 
-        let current_file_name = path
-            .file_name()
-            .ok_or_else(|| anyhow::anyhow!("File name not found: {}", path.display()))?
-            .to_string_lossy()
-            .to_string();
+        let (current_file_name, current_file_path) = if path.display().to_string() == project_path {
+            (None, None)
+        } else {
+            (
+                Some(
+                    path.file_name()
+                        .ok_or_else(|| anyhow::anyhow!("File name not found: {}", path.display()))?
+                        .to_string_lossy()
+                        .to_string(),
+                ),
+                Some(path.display().to_string()),
+            )
+        };
 
         Ok(Self {
             project_name,
             project_path,
             current_file_name,
-            current_file_path: path.display().to_string(),
+            current_file_path,
         })
     }
 }
@@ -318,11 +344,12 @@ mod tests {
         assert_eq!(
             state,
             super::ProjectRoute {
-                project_name: "assembly".to_string(),
+                project_name: Some("assembly".to_string()),
                 project_path: "/Users/macinatormax/Documents/kittycad-modeling-projects/assembly".to_string(),
-                current_file_name: "main.kcl".to_string(),
-                current_file_path: "/Users/macinatormax/Documents/kittycad-modeling-projects/assembly/main.kcl"
-                    .to_string(),
+                current_file_name: Some("main.kcl".to_string()),
+                current_file_path: Some(
+                    "/Users/macinatormax/Documents/kittycad-modeling-projects/assembly/main.kcl".to_string()
+                ),
             }
         );
     }
@@ -338,10 +365,10 @@ mod tests {
         assert_eq!(
             state,
             super::ProjectRoute {
-                project_name: "modeling-app".to_string(),
+                project_name: Some("modeling-app".to_string()),
                 project_path: "/Users/macinatormax/kittycad/modeling-app".to_string(),
-                current_file_name: "main.kcl".to_string(),
-                current_file_path: "/Users/macinatormax/kittycad/modeling-app/main.kcl".to_string(),
+                current_file_name: Some("main.kcl".to_string()),
+                current_file_path: Some("/Users/macinatormax/kittycad/modeling-app/main.kcl".to_string()),
             }
         );
     }
@@ -356,10 +383,28 @@ mod tests {
         assert_eq!(
             state,
             super::ProjectRoute {
-                project_name: "browser".to_string(),
+                project_name: Some("browser".to_string()),
                 project_path: "/browser".to_string(),
-                current_file_name: "main.kcl".to_string(),
-                current_file_path: "/browser/main.kcl".to_string(),
+                current_file_name: Some("main.kcl".to_string()),
+                current_file_path: Some("/browser/main.kcl".to_string()),
+            }
+        );
+    }
+
+    #[test]
+    fn test_project_route_from_route_browser_no_path() {
+        let mut configuration = crate::settings::types::Configuration::default();
+        configuration.settings.project.directory = std::path::PathBuf::default();
+
+        let route = "/browser";
+        let state = super::ProjectRoute::from_route(&configuration, route).unwrap();
+        assert_eq!(
+            state,
+            super::ProjectRoute {
+                project_name: Some("browser".to_string()),
+                project_path: "/browser".to_string(),
+                current_file_name: None,
+                current_file_path: None,
             }
         );
     }
