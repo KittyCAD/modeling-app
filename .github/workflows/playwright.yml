@@ -19,7 +19,7 @@ jobs:
   check-rust-changes:
     runs-on: ubuntu-latest
     outputs:
-      rust-changed: ${{ steps.filter.outputs.rust-changed }}
+      rust-changed: ${{ steps.filter.outputs.rust }}
 
     steps:
       - uses: actions/checkout@v4
