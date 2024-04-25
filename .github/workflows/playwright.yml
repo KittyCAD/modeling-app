@@ -48,13 +48,24 @@ jobs:
       run: yarn
     - name: Install Playwright Browsers
       run: yarn playwright install --with-deps
+    # - name: download wasm
+    #   id: download-wasm
+    #   if: needs.check-rust-changes.outputs.rust-changed == 'false'
+    #   uses: actions/download-artifact@v2
+    #   continue-on-error: true
+    #   with:
+    #     name: wasm-bundle
+    #     path: src/wasm-lib/pkg
     - name: download wasm
       id: download-wasm
       if: needs.check-rust-changes.outputs.rust-changed == 'false'
-      uses: actions/download-artifact@v2
+      uses: dawidd6/action-download-artifact@v3
       continue-on-error: true
       with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
         name: wasm-bundle
+        workflow: build-and-store-wasm.yml
+        branch: main
         path: src/wasm-lib/pkg
     - name: copy wasm blob
       if: needs.check-rust-changes.outputs.rust-changed == 'false'
@@ -131,11 +142,6 @@ jobs:
         name: playwright-report
         path: playwright-report/
         retention-days: 30
-    - uses: actions/upload-artifact@v4
-      if: github.ref == 'refs/heads/main'
-      with:
-        name: wasm-bundle
-        path: src/wasm-lib/pkg
 
   playwright-macos:
     timeout-minutes: 60
@@ -151,14 +157,24 @@ jobs:
       run: yarn
     - name: Install Playwright Browsers
       run: yarn playwright install --with-deps
+    # - name: download wasm
+    #   id: download-wasm
+    #   if: needs.check-rust-changes.outputs.rust-changed == 'false'
+    #   uses: actions/download-artifact@v4
+    #   with:
+    #     name: wasm-bundle
+    #     path: src/wasm-lib/pkg
     - name: download wasm
       id: download-wasm
       if: needs.check-rust-changes.outputs.rust-changed == 'false'
-      uses: actions/download-artifact@v4
-      with:
-        name: wasm-bundle
-        path: src/wasm-lib/pkg
+      uses: dawidd6/action-download-artifact@v3
       continue-on-error: true
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        name: wasm-bundle
+        workflow: build-and-store-wasm.yml
+        branch: main
+        path: src/wasm-lib/pkg
     - name: copy wasm blob
       if: needs.check-rust-changes.outputs.rust-changed == 'false'
       run: cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
@@ -200,8 +216,3 @@ jobs:
         name: playwright-report
         path: playwright-report/
         retention-days: 30
-    - uses: actions/upload-artifact@v4
-      if: github.ref == 'refs/heads/main'
-      with:
-        name: wasm-bundle
-        path: src/wasm-lib/pkg
