@@ -27,10 +27,7 @@ function OnboardingWithNewFile() {
 
   async function createAndOpenNewProject() {
     const projects = await listProjects()
-    const nextIndex =  getNextProjectIndex(
-      ONBOARDING_PROJECT_NAME,
-      projects
-    )
+    const nextIndex = getNextProjectIndex(ONBOARDING_PROJECT_NAME, projects)
     const name = interpolateProjectNameWithIndex(
       ONBOARDING_PROJECT_NAME,
       nextIndex
