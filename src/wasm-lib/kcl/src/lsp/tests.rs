@@ -49,11 +49,7 @@ async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
     let zoo_client = new_zoo_client();
 
     let executor_ctx = if execute {
-        let ws = zoo_client
-            .modeling()
-            .commands_ws(None, None, None, None, None, None, Some(false))
-            .await?;
-        Some(crate::executor::ExecutorContext::new(ws, Default::default()).await?)
+        Some(crate::executor::ExecutorContext::new(&zoo_client, Default::default()).await?)
     } else {
         None
     };

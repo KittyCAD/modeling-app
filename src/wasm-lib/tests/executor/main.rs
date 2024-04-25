@@ -28,11 +28,6 @@ async fn execute_and_snapshot(code: &str, units: kcl_lib::settings::types::UnitL
         client.set_base_url(addr);
     }
 
-    let ws = client
-        .modeling()
-        .commands_ws(None, None, None, None, None, None, Some(false))
-        .await?;
-
     // Create a temporary file to write the output to.
     let output_file = std::env::temp_dir().join(format!("kcl_output_{}.png", uuid::Uuid::new_v4()));
 
@@ -40,7 +35,7 @@ async fn execute_and_snapshot(code: &str, units: kcl_lib::settings::types::UnitL
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
     let ctx = kcl_lib::executor::ExecutorContext::new(
-        ws,
+        &client,
         ExecutorSettings {
             units,
             ..Default::default()
