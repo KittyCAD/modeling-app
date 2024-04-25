@@ -66,6 +66,11 @@
       ],
       "subcommands": {}
     },
+    "deep-link": {
+      "domains": [
+        { "host": "app.zoo.dev", "pathPrefix": ["/open"] }
+      ]
+    },
     "shell": {
       "open": true
     }

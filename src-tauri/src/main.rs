@@ -6,7 +6,6 @@ pub(crate) mod state;
 use std::{
     env,
     path::{Path, PathBuf},
-    process::Command,
 };
 
 use anyhow::Result;
@@ -19,6 +18,7 @@ use oauth2::TokenResponse;
 use tauri::{ipc::InvokeError, Manager};
 use tauri_plugin_cli::CliExt;
 use tauri_plugin_shell::ShellExt;
+use tokio::process::Command;
 
 const DEFAULT_HOST: &str = "https://api.zoo.dev";
 const SETTINGS_FILE_NAME: &str = "settings.toml";
@@ -495,6 +495,7 @@ fn main() -> Result<()> {
 
             Ok(())
         })
+        .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_http::init())
