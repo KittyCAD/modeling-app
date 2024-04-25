@@ -70,7 +70,7 @@ async fn read_app_settings_file(app: tauri::AppHandle) -> Result<Configuration, 
         .await
         .map_err(|e| InvokeError::from_anyhow(e.into()))?;
     let mut parsed =
-        Configuration::backwards_compatible_toml_parse(&contents).map_err(|e| InvokeError::from_anyhow(e.into()))?;
+        Configuration::backwards_compatible_toml_parse(&contents).map_err(|e| InvokeError::from_anyhow(e))?;
     if parsed.settings.project.directory == PathBuf::new() {
         parsed.settings.project.directory = get_initial_default_dir(app.clone())?;
     }
@@ -123,8 +123,8 @@ async fn read_project_settings_file(
     let contents = tokio::fs::read_to_string(&settings_path)
         .await
         .map_err(|e| InvokeError::from_anyhow(e.into()))?;
-    let parsed = ProjectConfiguration::backwards_compatible_toml_parse(&contents)
-        .map_err(|e| InvokeError::from_anyhow(e.into()))?;
+    let parsed =
+        ProjectConfiguration::backwards_compatible_toml_parse(&contents).map_err(|e| InvokeError::from_anyhow(e))?;
 
     Ok(parsed)
 }
@@ -150,7 +150,7 @@ async fn initialize_project_directory(configuration: Configuration) -> Result<Pa
     configuration
         .ensure_project_directory_exists()
         .await
-        .map_err(|e| InvokeError::from_anyhow(e.into()))
+        .map_err(|e| InvokeError::from_anyhow(e))
 }
 
 /// Create a new project directory.
@@ -163,7 +163,7 @@ async fn create_new_project_directory(
     configuration
         .create_new_project_directory(project_name, initial_code)
         .await
-        .map_err(|e| InvokeError::from_anyhow(e.into()))
+        .map_err(|e| InvokeError::from_anyhow(e))
 }
 
 /// List all the projects in the project directory.
@@ -172,7 +172,7 @@ async fn list_projects(configuration: Configuration) -> Result<Vec<Project>, Inv
     configuration
         .list_projects()
         .await
-        .map_err(|e| InvokeError::from_anyhow(e.into()))
+        .map_err(|e| InvokeError::from_anyhow(e))
 }
 
 /// Get information about a project.
@@ -181,14 +181,14 @@ async fn get_project_info(configuration: Configuration, project_name: &str) -> R
     configuration
         .get_project_info(project_name)
         .await
-        .map_err(|e| InvokeError::from_anyhow(e.into()))
+        .map_err(|e| InvokeError::from_anyhow(e))
 }
 
 #[tauri::command]
 async fn read_dir_recursive(path: &str) -> Result<FileEntry, InvokeError> {
     kcl_lib::settings::utils::walk_dir(&Path::new(path).to_path_buf())
         .await
-        .map_err(|e| InvokeError::from_anyhow(e.into()))
+        .map_err(|e| InvokeError::from_anyhow(e))
 }
 
 /// This command instantiates a new window with auth.
