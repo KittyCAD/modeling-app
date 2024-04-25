@@ -1160,7 +1160,7 @@ pub(crate) async fn inner_close(
     Ok(new_sketch_group)
 }
 
-/// Data to draw an arc.
+/// Data to draw an arc. (random comment to delete)
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
