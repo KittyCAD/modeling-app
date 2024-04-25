@@ -27,7 +27,7 @@ jobs:
 
       - id: filter
         name: Check for Rust changes
-        uses: dorny/paths-filter@v2
+        uses: dorny/paths-filter@v3
         with:
           filters: |
             rust:
