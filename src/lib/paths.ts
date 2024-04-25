@@ -29,12 +29,15 @@ export function getProjectMetaByRouteId(id?: string, defaultDir = '') {
   if (!id) return undefined
   const s = isTauri() ? sep() : '/'
 
+  console.log('id', id)
+
   const decodedId = decodeURIComponent(id).replace(/\/$/, '') // remove trailing slash
   const projectAndFile =
     defaultDir === '/'
       ? decodedId.replace(defaultDir, '')
       : decodedId.replace(defaultDir + s, '')
   const filePathParts = projectAndFile.split(s)
+  console.log('filePathParts', filePathParts)
   const projectName = filePathParts[0]
   const projectPath =
     (defaultDir === '/' ? defaultDir : defaultDir + s) + projectName

@@ -11,7 +11,7 @@ use std::{
 
 use anyhow::Result;
 use kcl_lib::settings::types::{
-    file::{FileEntry, Project, ProjectState},
+    file::{FileEntry, Project, ProjectRoute, ProjectState},
     project::ProjectConfiguration,
     Configuration, DEFAULT_PROJECT_KCL_FILE,
 };
@@ -195,6 +195,12 @@ async fn get_project_info(configuration: Configuration, project_path: &str) -> R
         .map_err(InvokeError::from_anyhow)
 }
 
+/// Parse the project route.
+#[tauri::command]
+async fn parse_project_route(configuration: Configuration, route: &str) -> Result<ProjectRoute, InvokeError> {
+    ProjectRoute::from_route(&configuration, route).map_err(InvokeError::from_anyhow)
+}
+
 #[tauri::command]
 async fn read_dir_recursive(path: &str) -> Result<FileEntry, InvokeError> {
     kcl_lib::settings::utils::walk_dir(&Path::new(path).to_path_buf())
@@ -351,6 +357,7 @@ fn main() -> Result<()> {
             create_new_project_directory,
             list_projects,
             get_project_info,
+            parse_project_route,
             get_user,
             login,
             read_dir_recursive,

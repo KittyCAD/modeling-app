@@ -75,6 +75,7 @@ export const fileLoader: LoaderFunction = async ({
 
   const defaultDir = settings.app.projectDirectory.current || '/'
   const projectPathData = getProjectMetaByRouteId(params.id, defaultDir)
+  console.log('projectPathData', projectPathData)
   const isBrowserProject = params.id === decodeURIComponent(BROWSER_PATH)
 
   if (!isBrowserProject && projectPathData) {
