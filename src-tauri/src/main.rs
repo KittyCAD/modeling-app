@@ -235,8 +235,9 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
     let e2e_tauri_enabled = env::var("E2E_TAURI_ENABLED").is_ok();
     if e2e_tauri_enabled {
         println!("E2E_TAURI_ENABLED is set, won't open {} externally", auth_uri.secret());
-        std::fs::write("/tmp/kittycad_user_code", details.user_code().secret())
-            .expect("Unable to write /tmp/kittycad_user_code file");
+        tokio::fs::write("/tmp/kittycad_user_code", details.user_code().secret())
+            .await
+            .map_err(|e| InvokeError::from_anyhow(e.into()))?;
     } else {
         app.shell()
             .open(auth_uri.secret(), None)
@@ -259,7 +260,7 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
 ///This command returns the KittyCAD user info given a token.
 /// The string returned from this method is the user info as a json string.
 #[tauri::command]
-async fn get_user(token: Option<String>, hostname: &str) -> Result<kittycad::types::User, InvokeError> {
+async fn get_user(token: &str, hostname: &str) -> Result<kittycad::types::User, InvokeError> {
     // Use the host passed in if it's set.
     // Otherwise, use the default host.
     let host = if hostname.is_empty() {
@@ -279,7 +280,7 @@ async fn get_user(token: Option<String>, hostname: &str) -> Result<kittycad::typ
     println!("Getting user info...");
 
     // use kittycad library to fetch the user info from /user/me
-    let mut client = kittycad::Client::new(token.unwrap());
+    let mut client = kittycad::Client::new(token);
 
     if baseurl != DEFAULT_HOST {
         client.set_base_url(&baseurl);
@@ -298,22 +299,27 @@ async fn get_user(token: Option<String>, hostname: &str) -> Result<kittycad::typ
 /// From this GitHub comment: https://github.com/tauri-apps/tauri/issues/4062#issuecomment-1338048169
 /// But with the Linux support removed since we don't need it for now.
 #[tauri::command]
-fn show_in_folder(path: String) {
-    #[cfg(target_os = "windows")]
+fn show_in_folder(path: &str) -> Result<(), InvokeError> {
+    #[cfg(not(unix))]
     {
         Command::new("explorer")
             .args(["/select,", &path]) // The comma after select is not a typo
             .spawn()
-            .unwrap();
+            .map_err(|e| InvokeError::from_anyhow(e.into()))?;
     }
 
-    #[cfg(target_os = "macos")]
+    #[cfg(unix)]
     {
-        Command::new("open").args(["-R", &path]).spawn().unwrap();
+        Command::new("open")
+            .args(["-R", &path])
+            .spawn()
+            .map_err(|e| InvokeError::from_anyhow(e.into()))?;
     }
+
+    Ok(())
 }
 
-fn main() {
+fn main() -> Result<()> {
     tauri::Builder::default()
         .setup(|_app| {
             #[cfg(debug_assertions)]
@@ -347,6 +353,7 @@ fn main() {
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_shell::init())
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .run(tauri::generate_context!())?;
+
+    Ok(())
 }
