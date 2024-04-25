@@ -79,7 +79,6 @@ export const fileLoader: LoaderFunction = async ({
     params.id,
     configuration
   )
-  console.log('projectPathData', projectPathData)
   const isBrowserProject = params.id === decodeURIComponent(BROWSER_PATH)
 
   if (!isBrowserProject && projectPathData) {
