@@ -495,6 +495,13 @@ fn main() -> Result<()> {
 
             Ok(())
         })
+        .register_uri_scheme_protocol("zoo-modeling-app", |_app, request| {
+            let path = request.uri().path();
+            dbg!(path);
+            println!("Requesting path: {}", path);
+
+            tauri::http::Response::builder().status(200).body(b"{}").unwrap()
+        })
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_http::init())
