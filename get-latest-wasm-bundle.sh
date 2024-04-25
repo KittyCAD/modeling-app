@@ -21,4 +21,4 @@ fi
 gh run download $RUN_ID --repo $REPO_OWNER/$REPO_NAME --name $ARTIFACT_NAME --dir ./src/wasm-lib/pkg
 
 cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
-echo "lastest wasm copied to public folder"
+echo "latest wasm copied to public folder"
