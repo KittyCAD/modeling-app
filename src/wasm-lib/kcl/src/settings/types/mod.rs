@@ -539,6 +539,47 @@ pub enum OnboardingStatus {
     Incomplete,
     /// The user has dismissed onboarding.
     Dismissed,
+
+    // Routes
+    #[serde(rename = "/")]
+    #[display("/")]
+    Index,
+    #[serde(rename = "/camera")]
+    #[display("/camera")]
+    Camera,
+    #[serde(rename = "/streaming")]
+    #[display("/streaming")]
+    Streaming,
+    #[serde(rename = "/editor")]
+    #[display("/editor")]
+    Editor,
+    #[serde(rename = "/parametric-modeling")]
+    #[display("/parametric-modeling")]
+    ParametricModeling,
+    #[serde(rename = "/interactive-numbers")]
+    #[display("/interactive-numbers")]
+    InteractiveNumbers,
+    #[serde(rename = "/command-k")]
+    #[display("/command-k")]
+    CommandK,
+    #[serde(rename = "/user-menu")]
+    #[display("/user-menu")]
+    UserMenu,
+    #[serde(rename = "/project-menu")]
+    #[display("/project-menu")]
+    ProjectMenu,
+    #[serde(rename = "/export")]
+    #[display("/export")]
+    Export,
+    #[serde(rename = "/move")]
+    #[display("/move")]
+    Move,
+    #[serde(rename = "/sketching")]
+    #[display("/sketching")]
+    Sketching,
+    #[serde(rename = "/future-work")]
+    #[display("/future-work")]
+    FutureWork,
 }
 
 fn is_default<T: Default + PartialEq>(t: &T) -> bool {

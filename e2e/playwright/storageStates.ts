@@ -24,7 +24,7 @@ export const TEST_SETTINGS = {
 
 export const TEST_SETTINGS_ONBOARDING = {
   ...TEST_SETTINGS,
-  app: { ...TEST_SETTINGS.app, onboardingStatus: '/export ' },
+  app: { ...TEST_SETTINGS.app, onboardingStatus: '/export' },
 } satisfies Partial<SaveSettingsPayload>
 
 export const TEST_SETTINGS_CORRUPTED = {
