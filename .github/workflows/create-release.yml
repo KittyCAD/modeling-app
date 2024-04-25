@@ -35,4 +35,5 @@ jobs:
               body,
               tag_name: version,
               name: version,
+              draft: true,
             })
