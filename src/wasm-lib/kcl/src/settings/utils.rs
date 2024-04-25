@@ -3,8 +3,22 @@
 use std::path::Path;
 
 use anyhow::Result;
+use clap::ValueEnum;
 
 use crate::settings::types::file::FileEntry;
+
+lazy_static::lazy_static! {
+    static ref RELEVANT_EXTENSIONS: Vec<String> = {
+        let mut relevant_extensions = vec!["kcl".to_string(), "stp".to_string(), "glb".to_string()];
+        let named_extensions = kittycad::types::FileImportFormat::value_variants()
+            .iter()
+            .map(|x| format!("{}", x))
+            .collect::<Vec<String>>();
+        // Add all the default import formats.
+        relevant_extensions.extend_from_slice(&named_extensions);
+        relevant_extensions
+    };
+}
 
 /// Walk a directory recursively and return a list of all files.
 #[async_recursion::async_recursion]
@@ -27,6 +41,9 @@ pub async fn walk_dir<P: AsRef<Path> + Send>(dir: P) -> Result<FileEntry> {
         if e.file_type().await?.is_dir() {
             children.push(walk_dir(&e.path()).await?);
         } else {
+            if !is_relevant_file(&e.path())? {
+                continue;
+            }
             children.push(FileEntry {
                 name: e.file_name().to_string_lossy().to_string(),
                 path: e.path().display().to_string(),
@@ -39,4 +56,13 @@ pub async fn walk_dir<P: AsRef<Path> + Send>(dir: P) -> Result<FileEntry> {
     entry.children = Some(children);
 
     Ok(entry)
+}
+
+/// Check if a file is relevant for the application.
+fn is_relevant_file<P: AsRef<Path>>(path: P) -> Result<bool> {
+    if let Some(ext) = path.as_ref().extension() {
+        Ok(RELEVANT_EXTENSIONS.contains(&ext.to_string_lossy().to_string()))
+    } else {
+        Ok(false)
+    }
 }
