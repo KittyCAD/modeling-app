@@ -12,11 +12,30 @@ concurrency:
 permissions:
   contents: write
   pull-requests: write
+  
 
 jobs:
+
+  check-rust-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      rust-changed: ${{ steps.filter.outputs.rust-changed }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: filter
+        name: Check for Rust changes
+        uses: dorny/paths-filter@v2
+        with:
+          filters: |
+            rust:
+              - 'src/wasm-lib/**'
+
   playwright-ubuntu:
     timeout-minutes: 60
     runs-on: ubuntu-latest-8-cores
+    needs: check-rust-changes
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
@@ -29,13 +48,25 @@ jobs:
     - name: Install Playwright Browsers
       run: yarn playwright install --with-deps
     - name: Setup Rust
+      if: needs.check-rust-changes.outputs.rust-changed == 'true'
       uses: dtolnay/rust-toolchain@stable
     - name: Cache wasm
+      if: needs.check-rust-changes.outputs.rust-changed == 'true'
       uses: Swatinem/rust-cache@v2
       with:
         workspaces: './src/wasm-lib'
     - name: build wasm
+      if: needs.check-rust-changes.outputs.rust-changed == 'true'
       run: yarn build:wasm
+    - name: download wasm
+      if: needs.check-rust-changes.outputs.rust-changed == 'false'
+      uses: actions/download-artifact@v2
+        with:
+          name: wasm-bundle
+          path: src/wasm-lib/pkg
+    - name: copy wasm blob
+      if: needs.check-rust-changes.outputs.rust-changed == 'false'
+      run: cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
     - name: build web
       run: yarn build:local
     - name: Run ubuntu/chrome snapshots
