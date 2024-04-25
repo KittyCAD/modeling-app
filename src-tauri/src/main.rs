@@ -420,7 +420,7 @@ fn main() -> Result<()> {
                             println!("Project loaded from path: {}", source_path.display());
                         }
 
-                        // Create the defaut file in the project.
+                        // Create the default file in the project.
                         // Write the initial project file.
                         let project_file = source_path.join(DEFAULT_PROJECT_KCL_FILE);
                         tokio::fs::write(&project_file, vec![]).await?;
