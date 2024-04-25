@@ -43,7 +43,9 @@ jobs:
             libwebkit2gtk-4.1-dev \
             at-spi2-core \
             xvfb
-          yarn build
+          yarn build:wasm
+          yarn build:local
+
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2.6.1
 
