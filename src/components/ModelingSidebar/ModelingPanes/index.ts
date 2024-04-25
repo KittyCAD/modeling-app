@@ -10,21 +10,32 @@ import { KclEditorMenu } from 'components/ModelingSidebar/ModelingPanes/KclEdito
 import { CustomIconName } from 'components/CustomIcon'
 import { KclEditorPane } from 'components/ModelingSidebar/ModelingPanes/KclEditorPane'
 import { ReactNode } from 'react'
-import type { PaneType } from 'useStore'
 import { MemoryPane } from './MemoryPane'
 import { KclErrorsPane, LogsPane } from './LoggingPanes'
 import { DebugPane } from './DebugPane'
+import { FileTreeInner, FileTreeMenu } from 'components/FileTree'
 
-export type Pane = {
-  id: PaneType
+export type SidebarType =
+  | 'code'
+  | 'debug'
+  | 'export'
+  | 'files'
+  | 'kclErrors'
+  | 'logs'
+  | 'lspMessages'
+  | 'variables'
+
+export type SidebarPane = {
+  id: SidebarType
   title: string
   icon: CustomIconName | IconDefinition
+  keybinding: string
   Content: ReactNode | React.FC
   Menu?: ReactNode | React.FC
-  keybinding: string
+  hideOnPlatform?: 'desktop' | 'web'
 }
 
-export const topPanes: Pane[] = [
+export const topPanes: SidebarPane[] = [
   {
     id: 'code',
     title: 'KCL Code',
@@ -33,9 +44,18 @@ export const topPanes: Pane[] = [
     keybinding: 'shift + c',
     Menu: KclEditorMenu,
   },
+  {
+    id: 'files',
+    title: 'Project Files',
+    icon: 'folder',
+    Content: FileTreeInner,
+    keybinding: 'shift + f',
+    Menu: FileTreeMenu,
+    hideOnPlatform: 'web',
+  },
 ]
 
-export const bottomPanes: Pane[] = [
+export const bottomPanes: SidebarPane[] = [
   {
     id: 'variables',
     title: 'Variables',

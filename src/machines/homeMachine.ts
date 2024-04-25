@@ -1,6 +1,6 @@
 import { assign, createMachine } from 'xstate'
-import { type ProjectWithEntryPointMetadata } from 'lib/types'
 import { HomeCommandSchema } from 'lib/commandBarConfigs/homeCommandConfig'
+import { Project } from 'wasm-lib/kcl/bindings/Project'
 
 export const homeMachine = createMachine(
   {
@@ -10,7 +10,7 @@ export const homeMachine = createMachine(
     initial: 'Reading projects',
 
     context: {
-      projects: [] as ProjectWithEntryPointMetadata[],
+      projects: [] as Project[],
       defaultProjectName: '',
       defaultDirectory: '',
     },
@@ -145,7 +145,7 @@ export const homeMachine = createMachine(
         | { type: 'navigate'; data: { name: string } }
         | {
             type: 'done.invoke.read-projects'
-            data: ProjectWithEntryPointMetadata[]
+            data: Project[]
           }
         | { type: 'assign'; data: { [key: string]: any } },
     },
@@ -157,7 +157,7 @@ export const homeMachine = createMachine(
   {
     actions: {
       setProjects: assign((_, event) => {
-        return { projects: event.data as ProjectWithEntryPointMetadata[] }
+        return { projects: event.data as Project[] }
       }),
     },
   }

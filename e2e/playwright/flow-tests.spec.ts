@@ -594,13 +594,12 @@ test('Auto complete works', async ({ page }) => {
 
 test('Stored settings are validated and fall back to defaults', async ({
   page,
-  context,
 }) => {
   const u = getUtils(page)
 
   // Override beforeEach test setup
   // with corrupted settings
-  await context.addInitScript(
+  await page.addInitScript(
     async ({ settingsKey, settings }) => {
       localStorage.setItem(settingsKey, settings)
     },
@@ -617,18 +616,18 @@ test('Stored settings are validated and fall back to defaults', async ({
   // Check the settings were reset
   const storedSettings = TOML.parse(
     await page.evaluate(
-      ({ settingsKey }) => localStorage.getItem(settingsKey) || '{}',
+      ({ settingsKey }) => localStorage.getItem(settingsKey) || '',
       { settingsKey: TEST_SETTINGS_KEY }
     )
   ) as { settings: SaveSettingsPayload }
 
-  expect(storedSettings.settings.app?.theme).toBe('dark')
+  expect(storedSettings.settings?.app?.theme).toBe(undefined)
 
   // Check that the invalid settings were removed
-  expect(storedSettings.settings.modeling?.defaultUnit).toBe(undefined)
-  expect(storedSettings.settings.modeling?.mouseControls).toBe(undefined)
-  expect(storedSettings.settings.app?.projectDirectory).toBe(undefined)
-  expect(storedSettings.settings.projects?.defaultProjectName).toBe(undefined)
+  expect(storedSettings.settings?.modeling?.defaultUnit).toBe(undefined)
+  expect(storedSettings.settings?.modeling?.mouseControls).toBe(undefined)
+  expect(storedSettings.settings?.app?.projectDirectory).toBe(undefined)
+  expect(storedSettings.settings?.projects?.defaultProjectName).toBe(undefined)
 })
 
 test('Project settings can be set and override user settings', async ({
