@@ -1,5 +1,4 @@
 import { FormEvent, useEffect, useRef, useState } from 'react'
-import { type ProjectWithEntryPointMetadata } from 'lib/types'
 import { paths } from 'lib/paths'
 import { Link } from 'react-router-dom'
 import { ActionButton } from './ActionButton'
@@ -14,6 +13,7 @@ import { FILE_EXT } from 'lib/constants'
 import { Dialog } from '@headlessui/react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import Tooltip from './Tooltip'
+import { Project } from 'wasm-lib/kcl/bindings/Project'
 
 function ProjectCard({
   project,
@@ -21,12 +21,12 @@ function ProjectCard({
   handleDeleteProject,
   ...props
 }: {
-  project: ProjectWithEntryPointMetadata
+  project: Project
   handleRenameProject: (
     e: FormEvent<HTMLFormElement>,
-    f: ProjectWithEntryPointMetadata
+    f: Project
   ) => Promise<void>
-  handleDeleteProject: (f: ProjectWithEntryPointMetadata) => Promise<void>
+  handleDeleteProject: (f: Project) => Promise<void>
 }) {
   useHotkeys('esc', () => setIsEditing(false))
   const [isEditing, setIsEditing] = useState(false)
@@ -41,7 +41,8 @@ function ProjectCard({
     void handleRenameProject(e, project).then(() => setIsEditing(false))
   }
 
-  function getDisplayedTime(date: Date) {
+  function getDisplayedTime(dateStr: string) {
+    const date = new Date(dateStr)
     const startOfToday = new Date()
     startOfToday.setHours(0, 0, 0, 0)
     return date.getTime() < startOfToday.getTime()
@@ -137,8 +138,8 @@ function ProjectCard({
             </span>
             <span className="text-chalkboard-60 text-xs">
               Edited{' '}
-              {project.entrypointMetadata.mtime
-                ? getDisplayedTime(project.entrypointMetadata.mtime)
+              {project.metadata && project.metadata?.modified
+                ? getDisplayedTime(project.metadata.modified)
                 : 'never'}
             </span>
             <div className="absolute z-10 bottom-2 right-2 flex gap-1 items-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">

@@ -4,7 +4,8 @@ import { Models } from '@kittycad/lib/dist/types/src'
 import { invoke } from '@tauri-apps/api/core'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
-import { FileEntry } from './types'
+import { Project } from 'wasm-lib/kcl/bindings/Project'
+import { FileEntry } from 'wasm-lib/kcl/bindings/FileEntry'
 
 // Get the initial default dir for holding all projects.
 export async function getInitialDefaultDir(): Promise<string> {
@@ -17,6 +18,26 @@ export async function showInFolder(path: string | undefined): Promise<void> {
     return
   }
   return await invoke('show_in_folder', { path })
+}
+
+export async function initializeProjectDirectory(
+  settings: Configuration
+): Promise<string> {
+  return await invoke<string>('initialize_project_directory', {
+    configuration: settings,
+  })
+}
+
+export async function createNewProjectDirectory(
+  projectName: string,
+  initialCode?: string
+): Promise<Project> {
+  const configuration = await readAppSettingsFile()
+  return await invoke<Project>('create_new_project_directory', {
+    configuration,
+    projectName,
+    initialCode,
+  })
 }
 
 export async function login(host: string): Promise<string> {
@@ -63,8 +84,8 @@ export async function readProjectSettingsFile(
   projectName: string
 ): Promise<ProjectConfiguration> {
   return await invoke<ProjectConfiguration>('read_project_settings_file', {
-    app_settings: appSettings,
-    project_name: projectName,
+    appSettings,
+    projectName,
   })
 }
 
@@ -75,8 +96,8 @@ export async function writeProjectSettingsFile(
   settings: ProjectConfiguration
 ): Promise<void> {
   return await invoke('write_project_settings_file', {
-    app_settings: appSettings,
-    project_name: projectName,
+    appSettings,
+    projectName,
     configuration: settings,
   })
 }

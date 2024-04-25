@@ -31,18 +31,22 @@ describe('Test project name utility functions', () => {
     {
       name: 'new-project-04.kcl',
       path: '/projects/new-project-04.kcl',
+      children: [],
     },
     {
       name: 'new-project-007.kcl',
       path: '/projects/new-project-007.kcl',
+      children: [],
     },
     {
       name: 'new-project-05.kcl',
       path: '/projects/new-project-05.kcl',
+      children: [],
     },
     {
       name: 'new-project-0.kcl',
       path: '/projects/new-project-0.kcl',
+      children: [],
     },
   ]
 
@@ -56,14 +60,17 @@ describe('Test file tree utility functions', () => {
     {
       name: 'show-me.kcl',
       path: '/projects/show-me.kcl',
+      children: [],
     },
     {
       name: 'hide-me.jpg',
       path: '/projects/hide-me.jpg',
+      children: [],
     },
     {
       name: '.gitignore',
       path: '/projects/.gitignore',
+      children: [],
     },
   ]
 
@@ -71,6 +78,7 @@ describe('Test file tree utility functions', () => {
     {
       name: 'show-me.kcl',
       path: '/projects/show-me.kcl',
+      children: [],
     },
   ]
 

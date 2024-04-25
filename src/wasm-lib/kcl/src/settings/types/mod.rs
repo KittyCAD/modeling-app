@@ -1,5 +1,6 @@
 //! Types for kcl project and modeling-app settings.
 
+pub mod file;
 pub mod project;
 
 use anyhow::Result;
@@ -9,6 +10,7 @@ use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 const DEFAULT_THEME_COLOR: f64 = 264.5;
+const DEFAULT_PROJECT_KCL_FILE: &str = "main.kcl";
 
 /// High level configuration.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
@@ -54,6 +56,57 @@ impl Configuration {
         }
 
         Ok(settings)
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    /// Initialize the project directory.
+    pub async fn ensure_project_directory_exists(&self) -> Result<std::path::PathBuf> {
+        let project_dir = &self.settings.project.directory;
+
+        // Check if the directory exists.
+        if !project_dir.exists() {
+            // Create the directory.
+            tokio::fs::create_dir_all(project_dir).await?;
+        }
+
+        Ok(project_dir.clone())
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    /// Create a new project directory.
+    pub async fn create_new_project_directory(
+        &self,
+        project_name: &str,
+        initial_code: Option<&str>,
+    ) -> Result<crate::settings::types::file::Project> {
+        let main_dir = &self.ensure_project_directory_exists().await?;
+
+        if project_name.is_empty() {
+            return Err(anyhow::anyhow!("Project name cannot be empty."));
+        }
+
+        // Create the project directory.
+        let project_dir = main_dir.join(project_name);
+
+        // Create the directory.
+        if !project_dir.exists() {
+            tokio::fs::create_dir_all(&project_dir).await?;
+        }
+
+        // Write the initial project file.
+        let project_file = project_dir.join(DEFAULT_PROJECT_KCL_FILE);
+        tokio::fs::write(&project_file, initial_code.unwrap_or_default()).await?;
+
+        Ok(crate::settings::types::file::Project {
+            file: crate::settings::types::file::FileEntry {
+                path: project_dir.to_string_lossy().to_string(),
+                name: project_name.to_string(),
+                // We don't need to recursively get all files in the project directory.
+                // Because we just created it and it's empty.
+                children: vec![],
+            },
+            metadata: Some(tokio::fs::metadata(&project_dir).await?.into()),
+        })
     }
 }
 

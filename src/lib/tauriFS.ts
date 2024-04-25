@@ -1,7 +1,7 @@
-import { mkdir, exists, writeTextFile, stat } from '@tauri-apps/plugin-fs'
-import { appConfigDir, join, sep } from '@tauri-apps/api/path'
+import { stat } from '@tauri-apps/plugin-fs'
+import { appConfigDir, join } from '@tauri-apps/api/path'
 import { isTauri } from './isTauri'
-import type { FileEntry, ProjectWithEntryPointMetadata } from 'lib/types'
+import type { FileEntry } from 'lib/types'
 import {
   FILE_EXT,
   INDEX_IDENTIFIER,
@@ -9,95 +9,10 @@ import {
   ONBOARDING_PROJECT_NAME,
   PROJECT_ENTRYPOINT,
   RELEVANT_FILE_TYPES,
-  SETTINGS_FILE_EXT,
 } from 'lib/constants'
 import { bracket } from './exampleKcl'
 import { paths } from './paths'
-import { getInitialDefaultDir, readDirRecursive } from './tauri'
-
-type PathWithPossibleError = {
-  path: string | null
-  error: Error | null
-}
-
-// Initializes the project directory and returns the path
-// with any Errors that occurred
-export async function initializeProjectDirectory(
-  directory: string
-): Promise<PathWithPossibleError> {
-  let returnValue: PathWithPossibleError = {
-    path: null,
-    error: null,
-  }
-
-  if (!isTauri()) return returnValue
-
-  if (directory) {
-    returnValue = await testAndCreateDir(directory, returnValue)
-  }
-
-  // If the directory from settings does not exist or could not be created,
-  // use the default directory
-  if (returnValue.path === null) {
-    const INITIAL_DEFAULT_DIR = await getInitialDefaultDir()
-    const defaultReturnValue = await testAndCreateDir(
-      INITIAL_DEFAULT_DIR,
-      returnValue,
-      {
-        exists: 'Error checking default directory.',
-        create: 'Error creating default directory.',
-      }
-    )
-    returnValue.path = defaultReturnValue.path
-    returnValue.error =
-      returnValue.error === null ? defaultReturnValue.error : returnValue.error
-  }
-
-  return returnValue
-}
-
-async function testAndCreateDir(
-  directory: string,
-  returnValue = {
-    path: null,
-    error: null,
-  } as PathWithPossibleError,
-  errorMessages = {
-    exists:
-      'Error checking directory at path from saved settings. Using default.',
-    create:
-      'Error creating directory at path from saved settings. Using default.',
-  }
-): Promise<PathWithPossibleError> {
-  const dirExists = await exists(directory).catch((e) => {
-    console.error(`Error checking directory ${directory}. Original error:`, e)
-    return new Error(errorMessages.exists)
-  })
-
-  if (dirExists instanceof Error) {
-    returnValue.error = dirExists
-  } else if (dirExists === false) {
-    const newDirCreated = await mkdir(directory, { recursive: true }).catch(
-      (e) => {
-        console.error(
-          `Error creating directory ${directory}. Original error:`,
-          e
-        )
-        return new Error(errorMessages.create)
-      }
-    )
-
-    if (newDirCreated instanceof Error) {
-      returnValue.error = newDirCreated
-    } else {
-      returnValue.path = directory
-    }
-  } else if (dirExists === true) {
-    returnValue.path = directory
-  }
-
-  return returnValue
-}
+import { createNewProjectDirectory, readDirRecursive } from './tauri'
 
 export function isProjectDirectory(fileOrDir: Partial<FileEntry>) {
   return (
@@ -250,47 +165,6 @@ export function sortProject(project: FileEntry[]): FileEntry[] {
   })
 }
 
-// Creates a new file in the default directory with the default project name
-// Returns the path to the new file
-export async function createNewProject(
-  path: string,
-  initCode = ''
-): Promise<ProjectWithEntryPointMetadata> {
-  if (!isTauri) {
-    throw new Error('createNewProject() can only be called from a Tauri app')
-  }
-
-  const dirExists = await exists(path)
-  if (!dirExists) {
-    await mkdir(path, { recursive: true }).catch((err) => {
-      console.error('Error creating new directory:', err)
-      throw err
-    })
-  }
-
-  await writeTextFile(await join(path, PROJECT_ENTRYPOINT), initCode).catch(
-    (err) => {
-      console.error('Error creating new file:', err)
-      throw err
-    }
-  )
-
-  const m = await stat(path)
-
-  return {
-    name: path.slice(path.lastIndexOf(sep()) + 1),
-    path: path,
-    entrypointMetadata: m,
-    children: [
-      {
-        name: PROJECT_ENTRYPOINT,
-        path: await join(path, PROJECT_ENTRYPOINT),
-        children: [],
-      },
-    ],
-  }
-}
-
 // create a regex to match the project name
 // replacing any instances of "$n" with a regex to match any number
 function interpolateProjectName(projectName: string) {
@@ -344,13 +218,6 @@ function getPaddedIdentifierRegExp() {
   return new RegExp(`${escapedIdentifier}(${escapedIdentifier.slice(-1)}*)`)
 }
 
-export async function getUserSettingsFilePath(
-  filename: string = SETTINGS_FILE_EXT
-) {
-  const dir = await appConfigDir()
-  return await join(dir, filename)
-}
-
 export async function getSettingsFolderPaths(projectPath?: string) {
   const user = isTauri() ? await appConfigDir() : '/'
   const project = projectPath !== undefined ? projectPath : undefined
@@ -371,9 +238,6 @@ export async function createAndOpenNewProject(
     ONBOARDING_PROJECT_NAME,
     nextIndex
   )
-  const newFile = await createNewProject(
-    await join(projectDirectory, name),
-    bracket
-  )
+  const newFile = await createNewProjectDirectory(name, bracket)
   navigate(`${paths.FILE}/${encodeURIComponent(newFile.path)}`)
 }

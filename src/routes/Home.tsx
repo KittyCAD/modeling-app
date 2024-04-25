@@ -1,7 +1,6 @@
 import { FormEvent, useEffect } from 'react'
 import { remove, rename } from '@tauri-apps/plugin-fs'
 import {
-  createNewProject,
   getNextProjectIndex,
   interpolateProjectNameWithIndex,
   doesProjectNameNeedInterpolated,
@@ -14,10 +13,7 @@ import { AppHeader } from '../components/AppHeader'
 import ProjectCard from '../components/ProjectCard'
 import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-import {
-  type ProjectWithEntryPointMetadata,
-  type HomeLoaderData,
-} from 'lib/types'
+import { type HomeLoaderData } from 'lib/types'
 import Loading from '../components/Loading'
 import { useMachine } from '@xstate/react'
 import { homeMachine } from '../machines/homeMachine'
@@ -39,6 +35,8 @@ import { kclManager } from 'lib/singletons'
 import { useLspContext } from 'components/LspProvider'
 import { useRefreshSettings } from 'hooks/useRefreshSettings'
 import { LowerRightControls } from 'components/LowerRightControls'
+import { Project } from 'wasm-lib/kcl/bindings/Project'
+import { createNewProjectDirectory } from 'lib/tauri'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
@@ -110,7 +108,7 @@ const Home = () => {
           name = interpolateProjectNameWithIndex(name, nextIndex)
         }
 
-        await createNewProject(await join(context.defaultDirectory, name))
+        await createNewProjectDirectory(name)
 
         return `Successfully created "${name}"`
       },
@@ -181,7 +179,7 @@ const Home = () => {
 
   async function handleRenameProject(
     e: FormEvent<HTMLFormElement>,
-    project: ProjectWithEntryPointMetadata
+    project: Project
   ) {
     const { newProjectName } = Object.fromEntries(
       new FormData(e.target as HTMLFormElement)
@@ -192,7 +190,7 @@ const Home = () => {
     })
   }
 
-  async function handleDeleteProject(project: ProjectWithEntryPointMetadata) {
+  async function handleDeleteProject(project: Project) {
     send('Delete project', { data: { name: project.name || '' } })
   }
 

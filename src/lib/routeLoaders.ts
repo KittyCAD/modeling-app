@@ -9,20 +9,21 @@ import {
   PROJECT_ENTRYPOINT,
 } from 'lib/constants'
 import { loadAndValidateSettings } from './settings/settingsUtils'
-import { getProjectsInDir, initializeProjectDirectory } from './tauriFS'
+import { getProjectsInDir } from './tauriFS'
 import makeUrlPathRelative from './makeUrlPathRelative'
 import { join, sep } from '@tauri-apps/api/path'
 import { readTextFile, stat } from '@tauri-apps/plugin-fs'
 import { codeManager, kclManager } from 'lib/singletons'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
-import { getInitialDefaultDir, readDirRecursive } from './tauri'
+import { initializeProjectDirectory, readDirRecursive } from './tauri'
+import { createSettings } from './settings/initialSettings'
 
 // The root loader simply resolves the settings and any errors that
 // occurred during the settings load
 export const settingsLoader: LoaderFunction = async ({
   params,
-}): ReturnType<typeof loadAndValidateSettings> => {
-  let settings = await loadAndValidateSettings()
+}): Promise<ReturnType<typeof createSettings>> => {
+  let { settings } = await loadAndValidateSettings()
 
   // I don't love that we have to read the settings again here,
   // but we need to get the project path to load the project settings
@@ -31,7 +32,8 @@ export const settingsLoader: LoaderFunction = async ({
     const projectPathData = getProjectMetaByRouteId(params.id, defaultDir)
     if (projectPathData) {
       const { projectName } = projectPathData
-      settings = await loadAndValidateSettings(projectName)
+      const { settings: s } = await loadAndValidateSettings(projectName)
+      settings = s
     }
   }
 
@@ -40,7 +42,7 @@ export const settingsLoader: LoaderFunction = async ({
 
 // Redirect users to the appropriate onboarding page if they haven't completed it
 export const onboardingRedirectLoader: ActionFunction = async (args) => {
-  const settings = await loadAndValidateSettings()
+  const { settings } = await loadAndValidateSettings()
   const onboardingStatus = settings.app.onboardingStatus.current || ''
   const notEnRouteToOnboarding = !args.request.url.includes(
     paths.ONBOARDING.INDEX
@@ -64,7 +66,7 @@ export const onboardingRedirectLoader: ActionFunction = async (args) => {
 export const fileLoader: LoaderFunction = async ({
   params,
 }): Promise<FileLoaderData | Response> => {
-  let settings = await loadAndValidateSettings()
+  let { settings } = await loadAndValidateSettings()
 
   const defaultDir = settings.app.projectDirectory.current || '/'
   const projectPathData = getProjectMetaByRouteId(params.id, defaultDir)
@@ -107,11 +109,11 @@ export const fileLoader: LoaderFunction = async ({
         name: projectName,
         path: projectPath,
         children,
-        entrypointMetadata,
       },
       file: {
         name: currentFileName,
         path: currentFilePath,
+        children: [],
       },
     }
 
@@ -130,6 +132,7 @@ export const fileLoader: LoaderFunction = async ({
     file: {
       name: BROWSER_FILE_NAME,
       path: decodeURIComponent(BROWSER_PATH),
+      children: [],
     },
   }
 }
@@ -142,14 +145,12 @@ export const homeLoader: LoaderFunction = async (): Promise<
   if (!isTauri()) {
     return redirect(paths.FILE + '/%2F' + BROWSER_PROJECT_NAME)
   }
-  const settings = await loadAndValidateSettings()
+  const { configuration } = await loadAndValidateSettings()
 
-  const projectDir = await initializeProjectDirectory(
-    settings.app.projectDirectory.current || (await getInitialDefaultDir())
-  )
+  const projectDir = await initializeProjectDirectory(configuration)
 
-  if (projectDir.path) {
-    const projects = await getProjectsInDir(projectDir.path)
+  if (projectDir) {
+    const projects = await getProjectsInDir(projectDir)
 
     return {
       projects,

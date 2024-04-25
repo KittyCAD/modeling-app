@@ -123,7 +123,14 @@ function readLocalStorageProjectSettingsFile(): ProjectConfiguration {
   return parseProjectSettings(stored)
 }
 
-export async function loadAndValidateSettings(projectName?: string) {
+export interface AppSettings {
+  settings: ReturnType<typeof createSettings>
+  configuration: Configuration
+}
+
+export async function loadAndValidateSettings(
+  projectName?: string
+): Promise<AppSettings> {
   const settings = createSettings()
   const inTauri = isTauri()
 
@@ -152,7 +159,7 @@ export async function loadAndValidateSettings(projectName?: string) {
   }
 
   // Return the settings object
-  return settings
+  return { settings, configuration: appSettings }
 }
 
 export async function saveSettings(

@@ -8,7 +8,7 @@ use std::{
 };
 
 use anyhow::Result;
-use kcl_lib::settings::types::{project::ProjectConfiguration, Configuration};
+use kcl_lib::settings::types::{file::Project, project::ProjectConfiguration, Configuration};
 use oauth2::TokenResponse;
 use serde::Serialize;
 use tauri::{ipc::InvokeError, Manager};
@@ -16,6 +16,7 @@ use tauri_plugin_shell::ShellExt;
 
 const DEFAULT_HOST: &str = "https://api.zoo.dev";
 const SETTINGS_FILE_NAME: &str = "settings.toml";
+const PROJECT_SETTINGS_FILE_NAME: &str = "project.toml";
 const PROJECT_FOLDER: &str = "zoo-modeling-app-projects";
 
 #[tauri::command]
@@ -100,7 +101,7 @@ fn get_project_settings_file_path(app_settings: Configuration, project_name: &st
         .project
         .directory
         .join(project_name)
-        .join(SETTINGS_FILE_NAME))
+        .join(PROJECT_SETTINGS_FILE_NAME))
 }
 
 #[tauri::command]
@@ -138,6 +139,28 @@ async fn write_project_settings_file(
         .map_err(|e| InvokeError::from_anyhow(e.into()))?;
 
     Ok(())
+}
+
+/// Initialize the directory that holds all the projects.
+#[tauri::command]
+async fn initialize_project_directory(configuration: Configuration) -> Result<PathBuf, InvokeError> {
+    configuration
+        .ensure_project_directory_exists()
+        .await
+        .map_err(|e| InvokeError::from_anyhow(e.into()))
+}
+
+/// Create a new project directory.
+#[tauri::command]
+async fn create_new_project_directory(
+    configuration: Configuration,
+    project_name: &str,
+    initial_code: Option<&str>,
+) -> Result<Project, InvokeError> {
+    configuration
+        .create_new_project_directory(project_name, initial_code)
+        .await
+        .map_err(|e| InvokeError::from_anyhow(e.into()))
 }
 
 /// From https://github.com/tauri-apps/tauri/blob/1.x/core/tauri/src/api/dir.rs#L51
@@ -323,6 +346,8 @@ fn main() {
         })
         .invoke_handler(tauri::generate_handler![
             get_initial_default_dir,
+            initialize_project_directory,
+            create_new_project_directory,
             get_user,
             login,
             read_dir_recursive,

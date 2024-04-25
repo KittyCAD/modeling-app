@@ -4,7 +4,6 @@ import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { bracket } from 'lib/exampleKcl'
 import {
-  createNewProject,
   getNextProjectIndex,
   getProjectsInDir,
   interpolateProjectNameWithIndex,
@@ -20,6 +19,7 @@ import {
   ONBOARDING_PROJECT_NAME,
   PROJECT_ENTRYPOINT,
 } from 'lib/constants'
+import { createNewProjectDirectory } from 'lib/tauri'
 
 function OnboardingWithNewFile() {
   const navigate = useNavigate()
@@ -43,10 +43,7 @@ function OnboardingWithNewFile() {
       ONBOARDING_PROJECT_NAME,
       nextIndex
     )
-    const newFile = await createNewProject(
-      await join(projectDirectory.current, name),
-      bracket
-    )
+    const newFile = await createNewProjectDirectory(name, bracket)
     navigate(
       `${paths.FILE}/${encodeURIComponent(
         await join(newFile.path, PROJECT_ENTRYPOINT)
