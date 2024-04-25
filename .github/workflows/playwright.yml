@@ -131,15 +131,15 @@ jobs:
     - name: Install Playwright Browsers
       run: yarn playwright install --with-deps
     - name: Setup Rust
-      if: ${{ steps.check-wasm-lib-changes.outputs.url }} == ''
+      if: needs.check-wasm-lib-changes.outputs.url == ''
       uses: dtolnay/rust-toolchain@stable
     - name: Cache wasm
-      if: ${{ steps.check-wasm-lib-changes.outputs.url }} == ''
+      if: needs.check-wasm-lib-changes.outputs.url == ''
       uses: Swatinem/rust-cache@v2
       with:
         workspaces: './src/wasm-lib'
     - name: build wasm
-      if: ${{ steps.check-wasm-lib-changes.outputs.url }} == ''
+      if: needs.check-wasm-lib-changes.outputs.url == ''
       run: yarn build:wasm
     - name: build web
       run: yarn build:local
