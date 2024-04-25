@@ -368,7 +368,8 @@ export function parseAppSettings(toml: string): Configuration {
     const settings: Configuration = parse_app_settings(toml)
     return settings
   } catch (e: any) {
-    throw new Error(`Error parsing app settings: ${e}`)
+    console.error(`Error parsing app settings: ${e}`)
+    return defaultAppSettings()
   }
 }
 
@@ -377,7 +378,7 @@ export function defaultProjectSettings(): ProjectConfiguration {
     const settings: ProjectConfiguration = default_project_settings()
     return settings
   } catch (e: any) {
-    throw new Error(`Error getting default app settings: ${e}`)
+    throw new Error(`Error getting default project settings: ${e}`)
   }
 }
 
@@ -386,6 +387,7 @@ export function parseProjectSettings(toml: string): ProjectConfiguration {
     const settings: ProjectConfiguration = parse_project_settings(toml)
     return settings
   } catch (e: any) {
-    throw new Error(`Error parsing app settings: ${e}`)
+    console.error(`Error parsing project settings: ${e}`)
+    return defaultProjectSettings()
   }
 }
