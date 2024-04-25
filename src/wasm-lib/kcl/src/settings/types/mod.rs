@@ -129,7 +129,7 @@ impl Configuration {
                 continue;
             }
 
-            projects.push(self.get_project_info(&e.file_name().to_string_lossy()).await?);
+            projects.push(self.get_project_info(&e.path().display().to_string()).await?);
         }
 
         Ok(projects)

@@ -35,9 +35,8 @@ pub async fn walk_dir<P: AsRef<Path> + Send>(dir: P) -> Result<FileEntry> {
         }
     }
 
-    if !children.is_empty() {
-        entry.children = Some(children);
-    }
+    // We don't set this to none if there are no children, because it's a directory.
+    entry.children = Some(children);
 
     Ok(entry)
 }
