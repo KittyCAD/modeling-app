@@ -161,6 +161,7 @@ export async function loadAndValidateSettings(
   const appSettings = inTauri
     ? await readAppSettingsFile()
     : readLocalStorageAppSettingsFile()
+  console.log('appSettings', appSettings)
   // Convert the app settings to the JS settings format.
   const appSettingsPayload = configurationToSettingsPayload(appSettings)
   setSettingsAtLevel(settings, 'user', appSettingsPayload)
