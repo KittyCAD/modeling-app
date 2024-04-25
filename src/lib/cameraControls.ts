@@ -1,3 +1,5 @@
+import { MouseControlType } from 'wasm-lib/kcl/bindings/MouseControlType'
+
 const noModifiersPressed = (e: React.MouseEvent) =>
   !e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey
 
@@ -19,6 +21,29 @@ export const cameraSystems: CameraSystem[] = [
   'Creo',
   'AutoCAD',
 ]
+
+export function mouseControlsToCameraSystem(
+  mouseControl: MouseControlType | undefined
+): CameraSystem | undefined {
+  switch (mouseControl) {
+    case 'kitty_cad':
+      return 'KittyCAD'
+    case 'on_shape':
+      return 'OnShape'
+    case 'trackpad_friendly':
+      return 'Trackpad Friendly'
+    case 'solidworks':
+      return 'Solidworks'
+    case 'nx':
+      return 'NX'
+    case 'creo':
+      return 'Creo'
+    case 'auto_cad':
+      return 'AutoCAD'
+    default:
+      return undefined
+  }
+}
 
 interface MouseGuardHandler {
   description: string

@@ -28,8 +28,7 @@ mod test_examples_show {
         let tokens = crate::token::lexer("This is another code block.\nyes sirrr.\nshow").unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
-        let units = kittycad::types::UnitLength::Mm;
-        let ctx = crate::executor::ExecutorContext::new(ws, units.clone())
+        let ctx = crate::executor::ExecutorContext::new(ws, Default::default())
             .await
             .unwrap();
         ctx.run(program, None).await.unwrap();
@@ -105,8 +104,7 @@ mod test_examples_show {
         let tokens = crate::token::lexer("This is code.\nIt does other shit.\nshow").unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
-        let units = kittycad::types::UnitLength::Mm;
-        let ctx = crate::executor::ExecutorContext::new(ws, units.clone())
+        let ctx = crate::executor::ExecutorContext::new(ws, Default::default())
             .await
             .unwrap();
         ctx.run(program, None).await.unwrap();

@@ -122,3 +122,8 @@ jobs:
         name: playwright-report
         path: playwright-report/
         retention-days: 30
+    - uses: actions/upload-artifact@v2
+      if: github.ref == 'refs/heads/main'
+      with:
+        name: wasm-bundle
+        path: src/wasm-lib/pkg
