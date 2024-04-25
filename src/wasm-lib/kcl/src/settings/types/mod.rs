@@ -7,7 +7,7 @@ use anyhow::Result;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use validator::Validate;
+use validator::{Validate, ValidateRange};
 
 const DEFAULT_THEME_COLOR: f64 = 264.5;
 const DEFAULT_PROJECT_KCL_FILE: &str = "main.kcl";
@@ -280,6 +280,12 @@ impl From<AppColor> for f64 {
 impl From<f64> for AppColor {
     fn from(color: f64) -> Self {
         Self(color)
+    }
+}
+
+impl Validate for AppColor {
+    fn validate(&self) -> Result<(), validator::ValidationErrors> {
+        self.0.validate_range(Some(0.0), None, None, Some(360.0))
     }
 }
 

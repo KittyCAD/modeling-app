@@ -1,7 +1,6 @@
 //! Types for interacting with files in projects.
 
 use anyhow::Result;
-
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};

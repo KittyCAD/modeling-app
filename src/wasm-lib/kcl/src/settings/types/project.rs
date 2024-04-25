@@ -4,9 +4,8 @@ use anyhow::Result;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use crate::settings::types::{AppSettings, AppTheme, CommandBarSettings, ModelingSettings, TextEditorSettings};
-
 use super::AppColor;
+use crate::settings::types::{AppSettings, AppTheme, CommandBarSettings, ModelingSettings, TextEditorSettings};
 
 /// High level project configuration.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
