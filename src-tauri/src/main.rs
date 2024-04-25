@@ -352,17 +352,6 @@ fn show_in_folder(path: &str) -> Result<(), InvokeError> {
 
 fn main() -> Result<()> {
     tauri::Builder::default()
-        .setup(|_app| {
-            #[cfg(debug_assertions)]
-            {
-                _app.get_webview("main").unwrap().open_devtools();
-            }
-            #[cfg(not(debug_assertions))]
-            {
-                _app.handle().plugin(tauri_plugin_updater::Builder::new().build())?;
-            }
-            Ok(())
-        })
         .invoke_handler(tauri::generate_handler![
             get_state,
             set_state,
@@ -383,6 +372,16 @@ fn main() -> Result<()> {
         ])
         .plugin(tauri_plugin_cli::init())
         .setup(|app| {
+            // Do update things.
+            #[cfg(debug_assertions)]
+            {
+                app.get_webview("main").unwrap().open_devtools();
+            }
+            #[cfg(not(debug_assertions))]
+            {
+                app.handle().plugin(tauri_plugin_updater::Builder::new().build())?;
+            }
+
             let mut verbose = false;
             let mut source_path: Option<PathBuf> = None;
             match app.cli().matches() {
