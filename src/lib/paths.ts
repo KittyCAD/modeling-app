@@ -43,7 +43,9 @@ export async function getProjectMetaByRouteId(
       : readLocalStorageAppSettingsFile()
   }
 
-  return inTauri
+  const route = inTauri
     ? await parseProjectRoute(configuration, id)
     : parseProjectRouteWasm(configuration, id)
+
+  return route
 }

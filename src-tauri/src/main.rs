@@ -430,6 +430,14 @@ fn main() -> Result<()> {
 
             let runner: tauri::async_runtime::JoinHandle<Result<ProjectState>> =
                 tauri::async_runtime::spawn(async move {
+                    // Fix for "." path, which is the current directory.
+                    let source_path = if source_path == Path::new(".") {
+                        std::env::current_dir()
+                            .map_err(|e| anyhow::anyhow!("Error getting the current directory: {:?}", e))?
+                    } else {
+                        source_path
+                    };
+
                     // If the path is a directory, let's assume it is a project directory.
                     if source_path.is_dir() {
                         // Load the details about the project from the path.
