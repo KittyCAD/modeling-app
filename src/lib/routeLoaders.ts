@@ -86,7 +86,7 @@ export const fileLoader: LoaderFunction = async ({
     const { project_name, project_path, current_file_name, current_file_path } =
       projectPathData
 
-    if (!current_file_name || !current_file_path) {
+    if (!current_file_name || !current_file_path || !project_name) {
       return redirect(
         `${paths.FILE}/${encodeURIComponent(
           `${params.id}${isTauri() ? sep() : '/'}${PROJECT_ENTRYPOINT}`
