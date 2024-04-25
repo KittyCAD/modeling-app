@@ -14,5 +14,25 @@
                 </array>
             </dict>
         </array>
+        <key>UTExportedTypeDeclarations</key>
+        <array>
+            <dict>
+                <key>UTTypeIdentifier</key>
+                <string>dev.zoo.app-kcl</string>
+                <key>UTTypeConformsTo</key>
+                <array>
+                    <string>public.plain-text</string>
+                </array>
+                <key>UTTypeDescription</key>
+                <string>KCL Code</string>
+                <key>UTTypeTagSpecification</key>
+                <dict>
+                    <key>public.filename-extension</key>
+                    <array>
+                        <string>kcl</string>
+                    </array>
+                </dict>
+            </dict>
+        </array>
     </dict>
 </plist>
