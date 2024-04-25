@@ -137,17 +137,16 @@ impl Configuration {
 
     #[cfg(not(target_arch = "wasm32"))]
     /// Get information about a project.
-    pub async fn get_project_info(&self, project_name: &str) -> Result<crate::settings::types::file::Project> {
-        let main_dir = &self.ensure_project_directory_exists().await?;
-
-        if project_name.is_empty() {
-            return Err(anyhow::anyhow!("Project name cannot be empty."));
+    pub async fn get_project_info(&self, project_path: &str) -> Result<crate::settings::types::file::Project> {
+        // Check the directory.
+        let project_dir = std::path::Path::new(project_path);
+        if !project_dir.exists() {
+            return Err(anyhow::anyhow!("Project directory does not exist: {}", project_path));
         }
 
-        // Check the directory.
-        let project_dir = main_dir.join(project_name);
-        if !project_dir.exists() {
-            return Err(anyhow::anyhow!("Project directory does not exist."));
+        // Make sure it is a directory.
+        if !project_dir.is_dir() {
+            return Err(anyhow::anyhow!("Project path is not a directory: {}", project_path));
         }
 
         let mut project = crate::settings::types::file::Project {

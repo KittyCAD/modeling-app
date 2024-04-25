@@ -64,7 +64,7 @@ export async function listProjects(
 }
 
 export async function getProjectInfo(
-  projectName: string,
+  projectPath: string,
   configuration?: Configuration
 ): Promise<Project> {
   if (!configuration) {
@@ -72,7 +72,7 @@ export async function getProjectInfo(
   }
   return await invoke<Project>('get_project_info', {
     configuration,
-    projectName,
+    projectPath,
   })
 }
 

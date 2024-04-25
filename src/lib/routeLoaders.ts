@@ -107,7 +107,7 @@ export const fileLoader: LoaderFunction = async ({
     const projectData: IndexLoaderData = {
       code,
       project: isTauri()
-        ? await getProjectInfo(projectName)
+        ? await getProjectInfo(projectPath)
         : {
             name: projectName,
             path: projectPath,

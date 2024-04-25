@@ -188,9 +188,9 @@ async fn list_projects(configuration: Configuration) -> Result<Vec<Project>, Inv
 
 /// Get information about a project.
 #[tauri::command]
-async fn get_project_info(configuration: Configuration, project_name: &str) -> Result<Project, InvokeError> {
+async fn get_project_info(configuration: Configuration, project_path: &str) -> Result<Project, InvokeError> {
     configuration
-        .get_project_info(project_name)
+        .get_project_info(project_path)
         .await
         .map_err(InvokeError::from_anyhow)
 }
