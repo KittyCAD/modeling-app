@@ -3,7 +3,7 @@ import type * as LSP from 'vscode-languageserver-protocol'
 import React, { createContext, useMemo, useEffect, useContext } from 'react'
 import { FromServer, IntoServer } from 'editor/plugins/lsp/codec'
 import Client from '../editor/plugins/lsp/client'
-import { DEV, TEST } from 'env'
+import { TEST, VITE_KC_API_BASE_URL } from 'env'
 import kclLanguage from 'editor/plugins/lsp/kcl/language'
 import { copilotPlugin } from 'editor/plugins/lsp/copilot'
 import { useStore } from 'useStore'
@@ -103,7 +103,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       wasmUrl: wasmUrl(),
       token: token,
       baseUnit: defaultUnit.current,
-      devMode: DEV,
+      apiBaseUrl: VITE_KC_API_BASE_URL,
     }
     lspWorker.postMessage({
       worker: LspWorker.Kcl,
@@ -177,7 +177,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     const initEvent: CopilotWorkerOptions = {
       wasmUrl: wasmUrl(),
       token: token,
-      devMode: DEV,
+      apiBaseUrl: VITE_KC_API_BASE_URL,
     }
     lspWorker.postMessage({
       worker: LspWorker.Copilot,
