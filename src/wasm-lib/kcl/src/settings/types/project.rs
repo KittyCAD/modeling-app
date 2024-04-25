@@ -3,17 +3,20 @@
 use anyhow::Result;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
-use super::AppColor;
-use crate::settings::types::{AppSettings, AppTheme, CommandBarSettings, ModelingSettings, TextEditorSettings};
+use crate::settings::types::{
+    AppColor, AppSettings, AppTheme, CommandBarSettings, ModelingSettings, TextEditorSettings,
+};
 
 /// High level project configuration.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct ProjectConfiguration {
     /// The settings for the project.
     #[serde(default)]
+    #[validate(nested)]
     pub settings: PerProjectSettings,
 }
 
@@ -44,26 +47,32 @@ impl ProjectConfiguration {
             }
         }
 
+        settings.validate()?;
+
         Ok(settings)
     }
 }
 
 /// High level project settings.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct PerProjectSettings {
     /// The settings for the modeling app.
     #[serde(default)]
+    #[validate(nested)]
     pub app: AppSettings,
     /// Settings that affect the behavior while modeling.
     #[serde(default)]
+    #[validate(nested)]
     pub modeling: ModelingSettings,
     /// Settings that affect the behavior of the KCL text editor.
     #[serde(default, alias = "textEditor")]
+    #[validate(nested)]
     pub text_editor: TextEditorSettings,
     /// Settings that affect the behavior of the command bar.
     #[serde(default, alias = "commandBar")]
+    #[validate(nested)]
     pub command_bar: CommandBarSettings,
 }
 
@@ -157,5 +166,22 @@ includeSettings = false
 
         let parsed = ProjectConfiguration::backwards_compatible_toml_parse(empty_settings_file).unwrap();
         assert_eq!(parsed, ProjectConfiguration::default());
+    }
+
+    #[test]
+    fn test_project_settings_color_validation_error() {
+        let settings_file = r#"[settings.app.appearance]
+color = 1567.4"#;
+
+        let result = ProjectConfiguration::backwards_compatible_toml_parse(settings_file);
+        if let Ok(r) = result {
+            panic!("Expected an error, but got success: {:?}", r);
+        }
+        assert!(result.is_err());
+
+        assert_eq!(
+            result.unwrap_err().to_string(),
+            r#"color: Validation error: color [{"min": Number(0.0), "exclusive_max": Number(360.0)}]"#
+        );
     }
 }

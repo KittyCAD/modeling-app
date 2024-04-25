@@ -14,12 +14,13 @@ const DEFAULT_PROJECT_KCL_FILE: &str = "main.kcl";
 const DEFAULT_PROJECT_NAME_TEMPLATE: &str = "project-$nnn";
 
 /// High level configuration.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct Configuration {
     /// The settings for the modeling app.
     #[serde(default, skip_serializing_if = "is_default")]
+    #[validate(nested)]
     pub settings: Settings,
 }
 
@@ -55,6 +56,8 @@ impl Configuration {
                 settings.settings.app.enable_ssao = None;
             }
         }
+
+        settings.validate()?;
 
         Ok(settings)
     }
@@ -165,36 +168,42 @@ impl Configuration {
 }
 
 /// High level settings.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct Settings {
     /// The settings for the modeling app.
     #[serde(default, skip_serializing_if = "is_default")]
+    #[validate(nested)]
     pub app: AppSettings,
     /// Settings that affect the behavior while modeling.
     #[serde(default, skip_serializing_if = "is_default")]
+    #[validate(nested)]
     pub modeling: ModelingSettings,
     /// Settings that affect the behavior of the KCL text editor.
     #[serde(default, alias = "textEditor", skip_serializing_if = "is_default")]
+    #[validate(nested)]
     pub text_editor: TextEditorSettings,
     /// Settings that affect the behavior of project management.
     #[serde(default, alias = "projects", skip_serializing_if = "is_default")]
+    #[validate(nested)]
     pub project: ProjectSettings,
     /// Settings that affect the behavior of the command bar.
     #[serde(default, alias = "commandBar", skip_serializing_if = "is_default")]
+    #[validate(nested)]
     pub command_bar: CommandBarSettings,
 }
 
 /// Application wide settings.
 // TODO: When we remove backwards compatibility with the old settings file, we can remove the
 // aliases to camelCase (and projects plural) from everywhere.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct AppSettings {
     /// The settings for the appearance of the app.
     #[serde(default, skip_serializing_if = "is_default")]
+    #[validate(nested)]
     pub appearance: AppearanceSettings,
     /// The onboarding status of the app.
     #[serde(default, alias = "onboardingStatus", skip_serializing_if = "is_default")]
@@ -248,7 +257,7 @@ impl From<FloatOrInt> for AppColor {
 }
 
 /// The settings for the theme of the app.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct AppearanceSettings {
@@ -257,6 +266,7 @@ pub struct AppearanceSettings {
     pub theme: AppTheme,
     /// The hue of the primary theme color for the app.
     #[serde(default, skip_serializing_if = "is_default")]
+    #[validate(nested)]
     pub color: AppColor,
 }
 
@@ -285,7 +295,15 @@ impl From<f64> for AppColor {
 
 impl Validate for AppColor {
     fn validate(&self) -> Result<(), validator::ValidationErrors> {
-        self.0.validate_range(Some(0.0), None, None, Some(360.0))
+        if !self.0.validate_range(Some(0.0), None, None, Some(360.0)) {
+            let mut errors = validator::ValidationErrors::new();
+            let mut err = validator::ValidationError::new("color");
+            err.add_param(std::borrow::Cow::from("min"), &0.0);
+            err.add_param(std::borrow::Cow::from("exclusive_max"), &360.0);
+            errors.add("color", err);
+            return Err(errors);
+        }
+        Ok(())
     }
 }
 
@@ -331,7 +349,7 @@ impl From<AppTheme> for kittycad::types::Color {
 }
 
 /// Settings that affect the behavior while modeling.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct ModelingSettings {
@@ -450,7 +468,7 @@ pub enum MouseControlType {
 }
 
 /// Settings that affect the behavior of the KCL text editor.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct TextEditorSettings {
@@ -463,7 +481,7 @@ pub struct TextEditorSettings {
 }
 
 /// Settings that affect the behavior of project management.
-#[derive(Debug, Clone, Default, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
+#[derive(Debug, Clone, Default, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct ProjectSettings {
@@ -499,7 +517,7 @@ impl From<String> for ProjectNameTemplate {
 }
 
 /// Settings that affect the behavior of the command bar.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct CommandBarSettings {
@@ -530,12 +548,12 @@ fn is_default<T: Default + PartialEq>(t: &T) -> bool {
 #[cfg(test)]
 mod tests {
     use pretty_assertions::assert_eq;
+    use validator::Validate;
 
     use super::{
-        AppSettings, AppTheme, AppearanceSettings, CommandBarSettings, Configuration, ModelingSettings,
-        ProjectSettings, Settings, TextEditorSettings, UnitLength,
+        AppColor, AppSettings, AppTheme, AppearanceSettings, CommandBarSettings, Configuration, ModelingSettings,
+        OnboardingStatus, ProjectSettings, Settings, TextEditorSettings, UnitLength,
     };
-    use crate::settings::types::OnboardingStatus;
 
     #[test]
     // Test that we can deserialize a project file from the old format.
@@ -659,6 +677,34 @@ defaultProjectName = "projects-$nnn"
                 }
             }
         );
+
+        // Write the file back out.
+        let serialized = toml::to_string(&parsed).unwrap();
+        assert_eq!(
+            serialized,
+            r#"[settings.app]
+onboarding_status = "dismissed"
+
+[settings.app.appearance]
+theme = "dark"
+color = 138.0
+
+[settings.modeling]
+base_unit = "yd"
+show_debug_panel = true
+
+[settings.text_editor]
+text_wrapping = false
+blinking_cursor = false
+
+[settings.project]
+directory = "/Users/macinatormax/Documents/kittycad-modeling-projects"
+default_project_name = "projects-$nnn"
+
+[settings.command_bar]
+include_settings = false
+"#
+        );
     }
 
     #[test]
@@ -733,5 +779,51 @@ directory = "/Users/macinatormax/Documents/kittycad-modeling-projects"
 
         let parsed = Configuration::backwards_compatible_toml_parse(empty_settings_file).unwrap();
         assert_eq!(parsed, Configuration::default());
+    }
+
+    #[test]
+    fn test_color_validation() {
+        let color = AppColor(360.0);
+
+        let result = color.validate();
+        if let Ok(r) = result {
+            panic!("Expected an error, but got success: {:?}", r);
+        }
+        assert!(result.is_err());
+        assert_eq!(
+            result.unwrap_err().to_string(),
+            r#"color: Validation error: color [{"min": Number(0.0), "exclusive_max": Number(360.0)}]"#
+        );
+
+        let appearance = AppearanceSettings {
+            theme: AppTheme::System,
+            color: AppColor(361.5),
+        };
+        let result = appearance.validate();
+        if let Ok(r) = result {
+            panic!("Expected an error, but got success: {:?}", r);
+        }
+        assert!(result.is_err());
+        assert_eq!(
+            result.unwrap_err().to_string(),
+            r#"color: Validation error: color [{"min": Number(0.0), "exclusive_max": Number(360.0)}]"#
+        );
+    }
+
+    #[test]
+    fn test_settings_color_validation_error() {
+        let settings_file = r#"[settings.app.appearance]
+color = 1567.4"#;
+
+        let result = Configuration::backwards_compatible_toml_parse(settings_file);
+        if let Ok(r) = result {
+            panic!("Expected an error, but got success: {:?}", r);
+        }
+        assert!(result.is_err());
+
+        assert_eq!(
+            result.unwrap_err().to_string(),
+            r#"color: Validation error: color [{"min": Number(0.0), "exclusive_max": Number(360.0)}]"#
+        );
     }
 }
