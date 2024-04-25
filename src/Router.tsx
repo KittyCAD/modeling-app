@@ -59,7 +59,6 @@ const router = createBrowserRouter([
             const appState = await getState()
 
             if (appState) {
-              console.log('appState', appState)
               // Reset the state.
               // We do this so that we load the initial state from the cli but everything
               // else we can ignore.

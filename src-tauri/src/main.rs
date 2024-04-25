@@ -11,7 +11,7 @@ use std::{
 
 use anyhow::Result;
 use kcl_lib::settings::types::{
-    file::{FileEntry, Project, ProjectState},
+    file::{FileEntry, Project, ProjectRoute, ProjectState},
     project::ProjectConfiguration,
     Configuration, DEFAULT_PROJECT_KCL_FILE,
 };
@@ -52,14 +52,22 @@ async fn set_state(app: tauri::AppHandle, state: Option<ProjectState>) -> Result
     Ok(())
 }
 
-fn get_app_settings_file_path(app: &tauri::AppHandle) -> Result<PathBuf, InvokeError> {
+async fn get_app_settings_file_path(app: &tauri::AppHandle) -> Result<PathBuf, InvokeError> {
     let app_config_dir = app.path().app_config_dir()?;
+
+    // Ensure this directory exists.
+    if !app_config_dir.exists() {
+        tokio::fs::create_dir_all(&app_config_dir)
+            .await
+            .map_err(|e| InvokeError::from_anyhow(e.into()))?;
+    }
+
     Ok(app_config_dir.join(SETTINGS_FILE_NAME))
 }
 
 #[tauri::command]
 async fn read_app_settings_file(app: tauri::AppHandle) -> Result<Configuration, InvokeError> {
-    let mut settings_path = get_app_settings_file_path(&app)?;
+    let mut settings_path = get_app_settings_file_path(&app).await?;
     let mut needs_migration = false;
 
     // Check if this file exists.
@@ -104,7 +112,7 @@ async fn read_app_settings_file(app: tauri::AppHandle) -> Result<Configuration, 
 
 #[tauri::command]
 async fn write_app_settings_file(app: tauri::AppHandle, configuration: Configuration) -> Result<(), InvokeError> {
-    let settings_path = get_app_settings_file_path(&app)?;
+    let settings_path = get_app_settings_file_path(&app).await?;
     let contents = toml::to_string_pretty(&configuration).map_err(|e| InvokeError::from_anyhow(e.into()))?;
     tokio::fs::write(settings_path, contents.as_bytes())
         .await
@@ -113,13 +121,19 @@ async fn write_app_settings_file(app: tauri::AppHandle, configuration: Configura
     Ok(())
 }
 
-fn get_project_settings_file_path(app_settings: Configuration, project_name: &str) -> Result<PathBuf, InvokeError> {
-    Ok(app_settings
-        .settings
-        .project
-        .directory
-        .join(project_name)
-        .join(PROJECT_SETTINGS_FILE_NAME))
+async fn get_project_settings_file_path(
+    app_settings: Configuration,
+    project_name: &str,
+) -> Result<PathBuf, InvokeError> {
+    let project_dir = app_settings.settings.project.directory.join(project_name);
+
+    if !project_dir.exists() {
+        tokio::fs::create_dir_all(&project_dir)
+            .await
+            .map_err(|e| InvokeError::from_anyhow(e.into()))?;
+    }
+
+    Ok(project_dir.join(PROJECT_SETTINGS_FILE_NAME))
 }
 
 #[tauri::command]
@@ -127,7 +141,7 @@ async fn read_project_settings_file(
     app_settings: Configuration,
     project_name: &str,
 ) -> Result<ProjectConfiguration, InvokeError> {
-    let settings_path = get_project_settings_file_path(app_settings, project_name)?;
+    let settings_path = get_project_settings_file_path(app_settings, project_name).await?;
 
     // Check if this file exists.
     if !settings_path.exists() {
@@ -149,7 +163,7 @@ async fn write_project_settings_file(
     project_name: &str,
     configuration: ProjectConfiguration,
 ) -> Result<(), InvokeError> {
-    let settings_path = get_project_settings_file_path(app_settings, project_name)?;
+    let settings_path = get_project_settings_file_path(app_settings, project_name).await?;
     let contents = toml::to_string_pretty(&configuration).map_err(|e| InvokeError::from_anyhow(e.into()))?;
     tokio::fs::write(settings_path, contents.as_bytes())
         .await
@@ -193,6 +207,12 @@ async fn get_project_info(configuration: Configuration, project_path: &str) -> R
         .get_project_info(project_path)
         .await
         .map_err(InvokeError::from_anyhow)
+}
+
+/// Parse the project route.
+#[tauri::command]
+async fn parse_project_route(configuration: Configuration, route: &str) -> Result<ProjectRoute, InvokeError> {
+    ProjectRoute::from_route(&configuration, route).map_err(InvokeError::from_anyhow)
 }
 
 #[tauri::command]
@@ -351,6 +371,7 @@ fn main() -> Result<()> {
             create_new_project_directory,
             list_projects,
             get_project_info,
+            parse_project_route,
             get_user,
             login,
             read_dir_recursive,
@@ -409,6 +430,14 @@ fn main() -> Result<()> {
 
             let runner: tauri::async_runtime::JoinHandle<Result<ProjectState>> =
                 tauri::async_runtime::spawn(async move {
+                    // Fix for "." path, which is the current directory.
+                    let source_path = if source_path == Path::new(".") {
+                        std::env::current_dir()
+                            .map_err(|e| anyhow::anyhow!("Error getting the current directory: {:?}", e))?
+                    } else {
+                        source_path
+                    };
+
                     // If the path is a directory, let's assume it is a project directory.
                     if source_path.is_dir() {
                         // Load the details about the project from the path.
