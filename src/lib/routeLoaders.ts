@@ -9,13 +9,16 @@ import {
   PROJECT_ENTRYPOINT,
 } from 'lib/constants'
 import { loadAndValidateSettings } from './settings/settingsUtils'
-import { getProjectsInDir } from './tauriFS'
 import makeUrlPathRelative from './makeUrlPathRelative'
-import { join, sep } from '@tauri-apps/api/path'
-import { readTextFile, stat } from '@tauri-apps/plugin-fs'
+import { sep } from '@tauri-apps/api/path'
+import { readTextFile } from '@tauri-apps/plugin-fs'
 import { codeManager, kclManager } from 'lib/singletons'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
-import { initializeProjectDirectory, readDirRecursive } from './tauri'
+import {
+  initializeProjectDirectory,
+  listProjects,
+  readDirRecursive,
+} from './tauri'
 import { createSettings } from './settings/initialSettings'
 
 // The root loader simply resolves the settings and any errors that
@@ -147,7 +150,7 @@ export const homeLoader: LoaderFunction = async (): Promise<
   const projectDir = await initializeProjectDirectory(configuration)
 
   if (projectDir) {
-    const projects = await getProjectsInDir(projectDir)
+    const projects = await listProjects(configuration)
 
     return {
       projects,

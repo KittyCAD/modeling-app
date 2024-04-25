@@ -103,10 +103,35 @@ impl Configuration {
                 name: project_name.to_string(),
                 // We don't need to recursively get all files in the project directory.
                 // Because we just created it and it's empty.
-                children: vec![],
+                children: None,
             },
             metadata: Some(tokio::fs::metadata(&project_dir).await?.into()),
         })
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    /// List all the projects for the configuration.
+    pub async fn list_projects(&self) -> Result<Vec<crate::settings::types::file::Project>> {
+        // Get all the top level directories in the project directory.
+        let main_dir = &self.ensure_project_directory_exists().await?;
+        let mut projects = vec![];
+
+        let mut entries = tokio::fs::read_dir(main_dir).await?;
+        while let Some(e) = entries.next_entry().await? {
+            if !e.file_type().await?.is_dir() {
+                // We don't care it's not a directory.
+                continue;
+            }
+
+            let project = crate::settings::types::file::Project {
+                file: crate::settings::utils::walk_dir(e.path()).await?,
+                metadata: Some(tokio::fs::metadata(&e.path()).await?.into()),
+            };
+
+            projects.push(project);
+        }
+
+        Ok(projects)
     }
 }
 

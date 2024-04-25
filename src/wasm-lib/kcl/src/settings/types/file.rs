@@ -22,8 +22,8 @@ pub struct Project {
 pub struct FileEntry {
     pub path: String,
     pub name: String,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub children: Vec<FileEntry>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub children: Option<Vec<FileEntry>>,
 }
 
 /// Metadata about a file or directory.

@@ -5,7 +5,6 @@ import { Themes, getSystemTheme } from 'lib/theme'
 import { bracket } from 'lib/exampleKcl'
 import {
   getNextProjectIndex,
-  getProjectsInDir,
   interpolateProjectNameWithIndex,
 } from 'lib/tauriFS'
 import { isTauri } from 'lib/isTauri'
@@ -19,22 +18,15 @@ import {
   ONBOARDING_PROJECT_NAME,
   PROJECT_ENTRYPOINT,
 } from 'lib/constants'
-import { createNewProjectDirectory } from 'lib/tauri'
+import { createNewProjectDirectory, listProjects } from 'lib/tauri'
 
 function OnboardingWithNewFile() {
   const navigate = useNavigate()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.INDEX)
-  const {
-    settings: {
-      context: {
-        app: { projectDirectory },
-      },
-    },
-  } = useSettingsAuthContext()
 
   async function createAndOpenNewProject() {
-    const projects = await getProjectsInDir(projectDirectory.current)
+    const projects = await listProjects()
     const nextIndex = await getNextProjectIndex(
       ONBOARDING_PROJECT_NAME,
       projects

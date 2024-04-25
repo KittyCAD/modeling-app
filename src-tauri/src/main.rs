@@ -163,6 +163,15 @@ async fn create_new_project_directory(
         .map_err(|e| InvokeError::from_anyhow(e.into()))
 }
 
+/// List all the projects in the project directory.
+#[tauri::command]
+async fn list_projects(configuration: Configuration) -> Result<Vec<Project>, InvokeError> {
+    configuration
+        .list_projects()
+        .await
+        .map_err(|e| InvokeError::from_anyhow(e.into()))
+}
+
 /// From https://github.com/tauri-apps/tauri/blob/1.x/core/tauri/src/api/dir.rs#L51
 /// Removed from tauri v2
 #[derive(Debug, Serialize)]
@@ -348,6 +357,7 @@ fn main() {
             get_initial_default_dir,
             initialize_project_directory,
             create_new_project_directory,
+            list_projects,
             get_user,
             login,
             read_dir_recursive,

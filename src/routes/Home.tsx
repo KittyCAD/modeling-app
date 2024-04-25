@@ -4,7 +4,6 @@ import {
   getNextProjectIndex,
   interpolateProjectNameWithIndex,
   doesProjectNameNeedInterpolated,
-  getProjectsInDir,
 } from '../lib/tauriFS'
 import { ActionButton } from '../components/ActionButton'
 import { faArrowDown, faPlus } from '@fortawesome/free-solid-svg-icons'
@@ -36,7 +35,7 @@ import { useLspContext } from 'components/LspProvider'
 import { useRefreshSettings } from 'hooks/useRefreshSettings'
 import { LowerRightControls } from 'components/LowerRightControls'
 import { Project } from 'wasm-lib/kcl/bindings/Project'
-import { createNewProjectDirectory } from 'lib/tauri'
+import { createNewProjectDirectory, listProjects } from 'lib/tauri'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
@@ -92,7 +91,7 @@ const Home = () => {
     },
     services: {
       readProjects: async (context: ContextFrom<typeof homeMachine>) =>
-        getProjectsInDir(context.defaultDirectory),
+        listProjects(),
       createProject: async (
         context: ContextFrom<typeof homeMachine>,
         event: EventFrom<typeof homeMachine, 'Create project'>

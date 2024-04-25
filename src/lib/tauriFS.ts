@@ -1,5 +1,4 @@
-import { stat } from '@tauri-apps/plugin-fs'
-import { appConfigDir, join } from '@tauri-apps/api/path'
+import { appConfigDir} from '@tauri-apps/api/path'
 import { isTauri } from './isTauri'
 import type { FileEntry } from 'lib/types'
 import {
@@ -12,30 +11,18 @@ import {
 } from 'lib/constants'
 import { bracket } from './exampleKcl'
 import { paths } from './paths'
-import { createNewProjectDirectory, readDirRecursive } from './tauri'
+import {
+  createNewProjectDirectory,
+  listProjects,
+  readAppSettingsFile,
+  readDirRecursive,
+} from './tauri'
 
 export function isProjectDirectory(fileOrDir: Partial<FileEntry>) {
   return (
     fileOrDir.children?.length &&
     fileOrDir.children.some((child) => child.name === PROJECT_ENTRYPOINT)
   )
-}
-
-// Read the contents of a directory
-// and return the valid projects
-export async function getProjectsInDir(projectDir: string) {
-  const readProjects = (await readDirRecursive(projectDir)).filter(
-    isProjectDirectory
-  )
-
-  const projectsWithMetadata = await Promise.all(
-    readProjects.map(async (p) => ({
-      entrypointMetadata: await stat(await join(p.path, PROJECT_ENTRYPOINT)),
-      ...p,
-    }))
-  )
-
-  return projectsWithMetadata
 }
 
 export const isHidden = (fileOrDir: FileEntry) =>
@@ -232,12 +219,13 @@ export async function createAndOpenNewProject(
   projectDirectory: string,
   navigate: (path: string) => void
 ) {
-  const projects = await getProjectsInDir(projectDirectory)
+  const configuration = await readAppSettingsFile()
+  const projects = await listProjects(configuration)
   const nextIndex = await getNextProjectIndex(ONBOARDING_PROJECT_NAME, projects)
   const name = interpolateProjectNameWithIndex(
     ONBOARDING_PROJECT_NAME,
     nextIndex
   )
-  const newFile = await createNewProjectDirectory(name, bracket)
+  const newFile = await createNewProjectDirectory(name, bracket, configuration)
   navigate(`${paths.FILE}/${encodeURIComponent(newFile.path)}`)
 }

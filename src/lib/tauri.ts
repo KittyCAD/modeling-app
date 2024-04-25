@@ -30,14 +30,26 @@ export async function initializeProjectDirectory(
 
 export async function createNewProjectDirectory(
   projectName: string,
-  initialCode?: string
+  initialCode?: string,
+  configuration?: Configuration
 ): Promise<Project> {
-  const configuration = await readAppSettingsFile()
+  if (!configuration) {
+    configuration = await readAppSettingsFile()
+  }
   return await invoke<Project>('create_new_project_directory', {
     configuration,
     projectName,
     initialCode,
   })
+}
+
+export async function listProjects(
+  configuration?: Configuration
+): Promise<Project[]> {
+  if (!configuration) {
+    configuration = await readAppSettingsFile()
+  }
+  return await invoke<Project[]>('list_projects', { configuration })
 }
 
 export async function login(host: string): Promise<string> {
