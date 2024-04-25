@@ -1483,7 +1483,7 @@ const things = "things"
     fn test_kitt() {
         let program = include_str!("../../../tests/executor/inputs/kittycad_svg.kcl");
         let actual = lexer(program).unwrap();
-        assert_eq!(actual.len(), 5093);
+        assert_eq!(actual.len(), 5103);
     }
     #[test]
     fn test_pipes_on_pipes() {

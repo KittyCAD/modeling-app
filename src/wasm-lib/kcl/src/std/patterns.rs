@@ -93,6 +93,7 @@ pub async fn pattern_linear_2d(args: Args) -> Result<MemoryItem, KclError> {
 /// const part =  startSketchOn('XY')
 ///     |> circle([0,0], 2, %)
 ///     |> patternLinear2d({axis: [0,1], repetitions: 12, distance: 2}, %)
+///     |> extrude(1, %)
 /// ```
 #[stdlib {
     name = "patternLinear2d",
@@ -341,6 +342,7 @@ pub async fn pattern_circular_2d(args: Args) -> Result<MemoryItem, KclError> {
 /// const part = startSketchOn('XY')
 ///     |> circle([0,0], 2, %)
 ///     |> patternCircular2d({center: [20, 20], repetitions: 12, arcDegrees: 210, rotateDuplicates: true}, %)
+///     |> extrude(1, %)
 /// ```
 #[stdlib {
     name = "patternCircular2d",
