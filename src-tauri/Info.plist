@@ -10,6 +10,7 @@
                 <key>CFBundleURLSchemes</key>
                 <array>
                     <string>zoo-modeling-app</string>
+                    <string>zoo</string>
                 </array>
             </dict>
         </array>
