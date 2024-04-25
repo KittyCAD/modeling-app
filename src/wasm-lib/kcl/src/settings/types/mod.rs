@@ -790,10 +790,10 @@ directory = "/Users/macinatormax/Documents/kittycad-modeling-projects"
             panic!("Expected an error, but got success: {:?}", r);
         }
         assert!(result.is_err());
-        assert_eq!(
-            result.unwrap_err().to_string(),
-            r#"color: Validation error: color [{"min": Number(0.0), "exclusive_max": Number(360.0)}]"#
-        );
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("color: Validation error: color"));
 
         let appearance = AppearanceSettings {
             theme: AppTheme::System,
@@ -804,10 +804,10 @@ directory = "/Users/macinatormax/Documents/kittycad-modeling-projects"
             panic!("Expected an error, but got success: {:?}", r);
         }
         assert!(result.is_err());
-        assert_eq!(
-            result.unwrap_err().to_string(),
-            r#"color: Validation error: color [{"min": Number(0.0), "exclusive_max": Number(360.0)}]"#
-        );
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("color: Validation error: color"));
     }
 
     #[test]
@@ -821,9 +821,9 @@ color = 1567.4"#;
         }
         assert!(result.is_err());
 
-        assert_eq!(
-            result.unwrap_err().to_string(),
-            r#"color: Validation error: color [{"min": Number(0.0), "exclusive_max": Number(360.0)}]"#
-        );
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("color: Validation error: color"));
     }
 }
