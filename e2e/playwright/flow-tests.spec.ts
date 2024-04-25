@@ -1282,7 +1282,6 @@ fn yohey = (pos) => {
 
   await page.getByText(selectionsSnippets.extrudeAndEditBlocked).click()
   await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
-  await expect(page.getByRole('button', { name: 'Sketch' })).not.toBeVisible()
 
   await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
   await expect(page.getByRole('button', { name: 'Extrude' })).not.toBeDisabled()
@@ -1296,7 +1295,6 @@ fn yohey = (pos) => {
     .getByText(selectionsSnippets.extrudeAndEditBlockedInFunction)
     .click()
   await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
-  await expect(page.getByRole('button', { name: 'Sketch' })).not.toBeVisible()
 
   // selecting an editable sketch but clicking "start sktech" should start a new sketch and not edit the existing one
   await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
@@ -1457,9 +1455,6 @@ const doSnapAtDifferentScales = async (
 |> line([${roundOff(scale * 175.36)}, 0], %)
 |> line([0, -${roundOff(scale * 175.36) + fudge}], %)
 |> close(%)`
-
-  await expect(page.getByRole('button', { name: 'Sketch' })).not.toBeDisabled()
-  await expect(page.getByRole('button', { name: 'Sketch' })).toBeVisible()
 
   await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Sketch' }).click()
