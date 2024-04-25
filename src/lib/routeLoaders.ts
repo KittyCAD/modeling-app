@@ -28,16 +28,18 @@ export const settingsLoader: LoaderFunction = async ({
 }): Promise<
   ReturnType<typeof createSettings> | ReturnType<typeof redirect>
 > => {
-  let { settings } = await loadAndValidateSettings()
+  let { settings, configuration } = await loadAndValidateSettings()
 
   // I don't love that we have to read the settings again here,
   // but we need to get the project path to load the project settings
   if (params.id) {
-    const defaultDir = settings.app.projectDirectory.current || ''
-    const projectPathData = getProjectMetaByRouteId(params.id, defaultDir)
+    const projectPathData = await getProjectMetaByRouteId(
+      params.id,
+      configuration
+    )
     if (projectPathData) {
-      const { projectName } = projectPathData
-      const { settings: s } = await loadAndValidateSettings(projectName)
+      const { project_name } = projectPathData
+      const { settings: s } = await loadAndValidateSettings(project_name)
       settings = s
     }
   }
@@ -71,18 +73,20 @@ export const onboardingRedirectLoader: ActionFunction = async (args) => {
 export const fileLoader: LoaderFunction = async ({
   params,
 }): Promise<FileLoaderData | Response> => {
-  let { settings } = await loadAndValidateSettings()
+  let { configuration } = await loadAndValidateSettings()
 
-  const defaultDir = settings.app.projectDirectory.current || '/'
-  const projectPathData = getProjectMetaByRouteId(params.id, defaultDir)
+  const projectPathData = await getProjectMetaByRouteId(
+    params.id,
+    configuration
+  )
   console.log('projectPathData', projectPathData)
   const isBrowserProject = params.id === decodeURIComponent(BROWSER_PATH)
 
   if (!isBrowserProject && projectPathData) {
-    const { projectName, projectPath, currentFileName, currentFilePath } =
+    const { project_name, project_path, current_file_name, current_file_path } =
       projectPathData
 
-    if (!currentFileName || !currentFilePath) {
+    if (!current_file_name || !current_file_path) {
       return redirect(
         `${paths.FILE}/${encodeURIComponent(
           `${params.id}${isTauri() ? sep() : '/'}${PROJECT_ENTRYPOINT}`
@@ -92,33 +96,33 @@ export const fileLoader: LoaderFunction = async ({
 
     // TODO: PROJECT_ENTRYPOINT is hardcoded
     // until we support setting a project's entrypoint file
-    const code = await readTextFile(currentFilePath)
+    const code = await readTextFile(current_file_path)
 
     // Update both the state and the editor's code.
     // We explicitly do not write to the file here since we are loading from
     // the file system and not the editor.
-    codeManager.updateCurrentFilePath(currentFilePath)
+    codeManager.updateCurrentFilePath(current_file_path)
     codeManager.updateCodeStateEditor(code)
     kclManager.executeCode(true)
 
     // Set the file system manager to the project path
     // So that WASM gets an updated path for operations
-    fileSystemManager.dir = projectPath
+    fileSystemManager.dir = project_path
 
     const projectData: IndexLoaderData = {
       code,
       project: isTauri()
-        ? await getProjectInfo(projectPath)
+        ? await getProjectInfo(project_path, configuration)
         : {
-            name: projectName,
-            path: projectPath,
+            name: project_name,
+            path: project_path,
             children: [],
             kcl_file_count: 0,
             directory_count: 0,
           },
       file: {
-        name: currentFileName,
-        path: currentFilePath,
+        name: current_file_name,
+        path: current_file_path,
         children: [],
       },
     }
