@@ -127,9 +127,9 @@ export const ClientSideScene = ({
         style={{ cursor: cursor }}
         className={`absolute inset-0 h-full w-full transition-all duration-300 ${
           hideClient ? 'opacity-0' : 'opacity-100'
-        } ${hideServer ? 'bg-black' : ''} ${
+        } ${hideServer ? 'bg-[#1C1C1C]' : ''} ${
           !hideClient && !hideServer && state.matches('Sketch')
-            ? 'bg-black/80'
+            ? 'bg-[#1C1C1C]/80'
             : ''
         }`}
       ></div>
@@ -318,7 +318,6 @@ const ConstraintSymbol = ({
       displayName: string
       iconName: CustomIconName
       implicitConstraintDesc?: string
-      // implicitConstraintDesc?: (props: {value:string}) => React.ReactNode
     }
   } = {
     xRelative: {
@@ -356,6 +355,7 @@ const ConstraintSymbol = ({
       displayName: 'Intersection Offset',
       iconName: 'intersection-offset',
     },
+
     // implicit constraints
     vertical: {
       varName: '',
@@ -396,9 +396,11 @@ const ConstraintSymbol = ({
     <div className="relative group">
       <button
         className={`${
-          isConstrained
-            ? 'bg-white/50 group-hover:bg-white/80 text-black border-2 border-transparent group-hover:border-gray-400 rounded-sm'
-            : 'bg-primary/30 text-primary border-2 border-transparent group-hover:bg-primary/40 group-hover:border-primary/50 group-hover:brightness-125'
+          implicitDesc
+            ? 'bg-[#1C1C1C]/90 border-transparent border-0 rounded'
+            : isConstrained
+            ? 'bg-white/50 group-hover:bg-white/80 text-black border-transparent group-hover:border-gray-400 rounded-sm'
+            : 'bg-primary/30 text-primary border-transparent group-hover:bg-primary/40 group-hover:border-primary/50 group-hover:brightness-125'
         } h-[26px] w-[26px] rounded-sm relative m-0 p-0`}
         onMouseEnter={() => {
           editorManager.setHighlightRange(range)
@@ -407,6 +409,7 @@ const ConstraintSymbol = ({
           editorManager.setHighlightRange([0, 0])
         }}
         // disabled={isConstrained || !convertToVarEnabled}
+        // disabled={implicitDesc} TODO why does this change styles that are hard to override?
         onClick={() => {
           console.log(
             'isConstrained && convertToVarEnabled',
