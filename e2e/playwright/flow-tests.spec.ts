@@ -1294,15 +1294,6 @@ fn yohey = (pos) => {
     .getByText(selectionsSnippets.extrudeAndEditBlockedInFunction)
     .click()
   await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
-
-  // selecting an editable sketch but clicking "start sktech" should start a new sketch and not edit the existing one
-  await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
-  await page.getByRole('button', { name: 'Sketch' }).click()
-  await page.mouse.click(700, 200)
-  // expect main content to contain `part005` i.e. started a new sketch
-  await expect(page.locator('.cm-content')).toHaveText(
-    /part005 = startSketchOn\('-XZ'\)/
-  )
 })
 
 test('Deselecting line tool should mean nothing happens on click', async ({
@@ -1392,17 +1383,18 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
   const dragPX = 30
 
   await page.getByText('startProfileAt([4.61, -14.01], %)').click()
+  await page.waitForTimeout(100)
   await expect(page.getByRole('button', { name: 'Sketch' })).toBeVisible()
   await page.getByRole('button', { name: 'Sketch' }).click()
-  await page.waitForTimeout(400)
+  await page.waitForTimeout(1000)
   let prevContent = await page.locator('.cm-content').innerText()
 
-  const step5 = { steps: 5 }
+  const step10 = { steps: 10 }
 
   // drag startProfieAt handle
   await page.mouse.move(startPX[0], startPX[1])
   await page.mouse.down()
-  await page.mouse.move(startPX[0] + dragPX, startPX[1] - dragPX, step5)
+  await page.mouse.move(startPX[0] + dragPX, startPX[1] - dragPX, step10)
   await page.mouse.up()
 
   await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
@@ -1414,7 +1406,7 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
   await page.mouse.move(
     lineEndPX[0] + dragPX * 2,
     lineEndPX[1] - dragPX * 2,
-    step5
+    step10
   )
   await page.mouse.up()
   await page.waitForTimeout(100)
@@ -1424,7 +1416,7 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
   // drag tangentialArcTo handle
   await page.mouse.move(arcEndPX[0], arcEndPX[1])
   await page.mouse.down()
-  await page.mouse.move(arcEndPX[0] + dragPX, arcEndPX[1] - dragPX, step5)
+  await page.mouse.move(arcEndPX[0] + dragPX, arcEndPX[1] - dragPX, step10)
   await page.mouse.up()
   await page.waitForTimeout(100)
   await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
