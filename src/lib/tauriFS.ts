@@ -15,13 +15,6 @@ import {
   readAppSettingsFile,
 } from './tauri'
 
-export function isProjectDirectory(fileOrDir: Partial<FileEntry>) {
-  return (
-    fileOrDir.children?.length &&
-    fileOrDir.children.some((child) => child.name === PROJECT_ENTRYPOINT)
-  )
-}
-
 export const isHidden = (fileOrDir: FileEntry) =>
   !!fileOrDir.name?.startsWith('.')
 
