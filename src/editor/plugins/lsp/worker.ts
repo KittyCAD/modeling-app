@@ -28,11 +28,11 @@ const initialise = async (wasmUrl: string) => {
 export async function copilotLspRun(
   config: ServerConfig,
   token: string,
-  devMode: boolean = false
+  baseUrl: string
 ) {
   try {
     console.log('starting copilot lsp')
-    await copilot_lsp_run(config, token, devMode)
+    await copilot_lsp_run(config, token, baseUrl)
   } catch (e: any) {
     console.log('copilot lsp failed', e)
     // We can't restart here because a moved value, we should do this another way.
@@ -44,11 +44,11 @@ export async function kclLspRun(
   engineCommandManager: EngineCommandManager | null,
   token: string,
   baseUnit: string,
-  devMode: boolean = false
+  baseUrl: string
 ) {
   try {
     console.log('start kcl lsp')
-    await kcl_lsp_run(config, engineCommandManager, baseUnit, token, devMode)
+    await kcl_lsp_run(config, engineCommandManager, baseUnit, token, baseUrl)
   } catch (e: any) {
     console.log('kcl lsp failed', e)
     // We can't restart here because a moved value, we should do this another way.
@@ -80,12 +80,12 @@ onmessage = function (event) {
                 null,
                 kclData.token,
                 kclData.baseUnit,
-                kclData.devMode
+                kclData.apiBaseUrl
               )
               break
             case LspWorker.Copilot:
               let copilotData = eventData as CopilotWorkerOptions
-              copilotLspRun(config, copilotData.token, copilotData.devMode)
+              copilotLspRun(config, copilotData.token, copilotData.apiBaseUrl)
               break
           }
         })

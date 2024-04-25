@@ -77,7 +77,7 @@ export const ModelingMachineProvider = ({
     auth,
     settings: {
       context: {
-        app: { theme },
+        app: { theme, enableSSAO },
         modeling: { defaultUnit, highlightEdges },
       },
     },
@@ -87,6 +87,7 @@ export const ModelingMachineProvider = ({
   useSetupEngineManager(streamRef, token, {
     theme: theme.current,
     highlightEdges: highlightEdges.current,
+    enableSSAO: enableSSAO.current,
   })
   const { htmlRef } = useStore((s) => ({
     htmlRef: s.htmlRef,
@@ -267,10 +268,12 @@ export const ModelingMachineProvider = ({
         'has valid extrude selection': ({ selectionRanges }) => {
           // A user can begin extruding if they either have 1+ faces selected or nothing selected
           // TODO: I believe this guard only allows for extruding a single face at a time
-          if (selectionRanges.codeBasedSelections.length < 1) return false
           const isPipe = isSketchPipe(selectionRanges)
 
-          if (isSelectionLastLine(selectionRanges, codeManager.code))
+          if (
+            selectionRanges.codeBasedSelections.length === 0 ||
+            isSelectionLastLine(selectionRanges, codeManager.code)
+          )
             return true
           if (!isPipe) return false
 

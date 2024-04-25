@@ -1,91 +1,219 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::env;
-use std::fs;
-use std::io::Read;
-use std::path::Path;
-use std::path::PathBuf;
+pub(crate) mod state;
+
+use std::{
+    env,
+    path::{Path, PathBuf},
+    process::Command,
+};
 
 use anyhow::Result;
+use kcl_lib::settings::types::{
+    file::{FileEntry, Project, ProjectState},
+    project::ProjectConfiguration,
+    Configuration, DEFAULT_PROJECT_KCL_FILE,
+};
 use oauth2::TokenResponse;
-use serde::Serialize;
-use std::process::Command;
-use tauri::ipc::InvokeError;
+use tauri::{ipc::InvokeError, Manager};
+use tauri_plugin_cli::CliExt;
 use tauri_plugin_shell::ShellExt;
-const DEFAULT_HOST: &str = "https://api.kittycad.io";
 
-/// This command returns the a json string parse from a toml file at the path.
+const DEFAULT_HOST: &str = "https://api.zoo.dev";
+const SETTINGS_FILE_NAME: &str = "settings.toml";
+const PROJECT_SETTINGS_FILE_NAME: &str = "project.toml";
+const PROJECT_FOLDER: &str = "zoo-modeling-app-projects";
+
 #[tauri::command]
-fn read_toml(path: &str) -> Result<String, InvokeError> {
-    let mut file = std::fs::File::open(path).map_err(|e| InvokeError::from_anyhow(e.into()))?;
-    let mut contents = String::new();
-    file.read_to_string(&mut contents)
-        .map_err(|e| InvokeError::from_anyhow(e.into()))?;
-    let value =
-        toml::from_str::<toml::Value>(&contents).map_err(|e| InvokeError::from_anyhow(e.into()))?;
-    let value = serde_json::to_string(&value).map_err(|e| InvokeError::from_anyhow(e.into()))?;
-    Ok(value)
+fn get_initial_default_dir(app: tauri::AppHandle) -> Result<PathBuf, InvokeError> {
+    let dir = match app.path().document_dir() {
+        Ok(dir) => dir,
+        Err(_) => {
+            // for headless Linux (eg. Github Actions)
+            let home_dir = app.path().home_dir()?;
+            home_dir.join("Documents")
+        }
+    };
+
+    Ok(dir.join(PROJECT_FOLDER))
 }
 
-/// From https://github.com/tauri-apps/tauri/blob/1.x/core/tauri/src/api/dir.rs#L51
-/// Removed from tauri v2
-#[derive(Debug, Serialize)]
-pub struct DiskEntry {
-    /// The path to the entry.
-    pub path: PathBuf,
-    /// The name of the entry (file name with extension or directory name).
-    pub name: Option<String>,
-    /// The children of this entry if it's a directory.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub children: Option<Vec<DiskEntry>>,
-}
-
-/// From https://github.com/tauri-apps/tauri/blob/1.x/core/tauri/src/api/dir.rs#L51
-/// Removed from tauri v2
-fn is_dir<P: AsRef<Path>>(path: P) -> Result<bool> {
-    std::fs::metadata(path)
-        .map(|md| md.is_dir())
-        .map_err(Into::into)
-}
-
-/// From https://github.com/tauri-apps/tauri/blob/1.x/core/tauri/src/api/dir.rs#L51
-/// Removed from tauri v2
 #[tauri::command]
-fn read_dir_recursive(path: &str) -> Result<Vec<DiskEntry>, InvokeError> {
-    let mut files_and_dirs: Vec<DiskEntry> = vec![];
-    // let path = path.as_ref();
-    for entry in fs::read_dir(path).map_err(|e| InvokeError::from_anyhow(e.into()))? {
-        let path = entry
-            .map_err(|e| InvokeError::from_anyhow(e.into()))?
-            .path();
+async fn get_state(app: tauri::AppHandle) -> Result<Option<ProjectState>, InvokeError> {
+    let store = app.state::<state::Store>();
+    Ok(store.get().await)
+}
 
-        if let Ok(flag) = is_dir(&path) {
-            files_and_dirs.push(DiskEntry {
-                path: path.clone(),
-                children: if flag {
-                    Some(read_dir_recursive(path.to_str().expect("No path"))?)
-                } else {
-                    None
-                },
-                name: path
-                    .file_name()
-                    .map(|name| name.to_string_lossy())
-                    .map(|name| name.to_string()),
-            });
+#[tauri::command]
+async fn set_state(app: tauri::AppHandle, state: Option<ProjectState>) -> Result<(), InvokeError> {
+    let store = app.state::<state::Store>();
+    store.set(state).await;
+    Ok(())
+}
+
+async fn get_app_settings_file_path(app: &tauri::AppHandle) -> Result<PathBuf, InvokeError> {
+    let app_config_dir = app.path().app_config_dir()?;
+
+    // Ensure this directory exists.
+    if !app_config_dir.exists() {
+        tokio::fs::create_dir_all(&app_config_dir)
+            .await
+            .map_err(|e| InvokeError::from_anyhow(e.into()))?;
+    }
+
+    Ok(app_config_dir.join(SETTINGS_FILE_NAME))
+}
+
+#[tauri::command]
+async fn read_app_settings_file(app: tauri::AppHandle) -> Result<Configuration, InvokeError> {
+    let mut settings_path = get_app_settings_file_path(&app).await?;
+    let mut needs_migration = false;
+
+    // Check if this file exists.
+    if !settings_path.exists() {
+        // Try the backwards compatible path.
+        // TODO: Remove this after a few releases.
+        let app_config_dir = app.path().app_config_dir()?;
+        settings_path = format!(
+            "{}user.toml",
+            app_config_dir.display().to_string().trim_end_matches('/')
+        )
+        .into();
+        needs_migration = true;
+        // Check if this path exists.
+        if !settings_path.exists() {
+            let mut default = Configuration::default();
+            default.settings.project.directory = get_initial_default_dir(app.clone())?;
+            // Return the default configuration.
+            return Ok(default);
         }
     }
-    Ok(files_and_dirs)
+
+    let contents = tokio::fs::read_to_string(&settings_path)
+        .await
+        .map_err(|e| InvokeError::from_anyhow(e.into()))?;
+    let mut parsed = Configuration::backwards_compatible_toml_parse(&contents).map_err(InvokeError::from_anyhow)?;
+    if parsed.settings.project.directory == PathBuf::new() {
+        parsed.settings.project.directory = get_initial_default_dir(app.clone())?;
+    }
+
+    // TODO: Remove this after a few releases.
+    if needs_migration {
+        write_app_settings_file(app, parsed.clone()).await?;
+        // Delete the old file.
+        tokio::fs::remove_file(settings_path)
+            .await
+            .map_err(|e| InvokeError::from_anyhow(e.into()))?;
+    }
+
+    Ok(parsed)
 }
 
-/// This command returns a string that is the contents of a file at the path.
 #[tauri::command]
-fn read_txt_file(path: &str) -> Result<String, InvokeError> {
-    let mut file = std::fs::File::open(path).map_err(|e| InvokeError::from_anyhow(e.into()))?;
-    let mut contents = String::new();
-    file.read_to_string(&mut contents)
+async fn write_app_settings_file(app: tauri::AppHandle, configuration: Configuration) -> Result<(), InvokeError> {
+    let settings_path = get_app_settings_file_path(&app).await?;
+    let contents = toml::to_string_pretty(&configuration).map_err(|e| InvokeError::from_anyhow(e.into()))?;
+    tokio::fs::write(settings_path, contents.as_bytes())
+        .await
         .map_err(|e| InvokeError::from_anyhow(e.into()))?;
-    Ok(contents)
+
+    Ok(())
+}
+
+async fn get_project_settings_file_path(
+    app_settings: Configuration,
+    project_name: &str,
+) -> Result<PathBuf, InvokeError> {
+    let project_dir = app_settings.settings.project.directory.join(project_name);
+
+    if !project_dir.exists() {
+        tokio::fs::create_dir_all(&project_dir)
+            .await
+            .map_err(|e| InvokeError::from_anyhow(e.into()))?;
+    }
+
+    Ok(project_dir.join(PROJECT_SETTINGS_FILE_NAME))
+}
+
+#[tauri::command]
+async fn read_project_settings_file(
+    app_settings: Configuration,
+    project_name: &str,
+) -> Result<ProjectConfiguration, InvokeError> {
+    let settings_path = get_project_settings_file_path(app_settings, project_name).await?;
+
+    // Check if this file exists.
+    if !settings_path.exists() {
+        // Return the default configuration.
+        return Ok(ProjectConfiguration::default());
+    }
+
+    let contents = tokio::fs::read_to_string(&settings_path)
+        .await
+        .map_err(|e| InvokeError::from_anyhow(e.into()))?;
+    let parsed = ProjectConfiguration::backwards_compatible_toml_parse(&contents).map_err(InvokeError::from_anyhow)?;
+
+    Ok(parsed)
+}
+
+#[tauri::command]
+async fn write_project_settings_file(
+    app_settings: Configuration,
+    project_name: &str,
+    configuration: ProjectConfiguration,
+) -> Result<(), InvokeError> {
+    let settings_path = get_project_settings_file_path(app_settings, project_name).await?;
+    let contents = toml::to_string_pretty(&configuration).map_err(|e| InvokeError::from_anyhow(e.into()))?;
+    tokio::fs::write(settings_path, contents.as_bytes())
+        .await
+        .map_err(|e| InvokeError::from_anyhow(e.into()))?;
+
+    Ok(())
+}
+
+/// Initialize the directory that holds all the projects.
+#[tauri::command]
+async fn initialize_project_directory(configuration: Configuration) -> Result<PathBuf, InvokeError> {
+    configuration
+        .ensure_project_directory_exists()
+        .await
+        .map_err(InvokeError::from_anyhow)
+}
+
+/// Create a new project directory.
+#[tauri::command]
+async fn create_new_project_directory(
+    configuration: Configuration,
+    project_name: &str,
+    initial_code: Option<&str>,
+) -> Result<Project, InvokeError> {
+    configuration
+        .create_new_project_directory(project_name, initial_code)
+        .await
+        .map_err(InvokeError::from_anyhow)
+}
+
+/// List all the projects in the project directory.
+#[tauri::command]
+async fn list_projects(configuration: Configuration) -> Result<Vec<Project>, InvokeError> {
+    configuration.list_projects().await.map_err(InvokeError::from_anyhow)
+}
+
+/// Get information about a project.
+#[tauri::command]
+async fn get_project_info(configuration: Configuration, project_path: &str) -> Result<Project, InvokeError> {
+    configuration
+        .get_project_info(project_path)
+        .await
+        .map_err(InvokeError::from_anyhow)
+}
+
+#[tauri::command]
+async fn read_dir_recursive(path: &str) -> Result<FileEntry, InvokeError> {
+    kcl_lib::settings::utils::walk_dir(&Path::new(path).to_path_buf())
+        .await
+        .map_err(InvokeError::from_anyhow)
 }
 
 /// This command instantiates a new window with auth.
@@ -103,8 +231,7 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
     let auth_client = oauth2::basic::BasicClient::new(
         oauth2::ClientId::new(client_id),
         None,
-        oauth2::AuthUrl::new(format!("{host}/authorize"))
-            .map_err(|e| InvokeError::from_anyhow(e.into()))?,
+        oauth2::AuthUrl::new(format!("{host}/authorize")).map_err(|e| InvokeError::from_anyhow(e.into()))?,
         Some(
             oauth2::TokenUrl::new(format!("{host}/oauth2/device/token"))
                 .map_err(|e| InvokeError::from_anyhow(e.into()))?,
@@ -132,12 +259,10 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
     // and bypass the shell::open call as it fails on GitHub Actions.
     let e2e_tauri_enabled = env::var("E2E_TAURI_ENABLED").is_ok();
     if e2e_tauri_enabled {
-        println!(
-            "E2E_TAURI_ENABLED is set, won't open {} externally",
-            auth_uri.secret()
-        );
-        fs::write("/tmp/kittycad_user_code", details.user_code().secret())
-            .expect("Unable to write /tmp/kittycad_user_code file");
+        println!("E2E_TAURI_ENABLED is set, won't open {} externally", auth_uri.secret());
+        tokio::fs::write("/tmp/kittycad_user_code", details.user_code().secret())
+            .await
+            .map_err(|e| InvokeError::from_anyhow(e.into()))?;
     } else {
         app.shell()
             .open(auth_uri.secret(), None)
@@ -160,10 +285,7 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
 ///This command returns the KittyCAD user info given a token.
 /// The string returned from this method is the user info as a json string.
 #[tauri::command]
-async fn get_user(
-    token: Option<String>,
-    hostname: &str,
-) -> Result<kittycad::types::User, InvokeError> {
+async fn get_user(token: &str, hostname: &str) -> Result<kittycad::types::User, InvokeError> {
     // Use the host passed in if it's set.
     // Otherwise, use the default host.
     let host = if hostname.is_empty() {
@@ -183,7 +305,7 @@ async fn get_user(
     println!("Getting user info...");
 
     // use kittycad library to fetch the user info from /user/me
-    let mut client = kittycad::Client::new(token.unwrap());
+    let mut client = kittycad::Client::new(token);
 
     if baseurl != DEFAULT_HOST {
         client.set_base_url(&baseurl);
@@ -202,50 +324,170 @@ async fn get_user(
 /// From this GitHub comment: https://github.com/tauri-apps/tauri/issues/4062#issuecomment-1338048169
 /// But with the Linux support removed since we don't need it for now.
 #[tauri::command]
-fn show_in_folder(path: String) {
-    #[cfg(target_os = "windows")]
+fn show_in_folder(path: &str) -> Result<(), InvokeError> {
+    #[cfg(not(unix))]
     {
         Command::new("explorer")
             .args(["/select,", &path]) // The comma after select is not a typo
             .spawn()
-            .unwrap();
+            .map_err(|e| InvokeError::from_anyhow(e.into()))?;
     }
 
-    #[cfg(target_os = "macos")]
+    #[cfg(unix)]
     {
-        Command::new("open").args(["-R", &path]).spawn().unwrap();
+        Command::new("open")
+            .args(["-R", &path])
+            .spawn()
+            .map_err(|e| InvokeError::from_anyhow(e.into()))?;
     }
+
+    Ok(())
 }
 
-fn main() {
+fn main() -> Result<()> {
     tauri::Builder::default()
         .setup(|_app| {
             #[cfg(debug_assertions)]
             {
-                use tauri::Manager;
                 _app.get_webview("main").unwrap().open_devtools();
             }
             #[cfg(not(debug_assertions))]
             {
-                _app.handle()
-                    .plugin(tauri_plugin_updater::Builder::new().build())?;
+                _app.handle().plugin(tauri_plugin_updater::Builder::new().build())?;
             }
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            get_state,
+            set_state,
+            get_initial_default_dir,
+            initialize_project_directory,
+            create_new_project_directory,
+            list_projects,
+            get_project_info,
             get_user,
             login,
-            read_toml,
-            read_txt_file,
             read_dir_recursive,
             show_in_folder,
+            read_app_settings_file,
+            write_app_settings_file,
+            read_project_settings_file,
+            write_project_settings_file,
         ])
+        .plugin(tauri_plugin_cli::init())
+        .setup(|app| {
+            let mut verbose = false;
+            let mut source_path: Option<PathBuf> = None;
+            match app.cli().matches() {
+                // `matches` here is a Struct with { args, subcommand }.
+                // `args` is `HashMap<String, ArgData>` where `ArgData` is a struct with { value, occurrences }.
+                // `subcommand` is `Option<Box<SubcommandMatches>>` where `SubcommandMatches` is a struct with { name, matches }.
+                Ok(matches) => {
+                    if let Some(verbose_flag) = matches.args.get("verbose") {
+                        let Some(value) = verbose_flag.value.as_bool() else {
+                            return Err(
+                                anyhow::anyhow!("Error parsing CLI arguments: verbose flag is not a boolean").into(),
+                            );
+                        };
+                        verbose = value;
+                    }
+
+                    // Get the path we are trying to open.
+                    if let Some(source_arg) = matches.args.get("source") {
+                        // We don't do an else here because this can be null.
+                        if let Some(value) = source_arg.value.as_str() {
+                            source_path = Some(Path::new(value).to_path_buf());
+                        }
+                    }
+                }
+                Err(err) => {
+                    return Err(anyhow::anyhow!("Error parsing CLI arguments: {:?}", err).into());
+                }
+            }
+
+            // If we have a source path to open, make sure it exists.
+            let Some(source_path) = source_path else {
+                // The user didn't provide a source path to open.
+                // Run the app as normal.
+                app.manage(state::Store::default());
+                return Ok(());
+            };
+
+            if !source_path.exists() {
+                return Err(anyhow::anyhow!(
+                    "Error: the path `{}` you are trying to open does not exist",
+                    source_path.display()
+                )
+                .into());
+            }
+
+            let runner: tauri::async_runtime::JoinHandle<Result<ProjectState>> =
+                tauri::async_runtime::spawn(async move {
+                    // If the path is a directory, let's assume it is a project directory.
+                    if source_path.is_dir() {
+                        // Load the details about the project from the path.
+                        let project = Project::from_path(&source_path).await.map_err(|e| {
+                            anyhow::anyhow!("Error loading project from path {}: {:?}", source_path.display(), e)
+                        })?;
+
+                        if verbose {
+                            println!("Project loaded from path: {}", source_path.display());
+                        }
+
+                        // Create the default file in the project.
+                        // Write the initial project file.
+                        let project_file = source_path.join(DEFAULT_PROJECT_KCL_FILE);
+                        tokio::fs::write(&project_file, vec![]).await?;
+
+                        return Ok(ProjectState {
+                            project,
+                            current_file: Some(project_file.display().to_string()),
+                        });
+                    }
+
+                    // We were given a file path, not a directory.
+                    // Let's get the parent directory of the file.
+                    let parent = source_path.parent().ok_or_else(|| {
+                        anyhow::anyhow!(
+                            "Error getting the parent directory of the file: {}",
+                            source_path.display()
+                        )
+                    })?;
+
+                    // Load the details about the project from the parent directory.
+                    let project = Project::from_path(&parent).await.map_err(|e| {
+                        anyhow::anyhow!("Error loading project from path {}: {:?}", source_path.display(), e)
+                    })?;
+
+                    if verbose {
+                        println!(
+                            "Project loaded from path: {}, current file: {}",
+                            parent.display(),
+                            source_path.display()
+                        );
+                    }
+
+                    Ok(ProjectState {
+                        project,
+                        current_file: Some(source_path.display().to_string()),
+                    })
+                });
+
+            // Block on the handle.
+            let store = tauri::async_runtime::block_on(runner)??;
+
+            // Create a state object to hold the project.
+            app.manage(state::Store::new(store));
+
+            Ok(())
+        })
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_shell::init())
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .run(tauri::generate_context!())?;
+
+    Ok(())
 }

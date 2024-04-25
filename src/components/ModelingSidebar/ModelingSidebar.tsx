@@ -2,13 +2,19 @@ import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Resizable } from 're-resizable'
 import { useCallback, useEffect, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { PaneType, useStore } from 'useStore'
+import { useStore } from 'useStore'
 import { Tab } from '@headlessui/react'
-import { Pane, bottomPanes, topPanes } from './ModelingPanes'
+import {
+  SidebarPane,
+  SidebarType,
+  bottomPanes,
+  topPanes,
+} from './ModelingPanes'
 import Tooltip from 'components/Tooltip'
 import { ActionIcon } from 'components/ActionIcon'
 import styles from './ModelingSidebar.module.css'
 import { ModelingPane } from './ModelingPane'
+import { isTauri } from 'lib/isTauri'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -52,7 +58,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
 }
 
 interface ModelingSidebarSectionProps {
-  panes: Pane[]
+  panes: SidebarPane[]
   alignButtons?: 'start' | 'end'
 }
 
@@ -69,11 +75,11 @@ function ModelingSidebarSection({
   }))
   const foundOpenPane = openPanes.find((pane) => paneIds.includes(pane))
   const [currentPane, setCurrentPane] = useState(
-    foundOpenPane || ('none' as PaneType | 'none')
+    foundOpenPane || ('none' as SidebarType | 'none')
   )
 
   const togglePane = useCallback(
-    (newPane: PaneType | 'none') => {
+    (newPane: SidebarType | 'none') => {
       if (newPane === 'none') {
         setOpenPanes(openPanes.filter((p) => p !== currentPane))
         setCurrentPane('none')
@@ -90,9 +96,15 @@ function ModelingSidebarSection({
 
   // Filter out the debug panel if it's not supposed to be shown
   // TODO: abstract out for allowing user to configure which panes to show
-  const filteredPanes = showDebugPanel.current
-    ? panes
-    : panes.filter((pane) => pane.id !== 'debug')
+  const filteredPanes = (
+    showDebugPanel.current ? panes : panes.filter((pane) => pane.id !== 'debug')
+  ).filter(
+    (pane) =>
+      !pane.hideOnPlatform ||
+      (isTauri()
+        ? pane.hideOnPlatform === 'web'
+        : pane.hideOnPlatform === 'desktop')
+  )
   useEffect(() => {
     if (
       !showDebugPanel.current &&
@@ -168,8 +180,8 @@ function ModelingSidebarSection({
 }
 
 interface ModelingPaneButtonProps {
-  paneConfig: Pane
-  currentPane: PaneType | 'none'
+  paneConfig: SidebarPane
+  currentPane: SidebarType | 'none'
   togglePane: () => void
 }
 
