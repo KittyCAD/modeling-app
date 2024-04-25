@@ -18,8 +18,10 @@ import {
   getProjectInfo,
   initializeProjectDirectory,
   listProjects,
+  setState,
 } from './tauri'
 import { createSettings } from './settings/initialSettings'
+import { getState } from 'lib/tauri'
 
 // The root loader simply resolves the settings and any errors that
 // occurred during the settings load
@@ -27,6 +29,18 @@ export const settingsLoader: LoaderFunction = async ({
   params,
 }): Promise<ReturnType<typeof createSettings>> => {
   let { settings } = await loadAndValidateSettings()
+  const inTauri = isTauri()
+  if (inTauri) {
+    const appState = await getState()
+
+    if (appState) {
+      console.log('appState', appState)
+      // Reset the state.
+      // We do this so that we load the initial state from the cli but everything
+      // else we can ignore.
+      await setState(undefined)
+    }
+  }
 
   // I don't love that we have to read the settings again here,
   // but we need to get the project path to load the project settings

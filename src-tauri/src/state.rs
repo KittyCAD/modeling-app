@@ -15,7 +15,7 @@ impl Store {
         self.0.lock().await.clone()
     }
 
-    pub async fn set(&self, p: ProjectState) {
-        *self.0.lock().await = Some(p);
+    pub async fn set(&self, p: Option<ProjectState>) {
+        *self.0.lock().await = p;
     }
 }

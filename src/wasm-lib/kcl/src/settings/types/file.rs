@@ -35,12 +35,19 @@ impl Project {
     #[cfg(not(target_arch = "wasm32"))]
     /// Populate a project from a path.
     pub async fn from_path<P: AsRef<std::path::Path>>(path: P) -> Result<Self> {
+        // Check if they are using '.' as the path.
+        let path = if path.as_ref() == std::path::Path::new(".") {
+            std::env::current_dir()?
+        } else {
+            path.as_ref().to_path_buf()
+        };
+
         // Make sure the path exists.
-        if !path.as_ref().exists() {
+        if !path.exists() {
             return Err(anyhow::anyhow!("Path does not exist"));
         }
 
-        let file = crate::settings::utils::walk_dir(&path.as_ref()).await?;
+        let file = crate::settings::utils::walk_dir(&path).await?;
         let metadata = std::fs::metadata(path).ok().map(|m| m.into());
         let mut project = Self {
             file,

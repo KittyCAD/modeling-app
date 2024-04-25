@@ -46,7 +46,7 @@ async fn get_state(app: tauri::AppHandle) -> Result<Option<ProjectState>, Invoke
 }
 
 #[tauri::command]
-async fn set_state(app: tauri::AppHandle, state: ProjectState) -> Result<(), InvokeError> {
+async fn set_state(app: tauri::AppHandle, state: Option<ProjectState>) -> Result<(), InvokeError> {
     let store = app.state::<state::Store>();
     store.set(state).await;
     Ok(())
@@ -369,8 +369,6 @@ fn main() -> Result<()> {
                 // `args` is `HashMap<String, ArgData>` where `ArgData` is a struct with { value, occurrences }.
                 // `subcommand` is `Option<Box<SubcommandMatches>>` where `SubcommandMatches` is a struct with { name, matches }.
                 Ok(matches) => {
-                    println!("{:?}", matches);
-
                     if let Some(verbose_flag) = matches.args.get("verbose") {
                         let Some(value) = verbose_flag.value.as_bool() else {
                             return Err(
@@ -382,14 +380,10 @@ fn main() -> Result<()> {
 
                     // Get the path we are trying to open.
                     if let Some(source_arg) = matches.args.get("source") {
-                        let Some(value) = source_arg.value.as_str() else {
-                            return Err(anyhow::anyhow!(
-                                "Error parsing CLI arguments: source arg is not a path string"
-                            )
-                            .into());
-                        };
-
-                        source_path = Some(Path::new(value).to_path_buf());
+                        // We don't do an else here because this can be null.
+                        if let Some(value) = source_arg.value.as_str() {
+                            source_path = Some(Path::new(value).to_path_buf());
+                        }
                     }
                 }
                 Err(err) => {
