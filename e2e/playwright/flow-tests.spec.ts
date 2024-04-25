@@ -618,7 +618,7 @@ test('Stored settings are validated and fall back to defaults', async ({
   // Check the settings were reset
   const storedSettings = TOML.parse(
     await page.evaluate(
-      ({ settingsKey }) => localStorage.getItem(settingsKey) || '{}',
+      ({ settingsKey }) => localStorage.getItem(settingsKey) || '',
       { settingsKey: TEST_SETTINGS_KEY }
     )
   ) as { settings: SaveSettingsPayload }
