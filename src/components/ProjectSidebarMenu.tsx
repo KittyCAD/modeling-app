@@ -133,13 +133,13 @@ function ProjectMenuPopover({
                   <p className="m-0 text-mono" data-testid="projectName">
                     {project?.name ? project.name : APP_NAME}
                   </p>
-                  {project?.entrypointMetadata && (
+                  {project?.metadata && project.metadata.created && (
                     <p
                       className="m-0 text-xs text-chalkboard-80 dark:text-chalkboard-40"
                       data-testid="createdAt"
                     >
                       Created{' '}
-                      {project.entrypointMetadata.birthtime?.toLocaleDateString()}
+                      {new Date(project.metadata.created).toLocaleDateString()}
                     </p>
                   )}
                 </div>

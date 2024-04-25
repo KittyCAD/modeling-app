@@ -3,35 +3,40 @@ on:
     branches:
       - main
     paths:
+      - 'src-tauri/**.rs'
       - '**/Cargo.toml'
       - '**/Cargo.lock'
       - '**/rust-toolchain.toml'
-      - '**.rs'
-      - .github/workflows/cargo-clippy.yml
+      - .github/workflows/cargo-test-tauri.yml
   pull_request:
+    paths:
+      - 'src-tauri/**.rs'
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+      - '**/rust-toolchain.toml'
+      - .github/workflows/cargo-test-tauri.yml
+  workflow_dispatch:
+permissions: read-all
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
-name: cargo clippy
+name: cargo test of tauri
 jobs:
-  cargoclippy:
-    name: cargo clippy
-    runs-on: ubuntu-latest
+  cargotest:
+    name: cargo test
+    runs-on: ubuntu-latest-8-cores
     strategy:
       matrix:
-        dir: ['src/wasm-lib', 'src-tauri']
+        dir: ['src-tauri']
     steps:
       - uses: actions/checkout@v4
       - name: Install latest rust
         uses: actions-rs/toolchain@v1
         with:
-            toolchain: stable
-            override: true
-            components: clippy
-
+          toolchain: stable
+          override: true
       - name: install dependencies
         if: matrix.dir ==  'src-tauri'
-        shell: bash
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -43,14 +48,10 @@ jobs:
             libwebkit2gtk-4.1-dev \
             at-spi2-core \
             xvfb
-          yarn install
-          yarn build:wasm
-          yarn build:local
-
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2.6.1
-
-      - name: Run clippy
-        run: |
+      - name: cargo test
+        shell: bash
+        run: |-
           cd "${{ matrix.dir }}"
-          cargo clippy --all --tests --benches -- -D warnings
+          cargo test --all

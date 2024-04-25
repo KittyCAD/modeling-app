@@ -1,100 +1,228 @@
-import {
-  getInitialDefaultDir,
-  getSettingsFilePaths,
-  readSettingsFile,
-} from '../tauriFS'
 import { Setting, createSettings, settings } from 'lib/settings/initialSettings'
 import { SaveSettingsPayload, SettingsLevel } from './settingsTypes'
 import { isTauri } from 'lib/isTauri'
-import { remove, writeTextFile, exists } from '@tauri-apps/plugin-fs'
-import { initPromise, tomlParse, tomlStringify } from 'lang/wasm'
+import {
+  defaultAppSettings,
+  defaultProjectSettings,
+  initPromise,
+  parseAppSettings,
+  parseProjectSettings,
+  tomlStringify,
+} from 'lang/wasm'
+import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
+import { mouseControlsToCameraSystem } from 'lib/cameraControls'
+import { appThemeToTheme } from 'lib/theme'
+import {
+  readAppSettingsFile,
+  readProjectSettingsFile,
+  writeAppSettingsFile,
+  writeProjectSettingsFile,
+} from 'lib/tauri'
+import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
+import { BROWSER_PROJECT_NAME } from 'lib/constants'
 
 /**
- * We expect the settings to be stored in a TOML file
- * or TOML-formatted string in localStorage
- * under a top-level [settings] key.
- * @param path
- * @returns
- */
-function getSettingsFromStorage(path: string) {
-  return isTauri()
-    ? readSettingsFile(path)
-    : (tomlParse(localStorage.getItem(path) ?? '')
-        .settings as Partial<SaveSettingsPayload>)
+ * Convert from a rust settings struct into the JS settings struct.
+ * We do this because the JS settings type has all the fancy shit
+ * for hiding and showing settings.
+ **/
+function configurationToSettingsPayload(
+  configuration: Configuration
+): Partial<SaveSettingsPayload> {
+  return {
+    app: {
+      theme: appThemeToTheme(configuration?.settings?.app?.appearance?.theme),
+      themeColor: configuration?.settings?.app?.appearance?.color
+        ? configuration?.settings?.app?.appearance?.color.toString()
+        : undefined,
+      onboardingStatus: configuration?.settings?.app?.onboarding_status,
+      dismissWebBanner: configuration?.settings?.app?.dismiss_web_banner,
+      projectDirectory: configuration?.settings?.project?.directory,
+      enableSSAO: configuration?.settings?.modeling?.enable_ssao,
+    },
+    modeling: {
+      defaultUnit: configuration?.settings?.modeling?.base_unit,
+      mouseControls: mouseControlsToCameraSystem(
+        configuration?.settings?.modeling?.mouse_controls
+      ),
+      highlightEdges: configuration?.settings?.modeling?.highlight_edges,
+      showDebugPanel: configuration?.settings?.modeling?.show_debug_panel,
+    },
+    textEditor: {
+      textWrapping: configuration?.settings?.text_editor?.text_wrapping,
+      blinkingCursor: configuration?.settings?.text_editor?.blinking_cursor,
+    },
+    projects: {
+      defaultProjectName:
+        configuration?.settings?.project?.default_project_name,
+    },
+    commandBar: {
+      includeSettings: configuration?.settings?.command_bar?.include_settings,
+    },
+  }
 }
 
-export async function loadAndValidateSettings(projectPath?: string) {
-  const settings = createSettings()
-  settings.app.projectDirectory.default = await getInitialDefaultDir()
-  // First, get the settings data at the user and project level
-  const settingsFilePaths = await getSettingsFilePaths(projectPath)
+function projectConfigurationToSettingsPayload(
+  configuration: ProjectConfiguration
+): Partial<SaveSettingsPayload> {
+  return {
+    app: {
+      theme: appThemeToTheme(configuration?.settings?.app?.appearance?.theme),
+      themeColor: configuration?.settings?.app?.appearance?.color
+        ? configuration?.settings?.app?.appearance?.color.toString()
+        : undefined,
+      onboardingStatus: configuration?.settings?.app?.onboarding_status,
+      dismissWebBanner: configuration?.settings?.app?.dismiss_web_banner,
+      enableSSAO: configuration?.settings?.modeling?.enable_ssao,
+    },
+    modeling: {
+      defaultUnit: configuration?.settings?.modeling?.base_unit,
+      mouseControls: mouseControlsToCameraSystem(
+        configuration?.settings?.modeling?.mouse_controls
+      ),
+      highlightEdges: configuration?.settings?.modeling?.highlight_edges,
+      showDebugPanel: configuration?.settings?.modeling?.show_debug_panel,
+    },
+    textEditor: {
+      textWrapping: configuration?.settings?.text_editor?.text_wrapping,
+      blinkingCursor: configuration?.settings?.text_editor?.blinking_cursor,
+    },
+    commandBar: {
+      includeSettings: configuration?.settings?.command_bar?.include_settings,
+    },
+  }
+}
 
-  // Load the settings from the files
-  if (settingsFilePaths.user) {
-    await initPromise
-    const userSettings = await getSettingsFromStorage(settingsFilePaths.user)
-    if (userSettings) {
-      setSettingsAtLevel(settings, 'user', userSettings)
-    }
+function localStorageAppSettingsPath() {
+  return '/settings.toml'
+}
+
+function localStorageProjectSettingsPath() {
+  return '/' + BROWSER_PROJECT_NAME + '/project.toml'
+}
+
+function readLocalStorageAppSettingsFile(): Configuration {
+  // TODO: Remove backwards compatibility after a few releases.
+  let stored =
+    localStorage.getItem(localStorageAppSettingsPath()) ??
+    localStorage.getItem('/user.toml') ??
+    ''
+
+  if (stored === '') {
+    return defaultAppSettings()
   }
 
-  // Load the project settings if they exist
-  if (settingsFilePaths.project) {
-    const projectSettings = await getSettingsFromStorage(
-      settingsFilePaths.project
+  try {
+    return parseAppSettings(stored)
+  } catch (e) {
+    const settings = defaultAppSettings()
+    localStorage.setItem(localStorageAppSettingsPath(), tomlStringify(settings))
+    return settings
+  }
+}
+
+function readLocalStorageProjectSettingsFile(): ProjectConfiguration {
+  // TODO: Remove backwards compatibility after a few releases.
+  let stored = localStorage.getItem(localStorageProjectSettingsPath()) ?? ''
+
+  if (stored === '') {
+    return defaultProjectSettings()
+  }
+
+  try {
+    return parseProjectSettings(stored)
+  } catch (e) {
+    const settings = defaultProjectSettings()
+    localStorage.setItem(
+      localStorageProjectSettingsPath(),
+      tomlStringify(settings)
     )
-    if (projectSettings) {
-      setSettingsAtLevel(settings, 'project', projectSettings)
-    }
+    return settings
+  }
+}
+
+export interface AppSettings {
+  settings: ReturnType<typeof createSettings>
+  configuration: Configuration
+}
+
+export async function loadAndValidateSettings(
+  projectName?: string
+): Promise<AppSettings> {
+  const settings = createSettings()
+  const inTauri = isTauri()
+
+  if (!inTauri) {
+    // Make sure we have wasm initialized.
+    await initPromise
+  }
+
+  // Load the app settings from the file system or localStorage.
+  const appSettings = inTauri
+    ? await readAppSettingsFile()
+    : readLocalStorageAppSettingsFile()
+  // Convert the app settings to the JS settings format.
+  const appSettingsPayload = configurationToSettingsPayload(appSettings)
+  setSettingsAtLevel(settings, 'user', appSettingsPayload)
+
+  // Load the project settings if they exist
+  if (projectName) {
+    const projectSettings = inTauri
+      ? await readProjectSettingsFile(appSettings, projectName)
+      : readLocalStorageProjectSettingsFile()
+
+    const projectSettingsPayload =
+      projectConfigurationToSettingsPayload(projectSettings)
+    setSettingsAtLevel(settings, 'project', projectSettingsPayload)
   }
 
   // Return the settings object
-  return settings
+  return { settings, configuration: appSettings }
 }
 
 export async function saveSettings(
   allSettings: typeof settings,
-  projectPath?: string
+  projectName?: string
 ) {
-  const settingsFilePaths = await getSettingsFilePaths(projectPath)
-
-  if (settingsFilePaths.user) {
-    const changedSettings = getChangedSettingsAtLevel(allSettings, 'user')
-
-    await writeOrClearPersistedSettings(settingsFilePaths.user, changedSettings)
-  }
-
-  if (settingsFilePaths.project) {
-    const changedSettings = getChangedSettingsAtLevel(allSettings, 'project')
-
-    await writeOrClearPersistedSettings(
-      settingsFilePaths.project,
-      changedSettings
-    )
-  }
-}
-
-async function writeOrClearPersistedSettings(
-  settingsFilePath: string,
-  changedSettings: Partial<SaveSettingsPayload>
-) {
+  // Make sure we have wasm initialized.
   await initPromise
-  if (changedSettings && Object.keys(changedSettings).length) {
-    if (isTauri()) {
-      await writeTextFile(
-        settingsFilePath,
-        tomlStringify({ settings: changedSettings })
-      )
-    }
-    localStorage.setItem(
-      settingsFilePath,
-      tomlStringify({ settings: changedSettings })
-    )
+  const inTauri = isTauri()
+
+  // Get the user settings.
+  const jsAppSettings = getChangedSettingsAtLevel(allSettings, 'user')
+  const tomlString = tomlStringify({ settings: jsAppSettings })
+  // Parse this as a Configuration.
+  const appSettings = parseAppSettings(tomlString)
+
+  // Write the app settings.
+  if (inTauri) {
+    await writeAppSettingsFile(appSettings)
   } else {
-    if (isTauri() && (await exists(settingsFilePath))) {
-      await remove(settingsFilePath)
-    }
-    localStorage.removeItem(settingsFilePath)
+    localStorage.setItem(
+      localStorageAppSettingsPath(),
+      tomlStringify(appSettings)
+    )
+  }
+
+  if (!projectName) {
+    // If we're not saving project settings, we're done.
+    return
+  }
+
+  // Get the project settings.
+  const jsProjectSettings = getChangedSettingsAtLevel(allSettings, 'project')
+  const projectTomlString = tomlStringify({ settings: jsProjectSettings })
+  // Parse this as a Configuration.
+  const projectSettings = parseProjectSettings(projectTomlString)
+
+  // Write the project settings.
+  if (inTauri) {
+    await writeProjectSettingsFile(appSettings, projectName, projectSettings)
+  } else {
+    localStorage.setItem(
+      localStorageProjectSettingsPath(),
+      tomlStringify(projectSettings)
+    )
   }
 }
 
