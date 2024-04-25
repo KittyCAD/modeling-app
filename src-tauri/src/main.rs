@@ -511,7 +511,7 @@ fn main() -> Result<()> {
             app.manage(state::Store::new(store));
 
             // Listen on the deep links.
-            app.listen("zoo-modeling-app://", |url| {
+            app.listen("deep-link://new-url", |url| {
                 dbg!(url);
             });
 
