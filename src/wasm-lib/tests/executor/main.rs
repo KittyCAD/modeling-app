@@ -38,7 +38,8 @@ async fn execute_and_snapshot(code: &str, units: kcl_lib::settings::types::UnitL
         &client,
         ExecutorSettings {
             units,
-            ..Default::default()
+            highlight_edges: true,
+            enable_ssao: false,
         },
     )
     .await?;

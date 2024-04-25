@@ -22380,8 +22380,8 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 10], %)\n  |> line([10, 0], %)\n  |> close(%)",
-      "startSketchOn('YZ')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 10], %)\n  |> line([10, 0], %)\n  |> close(%, \"edge1\")"
+      "startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 10], %)\n  |> line([10, 0], %)\n  |> close(%)\n  |> extrude(10, %)",
+      "startSketchOn('YZ')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 10], %)\n  |> line([10, 0], %)\n  |> close(%, \"edge1\")\n  |> extrude(10, %)"
     ]
   },
   {
@@ -43695,7 +43695,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "fn rectShape = (pos, w, l) => {\n  const rr = startSketchOn('YZ')\n    |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)\n    |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, \"edge1\")\n    |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, \"edge2\")\n    |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, \"edge3\")\n    |> close(%, \"edge4\")\n  return rr\n}\n\n// Create the mounting plate extrusion, holes, and fillets\nconst part = rectShape([0, 0], 20, 20)"
+      "fn rectShape = (pos, w, l) => {\n  const rr = startSketchOn('YZ')\n    |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)\n    |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, \"edge1\")\n    |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, \"edge2\")\n    |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, \"edge3\")\n    |> close(%, \"edge4\")\n  return rr\n}\n\n// Create the mounting plate extrusion, holes, and fillets\nconst part = rectShape([0, 0], 20, 20)\n  |> extrude(10, %)"
     ]
   },
   {
@@ -59318,7 +59318,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 10], %)"
+      "startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 10], %)\n  |> line([10, 0], %)\n  |> close(%)\n  |> extrude(10, %)"
     ]
   },
   {
@@ -60312,7 +60312,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "startSketchAt([0, 0])\n  |> line([10, 10], %)"
+      "startSketchAt([0, 0])\n  |> line([10, 10], %)\n  |> line([20, 10], %, \"edge1\")\n  |> close(%, \"edge2\")\n  |> extrude(10, %)"
     ]
   },
   {
@@ -61585,7 +61585,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 10], %)\n  |> line([20, 10], %, \"edge1\")\n  |> close(%, \"edge2\")",
+      "startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 10], %)\n  |> line([20, 10], %, \"edge1\")\n  |> close(%, \"edge2\")\n  |> extrude(10, %)",
       "fn cube = (pos, scale) => {\n  const sg = startSketchOn('XY')\n    |> startProfileAt(pos, %)\n    |> line([0, scale], %)\n    |> line([scale, 0], %)\n    |> line([0, -scale], %)\n    |> close(%)\n    |> extrude(scale, %)\n\n  return sg\n}\n\nconst box = cube([0, 0], 20)\n\nconst part001 = startSketchOn(box, \"start\")\n  |> startProfileAt([0, 0], %)\n  |> line([10, 10], %)\n  |> line([20, 10], %, \"edge1\")\n  |> close(%)\n  |> extrude(20, %)"
     ]
   },
@@ -65584,7 +65584,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "startSketchOn('-YZ')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 10], %, \"edge0\")\n  |> tangentialArcTo([10, 0], %)\n  |> close(%)"
+      "startSketchOn('-YZ')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 10], %, \"edge0\")\n  |> tangentialArcTo([10, 0], %)\n  |> close(%)\n  |> extrude(10, %)"
     ]
   },
   {

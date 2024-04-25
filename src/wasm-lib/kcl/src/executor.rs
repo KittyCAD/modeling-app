@@ -1022,7 +1022,7 @@ impl Default for ExecutorSettings {
         Self {
             units: Default::default(),
             highlight_edges: true,
-            enable_ssao: true,
+            enable_ssao: false,
         }
     }
 }
