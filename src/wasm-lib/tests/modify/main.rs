@@ -31,15 +31,10 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
         client.set_base_url(addr);
     }
 
-    let ws = client
-        .modeling()
-        .commands_ws(None, None, None, None, None, None, Some(false))
-        .await?;
-
     let tokens = kcl_lib::token::lexer(code)?;
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
-    let ctx = kcl_lib::executor::ExecutorContext::new(ws, kittycad::types::UnitLength::Mm).await?;
+    let ctx = kcl_lib::executor::ExecutorContext::new(&client, Default::default()).await?;
     let memory = ctx.run(program.clone(), None).await?;
 
     // We need to get the sketch ID.

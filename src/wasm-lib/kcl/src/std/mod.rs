@@ -11,6 +11,7 @@ pub mod revolve;
 pub mod segment;
 pub mod shapes;
 pub mod sketch;
+pub mod types;
 pub mod utils;
 
 use std::collections::HashMap;
@@ -628,6 +629,49 @@ impl Args {
         Ok((data, sketch_group))
     }
 
+    fn get_data_and_sketch_group_set<T: serde::de::DeserializeOwned>(&self) -> Result<(T, SketchGroupSet), KclError> {
+        let first_value = self
+            .args
+            .first()
+            .ok_or_else(|| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Expected a struct as the first argument, found `{:?}`", self.args),
+                    source_ranges: vec![self.source_range],
+                })
+            })?
+            .get_json_value()?;
+
+        let data: T = serde_json::from_value(first_value).map_err(|e| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Failed to deserialize struct from JSON: {}", e),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let second_value = self.args.get(1).ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Expected a SketchGroup as the second argument, found `{:?}`", self.args),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let sketch_set = if let MemoryItem::SketchGroup(sg) = second_value {
+            SketchGroupSet::SketchGroup(sg.clone())
+        } else if let MemoryItem::SketchGroups { value } = second_value {
+            SketchGroupSet::SketchGroups(value.clone())
+        } else {
+            return Err(KclError::Type(KclErrorDetails {
+                message: format!(
+                    "Expected a SketchGroup or Vector of SketchGroups as the second argument, found `{:?}`",
+                    self.args
+                ),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+
+        Ok((data, sketch_set))
+    }
+
     fn get_data_and_sketch_group_and_tag<T: serde::de::DeserializeOwned>(
         &self,
     ) -> Result<(T, Box<SketchGroup>, Option<String>), KclError> {
@@ -823,7 +867,7 @@ impl Args {
         Ok((segment_name, to_number, sketch_group))
     }
 
-    fn get_number_sketch_group(&self) -> Result<(f64, Box<SketchGroup>), KclError> {
+    fn get_number_sketch_group_set(&self) -> Result<(f64, SketchGroupSet), KclError> {
         // Iterate over our args, the first argument should be a number.
         // The second argument should be a SketchGroup.
         let first_value = self
@@ -846,16 +890,21 @@ impl Args {
             })
         })?;
 
-        let sketch_group = if let MemoryItem::SketchGroup(sg) = second_value {
-            sg.clone()
+        let sketch_set = if let MemoryItem::SketchGroup(sg) = second_value {
+            SketchGroupSet::SketchGroup(sg.clone())
+        } else if let MemoryItem::SketchGroups { value } = second_value {
+            SketchGroupSet::SketchGroups(value.clone())
         } else {
             return Err(KclError::Type(KclErrorDetails {
-                message: format!("Expected a SketchGroup as the second argument, found `{:?}`", self.args),
+                message: format!(
+                    "Expected a SketchGroup or Vector of SketchGroups as the second argument, found `{:?}`",
+                    self.args
+                ),
                 source_ranges: vec![self.source_range],
             }));
         };
 
-        Ok((number, sketch_group))
+        Ok((number, sketch_set))
     }
 
     fn get_path_name_extrude_group(&self) -> Result<(String, Box<ExtrudeGroup>), KclError> {

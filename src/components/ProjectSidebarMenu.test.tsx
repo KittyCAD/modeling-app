@@ -1,10 +1,10 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
-import { type ProjectWithEntryPointMetadata } from 'lib/types'
 import { SettingsAuthProviderJest } from './SettingsAuthProvider'
 import { APP_NAME } from 'lib/constants'
 import { CommandBarProvider } from './CommandBar/CommandBarProvider'
+import { Project } from 'wasm-lib/kcl/bindings/Project'
 
 const now = new Date()
 const projectWellFormed = {
@@ -14,29 +14,17 @@ const projectWellFormed = {
     {
       name: 'main.kcl',
       path: '/some/path/Simple Box/main.kcl',
+      children: [],
     },
   ],
-  entrypointMetadata: {
-    atime: now,
-    blksize: 32,
-    blocks: 32,
-    birthtime: now,
-    dev: 1,
-    gid: 1,
-    ino: 1,
-    isDirectory: false,
-    isFile: true,
-    isSymlink: false,
-    mode: 1,
-    mtime: now,
-    nlink: 1,
-    readonly: false,
-    rdev: 1,
+  metadata: {
+    created: now.toISOString(),
+    modified: now.toISOString(),
     size: 32,
-    uid: 1,
-    fileAttributes: null,
   },
-} satisfies ProjectWithEntryPointMetadata
+  kcl_file_count: 1,
+  directory_count: 0,
+} satisfies Project
 
 describe('ProjectSidebarMenu tests', () => {
   test('Renders the project name', () => {

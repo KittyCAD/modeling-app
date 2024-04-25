@@ -20,3 +20,15 @@ export const sceneEntitiesManager = new SceneEntities(engineCommandManager)
 
 // This needs to be after sceneInfra and engineCommandManager are is created.
 export const editorManager = new EditorManager()
+
+if (typeof window !== 'undefined') {
+  ;(window as any).engineCommandManager = engineCommandManager
+  ;(window as any).kclManager = kclManager
+  ;(window as any).sceneInfra = sceneInfra
+  ;(window as any).sceneEntitiesManager = sceneEntitiesManager
+  ;(window as any).editorManager = editorManager
+  ;(window as any).enableMousePositionLogs = () =>
+    document.addEventListener('mousemove', (e) =>
+      console.log(`await page.mouse.click(${e.clientX}, ${e.clientY})`)
+    )
+}

@@ -11,9 +11,11 @@ export function useSetupEngineManager(
   settings = {
     theme: Themes.System,
     highlightEdges: true,
+    enableSSAO: true,
   } as {
     theme: Themes
     highlightEdges: boolean
+    enableSSAO: boolean
   }
 ) {
   const {
