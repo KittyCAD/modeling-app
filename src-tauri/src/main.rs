@@ -437,6 +437,16 @@ fn main() -> Result<()> {
                         source_path
                     };
 
+                    // If the path does not start with a slash, it is a relative path.
+                    // We need to convert it to an absolute path.
+                    let source_path = if source_path.is_relative() {
+                        std::env::current_dir()
+                            .map_err(|e| anyhow::anyhow!("Error getting the current directory: {:?}", e))?
+                            .join(source_path)
+                    } else {
+                        source_path
+                    };
+
                     // If the path is a directory, let's assume it is a project directory.
                     if source_path.is_dir() {
                         // Load the details about the project from the path.
