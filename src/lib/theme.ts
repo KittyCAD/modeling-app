@@ -6,7 +6,9 @@ export enum Themes {
   System = 'system',
 }
 
-export function appThemeToTheme(theme: AppTheme | undefined): Themes {
+export function appThemeToTheme(
+  theme: AppTheme | undefined
+): Themes | undefined {
   switch (theme) {
     case 'light':
       return Themes.Light
@@ -15,7 +17,7 @@ export function appThemeToTheme(theme: AppTheme | undefined): Themes {
     case 'system':
       return Themes.System
     default:
-      return Themes.System
+      return undefined
   }
 }
 

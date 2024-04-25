@@ -599,6 +599,66 @@ mod tests {
     #[test]
     // Test that we can deserialize a project file from the old format.
     // TODO: We can remove this functionality after a few versions.
+    fn test_backwards_compatible_project_settings_file_pw() {
+        let old_project_file = r#"[settings.app]
+theme = "dark"
+onboardingStatus = "dismissed"
+projectDirectory = ""
+enableSSAO = false
+
+[settings.modeling]
+defaultUnit = "in"
+mouseControls = "KittyCAD"
+showDebugPanel = true
+
+[settings.projects]
+defaultProjectName = "project-$nnn"
+
+[settings.textEditor]
+textWrapping = true
+#"#;
+
+        //let parsed = toml::from_str::<Configuration(old_project_file).unwrap();
+        let parsed = Configuration::backwards_compatible_toml_parse(old_project_file).unwrap();
+        assert_eq!(
+            parsed,
+            Configuration {
+                settings: Settings {
+                    app: AppSettings {
+                        appearance: AppearanceSettings {
+                            theme: AppTheme::Dark,
+                            color: Default::default(),
+                        },
+                        onboarding_status: OnboardingStatus::Dismissed,
+                        project_directory: None,
+                        theme: None,
+                        theme_color: None,
+                        dismiss_web_banner: false,
+                        enable_ssao: None,
+                    },
+                    modeling: ModelingSettings {
+                        base_unit: UnitLength::In,
+                        mouse_controls: Default::default(),
+                        highlight_edges: Default::default(),
+                        show_debug_panel: true,
+                        enable_ssao: false.into(),
+                    },
+                    text_editor: TextEditorSettings {
+                        text_wrapping: true.into(),
+                        blinking_cursor: true.into(),
+                    },
+                    project: Default::default(),
+                    command_bar: CommandBarSettings {
+                        include_settings: true.into(),
+                    },
+                }
+            }
+        );
+    }
+
+    #[test]
+    // Test that we can deserialize a project file from the old format.
+    // TODO: We can remove this functionality after a few versions.
     fn test_backwards_compatible_project_settings_file() {
         let old_project_file = r#"[settings.app]
 theme = "dark"

@@ -24,7 +24,7 @@ export const cameraSystems: CameraSystem[] = [
 
 export function mouseControlsToCameraSystem(
   mouseControl: MouseControlType | undefined
-): CameraSystem {
+): CameraSystem | undefined {
   switch (mouseControl) {
     case 'kitty_cad':
       return 'KittyCAD'
@@ -41,7 +41,7 @@ export function mouseControlsToCameraSystem(
     case 'auto_cad':
       return 'AutoCAD'
     default:
-      return 'KittyCAD'
+      return undefined
   }
 }
 
