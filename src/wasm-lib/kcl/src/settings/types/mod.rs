@@ -11,6 +11,7 @@ use validator::Validate;
 
 const DEFAULT_THEME_COLOR: f64 = 264.5;
 const DEFAULT_PROJECT_KCL_FILE: &str = "main.kcl";
+const DEFAULT_PROJECT_NAME_TEMPLATE: &str = "project-$nnn";
 
 /// High level configuration.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
@@ -18,7 +19,7 @@ const DEFAULT_PROJECT_KCL_FILE: &str = "main.kcl";
 #[serde(rename_all = "snake_case")]
 pub struct Configuration {
     /// The settings for the modeling app.
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "is_default")]
     pub settings: Settings,
 }
 
@@ -42,15 +43,15 @@ impl Configuration {
         }
 
         if let Some(theme_color) = &settings.settings.app.theme_color {
-            if settings.settings.app.appearance.color == DEFAULT_THEME_COLOR {
+            if settings.settings.app.appearance.color == AppColor::default() {
                 settings.settings.app.appearance.color = theme_color.clone().into();
                 settings.settings.app.theme_color = None;
             }
         }
 
         if let Some(enable_ssao) = settings.settings.app.enable_ssao {
-            if settings.settings.modeling.enable_ssao {
-                settings.settings.modeling.enable_ssao = enable_ssao;
+            if settings.settings.modeling.enable_ssao.into() {
+                settings.settings.modeling.enable_ssao = enable_ssao.into();
                 settings.settings.app.enable_ssao = None;
             }
         }
@@ -169,19 +170,19 @@ impl Configuration {
 #[serde(rename_all = "snake_case")]
 pub struct Settings {
     /// The settings for the modeling app.
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "is_default")]
     pub app: AppSettings,
     /// Settings that affect the behavior while modeling.
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "is_default")]
     pub modeling: ModelingSettings,
     /// Settings that affect the behavior of the KCL text editor.
-    #[serde(default, alias = "textEditor")]
+    #[serde(default, alias = "textEditor", skip_serializing_if = "is_default")]
     pub text_editor: TextEditorSettings,
     /// Settings that affect the behavior of project management.
-    #[serde(default, alias = "projects")]
+    #[serde(default, alias = "projects", skip_serializing_if = "is_default")]
     pub project: ProjectSettings,
     /// Settings that affect the behavior of the command bar.
-    #[serde(default, alias = "commandBar")]
+    #[serde(default, alias = "commandBar", skip_serializing_if = "is_default")]
     pub command_bar: CommandBarSettings,
 }
 
@@ -193,10 +194,10 @@ pub struct Settings {
 #[serde(rename_all = "snake_case")]
 pub struct AppSettings {
     /// The settings for the appearance of the app.
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "is_default")]
     pub appearance: AppearanceSettings,
     /// The onboarding status of the app.
-    #[serde(default, alias = "onboardingStatus")]
+    #[serde(default, alias = "onboardingStatus", skip_serializing_if = "is_default")]
     pub onboarding_status: OnboardingStatus,
     /// Backwards compatible project directory setting.
     #[serde(default, alias = "projectDirectory", skip_serializing_if = "Option::is_none")]
@@ -212,7 +213,7 @@ pub struct AppSettings {
     pub enable_ssao: Option<bool>,
     /// Permanently dismiss the banner warning to download the desktop app.
     /// This setting only applies to the web app. And is temporary until we have Linux support.
-    #[serde(default, alias = "dismissWebBanner")]
+    #[serde(default, alias = "dismissWebBanner", skip_serializing_if = "is_default")]
     pub dismiss_web_banner: bool,
 }
 
@@ -236,26 +237,49 @@ impl From<FloatOrInt> for f64 {
     }
 }
 
+impl From<FloatOrInt> for AppColor {
+    fn from(float_or_int: FloatOrInt) -> Self {
+        match float_or_int {
+            FloatOrInt::String(s) => s.parse::<f64>().unwrap().into(),
+            FloatOrInt::Float(f) => f.into(),
+            FloatOrInt::Int(i) => (i as f64).into(),
+        }
+    }
+}
+
 /// The settings for the theme of the app.
-#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Validate, PartialEq)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct AppearanceSettings {
     /// The overall theme of the app.
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "is_default")]
     pub theme: AppTheme,
     /// The hue of the primary theme color for the app.
-    #[serde(default)]
-    #[validate(range(min = 0.0, max = 360.0))]
-    pub color: f64,
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub color: AppColor,
 }
 
-impl Default for AppearanceSettings {
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
+#[ts(export)]
+#[serde(transparent)]
+pub struct AppColor(pub f64);
+
+impl Default for AppColor {
     fn default() -> Self {
-        Self {
-            theme: Default::default(),
-            color: DEFAULT_THEME_COLOR,
-        }
+        Self(DEFAULT_THEME_COLOR)
+    }
+}
+
+impl From<AppColor> for f64 {
+    fn from(color: AppColor) -> Self {
+        color.0
+    }
+}
+
+impl From<f64> for AppColor {
+    fn from(color: f64) -> Self {
+        Self(color)
     }
 }
 
@@ -301,37 +325,48 @@ impl From<AppTheme> for kittycad::types::Color {
 }
 
 /// Settings that affect the behavior while modeling.
-#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct ModelingSettings {
     /// The default unit to use in modeling dimensions.
-    #[serde(default, alias = "defaultUnit")]
+    #[serde(default, alias = "defaultUnit", skip_serializing_if = "is_default")]
     pub base_unit: UnitLength,
     /// The controls for how to navigate the 3D view.
-    #[serde(default, alias = "mouseControls")]
+    #[serde(default, alias = "mouseControls", skip_serializing_if = "is_default")]
     pub mouse_controls: MouseControlType,
     /// Highlight edges of 3D objects?
-    #[serde(default, alias = "highlightEdges")]
-    pub highlight_edges: bool,
+    #[serde(default, alias = "highlightEdges", skip_serializing_if = "is_default")]
+    pub highlight_edges: DefaultTrue,
     /// Whether to show the debug panel, which lets you see various states
     /// of the app to aid in development.
-    #[serde(default, alias = "showDebugPanel")]
+    #[serde(default, alias = "showDebugPanel", skip_serializing_if = "is_default")]
     pub show_debug_panel: bool,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
-    #[serde(default)]
-    pub enable_ssao: bool,
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub enable_ssao: DefaultTrue,
 }
 
-impl Default for ModelingSettings {
+#[derive(Debug, Copy, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
+#[ts(export)]
+#[serde(transparent)]
+pub struct DefaultTrue(pub bool);
+
+impl Default for DefaultTrue {
     fn default() -> Self {
-        Self {
-            base_unit: Default::default(),
-            mouse_controls: Default::default(),
-            highlight_edges: true,
-            show_debug_panel: false,
-            enable_ssao: true,
-        }
+        Self(true)
+    }
+}
+
+impl From<DefaultTrue> for bool {
+    fn from(default_true: DefaultTrue) -> Self {
+        default_true.0
+    }
+}
+
+impl From<bool> for DefaultTrue {
+    fn from(b: bool) -> Self {
+        Self(b)
     }
 }
 
@@ -409,64 +444,62 @@ pub enum MouseControlType {
 }
 
 /// Settings that affect the behavior of the KCL text editor.
-#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct TextEditorSettings {
     /// Whether to wrap text in the editor or overflow with scroll.
-    #[serde(default, alias = "textWrapping")]
-    pub text_wrapping: bool,
+    #[serde(default, alias = "textWrapping", skip_serializing_if = "is_default")]
+    pub text_wrapping: DefaultTrue,
     /// Whether to make the cursor blink in the editor.
-    #[serde(default, alias = "blinkingCursor")]
-    pub blinking_cursor: bool,
-}
-
-impl Default for TextEditorSettings {
-    fn default() -> Self {
-        Self {
-            text_wrapping: true,
-            blinking_cursor: true,
-        }
-    }
+    #[serde(default, alias = "blinkingCursor", skip_serializing_if = "is_default")]
+    pub blinking_cursor: DefaultTrue,
 }
 
 /// Settings that affect the behavior of project management.
-#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
+#[derive(Debug, Clone, Default, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct ProjectSettings {
     /// The directory to save and load projects from.
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "is_default")]
     pub directory: std::path::PathBuf,
     /// The default project name to use when creating a new project.
-    #[serde(default, alias = "defaultProjectName")]
-    pub default_project_name: String,
+    #[serde(default, alias = "defaultProjectName", skip_serializing_if = "is_default")]
+    pub default_project_name: ProjectNameTemplate,
 }
 
-impl Default for ProjectSettings {
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
+#[ts(export)]
+#[serde(transparent)]
+pub struct ProjectNameTemplate(pub String);
+
+impl Default for ProjectNameTemplate {
     fn default() -> Self {
-        Self {
-            default_project_name: "project-$nnn".to_string(),
-            // TODO: set to the tauri directory.
-            directory: Default::default(),
-        }
+        Self(DEFAULT_PROJECT_NAME_TEMPLATE.to_string())
+    }
+}
+
+impl From<ProjectNameTemplate> for String {
+    fn from(project_name: ProjectNameTemplate) -> Self {
+        project_name.0
+    }
+}
+
+impl From<String> for ProjectNameTemplate {
+    fn from(s: String) -> Self {
+        Self(s)
     }
 }
 
 /// Settings that affect the behavior of the command bar.
-#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct CommandBarSettings {
     /// Whether to include settings in the command bar.
-    #[serde(default, alias = "includeSettings")]
-    pub include_settings: bool,
-}
-
-impl Default for CommandBarSettings {
-    fn default() -> Self {
-        Self { include_settings: true }
-    }
+    #[serde(default, alias = "includeSettings", skip_serializing_if = "is_default")]
+    pub include_settings: DefaultTrue,
 }
 
 /// The types of onboarding status.
@@ -484,6 +517,10 @@ pub enum OnboardingStatus {
     Dismissed,
 }
 
+fn is_default<T: Default + PartialEq>(t: &T) -> bool {
+    t == &T::default()
+}
+
 #[cfg(test)]
 mod tests {
     use pretty_assertions::assert_eq;
@@ -492,7 +529,7 @@ mod tests {
         AppSettings, AppTheme, AppearanceSettings, CommandBarSettings, Configuration, ModelingSettings,
         ProjectSettings, Settings, TextEditorSettings, UnitLength,
     };
-    use crate::settings::types::{OnboardingStatus, DEFAULT_THEME_COLOR};
+    use crate::settings::types::OnboardingStatus;
 
     #[test]
     // Test that we can deserialize a project file from the old format.
@@ -523,7 +560,7 @@ includeSettings = false
                     app: AppSettings {
                         appearance: AppearanceSettings {
                             theme: AppTheme::Dark,
-                            color: 138.0,
+                            color: 138.0.into(),
                         },
                         onboarding_status: Default::default(),
                         project_directory: None,
@@ -537,15 +574,15 @@ includeSettings = false
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
-                        enable_ssao: false,
+                        enable_ssao: true.into(),
                     },
                     text_editor: TextEditorSettings {
-                        text_wrapping: false,
-                        blinking_cursor: false,
+                        text_wrapping: false.into(),
+                        blinking_cursor: false.into(),
                     },
                     project: Default::default(),
                     command_bar: CommandBarSettings {
-                        include_settings: false,
+                        include_settings: false.into(),
                     },
                 }
             }
@@ -586,7 +623,7 @@ defaultProjectName = "projects-$nnn"
                     app: AppSettings {
                         appearance: AppearanceSettings {
                             theme: AppTheme::Dark,
-                            color: 138.0,
+                            color: 138.0.into(),
                         },
                         onboarding_status: OnboardingStatus::Dismissed,
                         project_directory: None,
@@ -600,18 +637,18 @@ defaultProjectName = "projects-$nnn"
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
-                        enable_ssao: false,
+                        enable_ssao: true.into(),
                     },
                     text_editor: TextEditorSettings {
-                        text_wrapping: false,
-                        blinking_cursor: false,
+                        text_wrapping: false.into(),
+                        blinking_cursor: false.into(),
                     },
                     project: ProjectSettings {
                         directory: "/Users/macinatormax/Documents/kittycad-modeling-projects".into(),
-                        default_project_name: "projects-$nnn".to_string(),
+                        default_project_name: "projects-$nnn".to_string().into(),
                     },
                     command_bar: CommandBarSettings {
-                        include_settings: false,
+                        include_settings: false.into(),
                     },
                 }
             }
@@ -633,7 +670,7 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                     app: AppSettings {
                         appearance: AppearanceSettings {
                             theme: AppTheme::System,
-                            color: DEFAULT_THEME_COLOR,
+                            color: Default::default(),
                         },
                         onboarding_status: OnboardingStatus::Dismissed,
                         project_directory: None,
@@ -645,19 +682,21 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Mm,
                         mouse_controls: Default::default(),
-                        highlight_edges: true,
+                        highlight_edges: true.into(),
                         show_debug_panel: false,
-                        enable_ssao: true,
+                        enable_ssao: true.into(),
                     },
                     text_editor: TextEditorSettings {
-                        text_wrapping: true,
-                        blinking_cursor: true,
+                        text_wrapping: true.into(),
+                        blinking_cursor: true.into(),
                     },
                     project: ProjectSettings {
                         directory: "/Users/macinatormax/Documents/kittycad-modeling-projects".into(),
-                        default_project_name: "project-$nnn".to_string(),
+                        default_project_name: "project-$nnn".to_string().into(),
                     },
-                    command_bar: CommandBarSettings { include_settings: true },
+                    command_bar: CommandBarSettings {
+                        include_settings: true.into()
+                    },
                 }
             }
         );
@@ -668,29 +707,9 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
             serialized,
             r#"[settings.app]
 onboarding_status = "dismissed"
-dismiss_web_banner = false
-
-[settings.app.appearance]
-theme = "system"
-color = 264.5
-
-[settings.modeling]
-base_unit = "mm"
-mouse_controls = "kittycad"
-highlight_edges = true
-show_debug_panel = false
-enable_ssao = true
-
-[settings.text_editor]
-text_wrapping = true
-blinking_cursor = true
 
 [settings.project]
 directory = "/Users/macinatormax/Documents/kittycad-modeling-projects"
-default_project_name = "project-$nnn"
-
-[settings.command_bar]
-include_settings = true
 "#
         );
     }
@@ -704,35 +723,7 @@ include_settings = true
 
         // Write the file back out.
         let serialized = toml::to_string(&parsed).unwrap();
-        assert_eq!(
-            serialized,
-            r#"[settings.app]
-onboarding_status = "incomplete"
-dismiss_web_banner = false
-
-[settings.app.appearance]
-theme = "system"
-color = 264.5
-
-[settings.modeling]
-base_unit = "mm"
-mouse_controls = "kittycad"
-highlight_edges = true
-show_debug_panel = false
-enable_ssao = true
-
-[settings.text_editor]
-text_wrapping = true
-blinking_cursor = true
-
-[settings.project]
-directory = ""
-default_project_name = "project-$nnn"
-
-[settings.command_bar]
-include_settings = true
-"#
-        );
+        assert_eq!(serialized, r#""#);
 
         let parsed = Configuration::backwards_compatible_toml_parse(empty_settings_file).unwrap();
         assert_eq!(parsed, Configuration::default());

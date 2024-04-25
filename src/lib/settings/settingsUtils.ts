@@ -19,6 +19,7 @@ import {
   writeProjectSettingsFile,
 } from 'lib/tauri'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
+import { BROWSER_PROJECT_NAME } from 'lib/constants'
 
 /**
  * Convert from a rust settings struct into the JS settings struct.
@@ -92,7 +93,7 @@ function localStorageAppSettingsPath() {
 }
 
 function localStorageProjectSettingsPath() {
-  return '/project.toml'
+  return '/' + BROWSER_PROJECT_NAME + '/project.toml'
 }
 
 function readLocalStorageAppSettingsFile(): Configuration {
@@ -111,10 +112,7 @@ function readLocalStorageAppSettingsFile(): Configuration {
 
 function readLocalStorageProjectSettingsFile(): ProjectConfiguration {
   // TODO: Remove backwards compatibility after a few releases.
-  let stored =
-    localStorage.getItem(localStorageProjectSettingsPath()) ??
-    localStorage.getItem('/browser/project.toml') ??
-    ''
+  let stored = localStorage.getItem(localStorageProjectSettingsPath()) ?? ''
 
   if (stored === '') {
     return defaultProjectSettings()
@@ -195,7 +193,7 @@ export async function saveSettings(
   const jsProjectSettings = getChangedSettingsAtLevel(allSettings, 'project')
   const projectTomlString = tomlStringify({ settings: jsProjectSettings })
   // Parse this as a Configuration.
-  const projectSettings = parseAppSettings(projectTomlString)
+  const projectSettings = parseProjectSettings(projectTomlString)
 
   // Write the project settings.
   if (inTauri) {

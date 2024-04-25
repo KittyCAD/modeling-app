@@ -4,9 +4,9 @@ use anyhow::Result;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use crate::settings::types::{
-    AppSettings, AppTheme, CommandBarSettings, ModelingSettings, TextEditorSettings, DEFAULT_THEME_COLOR,
-};
+use crate::settings::types::{AppSettings, AppTheme, CommandBarSettings, ModelingSettings, TextEditorSettings};
+
+use super::AppColor;
 
 /// High level project configuration.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
@@ -32,15 +32,15 @@ impl ProjectConfiguration {
         }
 
         if let Some(theme_color) = &settings.settings.app.theme_color {
-            if settings.settings.app.appearance.color == DEFAULT_THEME_COLOR {
+            if settings.settings.app.appearance.color == AppColor::default() {
                 settings.settings.app.appearance.color = theme_color.clone().into();
                 settings.settings.app.theme_color = None;
             }
         }
 
         if let Some(enable_ssao) = settings.settings.app.enable_ssao {
-            if settings.settings.modeling.enable_ssao {
-                settings.settings.modeling.enable_ssao = enable_ssao;
+            if settings.settings.modeling.enable_ssao.into() {
+                settings.settings.modeling.enable_ssao = enable_ssao.into();
                 settings.settings.app.enable_ssao = None;
             }
         }
@@ -107,7 +107,7 @@ includeSettings = false
                     app: AppSettings {
                         appearance: AppearanceSettings {
                             theme: AppTheme::Dark,
-                            color: 138.0,
+                            color: 138.0.into(),
                         },
                         onboarding_status: Default::default(),
                         project_directory: None,
@@ -121,14 +121,14 @@ includeSettings = false
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
-                        enable_ssao: false,
+                        enable_ssao: true.into(),
                     },
                     text_editor: TextEditorSettings {
-                        text_wrapping: false,
-                        blinking_cursor: false,
+                        text_wrapping: false.into(),
+                        blinking_cursor: false.into(),
                     },
                     command_bar: CommandBarSettings {
-                        include_settings: false,
+                        include_settings: false.into(),
                     },
                 }
             }
@@ -147,26 +147,12 @@ includeSettings = false
         assert_eq!(
             serialized,
             r#"[settings.app]
-onboarding_status = "incomplete"
-dismiss_web_banner = false
-
-[settings.app.appearance]
-theme = "system"
-color = 264.5
 
 [settings.modeling]
-base_unit = "mm"
-mouse_controls = "kittycad"
-highlight_edges = true
-show_debug_panel = false
-enable_ssao = true
 
 [settings.text_editor]
-text_wrapping = true
-blinking_cursor = true
 
 [settings.command_bar]
-include_settings = true
 "#
         );
 
