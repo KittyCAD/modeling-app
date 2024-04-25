@@ -575,8 +575,7 @@ impl Backend {
                 false
             };
 
-            let units: kittycad::types::UnitLength = params.units.into();
-            if executor_ctx.units == units
+            if executor_ctx.settings.units == params.units
                 && !self.has_diagnostics(params.text_document.uri.as_ref()).await
                 && has_memory
             {
@@ -585,7 +584,7 @@ impl Backend {
             }
 
             // Set the engine units.
-            executor_ctx.update_units(units);
+            executor_ctx.update_units(params.units);
 
             // Update the locked executor context.
             self.set_executor_ctx(executor_ctx.clone()).await;

@@ -8,8 +8,6 @@ export const MAX_PADDING = 7
  * This is available for users to edit as a setting.
  */
 export const DEFAULT_PROJECT_NAME = 'project-$nnn'
-/** The file name for settings files, both at the user and project level */
-export const SETTINGS_FILE_EXT = '.toml'
 /** Name given the temporary "project" in the browser version of the app */
 export const BROWSER_PROJECT_NAME = 'browser'
 /** Name given the temporary file in the browser version of the app */
