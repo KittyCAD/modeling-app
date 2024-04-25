@@ -74,15 +74,13 @@ impl ProjectRoute {
                             .to_string(),
                     ),
                 )
+            } else if let Some(project_name) = project_dir.file_name() {
+                (
+                    project_dir.display().to_string(),
+                    Some(project_name.to_string_lossy().to_string()),
+                )
             } else {
-                if let Some(project_name) = project_dir.file_name() {
-                    (
-                        project_dir.display().to_string(),
-                        Some(project_name.to_string_lossy().to_string()),
-                    )
-                } else {
-                    (project_dir.display().to_string(), None)
-                }
+                (project_dir.display().to_string(), None)
             }
         };
 
