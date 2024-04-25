@@ -507,3 +507,19 @@ pub fn parse_project_settings(toml_str: &str) -> Result<JsValue, String> {
     // gloo-serialize crate instead.
     JsValue::from_serde(&settings).map_err(|e| e.to_string())
 }
+
+/// Parse the project route.
+#[wasm_bindgen]
+pub fn parse_project_route(configuration: &str, route: &str) -> Result<JsValue, String> {
+    console_error_panic_hook::set_once();
+
+    let configuration: kcl_lib::settings::types::Configuration =
+        serde_json::from_str(configuration).map_err(|e| e.to_string())?;
+
+    let route =
+        kcl_lib::settings::types::file::ProjectRoute::from_route(&configuration, route).map_err(|e| e.to_string())?;
+
+    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
+    // gloo-serialize crate instead.
+    JsValue::from_serde(&route).map_err(|e| e.to_string())
+}

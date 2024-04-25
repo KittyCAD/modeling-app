@@ -11,7 +11,7 @@ use std::{
 
 use anyhow::Result;
 use kcl_lib::settings::types::{
-    file::{FileEntry, Project, ProjectState},
+    file::{FileEntry, Project, ProjectRoute, ProjectState},
     project::ProjectConfiguration,
     Configuration, DEFAULT_PROJECT_KCL_FILE,
 };
@@ -209,6 +209,12 @@ async fn get_project_info(configuration: Configuration, project_path: &str) -> R
         .map_err(InvokeError::from_anyhow)
 }
 
+/// Parse the project route.
+#[tauri::command]
+async fn parse_project_route(configuration: Configuration, route: &str) -> Result<ProjectRoute, InvokeError> {
+    ProjectRoute::from_route(&configuration, route).map_err(InvokeError::from_anyhow)
+}
+
 #[tauri::command]
 async fn read_dir_recursive(path: &str) -> Result<FileEntry, InvokeError> {
     kcl_lib::settings::utils::walk_dir(&Path::new(path).to_path_buf())
@@ -365,6 +371,7 @@ fn main() -> Result<()> {
             create_new_project_directory,
             list_projects,
             get_project_info,
+            parse_project_route,
             get_user,
             login,
             read_dir_recursive,
@@ -423,6 +430,14 @@ fn main() -> Result<()> {
 
             let runner: tauri::async_runtime::JoinHandle<Result<ProjectState>> =
                 tauri::async_runtime::spawn(async move {
+                    // Fix for "." path, which is the current directory.
+                    let source_path = if source_path == Path::new(".") {
+                        std::env::current_dir()
+                            .map_err(|e| anyhow::anyhow!("Error getting the current directory: {:?}", e))?
+                    } else {
+                        source_path
+                    };
+
                     // If the path is a directory, let's assume it is a project directory.
                     if source_path.is_dir() {
                         // Load the details about the project from the path.

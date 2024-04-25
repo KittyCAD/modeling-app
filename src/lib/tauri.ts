@@ -7,6 +7,7 @@ import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration
 import { Project } from 'wasm-lib/kcl/bindings/Project'
 import { FileEntry } from 'wasm-lib/kcl/bindings/FileEntry'
 import { ProjectState } from 'wasm-lib/kcl/bindings/ProjectState'
+import { ProjectRoute } from 'wasm-lib/kcl/bindings/ProjectRoute'
 
 // Get the app state from tauri.
 export async function getState(): Promise<ProjectState | undefined> {
@@ -78,6 +79,16 @@ export async function getProjectInfo(
 
 export async function login(host: string): Promise<string> {
   return await invoke('login', { host })
+}
+
+export async function parseProjectRoute(
+  configuration: Configuration,
+  route: string
+): Promise<ProjectRoute> {
+  return await invoke<ProjectRoute>('parse_project_route', {
+    configuration,
+    route,
+  })
 }
 
 export async function getUser(

@@ -5,6 +5,8 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+use super::Configuration;
+
 /// State management for the application.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
 #[ts(export)]
@@ -12,6 +14,100 @@ use serde::{Deserialize, Serialize};
 pub struct ProjectState {
     pub project: Project,
     pub current_file: Option<String>,
+}
+
+/// Project route information.
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct ProjectRoute {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub project_name: Option<String>,
+    pub project_path: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub current_file_name: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub current_file_path: Option<String>,
+}
+
+impl ProjectRoute {
+    /// Get the project state from the url in the route.
+    pub fn from_route(configuration: &Configuration, route: &str) -> Result<Self> {
+        let path = std::path::Path::new(route);
+        // Check if the default project path is in the route.
+        let (project_path, project_name) = if path.starts_with(&configuration.settings.project.directory)
+            && configuration.settings.project.directory != std::path::PathBuf::default()
+        {
+            // Get the project name.
+            if let Some(project_name) = path
+                .strip_prefix(&configuration.settings.project.directory)
+                .unwrap()
+                .iter()
+                .next()
+            {
+                (
+                    configuration
+                        .settings
+                        .project
+                        .directory
+                        .join(project_name)
+                        .display()
+                        .to_string(),
+                    Some(project_name.to_string_lossy().to_string()),
+                )
+            } else {
+                (configuration.settings.project.directory.display().to_string(), None)
+            }
+        } else {
+            // Assume the project path is the parent directory of the file.
+            let project_dir = if path.display().to_string().ends_with(".kcl") {
+                path.parent()
+                    .ok_or_else(|| anyhow::anyhow!("Parent directory not found: {}", path.display()))?
+            } else {
+                path
+            };
+
+            if project_dir == std::path::Path::new("/") {
+                (
+                    path.display().to_string(),
+                    Some(
+                        path.file_name()
+                            .ok_or_else(|| anyhow::anyhow!("File name not found: {}", path.display()))?
+                            .to_string_lossy()
+                            .to_string(),
+                    ),
+                )
+            } else if let Some(project_name) = project_dir.file_name() {
+                (
+                    project_dir.display().to_string(),
+                    Some(project_name.to_string_lossy().to_string()),
+                )
+            } else {
+                (project_dir.display().to_string(), None)
+            }
+        };
+
+        let (current_file_name, current_file_path) = if path.display().to_string() == project_path {
+            (None, None)
+        } else {
+            (
+                Some(
+                    path.file_name()
+                        .ok_or_else(|| anyhow::anyhow!("File name not found: {}", path.display()))?
+                        .to_string_lossy()
+                        .to_string(),
+                ),
+                Some(path.display().to_string()),
+            )
+        };
+
+        Ok(Self {
+            project_name,
+            project_path,
+            current_file_name,
+            current_file_path,
+        })
+    }
 }
 
 /// Information about project.
@@ -231,5 +327,143 @@ impl From<std::fs::Metadata> for FileMetadata {
             modified: metadata.modified().ok().map(|t| t.into()),
             permission: Some(metadata.permissions().into()),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn test_project_route_from_route_std_path() {
+        let mut configuration = crate::settings::types::Configuration::default();
+        configuration.settings.project.directory =
+            std::path::PathBuf::from("/Users/macinatormax/Documents/kittycad-modeling-projects");
+
+        let route = "/Users/macinatormax/Documents/kittycad-modeling-projects/assembly/main.kcl";
+        let state = super::ProjectRoute::from_route(&configuration, route).unwrap();
+        assert_eq!(
+            state,
+            super::ProjectRoute {
+                project_name: Some("assembly".to_string()),
+                project_path: "/Users/macinatormax/Documents/kittycad-modeling-projects/assembly".to_string(),
+                current_file_name: Some("main.kcl".to_string()),
+                current_file_path: Some(
+                    "/Users/macinatormax/Documents/kittycad-modeling-projects/assembly/main.kcl".to_string()
+                ),
+            }
+        );
+    }
+
+    #[test]
+    fn test_project_route_from_route_std_path_dir() {
+        let mut configuration = crate::settings::types::Configuration::default();
+        configuration.settings.project.directory =
+            std::path::PathBuf::from("/Users/macinatormax/Documents/kittycad-modeling-projects");
+
+        let route = "/Users/macinatormax/Documents/kittycad-modeling-projects/assembly";
+        let state = super::ProjectRoute::from_route(&configuration, route).unwrap();
+        assert_eq!(
+            state,
+            super::ProjectRoute {
+                project_name: Some("assembly".to_string()),
+                project_path: "/Users/macinatormax/Documents/kittycad-modeling-projects/assembly".to_string(),
+                current_file_name: None,
+                current_file_path: None,
+            }
+        );
+    }
+
+    #[test]
+    fn test_project_route_from_route_std_path_dir_empty() {
+        let mut configuration = crate::settings::types::Configuration::default();
+        configuration.settings.project.directory =
+            std::path::PathBuf::from("/Users/macinatormax/Documents/kittycad-modeling-projects");
+
+        let route = "/Users/macinatormax/Documents/kittycad-modeling-projects";
+        let state = super::ProjectRoute::from_route(&configuration, route).unwrap();
+        assert_eq!(
+            state,
+            super::ProjectRoute {
+                project_name: None,
+                project_path: "/Users/macinatormax/Documents/kittycad-modeling-projects".to_string(),
+                current_file_name: None,
+                current_file_path: None,
+            }
+        );
+    }
+
+    #[test]
+    fn test_project_route_from_route_outside_std_path() {
+        let mut configuration = crate::settings::types::Configuration::default();
+        configuration.settings.project.directory =
+            std::path::PathBuf::from("/Users/macinatormax/Documents/kittycad-modeling-projects");
+
+        let route = "/Users/macinatormax/kittycad/modeling-app/main.kcl";
+        let state = super::ProjectRoute::from_route(&configuration, route).unwrap();
+        assert_eq!(
+            state,
+            super::ProjectRoute {
+                project_name: Some("modeling-app".to_string()),
+                project_path: "/Users/macinatormax/kittycad/modeling-app".to_string(),
+                current_file_name: Some("main.kcl".to_string()),
+                current_file_path: Some("/Users/macinatormax/kittycad/modeling-app/main.kcl".to_string()),
+            }
+        );
+    }
+
+    #[test]
+    fn test_project_route_from_route_outside_std_path_dir() {
+        let mut configuration = crate::settings::types::Configuration::default();
+        configuration.settings.project.directory =
+            std::path::PathBuf::from("/Users/macinatormax/Documents/kittycad-modeling-projects");
+
+        let route = "/Users/macinatormax/kittycad/modeling-app";
+        let state = super::ProjectRoute::from_route(&configuration, route).unwrap();
+        assert_eq!(
+            state,
+            super::ProjectRoute {
+                project_name: Some("modeling-app".to_string()),
+                project_path: "/Users/macinatormax/kittycad/modeling-app".to_string(),
+                current_file_name: None,
+                current_file_path: None,
+            }
+        );
+    }
+
+    #[test]
+    fn test_project_route_from_route_browser() {
+        let mut configuration = crate::settings::types::Configuration::default();
+        configuration.settings.project.directory = std::path::PathBuf::default();
+
+        let route = "/browser/main.kcl";
+        let state = super::ProjectRoute::from_route(&configuration, route).unwrap();
+        assert_eq!(
+            state,
+            super::ProjectRoute {
+                project_name: Some("browser".to_string()),
+                project_path: "/browser".to_string(),
+                current_file_name: Some("main.kcl".to_string()),
+                current_file_path: Some("/browser/main.kcl".to_string()),
+            }
+        );
+    }
+
+    #[test]
+    fn test_project_route_from_route_browser_no_path() {
+        let mut configuration = crate::settings::types::Configuration::default();
+        configuration.settings.project.directory = std::path::PathBuf::default();
+
+        let route = "/browser";
+        let state = super::ProjectRoute::from_route(&configuration, route).unwrap();
+        assert_eq!(
+            state,
+            super::ProjectRoute {
+                project_name: Some("browser".to_string()),
+                project_path: "/browser".to_string(),
+                current_file_name: None,
+                current_file_path: None,
+            }
+        );
     }
 }
