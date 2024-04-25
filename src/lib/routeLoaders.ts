@@ -25,7 +25,9 @@ import { createSettings } from './settings/initialSettings'
 // occurred during the settings load
 export const settingsLoader: LoaderFunction = async ({
   params,
-}): Promise<ReturnType<typeof createSettings>> => {
+}): Promise<
+  ReturnType<typeof createSettings> | ReturnType<typeof redirect>
+> => {
   let { settings } = await loadAndValidateSettings()
 
   // I don't love that we have to read the settings again here,
@@ -105,7 +107,7 @@ export const fileLoader: LoaderFunction = async ({
     const projectData: IndexLoaderData = {
       code,
       project: isTauri()
-        ? await getProjectInfo(projectName)
+        ? await getProjectInfo(projectPath)
         : {
             name: projectName,
             path: projectPath,

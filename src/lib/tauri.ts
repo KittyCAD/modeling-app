@@ -6,6 +6,17 @@ import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 import { Project } from 'wasm-lib/kcl/bindings/Project'
 import { FileEntry } from 'wasm-lib/kcl/bindings/FileEntry'
+import { ProjectState } from 'wasm-lib/kcl/bindings/ProjectState'
+
+// Get the app state from tauri.
+export async function getState(): Promise<ProjectState | undefined> {
+  return await invoke<ProjectState | undefined>('get_state')
+}
+
+// Set the app state in tauri.
+export async function setState(state: ProjectState | undefined): Promise<void> {
+  return await invoke('set_state', { state })
+}
 
 // Get the initial default dir for holding all projects.
 export async function getInitialDefaultDir(): Promise<string> {
@@ -53,7 +64,7 @@ export async function listProjects(
 }
 
 export async function getProjectInfo(
-  projectName: string,
+  projectPath: string,
   configuration?: Configuration
 ): Promise<Project> {
   if (!configuration) {
@@ -61,7 +72,7 @@ export async function getProjectInfo(
   }
   return await invoke<Project>('get_project_info', {
     configuration,
-    projectName,
+    projectPath,
   })
 }
 

@@ -1,6 +1,8 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+pub(crate) mod state;
+
 use std::{
     env,
     path::{Path, PathBuf},
@@ -9,12 +11,13 @@ use std::{
 
 use anyhow::Result;
 use kcl_lib::settings::types::{
-    file::{FileEntry, Project},
+    file::{FileEntry, Project, ProjectState},
     project::ProjectConfiguration,
-    Configuration,
+    Configuration, DEFAULT_PROJECT_KCL_FILE,
 };
 use oauth2::TokenResponse;
 use tauri::{ipc::InvokeError, Manager};
+use tauri_plugin_cli::CliExt;
 use tauri_plugin_shell::ShellExt;
 
 const DEFAULT_HOST: &str = "https://api.zoo.dev";
@@ -34,6 +37,19 @@ fn get_initial_default_dir(app: tauri::AppHandle) -> Result<PathBuf, InvokeError
     };
 
     Ok(dir.join(PROJECT_FOLDER))
+}
+
+#[tauri::command]
+async fn get_state(app: tauri::AppHandle) -> Result<Option<ProjectState>, InvokeError> {
+    let store = app.state::<state::Store>();
+    Ok(store.get().await)
+}
+
+#[tauri::command]
+async fn set_state(app: tauri::AppHandle, state: Option<ProjectState>) -> Result<(), InvokeError> {
+    let store = app.state::<state::Store>();
+    store.set(state).await;
+    Ok(())
 }
 
 fn get_app_settings_file_path(app: &tauri::AppHandle) -> Result<PathBuf, InvokeError> {
@@ -172,9 +188,9 @@ async fn list_projects(configuration: Configuration) -> Result<Vec<Project>, Inv
 
 /// Get information about a project.
 #[tauri::command]
-async fn get_project_info(configuration: Configuration, project_name: &str) -> Result<Project, InvokeError> {
+async fn get_project_info(configuration: Configuration, project_path: &str) -> Result<Project, InvokeError> {
     configuration
-        .get_project_info(project_name)
+        .get_project_info(project_path)
         .await
         .map_err(InvokeError::from_anyhow)
 }
@@ -328,6 +344,8 @@ fn main() -> Result<()> {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            get_state,
+            set_state,
             get_initial_default_dir,
             initialize_project_directory,
             create_new_project_directory,
@@ -342,6 +360,113 @@ fn main() -> Result<()> {
             read_project_settings_file,
             write_project_settings_file,
         ])
+        .plugin(tauri_plugin_cli::init())
+        .setup(|app| {
+            let mut verbose = false;
+            let mut source_path: Option<PathBuf> = None;
+            match app.cli().matches() {
+                // `matches` here is a Struct with { args, subcommand }.
+                // `args` is `HashMap<String, ArgData>` where `ArgData` is a struct with { value, occurrences }.
+                // `subcommand` is `Option<Box<SubcommandMatches>>` where `SubcommandMatches` is a struct with { name, matches }.
+                Ok(matches) => {
+                    if let Some(verbose_flag) = matches.args.get("verbose") {
+                        let Some(value) = verbose_flag.value.as_bool() else {
+                            return Err(
+                                anyhow::anyhow!("Error parsing CLI arguments: verbose flag is not a boolean").into(),
+                            );
+                        };
+                        verbose = value;
+                    }
+
+                    // Get the path we are trying to open.
+                    if let Some(source_arg) = matches.args.get("source") {
+                        // We don't do an else here because this can be null.
+                        if let Some(value) = source_arg.value.as_str() {
+                            source_path = Some(Path::new(value).to_path_buf());
+                        }
+                    }
+                }
+                Err(err) => {
+                    return Err(anyhow::anyhow!("Error parsing CLI arguments: {:?}", err).into());
+                }
+            }
+
+            // If we have a source path to open, make sure it exists.
+            let Some(source_path) = source_path else {
+                // The user didn't provide a source path to open.
+                // Run the app as normal.
+                app.manage(state::Store::default());
+                return Ok(());
+            };
+
+            if !source_path.exists() {
+                return Err(anyhow::anyhow!(
+                    "Error: the path `{}` you are trying to open does not exist",
+                    source_path.display()
+                )
+                .into());
+            }
+
+            let runner: tauri::async_runtime::JoinHandle<Result<ProjectState>> =
+                tauri::async_runtime::spawn(async move {
+                    // If the path is a directory, let's assume it is a project directory.
+                    if source_path.is_dir() {
+                        // Load the details about the project from the path.
+                        let project = Project::from_path(&source_path).await.map_err(|e| {
+                            anyhow::anyhow!("Error loading project from path {}: {:?}", source_path.display(), e)
+                        })?;
+
+                        if verbose {
+                            println!("Project loaded from path: {}", source_path.display());
+                        }
+
+                        // Create the default file in the project.
+                        // Write the initial project file.
+                        let project_file = source_path.join(DEFAULT_PROJECT_KCL_FILE);
+                        tokio::fs::write(&project_file, vec![]).await?;
+
+                        return Ok(ProjectState {
+                            project,
+                            current_file: Some(project_file.display().to_string()),
+                        });
+                    }
+
+                    // We were given a file path, not a directory.
+                    // Let's get the parent directory of the file.
+                    let parent = source_path.parent().ok_or_else(|| {
+                        anyhow::anyhow!(
+                            "Error getting the parent directory of the file: {}",
+                            source_path.display()
+                        )
+                    })?;
+
+                    // Load the details about the project from the parent directory.
+                    let project = Project::from_path(&parent).await.map_err(|e| {
+                        anyhow::anyhow!("Error loading project from path {}: {:?}", source_path.display(), e)
+                    })?;
+
+                    if verbose {
+                        println!(
+                            "Project loaded from path: {}, current file: {}",
+                            parent.display(),
+                            source_path.display()
+                        );
+                    }
+
+                    Ok(ProjectState {
+                        project,
+                        current_file: Some(source_path.display().to_string()),
+                    })
+                });
+
+            // Block on the handle.
+            let store = tauri::async_runtime::block_on(runner)??;
+
+            // Create a state object to hold the project.
+            app.manage(state::Store::new(store));
+
+            Ok(())
+        })
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_http::init())

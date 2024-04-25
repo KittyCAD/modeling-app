@@ -5,6 +5,15 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+/// State management for the application.
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct ProjectState {
+    pub project: Project,
+    pub current_file: Option<String>,
+}
+
 /// Information about project.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
 #[ts(export)]
@@ -23,6 +32,34 @@ pub struct Project {
 }
 
 impl Project {
+    #[cfg(not(target_arch = "wasm32"))]
+    /// Populate a project from a path.
+    pub async fn from_path<P: AsRef<std::path::Path>>(path: P) -> Result<Self> {
+        // Check if they are using '.' as the path.
+        let path = if path.as_ref() == std::path::Path::new(".") {
+            std::env::current_dir()?
+        } else {
+            path.as_ref().to_path_buf()
+        };
+
+        // Make sure the path exists.
+        if !path.exists() {
+            return Err(anyhow::anyhow!("Path does not exist"));
+        }
+
+        let file = crate::settings::utils::walk_dir(&path).await?;
+        let metadata = std::fs::metadata(path).ok().map(|m| m.into());
+        let mut project = Self {
+            file,
+            metadata,
+            kcl_file_count: 0,
+            directory_count: 0,
+        };
+        project.populate_kcl_file_count()?;
+        project.populate_directory_count()?;
+        Ok(project)
+    }
+
     /// Populate the number of KCL files in the project.
     pub fn populate_kcl_file_count(&mut self) -> Result<()> {
         let mut count = 0;

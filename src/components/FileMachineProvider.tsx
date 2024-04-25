@@ -62,7 +62,7 @@ export const FileMachineProvider = ({
     services: {
       readFiles: async (context: ContextFrom<typeof fileMachine>) => {
         const newFiles = isTauri()
-          ? (await getProjectInfo(context.project.name)).children
+          ? (await getProjectInfo(context.project.path)).children
           : []
         return {
           ...context.project,
