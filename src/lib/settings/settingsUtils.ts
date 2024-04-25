@@ -32,7 +32,9 @@ function configurationToSettingsPayload(
   return {
     app: {
       theme: appThemeToTheme(configuration?.settings?.app?.appearance?.theme),
-      themeColor: configuration?.settings?.app?.appearance?.color.toString(),
+      themeColor: configuration?.settings?.app?.appearance?.color
+        ? configuration?.settings?.app?.appearance?.color.toString()
+        : undefined,
       onboardingStatus: configuration?.settings?.app?.onboarding_status,
       dismissWebBanner: configuration?.settings?.app?.dismiss_web_banner,
       projectDirectory: configuration?.settings?.project?.directory,
@@ -66,7 +68,9 @@ function projectConfigurationToSettingsPayload(
   return {
     app: {
       theme: appThemeToTheme(configuration?.settings?.app?.appearance?.theme),
-      themeColor: configuration?.settings?.app?.appearance?.color.toString(),
+      themeColor: configuration?.settings?.app?.appearance?.color
+        ? configuration?.settings?.app?.appearance?.color.toString()
+        : undefined,
       onboardingStatus: configuration?.settings?.app?.onboarding_status,
       dismissWebBanner: configuration?.settings?.app?.dismiss_web_banner,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
