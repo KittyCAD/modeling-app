@@ -28,11 +28,6 @@ async fn execute_and_snapshot(code: &str, units: kcl_lib::settings::types::UnitL
         client.set_base_url(addr);
     }
 
-    let ws = client
-        .modeling()
-        .commands_ws(None, None, None, None, None, None, Some(false))
-        .await?;
-
     // Create a temporary file to write the output to.
     let output_file = std::env::temp_dir().join(format!("kcl_output_{}.png", uuid::Uuid::new_v4()));
 
@@ -40,10 +35,11 @@ async fn execute_and_snapshot(code: &str, units: kcl_lib::settings::types::UnitL
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
     let ctx = kcl_lib::executor::ExecutorContext::new(
-        ws,
+        &client,
         ExecutorSettings {
             units,
-            ..Default::default()
+            highlight_edges: true,
+            enable_ssao: false,
         },
     )
     .await?;
@@ -578,12 +574,14 @@ async fn serial_test_member_expression_sketch_group() {
     |> line([0, scale], %)
     |> line([scale, 0], %)
     |> line([0, -scale], %)
+    |> close(%)
 
   return sg
 }
 
 const b1 = cube([0,0], 10)
 const b2 = cube([3,3], 4)
+    |> extrude(10, %)
 
 const pt1 = b1.value[0]
 const pt2 = b2.value[0]
@@ -667,6 +665,7 @@ async fn serial_test_dimensions_match() {
   |> line([0, 20], %)
   |> line([-20, 0], %)
   |> close(%)
+  |> extrude(10, %)
 "#;
 
     let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
@@ -887,6 +886,7 @@ async fn optional_params() {
         |> startProfileAt(pos, %)
         |> arc({angle_end: 360, angle_start: 0, radius: radius}, %)
         |> close(%)
+        |> extrude(2, %)
 
       return sg
   }
@@ -1004,6 +1004,7 @@ async fn serial_test_patterns_linear_basic_negative_distance() {
     let code = r#"const part = startSketchOn('XY')
     |> circle([0,0], 2, %)
     |> patternLinear2d({axis: [0,1], repetitions: 12, distance: -2}, %)
+    |> extrude(1, %)
 "#;
 
     let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
@@ -1021,6 +1022,7 @@ async fn serial_test_patterns_linear_basic_negative_axis() {
     let code = r#"const part = startSketchOn('XY')
     |> circle([0,0], 2, %)
     |> patternLinear2d({axis: [0,-1], repetitions: 12, distance: 2}, %)
+    |> extrude(1, %)
 "#;
 
     let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
@@ -1046,6 +1048,7 @@ const rectangle = startSketchOn('XY')
   |> line([0, -50], %)
   |> close(%)
   |> hole(circles, %)
+  |> extrude(10, %)
 
 "#;
 
@@ -1060,6 +1063,7 @@ async fn serial_test_patterns_circular_basic_2d() {
     let code = r#"const part = startSketchOn('XY')
     |> circle([0,0], 2, %)
     |> patternCircular2d({center: [20, 20], repetitions: 12, arcDegrees: 210, rotateDuplicates: true}, %)
+    |> extrude(1, %)
 "#;
 
     let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
