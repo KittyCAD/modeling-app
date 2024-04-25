@@ -3,8 +3,7 @@ name: Create Release
 on:
   push:
     branches:
-      # - main
-      - pierremtb/automate-release
+      - main
 
 jobs:
   create-release:
@@ -12,22 +11,20 @@ jobs:
     permissions:
       contents: write
       pull-requests: read
-    # if: contains(github.event.head_commit.message, 'Cut release v')
+    if: contains(github.event.head_commit.message, 'Cut release v')
     steps:
       - uses: actions/github-script@v7
         name: Read Cut release PR info and create release
         with:
           script: |
-            const { owner, repo } = context.repo
+            const { owner, repo, sha } = context.repo
             const pulls = await github.rest.repos.listPullRequestsAssociatedWithCommit({
               owner,
               repo,
-              // commit_sha: context.sha,
-              commit_sha: 'e123a00d4bd1c20c08fea81448da4766c083bbae',
+              commit_sha: sha,
             })
             const { title, body } = pulls.data[0]
             const version = title.split('Cut release ')[1]
-            console.log(version, body)
 
             await github.rest.repos.createRelease({
               owner,
@@ -37,3 +34,5 @@ jobs:
               name: version,
               draft: true,
             })
+
+            console.log('Release created as Draft: ', version, body)
