@@ -281,7 +281,7 @@ const Home = () => {
                 icon={{ icon: faPlus, iconClassName: 'p-1 w-4' }}
                 data-testid="home-new-file"
               >
-                New file
+                New project
               </ActionButton>
             </>
           )}
