@@ -1,0 +1,15 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["92H8YB3B95.dev.zoo.app"],
+        "components": [
+          {
+            "/": "/file/*",
+            "comment": "Matches any URL whose path starts with /file/"
+          }
+        ]
+      }
+    ]
+  }
+}
