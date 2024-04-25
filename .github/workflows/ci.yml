@@ -50,7 +50,7 @@ jobs:
       - run: yarn tsc
 
 
-  check-typos: 
+  check-typos:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -98,7 +98,7 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
-          
+
       - name: Set nightly version
         if: github.event_name == 'schedule'
         run: |
@@ -143,21 +143,21 @@ jobs:
           ls -l artifact
           cp artifact/package.json package.json
           cp artifact/src-tauri/tauri.conf.json src-tauri/tauri.conf.json
-          cp artifact/src-tauri/tauri.release.conf.json src-tauri/tauri.release.conf.json 
+          cp artifact/src-tauri/tauri.release.conf.json src-tauri/tauri.release.conf.json
 
       - name: Install ubuntu system dependencies
         if: matrix.os == 'ubuntu-latest'
-        run: >
-          sudo apt-get update &&
-          sudo apt-get install -y
-          libgtk-3-dev
-          libayatana-appindicator3-dev
-          webkit2gtk-driver
-          libsoup-3.0-dev
-          libjavascriptcoregtk-4.1-dev
-          libwebkit2gtk-4.1-dev
-          at-spi2-core
-          xvfb
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            webkit2gtk-driver \
+            libsoup-3.0-dev \
+            libjavascriptcoregtk-4.1-dev \
+            libwebkit2gtk-4.1-dev \
+            at-spi2-core \
+            xvfb
 
       - name: Sync node version and setup cache
         uses: actions/setup-node@v4
@@ -383,7 +383,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: 'artifact/*/Zoo*'
-          
+
   announce_release:
     needs: [publish-apps-release]
     runs-on: ubuntu-latest
@@ -391,17 +391,17 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-          
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-  
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install requests
-  
+
       - name: Announce Release
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
