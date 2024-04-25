@@ -1013,6 +1013,8 @@ pub struct ExecutorSettings {
     pub units: crate::settings::types::UnitLength,
     /// Highlight edges of 3D objects?
     pub highlight_edges: bool,
+    /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
+    pub enable_ssao: bool,
 }
 
 impl Default for ExecutorSettings {
@@ -1020,6 +1022,37 @@ impl Default for ExecutorSettings {
         Self {
             units: Default::default(),
             highlight_edges: true,
+            enable_ssao: false,
+        }
+    }
+}
+
+impl From<crate::settings::types::Configuration> for ExecutorSettings {
+    fn from(config: crate::settings::types::Configuration) -> Self {
+        Self {
+            units: config.settings.modeling.base_unit,
+            highlight_edges: config.settings.modeling.highlight_edges.into(),
+            enable_ssao: config.settings.modeling.enable_ssao.into(),
+        }
+    }
+}
+
+impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSettings {
+    fn from(config: crate::settings::types::project::ProjectConfiguration) -> Self {
+        Self {
+            units: config.settings.modeling.base_unit,
+            highlight_edges: config.settings.modeling.highlight_edges.into(),
+            enable_ssao: config.settings.modeling.enable_ssao.into(),
+        }
+    }
+}
+
+impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
+    fn from(modeling: crate::settings::types::ModelingSettings) -> Self {
+        Self {
+            units: modeling.base_unit,
+            highlight_edges: modeling.highlight_edges.into(),
+            enable_ssao: modeling.enable_ssao.into(),
         }
     }
 }
@@ -1027,9 +1060,40 @@ impl Default for ExecutorSettings {
 impl ExecutorContext {
     /// Create a new default executor context.
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new(ws: reqwest::Upgraded, settings: ExecutorSettings) -> Result<Self> {
+    pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
+        let ws = client
+            .modeling()
+            .commands_ws(
+                None,
+                None,
+                if settings.enable_ssao {
+                    Some(kittycad::types::PostEffectType::Ssao)
+                } else {
+                    None
+                },
+                None,
+                None,
+                None,
+                Some(false),
+            )
+            .await?;
+
+        let engine: Arc<Box<dyn EngineManager>> =
+            Arc::new(Box::new(crate::engine::conn::EngineConnection::new(ws).await?));
+
+        // Set the edge visibility.
+        engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                SourceRange::default(),
+                kittycad::types::ModelingCmd::EdgeLinesVisible {
+                    hidden: !settings.highlight_edges,
+                },
+            )
+            .await?;
+
         Ok(Self {
-            engine: Arc::new(Box::new(crate::engine::conn::EngineConnection::new(ws).await?)),
+            engine,
             fs: Arc::new(FileManager::new()),
             stdlib: Arc::new(StdLib::new()),
             settings,
