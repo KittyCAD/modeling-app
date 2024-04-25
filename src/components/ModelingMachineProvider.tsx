@@ -56,6 +56,7 @@ import toast from 'react-hot-toast'
 import { EditorSelection } from '@uiw/react-codemirror'
 import { CoreDumpManager } from 'lib/coredump'
 import { useHotkeys } from 'react-hotkeys-hook'
+import { useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 
 type MachineContext<T extends AnyStateMachine> = {
@@ -84,7 +85,12 @@ export const ModelingMachineProvider = ({
   } = useSettingsAuthContext()
   const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)
+
+  let [searchParams] = useSearchParams()
+  const pool = searchParams.get('pool')
+
   useSetupEngineManager(streamRef, token, {
+    pool: pool,
     theme: theme.current,
     highlightEdges: highlightEdges.current,
     enableSSAO: enableSSAO.current,
