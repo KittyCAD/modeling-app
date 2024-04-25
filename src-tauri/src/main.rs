@@ -371,6 +371,13 @@ fn main() -> Result<()> {
             write_project_settings_file,
         ])
         .plugin(tauri_plugin_cli::init())
+        .plugin(tauri_plugin_deep_link::init())
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_http::init())
+        .plugin(tauri_plugin_os::init())
+        .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_shell::init())
         .setup(|app| {
             // Do update things.
             #[cfg(debug_assertions)]
@@ -493,15 +500,13 @@ fn main() -> Result<()> {
             // Create a state object to hold the project.
             app.manage(state::Store::new(store));
 
+            // Listen on the deep links.
+            app.listen("zoo-modeling-app://", |url| {
+                dbg!(url);
+            });
+
             Ok(())
         })
-        .plugin(tauri_plugin_deep_link::init())
-        .plugin(tauri_plugin_dialog::init())
-        .plugin(tauri_plugin_fs::init())
-        .plugin(tauri_plugin_http::init())
-        .plugin(tauri_plugin_os::init())
-        .plugin(tauri_plugin_process::init())
-        .plugin(tauri_plugin_shell::init())
         .run(tauri::generate_context!())?;
 
     Ok(())

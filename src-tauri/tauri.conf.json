@@ -68,7 +68,7 @@
     },
     "deep-link": {
       "domains": [
-        { "host": "app.zoo.dev", "pathPrefix": ["/open"] }
+        { "host": "app.zoo.dev" }
       ]
     },
     "shell": {
