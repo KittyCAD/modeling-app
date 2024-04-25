@@ -18,20 +18,21 @@ jobs:
         name: Read Cut release PR info and create release
         with:
           script: |
+            const { owner, repo } = context.repo
             const pulls = await github.rest.repos.listPullRequestsAssociatedWithCommit({
-                // commit_sha: context.sha,
-                commit_sha: '0b235dc1cde26b4321cee105ae02906eacc586bf',
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-              })
+              owner,
+              repo,
+              // commit_sha: context.sha,
+              commit_sha: 'e123a00d4bd1c20c08fea81448da4766c083bbae',
+            })
             const { title, body } = pulls.data[0]
             const version = title.split('Cut release ')[1]
             console.log(version, body)
 
-            // await github.rest.releases.create({
-            //     tag_name: version,
-            //     name: version,
-            //     body: body,
-            //     owner: context.repo.owner,
-            //     repo: context.repo.repo,
-            // })
+            await github.rest.repos.createRelease({
+              owner,
+              repo,
+              body,
+              tag_name: version,
+              name: version,
+            })
