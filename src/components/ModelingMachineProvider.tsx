@@ -86,7 +86,7 @@ export const ModelingMachineProvider = ({
   const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)
 
-  let [searchParams, _] = useSearchParams()
+  let [searchParams] = useSearchParams()
   const pool = searchParams.get('pool')
 
   useSetupEngineManager(streamRef, token, {
