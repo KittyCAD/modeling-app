@@ -33,7 +33,7 @@
                     </array>
                     <key>public.mime-type</key>
                     <array>
-                        <string>text/vnd.zoo-kcl</string>
+                        <string>text/vnd.zoo.kcl</string>
                     </array>
                 </dict>
             </dict>
