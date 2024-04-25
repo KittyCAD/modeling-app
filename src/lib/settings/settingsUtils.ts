@@ -112,7 +112,13 @@ function readLocalStorageAppSettingsFile(): Configuration {
     return defaultAppSettings()
   }
 
-  return parseAppSettings(stored)
+  try {
+    return parseAppSettings(stored)
+  } catch (e) {
+    const settings = defaultAppSettings()
+    localStorage.setItem(localStorageAppSettingsPath(), tomlStringify(settings))
+    return settings
+  }
 }
 
 function readLocalStorageProjectSettingsFile(): ProjectConfiguration {
@@ -123,7 +129,16 @@ function readLocalStorageProjectSettingsFile(): ProjectConfiguration {
     return defaultProjectSettings()
   }
 
-  return parseProjectSettings(stored)
+  try {
+    return parseProjectSettings(stored)
+  } catch (e) {
+    const settings = defaultProjectSettings()
+    localStorage.setItem(
+      localStorageProjectSettingsPath(),
+      tomlStringify(settings)
+    )
+    return settings
+  }
 }
 
 export interface AppSettings {

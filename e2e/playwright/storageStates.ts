@@ -1,7 +1,7 @@
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { Themes } from 'lib/theme'
 
-export const TEST_SETTINGS_KEY = '/user.toml'
+export const TEST_SETTINGS_KEY = '/settings.toml'
 export const TEST_SETTINGS = {
   app: {
     theme: Themes.Dark,
