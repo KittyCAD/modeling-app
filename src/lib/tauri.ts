@@ -10,7 +10,12 @@ import { ProjectState } from 'wasm-lib/kcl/bindings/ProjectState'
 
 // Get the app state from tauri.
 export async function getState(): Promise<ProjectState | undefined> {
-  return await invoke<string>('get__state')
+  return await invoke<ProjectState | undefined>('get_state')
+}
+
+// Set the app state in tauri.
+export async function setState(state: ProjectState | undefined): Promise<void> {
+  return await invoke('set_state', { state })
 }
 
 // Get the initial default dir for holding all projects.

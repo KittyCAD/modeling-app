@@ -45,6 +45,13 @@ async fn get_state(app: tauri::AppHandle) -> Result<Option<ProjectState>, Invoke
     Ok(store.get().await)
 }
 
+#[tauri::command]
+async fn set_state(app: tauri::AppHandle, state: ProjectState) -> Result<(), InvokeError> {
+    let store = app.state::<state::Store>();
+    store.set(state).await;
+    Ok(())
+}
+
 fn get_app_settings_file_path(app: &tauri::AppHandle) -> Result<PathBuf, InvokeError> {
     let app_config_dir = app.path().app_config_dir()?;
     Ok(app_config_dir.join(SETTINGS_FILE_NAME))
@@ -338,6 +345,7 @@ fn main() -> Result<()> {
         })
         .invoke_handler(tauri::generate_handler![
             get_state,
+            set_state,
             get_initial_default_dir,
             initialize_project_directory,
             create_new_project_directory,
