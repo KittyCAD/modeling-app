@@ -270,8 +270,6 @@ jobs:
           security import "dist.cer" -k ~/Library/Keychains/refine-build.keychain -T /usr/bin/codesign
           security import "installer.cer" -k ~/Library/Keychains/refine-build.keychain -T /usr/bin/codesign
 
-          security set-key-partition-list -S apple-tool:,apple: -s -k gh_actions refine-build.keychain
-
           target="universal-apple-darwin"
 
           # Turn off the default target
