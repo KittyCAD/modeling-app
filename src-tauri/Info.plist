@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>CFBundleURLTypes</key>
+        <array>
+            <dict>
+                <key>CFBundleURLName</key>
+                <string>dev.zoo.modeling-app</string>
+                <key>CFBundleURLSchemes</key>
+                <array>
+                    <string>zoo-modeling-app</string>
+                    <string>zoo</string>
+                </array>
+            </dict>
+        </array>
+        <key>UTExportedTypeDeclarations</key>
+        <array>
+            <dict>
+                <key>UTTypeIdentifier</key>
+                <string>dev.zoo.kcl</string>
+                <key>UTTypeConformsTo</key>
+                <array>
+                    <string>public.source-code</string>
+                </array>
+                <key>UTTypeDescription</key>
+                <string>KCL (KittyCAD Language) document</string>
+                <key>UTTypeTagSpecification</key>
+                <dict>
+                    <key>public.filename-extension</key>
+                    <array>
+                        <string>kcl</string>
+                    </array>
+                    <key>public.mime-type</key>
+                    <array>
+                        <string>text/vnd.zoo.kcl</string>
+                    </array>
+                </dict>
+            </dict>
+        </array>
+    </dict>
+</plist>

@@ -198,7 +198,7 @@ pub async fn kcl_lsp_run(
     engine_manager: Option<kcl_lib::engine::conn_wasm::EngineCommandManager>,
     units: &str,
     token: String,
-    is_dev: bool,
+    baseurl: String,
 ) -> Result<(), JsValue> {
     console_error_panic_hook::set_once();
 
@@ -216,9 +216,7 @@ pub async fn kcl_lsp_run(
     let token_types = kcl_lib::token::TokenType::all_semantic_token_types().unwrap();
 
     let mut zoo_client = kittycad::Client::new(token);
-    if is_dev {
-        zoo_client.set_base_url("https://api.dev.zoo.dev");
-    }
+    zoo_client.set_base_url(baseurl.as_str());
 
     let file_manager = Arc::new(kcl_lib::fs::FileManager::new(fs));
 
@@ -313,7 +311,7 @@ pub async fn kcl_lsp_run(
 
 // NOTE: input needs to be an AsyncIterator<Uint8Array, never, void> specifically
 #[wasm_bindgen]
-pub async fn copilot_lsp_run(config: ServerConfig, token: String, is_dev: bool) -> Result<(), JsValue> {
+pub async fn copilot_lsp_run(config: ServerConfig, token: String, baseurl: String) -> Result<(), JsValue> {
     console_error_panic_hook::set_once();
 
     let ServerConfig {
@@ -323,9 +321,7 @@ pub async fn copilot_lsp_run(config: ServerConfig, token: String, is_dev: bool) 
     } = config;
 
     let mut zoo_client = kittycad::Client::new(token);
-    if is_dev {
-        zoo_client.set_base_url("https://api.dev.zoo.dev");
-    }
+    zoo_client.set_base_url(baseurl.as_str());
 
     let file_manager = Arc::new(kcl_lib::fs::FileManager::new(fs));
 
@@ -510,4 +506,20 @@ pub fn parse_project_settings(toml_str: &str) -> Result<JsValue, String> {
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
     JsValue::from_serde(&settings).map_err(|e| e.to_string())
+}
+
+/// Parse the project route.
+#[wasm_bindgen]
+pub fn parse_project_route(configuration: &str, route: &str) -> Result<JsValue, String> {
+    console_error_panic_hook::set_once();
+
+    let configuration: kcl_lib::settings::types::Configuration =
+        serde_json::from_str(configuration).map_err(|e| e.to_string())?;
+
+    let route =
+        kcl_lib::settings::types::file::ProjectRoute::from_route(&configuration, route).map_err(|e| e.to_string())?;
+
+    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
+    // gloo-serialize crate instead.
+    JsValue::from_serde(&route).map_err(|e| e.to_string())
 }
