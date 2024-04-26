@@ -13,7 +13,7 @@
     <key>com.apple.security.files.downloads.read-write</key>
     <true/>
     <key>com.apple.application-identifier</key>
-    <string>92H8YB3B95.dev.zoo.app</string>
+    <string>92H8YB3B95.dev.zoo.modeling-app</string>
     <key>com.apple.developer.team-identifier</key>
     <string>92H8YB3B95</string>
   </dict>
