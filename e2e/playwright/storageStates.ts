@@ -22,9 +22,14 @@ export const TEST_SETTINGS = {
   },
 } satisfies Partial<SaveSettingsPayload>
 
-export const TEST_SETTINGS_ONBOARDING = {
+export const TEST_SETTINGS_ONBOARDING_EXPORT = {
   ...TEST_SETTINGS,
   app: { ...TEST_SETTINGS.app, onboardingStatus: '/export' },
+} satisfies Partial<SaveSettingsPayload>
+
+export const TEST_SETTINGS_ONBOARDING_START = {
+  ...TEST_SETTINGS,
+  app: { ...TEST_SETTINGS.app, onboardingStatus: '' },
 } satisfies Partial<SaveSettingsPayload>
 
 export const TEST_SETTINGS_CORRUPTED = {
