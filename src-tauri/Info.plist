@@ -33,6 +33,8 @@
                 <false/>
                 <key>NSDocumentClass</key>
                 <string>Document</string>
+                <key>LSHandlerRank</key>
+                <string>Owner</string>
             </dict>
             <dict>
                 <key>LSItemContentTypes</key>
@@ -42,11 +44,13 @@
                 <key>CFBundleTypeName</key>
                 <string>TOML</string>
                 <key>CFBundleTypeRole</key>
-                <string>Viewer</string>
+                <string>Editor</string>
                 <key>LSTypeIsPackage</key>
                 <false/>
                 <key>NSDocumentClass</key>
                 <string>Document</string>
+                <key>LSHandlerRank</key>
+                <string>Default</string>
             </dict>
             <dict>
                 <key>LSItemContentTypes</key>
@@ -61,6 +65,8 @@
                 <false/>
                 <key>NSDocumentClass</key>
                 <string>Document</string>
+                <key>LSHandlerRank</key>
+                <string>Default</string>
             </dict>
             <dict>
                 <key>LSItemContentTypes</key>
@@ -75,6 +81,8 @@
                 <false/>
                 <key>NSDocumentClass</key>
                 <string>Document</string>
+                <key>LSHandlerRank</key>
+                <string>Default</string>
             </dict>
             <dict>
                 <key>LSItemContentTypes</key>
@@ -89,6 +97,8 @@
                 <false/>
                 <key>NSDocumentClass</key>
                 <string>Document</string>
+                <key>LSHandlerRank</key>
+                <string>Default</string>
             </dict>
             <dict>
                 <key>LSItemContentTypes</key>
@@ -103,6 +113,8 @@
                 <false/>
                 <key>NSDocumentClass</key>
                 <string>Document</string>
+                <key>LSHandlerRank</key>
+                <string>Default</string>
             </dict>
             <dict>
                 <key>LSItemContentTypes</key>
@@ -117,6 +129,8 @@
                 <false/>
                 <key>NSDocumentClass</key>
                 <string>Document</string>
+                <key>LSHandlerRank</key>
+                <string>Default</string>
             </dict>
             <dict>
                 <key>LSItemContentTypes</key>
@@ -131,6 +145,8 @@
                 <false/>
                 <key>NSDocumentClass</key>
                 <string>Document</string>
+                <key>LSHandlerRank</key>
+                <string>Default</string>
             </dict>
             <dict>
                 <key>LSItemContentTypes</key>
@@ -145,6 +161,8 @@
                 <false/>
                 <key>NSDocumentClass</key>
                 <string>Document</string>
+                <key>LSHandlerRank</key>
+                <string>Default</string>
             </dict>
             <dict>
                 <key>LSItemContentTypes</key>
@@ -159,6 +177,8 @@
                 <false/>
                 <key>NSDocumentClass</key>
                 <string>Document</string>
+                <key>LSHandlerRank</key>
+                <string>Default</string>
             </dict>
             <dict>
                 <key>LSItemContentTypes</key>
@@ -173,6 +193,8 @@
                 <false/>
                 <key>NSDocumentClass</key>
                 <string>Folder</string>
+                <key>LSHandlerRank</key>
+                <string>Default</string>
             </dict>
         </array>
         <key>UTExportedTypeDeclarations</key>
