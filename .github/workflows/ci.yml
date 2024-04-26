@@ -133,11 +133,6 @@ jobs:
       TAURI_ARGS_MACOS: ${{ matrix.os == 'macos-14' && '--target universal-apple-darwin' || '' }}
       TAURI_ARGS_UBUNTU: ${{ matrix.os == 'ubuntu-latest' && '--bundles' || '' }}
     steps:
-      - uses: maxim-lobanov/setup-xcode@v1
-        if: matrix.os == 'macos-14'
-        with:
-          xcode-version: latest-stable
-
       - uses: actions/checkout@v4
 
       - uses: actions/download-artifact@v3
@@ -242,6 +237,10 @@ jobs:
           includeDebug: true
           args: "${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
 
+      - uses: maxim-lobanov/setup-xcode@v1
+        if: matrix.os == 'macos-14'
+        with:
+          xcode-version: '14.3.1' 
 
       - name: Mac App Store
         if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'macos-14' }}
