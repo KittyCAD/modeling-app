@@ -38,7 +38,7 @@
     },
     "longDescription": "",
     "macOS": {
-      "entitlements": "entitlements/Zoo Modeling App.entitlements"
+      "entitlements": "entitlements/general.entitlements"
     },
     "resources": [],
     "shortDescription": "",

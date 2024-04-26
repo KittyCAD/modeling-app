@@ -281,12 +281,12 @@ jobs:
           rm src-tauri/Cargo.toml.bu
           git diff src-tauri/Cargo.toml
 
-          yarn tauri build --target "${target}" --verbose
+          yarn tauri build --target "${target}" --verbose --config src-tauri/tauri.appstore.conf.json
 
           app_path="src-tauri/target/${target}/release/bundle/macos/Zoo Modeling App.app"
           build_name="src-tauri/target/${target}/release/bundle/macos/Zoo Modeling App.pkg"
           cp_dir="src-tauri/target/${target}/release/bundle/macos/Zoo Modeling App.app/Contents/embedded.provisionprofile"
-          entitlements="src-tauri/entitlements/Zoo Modeling App.entitlements"
+          entitlements="src-tauri/entitlements/app-store.entitlements"
 
           cp "${profile}" "${cp_dir}"
 
