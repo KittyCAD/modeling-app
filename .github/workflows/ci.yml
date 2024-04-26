@@ -279,6 +279,8 @@ jobs:
           # We don't want to install the updater for the apple store build
           sed -i.bu "s/default =/# default =/" src-tauri/Cargo.toml
           rm src-tauri/Cargo.toml.bu
+          git diff src-tauri/Cargo.toml
+
           yarn tauri build --target "${target}" --verbose
 
           app_path="src-tauri/target/${target}/release/bundle/macos/Zoo Modeling App.app"
