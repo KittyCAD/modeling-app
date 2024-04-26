@@ -3,7 +3,7 @@ import {
   faArrowUp,
   faCircle,
 } from '@fortawesome/free-solid-svg-icons'
-import { type ProjectWithEntryPointMetadata } from 'lib/types'
+import { Project } from 'wasm-lib/kcl/bindings/Project'
 
 const DESC = ':desc'
 
@@ -27,10 +27,7 @@ export function getNextSearchParams(currentSort: string, newSort: string) {
 }
 
 export function getSortFunction(sortBy: string) {
-  const sortByName = (
-    a: ProjectWithEntryPointMetadata,
-    b: ProjectWithEntryPointMetadata
-  ) => {
+  const sortByName = (a: Project, b: Project) => {
     if (a.name && b.name) {
       return sortBy.includes('desc')
         ? a.name.localeCompare(b.name)
@@ -39,16 +36,13 @@ export function getSortFunction(sortBy: string) {
     return 0
   }
 
-  const sortByModified = (
-    a: ProjectWithEntryPointMetadata,
-    b: ProjectWithEntryPointMetadata
-  ) => {
-    if (a.entrypointMetadata?.mtime && b.entrypointMetadata?.mtime) {
+  const sortByModified = (a: Project, b: Project) => {
+    if (a.metadata?.modified && b.metadata?.modified) {
+      const aDate = new Date(a.metadata.modified)
+      const bDate = new Date(b.metadata.modified)
       return !sortBy || sortBy.includes('desc')
-        ? b.entrypointMetadata.mtime.getTime() -
-            a.entrypointMetadata.mtime.getTime()
-        : a.entrypointMetadata.mtime.getTime() -
-            b.entrypointMetadata.mtime.getTime()
+        ? bDate.getTime() - aDate.getTime()
+        : aDate.getTime() - bDate.getTime()
     }
     return 0
   }

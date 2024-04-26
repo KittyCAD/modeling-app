@@ -2,8 +2,8 @@ import { createMachine, assign } from 'xstate'
 import { Models } from '@kittycad/lib'
 import withBaseURL from '../lib/withBaseURL'
 import { isTauri } from 'lib/isTauri'
-import { invoke } from '@tauri-apps/api/core'
 import { VITE_KC_API_BASE_URL } from 'env'
+import { getUser as getUserTauri } from 'lib/tauri'
 
 const SKIP_AUTH =
   import.meta.env.VITE_KC_SKIP_AUTH === 'true' && import.meta.env.DEV
@@ -129,10 +129,7 @@ async function getUser(context: UserContext) {
       })
         .then((res) => res.json())
         .catch((err) => console.error('error from Browser getUser', err))
-    : invoke<Models['User_type'] | Record<'error_code', unknown>>('get_user', {
-        token: context.token,
-        hostname: VITE_KC_API_BASE_URL,
-      }).catch((err) => console.error('error from Tauri getUser', err))
+    : getUserTauri(context.token, VITE_KC_API_BASE_URL)
 
   const user = await userPromise
 

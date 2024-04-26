@@ -62,7 +62,11 @@ impl StdLibFnArg {
     }
 
     pub fn get_autocomplete_snippet(&self, index: usize) -> Result<Option<(usize, String)>> {
-        if self.type_ == "SketchGroup" || self.type_ == "ExtrudeGroup" || self.type_ == "SketchSurface" {
+        if self.type_ == "SketchGroup"
+            || self.type_ == "ExtrudeGroup"
+            || self.type_ == "SketchSurface"
+            || self.type_ == "SketchGroupSet"
+        {
             return Ok(Some((index, format!("${{{}:{}}}", index, "%"))));
         }
         get_autocomplete_snippet_from_schema(&self.schema.clone(), index)
@@ -319,7 +323,12 @@ pub fn get_type_string_from_schema(schema: &schemars::schema::Schema) -> Result<
             if let Some(format) = &o.format {
                 if format == "uuid" {
                     return Ok((Primitive::Uuid.to_string(), false));
-                } else if format == "double" || format == "uint" || format == "int64" || format == "uint32" {
+                } else if format == "double"
+                    || format == "uint"
+                    || format == "int64"
+                    || format == "uint32"
+                    || format == "uint64"
+                {
                     return Ok((Primitive::Number.to_string(), false));
                 } else {
                     anyhow::bail!("unknown format: {}", format);
@@ -456,7 +465,12 @@ pub fn get_autocomplete_snippet_from_schema(
             if let Some(format) = &o.format {
                 if format == "uuid" {
                     return Ok(Some((index, format!(r#"${{{}:"tag_or_edge_fn"}}"#, index))));
-                } else if format == "double" || format == "uint" || format == "int64" || format == "uint32" {
+                } else if format == "double"
+                    || format == "uint"
+                    || format == "int64"
+                    || format == "uint32"
+                    || format == "uint64"
+                {
                     return Ok(Some((index, format!(r#"${{{}:3.14}}"#, index))));
                 } else {
                     anyhow::bail!("unknown format: {}", format);
@@ -610,7 +624,12 @@ pub fn get_autocomplete_string_from_schema(schema: &schemars::schema::Schema) ->
             if let Some(format) = &o.format {
                 if format == "uuid" {
                     return Ok(Primitive::Uuid.to_string());
-                } else if format == "double" || format == "uint" || format == "int64" || format == "uint32" {
+                } else if format == "double"
+                    || format == "uint"
+                    || format == "int64"
+                    || format == "uint32"
+                    || format == "uint64"
+                {
                     return Ok(Primitive::Number.to_string());
                 } else {
                     anyhow::bail!("unknown format: {}", format);
@@ -736,10 +755,12 @@ pub fn completion_item_from_enum_schema(
         anyhow::bail!("expected at least one enum value: {:#?}", o);
     }
 
-    let label = enum_values[0].to_string();
+    let serde_json::Value::String(ref enum_value) = enum_values[0] else {
+        anyhow::bail!("expected string enum value: {:#?}", enum_values[0]);
+    };
 
     Ok(CompletionItem {
-        label,
+        label: enum_value.to_string(),
         label_details: None,
         kind: Some(kind),
         detail: Some(description.to_string()),

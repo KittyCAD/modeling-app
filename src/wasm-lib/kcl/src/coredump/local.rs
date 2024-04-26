@@ -33,6 +33,10 @@ impl CoreDump for CoreDumper {
         Ok(env!("CARGO_PKG_VERSION").to_string())
     }
 
+    fn pool(&self) -> Result<String> {
+        Ok("".to_owned())
+    }
+
     async fn os(&self) -> Result<crate::coredump::OsInfo> {
         Ok(crate::coredump::OsInfo {
             platform: Some(std::env::consts::OS.to_string()),

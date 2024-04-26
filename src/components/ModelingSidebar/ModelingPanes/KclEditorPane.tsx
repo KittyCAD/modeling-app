@@ -16,7 +16,6 @@ import {
   EditorView,
   dropCursor,
   drawSelection,
-  ViewUpdate,
 } from '@codemirror/view'
 import {
   indentWithTab,
@@ -191,9 +190,6 @@ export const KclEditorPane = () => {
     return extensions
   }, [kclLSP, copilotLSP, textWrapping.current, cursorBlinking.current])
 
-  let debounceTimer: ReturnType<typeof setTimeout> | null = null
-  const updateDelay = 100
-
   return (
     <div
       id="code-mirror-override"
@@ -206,17 +202,6 @@ export const KclEditorPane = () => {
         onCreateEditor={(_editorView) =>
           editorManager.setEditorView(_editorView)
         }
-        onUpdate={(view: ViewUpdate) => {
-          // debounce the view update.
-          // otherwise it is laggy for typing.
-          if (debounceTimer) {
-            clearTimeout(debounceTimer)
-          }
-
-          debounceTimer = setTimeout(() => {
-            editorManager.handleOnViewUpdate(view)
-          }, updateDelay)
-        }}
         indentWithTab={false}
         basicSetup={false}
       />

@@ -9,6 +9,7 @@ import {
 import { enginelessExecutor } from './lib/testHelpers'
 import { EngineCommandManager } from './lang/std/engineConnection'
 import { KCLError } from './lang/errors'
+import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
 
 export type ToolTip =
   | 'lineTo'
@@ -44,14 +45,6 @@ export const toolTips = [
   'tangentialArcTo',
 ] as any as ToolTip[]
 
-export type PaneType =
-  | 'code'
-  | 'variables'
-  | 'debug'
-  | 'kclErrors'
-  | 'logs'
-  | 'lspMessages'
-
 export interface StoreState {
   mediaStream?: MediaStream
   setMediaStream: (mediaStream: MediaStream) => void
@@ -77,8 +70,8 @@ export interface StoreState {
 
   showHomeMenu: boolean
   setHomeShowMenu: (showMenu: boolean) => void
-  openPanes: PaneType[]
-  setOpenPanes: (panes: PaneType[]) => void
+  openPanes: SidebarType[]
+  setOpenPanes: (panes: SidebarType[]) => void
   homeMenuItems: {
     name: string
     path: string

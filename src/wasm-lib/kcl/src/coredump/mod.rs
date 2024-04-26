@@ -19,6 +19,8 @@ pub trait CoreDump: Clone {
 
     fn version(&self) -> Result<String>;
 
+    fn pool(&self) -> Result<String>;
+
     async fn os(&self) -> Result<OsInfo>;
 
     fn is_tauri(&self) -> Result<bool>;
@@ -71,6 +73,7 @@ pub trait CoreDump: Clone {
             os,
             webrtc_stats,
             github_issue_url: None,
+            pool: self.pool()?,
         };
         app_info.set_github_issue_url(&screenshot_url)?;
 
@@ -103,6 +106,9 @@ pub struct AppInfo {
     /// This gets prepoulated with all the core dump info.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub github_issue_url: Option<String>,
+
+    /// Engine pool the client is connected to.
+    pub pool: String,
 }
 
 impl AppInfo {

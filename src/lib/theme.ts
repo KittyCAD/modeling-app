@@ -1,7 +1,24 @@
+import { AppTheme } from 'wasm-lib/kcl/bindings/AppTheme'
+
 export enum Themes {
   Light = 'light',
   Dark = 'dark',
   System = 'system',
+}
+
+export function appThemeToTheme(
+  theme: AppTheme | undefined
+): Themes | undefined {
+  switch (theme) {
+    case 'light':
+      return Themes.Light
+    case 'dark':
+      return Themes.Dark
+    case 'system':
+      return Themes.System
+    default:
+      return undefined
+  }
 }
 
 // Get the theme from the system settings manually
@@ -23,6 +40,17 @@ export function setThemeClass(theme: Themes) {
   }
 }
 
+// Returns the resolved theme in use (Dark || Light)
+export function getResolvedTheme(theme: Themes) {
+  return theme === Themes.System ? getSystemTheme() : theme
+}
+
+// Returns the opposing theme
+export function getOppositeTheme(theme: Themes) {
+  const resolvedTheme = getResolvedTheme(theme)
+  return resolvedTheme === Themes.Dark ? Themes.Light : Themes.Dark
+}
+
 /**
  * The engine takes RGBA values from 0-1
  * So we convert from the conventional 0-255 found in Figma
@@ -30,7 +58,7 @@ export function setThemeClass(theme: Themes) {
  * @returns { r: number, g: number, b: number, a: number }
  */
 export function getThemeColorForEngine(theme: Themes) {
-  const resolvedTheme = theme === Themes.System ? getSystemTheme() : theme
+  const resolvedTheme = getResolvedTheme(theme)
   const dark = 28 / 255
   const light = 249 / 255
   return resolvedTheme === Themes.Dark

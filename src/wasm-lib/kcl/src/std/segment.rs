@@ -260,6 +260,7 @@ pub async fn angle_to_match_length_x(args: Args) -> Result<MemoryItem, KclError>
 ///         5
 ///         ], %)
 ///     |> close(%)
+///     |> extrude(5, %)
 /// ```
 #[stdlib {
     name = "angleToMatchLengthX",
@@ -326,6 +327,7 @@ pub async fn angle_to_match_length_y(args: Args) -> Result<MemoryItem, KclError>
 ///         5
 ///         ], %)
 ///     |> close(%)
+///     |> extrude(5, %)
 /// ```
 #[stdlib {
     name = "angleToMatchLengthY",

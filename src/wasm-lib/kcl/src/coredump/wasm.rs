@@ -16,6 +16,9 @@ extern "C" {
     #[wasm_bindgen(method, js_name = baseApiUrl, catch)]
     fn baseApiUrl(this: &CoreDumpManager) -> Result<String, js_sys::Error>;
 
+    #[wasm_bindgen(method, js_name = pool, catch)]
+    fn pool(this: &CoreDumpManager) -> Result<String, js_sys::Error>;
+
     #[wasm_bindgen(method, js_name = version, catch)]
     fn version(this: &CoreDumpManager) -> Result<String, js_sys::Error>;
 
@@ -64,6 +67,12 @@ impl CoreDump for CoreDumper {
         self.manager
             .version()
             .map_err(|e| anyhow::anyhow!("Failed to get response from version: {:?}", e))
+    }
+
+    fn pool(&self) -> Result<String> {
+        self.manager
+            .pool()
+            .map_err(|e| anyhow::anyhow!("Failed to get response from pool: {:?}", e))
     }
 
     async fn os(&self) -> Result<crate::coredump::OsInfo> {

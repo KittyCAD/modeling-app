@@ -1,11 +1,11 @@
 import { ActionButton } from '../components/ActionButton'
 import { isTauri } from '../lib/isTauri'
-import { invoke } from '@tauri-apps/api/core'
 import { VITE_KC_SITE_BASE_URL, VITE_KC_API_BASE_URL } from '../env'
 import { Themes, getSystemTheme } from '../lib/theme'
 import { paths } from 'lib/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { APP_NAME } from 'lib/constants'
+import { login } from 'lib/tauri'
 
 const SignIn = () => {
   const {
@@ -28,9 +28,7 @@ const SignIn = () => {
   const signInTauri = async () => {
     // We want to invoke our command to login via device auth.
     try {
-      const token: string = await invoke('login', {
-        host: VITE_KC_API_BASE_URL,
-      })
+      const token: string = await login(VITE_KC_API_BASE_URL)
       send({ type: 'Log in', token })
     } catch (error) {
       console.error('Error with login button', error)
