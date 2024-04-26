@@ -240,6 +240,7 @@ jobs:
 
       - name: Mac App Store
         if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'macos-14' }}
+        shell: bash
         run: |
           set -x
           unset APPLE_SIGNING_IDENTITY
