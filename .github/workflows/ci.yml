@@ -254,7 +254,6 @@ jobs:
 
           echo -n "${APPLE_STORE_DISTRIBUTION_CERT}" | base64 --decode -o "dist.cer"
           echo -n "${APPLE_STORE_INSTALLER_CERT}" | base64 --decode -o "installer.cer"
-          echo -n "${APPLE_CERTIFICATE}" | base64 --decode -o "cert.p12"
 
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
           KEYCHAIN_PASSWORD="password"
@@ -265,9 +264,8 @@ jobs:
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
 
           # import certificate to keychain
-          #security import "cert.p12" -P "$APPLE_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
-          security import "dist.cer" -k $KEYCHAIN_PATH -f pkcs12 -t cert -A
-          security import "installer.cer" -k $KEYCHAIN_PATH -f pkcs12 -t cert -A
+          security import "dist.cer" -P "$APPLE_STORE_P12_PASSWORD" -k $KEYCHAIN_PATH -f pkcs12 -t cert -A
+          security import "installer.cer" -P "$APPLE_STORE_P12_PASSWORD" -k $KEYCHAIN_PATH -f pkcs12 -t cert -A
 
           security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
           security list-keychain -d user -s $KEYCHAIN_PATH
@@ -298,8 +296,8 @@ jobs:
           APPLE_STORE_PROVISIONING_PROFILE: ${{ secrets.APPLE_STORE_PROVISIONING_PROFILE }}
           APPLE_STORE_DISTRIBUTION_CERT: ${{ secrets.APPLE_STORE_DISTRIBUTION_CERT }}
           APPLE_STORE_INSTALLER_CERT: ${{ secrets.APPLE_STORE_INSTALLER_CERT }}
-          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_STORE_P12_PASSWORD: ${{ secrets.APPLE_STORE_P12_PASSWORD }}
+
 
       - name: 'Upload app to TestFlight'
         uses: apple-actions/upload-testflight-build@v1
