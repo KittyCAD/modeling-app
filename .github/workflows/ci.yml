@@ -273,7 +273,8 @@ jobs:
           target="universal-apple-darwin"
 
           # Turn off the default target
-          sed -i "s/default =/# default =/" src-tauri/Cargo.toml
+          sed -i.bu "s/default =/# default =/" src-tauri/Cargo.toml
+          rm src-tauri/Cargo.toml.bu
           yarn tauri build --target "${target}" --verbose
 
           ls -l src-tauri/target/${target}
