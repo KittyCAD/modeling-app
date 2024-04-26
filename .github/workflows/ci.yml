@@ -274,6 +274,8 @@ jobs:
 
           target="universal-apple-darwin"
 
+          # Turn off the default target
+          sed -i "s/default =/# default =/" src-tauri/Cargo.toml
           yarn tauri build --target "${target}" --verbose
 
           ls -l src-tauri/target/${target}
@@ -291,6 +293,9 @@ jobs:
           codesign --deep --force -s "${sign_app}" --entitlements "${entitlements}" "${app_path}"
 
           productbuild --component "${app_path}" /Applications/ --sign "${sign_install}" "${build_name}"
+
+          # Undo the changes to the Cargo.toml
+          git checkout src-tauri/Cargo.toml
         env:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           APPLE_STORE_PROVISIONING_PROFILE: ${{ secrets.APPLE_STORE_PROVISIONING_PROFILE }}
