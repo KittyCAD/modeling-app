@@ -974,7 +974,7 @@ export class EngineCommandManager {
     }
 
     const additionalSettings = settings.enableSSAO ? '&post_effect=ssao' : ''
-    const pool = this.pool == undefined ? '' : `&pool=${this.pool}`
+    const pool = this.pool === undefined ? '' : `&pool=${this.pool}`
     const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}${additionalSettings}${pool}`
     this.engineConnection = new EngineConnection({
       engineCommandManager: this,
