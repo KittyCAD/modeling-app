@@ -64,7 +64,9 @@
     },
     "deep-link": {
       "domains": [
-        { "host": "app.zoo.dev" }
+        {
+          "host": "app.zoo.dev"
+        }
       ]
     },
     "shell": {
@@ -72,5 +74,5 @@
     }
   },
   "productName": "Zoo Modeling App",
-  "version": "0.19.4"
+  "version": "0.19.5"
 }
