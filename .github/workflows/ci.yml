@@ -295,6 +295,8 @@ jobs:
 
           # Undo the changes to the Cargo.toml
           git checkout src-tauri/Cargo.toml
+
+          git status
         env:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           APPLE_STORE_PROVISIONING_PROFILE: ${{ secrets.APPLE_STORE_PROVISIONING_PROFILE }}
