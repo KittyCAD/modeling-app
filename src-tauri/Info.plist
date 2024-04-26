@@ -37,6 +37,20 @@
             <dict>
                 <key>LSItemContentTypes</key>
                 <array>
+                    <string>dev.zoo.toml</string>
+                </array>
+                <key>CFBundleTypeName</key>
+                <string>TOML</string>
+                <key>CFBundleTypeRole</key>
+                <string>Viewer</string>
+                <key>LSTypeIsPackage</key>
+                <false/>
+                <key>NSDocumentClass</key>
+                <string>Document</string>
+            </dict>
+            <dict>
+                <key>LSItemContentTypes</key>
+                <array>
                     <string>dev.zoo.gltf</string>
                 </array>
                 <key>CFBundleTypeName</key>
@@ -315,6 +329,31 @@
                     <key>public.mime-type</key>
                     <array>
                         <string>model/vnd.autodesk.fbx</string>
+                    </array>
+                </dict>
+            </dict>
+            <dict>
+                <key>UTTypeIdentifier</key>
+                <string>dev.zoo.toml</string>
+                <key>UTTypeReferenceURL</key>
+                <string>https://toml.io/en/</string>
+                <key>UTTypeConformsTo</key>
+                <array>
+                    <string>public.data</string>
+                    <string>public.text</string>
+                    <string>public.plain-text</string>
+                </array>
+                <key>UTTypeDescription</key>
+                <string>Tom's Obvious Minimal Language</string>
+                <key>UTTypeTagSpecification</key>
+                <dict>
+                    <key>public.filename-extension</key>
+                    <array>
+                        <string>kcl</string>
+                    </array>
+                    <key>public.mime-type</key>
+                    <array>
+                        <string>text/toml</string>
                     </array>
                 </dict>
             </dict>
