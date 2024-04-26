@@ -38,11 +38,7 @@
     },
     "longDescription": "",
     "macOS": {
-      "entitlements": "entitlements/Zoo Modeling App.entitlements",
-      "exceptionDomain": "",
-      "frameworks": [],
-      "providerShortName": null,
-      "signingIdentity": null
+      "entitlements": "entitlements/Zoo Modeling App.entitlements"
     },
     "resources": [],
     "shortDescription": "",
