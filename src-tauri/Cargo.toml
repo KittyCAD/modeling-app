@@ -1,8 +1,8 @@
 [package]
 name = "app"
 version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
+description = "The Zoo Modeling App"
+authors = ["Zoo Engineers <eng@zoo.dev>"]
 license = ""
 repository = "https://github.com/KittyCAD/modeling-app"
 default-run = "app"
@@ -21,6 +21,7 @@ oauth2 = "4.4.2"
 serde_json = "1.0"
 tauri = { version = "2.0.0-beta.15", features = [ "devtools", "unstable"] }
 tauri-plugin-cli = { version = "2.0.0-beta.3" }
+tauri-plugin-deep-link = { version = "2.0.0-beta.3" }
 tauri-plugin-dialog = { version = "2.0.0-beta.6" }
 tauri-plugin-fs = { version = "2.0.0-beta.6" }
 tauri-plugin-http = { version = "2.0.0-beta.6" }
@@ -28,11 +29,13 @@ tauri-plugin-os = { version = "2.0.0-beta.2" }
 tauri-plugin-process = { version = "2.0.0-beta.2" }
 tauri-plugin-shell = { version = "2.0.0-beta.2" }
 tauri-plugin-updater = { version = "2.0.0-beta.4" }
-tokio = { version = "1.37.0", features = ["time", "fs"] }
+tokio = { version = "1.37.0", features = ["time", "fs", "process"] }
 toml = "0.8.2"
 
 [features]
+default = ["updater"]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.
 # If you use cargo directly instead of tauri's cli you can use this feature flag to switch between tauri's `dev` and `build` modes.
 # DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]
+updater = []

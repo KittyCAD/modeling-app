@@ -38,6 +38,11 @@ pub async fn walk_dir<P: AsRef<Path> + Send>(dir: P) -> Result<FileEntry> {
 
     let mut entries = tokio::fs::read_dir(&dir.as_ref()).await?;
     while let Some(e) = entries.next_entry().await? {
+        // ignore hidden files and directories (starting with a dot)
+        if e.file_name().to_string_lossy().starts_with('.') {
+            continue;
+        }
+
         if e.file_type().await?.is_dir() {
             children.push(walk_dir(&e.path()).await?);
         } else {

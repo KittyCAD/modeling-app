@@ -888,6 +888,7 @@ export class EngineCommandManager {
   sceneCommandArtifacts: ArtifactMap = {}
   outSequence = 1
   inSequence = 1
+  pool?: string
   engineConnection?: EngineConnection
   defaultPlanes: DefaultPlanes | null = null
   commandLogs: CommandLog[] = []
@@ -914,8 +915,9 @@ export class EngineCommandManager {
   callbacksEngineStateConnection: ((state: EngineConnectionState) => void)[] =
     []
 
-  constructor() {
+  constructor(pool?: string) {
     this.engineConnection = undefined
+    this.pool = pool
   }
 
   private _camControlsCameraChange = () => {}
@@ -972,7 +974,8 @@ export class EngineCommandManager {
     }
 
     const additionalSettings = settings.enableSSAO ? '&post_effect=ssao' : ''
-    const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}${additionalSettings}`
+    const pool = this.pool === undefined ? '' : `&pool=${this.pool}`
+    const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}${additionalSettings}${pool}`
     this.engineConnection = new EngineConnection({
       engineCommandManager: this,
       url,
