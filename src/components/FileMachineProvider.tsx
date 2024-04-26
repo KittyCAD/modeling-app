@@ -15,10 +15,10 @@ import {
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { fileMachine } from 'machines/fileMachine'
 import { mkdir, remove, rename, create } from '@tauri-apps/plugin-fs'
-import { readProject } from 'lib/tauriFS'
 import { isTauri } from 'lib/isTauri'
 import { join, sep } from '@tauri-apps/api/path'
 import { DEFAULT_FILE_NAME, FILE_EXT } from 'lib/constants'
+import { getProjectInfo } from 'lib/tauri'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -62,7 +62,7 @@ export const FileMachineProvider = ({
     services: {
       readFiles: async (context: ContextFrom<typeof fileMachine>) => {
         const newFiles = isTauri()
-          ? await readProject(context.project.path)
+          ? (await getProjectInfo(context.project.path)).children
           : []
         return {
           ...context.project,

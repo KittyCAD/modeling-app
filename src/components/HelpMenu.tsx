@@ -94,10 +94,7 @@ export function HelpMenu(props: React.PropsWithChildren) {
             if (isInProject) {
               navigate('onboarding')
             } else {
-              createAndOpenNewProject(
-                settings.context.app.projectDirectory.current,
-                navigate
-              )
+              createAndOpenNewProject(navigate)
             }
           }}
         >

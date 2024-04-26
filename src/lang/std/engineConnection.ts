@@ -4,7 +4,7 @@ import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
 import { uuidv4 } from 'lib/utils'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
-import { Themes, getThemeColorForEngine } from 'lib/theme'
+import { Themes, getThemeColorForEngine, getOppositeTheme } from 'lib/theme'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 
 let lastMessage = ''
@@ -888,6 +888,7 @@ export class EngineCommandManager {
   sceneCommandArtifacts: ArtifactMap = {}
   outSequence = 1
   inSequence = 1
+  pool?: string
   engineConnection?: EngineConnection
   defaultPlanes: DefaultPlanes | null = null
   commandLogs: CommandLog[] = []
@@ -914,8 +915,9 @@ export class EngineCommandManager {
   callbacksEngineStateConnection: ((state: EngineConnectionState) => void)[] =
     []
 
-  constructor() {
+  constructor(pool?: string) {
     this.engineConnection = undefined
+    this.pool = pool
   }
 
   private _camControlsCameraChange = () => {}
@@ -941,6 +943,7 @@ export class EngineCommandManager {
     settings = {
       theme: Themes.Dark,
       highlightEdges: true,
+      enableSSAO: true,
     },
   }: {
     setMediaStream: (stream: MediaStream) => void
@@ -953,6 +956,7 @@ export class EngineCommandManager {
     settings?: {
       theme: Themes
       highlightEdges: boolean
+      enableSSAO: boolean
     }
   }) {
     this.makeDefaultPlanes = makeDefaultPlanes
@@ -969,7 +973,9 @@ export class EngineCommandManager {
       return
     }
 
-    const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}`
+    const additionalSettings = settings.enableSSAO ? '&post_effect=ssao' : ''
+    const pool = this.pool === undefined ? '' : `&pool=${this.pool}`
+    const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}${additionalSettings}${pool}`
     this.engineConnection = new EngineConnection({
       engineCommandManager: this,
       url,
@@ -989,6 +995,18 @@ export class EngineCommandManager {
             color: getThemeColorForEngine(settings.theme),
           },
         })
+
+        // Sets the default line colors
+        const opposingTheme = getOppositeTheme(settings.theme)
+        this.sendSceneCommand({
+          cmd_id: uuidv4(),
+          type: 'modeling_cmd_req',
+          cmd: {
+            type: 'set_default_system_properties',
+            color: getThemeColorForEngine(opposingTheme),
+          },
+        })
+
         // Set the edge lines visibility
         this.sendSceneCommand({
           type: 'modeling_cmd_req',
@@ -1171,7 +1189,10 @@ export class EngineCommandManager {
       type: 'receive-reliable',
       data: message,
       id,
-      cmd_type: command?.commandType || this.lastArtifactMap[id]?.commandType,
+      cmd_type:
+        command?.commandType ||
+        this.lastArtifactMap[id]?.commandType ||
+        sceneCommand?.commandType,
     })
     Object.values(this.subscriptions[modelingResponse.type] || {}).forEach(
       (callback) => callback(modelingResponse)
@@ -1323,6 +1344,17 @@ export class EngineCommandManager {
     this.lastArtifactMap = this.artifactMap
     this.artifactMap = {}
     await this.initPlanes()
+    await this.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'make_axes_gizmo',
+        clobber: false,
+        // If true, axes gizmo will be placed in the corner of the screen.
+        // If false, it will be placed at the origin of the scene.
+        gizmo_mode: true,
+      },
+    })
   }
   subscribeTo<T extends ModelTypes>({
     event,

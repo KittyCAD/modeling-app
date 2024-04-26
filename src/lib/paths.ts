@@ -1,7 +1,11 @@
-import { sep } from '@tauri-apps/api/path'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { BROWSER_FILE_NAME, BROWSER_PROJECT_NAME, FILE_EXT } from './constants'
 import { isTauri } from './isTauri'
+import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
+import { ProjectRoute } from 'wasm-lib/kcl/bindings/ProjectRoute'
+import { parseProjectRoute, readAppSettingsFile } from './tauri'
+import { parseProjectRoute as parseProjectRouteWasm } from 'lang/wasm'
+import { readLocalStorageAppSettingsFile } from './settings/settingsUtils'
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {
@@ -25,28 +29,23 @@ export const paths = {
 } as const
 export const BROWSER_PATH = `%2F${BROWSER_PROJECT_NAME}%2F${BROWSER_FILE_NAME}${FILE_EXT}`
 
-export function getProjectMetaByRouteId(id?: string, defaultDir = '') {
+export async function getProjectMetaByRouteId(
+  id?: string,
+  configuration?: Configuration
+): Promise<ProjectRoute | undefined> {
   if (!id) return undefined
-  const s = isTauri() ? sep() : '/'
 
-  const decodedId = decodeURIComponent(id).replace(/\/$/, '') // remove trailing slash
-  const projectAndFile =
-    defaultDir === '/'
-      ? decodedId.replace(defaultDir, '')
-      : decodedId.replace(defaultDir + s, '')
-  const filePathParts = projectAndFile.split(s)
-  const projectName = filePathParts[0]
-  const projectPath =
-    (defaultDir === '/' ? defaultDir : defaultDir + s) + projectName
-  const lastPathPart = filePathParts[filePathParts.length - 1]
-  const currentFileName =
-    lastPathPart === projectName ? undefined : lastPathPart
-  const currentFilePath = lastPathPart === projectName ? undefined : decodedId
+  const inTauri = isTauri()
 
-  return {
-    projectName,
-    projectPath,
-    currentFileName,
-    currentFilePath,
+  if (!configuration) {
+    configuration = inTauri
+      ? await readAppSettingsFile()
+      : readLocalStorageAppSettingsFile()
   }
+
+  const route = inTauri
+    ? await parseProjectRoute(configuration, id)
+    : parseProjectRouteWasm(configuration, id)
+
+  return route
 }

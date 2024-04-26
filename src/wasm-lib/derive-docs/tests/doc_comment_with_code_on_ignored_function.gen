@@ -21,42 +21,21 @@ mod test_examples_import {
             client.set_base_url(addr);
         }
 
-        let ws = client
-            .modeling()
-            .commands_ws(None, None, None, None, None, None, Some(false))
-            .await
-            .unwrap();
         let tokens =
             crate::token::lexer("This is another code block.\nyes sirrr.\nimport").unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
-        let units = kittycad::types::UnitLength::Mm;
-        let ctx = crate::executor::ExecutorContext::new(ws, units.clone())
+        let ctx = crate::executor::ExecutorContext::new(&client, Default::default())
             .await
             .unwrap();
         ctx.run(program, None).await.unwrap();
-        let (x, y) = crate::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
         ctx.engine
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 crate::executor::SourceRange::default(),
-                kittycad::types::ModelingCmd::DefaultCameraLookAt {
-                    center: kittycad::types::Point3D {
-                        x: 0.0,
-                        y: 0.0,
-                        z: 0.0,
-                    },
-                    up: kittycad::types::Point3D {
-                        x: 0.0,
-                        y: 0.0,
-                        z: 1.0,
-                    },
-                    vantage: kittycad::types::Point3D {
-                        x: 0.0,
-                        y: -x,
-                        z: y,
-                    },
-                    sequence: None,
+                kittycad::types::ModelingCmd::ZoomToFit {
+                    object_ids: Default::default(),
+                    padding: 0.1,
                 },
             )
             .await
@@ -115,41 +94,20 @@ mod test_examples_import {
             client.set_base_url(addr);
         }
 
-        let ws = client
-            .modeling()
-            .commands_ws(None, None, None, None, None, None, Some(false))
-            .await
-            .unwrap();
         let tokens = crate::token::lexer("This is code.\nIt does other shit.\nimport").unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
-        let units = kittycad::types::UnitLength::Mm;
-        let ctx = crate::executor::ExecutorContext::new(ws, units.clone())
+        let ctx = crate::executor::ExecutorContext::new(&client, Default::default())
             .await
             .unwrap();
         ctx.run(program, None).await.unwrap();
-        let (x, y) = crate::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
         ctx.engine
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 crate::executor::SourceRange::default(),
-                kittycad::types::ModelingCmd::DefaultCameraLookAt {
-                    center: kittycad::types::Point3D {
-                        x: 0.0,
-                        y: 0.0,
-                        z: 0.0,
-                    },
-                    up: kittycad::types::Point3D {
-                        x: 0.0,
-                        y: 0.0,
-                        z: 1.0,
-                    },
-                    vantage: kittycad::types::Point3D {
-                        x: 0.0,
-                        y: -x,
-                        z: y,
-                    },
-                    sequence: None,
+                kittycad::types::ModelingCmd::ZoomToFit {
+                    object_ids: Default::default(),
+                    padding: 0.1,
                 },
             )
             .await

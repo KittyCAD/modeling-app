@@ -54,10 +54,10 @@ import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
 import { EditorSelection } from '@uiw/react-codemirror'
-import { Vector3 } from 'three'
-import { quaternionFromUpNForward } from 'clientSideScene/helpers'
 import { CoreDumpManager } from 'lib/coredump'
 import { useHotkeys } from 'react-hotkeys-hook'
+import { useSearchParams } from 'react-router-dom'
+import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -78,16 +78,22 @@ export const ModelingMachineProvider = ({
     auth,
     settings: {
       context: {
-        app: { theme },
+        app: { theme, enableSSAO },
         modeling: { defaultUnit, highlightEdges },
       },
     },
   } = useSettingsAuthContext()
   const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)
+
+  let [searchParams] = useSearchParams()
+  const pool = searchParams.get('pool')
+
   useSetupEngineManager(streamRef, token, {
+    pool: pool,
     theme: theme.current,
     highlightEdges: highlightEdges.current,
+    enableSSAO: enableSSAO.current,
   })
   const { htmlRef } = useStore((s) => ({
     htmlRef: s.htmlRef,
@@ -268,10 +274,12 @@ export const ModelingMachineProvider = ({
         'has valid extrude selection': ({ selectionRanges }) => {
           // A user can begin extruding if they either have 1+ faces selected or nothing selected
           // TODO: I believe this guard only allows for extruding a single face at a time
-          if (selectionRanges.codeBasedSelections.length < 1) return false
           const isPipe = isSketchPipe(selectionRanges)
 
-          if (isSelectionLastLine(selectionRanges, codeManager.code))
+          if (
+            selectionRanges.codeBasedSelections.length === 0 ||
+            isSelectionLastLine(selectionRanges, codeManager.code)
+          )
             return true
           if (!isPipe) return false
 
@@ -319,16 +327,9 @@ export const ModelingMachineProvider = ({
               )
             await kclManager.executeAstMock(modifiedAst)
 
-            const forward = new Vector3(...data.zAxis)
-            const up = new Vector3(...data.yAxis)
-
-            let target = new Vector3(...data.position).multiplyScalar(
-              sceneInfra._baseUnitMultiplier
-            )
-            const quaternion = quaternionFromUpNForward(up, forward)
-            await sceneInfra.camControls.tweenCameraToQuaternion(
-              quaternion,
-              target
+            await letEngineAnimateAndSyncCamAfter(
+              engineCommandManager,
+              data.faceId
             )
 
             return {
@@ -343,6 +344,7 @@ export const ModelingMachineProvider = ({
             data.plane
           )
           await kclManager.updateAst(modifiedAst, false)
+          sceneInfra.camControls.syncDirection = 'clientToEngine'
           const quat = await getSketchQuaternion(pathToNode, data.zAxis)
           await sceneInfra.camControls.tweenCameraToQuaternion(quat)
           return {
@@ -359,9 +361,9 @@ export const ModelingMachineProvider = ({
             sourceRange
           )
           const info = await getSketchOrientationDetails(sketchPathToNode || [])
-          await sceneInfra.camControls.tweenCameraToQuaternion(
-            info.quat,
-            new Vector3(...info.sketchDetails.origin)
+          await letEngineAnimateAndSyncCamAfter(
+            engineCommandManager,
+            info?.sketchDetails?.faceId || ''
           )
           return {
             sketchPathToNode: sketchPathToNode || [],

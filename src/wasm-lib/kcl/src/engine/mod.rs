@@ -124,7 +124,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         let batched_requests = WebSocketRequest::ModelingCmdBatchReq {
             requests,
             batch_id: uuid::Uuid::new_v4(),
-            responses: Some(false),
+            responses: false,
         };
 
         let final_req = if self.batch().lock().unwrap().len() == 1 {
@@ -365,6 +365,7 @@ pub fn is_cmd_with_return_values(cmd: &kittycad::types::ModelingCmd) -> bool {
     | kittycad::types::ModelingCmd::EntityGetDistance { .. }
     | kittycad::types::ModelingCmd::EntityLinearPattern { .. }
     | kittycad::types::ModelingCmd::EntityCircularPattern { .. }
+    | kittycad::types::ModelingCmd::ZoomToFit { .. }
     | kittycad::types::ModelingCmd::Solid3DGetExtrusionFaceInfo { .. }) = cmd
     else {
         return false;

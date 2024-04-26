@@ -1,0 +1,33 @@
+name: Build and Store WASM
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+      - name: Install dependencies
+        run: yarn
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Cache wasm
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: './src/wasm-lib'
+      - name: build wasm
+        run: yarn build:wasm
+
+
+      # Upload the WASM bundle as an artifact
+      - uses: actions/upload-artifact@v3
+        with:
+          name: wasm-bundle
+          path: src/wasm-lib/pkg
