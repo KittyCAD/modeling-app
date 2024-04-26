@@ -165,7 +165,7 @@ function ModelingSidebarSection({
         <Tab.Panel key="none" />
         {filteredPanes.map((pane) => (
           <Tab.Panel key={pane.id} className="h-full">
-            <ModelingPane title={pane.title} Menu={pane.Menu}>
+            <ModelingPane id={`${pane.id}-pane`} title={pane.title} Menu={pane.Menu}>
               {pane.Content instanceof Function ? (
                 <pane.Content />
               ) : (
