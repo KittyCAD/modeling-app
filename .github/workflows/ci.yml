@@ -250,10 +250,10 @@ jobs:
           profile="src-tauri/entitlements/Mac_App_Distribution.provisionprofile"
 
           mkdir -p src-tauri/entitlements
-          echo "${APPLE_STORE_PROVISIONING_PROFILE}" | base64 --decode > "${profile}"
+          echo -n "${APPLE_STORE_PROVISIONING_PROFILE}" | base64 --decode -o "${profile}"
 
-          echo "${APPLE_STORE_DISTRIBUTION_CERT}" | base64 --decode > "dist.cer"
-          echo "${APPLE_STORE_INSTALLER_CERT}" | base64 --decode > "installer.cer"
+          echo -n "${APPLE_STORE_DISTRIBUTION_CERT}" | base64 --decode -o "dist.cer"
+          echo -n "${APPLE_STORE_INSTALLER_CERT}" | base64 --decode -o "installer.cer"
 
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
           KEYCHAIN_PASSWORD="password"
