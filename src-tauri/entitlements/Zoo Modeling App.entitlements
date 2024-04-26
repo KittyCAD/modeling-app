@@ -3,14 +3,8 @@
 <plist version="1.0">
     <dict>
         <key>com.apple.security.app-sandbox</key>
-        <true/>
-        <key>com.apple.security.network.client</key>
-        <true/>
-        <key>com.apple.security.network.server</key>
-        <true/>
-        <key>com.apple.security.files.user-selected.read-write</key>
-        <true/>
-        <key>com.apple.security.files.downloads.read-write</key>
+        <false/>
+        <key>com.apple.developer.associated-domains.applinks.read-write</key>
         <true/>
         <key>com.apple.application-identifier</key>
         <string>92H8YB3B95.dev.zoo.modeling-app</string>
