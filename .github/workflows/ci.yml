@@ -297,6 +297,10 @@ jobs:
           git checkout src-tauri/Cargo.toml
 
           git status
+          # remove our target builds because we want to make sure the later build
+          # includes the updater, and that anything we changed with the target
+          # does not persist
+          rm -rf src-tauri/target
         env:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           APPLE_STORE_PROVISIONING_PROFILE: ${{ secrets.APPLE_STORE_PROVISIONING_PROFILE }}
