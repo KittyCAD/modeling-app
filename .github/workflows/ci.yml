@@ -273,6 +273,7 @@ jobs:
           target="universal-apple-darwin"
 
           # Turn off the default target
+          # We don't want to install the updater for the apple store build
           sed -i.bu "s/default =/# default =/" src-tauri/Cargo.toml
           rm src-tauri/Cargo.toml.bu
           yarn tauri build --target "${target}" --verbose
