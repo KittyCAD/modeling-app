@@ -38,11 +38,7 @@
     },
     "longDescription": "",
     "macOS": {
-      "entitlements": null,
-      "exceptionDomain": "",
-      "frameworks": [],
-      "providerShortName": null,
-      "signingIdentity": null
+      "entitlements": "entitlements/Zoo Modeling App.entitlements"
     },
     "resources": [],
     "shortDescription": "",
@@ -65,6 +61,11 @@
         }
       ],
       "subcommands": {}
+    },
+    "deep-link": {
+      "domains": [
+        { "host": "app.zoo.dev" }
+      ]
     },
     "shell": {
       "open": true
