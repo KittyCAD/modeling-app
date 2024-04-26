@@ -242,7 +242,6 @@ jobs:
         if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'macos-14' }}
         shell: bash
         run: |
-          set -x
           unset APPLE_SIGNING_IDENTITY
           unset APPLE_CERTIFICATE
           sign_app="3rd Party Mac Developer Application: KittyCAD Inc (${APPLE_TEAM_ID})"
@@ -307,6 +306,7 @@ jobs:
           issuer-id: ${{ secrets.APPLE_STORE_ISSUER_ID }}
           api-key-id: ${{ secrets.APPLE_STORE_API_KEY_ID }}
           api-private-key: ${{ secrets.APPLE_STORE_API_PRIVATE_KEY }}
+          app-type: osx
 
       # We do this after the apple store because the apple store build is
       # specific and we want to overwrite it with the this new build after and
