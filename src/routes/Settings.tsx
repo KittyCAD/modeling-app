@@ -5,7 +5,7 @@ import {
   WildcardSetEvent,
 } from 'lib/settings/settingsTypes'
 import { Toggle } from 'components/Toggle/Toggle'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { paths } from 'lib/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
@@ -14,11 +14,11 @@ import { createAndOpenNewProject, getSettingsFolderPaths } from 'lib/tauriFS'
 import { sep } from '@tauri-apps/api/path'
 import { isTauri } from 'lib/isTauri'
 import toast from 'react-hot-toast'
-import React, { Fragment, useMemo, useRef, useState } from 'react'
+import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { Setting } from 'lib/settings/initialSettings'
 import decamelize from 'decamelize'
 import { Event } from 'xstate'
-import { Dialog, RadioGroup, Transition } from '@headlessui/react'
+import { Combobox, Dialog, RadioGroup, Transition } from '@headlessui/react'
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
 import {
@@ -27,11 +27,97 @@ import {
   shouldShowSettingInput,
 } from 'lib/settings/settingsUtils'
 import { getInitialDefaultDir, showInFolder } from 'lib/tauri'
+import Fuse from 'fuse.js'
 
 export const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
 
+function SettingsSearchBar() {
+  const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [query, setQuery] = useState('')
+  const { settings } = useSettingsAuthContext()
+  const settingsAsSearchable = useMemo(
+    () =>
+      Object.entries(settings.state.context).flatMap(
+        ([category, categorySettings]) =>
+          Object.entries(categorySettings).flatMap(([settingName, setting]) => {
+            const s = setting as Setting
+            return ['project', 'user']
+              .filter((l) => s.hideOnLevel !== l)
+              .map((l) => ({
+                category,
+                settingName,
+                setting: s,
+                level: l,
+              }))
+          })
+      ),
+    [settings.state.context]
+  )
+  const [searchResults, setSearchResults] = useState(settingsAsSearchable)
+
+  const fuse = new Fuse(settingsAsSearchable, {
+    keys: ['category', 'settingName'],
+    includeScore: true,
+  })
+
+  useEffect(() => {
+    const results = fuse.search(query).map((result) => result.item)
+    setSearchResults(query.length > 0 ? results : settingsAsSearchable)
+  }, [query])
+
+  function handleSelection({
+    level,
+    settingName,
+  }: {
+    category: string
+    settingName: string
+    setting: Setting<unknown>
+    level: string
+  }) {
+    navigate(`?tab=${level}#${settingName}`)
+  }
+
+  return (
+    <Combobox onChange={handleSelection}>
+      <div className="relative">
+        <div className="flex items-center gap-2 px-4 pb-2 border-solid border-0 border-b border-b-chalkboard-20 dark:border-b-chalkboard-80">
+          <CustomIcon
+            name="search"
+            className="w-5 h-5 bg-primary/10 text-primary"
+          />
+          <Combobox.Input
+            onChange={(event) => setQuery(event.target.value)}
+            className="w-full bg-transparent focus:outline-none selection:bg-primary/20 dark:selection:bg-primary/40 dark:focus:outline-none"
+            placeholder="Search settings"
+            autoCapitalize="off"
+            autoComplete="off"
+            autoCorrect="off"
+            spellCheck="false"
+            autoFocus
+          />
+        </div>
+        <Combobox.Options className="absolute top-full mt-2 right-0 overflow-y-auto max-h-96 cursor-pointer">
+          {searchResults?.map((option) => (
+            <Combobox.Option
+              key={`${option.category}-${option.settingName}-${option.level}`}
+              value={option}
+              className="flex items-center gap-2 px-4 py-1 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90"
+            >
+              <p className="flex-grow">
+                {option.level} · {option.category} · {option.settingName}
+              </p>
+            </Combobox.Option>
+          ))}
+        </Combobox.Options>
+      </div>
+    </Combobox>
+  )
+}
+
 export const Settings = () => {
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const close = () => navigate(location.pathname.replace(paths.SETTINGS, ''))
   const location = useLocation()
   const isFileSettings = location.pathname.includes(paths.FILE)
@@ -44,9 +130,12 @@ export const Settings = () => {
             .slice(0, decodeURI(location.pathname).lastIndexOf(sep()))
         )
       : undefined
-  const [settingsLevel, setSettingsLevel] = useState<SettingsLevel>(
-    isFileSettings ? 'project' : 'user'
-  )
+  const searchParamTab =
+    searchParams.get('tab') ?? isFileSettings ? 'project' : 'user'
+
+  useEffect(() => {
+    console.log('searchParams', searchParams.get('tab'))
+  }, [searchParams])
   const scrollRef = useRef<HTMLDivElement>(null)
   const dotDotSlash = useDotDotSlash()
   useHotkeys('esc', () => navigate(dotDotSlash()))
@@ -102,6 +191,7 @@ export const Settings = () => {
           <Dialog.Panel className="rounded relative mx-auto bg-chalkboard-10 dark:bg-chalkboard-100 border dark:border-chalkboard-70 max-w-3xl w-full max-h-[66vh] shadow-lg flex flex-col gap-8">
             <div className="p-5 pb-0 flex justify-between items-center">
               <h1 className="text-2xl font-bold">Settings</h1>
+              <SettingsSearchBar />
               <button
                 onClick={close}
                 className="p-0 m-0 focus:ring-0 focus:outline-none border-none hover:bg-destroy-10 focus:bg-destroy-10 dark:hover:bg-destroy-80/50 dark:focus:bg-destroy-80/50"
@@ -111,8 +201,8 @@ export const Settings = () => {
               </button>
             </div>
             <RadioGroup
-              value={settingsLevel}
-              onChange={setSettingsLevel}
+              value={searchParams.get('tab') ?? 'user'}
+              onChange={(v) => setSearchParams((p) => ({ ...p, tab: v }))}
               className="flex justify-start pl-4 pr-5 gap-5 border-0 border-b border-b-chalkboard-20 dark:border-b-chalkboard-90"
             >
               <RadioGroup.Option value="user">
@@ -146,7 +236,7 @@ export const Settings = () => {
                     // Filter out categories that don't have any non-hidden settings
                     Object.values(categorySettings).some(
                       (setting: Setting) =>
-                        !shouldHideSetting(setting, settingsLevel)
+                        !shouldHideSetting(setting, searchParamTab)
                     )
                   )
                   .map(([category]) => (
@@ -198,7 +288,7 @@ export const Settings = () => {
                     .filter(([_, categorySettings]) =>
                       // Filter out categories that don't have any non-hidden settings
                       Object.values(categorySettings).some(
-                        (setting) => !shouldHideSetting(setting, settingsLevel)
+                        (setting) => !shouldHideSetting(setting, searchParamTab)
                       )
                     )
                     .map(([category, categorySettings]) => (
@@ -214,36 +304,42 @@ export const Settings = () => {
                             // Filter out settings that don't have a Component or inputType
                             // or are hidden on the current level or the current platform
                             (item: [string, Setting<unknown>]) =>
-                              shouldShowSettingInput(item[1], settingsLevel)
+                              shouldShowSettingInput(item[1], searchParamTab)
                           )
                           .map(([settingName, s]) => {
                             const setting = s as Setting
                             const parentValue =
-                              setting[setting.getParentLevel(settingsLevel)]
+                              setting[setting.getParentLevel(searchParamTab)]
                             return (
                               <SettingsSection
                                 title={decamelize(settingName, {
                                   separator: ' ',
                                 })}
-                                key={`${category}-${settingName}-${settingsLevel}`}
+                                id={settingName}
+                                className={
+                                  location.hash === `#${settingName}`
+                                    ? 'bg-primary/10 dark:bg-chalkboard-90'
+                                    : ''
+                                }
+                                key={`${category}-${settingName}-${searchParamTab}`}
                                 description={setting.description}
                                 settingHasChanged={
-                                  setting[settingsLevel] !== undefined &&
-                                  setting[settingsLevel] !==
-                                    setting.getFallback(settingsLevel)
+                                  setting[searchParamTab] !== undefined &&
+                                  setting[searchParamTab] !==
+                                    setting.getFallback(searchParamTab)
                                 }
                                 parentLevel={setting.getParentLevel(
-                                  settingsLevel
+                                  searchParamTab
                                 )}
                                 onFallback={() =>
                                   send({
                                     type: `set.${category}.${settingName}`,
                                     data: {
-                                      level: settingsLevel,
+                                      level: searchParamTab,
                                       value:
                                         parentValue !== undefined
                                           ? parentValue
-                                          : setting.getFallback(settingsLevel),
+                                          : setting.getFallback(searchParamTab),
                                     },
                                   } as SetEventTypes)
                                 }
@@ -251,7 +347,7 @@ export const Settings = () => {
                                 <GeneratedSetting
                                   category={category}
                                   settingName={settingName}
-                                  settingsLevel={settingsLevel}
+                                  settingsLevel={searchParamTab}
                                   setting={setting}
                                 />
                               </SettingsSection>
@@ -298,7 +394,7 @@ export const Settings = () => {
                                 ? decodeURIComponent(projectPath)
                                 : undefined
                             )
-                            showInFolder(paths[settingsLevel])
+                            showInFolder(paths[searchParamTab])
                           }}
                           icon={{
                             icon: 'folder',
@@ -369,8 +465,9 @@ export const Settings = () => {
   )
 }
 
-interface SettingsSectionProps extends React.PropsWithChildren {
+interface SettingsSectionProps extends React.HTMLProps<HTMLDivElement> {
   title: string
+  titleClassName?: string
   description?: string
   className?: string
   parentLevel?: SettingsLevel | 'default'
@@ -381,6 +478,8 @@ interface SettingsSectionProps extends React.PropsWithChildren {
 
 export function SettingsSection({
   title,
+  titleClassName,
+  id,
   description,
   className,
   children,
@@ -391,6 +490,7 @@ export function SettingsSection({
 }: SettingsSectionProps) {
   return (
     <section
+      id={id}
       className={
         'group grid grid-cols-2 gap-6 items-start ' +
         className +
