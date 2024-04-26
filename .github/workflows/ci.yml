@@ -264,6 +264,7 @@ jobs:
           sign_install="installer.cer"
           profile="src-tauri/entitlements/Mac_App_Distribution.provisionprofile"
 
+          mkdir -p src-tauri/entitlements
           echo "${APPLE_STORE_PROVISIONING_PROFILE}" | base64 --decode > "${profile}"
 
           echo "${APPLE_STORE_DISTRIBUTION_CERT}" | base64 --decode > "dist.cer"
@@ -302,7 +303,7 @@ jobs:
 
           cp "${profile}" "${cp_dir}"
 
-          codesign --deep --force -s "${sign_app}" --entitlements ${entitlements} "${app_path}"
+          codesign --deep --force -s "${sign_app}" --entitlements "${entitlements}" "${app_path}"
 
           productbuild --component "${app_path}" /Applications/ --sign "${sign_install}" "${build_name}"
         env:
