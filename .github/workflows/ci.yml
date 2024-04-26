@@ -253,22 +253,19 @@ jobs:
           echo "${APPLE_STORE_DISTRIBUTION_CERT}" | base64 --decode > "dist.cer"
           echo "${APPLE_STORE_INSTALLER_CERT}" | base64 --decode > "installer.cer"
 
-          # load the certificates into the keychain
-          # Create a custom keychain
-          security create-keychain -p gh_actions refine-build.keychain
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          KEYCHAIN_PASSWORD="password"
 
-          # Make the custom keychain default, so xcodebuild will use it for signing
-          security default-keychain -s refine-build.keychain
+          # create temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
 
-          # Unlock the keychain
-          security unlock-keychain -p gh_actions refine-build.keychain
-
-          # Set keychain timeout to 1 hour for long builds
-          security set-keychain-settings -t 3600 -l ~/Library/Keychains/refine-build.keychain
-
-          # Add certificates to keychain and allow codesign to access them
-          security import "dist.cer" -k ~/Library/Keychains/refine-build.keychain -T /usr/bin/codesign
-          security import "installer.cer" -k ~/Library/Keychains/refine-build.keychain -T /usr/bin/codesign
+          # import certificate to keychain
+          security import "dist.cer" -k $KEYCHAIN_PATH -T /usr/bin/codesign
+          security import "installer.cer" -k $KEYCHAIN_PATH -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
 
           target="universal-apple-darwin"
 
@@ -277,11 +274,6 @@ jobs:
           sed -i.bu "s/default =/# default =/" src-tauri/Cargo.toml
           rm src-tauri/Cargo.toml.bu
           yarn tauri build --target "${target}" --verbose
-
-          ls -l src-tauri/target/${target}
-          ls -l src-tauri/target
-          ls -l src-tauri/target/${target}/release/bundle/macos
-          ls -l src-tauri/entitlements
 
           app_path="src-tauri/target/${target}/release/bundle/macos/Zoo Modeling App.app"
           build_name="src-tauri/target/${target}/release/bundle/macos/Zoo Modeling App.pkg"
