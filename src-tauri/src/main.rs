@@ -385,6 +385,7 @@ fn main() -> Result<()> {
                 app.get_webview("main").unwrap().open_devtools();
             }
             #[cfg(not(debug_assertions))]
+            #[cfg(feature = "updater")]
             {
                 app.handle().plugin(tauri_plugin_updater::Builder::new().build())?;
             }
