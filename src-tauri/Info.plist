@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
     <dict>
+        <key>CFBundleDevelopmentRegion</key>
+	    <string>en</string>
+        <key>NSPrincipalClass</key>
+	    <string>NSApplication</string>
+        <key>CFBundlePackageType</key>
+	    <string>APPL</string>
         <key>NSDesktopFolderUsageDescription</key>
         <string>Zoo Modeling App accesses the Desktop to load and save your project files and/or exported files here</string>
         <key>NSDocumentsFolderUsageDescription</key>
@@ -26,6 +32,8 @@
                 </array>
             </dict>
         </array>
+        <key>LSFileQuarantineEnabled</key>
+	    <false/>
         <key>CFBundleDocumentTypes</key>
         <array>
             <dict>
@@ -194,15 +202,13 @@
                     <string>public.folder</string>
                 </array>
                 <key>CFBundleTypeName</key>
-                <string>Folder</string>
+                <string>Folders</string>
                 <key>CFBundleTypeRole</key>
-                <string>Editor</string>
-                <key>LSTypeIsPackage</key>
-                <false/>
+                <string>Viewer</string>
                 <key>NSDocumentClass</key>
                 <string>Folder</string>
                 <key>LSHandlerRank</key>
-                <string>Default</string>
+                <string>Alternate</string>
             </dict>
         </array>
         <key>UTExportedTypeDeclarations</key>
