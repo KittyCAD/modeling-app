@@ -3,11 +3,11 @@
 <plist version="1.0">
     <dict>
         <key>CFBundleDevelopmentRegion</key>
-	    <string>en</string>
+        <string>en</string>
         <key>NSPrincipalClass</key>
-	    <string>NSApplication</string>
+        <string>NSApplication</string>
         <key>CFBundlePackageType</key>
-	    <string>APPL</string>
+        <string>APPL</string>
         <key>NSDesktopFolderUsageDescription</key>
         <string>Zoo Modeling App accesses the Desktop to load and save your project files and/or exported files here</string>
         <key>NSDocumentsFolderUsageDescription</key>
@@ -33,7 +33,7 @@
             </dict>
         </array>
         <key>LSFileQuarantineEnabled</key>
-	    <false/>
+        <false/>
         <key>CFBundleDocumentTypes</key>
         <array>
             <dict>
