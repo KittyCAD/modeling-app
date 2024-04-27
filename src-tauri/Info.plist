@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
     <dict>
+        <key>NSDesktopFolderUsageDescription</key>
+        <string>Zoo Modeling App accesses the Desktop to load and save your project files and/or exported files here</string>
+        <key>NSDocumentsFolderUsageDescription</key>
+        <string>Zoo Modeling App accesses the Documents folder to load and save your project files and/or exported files here</string>
+        <key>NSDownloadsFolderUsageDescription</key>
+        <string>Zoo Modeling App accesses the Downloads folder to load and save your project files and/or exported files here</string>
         <key>ITSAppUsesNonExemptEncryption</key>
         <false/>
         <key>DTXcode</key>
