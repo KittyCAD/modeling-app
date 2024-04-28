@@ -34,6 +34,8 @@ import { Popover } from '@headlessui/react'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
 import { useKclContext } from 'lang/KclProvider'
 import { LineInputsType } from 'lang/std/sketchcombos'
+import { removeSingleConstraintInfo } from 'components/Toolbar/RemoveConstrainingValues'
+import toast from 'react-hot-toast'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -306,12 +308,20 @@ const SegmentMenu = ({
 }
 
 const ConstraintSymbol = ({
-  constrainInfo: { type: _type, isConstrained, value, pathToNode },
+  constrainInfo: {
+    type: _type,
+    isConstrained,
+    value,
+    pathToNode,
+    stblidFnName,
+    argPosition,
+  },
   verticalPosition,
 }: {
   constrainInfo: ConstrainInfo
   verticalPosition: 'top' | 'bottom'
 }) => {
+  const { context } = useModelingContext()
   const varNameMap: {
     [key in ConstrainInfo['type']]: {
       varName: string
@@ -410,15 +420,38 @@ const ConstraintSymbol = ({
         }}
         // disabled={isConstrained || !convertToVarEnabled}
         // disabled={implicitDesc} TODO why does this change styles that are hard to override?
-        onClick={() => {
-          console.log(
-            'isConstrained && convertToVarEnabled',
-            isConstrained,
-            convertToVarEnabled,
-            range
-          )
+        onClick={async () => {
           if (!isConstrained && convertToVarEnabled) {
-            handleConvertToVarClick(varName)
+            await handleConvertToVarClick(varName)
+          } else if (isConstrained) {
+            try {
+              const input:
+                | Parameters<typeof removeSingleConstraintInfo>[0]
+                | false =
+                argPosition?.type === 'singleValue'
+                  ? {
+                      pathToCallExp: pathToNode,
+                    }
+                  : argPosition?.type === 'arrayItem'
+                  ? {
+                      pathToCallExp: pathToNode,
+                      arrayIndex: argPosition.index,
+                    }
+                  : argPosition?.type === 'objectProperty'
+                  ? {
+                      pathToCallExp: pathToNode,
+                      objectProperty: argPosition.key,
+                    }
+                  : false
+              if (!input || !context.sketchDetails) return
+              const transform = removeSingleConstraintInfo(input)
+              if (!transform) return
+              const { modifiedAst } = transform
+              kclManager.updateAst(modifiedAst, true)
+            } catch (e) {
+              console.log('error', e)
+            }
+            toast.success('Constraint removed')
           }
         }}
       >

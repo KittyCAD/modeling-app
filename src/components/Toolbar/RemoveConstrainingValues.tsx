@@ -1,6 +1,6 @@
 import { toolTips } from '../../useStore'
 import { Selections } from 'lib/selections'
-import { Program, Value } from '../../lang/wasm'
+import { PathToNode, Program, Value } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -8,6 +8,7 @@ import {
 import {
   PathToNodeMap,
   getRemoveConstraintsTransforms,
+  removeSingleConstraint,
   transformAstSketchLines,
 } from '../../lang/std/sketchcombos'
 import { kclManager } from 'lib/singletons'
@@ -57,6 +58,37 @@ export function applyRemoveConstrainingValues({
     ast: kclManager.ast,
     selectionRanges,
     transformInfos: transforms,
+    programMemory: kclManager.programMemory,
+    referenceSegName: '',
+  })
+}
+
+export function removeSingleConstraintInfo({
+  pathToCallExp,
+  arrayIndex,
+  objectProperty,
+}: {
+  pathToCallExp: PathToNode
+  arrayIndex?: number
+  objectProperty?: string
+}):
+  | {
+      modifiedAst: Program
+      pathToNodeMap: PathToNodeMap
+    }
+  | false {
+  // return false
+  const transform = removeSingleConstraint({
+    pathToCallExp,
+    arrayIndex,
+    objectProperty,
+    ast: kclManager.ast,
+  })
+  if (!transform) return false
+  return transformAstSketchLines({
+    ast: kclManager.ast,
+    selectionRanges: [pathToCallExp],
+    transformInfos: [transform],
     programMemory: kclManager.programMemory,
     referenceSegName: '',
   })

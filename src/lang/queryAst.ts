@@ -25,10 +25,17 @@ import {
   getConstraintType,
 } from './std/sketchcombos'
 
+/**
+ * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
+ * This function navigates through the AST (Abstract Syntax Tree) based on the provided path, attempting to locate
+ * and return the node at the end of this path.
+ * By default it will return the node of the deepest "stopAt" type encountered, or the node at the end of the path if no "stopAt" type is provided.
+ * If the "returnEarly" flag is set to true, the function will return as soon as a node of the specified type is found.
+ */
 export function getNodeFromPath<T>(
   node: Program,
   path: PathToNode,
-  stopAt: string | string[] = '',
+  stopAt?: SyntaxType | SyntaxType[],
   returnEarly = false
 ): {
   node: T
@@ -81,17 +88,20 @@ export function getNodeFromPath<T>(
   }
 }
 
+/**
+ * Functions the same as getNodeFromPath, but returns a curried function that can be called with the stopAt and returnEarly arguments.
+ */
 export function getNodeFromPathCurry(
   node: Program,
   path: PathToNode
 ): <T>(
-  stopAt: string,
+  stopAt?: SyntaxType | SyntaxType[],
   returnEarly?: boolean
 ) => {
   node: T
   path: PathToNode
 } {
-  return <T>(stopAt: string = '', returnEarly = false) => {
+  return <T>(stopAt?: SyntaxType | SyntaxType[], returnEarly = false) => {
     const { node: _node, shallowPath } = getNodeFromPath<T>(
       node,
       path,
@@ -353,11 +363,12 @@ export function isNodeSafeToReplace(
   if (path[path.length - 1][0] === 'callee') {
     path = path.slice(0, -1)
   }
-  const acceptedNodeTypes = [
+  const acceptedNodeTypes: SyntaxType[] = [
     'BinaryExpression',
     'Identifier',
     'CallExpression',
     'Literal',
+    'UnaryExpression',
   ]
   const { node: value, deepPath: outPath } = getNodeFromPath(
     ast,

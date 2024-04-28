@@ -1,3 +1,4 @@
+import { getNodeFromPath } from 'lang/queryAst'
 import { ToolTip, toolTips } from '../../useStore'
 import {
   Program,
@@ -6,8 +7,27 @@ import {
   SketchGroup,
   SourceRange,
   Path,
+  PathToNode,
+  Value,
 } from '../wasm'
 
+export function getSketchSegmentFromPathToNode(
+  sketchGroup: SketchGroup,
+  ast: Program,
+  pathToNode: PathToNode
+): {
+  segment: SketchGroup['value'][number]
+  index: number
+} {
+  // TODO: once pathTodNode is stored on program memory as part of execution,
+  // we can check if the pathToNode matches the pathToNode of the sketchGroup.
+  // For now we fall back to the sourceRange
+  const node = getNodeFromPath<Value>(ast, pathToNode).node
+  if (!node || typeof node.start !== 'number' || !node.end)
+    throw new Error('no node found')
+  const sourceRange: SourceRange = [node.start, node.end]
+  return getSketchSegmentFromSourceRange(sketchGroup, sourceRange)
+}
 export function getSketchSegmentFromSourceRange(
   sketchGroup: SketchGroup,
   [rangeStart, rangeEnd]: SourceRange

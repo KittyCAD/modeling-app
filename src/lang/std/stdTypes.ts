@@ -1,3 +1,4 @@
+import { ToolTip } from 'useStore'
 import {
   ProgramMemory,
   Path,
@@ -6,6 +7,7 @@ import {
   Value,
   PathToNode,
   CallExpression,
+  Literal,
 } from '../wasm'
 import { EngineCommandManager } from './engineConnection'
 import { LineInputsType } from './sketchcombos'
@@ -45,8 +47,45 @@ interface updateArgs extends ModifyAstBase {
   to: [number, number]
 }
 
+export type VarValueKeys = 'angle' | 'offset'
+export interface SingleValueInput<T> {
+  type: 'singleValue'
+  argType: LineInputsType
+  value: T
+}
+export interface ArrayItemInput<T> {
+  type: 'arrayItem'
+  index: 0 | 1
+  argType: LineInputsType
+  value: T
+}
+export interface ObjectPropertyInput<T> {
+  type: 'objectProperty'
+  key: VarValueKeys
+  argType: LineInputsType
+  value: T
+}
+export type _VarValue<T> =
+  | SingleValueInput<T>
+  | ArrayItemInput<T>
+  | ObjectPropertyInput<T>
+
+export type VarValue = _VarValue<Value>
+export type RawValue = _VarValue<Literal>
+
+export type VarValues = Array<VarValue>
+export type RawValues = Array<RawValue>
+
+type SimplifiedVarValue =
+  | {
+      type: 'singleValue'
+    }
+  | { type: 'arrayItem'; index: 0 | 1 }
+  | { type: 'objectProperty'; key: VarValueKeys }
+
 export type TransformCallback = (
   args: [Value, Value],
+  literalValues: RawValues,
   referencedSegment?: Path
 ) => {
   callExp: Value
@@ -54,12 +93,14 @@ export type TransformCallback = (
 }
 
 export interface ConstrainInfo {
+  stblidFnName: ToolTip
   type: LineInputsType | 'vertical' | 'horizontal' | 'tangentialWithPrevious'
   isConstrained: boolean
   sourceRange: SourceRange
   pathToNode: PathToNode
   value: string
   calculatedValue?: any
+  argPosition?: SimplifiedVarValue
   // linked?: SourceRange
 }
 

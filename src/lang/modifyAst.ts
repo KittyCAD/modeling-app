@@ -241,11 +241,7 @@ export function extrudeSketch(
   pathToExtrudeArg: PathToNode
 } {
   const _node = { ...node }
-  const { node: sketchExpression } = getNodeFromPath(
-    _node,
-    pathToNode,
-    'SketchExpression' // TODO fix this #25
-  )
+  const { node: sketchExpression } = getNodeFromPath(_node, pathToNode)
 
   // determine if sketchExpression is in a pipeExpression or not
   const { node: pipeExpression } = getNodeFromPath<PipeExpression>(
