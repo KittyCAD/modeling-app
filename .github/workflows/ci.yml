@@ -13,7 +13,7 @@ on:
   # Will checkout the last commit from the default branch (main as of 2023-10-04)
 
 env:
-  BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && contains(github.event.pull_request.title, 'Cut release v') }}
+  BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -50,7 +50,7 @@ jobs:
       - run: yarn tsc
 
 
-  check-typos: 
+  check-typos:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -98,7 +98,7 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
-          
+
       - name: Set nightly version
         if: github.event_name == 'schedule'
         run: |
@@ -143,21 +143,21 @@ jobs:
           ls -l artifact
           cp artifact/package.json package.json
           cp artifact/src-tauri/tauri.conf.json src-tauri/tauri.conf.json
-          cp artifact/src-tauri/tauri.release.conf.json src-tauri/tauri.release.conf.json 
+          cp artifact/src-tauri/tauri.release.conf.json src-tauri/tauri.release.conf.json
 
       - name: Install ubuntu system dependencies
         if: matrix.os == 'ubuntu-latest'
-        run: >
-          sudo apt-get update &&
-          sudo apt-get install -y
-          libgtk-3-dev
-          libayatana-appindicator3-dev
-          webkit2gtk-driver
-          libsoup-3.0-dev
-          libjavascriptcoregtk-4.1-dev
-          libwebkit2gtk-4.1-dev
-          at-spi2-core
-          xvfb
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            webkit2gtk-driver \
+            libsoup-3.0-dev \
+            libjavascriptcoregtk-4.1-dev \
+            libwebkit2gtk-4.1-dev \
+            at-spi2-core \
+            xvfb
 
       - name: Sync node version and setup cache
         uses: actions/setup-node@v4
@@ -237,6 +237,83 @@ jobs:
           includeDebug: true
           args: "${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
 
+
+      - name: Mac App Store
+        if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'macos-14' }}
+        run: |
+          unset APPLE_SIGNING_IDENTITY
+          unset APPLE_CERTIFICATE
+          sign_app="3rd Party Mac Developer Application: KittyCAD Inc (${APPLE_TEAM_ID})"
+          sign_install="3rd Party Mac Developer Installer: KittyCAD Inc (${APPLE_TEAM_ID})"
+          profile="src-tauri/entitlements/Mac_App_Distribution.provisionprofile"
+
+          mkdir -p src-tauri/entitlements
+          echo "${APPLE_STORE_PROVISIONING_PROFILE}" | base64 --decode > "${profile}"
+
+          echo "${APPLE_STORE_DISTRIBUTION_CERT}" | base64 --decode > "dist.cer"
+          echo "${APPLE_STORE_INSTALLER_CERT}" | base64 --decode > "installer.cer"
+
+          # load the certificates into the keychain
+          # Create a custom keychain
+          security create-keychain -p gh_actions refine-build.keychain
+
+          # Make the custom keychain default, so xcodebuild will use it for signing
+          security default-keychain -s refine-build.keychain
+
+          # Unlock the keychain
+          security unlock-keychain -p gh_actions refine-build.keychain
+
+          # Set keychain timeout to 1 hour for long builds
+          security set-keychain-settings -t 3600 -l ~/Library/Keychains/refine-build.keychain
+
+          # Add certificates to keychain and allow codesign to access them
+          security import "dist.cer" -k ~/Library/Keychains/refine-build.keychain -T /usr/bin/codesign
+          security import "installer.cer" -k ~/Library/Keychains/refine-build.keychain -T /usr/bin/codesign
+
+          security set-key-partition-list -S apple-tool:,apple: -s -k gh_actions refine-build.keychain
+
+          target="universal-apple-darwin"
+
+          # Turn off the default target
+          sed -i "s/default =/# default =/" src-tauri/Cargo.toml
+          yarn tauri build --target "${target}" --verbose
+
+          ls -l src-tauri/target/${target}
+          ls -l src-tauri/target
+          ls -l src-tauri/target/${target}/release/bundle/macos
+          ls -l src-tauri/entitlements
+
+          app_path="src-tauri/target/${target}/release/bundle/macos/Zoo Modeling App.app"
+          build_name="src-tauri/target/${target}/release/bundle/macos/Zoo Modeling App.pkg"
+          cp_dir="src-tauri/target/${target}/release/bundle/macos/Zoo Modeling App.app/Contents/embedded.provisionprofile"
+          entitlements="src-tauri/entitlements/Zoo Modeling App.entitlements"
+
+          cp "${profile}" "${cp_dir}"
+
+          codesign --deep --force -s "${sign_app}" --entitlements "${entitlements}" "${app_path}"
+
+          productbuild --component "${app_path}" /Applications/ --sign "${sign_install}" "${build_name}"
+
+          # Undo the changes to the Cargo.toml
+          git checkout src-tauri/Cargo.toml
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_STORE_PROVISIONING_PROFILE: ${{ secrets.APPLE_STORE_PROVISIONING_PROFILE }}
+          APPLE_STORE_DISTRIBUTION_CERT: ${{ secrets.APPLE_STORE_DISTRIBUTION_CERT }}
+          APPLE_STORE_INSTALLER_CERT: ${{ secrets.APPLE_STORE_INSTALLER_CERT }}
+
+      - name: 'Upload app to TestFlight'
+        uses: apple-actions/upload-testflight-build@v1
+        if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'macos-14' }}
+        with:
+          app-path: 'src-tauri/target/universal-apple-darwin/release/bundle/macos/Zoo Modeling App.pkg'
+          issuer-id: ${{ secrets.APPLE_STORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPLE_STORE_API_KEY_ID }}
+          api-private-key: ${{ secrets.APPLE_STORE_API_PRIVATE_KEY }}
+
+      # We do this after the apple store because the apple store build is
+      # specific and we want to overwrite it with the this new build after and
+      # not upload the apple store build to the public bucket
       - name: Build the app (release) and sign
         uses: tauri-apps/tauri-action@v0
         if: ${{ env.BUILD_RELEASE == 'true' }}
@@ -383,7 +460,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: 'artifact/*/Zoo*'
-          
+
   announce_release:
     needs: [publish-apps-release]
     runs-on: ubuntu-latest
@@ -391,17 +468,17 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-          
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-  
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install requests
-  
+
       - name: Announce Release
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}

@@ -1,5 +1,6 @@
 import { assign, createMachine } from 'xstate'
-import type { FileEntry, ProjectWithEntryPointMetadata } from 'lib/types'
+import type { FileEntry } from 'lib/types'
+import { Project } from 'wasm-lib/kcl/bindings/Project'
 
 export const fileMachine = createMachine(
   {
@@ -9,7 +10,7 @@ export const fileMachine = createMachine(
     initial: 'Reading files',
 
     context: {
-      project: {} as ProjectWithEntryPointMetadata,
+      project: {} as Project,
       selectedDirectory: {} as FileEntry,
     },
 
@@ -154,7 +155,7 @@ export const fileMachine = createMachine(
         | { type: 'navigate'; data: { name: string } }
         | {
             type: 'done.invoke.read-files'
-            data: ProjectWithEntryPointMetadata
+            data: Project
           }
         | { type: 'assign'; data: { [key: string]: any } }
         | { type: 'Refresh' },

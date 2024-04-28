@@ -47,6 +47,7 @@ pub async fn line_to(args: Args) -> Result<MemoryItem, KclError> {
 ///
 /// // Create the mounting plate extrusion, holes, and fillets
 /// const part = rectShape([0, 0], 20, 20)
+///  |> extrude(10, %)
 /// ```
 #[stdlib {
     name = "lineTo",
@@ -662,6 +663,9 @@ pub async fn start_sketch_at(args: Args) -> Result<MemoryItem, KclError> {
 /// ```no_run
 /// startSketchAt([0, 0])
 ///    |> line([10, 10], %)
+///    |> line([20, 10], %, "edge1")
+///    |> close(%, "edge2")
+///    |> extrude(10, %)
 /// ```
 #[stdlib {
     name = "startSketchAt",
@@ -814,6 +818,7 @@ pub async fn start_sketch_on(args: Args) -> Result<MemoryItem, KclError> {
 ///  |> line([10, 10], %)
 ///  |> line([20, 10], %, "edge1")
 ///  |> close(%, "edge2")
+///  |> extrude(10, %)
 /// ```
 ///
 /// ```no_run
@@ -1027,6 +1032,9 @@ pub async fn start_profile_at(args: Args) -> Result<MemoryItem, KclError> {
 /// startSketchOn('XY')
 ///     |> startProfileAt([0, 0], %)
 ///     |> line([10, 10], %)
+///     |> line([10, 0], %)
+///     |> close(%)
+///     |> extrude(10, %)
 /// ```
 #[stdlib {
     name = "startProfileAt",
@@ -1097,6 +1105,7 @@ pub async fn close(args: Args) -> Result<MemoryItem, KclError> {
 ///    |> line([10, 10], %)
 ///    |> line([10, 0], %)
 ///    |> close(%)
+///    |> extrude(10, %)
 /// ```
 ///
 /// ```no_run
@@ -1105,6 +1114,7 @@ pub async fn close(args: Args) -> Result<MemoryItem, KclError> {
 ///    |> line([10, 10], %)
 ///    |> line([10, 0], %)
 ///    |> close(%, "edge1")
+///    |> extrude(10, %)
 /// ```
 #[stdlib {
     name = "close",
@@ -1411,6 +1421,7 @@ pub async fn tangential_arc_to(args: Args) -> Result<MemoryItem, KclError> {
 /// |> line([10, 10], %, "edge0")
 /// |> tangentialArcTo([10, 0], %)
 /// |> close(%)
+/// |> extrude(10, %)
 /// ```
 #[stdlib {
     name = "tangentialArcTo",
@@ -1517,12 +1528,12 @@ async fn inner_bezier_curve(
         ModelingCmd::ExtendPath {
             path: sketch_group.id,
             segment: kittycad::types::PathSegment::Bezier {
-                control1: Point3D {
+                control_1: Point3D {
                     x: data.control1[0],
                     y: data.control1[1],
                     z: 0.0,
                 },
-                control2: Point3D {
+                control_2: Point3D {
                     x: data.control2[0],
                     y: data.control2[1],
                     z: 0.0,

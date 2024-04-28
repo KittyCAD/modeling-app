@@ -1,10 +1,5 @@
 import { ActionFunction, LoaderFunction, redirect } from 'react-router-dom'
-import {
-  FileEntry,
-  FileLoaderData,
-  HomeLoaderData,
-  IndexLoaderData,
-} from './types'
+import { FileLoaderData, HomeLoaderData, IndexLoaderData } from './types'
 import { isTauri } from './isTauri'
 import { getProjectMetaByRouteId, paths } from './paths'
 import { BROWSER_PATH } from 'lib/paths'
@@ -14,33 +9,38 @@ import {
   PROJECT_ENTRYPOINT,
 } from 'lib/constants'
 import { loadAndValidateSettings } from './settings/settingsUtils'
-import {
-  getInitialDefaultDir,
-  getProjectsInDir,
-  initializeProjectDirectory,
-} from './tauriFS'
 import makeUrlPathRelative from './makeUrlPathRelative'
-import { join, sep } from '@tauri-apps/api/path'
-import { readTextFile, stat } from '@tauri-apps/plugin-fs'
+import { sep } from '@tauri-apps/api/path'
+import { readTextFile } from '@tauri-apps/plugin-fs'
 import { codeManager, kclManager } from 'lib/singletons'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
-import { invoke } from '@tauri-apps/api/core'
+import {
+  getProjectInfo,
+  initializeProjectDirectory,
+  listProjects,
+} from './tauri'
+import { createSettings } from './settings/initialSettings'
 
 // The root loader simply resolves the settings and any errors that
 // occurred during the settings load
 export const settingsLoader: LoaderFunction = async ({
   params,
-}): ReturnType<typeof loadAndValidateSettings> => {
-  let settings = await loadAndValidateSettings()
+}): Promise<
+  ReturnType<typeof createSettings> | ReturnType<typeof redirect>
+> => {
+  let { settings, configuration } = await loadAndValidateSettings()
 
   // I don't love that we have to read the settings again here,
   // but we need to get the project path to load the project settings
   if (params.id) {
-    const defaultDir = settings.app.projectDirectory.current || ''
-    const projectPathData = getProjectMetaByRouteId(params.id, defaultDir)
+    const projectPathData = await getProjectMetaByRouteId(
+      params.id,
+      configuration
+    )
     if (projectPathData) {
-      const { projectPath } = projectPathData
-      settings = await loadAndValidateSettings(projectPath)
+      const { project_name } = projectPathData
+      const { settings: s } = await loadAndValidateSettings(project_name)
+      settings = s
     }
   }
 
@@ -49,7 +49,7 @@ export const settingsLoader: LoaderFunction = async ({
 
 // Redirect users to the appropriate onboarding page if they haven't completed it
 export const onboardingRedirectLoader: ActionFunction = async (args) => {
-  const settings = await loadAndValidateSettings()
+  const { settings } = await loadAndValidateSettings()
   const onboardingStatus = settings.app.onboardingStatus.current || ''
   const notEnRouteToOnboarding = !args.request.url.includes(
     paths.ONBOARDING.INDEX
@@ -73,17 +73,19 @@ export const onboardingRedirectLoader: ActionFunction = async (args) => {
 export const fileLoader: LoaderFunction = async ({
   params,
 }): Promise<FileLoaderData | Response> => {
-  let settings = await loadAndValidateSettings()
+  let { configuration } = await loadAndValidateSettings()
 
-  const defaultDir = settings.app.projectDirectory.current || '/'
-  const projectPathData = getProjectMetaByRouteId(params.id, defaultDir)
+  const projectPathData = await getProjectMetaByRouteId(
+    params.id,
+    configuration
+  )
   const isBrowserProject = params.id === decodeURIComponent(BROWSER_PATH)
 
   if (!isBrowserProject && projectPathData) {
-    const { projectName, projectPath, currentFileName, currentFilePath } =
+    const { project_name, project_path, current_file_name, current_file_path } =
       projectPathData
 
-    if (!currentFileName || !currentFilePath) {
+    if (!current_file_name || !current_file_path || !project_name) {
       return redirect(
         `${paths.FILE}/${encodeURIComponent(
           `${params.id}${isTauri() ? sep() : '/'}${PROJECT_ENTRYPOINT}`
@@ -93,35 +95,34 @@ export const fileLoader: LoaderFunction = async ({
 
     // TODO: PROJECT_ENTRYPOINT is hardcoded
     // until we support setting a project's entrypoint file
-    const code = await readTextFile(currentFilePath)
-    const entrypointMetadata = await stat(
-      await join(projectPath, PROJECT_ENTRYPOINT)
-    )
-    const children = await invoke<FileEntry[]>('read_dir_recursive', {
-      path: projectPath,
-    })
+    const code = await readTextFile(current_file_path)
+
     // Update both the state and the editor's code.
     // We explicitly do not write to the file here since we are loading from
     // the file system and not the editor.
-    codeManager.updateCurrentFilePath(currentFilePath)
+    codeManager.updateCurrentFilePath(current_file_path)
     codeManager.updateCodeStateEditor(code)
     kclManager.executeCode(true)
 
     // Set the file system manager to the project path
     // So that WASM gets an updated path for operations
-    fileSystemManager.dir = projectPath
+    fileSystemManager.dir = project_path
 
     const projectData: IndexLoaderData = {
       code,
-      project: {
-        name: projectName,
-        path: projectPath,
-        children,
-        entrypointMetadata,
-      },
+      project: isTauri()
+        ? await getProjectInfo(project_path, configuration)
+        : {
+            name: project_name,
+            path: project_path,
+            children: [],
+            kcl_file_count: 0,
+            directory_count: 0,
+          },
       file: {
-        name: currentFileName,
-        path: currentFilePath,
+        name: current_file_name,
+        path: current_file_path,
+        children: [],
       },
     }
 
@@ -140,6 +141,7 @@ export const fileLoader: LoaderFunction = async ({
     file: {
       name: BROWSER_FILE_NAME,
       path: decodeURIComponent(BROWSER_PATH),
+      children: [],
     },
   }
 }
@@ -152,14 +154,12 @@ export const homeLoader: LoaderFunction = async (): Promise<
   if (!isTauri()) {
     return redirect(paths.FILE + '/%2F' + BROWSER_PROJECT_NAME)
   }
-  const settings = await loadAndValidateSettings()
+  const { configuration } = await loadAndValidateSettings()
 
-  const projectDir = await initializeProjectDirectory(
-    settings.app.projectDirectory.current || (await getInitialDefaultDir())
-  )
+  const projectDir = await initializeProjectDirectory(configuration)
 
-  if (projectDir.path) {
-    const projects = await getProjectsInDir(projectDir.path)
+  if (projectDir) {
+    const projects = await listProjects(configuration)
 
     return {
       projects,
