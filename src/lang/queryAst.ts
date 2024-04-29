@@ -15,6 +15,7 @@ import {
   SketchGroup,
   SourceRange,
   PipeExpression,
+  VariableDeclarator,
 } from './wasm'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
 import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
@@ -590,4 +591,100 @@ export function isSingleCursorInPipe(
   if (nodeTypes.includes('FunctionExpression')) return false
   if (nodeTypes.includes('PipeExpression')) return true
   return false
+}
+
+type KCLNode =
+  | Value
+  | ExpressionStatement
+  | VariableDeclaration
+  | VariableDeclarator
+  | ReturnStatement
+
+function traverse(
+  node: KCLNode,
+  option: {
+    enter?: (node: KCLNode) => void
+    leave?: (node: KCLNode) => void
+  }
+) {
+  option?.enter?.(node)
+  const _traverse = (node: KCLNode) => traverse(node, option)
+
+  if (node.type === 'VariableDeclaration') {
+    node.declarations.forEach(_traverse)
+  } else if (node.type === 'VariableDeclarator') {
+    _traverse(node.init)
+  } else if (node.type === 'PipeExpression') {
+    node.body.forEach(_traverse)
+  } else if (node.type === 'CallExpression') {
+    _traverse(node.callee)
+    node.arguments.forEach(_traverse)
+  } else if (node.type === 'BinaryExpression') {
+    _traverse(node.left)
+    _traverse(node.right)
+  } else if (node.type === 'Identifier') {
+    // do nothing
+  } else if (node.type === 'Literal') {
+    // do nothing
+  } else if (node.type === 'ArrayExpression') {
+    node.elements.forEach(_traverse)
+  } else if (node.type === 'ObjectExpression') {
+    node.properties.forEach(({ key, value }) => {
+      _traverse(key)
+      _traverse(value)
+    })
+  } else if (node.type === 'UnaryExpression') {
+    _traverse(node.argument)
+  } else if (node.type === 'MemberExpression') {
+    // hmm this smell
+    _traverse(node.object)
+    _traverse(node.property)
+  } else if ('body' in node && Array.isArray(node.body)) {
+    node.body.forEach(_traverse)
+  }
+  option?.leave?.(node)
+}
+
+export function determineIfOtherLinesDependOn(
+  ast: Program,
+  pathToNode: PathToNode
+): SourceRange[] {
+  const stdlibFunctionsThatTakeTagInputs = [
+    'segAng',
+    'segEndX',
+    'segEndY',
+    'segLen',
+  ]
+  const node = getNodeFromPath<CallExpression>(
+    ast,
+    pathToNode,
+    'CallExpression'
+  ).node
+  if (node.type !== 'CallExpression') return []
+  const tagIndex = node.callee.name === 'close' ? 1 : 2
+  const thirdParam = node.arguments[tagIndex]
+  if (thirdParam?.type !== 'Literal') return []
+  const tag = String(thirdParam.value)
+
+  const varDec = getNodeFromPath<VariableDeclaration>(
+    ast,
+    pathToNode,
+    'VariableDeclaration'
+  ).node
+  const dependantRanges: SourceRange[] = []
+
+  traverse(varDec, {
+    enter: (node) => {
+      if (
+        node.type !== 'CallExpression' ||
+        !stdlibFunctionsThatTakeTagInputs.includes(node.callee.name)
+      )
+        return
+      const tagArg = node.arguments[0]
+      if (tagArg.type !== 'Literal') return
+      if (String(tagArg.value) === tag)
+        dependantRanges.push([node.start, node.end])
+    },
+  })
+  return dependantRanges
 }
