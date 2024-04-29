@@ -69,6 +69,15 @@ export default function ParametricModeling() {
             </em>
             .
           </p>
+          <figure className="my-4 w-2/3 mx-auto">
+            <img
+              src={`/onboarding-bracket-dimensions${getImageTheme()}.png`}
+              alt="Bracket Dimensions"
+            />
+            <figcaption className="text-small italic text-center">
+              Bracket Dimensions
+            </figcaption>
+          </figure>
         </section>
         <OnboardingButtons
           currentSlug={onboardingPaths.PARAMETRIC_MODELING}
