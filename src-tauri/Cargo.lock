@@ -159,6 +159,7 @@ dependencies = [
  "tauri",
  "tauri-build",
  "tauri-plugin-cli",
+ "tauri-plugin-deep-link",
  "tauri-plugin-dialog",
  "tauri-plugin-fs",
  "tauri-plugin-http",
@@ -751,6 +752,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "90bc066a67923782aa8515dbaea16946c5bcc5addbd668bb80af688e53e548a0"
 dependencies = [
  "clap_builder",
+ "clap_derive",
 ]
 
 [[package]]
@@ -763,6 +765,20 @@ dependencies = [
  "anstyle",
  "clap_lex",
  "strsim 0.11.1",
+ "unicase",
+ "unicode-width",
+]
+
+[[package]]
+name = "clap_derive"
+version = "4.5.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "528131438037fd55894f62d6e9f068b8f45ac57ffa77517819645d10aed04f64"
+dependencies = [
+ "heck 0.5.0",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.60",
 ]
 
 [[package]]
@@ -2403,7 +2419,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.1.52"
+version = "0.1.53"
 dependencies = [
  "anyhow",
  "approx",
@@ -2412,6 +2428,7 @@ dependencies = [
  "base64 0.22.0",
  "bson",
  "chrono",
+ "clap",
  "dashmap",
  "databake",
  "derive-docs",
@@ -2471,6 +2488,7 @@ dependencies = [
  "bigdecimal",
  "bytes",
  "chrono",
+ "clap",
  "data-encoding",
  "format_serde_error",
  "futures",
@@ -5062,6 +5080,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "tauri-plugin-deep-link"
+version = "2.0.0-beta.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6a1aee2af6aec05ace816d46da0b0c0bdb4fcd0c985c0f14634a50c860824435"
+dependencies = [
+ "log",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-plugin",
+ "thiserror",
+ "url",
+]
+
+[[package]]
 name = "tauri-plugin-dialog"
 version = "2.0.0-beta.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5885,6 +5918,12 @@ name = "unicode-segmentation"
 version = "1.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d4c87d22b6e3f4a18d4d40ef354e97c90fcb14dd91d7dc0aa9d8a1172ebf7202"
+
+[[package]]
+name = "unicode-width"
+version = "0.1.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e51733f11c9c4f72aa0c160008246859e340b00807569a0da0e7a1079b27ba85"
 
 [[package]]
 name = "untrusted"

@@ -49,6 +49,11 @@ export class CoreDumpManager {
     return APP_VERSION
   }
 
+  // Get the backend pool we've requested.
+  pool(): string {
+    return this.engineCommandManager.pool || ''
+  }
+
   // Get the os information.
   getOsInfo(): Promise<string> {
     if (this.isTauri()) {
