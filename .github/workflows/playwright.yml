@@ -27,7 +27,7 @@ jobs:
 
       - id: filter
         name: Check for Rust changes
-        uses: dorny/paths-filter@v2
+        uses: dorny/paths-filter@v3
         with:
           filters: |
             rust:
@@ -48,38 +48,37 @@ jobs:
       run: yarn
     - name: Install Playwright Browsers
       run: yarn playwright install --with-deps
-    - name: download wasm
+    - name: Download Wasm Cache
       id: download-wasm
       if: needs.check-rust-changes.outputs.rust-changed == 'false'
-      uses: actions/download-artifact@v2
+      uses: dawidd6/action-download-artifact@v3
       continue-on-error: true
       with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
         name: wasm-bundle
+        workflow: build-and-store-wasm.yml
+        branch: main
         path: src/wasm-lib/pkg
     - name: copy wasm blob
       if: needs.check-rust-changes.outputs.rust-changed == 'false'
       run: cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
       continue-on-error: true
     - name: Setup Rust
-      if: needs.check-rust-changes.outputs.rust-changed == 'true'
       uses: dtolnay/rust-toolchain@stable
-    - name: Setup Rust
-      if: steps.download-wasm.outcome == 'failure'
-      uses: dtolnay/rust-toolchain@stable
-    - name: Cache wasm
+    - name: Cache Wasm (because rust diff)
       if: needs.check-rust-changes.outputs.rust-changed == 'true'
       uses: Swatinem/rust-cache@v2
       with:
         workspaces: './src/wasm-lib'
-    - name: Cache wasm
+    - name: OR Cache Wasm (because wasm cache failed)
       if: steps.download-wasm.outcome == 'failure'
       uses: Swatinem/rust-cache@v2
       with:
         workspaces: './src/wasm-lib'
-    - name: build wasm
+    - name: Build Wasm (because rust diff)
       if: needs.check-rust-changes.outputs.rust-changed == 'true'
       run: yarn build:wasm
-    - name: build wasm
+    - name: OR Build Wasm (because wasm cache failed)
       if: steps.download-wasm.outcome == 'failure'
       run: yarn build:wasm
     - name: build web
@@ -131,11 +130,6 @@ jobs:
         name: playwright-report
         path: playwright-report/
         retention-days: 30
-    - uses: actions/upload-artifact@v4
-      if: github.ref == 'refs/heads/main'
-      with:
-        name: wasm-bundle
-        path: src/wasm-lib/pkg
 
   playwright-macos:
     timeout-minutes: 60
@@ -151,38 +145,37 @@ jobs:
       run: yarn
     - name: Install Playwright Browsers
       run: yarn playwright install --with-deps
-    - name: download wasm
+    - name: Download Wasm Cache
       id: download-wasm
       if: needs.check-rust-changes.outputs.rust-changed == 'false'
-      uses: actions/download-artifact@v4
-      with:
-        name: wasm-bundle
-        path: src/wasm-lib/pkg
+      uses: dawidd6/action-download-artifact@v3
       continue-on-error: true
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        name: wasm-bundle
+        workflow: build-and-store-wasm.yml
+        branch: main
+        path: src/wasm-lib/pkg
     - name: copy wasm blob
       if: needs.check-rust-changes.outputs.rust-changed == 'false'
       run: cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
       continue-on-error: true
     - name: Setup Rust
-      if: needs.check-rust-changes.outputs.rust-changed == 'true'
       uses: dtolnay/rust-toolchain@stable
-    - name: Setup Rust
-      if: steps.download-wasm.outcome == 'failure'
-      uses: dtolnay/rust-toolchain@stable
-    - name: Cache wasm
+    - name: Cache Wasm (because rust diff)
       if: needs.check-rust-changes.outputs.rust-changed == 'true'
       uses: Swatinem/rust-cache@v2
       with:
         workspaces: './src/wasm-lib'
-    - name: Cache wasm
+    - name: OR Cache Wasm (because wasm cache failed)
       if: steps.download-wasm.outcome == 'failure'
       uses: Swatinem/rust-cache@v2
       with:
         workspaces: './src/wasm-lib'
-    - name: build wasm
+    - name: Build Wasm (because rust diff)
       if: needs.check-rust-changes.outputs.rust-changed == 'true'
       run: yarn build:wasm
-    - name: build wasm
+    - name: OR Build Wasm (because wasm cache failed)
       if: steps.download-wasm.outcome == 'failure'
       run: yarn build:wasm
     - name: build web
@@ -200,8 +193,3 @@ jobs:
         name: playwright-report
         path: playwright-report/
         retention-days: 30
-    - uses: actions/upload-artifact@v4
-      if: github.ref == 'refs/heads/main'
-      with:
-        name: wasm-bundle
-        path: src/wasm-lib/pkg

@@ -6,7 +6,6 @@ pub(crate) mod state;
 use std::{
     env,
     path::{Path, PathBuf},
-    process::Command,
 };
 
 use anyhow::Result;
@@ -19,6 +18,7 @@ use oauth2::TokenResponse;
 use tauri::{ipc::InvokeError, Manager};
 use tauri_plugin_cli::CliExt;
 use tauri_plugin_shell::ShellExt;
+use tokio::process::Command;
 
 const DEFAULT_HOST: &str = "https://api.zoo.dev";
 const SETTINGS_FILE_NAME: &str = "settings.toml";
@@ -371,6 +371,13 @@ fn main() -> Result<()> {
             write_project_settings_file,
         ])
         .plugin(tauri_plugin_cli::init())
+        .plugin(tauri_plugin_deep_link::init())
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_http::init())
+        .plugin(tauri_plugin_os::init())
+        .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_shell::init())
         .setup(|app| {
             // Do update things.
             #[cfg(debug_assertions)]
@@ -378,6 +385,7 @@ fn main() -> Result<()> {
                 app.get_webview("main").unwrap().open_devtools();
             }
             #[cfg(not(debug_assertions))]
+            #[cfg(feature = "updater")]
             {
                 app.handle().plugin(tauri_plugin_updater::Builder::new().build())?;
             }
@@ -433,6 +441,16 @@ fn main() -> Result<()> {
                     let source_path = if source_path == Path::new(".") {
                         std::env::current_dir()
                             .map_err(|e| anyhow::anyhow!("Error getting the current directory: {:?}", e))?
+                    } else {
+                        source_path
+                    };
+
+                    // If the path does not start with a slash, it is a relative path.
+                    // We need to convert it to an absolute path.
+                    let source_path = if source_path.is_relative() {
+                        std::env::current_dir()
+                            .map_err(|e| anyhow::anyhow!("Error getting the current directory: {:?}", e))?
+                            .join(source_path)
                     } else {
                         source_path
                     };
@@ -493,14 +511,13 @@ fn main() -> Result<()> {
             // Create a state object to hold the project.
             app.manage(state::Store::new(store));
 
+            // Listen on the deep links.
+            app.listen("deep-link://new-url", |url| {
+                dbg!(url);
+            });
+
             Ok(())
         })
-        .plugin(tauri_plugin_dialog::init())
-        .plugin(tauri_plugin_fs::init())
-        .plugin(tauri_plugin_http::init())
-        .plugin(tauri_plugin_os::init())
-        .plugin(tauri_plugin_process::init())
-        .plugin(tauri_plugin_shell::init())
         .run(tauri::generate_context!())?;
 
     Ok(())

@@ -335,7 +335,9 @@ class EngineConnection {
     // Information on the connect transaction
 
     const createPeerConnection = () => {
-      this.pc = new RTCPeerConnection()
+      this.pc = new RTCPeerConnection({
+        bundlePolicy: 'max-bundle',
+      })
 
       // Data channels MUST BE specified before SDP offers because requesting
       // them affects what our needs are!
@@ -660,6 +662,7 @@ failed cmd type was ${artifactThatFailed?.commandType}`
             // talk to the engine in any configuration /other/ than relay
             // from a infra POV.
             this.pc?.setConfiguration({
+              bundlePolicy: 'max-bundle',
               iceServers: ice_servers,
               iceTransportPolicy: 'relay',
             })
@@ -974,7 +977,7 @@ export class EngineCommandManager {
     }
 
     const additionalSettings = settings.enableSSAO ? '&post_effect=ssao' : ''
-    const pool = this.pool == undefined ? '' : `&pool=${this.pool}`
+    const pool = this.pool === undefined ? '' : `&pool=${this.pool}`
     const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}${additionalSettings}${pool}`
     this.engineConnection = new EngineConnection({
       engineCommandManager: this,
