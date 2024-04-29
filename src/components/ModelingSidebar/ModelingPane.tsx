@@ -24,6 +24,7 @@ export const ModelingPaneHeader = ({
 
 export const ModelingPane = ({
   title,
+  id,
   children,
   className,
   Menu,
@@ -43,6 +44,7 @@ export const ModelingPane = ({
     <section
       {...props}
       data-testid={detailsTestId}
+      id={id}
       className={
         pointerEventsCssClass + styles.panel + ' group ' + (className || '')
       }

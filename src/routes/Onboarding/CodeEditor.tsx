@@ -14,11 +14,7 @@ export default function CodeEditor() {
     <div className="fixed grid justify-end items-center inset-0 z-50 pointer-events-none">
       <div
         className="fixed inset-0 bg-black opacity-50 dark:opacity-80 pointer-events-none"
-        style={
-          {
-            /*clipPath: useBackdropHighlight('code-pane')*/
-          }
-        }
+        style={{ clipPath: useBackdropHighlight('code-pane') }}
       ></div>
       <div
         className={
