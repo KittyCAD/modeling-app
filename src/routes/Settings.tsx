@@ -32,8 +32,16 @@ import Fuse from 'fuse.js'
 export const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
 
 function SettingsSearchBar() {
+  const inputRef = useRef<HTMLInputElement>(null)
+  useHotkeys(
+    'Ctrl+.',
+    (e) => {
+      e.preventDefault()
+      inputRef.current?.focus()
+    },
+    { enableOnFormTags: true }
+  )
   const navigate = useNavigate()
-  const [searchParams, setSearchParams] = useSearchParams()
   const [query, setQuery] = useState('')
   const { settings } = useSettingsAuthContext()
   const settingsAsSearchable = useMemo(
@@ -45,8 +53,9 @@ function SettingsSearchBar() {
             return ['project', 'user']
               .filter((l) => s.hideOnLevel !== l)
               .map((l) => ({
-                category,
-                settingName,
+                category: decamelize(category, { separator: ' ' }),
+                settingName: settingName,
+                settingNameDisplay: decamelize(settingName, { separator: ' ' }),
                 setting: s,
                 level: l,
               }))
@@ -57,7 +66,7 @@ function SettingsSearchBar() {
   const [searchResults, setSearchResults] = useState(settingsAsSearchable)
 
   const fuse = new Fuse(settingsAsSearchable, {
-    keys: ['category', 'settingName'],
+    keys: ['category', 'settingNameDisplay'],
     includeScore: true,
   })
 
@@ -81,23 +90,24 @@ function SettingsSearchBar() {
   return (
     <Combobox onChange={handleSelection}>
       <div className="relative">
-        <div className="flex items-center gap-2 px-4 pb-2 border-solid border-0 border-b border-b-chalkboard-20 dark:border-b-chalkboard-80">
-          <CustomIcon
-            name="search"
-            className="w-5 h-5 bg-primary/10 text-primary"
-          />
+        <div className="flex items-center gap-2 p-1 pl-2 rounded border-solid border border-primary/10 dark:border-chalkboard-80">
           <Combobox.Input
+            ref={inputRef}
             onChange={(event) => setQuery(event.target.value)}
             className="w-full bg-transparent focus:outline-none selection:bg-primary/20 dark:selection:bg-primary/40 dark:focus:outline-none"
-            placeholder="Search settings"
+            placeholder="Search settings (^.)"
             autoCapitalize="off"
             autoComplete="off"
             autoCorrect="off"
             spellCheck="false"
             autoFocus
           />
+          <CustomIcon
+            name="search"
+            className="w-5 h-5 bg-primary/10 text-primary"
+          />
         </div>
-        <Combobox.Options className="absolute top-full mt-2 right-0 overflow-y-auto max-h-96 cursor-pointer">
+        <Combobox.Options className="absolute top-full mt-2 right-0 overflow-y-auto z-50 max-h-96 cursor-pointer bg-chalkboard-10 dark:bg-chalkboard-100">
           {searchResults?.map((option) => (
             <Combobox.Option
               key={`${option.category}-${option.settingName}-${option.level}`}
@@ -105,7 +115,9 @@ function SettingsSearchBar() {
               className="flex items-center gap-2 px-4 py-1 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90"
             >
               <p className="flex-grow">
-                {option.level} · {option.category} · {option.settingName}
+                {option.level} ·{' '}
+                {decamelize(option.category, { separator: ' ' })} ·{' '}
+                {option.settingNameDisplay}
               </p>
             </Combobox.Option>
           ))}
@@ -121,6 +133,9 @@ export const Settings = () => {
   const close = () => navigate(location.pathname.replace(paths.SETTINGS, ''))
   const location = useLocation()
   const isFileSettings = location.pathname.includes(paths.FILE)
+  const searchParamTab =
+    (searchParams.get('tab') as SettingsLevel) ??
+    (isFileSettings ? 'project' : 'user')
   const projectPath =
     isFileSettings && isTauri()
       ? decodeURI(
@@ -130,12 +145,7 @@ export const Settings = () => {
             .slice(0, decodeURI(location.pathname).lastIndexOf(sep()))
         )
       : undefined
-  const searchParamTab =
-    searchParams.get('tab') ?? isFileSettings ? 'project' : 'user'
 
-  useEffect(() => {
-    console.log('searchParams', searchParams.get('tab'))
-  }, [searchParams])
   const scrollRef = useRef<HTMLDivElement>(null)
   const dotDotSlash = useDotDotSlash()
   useHotkeys('esc', () => navigate(dotDotSlash()))
@@ -158,6 +168,20 @@ export const Settings = () => {
       createAndOpenNewProject(navigate)
     }
   }
+
+  // Scroll to the hash on load if it exists
+  useEffect(() => {
+    console.log('hash', location.hash)
+    if (location.hash) {
+      const element = document.getElementById(location.hash.slice(1))
+      if (element) {
+        element.scrollIntoView({ block: 'center', behavior: 'smooth' })
+        ;(
+          element.querySelector('input, select, textarea') as HTMLInputElement
+        )?.focus()
+      }
+    }
+  }, [location.hash])
 
   return (
     <Transition appear show={true} as={Fragment}>
@@ -191,17 +215,19 @@ export const Settings = () => {
           <Dialog.Panel className="rounded relative mx-auto bg-chalkboard-10 dark:bg-chalkboard-100 border dark:border-chalkboard-70 max-w-3xl w-full max-h-[66vh] shadow-lg flex flex-col gap-8">
             <div className="p-5 pb-0 flex justify-between items-center">
               <h1 className="text-2xl font-bold">Settings</h1>
-              <SettingsSearchBar />
-              <button
-                onClick={close}
-                className="p-0 m-0 focus:ring-0 focus:outline-none border-none hover:bg-destroy-10 focus:bg-destroy-10 dark:hover:bg-destroy-80/50 dark:focus:bg-destroy-80/50"
-                data-testid="settings-close-button"
-              >
-                <CustomIcon name="close" className="w-5 h-5" />
-              </button>
+              <div className="flex gap-4 items-start">
+                <SettingsSearchBar />
+                <button
+                  onClick={close}
+                  className="p-0 m-0 focus:ring-0 focus:outline-none border-none hover:bg-destroy-10 focus:bg-destroy-10 dark:hover:bg-destroy-80/50 dark:focus:bg-destroy-80/50"
+                  data-testid="settings-close-button"
+                >
+                  <CustomIcon name="close" className="w-5 h-5" />
+                </button>
+              </div>
             </div>
             <RadioGroup
-              value={searchParams.get('tab') ?? 'user'}
+              value={searchParamTab}
               onChange={(v) => setSearchParams((p) => ({ ...p, tab: v }))}
               className="flex justify-start pl-4 pr-5 gap-5 border-0 border-b border-b-chalkboard-20 dark:border-b-chalkboard-90"
             >
@@ -227,7 +253,7 @@ export const Settings = () => {
               )}
             </RadioGroup>
             <div
-              className="flex-1 grid items-stretch pl-4 pr-5 pb-5 gap-4 overflow-hidden"
+              className="flex-1 grid items-stretch pl-4 pr-5 pb-5 gap-2 overflow-hidden"
               style={{ gridTemplateColumns: 'auto 1fr' }}
             >
               <div className="flex w-32 flex-col gap-3 pr-2 py-1 border-0 border-r border-r-chalkboard-20 dark:border-r-chalkboard-90">
@@ -246,7 +272,7 @@ export const Settings = () => {
                         scrollRef.current
                           ?.querySelector(`#category-${category}`)
                           ?.scrollIntoView({
-                            block: 'nearest',
+                            block: 'center',
                             behavior: 'smooth',
                           })
                       }
@@ -260,7 +286,7 @@ export const Settings = () => {
                     scrollRef.current
                       ?.querySelector(`#settings-resets`)
                       ?.scrollIntoView({
-                        block: 'nearest',
+                        block: 'center',
                         behavior: 'smooth',
                       })
                   }
@@ -273,7 +299,7 @@ export const Settings = () => {
                     scrollRef.current
                       ?.querySelector(`#settings-about`)
                       ?.scrollIntoView({
-                        block: 'nearest',
+                        block: 'center',
                         behavior: 'smooth',
                       })
                   }
@@ -283,7 +309,7 @@ export const Settings = () => {
                 </button>
               </div>
               <div className="relative overflow-y-auto">
-                <div ref={scrollRef} className="flex flex-col gap-6 px-2">
+                <div ref={scrollRef} className="flex flex-col gap-4 px-2">
                   {Object.entries(context)
                     .filter(([_, categorySettings]) =>
                       // Filter out categories that don't have any non-hidden settings
@@ -295,7 +321,7 @@ export const Settings = () => {
                       <Fragment key={category}>
                         <h2
                           id={`category-${category}`}
-                          className="text-2xl mt-6 first-of-type:mt-0 capitalize font-bold"
+                          className="text-xl mt-6 first-of-type:mt-0 capitalize font-bold"
                         >
                           {decamelize(category, { separator: ' ' })}
                         </h2>
@@ -486,13 +512,13 @@ export function SettingsSection({
   parentLevel,
   settingHasChanged,
   onFallback,
-  headingClassName = 'text-base font-normal capitalize tracking-wide',
+  headingClassName = 'text-lg font-normal capitalize tracking-wide',
 }: SettingsSectionProps) {
   return (
     <section
       id={id}
       className={
-        'group grid grid-cols-2 gap-6 items-start ' +
+        'group p-2 pl-0 grid grid-cols-2 gap-6 items-start ' +
         className +
         (settingHasChanged ? ' border-0 border-l-2 -ml-0.5 border-primary' : '')
       }
