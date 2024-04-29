@@ -43,7 +43,7 @@ export function SettingsSearchBar() {
   const [searchResults, setSearchResults] = useState(settingsAsSearchable)
 
   const fuse = new Fuse(settingsAsSearchable, {
-    keys: ['category', 'settingNameDisplay'],
+    keys: ['category', 'settingNameDisplay', 'setting.description'],
     includeScore: true,
   })
 
@@ -67,7 +67,7 @@ export function SettingsSearchBar() {
   return (
     <Combobox onChange={handleSelection}>
       <div className="relative group">
-        <div className="flex items-center gap-2 p-1 pl-2 rounded border-solid border border-primary/10 dark:border-chalkboard-80 focus-within:border-primary dark:focus-within:border-chalkboard-30">
+        <div className="flex items-center gap-2 py-0.5 pr-1 pl-2 rounded border-solid border border-primary/10 dark:border-chalkboard-80 focus-within:border-primary dark:focus-within:border-chalkboard-30">
           <Combobox.Input
             ref={inputRef}
             onChange={(event) => setQuery(event.target.value)}
@@ -89,13 +89,18 @@ export function SettingsSearchBar() {
             <Combobox.Option
               key={`${option.category}-${option.settingName}-${option.level}`}
               value={option}
-              className="flex items-center gap-2 px-4 py-1 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90"
+              className="flex flex-col items-start gap-2 px-4 py-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90"
             >
-              <p className="flex-grow capitalize">
+              <p className="flex-grow text-base capitalize m-0 leading-none">
                 {option.level} ·{' '}
                 {decamelize(option.category, { separator: ' ' })} ·{' '}
                 {option.settingNameDisplay}
               </p>
+              {option.setting.description && (
+                <p className="text-xs leading-tight text-chalkboard-70 dark:text-chalkboard-50">
+                  {option.setting.description}
+                </p>
+              )}
             </Combobox.Option>
           ))}
         </Combobox.Options>
