@@ -56,9 +56,10 @@ export function getNodeFromPath<T>(
         pathsExplored.push(pathItem)
       }
       if (
-        Array.isArray(stopAt)
+        typeof stopAt !== 'undefined' &&
+        (Array.isArray(stopAt)
           ? stopAt.includes(currentNode.type)
-          : currentNode.type === stopAt
+          : currentNode.type === stopAt)
       ) {
         // it will match the deepest node of the type
         // instead of returning at the first match
