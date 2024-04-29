@@ -1,6 +1,6 @@
 {
   "name": "untitled-app",
-  "version": "0.18.1",
+  "version": "0.19.4",
   "private": true,
   "dependencies": {
     "@codemirror/autocomplete": "^6.16.0",
@@ -86,6 +86,7 @@
     "simpleserver": "yarn pretest && http-server ./public --cors -p 3000",
     "fmt": "prettier --write ./src *.ts *.json *.js ./e2e",
     "fmt-check": "prettier --check ./src *.ts *.json *.js ./e2e",
+    "fetch:wasm": "./get-latest-wasm-bundle.sh",
     "build:wasm-dev": "(cd src/wasm-lib && wasm-pack build --dev --target web --out-dir pkg && cargo test -p kcl-lib export_bindings) && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn fmt",
     "build:wasm": "(cd src/wasm-lib && wasm-pack build --target web --out-dir pkg && cargo test -p kcl-lib export_bindings) && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn fmt",
     "build:wasm-clean": "yarn wasm-prep && yarn build:wasm",

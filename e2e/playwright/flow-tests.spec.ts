@@ -8,7 +8,8 @@ import {
   TEST_SETTINGS,
   TEST_SETTINGS_KEY,
   TEST_SETTINGS_CORRUPTED,
-  TEST_SETTINGS_ONBOARDING,
+  TEST_SETTINGS_ONBOARDING_EXPORT,
+  TEST_SETTINGS_ONBOARDING_START,
 } from './storageStates'
 import * as TOML from '@iarna/toml'
 
@@ -596,13 +597,12 @@ test('Auto complete works', async ({ page }) => {
 
 test('Stored settings are validated and fall back to defaults', async ({
   page,
-  context,
 }) => {
   const u = getUtils(page)
 
   // Override beforeEach test setup
   // with corrupted settings
-  await context.addInitScript(
+  await page.addInitScript(
     async ({ settingsKey, settings }) => {
       localStorage.setItem(settingsKey, settings)
     },
@@ -619,18 +619,18 @@ test('Stored settings are validated and fall back to defaults', async ({
   // Check the settings were reset
   const storedSettings = TOML.parse(
     await page.evaluate(
-      ({ settingsKey }) => localStorage.getItem(settingsKey) || '{}',
+      ({ settingsKey }) => localStorage.getItem(settingsKey) || '',
       { settingsKey: TEST_SETTINGS_KEY }
     )
   ) as { settings: SaveSettingsPayload }
 
-  expect(storedSettings.settings.app?.theme).toBe('dark')
+  expect(storedSettings.settings?.app?.theme).toBe(undefined)
 
   // Check that the invalid settings were removed
-  expect(storedSettings.settings.modeling?.defaultUnit).toBe(undefined)
-  expect(storedSettings.settings.modeling?.mouseControls).toBe(undefined)
-  expect(storedSettings.settings.app?.projectDirectory).toBe(undefined)
-  expect(storedSettings.settings.projects?.defaultProjectName).toBe(undefined)
+  expect(storedSettings.settings?.modeling?.defaultUnit).toBe(undefined)
+  expect(storedSettings.settings?.modeling?.mouseControls).toBe(undefined)
+  expect(storedSettings.settings?.app?.projectDirectory).toBe(undefined)
+  expect(storedSettings.settings?.projects?.defaultProjectName).toBe(undefined)
 })
 
 test('Project settings can be set and override user settings', async ({
@@ -681,6 +681,45 @@ test('Project settings can be set and override user settings', async ({
   await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
 })
 
+test('Click through each onboarding step', async ({ page }) => {
+  const u = getUtils(page)
+
+  // Override beforeEach test setup
+  await page.addInitScript(
+    async ({ settingsKey, settings }) => {
+      // Give no initial code, so that the onboarding start is shown immediately
+      localStorage.setItem('persistCode', '')
+      localStorage.setItem(settingsKey, settings)
+    },
+    {
+      settingsKey: TEST_SETTINGS_KEY,
+      settings: TOML.stringify({ settings: TEST_SETTINGS_ONBOARDING_START }),
+    }
+  )
+
+  await page.setViewportSize({ width: 1200, height: 1080 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+
+  // Test that the onboarding pane loaded
+  await expect(page.getByText('Welcome to Modeling App! This')).toBeVisible()
+
+  const nextButton = page.getByTestId('onboarding-next')
+
+  while ((await nextButton.innerText()) !== 'Finish') {
+    await expect(nextButton).toBeVisible()
+    await nextButton.click()
+  }
+
+  // Finish the onboarding
+  await expect(nextButton).toBeVisible()
+  await nextButton.click()
+
+  // Test that the onboarding pane is gone
+  await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
+  await expect(page.url()).not.toContain('onboarding')
+})
+
 test('Onboarding redirects and code updating', async ({ page }) => {
   const u = getUtils(page)
 
@@ -693,7 +732,7 @@ test('Onboarding redirects and code updating', async ({ page }) => {
     },
     {
       settingsKey: TEST_SETTINGS_KEY,
-      settings: TOML.stringify({ settings: TEST_SETTINGS_ONBOARDING }),
+      settings: TOML.stringify({ settings: TEST_SETTINGS_ONBOARDING_EXPORT }),
     }
   )
 

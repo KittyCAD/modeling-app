@@ -1,35 +1,22 @@
-import { type FileInfo } from '@tauri-apps/plugin-fs'
+import { FileEntry } from 'wasm-lib/kcl/bindings/FileEntry'
+import { Project } from 'wasm-lib/kcl/bindings/Project'
+
+export type { FileEntry } from 'wasm-lib/kcl/bindings/FileEntry'
 
 export type IndexLoaderData = {
   code: string | null
-  project?: ProjectWithEntryPointMetadata
+  project?: Project
   file?: FileEntry
 }
 
 export type FileLoaderData = {
   code: string | null
-  project?: FileEntry | ProjectWithEntryPointMetadata
+  project?: FileEntry | Project
   file?: FileEntry
 }
 
-export type ProjectWithEntryPointMetadata = FileEntry & {
-  entrypointMetadata: FileInfo
-}
 export type HomeLoaderData = {
-  projects: ProjectWithEntryPointMetadata[]
-}
-
-// From https://github.com/tauri-apps/tauri/blob/1.x/tooling/api/src/fs.ts#L159
-// Removed from tauri v2
-export interface FileEntry {
-  path: string
-  /**
-   * Name of the directory/file
-   * can be null if the path terminates with `..`
-   */
-  name?: string
-  /** Children of this entry if it's a directory; null otherwise */
-  children?: FileEntry[]
+  projects: Project[]
 }
 
 // From the very helpful @jcalz on StackOverflow: https://stackoverflow.com/a/58436959/22753272

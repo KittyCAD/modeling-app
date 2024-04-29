@@ -1,8 +1,9 @@
 use anyhow::Result;
+use kcl_lib::executor::ExecutorSettings;
 
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
-async fn execute_and_snapshot(code: &str, units: kittycad::types::UnitLength) -> Result<image::DynamicImage> {
+async fn execute_and_snapshot(code: &str, units: kcl_lib::settings::types::UnitLength) -> Result<image::DynamicImage> {
     let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
     let http_client = reqwest::Client::builder()
         .user_agent(user_agent)
@@ -27,18 +28,21 @@ async fn execute_and_snapshot(code: &str, units: kittycad::types::UnitLength) ->
         client.set_base_url(addr);
     }
 
-    let ws = client
-        .modeling()
-        .commands_ws(None, None, None, None, None, None, Some(false))
-        .await?;
-
     // Create a temporary file to write the output to.
     let output_file = std::env::temp_dir().join(format!("kcl_output_{}.png", uuid::Uuid::new_v4()));
 
     let tokens = kcl_lib::token::lexer(code)?;
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
-    let ctx = kcl_lib::executor::ExecutorContext::new(ws, units.clone()).await?;
+    let ctx = kcl_lib::executor::ExecutorContext::new(
+        &client,
+        ExecutorSettings {
+            units,
+            highlight_edges: true,
+            enable_ssao: false,
+        },
+    )
+    .await?;
 
     let _ = ctx.run(program, None).await?;
 
@@ -100,7 +104,7 @@ const part002 = startSketchOn(part001, "here")
   |> extrude(5, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face.png", &result, 0.999);
@@ -109,7 +113,7 @@ const part002 = startSketchOn(part001, "here")
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_riddle_small() {
     let code = include_str!("inputs/riddle_small.kcl");
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/riddle_small.png", &result, 0.999);
@@ -118,7 +122,7 @@ async fn serial_test_riddle_small() {
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_lego() {
     let code = include_str!("inputs/lego.kcl");
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/lego.png", &result, 0.999);
@@ -127,7 +131,7 @@ async fn serial_test_lego() {
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_pentagon_fillet_desugar() {
     let code = include_str!("inputs/pentagon_fillet_desugar.kcl");
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Cm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Cm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/pentagon_fillet_desugar.png", &result, 0.999);
@@ -136,7 +140,7 @@ async fn serial_test_pentagon_fillet_desugar() {
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_pentagon_fillet_sugar() {
     let code = include_str!("inputs/pentagon_fillet_sugar.kcl");
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Cm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Cm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/pentagon_fillet_sugar.png", &result, 0.999);
@@ -166,7 +170,7 @@ const part002 = startSketchOn(part001, "start")
   |> extrude(5, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_start.png", &result, 0.999);
@@ -175,7 +179,7 @@ const part002 = startSketchOn(part001, "start")
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_mike_stress_lines() {
     let code = include_str!("inputs/mike_stress_test.kcl");
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/mike_stress_test.png", &result, 0.999);
@@ -205,7 +209,7 @@ const part002 = startSketchOn(part001, "END")
   |> extrude(5, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_end.png", &result, 0.999);
@@ -235,7 +239,7 @@ const part002 = startSketchOn(part001, "END")
   |> extrude(-5, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image(
@@ -257,7 +261,7 @@ async fn serial_test_fillet_duplicate_tags() {
     |> fillet({radius: 0.5, tags: ["thing", "thing"]}, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
@@ -277,7 +281,7 @@ async fn serial_test_basic_fillet_cube_start() {
     |> fillet({radius: 2, tags: ["thing", "thing2"]}, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/basic_fillet_cube_start.png", &result, 0.999);
@@ -296,7 +300,7 @@ async fn serial_test_basic_fillet_cube_end() {
 
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/basic_fillet_cube_end.png", &result, 0.999);
@@ -315,7 +319,7 @@ async fn serial_test_basic_fillet_cube_close_opposite() {
 
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image(
@@ -337,7 +341,7 @@ async fn serial_test_basic_fillet_cube_next_adjacent() {
     |> fillet({radius: 2, tags: [getNextAdjacentEdge("thing3", %)]}, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image(
@@ -359,7 +363,7 @@ async fn serial_test_basic_fillet_cube_previous_adjacent() {
     |> fillet({radius: 2, tags: [getPreviousAdjacentEdge("thing3", %)]}, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image(
@@ -386,7 +390,7 @@ async fn serial_test_execute_with_function_sketch() {
 const fnBox = box(3, 6, 10)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/function_sketch.png", &result, 0.999);
@@ -408,7 +412,7 @@ async fn serial_test_execute_with_function_sketch_with_position() {
 
 const thing = box([0,0], 3, 6, 10)"#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image(
@@ -431,7 +435,7 @@ async fn serial_test_execute_with_angled_line() {
   |> extrude(4, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/angled_line.png", &result, 0.999);
@@ -459,7 +463,7 @@ const bracket = startSketchOn('XY')
   |> extrude(width, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/parametric.png", &result, 0.999);
@@ -495,7 +499,7 @@ const bracket = startSketchAt([0, 0])
   |> extrude(width, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/parametric_with_tan_arc.png", &result, 0.999);
@@ -512,7 +516,7 @@ async fn serial_test_execute_engine_error_return() {
   |> extrude(4, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
@@ -525,7 +529,7 @@ async fn serial_test_execute_i_shape() {
     // This is some code from lee that starts a pipe expression with a variable.
     let code = include_str!("inputs/i_shape.kcl");
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/i_shape.png", &result, 0.999);
@@ -536,7 +540,7 @@ async fn serial_test_execute_i_shape() {
 async fn serial_test_execute_pipes_on_pipes() {
     let code = include_str!("inputs/pipes_on_pipes.kcl");
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/pipes_on_pipes.png", &result, 0.999);
@@ -546,7 +550,7 @@ async fn serial_test_execute_pipes_on_pipes() {
 async fn serial_test_execute_cylinder() {
     let code = include_str!("inputs/cylinder.kcl");
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/cylinder.png", &result, 0.999);
@@ -556,7 +560,7 @@ async fn serial_test_execute_cylinder() {
 async fn serial_test_execute_kittycad_svg() {
     let code = include_str!("inputs/kittycad_svg.kcl");
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/kittycad_svg.png", &result, 0.999);
@@ -570,18 +574,20 @@ async fn serial_test_member_expression_sketch_group() {
     |> line([0, scale], %)
     |> line([scale, 0], %)
     |> line([0, -scale], %)
+    |> close(%)
 
   return sg
 }
 
 const b1 = cube([0,0], 10)
 const b2 = cube([3,3], 4)
+    |> extrude(10, %)
 
 const pt1 = b1.value[0]
 const pt2 = b2.value[0]
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image(
@@ -599,7 +605,7 @@ async fn serial_test_helix_defaults() {
      |> helix({revolutions: 16, angle_start: 0}, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/helix_defaults.png", &result, 1.0);
@@ -613,7 +619,7 @@ async fn serial_test_helix_defaults_negative_extrude() {
      |> helix({revolutions: 16, angle_start: 0}, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image(
@@ -631,7 +637,7 @@ async fn serial_test_helix_ccw() {
      |> helix({revolutions: 16, angle_start: 0, ccw: true}, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/helix_ccw.png", &result, 1.0);
@@ -645,7 +651,7 @@ async fn serial_test_helix_with_length() {
      |> helix({revolutions: 16, angle_start: 0, length: 3}, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/helix_with_length.png", &result, 1.0);
@@ -659,9 +665,10 @@ async fn serial_test_dimensions_match() {
   |> line([0, 20], %)
   |> line([-20, 0], %)
   |> close(%)
+  |> extrude(10, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/dimensions_match.png", &result, 1.0);
@@ -680,7 +687,7 @@ const body = startSketchOn('XY')
       |> extrude(height, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/close_arc.png", &result, 0.999);
@@ -708,7 +715,7 @@ box(10, 23, 8)
 let thing = box(-12, -15, 10)
 box(-20, -5, 10)"#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/negative_args.png", &result, 0.999);
@@ -723,7 +730,7 @@ async fn serial_test_basic_tangential_arc() {
     |> extrude(10, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/tangential_arc.png", &result, 0.999);
@@ -738,7 +745,7 @@ async fn serial_test_basic_tangential_arc_with_point() {
     |> extrude(10, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/tangential_arc_with_point.png", &result, 0.999);
@@ -753,7 +760,7 @@ async fn serial_test_basic_tangential_arc_to() {
     |> extrude(10, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/tangential_arc_to.png", &result, 0.999);
@@ -782,7 +789,7 @@ box(30, 43, 18, '-xy')
 let thing = box(-12, -15, 10, 'yz')
 box(-20, -5, 10, 'xy')"#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image(
@@ -846,7 +853,7 @@ const part004 = startSketchOn('YZ')
   |> close(%)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/lots_of_planes.png", &result, 0.999);
@@ -865,7 +872,7 @@ async fn serial_test_holes() {
   |> extrude(2, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/holes.png", &result, 0.999);
@@ -879,13 +886,14 @@ async fn optional_params() {
         |> startProfileAt(pos, %)
         |> arc({angle_end: 360, angle_start: 0, radius: radius}, %)
         |> close(%)
+        |> extrude(2, %)
 
       return sg
   }
 
 const thing = other_circle([2, 2], 20)
 "#;
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/optional_params.png", &result, 0.999);
@@ -923,7 +931,7 @@ const part = roundedRectangle([0, 0], 20, 20, 4)
   |> extrude(2, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/rounded_with_holes.png", &result, 0.999);
@@ -933,7 +941,7 @@ const part = roundedRectangle([0, 0], 20, 20, 4)
 async fn serial_test_top_level_expression() {
     let code = r#"startSketchOn('XY') |> circle([0,0], 22, %) |> extrude(14, %)"#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/top_level_expression.png", &result, 0.999);
@@ -949,7 +957,7 @@ const part =  startSketchOn('XY')
     |> extrude(1, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image(
@@ -967,7 +975,7 @@ async fn serial_test_patterns_linear_basic() {
     |> extrude(1, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/patterns_linear_basic.png", &result, 0.999);
@@ -985,7 +993,7 @@ async fn serial_test_patterns_linear_basic_3d() {
     |> patternLinear3d({axis: [1, 0, 1], repetitions: 3, distance: 6}, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/patterns_linear_basic_3d.png", &result, 0.999);
@@ -996,9 +1004,10 @@ async fn serial_test_patterns_linear_basic_negative_distance() {
     let code = r#"const part = startSketchOn('XY')
     |> circle([0,0], 2, %)
     |> patternLinear2d({axis: [0,1], repetitions: 12, distance: -2}, %)
+    |> extrude(1, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image(
@@ -1013,9 +1022,10 @@ async fn serial_test_patterns_linear_basic_negative_axis() {
     let code = r#"const part = startSketchOn('XY')
     |> circle([0,0], 2, %)
     |> patternLinear2d({axis: [0,-1], repetitions: 12, distance: 2}, %)
+    |> extrude(1, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image(
@@ -1038,10 +1048,11 @@ const rectangle = startSketchOn('XY')
   |> line([0, -50], %)
   |> close(%)
   |> hole(circles, %)
+  |> extrude(10, %)
 
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/patterns_linear_basic_holes.png", &result, 0.999);
@@ -1052,9 +1063,10 @@ async fn serial_test_patterns_circular_basic_2d() {
     let code = r#"const part = startSketchOn('XY')
     |> circle([0,0], 2, %)
     |> patternCircular2d({center: [20, 20], repetitions: 12, arcDegrees: 210, rotateDuplicates: true}, %)
+    |> extrude(1, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/patterns_circular_basic_2d.png", &result, 0.999);
@@ -1072,7 +1084,7 @@ async fn serial_test_patterns_circular_basic_3d() {
     |> patternCircular3d({axis: [0,0, 1], center: [-20, -20, -20], repetitions: 40, arcDegrees: 360, rotateDuplicates: false}, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/patterns_circular_basic_3d.png", &result, 0.999);
@@ -1090,7 +1102,7 @@ async fn serial_test_patterns_circular_3d_tilted_axis() {
     |> patternCircular3d({axis: [1,1,0], center: [10, 0, 10], repetitions: 10, arcDegrees: 360, rotateDuplicates: true}, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image(
@@ -1104,7 +1116,7 @@ async fn serial_test_patterns_circular_3d_tilted_axis() {
 async fn serial_test_import_file_doesnt_exist() {
     let code = r#"const model = import("thing.obj")"#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
@@ -1116,7 +1128,7 @@ async fn serial_test_import_file_doesnt_exist() {
 async fn serial_test_import_obj_with_mtl() {
     let code = r#"const model = import("tests/executor/inputs/cube.obj")"#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/import_obj_with_mtl.png", &result, 0.999);
@@ -1126,7 +1138,7 @@ async fn serial_test_import_obj_with_mtl() {
 async fn serial_test_import_obj_with_mtl_units() {
     let code = r#"const model = import("tests/executor/inputs/cube.obj", {type: "obj", units: "m"})"#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/import_obj_with_mtl_units.png", &result, 0.999);
@@ -1136,7 +1148,7 @@ async fn serial_test_import_obj_with_mtl_units() {
 async fn serial_test_import_gltf_with_bin() {
     let code = r#"const model = import("tests/executor/inputs/cube.gltf")"#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/import_gltf_with_bin.png", &result, 0.999);
@@ -1146,7 +1158,7 @@ async fn serial_test_import_gltf_with_bin() {
 async fn serial_test_import_gltf_embedded() {
     let code = r#"const model = import("tests/executor/inputs/cube-embedded.gltf")"#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/import_gltf_embedded.png", &result, 0.999);
@@ -1156,7 +1168,7 @@ async fn serial_test_import_gltf_embedded() {
 async fn serial_test_import_glb() {
     let code = r#"const model = import("tests/executor/inputs/cube.glb")"#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/import_glb.png", &result, 0.999);
@@ -1166,7 +1178,7 @@ async fn serial_test_import_glb() {
 async fn serial_test_import_glb_no_assign() {
     let code = r#"import("tests/executor/inputs/cube.glb")"#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/import_glb_no_assign.png", &result, 0.999);
@@ -1176,7 +1188,7 @@ async fn serial_test_import_glb_no_assign() {
 async fn serial_test_import_ext_doesnt_match() {
     let code = r#"const model = import("tests/executor/inputs/cube.gltf", {type: "obj", units: "m"})"#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
@@ -1201,7 +1213,7 @@ async fn serial_test_cube_mm() {
 const myCube = cube([0,0], 10)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/cube_mm.png", &result, 1.0);
@@ -1224,7 +1236,7 @@ async fn serial_test_cube_cm() {
 const myCube = cube([0,0], 10)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Cm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Cm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/cube_cm.png", &result, 1.0);
@@ -1247,7 +1259,7 @@ async fn serial_test_cube_m() {
 const myCube = cube([0,0], 10)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::M)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::M)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/cube_m.png", &result, 1.0);
@@ -1270,7 +1282,7 @@ async fn serial_test_cube_in() {
 const myCube = cube([0,0], 10)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::In)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::In)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/cube_in.png", &result, 1.0);
@@ -1293,7 +1305,7 @@ async fn serial_test_cube_ft() {
 const myCube = cube([0,0], 10)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Ft)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Ft)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/cube_ft.png", &result, 1.0);
@@ -1316,7 +1328,7 @@ async fn serial_test_cube_yd() {
 const myCube = cube([0,0], 10)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Yd)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Yd)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/cube_yd.png", &result, 1.0);
@@ -1346,7 +1358,7 @@ const part002 = startSketchOn(part001, "here")
   |> extrude(1, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm).await;
 
     assert!(result.is_err());
     assert_eq!(
@@ -1387,7 +1399,7 @@ const part003 = startSketchOn(part002, "end")
   |> extrude(5, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_of_face.png", &result, 1.0);
@@ -1406,7 +1418,7 @@ async fn serial_test_stdlib_kcl_error_right_code_path() {
   |> extrude(2, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
@@ -1434,7 +1446,7 @@ const part002 = startSketchOn(part001, "end")
   |> extrude(5, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_circle.png", &result, 1.0);
@@ -1460,7 +1472,7 @@ const part002 = startSketchOn(part001, "end")
   |> extrude(5, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/sketch_on_face_circle_tagged.png", &result, 1.0);
@@ -1504,7 +1516,7 @@ const part = rectShape([0, 0], 20, 20)
      }, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
@@ -1525,7 +1537,7 @@ async fn serial_test_big_number_angle_to_match_length_x() {
   |> extrude(10, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image(
@@ -1548,7 +1560,7 @@ async fn serial_test_big_number_angle_to_match_length_y() {
   |> extrude(10, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image(
@@ -1574,7 +1586,7 @@ async fn serial_test_simple_revolve() {
 
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/simple_revolve.png", &result, 1.0);
@@ -1596,7 +1608,7 @@ async fn serial_test_simple_revolve_uppercase() {
 
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/simple_revolve_uppercase.png", &result, 1.0);
@@ -1618,7 +1630,7 @@ async fn serial_test_simple_revolve_negative() {
 
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/simple_revolve_negative.png", &result, 1.0);
@@ -1640,7 +1652,7 @@ async fn serial_test_revolve_bad_angle_low() {
 
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm).await;
 
     assert!(result.is_err());
     assert_eq!(
@@ -1665,7 +1677,7 @@ async fn serial_test_revolve_bad_angle_high() {
 
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm).await;
 
     assert!(result.is_err());
     assert_eq!(
@@ -1690,7 +1702,7 @@ async fn serial_test_simple_revolve_custom_angle() {
 
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/simple_revolve_custom_angle.png", &result, 1.0);
@@ -1712,7 +1724,7 @@ async fn serial_test_simple_revolve_custom_axis() {
 
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/simple_revolve_custom_axis.png", &result, 1.0);
@@ -1738,7 +1750,7 @@ const sketch001 = startSketchOn(box, "end")
 
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/revolve_on_edge.png", &result, 1.0);
@@ -1764,7 +1776,7 @@ const sketch001 = startSketchOn(box, "revolveAxis")
 
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm).await;
 
     assert!(result.is_err());
     assert_eq!(
@@ -1791,7 +1803,7 @@ const sketch001 = startSketchOn(box, "END")
     }, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/revolve_on_face_circle_edge.png", &result, 1.0);
@@ -1815,7 +1827,7 @@ const sketch001 = startSketchOn(box, "END")
     }, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/revolve_on_face_circle.png", &result, 1.0);
@@ -1843,7 +1855,7 @@ const sketch001 = startSketchOn(box, "end")
   }, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/revolve_on_face.png", &result, 1.0);
@@ -1859,7 +1871,7 @@ async fn serial_test_basic_revolve_circle() {
     }, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/basic_revolve_circle.png", &result, 1.0);
@@ -1888,7 +1900,7 @@ const part002 = startSketchOn(part001, 'end')
     |> extrude(5, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/simple_revolve_sketch_on_edge.png", &result, 1.0);
@@ -1951,7 +1963,7 @@ const plumbus0 = make_circle(p, 'a', [0, 0], 2.5)
 //      }, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/plumbus_fillets.png", &result, 1.0);
@@ -1961,7 +1973,7 @@ const plumbus0 = make_circle(p, 'a', [0, 0], 2.5)
 async fn serial_test_empty_file_is_ok() {
     let code = r#""#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm).await;
     assert!(result.is_ok());
 }
 
@@ -1991,7 +2003,7 @@ async fn serial_test_member_expression_in_params() {
 capScrew([0, 0.5, 0], 50, 37.5, 50, 25)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm)
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
         .await
         .unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/member_expression_in_params.png", &result, 1.0);
@@ -2038,7 +2050,7 @@ const bracket = startSketchOn('XY')
      }, %)
 "#;
 
-    let result = execute_and_snapshot(code, kittycad::types::UnitLength::Mm).await;
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm).await;
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),

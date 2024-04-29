@@ -10,7 +10,11 @@ import init, {
   make_default_planes,
   coredump,
   toml_stringify,
-  toml_parse,
+  default_app_settings,
+  parse_app_settings,
+  parse_project_settings,
+  default_project_settings,
+  parse_project_route,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
@@ -26,6 +30,9 @@ import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import { TEST } from 'env'
+import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
+import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
+import { ProjectRoute } from 'wasm-lib/kcl/bindings/ProjectRoute'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Value } from '../wasm-lib/kcl/bindings/Value'
@@ -349,11 +356,53 @@ export function tomlStringify(toml: any): string {
   }
 }
 
-export function tomlParse(toml: string): any {
+export function defaultAppSettings(): Configuration {
   try {
-    const parsed: any = toml_parse(toml)
-    return parsed
+    const settings: Configuration = default_app_settings()
+    return settings
   } catch (e: any) {
-    throw new Error(`Error parsing toml: ${e}`)
+    throw new Error(`Error getting default app settings: ${e}`)
+  }
+}
+
+export function parseAppSettings(toml: string): Configuration {
+  try {
+    const settings: Configuration = parse_app_settings(toml)
+    return settings
+  } catch (e: any) {
+    throw new Error(`Error parsing app settings: ${e}`)
+  }
+}
+
+export function defaultProjectSettings(): ProjectConfiguration {
+  try {
+    const settings: ProjectConfiguration = default_project_settings()
+    return settings
+  } catch (e: any) {
+    throw new Error(`Error getting default project settings: ${e}`)
+  }
+}
+
+export function parseProjectSettings(toml: string): ProjectConfiguration {
+  try {
+    const settings: ProjectConfiguration = parse_project_settings(toml)
+    return settings
+  } catch (e: any) {
+    throw new Error(`Error parsing project settings: ${e}`)
+  }
+}
+
+export function parseProjectRoute(
+  configuration: Configuration,
+  route_str: string
+): ProjectRoute {
+  try {
+    const route: ProjectRoute = parse_project_route(
+      JSON.stringify(configuration),
+      route_str
+    )
+    return route
+  } catch (e: any) {
+    throw new Error(`Error parsing project route: ${e}`)
   }
 }

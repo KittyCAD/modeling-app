@@ -10,15 +10,10 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { paths } from 'lib/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
-import {
-  createAndOpenNewProject,
-  getInitialDefaultDir,
-  getSettingsFolderPaths,
-} from 'lib/tauriFS'
+import { createAndOpenNewProject, getSettingsFolderPaths } from 'lib/tauriFS'
 import { sep } from '@tauri-apps/api/path'
 import { isTauri } from 'lib/isTauri'
 import toast from 'react-hot-toast'
-import { invoke } from '@tauri-apps/api/core'
 import React, { Fragment, useMemo, useRef, useState } from 'react'
 import { Setting } from 'lib/settings/initialSettings'
 import decamelize from 'decamelize'
@@ -31,6 +26,7 @@ import {
   shouldHideSetting,
   shouldShowSettingInput,
 } from 'lib/settings/settingsUtils'
+import { getInitialDefaultDir, showInFolder } from 'lib/tauri'
 
 export const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
 
@@ -70,7 +66,7 @@ export const Settings = () => {
     if (isFileSettings) {
       navigate(dotDotSlash(1) + paths.ONBOARDING.INDEX)
     } else {
-      createAndOpenNewProject(context.app.projectDirectory.current, navigate)
+      createAndOpenNewProject(navigate)
     }
   }
 
@@ -302,9 +298,7 @@ export const Settings = () => {
                                 ? decodeURIComponent(projectPath)
                                 : undefined
                             )
-                            void invoke('show_in_folder', {
-                              path: paths[settingsLevel],
-                            })
+                            showInFolder(paths[settingsLevel])
                           }}
                           icon={{
                             icon: 'folder',

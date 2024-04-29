@@ -59,6 +59,10 @@ followed by:
 ```
 yarn build:wasm-dev
 ```
+or if you have the gh cli installed
+```
+./get-latest-wasm-bundle.sh # this will download the latest main wasm bundle
+```
 
 That will build the WASM binary and put in the `public` dir (though gitignored)
 
