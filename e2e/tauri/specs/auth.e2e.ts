@@ -102,8 +102,8 @@ describe('ZMA (Tauri, Linux)', () => {
     // const nameInput = await $('[data-testid="projects-defaultProjectName"]')
     // expect(await nameInput.getValue()).toEqual('project-$nnn')
 
-    // const closeButton = await $('[data-testid="settings-close-button"]')
-    // await click(closeButton)
+    const closeButton = await $('[data-testid="settings-close-button"]')
+    await click(closeButton)
   })
 
   it('checks that no file exists, creates a new file', async () => {
