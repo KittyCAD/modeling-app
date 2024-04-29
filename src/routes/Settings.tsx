@@ -14,118 +14,24 @@ import { createAndOpenNewProject, getSettingsFolderPaths } from 'lib/tauriFS'
 import { sep } from '@tauri-apps/api/path'
 import { isTauri } from 'lib/isTauri'
 import toast from 'react-hot-toast'
-import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef } from 'react'
 import { Setting } from 'lib/settings/initialSettings'
 import decamelize from 'decamelize'
 import { Event } from 'xstate'
-import { Combobox, Dialog, RadioGroup, Transition } from '@headlessui/react'
-import { CustomIcon, CustomIconName } from 'components/CustomIcon'
-import Tooltip from 'components/Tooltip'
+import { Dialog, Transition } from '@headlessui/react'
+import { CustomIcon } from 'components/CustomIcon'
 import {
   getSettingInputType,
   shouldHideSetting,
   shouldShowSettingInput,
 } from 'lib/settings/settingsUtils'
 import { getInitialDefaultDir, showInFolder } from 'lib/tauri'
-import Fuse from 'fuse.js'
+import { SettingsSearchBar } from 'components/Settings/SettingsSearchBar'
+import { SettingsTabs } from 'components/Settings/SettingsTabs'
+import { SettingsSection } from 'components/Settings/SettingsSection'
+import { SettingsFieldInput } from 'components/Settings/SettingsFieldInput'
 
 export const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
-
-function SettingsSearchBar() {
-  const inputRef = useRef<HTMLInputElement>(null)
-  useHotkeys(
-    'Ctrl+.',
-    (e) => {
-      e.preventDefault()
-      inputRef.current?.focus()
-    },
-    { enableOnFormTags: true }
-  )
-  const navigate = useNavigate()
-  const [query, setQuery] = useState('')
-  const { settings } = useSettingsAuthContext()
-  const settingsAsSearchable = useMemo(
-    () =>
-      Object.entries(settings.state.context).flatMap(
-        ([category, categorySettings]) =>
-          Object.entries(categorySettings).flatMap(([settingName, setting]) => {
-            const s = setting as Setting
-            return ['project', 'user']
-              .filter((l) => s.hideOnLevel !== l)
-              .map((l) => ({
-                category: decamelize(category, { separator: ' ' }),
-                settingName: settingName,
-                settingNameDisplay: decamelize(settingName, { separator: ' ' }),
-                setting: s,
-                level: l,
-              }))
-          })
-      ),
-    [settings.state.context]
-  )
-  const [searchResults, setSearchResults] = useState(settingsAsSearchable)
-
-  const fuse = new Fuse(settingsAsSearchable, {
-    keys: ['category', 'settingNameDisplay'],
-    includeScore: true,
-  })
-
-  useEffect(() => {
-    const results = fuse.search(query).map((result) => result.item)
-    setSearchResults(query.length > 0 ? results : settingsAsSearchable)
-  }, [query])
-
-  function handleSelection({
-    level,
-    settingName,
-  }: {
-    category: string
-    settingName: string
-    setting: Setting<unknown>
-    level: string
-  }) {
-    navigate(`?tab=${level}#${settingName}`)
-  }
-
-  return (
-    <Combobox onChange={handleSelection}>
-      <div className="relative">
-        <div className="flex items-center gap-2 p-1 pl-2 rounded border-solid border border-primary/10 dark:border-chalkboard-80">
-          <Combobox.Input
-            ref={inputRef}
-            onChange={(event) => setQuery(event.target.value)}
-            className="w-full bg-transparent focus:outline-none selection:bg-primary/20 dark:selection:bg-primary/40 dark:focus:outline-none"
-            placeholder="Search settings (^.)"
-            autoCapitalize="off"
-            autoComplete="off"
-            autoCorrect="off"
-            spellCheck="false"
-            autoFocus
-          />
-          <CustomIcon
-            name="search"
-            className="w-5 h-5 bg-primary/10 text-primary"
-          />
-        </div>
-        <Combobox.Options className="absolute top-full mt-2 right-0 overflow-y-auto z-50 max-h-96 cursor-pointer bg-chalkboard-10 dark:bg-chalkboard-100">
-          {searchResults?.map((option) => (
-            <Combobox.Option
-              key={`${option.category}-${option.settingName}-${option.level}`}
-              value={option}
-              className="flex items-center gap-2 px-4 py-1 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90"
-            >
-              <p className="flex-grow">
-                {option.level} ·{' '}
-                {decamelize(option.category, { separator: ' ' })} ·{' '}
-                {option.settingNameDisplay}
-              </p>
-            </Combobox.Option>
-          ))}
-        </Combobox.Options>
-      </div>
-    </Combobox>
-  )
-}
 
 export const Settings = () => {
   const navigate = useNavigate()
@@ -226,32 +132,11 @@ export const Settings = () => {
                 </button>
               </div>
             </div>
-            <RadioGroup
+            <SettingsTabs
               value={searchParamTab}
               onChange={(v) => setSearchParams((p) => ({ ...p, tab: v }))}
-              className="flex justify-start pl-4 pr-5 gap-5 border-0 border-b border-b-chalkboard-20 dark:border-b-chalkboard-90"
-            >
-              <RadioGroup.Option value="user">
-                {({ checked }) => (
-                  <SettingsTabButton
-                    checked={checked}
-                    icon="person"
-                    text="User"
-                  />
-                )}
-              </RadioGroup.Option>
-              {isFileSettings && (
-                <RadioGroup.Option value="project">
-                  {({ checked }) => (
-                    <SettingsTabButton
-                      checked={checked}
-                      icon="folder"
-                      text="This project"
-                    />
-                  )}
-                </RadioGroup.Option>
-              )}
-            </RadioGroup>
+              showProjectTab={isFileSettings}
+            />
             <div
               className="flex-1 grid items-stretch pl-4 pr-5 pb-5 gap-2 overflow-hidden"
               style={{ gridTemplateColumns: 'auto 1fr' }}
@@ -370,7 +255,7 @@ export const Settings = () => {
                                   } as SetEventTypes)
                                 }
                               >
-                                <GeneratedSetting
+                                <SettingsFieldInput
                                   category={category}
                                   settingName={settingName}
                                   settingsLevel={searchParamTab}
@@ -488,232 +373,5 @@ export const Settings = () => {
         </Transition.Child>
       </Dialog>
     </Transition>
-  )
-}
-
-interface SettingsSectionProps extends React.HTMLProps<HTMLDivElement> {
-  title: string
-  titleClassName?: string
-  description?: string
-  className?: string
-  parentLevel?: SettingsLevel | 'default'
-  onFallback?: () => void
-  settingHasChanged?: boolean
-  headingClassName?: string
-}
-
-export function SettingsSection({
-  title,
-  titleClassName,
-  id,
-  description,
-  className,
-  children,
-  parentLevel,
-  settingHasChanged,
-  onFallback,
-  headingClassName = 'text-lg font-normal capitalize tracking-wide',
-}: SettingsSectionProps) {
-  return (
-    <section
-      id={id}
-      className={
-        'group p-2 pl-0 grid grid-cols-2 gap-6 items-start ' +
-        className +
-        (settingHasChanged ? ' border-0 border-l-2 -ml-0.5 border-primary' : '')
-      }
-    >
-      <div className="ml-2">
-        <div className="flex items-center gap-2">
-          <h2 className={headingClassName}>{title}</h2>
-          {onFallback && parentLevel && settingHasChanged && (
-            <button
-              onClick={onFallback}
-              className="hidden group-hover:block group-focus-within:block border-none p-0 hover:bg-warn-10 dark:hover:bg-warn-80 focus:bg-warn-10 dark:focus:bg-warn-80 focus:outline-none"
-            >
-              <CustomIcon name="refresh" className="w-4 h-4" />
-              <span className="sr-only">Roll back {title}</span>
-              <Tooltip position="right">
-                Roll back to match {parentLevel}
-              </Tooltip>
-            </button>
-          )}
-        </div>
-        {description && (
-          <p className="mt-2 text-xs text-chalkboard-80 dark:text-chalkboard-30">
-            {description}
-          </p>
-        )}
-      </div>
-      <div>{children}</div>
-    </section>
-  )
-}
-
-interface GeneratedSettingProps {
-  // We don't need the fancy types here,
-  // it doesn't help us with autocomplete or anything
-  category: string
-  settingName: string
-  settingsLevel: SettingsLevel
-  setting: Setting<unknown>
-}
-
-function GeneratedSetting({
-  category,
-  settingName,
-  settingsLevel,
-  setting,
-}: GeneratedSettingProps) {
-  const {
-    settings: { context, send },
-  } = useSettingsAuthContext()
-  const options = useMemo(() => {
-    return setting.commandConfig &&
-      'options' in setting.commandConfig &&
-      setting.commandConfig.options
-      ? setting.commandConfig.options instanceof Array
-        ? setting.commandConfig.options
-        : setting.commandConfig.options(
-            {
-              argumentsToSubmit: {
-                level: settingsLevel,
-              },
-            },
-            context
-          )
-      : []
-  }, [setting, settingsLevel, context])
-  const inputType = getSettingInputType(setting)
-
-  switch (inputType) {
-    case 'component':
-      return (
-        setting.Component && (
-          <setting.Component
-            value={setting[settingsLevel] || setting.getFallback(settingsLevel)}
-            updateValue={(newValue) => {
-              send({
-                type: `set.${category}.${settingName}`,
-                data: {
-                  level: settingsLevel,
-                  value: newValue,
-                },
-              } as unknown as Event<WildcardSetEvent>)
-            }}
-          />
-        )
-      )
-    case 'boolean':
-      return (
-        <Toggle
-          offLabel="Off"
-          onLabel="On"
-          onChange={(e) =>
-            send({
-              type: `set.${category}.${settingName}`,
-              data: {
-                level: settingsLevel,
-                value: Boolean(e.target.checked),
-              },
-            } as SetEventTypes)
-          }
-          checked={Boolean(
-            setting[settingsLevel] !== undefined
-              ? setting[settingsLevel]
-              : setting.getFallback(settingsLevel)
-          )}
-          name={`${category}-${settingName}`}
-          data-testid={`${category}-${settingName}`}
-        />
-      )
-    case 'options':
-      return (
-        <select
-          name={`${category}-${settingName}`}
-          data-testid={`${category}-${settingName}`}
-          className="p-1 bg-transparent border rounded-sm border-chalkboard-30 w-full"
-          value={String(
-            setting[settingsLevel] || setting.getFallback(settingsLevel)
-          )}
-          onChange={(e) =>
-            send({
-              type: `set.${category}.${settingName}`,
-              data: {
-                level: settingsLevel,
-                value: e.target.value,
-              },
-            } as unknown as Event<WildcardSetEvent>)
-          }
-        >
-          {options &&
-            options.length > 0 &&
-            options.map((option) => (
-              <option key={option.name} value={String(option.value)}>
-                {option.name}
-              </option>
-            ))}
-        </select>
-      )
-    case 'string':
-      return (
-        <input
-          name={`${category}-${settingName}`}
-          data-testid={`${category}-${settingName}`}
-          type="text"
-          className="p-1 bg-transparent border rounded-sm border-chalkboard-30 w-full"
-          defaultValue={String(
-            setting[settingsLevel] || setting.getFallback(settingsLevel)
-          )}
-          onBlur={(e) => {
-            if (
-              setting[settingsLevel] === undefined
-                ? setting.getFallback(settingsLevel) !== e.target.value
-                : setting[settingsLevel] !== e.target.value
-            ) {
-              send({
-                type: `set.${category}.${settingName}`,
-                data: {
-                  level: settingsLevel,
-                  value: e.target.value,
-                },
-              } as unknown as Event<WildcardSetEvent>)
-            }
-          }}
-        />
-      )
-  }
-  return (
-    <p className="text-destroy-70 dark:text-destroy-20">
-      No component or input type found for setting {settingName} in category{' '}
-      {category}
-    </p>
-  )
-}
-
-interface SettingsTabButtonProps {
-  checked: boolean
-  icon: CustomIconName
-  text: string
-}
-
-function SettingsTabButton(props: SettingsTabButtonProps) {
-  const { checked, icon, text } = props
-  return (
-    <div
-      className={`cursor-pointer select-none flex items-center gap-1 p-1 pr-2 -mb-[1px] border-0 border-b ${
-        checked
-          ? 'border-primary'
-          : 'border-chalkboard-20 dark:border-chalkboard-30 hover:bg-primary/20 dark:hover:bg-primary/50'
-      }`}
-    >
-      <CustomIcon
-        name={icon}
-        className={
-          'w-5 h-5 ' + (checked ? 'bg-primary !text-chalkboard-10' : '')
-        }
-      />
-      <span>{text}</span>
-    </div>
   )
 }
