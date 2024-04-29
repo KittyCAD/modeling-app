@@ -43,7 +43,7 @@ url = { version = "2.5.0", features = ["serde"] }
 uuid = { version = "1.8.0", features = ["v4", "js", "serde"] }
 validator = { version = "0.18.1", features = ["derive"] }
 winnow = "0.5.40"
-zip = { version = "0.6.6", default-features = false }
+zip = { version = "1.1.2", default-features = false }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 js-sys = { version = "0.3.69" }
