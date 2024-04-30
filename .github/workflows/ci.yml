@@ -237,11 +237,6 @@ jobs:
           includeDebug: true
           args: "${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
 
-      - uses: maxim-lobanov/setup-xcode@v1
-        if: matrix.os == 'macos-14'
-        with:
-          xcode-version: '14.3.1'
-
       - name: Mac App Store
         if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'macos-14' }}
         shell: bash
