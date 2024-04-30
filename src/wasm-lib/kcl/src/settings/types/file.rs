@@ -47,10 +47,14 @@ impl ProjectState {
                 .await
                 .map_err(|e| anyhow::anyhow!("Error loading project from path {}: {:?}", source_path.display(), e))?;
 
-            // Create the default file in the project.
-            // Write the initial project file.
+            // Check if we have a main.kcl file in the project.
             let project_file = source_path.join(DEFAULT_PROJECT_KCL_FILE);
-            tokio::fs::write(&project_file, vec![]).await?;
+
+            if !project_file.exists() {
+                // Create the default file in the project.
+                // Write the initial project file.
+                tokio::fs::write(&project_file, vec![]).await?;
+            }
 
             return Ok(ProjectState {
                 project,
