@@ -1,6 +1,6 @@
 import { toolTips } from '../../useStore'
 import { Selections } from 'lib/selections'
-import { PathToNode, Program, Value } from '../../lang/wasm'
+import { Program, Value } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -8,7 +8,6 @@ import {
 import {
   PathToNodeMap,
   getRemoveConstraintsTransforms,
-  removeSingleConstraint,
   transformAstSketchLines,
 } from '../../lang/std/sketchcombos'
 import { kclManager } from 'lib/singletons'

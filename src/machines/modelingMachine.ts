@@ -1,4 +1,4 @@
-import { PathToNode, PipeExpression, VariableDeclarator } from 'lang/wasm'
+import { PathToNode, VariableDeclarator } from 'lang/wasm'
 import { Axis, Selection, Selections } from 'lib/selections'
 import { assign, createMachine } from 'xstate'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
