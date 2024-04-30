@@ -1,7 +1,13 @@
 .toggle {
   @apply flex items-center gap-2 w-fit;
-  --toggle-size: 1.25rem;
+  @apply text-chalkboard-110;
+  --toggle-size: 0.75rem;
   --padding: 0.25rem;
+  --border: 1px;
+}
+
+:global(.dark) .toggle {
+  @apply text-chalkboard-10;
 }
 
 .toggle:focus-within > span {
@@ -13,9 +19,12 @@
 }
 
 .toggle > span {
-  @apply relative rounded border border-chalkboard-110 hover:border-chalkboard-100 cursor-pointer;
-  width: calc(2 * (var(--toggle-size) + var(--padding)));
-  height: calc(var(--toggle-size) + var(--padding));
+  @apply relative rounded border border-chalkboard-70 hover:border-chalkboard-80 cursor-pointer;
+  border-width: var(--border);
+  width: calc(
+    2 * (var(--toggle-size) + var(--padding) * 2 - var(--border) * 2)
+  );
+  height: calc(var(--toggle-size) + var(--padding) * 2 - var(--border) * 2);
 }
 
 :global(.dark) .toggle > span {
@@ -23,18 +32,26 @@
 }
 
 .toggle > span::after {
+  width: var(--toggle-size);
+  height: var(--toggle-size);
+  border-radius: calc(var(--toggle-size) / 8);
   content: '';
-  @apply absolute w-4 h-4 rounded-sm bg-chalkboard-110;
+  @apply absolute bg-chalkboard-70;
   top: 50%;
   left: 50%;
-  translate: calc(-100% - var(--padding)) -50%;
+  translate: calc(-100% - var(--padding) + var(--border)) -50%;
   transition: translate 0.08s ease-out;
 }
 
 :global(.dark) .toggle > span::after {
-  @apply bg-chalkboard-10;
+  @apply bg-chalkboard-50;
 }
 
 .toggle input:checked + span::after {
-  translate: calc(50% - var(--padding)) -50%;
+  translate: calc(50% - var(--padding) + var(--border)) -50%;
+  @apply bg-chalkboard-110;
+}
+
+:global(.dark) .toggle input:checked + span::after {
+  @apply bg-chalkboard-10;
 }
