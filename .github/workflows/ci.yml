@@ -276,7 +276,7 @@ jobs:
           rm src-tauri/Cargo.toml.bu
           git diff src-tauri/Cargo.toml
 
-          yarn tauri build --target "${target}" --verbose --config src-tauri/tauri.appstore.conf.json
+          yarn tauri build --target "${target}" --verbose --config src-tauri/tauri.app-store.conf.json
 
           app_path="src-tauri/target/${target}/release/bundle/macos/Zoo Modeling App.app"
           build_name="src-tauri/target/${target}/release/bundle/macos/Zoo Modeling App.pkg"

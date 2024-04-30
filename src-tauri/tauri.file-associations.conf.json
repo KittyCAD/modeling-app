@@ -1,0 +1,43 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/schema.json",
+  "bundle": {
+    "fileAssociations": [
+      {
+        "ext": ["kcl"],
+        "mimeType": "text/vnd.zoo.kcl"
+      },
+      {
+        "ext": ["obj"],
+        "mimeType": "model/obj"
+      },
+      {
+        "ext": ["gltf"],
+        "mimeType": "model/gltf+json"
+      },
+      {
+        "ext": ["glb"],
+        "mimeType": "model/gltf+binary"
+      },
+      {
+        "ext": ["fbx", "fbxb"],
+        "mimeType": "model/fbx"
+      },
+      {
+        "ext": ["stl"],
+        "mimeType": "model/stl"
+      },
+      {
+        "ext": ["ply"],
+        "mimeType": "model/ply"
+      },
+      {
+        "ext": ["step", "stp"],
+        "mimeType": "model/step"
+      },
+      {
+        "ext": ["sldprt"],
+        "mimeType": "model/sldprt"
+      }
+    ]
+  }
+}
