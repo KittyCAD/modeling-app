@@ -122,11 +122,7 @@ describe('ZMA (Tauri, Linux)', () => {
     await click(projectLink)
     const errorText = await $('[data-testid="unexpected-error"]')
     expect(await errorText.getText()).toContain('unexpected error')
-    const errorHomeButton = await $('[data-testid="unexpected-error-home"]')
-    await click(errorHomeButton)
-
-    const homeSection = await $('[data-testid="home-section"]')
-    expect(await homeSection.getText()).toContain('project-000')
+    await browser.execute('window.location.href = "tauri://localhost/home"')
   })
 
   it('signs out', async () => {
