@@ -38,7 +38,7 @@
     },
     "longDescription": "",
     "macOS": {
-      "entitlements": "entitlements/Zoo Modeling App.entitlements"
+      "entitlements": "entitlements/general.entitlements"
     },
     "resources": [],
     "shortDescription": "",
@@ -56,6 +56,8 @@
         },
         {
           "name": "source",
+          "description": "The file or directory to open",
+          "required": false,
           "index": 1,
           "takesValue": true
         }
@@ -64,7 +66,9 @@
     },
     "deep-link": {
       "domains": [
-        { "host": "app.zoo.dev" }
+        {
+          "host": "app.zoo.dev"
+        }
       ]
     },
     "shell": {

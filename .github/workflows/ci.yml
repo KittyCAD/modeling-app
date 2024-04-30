@@ -237,9 +237,9 @@ jobs:
           includeDebug: true
           args: "${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
 
-
       - name: Mac App Store
         if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'macos-14' }}
+        shell: bash
         run: |
           unset APPLE_SIGNING_IDENTITY
           unset APPLE_CERTIFICATE
@@ -248,45 +248,40 @@ jobs:
           profile="src-tauri/entitlements/Mac_App_Distribution.provisionprofile"
 
           mkdir -p src-tauri/entitlements
-          echo "${APPLE_STORE_PROVISIONING_PROFILE}" | base64 --decode > "${profile}"
+          echo -n "${APPLE_STORE_PROVISIONING_PROFILE}" | base64 --decode -o "${profile}"
 
-          echo "${APPLE_STORE_DISTRIBUTION_CERT}" | base64 --decode > "dist.cer"
-          echo "${APPLE_STORE_INSTALLER_CERT}" | base64 --decode > "installer.cer"
+          echo -n "${APPLE_STORE_DISTRIBUTION_CERT}" | base64 --decode -o "dist.cer"
+          echo -n "${APPLE_STORE_INSTALLER_CERT}" | base64 --decode -o "installer.cer"
 
-          # load the certificates into the keychain
-          # Create a custom keychain
-          security create-keychain -p gh_actions refine-build.keychain
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          KEYCHAIN_PASSWORD="password"
 
-          # Make the custom keychain default, so xcodebuild will use it for signing
-          security default-keychain -s refine-build.keychain
+          # create temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
 
-          # Unlock the keychain
-          security unlock-keychain -p gh_actions refine-build.keychain
+          # import certificate to keychain
+          security import "dist.cer" -P "$APPLE_STORE_P12_PASSWORD" -k $KEYCHAIN_PATH -f pkcs12 -t cert -A
+          security import "installer.cer" -P "$APPLE_STORE_P12_PASSWORD" -k $KEYCHAIN_PATH -f pkcs12 -t cert -A
 
-          # Set keychain timeout to 1 hour for long builds
-          security set-keychain-settings -t 3600 -l ~/Library/Keychains/refine-build.keychain
-
-          # Add certificates to keychain and allow codesign to access them
-          security import "dist.cer" -k ~/Library/Keychains/refine-build.keychain -T /usr/bin/codesign
-          security import "installer.cer" -k ~/Library/Keychains/refine-build.keychain -T /usr/bin/codesign
-
-          security set-key-partition-list -S apple-tool:,apple: -s -k gh_actions refine-build.keychain
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
 
           target="universal-apple-darwin"
 
           # Turn off the default target
-          sed -i "s/default =/# default =/" src-tauri/Cargo.toml
-          yarn tauri build --target "${target}" --verbose
+          # We don't want to install the updater for the apple store build
+          sed -i.bu "s/default =/# default =/" src-tauri/Cargo.toml
+          rm src-tauri/Cargo.toml.bu
+          git diff src-tauri/Cargo.toml
 
-          ls -l src-tauri/target/${target}
-          ls -l src-tauri/target
-          ls -l src-tauri/target/${target}/release/bundle/macos
-          ls -l src-tauri/entitlements
+          yarn tauri build --target "${target}" --verbose --config src-tauri/tauri.appstore.conf.json
 
           app_path="src-tauri/target/${target}/release/bundle/macos/Zoo Modeling App.app"
           build_name="src-tauri/target/${target}/release/bundle/macos/Zoo Modeling App.pkg"
           cp_dir="src-tauri/target/${target}/release/bundle/macos/Zoo Modeling App.app/Contents/embedded.provisionprofile"
-          entitlements="src-tauri/entitlements/Zoo Modeling App.entitlements"
+          entitlements="src-tauri/entitlements/app-store.entitlements"
 
           cp "${profile}" "${cp_dir}"
 
@@ -296,11 +291,14 @@ jobs:
 
           # Undo the changes to the Cargo.toml
           git checkout src-tauri/Cargo.toml
+
         env:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           APPLE_STORE_PROVISIONING_PROFILE: ${{ secrets.APPLE_STORE_PROVISIONING_PROFILE }}
           APPLE_STORE_DISTRIBUTION_CERT: ${{ secrets.APPLE_STORE_DISTRIBUTION_CERT }}
           APPLE_STORE_INSTALLER_CERT: ${{ secrets.APPLE_STORE_INSTALLER_CERT }}
+          APPLE_STORE_P12_PASSWORD: ${{ secrets.APPLE_STORE_P12_PASSWORD }}
+
 
       - name: 'Upload app to TestFlight'
         uses: apple-actions/upload-testflight-build@v1
@@ -310,6 +308,18 @@ jobs:
           issuer-id: ${{ secrets.APPLE_STORE_ISSUER_ID }}
           api-key-id: ${{ secrets.APPLE_STORE_API_KEY_ID }}
           api-private-key: ${{ secrets.APPLE_STORE_API_PRIVATE_KEY }}
+          app-type: osx
+
+
+      - name: Clean up after Mac App Store
+        if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'macos-14' }}
+        shell: bash
+        run: |
+          git status
+          # remove our target builds because we want to make sure the later build
+          # includes the updater, and that anything we changed with the target
+          # does not persist
+          rm -rf src-tauri/target
 
       # We do this after the apple store because the apple store build is
       # specific and we want to overwrite it with the this new build after and

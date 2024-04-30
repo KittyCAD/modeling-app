@@ -1,0 +1,8 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/schema.json",
+  "bundle": {
+    "macOS": {
+      "entitlements": "entitlements/app-store.entitlements"
+    }
+  }
+}
