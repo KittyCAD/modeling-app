@@ -350,6 +350,30 @@ fn show_in_folder(path: &str) -> Result<(), InvokeError> {
     Ok(())
 }
 
+fn open_url_sync(app: &tauri::AppHandle, url: &url::Url) {
+    println!("Opening URL: {:?}", url);
+    let cloned_url = url.clone();
+    let runner: tauri::async_runtime::JoinHandle<Result<ProjectState>> = tauri::async_runtime::spawn(async move {
+        let url_str = cloned_url.to_string();
+        let path = Path::new(url_str.as_str());
+        ProjectState::new_from_path(path.to_path_buf()).await
+    });
+
+    // Block on the handle.
+    match tauri::async_runtime::block_on(runner) {
+        Ok(Ok(store)) => {
+            // Create a state object to hold the project.
+            app.manage(state::Store::new(store));
+        }
+        Err(e) => {
+            println!("Error opening URL:{} {:?}", url, e);
+        }
+        Ok(Err(e)) => {
+            println!("Error opening URL:{} {:?}", url, e);
+        }
+    }
+}
+
 fn main() -> Result<()> {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
@@ -450,8 +474,9 @@ fn main() -> Result<()> {
             app.manage(state::Store::new(store));
 
             // Listen on the deep links.
-            app.listen("deep-link://new-url", |url| {
-                println!("got deep-link url: {:?}", url);
+            app.listen("deep-link://new-url", |event| {
+                println!("got deep-link url: {:?}", event);
+                // TODO: open_url_sync(app.handle(), event.url);
             });
 
             Ok(())
@@ -466,28 +491,7 @@ fn main() -> Result<()> {
                 // TODO: do we want to handle more than one URL?
                 // Under what conditions would we even have more than one?
                 if let Some(url) = urls.first() {
-                    println!("Opening URL: {:?}", url);
-                    let cloned_url = url.clone();
-                    let runner: tauri::async_runtime::JoinHandle<Result<ProjectState>> =
-                        tauri::async_runtime::spawn(async move {
-                            let url_str = cloned_url.to_string();
-                            let path = Path::new(url_str.as_str());
-                            ProjectState::new_from_path(path.to_path_buf()).await
-                        });
-
-                    // Block on the handle.
-                    match tauri::async_runtime::block_on(runner) {
-                        Ok(Ok(store)) => {
-                            // Create a state object to hold the project.
-                            app.manage(state::Store::new(store));
-                        }
-                        Err(e) => {
-                            println!("Error opening URL:{} {:?}", url, e);
-                        }
-                        Ok(Err(e)) => {
-                            println!("Error opening URL:{} {:?}", url, e);
-                        }
-                    }
+                    open_url_sync(app, url);
                 }
             }
         });
