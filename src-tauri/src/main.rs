@@ -458,6 +458,7 @@ fn main() -> Result<()> {
         })
         .build(tauri::generate_context!())?
         .run(|app, event| {
+            #[cfg(any(target_os = "macos", target_os = "ios"))]
             if let tauri::RunEvent::Opened { urls } = event {
                 println!("Opened URLs: {:?}", urls);
 
