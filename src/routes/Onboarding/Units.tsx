@@ -1,7 +1,7 @@
 import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { type BaseUnit, baseUnitsUnion } from 'lib/settings/settingsTypes'
 import { ActionButton } from 'components/ActionButton'
-import { SettingsSection } from '../Settings'
+import { SettingsSection } from 'components/Settings/SettingsSection'
 import { useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
