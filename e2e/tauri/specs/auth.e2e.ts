@@ -117,13 +117,17 @@ describe('ZMA (Tauri, Linux)', () => {
     expect(await homeSection.getText()).toContain('project-000')
   })
 
-  // it('opens the new file and expects a loading stream', async () => {
-  //   const projectLink = await $('[data-testid="project-link"]')
-  //   await click(projectLink)
-  //   const loadingText = await $('[data-testid="loading-stream"]')
-  //   expect(await loadingText.getText()).toContain('Loading stream...')
-  //   await browser.execute('window.location.href = "tauri://localhost/home"')
-  // })
+  it('opens the new file and expects a loading stream', async () => {
+    const projectLink = await $('[data-testid="project-link"]')
+    await click(projectLink)
+    const errorText = await $('[data-testid="unexpected-error"]')
+    expect(await errorText.getText()).toContain('unexpected error')
+    const errorHomeButton = await $('[data-testid="unexpected-error-home"]')
+    await click(errorHomeButton)
+
+    const homeSection = await $('[data-testid="home-section"]')
+    expect(await homeSection.getText()).toContain('project-000')
+  })
 
   it('signs out', async () => {
     const menuButton = await $('[data-testid="user-sidebar-toggle"]')
