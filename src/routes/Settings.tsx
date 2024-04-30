@@ -1,8 +1,5 @@
 import { ActionButton } from '../components/ActionButton'
-import {
-  SetEventTypes,
-  SettingsLevel,
-} from 'lib/settings/settingsTypes'
+import { SetEventTypes, SettingsLevel } from 'lib/settings/settingsTypes'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { paths } from 'lib/paths'
