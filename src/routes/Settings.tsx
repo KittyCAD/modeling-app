@@ -2,9 +2,7 @@ import { ActionButton } from '../components/ActionButton'
 import {
   SetEventTypes,
   SettingsLevel,
-  WildcardSetEvent,
 } from 'lib/settings/settingsTypes'
-import { Toggle } from 'components/Toggle/Toggle'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { paths } from 'lib/paths'
@@ -14,14 +12,12 @@ import { createAndOpenNewProject, getSettingsFolderPaths } from 'lib/tauriFS'
 import { sep } from '@tauri-apps/api/path'
 import { isTauri } from 'lib/isTauri'
 import toast from 'react-hot-toast'
-import { Fragment, useEffect, useMemo, useRef } from 'react'
+import { Fragment, useEffect, useRef } from 'react'
 import { Setting } from 'lib/settings/initialSettings'
 import decamelize from 'decamelize'
-import { Event } from 'xstate'
 import { Dialog, Transition } from '@headlessui/react'
 import { CustomIcon } from 'components/CustomIcon'
 import {
-  getSettingInputType,
   shouldHideSetting,
   shouldShowSettingInput,
 } from 'lib/settings/settingsUtils'
