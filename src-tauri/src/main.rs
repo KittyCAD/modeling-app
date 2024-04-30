@@ -420,6 +420,10 @@ fn main() -> Result<()> {
                 }
             }
 
+            if verbose {
+                println!("Verbose mode enabled.");
+            }
+
             // If we have a source path to open, make sure it exists.
             let Some(source_path) = source_path else {
                 // The user didn't provide a source path to open.
@@ -461,11 +465,14 @@ fn main() -> Result<()> {
                 // TODO: do we want to handle more than one URL?
                 // Under what conditions would we even have more than one?
                 if let Some(url) = urls.first() {
-                    let path = Path::new(url.to_string().as_str());
                     println!("Opening URL: {:?}", url);
-                    let runner: tauri::async_runtime::JoinHandle<Result<ProjectState>> = tauri::async_runtime::spawn(
-                        async move { ProjectState::new_from_path(path.to_path_buf()).await },
-                    );
+                    let cloned_url = url.clone();
+                    let runner: tauri::async_runtime::JoinHandle<Result<ProjectState>> =
+                        tauri::async_runtime::spawn(async move {
+                            let url_str = cloned_url.to_string();
+                            let path = Path::new(url_str.as_str());
+                            ProjectState::new_from_path(path.to_path_buf()).await
+                        });
 
                     // Block on the handle.
                     match tauri::async_runtime::block_on(runner) {
