@@ -1,11 +1,13 @@
 //! Types for interacting with files in projects.
 
+use std::path::{Path, PathBuf};
+
 use anyhow::Result;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use super::Configuration;
+use crate::settings::types::{Configuration, DEFAULT_PROJECT_KCL_FILE};
 
 /// State management for the application.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
@@ -14,6 +16,67 @@ use super::Configuration;
 pub struct ProjectState {
     pub project: Project,
     pub current_file: Option<String>,
+}
+
+impl ProjectState {
+    /// Create a new project state from a path.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_from_path(path: PathBuf) -> Result<ProjectState> {
+        // Fix for "." path, which is the current directory.
+
+        let source_path = if path == Path::new(".") {
+            std::env::current_dir().map_err(|e| anyhow::anyhow!("Error getting the current directory: {:?}", e))?
+        } else {
+            path
+        };
+
+        // If the path does not start with a slash, it is a relative path.
+        // We need to convert it to an absolute path.
+        let source_path = if source_path.is_relative() {
+            std::env::current_dir()
+                .map_err(|e| anyhow::anyhow!("Error getting the current directory: {:?}", e))?
+                .join(source_path)
+        } else {
+            source_path
+        };
+
+        // If the path is a directory, let's assume it is a project directory.
+        if source_path.is_dir() {
+            // Load the details about the project from the path.
+            let project = Project::from_path(&source_path)
+                .await
+                .map_err(|e| anyhow::anyhow!("Error loading project from path {}: {:?}", source_path.display(), e))?;
+
+            // Create the default file in the project.
+            // Write the initial project file.
+            let project_file = source_path.join(DEFAULT_PROJECT_KCL_FILE);
+            tokio::fs::write(&project_file, vec![]).await?;
+
+            return Ok(ProjectState {
+                project,
+                current_file: Some(project_file.display().to_string()),
+            });
+        }
+
+        // We were given a file path, not a directory.
+        // Let's get the parent directory of the file.
+        let parent = source_path.parent().ok_or_else(|| {
+            anyhow::anyhow!(
+                "Error getting the parent directory of the file: {}",
+                source_path.display()
+            )
+        })?;
+
+        // Load the details about the project from the parent directory.
+        let project = Project::from_path(&parent)
+            .await
+            .map_err(|e| anyhow::anyhow!("Error loading project from path {}: {:?}", source_path.display(), e))?;
+
+        Ok(ProjectState {
+            project,
+            current_file: Some(source_path.display().to_string()),
+        })
+    }
 }
 
 /// Project route information.
