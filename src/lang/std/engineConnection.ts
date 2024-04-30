@@ -654,7 +654,9 @@ failed cmd type was ${artifactThatFailed?.commandType}`
           // No ICE servers can be valid in a local dev. env.
           if (ice_servers?.length === 0) {
             console.warn('No ICE servers')
-            this.pc?.setConfiguration({})
+            this.pc?.setConfiguration({
+              bundlePolicy: 'max-bundle',
+            })
           } else {
             // When we set the Configuration, we want to always force
             // iceTransportPolicy to 'relay', since we know the topology
