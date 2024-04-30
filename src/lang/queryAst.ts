@@ -645,7 +645,7 @@ function traverse(
   option?.leave?.(node)
 }
 
-export function determineIfOtherLinesDependOn(
+export function findUsesOfTagInPipe(
   ast: Program,
   pathToNode: PathToNode
 ): SourceRange[] {

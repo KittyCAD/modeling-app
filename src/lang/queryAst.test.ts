@@ -6,7 +6,7 @@ import {
   getNodePathFromSourceRange,
   doesPipeHaveCallExp,
   hasExtrudeSketchGroup,
-  determineIfOtherLinesDependOn as findUsesOfTagInPipe,
+  findUsesOfTagInPipe,
 } from './queryAst'
 import { enginelessExecutor } from '../lib/testHelpers'
 import {
@@ -361,8 +361,7 @@ const part001 = startSketchAt([-1.41, 3.46])
 })
 
 describe('Testing findUsesOfTagInPipe', () => {
-  const exampleCode = `// in same pipeExpression
-const part001 = startSketchOn('-XZ')
+  const exampleCode = `const part001 = startSketchOn('-XZ')
 |> startProfileAt([68.12, 156.65], %)
 |> line([306.21, 198.82], %)
 |> line([306.21, 198.85], %, 'seg01')

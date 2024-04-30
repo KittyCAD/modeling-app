@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useMemo } from 'react'
+import { useRef, useEffect, useState, useMemo, Fragment } from 'react'
 import { useModelingContext } from 'hooks/useModelingContext'
 
 import { cameraMouseDragGuards } from 'lib/cameraControls'
@@ -11,17 +11,20 @@ import {
   kclManager,
   codeManager,
   editorManager,
+  sceneEntitiesManager,
+  engineCommandManager,
 } from 'lib/singletons'
 import {
   EXTRA_SEGMENT_HANDLE,
   PROFILE_START,
   getParentGroup,
 } from './sceneEntities'
-import { SegmentOverlay } from 'machines/modelingMachine'
-import { getNodeFromPath } from 'lang/queryAst'
+import { SegmentOverlay, SketchDetails } from 'machines/modelingMachine'
+import { findUsesOfTagInPipe, getNodeFromPath } from 'lang/queryAst'
 import {
   CallExpression,
   PathToNode,
+  Program,
   SourceRange,
   Value,
   parse,
@@ -30,12 +33,19 @@ import {
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import { ConstrainInfo } from 'lang/std/stdTypes'
 import { getConstraintInfo } from 'lang/std/sketch'
-import { Popover } from '@headlessui/react'
+import { Dialog, Popover, Transition } from '@headlessui/react'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
 import { useKclContext } from 'lang/KclProvider'
 import { LineInputsType } from 'lang/std/sketchcombos'
-import { removeSingleConstraintInfo } from 'components/Toolbar/RemoveConstrainingValues'
 import toast from 'react-hot-toast'
+import { InstanceProps, create } from 'react-modal-promise'
+import { executeAst } from 'useStore'
+import {
+  deleteSegmentFromPipeExpression,
+  makeRemoveSingleConstraintInput,
+  removeSingleConstraintInfo,
+} from 'lang/modifyAst'
+import { ActionButton } from 'components/ActionButton'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -267,6 +277,121 @@ const Overlay = ({
   )
 }
 
+type ConfirmModalProps = InstanceProps<boolean, boolean> & { text: string }
+
+export const ConfirmModal = ({
+  isOpen,
+  onResolve,
+  onReject,
+  text,
+}: ConfirmModalProps) => {
+  return (
+    <Transition appear show={isOpen} as={Fragment}>
+      <Dialog
+        as="div"
+        className="relative z-10"
+        onClose={() => onResolve(false)}
+      >
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-black bg-opacity-25" />
+        </Transition.Child>
+
+        <div className="fixed inset-0 overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4 text-center">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
+            >
+              <Dialog.Panel className="rounded relative mx-auto px-4 py-8 bg-chalkboard-10 dark:bg-chalkboard-100 border dark:border-chalkboard-70 max-w-xl w-full shadow-lg">
+                <div>{text}</div>
+                <div className="mt-8 flex justify-between">
+                  <ActionButton
+                    Element="button"
+                    onClick={() => onResolve(true)}
+                  >
+                    Continue and unconstrain
+                  </ActionButton>
+                  <ActionButton
+                    Element="button"
+                    onClick={() => onReject(false)}
+                  >
+                    Cancel
+                  </ActionButton>
+                </div>
+              </Dialog.Panel>
+            </Transition.Child>
+          </div>
+        </div>
+      </Dialog>
+    </Transition>
+  )
+}
+
+export const confirmModal = create<ConfirmModalProps, boolean, boolean>(
+  ConfirmModal
+)
+
+export async function deleteSegment({
+  pathToNode,
+  sketchDetails,
+}: {
+  pathToNode: PathToNode
+  sketchDetails: SketchDetails | null
+}) {
+  let modifiedAst: Program = kclManager.ast
+  const dependantRanges = findUsesOfTagInPipe(modifiedAst, pathToNode)
+
+  const shouldContinueSegDelete = dependantRanges.length
+    ? await confirmModal({
+        text: "At least 2 segment rely on the segment you're deleting.\nDo you want to continue and unconstrain these segments?",
+        isOpen: true,
+      })
+    : true
+
+  if (!shouldContinueSegDelete) return
+  modifiedAst = deleteSegmentFromPipeExpression(
+    dependantRanges,
+    modifiedAst,
+    kclManager.programMemory,
+    codeManager.code,
+    pathToNode
+  )
+
+  const newCode = recast(modifiedAst)
+  modifiedAst = parse(newCode)
+  const testExecute = await executeAst({
+    ast: modifiedAst,
+    useFakeExecutor: true,
+    engineCommandManager: engineCommandManager,
+  })
+  if (testExecute.errors.length) {
+    toast.error('Segment tag used outside of current Sketch. Could not delete.')
+    return
+  }
+
+  if (!sketchDetails) return
+  sceneEntitiesManager.updateAstAndRejigSketch(
+    sketchDetails.sketchPathToNode,
+    modifiedAst,
+    sketchDetails.zAxis,
+    sketchDetails.yAxis,
+    sketchDetails.origin
+  )
+}
+
 const SegmentMenu = ({
   verticalPosition,
   pathToNode,
@@ -275,6 +400,7 @@ const SegmentMenu = ({
   pathToNode: PathToNode
 }) => {
   const { send } = useModelingContext()
+  const dependantSourceRanges = findUsesOfTagInPipe(kclManager.ast, pathToNode)
   return (
     <Popover className="relative">
       {({ open }) => (
@@ -293,6 +419,12 @@ const SegmentMenu = ({
               </button> */}
               <button
                 className="hover:bg-white/80 bg-white/50 rounded p-1 text-nowrap"
+                // disabled={dependantSourceRanges.length > 0}
+                title={
+                  dependantSourceRanges.length > 0
+                    ? `At least ${dependantSourceRanges.length} segment rely on this segment's tag.`
+                    : ''
+                }
                 onClick={() => {
                   send({ type: 'Delete segment', data: pathToNode })
                 }}
@@ -425,26 +557,22 @@ const ConstraintSymbol = ({
             await handleConvertToVarClick(varName)
           } else if (isConstrained) {
             try {
-              const input:
-                | Parameters<typeof removeSingleConstraintInfo>[0]
-                | false =
-                argPosition?.type === 'singleValue'
-                  ? {
-                      pathToCallExp: pathToNode,
-                    }
-                  : argPosition?.type === 'arrayItem'
-                  ? {
-                      pathToCallExp: pathToNode,
-                      arrayIndex: argPosition.index,
-                    }
-                  : argPosition?.type === 'objectProperty'
-                  ? {
-                      pathToCallExp: pathToNode,
-                      objectProperty: argPosition.key,
-                    }
-                  : false
+              const shallowPath = getNodeFromPath<CallExpression>(
+                parse(recast(ast)),
+                pathToNode,
+                'CallExpression',
+                true
+              ).shallowPath
+              const input = makeRemoveSingleConstraintInput(
+                argPosition,
+                shallowPath
+              )
               if (!input || !context.sketchDetails) return
-              const transform = removeSingleConstraintInfo(input)
+              const transform = removeSingleConstraintInfo(
+                input,
+                kclManager.ast,
+                kclManager.programMemory
+              )
               if (!transform) return
               const { modifiedAst } = transform
               kclManager.updateAst(modifiedAst, true)

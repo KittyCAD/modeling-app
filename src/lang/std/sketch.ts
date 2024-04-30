@@ -1798,5 +1798,5 @@ export function getFirstArg(callExp: CallExpression): {
     // TODO probably needs it's own implementation
     return getFirstArgValuesForXYFns(callExp)
   }
-  throw new Error('unexpected call expression')
+  throw new Error('unexpected call expression: ' + name)
 }

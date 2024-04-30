@@ -45,6 +45,7 @@ import { Vector3 } from 'three'
 import { quaternionFromUpNForward } from 'clientSideScene/helpers'
 import { uuidv4 } from 'lib/utils'
 import { Coords2d } from 'lang/std/sketch'
+import { deleteSegment } from 'clientSideScene/ClientSideSceneComp'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -1087,33 +1088,8 @@ export const modelingMachine = createMachine(
           },
         }),
       'set selection filter to defaults': () => kclManager.enterEditMode(),
-      'Delete segment': ({ sketchDetails }, { data: pathToNode }) => {
-        // TODO this delete is not safe, it will delete segments that other segments might rely on
-        // fix this with a query that checks for this, maybe we need to through up
-        // a confirm if later segments rely on it.
-        const modifiedAst = JSON.parse(JSON.stringify(kclManager.ast))
-
-        const pipeExpression = getNodeFromPath<PipeExpression>(
-          modifiedAst,
-          pathToNode,
-          'PipeExpression'
-        ).node
-
-        const pipeInPathIndex = pathToNode.findIndex(
-          ([_, desc]) => desc === 'PipeExpression'
-        )
-        const segmentIndexInPipe = pathToNode[pipeInPathIndex + 1][0] as number
-        pipeExpression.body.splice(segmentIndexInPipe, 1)
-
-        if (!sketchDetails) return
-        sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails.sketchPathToNode,
-          modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin
-        )
-      },
+      'Delete segment': ({ sketchDetails }, { data: pathToNode }) =>
+        deleteSegment({ pathToNode, sketchDetails }),
       'Reset Segment Overlays': () => sceneEntitiesManager.resetOverlays(),
     },
     // end actions

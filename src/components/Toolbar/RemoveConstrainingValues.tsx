@@ -62,34 +62,3 @@ export function applyRemoveConstrainingValues({
     referenceSegName: '',
   })
 }
-
-export function removeSingleConstraintInfo({
-  pathToCallExp,
-  arrayIndex,
-  objectProperty,
-}: {
-  pathToCallExp: PathToNode
-  arrayIndex?: number
-  objectProperty?: string
-}):
-  | {
-      modifiedAst: Program
-      pathToNodeMap: PathToNodeMap
-    }
-  | false {
-  // return false
-  const transform = removeSingleConstraint({
-    pathToCallExp,
-    arrayIndex,
-    objectProperty,
-    ast: kclManager.ast,
-  })
-  if (!transform) return false
-  return transformAstSketchLines({
-    ast: kclManager.ast,
-    selectionRanges: [pathToCallExp],
-    transformInfos: [transform],
-    programMemory: kclManager.programMemory,
-    referenceSegName: '',
-  })
-}
