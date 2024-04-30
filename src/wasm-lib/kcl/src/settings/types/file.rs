@@ -62,6 +62,23 @@ impl ProjectState {
             });
         }
 
+        // Check if the extension on what we are trying to open is a relevant file type.
+        // Get the extension of the file.
+        let extension = source_path
+            .extension()
+            .ok_or_else(|| anyhow::anyhow!("Error getting the extension of the file: {}", source_path.display()))?;
+        let ext = extension.to_string_lossy().to_string();
+
+        // Check if the extension is a relevant file type.
+        if !crate::settings::utils::RELEVANT_EXTENSIONS.contains(&ext) || ext == "toml" {
+            return Err(anyhow::anyhow!(
+                "File type ({}) cannot be opened with this app: {}, try opening one of the following file types: {}",
+                ext,
+                source_path.display(),
+                crate::settings::utils::RELEVANT_EXTENSIONS.join(", ")
+            ));
+        }
+
         // We were given a file path, not a directory.
         // Let's get the parent directory of the file.
         let parent = source_path.parent().ok_or_else(|| {

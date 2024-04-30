@@ -8,7 +8,7 @@ use clap::ValueEnum;
 use crate::settings::types::file::FileEntry;
 
 lazy_static::lazy_static! {
-    static ref RELEVANT_EXTENSIONS: Vec<String> = {
+    pub static ref RELEVANT_EXTENSIONS: Vec<String> = {
         let mut relevant_extensions = vec!["kcl".to_string(), "stp".to_string(), "glb".to_string(), "fbxb".to_string()];
         let named_extensions = kittycad::types::FileImportFormat::value_variants()
             .iter()
