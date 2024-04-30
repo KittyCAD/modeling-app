@@ -130,8 +130,9 @@ jobs:
       matrix:
         os: [macos-14, ubuntu-latest, windows-latest]
     env:
-      TAURI_ARGS_MACOS: ${{ matrix.os == 'macos-14' && '--target universal-apple-darwin' || '' }}
-      TAURI_ARGS_UBUNTU: ${{ matrix.os == 'ubuntu-latest' && '--bundles' || '' }}
+      TAURI_ARGS_MACOS: ${{ matrix.os == 'macos-14' && '--target universal-apple-darwin --config src-tauri/tauri.release-macos.conf.json' || '' }}
+      TAURI_ARGS_UBUNTU: ${{ matrix.os == 'ubuntu-latest' && '--bundles --config src-tauri/tauri.release.conf.json' || '' }}
+      TAURI_ARGS_WINDOWS: ${{ matrix.os == 'windows-latest' && '--bundles --config src-tauri\\tauri.release.conf.json' || '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -235,7 +236,7 @@ jobs:
         with:
           includeRelease: false
           includeDebug: true
-          args: "${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
+          args: "${{ env.TAURI_ARGS_WINDOWS }} ${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
 
       - name: Mac App Store
         if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'macos-14' }}
@@ -276,7 +277,7 @@ jobs:
           rm src-tauri/Cargo.toml.bu
           git diff src-tauri/Cargo.toml
 
-          yarn tauri build --target "${target}" --verbose --config src-tauri/tauri.appstore.conf.json
+          yarn tauri build --target "${target}" --verbose --config src-tauri/tauri.app-store.conf.json
 
           app_path="src-tauri/target/${target}/release/bundle/macos/Zoo Modeling App.app"
           build_name="src-tauri/target/${target}/release/bundle/macos/Zoo Modeling App.pkg"
@@ -336,9 +337,8 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          TAURI_CONF_ARGS: "--config ${{ matrix.os == 'windows-latest' && 'src-tauri\\tauri.release.conf.json' || 'src-tauri/tauri.release.conf.json' }}"
         with:
-          args: "${{ env.TAURI_CONF_ARGS }} ${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
+          args: "${{ env.TAURI_ARGS_WINDOWS }} ${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
 
       - uses: actions/upload-artifact@v3
         if: matrix.os != 'ubuntu-latest'
