@@ -350,6 +350,7 @@ fn show_in_folder(path: &str) -> Result<(), InvokeError> {
     Ok(())
 }
 
+#[allow(dead_code)]
 fn open_url_sync(app: &tauri::AppHandle, url: &url::Url) {
     println!("Opening URL: {:?}", url);
     let cloned_url = url.clone();
@@ -482,19 +483,22 @@ fn main() -> Result<()> {
             Ok(())
         })
         .build(tauri::generate_context!())?
-        .run(|app, event| {
-            #[cfg(any(target_os = "macos", target_os = "ios"))]
-            if let tauri::RunEvent::Opened { urls } = event {
-                println!("Opened URLs: {:?}", urls);
+        .run(
+            #[allow(unused_variables)]
+            |app, event| {
+                #[cfg(any(target_os = "macos", target_os = "ios"))]
+                if let tauri::RunEvent::Opened { urls } = event {
+                    println!("Opened URLs: {:?}", urls);
 
-                // Handle the first URL.
-                // TODO: do we want to handle more than one URL?
-                // Under what conditions would we even have more than one?
-                if let Some(url) = urls.first() {
-                    open_url_sync(app, url);
+                    // Handle the first URL.
+                    // TODO: do we want to handle more than one URL?
+                    // Under what conditions would we even have more than one?
+                    if let Some(url) = urls.first() {
+                        open_url_sync(app, url);
+                    }
                 }
-            }
-        });
+            },
+        );
 
     Ok(())
 }
