@@ -13,9 +13,10 @@ import {
   giveSketchFnCallTag,
   moveValueIntoNewVariable,
   sketchOnExtrudedFace,
+  deleteSegmentFromPipeExpression,
 } from './modifyAst'
 import { enginelessExecutor } from '../lib/testHelpers'
-import { getNodePathFromSourceRange } from './queryAst'
+import { findUsesOfTagInPipe, getNodePathFromSourceRange } from './queryAst'
 
 beforeAll(async () => {
   await initPromise
@@ -362,5 +363,71 @@ const part002 = startSketchOn(part001, 'seg01')`)
   |> close(%)
   |> extrude(5 + 7, %)
 const part002 = startSketchOn(part001, 'END')`)
+  })
+})
+
+describe('Testing deleteSegmentFromPipeExpression', () => {
+  it('Should delete a segment withOUT any dependent segments', async () => {
+    const code = `const part001 = startSketchOn('-XZ')
+  |> startProfileAt([54.78, -95.91], %)
+  |> line([306.21, 198.82], %)
+  |> line([306.21, 198.85], %, 'a')
+  |> line([306.21, 198.87], %)`
+    const ast = parse(code)
+    const programMemory = await enginelessExecutor(ast)
+    const lineOfInterest = "line([306.21, 198.85], %, 'a')"
+    const range: [number, number] = [
+      code.indexOf(lineOfInterest),
+      code.indexOf(lineOfInterest) + lineOfInterest.length,
+    ]
+    const pathToNode = getNodePathFromSourceRange(ast, range)
+    const modifiedAst = deleteSegmentFromPipeExpression(
+      [],
+      ast,
+      programMemory,
+      code,
+      pathToNode
+    )
+    const newCode = recast(modifiedAst)
+    expect(newCode).toBe(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt([54.78, -95.91], %)
+  |> line([306.21, 198.82], %)
+  |> line([306.21, 198.87], %)
+`)
+  })
+  it('Should delete a segment WITH any dependent segments, unconstraining the dependent parts', async () => {
+    const code = `const part001 = startSketchOn('-XZ')
+  |> startProfileAt([54.78, -95.91], %)
+  |> line([306.21, 198.82], %)
+  |> line([306.21, 198.85], %, 'a')
+  |> angledLine([-65, segLen('a', %)], %)
+  |> line([306.21, 198.87], %)
+  |> angledLine([65, segAng('a', %)], %)
+  |> line([-963.39, -154.67], %)`
+    const ast = parse(code)
+    const programMemory = await enginelessExecutor(ast)
+    const lineOfInterest = "line([306.21, 198.85], %, 'a')"
+    const range: [number, number] = [
+      code.indexOf(lineOfInterest),
+      code.indexOf(lineOfInterest) + lineOfInterest.length,
+    ]
+    const pathToNode = getNodePathFromSourceRange(ast, range)
+    const dependentSegments = findUsesOfTagInPipe(ast, pathToNode)
+    const modifiedAst = deleteSegmentFromPipeExpression(
+      dependentSegments,
+      ast,
+      programMemory,
+      code,
+      pathToNode
+    )
+    const newCode = recast(modifiedAst)
+    expect(newCode).toBe(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt([54.78, -95.91], %)
+  |> line([306.21, 198.82], %)
+  |> angledLine([-65, 365.11], %)
+  |> line([306.21, 198.87], %)
+  |> angledLine([65, 33], %)
+  |> line([-963.39, -154.67], %)
+`)
   })
 })
