@@ -650,10 +650,10 @@ export function moveValueIntoNewVariable(
 
 /**
  * Deletes a segment from a pipe expression, if the segment has a tag that other segments use, it will remove that value and replace it with the equivalent literal
- * @param dependantRanges - The ranges of the segments that are dependant on the segment being deleted, this is usually the output of `findUsesOfTagInPipe`
+ * @param dependentRanges - The ranges of the segments that are dependent on the segment being deleted, this is usually the output of `findUsesOfTagInPipe`
  */
 export function deleteSegmentFromPipeExpression(
-  dependantRanges: SourceRange[],
+  dependentRanges: SourceRange[],
   modifiedAst: Program,
   programMemory: ProgramMemory,
   code: string,
@@ -661,7 +661,7 @@ export function deleteSegmentFromPipeExpression(
 ): Program {
   let _modifiedAst: Program = JSON.parse(JSON.stringify(modifiedAst))
 
-  dependantRanges.forEach((range) => {
+  dependentRanges.forEach((range) => {
     const path = getNodePathFromSourceRange(_modifiedAst, range)
 
     const callExp = getNodeFromPath<CallExpression>(
