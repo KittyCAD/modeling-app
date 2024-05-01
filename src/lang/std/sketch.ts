@@ -135,40 +135,77 @@ const commonConstraintInfoHelper = (
   stblidFnName: ConstrainInfo['stblidFnName'],
   abbreviatedInputs: [AbbreviatedInput, AbbreviatedInput],
   code: string,
-  pathToNode: PathToNode
+  pathToNode: PathToNode,
+  keyNames: [string, string] = ['', '']
 ) => {
   if (callExp.type !== 'CallExpression') return []
   const firstArg = callExp.arguments?.[0]
-  if (firstArg.type !== 'ArrayExpression') return []
+  const isArr = firstArg.type === 'ArrayExpression'
+  if (!isArr && firstArg.type !== 'ObjectExpression') return []
   const pathToArrayExpression: PathToNode = [
     ...pathToNode,
     ['arguments', 'CallExpression'],
     [0, 'index'],
-    ['elements', 'ArrayExpression'],
+    isArr
+      ? ['elements', 'ArrayExpression']
+      : ['properties', 'ObjectExpression'],
   ]
-  const pathToFirstArg: PathToNode = [...pathToArrayExpression, [0, 'index']]
+  const pathToFirstArg: PathToNode = isArr
+    ? [...pathToArrayExpression, [1, 'index']]
+    : [
+        ...pathToArrayExpression,
+        [
+          firstArg.properties.findIndex((a) => a.key.name === keyNames[0]),
+          'index',
+        ],
+        ['value', 'Property'],
+      ]
 
-  const pathToSecondArg: PathToNode = [...pathToArrayExpression, [1, 'index']]
-  return [
-    constrainInfo(
-      inputConstrainTypes[0],
-      isNotLiteralArrayOrStatic(firstArg.elements[0]),
-      code.slice(firstArg.elements[0].start, firstArg.elements[0].end),
-      stblidFnName,
-      abbreviatedInputs[0],
-      [firstArg.elements[0].start, firstArg.elements[0].end],
-      pathToFirstArg
-    ),
-    constrainInfo(
-      inputConstrainTypes[1],
-      isNotLiteralArrayOrStatic(firstArg.elements[1]),
-      code.slice(firstArg.elements[1].start, firstArg.elements[1].end),
-      stblidFnName,
-      abbreviatedInputs[1],
-      [firstArg.elements[1].start, firstArg.elements[1].end],
-      pathToSecondArg
-    ),
-  ]
+  const pathToSecondArg: PathToNode = isArr
+    ? [...pathToArrayExpression, [1, 'index']]
+    : [
+        ...pathToArrayExpression,
+        [
+          firstArg.properties.findIndex((a) => a.key.name === keyNames[1]),
+          'index',
+        ],
+        ['value', 'Property'],
+      ]
+
+  const input1 = isArr
+    ? firstArg.elements[0]
+    : firstArg.properties.find((a) => a.key.name === keyNames[0])?.value
+  const input2 = isArr
+    ? firstArg.elements[1]
+    : firstArg.properties.find((a) => a.key.name === keyNames[1])?.value
+
+  const constraints: ConstrainInfo[] = []
+  if (input1)
+    constraints.push(
+      constrainInfo(
+        inputConstrainTypes[0],
+        isNotLiteralArrayOrStatic(input1),
+        code.slice(input1.start, input1.end),
+        stblidFnName,
+        abbreviatedInputs[0],
+        [input1.start, input1.end],
+        pathToFirstArg
+      )
+    )
+  if (input2)
+    constraints.push(
+      constrainInfo(
+        inputConstrainTypes[1],
+        isNotLiteralArrayOrStatic(input2),
+        code.slice(input2.start, input2.end),
+        stblidFnName,
+        abbreviatedInputs[1],
+        [input2.start, input2.end],
+        pathToSecondArg
+      )
+    )
+
+  return constraints
 }
 
 const horzVertConstraintInfoHelper = (
@@ -666,7 +703,7 @@ export const yLine: SketchLineHelper = {
     horzVertConstraintInfoHelper(
       callExp,
       ['vertical', 'yRelative'],
-      'xLine',
+      'yLine',
       'singleValue',
       ...args
     ),
@@ -876,7 +913,8 @@ export const angledLine: SketchLineHelper = {
       ['angle', 'length'],
       'angledLine',
       [0, 1],
-      ...args
+      ...args,
+      ['angle', 'length']
     ),
 }
 
@@ -963,7 +1001,8 @@ export const angledLineOfXLength: SketchLineHelper = {
       ['angle', 'xRelative'],
       'angledLineOfXLength',
       [0, 1],
-      ...args
+      ...args,
+      ['angle', 'length']
     ),
 }
 
@@ -1051,7 +1090,8 @@ export const angledLineOfYLength: SketchLineHelper = {
       ['angle', 'yRelative'],
       'angledLineOfYLength',
       [0, 1],
-      ...args
+      ...args,
+      ['angle', 'length']
     ),
 }
 
@@ -1132,7 +1172,8 @@ export const angledLineToX: SketchLineHelper = {
       ['angle', 'xAbsolute'],
       'angledLineToX',
       [0, 1],
-      ...args
+      ...args,
+      ['angle', 'to']
     ),
 }
 
@@ -1214,7 +1255,8 @@ export const angledLineToY: SketchLineHelper = {
       ['angle', 'yAbsolute'],
       'angledLineToY',
       [0, 1],
-      ...args
+      ...args,
+      ['angle', 'to']
     ),
 }
 

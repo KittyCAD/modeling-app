@@ -5,9 +5,16 @@ import {
   getYComponent,
   getXComponent,
   addCloseToPipe,
+  getConstraintInfo,
 } from './sketch'
-import { parse, recast, initPromise } from '../wasm'
-import { getNodePathFromSourceRange } from '../queryAst'
+import {
+  parse,
+  recast,
+  initPromise,
+  SourceRange,
+  CallExpression,
+} from '../wasm'
+import { getNodeFromPath, getNodePathFromSourceRange } from '../queryAst'
 import { enginelessExecutor } from '../../lib/testHelpers'
 
 const eachQuad: [number, [number, number]][] = [
@@ -210,5 +217,865 @@ describe('testing addTagForSketchOnFace', () => {
     )
     const expectedCode = genCode("lineTo([-1.59, -1.54], %, 'seg01')")
     expect(recast(modifiedAst)).toBe(expectedCode)
+  })
+})
+
+describe('testing getConstraintInfo', () => {
+  describe('object notation', () => {
+    const code = `const part001 = startSketchOn('-XZ')
+  |> startProfileAt([0,0], %)
+  |> line([3, 4], %)
+  |> angledLine({
+    angle: 3.14,
+    length: 3.14,
+  }, %)
+  |> lineTo([6.14, 3.14], %)
+  |> xLineTo(8, %)
+  |> yLineTo(5, %)
+  |> yLine(3.14, %, 'a')
+  |> xLine(3.14, %)
+  |> angledLineOfXLength({
+    angle: 3.14,
+    length: 3.14,
+  }, %)
+  |> angledLineOfYLength({
+    angle: 30,
+    length: 3,
+  }, %)
+  |> angledLineToX({
+    angle: 12.14,
+    to: 12,
+  }, %)
+  |> angledLineToY({
+    angle: 30,
+    to: 10.14,
+  }, %)
+  |> angledLineThatIntersects({
+    angle: 3.14,
+    intersectTag: 'a',
+    offset: 0
+  }, %)
+  |> tangentialArcTo([3.14, 13.14], %)`
+    const ast = parse(code)
+    test.each([
+      [
+        'line',
+        [
+          {
+            type: 'xRelative',
+            isConstrained: false,
+            value: '3',
+            sourceRange: [78, 79],
+            argPosition: { type: 'arrayItem', index: 0 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'line',
+          },
+          {
+            type: 'yRelative',
+            isConstrained: false,
+            value: '4',
+            sourceRange: [81, 82],
+            argPosition: { type: 'arrayItem', index: 1 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'line',
+          },
+        ],
+      ],
+      [
+        `angledLine(`,
+        [
+          {
+            type: 'angle',
+            isConstrained: false,
+            value: '3.14',
+            sourceRange: [117, 121],
+            argPosition: { type: 'arrayItem', index: 0 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLine',
+          },
+          {
+            type: 'length',
+            isConstrained: false,
+            value: '3.14',
+            sourceRange: [135, 139],
+            argPosition: { type: 'arrayItem', index: 1 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLine',
+          },
+        ],
+      ],
+      [
+        'lineTo',
+        [
+          {
+            type: 'xAbsolute',
+            isConstrained: false,
+            value: '6.14',
+            sourceRange: [162, 166],
+            argPosition: { type: 'arrayItem', index: 0 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'lineTo',
+          },
+          {
+            type: 'yAbsolute',
+            isConstrained: false,
+            value: '3.14',
+            sourceRange: [168, 172],
+            argPosition: { type: 'arrayItem', index: 1 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'lineTo',
+          },
+        ],
+      ],
+      [
+        'xLineTo',
+        [
+          {
+            type: 'horizontal',
+            isConstrained: true,
+            value: 'xLineTo',
+            sourceRange: [183, 190],
+            argPosition: undefined,
+            pathToNode: expect.any(Array),
+            stblidFnName: 'xLineTo',
+          },
+          {
+            type: 'xAbsolute',
+            isConstrained: false,
+            value: '8',
+            sourceRange: [191, 192],
+            argPosition: { type: 'singleValue' },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'xLineTo',
+          },
+        ],
+      ],
+      [
+        'yLineTo',
+        [
+          {
+            type: 'vertical',
+            isConstrained: true,
+            value: 'yLineTo',
+            sourceRange: [202, 209],
+            argPosition: undefined,
+            pathToNode: expect.any(Array),
+            stblidFnName: 'yLineTo',
+          },
+          {
+            type: 'yAbsolute',
+            isConstrained: false,
+            value: '5',
+            sourceRange: [210, 211],
+            argPosition: { type: 'singleValue' },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'yLineTo',
+          },
+        ],
+      ],
+      [
+        'yLine(',
+        [
+          {
+            type: 'vertical',
+            isConstrained: true,
+            value: 'yLine',
+            sourceRange: [221, 226],
+            argPosition: undefined,
+            pathToNode: expect.any(Array),
+            stblidFnName: 'yLine',
+          },
+          {
+            type: 'yRelative',
+            isConstrained: false,
+            value: '3.14',
+            sourceRange: [227, 231],
+            argPosition: { type: 'singleValue' },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'yLine',
+          },
+        ],
+      ],
+      [
+        'xLine(',
+        [
+          {
+            type: 'horizontal',
+            isConstrained: true,
+            value: 'xLine',
+            sourceRange: [246, 251],
+            argPosition: undefined,
+            pathToNode: expect.any(Array),
+            stblidFnName: 'xLine',
+          },
+          {
+            type: 'xRelative',
+            isConstrained: false,
+            value: '3.14',
+            sourceRange: [252, 256],
+            argPosition: { type: 'singleValue' },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'xLine',
+          },
+        ],
+      ],
+      [
+        'angledLineOfXLength',
+        [
+          {
+            type: 'angle',
+            isConstrained: false,
+            value: '3.14',
+            sourceRange: [299, 303],
+            argPosition: { type: 'arrayItem', index: 0 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineOfXLength',
+          },
+          {
+            type: 'xRelative',
+            isConstrained: false,
+            value: '3.14',
+            sourceRange: [317, 321],
+            argPosition: { type: 'arrayItem', index: 1 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineOfXLength',
+          },
+        ],
+      ],
+      [
+        'angledLineOfYLength',
+        [
+          {
+            type: 'angle',
+            isConstrained: false,
+            value: '30',
+            sourceRange: [369, 371],
+            argPosition: { type: 'arrayItem', index: 0 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineOfYLength',
+          },
+          {
+            type: 'yRelative',
+            isConstrained: false,
+            value: '3',
+            sourceRange: [385, 386],
+            argPosition: { type: 'arrayItem', index: 1 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineOfYLength',
+          },
+        ],
+      ],
+      [
+        'angledLineToX',
+        [
+          {
+            type: 'angle',
+            isConstrained: false,
+            value: '12.14',
+            sourceRange: [428, 433],
+            argPosition: { type: 'arrayItem', index: 0 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineToX',
+          },
+          {
+            type: 'xAbsolute',
+            isConstrained: false,
+            value: '12',
+            sourceRange: [443, 445],
+            argPosition: { type: 'arrayItem', index: 1 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineToX',
+          },
+        ],
+      ],
+      [
+        'angledLineToY',
+        [
+          {
+            type: 'angle',
+            isConstrained: false,
+            value: '30',
+            sourceRange: [487, 489],
+            argPosition: { type: 'arrayItem', index: 0 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineToY',
+          },
+          {
+            type: 'yAbsolute',
+            isConstrained: false,
+            value: '10.14',
+            sourceRange: [499, 504],
+            argPosition: { type: 'arrayItem', index: 1 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineToY',
+          },
+        ],
+      ],
+      [
+        'angledLineThatIntersects',
+        [
+          {
+            type: 'angle',
+            isConstrained: false,
+            value: '3.14',
+            sourceRange: [557, 561],
+            argPosition: { type: 'objectProperty', key: 'angle' },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineThatIntersects',
+          },
+          {
+            type: 'intersectionOffset',
+            isConstrained: false,
+            value: '0',
+            sourceRange: [598, 599],
+            argPosition: { type: 'objectProperty', key: 'offset' },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineThatIntersects',
+          },
+        ],
+      ],
+      [
+        'tangentialArcTo',
+        [
+          {
+            type: 'tangentialWithPrevious',
+            isConstrained: true,
+            value: 'tangentialArcTo',
+            sourceRange: [613, 628],
+            argPosition: undefined,
+            pathToNode: expect.any(Array),
+            stblidFnName: 'tangentialArcTo',
+          },
+          {
+            type: 'xAbsolute',
+            isConstrained: false,
+            value: '3.14',
+            sourceRange: [630, 634],
+            argPosition: { type: 'arrayItem', index: 0 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'tangentialArcTo',
+          },
+          {
+            type: 'yAbsolute',
+            isConstrained: false,
+            value: '13.14',
+            sourceRange: [636, 641],
+            argPosition: { type: 'arrayItem', index: 1 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'tangentialArcTo',
+          },
+        ],
+      ],
+    ])('testing %s when inputs are unconstrained', (functionName, expected) => {
+      const sourceRange: SourceRange = [
+        code.indexOf(functionName),
+        code.indexOf(functionName) + functionName.length,
+      ]
+      const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
+      const callExp = getNodeFromPath<CallExpression>(
+        ast,
+        pathToNode,
+        'CallExpression'
+      ).node
+      const result = getConstraintInfo(callExp, code, pathToNode)
+      expect(result).toEqual(expected)
+    })
+  })
+  describe('array notation', () => {
+    const code = `const part001 = startSketchOn('-XZ')
+    |> startProfileAt([0, 0], %)
+    |> line([3, 4], %)
+    |> angledLine([3.14, 3.14], %)
+    |> lineTo([6.14, 3.14], %)
+    |> xLineTo(8, %)
+    |> yLineTo(5, %)
+    |> yLine(3.14, %, 'a')
+    |> xLine(3.14, %)
+    |> angledLineOfXLength([3.14, 3.14], %)
+    |> angledLineOfYLength([30, 3], %)
+    |> angledLineToX([12, 12], %)
+    |> angledLineToY([30, 10], %)
+    |> angledLineThatIntersects({
+         angle: 3.14,
+         intersectTag: 'a',
+         offset: 0
+       }, %)
+    |> tangentialArcTo([3.14, 13.14], %)`
+    const ast = parse(code)
+    test.each([
+      [
+        `angledLine(`,
+        [
+          {
+            type: 'angle',
+            isConstrained: false,
+            value: '3.14',
+            sourceRange: [112, 116],
+            argPosition: { type: 'arrayItem', index: 0 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLine',
+          },
+          {
+            type: 'length',
+            isConstrained: false,
+            value: '3.14',
+            sourceRange: [118, 122],
+            argPosition: { type: 'arrayItem', index: 1 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLine',
+          },
+        ],
+      ],
+      [
+        'angledLineOfXLength',
+        [
+          {
+            type: 'angle',
+            isConstrained: false,
+            value: '3.14',
+            sourceRange: [278, 282],
+            argPosition: { type: 'arrayItem', index: 0 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineOfXLength',
+          },
+          {
+            type: 'xRelative',
+            isConstrained: false,
+            value: '3.14',
+            sourceRange: [284, 288],
+            argPosition: { type: 'arrayItem', index: 1 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineOfXLength',
+          },
+        ],
+      ],
+      [
+        'angledLineOfYLength',
+        [
+          {
+            type: 'angle',
+            isConstrained: false,
+            value: '30',
+            sourceRange: [322, 324],
+            argPosition: { type: 'arrayItem', index: 0 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineOfYLength',
+          },
+          {
+            type: 'yRelative',
+            isConstrained: false,
+            value: '3',
+            sourceRange: [326, 327],
+            argPosition: { type: 'arrayItem', index: 1 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineOfYLength',
+          },
+        ],
+      ],
+      [
+        'angledLineToX',
+        [
+          {
+            type: 'angle',
+            isConstrained: false,
+            value: '12',
+            sourceRange: [355, 357],
+            argPosition: { type: 'arrayItem', index: 0 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineToX',
+          },
+          {
+            type: 'xAbsolute',
+            isConstrained: false,
+            value: '12',
+            sourceRange: [359, 361],
+            argPosition: { type: 'arrayItem', index: 1 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineToX',
+          },
+        ],
+      ],
+      [
+        'angledLineToY',
+        [
+          {
+            type: 'angle',
+            isConstrained: false,
+            value: '30',
+            sourceRange: [389, 391],
+            argPosition: { type: 'arrayItem', index: 0 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineToY',
+          },
+          {
+            type: 'yAbsolute',
+            isConstrained: false,
+            value: '10',
+            sourceRange: [393, 395],
+            argPosition: { type: 'arrayItem', index: 1 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineToY',
+          },
+        ],
+      ],
+    ])('testing %s when inputs are unconstrained', (functionName, expected) => {
+      const sourceRange: SourceRange = [
+        code.indexOf(functionName),
+        code.indexOf(functionName) + functionName.length,
+      ]
+      const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
+      const callExp = getNodeFromPath<CallExpression>(
+        ast,
+        pathToNode,
+        'CallExpression'
+      ).node
+      const result = getConstraintInfo(callExp, code, pathToNode)
+      expect(result).toEqual(expected)
+    })
+  })
+  describe('constrained', () => {
+    const code = `const part001 = startSketchOn('-XZ')
+    |> startProfileAt([0, 0], %)
+    |> line([3 + 0, 4 + 0], %)
+    |> angledLine({ angle: 3.14 + 0, length: 3.14 + 0 }, %)
+    |> lineTo([6.14 + 0, 3.14 + 0], %)
+    |> xLineTo(8 + 0, %)
+    |> yLineTo(5 + 0, %)
+    |> yLine(3.14 + 0, %, 'a')
+    |> xLine(3.14 + 0, %)
+    |> angledLineOfXLength({ angle: 3.14 + 0, length: 3.14 + 0 }, %)
+    |> angledLineOfYLength({ angle: 30 + 0, length: 3 + 0 }, %)
+    |> angledLineToX({ angle: 12.14 + 0, to: 12 + 0 }, %)
+    |> angledLineToY({ angle: 30 + 0, to: 10.14 + 0 }, %)
+    |> angledLineThatIntersects({
+         angle: 3.14 + 0,
+         intersectTag: 'a',
+         offset: 0 + 0
+       }, %)
+    |> tangentialArcTo([3.14 + 0, 13.14 + 0], %)`
+    const ast = parse(code)
+    test.each([
+      [
+        'line',
+        [
+          {
+            type: 'xRelative',
+            isConstrained: true,
+            value: '3 + 0',
+            sourceRange: [83, 88],
+            argPosition: { type: 'arrayItem', index: 0 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'line',
+          },
+          {
+            type: 'yRelative',
+            isConstrained: true,
+            value: '4 + 0',
+            sourceRange: [90, 95],
+            argPosition: { type: 'arrayItem', index: 1 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'line',
+          },
+        ],
+      ],
+      [
+        `angledLine(`,
+        [
+          {
+            type: 'angle',
+            isConstrained: true,
+            value: '3.14 + 0',
+            sourceRange: [128, 136],
+            argPosition: { type: 'arrayItem', index: 0 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLine',
+          },
+          {
+            type: 'length',
+            isConstrained: true,
+            value: '3.14 + 0',
+            sourceRange: [146, 154],
+            argPosition: { type: 'arrayItem', index: 1 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLine',
+          },
+        ],
+      ],
+      [
+        'lineTo',
+        [
+          {
+            type: 'xAbsolute',
+            isConstrained: true,
+            value: '6.14 + 0',
+            sourceRange: [176, 184],
+            argPosition: { type: 'arrayItem', index: 0 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'lineTo',
+          },
+          {
+            type: 'yAbsolute',
+            isConstrained: true,
+            value: '3.14 + 0',
+            sourceRange: [186, 194],
+            argPosition: { type: 'arrayItem', index: 1 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'lineTo',
+          },
+        ],
+      ],
+      [
+        'xLineTo',
+        [
+          {
+            type: 'horizontal',
+            isConstrained: true,
+            value: 'xLineTo',
+            sourceRange: [207, 214],
+            argPosition: undefined,
+            pathToNode: expect.any(Array),
+            stblidFnName: 'xLineTo',
+          },
+          {
+            type: 'xAbsolute',
+            isConstrained: true,
+            value: '8 + 0',
+            sourceRange: [215, 220],
+            argPosition: { type: 'singleValue' },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'xLineTo',
+          },
+        ],
+      ],
+      [
+        'yLineTo',
+        [
+          {
+            type: 'vertical',
+            isConstrained: true,
+            value: 'yLineTo',
+            sourceRange: [232, 239],
+            argPosition: undefined,
+            pathToNode: expect.any(Array),
+            stblidFnName: 'yLineTo',
+          },
+          {
+            type: 'yAbsolute',
+            isConstrained: true,
+            value: '5 + 0',
+            sourceRange: [240, 245],
+            argPosition: { type: 'singleValue' },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'yLineTo',
+          },
+        ],
+      ],
+      [
+        'yLine(',
+        [
+          {
+            type: 'vertical',
+            isConstrained: true,
+            value: 'yLine',
+            sourceRange: [257, 262],
+            argPosition: undefined,
+            pathToNode: expect.any(Array),
+            stblidFnName: 'yLine',
+          },
+          {
+            type: 'yRelative',
+            isConstrained: true,
+            value: '3.14 + 0',
+            sourceRange: [263, 271],
+            argPosition: { type: 'singleValue' },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'yLine',
+          },
+        ],
+      ],
+      [
+        'xLine(',
+        [
+          {
+            type: 'horizontal',
+            isConstrained: true,
+            value: 'xLine',
+            sourceRange: [288, 293],
+            argPosition: undefined,
+            pathToNode: expect.any(Array),
+            stblidFnName: 'xLine',
+          },
+          {
+            type: 'xRelative',
+            isConstrained: true,
+            value: '3.14 + 0',
+            sourceRange: [294, 302],
+            argPosition: { type: 'singleValue' },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'xLine',
+          },
+        ],
+      ],
+      [
+        'angledLineOfXLength',
+        [
+          {
+            type: 'angle',
+            isConstrained: true,
+            value: '3.14 + 0',
+            sourceRange: [343, 351],
+            argPosition: { type: 'arrayItem', index: 0 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineOfXLength',
+          },
+          {
+            type: 'xRelative',
+            isConstrained: true,
+            value: '3.14 + 0',
+            sourceRange: [361, 369],
+            argPosition: { type: 'arrayItem', index: 1 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineOfXLength',
+          },
+        ],
+      ],
+      [
+        'angledLineOfYLength',
+        [
+          {
+            type: 'angle',
+            isConstrained: true,
+            value: '30 + 0',
+            sourceRange: [412, 418],
+            argPosition: { type: 'arrayItem', index: 0 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineOfYLength',
+          },
+          {
+            type: 'yRelative',
+            isConstrained: true,
+            value: '3 + 0',
+            sourceRange: [428, 433],
+            argPosition: { type: 'arrayItem', index: 1 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineOfYLength',
+          },
+        ],
+      ],
+      [
+        'angledLineToX',
+        [
+          {
+            type: 'angle',
+            isConstrained: true,
+            value: '12.14 + 0',
+            sourceRange: [470, 479],
+            argPosition: { type: 'arrayItem', index: 0 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineToX',
+          },
+          {
+            type: 'xAbsolute',
+            isConstrained: true,
+            value: '12 + 0',
+            sourceRange: [485, 491],
+            argPosition: { type: 'arrayItem', index: 1 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineToX',
+          },
+        ],
+      ],
+      [
+        'angledLineToY',
+        [
+          {
+            type: 'angle',
+            isConstrained: true,
+            value: '30 + 0',
+            sourceRange: [528, 534],
+            argPosition: { type: 'arrayItem', index: 0 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineToY',
+          },
+          {
+            type: 'yAbsolute',
+            isConstrained: true,
+            value: '10.14 + 0',
+            sourceRange: [540, 549],
+            argPosition: { type: 'arrayItem', index: 1 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineToY',
+          },
+        ],
+      ],
+      [
+        'angledLineThatIntersects',
+        [
+          {
+            type: 'angle',
+            isConstrained: true,
+            value: '3.14 + 0',
+            sourceRange: [606, 614],
+            argPosition: { type: 'objectProperty', key: 'angle' },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineThatIntersects',
+          },
+          {
+            type: 'intersectionOffset',
+            isConstrained: true,
+            value: '0 + 0',
+            sourceRange: [661, 666],
+            argPosition: { type: 'objectProperty', key: 'offset' },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'angledLineThatIntersects',
+          },
+        ],
+      ],
+      [
+        'tangentialArcTo',
+        [
+          {
+            type: 'tangentialWithPrevious',
+            isConstrained: true,
+            value: 'tangentialArcTo',
+            sourceRange: [687, 702],
+            argPosition: undefined,
+            pathToNode: expect.any(Array),
+            stblidFnName: 'tangentialArcTo',
+          },
+          {
+            type: 'xAbsolute',
+            isConstrained: true,
+            value: '3.14 + 0',
+            sourceRange: [704, 712],
+            argPosition: { type: 'arrayItem', index: 0 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'tangentialArcTo',
+          },
+          {
+            type: 'yAbsolute',
+            isConstrained: true,
+            value: '13.14 + 0',
+            sourceRange: [714, 723],
+            argPosition: { type: 'arrayItem', index: 1 },
+            pathToNode: expect.any(Array),
+            stblidFnName: 'tangentialArcTo',
+          },
+        ],
+      ],
+    ])('testing %s when inputs are unconstrained', (functionName, expected) => {
+      const sourceRange: SourceRange = [
+        code.indexOf(functionName),
+        code.indexOf(functionName) + functionName.length,
+      ]
+      const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
+      const callExp = getNodeFromPath<CallExpression>(
+        ast,
+        pathToNode,
+        'CallExpression'
+      ).node
+      const result = getConstraintInfo(callExp, code, pathToNode)
+      expect(result).toEqual(expected)
+    })
   })
 })
