@@ -130,7 +130,7 @@ jobs:
       matrix:
         os: [macos-14, ubuntu-latest, windows-latest]
     env:
-      TAURI_ARGS_MACOS: ${{ matrix.os == 'macos-14' && '--target universal-apple-darwin --config src-tauri/tauri.release-macos.conf.json' || '' }}
+      TAURI_ARGS_MACOS: ${{ matrix.os == 'macos-14' && '--target universal-apple-darwin' || '' }}
       TAURI_ARGS_UBUNTU: ${{ matrix.os == 'ubuntu-latest' && '--bundles --config src-tauri/tauri.release.conf.json' || '' }}
       TAURI_ARGS_WINDOWS: ${{ matrix.os == 'windows-latest' && '--bundles --config src-tauri\\tauri.release.conf.json' || '' }}
     steps:
