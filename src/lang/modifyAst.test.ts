@@ -396,40 +396,79 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
   |> line([306.21, 198.87], %)
 `)
   })
-  it('Should delete a segment WITH any dependent segments, unconstraining the dependent parts', async () => {
-    const code = `const part001 = startSketchOn('-XZ')
+  describe('Should delete a segment WITH any dependent segments, unconstraining the dependent parts', () => {
+    const makeCode = (
+      line: string,
+      replace1 = '',
+      replace2 = ''
+    ) => `const part001 = startSketchOn('-XZ')
   |> startProfileAt([54.78, -95.91], %)
-  |> line([306.21, 198.82], %)
-  |> line([306.21, 198.85], %, 'a')
-  |> angledLine([-65, segLen('a', %)], %)
+  |> line([306.21, 198.82], %, 'b')
+${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine([-65, ${
+      !replace1 ? "segLen('a', %)" : replace1
+    }], %)
   |> line([306.21, 198.87], %)
-  |> angledLine([65, segAng('a', %)], %)
-  |> line([-963.39, -154.67], %)`
-    const ast = parse(code)
-    const programMemory = await enginelessExecutor(ast)
-    const lineOfInterest = "line([306.21, 198.85], %, 'a')"
-    const range: [number, number] = [
-      code.indexOf(lineOfInterest),
-      code.indexOf(lineOfInterest) + lineOfInterest.length,
-    ]
-    const pathToNode = getNodePathFromSourceRange(ast, range)
-    const dependentSegments = findUsesOfTagInPipe(ast, pathToNode)
-    const modifiedAst = deleteSegmentFromPipeExpression(
-      dependentSegments,
-      ast,
-      programMemory,
-      code,
-      pathToNode
-    )
-    const newCode = recast(modifiedAst)
-    expect(newCode).toBe(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt([54.78, -95.91], %)
-  |> line([306.21, 198.82], %)
-  |> angledLine([-65, 365.11], %)
-  |> line([306.21, 198.87], %)
-  |> angledLine([65, 33], %)
+  |> angledLine([65, ${!replace2 ? "segAng('a', %)" : replace2}], %)
   |> line([-963.39, -154.67], %)
-`)
+`
+    test.each([
+      ['line', "line([306.21, 198.85], %, 'a')", ['365.11', '33']],
+      ['lineTo', "lineTo([306.21, 198.85], %, 'a')", ['110.48', '119.73']],
+      ['yLine', "yLine(198.85, %, 'a')", ['198.85', '90']],
+      ['xLine', "xLine(198.85, %, 'a')", ['198.85', '0']],
+      ['yLineTo', "yLineTo(198.85, %, 'a')", ['95.94', '90']],
+      ['xLineTo', "xLineTo(198.85, %, 'a')", ['162.14', '180']],
+      [
+        'angledLine',
+        "angledLine({ angle: 45.5, length: 198.85 }, %, 'a')",
+        ['198.85', '45.5'],
+      ],
+      [
+        'angledLineOfXLength',
+        "angledLineOfXLength({ angle: 45.5, length: 198.85 }, %, 'a')",
+        ['283.7', '45.5'],
+      ],
+      [
+        'angledLineOfYLength',
+        "angledLineOfYLength({ angle: 45.5, length: 198.85 }, %, 'a')",
+        ['278.79', '45.5'],
+      ],
+      [
+        'angledLineToX',
+        "angledLineToX({ angle: 45.5, to: 198.85 }, %, 'a')",
+        ['231.33', '134.5'],
+      ],
+      [
+        'angledLineToY',
+        "angledLineToY({ angle: 45.5, to: 198.85 }, %, 'a')",
+        ['134.51', '45.5'],
+      ],
+      [
+        'angledLineThatIntersects',
+        `angledLineThatIntersects({ angle: 45.5, intersectTag: 'b', offset: 198.85 }, %, 'a')`,
+        ['918.4', '45.5'],
+      ],
+    ])(`%s`, async (_, line, [replace1, replace2]) => {
+      const code = makeCode(line)
+      const ast = parse(code)
+      const programMemory = await enginelessExecutor(ast)
+      const lineOfInterest = line
+      const range: [number, number] = [
+        code.indexOf(lineOfInterest),
+        code.indexOf(lineOfInterest) + lineOfInterest.length,
+      ]
+      const pathToNode = getNodePathFromSourceRange(ast, range)
+      const dependentSegments = findUsesOfTagInPipe(ast, pathToNode)
+      const modifiedAst = deleteSegmentFromPipeExpression(
+        dependentSegments,
+        ast,
+        programMemory,
+        code,
+        pathToNode
+      )
+      const newCode = recast(modifiedAst)
+      expect(newCode).toBe(makeCode(line, replace1, replace2))
+    })
   })
 })
 
