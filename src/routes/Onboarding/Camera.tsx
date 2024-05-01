@@ -1,13 +1,13 @@
 import { OnboardingButtons, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useStore } from '../../useStore'
-import { SettingsSection } from 'routes/Settings'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import {
   CameraSystem,
   cameraMouseDragGuards,
   cameraSystems,
 } from 'lib/cameraControls'
+import { SettingsSection } from 'components/Settings/SettingsSection'
 
 export default function Units() {
   const { buttonDownInStream } = useStore((s) => ({

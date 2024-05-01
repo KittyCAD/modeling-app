@@ -12,7 +12,7 @@ use anyhow::Result;
 use kcl_lib::settings::types::{
     file::{FileEntry, Project, ProjectRoute, ProjectState},
     project::ProjectConfiguration,
-    Configuration, DEFAULT_PROJECT_KCL_FILE,
+    Configuration,
 };
 use oauth2::TokenResponse;
 use tauri::{ipc::InvokeError, Manager};
@@ -350,6 +350,31 @@ fn show_in_folder(path: &str) -> Result<(), InvokeError> {
     Ok(())
 }
 
+#[allow(dead_code)]
+fn open_url_sync(app: &tauri::AppHandle, url: &url::Url) {
+    println!("Opening URL: {:?}", url);
+    let cloned_url = url.clone();
+    let runner: tauri::async_runtime::JoinHandle<Result<ProjectState>> = tauri::async_runtime::spawn(async move {
+        let url_str = cloned_url.to_string();
+        let path = Path::new(url_str.as_str());
+        ProjectState::new_from_path(path.to_path_buf()).await
+    });
+
+    // Block on the handle.
+    match tauri::async_runtime::block_on(runner) {
+        Ok(Ok(store)) => {
+            // Create a state object to hold the project.
+            app.manage(state::Store::new(store));
+        }
+        Err(e) => {
+            println!("Error opening URL:{} {:?}", url, e);
+        }
+        Ok(Err(e)) => {
+            println!("Error opening URL:{} {:?}", url, e);
+        }
+    }
+}
+
 fn main() -> Result<()> {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
@@ -410,6 +435,7 @@ fn main() -> Result<()> {
                     if let Some(source_arg) = matches.args.get("source") {
                         // We don't do an else here because this can be null.
                         if let Some(value) = source_arg.value.as_str() {
+                            println!("Got path in cli argument: {}", value);
                             source_path = Some(Path::new(value).to_path_buf());
                         }
                     }
@@ -417,6 +443,10 @@ fn main() -> Result<()> {
                 Err(err) => {
                     return Err(anyhow::anyhow!("Error parsing CLI arguments: {:?}", err).into());
                 }
+            }
+
+            if verbose {
+                println!("Verbose mode enabled.");
             }
 
             // If we have a source path to open, make sure it exists.
@@ -436,74 +466,7 @@ fn main() -> Result<()> {
             }
 
             let runner: tauri::async_runtime::JoinHandle<Result<ProjectState>> =
-                tauri::async_runtime::spawn(async move {
-                    // Fix for "." path, which is the current directory.
-                    let source_path = if source_path == Path::new(".") {
-                        std::env::current_dir()
-                            .map_err(|e| anyhow::anyhow!("Error getting the current directory: {:?}", e))?
-                    } else {
-                        source_path
-                    };
-
-                    // If the path does not start with a slash, it is a relative path.
-                    // We need to convert it to an absolute path.
-                    let source_path = if source_path.is_relative() {
-                        std::env::current_dir()
-                            .map_err(|e| anyhow::anyhow!("Error getting the current directory: {:?}", e))?
-                            .join(source_path)
-                    } else {
-                        source_path
-                    };
-
-                    // If the path is a directory, let's assume it is a project directory.
-                    if source_path.is_dir() {
-                        // Load the details about the project from the path.
-                        let project = Project::from_path(&source_path).await.map_err(|e| {
-                            anyhow::anyhow!("Error loading project from path {}: {:?}", source_path.display(), e)
-                        })?;
-
-                        if verbose {
-                            println!("Project loaded from path: {}", source_path.display());
-                        }
-
-                        // Create the default file in the project.
-                        // Write the initial project file.
-                        let project_file = source_path.join(DEFAULT_PROJECT_KCL_FILE);
-                        tokio::fs::write(&project_file, vec![]).await?;
-
-                        return Ok(ProjectState {
-                            project,
-                            current_file: Some(project_file.display().to_string()),
-                        });
-                    }
-
-                    // We were given a file path, not a directory.
-                    // Let's get the parent directory of the file.
-                    let parent = source_path.parent().ok_or_else(|| {
-                        anyhow::anyhow!(
-                            "Error getting the parent directory of the file: {}",
-                            source_path.display()
-                        )
-                    })?;
-
-                    // Load the details about the project from the parent directory.
-                    let project = Project::from_path(&parent).await.map_err(|e| {
-                        anyhow::anyhow!("Error loading project from path {}: {:?}", source_path.display(), e)
-                    })?;
-
-                    if verbose {
-                        println!(
-                            "Project loaded from path: {}, current file: {}",
-                            parent.display(),
-                            source_path.display()
-                        );
-                    }
-
-                    Ok(ProjectState {
-                        project,
-                        current_file: Some(source_path.display().to_string()),
-                    })
-                });
+                tauri::async_runtime::spawn(async move { ProjectState::new_from_path(source_path).await });
 
             // Block on the handle.
             let store = tauri::async_runtime::block_on(runner)??;
@@ -512,13 +475,30 @@ fn main() -> Result<()> {
             app.manage(state::Store::new(store));
 
             // Listen on the deep links.
-            app.listen("deep-link://new-url", |url| {
-                dbg!(url);
+            app.listen("deep-link://new-url", |event| {
+                println!("got deep-link url: {:?}", event);
+                // TODO: open_url_sync(app.handle(), event.url);
             });
 
             Ok(())
         })
-        .run(tauri::generate_context!())?;
+        .build(tauri::generate_context!())?
+        .run(
+            #[allow(unused_variables)]
+            |app, event| {
+                #[cfg(any(target_os = "macos", target_os = "ios"))]
+                if let tauri::RunEvent::Opened { urls } = event {
+                    println!("Opened URLs: {:?}", urls);
+
+                    // Handle the first URL.
+                    // TODO: do we want to handle more than one URL?
+                    // Under what conditions would we even have more than one?
+                    if let Some(url) = urls.first() {
+                        open_url_sync(app, url);
+                    }
+                }
+            },
+        );
 
     Ok(())
 }

@@ -85,7 +85,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       },
     },
   } = useSettingsAuthContext()
-  const token = auth?.context?.token
+  const token = auth?.context.token
   const navigate = useNavigate()
   const { overallState } = useNetworkStatus()
   const isNetworkOkay = overallState === NetworkHealthState.Ok

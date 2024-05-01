@@ -19,7 +19,11 @@ export const Toggle = ({
 }: ToggleProps) => {
   return (
     <label className={`${styles.toggle} ${className}`}>
-      {offLabel}
+      <p
+        className={checked ? 'text-chalkboard-70 dark:text-chalkboard-50' : ''}
+      >
+        {offLabel}
+      </p>
       <input
         type="checkbox"
         name={name}
@@ -28,7 +32,11 @@ export const Toggle = ({
         onChange={onChange}
       />
       <span></span>
-      {onLabel}
+      <p
+        className={!checked ? 'text-chalkboard-70 dark:text-chalkboard-50' : ''}
+      >
+        {onLabel}
+      </p>
     </label>
   )
 }

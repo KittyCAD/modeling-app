@@ -22,6 +22,7 @@ export const config = {
   reporters: ['spec'],
   framework: 'mocha',
   mochaOpts: {
+    bail: true,
     ui: 'bdd',
     timeout: 600000,
   },
