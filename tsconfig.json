@@ -8,7 +8,8 @@
       "vite/client",
       "@types/wicg-file-system-access",
       "node",
-      "@wdio/globals/types"
+      "@wdio/globals/types",
+      "mocha"
     ],
     "target": "esnext",
     "lib": ["dom", "dom.iterable", "esnext"],
