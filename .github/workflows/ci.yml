@@ -13,7 +13,7 @@ on:
   # Will checkout the last commit from the default branch (main as of 2023-10-04)
 
 env:
-  BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
+  BUILD_RELEASE: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -130,9 +130,10 @@ jobs:
       matrix:
         os: [macos-14, ubuntu-latest, windows-latest]
     env:
+      # Specific Apple Universal target for macos
       TAURI_ARGS_MACOS: ${{ matrix.os == 'macos-14' && '--target universal-apple-darwin' || '' }}
-      TAURI_ARGS_UBUNTU: ${{ matrix.os == 'ubuntu-latest' && '--bundles --config src-tauri/tauri.release.conf.json' || '' }}
-      TAURI_ARGS_WINDOWS: ${{ matrix.os == 'windows-latest' && '--bundles --config src-tauri\\tauri.release.conf.json' || '' }}
+      # Only build executable on linux (no appimage or deb)
+      TAURI_ARGS_UBUNTU: ${{ matrix.os == 'ubuntu-latest' && '--bundles' || '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -236,7 +237,7 @@ jobs:
         with:
           includeRelease: false
           includeDebug: true
-          args: "${{ env.TAURI_ARGS_WINDOWS }} ${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
+          args: "${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
 
       - name: Mac App Store
         if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'macos-14' }}
@@ -338,7 +339,7 @@ jobs:
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         with:
-          args: "${{ env.TAURI_ARGS_WINDOWS }} ${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
+          args: "${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
 
       - uses: actions/upload-artifact@v3
         if: matrix.os != 'ubuntu-latest'
