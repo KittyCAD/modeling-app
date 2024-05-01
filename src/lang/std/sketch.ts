@@ -34,6 +34,8 @@ import {
   ArrayItemInput,
   ObjectPropertyInput,
   SingleValueInput,
+  VarValueKeys,
+  ArrayOrObjItemInput,
 } from 'lang/std/stdTypes'
 
 import {
@@ -133,10 +135,19 @@ const commonConstraintInfoHelper = (
   callExp: CallExpression,
   inputConstrainTypes: [ConstrainInfo['type'], ConstrainInfo['type']],
   stblidFnName: ConstrainInfo['stblidFnName'],
-  abbreviatedInputs: [AbbreviatedInput, AbbreviatedInput],
+  abbreviatedInputs: [
+    {
+      arrayInput?: 0 | 1
+      objInput?: ObjectPropertyInput<any>['key']
+    },
+    {
+      arrayInput?: 0 | 1
+      objInput?: ObjectPropertyInput<any>['key']
+    }
+  ],
   code: string,
-  pathToNode: PathToNode,
-  keyNames: [string, string] = ['', '']
+  pathToNode: PathToNode
+  // keyNames: [string, string] = ['', '']
 ) => {
   if (callExp.type !== 'CallExpression') return []
   const firstArg = callExp.arguments?.[0]
@@ -155,7 +166,9 @@ const commonConstraintInfoHelper = (
     : [
         ...pathToArrayExpression,
         [
-          firstArg.properties.findIndex((a) => a.key.name === keyNames[0]),
+          firstArg.properties.findIndex(
+            (a) => a.key.name === abbreviatedInputs[0].objInput
+          ),
           'index',
         ],
         ['value', 'Property'],
@@ -166,7 +179,9 @@ const commonConstraintInfoHelper = (
     : [
         ...pathToArrayExpression,
         [
-          firstArg.properties.findIndex((a) => a.key.name === keyNames[1]),
+          firstArg.properties.findIndex(
+            (a) => a.key.name === abbreviatedInputs[1].objInput
+          ),
           'index',
         ],
         ['value', 'Property'],
@@ -174,10 +189,14 @@ const commonConstraintInfoHelper = (
 
   const input1 = isArr
     ? firstArg.elements[0]
-    : firstArg.properties.find((a) => a.key.name === keyNames[0])?.value
+    : firstArg.properties.find(
+        (a) => a.key.name === abbreviatedInputs[0].objInput
+      )?.value
   const input2 = isArr
     ? firstArg.elements[1]
-    : firstArg.properties.find((a) => a.key.name === keyNames[1])?.value
+    : firstArg.properties.find(
+        (a) => a.key.name === abbreviatedInputs[1].objInput
+      )?.value
 
   const constraints: ConstrainInfo[] = []
   if (input1)
@@ -187,7 +206,7 @@ const commonConstraintInfoHelper = (
         isNotLiteralArrayOrStatic(input1),
         code.slice(input1.start, input1.end),
         stblidFnName,
-        abbreviatedInputs[0],
+        isArr ? abbreviatedInputs[0].arrayInput : abbreviatedInputs[0].objInput,
         [input1.start, input1.end],
         pathToFirstArg
       )
@@ -199,7 +218,7 @@ const commonConstraintInfoHelper = (
         isNotLiteralArrayOrStatic(input2),
         code.slice(input2.start, input2.end),
         stblidFnName,
-        abbreviatedInputs[1],
+        isArr ? abbreviatedInputs[1].arrayInput : abbreviatedInputs[1].objInput,
         [input2.start, input2.end],
         pathToSecondArg
       )
@@ -252,6 +271,21 @@ function arrayRawValuesHelper(a: Array<[Literal, LineInputsType]>): RawValues {
     ([literal, argType], index): ArrayItemInput<Literal> => ({
       type: 'arrayItem',
       index: index === 0 ? 0 : 1,
+      argType,
+      value: literal,
+    })
+  )
+}
+
+function arrOrObjectRawValuesHelper(
+  a: Array<[Literal, LineInputsType, VarValueKeys]>
+): RawValues {
+  return a.map(
+    ([literal, argType, key], index): ArrayOrObjItemInput<Literal> => ({
+      type: 'arrayOrObjItem',
+      // key: argType,w
+      index: index === 0 ? 0 : 1,
+      key,
       argType,
       value: literal,
     })
@@ -345,7 +379,7 @@ export const lineTo: SketchLineHelper = {
       callExp,
       ['xAbsolute', 'yAbsolute'],
       'lineTo',
-      [0, 1],
+      [{ arrayInput: 0 }, { arrayInput: 1 }],
       ...args
     ),
 }
@@ -473,7 +507,7 @@ export const line: SketchLineHelper = {
       callExp,
       ['xRelative', 'yRelative'],
       'line',
-      [0, 1],
+      [{ arrayInput: 0 }, { arrayInput: 1 }],
       ...args
     ),
 }
@@ -863,9 +897,9 @@ export const angledLine: SketchLineHelper = {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       const { callExp, valueUsedInTransform } = createCallback(
         [newAngleVal, newLengthVal],
-        arrayRawValuesHelper([
-          [newAngleVal, 'angle'],
-          [newLengthVal, 'length'],
+        arrOrObjectRawValuesHelper([
+          [newAngleVal, 'angle', 'angle'],
+          [newLengthVal, 'length', 'length'],
         ]),
         referencedSegment
       )
@@ -912,9 +946,11 @@ export const angledLine: SketchLineHelper = {
       callExp,
       ['angle', 'length'],
       'angledLine',
-      [0, 1],
-      ...args,
-      ['angle', 'length']
+      [
+        { arrayInput: 0, objInput: 'angle' },
+        { arrayInput: 1, objInput: 'length' },
+      ],
+      ...args
     ),
 }
 
@@ -947,9 +983,9 @@ export const angledLineOfXLength: SketchLineHelper = {
     const newLine = createCallback
       ? createCallback(
           [angle, xLength],
-          arrayRawValuesHelper([
-            [angle, 'angle'],
-            [xLength, 'xRelative'],
+          arrOrObjectRawValuesHelper([
+            [angle, 'angle', 'angle'],
+            [xLength, 'xRelative', 'length'],
           ])
         ).callExp
       : createCallExpression('angledLineOfXLength', [
@@ -1000,9 +1036,11 @@ export const angledLineOfXLength: SketchLineHelper = {
       callExp,
       ['angle', 'xRelative'],
       'angledLineOfXLength',
-      [0, 1],
-      ...args,
-      ['angle', 'length']
+      [
+        { arrayInput: 0, objInput: 'angle' },
+        { arrayInput: 1, objInput: 'length' },
+      ],
+      ...args
     ),
 }
 
@@ -1036,9 +1074,9 @@ export const angledLineOfYLength: SketchLineHelper = {
     const newLine = createCallback
       ? createCallback(
           [angle, yLength],
-          arrayRawValuesHelper([
-            [angle, 'angle'],
-            [yLength, 'yRelative'],
+          arrOrObjectRawValuesHelper([
+            [angle, 'angle', 'angle'],
+            [yLength, 'yRelative', 'length'],
           ])
         ).callExp
       : createCallExpression('angledLineOfYLength', [
@@ -1089,9 +1127,11 @@ export const angledLineOfYLength: SketchLineHelper = {
       callExp,
       ['angle', 'yRelative'],
       'angledLineOfYLength',
-      [0, 1],
-      ...args,
-      ['angle', 'length']
+      [
+        { arrayInput: 0, objInput: 'angle' },
+        { arrayInput: 1, objInput: 'length' },
+      ],
+      ...args
     ),
 }
 
@@ -1116,9 +1156,9 @@ export const angledLineToX: SketchLineHelper = {
     if (replaceExisting && createCallback) {
       const { callExp, valueUsedInTransform } = createCallback(
         [angle, xArg],
-        arrayRawValuesHelper([
-          [angle, 'angle'],
-          [xArg, 'xAbsolute'],
+        arrOrObjectRawValuesHelper([
+          [angle, 'angle', 'angle'],
+          [xArg, 'xAbsolute', 'to'],
         ]),
         referencedSegment
       )
@@ -1171,9 +1211,11 @@ export const angledLineToX: SketchLineHelper = {
       callExp,
       ['angle', 'xAbsolute'],
       'angledLineToX',
-      [0, 1],
-      ...args,
-      ['angle', 'to']
+      [
+        { arrayInput: 0, objInput: 'angle' },
+        { arrayInput: 1, objInput: 'to' },
+      ],
+      ...args
     ),
 }
 
@@ -1199,9 +1241,9 @@ export const angledLineToY: SketchLineHelper = {
     if (replaceExisting && createCallback) {
       const { callExp, valueUsedInTransform } = createCallback(
         [angle, yArg],
-        arrayRawValuesHelper([
-          [angle, 'angle'],
-          [yArg, 'yAbsolute'],
+        arrOrObjectRawValuesHelper([
+          [angle, 'angle', 'angle'],
+          [yArg, 'yAbsolute', 'to'],
         ]),
         referencedSegment
       )
@@ -1254,9 +1296,11 @@ export const angledLineToY: SketchLineHelper = {
       callExp,
       ['angle', 'yAbsolute'],
       'angledLineToY',
-      [0, 1],
-      ...args,
-      ['angle', 'to']
+      [
+        { arrayInput: 0, objInput: 'angle' },
+        { arrayInput: 1, objInput: 'to' },
+      ],
+      ...args
     ),
 }
 

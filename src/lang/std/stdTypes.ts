@@ -47,7 +47,7 @@ interface updateArgs extends ModifyAstBase {
   to: [number, number]
 }
 
-export type VarValueKeys = 'angle' | 'offset'
+export type VarValueKeys = 'angle' | 'offset' | 'length' | 'to' | 'intersectTag'
 export interface SingleValueInput<T> {
   type: 'singleValue'
   argType: LineInputsType
@@ -65,10 +65,20 @@ export interface ObjectPropertyInput<T> {
   argType: LineInputsType
   value: T
 }
+
+export interface ArrayOrObjItemInput<T> {
+  type: 'arrayOrObjItem'
+  key: VarValueKeys
+  index: 0 | 1
+  argType: LineInputsType
+  value: T
+}
+
 export type _VarValue<T> =
   | SingleValueInput<T>
   | ArrayItemInput<T>
   | ObjectPropertyInput<T>
+  | ArrayOrObjItemInput<T>
 
 export type VarValue = _VarValue<Value>
 export type RawValue = _VarValue<Literal>

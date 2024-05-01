@@ -14,6 +14,7 @@ import {
   moveValueIntoNewVariable,
   sketchOnExtrudedFace,
   deleteSegmentFromPipeExpression,
+  removeSingleConstraintInfo,
 } from './modifyAst'
 import { enginelessExecutor } from '../lib/testHelpers'
 import { findUsesOfTagInPipe, getNodePathFromSourceRange } from './queryAst'
@@ -429,5 +430,128 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
   |> angledLine([65, 33], %)
   |> line([-963.39, -154.67], %)
 `)
+  })
+})
+
+describe('Testing removeSingleConstraintInfo', () => {
+  describe('with mostly object notation', () => {
+    const code = `const part001 = startSketchOn('-XZ')
+  |> startProfileAt([0, 0], %)
+  |> line([3 + 0, 4 + 0], %)
+  |> angledLine({ angle: 3 + 0, length: 3.14 + 0 }, %)
+  |> lineTo([6.14 + 0, 3.14 + 0], %)
+  |> xLineTo(8 + 0, %)
+  |> yLineTo(5 + 0, %)
+  |> yLine(3.14 + 0, %, 'a')
+  |> xLine(3.14 + 0, %)
+  |> angledLineOfXLength({ angle: 3 + 0, length: 3.14 + 0 }, %)
+  |> angledLineOfYLength({ angle: 30 + 0, length: 3 + 0 }, %)
+  |> angledLineToX({ angle: 12.14 + 0, to: 12 + 0 }, %)
+  |> angledLineToY({ angle: 30 + 0, to: 10.14 + 0 }, %)
+  |> angledLineThatIntersects({
+        angle: 3.14 + 0,
+        intersectTag: 'a',
+        offset: 0 + 0
+      }, %)
+  |> tangentialArcTo([3.14 + 0, 13.14 + 0], %)`
+    test.each([
+      [' line([3 + 0, 4], %)', 'arrayIndex', 1],
+      [
+        'angledLine({ angle: 3, length: 3.14 + 0 }, %)',
+        'objectProperty',
+        'angle',
+      ],
+      ['lineTo([6.14, 3.14 + 0], %)', 'arrayIndex', 0],
+      ['xLineTo(8, %)', '', ''],
+      ['yLineTo(5, %)', '', ''],
+      ["yLine(3.14, %, 'a')", '', ''],
+      ['xLine(3.14, %)', '', ''],
+      [
+        'angledLineOfXLength({ angle: 3, length: 3.14 + 0 }, %)',
+        'objectProperty',
+        'angle',
+      ],
+      [
+        'angledLineOfYLength({ angle: 30 + 0, length: 3 }, %)',
+        'objectProperty',
+        'length',
+      ],
+      [
+        'angledLineToX({ angle: 12.14 + 0, to: 12 }, %)',
+        'objectProperty',
+        'to',
+      ],
+      [
+        'angledLineToY({ angle: 30, to: 10.14 + 0 }, %)',
+        'objectProperty',
+        'angle',
+      ],
+      [
+        `angledLineThatIntersects({
+       angle: 3.14 + 0,
+       intersectTag: 'a',
+       offset: 0
+     }, %)`,
+        'objectProperty',
+        'offset',
+      ],
+      ['tangentialArcTo([3.14 + 0, 13.14], %)', 'arrayIndex', 1],
+    ])('stdlib fn: %s', async (expectedFinish, key, value) => {
+      const ast = parse(code)
+      const programMemory = await enginelessExecutor(ast)
+      const lineOfInterest = expectedFinish.split('(')[0] + '('
+      const range: [number, number] = [
+        code.indexOf(lineOfInterest) + 1,
+        code.indexOf(lineOfInterest) + lineOfInterest.length,
+      ]
+      const pathToNode = getNodePathFromSourceRange(ast, range)
+      const mod = removeSingleConstraintInfo(
+        {
+          pathToCallExp: pathToNode,
+          [key]: value,
+        },
+        ast,
+        programMemory
+      )
+      if (!mod) throw new Error('yo is undefined')
+      const recastCode = recast(mod.modifiedAst)
+      expect(recastCode).toContain(expectedFinish)
+    })
+  })
+  describe('with array notation', () => {
+    const code = `const part001 = startSketchOn('-XZ')
+  |> startProfileAt([0, 0], %)
+  |> angledLine([3.14 + 0, 3.14 + 0], %)
+  |> angledLineOfXLength([3 + 0, 3.14 + 0], %)
+  |> angledLineOfYLength([30 + 0, 3 + 0], %)
+  |> angledLineToX([12.14 + 0, 12 + 0], %)
+  |> angledLineToY([30 + 0, 10.14 + 0], %)`
+    test.each([
+      ['angledLine([3, 3.14 + 0], %)', 'arrayIndex', 0],
+      ['angledLineOfXLength([3, 3.14 + 0], %)', 'arrayIndex', 0],
+      ['angledLineOfYLength([30 + 0, 3], %)', 'arrayIndex', 1],
+      ['angledLineToX([12.14 + 0, 12], %)', 'arrayIndex', 1],
+      ['angledLineToY([30, 10.14 + 0], %)', 'arrayIndex', 0],
+    ])('stdlib fn: %s', async (expectedFinish, key, value) => {
+      const ast = parse(code)
+      const programMemory = await enginelessExecutor(ast)
+      const lineOfInterest = expectedFinish.split('(')[0] + '('
+      const range: [number, number] = [
+        code.indexOf(lineOfInterest) + 1,
+        code.indexOf(lineOfInterest) + lineOfInterest.length,
+      ]
+      const pathToNode = getNodePathFromSourceRange(ast, range)
+      const mod = removeSingleConstraintInfo(
+        {
+          pathToCallExp: pathToNode,
+          [key]: value,
+        },
+        ast,
+        programMemory
+      )
+      if (!mod) throw new Error('yo is undefined')
+      const recastCode = recast(mod.modifiedAst)
+      expect(recastCode).toContain(expectedFinish)
+    })
   })
 })

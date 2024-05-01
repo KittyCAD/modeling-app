@@ -1223,20 +1223,24 @@ export function removeSingleConstraint({
       ({ tag, referenceSegName, varValues }) =>
       (_, rawValues) => {
         if (objectProperty) {
-          const yo: Parameters<typeof createObjectExpression>[0] = {}
+          const expression: Parameters<typeof createObjectExpression>[0] = {}
           varValues.forEach((varValue) => {
-            if (varValue.type !== 'objectProperty') return
+            if (
+              varValue.type !== 'objectProperty' &&
+              varValue.type !== 'arrayOrObjItem'
+            )
+              return
             const literal = rawValues.find(
               (rawValue) =>
-                rawValue.type === 'objectProperty' &&
+                (rawValue.type === 'objectProperty' ||
+                  rawValue.type === 'arrayOrObjItem') &&
                 rawValue.key === objectProperty
             )?.value
             const value =
               (varValue.key === objectProperty && literal) || varValue.value
-            yo[varValue.key] = value
+            expression[varValue.key] = value
           })
-          const objExp = createObjectExpression(yo)
-
+          const objExp = createObjectExpression(expression)
           return createStdlibCallExpression(
             callExp.callee.name as any,
             objExp,
@@ -1246,12 +1250,15 @@ export function removeSingleConstraint({
         if (typeof arrayIndex === 'number') {
           const values = varValues.map((varValue) => {
             if (
-              varValue.type === 'arrayItem' &&
+              (varValue.type === 'arrayItem' ||
+                varValue.type === 'arrayOrObjItem') &&
               varValue.index === arrayIndex
             ) {
               const literal = rawValues.find(
                 (rawValue) =>
-                  rawValue.type === 'arrayItem' && rawValue.index === arrayIndex
+                  (rawValue.type === 'arrayItem' ||
+                    rawValue.type === 'arrayOrObjItem') &&
+                  rawValue.index === arrayIndex
               )?.value
               return (
                 (varValue.index === arrayIndex && literal) || varValue.value
@@ -1563,6 +1570,7 @@ export function transformAstSketchLines({
 
     const arrayValueMap: {
       [key in ToolTip]?: [LineInputsType, LineInputsType]
+      // todo spreading shit everywhere, put this in as a SketchLineHelper
     } = {
       angledLine: ['angle', 'length'],
       angledLineOfXLength: ['angle', 'xRelative'],
@@ -1592,13 +1600,26 @@ export function transformAstSketchLines({
     }
 
     const objectValueMap: { [key in ToolTip]?: Array<LineInputsType> } = {
+      // todo spreading shit everywhere, put this in as a SketchLineHelper
+      angledLine: ['angle', 'length'],
+      angledLineOfXLength: ['angle', 'xRelative'],
+      angledLineOfYLength: ['angle', 'yRelative'],
+      angledLineToX: ['angle', 'xAbsolute'],
+      angledLineToY: ['angle', 'yAbsolute'],
       angledLineThatIntersects: ['angle', 'length'],
     }
     const objectValueArgTypes = objectValueMap[callExp.callee.name as ToolTip]
+    console.log('objectValueArgTypes', objectValueArgTypes, firstInput)
     if (objectValueArgTypes && firstInput.type === 'ObjectExpression') {
       firstInput.properties.forEach((prop, index) => {
         const name = prop.key.name as VarValueKeys
-        const allowedProps: Array<VarValueKeys> = ['angle', 'offset']
+        const allowedProps: Array<VarValueKeys> = [
+          'angle',
+          'offset',
+          'length',
+          'to',
+          'intersectTag',
+        ]
         if (allowedProps.includes(name))
           varValues.push({
             type: 'objectProperty',
