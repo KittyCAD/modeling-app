@@ -191,6 +191,9 @@ export type ModelingMachineEvent =
   | {
       type: 'Delete segment'
       data: PathToNode
+  }
+  |{
+      type: 'Rejig sketch'
     }
 
 export type MoveDesc = { line: number; snippet: string }
@@ -378,6 +381,11 @@ export const modelingMachine = createMachine(
                 target: 'Rectangle tool',
                 cond: 'Sketch is empty',
               },
+
+              'Rejig sketch': {
+                actions: 'Rejig sketch',
+                internal: true,
+              },
             },
 
             entry: 'setup client side sketch segments',
@@ -480,6 +488,11 @@ export const modelingMachine = createMachine(
                 target: 'Rectangle tool',
                 cond: 'Sketch is empty',
               },
+
+              'Rejig sketch': {
+                target: 'Line tool',
+                internal: true,
+              },
             },
 
             states: {
@@ -541,6 +554,7 @@ export const modelingMachine = createMachine(
 
           'Rectangle tool': {
             entry: ['listen for rectangle origin'],
+
             states: {
               'Awaiting second corner': {},
 
@@ -555,6 +569,13 @@ export const modelingMachine = createMachine(
             },
 
             initial: 'Awaiting origin',
+
+            on: {
+              'Rejig sketch': {
+                target: 'Rectangle tool',
+                internal: true,
+              },
+            },
           },
         },
 
@@ -1091,6 +1112,17 @@ export const modelingMachine = createMachine(
       'Delete segment': ({ sketchDetails }, { data: pathToNode }) =>
         deleteSegment({ pathToNode, sketchDetails }),
       'Reset Segment Overlays': () => sceneEntitiesManager.resetOverlays(),
+      'Rejig sketch': ({ sketchDetails }) => {
+        if (!sketchDetails) return
+        sceneEntitiesManager.updateAstAndRejigSketch(
+          sketchDetails.sketchPathToNode,
+          kclManager.ast,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin,
+          false
+        )
+      },
     },
     // end actions
   }
