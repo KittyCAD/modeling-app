@@ -36,6 +36,28 @@ pub struct Program {
 }
 
 impl Program {
+    pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
+        // Check if we are in the non code meta.
+        if let Some(meta) = self.get_non_code_meta_for_position(pos) {
+            for node in &meta.start {
+                if node.contains(pos) {
+                    // We only care about the shebang.
+                    if let NonCodeValue::Shebang { value: _ } = &node.value {
+                        let source_range: SourceRange = node.into();
+                        return Some(Hover::Comment {
+                            value: r#"The `#!` at the start of a script, known as a shebang, specifies the path to the interpreter that should execute the script. This line is not necessary for your `kcl` to run in the modeling-app. You can safely delete it. If you wish to learn more about what you _can_ do with a shebang, read this doc: [zoo.dev/docs/faq/shebang](https://zoo.dev/docs/faq/shebang)."#.to_string(),
+                            range: source_range.to_lsp_range(code),
+                        });
+                    }
+                }
+            }
+        }
+
+        let value = self.get_value_for_position(pos)?;
+
+        value.get_hover_value_for_position(pos, code)
+    }
+
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         let indentation = options.get_indentation(indentation_level);
         let result = self
@@ -812,6 +834,18 @@ pub struct NonCodeNode {
     pub start: usize,
     pub end: usize,
     pub value: NonCodeValue,
+}
+
+impl From<NonCodeNode> for SourceRange {
+    fn from(value: NonCodeNode) -> Self {
+        Self([value.start, value.end])
+    }
+}
+
+impl From<&NonCodeNode> for SourceRange {
+    fn from(value: &NonCodeNode) -> Self {
+        Self([value.start, value.end])
+    }
 }
 
 impl NonCodeNode {
@@ -2985,6 +3019,10 @@ pub enum Hover {
     Signature {
         name: String,
         parameter_index: u32,
+        range: LspRange,
+    },
+    Comment {
+        value: String,
         range: LspRange,
     },
 }

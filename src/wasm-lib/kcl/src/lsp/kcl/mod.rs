@@ -795,11 +795,7 @@ impl LanguageServer for Backend {
             return Ok(None);
         };
 
-        let Some(value) = ast.get_value_for_position(pos) else {
-            return Ok(None);
-        };
-
-        let Some(hover) = value.get_hover_value_for_position(pos, current_code) else {
+        let Some(hover) = ast.get_hover_value_for_position(pos, current_code) else {
             return Ok(None);
         };
 
@@ -836,6 +832,13 @@ impl LanguageServer for Backend {
                 }))
             }
             crate::ast::types::Hover::Signature { .. } => Ok(None),
+            crate::ast::types::Hover::Comment { value, range } => Ok(Some(Hover {
+                contents: HoverContents::Markup(MarkupContent {
+                    kind: MarkupKind::Markdown,
+                    value,
+                }),
+                range: Some(range),
+            })),
         }
     }
 
@@ -943,6 +946,9 @@ impl LanguageServer for Backend {
                 signature.active_parameter = Some(parameter_index);
 
                 Ok(Some(signature.clone()))
+            }
+            crate::ast::types::Hover::Comment { value: _, range: _ } => {
+                return Ok(None);
             }
         }
     }
