@@ -821,6 +821,7 @@ impl NonCodeNode {
 
     pub fn value(&self) -> String {
         match &self.value {
+            NonCodeValue::Shebang { value } => value.clone(),
             NonCodeValue::InlineComment { value, style: _ } => value.clone(),
             NonCodeValue::BlockComment { value, style: _ } => value.clone(),
             NonCodeValue::NewLineBlockComment { value, style: _ } => value.clone(),
@@ -830,6 +831,7 @@ impl NonCodeNode {
 
     pub fn format(&self, indentation: &str) -> String {
         match &self.value {
+            NonCodeValue::Shebang { value } => format!("{}\n\n", value),
             NonCodeValue::InlineComment {
                 value,
                 style: CommentStyle::Line,
@@ -882,6 +884,15 @@ pub enum CommentStyle {
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum NonCodeValue {
+    /// A shebang.
+    /// This is a special type of comment that is at the top of the file.
+    /// It looks like this:
+    /// ```python,no_run
+    /// #!/usr/bin/env python
+    /// ```
+    Shebang {
+        value: String,
+    },
     /// An inline comment.
     /// Here are examples:
     /// `1 + 1 // This is an inline comment`.
@@ -3271,6 +3282,117 @@ fn ghi = (x) => {
         let recasted = program.recast(&Default::default(), 0);
         // Its VERY important this comes back with zero new lines.
         assert_eq!(recasted, r#""#);
+    }
+
+    #[test]
+    fn test_recast_shebang_only() {
+        let some_program_string = r#"#!/usr/local/env zoo kcl"#;
+
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let result = parser.ast();
+
+        assert!(result.is_err());
+        assert_eq!(
+            result.unwrap_err().to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([21, 24])], message: "Unexpected end of file. The compiler expected a function body items (functions are made up of variable declarations, expressions, and return statements, each of those is a possible body item" }"#
+        );
+    }
+
+    #[test]
+    fn test_recast_shebang() {
+        let some_program_string = r#"#!/usr/local/env zoo kcl
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+"#;
+
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"#!/usr/local/env zoo kcl
+
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+"#
+        );
+    }
+
+    #[test]
+    fn test_recast_shebang_new_lines() {
+        let some_program_string = r#"#!/usr/local/env zoo kcl
+        
+
+
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+"#;
+
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"#!/usr/local/env zoo kcl
+
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+"#
+        );
+    }
+
+    #[test]
+    fn test_recast_shebang_with_comments() {
+        let some_program_string = r#"#!/usr/local/env zoo kcl
+        
+// Yo yo my comments.
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+"#;
+
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"#!/usr/local/env zoo kcl
+
+// Yo yo my comments.
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+"#
+        );
     }
 
     #[test]
