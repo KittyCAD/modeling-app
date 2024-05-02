@@ -223,15 +223,18 @@ const _makeTemplate = (
 }
 
 /**
- * Tool for making templates to match code snippets in the editor with some fudge factor, as there's some level of undeterminism
- * usage is such
+ * Tool for making templates to match code snippets in the editor with some fudge factor,
+ * as there's some level of non-determinism.
+ *
+ * Usage is as such:
  * ```typescript
  * const result = makeTemplate`const myVar = aFunc(${[1, 2, 3]})`
  * await expect(page.locator('.cm-content')).toHaveText(result.regExp)
  * ```
- * Where the value 1, 2 or 3 are all valid and should make the test pass
+ * Where the value `1`, `2` or `3` are all valid and should make the test pass.
  *
- * The function also has a `genNext` function that allows you to chain multiple templates together
+ * The function also has a `genNext` function that allows you to chain multiple templates
+ * together without having to repeat previous parts of the template.
  * ```typescript
  * const result2 = result.genNext`const myVar2 = aFunc(${[4, 5, 6]})`
  * ```
