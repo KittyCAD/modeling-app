@@ -68,9 +68,7 @@ export class LanguageServerPlugin implements PluginValue {
 
       if (this.viewUpdate) {
         editorManager.handleOnViewUpdate(this.viewUpdate)
-        setTimeout(() => {
-          sceneInfra.modelingSend({ type: 'Rejig sketch' })
-        }, 100)
+        setTimeout(() => sceneInfra.modelingSend({ type: 'Rejig sketch' }))
       }
     } catch (e) {
       console.error(e)
