@@ -507,7 +507,7 @@ test('Draft rectangles should look right', async ({ page, context }) => {
     `const part001 = startSketchOn('-XZ')`
   )
 
-  await page.waitForTimeout(300) // TODO detect animation ending, or disable animation
+  await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
   await u.closeDebugPanel()
 
   const startXPx = 600
