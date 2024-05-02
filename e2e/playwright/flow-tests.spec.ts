@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { getUtils } from './test-utils'
+import { makeTemplate, getUtils } from './test-utils'
 import waitOn from 'wait-on'
 import { roundOff } from 'lib/utils'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
@@ -1689,14 +1689,13 @@ test('Sketch on face', async ({ page }) => {
   await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
   previousCodeContent = await page.locator('.cm-content').innerText()
 
-  await expect(page.locator('.cm-content'))
-    .toContainText(`const part002 = startSketchOn(part001, 'seg01')
-|> startProfileAt([-12.83, 6.7], %)
-|> line([${process?.env?.CI ? 2.28 : 2.28}, -${
-    process?.env?.CI ? 0.07 : 0.07
-  }], %)
-|> line([-3.05, -1.47], %)
-|> close(%)`)
+  const result = makeTemplate`const part002 = startSketchOn(part001, 'seg01')
+  |> startProfileAt([-12.83, 6.7], %)
+  |> line([${[2.28, 2.35]}, -${0.07}], %)
+  |> line([-3.05, -1.47], %)
+  |> close(%)`
+
+  await expect(page.locator('.cm-content')).toHaveText(result.regExp)
 
   // exit sketch
   await u.openAndClearDebugPanel()
@@ -1715,15 +1714,9 @@ test('Sketch on face', async ({ page }) => {
   await expect(page.getByText('Confirm Extrude')).toBeVisible()
   await page.keyboard.press('Enter')
 
-  await expect(page.locator('.cm-content'))
-    .toContainText(`const part002 = startSketchOn(part001, 'seg01')
-|> startProfileAt([-12.83, 6.7], %)
-|> line([${process?.env?.CI ? 2.28 : 2.28}, -${
-    process?.env?.CI ? 0.07 : 0.07
-  }], %)
-|> line([-3.05, -1.47], %)
-|> close(%)
-|> extrude(5 + 7, %)`)
+  const result2 = result.genNext`
+  |> extrude(${[5, 5]} + 7, %)`
+  await expect(page.locator('.cm-content')).toHaveText(result2.regExp)
 })
 
 test('Can code mod a line length', async ({ page }) => {
