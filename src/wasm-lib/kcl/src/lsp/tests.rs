@@ -742,7 +742,7 @@ async fn test_kcl_lsp_create_zip() {
 
     assert_eq!(files.len(), 11);
     let util_path = format!("{}/util.rs", string_path).replace("file://", "");
-    assert!(files.get(&util_path).is_some());
+    assert!(files.contains_key(&util_path));
     assert_eq!(files.get("/test.kcl"), Some(&4));
 }
 
