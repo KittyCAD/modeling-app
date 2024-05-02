@@ -279,7 +279,7 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
     const bottomAng = 25
    */
   await page.click('.cm-content')
-  await page.keyboard.type('* error')
+  await page.keyboard.type('$ error')
 
   // press arrows to clear autocomplete
   await page.keyboard.press('ArrowLeft')
@@ -296,10 +296,10 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
 
   // error text on hover
   await page.hover('.cm-lint-marker-error')
-  await expect(page.getByText("found unknown token '*'")).toBeVisible()
+  await expect(page.getByText("found unknown token '$'")).toBeVisible()
 
   // select the line that's causing the error and delete it
-  await page.getByText('* error').click()
+  await page.getByText('$ error').click()
   await page.keyboard.press('End')
   await page.keyboard.down('Shift')
   await page.keyboard.press('Home')
