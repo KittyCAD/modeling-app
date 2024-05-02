@@ -182,3 +182,56 @@ export function getUtils(page: Page) {
       }),
   }
 }
+
+type TemplateOptions = Array<number | Array<number>>
+
+type makeTemplateReturn = {
+  regExp: RegExp
+  genNext: (
+    newStrs: TemplateStringsArray,
+    ...newValues: TemplateOptions
+  ) => makeTemplateReturn
+}
+
+const escapeRegExp = (string: string) => {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // $& means the whole matched string
+}
+
+const _makeTemplate = (
+  strs: TemplateStringsArray,
+  ...values: TemplateOptions
+) => {
+  const length = Math.max(...values.map((a) => (Array.isArray(a) ? a[0] : 0)))
+  let reExpTemplate = ''
+  for (let i = 0; i < length; i++) {
+    const currentStr = strs.map((str, index) => {
+      const hiThere = values[index]
+      return (
+        escapeRegExp(str) +
+        String(
+          Array.isArray(hiThere)
+            ? hiThere[i]
+            : typeof hiThere === 'number'
+            ? hiThere
+            : ''
+        )
+      )
+    })
+    reExpTemplate += '|' + currentStr.join('')
+  }
+  return new RegExp(reExpTemplate)
+}
+
+export const makeTemplate: (
+  strs: TemplateStringsArray,
+  ...values: TemplateOptions
+) => makeTemplateReturn = (strs, ...values) => {
+  return {
+    regExp: _makeTemplate(strs, ...values),
+    genNext: (newStrs: TemplateStringsArray, ...newValues: TemplateOptions) =>
+      makeTemplate(
+        [...strs, ...newStrs] as any as TemplateStringsArray,
+        [...values, ...newValues] as any
+      ),
+  }
+}
