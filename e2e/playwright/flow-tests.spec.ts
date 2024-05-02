@@ -1390,7 +1390,7 @@ test('Deselecting line tool should mean nothing happens on click', async ({
     `const part001 = startSketchOn('-XZ')`
   )
 
-  await page.waitForTimeout(300)
+  await page.waitForTimeout(600)
 
   let previousCodeContent = await page.locator('.cm-content').innerText()
 
