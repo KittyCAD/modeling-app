@@ -334,7 +334,7 @@ fn show_in_folder(path: &str) -> Result<(), InvokeError> {
     #[cfg(not(unix))]
     {
         Command::new("explorer")
-            .args(["/select,", &path]) // The comma after select is not a typo
+            .args(["/select,", path]) // The comma after select is not a typo
             .spawn()
             .map_err(|e| InvokeError::from_anyhow(e.into()))?;
     }
@@ -342,7 +342,7 @@ fn show_in_folder(path: &str) -> Result<(), InvokeError> {
     #[cfg(unix)]
     {
         Command::new("open")
-            .args(["-R", &path])
+            .args(["-R", path])
             .spawn()
             .map_err(|e| InvokeError::from_anyhow(e.into()))?;
     }
