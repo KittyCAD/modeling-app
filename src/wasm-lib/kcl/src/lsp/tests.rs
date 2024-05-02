@@ -885,6 +885,53 @@ async fn test_kcl_lsp_on_hover() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_on_hover_shebang() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"#!/usr/bin/env zoo kcl view
+startSketchOn()"#
+                    .to_string(),
+            },
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Send hover request.
+    let hover = server
+        .hover(tower_lsp::lsp_types::HoverParams {
+            text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 0, character: 2 },
+            },
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    // Check the hover.
+    if let Some(hover) = hover {
+        assert_eq!(
+            hover.contents,
+            tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent {
+                kind: tower_lsp::lsp_types::MarkupKind::Markdown,
+                value: "The `#!` at the start of a script, known as a shebang, specifies the path to the interpreter that should execute the script. This line is not necessary for your `kcl` to run in the modeling-app. You can safely delete it. If you wish to learn more about what you _can_ do with a shebang, read this doc: [zoo.dev/docs/faq/shebang](https://zoo.dev/docs/faq/shebang).".to_string()
+            })
+        );
+    } else {
+        panic!("Expected hover");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_signature_help() {
     let server = kcl_lsp_server(false).await.unwrap();
 
