@@ -188,8 +188,8 @@ type TemplateOptions = Array<number | Array<number>>
 type makeTemplateReturn = {
   regExp: RegExp
   genNext: (
-    newStrs: TemplateStringsArray,
-    ...newValues: TemplateOptions
+    templateParts: TemplateStringsArray,
+    ...options: TemplateOptions
   ) => makeTemplateReturn
 }
 
@@ -198,21 +198,21 @@ const escapeRegExp = (string: string) => {
 }
 
 const _makeTemplate = (
-  strs: TemplateStringsArray,
-  ...values: TemplateOptions
+  templateParts: TemplateStringsArray,
+  ...options: TemplateOptions
 ) => {
-  const length = Math.max(...values.map((a) => (Array.isArray(a) ? a[0] : 0)))
+  const length = Math.max(...options.map((a) => (Array.isArray(a) ? a[0] : 0)))
   let reExpTemplate = ''
   for (let i = 0; i < length; i++) {
-    const currentStr = strs.map((str, index) => {
-      const hiThere = values[index]
+    const currentStr = templateParts.map((str, index) => {
+      const currentOptions = options[index]
       return (
         escapeRegExp(str) +
         String(
-          Array.isArray(hiThere)
-            ? hiThere[i]
-            : typeof hiThere === 'number'
-            ? hiThere
+          Array.isArray(currentOptions)
+            ? currentOptions[i]
+            : typeof currentOptions === 'number'
+            ? currentOptions
             : ''
         )
       )
@@ -223,15 +223,15 @@ const _makeTemplate = (
 }
 
 export const makeTemplate: (
-  strs: TemplateStringsArray,
+  templateParts: TemplateStringsArray,
   ...values: TemplateOptions
-) => makeTemplateReturn = (strs, ...values) => {
+) => makeTemplateReturn = (templateParts, ...options) => {
   return {
-    regExp: _makeTemplate(strs, ...values),
-    genNext: (newStrs: TemplateStringsArray, ...newValues: TemplateOptions) =>
+    regExp: _makeTemplate(templateParts, ...options),
+    genNext: (nextTemplateParts: TemplateStringsArray, ...nextOptions: TemplateOptions) =>
       makeTemplate(
-        [...strs, ...newStrs] as any as TemplateStringsArray,
-        [...values, ...newValues] as any
+        [...templateParts, ...nextTemplateParts] as any as TemplateStringsArray,
+        [...options, ...nextOptions] as any
       ),
   }
 }
