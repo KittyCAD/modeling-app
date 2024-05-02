@@ -228,7 +228,10 @@ export const makeTemplate: (
 ) => makeTemplateReturn = (templateParts, ...options) => {
   return {
     regExp: _makeTemplate(templateParts, ...options),
-    genNext: (nextTemplateParts: TemplateStringsArray, ...nextOptions: TemplateOptions) =>
+    genNext: (
+      nextTemplateParts: TemplateStringsArray,
+      ...nextOptions: TemplateOptions
+    ) =>
       makeTemplate(
         [...templateParts, ...nextTemplateParts] as any as TemplateStringsArray,
         [...options, ...nextOptions] as any
