@@ -25,6 +25,7 @@ import {
   codeManager,
   editorManager,
   kclManager,
+  sceneEntitiesManager,
   sceneInfra,
 } from 'lib/singletons'
 import type { UnitLength } from 'wasm-lib/kcl/bindings/UnitLength'
@@ -68,7 +69,7 @@ export class LanguageServerPlugin implements PluginValue {
 
       if (this.viewUpdate) {
         editorManager.handleOnViewUpdate(this.viewUpdate)
-        setTimeout(() => sceneInfra.modelingSend({ type: 'Rejig sketch' }))
+        sceneEntitiesManager.rejigAgain(kclManager.ast, false)
       }
     } catch (e) {
       console.error(e)
