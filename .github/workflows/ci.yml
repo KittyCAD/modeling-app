@@ -322,6 +322,9 @@ jobs:
           # includes the updater, and that anything we changed with the target
           # does not persist
           rm -rf src-tauri/target
+          # Lets get rid of the info.plist for the normal mac builds since its
+          # being sketchy.
+          rm src-tauri/Info.plist
 
       # We do this after the apple store because the apple store build is
       # specific and we want to overwrite it with the this new build after and
