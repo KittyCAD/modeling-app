@@ -2382,7 +2382,7 @@ const secondExtrude = startSketchOn('XY')
         let err = parser.ast().unwrap_err();
         assert_eq!(
             err.to_string(),
-            r#"lexical: KclErrorDetails { source_ranges: [SourceRange([1, 2])], message: "found unknown token '!'" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([0, 1])], message: "Unexpected token" }"#
         );
     }
 
@@ -2449,7 +2449,7 @@ z(-[["#,
         assert!(result.is_err());
         assert_eq!(
             result.err().unwrap().to_string(),
-            r#"lexical: KclErrorDetails { source_ranges: [SourceRange([6, 7])], message: "found unknown token '#'" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([3, 4])], message: "Unexpected token" }"#
         );
     }
 
@@ -2461,7 +2461,7 @@ z(-[["#,
         assert!(result.is_err());
         assert_eq!(
             result.err().unwrap().to_string(),
-            r#"lexical: KclErrorDetails { source_ranges: [SourceRange([25, 26]), SourceRange([26, 27])], message: "found unknown tokens [#, #]" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([2, 3])], message: "Unexpected token" }"#
         );
     }
 
