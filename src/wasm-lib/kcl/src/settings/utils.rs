@@ -22,7 +22,10 @@ lazy_static::lazy_static! {
 
 /// Walk a directory recursively and return a list of all files.
 #[async_recursion::async_recursion]
-pub async fn walk_dir<P: AsRef<Path> + Send>(dir: P) -> Result<FileEntry> {
+pub async fn walk_dir<P>(dir: P) -> Result<FileEntry>
+where
+    P: AsRef<Path> + Send,
+{
     let mut entry = FileEntry {
         name: dir
             .as_ref()
