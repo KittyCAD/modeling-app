@@ -150,6 +150,9 @@ export type ModelingMachineEvent =
       data: SketchDetails
     }
   | { type: 'Set mouse state'; data: MouseState }
+  | {
+      type: 'Rejig sketch'
+    }
 
 export type MoveDesc = { line: number; snippet: string }
 
@@ -518,6 +521,11 @@ export const modelingMachine = createMachine(
 
         on: {
           CancelSketch: '.SketchIdle',
+
+          'Rejig sketch': {
+            internal: true,
+            actions: 'Rejig sketch',
+          },
         },
 
         exit: [
@@ -1034,6 +1042,17 @@ export const modelingMachine = createMachine(
           },
         }),
       'set selection filter to defaults': () => kclManager.enterEditMode(),
+      'Rejig sketch': ({ sketchDetails }) => {
+        if (!sketchDetails) return
+        sceneEntitiesManager.updateAstAndRejigSketch(
+          sketchDetails.sketchPathToNode,
+          kclManager.ast,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin,
+          false
+        )
+      },
     },
     // end actions
   }

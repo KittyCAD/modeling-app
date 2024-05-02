@@ -455,9 +455,10 @@ export class SceneEntities {
     modifiedAst: Program,
     forward: [number, number, number],
     up: [number, number, number],
-    origin: [number, number, number]
+    origin: [number, number, number],
+    updateAst = true
   ) => {
-    await kclManager.updateAst(modifiedAst, false)
+    if (updateAst) await kclManager.updateAst(modifiedAst, false)
     await this.tearDownSketch({ removeAxis: false })
     sceneInfra.resetMouseListeners()
     await this.setupSketch({
