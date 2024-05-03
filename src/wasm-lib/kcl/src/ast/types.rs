@@ -36,6 +36,28 @@ pub struct Program {
 }
 
 impl Program {
+    pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
+        // Check if we are in the non code meta.
+        if let Some(meta) = self.get_non_code_meta_for_position(pos) {
+            for node in &meta.start {
+                if node.contains(pos) {
+                    // We only care about the shebang.
+                    if let NonCodeValue::Shebang { value: _ } = &node.value {
+                        let source_range: SourceRange = node.into();
+                        return Some(Hover::Comment {
+                            value: r#"The `#!` at the start of a script, known as a shebang, specifies the path to the interpreter that should execute the script. This line is not necessary for your `kcl` to run in the modeling-app. You can safely delete it. If you wish to learn more about what you _can_ do with a shebang, read this doc: [zoo.dev/docs/faq/shebang](https://zoo.dev/docs/faq/shebang)."#.to_string(),
+                            range: source_range.to_lsp_range(code),
+                        });
+                    }
+                }
+            }
+        }
+
+        let value = self.get_value_for_position(pos)?;
+
+        value.get_hover_value_for_position(pos, code)
+    }
+
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         let indentation = options.get_indentation(indentation_level);
         let result = self
@@ -814,6 +836,18 @@ pub struct NonCodeNode {
     pub value: NonCodeValue,
 }
 
+impl From<NonCodeNode> for SourceRange {
+    fn from(value: NonCodeNode) -> Self {
+        Self([value.start, value.end])
+    }
+}
+
+impl From<&NonCodeNode> for SourceRange {
+    fn from(value: &NonCodeNode) -> Self {
+        Self([value.start, value.end])
+    }
+}
+
 impl NonCodeNode {
     pub fn contains(&self, pos: usize) -> bool {
         self.start <= pos && pos <= self.end
@@ -821,6 +855,7 @@ impl NonCodeNode {
 
     pub fn value(&self) -> String {
         match &self.value {
+            NonCodeValue::Shebang { value } => value.clone(),
             NonCodeValue::InlineComment { value, style: _ } => value.clone(),
             NonCodeValue::BlockComment { value, style: _ } => value.clone(),
             NonCodeValue::NewLineBlockComment { value, style: _ } => value.clone(),
@@ -830,6 +865,7 @@ impl NonCodeNode {
 
     pub fn format(&self, indentation: &str) -> String {
         match &self.value {
+            NonCodeValue::Shebang { value } => format!("{}\n\n", value),
             NonCodeValue::InlineComment {
                 value,
                 style: CommentStyle::Line,
@@ -882,6 +918,15 @@ pub enum CommentStyle {
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum NonCodeValue {
+    /// A shebang.
+    /// This is a special type of comment that is at the top of the file.
+    /// It looks like this:
+    /// ```python,no_run
+    /// #!/usr/bin/env python
+    /// ```
+    Shebang {
+        value: String,
+    },
     /// An inline comment.
     /// Here are examples:
     /// `1 + 1 // This is an inline comment`.
@@ -2976,6 +3021,10 @@ pub enum Hover {
         parameter_index: u32,
         range: LspRange,
     },
+    Comment {
+        value: String,
+        range: LspRange,
+    },
 }
 
 /// Format options.
@@ -3271,6 +3320,117 @@ fn ghi = (x) => {
         let recasted = program.recast(&Default::default(), 0);
         // Its VERY important this comes back with zero new lines.
         assert_eq!(recasted, r#""#);
+    }
+
+    #[test]
+    fn test_recast_shebang_only() {
+        let some_program_string = r#"#!/usr/local/env zoo kcl"#;
+
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let result = parser.ast();
+
+        assert!(result.is_err());
+        assert_eq!(
+            result.unwrap_err().to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([21, 24])], message: "Unexpected end of file. The compiler expected a function body items (functions are made up of variable declarations, expressions, and return statements, each of those is a possible body item" }"#
+        );
+    }
+
+    #[test]
+    fn test_recast_shebang() {
+        let some_program_string = r#"#!/usr/local/env zoo kcl
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+"#;
+
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"#!/usr/local/env zoo kcl
+
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+"#
+        );
+    }
+
+    #[test]
+    fn test_recast_shebang_new_lines() {
+        let some_program_string = r#"#!/usr/local/env zoo kcl
+        
+
+
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+"#;
+
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"#!/usr/local/env zoo kcl
+
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+"#
+        );
+    }
+
+    #[test]
+    fn test_recast_shebang_with_comments() {
+        let some_program_string = r#"#!/usr/local/env zoo kcl
+        
+// Yo yo my comments.
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+"#;
+
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"#!/usr/local/env zoo kcl
+
+// Yo yo my comments.
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+"#
+        );
     }
 
     #[test]

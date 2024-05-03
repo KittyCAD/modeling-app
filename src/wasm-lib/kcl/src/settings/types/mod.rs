@@ -31,7 +31,7 @@ impl Configuration {
 
         if let Some(project_directory) = &settings.settings.app.project_directory {
             if settings.settings.project.directory.to_string_lossy().is_empty() {
-                settings.settings.project.directory = project_directory.clone();
+                settings.settings.project.directory.clone_from(project_directory);
                 settings.settings.app.project_directory = None;
             }
         }

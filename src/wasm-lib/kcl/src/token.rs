@@ -31,6 +31,10 @@ pub enum TokenType {
     Type,
     /// A brace.
     Brace,
+    /// A hash.
+    Hash,
+    /// A bang.
+    Bang,
     /// Whitespace.
     Whitespace,
     /// A comma.
@@ -74,6 +78,8 @@ impl TryFrom<TokenType> for SemanticTokenType {
             | TokenType::Colon
             | TokenType::Period
             | TokenType::DoublePeriod
+            | TokenType::Hash
+            | TokenType::Bang
             | TokenType::Unknown => {
                 anyhow::bail!("unsupported token type: {:?}", token_type)
             }
