@@ -317,7 +317,7 @@ export class KclManager {
     if (execute) {
       // Call execute on the set ast.
       // Update the code state and editor.
-      codeManager.updateCodeStateEditor(newCode)
+      codeManager.updateCodeEditor(newCode)
       // Write the file to disk.
       await codeManager.writeToFile()
       await this.executeAst(astWithUpdatedSource)
