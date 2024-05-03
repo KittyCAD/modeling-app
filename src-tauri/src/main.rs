@@ -488,6 +488,9 @@ fn main() -> Result<()> {
             |app, event| {
                 #[cfg(any(target_os = "macos", target_os = "ios"))]
                 if let tauri::RunEvent::Opened { urls } = event {
+                    if let Some(w) = app.get_webview_window("main") {
+                        let _ = w.eval(&format!("console.log(`[tauri] Opened URLs: {:?}`)", urls));
+                    }
                     println!("Opened URLs: {:?}", urls);
 
                     // Handle the first URL.
