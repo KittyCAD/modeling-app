@@ -305,16 +305,6 @@ export class SceneEntities {
     sketchGroup: SketchGroup
     variableDeclarationName: string
   }> {
-    this.rejigAgain = async (_modifiedAst: Program, _updateAst: boolean) => {
-      return this.updateAstAndRejigSketch(
-        sketchPathToNode,
-        _modifiedAst,
-        forward,
-        up,
-        position || [0, 0, 0],
-        _updateAst
-      )
-    }
     this.createIntersectionPlane()
 
     const { truncatedAst, programMemoryOverride, variableDeclarationName } =
@@ -460,7 +450,6 @@ export class SceneEntities {
       variableDeclarationName,
     }
   }
-  rejigAgain: (modifiedAst: Program, update: boolean) => void = () => {}
   updateAstAndRejigSketch = async (
     sketchPathToNode: PathToNode,
     modifiedAst: Program,
@@ -469,16 +458,6 @@ export class SceneEntities {
     origin: [number, number, number],
     updateAst = true
   ) => {
-    this.rejigAgain = async (_modifiedAst: Program, _updateAst: boolean) => {
-      return this.updateAstAndRejigSketch(
-        sketchPathToNode,
-        _modifiedAst,
-        forward,
-        up,
-        origin,
-        _updateAst
-      )
-    }
     if (updateAst) await kclManager.updateAst(modifiedAst, false)
     await this.tearDownSketch({ removeAxis: false })
     sceneInfra.resetMouseListeners()
@@ -986,7 +965,7 @@ export class SceneEntities {
       if (!draftInfo)
         // don't want to mod the user's code yet as they have't committed to the change yet
         // plus this would be the truncated ast being recast, it would be wrong
-        codeManager.updateCodeStateEditor(code)
+        codeManager.updateCodeEditor(code)
       const { programMemory } = await executeAst({
         ast: truncatedAst,
         useFakeExecutor: true,

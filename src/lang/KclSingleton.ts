@@ -17,7 +17,7 @@ import {
   ExtrudeGroup,
 } from 'lang/wasm'
 import { getNodeFromPath } from './queryAst'
-import { codeManager, editorManager } from 'lib/singletons'
+import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
 
 export class KclManager {
   private _ast: Program = {
@@ -187,6 +187,7 @@ export class KclManager {
       ast,
       engineCommandManager: this.engineCommandManager,
     })
+    sceneInfra.modelingSend({ type: 'code edit during sketch' })
     enterEditMode(programMemory, this.engineCommandManager)
     this.isExecuting = false
     // Check the cancellation token for this execution before applying side effects
@@ -219,7 +220,7 @@ export class KclManager {
     const newCode = recast(ast)
     const newAst = this.safeParse(newCode)
     if (!newAst) return
-    codeManager.updateCodeStateEditor(newCode)
+    codeManager.updateCodeEditor(newCode)
     // Write the file to disk.
     await codeManager.writeToFile()
     await this?.engineCommandManager?.waitForReady

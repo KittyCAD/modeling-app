@@ -11,8 +11,7 @@ const PERSIST_CODE_TOKEN = 'persistCode'
 
 export default class CodeManager {
   private _code: string = bracket
-  private _updateState: (arg: string) => void = () => {}
-  private _updateEditor: (arg: string) => void = () => {}
+  #updateState: (arg: string) => void = () => {}
   private _currentFilePath: string | null = null
 
   constructor() {
@@ -46,7 +45,7 @@ export default class CodeManager {
   }
 
   registerCallBacks({ setCode }: { setCode: (arg: string) => void }) {
-    this._updateState = setCode
+    this.#updateState = setCode
   }
 
   updateCurrentFilePath(path: string) {
@@ -57,7 +56,7 @@ export default class CodeManager {
   updateCodeState(code: string): void {
     if (this._code !== code) {
       this.code = code
-      this._updateState(code)
+      this.#updateState(code)
     }
   }
 
@@ -65,7 +64,6 @@ export default class CodeManager {
   updateCodeEditor(code: string): void {
     const lastCode = this._code
     this.code = code
-    this._updateEditor(code)
     if (editorManager.editorView) {
       editorManager.editorView.dispatch({
         changes: { from: 0, to: lastCode.length, insert: code },
@@ -77,8 +75,7 @@ export default class CodeManager {
   updateCodeStateEditor(code: string): void {
     if (this._code !== code) {
       this.code = code
-      this._updateState(code)
-      this._updateEditor(code)
+      this.#updateState(code)
     }
   }
 

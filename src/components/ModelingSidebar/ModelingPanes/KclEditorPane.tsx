@@ -2,7 +2,7 @@ import ReactCodeMirror from '@uiw/react-codemirror'
 import { TEST } from 'env'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
 import { lineHighlightField } from 'editor/highlightextension'
 import { roundOff } from 'lib/utils'
@@ -190,13 +190,15 @@ export const KclEditorPane = () => {
     return extensions
   }, [kclLSP, copilotLSP, textWrapping.current, cursorBlinking.current])
 
+  const initialCode = useRef(codeManager.code)
+
   return (
     <div
       id="code-mirror-override"
       className={'absolute inset-0 ' + (cursorBlinking.current ? 'blink' : '')}
     >
       <ReactCodeMirror
-        value={codeManager.code}
+        value={initialCode.current}
         extensions={editorExtensions}
         theme={theme}
         onCreateEditor={(_editorView) =>

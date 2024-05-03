@@ -21,13 +21,7 @@ import { LanguageServerClient } from 'editor/plugins/lsp'
 import { Marked } from '@ts-stack/markdown'
 import { posToOffset } from 'editor/plugins/lsp/util'
 import { Program, ProgramMemory } from 'lang/wasm'
-import {
-  codeManager,
-  editorManager,
-  kclManager,
-  sceneEntitiesManager,
-  sceneInfra,
-} from 'lib/singletons'
+import { codeManager, editorManager, kclManager } from 'lib/singletons'
 import type { UnitLength } from 'wasm-lib/kcl/bindings/UnitLength'
 import { UpdateUnitsResponse } from 'wasm-lib/kcl/bindings/UpdateUnitsResponse'
 import { UpdateCanExecuteResponse } from 'wasm-lib/kcl/bindings/UpdateCanExecuteResponse'
@@ -69,7 +63,6 @@ export class LanguageServerPlugin implements PluginValue {
 
       if (this.viewUpdate) {
         editorManager.handleOnViewUpdate(this.viewUpdate)
-        sceneEntitiesManager.rejigAgain(kclManager.ast, false)
       }
     } catch (e) {
       console.error(e)
