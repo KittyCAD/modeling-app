@@ -647,9 +647,10 @@ impl Callable for StartSketchAt {
             Uuid::new_v4().into(),
             [
                 Some(axes.z).into_parts(),
-                vec![false.into()], // animated
-                vec![false.into()], // ortho mode
-                vec![plane_id.into()],
+                vec![false.into()],    // adjust camera
+                vec![false.into()],    // animated
+                vec![false.into()],    // ortho mode
+                vec![plane_id.into()], // entity id (plane in this case)
             ],
         );
 
