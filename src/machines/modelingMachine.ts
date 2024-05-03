@@ -151,9 +151,6 @@ export type ModelingMachineEvent =
     }
   | { type: 'Set mouse state'; data: MouseState }
   | {
-      type: 'Rejig sketch'
-    }
-  | {
       type: 'code edit during sketch'
     }
 
@@ -1050,19 +1047,6 @@ export const modelingMachine = createMachine(
           },
         }),
       'set selection filter to defaults': () => kclManager.enterEditMode(),
-      'Rejig sketch': ({ sketchDetails }, c, d) => {
-        console.log('state', c, d)
-        // if(!state.matches('Sketch.SketchIdle')) return
-        if (!sketchDetails) return
-        sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails.sketchPathToNode,
-          kclManager.ast,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          false
-        )
-      },
     },
     // end actions
   }
