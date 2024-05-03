@@ -62,11 +62,14 @@ export default class CodeManager {
 
   // Update the code in the editor.
   updateCodeEditor(code: string): void {
-    const lastCode = this._code
     this.code = code
     if (editorManager.editorView) {
       editorManager.editorView.dispatch({
-        changes: { from: 0, to: lastCode.length, insert: code },
+        changes: {
+          from: 0,
+          to: editorManager.editorView.state.doc.length,
+          insert: code,
+        },
       })
     }
   }
