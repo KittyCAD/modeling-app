@@ -355,7 +355,7 @@ fn open_url_sync(app: &tauri::AppHandle, url: &url::Url) {
     println!("Opening URL: {:?}", url);
     let cloned_url = url.clone();
     let runner: tauri::async_runtime::JoinHandle<Result<ProjectState>> = tauri::async_runtime::spawn(async move {
-        let url_str = cloned_url.to_string();
+        let url_str = cloned_url.path().to_string();
         let path = Path::new(url_str.as_str());
         ProjectState::new_from_path(path.to_path_buf()).await
     });
