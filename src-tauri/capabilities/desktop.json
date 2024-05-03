@@ -9,6 +9,7 @@
   "permissions": [
     "cli:default",
     "deep-link:default",
+    "log:default",
     "path:default",
     "event:default",
     "window:default",
