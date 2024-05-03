@@ -226,7 +226,7 @@ async fn read_dir_recursive(path: &str) -> Result<FileEntry, InvokeError> {
 /// The string returned from this method is the access token.
 #[tauri::command]
 async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError> {
-    println!("Logging in...");
+    log::debug!("Logging in...");
     // Do an OAuth 2.0 Device Authorization Grant dance to get a token.
     let device_auth_url = oauth2::DeviceAuthorizationUrl::new(format!("{host}/oauth2/device/auth"))
         .map_err(|e| InvokeError::from_anyhow(e.into()))?;
@@ -265,7 +265,7 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
     // and bypass the shell::open call as it fails on GitHub Actions.
     let e2e_tauri_enabled = env::var("E2E_TAURI_ENABLED").is_ok();
     if e2e_tauri_enabled {
-        println!("E2E_TAURI_ENABLED is set, won't open {} externally", auth_uri.secret());
+        log::warn!("E2E_TAURI_ENABLED is set, won't open {} externally", auth_uri.secret());
         tokio::fs::write("/tmp/kittycad_user_code", details.user_code().secret())
             .await
             .map_err(|e| InvokeError::from_anyhow(e.into()))?;
@@ -308,7 +308,7 @@ async fn get_user(token: &str, hostname: &str) -> Result<kittycad::types::User, 
             baseurl = format!("http://{host}")
         }
     }
-    println!("Getting user info...");
+    log::debug!("Getting user info...");
 
     // use kittycad library to fetch the user info from /user/me
     let mut client = kittycad::Client::new(token);
@@ -352,7 +352,7 @@ fn show_in_folder(path: &str) -> Result<(), InvokeError> {
 
 #[allow(dead_code)]
 fn open_url_sync(app: &tauri::AppHandle, url: &url::Url) {
-    println!("Opening URL: {:?}", url);
+    log::debug!("Opening URL: {:?}", url);
     let cloned_url = url.clone();
     let runner: tauri::async_runtime::JoinHandle<Result<ProjectState>> = tauri::async_runtime::spawn(async move {
         let url_str = cloned_url.to_string();
@@ -367,10 +367,10 @@ fn open_url_sync(app: &tauri::AppHandle, url: &url::Url) {
             app.manage(state::Store::new(store));
         }
         Err(e) => {
-            println!("Error opening URL:{} {:?}", url, e);
+            log::warn!("Error opening URL:{} {:?}", url, e);
         }
         Ok(Err(e)) => {
-            println!("Error opening URL:{} {:?}", url, e);
+            log::warn!("Error opening URL:{} {:?}", url, e);
         }
     }
 }
@@ -406,6 +406,7 @@ fn main() -> Result<()> {
                     tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Stdout),
                     tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::LogDir { file_name: None }),
                 ])
+                .level(log::LevelFilter::Debug)
                 .build(),
         )
         .plugin(tauri_plugin_os::init())
@@ -443,7 +444,7 @@ fn main() -> Result<()> {
                     if let Some(source_arg) = matches.args.get("source") {
                         // We don't do an else here because this can be null.
                         if let Some(value) = source_arg.value.as_str() {
-                            println!("Got path in cli argument: {}", value);
+                            log::info!("Got path in cli argument: {}", value);
                             source_path = Some(Path::new(value).to_path_buf());
                         }
                     }
@@ -454,7 +455,7 @@ fn main() -> Result<()> {
             }
 
             if verbose {
-                println!("Verbose mode enabled.");
+                log::debug!("Verbose mode enabled.");
             }
 
             // If we have a source path to open, make sure it exists.
@@ -484,7 +485,7 @@ fn main() -> Result<()> {
 
             // Listen on the deep links.
             app.listen("deep-link://new-url", |event| {
-                println!("got deep-link url: {:?}", event);
+                log::info!("got deep-link url: {:?}", event);
                 // TODO: open_url_sync(app.handle(), event.url);
             });
 
@@ -499,7 +500,7 @@ fn main() -> Result<()> {
                     if let Some(w) = app.get_webview_window("main") {
                         let _ = w.eval(&format!("console.log(`[tauri] Opened URLs: {:?}`)", urls));
                     }
-                    println!("Opened URLs: {:?}", urls);
+                    log::info!("Opened URLs: {:?}", urls);
 
                     // Handle the first URL.
                     // TODO: do we want to handle more than one URL?

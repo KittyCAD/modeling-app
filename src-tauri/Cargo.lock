@@ -183,6 +183,7 @@ dependencies = [
  "anyhow",
  "kcl-lib",
  "kittycad",
+ "log",
  "oauth2",
  "serde_json",
  "tauri",
