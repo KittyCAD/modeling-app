@@ -642,7 +642,7 @@ impl Callable for StartSketchAt {
         // Next, enter sketch mode.
         stack_api_call(
             &mut instructions,
-            ModelingCmdEndpoint::SketchModeEnable,
+            ModelingCmdEndpoint::EnableSketchMode,
             None,
             Uuid::new_v4().into(),
             [
