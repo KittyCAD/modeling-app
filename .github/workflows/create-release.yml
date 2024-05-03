@@ -17,11 +17,11 @@ jobs:
         name: Read Cut release PR info and create release
         with:
           script: |
-            const { owner, repo, sha } = context.repo
+            const { owner, repo } = context.repo
             const pulls = await github.rest.repos.listPullRequestsAssociatedWithCommit({
               owner,
               repo,
-              commit_sha: sha,
+              commit_sha: context.sha,
             })
             const { title, body } = pulls.data[0]
             const version = title.split('Cut release ')[1]
