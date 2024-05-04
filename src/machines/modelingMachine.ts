@@ -886,7 +886,7 @@ export const modelingMachine = createMachine(
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
             cmd: {
-              type: 'default_camera_disable_sketch_mode',
+              type: 'sketch_mode_disable',
             },
           })
           .then(async () => {
