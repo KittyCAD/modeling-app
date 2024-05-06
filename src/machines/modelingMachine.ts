@@ -193,9 +193,6 @@ export type ModelingMachineEvent =
       data: PathToNode
     }
   | {
-      type: 'Rejig sketch'
-    }
-  | {
       type: 'code edit during sketch'
     }
 
@@ -1106,16 +1103,6 @@ export const modelingMachine = createMachine(
       'Delete segment': ({ sketchDetails }, { data: pathToNode }) =>
         deleteSegment({ pathToNode, sketchDetails }),
       'Reset Segment Overlays': () => sceneEntitiesManager.resetOverlays(),
-      'Rejig sketch': ({ sketchDetails }) => {
-        if (!sketchDetails) return
-        sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails.sketchPathToNode,
-          kclManager.ast,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin
-        )
-      },
     },
     // end actions
   }
