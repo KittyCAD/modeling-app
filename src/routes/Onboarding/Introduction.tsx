@@ -56,7 +56,7 @@ function OnboardingWithNewFile() {
               dismiss={dismiss}
               next={() => {
                 // We do want to update both the state and editor here.
-                codeManager.updateCodeStateEditor(bracket)
+                codeManager.updateCodeEditor(bracket)
                 kclManager.executeCode(true)
                 next()
               }}
@@ -80,7 +80,7 @@ function OnboardingWithNewFile() {
               dismiss={dismiss}
               next={() => {
                 void createAndOpenNewProject()
-                codeManager.updateCodeStateEditor(bracket)
+                codeManager.updateCodeEditor(bracket)
                 dismiss()
               }}
               nextText="Make a new project"
@@ -113,7 +113,7 @@ export default function Introduction() {
   const isStarterCode = currentCode === '' || currentCode === bracket
 
   useEffect(() => {
-    if (codeManager.code === '') codeManager.updateCodeStateEditor(bracket)
+    if (codeManager.code === '') codeManager.updateCodeEditor(bracket)
   }, [])
 
   return isStarterCode ? (
