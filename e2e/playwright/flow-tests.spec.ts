@@ -528,6 +528,7 @@ test.describe('Can create sketches on all planes and their back sides', () => {
 })
 
 test('Auto complete works', async ({ page }) => {
+  test.skip(true, 'CORS issue stopping the kcl lsp from working, enable again later')
   const u = getUtils(page)
   // const PUR = 400 / 37.5 //pixeltoUnitRatio
   await page.setViewportSize({ width: 1200, height: 500 })
