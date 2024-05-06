@@ -37,9 +37,7 @@
       }
     },
     "longDescription": "",
-    "macOS": {
-      "entitlements": "entitlements/general.entitlements"
-    },
+    "macOS": {},
     "resources": [],
     "shortDescription": "",
     "targets": "all"
@@ -76,5 +74,5 @@
     }
   },
   "productName": "Zoo Modeling App",
-  "version": "0.19.4"
+  "version": "0.20.1"
 }

@@ -478,10 +478,9 @@ export class SceneEntities {
     modifiedAst: Program,
     forward: [number, number, number],
     up: [number, number, number],
-    origin: [number, number, number],
-    updateAst = true
+    origin: [number, number, number]
   ) => {
-    if (updateAst) await kclManager.updateAst(modifiedAst, false)
+    await kclManager.updateAst(modifiedAst, false)
     await this.tearDownSketch({ removeAxis: false })
     sceneInfra.resetMouseListeners()
     await this.setupSketch({
@@ -988,7 +987,7 @@ export class SceneEntities {
       if (!draftInfo)
         // don't want to mod the user's code yet as they have't committed to the change yet
         // plus this would be the truncated ast being recast, it would be wrong
-        codeManager.updateCodeStateEditor(code)
+        codeManager.updateCodeEditor(code)
       const { programMemory } = await executeAst({
         ast: truncatedAst,
         useFakeExecutor: true,

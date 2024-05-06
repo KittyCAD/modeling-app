@@ -21,12 +21,7 @@ import { LanguageServerClient } from 'editor/plugins/lsp'
 import { Marked } from '@ts-stack/markdown'
 import { posToOffset } from 'editor/plugins/lsp/util'
 import { Program, ProgramMemory } from 'lang/wasm'
-import {
-  codeManager,
-  editorManager,
-  kclManager,
-  sceneInfra,
-} from 'lib/singletons'
+import { codeManager, editorManager, kclManager } from 'lib/singletons'
 import type { UnitLength } from 'wasm-lib/kcl/bindings/UnitLength'
 import { UpdateUnitsResponse } from 'wasm-lib/kcl/bindings/UpdateUnitsResponse'
 import { UpdateCanExecuteResponse } from 'wasm-lib/kcl/bindings/UpdateCanExecuteResponse'
@@ -68,7 +63,6 @@ export class LanguageServerPlugin implements PluginValue {
 
       if (this.viewUpdate) {
         editorManager.handleOnViewUpdate(this.viewUpdate)
-        setTimeout(() => sceneInfra.modelingSend({ type: 'Rejig sketch' }))
       }
     } catch (e) {
       console.error(e)
@@ -173,6 +167,7 @@ export class LanguageServerPlugin implements PluginValue {
     if (pos === null) return null
     const dom = document.createElement('div')
     dom.classList.add('documentation')
+    dom.style.zIndex = '99999999'
     if (this.allowHTMLContent) dom.innerHTML = formatContents(contents)
     else dom.textContent = formatContents(contents)
     return { pos, end, create: (view) => ({ dom }), above: true }

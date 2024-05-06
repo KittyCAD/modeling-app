@@ -507,7 +507,7 @@ test('Draft rectangles should look right', async ({ page, context }) => {
     `const part001 = startSketchOn('-XZ')`
   )
 
-  await page.waitForTimeout(300) // TODO detect animation ending, or disable animation
+  await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
   await u.closeDebugPanel()
 
   const startXPx = 600
@@ -597,12 +597,15 @@ test.describe('Client side scene scale should match engine scale', () => {
 
     // exit sketch
     await u.openAndClearDebugPanel()
-    await page.getByRole('button', { name: 'Exit Sketch' }).click()
+    await u.doAndWaitForImageDiff(
+      () => page.getByRole('button', { name: 'Exit Sketch' }).click(),
+      200
+    )
 
     // wait for execution done
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.clearAndCloseDebugPanel()
-    await page.waitForTimeout(200)
+    await page.waitForTimeout(300)
 
     // second screen shot should look almost identical, i.e. scale should be the same.
     await expect(page).toHaveScreenshot({
@@ -696,12 +699,15 @@ test.describe('Client side scene scale should match engine scale', () => {
 
     // exit sketch
     await u.openAndClearDebugPanel()
-    await page.getByRole('button', { name: 'Exit Sketch' }).click()
+    await u.doAndWaitForImageDiff(
+      () => page.getByRole('button', { name: 'Exit Sketch' }).click(),
+      200
+    )
 
     // wait for execution done
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.clearAndCloseDebugPanel()
-    await page.waitForTimeout(200)
+    await page.waitForTimeout(300)
 
     // second screen shot should look almost identical, i.e. scale should be the same.
     await expect(page).toHaveScreenshot({

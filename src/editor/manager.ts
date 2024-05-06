@@ -189,6 +189,7 @@ export default class EditorManager {
     const ignoreEvents: ModelingMachineEvent['type'][] = [
       'Equip Line tool',
       'Equip tangential arc to',
+      'Equip rectangle tool',
     ]
 
     if (!this._modelingEvent) {

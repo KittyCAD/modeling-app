@@ -279,7 +279,7 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
     const bottomAng = 25
    */
   await page.click('.cm-content')
-  await page.keyboard.type('# error')
+  await page.keyboard.type('$ error')
 
   // press arrows to clear autocomplete
   await page.keyboard.press('ArrowLeft')
@@ -296,10 +296,10 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
 
   // error text on hover
   await page.hover('.cm-lint-marker-error')
-  await expect(page.getByText("found unknown token '#'")).toBeVisible()
+  await expect(page.getByText("found unknown token '$'")).toBeVisible()
 
   // select the line that's causing the error and delete it
-  await page.getByText('# error').click()
+  await page.getByText('$ error').click()
   await page.keyboard.press('End')
   await page.keyboard.down('Shift')
   await page.keyboard.press('Home')
@@ -528,6 +528,10 @@ test.describe('Can create sketches on all planes and their back sides', () => {
 })
 
 test('Auto complete works', async ({ page }) => {
+  test.skip(
+    true,
+    'CORS issue stopping the kcl lsp from working, enable again later'
+  )
   const u = getUtils(page)
   // const PUR = 400 / 37.5 //pixeltoUnitRatio
   await page.setViewportSize({ width: 1200, height: 500 })
@@ -1390,7 +1394,7 @@ test('Deselecting line tool should mean nothing happens on click', async ({
     `const part001 = startSketchOn('-XZ')`
   )
 
-  await page.waitForTimeout(300)
+  await page.waitForTimeout(600)
 
   let previousCodeContent = await page.locator('.cm-content').innerText()
 

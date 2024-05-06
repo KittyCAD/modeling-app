@@ -1895,7 +1895,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.1.53"
+version = "0.1.54"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -1964,9 +1964,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.3.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ddc922f0da3abc22661bf49423c9bfcc02ce6ae92dae007ede6990874789545b"
+checksum = "2c6e12eb45fd9a28c8e99dbdef54556246b39acee14e4aa6f0fc43636caa62d9"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2003,9 +2003,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-execution-plan"
-version = "0.1.5"
+version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ae99665cd699f8800da8ea4b01889c0c9c61619d2a9dc62d1d5028f1b21110bd"
+checksum = "0936396491f132c163e9411a3dd699e5b2daa49c19436691c5153f7ad2d4953d"
 dependencies = [
  "bytes",
  "gltf-json",
@@ -2048,9 +2048,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.22"
+version = "0.2.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ef6326553271cfb08d0143d9329f38cde162d5a0dcba1bd717c763d5361700d7"
+checksum = "1c1f8bdab7f09b4f4a954dafe0694e96f6f2b73733cf7cddccc42ee493e2c1e9"
 dependencies = [
  "anyhow",
  "chrono",
@@ -3519,9 +3519,9 @@ checksum = "92d43fe69e652f3df9bdc2b85b2854a0825b86e4fb76bc44d945137d053639ca"
 
 [[package]]
 name = "serde"
-version = "1.0.199"
+version = "1.0.200"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0c9f6e76df036c77cd94996771fb40db98187f096dd0b9af39c6c6e452ba966a"
+checksum = "ddc6f9cc94d67c0e21aaf7eda3a010fd3af78ebf6e096aa6e2e13c79749cce4f"
 dependencies = [
  "serde_derive",
 ]
@@ -3537,9 +3537,9 @@ dependencies = [
 
 [[package]]
 name = "serde_derive"
-version = "1.0.199"
+version = "1.0.200"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "11bd257a6541e141e42ca6d24ae26f7714887b47e89aa739099104c7e4d3b7fc"
+checksum = "856f046b9400cee3c8c94ed572ecdb752444c24528c035cd35882aad6f492bcb"
 dependencies = [
  "proc-macro2",
  "quote",
