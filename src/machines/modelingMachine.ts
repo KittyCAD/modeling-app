@@ -857,7 +857,6 @@ export const modelingMachine = createMachine(
         }
       },
       'setup client side sketch segments': ({ sketchDetails }) => {
-        console.log('yo what dawg', sketchDetails)
         if (!sketchDetails) return
         ;(async () => {
           if (Object.keys(sceneEntitiesManager.activeSegments).length > 0) {

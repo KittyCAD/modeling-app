@@ -597,7 +597,10 @@ test.describe('Client side scene scale should match engine scale', () => {
 
     // exit sketch
     await u.openAndClearDebugPanel()
-    await page.getByRole('button', { name: 'Exit Sketch' }).click()
+    await u.doAndWaitForImageDiff(
+      () => page.getByRole('button', { name: 'Exit Sketch' }).click(),
+      200
+    )
 
     // wait for execution done
     await u.expectCmdLog('[data-message-type="execution-done"]')
@@ -696,7 +699,10 @@ test.describe('Client side scene scale should match engine scale', () => {
 
     // exit sketch
     await u.openAndClearDebugPanel()
-    await page.getByRole('button', { name: 'Exit Sketch' }).click()
+    await u.doAndWaitForImageDiff(
+      () => page.getByRole('button', { name: 'Exit Sketch' }).click(),
+      200
+    )
 
     // wait for execution done
     await u.expectCmdLog('[data-message-type="execution-done"]')
