@@ -605,7 +605,7 @@ test.describe('Client side scene scale should match engine scale', () => {
     // wait for execution done
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.clearAndCloseDebugPanel()
-    await page.waitForTimeout(500)
+    await page.waitForTimeout(300)
 
     // second screen shot should look almost identical, i.e. scale should be the same.
     await expect(page).toHaveScreenshot({
@@ -707,7 +707,7 @@ test.describe('Client side scene scale should match engine scale', () => {
     // wait for execution done
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.clearAndCloseDebugPanel()
-    await page.waitForTimeout(500)
+    await page.waitForTimeout(300)
 
     // second screen shot should look almost identical, i.e. scale should be the same.
     await expect(page).toHaveScreenshot({
