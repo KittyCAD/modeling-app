@@ -14,6 +14,7 @@ import init, {
   parse_app_settings,
   parse_project_settings,
   default_project_settings,
+  parse_project_route,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
@@ -31,6 +32,7 @@ import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import { TEST } from 'env'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
+import { ProjectRoute } from 'wasm-lib/kcl/bindings/ProjectRoute'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Value } from '../wasm-lib/kcl/bindings/Value'
@@ -387,5 +389,20 @@ export function parseProjectSettings(toml: string): ProjectConfiguration {
     return settings
   } catch (e: any) {
     throw new Error(`Error parsing project settings: ${e}`)
+  }
+}
+
+export function parseProjectRoute(
+  configuration: Configuration,
+  route_str: string
+): ProjectRoute {
+  try {
+    const route: ProjectRoute = parse_project_route(
+      JSON.stringify(configuration),
+      route_str
+    )
+    return route
+  } catch (e: any) {
+    throw new Error(`Error parsing project route: ${e}`)
   }
 }

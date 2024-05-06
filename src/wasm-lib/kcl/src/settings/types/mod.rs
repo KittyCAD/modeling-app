@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 use validator::{Validate, ValidateRange};
 
 const DEFAULT_THEME_COLOR: f64 = 264.5;
-const DEFAULT_PROJECT_KCL_FILE: &str = "main.kcl";
+pub const DEFAULT_PROJECT_KCL_FILE: &str = "main.kcl";
 const DEFAULT_PROJECT_NAME_TEMPLATE: &str = "project-$nnn";
 
 /// High level configuration.
@@ -31,7 +31,7 @@ impl Configuration {
 
         if let Some(project_directory) = &settings.settings.app.project_directory {
             if settings.settings.project.directory.to_string_lossy().is_empty() {
-                settings.settings.project.directory = project_directory.clone();
+                settings.settings.project.directory.clone_from(project_directory);
                 settings.settings.app.project_directory = None;
             }
         }
@@ -129,7 +129,7 @@ impl Configuration {
                 continue;
             }
 
-            projects.push(self.get_project_info(&e.file_name().to_string_lossy()).await?);
+            projects.push(self.get_project_info(&e.path().display().to_string()).await?);
         }
 
         Ok(projects)
@@ -137,21 +137,20 @@ impl Configuration {
 
     #[cfg(not(target_arch = "wasm32"))]
     /// Get information about a project.
-    pub async fn get_project_info(&self, project_name: &str) -> Result<crate::settings::types::file::Project> {
-        let main_dir = &self.ensure_project_directory_exists().await?;
-
-        if project_name.is_empty() {
-            return Err(anyhow::anyhow!("Project name cannot be empty."));
+    pub async fn get_project_info(&self, project_path: &str) -> Result<crate::settings::types::file::Project> {
+        // Check the directory.
+        let project_dir = std::path::Path::new(project_path);
+        if !project_dir.exists() {
+            return Err(anyhow::anyhow!("Project directory does not exist: {}", project_path));
         }
 
-        // Check the directory.
-        let project_dir = main_dir.join(project_name);
-        if !project_dir.exists() {
-            return Err(anyhow::anyhow!("Project directory does not exist."));
+        // Make sure it is a directory.
+        if !project_dir.is_dir() {
+            return Err(anyhow::anyhow!("Project path is not a directory: {}", project_path));
         }
 
         let mut project = crate::settings::types::file::Project {
-            file: crate::settings::utils::walk_dir(&project_dir).await?,
+            file: crate::settings::utils::walk_dir(project_dir).await?,
             metadata: Some(tokio::fs::metadata(&project_dir).await?.into()),
             kcl_file_count: 0,
             directory_count: 0,

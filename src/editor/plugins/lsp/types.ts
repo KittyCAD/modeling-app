@@ -8,13 +8,13 @@ export interface KclWorkerOptions {
   wasmUrl: string
   token: string
   baseUnit: UnitLength
-  devMode: boolean
+  apiBaseUrl: string
 }
 
 export interface CopilotWorkerOptions {
   wasmUrl: string
   token: string
-  devMode: boolean
+  apiBaseUrl: string
 }
 
 export enum LspWorkerEventType {

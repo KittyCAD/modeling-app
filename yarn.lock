@@ -1831,10 +1831,10 @@
   resolved "https://registry.yarnpkg.com/@juggle/resize-observer/-/resize-observer-3.4.0.tgz#08d6c5e20cf7e4cc02fd181c4b0c225cd31dbb60"
   integrity sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==
 
-"@kittycad/lib@^0.0.58":
-  version "0.0.58"
-  resolved "https://registry.yarnpkg.com/@kittycad/lib/-/lib-0.0.58.tgz#4b47a295d8238e64d30d855336e4bcc4aab380f9"
-  integrity sha512-iSkJNXumtlEjey/K1Lsl/j1aVlcjcPONW7+6YwqccioKJ6zwSCgXF4AFB3oxVmM27Gm8YjEmaHxbcOhGP02X9g==
+"@kittycad/lib@^0.0.60":
+  version "0.0.60"
+  resolved "https://registry.yarnpkg.com/@kittycad/lib/-/lib-0.0.60.tgz#478aa1f750ab05cd4e67503de96f2f3bbc075329"
+  integrity sha512-LW9NFy2gv0pm1GJyquMXPiFKOBSdJJxYGkmacDton6jluGhAa8Qtcuj3O5vqUEeq9ObSM1Jt8gp39P9nvXG9yg==
   dependencies:
     node-fetch "3.3.2"
     openapi-types "^12.0.0"
@@ -2427,7 +2427,7 @@
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==
 
-"@types/mocha@^10.0.0":
+"@types/mocha@^10.0.0", "@types/mocha@^10.0.6":
   version "10.0.6"
   resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-10.0.6.tgz#818551d39113081048bdddbef96701b4e8bb9d1b"
   integrity sha512-dJvrYWxP/UcXm36Qn36fxhUKu8A/xMRXVT2cliFF1Z7UA9liG5Psj3ezNSZw+5puH2czDXRLcXQxf8JbJt0ejg==

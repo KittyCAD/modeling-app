@@ -13,7 +13,7 @@ on:
   # Will checkout the last commit from the default branch (main as of 2023-10-04)
 
 env:
-  BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && contains(github.event.pull_request.title, 'Cut release v') }}
+  BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Cut release v')) }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -130,7 +130,9 @@ jobs:
       matrix:
         os: [macos-14, ubuntu-latest, windows-latest]
     env:
+      # Specific Apple Universal target for macos
       TAURI_ARGS_MACOS: ${{ matrix.os == 'macos-14' && '--target universal-apple-darwin' || '' }}
+      # Only build executable on linux (no appimage or deb)
       TAURI_ARGS_UBUNTU: ${{ matrix.os == 'ubuntu-latest' && '--bundles' || '' }}
     steps:
       - uses: actions/checkout@v4
@@ -237,6 +239,96 @@ jobs:
           includeDebug: true
           args: "${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
 
+      - name: Mac App Store
+        if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'macos-14' }}
+        shell: bash
+        run: |
+          unset APPLE_SIGNING_IDENTITY
+          unset APPLE_CERTIFICATE
+          sign_app="3rd Party Mac Developer Application: KittyCAD Inc (${APPLE_TEAM_ID})"
+          sign_install="3rd Party Mac Developer Installer: KittyCAD Inc (${APPLE_TEAM_ID})"
+          profile="src-tauri/entitlements/Mac_App_Distribution.provisionprofile"
+
+          mkdir -p src-tauri/entitlements
+          echo -n "${APPLE_STORE_PROVISIONING_PROFILE}" | base64 --decode -o "${profile}"
+
+          echo -n "${APPLE_STORE_DISTRIBUTION_CERT}" | base64 --decode -o "dist.cer"
+          echo -n "${APPLE_STORE_INSTALLER_CERT}" | base64 --decode -o "installer.cer"
+
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          KEYCHAIN_PASSWORD="password"
+
+          # create temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # import certificate to keychain
+          security import "dist.cer" -P "$APPLE_STORE_P12_PASSWORD" -k $KEYCHAIN_PATH -f pkcs12 -t cert -A
+          security import "installer.cer" -P "$APPLE_STORE_P12_PASSWORD" -k $KEYCHAIN_PATH -f pkcs12 -t cert -A
+
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+
+          target="universal-apple-darwin"
+
+          # Turn off the default target
+          # We don't want to install the updater for the apple store build
+          sed -i.bu "s/default =/# default =/" src-tauri/Cargo.toml
+          rm src-tauri/Cargo.toml.bu
+          git diff src-tauri/Cargo.toml
+
+          yarn tauri build --target "${target}" --verbose --config src-tauri/tauri.app-store.conf.json
+
+          app_path="src-tauri/target/${target}/release/bundle/macos/Zoo Modeling App.app"
+          build_name="src-tauri/target/${target}/release/bundle/macos/Zoo Modeling App.pkg"
+          cp_dir="src-tauri/target/${target}/release/bundle/macos/Zoo Modeling App.app/Contents/embedded.provisionprofile"
+          entitlements="src-tauri/entitlements/app-store.entitlements"
+
+          cp "${profile}" "${cp_dir}"
+
+          codesign --deep --force -s "${sign_app}" --entitlements "${entitlements}" "${app_path}"
+
+          productbuild --component "${app_path}" /Applications/ --sign "${sign_install}" "${build_name}"
+
+          # Undo the changes to the Cargo.toml
+          git checkout src-tauri/Cargo.toml
+
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_STORE_PROVISIONING_PROFILE: ${{ secrets.APPLE_STORE_PROVISIONING_PROFILE }}
+          APPLE_STORE_DISTRIBUTION_CERT: ${{ secrets.APPLE_STORE_DISTRIBUTION_CERT }}
+          APPLE_STORE_INSTALLER_CERT: ${{ secrets.APPLE_STORE_INSTALLER_CERT }}
+          APPLE_STORE_P12_PASSWORD: ${{ secrets.APPLE_STORE_P12_PASSWORD }}
+
+
+      - name: 'Upload app to TestFlight'
+        uses: apple-actions/upload-testflight-build@v1
+        if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'macos-14' }}
+        with:
+          app-path: 'src-tauri/target/universal-apple-darwin/release/bundle/macos/Zoo Modeling App.pkg'
+          issuer-id: ${{ secrets.APPLE_STORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPLE_STORE_API_KEY_ID }}
+          api-private-key: ${{ secrets.APPLE_STORE_API_PRIVATE_KEY }}
+          app-type: osx
+
+
+      - name: Clean up after Mac App Store
+        if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'macos-14' }}
+        shell: bash
+        run: |
+          git status
+          # remove our target builds because we want to make sure the later build
+          # includes the updater, and that anything we changed with the target
+          # does not persist
+          rm -rf src-tauri/target
+          # Lets get rid of the info.plist for the normal mac builds since its
+          # being sketchy.
+          rm src-tauri/Info.plist
+
+      # We do this after the apple store because the apple store build is
+      # specific and we want to overwrite it with the this new build after and
+      # not upload the apple store build to the public bucket
       - name: Build the app (release) and sign
         uses: tauri-apps/tauri-action@v0
         if: ${{ env.BUILD_RELEASE == 'true' }}
@@ -261,11 +353,10 @@ jobs:
         with:
           path: "${{ env.PREFIX }}/${{ env.MODE }}/bundle/*/*"
 
-      # TODO: re-enable linux e2e tests when possible
       - name: Run e2e tests (linux only)
-        if: false
+        if: matrix.os == 'ubuntu-latest'
         run: |
-          cargo install tauri-driver
+          cargo install tauri-driver --force
           source .env.${{ env.BUILD_RELEASE == 'true' && 'production' || 'development' }}
           export VITE_KC_API_BASE_URL
           xvfb-run yarn test:e2e:tauri

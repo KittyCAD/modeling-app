@@ -182,3 +182,76 @@ export function getUtils(page: Page) {
       }),
   }
 }
+
+type TemplateOptions = Array<number | Array<number>>
+
+type makeTemplateReturn = {
+  regExp: RegExp
+  genNext: (
+    templateParts: TemplateStringsArray,
+    ...options: TemplateOptions
+  ) => makeTemplateReturn
+}
+
+const escapeRegExp = (string: string) => {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // $& means the whole matched string
+}
+
+const _makeTemplate = (
+  templateParts: TemplateStringsArray,
+  ...options: TemplateOptions
+) => {
+  const length = Math.max(...options.map((a) => (Array.isArray(a) ? a[0] : 0)))
+  let reExpTemplate = ''
+  for (let i = 0; i < length; i++) {
+    const currentStr = templateParts.map((str, index) => {
+      const currentOptions = options[index]
+      return (
+        escapeRegExp(str) +
+        String(
+          Array.isArray(currentOptions)
+            ? currentOptions[i]
+            : typeof currentOptions === 'number'
+            ? currentOptions
+            : ''
+        )
+      )
+    })
+    reExpTemplate += '|' + currentStr.join('')
+  }
+  return new RegExp(reExpTemplate)
+}
+
+/**
+ * Tool for making templates to match code snippets in the editor with some fudge factor,
+ * as there's some level of non-determinism.
+ *
+ * Usage is as such:
+ * ```typescript
+ * const result = makeTemplate`const myVar = aFunc(${[1, 2, 3]})`
+ * await expect(page.locator('.cm-content')).toHaveText(result.regExp)
+ * ```
+ * Where the value `1`, `2` or `3` are all valid and should make the test pass.
+ *
+ * The function also has a `genNext` function that allows you to chain multiple templates
+ * together without having to repeat previous parts of the template.
+ * ```typescript
+ * const result2 = result.genNext`const myVar2 = aFunc(${[4, 5, 6]})`
+ * ```
+ */
+export const makeTemplate: (
+  templateParts: TemplateStringsArray,
+  ...values: TemplateOptions
+) => makeTemplateReturn = (templateParts, ...options) => {
+  return {
+    regExp: _makeTemplate(templateParts, ...options),
+    genNext: (
+      nextTemplateParts: TemplateStringsArray,
+      ...nextOptions: TemplateOptions
+    ) =>
+      makeTemplate(
+        [...templateParts, ...nextTemplateParts] as any as TemplateStringsArray,
+        [...options, ...nextOptions] as any
+      ),
+  }
+}

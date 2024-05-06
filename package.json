@@ -1,6 +1,6 @@
 {
   "name": "untitled-app",
-  "version": "0.18.1",
+  "version": "0.20.1",
   "private": true,
   "dependencies": {
     "@codemirror/autocomplete": "^6.16.0",
@@ -10,7 +10,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@headlessui/react": "^1.7.19",
     "@headlessui/tailwindcss": "^0.2.0",
-    "@kittycad/lib": "^0.0.58",
+    "@kittycad/lib": "^0.0.60",
     "@lezer/javascript": "^1.4.9",
     "@open-rpc/client-js": "^1.8.1",
     "@react-hook/resize-observer": "^1.2.6",
@@ -86,6 +86,7 @@
     "simpleserver": "yarn pretest && http-server ./public --cors -p 3000",
     "fmt": "prettier --write ./src *.ts *.json *.js ./e2e",
     "fmt-check": "prettier --check ./src *.ts *.json *.js ./e2e",
+    "fetch:wasm": "./get-latest-wasm-bundle.sh",
     "build:wasm-dev": "(cd src/wasm-lib && wasm-pack build --dev --target web --out-dir pkg && cargo test -p kcl-lib export_bindings) && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn fmt",
     "build:wasm": "(cd src/wasm-lib && wasm-pack build --target web --out-dir pkg && cargo test -p kcl-lib export_bindings) && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn fmt",
     "build:wasm-clean": "yarn wasm-prep && yarn build:wasm",
@@ -122,6 +123,7 @@
     "@tauri-apps/cli": "^2.0.0-beta.13",
     "@types/crypto-js": "^4.2.2",
     "@types/debounce-promise": "^3.1.9",
+    "@types/mocha": "^10.0.6",
     "@types/pixelmatch": "^5.2.6",
     "@types/pngjs": "^6.0.4",
     "@types/react-modal": "^3.16.3",

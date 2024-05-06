@@ -1,21 +1,24 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+pub(crate) mod state;
+
 use std::{
     env,
     path::{Path, PathBuf},
-    process::Command,
 };
 
 use anyhow::Result;
 use kcl_lib::settings::types::{
-    file::{FileEntry, Project},
+    file::{FileEntry, Project, ProjectRoute, ProjectState},
     project::ProjectConfiguration,
     Configuration,
 };
 use oauth2::TokenResponse;
 use tauri::{ipc::InvokeError, Manager};
+use tauri_plugin_cli::CliExt;
 use tauri_plugin_shell::ShellExt;
+use tokio::process::Command;
 
 const DEFAULT_HOST: &str = "https://api.zoo.dev";
 const SETTINGS_FILE_NAME: &str = "settings.toml";
@@ -36,14 +39,35 @@ fn get_initial_default_dir(app: tauri::AppHandle) -> Result<PathBuf, InvokeError
     Ok(dir.join(PROJECT_FOLDER))
 }
 
-fn get_app_settings_file_path(app: &tauri::AppHandle) -> Result<PathBuf, InvokeError> {
+#[tauri::command]
+async fn get_state(app: tauri::AppHandle) -> Result<Option<ProjectState>, InvokeError> {
+    let store = app.state::<state::Store>();
+    Ok(store.get().await)
+}
+
+#[tauri::command]
+async fn set_state(app: tauri::AppHandle, state: Option<ProjectState>) -> Result<(), InvokeError> {
+    let store = app.state::<state::Store>();
+    store.set(state).await;
+    Ok(())
+}
+
+async fn get_app_settings_file_path(app: &tauri::AppHandle) -> Result<PathBuf, InvokeError> {
     let app_config_dir = app.path().app_config_dir()?;
+
+    // Ensure this directory exists.
+    if !app_config_dir.exists() {
+        tokio::fs::create_dir_all(&app_config_dir)
+            .await
+            .map_err(|e| InvokeError::from_anyhow(e.into()))?;
+    }
+
     Ok(app_config_dir.join(SETTINGS_FILE_NAME))
 }
 
 #[tauri::command]
 async fn read_app_settings_file(app: tauri::AppHandle) -> Result<Configuration, InvokeError> {
-    let mut settings_path = get_app_settings_file_path(&app)?;
+    let mut settings_path = get_app_settings_file_path(&app).await?;
     let mut needs_migration = false;
 
     // Check if this file exists.
@@ -88,7 +112,7 @@ async fn read_app_settings_file(app: tauri::AppHandle) -> Result<Configuration, 
 
 #[tauri::command]
 async fn write_app_settings_file(app: tauri::AppHandle, configuration: Configuration) -> Result<(), InvokeError> {
-    let settings_path = get_app_settings_file_path(&app)?;
+    let settings_path = get_app_settings_file_path(&app).await?;
     let contents = toml::to_string_pretty(&configuration).map_err(|e| InvokeError::from_anyhow(e.into()))?;
     tokio::fs::write(settings_path, contents.as_bytes())
         .await
@@ -97,13 +121,19 @@ async fn write_app_settings_file(app: tauri::AppHandle, configuration: Configura
     Ok(())
 }
 
-fn get_project_settings_file_path(app_settings: Configuration, project_name: &str) -> Result<PathBuf, InvokeError> {
-    Ok(app_settings
-        .settings
-        .project
-        .directory
-        .join(project_name)
-        .join(PROJECT_SETTINGS_FILE_NAME))
+async fn get_project_settings_file_path(
+    app_settings: Configuration,
+    project_name: &str,
+) -> Result<PathBuf, InvokeError> {
+    let project_dir = app_settings.settings.project.directory.join(project_name);
+
+    if !project_dir.exists() {
+        tokio::fs::create_dir_all(&project_dir)
+            .await
+            .map_err(|e| InvokeError::from_anyhow(e.into()))?;
+    }
+
+    Ok(project_dir.join(PROJECT_SETTINGS_FILE_NAME))
 }
 
 #[tauri::command]
@@ -111,7 +141,7 @@ async fn read_project_settings_file(
     app_settings: Configuration,
     project_name: &str,
 ) -> Result<ProjectConfiguration, InvokeError> {
-    let settings_path = get_project_settings_file_path(app_settings, project_name)?;
+    let settings_path = get_project_settings_file_path(app_settings, project_name).await?;
 
     // Check if this file exists.
     if !settings_path.exists() {
@@ -133,7 +163,7 @@ async fn write_project_settings_file(
     project_name: &str,
     configuration: ProjectConfiguration,
 ) -> Result<(), InvokeError> {
-    let settings_path = get_project_settings_file_path(app_settings, project_name)?;
+    let settings_path = get_project_settings_file_path(app_settings, project_name).await?;
     let contents = toml::to_string_pretty(&configuration).map_err(|e| InvokeError::from_anyhow(e.into()))?;
     tokio::fs::write(settings_path, contents.as_bytes())
         .await
@@ -172,11 +202,17 @@ async fn list_projects(configuration: Configuration) -> Result<Vec<Project>, Inv
 
 /// Get information about a project.
 #[tauri::command]
-async fn get_project_info(configuration: Configuration, project_name: &str) -> Result<Project, InvokeError> {
+async fn get_project_info(configuration: Configuration, project_path: &str) -> Result<Project, InvokeError> {
     configuration
-        .get_project_info(project_name)
+        .get_project_info(project_path)
         .await
         .map_err(InvokeError::from_anyhow)
+}
+
+/// Parse the project route.
+#[tauri::command]
+async fn parse_project_route(configuration: Configuration, route: &str) -> Result<ProjectRoute, InvokeError> {
+    ProjectRoute::from_route(&configuration, route).map_err(InvokeError::from_anyhow)
 }
 
 #[tauri::command]
@@ -190,7 +226,7 @@ async fn read_dir_recursive(path: &str) -> Result<FileEntry, InvokeError> {
 /// The string returned from this method is the access token.
 #[tauri::command]
 async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError> {
-    println!("Logging in...");
+    log::debug!("Logging in...");
     // Do an OAuth 2.0 Device Authorization Grant dance to get a token.
     let device_auth_url = oauth2::DeviceAuthorizationUrl::new(format!("{host}/oauth2/device/auth"))
         .map_err(|e| InvokeError::from_anyhow(e.into()))?;
@@ -229,7 +265,7 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
     // and bypass the shell::open call as it fails on GitHub Actions.
     let e2e_tauri_enabled = env::var("E2E_TAURI_ENABLED").is_ok();
     if e2e_tauri_enabled {
-        println!("E2E_TAURI_ENABLED is set, won't open {} externally", auth_uri.secret());
+        log::warn!("E2E_TAURI_ENABLED is set, won't open {} externally", auth_uri.secret());
         tokio::fs::write("/tmp/kittycad_user_code", details.user_code().secret())
             .await
             .map_err(|e| InvokeError::from_anyhow(e.into()))?;
@@ -272,7 +308,7 @@ async fn get_user(token: &str, hostname: &str) -> Result<kittycad::types::User, 
             baseurl = format!("http://{host}")
         }
     }
-    println!("Getting user info...");
+    log::debug!("Getting user info...");
 
     // use kittycad library to fetch the user info from /user/me
     let mut client = kittycad::Client::new(token);
@@ -298,7 +334,7 @@ fn show_in_folder(path: &str) -> Result<(), InvokeError> {
     #[cfg(not(unix))]
     {
         Command::new("explorer")
-            .args(["/select,", &path]) // The comma after select is not a typo
+            .args(["/select,", path]) // The comma after select is not a typo
             .spawn()
             .map_err(|e| InvokeError::from_anyhow(e.into()))?;
     }
@@ -306,7 +342,7 @@ fn show_in_folder(path: &str) -> Result<(), InvokeError> {
     #[cfg(unix)]
     {
         Command::new("open")
-            .args(["-R", &path])
+            .args(["-R", path])
             .spawn()
             .map_err(|e| InvokeError::from_anyhow(e.into()))?;
     }
@@ -314,25 +350,44 @@ fn show_in_folder(path: &str) -> Result<(), InvokeError> {
     Ok(())
 }
 
+#[allow(dead_code)]
+fn open_url_sync(app: &tauri::AppHandle, url: &url::Url) {
+    log::debug!("Opening URL: {:?}", url);
+    let cloned_url = url.clone();
+    let runner: tauri::async_runtime::JoinHandle<Result<ProjectState>> = tauri::async_runtime::spawn(async move {
+        let url_str = cloned_url.path().to_string();
+
+        log::debug!("Opening URL path : {}", url_str);
+        let path = Path::new(url_str.as_str());
+        ProjectState::new_from_path(path.to_path_buf()).await
+    });
+
+    // Block on the handle.
+    match tauri::async_runtime::block_on(runner) {
+        Ok(Ok(store)) => {
+            // Create a state object to hold the project.
+            app.manage(state::Store::new(store));
+        }
+        Err(e) => {
+            log::warn!("Error opening URL:{} {:?}", url, e);
+        }
+        Ok(Err(e)) => {
+            log::warn!("Error opening URL:{} {:?}", url, e);
+        }
+    }
+}
+
 fn main() -> Result<()> {
     tauri::Builder::default()
-        .setup(|_app| {
-            #[cfg(debug_assertions)]
-            {
-                _app.get_webview("main").unwrap().open_devtools();
-            }
-            #[cfg(not(debug_assertions))]
-            {
-                _app.handle().plugin(tauri_plugin_updater::Builder::new().build())?;
-            }
-            Ok(())
-        })
         .invoke_handler(tauri::generate_handler![
+            get_state,
+            set_state,
             get_initial_default_dir,
             initialize_project_directory,
             create_new_project_directory,
             list_projects,
             get_project_info,
+            parse_project_route,
             get_user,
             login,
             read_dir_recursive,
@@ -342,13 +397,119 @@ fn main() -> Result<()> {
             read_project_settings_file,
             write_project_settings_file,
         ])
+        .plugin(tauri_plugin_cli::init())
+        .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_http::init())
+        .plugin(
+            tauri_plugin_log::Builder::new()
+                .targets([
+                    tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::Stdout),
+                    tauri_plugin_log::Target::new(tauri_plugin_log::TargetKind::LogDir { file_name: None }),
+                ])
+                .level(log::LevelFilter::Debug)
+                .build(),
+        )
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_shell::init())
-        .run(tauri::generate_context!())?;
+        .setup(|app| {
+            // Do update things.
+            #[cfg(debug_assertions)]
+            {
+                app.get_webview("main").unwrap().open_devtools();
+            }
+            #[cfg(not(debug_assertions))]
+            #[cfg(feature = "updater")]
+            {
+                app.handle().plugin(tauri_plugin_updater::Builder::new().build())?;
+            }
+
+            let mut verbose = false;
+            let mut source_path: Option<PathBuf> = None;
+            match app.cli().matches() {
+                // `matches` here is a Struct with { args, subcommand }.
+                // `args` is `HashMap<String, ArgData>` where `ArgData` is a struct with { value, occurrences }.
+                // `subcommand` is `Option<Box<SubcommandMatches>>` where `SubcommandMatches` is a struct with { name, matches }.
+                Ok(matches) => {
+                    if let Some(verbose_flag) = matches.args.get("verbose") {
+                        let Some(value) = verbose_flag.value.as_bool() else {
+                            return Err(
+                                anyhow::anyhow!("Error parsing CLI arguments: verbose flag is not a boolean").into(),
+                            );
+                        };
+                        verbose = value;
+                    }
+
+                    // Get the path we are trying to open.
+                    if let Some(source_arg) = matches.args.get("source") {
+                        // We don't do an else here because this can be null.
+                        if let Some(value) = source_arg.value.as_str() {
+                            log::info!("Got path in cli argument: {}", value);
+                            source_path = Some(Path::new(value).to_path_buf());
+                        }
+                    }
+                }
+                Err(err) => {
+                    return Err(anyhow::anyhow!("Error parsing CLI arguments: {:?}", err).into());
+                }
+            }
+
+            if verbose {
+                log::debug!("Verbose mode enabled.");
+            }
+
+            // If we have a source path to open, make sure it exists.
+            let Some(source_path) = source_path else {
+                // The user didn't provide a source path to open.
+                // Run the app as normal.
+                app.manage(state::Store::default());
+                return Ok(());
+            };
+
+            if !source_path.exists() {
+                return Err(anyhow::anyhow!(
+                    "Error: the path `{}` you are trying to open does not exist",
+                    source_path.display()
+                )
+                .into());
+            }
+
+            let runner: tauri::async_runtime::JoinHandle<Result<ProjectState>> =
+                tauri::async_runtime::spawn(async move { ProjectState::new_from_path(source_path).await });
+
+            // Block on the handle.
+            let store = tauri::async_runtime::block_on(runner)??;
+
+            // Create a state object to hold the project.
+            app.manage(state::Store::new(store));
+
+            // Listen on the deep links.
+            app.listen("deep-link://new-url", |event| {
+                log::info!("got deep-link url: {:?}", event);
+                // TODO: open_url_sync(app.handle(), event.url);
+            });
+
+            Ok(())
+        })
+        .build(tauri::generate_context!())?
+        .run(
+            #[allow(unused_variables)]
+            |app, event| {
+                #[cfg(any(target_os = "macos", target_os = "ios"))]
+                if let tauri::RunEvent::Opened { urls } = event {
+                    log::info!("Opened URLs: {:?}", urls);
+
+                    // Handle the first URL.
+                    // TODO: do we want to handle more than one URL?
+                    // Under what conditions would we even have more than one?
+                    if let Some(url) = urls.first() {
+                        open_url_sync(app, url);
+                    }
+                }
+            },
+        );
 
     Ok(())
 }

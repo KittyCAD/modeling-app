@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { getUtils } from './test-utils'
+import { makeTemplate, getUtils } from './test-utils'
 import waitOn from 'wait-on'
 import { roundOff } from 'lib/utils'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
@@ -8,7 +8,8 @@ import {
   TEST_SETTINGS,
   TEST_SETTINGS_KEY,
   TEST_SETTINGS_CORRUPTED,
-  TEST_SETTINGS_ONBOARDING,
+  TEST_SETTINGS_ONBOARDING_EXPORT,
+  TEST_SETTINGS_ONBOARDING_START,
 } from './storageStates'
 import * as TOML from '@iarna/toml'
 
@@ -278,7 +279,7 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
     const bottomAng = 25
    */
   await page.click('.cm-content')
-  await page.keyboard.type('# error')
+  await page.keyboard.type('$ error')
 
   // press arrows to clear autocomplete
   await page.keyboard.press('ArrowLeft')
@@ -295,10 +296,10 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
 
   // error text on hover
   await page.hover('.cm-lint-marker-error')
-  await expect(page.getByText("found unknown token '#'")).toBeVisible()
+  await expect(page.getByText("found unknown token '$'")).toBeVisible()
 
   // select the line that's causing the error and delete it
-  await page.getByText('# error').click()
+  await page.getByText('$ error').click()
   await page.keyboard.press('End')
   await page.keyboard.down('Shift')
   await page.keyboard.press('Home')
@@ -680,6 +681,45 @@ test('Project settings can be set and override user settings', async ({
   await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
 })
 
+test('Click through each onboarding step', async ({ page }) => {
+  const u = getUtils(page)
+
+  // Override beforeEach test setup
+  await page.addInitScript(
+    async ({ settingsKey, settings }) => {
+      // Give no initial code, so that the onboarding start is shown immediately
+      localStorage.setItem('persistCode', '')
+      localStorage.setItem(settingsKey, settings)
+    },
+    {
+      settingsKey: TEST_SETTINGS_KEY,
+      settings: TOML.stringify({ settings: TEST_SETTINGS_ONBOARDING_START }),
+    }
+  )
+
+  await page.setViewportSize({ width: 1200, height: 1080 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+
+  // Test that the onboarding pane loaded
+  await expect(page.getByText('Welcome to Modeling App! This')).toBeVisible()
+
+  const nextButton = page.getByTestId('onboarding-next')
+
+  while ((await nextButton.innerText()) !== 'Finish') {
+    await expect(nextButton).toBeVisible()
+    await nextButton.click()
+  }
+
+  // Finish the onboarding
+  await expect(nextButton).toBeVisible()
+  await nextButton.click()
+
+  // Test that the onboarding pane is gone
+  await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
+  await expect(page.url()).not.toContain('onboarding')
+})
+
 test('Onboarding redirects and code updating', async ({ page }) => {
   const u = getUtils(page)
 
@@ -692,7 +732,7 @@ test('Onboarding redirects and code updating', async ({ page }) => {
     },
     {
       settingsKey: TEST_SETTINGS_KEY,
-      settings: TOML.stringify({ settings: TEST_SETTINGS_ONBOARDING }),
+      settings: TOML.stringify({ settings: TEST_SETTINGS_ONBOARDING_EXPORT }),
     }
   )
 
@@ -1649,14 +1689,13 @@ test('Sketch on face', async ({ page }) => {
   await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
   previousCodeContent = await page.locator('.cm-content').innerText()
 
-  await expect(page.locator('.cm-content'))
-    .toContainText(`const part002 = startSketchOn(part001, 'seg01')
-|> startProfileAt([-12.83, 6.7], %)
-|> line([${process?.env?.CI ? 2.28 : 2.28}, -${
-    process?.env?.CI ? 0.07 : 0.07
-  }], %)
-|> line([-3.05, -1.47], %)
-|> close(%)`)
+  const result = makeTemplate`const part002 = startSketchOn(part001, 'seg01')
+  |> startProfileAt([-12.83, 6.7], %)
+  |> line([${[2.28, 2.35]}, -${0.07}], %)
+  |> line([-3.05, -1.47], %)
+  |> close(%)`
+
+  await expect(page.locator('.cm-content')).toHaveText(result.regExp)
 
   // exit sketch
   await u.openAndClearDebugPanel()
@@ -1675,15 +1714,9 @@ test('Sketch on face', async ({ page }) => {
   await expect(page.getByText('Confirm Extrude')).toBeVisible()
   await page.keyboard.press('Enter')
 
-  await expect(page.locator('.cm-content'))
-    .toContainText(`const part002 = startSketchOn(part001, 'seg01')
-|> startProfileAt([-12.83, 6.7], %)
-|> line([${process?.env?.CI ? 2.28 : 2.28}, -${
-    process?.env?.CI ? 0.07 : 0.07
-  }], %)
-|> line([-3.05, -1.47], %)
-|> close(%)
-|> extrude(5 + 7, %)`)
+  const result2 = result.genNext`
+  |> extrude(${[5, 5]} + 7, %)`
+  await expect(page.locator('.cm-content')).toHaveText(result2.regExp)
 })
 
 test('Can code mod a line length', async ({ page }) => {
