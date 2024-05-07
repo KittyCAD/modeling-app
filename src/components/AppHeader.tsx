@@ -1,12 +1,13 @@
 import { Toolbar } from '../Toolbar'
-import UserSidebarMenu from './UserSidebarMenu'
+import UserSidebarMenu from 'components/UserSidebarMenu'
 import { type IndexLoaderData } from 'lib/types'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import styles from './AppHeader.module.css'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { ActionButton } from './ActionButton'
+import { ActionButton } from 'components/ActionButton'
 import usePlatform from 'hooks/usePlatform'
+import { RefreshButton } from 'components/RefreshButton'
 
 interface AppHeaderProps extends React.PropsWithChildren {
   showToolbar?: boolean
@@ -60,7 +61,12 @@ export const AppHeader = ({
       </div>
       <div className="flex items-center gap-1 py-1 ml-auto">
         {/* If there are children, show them, otherwise show User menu */}
-        {children || <UserSidebarMenu user={user} />}
+        {children || (
+          <>
+            <RefreshButton />
+            <UserSidebarMenu user={user} />
+          </>
+        )}
       </div>
     </header>
   )
