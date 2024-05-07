@@ -1001,13 +1001,13 @@ test.describe('Command bar tests', () => {
       localStorage.setItem(
         'persistCode',
         `const distance = sqrt(20)
-        const part001 = startSketchOn('-XZ')
-  |> startProfileAt([-6.95, 4.98], %)
-  |> line([25.1, 0.41], %)
-  |> line([0.73, -14.93], %)
-  |> line([-23.44, 0.52], %)
-  |> close(%)
-        `
+      const part001 = startSketchOn('-XZ')
+      |> startProfileAt([-6.95, 10.98], %)
+      |> line([25.1, 0.41], %)
+      |> line([0.73, -20.93], %)
+      |> line([-23.44, 0.52], %)
+      |> close(%)
+          `
       )
     })
 
@@ -1024,7 +1024,6 @@ test.describe('Command bar tests', () => {
       page.getByRole('button', { name: 'Start Sketch' })
     ).not.toBeDisabled()
     await u.clearCommandLogs()
-    await page.getByText('|> line([0.73, -14.93], %)').click()
     await page.getByRole('button', { name: 'Extrude' }).isEnabled()
 
     let cmdSearchBar = page.getByPlaceholder('Search commands')
@@ -1033,6 +1032,12 @@ test.describe('Command bar tests', () => {
 
     // Search for extrude command and choose it
     await page.getByRole('option', { name: 'Extrude' }).click()
+
+    // Assert that we're on the selection step
+    await expect(page.getByRole('button', { name: 'selection' })).toBeDisabled()
+    // Select a face
+    await page.mouse.move(700, 200)
+    await page.mouse.click(700, 200)
 
     // Assert that we're on the distance step
     await expect(page.getByRole('button', { name: 'distance' })).toBeDisabled()
@@ -1067,9 +1072,9 @@ test.describe('Command bar tests', () => {
       `const distance = sqrt(20)
 const distance001 = 5 + 7
 const part001 = startSketchOn('-XZ')
-    |> startProfileAt([-6.95, 4.98], %)
+    |> startProfileAt([-6.95, 10.98], %)
     |> line([25.1, 0.41], %)
-    |> line([0.73, -14.93], %)
+    |> line([0.73, -20.93], %)
     |> line([-23.44, 0.52], %)
     |> close(%)
     |> extrude(distance001, %)`.replace(/(\r\n|\n|\r)/gm, '') // remove newlines
