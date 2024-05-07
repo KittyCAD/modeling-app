@@ -239,8 +239,8 @@ jobs:
           includeDebug: true
           args: "${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
 
-      - name: Mac App Store
-        if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'macos-14' }}
+      - name: Build for Mac TestFlight (nightly)
+        if: ${{ github.event_name == 'schedule' && matrix.os == 'macos-14' }}
         shell: bash
         run: |
           unset APPLE_SIGNING_IDENTITY
@@ -302,9 +302,9 @@ jobs:
           APPLE_STORE_P12_PASSWORD: ${{ secrets.APPLE_STORE_P12_PASSWORD }}
 
 
-      - name: 'Upload app to TestFlight'
+      - name: 'Upload to Mac TestFlight (nightly)'
         uses: apple-actions/upload-testflight-build@v1
-        if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'macos-14' }}
+        if: ${{ github.event_name == 'schedule' && matrix.os == 'macos-14' }}
         with:
           app-path: 'src-tauri/target/universal-apple-darwin/release/bundle/macos/Zoo Modeling App.pkg'
           issuer-id: ${{ secrets.APPLE_STORE_ISSUER_ID }}
@@ -313,8 +313,8 @@ jobs:
           app-type: osx
 
 
-      - name: Clean up after Mac App Store
-        if: ${{ env.BUILD_RELEASE == 'true' && matrix.os == 'macos-14' }}
+      - name: Clean up after Mac TestFlight (nightly)
+        if: ${{ github.event_name == 'schedule' && matrix.os == 'macos-14' }}
         shell: bash
         run: |
           git status
