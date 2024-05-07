@@ -2,7 +2,21 @@ import { CustomIcon } from './CustomIcon'
 import Tooltip from './Tooltip'
 
 export function RefreshButton() {
-  function refresh() {
+  async function refresh() {
+    if (window && 'plausible' in window) {
+      const p = window.plausible as (
+        event: string,
+        options?: { props: Record<string, string> }
+      ) => Promise<void>
+      // Send a refresh event to Plausible so we can track how often users get stuck
+      await p('Refresh', {
+        props: {
+          method: 'UI button',
+          // TODO: add more coredump data here
+        },
+      })
+    }
+
     // Window may not be available in some environments
     window?.location.reload()
   }
