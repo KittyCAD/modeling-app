@@ -23,7 +23,7 @@ serde_tokenstream = "0.2"
 syn = { version = "2.0.60", features = ["full"] }
 
 [dev-dependencies]
-anyhow = "1.0.82"
+anyhow = "1.0.83"
 expectorate = "1.1.0"
 pretty_assertions = "1.4.0"
 rustfmt-wrapper = "0.2.1"
