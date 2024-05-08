@@ -55,7 +55,8 @@ export function profileStart({
   const group = new Group()
 
   const geometry = new BoxGeometry(12, 12, 12) // in pixels scaled later
-  const body = new MeshBasicMaterial({ color: getThemeColorForThreeJs(theme) })
+  const baseColor = getThemeColorForThreeJs(theme)
+  const body = new MeshBasicMaterial({ color: baseColor })
   const mesh = new Mesh(geometry, body)
 
   group.add(mesh)
@@ -271,7 +272,8 @@ export function tangentialArcToSegment({
     scale,
   })
 
-  const body = new MeshBasicMaterial({ color: getThemeColorForThreeJs(theme) })
+  const baseColor = getThemeColorForThreeJs(theme)
+  const body = new MeshBasicMaterial({ color: baseColor })
   const mesh = new Mesh(geometry, body)
   mesh.userData.type = isDraftSegment
     ? TANGENTIAL_ARC_TO__SEGMENT_DASH
@@ -285,6 +287,7 @@ export function tangentialArcToSegment({
     prevSegment,
     pathToNode,
     isSelected: false,
+    baseColor,
   }
   group.name = TANGENTIAL_ARC_TO_SEGMENT
 
