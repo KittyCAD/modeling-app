@@ -57,10 +57,7 @@ export const Toolbar = () => {
         {...props}
         ref={toolbarButtonsRef}
         onWheel={handleToolbarButtonsWheelEvent}
-        className={
-          'm-0 py-1 rounded-l-sm flex gap-2 items-center overflow-x-auto ' +
-          className
-        }
+        className={'m-0 py-1 rounded-l-sm flex gap-2 items-center ' + className}
         style={{ scrollbarWidth: 'thin' }}
       >
         {state.nextEvents.includes('Enter sketch') && (
@@ -71,7 +68,7 @@ export const Toolbar = () => {
               onClick={() =>
                 send({ type: 'Enter sketch', data: { forceNewSketch: true } })
               }
-              icon={{
+              iconStart={{
                 icon: 'sketch',
                 iconClassName,
                 bgClassName,
@@ -88,7 +85,7 @@ export const Toolbar = () => {
               className={buttonClassName}
               Element="button"
               onClick={() => send({ type: 'Enter sketch' })}
-              icon={{
+              iconStart={{
                 icon: 'sketch',
                 iconClassName,
                 bgClassName,
@@ -105,7 +102,7 @@ export const Toolbar = () => {
               className={buttonClassName}
               Element="button"
               onClick={() => send({ type: 'Cancel' })}
-              icon={{
+              iconStart={{
                 icon: 'arrowLeft',
                 iconClassName,
                 bgClassName,
@@ -128,7 +125,7 @@ export const Toolbar = () => {
                     : send('Equip Line tool')
                 }
                 aria-pressed={state?.matches('Sketch.Line tool')}
-                icon={{
+                iconStart={{
                   icon: 'line',
                   iconClassName,
                   bgClassName,
@@ -148,7 +145,7 @@ export const Toolbar = () => {
                     : send('Equip tangential arc to')
                 }
                 aria-pressed={state.matches('Sketch.Tangential arc to')}
-                icon={{
+                iconStart={{
                   icon: 'arc',
                   iconClassName,
                   bgClassName,
@@ -172,7 +169,7 @@ export const Toolbar = () => {
                     : send('Equip rectangle tool')
                 }
                 aria-pressed={state.matches('Sketch.Rectangle tool')}
-                icon={{
+                iconStart={{
                   icon: 'rectangle',
                   iconClassName,
                   bgClassName,
@@ -228,7 +225,7 @@ export const Toolbar = () => {
                       .includes(eventName) || disableAllButtons
                   }
                   title={eventName}
-                  icon={{
+                  iconStart={{
                     icon: 'line',
                     iconClassName,
                     bgClassName,
@@ -257,7 +254,7 @@ export const Toolbar = () => {
                   ? 'extrude'
                   : 'sketches need to be closed, or not already extruded'
               }
-              icon={{
+              iconStart={{
                 icon: 'extrude',
                 iconClassName,
                 bgClassName,
@@ -272,7 +269,7 @@ export const Toolbar = () => {
   }
 
   return (
-    <menu className="max-w-full overflow-hidden whitespace-nowrap rounded px-1.5 py-0.5 backdrop-blur-sm bg-chalkboard-10/80 dark:bg-chalkboard-110/70 relative">
+    <menu className="max-w-full whitespace-nowrap rounded px-1.5 py-0.5 backdrop-blur-sm bg-chalkboard-10/80 dark:bg-chalkboard-110/70 relative">
       <ToolbarButtons />
     </menu>
   )

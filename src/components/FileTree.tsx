@@ -109,7 +109,7 @@ function DeleteConfirmationDialog({
                 send({ type: 'Delete file', data: fileOrDir })
                 setIsOpen(false)
               }}
-              icon={{
+              iconStart={{
                 icon: faTrashAlt,
                 bgClassName: 'bg-destroy-80',
                 iconClassName:
@@ -340,7 +340,7 @@ export const FileTreeMenu = () => {
     <>
       <ActionButton
         Element="button"
-        icon={{
+        iconStart={{
           icon: 'filePlus',
           iconClassName: '!text-current',
           bgClassName: 'bg-transparent',
@@ -355,7 +355,7 @@ export const FileTreeMenu = () => {
 
       <ActionButton
         Element="button"
-        icon={{
+        iconStart={{
           icon: 'folderPlus',
           iconClassName: '!text-current',
           bgClassName: 'bg-transparent',
