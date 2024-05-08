@@ -954,9 +954,8 @@ test.describe('Command bar tests', () => {
     let cmdSearchBar = page.getByPlaceholder('Search commands')
 
     // First try opening the command bar and closing it
-    // It has a different label on mac and windows/linux, "Meta+K" and "Ctrl+/" respectively
     await page
-      .getByRole('button', { name: 'Ctrl+/' })
+      .getByRole('button', { name: 'Commands', exact: false })
       .or(page.getByRole('button', { name: '⌘K' }))
       .click()
     await expect(cmdSearchBar).toBeVisible()

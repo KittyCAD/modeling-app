@@ -274,17 +274,8 @@ export const Toolbar = () => {
   }
 
   return (
-    <div className="max-w-full flex items-stretch rounded-l-sm rounded-r-full bg-chalkboard-10/80 dark:bg-chalkboard-110/70 relative">
-      <menu className="flex-1 pl-1 pr-2 py-0 overflow-hidden rounded-l-sm whitespace-nowrap border-solid border border-primary/30 dark:border-chalkboard-90 border-r-0">
-        <ToolbarButtons />
-      </menu>
-      <ActionButton
-        Element="button"
-        onClick={() => commandBarSend({ type: 'Open' })}
-        className="rounded-r-full pr-4 self-stretch border-primary/30 hover:border-primary dark:border-chalkboard-80 dark:bg-chalkboard-80 text-primary"
-      >
-        {platform === 'macos' ? '⌘K' : 'Ctrl+/'}
-      </ActionButton>
-    </div>
+    <menu className="max-w-full overflow-hidden whitespace-nowrap rounded px-1.5 py-0.5 backdrop-blur-sm bg-chalkboard-10/80 dark:bg-chalkboard-110/70 relative">
+      <ToolbarButtons />
+    </menu>
   )
 }

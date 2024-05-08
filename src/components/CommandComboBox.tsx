@@ -38,7 +38,7 @@ function CommandComboBox({
       <div className="flex items-center gap-2 px-4 pb-2 border-solid border-0 border-b border-b-chalkboard-20 dark:border-b-chalkboard-80">
         <CustomIcon
           name="search"
-          className="w-5 h-5 bg-primary/10 text-primary"
+          className="w-5 h-5 bg-primary/10 dark:bg-primary text-primary dark:text-inherit"
         />
         <Combobox.Input
           onChange={(event) => setQuery(event.target.value)}
