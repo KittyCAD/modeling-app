@@ -356,6 +356,7 @@ export class SceneEntities {
       id: sketchGroup.start.__geoMeta.id,
       pathToNode: segPathToNode,
       scale: factor,
+      theme: sceneInfra._theme,
     })
     _profileStart.layers.set(SKETCH_LAYER)
     _profileStart.traverse((child) => {
@@ -406,6 +407,7 @@ export class SceneEntities {
           isDraftSegment,
           scale: factor,
           texture: sceneInfra.extraSegmentTexture,
+          theme: sceneInfra._theme,
         })
       } else {
         seg = straightSegment({
@@ -417,6 +419,7 @@ export class SceneEntities {
           scale: factor,
           callExpName,
           texture: sceneInfra.extraSegmentTexture,
+          theme: sceneInfra._theme,
         })
       }
       seg.layers.set(SKETCH_LAYER)
