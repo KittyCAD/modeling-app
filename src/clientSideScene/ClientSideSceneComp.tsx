@@ -90,7 +90,8 @@ export const ClientSideScene = ({
       cursor = 'grabbing'
     } else if (
       state.matches('Sketch.Line tool') ||
-      state.matches('Sketch.Tangential arc to')
+      state.matches('Sketch.Tangential arc to') ||
+      state.matches('Sketch.Rectangle tool')
     ) {
       cursor = 'crosshair'
     } else {

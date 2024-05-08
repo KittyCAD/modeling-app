@@ -97,6 +97,7 @@ import {
   getRectangleCallExpressions,
   updateRectangleSketch,
 } from 'lib/rectangleTool'
+import { getThemeColorForThreeJs } from 'lib/theme'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -1506,7 +1507,10 @@ export class SceneEntities {
         const isSelected = parent?.userData?.isSelected
         colorSegment(
           selected,
-          isSelected ? 0x0000ff : parent?.userData?.baseColor || 0xffffff
+          isSelected
+            ? 0x0000ff
+            : parent?.userData?.baseColor ||
+                getThemeColorForThreeJs(sceneInfra._theme)
         )
         const extraSegmentGroup = parent?.getObjectByName(EXTRA_SEGMENT_HANDLE)
         if (extraSegmentGroup) {

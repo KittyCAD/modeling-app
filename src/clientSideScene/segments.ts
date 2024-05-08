@@ -271,7 +271,7 @@ export function tangentialArcToSegment({
     scale,
   })
 
-  const body = new MeshBasicMaterial({ color: 0xffffff })
+  const body = new MeshBasicMaterial({ color: getThemeColorForThreeJs(theme) })
   const mesh = new Mesh(geometry, body)
   mesh.userData.type = isDraftSegment
     ? TANGENTIAL_ARC_TO__SEGMENT_DASH
