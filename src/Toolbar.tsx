@@ -4,7 +4,6 @@ import { engineCommandManager, kclManager } from 'lib/singletons'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { ActionButton } from 'components/ActionButton'
-import usePlatform from 'hooks/usePlatform'
 import { isSingleCursorInPipe } from 'lang/queryAst'
 import { useKclContext } from 'lang/KclProvider'
 import {
@@ -14,16 +13,15 @@ import {
 import { useStore } from 'useStore'
 
 export const Toolbar = () => {
-  const platform = usePlatform()
   const { commandBarSend } = useCommandsContext()
   const { state, send, context } = useModelingContext()
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
   const iconClassName =
-    'group-disabled:text-chalkboard-50 group-enabled:group-hover:!text-chalkboard-10 group-pressed:!text-chalkboard-10'
+    'group-disabled:text-chalkboard-50 group-enabled:group-hover:!text-primary dark:group-enabled:group-hover:!text-inherit group-pressed:!text-chalkboard-10'
   const bgClassName =
-    'group-disabled:!bg-transparent group-enabled:group-hover:bg-primary group-pressed:bg-primary'
+    'group-disabled:!bg-transparent group-enabled:group-hover:bg-primary/10 dark:group-enabled:group-hover:bg-primary group-pressed:bg-primary'
   const buttonClassName =
-    'bg-chalkboard-10 dark:bg-chalkboard-100 hover:bg-chalkboard-10 dark:hover:bg-chalkboard-100'
+    'bg-chalkboard-10 dark:bg-chalkboard-100 enabled:hover:bg-chalkboard-10 dark:enabled:hover:bg-chalkboard-100 dark:pressed:border-primary'
   const pathId = useMemo(() => {
     if (!isSingleCursorInPipe(context.selectionRanges, kclManager.ast)) {
       return false
