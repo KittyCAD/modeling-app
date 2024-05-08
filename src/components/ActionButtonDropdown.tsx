@@ -1,10 +1,5 @@
 import { Popover } from '@headlessui/react'
-import { settings } from 'lib/settings/initialSettings'
-import { createAndOpenNewProject } from 'lib/tauriFS'
 import { ActionButton, ActionButtonProps } from './ActionButton'
-import { CustomIcon } from './CustomIcon'
-import Tooltip from './Tooltip'
-import { useState } from 'react'
 
 type ActionButtonSplitProps = Omit<ActionButtonProps, 'iconEnd'> & {
   splitMenuItems: {
