@@ -15,7 +15,7 @@ clap = "4.5.4"
 gloo-utils = "0.2.0"
 kcl-lib = { path = "kcl" }
 kittycad = { workspace = true }
-serde_json = "1.0.116"
+serde_json = "1.0.117"
 tokio = { version = "1.37.0", features = ["sync"] }
 toml = "0.8.12"
 uuid = { version = "1.8.0", features = ["v4", "js", "serde"] }
