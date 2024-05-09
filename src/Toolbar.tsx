@@ -4,7 +4,6 @@ import { engineCommandManager, kclManager } from 'lib/singletons'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { ActionButton } from 'components/ActionButton'
-import usePlatform from 'hooks/usePlatform'
 import { isSingleCursorInPipe } from 'lang/queryAst'
 import { useKclContext } from 'lang/KclProvider'
 import {
@@ -14,7 +13,6 @@ import {
 import { useStore } from 'useStore'
 
 export const Toolbar = () => {
-  const platform = usePlatform()
   const { commandBarSend } = useCommandsContext()
   const { state, send, context } = useModelingContext()
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
