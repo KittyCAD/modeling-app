@@ -100,6 +100,11 @@ export class CameraControls {
   }
   private debounceTimer = 0
 
+  // declare updateInterval property 
+  // for frequent camera updates 
+  // for gizmo during drag
+  updateInterval: number | null = null
+
   handleStart = () => {
     if (this.debounceTimer) clearTimeout(this.debounceTimer)
     this._isCamMovingCallback(true, false)
@@ -335,6 +340,26 @@ export class CameraControls {
         },
         cmd_id: uuidv4(),
       })
+
+      // Start an interval to request camera settings at 0.1-second rate.
+      this.updateInterval = window.setInterval(() => {
+        try {
+          this.engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: { type: 'default_camera_get_settings'}
+          })
+        } catch (error) {
+          console.error('Failed to update camera settings from server:', error)
+          // Clear the interval to stop frequent updates
+          if (this.updateInterval !== null) {
+            clearInterval(this.updateInterval)  
+            this.updateInterval = null
+          }
+        }
+
+      }, 100) // Ping every 0.1 seconds
+
     }
   }
 
@@ -391,6 +416,13 @@ export class CameraControls {
     this.isDragging = false
     this.handleEnd()
     if (this.syncDirection === 'engineToClient') {
+
+      // Clear the interval to stop frequent updates
+      if (this.updateInterval !== null) {
+        clearInterval(this.updateInterval)  
+        this.updateInterval = null
+      }
+
       const interaction = this.getInteractionType(event)
       if (interaction === 'none') return
       void this.engineCommandManager.sendSceneCommand({
