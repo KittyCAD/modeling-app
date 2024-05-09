@@ -134,6 +134,10 @@ export const SettingsAuthProviderBase = ({
             },
           })
         },
+        setClientTheme: (context) => {
+          const opposingTheme = getOppositeTheme(context.app.theme.current)
+          sceneInfra.theme = opposingTheme
+        },
         setEngineEdges: (context) => {
           engineCommandManager.sendSceneCommand({
             cmd_id: uuidv4(),
