@@ -542,6 +542,27 @@ class EngineConnection {
             },
           }
         })
+        this.unreliableDataChannel.addEventListener('message', (event) => {
+          const result: UnreliableResponses = JSON.parse(event.data)
+          Object.values(
+            this.engineCommandManager.unreliableSubscriptions[result.type] || {}
+          ).forEach(
+            // TODO: There is only one response that uses the unreliable channel atm,
+            // highlight_set_entity, if there are more it's likely they will all have the same
+            // sequence logic, but I'm not sure if we use a single global sequence or a sequence
+            // per unreliable subscription.
+            (callback) => {
+              if (
+                result.type === 'highlight_set_entity' &&
+                result?.data?.sequence &&
+                result?.data.sequence > this.engineCommandManager.inSequence
+              ) {
+                this.engineCommandManager.inSequence = result.data.sequence
+                callback(result)
+              }
+            }
+          )
+        })
       })
     }
 
@@ -853,7 +874,7 @@ type CommandTypes = Models['ModelingCmd_type']['type'] | 'batch'
 
 type UnreliableResponses = Extract<
   Models['OkModelingCmdResponse_type'],
-  { type: 'highlight_set_entity' }
+  { type: 'highlight_set_entity' | 'camera_drag_move' }
 >
 interface UnreliableSubscription<T extends UnreliableResponses['type']> {
   event: T
@@ -1061,32 +1082,6 @@ export class EngineCommandManager {
         setIsStreamReady(false)
       },
       onConnectionStarted: (engineConnection) => {
-        engineConnection?.pc?.addEventListener('datachannel', (event) => {
-          let unreliableDataChannel = event.channel
-
-          unreliableDataChannel.addEventListener('message', (event) => {
-            const result: UnreliableResponses = JSON.parse(event.data)
-            Object.values(
-              this.unreliableSubscriptions[result.type] || {}
-            ).forEach(
-              // TODO: There is only one response that uses the unreliable channel atm,
-              // highlight_set_entity, if there are more it's likely they will all have the same
-              // sequence logic, but I'm not sure if we use a single global sequence or a sequence
-              // per unreliable subscription.
-              (callback) => {
-                if (
-                  result?.data?.sequence &&
-                  result?.data.sequence > this.inSequence &&
-                  result.type === 'highlight_set_entity'
-                ) {
-                  this.inSequence = result.data.sequence
-                  callback(result)
-                }
-              }
-            )
-          })
-        })
-
         // When the EngineConnection starts a connection, we want to register
         // callbacks into the WebSocket/PeerConnection.
         engineConnection.websocket?.addEventListener('message', (event) => {
@@ -1366,14 +1361,11 @@ export class EngineCommandManager {
     callback,
   }: Subscription<T>): () => void {
     const localUnsubscribeId = uuidv4()
-    const otherEventCallbacks = this.subscriptions[event]
-    if (otherEventCallbacks) {
-      otherEventCallbacks[localUnsubscribeId] = callback
-    } else {
-      this.subscriptions[event] = {
-        [localUnsubscribeId]: callback,
-      }
+    if (!this.subscriptions[event]) {
+      this.subscriptions[event] = {}
     }
+    this.subscriptions[event][localUnsubscribeId] = callback
+
     return () => this.unSubscribeTo(event, localUnsubscribeId)
   }
   private unSubscribeTo(event: ModelTypes, id: string) {
@@ -1384,14 +1376,10 @@ export class EngineCommandManager {
     callback,
   }: UnreliableSubscription<T>): () => void {
     const localUnsubscribeId = uuidv4()
-    const otherEventCallbacks = this.unreliableSubscriptions[event]
-    if (otherEventCallbacks) {
-      otherEventCallbacks[localUnsubscribeId] = callback
-    } else {
-      this.unreliableSubscriptions[event] = {
-        [localUnsubscribeId]: callback,
-      }
+    if (!this.unreliableSubscriptions[event]) {
+      this.unreliableSubscriptions[event] = {}
     }
+    this.unreliableSubscriptions[event][localUnsubscribeId] = callback
     return () => this.unSubscribeToUnreliable(event, localUnsubscribeId)
   }
   private unSubscribeToUnreliable(
