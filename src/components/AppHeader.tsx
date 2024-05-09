@@ -4,9 +4,6 @@ import { type IndexLoaderData } from 'lib/types'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import styles from './AppHeader.module.css'
-import { useCommandsContext } from 'hooks/useCommandsContext'
-import { ActionButton } from 'components/ActionButton'
-import usePlatform from 'hooks/usePlatform'
 import { RefreshButton } from 'components/RefreshButton'
 import { CommandBarOpenButton } from './CommandBarOpenButton'
 
@@ -24,8 +21,6 @@ export const AppHeader = ({
   className = '',
   enableMenu = false,
 }: AppHeaderProps) => {
-  const platform = usePlatform()
-  const { commandBarSend } = useCommandsContext()
   const { auth } = useSettingsAuthContext()
   const user = auth?.context?.user
 
