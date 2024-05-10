@@ -79,6 +79,7 @@ export default class CodeManager {
     if (this._code !== code) {
       this.code = code
       this.#updateState(code)
+      this.updateCodeEditor(code)
     }
   }
 

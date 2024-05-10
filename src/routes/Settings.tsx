@@ -269,7 +269,7 @@ export const Settings = () => {
                     <ActionButton
                       Element="button"
                       onClick={restartOnboarding}
-                      icon={{
+                      iconStart={{
                         icon: 'refresh',
                         size: 'sm',
                         className: 'p-1',
@@ -300,7 +300,7 @@ export const Settings = () => {
                             )
                             showInFolder(paths[searchParamTab])
                           }}
-                          icon={{
+                          iconStart={{
                             icon: 'folder',
                             size: 'sm',
                             className: 'p-1',
@@ -319,7 +319,7 @@ export const Settings = () => {
                           })
                           toast.success('Settings restored to default')
                         }}
-                        icon={{
+                        iconStart={{
                           icon: 'refresh',
                           size: 'sm',
                           className: 'p-1 text-chalkboard-10',

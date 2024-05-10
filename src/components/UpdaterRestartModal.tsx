@@ -31,7 +31,7 @@ export const UpdaterRestartModal = ({
         <ActionButton
           Element="button"
           onClick={() => onResolve({ wantRestart: false })}
-          icon={{
+          iconStart={{
             icon: 'close',
             bgClassName: 'bg-destroy-80',
             iconClassName: 'text-destroy-20 group-hover:text-destroy-10',
@@ -44,7 +44,10 @@ export const UpdaterRestartModal = ({
         <ActionButton
           Element="button"
           onClick={() => onResolve({ wantRestart: true })}
-          icon={{ icon: 'arrowRight', bgClassName: 'dark:bg-chalkboard-80' }}
+          iconStart={{
+            icon: 'arrowRight',
+            bgClassName: 'dark:bg-chalkboard-80',
+          }}
           className="dark:hover:bg-chalkboard-80/50"
           data-testid="update-restrart-button-update"
         >
