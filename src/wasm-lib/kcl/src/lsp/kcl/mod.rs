@@ -1011,7 +1011,7 @@ impl LanguageServer for Backend {
             },
             0,
         );
-        let source_range = SourceRange([0, current_code.len() - 1]);
+        let source_range = SourceRange([0, current_code.len()]);
         let range = source_range.to_lsp_range(current_code);
         Ok(Some(vec![TextEdit {
             new_text: recast,

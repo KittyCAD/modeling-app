@@ -1213,6 +1213,16 @@ const outsideRevolve = startSketchOn('XZ')
     // Check the formatting.
     assert_eq!(formatting.len(), 1);
     assert_eq!(
+        formatting[0].range,
+        tower_lsp::lsp_types::Range {
+            start: tower_lsp::lsp_types::Position { line: 0, character: 0 },
+            end: tower_lsp::lsp_types::Position {
+                line: 60,
+                character: 30
+            }
+        }
+    );
+    assert_eq!(
         formatting[0].new_text,
         r#"// Ball Bearing
 // A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads.
