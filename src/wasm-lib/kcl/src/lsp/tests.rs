@@ -1014,9 +1014,12 @@ async fn test_kcl_lsp_semantic_tokens() {
     if let tower_lsp::lsp_types::SemanticTokensResult::Tokens(semantic_tokens) = semantic_tokens {
         assert_eq!(semantic_tokens.data.len(), 2);
         assert_eq!(semantic_tokens.data[0].length, 13);
+        assert_eq!(semantic_tokens.data[0].delta_start, 0);
+        assert_eq!(semantic_tokens.data[0].delta_line, 0);
         assert_eq!(semantic_tokens.data[0].token_type, 8);
         assert_eq!(semantic_tokens.data[1].length, 4);
         assert_eq!(semantic_tokens.data[1].delta_start, 14);
+        assert_eq!(semantic_tokens.data[1].delta_line, 0);
         assert_eq!(semantic_tokens.data[1].token_type, 3);
     } else {
         panic!("Expected semantic tokens");
@@ -1059,25 +1062,26 @@ const sphereDia = 0.5"#.to_string(),
 
     // Check the semantic tokens.
     if let tower_lsp::lsp_types::SemanticTokensResult::Tokens(semantic_tokens) = semantic_tokens {
-        println!("{:#?}", semantic_tokens.data);
-        println!("{:#?}", server.token_types);
         assert_eq!(semantic_tokens.data.len(), 7);
         assert_eq!(semantic_tokens.data[0].length, 15);
+        assert_eq!(semantic_tokens.data[0].delta_start, 0);
+        assert_eq!(semantic_tokens.data[0].delta_line, 0);
         assert_eq!(semantic_tokens.data[0].token_type, 6);
         assert_eq!(semantic_tokens.data[1].length, 232);
-        assert_eq!(semantic_tokens.data[1].delta_start, 15);
+        assert_eq!(semantic_tokens.data[1].delta_start, 0);
+        assert_eq!(semantic_tokens.data[1].delta_line, 1);
         assert_eq!(semantic_tokens.data[1].token_type, 6);
         assert_eq!(semantic_tokens.data[2].length, 88);
         assert_eq!(semantic_tokens.data[2].delta_start, 0);
         assert_eq!(semantic_tokens.data[2].delta_line, 2);
         assert_eq!(semantic_tokens.data[2].token_type, 6);
         assert_eq!(semantic_tokens.data[3].length, 5);
-        assert_eq!(semantic_tokens.data[3].delta_start, 88);
+        assert_eq!(semantic_tokens.data[3].delta_start, 0);
         assert_eq!(semantic_tokens.data[3].delta_line, 1);
         assert_eq!(semantic_tokens.data[3].token_type, 4);
         assert_eq!(semantic_tokens.data[4].length, 9);
         assert_eq!(semantic_tokens.data[4].delta_start, 6);
-        assert_eq!(semantic_tokens.data[4].delta_line, 1);
+        assert_eq!(semantic_tokens.data[4].delta_line, 0);
         assert_eq!(semantic_tokens.data[4].token_type, 1);
         assert_eq!(semantic_tokens.data[5].length, 1);
         assert_eq!(semantic_tokens.data[5].delta_start, 10);
