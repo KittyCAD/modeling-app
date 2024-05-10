@@ -3302,7 +3302,7 @@ fn ghi = (x) => {
         let some_program_string = r#"// Ball Bearing
 // A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads. 
 
-// Define constants like ball diameter, inside diamter, overhange length, and thickness
+// Define constants like ball diameter, inside diameter, overhange length, and thickness
 const sphereDia = 0.5
 const insideDia = 1
 const thickness = 0.25
@@ -3373,7 +3373,7 @@ const outsideRevolve = startSketchOn('XZ')
 // A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads.
 
 
-// Define constants like ball diameter, inside diamter, overhange length, and thickness
+// Define constants like ball diameter, inside diameter, overhange length, and thickness
 const sphereDia = 0.5
 const insideDia = 1
 const thickness = 0.25
