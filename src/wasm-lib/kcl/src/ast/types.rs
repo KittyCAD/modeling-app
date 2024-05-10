@@ -3298,6 +3298,144 @@ fn ghi = (x) => {
     }
 
     #[test]
+    fn test_recast_bug_extra_parens() {
+        let some_program_string = r#"// Ball Bearing
+// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads. 
+
+// Define constants like ball diameter, inside diamter, overhange length, and thickness
+const sphereDia = 0.5
+const insideDia = 1
+const thickness = 0.25
+const overHangLength = .4
+
+// Sketch and revolve the inside bearing piece
+const insideRevolve = startSketchOn('XZ')
+  |> startProfileAt([insideDia / 2, 0], %)
+  |> line([0, thickness + sphereDia / 2], %)
+  |> line([overHangLength, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-overHangLength + thickness, 0], %)
+  |> line([0, -sphereDia], %)
+  |> line([overHangLength - thickness, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-overHangLength, 0], %)
+  |> close(%)
+  |> revolve({ axis: 'y' }, %)
+
+// Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
+const sphere = startSketchOn('XZ')
+  |> startProfileAt([
+       0.05 + insideDia / 2 + thickness,
+       0 - 0.05
+     ], %)
+  |> line([sphereDia - 0.1, 0], %)
+  |> arc({
+       angle_start: 0,
+       angle_end: -180,
+       radius: sphereDia / 2 - 0.05
+     }, %)
+  |> close(%)
+  |> revolve({ axis: 'x' }, %)
+  |> patternCircular3d({
+       axis: [0, 0, 1],
+       center: [0, 0, 0],
+       repetitions: 10,
+       arcDegrees: 360,
+       rotateDuplicates: true
+     }, %)
+
+// Sketch and revolve the outside bearing
+const outsideRevolve = startSketchOn('XZ')
+  |> startProfileAt([
+       insideDia / 2 + thickness + sphereDia,
+       0
+     ], %)
+  |> line([0, sphereDia / 2], %)
+  |> line([-overHangLength + thickness, 0], %)
+  |> line([0, thickness], %)
+  |> line([overHangLength, 0], %)
+  |> line([0, -2 * thickness - sphereDia], %)
+  |> line([-overHangLength, 0], %)
+  |> line([0, thickness], %)
+  |> line([overHangLength - thickness, 0], %)
+  |> close(%)
+  |> revolve({ axis: 'y' }, %)"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        println!("{:#?}", program);
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"// Ball Bearing
+// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads.
+
+
+// Define constants like ball diameter, inside diamter, overhange length, and thickness
+const sphereDia = 0.5
+const insideDia = 1
+const thickness = 0.25
+const overHangLength = .4
+
+// Sketch and revolve the inside bearing piece
+const insideRevolve = startSketchOn('XZ')
+  |> startProfileAt([insideDia / 2, 0], %)
+  |> line([0, thickness + sphereDia / 2], %)
+  |> line([overHangLength, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-overHangLength + thickness, 0], %)
+  |> line([0, -sphereDia], %)
+  |> line([overHangLength - thickness, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-overHangLength, 0], %)
+  |> close(%)
+  |> revolve({ axis: 'y' }, %)
+
+// Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
+const sphere = startSketchOn('XZ')
+  |> startProfileAt([
+       0.05 + insideDia / 2 + thickness,
+       0 - 0.05
+     ], %)
+  |> line([sphereDia - 0.1, 0], %)
+  |> arc({
+       angle_start: 0,
+       angle_end: -180,
+       radius: sphereDia / 2 - 0.05
+     }, %)
+  |> close(%)
+  |> revolve({ axis: 'x' }, %)
+  |> patternCircular3d({
+       axis: [0, 0, 1],
+       center: [0, 0, 0],
+       repetitions: 10,
+       arcDegrees: 360,
+       rotateDuplicates: true
+     }, %)
+
+// Sketch and revolve the outside bearing
+const outsideRevolve = startSketchOn('XZ')
+  |> startProfileAt([
+       insideDia / 2 + thickness + sphereDia,
+       0
+     ], %)
+  |> line([0, sphereDia / 2], %)
+  |> line([-overHangLength + thickness, 0], %)
+  |> line([0, thickness], %)
+  |> line([overHangLength, 0], %)
+  |> line([0, -2 * thickness - sphereDia], %)
+  |> line([-overHangLength, 0], %)
+  |> line([0, thickness], %)
+  |> line([overHangLength - thickness, 0], %)
+  |> close(%)
+  |> revolve({ axis: 'y' }, %)
+"#
+        );
+    }
+
+    #[test]
     fn test_recast_empty_file() {
         let some_program_string = r#""#;
         let tokens = crate::token::lexer(some_program_string).unwrap();
