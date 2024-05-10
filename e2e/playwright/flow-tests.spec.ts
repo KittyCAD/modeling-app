@@ -300,9 +300,18 @@ test('if you use the format keyboard binding it formats your code', async ({
 }) => {
   const u = getUtils(page)
   await page.setViewportSize({ width: 1000, height: 500 })
+  const lspStartPromise = page.waitForEvent('console', async (message) => {
+    // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
+    // but that doesn't seem to make it to the console for macos/safari :(
+    if (message.text().includes('start kcl lsp')) {
+      await new Promise((resolve) => setTimeout(resolve, 200))
+      return true
+    }
+    return false
+  })
   await page.goto('/')
-
   await u.waitForAuthSkipAppStart()
+  await lspStartPromise
 
   // check no error to begin with
   await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -315,8 +324,10 @@ test('if you use the format keyboard binding it formats your code', async ({
 |> line([-20, 0], %)
 |> close(%)`)
 
+  await page.click('.cm-content')
+
   // Hit alt+shift+f to format the code
-  await page.keyboard.press('Alt+Shift+F')
+  await page.keyboard.press('Alt+Shift+KeyF')
 
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('XY')
@@ -592,10 +603,6 @@ test.describe('Can create sketches on all planes and their back sides', () => {
 })
 
 test('Auto complete works', async ({ page }) => {
-  test.skip(
-    true,
-    'CORS issue stopping the kcl lsp from working, enable again later'
-  )
   const u = getUtils(page)
   // const PUR = 400 / 37.5 //pixeltoUnitRatio
   await page.setViewportSize({ width: 1200, height: 500 })
