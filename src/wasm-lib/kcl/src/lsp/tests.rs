@@ -1113,6 +1113,173 @@ async fn test_kcl_lsp_formatting() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_formatting_extra_parens() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"// Ball Bearing
+// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads. 
+
+// Define constants like ball diameter, inside diamter, overhange length, and thickness
+const sphereDia = 0.5
+const insideDia = 1
+const thickness = 0.25
+const overHangLength = .4
+
+// Sketch and revolve the inside bearing piece
+const insideRevolve = startSketchOn('XZ')
+  |> startProfileAt([insideDia / 2, 0], %)
+  |> line([0, thickness + sphereDia / 2], %)
+  |> line([overHangLength, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-overHangLength + thickness, 0], %)
+  |> line([0, -sphereDia], %)
+  |> line([overHangLength - thickness, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-overHangLength, 0], %)
+  |> close(%)
+  |> revolve({ axis: 'y' }, %)
+
+// Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
+const sphere = startSketchOn('XZ')
+  |> startProfileAt([
+       0.05 + insideDia / 2 + thickness,
+       0 - 0.05
+     ], %)
+  |> line([sphereDia - 0.1, 0], %)
+  |> arc({
+       angle_start: 0,
+       angle_end: -180,
+       radius: sphereDia / 2 - 0.05
+     }, %)
+  |> close(%)
+  |> revolve({ axis: 'x' }, %)
+  |> patternCircular3d({
+       axis: [0, 0, 1],
+       center: [0, 0, 0],
+       repetitions: 10,
+       arcDegrees: 360,
+       rotateDuplicates: true
+     }, %)
+
+// Sketch and revolve the outside bearing
+const outsideRevolve = startSketchOn('XZ')
+  |> startProfileAt([
+       insideDia / 2 + thickness + sphereDia,
+       0
+     ], %)
+  |> line([0, sphereDia / 2], %)
+  |> line([-overHangLength + thickness, 0], %)
+  |> line([0, thickness], %)
+  |> line([overHangLength, 0], %)
+  |> line([0, -2 * thickness - sphereDia], %)
+  |> line([-overHangLength, 0], %)
+  |> line([0, thickness], %)
+  |> line([overHangLength - thickness, 0], %)
+  |> close(%)
+  |> revolve({ axis: 'y' }, %)"#
+                    .to_string(),
+            },
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Send formatting request.
+    let formatting = server
+        .formatting(tower_lsp::lsp_types::DocumentFormattingParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            options: tower_lsp::lsp_types::FormattingOptions {
+                tab_size: 2,
+                insert_spaces: true,
+                properties: Default::default(),
+                trim_trailing_whitespace: None,
+                insert_final_newline: None,
+                trim_final_newlines: None,
+            },
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    // Check the formatting.
+    assert_eq!(formatting.len(), 1);
+    assert_eq!(
+        formatting[0].new_text,
+        r#"// Ball Bearing
+// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads. 
+
+
+// Define constants like ball diameter, inside diamter, overhange length, and thickness
+const sphereDia = 0.5
+const insideDia = 1
+const thickness = 0.25
+const overHangLength = .4
+
+// Sketch and revolve the inside bearing piece
+const insideRevolve = startSketchOn('XZ')
+  |> startProfileAt([insideDia / 2, 0], %)
+  |> line([0, thickness + sphereDia / 2], %)
+  |> line([overHangLength, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-overHangLength + thickness, 0], %)
+  |> line([0, -sphereDia], %)
+  |> line([overHangLength - thickness, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-overHangLength, 0], %)
+  |> close(%)
+  |> revolve({ axis: 'y' }, %)
+
+// Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
+const sphere = startSketchOn('XZ')
+  |> startProfileAt([
+       0.05 + insideDia / 2 + thickness,
+       0 - 0.05
+     ], %)
+  |> line([sphereDia - 0.1, 0], %)
+  |> arc({
+       angle_start: 0,
+       angle_end: -180,
+       radius: sphereDia / 2 - 0.05
+     }, %)
+  |> close(%)
+  |> revolve({ axis: 'x' }, %)
+  |> patternCircular3d({
+       axis: [0, 0, 1],
+       center: [0, 0, 0],
+       repetitions: 10,
+       arcDegrees: 360,
+       rotateDuplicates: true
+     }, %)
+
+// Sketch and revolve the outside bearing
+const outsideRevolve = startSketchOn('XZ')
+  |> startProfileAt([
+       insideDia / 2 + thickness + sphereDia,
+       0
+     ], %)
+  |> line([0, sphereDia / 2], %)
+  |> line([-overHangLength + thickness, 0], %)
+  |> line([0, thickness], %)
+  |> line([overHangLength, 0], %)
+  |> line([0, -2 * thickness - sphereDia], %)
+  |> line([-overHangLength, 0], %)
+  |> line([0, thickness], %)
+  |> line([overHangLength - thickness, 0], %)
+  |> close(%)
+  |> revolve({ axis: 'y' }, %)"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_rename() {
     let server = kcl_lsp_server(false).await.unwrap();
 
