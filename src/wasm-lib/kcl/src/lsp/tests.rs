@@ -1024,7 +1024,6 @@ async fn test_kcl_lsp_semantic_tokens() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-#[ignore]
 async fn test_kcl_lsp_semantic_tokens_multiple_comments() {
     let server = kcl_lsp_server(false).await.unwrap();
 
@@ -1039,63 +1038,7 @@ async fn test_kcl_lsp_semantic_tokens_multiple_comments() {
 // A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads. 
 
 // Define constants like ball diameter, inside diameter, overhange length, and thickness
-const sphereDia = 0.5
-const insideDia = 1
-const thickness = 0.25
-const overHangLength = .4
-
-// Sketch and revolve the inside bearing piece
-const insideRevolve = startSketchOn('XZ')
-  |> startProfileAt([insideDia / 2, 0], %)
-  |> line([0, thickness + sphereDia / 2], %)
-  |> line([overHangLength, 0], %)
-  |> line([0, -thickness], %)
-  |> line([-overHangLength + thickness, 0], %)
-  |> line([0, -sphereDia], %)
-  |> line([overHangLength - thickness, 0], %)
-  |> line([0, -thickness], %)
-  |> line([-overHangLength, 0], %)
-  |> close(%)
-  |> revolve({ axis: 'y' }, %)
-
-// Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
-const sphere = startSketchOn('XZ')
-  |> startProfileAt([
-       0.05 + insideDia / 2 + thickness,
-       0 - 0.05
-     ], %)
-  |> line([sphereDia - 0.1, 0], %)
-  |> arc({
-       angle_start: 0,
-       angle_end: -180,
-       radius: sphereDia / 2 - 0.05
-     }, %)
-  |> close(%)
-  |> revolve({ axis: 'x' }, %)
-  |> patternCircular3d({
-       axis: [0, 0, 1],
-       center: [0, 0, 0],
-       repetitions: 10,
-       arcDegrees: 360,
-       rotateDuplicates: true
-     }, %)
-
-// Sketch and revolve the outside bearing
-const outsideRevolve = startSketchOn('XZ')
-  |> startProfileAt([
-       insideDia / 2 + thickness + sphereDia,
-       0
-     ], %)
-  |> line([0, sphereDia / 2], %)
-  |> line([-overHangLength + thickness, 0], %)
-  |> line([0, thickness], %)
-  |> line([overHangLength, 0], %)
-  |> line([0, -2 * thickness - sphereDia], %)
-  |> line([-overHangLength, 0], %)
-  |> line([0, thickness], %)
-  |> line([overHangLength - thickness, 0], %)
-  |> close(%)
-  |> revolve({ axis: 'y' }, %)"#.to_string(),
+const sphereDia = 0.5"#.to_string(),
             },
         })
         .await;
@@ -1117,12 +1060,31 @@ const outsideRevolve = startSketchOn('XZ')
     // Check the semantic tokens.
     if let tower_lsp::lsp_types::SemanticTokensResult::Tokens(semantic_tokens) = semantic_tokens {
         println!("{:#?}", semantic_tokens.data);
-        assert_eq!(semantic_tokens.data.len(), 2);
-        assert_eq!(semantic_tokens.data[0].length, 13);
-        assert_eq!(semantic_tokens.data[0].token_type, 8);
-        assert_eq!(semantic_tokens.data[1].length, 4);
-        assert_eq!(semantic_tokens.data[1].delta_start, 14);
-        assert_eq!(semantic_tokens.data[1].token_type, 3);
+        println!("{:#?}", server.token_types);
+        assert_eq!(semantic_tokens.data.len(), 7);
+        assert_eq!(semantic_tokens.data[0].length, 15);
+        assert_eq!(semantic_tokens.data[0].token_type, 6);
+        assert_eq!(semantic_tokens.data[1].length, 232);
+        assert_eq!(semantic_tokens.data[1].delta_start, 15);
+        assert_eq!(semantic_tokens.data[1].token_type, 6);
+        assert_eq!(semantic_tokens.data[2].length, 88);
+        assert_eq!(semantic_tokens.data[2].delta_start, 0);
+        assert_eq!(semantic_tokens.data[2].delta_line, 2);
+        assert_eq!(semantic_tokens.data[2].token_type, 6);
+        assert_eq!(semantic_tokens.data[3].length, 5);
+        assert_eq!(semantic_tokens.data[3].delta_start, 88);
+        assert_eq!(semantic_tokens.data[3].delta_line, 1);
+        assert_eq!(semantic_tokens.data[3].token_type, 4);
+        assert_eq!(semantic_tokens.data[4].length, 9);
+        assert_eq!(semantic_tokens.data[4].delta_start, 6);
+        assert_eq!(semantic_tokens.data[4].delta_line, 1);
+        assert_eq!(semantic_tokens.data[4].token_type, 1);
+        assert_eq!(semantic_tokens.data[5].length, 1);
+        assert_eq!(semantic_tokens.data[5].delta_start, 10);
+        assert_eq!(semantic_tokens.data[5].token_type, 2);
+        assert_eq!(semantic_tokens.data[6].length, 3);
+        assert_eq!(semantic_tokens.data[6].delta_start, 2);
+        assert_eq!(semantic_tokens.data[6].token_type, 0);
     } else {
         panic!("Expected semantic tokens");
     }
