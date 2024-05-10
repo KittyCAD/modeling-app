@@ -131,6 +131,7 @@ test('Basic sketch', async ({ page }) => {
   // selected two lines therefore there should be two cursors
   await expect(page.locator('.cm-cursor')).toHaveCount(2)
 
+  await page.getByRole('button', { name: 'Constrain' }).click()
   await page.getByRole('button', { name: 'Equal Length' }).click()
 
   await expect(page.locator('.cm-content'))
@@ -940,11 +941,14 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     // click a segment hold shift and click an axis, see that a relevant constraint is enabled
     await topHorzSegmentClick()
     await page.keyboard.down('Shift')
+    const constrainButton = page.getByRole('button', { name: 'Constrain' })
     const absYButton = page.getByRole('button', { name: 'ABS Y' })
+    await constrainButton.click()
     await expect(absYButton).toBeDisabled()
     await page.waitForTimeout(100)
     await xAxisClick()
     await page.keyboard.up('Shift')
+    await constrainButton.click()
     await absYButton.and(page.locator(':not([disabled])')).waitFor()
     await expect(absYButton).not.toBeDisabled()
 
@@ -954,12 +958,14 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     await page.waitForTimeout(100)
     // same selection but click the axis first
     await xAxisClick()
+    await constrainButton.click()
     await expect(absYButton).toBeDisabled()
     await page.keyboard.down('Shift')
     await page.waitForTimeout(100)
     await topHorzSegmentClick()
 
     await page.keyboard.up('Shift')
+    await constrainButton.click()
     await expect(absYButton).not.toBeDisabled()
 
     // clear selection by clicking on nothing
@@ -968,10 +974,12 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     // check the same selection again by putting cursor in code first then selecting axis
     await page.getByText(`  |> line([-${commonPoints.num2}, 0], %)`).click()
     await page.keyboard.down('Shift')
+    await constrainButton.click()
     await expect(absYButton).toBeDisabled()
     await page.waitForTimeout(100)
     await xAxisClick()
     await page.keyboard.up('Shift')
+    await constrainButton.click()
     await expect(absYButton).not.toBeDisabled()
 
     // clear selection by clicking on nothing
@@ -1905,6 +1913,7 @@ test('Can code mod a line length', async ({ page }) => {
   const startXPx = 500
   await page.mouse.move(startXPx + PUR * 15, 250 - PUR * 10)
   await page.mouse.click(615, 102)
+  await page.getByRole('button', { name: 'Constrain', exact: true }).click()
   await page.getByRole('button', { name: 'length', exact: true }).click()
   await page.getByText('Add constraining value').click()
 

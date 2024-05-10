@@ -85,7 +85,7 @@ function ProjectCard({
             <ActionButton
               Element="button"
               type="submit"
-              icon={{
+              iconStart={{
                 icon: faCheck,
                 size: 'sm',
                 className: 'p-1',
@@ -99,7 +99,7 @@ function ProjectCard({
             </ActionButton>
             <ActionButton
               Element="button"
-              icon={{
+              iconStart={{
                 icon: faX,
                 size: 'sm',
                 iconClassName: 'dark:!text-chalkboard-20',
@@ -141,7 +141,7 @@ function ProjectCard({
             <div className="absolute z-10 bottom-2 right-2 flex gap-1 items-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
               <ActionButton
                 Element="button"
-                icon={{
+                iconStart={{
                   icon: faPenAlt,
                   className: 'p-1',
                   iconClassName: 'dark:!text-chalkboard-20',
@@ -161,7 +161,7 @@ function ProjectCard({
               </ActionButton>
               <ActionButton
                 Element="button"
-                icon={{
+                iconStart={{
                   icon: faTrashAlt,
                   className: 'p-1',
                   size: 'xs',
@@ -207,7 +207,7 @@ function ProjectCard({
                       await handleDeleteProject(project)
                       setIsConfirmingDelete(false)
                     }}
-                    icon={{
+                    iconStart={{
                       icon: faTrashAlt,
                       bgClassName: 'bg-destroy-80',
                       className: 'p-1',
