@@ -1215,7 +1215,7 @@ const outsideRevolve = startSketchOn('XZ')
     assert_eq!(
         formatting[0].new_text,
         r#"// Ball Bearing
-// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads. 
+// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads.
 
 
 // Define constants like ball diameter, inside diamter, overhange length, and thickness
