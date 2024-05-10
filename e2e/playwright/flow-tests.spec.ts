@@ -264,6 +264,69 @@ test('Can moving camera', async ({ page, context }) => {
   }, [1, -94, -94])
 })
 
+test('if you click the format button it formats your code', async ({
+  page,
+}) => {
+  const u = getUtils(page)
+  await page.setViewportSize({ width: 1000, height: 500 })
+  await page.goto('/')
+
+  await u.waitForAuthSkipAppStart()
+
+  // check no error to begin with
+  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+  await page.click('.cm-content')
+  await page.keyboard.type(`const part001 = startSketchOn('XY')
+|> startProfileAt([-10, -10], %)
+|> line([20, 0], %)
+|> line([0, 20], %)
+|> line([-20, 0], %)
+|> close(%)`)
+  await page.click('#code-pane button:first-child')
+  await page.click('button:has-text("Format code")')
+
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)`)
+})
+
+test('if you use the format keyboard binding it formats your code', async ({
+  page,
+}) => {
+  const u = getUtils(page)
+  await page.setViewportSize({ width: 1000, height: 500 })
+  await page.goto('/')
+
+  await u.waitForAuthSkipAppStart()
+
+  // check no error to begin with
+  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+  await page.click('.cm-content')
+  await page.keyboard.type(`const part001 = startSketchOn('XY')
+|> startProfileAt([-10, -10], %)
+|> line([20, 0], %)
+|> line([0, 20], %)
+|> line([-20, 0], %)
+|> close(%)`)
+
+  // Hit alt+shift+f to format the code
+  await page.keyboard.press('Alt+Shift+F')
+
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)`)
+})
+
 test('if you write invalid kcl you get inlined errors', async ({ page }) => {
   const u = getUtils(page)
   await page.setViewportSize({ width: 1000, height: 500 })
