@@ -14,8 +14,8 @@ export function useEngineConnectionSubscriptions() {
       event: 'highlight_set_entity',
       callback: ({ data }) => {
         if (data?.entity_id) {
-          const sourceRange =
-            engineCommandManager.artifactMap?.[data.entity_id]?.range
+          const sourceRange = engineCommandManager.artifactMap?.[data.entity_id]
+            ?.range || [0, 0]
           editorManager.setHighlightRange(sourceRange)
         } else if (
           !editorManager.highlightRange ||

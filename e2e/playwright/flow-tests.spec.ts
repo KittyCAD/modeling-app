@@ -12,6 +12,7 @@ import {
   TEST_SETTINGS_ONBOARDING_START,
 } from './storageStates'
 import * as TOML from '@iarna/toml'
+import { Coords2d } from 'lang/std/sketch'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -954,9 +955,8 @@ test.describe('Command bar tests', () => {
     let cmdSearchBar = page.getByPlaceholder('Search commands')
 
     // First try opening the command bar and closing it
-    // It has a different label on mac and windows/linux, "Meta+K" and "Ctrl+/" respectively
     await page
-      .getByRole('button', { name: 'Ctrl+/' })
+      .getByRole('button', { name: 'Commands', exact: false })
       .or(page.getByRole('button', { name: '⌘K' }))
       .click()
     await expect(cmdSearchBar).toBeVisible()
@@ -1263,6 +1263,72 @@ test('ProgramMemory can be serialised', async ({ page }) => {
       expect(message).not.toContain(forbiddenMessage)
     })
   })
+})
+
+test('Hovering over 3d features highlights code', async ({ page }) => {
+  const u = getUtils(page)
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const part001 = startSketchOn('-XZ')
+  |> startProfileAt([20, 0], %)
+  |> line([7.13, 4 + 0], %)
+  |> angledLine({ angle: 3 + 0, length: 3.14 + 0 }, %)
+  |> lineTo([20.14 + 0, -0.14 + 0], %)
+  |> xLineTo(29 + 0, %)
+  |> yLine(-3.14 + 0, %, 'a')
+  |> xLine(1.63, %)
+  |> angledLineOfXLength({ angle: 3 + 0, length: 3.14 }, %)
+  |> angledLineOfYLength({ angle: 30, length: 3 + 0 }, %)
+  |> angledLineToX({ angle: 22.14 + 0, to: 12 }, %)
+  |> angledLineToY({ angle: 30, to: 11.14 }, %)
+  |> angledLineThatIntersects({
+        angle: 3.14,
+        intersectTag: 'a',
+        offset: 0
+      }, %)
+  |> tangentialArcTo([13.14 + 0, 13.14], %)
+  |> close(%)
+  |> extrude(5 + 7, %)    
+`
+    )
+  })
+  await page.setViewportSize({ width: 1000, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+
+  const extrusionTop: Coords2d = [800, 240]
+  const flatExtrusionFace: Coords2d = [960, 160]
+  const arc: Coords2d = [840, 160]
+  const close: Coords2d = [720, 200]
+  const nothing: Coords2d = [600, 200]
+
+  await page.mouse.move(nothing[0], nothing[1])
+  await page.mouse.click(nothing[0], nothing[1])
+
+  await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+  await page.waitForTimeout(200)
+
+  await page.mouse.move(extrusionTop[0], extrusionTop[1])
+  await expect(page.getByTestId('hover-highlight')).toBeVisible()
+  await page.mouse.move(nothing[0], nothing[1])
+  await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+
+  await page.mouse.move(arc[0], arc[1])
+  await expect(page.getByTestId('hover-highlight')).toBeVisible()
+  await page.mouse.move(nothing[0], nothing[1])
+  await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+
+  await page.mouse.move(close[0], close[1])
+  await expect(page.getByTestId('hover-highlight')).toBeVisible()
+  await page.mouse.move(nothing[0], nothing[1])
+  await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+
+  await page.mouse.move(flatExtrusionFace[0], flatExtrusionFace[1])
+  await expect(page.getByTestId('hover-highlight')).toHaveCount(5) // multiple lines
+  await page.mouse.move(nothing[0], nothing[1])
+  await page.waitForTimeout(100)
+  await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
 })
 
 test("Various pipe expressions should and shouldn't allow edit and or extrude", async ({
