@@ -31,6 +31,11 @@ extern "C" {
     #[wasm_bindgen(method, js_name = getWebrtcStats, catch)]
     fn get_webrtc_stats(this: &CoreDumpManager) -> Result<js_sys::Promise, js_sys::Error>;
 
+    // returning dummy data
+    // will need to return a Promise like get_webrtc_stats
+    #[wasm_bindgen(method, js_name = getClientState, catch)]
+    fn get_client_state(this: &CoreDumpManager) -> Result<js_sys::Promise, js_sys::Error>;
+
     #[wasm_bindgen(method, js_name = screenshot, catch)]
     fn screenshot(this: &CoreDumpManager) -> Result<js_sys::Promise, js_sys::Error>;
 }
@@ -121,6 +126,17 @@ impl CoreDump for CoreDumper {
             serde_json::from_str(&s).map_err(|e| anyhow::anyhow!("Failed to parse webrtc stats: {:?}", e))?;
 
         Ok(stats)
+    }
+
+    async fn get_client_state(&self) -> Result<String> {
+        // Parse the value as a string.
+        let client_state = "{ signletons: {}, xstate: {} }";
+
+        //self.manager
+        //    .get_client_state()
+        //    .map_err(|e| anyhow::anyhow!("Failed to get response from get client state: {:?}", e));
+
+        Ok(client_state.to_string())
     }
 
     async fn screenshot(&self) -> Result<String> {

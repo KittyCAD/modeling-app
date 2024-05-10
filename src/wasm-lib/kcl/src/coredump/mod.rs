@@ -27,6 +27,8 @@ pub trait CoreDump: Clone {
 
     async fn get_webrtc_stats(&self) -> Result<WebrtcStats>;
 
+    async fn get_client_state(&self) -> Result<String>;
+
     /// Return a screenshot of the app.
     async fn screenshot(&self) -> Result<String>;
 
@@ -61,6 +63,7 @@ pub trait CoreDump: Clone {
 
     /// Dump the app info.
     async fn dump(&self) -> Result<AppInfo> {
+        let client_state = self.get_client_state().await?;
         let webrtc_stats = self.get_webrtc_stats().await?;
         let os = self.os().await?;
         let screenshot_url = self.upload_screenshot().await?;
@@ -74,6 +77,7 @@ pub trait CoreDump: Clone {
             webrtc_stats,
             github_issue_url: None,
             pool: self.pool()?,
+            client_state,
         };
         app_info.set_github_issue_url(&screenshot_url)?;
 
@@ -109,6 +113,10 @@ pub struct AppInfo {
 
     /// Engine pool the client is connected to.
     pub pool: String,
+
+    /// The client state (singletons and xstate)
+    ///#[serde(skip_serializing_if = "Option::is_none")]
+    pub client_state: String,
 }
 
 impl AppInfo {

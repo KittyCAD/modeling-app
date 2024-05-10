@@ -144,6 +144,13 @@ export class CoreDumpManager {
       })
   }
 
+  // Currently just a placeholder to begin loading singleton and xstate data into
+  getClientState(): Promise<string> {
+    const placeholderState = { state: 'dshaw' }
+    console.log('getClientState', placeholderState)
+    return Promise.resolve(JSON.stringify(placeholderState))
+  }
+
   // Return a data URL (png format) of the screenshot of the current page.
   screenshot(): Promise<string> {
     return screenshot(this.htmlRef)
