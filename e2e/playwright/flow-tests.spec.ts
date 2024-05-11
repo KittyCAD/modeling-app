@@ -2458,7 +2458,9 @@ test.describe('Testing segment overlays', () => {
       ang: -25,
     })
   })
-  test('Hover over a segment should show its overlay, hovering over the input overlays should show its popover, clicking the input overlay should constrain/unconstrain it:\nfor the following segments [tangentialArcTo]', async ({ page }) => {
+  test('Hover over a segment should show its overlay, hovering over the input overlays should show its popover, clicking the input overlay should constrain/unconstrain it:\nfor the following segments [tangentialArcTo]', async ({
+    page,
+  }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
