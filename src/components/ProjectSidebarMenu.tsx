@@ -165,7 +165,7 @@ function ProjectMenuPopover({
               <div className="flex flex-col gap-2 p-4 dark:bg-chalkboard-90">
                 <ActionButton
                   Element="button"
-                  icon={{ icon: 'exportFile', className: 'p-1' }}
+                  iconStart={{ icon: 'exportFile', className: 'p-1' }}
                   className="border-transparent dark:border-transparent"
                   disabled={!findCommand(exportCommandInfo)}
                   onClick={() =>
@@ -185,7 +185,7 @@ function ProjectMenuPopover({
                       // Clear the scene and end the session.
                       engineCommandManager.endSession()
                     }}
-                    icon={{
+                    iconStart={{
                       icon: 'arrowLeft',
                       className: 'p-1',
                     }}

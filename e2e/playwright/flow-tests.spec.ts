@@ -131,6 +131,7 @@ test('Basic sketch', async ({ page }) => {
   // selected two lines therefore there should be two cursors
   await expect(page.locator('.cm-cursor')).toHaveCount(2)
 
+  await page.getByRole('button', { name: 'Constrain' }).click()
   await page.getByRole('button', { name: 'Equal Length' }).click()
 
   await expect(page.locator('.cm-content'))
@@ -298,12 +299,18 @@ test('if you click the format button it formats your code', async ({
 test('if you use the format keyboard binding it formats your code', async ({
   page,
 }) => {
-  test.skip(
-    true,
-    "I can't figure out how to get the keyboard shortcut to work (in playwright)"
-  )
-
   const u = getUtils(page)
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const part001 = startSketchOn('XY')
+|> startProfileAt([-10, -10], %)
+|> line([20, 0], %)
+|> line([0, 20], %)
+|> line([-20, 0], %)
+|> close(%)`
+    )
+  })
   await page.setViewportSize({ width: 1000, height: 500 })
   const lspStartPromise = page.waitForEvent('console', async (message) => {
     // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
@@ -321,15 +328,12 @@ test('if you use the format keyboard binding it formats your code', async ({
   // check no error to begin with
   await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-  await page.click('.cm-content')
-  await page.keyboard.type(`const part001 = startSketchOn('XY')
-|> startProfileAt([-10, -10], %)
-|> line([20, 0], %)
-|> line([0, 20], %)
-|> line([-20, 0], %)
-|> close(%)`)
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
 
-  await page.click('.cm-content')
+  // focus the editor
+  await page.click('.cm-line')
 
   // Hit alt+shift+f to format the code
   await page.keyboard.press('Alt+Shift+KeyF')
@@ -937,11 +941,14 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     // click a segment hold shift and click an axis, see that a relevant constraint is enabled
     await topHorzSegmentClick()
     await page.keyboard.down('Shift')
+    const constrainButton = page.getByRole('button', { name: 'Constrain' })
     const absYButton = page.getByRole('button', { name: 'ABS Y' })
+    await constrainButton.click()
     await expect(absYButton).toBeDisabled()
     await page.waitForTimeout(100)
     await xAxisClick()
     await page.keyboard.up('Shift')
+    await constrainButton.click()
     await absYButton.and(page.locator(':not([disabled])')).waitFor()
     await expect(absYButton).not.toBeDisabled()
 
@@ -951,12 +958,14 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     await page.waitForTimeout(100)
     // same selection but click the axis first
     await xAxisClick()
+    await constrainButton.click()
     await expect(absYButton).toBeDisabled()
     await page.keyboard.down('Shift')
     await page.waitForTimeout(100)
     await topHorzSegmentClick()
 
     await page.keyboard.up('Shift')
+    await constrainButton.click()
     await expect(absYButton).not.toBeDisabled()
 
     // clear selection by clicking on nothing
@@ -965,10 +974,12 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     // check the same selection again by putting cursor in code first then selecting axis
     await page.getByText(`  |> line([-${commonPoints.num2}, 0], %)`).click()
     await page.keyboard.down('Shift')
+    await constrainButton.click()
     await expect(absYButton).toBeDisabled()
     await page.waitForTimeout(100)
     await xAxisClick()
     await page.keyboard.up('Shift')
+    await constrainButton.click()
     await expect(absYButton).not.toBeDisabled()
 
     // clear selection by clicking on nothing
@@ -1902,6 +1913,7 @@ test('Can code mod a line length', async ({ page }) => {
   const startXPx = 500
   await page.mouse.move(startXPx + PUR * 15, 250 - PUR * 10)
   await page.mouse.click(615, 102)
+  await page.getByRole('button', { name: 'Constrain', exact: true }).click()
   await page.getByRole('button', { name: 'length', exact: true }).click()
   await page.getByText('Add constraining value').click()
 
