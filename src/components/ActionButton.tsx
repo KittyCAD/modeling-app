@@ -1,11 +1,12 @@
 import { ActionIcon, ActionIconProps } from './ActionIcon'
-import React from 'react'
+import React, { ForwardedRef, forwardRef } from 'react'
 import { paths } from 'lib/paths'
 import { Link } from 'react-router-dom'
 import type { LinkProps } from 'react-router-dom'
 
 interface BaseActionButtonProps {
-  icon?: ActionIconProps
+  iconStart?: ActionIconProps
+  iconEnd?: ActionIconProps
   className?: string
 }
 
@@ -32,15 +33,15 @@ type ActionButtonAsElement = BaseActionButtonProps &
     Element: React.ComponentType<React.HTMLAttributes<HTMLButtonElement>>
   }
 
-type ActionButtonProps =
+export type ActionButtonProps =
   | ActionButtonAsButton
   | ActionButtonAsLink
   | ActionButtonAsExternal
   | ActionButtonAsElement
 
-export const ActionButton = (props: ActionButtonProps) => {
-  const classNames = `action-button m-0 group mono text-sm flex items-center gap-2 rounded-sm border-solid border border-chalkboard-30 hover:border-chalkboard-40 dark:border-chalkboard-70 dark:hover:border-chalkboard-60 dark:bg-chalkboard-90/50 p-[3px] text-chalkboard-100 dark:text-chalkboard-10 ${
-    props.icon ? 'pr-2' : 'px-2'
+export const ActionButton = forwardRef((props: ActionButtonProps, ref) => {
+  const classNames = `action-button p-0 m-0 group mono text-xs leading-none flex items-center gap-2 rounded-sm border-solid border border-chalkboard-30 hover:border-chalkboard-40 enabled:dark:border-chalkboard-70 dark:hover:border-chalkboard-60 dark:bg-chalkboard-90/50 text-chalkboard-100 dark:text-chalkboard-10 ${
+    props.iconStart ? (props.iconEnd ? 'px-0' : 'pr-2') : 'px-2'
   } ${props.className ? props.className : ''}`
 
   switch (props.Element) {
@@ -48,11 +49,23 @@ export const ActionButton = (props: ActionButtonProps) => {
       // Note we have to destructure 'className' and 'Element' out of props
       // because we don't want to pass them to the button element;
       // the same is true for the other cases below.
-      const { Element, icon, children, className: _className, ...rest } = props
+      const {
+        Element,
+        iconStart,
+        iconEnd,
+        children,
+        className: _className,
+        ...rest
+      } = props
       return (
-        <button className={classNames} {...rest}>
-          {props.icon && <ActionIcon {...icon} />}
+        <button
+          ref={ref as ForwardedRef<HTMLButtonElement>}
+          className={classNames}
+          {...rest}
+        >
+          {iconStart && <ActionIcon {...iconStart} />}
           {children}
+          {iconEnd && <ActionIcon {...iconEnd} />}
         </button>
       )
     }
@@ -60,15 +73,22 @@ export const ActionButton = (props: ActionButtonProps) => {
       const {
         Element,
         to,
-        icon,
+        iconStart,
+        iconEnd,
         children,
         className: _className,
         ...rest
       } = props
       return (
-        <Link to={to || paths.INDEX} className={classNames} {...rest}>
-          {icon && <ActionIcon {...icon} />}
+        <Link
+          ref={ref as ForwardedRef<HTMLAnchorElement>}
+          to={to || paths.INDEX}
+          className={classNames}
+          {...rest}
+        >
+          {iconStart && <ActionIcon {...iconStart} />}
           {children}
+          {iconEnd && <ActionIcon {...iconEnd} />}
         </Link>
       )
     }
@@ -76,33 +96,42 @@ export const ActionButton = (props: ActionButtonProps) => {
       const {
         Element,
         to,
-        icon,
+        iconStart,
+        iconEnd,
         children,
         className: _className,
         ...rest
       } = props
       return (
         <Link
+          ref={ref as ForwardedRef<HTMLAnchorElement>}
           to={to || paths.INDEX}
           className={classNames}
           {...rest}
           target="_blank"
         >
-          {icon && <ActionIcon {...icon} />}
+          {iconStart && <ActionIcon {...iconStart} />}
           {children}
+          {iconEnd && <ActionIcon {...iconEnd} />}
         </Link>
       )
     }
     default: {
-      const { Element, icon, children, className: _className, ...rest } = props
-      if (!Element) throw new Error('Element is required')
+      const {
+        Element,
+        iconStart,
+        children,
+        className: _className,
+        ...rest
+      } = props
 
       return (
         <Element className={classNames} {...rest}>
-          {props.icon && <ActionIcon {...props.icon} />}
+          {props.iconStart && <ActionIcon {...props.iconStart} />}
           {children}
+          {props.iconEnd && <ActionIcon {...props.iconEnd} />}
         </Element>
       )
     }
   }
-}
+})

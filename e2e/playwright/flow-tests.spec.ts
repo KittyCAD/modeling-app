@@ -13,6 +13,7 @@ import {
 } from './storageStates'
 import * as TOML from '@iarna/toml'
 import { LineInputsType } from 'lang/std/sketchcombos'
+import { Coords2d } from 'lang/std/sketch'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -131,6 +132,7 @@ test('Basic sketch', async ({ page }) => {
   // selected two lines therefore there should be two cursors
   await expect(page.locator('.cm-cursor')).toHaveCount(2)
 
+  await page.getByRole('button', { name: 'Constrain' }).click()
   await page.getByRole('button', { name: 'Equal Length' }).click()
 
   await expect(page.locator('.cm-content'))
@@ -262,6 +264,88 @@ test('Can moving camera', async ({ page, context }) => {
     await page.mouse.move(700, 400)
     await page.mouse.wheel(0, -100)
   }, [1, -94, -94])
+})
+
+test('if you click the format button it formats your code', async ({
+  page,
+}) => {
+  const u = getUtils(page)
+  await page.setViewportSize({ width: 1000, height: 500 })
+  await page.goto('/')
+
+  await u.waitForAuthSkipAppStart()
+
+  // check no error to begin with
+  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+  await page.click('.cm-content')
+  await page.keyboard.type(`const part001 = startSketchOn('XY')
+|> startProfileAt([-10, -10], %)
+|> line([20, 0], %)
+|> line([0, 20], %)
+|> line([-20, 0], %)
+|> close(%)`)
+  await page.click('#code-pane button:first-child')
+  await page.click('button:has-text("Format code")')
+
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)`)
+})
+
+test('if you use the format keyboard binding it formats your code', async ({
+  page,
+}) => {
+  const u = getUtils(page)
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const part001 = startSketchOn('XY')
+|> startProfileAt([-10, -10], %)
+|> line([20, 0], %)
+|> line([0, 20], %)
+|> line([-20, 0], %)
+|> close(%)`
+    )
+  })
+  await page.setViewportSize({ width: 1000, height: 500 })
+  const lspStartPromise = page.waitForEvent('console', async (message) => {
+    // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
+    // but that doesn't seem to make it to the console for macos/safari :(
+    if (message.text().includes('start kcl lsp')) {
+      await new Promise((resolve) => setTimeout(resolve, 200))
+      return true
+    }
+    return false
+  })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await lspStartPromise
+
+  // check no error to begin with
+  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
+
+  // focus the editor
+  await page.click('.cm-line')
+
+  // Hit alt+shift+f to format the code
+  await page.keyboard.press('Alt+Shift+KeyF')
+
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)`)
 })
 
 test('if you write invalid kcl you get inlined errors', async ({ page }) => {
@@ -529,10 +613,6 @@ test.describe('Can create sketches on all planes and their back sides', () => {
 })
 
 test('Auto complete works', async ({ page }) => {
-  test.skip(
-    true,
-    'CORS issue stopping the kcl lsp from working, enable again later'
-  )
   const u = getUtils(page)
   // const PUR = 400 / 37.5 //pixeltoUnitRatio
   await page.setViewportSize({ width: 1200, height: 500 })
@@ -862,11 +942,14 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     // click a segment hold shift and click an axis, see that a relevant constraint is enabled
     await topHorzSegmentClick()
     await page.keyboard.down('Shift')
+    const constrainButton = page.getByRole('button', { name: 'Constrain' })
     const absYButton = page.getByRole('button', { name: 'ABS Y' })
+    await constrainButton.click()
     await expect(absYButton).toBeDisabled()
     await page.waitForTimeout(100)
     await xAxisClick()
     await page.keyboard.up('Shift')
+    await constrainButton.click()
     await absYButton.and(page.locator(':not([disabled])')).waitFor()
     await expect(absYButton).not.toBeDisabled()
 
@@ -876,12 +959,14 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     await page.waitForTimeout(100)
     // same selection but click the axis first
     await xAxisClick()
+    await constrainButton.click()
     await expect(absYButton).toBeDisabled()
     await page.keyboard.down('Shift')
     await page.waitForTimeout(100)
     await topHorzSegmentClick()
 
     await page.keyboard.up('Shift')
+    await constrainButton.click()
     await expect(absYButton).not.toBeDisabled()
 
     // clear selection by clicking on nothing
@@ -890,10 +975,12 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     // check the same selection again by putting cursor in code first then selecting axis
     await page.getByText(`  |> line([-${commonPoints.num2}, 0], %)`).click()
     await page.keyboard.down('Shift')
+    await constrainButton.click()
     await expect(absYButton).toBeDisabled()
     await page.waitForTimeout(100)
     await xAxisClick()
     await page.keyboard.up('Shift')
+    await constrainButton.click()
     await expect(absYButton).not.toBeDisabled()
 
     // clear selection by clicking on nothing
@@ -955,9 +1042,8 @@ test.describe('Command bar tests', () => {
     let cmdSearchBar = page.getByPlaceholder('Search commands')
 
     // First try opening the command bar and closing it
-    // It has a different label on mac and windows/linux, "Meta+K" and "Ctrl+/" respectively
     await page
-      .getByRole('button', { name: 'Ctrl+/' })
+      .getByRole('button', { name: 'Commands', exact: false })
       .or(page.getByRole('button', { name: '⌘K' }))
       .click()
     await expect(cmdSearchBar).toBeVisible()
@@ -1002,13 +1088,13 @@ test.describe('Command bar tests', () => {
       localStorage.setItem(
         'persistCode',
         `const distance = sqrt(20)
-        const part001 = startSketchOn('-XZ')
-  |> startProfileAt([-6.95, 4.98], %)
-  |> line([25.1, 0.41], %)
-  |> line([0.73, -14.93], %)
-  |> line([-23.44, 0.52], %)
-  |> close(%)
-        `
+      const part001 = startSketchOn('-XZ')
+      |> startProfileAt([-6.95, 10.98], %)
+      |> line([25.1, 0.41], %)
+      |> line([0.73, -20.93], %)
+      |> line([-23.44, 0.52], %)
+      |> close(%)
+          `
       )
     })
 
@@ -1025,7 +1111,6 @@ test.describe('Command bar tests', () => {
       page.getByRole('button', { name: 'Start Sketch' })
     ).not.toBeDisabled()
     await u.clearCommandLogs()
-    await page.getByText('|> line([0.73, -14.93], %)').click()
     await page.getByRole('button', { name: 'Extrude' }).isEnabled()
 
     let cmdSearchBar = page.getByPlaceholder('Search commands')
@@ -1034,6 +1119,12 @@ test.describe('Command bar tests', () => {
 
     // Search for extrude command and choose it
     await page.getByRole('option', { name: 'Extrude' }).click()
+
+    // Assert that we're on the selection step
+    await expect(page.getByRole('button', { name: 'selection' })).toBeDisabled()
+    // Select a face
+    await page.mouse.move(700, 200)
+    await page.mouse.click(700, 200)
 
     // Assert that we're on the distance step
     await expect(page.getByRole('button', { name: 'distance' })).toBeDisabled()
@@ -1068,9 +1159,9 @@ test.describe('Command bar tests', () => {
       `const distance = sqrt(20)
 const distance001 = 5 + 7
 const part001 = startSketchOn('-XZ')
-    |> startProfileAt([-6.95, 4.98], %)
+    |> startProfileAt([-6.95, 10.98], %)
     |> line([25.1, 0.41], %)
-    |> line([0.73, -14.93], %)
+    |> line([0.73, -20.93], %)
     |> line([-23.44, 0.52], %)
     |> close(%)
     |> extrude(distance001, %)`.replace(/(\r\n|\n|\r)/gm, '') // remove newlines
@@ -1259,6 +1350,72 @@ test('ProgramMemory can be serialised', async ({ page }) => {
       expect(message).not.toContain(forbiddenMessage)
     })
   })
+})
+
+test('Hovering over 3d features highlights code', async ({ page }) => {
+  const u = getUtils(page)
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const part001 = startSketchOn('-XZ')
+  |> startProfileAt([20, 0], %)
+  |> line([7.13, 4 + 0], %)
+  |> angledLine({ angle: 3 + 0, length: 3.14 + 0 }, %)
+  |> lineTo([20.14 + 0, -0.14 + 0], %)
+  |> xLineTo(29 + 0, %)
+  |> yLine(-3.14 + 0, %, 'a')
+  |> xLine(1.63, %)
+  |> angledLineOfXLength({ angle: 3 + 0, length: 3.14 }, %)
+  |> angledLineOfYLength({ angle: 30, length: 3 + 0 }, %)
+  |> angledLineToX({ angle: 22.14 + 0, to: 12 }, %)
+  |> angledLineToY({ angle: 30, to: 11.14 }, %)
+  |> angledLineThatIntersects({
+        angle: 3.14,
+        intersectTag: 'a',
+        offset: 0
+      }, %)
+  |> tangentialArcTo([13.14 + 0, 13.14], %)
+  |> close(%)
+  |> extrude(5 + 7, %)    
+`
+    )
+  })
+  await page.setViewportSize({ width: 1000, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+
+  const extrusionTop: Coords2d = [800, 240]
+  const flatExtrusionFace: Coords2d = [960, 160]
+  const arc: Coords2d = [840, 160]
+  const close: Coords2d = [720, 200]
+  const nothing: Coords2d = [600, 200]
+
+  await page.mouse.move(nothing[0], nothing[1])
+  await page.mouse.click(nothing[0], nothing[1])
+
+  await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+  await page.waitForTimeout(200)
+
+  await page.mouse.move(extrusionTop[0], extrusionTop[1])
+  await expect(page.getByTestId('hover-highlight')).toBeVisible()
+  await page.mouse.move(nothing[0], nothing[1])
+  await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+
+  await page.mouse.move(arc[0], arc[1])
+  await expect(page.getByTestId('hover-highlight')).toBeVisible()
+  await page.mouse.move(nothing[0], nothing[1])
+  await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+
+  await page.mouse.move(close[0], close[1])
+  await expect(page.getByTestId('hover-highlight')).toBeVisible()
+  await page.mouse.move(nothing[0], nothing[1])
+  await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+
+  await page.mouse.move(flatExtrusionFace[0], flatExtrusionFace[1])
+  await expect(page.getByTestId('hover-highlight')).toHaveCount(5) // multiple lines
+  await page.mouse.move(nothing[0], nothing[1])
+  await page.waitForTimeout(100)
+  await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
 })
 
 test("Various pipe expressions should and shouldn't allow edit and or extrude", async ({
@@ -1757,6 +1914,7 @@ test('Can code mod a line length', async ({ page }) => {
   const startXPx = 500
   await page.mouse.move(startXPx + PUR * 15, 250 - PUR * 10)
   await page.mouse.click(615, 102)
+  await page.getByRole('button', { name: 'Constrain', exact: true }).click()
   await page.getByRole('button', { name: 'length', exact: true }).click()
   await page.getByText('Add constraining value').click()
 

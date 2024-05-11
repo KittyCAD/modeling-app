@@ -124,7 +124,8 @@ export const ClientSideScene = ({
       cursor = 'grabbing'
     } else if (
       state.matches('Sketch.Line tool') ||
-      state.matches('Sketch.Tangential arc to')
+      state.matches('Sketch.Tangential arc to') ||
+      state.matches('Sketch.Rectangle tool')
     ) {
       cursor = 'crosshair'
     } else {
@@ -139,9 +140,9 @@ export const ClientSideScene = ({
         style={{ cursor: cursor }}
         className={`absolute inset-0 h-full w-full transition-all duration-300 ${
           hideClient ? 'opacity-0' : 'opacity-100'
-        } ${hideServer ? 'bg-[#1C1C1C]' : ''} ${
+        } ${hideServer ? 'bg-chalkboard-10 dark:bg-chalkboard-100' : ''} ${
           !hideClient && !hideServer && state.matches('Sketch')
-            ? 'bg-[#1C1C1C]/80'
+            ? 'bg-chalkboard-10/80 dark:bg-chalkboard-100/80'
             : ''
         }`}
       ></div>

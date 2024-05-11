@@ -1,12 +1,11 @@
 import { Toolbar } from '../Toolbar'
-import UserSidebarMenu from './UserSidebarMenu'
+import UserSidebarMenu from 'components/UserSidebarMenu'
 import { type IndexLoaderData } from 'lib/types'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import styles from './AppHeader.module.css'
-import { useCommandsContext } from 'hooks/useCommandsContext'
-import { ActionButton } from './ActionButton'
-import usePlatform from 'hooks/usePlatform'
+import { RefreshButton } from 'components/RefreshButton'
+import { CommandBarOpenButton } from './CommandBarOpenButton'
 
 interface AppHeaderProps extends React.PropsWithChildren {
   showToolbar?: boolean
@@ -22,8 +21,6 @@ export const AppHeader = ({
   className = '',
   enableMenu = false,
 }: AppHeaderProps) => {
-  const platform = usePlatform()
-  const { commandBarSend } = useCommandsContext()
   const { auth } = useSettingsAuthContext()
   const user = auth?.context?.user
 
@@ -43,24 +40,17 @@ export const AppHeader = ({
       />
       {/* Toolbar if the context deems it */}
       <div className="flex-grow flex justify-center max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-4xl 2xl:max-w-5xl">
-        {showToolbar ? (
-          <Toolbar />
-        ) : (
-          <ActionButton
-            Element="button"
-            onClick={() => commandBarSend({ type: 'Open' })}
-            className="text-sm self-center flex items-center w-fit gap-3"
-          >
-            Command Palette{' '}
-            <kbd className="bg-primary/10 dark:bg-chalkboard-100 dark:text-primary inline-block px-1 py-0.5 border-primary dark:border-chalkboard-90">
-              {platform === 'macos' ? '⌘K' : 'Ctrl+/'}
-            </kbd>
-          </ActionButton>
-        )}
+        {showToolbar && <Toolbar />}
       </div>
       <div className="flex items-center gap-1 py-1 ml-auto">
         {/* If there are children, show them, otherwise show User menu */}
-        {children || <UserSidebarMenu user={user} />}
+        {children || (
+          <>
+            <CommandBarOpenButton />
+            <RefreshButton />
+            <UserSidebarMenu user={user} />
+          </>
+        )}
       </div>
     </header>
   )

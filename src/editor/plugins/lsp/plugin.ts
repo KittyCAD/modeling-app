@@ -264,8 +264,12 @@ export class LanguageServerPlugin implements PluginValue {
     )
       return null
 
-    this.sendChange({
-      documentText: this.view.state.doc.toString(),
+    this.client.textDocumentDidChange({
+      textDocument: {
+        uri: this.documentUri,
+        version: this.documentVersion++,
+      },
+      contentChanges: [{ text: this.view.state.doc.toString() }],
     })
 
     const result = await this.client.textDocumentFormatting({

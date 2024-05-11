@@ -65,3 +65,15 @@ export function getThemeColorForEngine(theme: Themes) {
     ? { r: dark, g: dark, b: dark, a: 1 }
     : { r: light, g: light, b: light, a: 1 }
 }
+
+/**
+ * ThreeJS uses hex values for colors
+ * @param theme
+ * @returns
+ */
+export function getThemeColorForThreeJs(theme: Themes) {
+  const resolvedTheme = getResolvedTheme(theme)
+  const dark = 0x1c1c1c
+  const light = 0xf9f9f9
+  return resolvedTheme === Themes.Dark ? dark : light
+}

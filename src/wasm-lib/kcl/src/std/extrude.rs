@@ -8,8 +8,8 @@ use uuid::Uuid;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
-        ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, ExtrudeTransform, GeoMeta, MemoryItem, Path, SketchGroup,
-        SketchGroupSet, SketchSurface,
+        ExtrudeGroup, ExtrudeGroupSet, ExtrudeSurface, GeoMeta, MemoryItem, Path, SketchGroup, SketchGroupSet,
+        SketchSurface,
     },
     std::Args,
 };
@@ -222,50 +222,5 @@ pub(crate) async fn do_post_extrude(
         start_cap_id,
         end_cap_id,
         meta: sketch_group.meta,
-    }))
-}
-
-/// Returns the extrude wall transform.
-pub async fn get_extrude_wall_transform(args: Args) -> Result<MemoryItem, KclError> {
-    let (surface_name, extrude_group) = args.get_path_name_extrude_group()?;
-    let result = inner_get_extrude_wall_transform(&surface_name, *extrude_group, args)?;
-    Ok(MemoryItem::ExtrudeTransform(result))
-}
-
-/// Returns the extrude wall transform.
-///
-/// ```no_run
-/// const box = startSketchOn('XY')
-///     |> startProfileAt([0, 0], %)
-///     |> line([0, 10], %)
-///     |> line([10, 0], %)
-///     |> line([0, -10], %, "surface")
-///     |> close(%)
-///     |> extrude(5, %)
-///
-/// const transform = getExtrudeWallTransform('surface', box)
-/// ```
-#[stdlib {
-    name = "getExtrudeWallTransform"
-}]
-fn inner_get_extrude_wall_transform(
-    surface_name: &str,
-    extrude_group: ExtrudeGroup,
-    args: Args,
-) -> Result<Box<ExtrudeTransform>, KclError> {
-    let surface = extrude_group.get_path_by_name(surface_name).ok_or_else(|| {
-        KclError::Type(KclErrorDetails {
-            message: format!(
-                "Expected a surface name that exists in the given ExtrudeGroup, found `{}`",
-                surface_name
-            ),
-            source_ranges: vec![args.source_range],
-        })
-    })?;
-
-    Ok(Box::new(ExtrudeTransform {
-        position: surface.get_position(),
-        rotation: surface.get_rotation(),
-        meta: extrude_group.meta,
     }))
 }

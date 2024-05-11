@@ -210,7 +210,7 @@ const Home = () => {
                   : '')
               }
               onClick={() => setSearchParams(getNextSearchParams(sort, 'name'))}
-              icon={{
+              iconStart={{
                 icon: getSortIcon(sort, 'name'),
                 className: 'p-1.5',
                 iconClassName: !sort.includes('name')
@@ -232,7 +232,7 @@ const Home = () => {
               onClick={() =>
                 setSearchParams(getNextSearchParams(sort, 'modified'))
               }
-              icon={{
+              iconStart={{
                 icon: sort ? getSortIcon(sort, 'modified') : faArrowDown,
                 className: 'p-1.5',
                 iconClassName: !isSortByModified ? '!text-chalkboard-40' : '',
@@ -278,7 +278,7 @@ const Home = () => {
               <ActionButton
                 Element="button"
                 onClick={() => send('Create project')}
-                icon={{ icon: faPlus, iconClassName: 'p-1 w-4' }}
+                iconStart={{ icon: faPlus, iconClassName: 'p-1 w-4' }}
                 data-testid="home-new-file"
               >
                 New project

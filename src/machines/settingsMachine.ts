@@ -11,7 +11,7 @@ import {
 
 export const settingsMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlnXwFsB7CMYnKfAV20zVgG0AGAXUSgADrVidMtbEJAAPRABYAHAFZ8vAEwA2FVq0aNAZgCcARl0B2ADQgAnolO8LvfBYUXT+48YW+tCgF8Am1QMZgIiUgoqAENhYXw0AAswajA+QSQQUXEsKRl5BCM1DQUDMo0VQwVjJxt7BFMDJXwNWo0LFSU3c0DgkFCsXAiScgAlOHQAAkow4YyZHIl8rMKAWn18Q39q3ScVFQ1NFXqHXiVTfGNqhSdeXi1DJQ1TIJD0IbxCUbIAKgWsks8tJVopjFp8KZjEpqi9lKZDE0TnYzgZXO5PG0fH4+u85l9IuRQlMYsRiFNsGAAO4zD7hAEiMTLEGgda6fAKJoIiyIkwWYwWawoxpGFxaHkKFS1a7woL9bD0OAyQbhRZM4EFRBrUyOLY7SVafaHTSnBDGDqQiz6DRKbwqTxvAZ04bfUhq3KSFlyBxHdQIhR6HTQmoC02OUwKPW7GrPdy8QxygJAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlnXwEMAHW-Ae2wCNHqAnCHKZNatAFdYAbQAMAXUShajWJizNpIAB6IAbAFZN+AOwAWAIwAOYwE4AzGYBM+-ZosAaEAE9Eh62LP51ls+v0LMWt1awMAX3DnVAweAiJSCio6BjQACzAAWzAAYUZiRg5xKSQQWXlFbGU1BA9vQ0N1CwCxdVbdY1DnNwQzPp8zTTFje1D1QwtjSOj0LFx4knJKNHxMxggwYh58DYAzakFiNABVbAVi5XKFTCVSmotNY3w7YysHRuNDTXV1bvdG7w-IKTcbaazWCzTEAxOZ4QiLJIrFL4dJZMAXUpXSrVDTGazPMQPR4GXRBAx-XoGfDWIadMx4n6EqEwuLwxLLVbrTbbNKYKBpLb8tAAUWgcAxMjk11uoHumn0+DEw2sJkMulCgWsFL6YnwfX0ELsYg61jMumZs1ZCXIACU4OgAATLWGiSSXKXYu4aLz4UwWBr6DqBYYUzSePXqUlBLxmyZmC2xeZs8gxB3UYjEJ2W+YSsoem5VL0IKy6z6EsJifQ2Czq0MTHzq8Yjfz6MQmBMu5NkABUuaxBZxCDD+DD5lJgUjxssFP0xl0I+0pm06uMmg8kSiIGwXPgpRZ83dFQHRYAtA0LCO2tZjGIHJNdB5fq5EK3dc1OsNGkrA+oO1bFoe0qFrKiAnlol7BDed5zo+FK+Doc7qhCNaVv4UwbkAA */
     id: 'Settings',
     predictableActionArguments: true,
     context: {} as ReturnType<typeof createSettings>,
@@ -59,6 +59,7 @@ export const settingsMachine = createMachine(
               'setThemeClass',
               'setEngineTheme',
               'persistSettings',
+              'setClientTheme',
             ],
           },
 
@@ -83,6 +84,7 @@ export const settingsMachine = createMachine(
               'setClientSideSceneUnits',
               'Execute AST',
               'persistSettings',
+              'setClientTheme',
             ],
           },
 
@@ -96,6 +98,7 @@ export const settingsMachine = createMachine(
               'setClientSideSceneUnits',
               'Execute AST',
               'persistSettings',
+              'setClientTheme',
             ],
           },
         },

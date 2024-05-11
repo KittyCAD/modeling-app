@@ -97,6 +97,7 @@ import {
   getRectangleCallExpressions,
   updateRectangleSketch,
 } from 'lib/rectangleTool'
+import { getThemeColorForThreeJs } from 'lib/theme'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -361,6 +362,7 @@ export class SceneEntities {
       id: sketchGroup.start.__geoMeta.id,
       pathToNode: segPathToNode,
       scale: factor,
+      theme: sceneInfra._theme,
     })
     _profileStart.layers.set(SKETCH_LAYER)
     _profileStart.traverse((child) => {
@@ -411,6 +413,7 @@ export class SceneEntities {
           isDraftSegment,
           scale: factor,
           texture: sceneInfra.extraSegmentTexture,
+          theme: sceneInfra._theme,
         })
         callbacks.push(
           this.updateTangentialArcToSegment({
@@ -431,6 +434,7 @@ export class SceneEntities {
           scale: factor,
           callExpName,
           texture: sceneInfra.extraSegmentTexture,
+          theme: sceneInfra._theme,
         })
         callbacks.push(
           this.updateStraightSegment({
@@ -1549,7 +1553,10 @@ export class SceneEntities {
         const isSelected = parent?.userData?.isSelected
         colorSegment(
           selected,
-          isSelected ? 0x0000ff : parent?.userData?.baseColor || 0xffffff
+          isSelected
+            ? 0x0000ff
+            : parent?.userData?.baseColor ||
+                getThemeColorForThreeJs(sceneInfra._theme)
         )
         const extraSegmentGroup = parent?.getObjectByName(EXTRA_SEGMENT_HANDLE)
         if (extraSegmentGroup) {

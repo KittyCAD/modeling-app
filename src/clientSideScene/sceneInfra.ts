@@ -31,6 +31,7 @@ import { EngineCommandManager } from 'lang/std/engineConnection'
 import { settings } from 'lib/settings/initialSettings'
 import { MouseState, SegmentOverlayPayload } from 'machines/modelingMachine'
 import { getAngle, throttle } from 'lib/utils'
+import { Themes } from 'lib/theme'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -102,6 +103,7 @@ export class SceneInfra {
   isFovAnimationInProgress = false
   _baseUnit: BaseUnit = 'mm'
   _baseUnitMultiplier = 1
+  _theme: Themes = Themes.System
   extraSegmentTexture: Texture
   lastMouseState: MouseState = { type: 'idle' }
   onDragStartCallback: (arg: OnDragCallbackArgs) => void = () => {}
@@ -137,6 +139,9 @@ export class SceneInfra {
       this._baseUnitMultiplier,
       this._baseUnitMultiplier
     )
+  }
+  set theme(theme: Themes) {
+    this._theme = theme
   }
   resetMouseListeners = () => {
     this.setCallbacks({
