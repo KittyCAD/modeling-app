@@ -312,29 +312,31 @@ export interface PrevVariable<T> {
   value: T
 }
 
-export function findAllPreviousVariables(
+export function findAllPreviousVariablesPath(
   ast: Program,
   programMemory: ProgramMemory,
-  sourceRange: Selection['range'],
+  path: PathToNode,
   type: 'number' | 'string' = 'number'
 ): {
   variables: PrevVariable<typeof type extends 'number' ? number : string>[]
   bodyPath: PathToNode
   insertIndex: number
 } {
-  const path = getNodePathFromSourceRange(ast, sourceRange)
-  const { shallowPath: pathToDec } = getNodeFromPath(
+  const { shallowPath: pathToDec, node } = getNodeFromPath(
     ast,
     path,
     'VariableDeclaration'
   )
+
+  const startRange = (node as any).start
+
   const { index: insertIndex, path: bodyPath } = splitPathAtLastIndex(pathToDec)
 
   const { node: bodyItems } = getNodeFromPath<Program['body']>(ast, bodyPath)
 
   const variables: PrevVariable<any>[] = []
   bodyItems?.forEach?.((item) => {
-    if (item.type !== 'VariableDeclaration' || item.end > sourceRange[0]) return
+    if (item.type !== 'VariableDeclaration' || item.end > startRange) return
     const varName = item.declarations[0].id.name
     const varValue = programMemory?.root[varName]
     if (typeof varValue?.value !== type) return
@@ -351,17 +353,33 @@ export function findAllPreviousVariables(
   }
 }
 
-type ReplacerFn = (_ast: Program, varName: string) => { modifiedAst: Program }
-
-export function isNodeSafeToReplace(
+export function findAllPreviousVariables(
   ast: Program,
-  sourceRange: [number, number]
+  programMemory: ProgramMemory,
+  sourceRange: Selection['range'],
+  type: 'number' | 'string' = 'number'
+): {
+  variables: PrevVariable<typeof type extends 'number' ? number : string>[]
+  bodyPath: PathToNode
+  insertIndex: number
+} {
+  const path = getNodePathFromSourceRange(ast, sourceRange)
+  return findAllPreviousVariablesPath(ast, programMemory, path, type)
+}
+
+type ReplacerFn = (
+  _ast: Program,
+  varName: string
+) => { modifiedAst: Program; pathToReplaced: PathToNode }
+
+export function isNodeSafeToReplacePath(
+  ast: Program,
+  path: PathToNode
 ): {
   isSafe: boolean
   value: Value
   replacer: ReplacerFn
 } {
-  let path = getNodePathFromSourceRange(ast, sourceRange)
   if (path[path.length - 1][0] === 'callee') {
     path = path.slice(0, -1)
   }
@@ -391,10 +409,12 @@ export function isNodeSafeToReplace(
   const replaceNodeWithIdentifier: ReplacerFn = (_ast, varName) => {
     const identifier = createIdentifier(varName)
     const last = finPath[finPath.length - 1]
+    const pathToReplaced = JSON.parse(JSON.stringify(finPath))
+    pathToReplaced[1][0] = pathToReplaced[1][0] + 1
     const startPath = finPath.slice(0, -1)
     const nodeToReplace = getNodeFromPath(_ast, startPath).node as any
     nodeToReplace[last[0]] = identifier
-    return { modifiedAst: _ast }
+    return { modifiedAst: _ast, pathToReplaced }
   }
 
   const hasPipeSub = isTypeInValue(finVal as Value, 'PipeSubstitution')
@@ -408,6 +428,18 @@ export function isNodeSafeToReplace(
     value: finVal as Value,
     replacer: replaceNodeWithIdentifier,
   }
+}
+
+export function isNodeSafeToReplace(
+  ast: Program,
+  sourceRange: [number, number]
+): {
+  isSafe: boolean
+  value: Value
+  replacer: ReplacerFn
+} {
+  let path = getNodePathFromSourceRange(ast, sourceRange)
+  return isNodeSafeToReplacePath(ast, path)
 }
 
 export function isTypeInValue(node: Value, syntaxType: SyntaxType): boolean {

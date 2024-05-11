@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, Page } from '@playwright/test'
 import { makeTemplate, getUtils } from './test-utils'
 import waitOn from 'wait-on'
 import { roundOff } from 'lib/utils'
@@ -12,6 +12,7 @@ import {
   TEST_SETTINGS_ONBOARDING_START,
 } from './storageStates'
 import * as TOML from '@iarna/toml'
+import { LineInputsType } from 'lang/std/sketchcombos'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -1801,4 +1802,566 @@ test('Extrude from command bar selects extrude line after', async ({
   await expect(page.locator('.cm-activeLine')).toHaveText(
     `  |> extrude(5 + 7, %)`
   )
+})
+
+test.describe('testing segment overlays', () => {
+  const _clickConstrained =
+    (page: Page) =>
+    async ({
+      hoverPos,
+      constraintType,
+      expectBeforeUnconstrained,
+      expectAfterUnconstrained,
+      expectFinal,
+      ang = 45,
+      steps = 6,
+    }: {
+      hoverPos: { x: number; y: number }
+      constraintType:
+        | 'horizontal'
+        | 'vertical'
+        | 'tangentialWithPrevious'
+        | LineInputsType
+      expectBeforeUnconstrained: string
+      expectAfterUnconstrained: string
+      expectFinal: string
+      ang?: number
+      steps?: number
+    }) => {
+      await expect(page.getByText('Added variable')).not.toBeVisible()
+      const [x, y] = [
+        Math.cos((ang * Math.PI) / 180) * 45,
+        Math.sin((ang * Math.PI) / 180) * 45,
+      ]
+
+      await page.mouse.move(hoverPos.x + x, hoverPos.y + y)
+      await page.mouse.move(hoverPos.x, hoverPos.y, { steps })
+      await expect(page.locator('.cm-content')).toContainText(
+        expectBeforeUnconstrained
+      )
+      const constrainedLocator = page.locator(
+        `[data-constraint-type="${constraintType}"][data-is-constrained="true"]`
+      )
+      await constrainedLocator.hover()
+      await expect(
+        await page.getByTestId('constraint-symbol-popover').count()
+      ).toBeGreaterThan(0)
+      await constrainedLocator.click()
+      await expect(page.locator('.cm-content')).toContainText(
+        expectAfterUnconstrained
+      )
+      const unconstrainedLocator = page.locator(
+        `[data-constraint-type="${constraintType}"][data-is-constrained="false"]`
+      )
+      await unconstrainedLocator.hover()
+      await expect(
+        await page.getByTestId('constraint-symbol-popover').count()
+      ).toBeGreaterThan(0)
+      await unconstrainedLocator.click()
+      await page.getByText('Add variable').click()
+      await expect(page.locator('.cm-content')).toContainText(expectFinal)
+    }
+
+  const _clickUnconstrained =
+    (page: Page) =>
+    async ({
+      hoverPos,
+      constraintType,
+      expectBeforeUnconstrained,
+      expectAfterUnconstrained,
+      expectFinal,
+      ang = 45,
+      steps = 5,
+    }: {
+      hoverPos: { x: number; y: number }
+      constraintType:
+        | 'horizontal'
+        | 'vertical'
+        | 'tangentialWithPrevious'
+        | LineInputsType
+      expectBeforeUnconstrained: string
+      expectAfterUnconstrained: string
+      expectFinal: string
+      ang?: number
+      steps?: number
+    }) => {
+      const [x, y] = [
+        Math.cos((ang * Math.PI) / 180) * 45,
+        Math.sin((ang * Math.PI) / 180) * 45,
+      ]
+      await page.mouse.move(hoverPos.x + x, hoverPos.y + y)
+
+      await expect(page.getByText('Added variable')).not.toBeVisible()
+      await page.mouse.move(hoverPos.x, hoverPos.y, { steps })
+      await expect(page.locator('.cm-content')).toContainText(
+        expectBeforeUnconstrained
+      )
+      const unconstrainedLocator = page.locator(
+        `[data-constraint-type="${constraintType}"][data-is-constrained="false"]`
+      )
+      await unconstrainedLocator.hover()
+      await expect(
+        await page.getByTestId('constraint-symbol-popover').count()
+      ).toBeGreaterThan(0)
+      await unconstrainedLocator.click()
+      await page.getByText('Add variable').click()
+      await expect(page.locator('.cm-content')).toContainText(
+        expectAfterUnconstrained
+      )
+      await expect(page.getByText('Added variable')).not.toBeVisible()
+      await page.mouse.move(hoverPos.x, hoverPos.y, { steps })
+      const constrainedLocator = page.locator(
+        `[data-constraint-type="${constraintType}"][data-is-constrained="true"]`
+      )
+      await constrainedLocator.hover()
+      await expect(
+        await page.getByTestId('constraint-symbol-popover').count()
+      ).toBeGreaterThan(0)
+      await constrainedLocator.click()
+      await expect(page.locator('.cm-content')).toContainText(expectFinal)
+    }
+  test('Hovering over segements, [line, angledLine, lineTo, xLineTo, yLineTo, xLine]', async ({
+    page,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const part001 = startSketchOn('-XZ')
+  |> startProfileAt([0, 0], %)
+  |> line([0.5, -14 + 0], %)
+  |> angledLine({ angle: 3 + 0, length: 32 + 0 }, %)
+  |> lineTo([33, 11.5 + 0], %)
+  |> xLineTo(9 - 5, %)
+  |> yLineTo(-10.77, %, 'a')
+  |> xLine(26.04, %)
+  |> yLine(21.14 + 0, %)
+  |> angledLineOfXLength({ angle: 181 + 0, length: 23.14 }, %)
+  |> angledLineOfYLength({ angle: -91, length: 19 + 0 }, %)
+  |> angledLineToX({ angle: 3 + 0, to: 26 }, %)
+  |> angledLineToY({ angle: 89, to: 9.14 + 0 }, %)
+  |> angledLineThatIntersects({
+        angle: 4.14,
+        intersectTag: 'a',
+        offset: 9
+      }, %)
+  |> tangentialArcTo([3.14 + 13, 3.14], %)
+      `
+      )
+      localStorage.setItem('playwright', 'true')
+    })
+    const u = getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+
+    await page.getByText('xLineTo(9 - 5, %)').click()
+    await page.waitForTimeout(100)
+    await page.getByRole('button', { name: 'Edit Sketch' }).click()
+    await page.waitForTimeout(500)
+
+    await expect(page.getByTestId('segment-overlay')).toHaveCount(13)
+
+    const clickUnconstrained = _clickUnconstrained(page)
+    const clickConstrained = _clickConstrained(page)
+
+    const line = await u.getBoundingBox(`[data-overlay-index="${0}"]`)
+    console.log('line1')
+    await clickConstrained({
+      hoverPos: { x: line.x, y: line.y - 10 },
+      constraintType: 'yRelative',
+      expectBeforeUnconstrained: '|> line([0.5, -14 + 0], %)',
+      expectAfterUnconstrained: '|> line([0.5, -14], %)',
+      expectFinal: '|> line([0.5, yRel001], %)',
+      ang: 135,
+    })
+    console.log('line2')
+    await clickUnconstrained({
+      hoverPos: { x: line.x, y: line.y - 10 },
+      constraintType: 'xRelative',
+      expectBeforeUnconstrained: '|> line([0.5, yRel001], %)',
+      expectAfterUnconstrained: 'line([xRel001, yRel001], %)',
+      expectFinal: '|> line([0.5, yRel001], %)',
+      ang: -45,
+    })
+
+    const angledLine = await u.getBoundingBox(`[data-overlay-index="1"]`)
+    console.log('angledLine1')
+    await clickConstrained({
+      hoverPos: { x: angledLine.x - 10, y: angledLine.y },
+      constraintType: 'angle',
+      expectBeforeUnconstrained:
+        'angledLine({ angle: 3 + 0, length: 32 + 0 }, %)',
+      expectAfterUnconstrained: 'angledLine({ angle: 3, length: 32 + 0 }, %)',
+      expectFinal: 'angledLine({ angle: angle001, length: 32 + 0 }, %)',
+    })
+    console.log('angledLine2')
+    await clickConstrained({
+      hoverPos: { x: angledLine.x - 10, y: angledLine.y },
+      constraintType: 'length',
+      expectBeforeUnconstrained:
+        'angledLine({ angle: angle001, length: 32 + 0 }, %)',
+      expectAfterUnconstrained:
+        'angledLine({ angle: angle001, length: 32 }, %)',
+      expectFinal: 'angledLine({ angle: angle001, length: len001 }, %)',
+    })
+
+    const lineTo = await u.getBoundingBox(`[data-overlay-index="2"]`)
+    console.log('lineTo1')
+    await clickConstrained({
+      hoverPos: { x: lineTo.x, y: lineTo.y + 15 },
+      constraintType: 'yAbsolute',
+      expectBeforeUnconstrained: 'lineTo([33, 11.5 + 0], %)',
+      expectAfterUnconstrained: 'lineTo([33, 11.5], %)',
+      expectFinal: 'lineTo([33, yAbs001], %)',
+    })
+    console.log('lineTo2')
+    await clickUnconstrained({
+      hoverPos: { x: lineTo.x, y: lineTo.y + 15 },
+      constraintType: 'xAbsolute',
+      expectBeforeUnconstrained: 'lineTo([33, yAbs001], %)',
+      expectAfterUnconstrained: 'lineTo([xAbs001, yAbs001], %)',
+      expectFinal: 'lineTo([33, yAbs001], %)',
+    })
+
+    const xLineTo = await u.getBoundingBox(`[data-overlay-index="3"]`)
+    console.log('xlineTo1')
+    await clickConstrained({
+      hoverPos: { x: xLineTo.x + 15, y: xLineTo.y },
+      constraintType: 'xAbsolute',
+      expectBeforeUnconstrained: 'xLineTo(9 - 5, %)',
+      expectAfterUnconstrained: 'xLineTo(4, %)',
+      expectFinal: 'xLineTo(xAbs002, %)',
+    })
+
+    const yLineTo = await u.getBoundingBox(`[data-overlay-index="4"]`)
+    console.log('ylineTo1')
+    await clickUnconstrained({
+      hoverPos: { x: yLineTo.x, y: yLineTo.y - 30 },
+      constraintType: 'yAbsolute',
+      expectBeforeUnconstrained: "yLineTo(-10.77, %, 'a')",
+      expectAfterUnconstrained: "yLineTo(yAbs002, %, 'a')",
+      expectFinal: "yLineTo(-10.77, %, 'a')",
+      ang: 110,
+      steps: 6,
+    })
+
+    const xLine = await u.getBoundingBox(`[data-overlay-index="5"]`)
+    console.log('yline1')
+    await clickUnconstrained({
+      hoverPos: { x: xLine.x - 30, y: xLine.y },
+      constraintType: 'xRelative',
+      expectBeforeUnconstrained: 'xLine(26.04, %)',
+      expectAfterUnconstrained: 'xLine(xRel002, %)',
+      expectFinal: 'xLine(26.04, %)',
+      ang: 135,
+      steps: 6,
+    })
+  })
+  test('Hovering over segements, [yLine, angledLineOfXLength, angledLineOfYLength]', async ({
+    page,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const part001 = startSketchOn('-XZ')
+  |> startProfileAt([0, 0], %)
+  |> line([0.5, -14 + 0], %)
+  |> angledLine({ angle: 3 + 0, length: 32 + 0 }, %)
+  |> lineTo([33, 11.5 + 0], %)
+  |> xLineTo(9 - 5, %)
+  |> yLineTo(-10.77, %, 'a')
+  |> xLine(26.04, %)
+  |> yLine(21.14 + 0, %)
+  |> angledLineOfXLength({ angle: 181 + 0, length: 23.14 }, %)
+  |> angledLineOfYLength({ angle: -91, length: 19 + 0 }, %)
+  |> angledLineToX({ angle: 3 + 0, to: 26 }, %)
+  |> angledLineToY({ angle: 89, to: 9.14 + 0 }, %)
+  |> angledLineThatIntersects({
+        angle: 4.14,
+        intersectTag: 'a',
+        offset: 9
+      }, %)
+  |> tangentialArcTo([3.14 + 13, 3.14], %)
+      `
+      )
+      localStorage.setItem('playwright', 'true')
+    })
+    const u = getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+
+    await page.getByText('xLineTo(9 - 5, %)').click()
+    await page.waitForTimeout(100)
+    await page.getByRole('button', { name: 'Edit Sketch' }).click()
+    await page.waitForTimeout(500)
+
+    await expect(page.getByTestId('segment-overlay')).toHaveCount(13)
+
+    const clickUnconstrained = _clickUnconstrained(page)
+    const clickConstrained = _clickConstrained(page)
+
+    const yLine = await u.getBoundingBox(`[data-overlay-index="6"]`)
+    console.log('yline1')
+    await clickConstrained({
+      hoverPos: { x: yLine.x, y: yLine.y + 20 },
+      constraintType: 'yRelative',
+      expectBeforeUnconstrained: 'yLine(21.14 + 0, %)',
+      expectAfterUnconstrained: 'yLine(21.14, %)',
+      expectFinal: 'yLine(yRel001, %)',
+    })
+
+    const angledLineOfXLength = await u.getBoundingBox(
+      `[data-overlay-index="7"]`
+    )
+    console.log('angledLineOfXLength1')
+    await clickConstrained({
+      hoverPos: { x: angledLineOfXLength.x + 20, y: angledLineOfXLength.y },
+      constraintType: 'angle',
+      expectBeforeUnconstrained:
+        'angledLineOfXLength({ angle: 181 + 0, length: 23.14 }, %)',
+      expectAfterUnconstrained:
+        'angledLineOfXLength({ angle: -179, length: 23.14 }, %)',
+      expectFinal: 'angledLineOfXLength({ angle: angle001, length: 23.14 }, %)',
+    })
+    console.log('angledLineOfXLength2')
+    await clickUnconstrained({
+      hoverPos: { x: angledLineOfXLength.x + 20, y: angledLineOfXLength.y },
+      constraintType: 'xRelative',
+      expectBeforeUnconstrained:
+        'angledLineOfXLength({ angle: angle001, length: 23.14 }, %)',
+      expectAfterUnconstrained:
+        'angledLineOfXLength({ angle: angle001, length: xRel001 }, %)',
+      expectFinal: 'angledLineOfXLength({ angle: angle001, length: 23.14 }, %)',
+      ang: -45,
+      steps: 6,
+    })
+
+    const angledLineOfYLength = await u.getBoundingBox(
+      `[data-overlay-index="8"]`
+    )
+    console.log('angledLineOfYLength1')
+    await clickUnconstrained({
+      hoverPos: { x: angledLineOfYLength.x, y: angledLineOfYLength.y - 20 },
+      constraintType: 'angle',
+      expectBeforeUnconstrained:
+        'angledLineOfYLength({ angle: -91, length: 19 + 0 }, %)',
+      expectAfterUnconstrained:
+        'angledLineOfYLength({ angle: angle002, length: 19 + 0 }, %)',
+      expectFinal: 'angledLineOfYLength({ angle: -91, length: 19 + 0 }, %)',
+      ang: -45,
+    })
+    console.log('angledLineOfYLength2')
+    await clickConstrained({
+      hoverPos: { x: angledLineOfYLength.x, y: angledLineOfYLength.y - 20 },
+      constraintType: 'yRelative',
+      expectBeforeUnconstrained:
+        'angledLineOfYLength({ angle: -91, length: 19 + 0 }, %)',
+      expectAfterUnconstrained:
+        'angledLineOfYLength({ angle: -91, length: 19 }, %)',
+      expectFinal: 'angledLineOfYLength({ angle: -91, length: yRel002 }, %)',
+      ang: -45,
+    })
+  })
+  test('Hovering over segements, [angledLineToX, angledLineToY, angledLineThatIntersects]', async ({
+    page,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const part001 = startSketchOn('-XZ')
+  |> startProfileAt([0, 0], %)
+  |> line([0.5, -14 + 0], %)
+  |> angledLine({ angle: 3 + 0, length: 32 + 0 }, %)
+  |> lineTo([33, 11.5 + 0], %)
+  |> xLineTo(9 - 5, %)
+  |> yLineTo(-10.77, %, 'a')
+  |> xLine(26.04, %)
+  |> yLine(21.14 + 0, %)
+  |> angledLineOfXLength({ angle: 181 + 0, length: 23.14 }, %)
+  |> angledLineOfYLength({ angle: -91, length: 19 + 0 }, %)
+  |> angledLineToX({ angle: 3 + 0, to: 26 }, %)
+  |> angledLineToY({ angle: 89, to: 9.14 + 0 }, %)
+  |> angledLineThatIntersects({
+        angle: 4.14,
+        intersectTag: 'a',
+        offset: 9
+      }, %)
+  |> tangentialArcTo([3.14 + 13, 1.14], %)
+      `
+      )
+      localStorage.setItem('playwright', 'true')
+    })
+    const u = getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+
+    await page.getByText('xLineTo(9 - 5, %)').click()
+    await page.waitForTimeout(100)
+    await page.getByRole('button', { name: 'Edit Sketch' }).click()
+    await page.waitForTimeout(500)
+
+    await expect(page.getByTestId('segment-overlay')).toHaveCount(13)
+
+    const clickUnconstrained = _clickUnconstrained(page)
+    const clickConstrained = _clickConstrained(page)
+
+    const angledLineToX = await u.getBoundingBox(`[data-overlay-index="9"]`)
+    console.log('angledLineToX')
+    await clickConstrained({
+      hoverPos: { x: angledLineToX.x - 20, y: angledLineToX.y },
+      constraintType: 'angle',
+      expectBeforeUnconstrained: 'angledLineToX({ angle: 3 + 0, to: 26 }, %)',
+      expectAfterUnconstrained: 'angledLineToX({ angle: 3, to: 26 }, %)',
+      expectFinal: 'angledLineToX({ angle: angle001, to: 26 }, %)',
+    })
+    console.log('angledLineToX2')
+    await clickUnconstrained({
+      hoverPos: { x: angledLineToX.x - 20, y: angledLineToX.y },
+      constraintType: 'xAbsolute',
+      expectBeforeUnconstrained:
+        'angledLineToX({ angle: angle001, to: 26 }, %)',
+      expectAfterUnconstrained:
+        'angledLineToX({ angle: angle001, to: xAbs001 }, %)',
+      expectFinal: 'angledLineToX({ angle: angle001, to: 26 }, %)',
+    })
+
+    const angledLineToY = await u.getBoundingBox(`[data-overlay-index="10"]`)
+    console.log('angledLineToY')
+    await clickUnconstrained({
+      hoverPos: { x: angledLineToY.x, y: angledLineToY.y + 20 },
+      constraintType: 'angle',
+      expectBeforeUnconstrained:
+        'angledLineToY({ angle: 89, to: 9.14 + 0 }, %)',
+      expectAfterUnconstrained:
+        'angledLineToY({ angle: angle002, to: 9.14 + 0 }, %)',
+      expectFinal: 'angledLineToY({ angle: 89, to: 9.14 + 0 }, %)',
+    })
+    console.log('angledLineToY2')
+    await clickConstrained({
+      hoverPos: { x: angledLineToY.x, y: angledLineToY.y + 20 },
+      constraintType: 'yAbsolute',
+      expectBeforeUnconstrained:
+        'angledLineToY({ angle: 89, to: 9.14 + 0 }, %)',
+      expectAfterUnconstrained: 'angledLineToY({ angle: 89, to: 9.14 }, %)',
+      expectFinal: 'angledLineToY({ angle: 89, to: yAbs001 }, %)',
+    })
+
+    const angledLineThatIntersects = await u.getBoundingBox(
+      `[data-overlay-index="11"]`
+    )
+    console.log('angledLineThatIntersects')
+    await clickUnconstrained({
+      hoverPos: {
+        x: angledLineThatIntersects.x + 20,
+        y: angledLineThatIntersects.y,
+      },
+      constraintType: 'angle',
+      expectBeforeUnconstrained: `angledLineThatIntersects({
+    angle: 4.14,
+    intersectTag: 'a',
+    offset: 9
+  }, %)`,
+      expectAfterUnconstrained: `angledLineThatIntersects({
+    angle: angle003,
+    intersectTag: 'a',
+    offset: 9
+  }, %)`,
+      expectFinal: `angledLineThatIntersects({
+    angle: -176,
+    intersectTag: 'a',
+    offset: 9
+  }, %)`,
+      ang: -45,
+    })
+    console.log('angledLineThatIntersects2')
+    await clickUnconstrained({
+      hoverPos: {
+        x: angledLineThatIntersects.x + 20,
+        y: angledLineThatIntersects.y,
+      },
+      constraintType: 'intersectionOffset',
+      expectBeforeUnconstrained: `angledLineThatIntersects({
+    angle: -176,
+    intersectTag: 'a',
+    offset: 9
+  }, %)`,
+      expectAfterUnconstrained: `angledLineThatIntersects({
+    angle: -176,
+    intersectTag: 'a',
+    offset: perpDist001
+  }, %)`,
+      expectFinal: `angledLineThatIntersects({
+    angle: -176,
+    intersectTag: 'a',
+    offset: 9
+  }, %)`,
+      ang: -25,
+    })
+  })
+  test('Hovering over segements, [tangentialArcTo]', async ({ page }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `const part001 = startSketchOn('-XZ')
+  |> startProfileAt([0, 0], %)
+  |> line([0.5, -14 + 0], %)
+  |> angledLine({ angle: 3 + 0, length: 32 + 0 }, %)
+  |> lineTo([33, 11.5 + 0], %)
+  |> xLineTo(9 - 5, %)
+  |> yLineTo(-10.77, %, 'a')
+  |> xLine(26.04, %)
+  |> yLine(21.14 + 0, %)
+  |> angledLineOfXLength({ angle: 181 + 0, length: 23.14 }, %)
+  |> angledLineOfYLength({ angle: -91, length: 19 + 0 }, %)
+  |> angledLineToX({ angle: 3 + 0, to: 26 }, %)
+  |> angledLineToY({ angle: 89, to: 9.14 + 0 }, %)
+  |> angledLineThatIntersects({
+        angle: 4.14,
+        intersectTag: 'a',
+        offset: 9
+      }, %)
+  |> tangentialArcTo([3.14 + 13, -3.14], %)
+      `
+      )
+      localStorage.setItem('playwright', 'true')
+    })
+    const u = getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+
+    await page.getByText('xLineTo(9 - 5, %)').click()
+    await page.waitForTimeout(100)
+    await page.getByRole('button', { name: 'Edit Sketch' }).click()
+    await page.waitForTimeout(500)
+
+    await expect(page.getByTestId('segment-overlay')).toHaveCount(13)
+
+    const clickUnconstrained = _clickUnconstrained(page)
+    const clickConstrained = _clickConstrained(page)
+
+    const tangentialArcTo = await u.getBoundingBox(`[data-overlay-index="12"]`)
+    console.log('tangentialArcTo')
+    await clickConstrained({
+      hoverPos: { x: tangentialArcTo.x - 10, y: tangentialArcTo.y + 20 },
+      constraintType: 'xAbsolute',
+      expectBeforeUnconstrained: 'tangentialArcTo([3.14 + 13, -3.14], %)',
+      expectAfterUnconstrained: 'tangentialArcTo([16.14, -3.14], %)',
+      expectFinal: 'tangentialArcTo([xAbs001, -3.14], %)',
+      ang: -45,
+      steps: 6,
+    })
+    console.log('tangentialArcTo2')
+    await clickUnconstrained({
+      hoverPos: { x: tangentialArcTo.x - 10, y: tangentialArcTo.y + 20 },
+      constraintType: 'yAbsolute',
+      expectBeforeUnconstrained: 'tangentialArcTo([xAbs001, -3.14], %)',
+      expectAfterUnconstrained: 'tangentialArcTo([xAbs001, yAbs001], %)',
+      expectFinal: 'tangentialArcTo([xAbs001, -3.14], %)',
+      ang: -135,
+      steps: 10,
+    })
+  })
 })

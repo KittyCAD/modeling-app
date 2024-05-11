@@ -18,7 +18,9 @@ import {
   SourceRange,
 } from './wasm'
 import {
+  isNodeSafeToReplacePath,
   findAllPreviousVariables,
+  findAllPreviousVariablesPath,
   getNodeFromPath,
   getNodePathFromSourceRange,
   isNodeSafeToReplace,
@@ -622,6 +624,34 @@ export function giveSketchFnCallTag(
   }
 }
 
+export function moveValueIntoNewVariablePath(
+  ast: Program,
+  programMemory: ProgramMemory,
+  pathToNode: PathToNode,
+  variableName: string
+): {
+  modifiedAst: Program
+  pathToReplacedNode?: PathToNode
+} {
+  const { isSafe, value, replacer } = isNodeSafeToReplacePath(ast, pathToNode)
+  if (!isSafe || value.type === 'Identifier') return { modifiedAst: ast }
+
+  const { insertIndex } = findAllPreviousVariablesPath(
+    ast,
+    programMemory,
+    pathToNode
+  )
+  let _node = JSON.parse(JSON.stringify(ast))
+  const boop = replacer(_node, variableName)
+  _node = boop.modifiedAst
+  _node.body.splice(
+    insertIndex,
+    0,
+    createVariableDeclaration(variableName, value)
+  )
+  return { modifiedAst: _node, pathToReplacedNode: boop.pathToReplaced }
+}
+
 export function moveValueIntoNewVariable(
   ast: Program,
   programMemory: ProgramMemory,
@@ -629,6 +659,7 @@ export function moveValueIntoNewVariable(
   variableName: string
 ): {
   modifiedAst: Program
+  pathToReplacedNode?: PathToNode
 } {
   const { isSafe, value, replacer } = isNodeSafeToReplace(ast, sourceRange)
   if (!isSafe || value.type === 'Identifier') return { modifiedAst: ast }
@@ -639,13 +670,14 @@ export function moveValueIntoNewVariable(
     sourceRange
   )
   let _node = JSON.parse(JSON.stringify(ast))
-  _node = replacer(_node, variableName).modifiedAst
+  const { modifiedAst, pathToReplaced } = replacer(_node, variableName)
+  _node = modifiedAst
   _node.body.splice(
     insertIndex,
     0,
     createVariableDeclaration(variableName, value)
   )
-  return { modifiedAst: _node }
+  return { modifiedAst: _node, pathToReplacedNode: pathToReplaced }
 }
 
 /**

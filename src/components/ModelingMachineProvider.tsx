@@ -18,6 +18,7 @@ import {
   engineCommandManager,
   codeManager,
   editorManager,
+  sceneEntitiesManager,
 } from 'lib/singletons'
 import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
 import {
@@ -45,8 +46,18 @@ import {
   getSketchOrientationDetails,
   getSketchQuaternion,
 } from 'clientSideScene/sceneEntities'
-import { sketchOnExtrudedFace, startSketchOnDefault } from 'lang/modifyAst'
-import { Program, VariableDeclaration, coreDump } from 'lang/wasm'
+import {
+  moveValueIntoNewVariablePath,
+  sketchOnExtrudedFace,
+  startSketchOnDefault,
+} from 'lang/modifyAst'
+import {
+  Program,
+  VariableDeclaration,
+  coreDump,
+  parse,
+  recast,
+} from 'lang/wasm'
 import {
   getNodeFromPath,
   getNodePathFromSourceRange,
@@ -61,6 +72,7 @@ import { CoreDumpManager } from 'lib/coredump'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
+import { getVarNameModal } from 'hooks/useToolbarGuards'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -197,6 +209,16 @@ export const ModelingMachineProvider = ({
             return {}
           },
         }),
+        'Set sketchDetails': assign(({ sketchDetails }, event) =>
+          sketchDetails
+            ? {
+                sketchDetails: {
+                  ...sketchDetails,
+                  sketchPathToNode: event.data,
+                },
+              }
+            : {}
+        ),
         'Set selection': assign(({ selectionRanges }, event) => {
           if (event.type !== 'Set selection') return {} // this was needed for ts after adding 'Set selection' action to on done modal events
           const setSelections = event.data
@@ -570,6 +592,27 @@ export const ModelingMachineProvider = ({
               pathToNodeMap
             ),
           }
+        },
+        'Get convert to variable info': async ({ sketchDetails }, { data }) => {
+          if (!sketchDetails) return []
+          const { variableName } = await getVarNameModal({
+            valueName: data.variableName || 'var',
+          })
+          const { modifiedAst: _modifiedAst, pathToReplacedNode } =
+            moveValueIntoNewVariablePath(
+              parse(recast(kclManager.ast)),
+              kclManager.programMemory,
+              data.pathToNode,
+              variableName
+            )
+          await sceneEntitiesManager.updateAstAndRejigSketch(
+            pathToReplacedNode || [],
+            parse(recast(_modifiedAst)),
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin
+          )
+          return pathToReplacedNode || sketchDetails.sketchPathToNode
         },
       },
       devTools: true,

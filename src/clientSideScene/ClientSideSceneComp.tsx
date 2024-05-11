@@ -453,7 +453,7 @@ const ConstraintSymbol = ({
   constrainInfo: ConstrainInfo
   verticalPosition: 'top' | 'bottom'
 }) => {
-  const { context } = useModelingContext()
+  const { context, send } = useModelingContext()
   const varNameMap: {
     [key in ConstrainInfo['type']]: {
       varName: string
@@ -531,12 +531,14 @@ const ConstraintSymbol = ({
     [ast, pathToNode]
   )
   const range: SourceRange = node ? [node.start, node.end] : [0, 0]
-  const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
-    useConvertToVariable(range)
 
   return (
     <div className="relative group">
       <button
+        data-testid="constraint-symbol"
+        data-is-implicit-constraint={implicitDesc ? 'true' : 'false'}
+        data-constraint-type={_type}
+        data-is-constrained={isConstrained ? 'true' : 'false'}
         className={`${
           implicitDesc
             ? 'bg-[#1C1C1C]/90 border-transparent border-0 rounded'
@@ -553,12 +555,18 @@ const ConstraintSymbol = ({
         // disabled={isConstrained || !convertToVarEnabled}
         // disabled={implicitDesc} TODO why does this change styles that are hard to override?
         onClick={async () => {
-          if (!isConstrained && convertToVarEnabled) {
-            await handleConvertToVarClick(varName)
+          if (!isConstrained) {
+            send({
+              type: 'Convert to variable',
+              data: {
+                pathToNode,
+                variableName: varName,
+              },
+            })
           } else if (isConstrained) {
             try {
               const shallowPath = getNodeFromPath<CallExpression>(
-                parse(recast(ast)),
+                parse(recast(kclManager.ast)),
                 pathToNode,
                 'CallExpression',
                 true
@@ -603,7 +611,10 @@ const ConstraintSymbol = ({
           }, 0)`,
         }}
       >
-        <div className="bg-gray-800 p-2 px-3 rounded-sm">
+        <div
+          className="bg-gray-800 p-2 px-3 rounded-sm"
+          data-testid="constraint-symbol-popover"
+        >
           {implicitDesc ? (
             <div className="min-w-48">
               <pre className="inline-block">

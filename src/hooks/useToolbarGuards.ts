@@ -7,10 +7,10 @@ import { moveValueIntoNewVariable } from 'lang/modifyAst'
 import { isNodeSafeToReplace } from 'lang/queryAst'
 import { useEffect, useState } from 'react'
 import { useModelingContext } from './useModelingContext'
-import { SourceRange, parse, recast } from 'lang/wasm'
+import { PathToNode, SourceRange, parse, recast } from 'lang/wasm'
 import { useKclContext } from 'lang/KclProvider'
 
-const getModalInfo = createSetVarNameModal(SetVarNameModal)
+export const getVarNameModal = createSetVarNameModal(SetVarNameModal)
 
 export function useConvertToVariable(range?: SourceRange) {
   const { ast } = useKclContext()
@@ -33,20 +33,24 @@ export function useConvertToVariable(range?: SourceRange) {
     setEnabled(canReplace && isOnlyOneSelection)
   }, [context.selectionRanges])
 
-  const handleClick = async (valueName?: string) => {
+  const handleClick = async (
+    valueName?: string
+  ): Promise<PathToNode | undefined> => {
     try {
-      const { variableName } = await getModalInfo({
+      const { variableName } = await getVarNameModal({
         valueName: valueName || 'var',
       })
 
-      const { modifiedAst: _modifiedAst } = moveValueIntoNewVariable(
-        ast,
-        kclManager.programMemory,
-        range || context.selectionRanges.codeBasedSelections[0].range,
-        variableName
-      )
+      const { modifiedAst: _modifiedAst, pathToReplacedNode } =
+        moveValueIntoNewVariable(
+          ast,
+          kclManager.programMemory,
+          range || context.selectionRanges.codeBasedSelections[0].range,
+          variableName
+        )
 
-      kclManager.updateAst(_modifiedAst, true)
+      await kclManager.updateAst(_modifiedAst, true)
+      return pathToReplacedNode
     } catch (e) {
       console.log('error', e)
     }

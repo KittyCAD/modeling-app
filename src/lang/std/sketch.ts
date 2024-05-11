@@ -162,7 +162,7 @@ const commonConstraintInfoHelper = (
       : ['properties', 'ObjectExpression'],
   ]
   const pathToFirstArg: PathToNode = isArr
-    ? [...pathToArrayExpression, [1, 'index']]
+    ? [...pathToArrayExpression, [0, 'index']]
     : [
         ...pathToArrayExpression,
         [
@@ -252,7 +252,7 @@ const horzVertConstraintInfoHelper = (
       stblidFnName,
       undefined,
       [callee.start, callee.end],
-      pathToFirstArg
+      pathToCallee
     ),
     constrainInfo(
       inputConstrainTypes[1],
@@ -261,7 +261,7 @@ const horzVertConstraintInfoHelper = (
       stblidFnName,
       abbreviatedInput,
       [firstArg.start, firstArg.end],
-      pathToCallee
+      pathToFirstArg
     ),
   ]
 }

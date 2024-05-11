@@ -399,7 +399,7 @@ export class LanguageServerPlugin implements PluginValue {
         case 'kcl/astUpdated':
           // The server has updated the AST, we should update elsewhere.
           let updatedAst = notification.params as Program
-          console.log('[lsp]: Updated AST', updatedAst)
+          // console.log('[lsp]: Updated AST', updatedAst)
 
           // Update the folding ranges, since the AST has changed.
           // This is a hack since codemirror does not support async foldService.
