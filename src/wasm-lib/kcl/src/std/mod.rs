@@ -44,7 +44,6 @@ lazy_static! {
         Box::new(LegAngX),
         Box::new(LegAngY),
         Box::new(crate::std::extrude::Extrude),
-        Box::new(crate::std::extrude::GetExtrudeWallTransform),
         Box::new(crate::std::segment::SegEndX),
         Box::new(crate::std::segment::SegEndY),
         Box::new(crate::std::segment::LastSegX),
@@ -905,54 +904,6 @@ impl Args {
         };
 
         Ok((number, sketch_set))
-    }
-
-    fn get_path_name_extrude_group(&self) -> Result<(String, Box<ExtrudeGroup>), KclError> {
-        // Iterate over our args, the first argument should be a UserVal with a string value.
-        // The second argument should be a ExtrudeGroup.
-        let first_value = self
-            .args
-            .first()
-            .ok_or_else(|| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Expected a string as the first argument, found `{:?}`", self.args),
-                    source_ranges: vec![self.source_range],
-                })
-            })?
-            .get_json_value()?;
-
-        let path_name = if let serde_json::Value::String(s) = first_value {
-            s.to_string()
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!("Expected a string as the first argument, found `{:?}`", self.args),
-                source_ranges: vec![self.source_range],
-            }));
-        };
-
-        let second_value = self.args.get(1).ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a ExtrudeGroup as the second argument, found `{:?}`",
-                    self.args
-                ),
-                source_ranges: vec![self.source_range],
-            })
-        })?;
-
-        let extrude_group = if let MemoryItem::ExtrudeGroup(sg) = second_value {
-            sg.clone()
-        } else {
-            return Err(KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a ExtrudeGroup as the second argument, found `{:?}`",
-                    self.args
-                ),
-                source_ranges: vec![self.source_range],
-            }));
-        };
-
-        Ok((path_name, extrude_group))
     }
 }
 
