@@ -1962,7 +1962,7 @@ test('Extrude from command bar selects extrude line after', async ({
   )
 })
 
-test.describe('testing segment overlays', () => {
+test.describe('Testing segment overlays', () => {
   const _clickConstrained =
     (page: Page) =>
     async ({
@@ -2078,7 +2078,7 @@ test.describe('testing segment overlays', () => {
       await constrainedLocator.click()
       await expect(page.locator('.cm-content')).toContainText(expectFinal)
     }
-  test('Hovering over segements, [line, angledLine, lineTo, xLineTo, yLineTo, xLine]', async ({
+  test('Hover over a segment should show its overlay, hovering over the input overlays should show its popover, clicking the input overlay should constrain/unconstrain it:\nfor the following segments [line, angledLine, lineTo, xLineTo, yLineTo, xLine]', async ({
     page,
   }) => {
     await page.addInitScript(async () => {
@@ -2215,7 +2215,7 @@ test.describe('testing segment overlays', () => {
       steps: 6,
     })
   })
-  test('Hovering over segements, [yLine, angledLineOfXLength, angledLineOfYLength]', async ({
+  test('Hover over a segment should show its overlay, hovering over the input overlays should show its popover, clicking the input overlay should constrain/unconstrain it:\nfor the following segments [yLine, angledLineOfXLength, angledLineOfYLength]', async ({
     page,
   }) => {
     await page.addInitScript(async () => {
@@ -2321,7 +2321,7 @@ test.describe('testing segment overlays', () => {
       ang: -45,
     })
   })
-  test('Hovering over segements, [angledLineToX, angledLineToY, angledLineThatIntersects]', async ({
+  test('Hover over a segment should show its overlay, hovering over the input overlays should show its popover, clicking the input overlay should constrain/unconstrain it:\nfor the following segments [angledLineToX, angledLineToY, angledLineThatIntersects]', async ({
     page,
   }) => {
     await page.addInitScript(async () => {
@@ -2458,7 +2458,7 @@ test.describe('testing segment overlays', () => {
       ang: -25,
     })
   })
-  test('Hovering over segements, [tangentialArcTo]', async ({ page }) => {
+  test('Hover over a segment should show its overlay, hovering over the input overlays should show its popover, clicking the input overlay should constrain/unconstrain it:\nfor the following segments [tangentialArcTo]', async ({ page }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
