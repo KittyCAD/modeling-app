@@ -2021,6 +2021,15 @@ test.describe('Testing segment overlays', () => {
         await expect(page.locator('.cm-content')).toContainText(expectFinal)
       }
 
+    /**
+     * Clicks on an unconstrained element
+     * @param {Page} page - The page to perform the action on
+     * @param {Object} options - The options for the action
+     * @param {Object} options.hoverPos - The position to hover over
+     * @param {Object} options.constraintType - The type of constraint
+     * @param {number} options.ang - The angle
+     * @param {number} options.steps - The number of steps to perform
+     */
     const _clickUnconstrained =
       (page: Page) =>
       async ({
@@ -2190,6 +2199,7 @@ test.describe('Testing segment overlays', () => {
         expectBeforeUnconstrained: 'xLineTo(9 - 5, %)',
         expectAfterUnconstrained: 'xLineTo(4, %)',
         expectFinal: 'xLineTo(xAbs002, %)',
+        ang: -45,
       })
 
       const yLineTo = await u.getBoundingBox(`[data-overlay-index="4"]`)
@@ -2205,7 +2215,7 @@ test.describe('Testing segment overlays', () => {
       })
 
       const xLine = await u.getBoundingBox(`[data-overlay-index="5"]`)
-      console.log('yline1')
+      console.log('xline')
       await clickUnconstrained({
         hoverPos: { x: xLine.x - 30, y: xLine.y },
         constraintType: 'xRelative',
@@ -2213,7 +2223,7 @@ test.describe('Testing segment overlays', () => {
         expectAfterUnconstrained: 'xLine(xRel002, %)',
         expectFinal: 'xLine(26.04, %)',
         ang: 135,
-        steps: 6,
+        steps: 7,
       })
     })
     test('for segments [yLine, angledLineOfXLength, angledLineOfYLength]', async ({
@@ -2399,6 +2409,7 @@ test.describe('Testing segment overlays', () => {
         expectAfterUnconstrained:
           'angledLineToY({ angle: angle002, to: 9.14 + 0 }, %)',
         expectFinal: 'angledLineToY({ angle: 89, to: 9.14 + 0 }, %)',
+        steps: 7,
       })
       console.log('angledLineToY2')
       await clickConstrained({
