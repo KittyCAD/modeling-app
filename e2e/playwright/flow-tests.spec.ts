@@ -863,7 +863,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   const xAxisClick = () =>
     page.mouse.click(700, 253).then(() => page.waitForTimeout(100))
   const emptySpaceClick = () =>
-    page.mouse.click(728, 343).then(() => page.waitForTimeout(100))
+    page.mouse.click(700, 343).then(() => page.waitForTimeout(100))
   const topHorzSegmentClick = () =>
     page.mouse.click(709, 290).then(() => page.waitForTimeout(100))
   const bottomHorzSegmentClick = () =>
