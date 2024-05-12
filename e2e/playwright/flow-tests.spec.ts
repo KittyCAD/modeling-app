@@ -2286,7 +2286,7 @@ test.describe('Testing segment overlays', () => {
       })
       console.log('angledLineOfXLength2')
       await clickUnconstrained({
-        hoverPos: { x: angledLineOfXLength.x + 20, y: angledLineOfXLength.y },
+        hoverPos: { x: angledLineOfXLength.x + 25, y: angledLineOfXLength.y },
         constraintType: 'xRelative',
         expectBeforeUnconstrained:
           'angledLineOfXLength({ angle: angle001, length: 23.14 }, %)',
@@ -2294,8 +2294,7 @@ test.describe('Testing segment overlays', () => {
           'angledLineOfXLength({ angle: angle001, length: xRel001 }, %)',
         expectFinal:
           'angledLineOfXLength({ angle: angle001, length: 23.14 }, %)',
-        ang: -45,
-        steps: 6,
+        steps: 7,
       })
 
       const angledLineOfYLength = await u.getBoundingBox(
@@ -2310,7 +2309,8 @@ test.describe('Testing segment overlays', () => {
         expectAfterUnconstrained:
           'angledLineOfYLength({ angle: angle002, length: 19 + 0 }, %)',
         expectFinal: 'angledLineOfYLength({ angle: -91, length: 19 + 0 }, %)',
-        ang: -45,
+        ang: 135,
+        steps: 6,
       })
       console.log('angledLineOfYLength2')
       await clickConstrained({
@@ -2322,6 +2322,7 @@ test.describe('Testing segment overlays', () => {
           'angledLineOfYLength({ angle: -91, length: 19 }, %)',
         expectFinal: 'angledLineOfYLength({ angle: -91, length: yRel002 }, %)',
         ang: -45,
+        steps: 7,
       })
     })
     test('for segments [angledLineToX, angledLineToY, angledLineThatIntersects]', async ({
