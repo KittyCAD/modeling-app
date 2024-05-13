@@ -5,7 +5,7 @@ use winnow::{
     dispatch,
     error::{ErrMode, StrContext, StrContextValue},
     prelude::*,
-    token::{any, one_of},
+    token::{any, one_of, take_till},
 };
 
 use crate::{
@@ -39,7 +39,13 @@ fn expected(what: &'static str) -> StrContext {
 }
 
 fn program(i: TokenSlice) -> PResult<Program> {
+    let shebang = opt(shebang).parse_next(i)?;
     let mut out = function_body.parse_next(i)?;
+
+    // Add the shebang to the non-code meta.
+    if let Some(shebang) = shebang {
+        out.non_code_meta.start.insert(0, shebang);
+    }
     // Match original parser behaviour, for now.
     // Once this is merged and stable, consider changing this as I think it's more accurate
     // without the -1.
@@ -386,6 +392,39 @@ fn whitespace(i: TokenSlice) -> PResult<Vec<Token>> {
     .parse_next(i)
 }
 
+/// A shebang is a line at the start of a file that starts with `#!`.
+/// If the shebang is present it takes up the whole line.
+fn shebang(i: TokenSlice) -> PResult<NonCodeNode> {
+    // Parse the hash and the bang.
+    hash.parse_next(i)?;
+    bang.parse_next(i)?;
+    // Get the rest of the line.
+    // Parse everything until the next newline.
+    let tokens = take_till(0.., |token: Token| token.value.contains('\n')).parse_next(i)?;
+    let value = tokens.iter().map(|t| t.value.as_str()).collect::<String>();
+
+    if tokens.is_empty() {
+        return Err(ErrMode::Cut(
+            KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![],
+                message: "expected a shebang value after #!".to_owned(),
+            })
+            .into(),
+        ));
+    }
+
+    // Strip all the whitespace after the shebang.
+    opt(whitespace).parse_next(i)?;
+
+    Ok(NonCodeNode {
+        start: 0,
+        end: tokens.last().unwrap().end,
+        value: NonCodeValue::Shebang {
+            value: format!("#!{}", value),
+        },
+    })
+}
+
 /// Parse the = operator.
 fn equals(i: TokenSlice) -> PResult<Token> {
     one_of((TokenType::Operator, "="))
@@ -601,6 +640,7 @@ fn noncode_just_after_code(i: TokenSlice) -> PResult<NonCodeNode> {
                 // There's an empty line between the body item and the comment,
                 // This means the comment is a NewLineBlockComment!
                 let value = match nc.value {
+                    NonCodeValue::Shebang { value } => NonCodeValue::Shebang { value },
                     // Change block comments to inline, as discussed above
                     NonCodeValue::BlockComment { value, style } => NonCodeValue::NewLineBlockComment { value, style },
                     // Other variants don't need to change.
@@ -620,6 +660,7 @@ fn noncode_just_after_code(i: TokenSlice) -> PResult<NonCodeNode> {
                 // There's no newline between the body item and comment,
                 // so if this is a comment, it must be inline with code.
                 let value = match nc.value {
+                    NonCodeValue::Shebang { value } => NonCodeValue::Shebang { value },
                     // Change block comments to inline, as discussed above
                     NonCodeValue::BlockComment { value, style } => NonCodeValue::InlineComment { value, style },
                     // Other variants don't need to change.
@@ -1201,6 +1242,16 @@ fn close_brace(i: TokenSlice) -> PResult<Token> {
 
 fn comma(i: TokenSlice) -> PResult<()> {
     TokenType::Comma.parse_from(i)?;
+    Ok(())
+}
+
+fn hash(i: TokenSlice) -> PResult<()> {
+    TokenType::Hash.parse_from(i)?;
+    Ok(())
+}
+
+fn bang(i: TokenSlice) -> PResult<()> {
+    TokenType::Bang.parse_from(i)?;
     Ok(())
 }
 
@@ -2331,7 +2382,7 @@ const secondExtrude = startSketchOn('XY')
         let err = parser.ast().unwrap_err();
         assert_eq!(
             err.to_string(),
-            r#"lexical: KclErrorDetails { source_ranges: [SourceRange([1, 2])], message: "found unknown token '!'" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([0, 1])], message: "Unexpected token" }"#
         );
     }
 
@@ -2398,7 +2449,7 @@ z(-[["#,
         assert!(result.is_err());
         assert_eq!(
             result.err().unwrap().to_string(),
-            r#"lexical: KclErrorDetails { source_ranges: [SourceRange([6, 7])], message: "found unknown token '#'" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([3, 4])], message: "Unexpected token" }"#
         );
     }
 
@@ -2410,7 +2461,7 @@ z(-[["#,
         assert!(result.is_err());
         assert_eq!(
             result.err().unwrap().to_string(),
-            r#"lexical: KclErrorDetails { source_ranges: [SourceRange([25, 26]), SourceRange([26, 27])], message: "found unknown tokens [#, #]" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([2, 3])], message: "Unexpected token" }"#
         );
     }
 

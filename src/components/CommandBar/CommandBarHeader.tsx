@@ -142,7 +142,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                             name="make-variable"
                             className="w-4 h-4"
                           />
-                          <Tooltip position="blockEnd">
+                          <Tooltip position="bottom">
                             New variable:{' '}
                             {
                               (
@@ -175,7 +175,7 @@ function ReviewingButton() {
       type="submit"
       form="review-form"
       className="w-fit !p-0 rounded-sm border !border-primary hover:shadow"
-      icon={{
+      iconStart={{
         icon: 'checkmark',
         bgClassName: 'p-1 rounded-sm !bg-primary hover:brightness-110',
         iconClassName: '!text-chalkboard-10',
@@ -193,7 +193,7 @@ function GatheringArgsButton() {
       type="submit"
       form="arg-form"
       className="w-fit !p-0 rounded-sm border !border-primary hover:shadow"
-      icon={{
+      iconStart={{
         icon: 'arrowRight',
         bgClassName: 'p-1 rounded-sm !bg-primary hover:brightness-110',
         iconClassName: '!text-chalkboard-10',

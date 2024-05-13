@@ -157,6 +157,13 @@ export function createSettings() {
           </div>
         ),
       }),
+      enableSSAO: new Setting<boolean>({
+        defaultValue: true,
+        description:
+          'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled',
+        validate: (v) => typeof v === 'boolean',
+        hideOnPlatform: 'both', //for now
+      }),
       onboardingStatus: new Setting<string>({
         defaultValue: '',
         validate: (v) => typeof v === 'string',
@@ -213,7 +220,7 @@ export function createSettings() {
                 data-testid="project-directory-button"
               >
                 <CustomIcon name="folder" className="w-5 h-5" />
-                <Tooltip position="inlineStart">Choose a folder</Tooltip>
+                <Tooltip position="top-right">Choose a folder</Tooltip>
               </button>
             </div>
           )
@@ -306,6 +313,18 @@ export function createSettings() {
             </ul>
           </>
         ),
+      }),
+      /**
+       * Whether to highlight edges of 3D objects
+       */
+      highlightEdges: new Setting<boolean>({
+        defaultValue: true,
+        description: 'Whether to highlight edges of 3D objects',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+        hideOnLevel: 'project',
       }),
       /**
        * Whether to show the debug panel, which lets you see

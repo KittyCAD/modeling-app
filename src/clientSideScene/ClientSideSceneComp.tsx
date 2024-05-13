@@ -3,7 +3,6 @@ import { useModelingContext } from 'hooks/useModelingContext'
 
 import { cameraMouseDragGuards } from 'lib/cameraControls'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import { useStore } from 'useStore'
 import { ARROWHEAD, DEBUG_SHOW_BOTH_SCENES } from './sceneInfra'
 import { ReactCameraProperties } from './CameraControls'
 import { throttle } from 'lib/utils'
@@ -47,10 +46,6 @@ export const ClientSideScene = ({
   const canvasRef = useRef<HTMLDivElement>(null)
   const { state, send, context } = useModelingContext()
   const { hideClient, hideServer } = useShouldHideScene()
-  const { setHighlightRange } = useStore((s) => ({
-    setHighlightRange: s.setHighlightRange,
-    highlightRange: s.highlightRange,
-  }))
 
   // Listen for changes to the camera controls setting
   // and update the client-side scene's controls accordingly.
@@ -69,7 +64,6 @@ export const ClientSideScene = ({
     const canvas = canvasRef.current
     canvas.appendChild(sceneInfra.renderer.domElement)
     sceneInfra.animate()
-    sceneInfra.setHighlightCallback(setHighlightRange)
     canvas.addEventListener('mousemove', sceneInfra.onMouseMove, false)
     canvas.addEventListener('mousedown', sceneInfra.onMouseDown, false)
     canvas.addEventListener('mouseup', sceneInfra.onMouseUp, false)
@@ -96,7 +90,8 @@ export const ClientSideScene = ({
       cursor = 'grabbing'
     } else if (
       state.matches('Sketch.Line tool') ||
-      state.matches('Sketch.Tangential arc to')
+      state.matches('Sketch.Tangential arc to') ||
+      state.matches('Sketch.Rectangle tool')
     ) {
       cursor = 'crosshair'
     } else {
@@ -110,9 +105,9 @@ export const ClientSideScene = ({
       style={{ cursor: cursor }}
       className={`absolute inset-0 h-full w-full transition-all duration-300 ${
         hideClient ? 'opacity-0' : 'opacity-100'
-      } ${hideServer ? 'bg-black' : ''} ${
+      } ${hideServer ? 'bg-chalkboard-10 dark:bg-chalkboard-100' : ''} ${
         !hideClient && !hideServer && state.matches('Sketch')
-          ? 'bg-black/80'
+          ? 'bg-chalkboard-10/80 dark:bg-chalkboard-100/80'
           : ''
       }`}
     ></div>

@@ -1,7 +1,9 @@
 import { KCLError } from './errors'
 import { initPromise, parse } from './wasm'
 
-beforeAll(() => initPromise)
+beforeAll(async () => {
+  await initPromise
+})
 
 describe('testing AST', () => {
   test('5 + 6', () => {

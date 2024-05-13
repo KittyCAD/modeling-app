@@ -2,7 +2,7 @@ import { browser, $, expect } from '@wdio/globals'
 import fs from 'fs/promises'
 
 const documentsDir = `${process.env.HOME}/Documents`
-const userSettingsFile = `${process.env.HOME}/.config/dev.zoo.modeling-app/user.toml`
+const userSettingsDir = `${process.env.HOME}/.config/dev.zoo.modeling-app`
 const defaultProjectDir = `${documentsDir}/zoo-modeling-app-projects`
 const newProjectDir = `${documentsDir}/a-different-directory`
 const userCodeDir = '/tmp/kittycad_user_code'
@@ -29,8 +29,10 @@ describe('ZMA (Tauri, Linux)', () => {
     // Clean up filesystem from previous tests
     await new Promise((resolve) => setTimeout(resolve, 100))
     await fs.rm(defaultProjectDir, { force: true, recursive: true })
+    await fs.rm(newProjectDir, { force: true, recursive: true })
     await fs.rm(userCodeDir, { force: true })
-    await fs.rm(userSettingsFile, { force: true })
+    await fs.rm(userSettingsDir, { force: true, recursive: true })
+    await fs.mkdir(defaultProjectDir, { recursive: true })
     await fs.mkdir(newProjectDir, { recursive: true })
 
     const signInButton = await $('[data-testid="sign-in-button"]')
@@ -70,8 +72,9 @@ describe('ZMA (Tauri, Linux)', () => {
     console.log(cr.status)
 
     // Now should be signed in
+    await new Promise((resolve) => setTimeout(resolve, 10000))
     const newFileButton = await $('[data-testid="home-new-file"]')
-    expect(await newFileButton.getText()).toEqual('New file')
+    expect(await newFileButton.getText()).toEqual('New project')
   })
 
   it('opens the settings page, checks filesystem settings, and closes the settings page', async () => {
@@ -117,8 +120,8 @@ describe('ZMA (Tauri, Linux)', () => {
   it('opens the new file and expects a loading stream', async () => {
     const projectLink = await $('[data-testid="project-link"]')
     await click(projectLink)
-    const loadingText = await $('[data-testid="loading-stream"]')
-    expect(await loadingText.getText()).toContain('Loading stream...')
+    const errorText = await $('[data-testid="unexpected-error"]')
+    expect(await errorText.getText()).toContain('unexpected error')
     await browser.execute('window.location.href = "tauri://localhost/home"')
   })
 

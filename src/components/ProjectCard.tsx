@@ -1,5 +1,4 @@
 import { FormEvent, useEffect, useRef, useState } from 'react'
-import { type ProjectWithEntryPointMetadata } from 'lib/types'
 import { paths } from 'lib/paths'
 import { Link } from 'react-router-dom'
 import { ActionButton } from './ActionButton'
@@ -9,13 +8,13 @@ import {
   faTrashAlt,
   faX,
 } from '@fortawesome/free-solid-svg-icons'
-import { getPartsCount, readProject } from '../lib/tauriFS'
 import { FILE_EXT, PROJECT_IMAGE_NAME } from 'lib/constants'
 import { Dialog } from '@headlessui/react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import Tooltip from './Tooltip'
 import { join } from '@tauri-apps/api/path'
 import { exists, readFile } from '@tauri-apps/plugin-fs'
+import { Project } from 'wasm-lib/kcl/bindings/Project'
 
 function ProjectCard({
   project,
@@ -23,17 +22,17 @@ function ProjectCard({
   handleDeleteProject,
   ...props
 }: {
-  project: ProjectWithEntryPointMetadata
+  project: Project
   handleRenameProject: (
     e: FormEvent<HTMLFormElement>,
-    f: ProjectWithEntryPointMetadata
+    f: Project
   ) => Promise<void>
-  handleDeleteProject: (f: ProjectWithEntryPointMetadata) => Promise<void>
+  handleDeleteProject: (f: Project) => Promise<void>
 }) {
   useHotkeys('esc', () => setIsEditing(false))
   const [isEditing, setIsEditing] = useState(false)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
-  const [numberOfParts, setNumberOfParts] = useState(1)
+  const [numberOfFiles, setNumberOfFiles] = useState(1)
   const [numberOfFolders, setNumberOfFolders] = useState(0)
   const [imageUrl, setImageUrl] = useState('')
 
@@ -44,7 +43,8 @@ function ProjectCard({
     void handleRenameProject(e, project).then(() => setIsEditing(false))
   }
 
-  function getDisplayedTime(date: Date) {
+  function getDisplayedTime(dateStr: string) {
+    const date = new Date(dateStr)
     const startOfToday = new Date()
     startOfToday.setHours(0, 0, 0, 0)
     return date.getTime() < startOfToday.getTime()
@@ -53,12 +53,9 @@ function ProjectCard({
   }
 
   useEffect(() => {
-    async function getNumberOfParts() {
-      const { kclFileCount, kclDirCount } = getPartsCount(
-        await readProject(project.path)
-      )
-      setNumberOfParts(kclFileCount)
-      setNumberOfFolders(kclDirCount)
+    async function getNumberOfFiles() {
+      setNumberOfFiles(project.kcl_file_count)
+      setNumberOfFolders(project.directory_count)
     }
 
     async function setupImageUrl() {
@@ -71,9 +68,9 @@ function ProjectCard({
       }
     }
 
-    void getNumberOfParts()
+    void getNumberOfFiles()
     void setupImageUrl()
-  }, [project.path])
+  }, [project.kcl_file_count, project.directory_count])
 
   useEffect(() => {
     if (inputRef.current) {
@@ -112,7 +109,7 @@ function ProjectCard({
             <ActionButton
               Element="button"
               type="submit"
-              icon={{
+              iconStart={{
                 icon: faCheck,
                 size: 'sm',
                 className: 'p-1',
@@ -126,7 +123,7 @@ function ProjectCard({
             </ActionButton>
             <ActionButton
               Element="button"
-              icon={{
+              iconStart={{
                 icon: faX,
                 size: 'sm',
                 iconClassName: 'dark:!text-chalkboard-20',
@@ -152,8 +149,8 @@ function ProjectCard({
             >
               {project.name?.replace(FILE_EXT, '')}
             </Link>
-            <span className="px-2 text-chalkboard-60 text-xs">
-              {numberOfParts} part{numberOfParts === 1 ? '' : 's'}{' '}
+            <span className="text-chalkboard-60 text-xs">
+              {numberOfFiles} file{numberOfFiles === 1 ? '' : 's'}{' '}
               {numberOfFolders > 0 &&
                 `/ ${numberOfFolders} folder${
                   numberOfFolders === 1 ? '' : 's'
@@ -161,14 +158,14 @@ function ProjectCard({
             </span>
             <span className="px-2 text-chalkboard-60 text-xs">
               Edited{' '}
-              {project.entrypointMetadata.mtime
-                ? getDisplayedTime(project.entrypointMetadata.mtime)
+              {project.metadata && project.metadata?.modified
+                ? getDisplayedTime(project.metadata.modified)
                 : 'never'}
             </span>
             <div className="absolute z-10 bottom-2 right-2 flex gap-1 items-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
               <ActionButton
                 Element="button"
-                icon={{
+                iconStart={{
                   icon: faPenAlt,
                   className: 'p-1',
                   iconClassName: 'dark:!text-chalkboard-20',
@@ -188,7 +185,7 @@ function ProjectCard({
               </ActionButton>
               <ActionButton
                 Element="button"
-                icon={{
+                iconStart={{
                   icon: faTrashAlt,
                   className: 'p-1',
                   size: 'xs',
@@ -234,7 +231,7 @@ function ProjectCard({
                       await handleDeleteProject(project)
                       setIsConfirmingDelete(false)
                     }}
-                    icon={{
+                    iconStart={{
                       icon: faTrashAlt,
                       bgClassName: 'bg-destroy-80',
                       className: 'p-1',

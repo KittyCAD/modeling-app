@@ -2,9 +2,8 @@ import { createMachine, assign } from 'xstate'
 import { Models } from '@kittycad/lib'
 import withBaseURL from '../lib/withBaseURL'
 import { isTauri } from 'lib/isTauri'
-import { invoke } from '@tauri-apps/api/core'
-import { VITE_KC_API_BASE_URL } from 'env'
-import Cookies from 'js-cookie'
+import { VITE_KC_API_BASE_URL, VITE_KC_DEV_TOKEN } from 'env'
+import { getUser as getUserTauri } from 'lib/tauri'
 
 const SKIP_AUTH =
   import.meta.env.VITE_KC_SKIP_AUTH === 'true' && import.meta.env.DEV
@@ -113,14 +112,25 @@ export const authMachine = createMachine<UserContext, Events>(
 )
 
 async function getUser(context: UserContext) {
+  const token =
+    context.token && context.token !== ''
+      ? context.token
+      : getCookie(COOKIE_NAME) ||
+        localStorage?.getItem(TOKEN_PERSIST_KEY) ||
+        VITE_KC_DEV_TOKEN
   const url = withBaseURL('/user')
   const headers: { [key: string]: string } = {
     'Content-Type': 'application/json',
   }
 
-  if (!context.token && isTauri()) throw new Error('No token found')
-  if (context.token) headers['Authorization'] = `Bearer ${context.token}`
-  if (SKIP_AUTH) return LOCAL_USER
+  if (!token && isTauri()) throw new Error('No token found')
+  if (token) headers['Authorization'] = `Bearer ${context.token}`
+
+  if (SKIP_AUTH)
+    return {
+      user: LOCAL_USER,
+      token,
+    }
 
   const userPromise = !isTauri()
     ? fetch(url, {
@@ -130,39 +140,14 @@ async function getUser(context: UserContext) {
       })
         .then((res) => res.json())
         .catch((err) => console.error('error from Browser getUser', err))
-    : invoke<Models['User_type'] | Record<'error_code', unknown>>('get_user', {
-        token: context.token,
-        hostname: VITE_KC_API_BASE_URL,
-      }).catch((err) => console.error('error from Tauri getUser', err))
-
-  const tokenPromise = !isTauri()
-    ? fetch(withBaseURL('/user/api-tokens?limit=1'), {
-        method: 'GET',
-        credentials: 'include',
-        headers,
-      })
-        .then(async (res) => {
-          const result: Models['ApiTokenResultsPage_type'] = await res.json()
-          return result.items[0].token
-        })
-        .catch((err) => console.error('error from Browser getUser', err))
-    : context.token
+    : getUserTauri(context.token, VITE_KC_API_BASE_URL)
 
   const user = await userPromise
-  const token = await tokenPromise
 
   if ('error_code' in user) throw new Error(user.message)
 
-  console.log('context.token "', context.token, '"')
-  console.log('cookie "', getCookie(COOKIE_NAME), '"')
-  console.log(
-    'localStorage.getItem(TOKEN_PERSIST_KEY) "',
-    localStorage?.getItem(TOKEN_PERSIST_KEY),
-    '"'
-  )
-
   return {
-    user,
+    user: user as Models['User_type'],
     token,
   }
 }
@@ -171,8 +156,6 @@ function getCookie(cname: string): string | null {
   if (isTauri()) {
     return null
   }
-
-  console.log('cookies', Cookies.get())
 
   let name = cname + '='
   let decodedCookie = decodeURIComponent(document.cookie)

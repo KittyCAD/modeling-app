@@ -8,7 +8,17 @@ import { makeDefaultPlanes } from 'lang/wasm'
 export function useSetupEngineManager(
   streamRef: React.RefObject<HTMLDivElement>,
   token?: string,
-  theme = Themes.System
+  settings = {
+    pool: null,
+    theme: Themes.System,
+    highlightEdges: true,
+    enableSSAO: true,
+  } as {
+    pool: string | null
+    theme: Themes
+    highlightEdges: boolean
+    enableSSAO: boolean
+  }
 ) {
   const {
     setMediaStream,
@@ -26,6 +36,12 @@ export function useSetupEngineManager(
   const streamHeight = streamRef?.current?.offsetHeight
 
   const hasSetNonZeroDimensions = useRef<boolean>(false)
+
+  if (settings.pool) {
+    // override the pool param (?pool=) to request a specific engine instance
+    // from a particular pool.
+    engineCommandManager.pool = settings.pool
+  }
 
   useLayoutEffect(() => {
     // Load the engine command manager once with the initial width and height,
@@ -46,7 +62,7 @@ export function useSetupEngineManager(
           return kclManager.executeCode(true)
         },
         token,
-        theme,
+        settings,
         makeDefaultPlanes: () => {
           return makeDefaultPlanes(kclManager.engineCommandManager)
         },

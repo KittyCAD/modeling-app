@@ -3,13 +3,13 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useKclContext } from 'lang/KclProvider'
 import { CommandArgument } from 'lib/commandTypes'
 import {
-  ResolvedSelectionType,
   canSubmitSelectionArg,
   getSelectionType,
   getSelectionTypeDisplayText,
 } from 'lib/selections'
+import { kclManager } from 'lib/singletons'
 import { modelingMachine } from 'machines/modelingMachine'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { StateFrom } from 'xstate'
 
@@ -30,13 +30,13 @@ function CommandBarSelectionInput({
   const { commandBarState, commandBarSend } = useCommandsContext()
   const [hasSubmitted, setHasSubmitted] = useState(false)
   const selection = useSelector(arg.machineActor, selectionSelector)
-  const [selectionsByType, setSelectionsByType] = useState<
-    'none' | ResolvedSelectionType[]
-  >(
-    selection.codeBasedSelections[0]?.range[1] === code.length
+  const initSelectionsByType = useCallback(() => {
+    const selectionRangeEnd = selection.codeBasedSelections[0]?.range[1]
+    return !selectionRangeEnd || selectionRangeEnd === code.length
       ? 'none'
       : getSelectionType(selection)
-  )
+  }, [selection, code])
+  const selectionsByType = initSelectionsByType()
   const [canSubmitSelection, setCanSubmitSelection] = useState<boolean>(
     canSubmitSelectionArg(selectionsByType, arg)
   )
@@ -51,17 +51,22 @@ function CommandBarSelectionInput({
     inputRef.current?.focus()
   }, [selection, inputRef])
 
+  // Exit engine's edit mode when this input step is active,
+  // and re-enter it when it's not.
+  // In future the engine's edit mode will go away and this will be handled differently.
   useEffect(() => {
-    setSelectionsByType(
-      selection.codeBasedSelections[0]?.range[1] === code.length
-        ? 'none'
-        : getSelectionType(selection)
-    )
-  }, [selection])
+    kclManager.exitEditMode()
+    return () => kclManager.enterEditMode()
+  }, [])
 
   // Fast-forward through this arg if it's marked as skippable
   // and we have a valid selection already
   useEffect(() => {
+    console.log('selection input effect', {
+      selectionsByType,
+      canSubmitSelection,
+      arg,
+    })
     setCanSubmitSelection(canSubmitSelectionArg(selectionsByType, arg))
     const argValue = commandBarState.context.argumentsToSubmit[arg.name]
     if (canSubmitSelection && arg.skip && argValue === undefined) {

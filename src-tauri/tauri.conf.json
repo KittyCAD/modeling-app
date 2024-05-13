@@ -37,23 +37,42 @@
       }
     },
     "longDescription": "",
-    "macOS": {
-      "entitlements": null,
-      "exceptionDomain": "",
-      "frameworks": [],
-      "providerShortName": null,
-      "signingIdentity": null
-    },
+    "macOS": {},
     "resources": [],
     "shortDescription": "",
     "targets": "all"
   },
   "identifier": "dev.zoo.modeling-app",
   "plugins": {
+    "cli": {
+      "description": "Zoo Modeling App CLI",
+      "args": [
+        {
+          "short": "v",
+          "name": "verbose",
+          "description": "Verbosity level"
+        },
+        {
+          "name": "source",
+          "description": "The file or directory to open",
+          "required": false,
+          "index": 1,
+          "takesValue": true
+        }
+      ],
+      "subcommands": {}
+    },
+    "deep-link": {
+      "domains": [
+        {
+          "host": "app.zoo.dev"
+        }
+      ]
+    },
     "shell": {
       "open": true
     }
   },
   "productName": "Zoo Modeling App",
-  "version": "0.17.3"
+  "version": "0.21.1"
 }

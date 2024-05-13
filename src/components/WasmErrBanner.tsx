@@ -24,7 +24,7 @@ export function WasmErrBanner() {
           <ActionButton
             Element="button"
             onClick={() => setBannerDismissed(true)}
-            icon={{
+            iconStart={{
               icon: 'close',
               className: 'p-1',
               bgClassName:

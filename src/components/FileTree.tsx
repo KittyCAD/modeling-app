@@ -3,7 +3,7 @@ import { paths } from 'lib/paths'
 import { ActionButton } from './ActionButton'
 import Tooltip from './Tooltip'
 import { Dispatch, useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { Dialog, Disclosure } from '@headlessui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronRight, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
@@ -109,7 +109,7 @@ function DeleteConfirmationDialog({
                 send({ type: 'Delete file', data: fileOrDir })
                 setIsOpen(false)
               }}
-              icon={{
+              iconStart={{
                 icon: faTrashAlt,
                 bgClassName: 'bg-destroy-80',
                 iconClassName:
@@ -133,18 +133,13 @@ const FileTreeItem = ({
   project,
   currentFile,
   fileOrDir,
-  closePanel,
+  onDoubleClick,
   level = 0,
 }: {
   project?: IndexLoaderData['project']
   currentFile?: IndexLoaderData['file']
   fileOrDir: FileEntry
-  closePanel: (
-    focusableElement?:
-      | HTMLElement
-      | React.MutableRefObject<HTMLElement | null>
-      | undefined
-  ) => void
+  onDoubleClick?: () => void
   level?: number
 }) => {
   const { send, context } = useFileContext()
@@ -186,7 +181,7 @@ const FileTreeItem = ({
       // Open kcl files
       navigate(`${paths.FILE}/${encodeURIComponent(fileOrDir.path)}`)
     }
-    closePanel()
+    onDoubleClick?.()
   }
 
   return (
@@ -194,8 +189,10 @@ const FileTreeItem = ({
       {fileOrDir.children === undefined ? (
         <li
           className={
-            'group m-0 p-0 border-solid border-0 hover:text-primary hover:bg-primary/5 focus-within:bg-primary/5 ' +
-            (isCurrentFile ? '!bg-primary/10 !text-primary' : '')
+            'group m-0 p-0 border-solid border-0 hover:bg-primary/5 focus-within:bg-primary/5 dark:hover:bg-primary/20 dark:focus-within:bg-primary/20 ' +
+            (isCurrentFile
+              ? '!bg-primary/10 !text-primary dark:!bg-primary/20 dark:!text-inherit'
+              : '')
           }
         >
           {!isRenaming ? (
@@ -227,9 +224,9 @@ const FileTreeItem = ({
               {!isRenaming ? (
                 <Disclosure.Button
                   className={
-                    ' group border-none text-sm rounded-none p-0 m-0 flex items-center justify-start w-full py-0.5 hover:text-primary hover:bg-primary/5' +
+                    ' group border-none text-sm rounded-none p-0 m-0 flex items-center justify-start w-full py-0.5 hover:text-primary hover:bg-primary/5 dark:hover:text-inherit dark:hover:bg-primary/10' +
                     (context.selectedDirectory.path.includes(fileOrDir.path)
-                      ? ' ui-open:text-primary'
+                      ? ' ui-open:bg-primary/10'
                       : '')
                   }
                   style={{ paddingInlineStart: getIndentationCSS(level) }}
@@ -293,7 +290,7 @@ const FileTreeItem = ({
                       fileOrDir={child}
                       project={project}
                       currentFile={currentFile}
-                      closePanel={closePanel}
+                      onDoubleClick={onDoubleClick}
                       level={level + 1}
                       key={level + '-' + child.path}
                     />
@@ -325,20 +322,8 @@ interface FileTreeProps {
   ) => void
 }
 
-export const FileTree = ({
-  className = '',
-  file,
-  closePanel,
-}: FileTreeProps) => {
-  const { send, context } = useFileContext()
-  const docuemntHasFocus = useDocumentHasFocus()
-  useHotkeys('meta + n', createFile)
-  useHotkeys('meta + shift + n', createFolder)
-
-  // Refresh the file tree when the document gets focus
-  useEffect(() => {
-    send({ type: 'Refresh' })
-  }, [docuemntHasFocus])
+export const FileTreeMenu = () => {
+  const { send } = useFileContext()
 
   async function createFile() {
     send({ type: 'Create file', data: { name: '', makeDir: false } })
@@ -348,58 +333,88 @@ export const FileTree = ({
     send({ type: 'Create file', data: { name: '', makeDir: true } })
   }
 
+  useHotkeys('meta + n', createFile)
+  useHotkeys('meta + shift + n', createFolder)
+
+  return (
+    <>
+      <ActionButton
+        Element="button"
+        iconStart={{
+          icon: 'filePlus',
+          iconClassName: '!text-current',
+          bgClassName: 'bg-transparent',
+        }}
+        className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
+        onClick={createFile}
+      >
+        <Tooltip position="bottom-right" delay={750}>
+          Create file
+        </Tooltip>
+      </ActionButton>
+
+      <ActionButton
+        Element="button"
+        iconStart={{
+          icon: 'folderPlus',
+          iconClassName: '!text-current',
+          bgClassName: 'bg-transparent',
+        }}
+        className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
+        onClick={createFolder}
+      >
+        <Tooltip position="bottom-right" delay={750}>
+          Create folder
+        </Tooltip>
+      </ActionButton>
+    </>
+  )
+}
+
+export const FileTree = ({ className = '', closePanel }: FileTreeProps) => {
   return (
     <div className={className}>
       <div className="flex items-center gap-1 px-4 py-1 bg-chalkboard-20/40 dark:bg-chalkboard-80/50 border-b border-b-chalkboard-30 dark:border-b-chalkboard-80">
         <h2 className="flex-1 m-0 p-0 text-sm mono">Files</h2>
-        <ActionButton
-          Element="button"
-          icon={{
-            icon: 'filePlus',
-            iconClassName: '!text-current',
-            bgClassName: 'bg-transparent',
-          }}
-          className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
-          onClick={createFile}
-        >
-          <Tooltip position="inlineStart" delay={750}>
-            Create File
-          </Tooltip>
-        </ActionButton>
+        <FileTreeMenu />
+      </div>
+      <FileTreeInner onDoubleClick={closePanel} />
+    </div>
+  )
+}
 
-        <ActionButton
-          Element="button"
-          icon={{
-            icon: 'folderPlus',
-            iconClassName: '!text-current',
-            bgClassName: 'bg-transparent',
-          }}
-          className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
-          onClick={createFolder}
-        >
-          <Tooltip position="inlineStart" delay={750}>
-            Create Folder
-          </Tooltip>
-        </ActionButton>
-      </div>
-      <div className="overflow-auto max-h-full pb-12">
-        <ul
-          className="m-0 p-0 text-sm"
-          onClickCapture={(e) => {
-            send({ type: 'Set selected directory', data: context.project })
-          }}
-        >
-          {sortProject(context.project.children || []).map((fileOrDir) => (
-            <FileTreeItem
-              project={context.project}
-              currentFile={file}
-              fileOrDir={fileOrDir}
-              closePanel={closePanel}
-              key={fileOrDir.path}
-            />
-          ))}
-        </ul>
-      </div>
+export const FileTreeInner = ({
+  onDoubleClick,
+}: {
+  onDoubleClick?: () => void
+}) => {
+  const loaderData = useRouteLoaderData(paths.FILE) as IndexLoaderData
+  const { send, context } = useFileContext()
+  const documentHasFocus = useDocumentHasFocus()
+
+  // Refresh the file tree when the document gets focus
+  useEffect(() => {
+    send({ type: 'Refresh' })
+  }, [documentHasFocus])
+
+  return (
+    <div className="overflow-auto max-h-full pb-12">
+      <ul
+        className="m-0 p-0 text-sm"
+        onClickCapture={(e) => {
+          send({ type: 'Set selected directory', data: context.project })
+        }}
+      >
+        {sortProject(context.project.children || []).map((fileOrDir) => (
+          <FileTreeItem
+            project={context.project}
+            currentFile={loaderData?.file}
+            fileOrDir={fileOrDir}
+            onDoubleClick={onDoubleClick}
+            key={fileOrDir.path}
+          />
+        ))}
+      </ul>
     </div>
   )
 }

@@ -13,6 +13,7 @@ pub mod executor;
 pub mod fs;
 pub mod lsp;
 pub mod parser;
+pub mod settings;
 pub mod std;
 pub mod thread;
 pub mod token;

@@ -57,6 +57,7 @@ import {
   kclManager,
   sceneInfra,
   codeManager,
+  editorManager,
 } from 'lib/singletons'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 import { executeAst, useStore } from 'useStore'
@@ -73,12 +74,14 @@ import {
   changeSketchArguments,
   updateStartProfileAtArgs,
 } from 'lang/std/sketch'
-import { throttle } from 'lib/utils'
+import { roundOff, throttle } from 'lib/utils'
 import {
   createArrayExpression,
   createCallExpressionStdLib,
   createLiteral,
+  createPipeExpression,
   createPipeSubstitution,
+  findUniqueName,
 } from 'lang/modifyAst'
 import {
   getEventForSegmentSelection,
@@ -90,6 +93,11 @@ import { Models } from '@kittycad/lib'
 import { uuidv4 } from 'lib/utils'
 import { SketchDetails } from 'machines/modelingMachine'
 import { EngineCommandManager } from 'lang/std/engineConnection'
+import {
+  getRectangleCallExpressions,
+  updateRectangleSketch,
+} from 'lib/rectangleTool'
+import { getThemeColorForThreeJs } from 'lib/theme'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -208,8 +216,9 @@ export class SceneEntities {
     const orthoFactor = orthoScale(sceneInfra.camControls.camera)
     const baseXColor = 0x000055
     const baseYColor = 0x550000
-    const xAxisGeometry = new BoxGeometry(100000, 0.3, 0.01)
-    const yAxisGeometry = new BoxGeometry(0.3, 100000, 0.01)
+    const axisPixelWidth = 1.6
+    const xAxisGeometry = new BoxGeometry(100000, axisPixelWidth, 0.01)
+    const yAxisGeometry = new BoxGeometry(axisPixelWidth, 100000, 0.01)
     const xAxisMaterial = new MeshBasicMaterial({
       color: baseXColor,
       depthTest: false,
@@ -340,7 +349,7 @@ export class SceneEntities {
       sceneInfra._baseUnitMultiplier
 
     const segPathToNode = getNodePathFromSourceRange(
-      kclManager.ast,
+      maybeModdedAst,
       sketchGroup.start.__geoMeta.sourceRange
     )
     const _profileStart = profileStart({
@@ -348,6 +357,7 @@ export class SceneEntities {
       id: sketchGroup.start.__geoMeta.id,
       pathToNode: segPathToNode,
       scale: factor,
+      theme: sceneInfra._theme,
     })
     _profileStart.layers.set(SKETCH_LAYER)
     _profileStart.traverse((child) => {
@@ -358,7 +368,7 @@ export class SceneEntities {
 
     sketchGroup.value.forEach((segment, index) => {
       let segPathToNode = getNodePathFromSourceRange(
-        kclManager.ast,
+        maybeModdedAst,
         segment.__geoMeta.sourceRange
       )
       if (
@@ -368,7 +378,7 @@ export class SceneEntities {
         const previousSegment =
           sketchGroup.value[index - 1] || sketchGroup.start
         const previousSegmentPathToNode = getNodePathFromSourceRange(
-          kclManager.ast,
+          maybeModdedAst,
           previousSegment.__geoMeta.sourceRange
         )
         const bodyIndex = previousSegmentPathToNode[1][0]
@@ -384,7 +394,7 @@ export class SceneEntities {
         index >= draftExpressionsIndices.start
       let seg
       const callExpName = getNodeFromPath<CallExpression>(
-        kclManager.ast,
+        maybeModdedAst,
         segPathToNode,
         'CallExpression'
       )?.node?.callee?.name
@@ -398,6 +408,7 @@ export class SceneEntities {
           isDraftSegment,
           scale: factor,
           texture: sceneInfra.extraSegmentTexture,
+          theme: sceneInfra._theme,
         })
       } else {
         seg = straightSegment({
@@ -409,6 +420,7 @@ export class SceneEntities {
           scale: factor,
           callExpName,
           texture: sceneInfra.extraSegmentTexture,
+          theme: sceneInfra._theme,
         })
       }
       seg.layers.set(SKETCH_LAYER)
@@ -570,6 +582,173 @@ export class SceneEntities {
         })
       },
       ...this.mouseEnterLeaveCallbacks(),
+    })
+  }
+  setupRectangleOriginListener = () => {
+    sceneInfra.setCallbacks({
+      onClick: (args) => {
+        const twoD = args.intersectionPoint?.twoD
+        if (!twoD) {
+          console.warn(`This click didn't have a 2D intersection`, args)
+          return
+        }
+        sceneInfra.modelingSend({
+          type: 'Add rectangle origin',
+          data: [twoD.x, twoD.y],
+        })
+      },
+    })
+  }
+  setupDraftRectangle = async (
+    sketchPathToNode: PathToNode,
+    forward: [number, number, number],
+    up: [number, number, number],
+    sketchOrigin: [number, number, number],
+    rectangleOrigin: [x: number, y: number]
+  ) => {
+    let _ast = JSON.parse(JSON.stringify(kclManager.ast))
+
+    const variableDeclarationName =
+      getNodeFromPath<VariableDeclaration>(
+        _ast,
+        sketchPathToNode || [],
+        'VariableDeclaration'
+      )?.node?.declarations?.[0]?.id?.name || ''
+
+    const tags: [string, string, string] = [
+      findUniqueName(_ast, 'rectangleSegmentA'),
+      findUniqueName(_ast, 'rectangleSegmentB'),
+      findUniqueName(_ast, 'rectangleSegmentC'),
+    ]
+
+    const startSketchOn = getNodeFromPath<VariableDeclaration>(
+      _ast,
+      sketchPathToNode || [],
+      'VariableDeclaration'
+    )?.node?.declarations
+
+    const startSketchOnInit = startSketchOn?.[0]?.init
+    startSketchOn[0].init = createPipeExpression([
+      startSketchOnInit,
+      ...getRectangleCallExpressions(rectangleOrigin, tags),
+    ])
+
+    _ast = parse(recast(_ast))
+
+    const { programMemoryOverride, truncatedAst } = await this.setupSketch({
+      sketchPathToNode,
+      forward,
+      up,
+      position: sketchOrigin,
+      maybeModdedAst: _ast,
+      draftExpressionsIndices: { start: 0, end: 3 },
+    })
+
+    sceneInfra.setCallbacks({
+      onMove: async (args) => {
+        // Update the width and height of the draft rectangle
+        const pathToNodeTwo = JSON.parse(JSON.stringify(sketchPathToNode))
+        pathToNodeTwo[1][0] = 0
+
+        const sketchInit = getNodeFromPath<VariableDeclaration>(
+          truncatedAst,
+          pathToNodeTwo || [],
+          'VariableDeclaration'
+        )?.node?.declarations?.[0]?.init
+
+        const x = (args.intersectionPoint.twoD.x || 0) - rectangleOrigin[0]
+        const y = (args.intersectionPoint.twoD.y || 0) - rectangleOrigin[1]
+
+        if (sketchInit.type === 'PipeExpression') {
+          updateRectangleSketch(sketchInit, x, y, tags[0])
+        }
+
+        const { programMemory } = await executeAst({
+          ast: truncatedAst,
+          useFakeExecutor: true,
+          engineCommandManager: this.engineCommandManager,
+          programMemoryOverride,
+        })
+        this.sceneProgramMemory = programMemory
+        const sketchGroup = programMemory.root[
+          variableDeclarationName
+        ] as SketchGroup
+        const sgPaths = sketchGroup.value
+        const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+
+        this.updateSegment(
+          sketchGroup.start,
+          0,
+          0,
+          _ast,
+          orthoFactor,
+          sketchGroup
+        )
+        sgPaths.forEach((seg, index) =>
+          this.updateSegment(seg, index, 0, _ast, orthoFactor, sketchGroup)
+        )
+      },
+      onClick: async (args) => {
+        // Commit the rectangle to the full AST/code and return to sketch.idle
+        const cornerPoint = args.intersectionPoint?.twoD
+        if (!cornerPoint || args.mouseEvent.button !== 0) return
+
+        const x = roundOff((cornerPoint.x || 0) - rectangleOrigin[0])
+        const y = roundOff((cornerPoint.y || 0) - rectangleOrigin[1])
+
+        const sketchInit = getNodeFromPath<VariableDeclaration>(
+          _ast,
+          sketchPathToNode || [],
+          'VariableDeclaration'
+        )?.node?.declarations?.[0]?.init
+
+        if (sketchInit.type === 'PipeExpression') {
+          updateRectangleSketch(sketchInit, x, y, tags[0])
+
+          _ast = parse(recast(_ast))
+
+          console.log('onClick', {
+            sketchInit: sketchInit,
+            _ast,
+            x,
+            y,
+            truncatedAst,
+          })
+
+          // Update the primary AST and unequip the rectangle tool
+          await kclManager.executeAstMock(_ast)
+          sceneInfra.modelingSend({ type: 'CancelSketch' })
+
+          const { programMemory } = await executeAst({
+            ast: _ast,
+            useFakeExecutor: true,
+            engineCommandManager: this.engineCommandManager,
+            programMemoryOverride,
+          })
+
+          // Prepare to update the THREEjs scene
+          this.sceneProgramMemory = programMemory
+          const sketchGroup = programMemory.root[
+            variableDeclarationName
+          ] as SketchGroup
+          const sgPaths = sketchGroup.value
+          const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+
+          // Update the starting segment of the THREEjs scene
+          this.updateSegment(
+            sketchGroup.start,
+            0,
+            0,
+            _ast,
+            orthoFactor,
+            sketchGroup
+          )
+          // Update the rest of the segments of the THREEjs scene
+          sgPaths.forEach((seg, index) =>
+            this.updateSegment(seg, index, 0, _ast, orthoFactor, sketchGroup)
+          )
+        }
+      },
     })
   }
   setupSketchIdleCallbacks = ({
@@ -789,7 +968,7 @@ export class SceneEntities {
       if (!draftInfo)
         // don't want to mod the user's code yet as they have't committed to the change yet
         // plus this would be the truncated ast being recast, it would be wrong
-        codeManager.updateCodeStateEditor(code)
+        codeManager.updateCodeEditor(code)
       const { programMemory } = await executeAst({
         ast: truncatedAst,
         useFakeExecutor: true,
@@ -803,51 +982,83 @@ export class SceneEntities {
       const sgPaths = sketchGroup.value
       const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
-      const updateSegment = (
-        segment: Path | SketchGroup['start'],
-        index: number
-      ) => {
-        const segPathToNode = getNodePathFromSourceRange(
+      this.updateSegment(
+        sketchGroup.start,
+        0,
+        varDecIndex,
+        modifiedAst,
+        orthoFactor,
+        sketchGroup
+      )
+      sgPaths.forEach((group, index) =>
+        this.updateSegment(
+          group,
+          index,
+          varDecIndex,
           modifiedAst,
-          segment.__geoMeta.sourceRange
+          orthoFactor,
+          sketchGroup
         )
-        const originalPathToNodeStr = JSON.stringify(segPathToNode)
-        segPathToNode[1][0] = varDecIndex
-        const pathToNodeStr = JSON.stringify(segPathToNode)
-        // more hacks to hopefully be solved by proper pathToNode info in memory/sketchGroup segments
-        const group =
-          this.activeSegments[pathToNodeStr] ||
-          this.activeSegments[originalPathToNodeStr]
-        // const prevSegment = sketchGroup.slice(index - 1)[0]
-        const type = group?.userData?.type
-        const factor =
-          (sceneInfra.camControls.camera instanceof OrthographicCamera
-            ? orthoFactor
-            : perspScale(sceneInfra.camControls.camera, group)) /
-          sceneInfra._baseUnitMultiplier
-        if (type === TANGENTIAL_ARC_TO_SEGMENT) {
-          this.updateTangentialArcToSegment({
-            prevSegment: sgPaths[index - 1],
-            from: segment.from,
-            to: segment.to,
-            group: group,
-            scale: factor,
-          })
-        } else if (type === STRAIGHT_SEGMENT) {
-          this.updateStraightSegment({
-            from: segment.from,
-            to: segment.to,
-            group: group,
-            scale: factor,
-          })
-        } else if (type === PROFILE_START) {
-          group.position.set(segment.from[0], segment.from[1], 0)
-          group.scale.set(factor, factor, factor)
-        }
-      }
-      updateSegment(sketchGroup.start, 0)
-      sgPaths.forEach(updateSegment)
+      )
     })()
+  }
+
+  /**
+   * Update the THREEjs sketch entities with new segment data
+   * mapping them back to the AST
+   * @param segment
+   * @param index
+   * @param varDecIndex
+   * @param modifiedAst
+   * @param orthoFactor
+   * @param sketchGroup
+   */
+  updateSegment = (
+    segment: Path | SketchGroup['start'],
+    index: number,
+    varDecIndex: number,
+    modifiedAst: Program,
+    orthoFactor: number,
+    sketchGroup: SketchGroup
+  ) => {
+    const segPathToNode = getNodePathFromSourceRange(
+      modifiedAst,
+      segment.__geoMeta.sourceRange
+    )
+    const sgPaths = sketchGroup.value
+    const originalPathToNodeStr = JSON.stringify(segPathToNode)
+    segPathToNode[1][0] = varDecIndex
+    const pathToNodeStr = JSON.stringify(segPathToNode)
+    // more hacks to hopefully be solved by proper pathToNode info in memory/sketchGroup segments
+    const group =
+      this.activeSegments[pathToNodeStr] ||
+      this.activeSegments[originalPathToNodeStr]
+    // const prevSegment = sketchGroup.slice(index - 1)[0]
+    const type = group?.userData?.type
+    const factor =
+      (sceneInfra.camControls.camera instanceof OrthographicCamera
+        ? orthoFactor
+        : perspScale(sceneInfra.camControls.camera, group)) /
+      sceneInfra._baseUnitMultiplier
+    if (type === TANGENTIAL_ARC_TO_SEGMENT) {
+      this.updateTangentialArcToSegment({
+        prevSegment: sgPaths[index - 1],
+        from: segment.from,
+        to: segment.to,
+        group: group,
+        scale: factor,
+      })
+    } else if (type === STRAIGHT_SEGMENT) {
+      this.updateStraightSegment({
+        from: segment.from,
+        to: segment.to,
+        group,
+        scale: factor,
+      })
+    } else if (type === PROFILE_START) {
+      group.position.set(segment.from[0], segment.from[1], 0)
+      group.scale.set(factor, factor, factor)
+    }
   }
 
   updateTangentialArcToSegment({
@@ -1118,30 +1329,31 @@ export class SceneEntities {
         selected.material.color = defaultPlaneColor(type)
       },
       onClick: async (args) => {
-        const checkExtrudeFaceClick = async (): Promise<boolean> => {
+        const checkExtrudeFaceClick = async (): Promise<
+          ['face' | 'plane' | 'other', string]
+        > => {
           const { streamDimensions } = useStore.getState()
           const { entity_id } = await sendSelectEventToEngine(
             args?.mouseEvent,
             document.getElementById('video-stream') as HTMLVideoElement,
             streamDimensions
           )
-          if (!entity_id) return false
+          if (!entity_id) return ['other', '']
+          if (
+            engineCommandManager.defaultPlanes?.xy === entity_id ||
+            engineCommandManager.defaultPlanes?.xz === entity_id ||
+            engineCommandManager.defaultPlanes?.yz === entity_id
+          ) {
+            return ['plane', entity_id]
+          }
           const artifact = this.engineCommandManager.artifactMap[entity_id]
           if (artifact?.commandType !== 'solid3d_get_extrusion_face_info')
-            return false
-          const faceInfo: Models['FaceIsPlanar_type'] = (
-            await this.engineCommandManager.sendSceneCommand({
-              type: 'modeling_cmd_req',
-              cmd_id: uuidv4(),
-              cmd: {
-                type: 'face_is_planar',
-                object_id: entity_id,
-              },
-            })
-          )?.data?.data
+            return ['other', entity_id]
+
+          const faceInfo = await getFaceDetails(entity_id)
           if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
-            return false
-          const { z_axis, origin, y_axis } = faceInfo
+            return ['other', entity_id]
+          const { z_axis, y_axis, origin } = faceInfo
           const pathToNode = getNodePathFromSourceRange(
             kclManager.ast,
             artifact.range
@@ -1161,12 +1373,15 @@ export class SceneEntities {
                 artifact?.additionalData?.type === 'cap'
                   ? artifact.additionalData.info
                   : 'none',
+              faceId: entity_id,
             },
           })
-          return true
+          return ['face', entity_id]
         }
 
-        if (await checkExtrudeFaceClick()) return
+        const faceResult = await checkExtrudeFaceClick()
+        console.log('faceResult', faceResult)
+        if (faceResult[0] === 'face') return
 
         if (!args || !args.intersects?.[0]) return
         if (args.mouseEvent.which !== 1) return
@@ -1192,6 +1407,7 @@ export class SceneEntities {
             plane: planeString,
             zAxis,
             yAxis,
+            planeId: faceResult[1],
           },
         })
       },
@@ -1218,7 +1434,7 @@ export class SceneEntities {
             parent.userData.pathToNode,
             'CallExpression'
           ).node
-          sceneInfra.highlightCallback([node.start, node.end])
+          editorManager.setHighlightRange([node.start, node.end])
           const yellow = 0xffff00
           colorSegment(selected, yellow)
           const extraSegmentGroup = parent.getObjectByName(EXTRA_SEGMENT_HANDLE)
@@ -1254,10 +1470,10 @@ export class SceneEntities {
           }
           return
         }
-        sceneInfra.highlightCallback([0, 0])
+        editorManager.setHighlightRange([0, 0])
       },
       onMouseLeave: ({ selected, ...rest }: OnMouseEnterLeaveArgs) => {
-        sceneInfra.highlightCallback([0, 0])
+        editorManager.setHighlightRange([0, 0])
         const parent = getParentGroup(selected, [
           STRAIGHT_SEGMENT,
           TANGENTIAL_ARC_TO_SEGMENT,
@@ -1291,7 +1507,10 @@ export class SceneEntities {
         const isSelected = parent?.userData?.isSelected
         colorSegment(
           selected,
-          isSelected ? 0x0000ff : parent?.userData?.baseColor || 0xffffff
+          isSelected
+            ? 0x0000ff
+            : parent?.userData?.baseColor ||
+                getThemeColorForThreeJs(sceneInfra._theme)
         )
         const extraSegmentGroup = parent?.getObjectByName(EXTRA_SEGMENT_HANDLE)
         if (extraSegmentGroup) {
@@ -1475,7 +1694,7 @@ export async function getSketchOrientationDetails(
   sketchPathToNode: PathToNode
 ): Promise<{
   quat: Quaternion
-  sketchDetails: SketchDetails
+  sketchDetails: SketchDetails & { faceId?: string }
 }> {
   const sketchGroup = sketchGroupFromPathToNode({
     pathToNode: sketchPathToNode,
@@ -1491,20 +1710,13 @@ export async function getSketchOrientationDetails(
         zAxis: [zAxis.x, zAxis.y, zAxis.z],
         yAxis: [sketchGroup.yAxis.x, sketchGroup.yAxis.y, sketchGroup.yAxis.z],
         origin: [0, 0, 0],
+        faceId: sketchGroup.on.id,
       },
     }
   }
   if (sketchGroup.on.type === 'face') {
-    const faceInfo: Models['FaceIsPlanar_type'] = (
-      await engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'face_is_planar',
-          object_id: sketchGroup.on.faceId,
-        },
-      })
-    )?.data?.data
+    const faceInfo = await getFaceDetails(sketchGroup.on.faceId)
+
     if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
       throw new Error('faceInfo')
     const { z_axis, y_axis, origin } = faceInfo
@@ -1519,12 +1731,53 @@ export async function getSketchOrientationDetails(
         zAxis: [z_axis.x, z_axis.y, z_axis.z],
         yAxis: [y_axis.x, y_axis.y, y_axis.z],
         origin: [origin.x, origin.y, origin.z],
+        faceId: sketchGroup.on.faceId,
       },
     }
   }
   throw new Error(
     'sketchGroup.on.type not recognized, has a new type been added?'
   )
+}
+
+/**
+ * Retrieves orientation details for a given entity representing a face (brep face or default plane).
+ * This function asynchronously fetches and returns the origin, x-axis, y-axis, and z-axis details
+ * for a specified entity ID. It is primarily used to obtain the orientation of a face in the scene,
+ * which is essential for calculating the correct positioning and alignment of the client side sketch.
+ *
+ * @param  entityId - The ID of the entity for which orientation details are being fetched.
+ * @returns A promise that resolves with the orientation details of the face.
+ */
+async function getFaceDetails(
+  entityId: string
+): Promise<Models['FaceIsPlanar_type']> {
+  // TODO mode engine connection to allow batching returns and batch the following
+  await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'enable_sketch_mode',
+      adjust_camera: false,
+      animated: false,
+      ortho: false,
+      entity_id: entityId,
+    },
+  })
+  // TODO change typing to get_sketch_mode_plane once lib is updated
+  const faceInfo: Models['FaceIsPlanar_type'] = (
+    await engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: { type: 'get_sketch_mode_plane' },
+    })
+  )?.data?.data
+  await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: { type: 'sketch_mode_disable' },
+  })
+  return faceInfo
 }
 
 export function getQuaternionFromZAxis(zAxis: Vector3): Quaternion {

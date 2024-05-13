@@ -25,7 +25,7 @@ const DownloadAppBanner = () => {
             <ActionButton
               Element="button"
               onClick={() => setIsBannerDismissed(true)}
-              icon={{
+              iconStart={{
                 icon: 'close',
                 className: 'p-1',
                 bgClassName:

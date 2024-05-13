@@ -1,7 +1,7 @@
 import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { type BaseUnit, baseUnitsUnion } from 'lib/settings/settingsTypes'
 import { ActionButton } from 'components/ActionButton'
-import { SettingsSection } from '../Settings'
+import { SettingsSection } from 'components/Settings/SettingsSection'
 import { useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
@@ -51,7 +51,7 @@ export default function Units() {
           <ActionButton
             Element="button"
             onClick={dismiss}
-            icon={{
+            iconStart={{
               icon: faXmark,
               bgClassName: 'bg-destroy-80',
               iconClassName:
@@ -64,7 +64,7 @@ export default function Units() {
           <ActionButton
             Element="button"
             onClick={next}
-            icon={{ icon: faArrowRight }}
+            iconStart={{ icon: faArrowRight }}
           >
             Next: Camera
           </ActionButton>

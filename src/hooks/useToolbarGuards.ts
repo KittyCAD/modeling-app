@@ -2,7 +2,7 @@ import {
   SetVarNameModal,
   createSetVarNameModal,
 } from 'components/SetVarNameModal'
-import { kclManager } from 'lib/singletons'
+import { editorManager, kclManager } from 'lib/singletons'
 import { moveValueIntoNewVariable } from 'lang/modifyAst'
 import { isNodeSafeToReplace } from 'lang/queryAst'
 import { useEffect, useState } from 'react'
@@ -13,6 +13,11 @@ const getModalInfo = createSetVarNameModal(SetVarNameModal)
 export function useConvertToVariable() {
   const { context } = useModelingContext()
   const [enable, setEnabled] = useState(false)
+
+  useEffect(() => {
+    editorManager.convertToVariableEnabled = enable
+  }, [enable])
+
   useEffect(() => {
     const { isSafe, value } = isNodeSafeToReplace(
       kclManager.ast,
@@ -44,6 +49,8 @@ export function useConvertToVariable() {
       console.log('error', e)
     }
   }
+
+  editorManager.convertToVariableCallback = handleClick
 
   return { enable, handleClick }
 }

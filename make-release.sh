@@ -57,7 +57,7 @@ echo "New version number without 'v': $new_version_number"
 git checkout -b "cut-release-$new_version"
 
 echo "$(jq --arg v "$new_version_number" '.version=$v' package.json --indent 2)" > package.json
-echo "$(jq --arg v "$new_version_number" '.package.version=$v' src-tauri/tauri.conf.json --indent 2)" > src-tauri/tauri.conf.json
+echo "$(jq --arg v "$new_version_number" '.version=$v' src-tauri/tauri.conf.json --indent 2)" > src-tauri/tauri.conf.json
 
 git add package.json src-tauri/tauri.conf.json
 git commit -m "Cut release $new_version"

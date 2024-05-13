@@ -30,6 +30,7 @@ import SettingsAuthProvider from 'components/SettingsAuthProvider'
 import LspProvider from 'components/LspProvider'
 import { KclContextProvider } from 'lang/KclProvider'
 import { BROWSER_PROJECT_NAME } from 'lib/constants'
+import { getState, setState } from 'lib/tauri'
 
 const router = createBrowserRouter([
   {
@@ -52,10 +53,29 @@ const router = createBrowserRouter([
     children: [
       {
         path: paths.INDEX,
-        loader: () =>
-          isTauri()
+        loader: async () => {
+          const inTauri = isTauri()
+          if (inTauri) {
+            const appState = await getState()
+
+            if (appState) {
+              // Reset the state.
+              // We do this so that we load the initial state from the cli but everything
+              // else we can ignore.
+              await setState(undefined)
+              // Redirect to the file if we have a file path.
+              if (appState.current_file) {
+                return redirect(
+                  paths.FILE + '/' + encodeURIComponent(appState.current_file)
+                )
+              }
+            }
+          }
+
+          return inTauri
             ? redirect(paths.HOME)
-            : redirect(paths.FILE + '/%2F' + BROWSER_PROJECT_NAME),
+            : redirect(paths.FILE + '/%2F' + BROWSER_PROJECT_NAME)
+        },
       },
       {
         loader: fileLoader,

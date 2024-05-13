@@ -49,11 +49,7 @@ async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
     let zoo_client = new_zoo_client();
 
     let executor_ctx = if execute {
-        let ws = zoo_client
-            .modeling()
-            .commands_ws(None, None, None, None, None, None, Some(false))
-            .await?;
-        Some(crate::executor::ExecutorContext::new(ws, kittycad::types::UnitLength::Mm).await?)
+        Some(crate::executor::ExecutorContext::new(&zoo_client, Default::default()).await?)
     } else {
         None
     };
@@ -746,7 +742,7 @@ async fn test_kcl_lsp_create_zip() {
 
     assert_eq!(files.len(), 11);
     let util_path = format!("{}/util.rs", string_path).replace("file://", "");
-    assert!(files.get(&util_path).is_some());
+    assert!(files.contains_key(&util_path));
     assert_eq!(files.get("/test.kcl"), Some(&4));
 }
 
@@ -794,6 +790,56 @@ st"#
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_completions_const_raw() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"con"#.to_string(),
+            },
+        })
+        .await;
+
+    // Send completion request.
+    let completions = server
+        .completion(tower_lsp::lsp_types::CompletionParams {
+            text_document_position: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 0, character: 2 },
+            },
+            context: None,
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    // Check the completions.
+    if let tower_lsp::lsp_types::CompletionResponse::Array(completions) = completions {
+        assert!(completions.len() > 10);
+        // Find the one with label "const".
+        let const_completion = completions
+            .iter()
+            .find(|completion| completion.label == "const")
+            .unwrap();
+        assert_eq!(
+            const_completion.kind,
+            Some(tower_lsp::lsp_types::CompletionItemKind::KEYWORD)
+        );
+    } else {
+        panic!("Expected array of completions");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_on_hover() {
     let server = kcl_lsp_server(false).await.unwrap();
 
@@ -831,6 +877,53 @@ async fn test_kcl_lsp_on_hover() {
             tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent {
                 kind: tower_lsp::lsp_types::MarkupKind::Markdown,
                 value: "```startSketchOn(data: SketchData, tag?: SketchOnFaceTag) -> SketchSurface```\nStart a sketch on a specific plane or face.".to_string()
+            })
+        );
+    } else {
+        panic!("Expected hover");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_on_hover_shebang() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"#!/usr/bin/env zoo kcl view
+startSketchOn()"#
+                    .to_string(),
+            },
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Send hover request.
+    let hover = server
+        .hover(tower_lsp::lsp_types::HoverParams {
+            text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 0, character: 2 },
+            },
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    // Check the hover.
+    if let Some(hover) = hover {
+        assert_eq!(
+            hover.contents,
+            tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent {
+                kind: tower_lsp::lsp_types::MarkupKind::Markdown,
+                value: "The `#!` at the start of a script, known as a shebang, specifies the path to the interpreter that should execute the script. This line is not necessary for your `kcl` to run in the modeling-app. You can safely delete it. If you wish to learn more about what you _can_ do with a shebang, read this doc: [zoo.dev/docs/faq/shebang](https://zoo.dev/docs/faq/shebang).".to_string()
             })
         );
     } else {
@@ -921,10 +1014,81 @@ async fn test_kcl_lsp_semantic_tokens() {
     if let tower_lsp::lsp_types::SemanticTokensResult::Tokens(semantic_tokens) = semantic_tokens {
         assert_eq!(semantic_tokens.data.len(), 2);
         assert_eq!(semantic_tokens.data[0].length, 13);
+        assert_eq!(semantic_tokens.data[0].delta_start, 0);
+        assert_eq!(semantic_tokens.data[0].delta_line, 0);
         assert_eq!(semantic_tokens.data[0].token_type, 8);
         assert_eq!(semantic_tokens.data[1].length, 4);
         assert_eq!(semantic_tokens.data[1].delta_start, 14);
+        assert_eq!(semantic_tokens.data[1].delta_line, 0);
         assert_eq!(semantic_tokens.data[1].token_type, 3);
+    } else {
+        panic!("Expected semantic tokens");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_semantic_tokens_multiple_comments() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"// Ball Bearing
+// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads. 
+
+// Define constants like ball diameter, inside diameter, overhange length, and thickness
+const sphereDia = 0.5"#.to_string(),
+            },
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Send semantic tokens request.
+    let semantic_tokens = server
+        .semantic_tokens_full(tower_lsp::lsp_types::SemanticTokensParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    // Check the semantic tokens.
+    if let tower_lsp::lsp_types::SemanticTokensResult::Tokens(semantic_tokens) = semantic_tokens {
+        assert_eq!(semantic_tokens.data.len(), 7);
+        assert_eq!(semantic_tokens.data[0].length, 15);
+        assert_eq!(semantic_tokens.data[0].delta_start, 0);
+        assert_eq!(semantic_tokens.data[0].delta_line, 0);
+        assert_eq!(semantic_tokens.data[0].token_type, 6);
+        assert_eq!(semantic_tokens.data[1].length, 232);
+        assert_eq!(semantic_tokens.data[1].delta_start, 0);
+        assert_eq!(semantic_tokens.data[1].delta_line, 1);
+        assert_eq!(semantic_tokens.data[1].token_type, 6);
+        assert_eq!(semantic_tokens.data[2].length, 88);
+        assert_eq!(semantic_tokens.data[2].delta_start, 0);
+        assert_eq!(semantic_tokens.data[2].delta_line, 2);
+        assert_eq!(semantic_tokens.data[2].token_type, 6);
+        assert_eq!(semantic_tokens.data[3].length, 5);
+        assert_eq!(semantic_tokens.data[3].delta_start, 0);
+        assert_eq!(semantic_tokens.data[3].delta_line, 1);
+        assert_eq!(semantic_tokens.data[3].token_type, 4);
+        assert_eq!(semantic_tokens.data[4].length, 9);
+        assert_eq!(semantic_tokens.data[4].delta_start, 6);
+        assert_eq!(semantic_tokens.data[4].delta_line, 0);
+        assert_eq!(semantic_tokens.data[4].token_type, 1);
+        assert_eq!(semantic_tokens.data[5].length, 1);
+        assert_eq!(semantic_tokens.data[5].delta_start, 10);
+        assert_eq!(semantic_tokens.data[5].token_type, 2);
+        assert_eq!(semantic_tokens.data[6].length, 3);
+        assert_eq!(semantic_tokens.data[6].delta_start, 2);
+        assert_eq!(semantic_tokens.data[6].token_type, 0);
     } else {
         panic!("Expected semantic tokens");
     }
@@ -1016,6 +1180,183 @@ async fn test_kcl_lsp_formatting() {
         formatting[0].new_text,
         r#"startSketchOn('XY')
     |> startProfileAt([0, 0], %)"#
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_formatting_extra_parens() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"// Ball Bearing
+// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads. 
+
+// Define constants like ball diameter, inside diameter, overhange length, and thickness
+const sphereDia = 0.5
+const insideDia = 1
+const thickness = 0.25
+const overHangLength = .4
+
+// Sketch and revolve the inside bearing piece
+const insideRevolve = startSketchOn('XZ')
+  |> startProfileAt([insideDia / 2, 0], %)
+  |> line([0, thickness + sphereDia / 2], %)
+  |> line([overHangLength, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-overHangLength + thickness, 0], %)
+  |> line([0, -sphereDia], %)
+  |> line([overHangLength - thickness, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-overHangLength, 0], %)
+  |> close(%)
+  |> revolve({ axis: 'y' }, %)
+
+// Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
+const sphere = startSketchOn('XZ')
+  |> startProfileAt([
+       0.05 + insideDia / 2 + thickness,
+       0 - 0.05
+     ], %)
+  |> line([sphereDia - 0.1, 0], %)
+  |> arc({
+       angle_start: 0,
+       angle_end: -180,
+       radius: sphereDia / 2 - 0.05
+     }, %)
+  |> close(%)
+  |> revolve({ axis: 'x' }, %)
+  |> patternCircular3d({
+       axis: [0, 0, 1],
+       center: [0, 0, 0],
+       repetitions: 10,
+       arcDegrees: 360,
+       rotateDuplicates: true
+     }, %)
+
+// Sketch and revolve the outside bearing
+const outsideRevolve = startSketchOn('XZ')
+  |> startProfileAt([
+       insideDia / 2 + thickness + sphereDia,
+       0
+     ], %)
+  |> line([0, sphereDia / 2], %)
+  |> line([-overHangLength + thickness, 0], %)
+  |> line([0, thickness], %)
+  |> line([overHangLength, 0], %)
+  |> line([0, -2 * thickness - sphereDia], %)
+  |> line([-overHangLength, 0], %)
+  |> line([0, thickness], %)
+  |> line([overHangLength - thickness, 0], %)
+  |> close(%)
+  |> revolve({ axis: 'y' }, %)"#
+                    .to_string(),
+            },
+        })
+        .await;
+    server.wait_on_handle().await;
+
+    // Send formatting request.
+    let formatting = server
+        .formatting(tower_lsp::lsp_types::DocumentFormattingParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            options: tower_lsp::lsp_types::FormattingOptions {
+                tab_size: 2,
+                insert_spaces: true,
+                properties: Default::default(),
+                trim_trailing_whitespace: None,
+                insert_final_newline: None,
+                trim_final_newlines: None,
+            },
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    // Check the formatting.
+    assert_eq!(formatting.len(), 1);
+    assert_eq!(
+        formatting[0].range,
+        tower_lsp::lsp_types::Range {
+            start: tower_lsp::lsp_types::Position { line: 0, character: 0 },
+            end: tower_lsp::lsp_types::Position {
+                line: 60,
+                character: 30
+            }
+        }
+    );
+    assert_eq!(
+        formatting[0].new_text,
+        r#"// Ball Bearing
+// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads.
+
+
+// Define constants like ball diameter, inside diameter, overhange length, and thickness
+const sphereDia = 0.5
+const insideDia = 1
+const thickness = 0.25
+const overHangLength = .4
+
+// Sketch and revolve the inside bearing piece
+const insideRevolve = startSketchOn('XZ')
+  |> startProfileAt([insideDia / 2, 0], %)
+  |> line([0, thickness + sphereDia / 2], %)
+  |> line([overHangLength, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-overHangLength + thickness, 0], %)
+  |> line([0, -sphereDia], %)
+  |> line([overHangLength - thickness, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-overHangLength, 0], %)
+  |> close(%)
+  |> revolve({ axis: 'y' }, %)
+
+// Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
+const sphere = startSketchOn('XZ')
+  |> startProfileAt([
+       0.05 + insideDia / 2 + thickness,
+       0 - 0.05
+     ], %)
+  |> line([sphereDia - 0.1, 0], %)
+  |> arc({
+       angle_start: 0,
+       angle_end: -180,
+       radius: sphereDia / 2 - 0.05
+     }, %)
+  |> close(%)
+  |> revolve({ axis: 'x' }, %)
+  |> patternCircular3d({
+       axis: [0, 0, 1],
+       center: [0, 0, 0],
+       repetitions: 10,
+       arcDegrees: 360,
+       rotateDuplicates: true
+     }, %)
+
+// Sketch and revolve the outside bearing
+const outsideRevolve = startSketchOn('XZ')
+  |> startProfileAt([
+       insideDia / 2 + thickness + sphereDia,
+       0
+     ], %)
+  |> line([0, sphereDia / 2], %)
+  |> line([-overHangLength + thickness, 0], %)
+  |> line([0, thickness], %)
+  |> line([overHangLength, 0], %)
+  |> line([0, -2 * thickness - sphereDia], %)
+  |> line([-overHangLength, 0], %)
+  |> line([0, thickness], %)
+  |> line([overHangLength - thickness, 0], %)
+  |> close(%)
+  |> revolve({ axis: 'y' }, %)"#
     );
 }
 
@@ -1604,8 +1945,8 @@ const part001 = cube([0,0], 20)
     // Make sure the memory is the same.
     assert_eq!(memory, server.memory_map.get("file:///test.kcl").await.unwrap().clone());
 
-    let units = server.executor_ctx.read().await.clone().unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx.read().await.clone().unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Update the units.
     server
@@ -1613,15 +1954,15 @@ const part001 = cube([0,0], 20)
             text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
                 uri: "file:///test.kcl".try_into().unwrap(),
             },
-            units: crate::lsp::kcl::custom_notifications::UnitLength::M,
+            units: crate::settings::types::UnitLength::M,
             text: same_text.clone(),
         })
         .await
         .unwrap();
     server.wait_on_handle().await;
 
-    let units = server.executor_ctx().await.unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::M);
+    let units = server.executor_ctx().await.unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::M);
 
     // Make sure it forced a memory update.
     assert!(memory != server.memory_map.get("file:///test.kcl").await.unwrap().clone());
@@ -2160,8 +2501,8 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_re
     let memory = server.memory_map.get("file:///test.kcl").await.unwrap().clone();
     assert_eq!(memory, ProgramMemory::default());
 
-    let units = server.executor_ctx().await.unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx().await.unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Update the units to the _same_ units.
     server
@@ -2169,15 +2510,15 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_re
             text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
                 uri: "file:///test.kcl".try_into().unwrap(),
             },
-            units: crate::lsp::kcl::custom_notifications::UnitLength::Mm,
+            units: crate::settings::types::UnitLength::Mm,
             text: code.to_string(),
         })
         .await
         .unwrap();
     server.wait_on_handle().await;
 
-    let units = server.executor_ctx().await.unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx().await.unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();
@@ -2245,8 +2586,8 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecu
     let memory = server.memory_map.get("file:///test.kcl").await.unwrap().clone();
     assert_eq!(memory, ProgramMemory::default());
 
-    let units = server.executor_ctx().await.unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx().await.unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Update the units to the _same_ units.
     server
@@ -2254,15 +2595,15 @@ async fn serial_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecu
             text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
                 uri: "file:///test.kcl".try_into().unwrap(),
             },
-            units: crate::lsp::kcl::custom_notifications::UnitLength::Mm,
+            units: crate::settings::types::UnitLength::Mm,
             text: code.to_string(),
         })
         .await
         .unwrap();
     server.wait_on_handle().await;
 
-    let units = server.executor_ctx().await.unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx().await.unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();
@@ -2331,21 +2672,21 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
     assert_eq!(memory, ProgramMemory::default());
 
     // Update the units to the _same_ units.
-    let units = server.executor_ctx().await.unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx().await.unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
     server
         .update_units(crate::lsp::kcl::custom_notifications::UpdateUnitsParams {
             text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
                 uri: "file:///test.kcl".try_into().unwrap(),
             },
-            units: crate::lsp::kcl::custom_notifications::UnitLength::Mm,
+            units: crate::settings::types::UnitLength::Mm,
             text: code.to_string(),
         })
         .await
         .unwrap();
     server.wait_on_handle().await;
-    let units = server.executor_ctx().await.unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx().await.unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();
@@ -2381,21 +2722,21 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
     assert_eq!(server.can_execute().await, false);
 
     // Update the units to the _same_ units.
-    let units = server.executor_ctx().await.unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx().await.unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
     server
         .update_units(crate::lsp::kcl::custom_notifications::UpdateUnitsParams {
             text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
                 uri: "file:///test.kcl".try_into().unwrap(),
             },
-            units: crate::lsp::kcl::custom_notifications::UnitLength::Mm,
+            units: crate::settings::types::UnitLength::Mm,
             text: code.to_string(),
         })
         .await
         .unwrap();
     server.wait_on_handle().await;
-    let units = server.executor_ctx().await.unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx().await.unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();
@@ -2422,21 +2763,21 @@ async fn serial_test_kcl_lsp_cant_execute_set() {
     assert_eq!(server.can_execute().await, true);
 
     // Update the units to the _same_ units.
-    let units = server.executor_ctx.read().await.clone().unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx.read().await.clone().unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
     server
         .update_units(crate::lsp::kcl::custom_notifications::UpdateUnitsParams {
             text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
                 uri: "file:///test.kcl".try_into().unwrap(),
             },
-            units: crate::lsp::kcl::custom_notifications::UnitLength::Mm,
+            units: crate::settings::types::UnitLength::Mm,
             text: code.to_string(),
         })
         .await
         .unwrap();
     server.wait_on_handle().await;
-    let units = server.executor_ctx.read().await.clone().unwrap().units;
-    assert_eq!(units, kittycad::types::UnitLength::Mm);
+    let units = server.executor_ctx.read().await.clone().unwrap().settings.units;
+    assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").await.unwrap().clone();

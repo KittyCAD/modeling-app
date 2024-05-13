@@ -4,7 +4,6 @@ import {
   EngineCommand,
 } from '../lang/std/engineConnection'
 import { Models } from '@kittycad/lib'
-import { Themes } from './theme'
 import { v4 as uuidv4 } from 'uuid'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 
@@ -99,7 +98,6 @@ export async function executor(
     width: 0,
     height: 0,
     executeCode: () => {},
-    theme: Themes.Dark,
     makeDefaultPlanes: () => {
       return new Promise((resolve) => resolve(defaultPlanes))
     },

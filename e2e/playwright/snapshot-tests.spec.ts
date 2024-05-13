@@ -394,6 +394,7 @@ const extrudeDefaultPlane = async (context: any, page: any, plane: string) => {
   })
   await u.openKclCodePanel()
 }
+
 test.describe('extrude on default planes should be stable', () => {
   test('XY', async ({ page, context }) => {
     await extrudeDefaultPlane(context, page, 'XY')
@@ -479,6 +480,52 @@ test('Draft segments should look right', async ({ page, context }) => {
   })
 })
 
+test('Draft rectangles should look right', async ({ page, context }) => {
+  const u = getUtils(page)
+  await page.setViewportSize({ width: 1200, height: 500 })
+  const PUR = 400 / 37.5 //pixeltoUnitRatio
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await u.openDebugPanel()
+
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled()
+  await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
+
+  // click on "Start Sketch" button
+  await u.clearCommandLogs()
+  await u.doAndWaitForImageDiff(
+    () => page.getByRole('button', { name: 'Start Sketch' }).click(),
+    200
+  )
+
+  // select a plane
+  await page.mouse.click(700, 200)
+
+  await expect(page.locator('.cm-content')).toHaveText(
+    `const part001 = startSketchOn('-XZ')`
+  )
+
+  await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
+  await u.closeDebugPanel()
+
+  const startXPx = 600
+
+  // Equip the rectangle tool
+  await page.getByRole('button', { name: 'Line' }).click()
+  await page.getByRole('button', { name: 'Rectangle' }).click()
+
+  // Draw the rectangle
+  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 30)
+  await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 10, { steps: 5 })
+
+  // Ensure the draft rectangle looks the same as it usually does
+  await expect(page).toHaveScreenshot({
+    maxDiffPixels: 100,
+  })
+})
+
 test.describe('Client side scene scale should match engine scale', () => {
   test('Inch scale', async ({ page }) => {
     const u = getUtils(page)
@@ -550,12 +597,15 @@ test.describe('Client side scene scale should match engine scale', () => {
 
     // exit sketch
     await u.openAndClearDebugPanel()
-    await page.getByRole('button', { name: 'Exit Sketch' }).click()
+    await u.doAndWaitForImageDiff(
+      () => page.getByRole('button', { name: 'Exit Sketch' }).click(),
+      200
+    )
 
     // wait for execution done
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.clearAndCloseDebugPanel()
-    await page.waitForTimeout(200)
+    await page.waitForTimeout(300)
 
     // second screen shot should look almost identical, i.e. scale should be the same.
     await expect(page).toHaveScreenshot({
@@ -649,12 +699,15 @@ test.describe('Client side scene scale should match engine scale', () => {
 
     // exit sketch
     await u.openAndClearDebugPanel()
-    await page.getByRole('button', { name: 'Exit Sketch' }).click()
+    await u.doAndWaitForImageDiff(
+      () => page.getByRole('button', { name: 'Exit Sketch' }).click(),
+      200
+    )
 
     // wait for execution done
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.clearAndCloseDebugPanel()
-    await page.waitForTimeout(200)
+    await page.waitForTimeout(300)
 
     // second screen shot should look almost identical, i.e. scale should be the same.
     await expect(page).toHaveScreenshot({

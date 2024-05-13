@@ -7,7 +7,12 @@ import React, { createContext, useEffect } from 'react'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
 import { settingsMachine } from 'machines/settingsMachine'
 import { toast } from 'react-hot-toast'
-import { getThemeColorForEngine, setThemeClass, Themes } from 'lib/theme'
+import {
+  getThemeColorForEngine,
+  getOppositeTheme,
+  setThemeClass,
+  Themes,
+} from 'lib/theme'
 import decamelize from 'decamelize'
 import {
   AnyStateMachine,
@@ -99,6 +104,9 @@ export const SettingsAuthProviderBase = ({
     {
       context: loadedSettings,
       actions: {
+        //TODO: batch all these and if that's difficult to do from tsx,
+        // make it easy to do
+
         setClientSideSceneUnits: (context, event) => {
           const newBaseUnit =
             event.type === 'set.modeling.defaultUnit'
@@ -113,6 +121,30 @@ export const SettingsAuthProviderBase = ({
             cmd: {
               type: 'set_background_color',
               color: getThemeColorForEngine(context.app.theme.current),
+            },
+          })
+
+          const opposingTheme = getOppositeTheme(context.app.theme.current)
+          engineCommandManager.sendSceneCommand({
+            cmd_id: uuidv4(),
+            type: 'modeling_cmd_req',
+            cmd: {
+              type: 'set_default_system_properties',
+              color: getThemeColorForEngine(opposingTheme),
+            },
+          })
+        },
+        setClientTheme: (context) => {
+          const opposingTheme = getOppositeTheme(context.app.theme.current)
+          sceneInfra.theme = opposingTheme
+        },
+        setEngineEdges: (context) => {
+          engineCommandManager.sendSceneCommand({
+            cmd_id: uuidv4(),
+            type: 'modeling_cmd_req',
+            cmd: {
+              type: 'edge_lines_visible' as any, // TODO update kittycad.ts to get this new command type
+              hidden: !context.modeling.highlightEdges.current,
             },
           })
         },
@@ -140,7 +172,7 @@ export const SettingsAuthProviderBase = ({
         },
         'Execute AST': () => kclManager.executeCode(true),
         persistSettings: (context) =>
-          saveSettings(context, loadedProject?.project?.path),
+          saveSettings(context, loadedProject?.project?.name),
       },
     }
   )

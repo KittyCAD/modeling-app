@@ -313,6 +313,28 @@ impl Backend {
             let source_range: SourceRange = token.clone().into();
             let position = source_range.start_to_lsp_position(&params.text);
 
+            // We need to check if we are on the last token of the line.
+            // If we are starting from the end of the last line just add 1 to the line.
+            // Check if we are on the last token of the line.
+            if let Some(line) = params.text.lines().nth(position.line as usize) {
+                if line.len() == position.character as usize {
+                    // We are on the last token of the line.
+                    // We need to add a new line.
+                    let semantic_token = SemanticToken {
+                        delta_line: position.line - last_position.line + 1,
+                        delta_start: 0,
+                        length: token.value.len() as u32,
+                        token_type: token_type_index as u32,
+                        token_modifiers_bitset: 0,
+                    };
+
+                    semantic_tokens.push(semantic_token);
+
+                    last_position = Position::new(position.line + 1, 0);
+                    continue;
+                }
+            }
+
             let semantic_token = SemanticToken {
                 delta_line: position.line - last_position.line,
                 delta_start: if position.line != last_position.line {
@@ -575,8 +597,7 @@ impl Backend {
                 false
             };
 
-            let units: kittycad::types::UnitLength = params.units.into();
-            if executor_ctx.units == units
+            if executor_ctx.settings.units == params.units
                 && !self.has_diagnostics(params.text_document.uri.as_ref()).await
                 && has_memory
             {
@@ -585,7 +606,7 @@ impl Backend {
             }
 
             // Set the engine units.
-            executor_ctx.update_units(units);
+            executor_ctx.update_units(params.units);
 
             // Update the locked executor context.
             self.set_executor_ctx(executor_ctx.clone()).await;
@@ -796,11 +817,7 @@ impl LanguageServer for Backend {
             return Ok(None);
         };
 
-        let Some(value) = ast.get_value_for_position(pos) else {
-            return Ok(None);
-        };
-
-        let Some(hover) = value.get_hover_value_for_position(pos, current_code) else {
+        let Some(hover) = ast.get_hover_value_for_position(pos, current_code) else {
             return Ok(None);
         };
 
@@ -837,6 +854,13 @@ impl LanguageServer for Backend {
                 }))
             }
             crate::ast::types::Hover::Signature { .. } => Ok(None),
+            crate::ast::types::Hover::Comment { value, range } => Ok(Some(Hover {
+                contents: HoverContents::Markup(MarkupContent {
+                    kind: MarkupKind::Markdown,
+                    value,
+                }),
+                range: Some(range),
+            })),
         }
     }
 
@@ -945,6 +969,9 @@ impl LanguageServer for Backend {
 
                 Ok(Some(signature.clone()))
             }
+            crate::ast::types::Hover::Comment { value: _, range: _ } => {
+                return Ok(None);
+            }
         }
     }
 
@@ -1006,7 +1033,7 @@ impl LanguageServer for Backend {
             },
             0,
         );
-        let source_range = SourceRange([0, current_code.len() - 1]);
+        let source_range = SourceRange([0, current_code.len()]);
         let range = source_range.to_lsp_range(current_code);
         Ok(Some(vec![TextEdit {
             new_text: recast,

@@ -78,7 +78,7 @@ export const SetVarNameModal = ({
                   Element="button"
                   type="submit"
                   disabled={!isNewVariableNameUnique}
-                  icon={{ icon: faPlus }}
+                  iconStart={{ icon: faPlus }}
                 >
                   Add variable
                 </ActionButton>

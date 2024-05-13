@@ -20,7 +20,6 @@ import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { ActionButton } from 'components/ActionButton'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 
-export const ONBOARDING_PROJECT_NAME = 'Tutorial Project $nn'
 export const kbdClasses =
   'p-0.5 text-sm rounded-sm bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50'
 
@@ -145,9 +144,9 @@ export function OnboardingButtons({
       <ActionButton
         Element="button"
         onClick={dismiss}
-        icon={{
+        iconStart={{
           icon: 'close',
-          bgClassName: 'bg-destroy-80',
+          bgClassName: 'bg-destroy-80 group-hover:bg-destroy-80',
           iconClassName: 'text-destroy-20 group-hover:text-destroy-10',
         }}
         className="hover:border-destroy-40 hover:bg-destroy-10/50 dark:hover:bg-destroy-80/50"
@@ -162,7 +161,7 @@ export function OnboardingButtons({
       <ActionButton
         Element="button"
         onClick={next}
-        icon={{ icon: 'arrowRight', bgClassName: 'dark:bg-chalkboard-80' }}
+        iconStart={{ icon: 'arrowRight', bgClassName: 'dark:bg-chalkboard-80' }}
         className="dark:hover:bg-chalkboard-80/50"
         data-testid="onboarding-next"
       >

@@ -36,6 +36,28 @@ pub struct Program {
 }
 
 impl Program {
+    pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
+        // Check if we are in the non code meta.
+        if let Some(meta) = self.get_non_code_meta_for_position(pos) {
+            for node in &meta.start {
+                if node.contains(pos) {
+                    // We only care about the shebang.
+                    if let NonCodeValue::Shebang { value: _ } = &node.value {
+                        let source_range: SourceRange = node.into();
+                        return Some(Hover::Comment {
+                            value: r#"The `#!` at the start of a script, known as a shebang, specifies the path to the interpreter that should execute the script. This line is not necessary for your `kcl` to run in the modeling-app. You can safely delete it. If you wish to learn more about what you _can_ do with a shebang, read this doc: [zoo.dev/docs/faq/shebang](https://zoo.dev/docs/faq/shebang)."#.to_string(),
+                            range: source_range.to_lsp_range(code),
+                        });
+                    }
+                }
+            }
+        }
+
+        let value = self.get_value_for_position(pos)?;
+
+        value.get_hover_value_for_position(pos, code)
+    }
+
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         let indentation = options.get_indentation(indentation_level);
         let result = self
@@ -814,6 +836,18 @@ pub struct NonCodeNode {
     pub value: NonCodeValue,
 }
 
+impl From<NonCodeNode> for SourceRange {
+    fn from(value: NonCodeNode) -> Self {
+        Self([value.start, value.end])
+    }
+}
+
+impl From<&NonCodeNode> for SourceRange {
+    fn from(value: &NonCodeNode) -> Self {
+        Self([value.start, value.end])
+    }
+}
+
 impl NonCodeNode {
     pub fn contains(&self, pos: usize) -> bool {
         self.start <= pos && pos <= self.end
@@ -821,6 +855,7 @@ impl NonCodeNode {
 
     pub fn value(&self) -> String {
         match &self.value {
+            NonCodeValue::Shebang { value } => value.clone(),
             NonCodeValue::InlineComment { value, style: _ } => value.clone(),
             NonCodeValue::BlockComment { value, style: _ } => value.clone(),
             NonCodeValue::NewLineBlockComment { value, style: _ } => value.clone(),
@@ -830,6 +865,7 @@ impl NonCodeNode {
 
     pub fn format(&self, indentation: &str) -> String {
         match &self.value {
+            NonCodeValue::Shebang { value } => format!("{}\n\n", value),
             NonCodeValue::InlineComment {
                 value,
                 style: CommentStyle::Line,
@@ -882,6 +918,15 @@ pub enum CommentStyle {
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum NonCodeValue {
+    /// A shebang.
+    /// This is a special type of comment that is at the top of the file.
+    /// It looks like this:
+    /// ```python,no_run
+    /// #!/usr/bin/env python
+    /// ```
+    Shebang {
+        value: String,
+    },
     /// An inline comment.
     /// Here are examples:
     /// `1 + 1 // This is an inline comment`.
@@ -1864,7 +1909,13 @@ impl ObjectExpression {
             "{{ {} }}",
             self.properties
                 .iter()
-                .map(|prop| { format!("{}: {}", prop.key.name, prop.value.recast(options, 0, false)) })
+                .map(|prop| {
+                    format!(
+                        "{}: {}",
+                        prop.key.name,
+                        prop.value.recast(options, indentation_level + 1, is_in_pipe)
+                    )
+                })
                 .collect::<Vec<String>>()
                 .join(", ")
         );
@@ -1880,7 +1931,13 @@ impl ObjectExpression {
                 inner_indentation,
                 self.properties
                     .iter()
-                    .map(|prop| { format!("{}: {}", prop.key.name, prop.value.recast(options, 0, false)) })
+                    .map(|prop| {
+                        format!(
+                            "{}: {}",
+                            prop.key.name,
+                            prop.value.recast(options, indentation_level + 1, is_in_pipe)
+                        )
+                    })
                     .collect::<Vec<String>>()
                     .join(format!(",\n{}", inner_indentation).as_str()),
                 if is_in_pipe {
@@ -2657,7 +2714,12 @@ impl PipeExpression {
                 let non_code_meta = self.non_code_meta.clone();
                 if let Some(non_code_meta_value) = non_code_meta.non_code_nodes.get(&index) {
                     for val in non_code_meta_value {
-                        let formatted = val.format(&indentation).trim_end_matches('\n').to_string();
+                        let formatted = if val.end == self.end {
+                            let indentation = options.get_indentation(indentation_level);
+                            val.format(&indentation).trim_end_matches('\n').to_string()
+                        } else {
+                            val.format(&indentation).trim_end_matches('\n').to_string()
+                        };
                         if let NonCodeValue::BlockComment { .. } = val.value {
                             s += "\n";
                             s += &formatted;
@@ -2959,6 +3021,10 @@ pub enum Hover {
         parameter_index: u32,
         range: LspRange,
     },
+    Comment {
+        value: String,
+        range: LspRange,
+    },
 }
 
 /// Format options.
@@ -3232,6 +3298,144 @@ fn ghi = (x) => {
     }
 
     #[test]
+    fn test_recast_bug_extra_parens() {
+        let some_program_string = r#"// Ball Bearing
+// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads. 
+
+// Define constants like ball diameter, inside diameter, overhange length, and thickness
+const sphereDia = 0.5
+const insideDia = 1
+const thickness = 0.25
+const overHangLength = .4
+
+// Sketch and revolve the inside bearing piece
+const insideRevolve = startSketchOn('XZ')
+  |> startProfileAt([insideDia / 2, 0], %)
+  |> line([0, thickness + sphereDia / 2], %)
+  |> line([overHangLength, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-overHangLength + thickness, 0], %)
+  |> line([0, -sphereDia], %)
+  |> line([overHangLength - thickness, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-overHangLength, 0], %)
+  |> close(%)
+  |> revolve({ axis: 'y' }, %)
+
+// Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
+const sphere = startSketchOn('XZ')
+  |> startProfileAt([
+       0.05 + insideDia / 2 + thickness,
+       0 - 0.05
+     ], %)
+  |> line([sphereDia - 0.1, 0], %)
+  |> arc({
+       angle_start: 0,
+       angle_end: -180,
+       radius: sphereDia / 2 - 0.05
+     }, %)
+  |> close(%)
+  |> revolve({ axis: 'x' }, %)
+  |> patternCircular3d({
+       axis: [0, 0, 1],
+       center: [0, 0, 0],
+       repetitions: 10,
+       arcDegrees: 360,
+       rotateDuplicates: true
+     }, %)
+
+// Sketch and revolve the outside bearing
+const outsideRevolve = startSketchOn('XZ')
+  |> startProfileAt([
+       insideDia / 2 + thickness + sphereDia,
+       0
+     ], %)
+  |> line([0, sphereDia / 2], %)
+  |> line([-overHangLength + thickness, 0], %)
+  |> line([0, thickness], %)
+  |> line([overHangLength, 0], %)
+  |> line([0, -2 * thickness - sphereDia], %)
+  |> line([-overHangLength, 0], %)
+  |> line([0, thickness], %)
+  |> line([overHangLength - thickness, 0], %)
+  |> close(%)
+  |> revolve({ axis: 'y' }, %)"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        println!("{:#?}", program);
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"// Ball Bearing
+// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads.
+
+
+// Define constants like ball diameter, inside diameter, overhange length, and thickness
+const sphereDia = 0.5
+const insideDia = 1
+const thickness = 0.25
+const overHangLength = .4
+
+// Sketch and revolve the inside bearing piece
+const insideRevolve = startSketchOn('XZ')
+  |> startProfileAt([insideDia / 2, 0], %)
+  |> line([0, thickness + sphereDia / 2], %)
+  |> line([overHangLength, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-overHangLength + thickness, 0], %)
+  |> line([0, -sphereDia], %)
+  |> line([overHangLength - thickness, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-overHangLength, 0], %)
+  |> close(%)
+  |> revolve({ axis: 'y' }, %)
+
+// Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
+const sphere = startSketchOn('XZ')
+  |> startProfileAt([
+       0.05 + insideDia / 2 + thickness,
+       0 - 0.05
+     ], %)
+  |> line([sphereDia - 0.1, 0], %)
+  |> arc({
+       angle_start: 0,
+       angle_end: -180,
+       radius: sphereDia / 2 - 0.05
+     }, %)
+  |> close(%)
+  |> revolve({ axis: 'x' }, %)
+  |> patternCircular3d({
+       axis: [0, 0, 1],
+       center: [0, 0, 0],
+       repetitions: 10,
+       arcDegrees: 360,
+       rotateDuplicates: true
+     }, %)
+
+// Sketch and revolve the outside bearing
+const outsideRevolve = startSketchOn('XZ')
+  |> startProfileAt([
+       insideDia / 2 + thickness + sphereDia,
+       0
+     ], %)
+  |> line([0, sphereDia / 2], %)
+  |> line([-overHangLength + thickness, 0], %)
+  |> line([0, thickness], %)
+  |> line([overHangLength, 0], %)
+  |> line([0, -2 * thickness - sphereDia], %)
+  |> line([-overHangLength, 0], %)
+  |> line([0, thickness], %)
+  |> line([overHangLength - thickness, 0], %)
+  |> close(%)
+  |> revolve({ axis: 'y' }, %)
+"#
+        );
+    }
+
+    #[test]
     fn test_recast_empty_file() {
         let some_program_string = r#""#;
         let tokens = crate::token::lexer(some_program_string).unwrap();
@@ -3254,6 +3458,355 @@ fn ghi = (x) => {
         let recasted = program.recast(&Default::default(), 0);
         // Its VERY important this comes back with zero new lines.
         assert_eq!(recasted, r#""#);
+    }
+
+    #[test]
+    fn test_recast_shebang_only() {
+        let some_program_string = r#"#!/usr/local/env zoo kcl"#;
+
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let result = parser.ast();
+
+        assert!(result.is_err());
+        assert_eq!(
+            result.unwrap_err().to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([21, 24])], message: "Unexpected end of file. The compiler expected a function body items (functions are made up of variable declarations, expressions, and return statements, each of those is a possible body item" }"#
+        );
+    }
+
+    #[test]
+    fn test_recast_shebang() {
+        let some_program_string = r#"#!/usr/local/env zoo kcl
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+"#;
+
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"#!/usr/local/env zoo kcl
+
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+"#
+        );
+    }
+
+    #[test]
+    fn test_recast_shebang_new_lines() {
+        let some_program_string = r#"#!/usr/local/env zoo kcl
+        
+
+
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+"#;
+
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"#!/usr/local/env zoo kcl
+
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+"#
+        );
+    }
+
+    #[test]
+    fn test_recast_shebang_with_comments() {
+        let some_program_string = r#"#!/usr/local/env zoo kcl
+        
+// Yo yo my comments.
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+"#;
+
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"#!/usr/local/env zoo kcl
+
+// Yo yo my comments.
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+"#
+        );
+    }
+
+    #[test]
+    fn test_recast_large_file() {
+        let some_program_string = r#"// define constants
+const radius = 6.0
+const width = 144.0
+const length = 83.0
+const depth = 45.0
+const thk = 5
+const hole_diam = 5
+// define a rectangular shape func
+fn rectShape = (pos, w, l) => {
+  const rr = startSketchOn('xy')
+    |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
+    |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, "edge1")
+    |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, "edge2")
+    |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, "edge3")
+    |> close(%, "edge4")
+  return rr
+}
+// build the body of the focusrite scarlett solo gen 4
+// only used for visualization
+const scarlett_body = rectShape([0, 0], width, length)
+  |> extrude(depth, %)
+  |> fillet({
+       radius: radius,
+       tags: [
+  getEdge("edge2", %),
+  getEdge("edge4", %),
+  getOppositeEdge("edge2", %),
+  getOppositeEdge("edge4", %)
+]
+     }, %)
+  // build the bracket sketch around the body
+fn bracketSketch = (w, d, t) => {
+  const s = startSketchOn({
+         plane: {
+  origin: { x: 0, y: length / 2 + thk, z: 0 },
+  x_axis: { x: 1, y: 0, z: 0 },
+  y_axis: { x: 0, y: 0, z: 1 },
+  z_axis: { x: 0, y: 1, z: 0 }
+}
+       })
+    |> startProfileAt([-w / 2 - t, d + t], %)
+    |> lineTo([-w / 2 - t, -t], %, "edge1")
+    |> lineTo([w / 2 + t, -t], %, "edge2")
+    |> lineTo([w / 2 + t, d + t], %, "edge3")
+    |> lineTo([w / 2, d + t], %, "edge4")
+    |> lineTo([w / 2, 0], %, "edge5")
+    |> lineTo([-w / 2, 0], %, "edge6")
+    |> lineTo([-w / 2, d + t], %, "edge7")
+    |> close(%, "edge8")
+  return s
+}
+// build the body of the bracket
+const bracket_body = bracketSketch(width, depth, thk)
+  |> extrude(length + 10, %)
+  |> fillet({
+       radius: radius,
+       tags: [
+  getNextAdjacentEdge("edge7", %),
+  getNextAdjacentEdge("edge2", %),
+  getNextAdjacentEdge("edge3", %),
+  getNextAdjacentEdge("edge6", %)
+]
+     }, %)
+  // build the tabs of the mounting bracket (right side)
+const tabs_r = startSketchOn({
+       plane: {
+  origin: { x: 0, y: 0, z: depth + thk },
+  x_axis: { x: 1, y: 0, z: 0 },
+  y_axis: { x: 0, y: 1, z: 0 },
+  z_axis: { x: 0, y: 0, z: 1 }
+}
+     })
+  |> startProfileAt([width / 2 + thk, length / 2 + thk], %)
+  |> line([10, -5], %)
+  |> line([0, -10], %)
+  |> line([-10, -5], %)
+  |> close(%)
+  |> hole(circle([
+       width / 2 + thk + hole_diam,
+       length / 2 - hole_diam
+     ], hole_diam / 2, %), %)
+  |> extrude(-thk, %)
+  |> patternLinear3d({
+       axis: [0, -1, 0],
+       repetitions: 1,
+       distance: length - 10
+     }, %)
+  // build the tabs of the mounting bracket (left side)
+const tabs_l = startSketchOn({
+       plane: {
+  origin: { x: 0, y: 0, z: depth + thk },
+  x_axis: { x: 1, y: 0, z: 0 },
+  y_axis: { x: 0, y: 1, z: 0 },
+  z_axis: { x: 0, y: 0, z: 1 }
+}
+     })
+  |> startProfileAt([-width / 2 - thk, length / 2 + thk], %)
+  |> line([-10, -5], %)
+  |> line([0, -10], %)
+  |> line([10, -5], %)
+  |> close(%)
+  |> hole(circle([
+       -width / 2 - thk - hole_diam,
+       length / 2 - hole_diam
+     ], hole_diam / 2, %), %)
+  |> extrude(-thk, %)
+  |> patternLinear3d({
+       axis: [0, -1, 0],
+       repetitions: 1,
+       distance: length - 10
+     }, %)
+"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+        println!("{:#?}", program);
+
+        let recasted = program.recast(&Default::default(), 0);
+        // Its VERY important this comes back with zero new lines.
+        assert_eq!(
+            recasted,
+            r#"// define constants
+const radius = 6.0
+const width = 144.0
+const length = 83.0
+const depth = 45.0
+const thk = 5
+const hole_diam = 5
+// define a rectangular shape func
+fn rectShape = (pos, w, l) => {
+  const rr = startSketchOn('xy')
+    |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
+    |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, "edge1")
+    |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, "edge2")
+    |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, "edge3")
+    |> close(%, "edge4")
+  return rr
+}
+// build the body of the focusrite scarlett solo gen 4
+// only used for visualization
+const scarlett_body = rectShape([0, 0], width, length)
+  |> extrude(depth, %)
+  |> fillet({
+       radius: radius,
+       tags: [
+         getEdge("edge2", %),
+         getEdge("edge4", %),
+         getOppositeEdge("edge2", %),
+         getOppositeEdge("edge4", %)
+       ]
+     }, %)
+// build the bracket sketch around the body
+fn bracketSketch = (w, d, t) => {
+  const s = startSketchOn({
+         plane: {
+           origin: { x: 0, y: length / 2 + thk, z: 0 },
+           x_axis: { x: 1, y: 0, z: 0 },
+           y_axis: { x: 0, y: 0, z: 1 },
+           z_axis: { x: 0, y: 1, z: 0 }
+         }
+       })
+    |> startProfileAt([-w / 2 - t, d + t], %)
+    |> lineTo([-w / 2 - t, -t], %, "edge1")
+    |> lineTo([w / 2 + t, -t], %, "edge2")
+    |> lineTo([w / 2 + t, d + t], %, "edge3")
+    |> lineTo([w / 2, d + t], %, "edge4")
+    |> lineTo([w / 2, 0], %, "edge5")
+    |> lineTo([-w / 2, 0], %, "edge6")
+    |> lineTo([-w / 2, d + t], %, "edge7")
+    |> close(%, "edge8")
+  return s
+}
+// build the body of the bracket
+const bracket_body = bracketSketch(width, depth, thk)
+  |> extrude(length + 10, %)
+  |> fillet({
+       radius: radius,
+       tags: [
+         getNextAdjacentEdge("edge7", %),
+         getNextAdjacentEdge("edge2", %),
+         getNextAdjacentEdge("edge3", %),
+         getNextAdjacentEdge("edge6", %)
+       ]
+     }, %)
+// build the tabs of the mounting bracket (right side)
+const tabs_r = startSketchOn({
+       plane: {
+         origin: { x: 0, y: 0, z: depth + thk },
+         x_axis: { x: 1, y: 0, z: 0 },
+         y_axis: { x: 0, y: 1, z: 0 },
+         z_axis: { x: 0, y: 0, z: 1 }
+       }
+     })
+  |> startProfileAt([width / 2 + thk, length / 2 + thk], %)
+  |> line([10, -5], %)
+  |> line([0, -10], %)
+  |> line([-10, -5], %)
+  |> close(%)
+  |> hole(circle([
+       width / 2 + thk + hole_diam,
+       length / 2 - hole_diam
+     ], hole_diam / 2, %), %)
+  |> extrude(-thk, %)
+  |> patternLinear3d({
+       axis: [0, -1, 0],
+       repetitions: 1,
+       distance: length - 10
+     }, %)
+// build the tabs of the mounting bracket (left side)
+const tabs_l = startSketchOn({
+       plane: {
+         origin: { x: 0, y: 0, z: depth + thk },
+         x_axis: { x: 1, y: 0, z: 0 },
+         y_axis: { x: 0, y: 1, z: 0 },
+         z_axis: { x: 0, y: 0, z: 1 }
+       }
+     })
+  |> startProfileAt([-width / 2 - thk, length / 2 + thk], %)
+  |> line([-10, -5], %)
+  |> line([0, -10], %)
+  |> line([10, -5], %)
+  |> close(%)
+  |> hole(circle([
+       -width / 2 - thk - hole_diam,
+       length / 2 - hole_diam
+     ], hole_diam / 2, %), %)
+  |> extrude(-thk, %)
+  |> patternLinear3d({
+       axis: [0, -1, 0],
+       repetitions: 1,
+       distance: length - 10
+     }, %)
+"#
+        );
     }
 
     #[test]
@@ -3543,7 +4096,7 @@ const mySk1 = startSketchOn('XY')
   // and another with just white space between others below
   |> ry(45, %)
   |> rx(45, %)
-  // one more for good measure
+// one more for good measure
 "#
         );
     }

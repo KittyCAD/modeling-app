@@ -31,9 +31,11 @@ export function useCalculateKclExpression({
   newVariableInsertIndex: number
   setNewVariableName: (a: string) => void
 } {
-  const { programMemory } = useKclContext()
+  const { programMemory, code } = useKclContext()
   const { context } = useModelingContext()
-  const selectionRange = context.selectionRanges.codeBasedSelections[0].range
+  const selectionRange:
+    | (typeof context.selectionRanges.codeBasedSelections)[number]['range']
+    | undefined = context.selectionRanges.codeBasedSelections[0]?.range
   const inputRef = useRef<HTMLInputElement>(null)
   const [availableVarInfo, setAvailableVarInfo] = useState<
     ReturnType<typeof findAllPreviousVariables>
@@ -67,7 +69,7 @@ export function useCalculateKclExpression({
     } else {
       setIsNewVariableNameUnique(true)
     }
-  }, [newVariableName])
+  }, [programMemory, newVariableName])
 
   useEffect(() => {
     if (!programMemory || !selectionRange) return
@@ -81,8 +83,8 @@ export function useCalculateKclExpression({
 
   useEffect(() => {
     const execAstAndSetResult = async () => {
-      const code = `const __result__ = ${value}`
-      const ast = parse(code)
+      const _code = `const __result__ = ${value}`
+      const ast = parse(_code)
       const _programMem: any = { root: {}, return: null }
       availableVarInfo.variables.forEach(({ key, value }) => {
         _programMem.root[key] = { type: 'userVal', value, __meta: [] }
@@ -111,7 +113,7 @@ export function useCalculateKclExpression({
       setCalcResult('NAN')
       setValueNode(null)
     })
-  }, [value, availableVarInfo])
+  }, [value, availableVarInfo, code, kclManager.programMemory])
 
   return {
     valueNode,

@@ -12,6 +12,7 @@ import { APP_NAME } from 'lib/constants'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CustomIcon } from './CustomIcon'
 import { useLspContext } from './LspProvider'
+import { engineCommandManager } from 'lib/singletons'
 
 const ProjectSidebarMenu = ({
   project,
@@ -28,6 +29,8 @@ const ProjectSidebarMenu = ({
       <Link
         onClick={() => {
           onProjectClose(file || null, project?.path || null, false)
+          // Clear the scene and end the session.
+          engineCommandManager.endSession()
         }}
         to={paths.HOME}
         className="relative h-full grid place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-2.5 before:z-[-1] before:bg-primary hover:before:brightness-110 before:rounded-b-sm"
@@ -39,6 +42,8 @@ const ProjectSidebarMenu = ({
           <Link
             onClick={() => {
               onProjectClose(file || null, project?.path || null, false)
+              // Clear the scene and end the session.
+              engineCommandManager.endSession()
             }}
             to={paths.HOME}
             className="!no-underline"
@@ -128,13 +133,13 @@ function ProjectMenuPopover({
                   <p className="m-0 text-mono" data-testid="projectName">
                     {project?.name ? project.name : APP_NAME}
                   </p>
-                  {project?.entrypointMetadata && (
+                  {project?.metadata && project.metadata.created && (
                     <p
                       className="m-0 text-xs text-chalkboard-80 dark:text-chalkboard-40"
                       data-testid="createdAt"
                     >
                       Created{' '}
-                      {project.entrypointMetadata.birthtime?.toLocaleDateString()}
+                      {new Date(project.metadata.created).toLocaleDateString()}
                     </p>
                   )}
                 </div>
@@ -160,7 +165,7 @@ function ProjectMenuPopover({
               <div className="flex flex-col gap-2 p-4 dark:bg-chalkboard-90">
                 <ActionButton
                   Element="button"
-                  icon={{ icon: 'exportFile', className: 'p-1' }}
+                  iconStart={{ icon: 'exportFile', className: 'p-1' }}
                   className="border-transparent dark:border-transparent"
                   disabled={!findCommand(exportCommandInfo)}
                   onClick={() =>
@@ -177,8 +182,10 @@ function ProjectMenuPopover({
                     Element="button"
                     onClick={() => {
                       onProjectClose(file || null, project?.path || null, true)
+                      // Clear the scene and end the session.
+                      engineCommandManager.endSession()
                     }}
-                    icon={{
+                    iconStart={{
                       icon: 'arrowLeft',
                       className: 'p-1',
                     }}

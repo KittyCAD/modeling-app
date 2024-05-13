@@ -17,7 +17,9 @@ import {
 import { enginelessExecutor } from '../lib/testHelpers'
 import { getNodePathFromSourceRange } from './queryAst'
 
-beforeAll(() => initPromise)
+beforeAll(async () => {
+  await initPromise
+})
 
 describe('Testing createLiteral', () => {
   it('should create a literal', () => {

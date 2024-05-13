@@ -67,7 +67,7 @@ impl ProgramMemory {
 
     /// Add to the program memory.
     pub fn add(&mut self, key: &str, value: MemoryItem, source_range: SourceRange) -> Result<(), KclError> {
-        if self.root.get(key).is_some() {
+        if self.root.contains_key(key) {
             return Err(KclError::ValueAlreadyDefined(KclErrorDetails {
                 message: format!("Cannot redefine {}", key),
                 source_ranges: vec![source_range],
@@ -144,8 +144,6 @@ pub enum MemoryItem {
     },
     ImportedGeometry(ImportedGeometry),
     #[ts(skip)]
-    ExtrudeTransform(Box<ExtrudeTransform>),
-    #[ts(skip)]
     Function {
         #[serde(skip)]
         func: Option<MemoryFunction>,
@@ -189,6 +187,15 @@ pub enum Geometries {
 pub enum SketchGroupSet {
     SketchGroup(Box<SketchGroup>),
     SketchGroups(Vec<Box<SketchGroup>>),
+}
+
+/// A extrude group or a group of extrude groups.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
+pub enum ExtrudeGroupSet {
+    ExtrudeGroup(Box<ExtrudeGroup>),
+    ExtrudeGroups(Vec<Box<ExtrudeGroup>>),
 }
 
 /// Data for an imported geometry.
@@ -291,16 +298,6 @@ pub struct UserVal {
     pub meta: Vec<Metadata>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(tag = "type", rename_all = "camelCase")]
-pub struct ExtrudeTransform {
-    pub position: Position,
-    pub rotation: Rotation,
-    #[serde(rename = "__meta")]
-    pub meta: Vec<Metadata>,
-}
-
 pub type MemoryFunction =
     fn(
         s: Vec<MemoryItem>,
@@ -339,7 +336,6 @@ impl From<MemoryItem> for Vec<SourceRange> {
                 .flat_map(|eg| eg.meta.iter().map(|m| m.source_range))
                 .collect(),
             MemoryItem::ImportedGeometry(i) => i.meta.iter().map(|m| m.source_range).collect(),
-            MemoryItem::ExtrudeTransform(e) => e.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::Function { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::Plane(p) => p.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::Face(f) => f.meta.iter().map(|m| m.source_range).collect(),
@@ -991,21 +987,103 @@ pub struct ExecutorContext {
     pub engine: Arc<Box<dyn EngineManager>>,
     pub fs: Arc<FileManager>,
     pub stdlib: Arc<StdLib>,
-    pub units: kittycad::types::UnitLength,
+    pub settings: ExecutorSettings,
     /// Mock mode is only for the modeling app when they just want to mock engine calls and not
     /// actually make them.
     pub is_mock: bool,
 }
 
+/// The executor settings.
+#[derive(Debug, Clone)]
+pub struct ExecutorSettings {
+    /// The unit to use in modeling dimensions.
+    pub units: crate::settings::types::UnitLength,
+    /// Highlight edges of 3D objects?
+    pub highlight_edges: bool,
+    /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
+    pub enable_ssao: bool,
+}
+
+impl Default for ExecutorSettings {
+    fn default() -> Self {
+        Self {
+            units: Default::default(),
+            highlight_edges: true,
+            enable_ssao: false,
+        }
+    }
+}
+
+impl From<crate::settings::types::Configuration> for ExecutorSettings {
+    fn from(config: crate::settings::types::Configuration) -> Self {
+        Self {
+            units: config.settings.modeling.base_unit,
+            highlight_edges: config.settings.modeling.highlight_edges.into(),
+            enable_ssao: config.settings.modeling.enable_ssao.into(),
+        }
+    }
+}
+
+impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSettings {
+    fn from(config: crate::settings::types::project::ProjectConfiguration) -> Self {
+        Self {
+            units: config.settings.modeling.base_unit,
+            highlight_edges: config.settings.modeling.highlight_edges.into(),
+            enable_ssao: config.settings.modeling.enable_ssao.into(),
+        }
+    }
+}
+
+impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
+    fn from(modeling: crate::settings::types::ModelingSettings) -> Self {
+        Self {
+            units: modeling.base_unit,
+            highlight_edges: modeling.highlight_edges.into(),
+            enable_ssao: modeling.enable_ssao.into(),
+        }
+    }
+}
+
 impl ExecutorContext {
     /// Create a new default executor context.
     #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new(ws: reqwest::Upgraded, units: kittycad::types::UnitLength) -> Result<Self> {
+    pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
+        let ws = client
+            .modeling()
+            .commands_ws(
+                None,
+                None,
+                if settings.enable_ssao {
+                    Some(kittycad::types::PostEffectType::Ssao)
+                } else {
+                    None
+                },
+                None,
+                None,
+                None,
+                Some(false),
+            )
+            .await?;
+
+        let engine: Arc<Box<dyn EngineManager>> =
+            Arc::new(Box::new(crate::engine::conn::EngineConnection::new(ws).await?));
+
+        // Set the edge visibility.
+        engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                SourceRange::default(),
+                kittycad::types::ModelingCmd::EdgeLinesVisible {
+                    hidden: !settings.highlight_edges,
+                },
+            )
+            .await?;
+
         Ok(Self {
-            engine: Arc::new(Box::new(crate::engine::conn::EngineConnection::new(ws).await?)),
+            engine,
             fs: Arc::new(FileManager::new()),
             stdlib: Arc::new(StdLib::new()),
-            units,
+            settings,
             is_mock: false,
         })
     }
@@ -1024,7 +1102,7 @@ impl ExecutorContext {
                 uuid::Uuid::new_v4(),
                 SourceRange::default(),
                 kittycad::types::ModelingCmd::SetSceneUnits {
-                    unit: self.units.clone(),
+                    unit: self.settings.units.clone().into(),
                 },
             )
             .await?;
@@ -1257,8 +1335,8 @@ impl ExecutorContext {
     }
 
     /// Update the units for the executor.
-    pub fn update_units(&mut self, units: kittycad::types::UnitLength) {
-        self.units = units;
+    pub fn update_units(&mut self, units: crate::settings::types::UnitLength) {
+        self.settings.units = units;
     }
 }
 
@@ -1334,7 +1412,7 @@ mod tests {
             engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await?)),
             fs: Arc::new(crate::fs::FileManager::new()),
             stdlib: Arc::new(crate::std::StdLib::new()),
-            units: kittycad::types::UnitLength::Mm,
+            settings: Default::default(),
             is_mock: false,
         };
         let memory = ctx.run(program, None).await?;

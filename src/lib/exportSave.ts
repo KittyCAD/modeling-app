@@ -14,9 +14,21 @@ interface ModelingAppFile {
 const save_ = async (file: ModelingAppFile) => {
   try {
     if (isTauri()) {
+      const extension = file.name.split('.').pop() || null
+      let extensions: string[] = []
+      if (extension !== null) {
+        extensions.push(extension)
+      }
+
       // Open a dialog to save the file.
       const filePath = await save({
         defaultPath: file.name,
+        filters: [
+          {
+            name: 'model',
+            extensions: extensions,
+          },
+        ],
       })
 
       if (filePath === null) {
@@ -48,7 +60,7 @@ export async function exportSave(data: ArrayBuffer) {
   // This converts the ArrayBuffer to a Rust equivalent Vec<u8>.
   let uintArray = new Uint8Array(data)
 
-  const files: ModelingAppFile[] = deserialize_files(uintArray)
+  let files: ModelingAppFile[] = deserialize_files(uintArray)
 
   if (files.length > 1) {
     let zip = new JSZip()

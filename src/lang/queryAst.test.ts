@@ -15,7 +15,9 @@ import {
   createPipeSubstitution,
 } from './modifyAst'
 
-beforeAll(() => initPromise)
+beforeAll(async () => {
+  await initPromise
+})
 
 describe('findAllPreviousVariables', () => {
   it('should find all previous variables', async () => {

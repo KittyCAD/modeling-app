@@ -1,16 +1,15 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { addLineHighlight, EditorView } from './editor/highlightextension'
 import {
   Program,
   _executor,
   ProgramMemory,
   programMemoryInit,
 } from './lang/wasm'
-import { Selection } from 'lib/selections'
 import { enginelessExecutor } from './lib/testHelpers'
 import { EngineCommandManager } from './lang/std/engineConnection'
 import { KCLError } from './lang/errors'
+import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
 
 export type ToolTip =
   | 'lineTo'
@@ -46,21 +45,7 @@ export const toolTips = [
   'tangentialArcTo',
 ] as any as ToolTip[]
 
-export type PaneType =
-  | 'code'
-  | 'variables'
-  | 'debug'
-  | 'kclErrors'
-  | 'logs'
-  | 'lspMessages'
-
 export interface StoreState {
-  editorView: EditorView | null
-  setEditorView: (editorView: EditorView) => void
-  highlightRange: [number, number]
-  setHighlightRange: (range: Selection['range']) => void
-  isShiftDown: boolean
-  setIsShiftDown: (isShiftDown: boolean) => void
   mediaStream?: MediaStream
   setMediaStream: (mediaStream: MediaStream) => void
   isStreamReady: boolean
@@ -85,41 +70,19 @@ export interface StoreState {
 
   showHomeMenu: boolean
   setHomeShowMenu: (showMenu: boolean) => void
-  openPanes: PaneType[]
-  setOpenPanes: (panes: PaneType[]) => void
+  openPanes: SidebarType[]
+  setOpenPanes: (panes: SidebarType[]) => void
   homeMenuItems: {
     name: string
     path: string
   }[]
   setHomeMenuItems: (items: { name: string; path: string }[]) => void
-  lastCodeMirrorSelectionUpdatedFromScene: number
-  setLastCodeMirrorSelectionUpdatedFromScene: (time: number) => void
 }
 
 export const useStore = create<StoreState>()(
   persist(
     (set, get) => {
       return {
-        editorView: null,
-        setEditorView: (editorView) => {
-          set({ editorView })
-        },
-        highlightRange: [0, 0],
-        setHighlightRange: (selection) => {
-          set({ highlightRange: selection })
-          const editorView = get().editorView
-          const safeEnd = Math.min(
-            selection[1],
-            editorView?.state.doc.length || selection[1]
-          )
-          if (editorView) {
-            editorView.dispatch({
-              effects: addLineHighlight.of([selection[0], safeEnd]),
-            })
-          }
-        },
-        isShiftDown: false,
-        setIsShiftDown: (isShiftDown) => set({ isShiftDown }),
         setMediaStream: (mediaStream) => set({ mediaStream }),
         isStreamReady: false,
         setIsStreamReady: (isStreamReady) => set({ isStreamReady }),
@@ -159,9 +122,6 @@ export const useStore = create<StoreState>()(
         setHomeShowMenu: (showHomeMenu) => set({ showHomeMenu }),
         homeMenuItems: [],
         setHomeMenuItems: (homeMenuItems) => set({ homeMenuItems }),
-        lastCodeMirrorSelectionUpdatedFromScene: Date.now(),
-        setLastCodeMirrorSelectionUpdatedFromScene: (time) =>
-          set({ lastCodeMirrorSelectionUpdatedFromScene: time }),
       }
     },
     {
