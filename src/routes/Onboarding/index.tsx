@@ -146,7 +146,7 @@ export function OnboardingButtons({
         onClick={dismiss}
         iconStart={{
           icon: 'close',
-          bgClassName: 'bg-destroy-80',
+          bgClassName: 'bg-destroy-80 group-hover:bg-destroy-80',
           iconClassName: 'text-destroy-20 group-hover:text-destroy-10',
         }}
         className="hover:border-destroy-40 hover:bg-destroy-10/50 dark:hover:bg-destroy-80/50"
