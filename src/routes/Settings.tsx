@@ -132,7 +132,10 @@ export const Settings = () => {
             />
             <div
               className="flex-1 grid items-stretch pl-4 pr-5 pb-5 gap-2 overflow-hidden"
-              style={{ gridTemplateColumns: 'auto 1fr' }}
+              style={{
+                gridTemplateColumns: 'auto 1fr',
+                gridTemplateRows: '1fr',
+              }}
             >
               <div className="flex w-32 flex-col gap-3 pr-2 py-1 border-0 border-r border-r-chalkboard-20 dark:border-r-chalkboard-90">
                 {Object.entries(context)
