@@ -1,0 +1,27 @@
+{
+  "version": "0.20.1",
+  "git_rev": "3a05211d306ca045ace2e7bf10b7f8138e1daad5",
+  "timestamp": "2024-05-07T20:06:34.655Z",
+  "tauri": false,
+  "os": {
+    "platform": "Mac OS",
+    "version": "10.15.7",
+    "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+  },
+  "webrtc_stats": {
+    "packets_lost": 0,
+    "frames_received": 672,
+    "frame_width": 1440.0,
+    "frame_height": 712.0,
+    "frame_rate": 58.0,
+    "key_frames_decoded": 7,
+    "frames_dropped": 77,
+    "pause_count": 0,
+    "total_pauses_duration": 0.0,
+    "freeze_count": 12,
+    "total_freezes_duration": 3.057,
+    "pli_count": 6,
+    "jitter": 0.011
+  },
+  "pool": ""
+}
