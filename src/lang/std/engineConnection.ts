@@ -590,6 +590,8 @@ class EngineConnection {
               ) {
                 this.engineCommandManager.inSequence = result.data.sequence
                 callback(result)
+              } else if (result.type !== 'highlight_set_entity') {
+                callback(result)
               }
             }
           )
@@ -907,7 +909,7 @@ type UnreliableResponses = Extract<
   Models['OkModelingCmdResponse_type'],
   { type: 'highlight_set_entity' | 'camera_drag_move' }
 >
-interface UnreliableSubscription<T extends UnreliableResponses['type']> {
+export interface UnreliableSubscription<T extends UnreliableResponses['type']> {
   event: T
   callback: (data: Extract<UnreliableResponses, { type: T }>) => void
 }
