@@ -2,7 +2,7 @@
 
 use anyhow::Result;
 
-use crate::coredump::{AuthMachineState, ClientState, CoreDump};
+use crate::coredump::{ClientState, CoreDump};
 
 #[derive(Debug, Clone)]
 pub struct CoreDumper {}
