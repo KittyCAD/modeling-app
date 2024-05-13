@@ -6,8 +6,8 @@ use wasm_bindgen::prelude::wasm_bindgen;
 use crate::{
     coredump::{
         AuthMachineState, ClientState, CommandBarMachineState, CoreDump,
-        FileMachineState, HomeMachineState, ModelingMachineState,
-        SettingsMachineState
+        EngineCommandManagerState, FileMachineState, HomeMachineState, 
+        KclManagerState, ModelingMachineState,SceneInfraState, SettingsMachineState
     },
     wasm::JsFuture,
 };
@@ -137,6 +137,9 @@ impl CoreDump for CoreDumper {
 
     async fn get_client_state(&self) -> Result<ClientState> {
         Ok(ClientState {
+            engine_command_manager: EngineCommandManagerState { ..Default::default() },
+            kcl_manager: KclManagerState { ..Default::default() },
+            scene_infra: SceneInfraState { ..Default::default() },
             auth_machine: AuthMachineState { ..Default::default() },
             command_bar_machine: CommandBarMachineState { ..Default::default() },
             file_machine: FileMachineState { ..Default::default() },

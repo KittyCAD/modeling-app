@@ -205,6 +205,32 @@ pub struct WebrtcStats {
     pub jitter: f32,
 }
 
+/// Client State Structures
+
+/// Client State Singleton Structures
+
+#[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct EngineCommandManagerState {
+    pub _unused: [u8; 0],
+}
+
+#[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct KclManagerState {
+    pub _unused: [u8; 0],
+}
+
+#[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct SceneInfraState {
+    pub _unused: [u8; 0],
+}
+/// Client State XState Structures
+
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
@@ -252,7 +278,12 @@ pub struct SettingsMachineState {
 #[serde(rename_all = "snake_case")]
 pub struct ClientState {
     /// Singletons
-    /// 
+    /// Internal state of the KclManager/KclSingleton object.
+    pub engine_command_manager: EngineCommandManagerState,
+    /// Internal state of the KclManager/KclSingleton object.
+    pub kcl_manager: KclManagerState,
+    /// Internal state of the SceneInfra object.
+    pub scene_infra: SceneInfraState,
     
     /// XState
     /// Internal state of the AuthMachine xstate object.
