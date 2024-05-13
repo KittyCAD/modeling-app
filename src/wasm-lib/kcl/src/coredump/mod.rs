@@ -215,7 +215,56 @@ pub struct AuthMachineState {
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
+pub struct CommandBarMachineState {
+    pub _unused: [u8; 0],
+}
+
+#[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct FileMachineState {
+    pub _unused: [u8; 0],
+}
+
+#[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct HomeMachineState {
+    pub _unused: [u8; 0],
+}
+
+#[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct ModelingMachineState {
+    pub _unused: [u8; 0],
+}
+
+#[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct SettingsMachineState {
+    pub _unused: [u8; 0],
+}
+
+#[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
 pub struct ClientState {
+    /// Singletons
+    /// 
+    
+    /// XState
     /// Internal state of the AuthMachine xstate object.
     pub auth_machine: AuthMachineState,
+    /// Internal state of the CommandBarMachine xstate object.
+    pub command_bar_machine: CommandBarMachineState,
+    /// Internal state of the FileMachine xstate object.
+    pub file_machine: FileMachineState,
+    /// Internal state of the HomeMachine xstate object (for Tauri).
+    pub home_machine: HomeMachineState,
+    /// Internal state of the ModelingMachine xstate object.
+    pub modeling_machine: ModelingMachineState,
+    /// Internal state of the SettingsMachine xstate object.
+    pub settings_machine: SettingsMachineState,
 }
