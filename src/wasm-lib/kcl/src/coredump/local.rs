@@ -2,7 +2,7 @@
 
 use anyhow::Result;
 
-use crate::coredump::CoreDump;
+use crate::coredump::{AuthMachineState, ClientState, CoreDump};
 
 #[derive(Debug, Clone)]
 pub struct CoreDumper {}
@@ -55,8 +55,8 @@ impl CoreDump for CoreDumper {
         Ok(crate::coredump::WebrtcStats::default())
     }
 
-    async fn get_client_state(&self) -> Result<String> {
-        Ok("{}".to_string())
+    async fn get_client_state(&self) -> Result<ClientState> {
+        Ok(ClientState::default())
     }
 
     async fn screenshot(&self) -> Result<String> {

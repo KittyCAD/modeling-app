@@ -3,7 +3,10 @@
 use anyhow::Result;
 use wasm_bindgen::prelude::wasm_bindgen;
 
-use crate::{coredump::CoreDump, wasm::JsFuture};
+use crate::{
+    coredump::{AuthMachineState, ClientState, CoreDump},
+    wasm::JsFuture,
+};
 
 #[wasm_bindgen(module = "/../../lib/coredump.ts")]
 extern "C" {
@@ -128,15 +131,11 @@ impl CoreDump for CoreDumper {
         Ok(stats)
     }
 
-    async fn get_client_state(&self) -> Result<String> {
-        // Parse the value as a string.
-        let client_state = "{ signletons: {}, xstate: {} }";
-
-        //self.manager
-        //    .get_client_state()
-        //    .map_err(|e| anyhow::anyhow!("Failed to get response from get client state: {:?}", e));
-
-        Ok(client_state.to_string())
+    async fn get_client_state(&self) -> Result<ClientState> {
+        Ok(ClientState {
+            auth_machine: AuthMachineState { ..Default::default() },
+            ..Default::default()
+        })
     }
 
     async fn screenshot(&self) -> Result<String> {

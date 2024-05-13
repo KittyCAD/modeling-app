@@ -27,7 +27,7 @@ pub trait CoreDump: Clone {
 
     async fn get_webrtc_stats(&self) -> Result<WebrtcStats>;
 
-    async fn get_client_state(&self) -> Result<String>;
+    async fn get_client_state(&self) -> Result<ClientState>;
 
     /// Return a screenshot of the app.
     async fn screenshot(&self) -> Result<String>;
@@ -115,8 +115,7 @@ pub struct AppInfo {
     pub pool: String,
 
     /// The client state (singletons and xstate)
-    ///#[serde(skip_serializing_if = "Option::is_none")]
-    pub client_state: String,
+    pub client_state: ClientState,
 }
 
 impl AppInfo {
@@ -204,4 +203,19 @@ pub struct WebrtcStats {
     pub pli_count: u32,
     /// Packet jitter for this synchronizing source, measured in seconds.
     pub jitter: f32,
+}
+
+#[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct AuthMachineState {
+    pub _unused: [u8; 0],
+}
+
+#[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct ClientState {
+    /// Internal state of the AuthMachine xstate object.
+    pub auth_machine: AuthMachineState,
 }
