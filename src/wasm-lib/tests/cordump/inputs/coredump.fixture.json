@@ -23,5 +23,15 @@
     "pli_count": 6,
     "jitter": 0.011
   },
-  "pool": ""
+  "pool": "",
+  "client_state": {
+    "kcl_manager": {},
+    "scene_infra": {},
+    "engine_command_manager": {},
+    "modeling_machine": {},
+    "settings_machine": {},
+    "auth_machine": {},
+    "home_machine": {},
+    "command_bar_machine": {}
+  }
 }
