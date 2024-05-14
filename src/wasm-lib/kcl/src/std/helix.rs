@@ -41,9 +41,14 @@ pub async fn helix(args: Args) -> Result<MemoryItem, KclError> {
 ///
 /// ```no_run
 /// const part001 = startSketchOn('XY')
-///     |> circle([5, 5], 10, %)
-///     |> extrude(10, %)
-///     |> helix({revolutions: 16, angle_start: 0}, %)
+///   |> circle([5, 5], 10, %)
+///   |> extrude(10, %)
+///   |> helix({ 
+///     angle_start: 0,
+///     ccw: true,
+///     revolutions: 16, 
+///     angle_start: 0 
+///  }, %)
 /// ```
 #[stdlib {
     name = "helix",

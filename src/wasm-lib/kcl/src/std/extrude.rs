@@ -29,13 +29,46 @@ pub async fn extrude(args: Args) -> Result<MemoryItem, KclError> {
 /// Extrudes by a given amount.
 ///
 /// ```no_run
-/// startSketchOn('XY')
-///     |> startProfileAt([0, 0], %)
-///     |> line([0, 10], %)
-///     |> line([10, 0], %)
-///     |> line([0, -10], %)
-///     |> close(%)
-///     |> extrude(5, %)
+/// const example = startSketchOn('-XZ')
+///   |> startProfileAt([0, 0], %)
+///   |> line([10, 0], %)
+///   |> arc({
+///     angle_end: 0,
+///     angle_start: 120,
+///     radius: 5,
+///   }, %)
+///   |> line([5, 0], %)
+///   |> line([0, 10], %)
+///   |> bezierCurve({
+///     control1: [-10, 0],
+///     control2: [2, 10],
+///     to: [-5, 10],
+///   }, %)
+///   |> line([-5, -2], %)
+///   |> close(%)
+///   |> extrude(10, %)
+/// ```
+///
+/// ```no_run
+/// const exampleSketch = startSketchOn('-XZ')
+///   |> startProfileAt([-10, 0], %)
+///   |> arc({
+///     angle_end: -60,
+///     angle_start: 120,
+///     radius: 5,
+///   }, %)
+///   |> line([10, 0], %)
+///   |> line([5, 0], %)
+///   |> bezierCurve({
+///     control1: [-3, 0],
+///     control2: [2, 10],
+///     to: [-5, 10],
+///   }, %)
+///   |> line([-4, 10], %)
+///   |> line([-5, -2], %)
+///   |> close(%)
+///
+/// const example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "extrude"
