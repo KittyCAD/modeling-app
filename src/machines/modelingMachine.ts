@@ -839,7 +839,7 @@ export const modelingMachine = createMachine(
         const { modifiedAst, pathToExtrudeArg } = extrudeSketch(
           ast,
           pathToNode,
-          true,
+          false,
           'variableName' in distance
             ? distance.variableIdentifierAst
             : distance.valueAst

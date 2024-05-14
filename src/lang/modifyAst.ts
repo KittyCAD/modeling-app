@@ -26,6 +26,7 @@ import { addTagForSketchOnFace } from './std/sketch'
 import { isLiteralArrayOrStatic } from './std/sketchcombos'
 import { DefaultPlaneStr } from 'clientSideScene/sceneEntities'
 import { roundOff } from 'lib/utils'
+import { KCL_DEFAULT_CONSTANT_PREFIXES } from 'lib/constants'
 
 export function startSketchOnDefault(
   node: Program,
@@ -33,7 +34,8 @@ export function startSketchOnDefault(
   name = ''
 ): { modifiedAst: Program; id: string; pathToNode: PathToNode } {
   const _node = { ...node }
-  const _name = name || findUniqueName(node, 'part')
+  const _name =
+    name || findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SKETCH)
 
   const startSketchOn = createCallExpressionStdLib('startSketchOn', [
     createLiteral(axis),
@@ -100,7 +102,8 @@ export function addSketchTo(
   name = ''
 ): { modifiedAst: Program; id: string; pathToNode: PathToNode } {
   const _node = { ...node }
-  const _name = name || findUniqueName(node, 'part')
+  const _name =
+    name || findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.EXTRUDE)
 
   const startSketchOn = createCallExpressionStdLib('startSketchOn', [
     createLiteral(axis.toUpperCase()),
@@ -233,7 +236,7 @@ export function mutateObjExpProp(
 export function extrudeSketch(
   node: Program,
   pathToNode: PathToNode,
-  shouldPipe = true,
+  shouldPipe = false,
   distance = createLiteral(4) as Value
 ): {
   modifiedAst: Program
@@ -288,12 +291,29 @@ export function extrudeSketch(
       pathToExtrudeArg,
     }
   }
-  const name = findUniqueName(node, 'part')
+
+  // We're not creating a pipe expression,
+  // but rather a separate constant for the extrusion
+  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.EXTRUDE)
   const VariableDeclaration = createVariableDeclaration(name, extrudeCall)
-  _node.body.splice(_node.body.length, 0, VariableDeclaration)
+
+  const sketchIndexInPathToNode =
+    pathToDecleration.findIndex((a) => a[0] === 'body') + 1
+  const sketchIndexInBody = pathToDecleration[
+    sketchIndexInPathToNode
+  ][0] as number
+  _node.body.splice(sketchIndexInBody + 1, 0, VariableDeclaration)
+  console.log('extruding', {
+    VariableDeclaration,
+    extrudeCall,
+    body: _node.body,
+    pathToDecleration,
+    sketchIndexInBody,
+    sketchIndexInPathToNode,
+  })
   const pathToExtrudeArg: PathToNode = [
     ['body', ''],
-    [_node.body.length, 'index'],
+    [sketchIndexInBody + 1, 'index'],
     ['declarations', 'VariableDeclaration'],
     [0, 'index'],
     ['init', 'VariableDeclarator'],
@@ -301,7 +321,7 @@ export function extrudeSketch(
     [0, 'index'],
   ]
   return {
-    modifiedAst: node,
+    modifiedAst: _node,
     pathToNode: [...pathToNode.slice(0, -1), [-1, 'index']],
     pathToExtrudeArg,
   }
@@ -314,7 +334,10 @@ export function sketchOnExtrudedFace(
   cap: 'none' | 'start' | 'end' = 'none'
 ): { modifiedAst: Program; pathToNode: PathToNode } {
   let _node = { ...node }
-  const newSketchName = findUniqueName(node, 'part')
+  const newSketchName = findUniqueName(
+    node,
+    KCL_DEFAULT_CONSTANT_PREFIXES.SKETCH
+  )
   const { node: oldSketchNode } = getNodeFromPath<VariableDeclarator>(
     _node,
     pathToNode,
