@@ -5,12 +5,6 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { ActionButton } from 'components/ActionButton'
 import { isSingleCursorInPipe } from 'lang/queryAst'
-import { useKclContext } from 'lang/KclProvider'
-import {
-  NetworkHealthState,
-  useNetworkStatus,
-} from 'components/NetworkHealthIndicator'
-import { useStore } from 'useStore'
 import { useShouldDisableModelingActions } from 'hooks/useShouldDisableModelingActions'
 import { useInteractionMap } from 'hooks/useInteractionMap'
 
@@ -21,9 +15,17 @@ export const Toolbar = () => {
   useInteractionMap(
     [
       {
+        name: 'sketch',
+        title: 'Start Sketch',
+        sequence: 'shift+s',
+        action: () =>
+          send({ type: 'Enter sketch', data: { forceNewSketch: true } }),
+        guard: () => !shouldDisableModelingActions && state.matches('idle'),
+      },
+      {
         name: 'extrude',
         title: 'Extrude',
-        sequence: 'shift+e',
+        sequence: 'ctrl+c shift+e',
         action: () =>
           commandBarSend({
             type: 'Find and select command',
@@ -50,13 +52,6 @@ export const Toolbar = () => {
       context.selectionRanges
     )
   }, [engineCommandManager.artifactMap, context.selectionRanges])
-  const { overallState } = useNetworkStatus()
-  const { isExecuting } = useKclContext()
-  const { isStreamReady } = useStore((s) => ({
-    isStreamReady: s.isStreamReady,
-  }))
-  const disableAllButtons =
-    overallState !== NetworkHealthState.Ok || isExecuting || !isStreamReady
 
   function handleToolbarButtonsWheelEvent(ev: WheelEvent<HTMLSpanElement>) {
     const span = toolbarButtonsRef.current
@@ -95,7 +90,7 @@ export const Toolbar = () => {
                 iconClassName,
                 bgClassName,
               }}
-              disabled={disableAllButtons}
+              disabled={shouldDisableModelingActions}
             >
               <span data-testid="start-sketch">Start Sketch</span>
             </ActionButton>
@@ -112,7 +107,7 @@ export const Toolbar = () => {
                 iconClassName,
                 bgClassName,
               }}
-              disabled={disableAllButtons}
+              disabled={shouldDisableModelingActions}
             >
               Edit Sketch
             </ActionButton>
@@ -129,7 +124,7 @@ export const Toolbar = () => {
                 iconClassName,
                 bgClassName,
               }}
-              disabled={disableAllButtons}
+              disabled={shouldDisableModelingActions}
             >
               Exit Sketch
             </ActionButton>
@@ -152,7 +147,7 @@ export const Toolbar = () => {
                   iconClassName,
                   bgClassName,
                 }}
-                disabled={disableAllButtons}
+                disabled={shouldDisableModelingActions}
               >
                 Line
               </ActionButton>
@@ -175,7 +170,7 @@ export const Toolbar = () => {
                 disabled={
                   (!state.can('Equip tangential arc to') &&
                     !state.matches('Sketch.Tangential arc to')) ||
-                  disableAllButtons
+                  shouldDisableModelingActions
                 }
               >
                 Tangential Arc
@@ -199,7 +194,7 @@ export const Toolbar = () => {
                 disabled={
                   (!state.can('Equip rectangle tool') &&
                     !state.matches('Sketch.Rectangle tool')) ||
-                  disableAllButtons
+                  shouldDisableModelingActions
                 }
                 title={
                   state.can('Equip rectangle tool')
@@ -244,7 +239,7 @@ export const Toolbar = () => {
                   disabled={
                     !state.nextEvents
                       .filter((event) => state.can(event as any))
-                      .includes(eventName) || disableAllButtons
+                      .includes(eventName) || shouldDisableModelingActions
                   }
                   title={eventName}
                   icon={{
@@ -270,7 +265,7 @@ export const Toolbar = () => {
                   data: { name: 'Extrude', ownerMachine: 'modeling' },
                 })
               }
-              disabled={!state.can('Extrude') || disableAllButtons}
+              disabled={!state.can('Extrude') || shouldDisableModelingActions}
               title={
                 state.can('Extrude')
                   ? 'extrude'

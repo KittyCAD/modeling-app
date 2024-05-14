@@ -36,7 +36,6 @@ export const CommandBar = () => {
           })
         },
         guard: () => true,
-        ownerId: 'commandBar',
       },
       {
         name: 'close',
@@ -46,10 +45,10 @@ export const CommandBar = () => {
           commandBarSend({ type: 'Close' })
         },
         guard: () => !commandBarState.matches('Closed'),
-        ownerId: 'commandBar',
       },
     ],
-    [commandBarState, commandBarSend]
+    [commandBarState, commandBarSend],
+    'Command Bar'
   )
 
   function stepBack() {

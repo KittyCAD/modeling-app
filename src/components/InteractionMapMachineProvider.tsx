@@ -173,7 +173,18 @@ export function InteractionMapMachineProvider({
     }
 
     const fireEvent = (event: MouseEvent | KeyboardEvent) => {
-      send({ type: 'Fire event', data: event })
+      // Don't fire click events on interactable elements,
+      // and make sure these fire last in the bubbling phase
+      if (
+        event.BUBBLING_PHASE &&
+        !(
+          event instanceof MouseEvent &&
+          event.target instanceof HTMLElement &&
+          ['INPUT', 'BUTTON', 'ANCHOR'].includes(event.target.tagName)
+        )
+      ) {
+        send({ type: 'Fire event', data: event })
+      }
     }
 
     window.addEventListener('keydown', fireEvent)

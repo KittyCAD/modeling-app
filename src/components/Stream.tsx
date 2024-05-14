@@ -6,7 +6,7 @@ import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
 import { NetworkHealthState, useNetworkStatus } from './NetworkHealthIndicator'
-import { butName } from 'lib/cameraControls'
+import { buttonName } from 'lib/cameraControls'
 import { sendSelectEventToEngine } from 'lib/selections'
 
 export const Stream = ({ className = '' }: { className?: string }) => {
@@ -63,7 +63,7 @@ export const Stream = ({ className = '' }: { className?: string }) => {
     if (state.matches('Sketch')) return
     if (state.matches('Sketch no face')) return
 
-    if (!didDragInStream && butName(e).left) {
+    if (!didDragInStream && buttonName(e).left) {
       sendSelectEventToEngine(e, videoRef.current, streamDimensions)
     }
 

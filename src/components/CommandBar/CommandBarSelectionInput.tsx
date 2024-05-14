@@ -59,6 +59,10 @@ function CommandBarSelectionInput({
     return () => kclManager.enterEditMode()
   }, [])
 
+  useEffect(() => {
+    console.log('selectionsByType', selectionsByType)
+  }, [selectionsByType])
+
   // Fast-forward through this arg if it's marked as skippable
   // and we have a valid selection already
   useEffect(() => {
