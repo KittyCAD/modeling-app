@@ -304,7 +304,7 @@ describe('testing sketchOnExtrudedFace', () => {
   |> line([8.62, -9.57], %)
   |> close(%)
   |> extrude(5 + 7, %)
-const part002 = startSketchOn(part001, 'seg01')`)
+const sketch001 = startSketchOn(part001, 'seg01')`)
   })
   test('it should be able to extrude on close segments', async () => {
     const code = `const part001 = startSketchOn('-XZ')
@@ -330,7 +330,7 @@ const part002 = startSketchOn(part001, 'seg01')`)
   |> line([8.62, -9.57], %)
   |> close(%, 'seg01')
   |> extrude(5 + 7, %)
-const part002 = startSketchOn(part001, 'seg01')`)
+const sketch001 = startSketchOn(part001, 'seg01')`)
   })
   test('it should be able to extrude on start-end caps', async () => {
     const code = `const part001 = startSketchOn('-XZ')
@@ -361,6 +361,35 @@ const part002 = startSketchOn(part001, 'seg01')`)
   |> line([8.62, -9.57], %)
   |> close(%)
   |> extrude(5 + 7, %)
-const part002 = startSketchOn(part001, 'END')`)
+const sketch001 = startSketchOn(part001, 'END')`)
+  })
+  test('it should ensure that the new sketch is inserted after the extrude', async () => {
+    const code = `const sketch001 = startSketchOn('-XZ')
+    |> startProfileAt([3.29, 7.86], %)
+    |> line([2.48, 2.44], %)
+    |> line([2.66, 1.17], %)
+    |> line([3.75, 0.46], %)
+    |> line([4.99, -0.46], %)
+    |> line([3.3, -2.12], %)
+    |> line([2.16, -3.33], %)
+    |> line([0.85, -3.08], %)
+    |> line([-0.18, -3.36], %)
+    |> line([-3.86, -2.73], %)
+    |> line([-17.67, 0.85], %)
+    |> close(%)
+    const part001 = extrude(5 + 7, sketch001)`
+    const ast = parse(code)
+    const programMemory = await enginelessExecutor(ast)
+    const snippet = `line([4.41, -4.25], %)`
+    const range: [number, number] = [
+      code.indexOf(snippet),
+      code.indexOf(snippet) + snippet.length,
+    ]
+    const pathToNode = getNodePathFromSourceRange(ast, range)
+
+    const { modifiedAst } = sketchOnExtrudedFace(ast, pathToNode, programMemory)
+    const newCode = recast(modifiedAst)
+    expect(newCode).toContain(`const part001 = extrude(5 + 7, sketch001)
+const sketch002 = startSketchOn(part001, 'seg01')`)
   })
 })
