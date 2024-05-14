@@ -213,7 +213,7 @@ pub struct WebrtcStats {
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct EngineCommandManagerState {
-    pub _unused: [u8; 0],
+    pub meta: [u8; 0],
 }
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]

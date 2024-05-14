@@ -146,9 +146,23 @@ export class CoreDumpManager {
 
   // Currently just a placeholder to begin loading singleton and xstate data into
   getClientState(): Promise<string> {
-    const placeholderState = { state: 'dshaw' }
-    console.log('getClientState', placeholderState)
-    return Promise.resolve(JSON.stringify(placeholderState))
+    // TODO: dshaw set to ClientState once ts-rs bindings get set
+    /*
+      ,
+      kcl_manager: {},
+      scene_infra: {},
+      auth_machine: {},
+      command_bar_machine: {},
+      file_machine: {},
+      home_machine: {},
+      modeling_machine: {},
+      settings_machine: {}
+    */
+    const clientState: any = {
+      engine_command_manager: { meta: [] },
+    }
+    console.log('getClientState', clientState)
+    return Promise.resolve(JSON.stringify(clientState))
   }
 
   // Return a data URL (png format) of the screenshot of the current page.

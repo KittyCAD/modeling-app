@@ -136,7 +136,7 @@ impl CoreDump for CoreDumper {
     }
 
     async fn get_client_state(&self) -> Result<ClientState> {
-        Ok(ClientState {
+        let client_state: ClientState = ClientState {
             engine_command_manager: EngineCommandManagerState { ..Default::default() },
             kcl_manager: KclManagerState { ..Default::default() },
             scene_infra: SceneInfraState { ..Default::default() },
@@ -147,7 +147,40 @@ impl CoreDump for CoreDumper {
             modeling_machine: ModelingMachineState { ..Default::default() },
             settings_machine: SettingsMachineState { ..Default::default() },
             ..Default::default()
-        })
+        };
+
+        let promise = self
+            .manager
+            .get_client_state()
+            .map_err(|e| anyhow::anyhow!("Failed to get promise from get client state: {:?}", e))?;
+
+        let value = JsFuture::from(promise)
+            .await
+            .map_err(|e| anyhow::anyhow!("Failed to get response from client state: {:?}", e))?;
+
+        // Parse the value as a string.
+        let s = value
+            .as_string()
+            .ok_or_else(|| anyhow::anyhow!("Failed to get string from response from client stat: `{:?}`", value))?;
+
+        let client_state: ClientState =
+            serde_json::from_str(&s).map_err(|e| anyhow::anyhow!("Failed to parse client state: {:?}", e))?;
+
+        Ok(client_state)
+        
+        // Dummy response
+        // Ok(ClientState {
+        //     engine_command_manager: EngineCommandManagerState { ..Default::default() },
+        //     kcl_manager: KclManagerState { ..Default::default() },
+        //     scene_infra: SceneInfraState { ..Default::default() },
+        //     auth_machine: AuthMachineState { ..Default::default() },
+        //     command_bar_machine: CommandBarMachineState { ..Default::default() },
+        //     file_machine: FileMachineState { ..Default::default() },
+        //     home_machine: HomeMachineState { ..Default::default() },
+        //     modeling_machine: ModelingMachineState { ..Default::default() },
+        //     settings_machine: SettingsMachineState { ..Default::default() },
+        //     ..Default::default()
+        // })
     }
 
     async fn screenshot(&self) -> Result<String> {
