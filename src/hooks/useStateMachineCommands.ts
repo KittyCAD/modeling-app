@@ -7,12 +7,7 @@ import { authMachine } from 'machines/authMachine'
 import { settingsMachine } from 'machines/settingsMachine'
 import { homeMachine } from 'machines/homeMachine'
 import { Command, CommandSetConfig, CommandSetSchema } from 'lib/commandTypes'
-import {
-  NetworkHealthState,
-  useNetworkStatus,
-} from 'components/NetworkHealthIndicator'
-import { useKclContext } from 'lang/KclProvider'
-import { useStore } from 'useStore'
+import { useShouldDisableModelingActions } from './useShouldDisableModelingActions'
 
 // This might not be necessary, AnyStateMachine from xstate is working
 export type AllMachines =
@@ -47,17 +42,13 @@ export default function useStateMachineCommands<
   onCancel,
 }: UseStateMachineCommandsArgs<T, S>) {
   const { commandBarSend } = useCommandsContext()
-  const { overallState } = useNetworkStatus()
-  const { isExecuting } = useKclContext()
-  const { isStreamReady } = useStore((s) => ({
-    isStreamReady: s.isStreamReady,
-  }))
+  const shouldDisableModelingActions = useShouldDisableModelingActions()
 
   useEffect(() => {
-    const disableAllButtons =
-      overallState !== NetworkHealthState.Ok || isExecuting || !isStreamReady
     const newCommands = state.nextEvents
-      .filter((_) => !allCommandsRequireNetwork || !disableAllButtons)
+      .filter(
+        (_) => !allCommandsRequireNetwork || !shouldDisableModelingActions
+      )
       .filter((e) => !['done.', 'error.'].some((n) => e.includes(n)))
       .map((type) =>
         createMachineCommand<T, S>({
@@ -80,5 +71,5 @@ export default function useStateMachineCommands<
         data: { commands: newCommands },
       })
     }
-  }, [state, overallState, isExecuting, isStreamReady])
+  }, [state, shouldDisableModelingActions])
 }

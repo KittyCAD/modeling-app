@@ -43,15 +43,6 @@ function CommandComboBox({
         <Combobox.Input
           onChange={(event) => setQuery(event.target.value)}
           className="w-full bg-transparent focus:outline-none selection:bg-primary/20 dark:selection:bg-primary/40 dark:focus:outline-none"
-          onKeyDown={(event) => {
-            if (
-              (event.metaKey && event.key === 'k') ||
-              (event.key === 'Backspace' && !event.currentTarget.value)
-            ) {
-              event.preventDefault()
-              commandBarSend({ type: 'Close' })
-            }
-          }}
           placeholder={
             (defaultOption && defaultOption.name) ||
             placeholder ||

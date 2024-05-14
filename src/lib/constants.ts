@@ -42,3 +42,5 @@ export const RELEVANT_FILE_TYPES = [
 ] as const
 /** The default name for a tutorial project */
 export const ONBOARDING_PROJECT_NAME = 'Tutorial Project $nn'
+/** The separator between keys/buttons in an InteractionMapItem's step */
+export const INTERACTION_MAP_SEPARATOR = '+'

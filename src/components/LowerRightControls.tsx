@@ -6,6 +6,17 @@ import { NetworkHealthIndicator } from 'components/NetworkHealthIndicator'
 import { HelpMenu } from './HelpMenu'
 import { Link, useLocation } from 'react-router-dom'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
+import { useInteractionMapContext } from 'hooks/useInteractionMapContext'
+
+function InteractionSequenceInfo() {
+  const {
+    state: {
+      context: { currentSequence },
+    },
+  } = useInteractionMapContext()
+
+  return <span className="font-mono text-xs">{currentSequence}</span>
+}
 
 export function LowerRightControls(props: React.PropsWithChildren) {
   const location = useLocation()
@@ -17,6 +28,7 @@ export function LowerRightControls(props: React.PropsWithChildren) {
     <section className="fixed bottom-2 right-2">
       {props.children}
       <menu className="flex items-center justify-end gap-3">
+        <InteractionSequenceInfo />
         <a
           href={`https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`}
           target="_blank"

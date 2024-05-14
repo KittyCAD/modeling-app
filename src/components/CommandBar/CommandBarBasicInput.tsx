@@ -15,8 +15,7 @@ function CommandBarBasicInput({
   stepBack: () => void
   onSubmit: (event: unknown) => void
 }) {
-  const { commandBarSend, commandBarState } = useCommandsContext()
-  useHotkeys('mod + k, mod + /', () => commandBarSend({ type: 'Close' }))
+  const { commandBarState } = useCommandsContext()
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {

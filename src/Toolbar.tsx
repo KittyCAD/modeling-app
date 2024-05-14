@@ -11,10 +11,29 @@ import {
   useNetworkStatus,
 } from 'components/NetworkHealthIndicator'
 import { useStore } from 'useStore'
+import { useShouldDisableModelingActions } from 'hooks/useShouldDisableModelingActions'
+import { useInteractionMap } from 'hooks/useInteractionMap'
 
 export const Toolbar = () => {
   const { commandBarSend } = useCommandsContext()
   const { state, send, context } = useModelingContext()
+  const shouldDisableModelingActions = useShouldDisableModelingActions()
+  useInteractionMap(
+    [
+      {
+        name: 'extrude',
+        title: 'Extrude',
+        sequence: 'shift+e',
+        action: () =>
+          commandBarSend({
+            type: 'Find and select command',
+            data: { name: 'Extrude', ownerMachine: 'modeling' },
+          }),
+        guard: () => !shouldDisableModelingActions && state.matches('idle'),
+      },
+    ],
+    [shouldDisableModelingActions, commandBarSend, state]
+  )
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
   const iconClassName =
     'group-disabled:text-chalkboard-50 group-enabled:group-hover:!text-chalkboard-10 group-pressed:!text-chalkboard-10'

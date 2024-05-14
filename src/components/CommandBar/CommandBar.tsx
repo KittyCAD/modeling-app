@@ -1,11 +1,12 @@
 import { Dialog, Popover, Transition } from '@headlessui/react'
-import { Fragment, useEffect } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
+import { Fragment, useEffect, useMemo } from 'react'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import CommandBarArgument from './CommandBarArgument'
 import CommandComboBox from '../CommandComboBox'
 import CommandBarReview from './CommandBarReview'
 import { useLocation } from 'react-router-dom'
+import { InteractionMapItem } from 'machines/interactionMapMachine'
+import { useInteractionMap } from 'hooks/useInteractionMap'
 
 export const CommandBar = () => {
   const { pathname } = useLocation()
@@ -21,15 +22,35 @@ export const CommandBar = () => {
     commandBarSend({ type: 'Close' })
   }, [pathname])
 
-  // Hook up keyboard shortcuts
-  useHotkeys(['mod+k', 'mod+/'], () => {
-    if (commandBarState.context.commands.length === 0) return
-    if (commandBarState.matches('Closed')) {
-      commandBarSend({ type: 'Open' })
-    } else {
-      commandBarSend({ type: 'Close' })
-    }
-  })
+  useInteractionMap(
+    [
+      {
+        name: 'toggle',
+        title: 'Toggle Command Bar',
+        sequence: 'meta+k',
+        action: () => {
+          const type = commandBarState.matches('Closed') ? 'Open' : 'Close'
+          console.log('toggling command bar', type)
+          commandBarSend({
+            type,
+          })
+        },
+        guard: () => true,
+        ownerId: 'commandBar',
+      },
+      {
+        name: 'close',
+        title: 'Close Command Bar',
+        sequence: 'esc',
+        action: () => {
+          commandBarSend({ type: 'Close' })
+        },
+        guard: () => !commandBarState.matches('Closed'),
+        ownerId: 'commandBar',
+      },
+    ],
+    [commandBarState, commandBarSend]
+  )
 
   function stepBack() {
     if (!currentArgument) {

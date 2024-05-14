@@ -31,6 +31,7 @@ import LspProvider from 'components/LspProvider'
 import { KclContextProvider } from 'lang/KclProvider'
 import { BROWSER_PROJECT_NAME } from 'lib/constants'
 import { getState, setState } from 'lib/tauri'
+import { InteractionMapMachineProvider } from 'components/InteractionMapMachineProvider'
 
 const router = createBrowserRouter([
   {
@@ -39,15 +40,17 @@ const router = createBrowserRouter([
     /* Make sure auth is the outermost provider or else we will have
      * inefficient re-renders, use the react profiler to see. */
     element: (
-      <CommandBarProvider>
-        <SettingsAuthProvider>
-          <LspProvider>
-            <KclContextProvider>
-              <Outlet />
-            </KclContextProvider>
-          </LspProvider>
-        </SettingsAuthProvider>
-      </CommandBarProvider>
+      <InteractionMapMachineProvider>
+        <CommandBarProvider>
+          <SettingsAuthProvider>
+            <LspProvider>
+              <KclContextProvider>
+                <Outlet />
+              </KclContextProvider>
+            </LspProvider>
+          </SettingsAuthProvider>
+        </CommandBarProvider>
+      </InteractionMapMachineProvider>
     ),
     errorElement: <ErrorPage />,
     children: [

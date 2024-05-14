@@ -25,6 +25,8 @@ export type SidebarType =
   | 'lspMessages'
   | 'variables'
 
+const PANE_KEYBINDING_PREFIX = 'alt+p ' as const
+
 export type SidebarPane = {
   id: SidebarType
   title: string
@@ -41,7 +43,7 @@ export const topPanes: SidebarPane[] = [
     title: 'KCL Code',
     icon: faCode,
     Content: KclEditorPane,
-    keybinding: 'shift + c',
+    keybinding: PANE_KEYBINDING_PREFIX + 'c',
     Menu: KclEditorMenu,
   },
   {
@@ -49,7 +51,7 @@ export const topPanes: SidebarPane[] = [
     title: 'Project Files',
     icon: 'folder',
     Content: FileTreeInner,
-    keybinding: 'shift + f',
+    keybinding: PANE_KEYBINDING_PREFIX + 'f',
     Menu: FileTreeMenu,
     hideOnPlatform: 'web',
   },
@@ -61,27 +63,27 @@ export const bottomPanes: SidebarPane[] = [
     title: 'Variables',
     icon: faSquareRootVariable,
     Content: MemoryPane,
-    keybinding: 'shift + v',
+    keybinding: PANE_KEYBINDING_PREFIX + 'v',
   },
   {
     id: 'logs',
     title: 'Logs',
     icon: faCodeCommit,
     Content: LogsPane,
-    keybinding: 'shift + l',
+    keybinding: PANE_KEYBINDING_PREFIX + 'l',
   },
   {
     id: 'kclErrors',
     title: 'KCL Errors',
     icon: faExclamationCircle,
     Content: KclErrorsPane,
-    keybinding: 'shift + e',
+    keybinding: PANE_KEYBINDING_PREFIX + 'e',
   },
   {
     id: 'debug',
     title: 'Debug',
     icon: faBugSlash,
     Content: DebugPane,
-    keybinding: 'shift + d',
+    keybinding: PANE_KEYBINDING_PREFIX + 'd',
   },
 ]

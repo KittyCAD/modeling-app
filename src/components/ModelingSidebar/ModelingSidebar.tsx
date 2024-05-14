@@ -1,7 +1,6 @@
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Resizable } from 're-resizable'
 import { useCallback, useEffect, useState } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
 import { useStore } from 'useStore'
 import { Tab } from '@headlessui/react'
 import {
@@ -194,10 +193,6 @@ function ModelingPaneButton({
   currentPane,
   togglePane,
 }: ModelingPaneButtonProps) {
-  useHotkeys(paneConfig.keybinding, togglePane, {
-    scopes: ['modeling'],
-  })
-
   return (
     <Tab
       key={paneConfig.id}

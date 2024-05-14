@@ -25,7 +25,7 @@ function CommandBarKclInput({
   stepBack: () => void
   onSubmit: (event: unknown) => void
 }) {
-  const { commandBarSend, commandBarState } = useCommandsContext()
+  const { commandBarState } = useCommandsContext()
   const previouslySetValue = commandBarState.context.argumentsToSubmit[
     arg.name
   ] as KclCommandValue | undefined
@@ -38,7 +38,6 @@ function CommandBarKclInput({
     previouslySetValue && 'variableName' in previouslySetValue
   )
   const [canSubmit, setCanSubmit] = useState(true)
-  useHotkeys('mod + k, mod + /', () => commandBarSend({ type: 'Close' }))
   const editorRef = useRef<HTMLDivElement>(null)
 
   const {
