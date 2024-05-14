@@ -25,13 +25,14 @@
   },
   "pool": "",
   "client_state": {
+    "engine_command_manager": {},
     "kcl_manager": {},
     "scene_infra": {},
-    "engine_command_manager": {},
-    "modeling_machine": {},
-    "settings_machine": {},
     "auth_machine": {},
+    "command_bar_machine": {},
+    "file_machine": {},
     "home_machine": {},
-    "command_bar_machine": {}
+    "modeling_machine": {},
+    "settings_machine": {}
   }
 }
