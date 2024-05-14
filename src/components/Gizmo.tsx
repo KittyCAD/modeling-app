@@ -12,7 +12,7 @@ export default function Gizmo() {
 
       const canvas = canvasRef.current
       const renderer = new THREE.WebGLRenderer({canvas, antialias: true, alpha: true})
-      const canvasWidth = 100
+      const canvasWidth = 80
       const canvasHeight = canvasWidth
       renderer.setSize(canvasWidth, canvasHeight)
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -75,34 +75,6 @@ export default function Gizmo() {
 		  axisHeadZg.rotation.y = Math.PI / 2
       scene.add( axisHeadXg, axisHeadYg, axisHeadZg )
 
-      // 3. Circle
-      const circleGeometry = new THREE.PlaneGeometry(2,2)
-      const vertexShader = `
-      varying vec2 vUv;
-      void main() {
-        gl_Position = vec4(position.xy, 0.0, 1.0);
-        vUv = uv; 
-      }`
-      const fragmentShader = `
-      uniform vec3 color;
-      varying vec2 vUv;
-      void main() {
-        float strength = distance(vUv, vec2(0.5));
-        strength -= 0.47;
-        strength = abs(strength);
-        strength = step(0.005, strength); // thick
-        strength = 1.0 - strength;
-        gl_FragColor = vec4( color, strength );
-      }`
-      const circelMaterial = new THREE.ShaderMaterial({
-        vertexShader,
-        fragmentShader,
-        uniforms: { color: { value: colorC } },
-        transparent: true
-      })
-      const circle = new THREE.Mesh(circleGeometry, circelMaterial)
-      scene.add(circle)
-
       // 4. Camera
       const fr = 0.5
       const camera = new THREE.OrthographicCamera( -fr, fr, fr, -fr, 0.5, 3)
@@ -140,15 +112,11 @@ export default function Gizmo() {
   }, [])
 
   return (
-    <canvas
-      ref={canvasRef}
-      style={{
-        position: 'fixed',
-        right: '20px',
-        bottom: '50px',
-        width: '100px',
-        height: '100px',
-      }}
-    />
+    <div
+      className="grid place-content-center rounded-full overflow-hidden border border-solid border-primary/50"
+      style={{ position: 'fixed', right: '20px', bottom: '50px' }}
+    >
+      <canvas ref={canvasRef} />
+    </div>
   )
 }
