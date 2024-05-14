@@ -1739,7 +1739,6 @@ pub async fn hole(args: Args) -> Result<MemoryItem, KclError> {
 ///   const exampleSketch = startSketchOn('-XZ')
 ///     |> circle([0, 0], 3, %)
 ///     |> hole(squareHoleSketch(), %)
-/// 
 //   const example = extrude(1, exampleSketch)
 /// ```
 #[stdlib {

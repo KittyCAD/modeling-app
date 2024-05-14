@@ -99,7 +99,7 @@ pub async fn last_segment_x(args: Args) -> Result<MemoryItem, KclError> {
 /// Returns the last segment of x.
 ///
 /// ```no_run
-// const exampleSketch = startSketchOn("-XZ")
+/// const exampleSketch = startSketchOn("-XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([5, 0], %)
 ///   |> line([20, 5], %)
