@@ -177,6 +177,10 @@ async fn inner_pattern_linear_3d(
     extrude_group: Box<ExtrudeGroup>,
     args: Args,
 ) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
+    if args.ctx.is_mock {
+        return Ok(vec![extrude_group.clone()]);
+    }
+
     let geometries = pattern_linear(
         LinearPattern::ThreeD(data),
         Geometry::ExtrudeGroup(extrude_group),
