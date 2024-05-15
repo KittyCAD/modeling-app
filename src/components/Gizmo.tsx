@@ -11,7 +11,7 @@ import {
   Mesh,
   Clock,
   Quaternion,
-  ColorRepresentation
+  ColorRepresentation,
 } from 'three'
 
 const CANVAS_SIZE = 80
@@ -47,7 +47,12 @@ export default function Gizmo() {
 
     const animate = () => {
       requestAnimationFrame(animate)
-      updateCameraOrientation(camera, currentQuaternion, clientCamera.quaternion, clock.getDelta())
+      updateCameraOrientation(
+        camera,
+        currentQuaternion,
+        clientCamera.quaternion,
+        clock.getDelta()
+      )
       renderer.render(scene, camera)
     }
     animate()
@@ -68,7 +73,14 @@ export default function Gizmo() {
 }
 
 const createCamera = () => {
-  return new OrthographicCamera(-FRUSTUM_SIZE, FRUSTUM_SIZE, FRUSTUM_SIZE, -FRUSTUM_SIZE, 0.5, 3)
+  return new OrthographicCamera(
+    -FRUSTUM_SIZE,
+    FRUSTUM_SIZE,
+    FRUSTUM_SIZE,
+    -FRUSTUM_SIZE,
+    0.5,
+    3
+  )
 }
 
 const createGizmo = () => {
@@ -78,7 +90,7 @@ const createGizmo = () => {
     createAxis(AXIS_LENGTH, AXIS_WIDTH, AXIS_COLORS.z, -Math.PI / 2, 'y'),
     createAxis(AXIS_LENGTH, AXIS_WIDTH, AXIS_COLORS.gray, Math.PI, 'z'),
     createAxis(AXIS_LENGTH, AXIS_WIDTH, AXIS_COLORS.gray, -Math.PI / 2, 'z'),
-    createAxis(AXIS_LENGTH, AXIS_WIDTH, AXIS_COLORS.gray, Math.PI / 2, 'y')
+    createAxis(AXIS_LENGTH, AXIS_WIDTH, AXIS_COLORS.gray, Math.PI / 2, 'y'),
   ]
 
   const gizmoAxisHeads = [
@@ -87,21 +99,36 @@ const createGizmo = () => {
     createAxisHead(AXIS_LENGTH, AXIS_COLORS.z, -Math.PI / 2, 'y'),
     createAxisHead(AXIS_LENGTH, AXIS_COLORS.gray, Math.PI, 'z'),
     createAxisHead(AXIS_LENGTH, AXIS_COLORS.gray, -Math.PI / 2, 'z'),
-    createAxisHead(AXIS_LENGTH, AXIS_COLORS.gray, Math.PI / 2, 'y')
+    createAxisHead(AXIS_LENGTH, AXIS_COLORS.gray, Math.PI / 2, 'y'),
   ]
 
   return { gizmoAxes, gizmoAxisHeads }
 }
 
-const createAxis = (length: number, width: number, color: ColorRepresentation, rotation = 0, axis = 'x') => {
-  const geometry = new BoxGeometry(length, width, width).translate(length / 2, 0, 0)
+const createAxis = (
+  length: number,
+  width: number,
+  color: ColorRepresentation,
+  rotation = 0,
+  axis = 'x'
+) => {
+  const geometry = new BoxGeometry(length, width, width).translate(
+    length / 2,
+    0,
+    0
+  )
   const material = new MeshBasicMaterial({ color: new Color(color) })
   const mesh = new Mesh(geometry, material)
   mesh.rotation[axis as 'x' | 'y' | 'z'] = rotation
   return mesh
 }
 
-const createAxisHead = (length: number, color: ColorRepresentation, rotation = 0, axis = 'x') => {
+const createAxisHead = (
+  length: number,
+  color: ColorRepresentation,
+  rotation = 0,
+  axis = 'x'
+) => {
   const geometry = new SphereGeometry(0.065, 16, 8).translate(length, 0, 0)
   const material = new MeshBasicMaterial({ color: new Color(color) })
   const mesh = new Mesh(geometry, material)
