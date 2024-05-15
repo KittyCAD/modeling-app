@@ -54,8 +54,16 @@ interface PendingCommand extends CommandInfo {
   resolve: (val: ResolveCommand) => void
 }
 
+/**
+ * The ArtifactMap is a client-side representation of the artifacts that
+ * have been sent to the server-side engine. It is used to keep track of
+ * the state of each command, and to resolve the promise that was returned.
+ * It is also used to keep track of what entities are in the engine scene,
+ * so that we can associate IDs returned from the engine with the
+ * lines of KCL code that generated them.
+ */
 export interface ArtifactMap {
-  [key: string]: ResultCommand | PendingCommand | FailedCommand
+  [commandId: string]: ResultCommand | PendingCommand | FailedCommand
 }
 
 interface NewTrackArgs {
@@ -63,10 +71,11 @@ interface NewTrackArgs {
   mediaStream: MediaStream
 }
 
-// This looks funny, I know. This is needed because node and the browser
-// disagree as to the type. In a browser it's a number, but in node it's a
-// "Timeout".
-type Timeout = ReturnType<typeof setTimeout>
+/** This looks funny, I know. This is needed because node and the browser
+ * disagree as to the type. In a browser it's a number, but in node it's a
+ * "Timeout".
+ */
+type IsomorphicTimeout = ReturnType<typeof setTimeout>
 
 type ClientMetrics = Models['ClientMetrics_type']
 
@@ -188,9 +197,11 @@ export type EngineConnectionState =
   | State<EngineConnectionStateType.Disconnecting, DisconnectingValue>
   | State<EngineConnectionStateType.Disconnected, void>
 
-// EngineConnection encapsulates the connection(s) to the Engine
-// for the EngineCommandManager; namely, the underlying WebSocket
-// and WebRTC connections.
+/**
+ * EngineConnection encapsulates the connection(s) to the Engine
+ * for the EngineCommandManager; namely, the underlying WebSocket
+ * and WebRTC connections.
+ */
 class EngineConnection {
   websocket?: WebSocket
   pc?: RTCPeerConnection
@@ -227,23 +238,40 @@ class EngineConnection {
     this.onConnectionStateChange(this._state)
   }
 
-  private failedConnTimeout: Timeout | null
+  private failedConnTimeout: IsomorphicTimeout | null
 
   readonly url: string
   private readonly token?: string
 
-  // For now, this is only used by the NetworkHealthIndicator.
-  // We can eventually use it for more, but one step at a time.
+  /**For now, this is only used by the NetworkHealthIndicator.
+   * We can eventually use it for more, but one step at a time.
+   */
   private onConnectionStateChange: (state: EngineConnectionState) => void
 
-  // These are used for the EngineCommandManager and were created
-  // before onConnectionStateChange existed.
+  /**
+   * Used for the EngineCommandManager, created before
+   * onConnectionStateChange existed.
+   */
   private onEngineConnectionOpen: (engineConnection: EngineConnection) => void
+  /**
+   * Used for the EngineCommandManager, created before
+   * onConnectionStateChange existed.
+   */
   private onConnectionStarted: (engineConnection: EngineConnection) => void
+  /**
+   * Used for the EngineCommandManager, created before
+   * onConnectionStateChange existed.
+   */
   private onClose: (engineConnection: EngineConnection) => void
+  /**
+   * Used for the EngineCommandManager, created before
+   * onConnectionStateChange existed.
+   */
   private onNewTrack: (track: NewTrackArgs) => void
 
-  // TODO: actual type is ClientMetrics
+  /**
+   * @todo actual type is `ClientMetrics`
+   */
   public webrtcStatsCollector?: () => Promise<WebRTCClientMetrics>
   private engineCommandManager: EngineCommandManager
 
@@ -322,11 +350,13 @@ class EngineConnection {
     }
   }
 
-  // connect will attempt to connect to the Engine over a WebSocket, and
-  // establish the WebRTC connections.
-  //
-  // This will attempt the full handshake, and retry if the connection
-  // did not establish.
+  /**
+   * Attempts to connect to the Engine over a WebSocket, and
+   * establish the WebRTC connections.
+   *
+   * This will attempt the full handshake, and retry if the connection
+   * did not establish.
+   */
   connect() {
     if (this.isConnecting() || this.isReady()) {
       return
@@ -919,10 +949,12 @@ export class EngineCommandManager {
   defaultPlanes: DefaultPlanes | null = null
   commandLogs: CommandLog[] = []
   _commandLogCallBack: (command: CommandLog[]) => void = () => {}
-  // Folks should realize that wait for ready does not get called _everytime_
-  // the connection resets and restarts, it only gets called the first time.
-  // Be careful what you put here.
   private resolveReady = () => {}
+  /** Folks should realize that wait for ready does not get called _everytime_
+   *  the connection resets and restarts, it only gets called the first time.
+   *
+   *  Be careful what you put here.
+   */
   waitForReady: Promise<void> = new Promise((resolve) => {
     this.resolveReady = resolve
   })
