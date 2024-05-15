@@ -90,7 +90,7 @@ pub trait CoreDump: Clone {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
-pub struct AppInfo {
+pub struct CoreDumpInfo {
     /// The version of the app.
     pub version: String,
     /// The git revision of the app.
@@ -221,14 +221,14 @@ pub struct EngineCommandManagerState {
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct KclManagerState {
-    pub _unused: [u8; 0],
+    pub meta: [u8; 0],
 }
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct SceneInfraState {
-    pub _unused: [u8; 0],
+    pub meta: [u8; 0],
 }
 /// Client State XState Structures
 
@@ -236,42 +236,42 @@ pub struct SceneInfraState {
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct AuthMachineState {
-    pub _unused: [u8; 0],
+    pub meta: [u8; 0],
 }
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct CommandBarMachineState {
-    pub _unused: [u8; 0],
+    pub meta: [u8; 0],
 }
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct FileMachineState {
-    pub _unused: [u8; 0],
+    pub meta: [u8; 0],
 }
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct HomeMachineState {
-    pub _unused: [u8; 0],
+    pub meta: [u8; 0],
 }
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct ModelingMachineState {
-    pub _unused: [u8; 0],
+    pub meta: [u8; 0],
 }
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct SettingsMachineState {
-    pub _unused: [u8; 0],
+    pub meta: [u8; 0],
 }
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
