@@ -62,13 +62,13 @@ pub trait CoreDump: Clone {
     }
 
     /// Dump the app info.
-    async fn dump(&self) -> Result<AppInfo> {
+    async fn dump(&self) -> Result<CoreDumpInfo> {
         let client_state = self.get_client_state().await?;
         let webrtc_stats = self.get_webrtc_stats().await?;
         let os = self.os().await?;
         let screenshot_url = self.upload_screenshot().await?;
 
-        let mut app_info = AppInfo {
+        let mut core_dump_info = CoreDumpInfo {
             version: self.version()?,
             git_rev: git_rev::try_revision_string!().map_or_else(|| "unknown".to_string(), |s| s.to_string()),
             timestamp: chrono::Utc::now(),
@@ -79,13 +79,14 @@ pub trait CoreDump: Clone {
             pool: self.pool()?,
             client_state,
         };
-        app_info.set_github_issue_url(&screenshot_url)?;
+        core_dump_info.set_github_issue_url(&screenshot_url)?;
 
-        Ok(app_info)
+        Ok(core_dump_info)
     }
 }
 
 /// The app info structure.
+/// The Core Dump Info structure.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
@@ -118,7 +119,7 @@ pub struct AppInfo {
     pub client_state: ClientState,
 }
 
-impl AppInfo {
+impl CoreDumpInfo {
     /// Set the github issue url.
     pub fn set_github_issue_url(&mut self, screenshot_url: &str) -> Result<()> {
         let tauri_or_browser_label = if self.tauri { "tauri" } else { "browser" };
