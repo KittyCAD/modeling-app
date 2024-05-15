@@ -48,5 +48,5 @@ export const ONBOARDING_PROJECT_NAME = 'Tutorial Project $nn'
  * */
 export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   SKETCH: 'sketch',
-  EXTRUDE: 'part',
+  EXTRUDE: 'extrude',
 } as const
