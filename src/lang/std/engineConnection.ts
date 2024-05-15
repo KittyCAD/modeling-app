@@ -1121,24 +1121,6 @@ export class EngineCommandManager {
           },
         })
 
-        // Make the axis gizmo.
-        // We do this after the connection opened to avoid a race condition.
-        // Connected opened is the last thing that happens when the stream
-        // is ready.
-        // We also do this here because we want to ensure we create the gizmo
-        // and execute the code everytime the stream is restarted.
-        const gizmoId = uuidv4()
-        void this.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: gizmoId,
-          cmd: {
-            type: 'make_axes_gizmo',
-            clobber: false,
-            // If true, axes gizmo will be placed in the corner of the screen.
-            // If false, it will be placed at the origin of the scene.
-            gizmo_mode: true,
-          },
-        })
         this._camControlsCameraChange()
         this.sendSceneCommand({
           // CameraControls subscribes to default_camera_get_settings response events
@@ -1422,17 +1404,6 @@ export class EngineCommandManager {
     this.lastArtifactMap = this.artifactMap
     this.artifactMap = {}
     await this.initPlanes()
-    await this.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'make_axes_gizmo',
-        clobber: false,
-        // If true, axes gizmo will be placed in the corner of the screen.
-        // If false, it will be placed at the origin of the scene.
-        gizmo_mode: true,
-      },
-    })
   }
   subscribeTo<T extends ModelTypes>({
     event,
