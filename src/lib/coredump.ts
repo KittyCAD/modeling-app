@@ -1,5 +1,6 @@
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import { WebrtcStats } from 'wasm-lib/kcl/bindings/WebrtcStats'
+import { ClientState } from 'wasm-lib/kcl/bindings/ClientState'
 import { OsInfo } from 'wasm-lib/kcl/bindings/OsInfo'
 import { isTauri } from 'lib/isTauri'
 import {
@@ -147,19 +148,16 @@ export class CoreDumpManager {
   // Currently just a placeholder to begin loading singleton and xstate data into
   getClientState(): Promise<string> {
     // TODO: dshaw set to ClientState once ts-rs bindings get set
-    /*
-      ,
-      kcl_manager: {},
-      scene_infra: {},
-      auth_machine: {},
-      command_bar_machine: {},
-      file_machine: {},
-      home_machine: {},
-      modeling_machine: {},
-      settings_machine: {}
-    */
-    const clientState: any = {
+    const clientState: ClientState = {
       engine_command_manager: { meta: [] },
+      kcl_manager: { meta: [] },
+      scene_infra: { meta: [] },
+      auth_machine: { meta: [] },
+      command_bar_machine: { meta: [] },
+      file_machine: { meta: [] },
+      home_machine: { meta: [] },
+      modeling_machine: { meta: [] },
+      settings_machine: { meta: [] },
     }
     console.log('getClientState', clientState)
     return Promise.resolve(JSON.stringify(clientState))
