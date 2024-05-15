@@ -964,6 +964,8 @@ export class EngineCommandManager {
   /**
    * The {@link ArtifactMap} from the previous engine connection. This is used as a fallback
    * when the engine connection is reset without a full client-side refresh.
+   * 
+   * @deprecated This was used during a short time when we were choosing to not execute the engine in certain cases.
    */
   lastArtifactMap: ArtifactMap = {}
   /**
