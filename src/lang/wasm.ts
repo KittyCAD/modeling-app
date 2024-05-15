@@ -25,7 +25,7 @@ import type { Program } from '../wasm-lib/kcl/bindings/Program'
 import type { Token } from '../wasm-lib/kcl/bindings/Token'
 import { Coords2d } from './std/sketch'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
-import { AppInfo } from 'wasm-lib/kcl/bindings/AppInfo'
+import { CoreDumpInfo } from 'wasm-lib/kcl/bindings/CoreDumpInfo'
 import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
@@ -335,9 +335,9 @@ export function programMemoryInit(): ProgramMemory {
 export async function coreDump(
   coreDumpManager: CoreDumpManager,
   openGithubIssue: boolean = false
-): Promise<AppInfo> {
+): Promise<CoreDumpInfo> {
   try {
-    const dump: AppInfo = await coredump(coreDumpManager)
+    const dump: CoreDumpInfo = await coredump(coreDumpManager)
     if (openGithubIssue && dump.github_issue_url) {
       openWindow(dump.github_issue_url)
     }

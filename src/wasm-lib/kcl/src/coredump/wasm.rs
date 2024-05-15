@@ -38,8 +38,6 @@ extern "C" {
     #[wasm_bindgen(method, js_name = getWebrtcStats, catch)]
     fn get_webrtc_stats(this: &CoreDumpManager) -> Result<js_sys::Promise, js_sys::Error>;
 
-    // returning dummy data
-    // will need to return a Promise like get_webrtc_stats
     #[wasm_bindgen(method, js_name = getClientState, catch)]
     fn get_client_state(this: &CoreDumpManager) -> Result<js_sys::Promise, js_sys::Error>;
 
