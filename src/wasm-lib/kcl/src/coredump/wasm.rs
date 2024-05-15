@@ -165,20 +165,6 @@ impl CoreDump for CoreDumper {
             serde_json::from_str(&s).map_err(|e| anyhow::anyhow!("Failed to parse client state: {:?}", e))?;
 
         Ok(client_state)
-        
-        // Dummy response
-        // Ok(ClientState {
-        //     engine_command_manager: EngineCommandManagerState { ..Default::default() },
-        //     kcl_manager: KclManagerState { ..Default::default() },
-        //     scene_infra: SceneInfraState { ..Default::default() },
-        //     auth_machine: AuthMachineState { ..Default::default() },
-        //     command_bar_machine: CommandBarMachineState { ..Default::default() },
-        //     file_machine: FileMachineState { ..Default::default() },
-        //     home_machine: HomeMachineState { ..Default::default() },
-        //     modeling_machine: ModelingMachineState { ..Default::default() },
-        //     settings_machine: SettingsMachineState { ..Default::default() },
-        //     ..Default::default()
-        // })
     }
 
     async fn screenshot(&self) -> Result<String> {
