@@ -661,7 +661,6 @@ class EngineConnection extends EventTarget {
         // Send an initial ping
         this.send({ type: 'ping' })
         this.pingPongSpan.ping = new Date()
-
       })
 
       this.websocket.addEventListener('close', (event) => {
