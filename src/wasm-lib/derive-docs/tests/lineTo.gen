@@ -1,5 +1,25 @@
 #[cfg(test)]
 mod test_examples_line_to {
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_mock_example_line_to0() {
+        let tokens =
+            crate::token::lexer("This is another code block.\nyes sirrr.\nlineTo").unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+        let ctx = crate::executor::ExecutorContext {
+            engine: std::sync::Arc::new(Box::new(
+                crate::engine::conn_mock::EngineConnection::new()
+                    .await
+                    .unwrap(),
+            )),
+            fs: std::sync::Arc::new(crate::fs::FileManager::new()),
+            stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
+            settings: Default::default(),
+            is_mock: true,
+        };
+        ctx.run(program, None).await.unwrap();
+    }
+
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
     async fn serial_test_example_line_to0() {
         let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
@@ -70,6 +90,25 @@ mod test_examples_line_to {
             &actual,
             1.0,
         );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_mock_example_line_to1() {
+        let tokens = crate::token::lexer("This is code.\nIt does other shit.\nlineTo").unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+        let ctx = crate::executor::ExecutorContext {
+            engine: std::sync::Arc::new(Box::new(
+                crate::engine::conn_mock::EngineConnection::new()
+                    .await
+                    .unwrap(),
+            )),
+            fs: std::sync::Arc::new(crate::fs::FileManager::new()),
+            stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
+            settings: Default::default(),
+            is_mock: true,
+        };
+        ctx.run(program, None).await.unwrap();
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]

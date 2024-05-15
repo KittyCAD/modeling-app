@@ -125,7 +125,23 @@ pub async fn abs(args: Args) -> Result<MemoryItem, KclError> {
 /// Computes the absolute value of a number.
 ///
 /// ```no_run
-/// const myVar = abs(-4)
+/// const myAngle = -120
+///
+/// const sketch001 = startSketchOn('-XZ')
+///   |> startProfileAt([0, 0], %)
+///   |> line([8, 0], %)
+///   |> angledLine({
+///     angle: abs(myAngle),
+///     length: 5,
+///   }, %)
+///   |> line([-5, 0], %)
+///   |> angledLine({
+///     angle: myAngle,
+///     length: 5,
+///   }, %)
+///   |> close(%)
+///
+/// const baseExtrusion = extrude(5, sketch001)
 /// ```
 #[stdlib {
     name = "abs",

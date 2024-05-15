@@ -291,26 +291,32 @@ pub async fn get_edge(args: Args) -> Result<MemoryItem, KclError> {
 /// Get an edge on a 3D solid.
 ///
 /// ```no_run
-/// const box = startSketchOn('XY')
-///     |> startProfileAt([0, 0], %)
-///     |> line([0, 10], %)
-///     |> line([10, 0], %)
-///     |> line([0, -10], %, 'revolveAxis')
-///     |> close(%)
-///     |> extrude(10, %)
+/// const box = startSketchOn('XZ')
+///   |> startProfileAt([0, 0], %)
+///   |> line([0, 10], %, 'revolveAxis')
+///   |> line([10, 0], %)
+///   |> line([0, -10], %)
+///   |> close(%)
+///   |> extrude(10, %)
 ///
-/// const sketch001 = startSketchOn('XY')
-///     |> startProfileAt([0, -10], %)
-///     |> line([0, -10], %)
-///     |> line([2, 0], %)
-///     |> line([0, 10], %)
-///     |> close(%)
-///     |> revolve({ axis: getEdge('revolveAxis', box), angle: 90 }, %)
+/// const revolution = startSketchOn('XZ')
+///   |> startProfileAt([-10, 0], %)
+///   |> line([0, 10], %)
+///   |> line([2, 0], %)
+///   |> line([0, -10], %)
+///   |> close(%)
+///   |> revolve({
+///        axis: getEdge('revolveAxis', box),
+///        angle: 90
+///      }, %)
 /// ```
 #[stdlib {
     name = "getEdge",
 }]
 async fn inner_get_edge(tag: String, extrude_group: Box<ExtrudeGroup>, args: Args) -> Result<Uuid, KclError> {
+    if args.ctx.is_mock {
+        return Ok(Uuid::new_v4());
+    }
     let tagged_path = extrude_group
         .sketch_group_values
         .iter()
