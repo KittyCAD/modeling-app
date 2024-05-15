@@ -738,6 +738,7 @@ fn generate_code_block_test(
     tags: &[String],
 ) -> proc_macro2::TokenStream {
     let test_name = format_ident!("serial_test_example_{}{}", fn_name, index);
+    let test_name_mock = format_ident!("test_mock_example_{}{}", fn_name, index);
     let test_name_str = format!("serial_test_example_{}{}", fn_name, index);
 
     // TODO: We ignore import for now, because the files don't exist and we just want
@@ -749,6 +750,23 @@ fn generate_code_block_test(
     };
 
     quote! {
+        #[tokio::test(flavor = "multi_thread")]
+        #ignored
+        async fn #test_name_mock() {
+            let tokens = crate::token::lexer(#code_block).unwrap();
+            let parser = crate::parser::Parser::new(tokens);
+            let program = parser.ast().unwrap();
+            let ctx = crate::executor::ExecutorContext {
+                engine: std::sync::Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await.unwrap())),
+                fs: std::sync::Arc::new(crate::fs::FileManager::new()),
+                stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
+                settings: Default::default(),
+                is_mock: true,
+            };
+
+            ctx.run(program, None).await.unwrap();
+        }
+
         #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
         #ignored
         async fn #test_name() {
