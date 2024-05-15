@@ -353,6 +353,9 @@ async fn inner_get_previous_adjacent_edge(
     extrude_group: Box<ExtrudeGroup>,
     args: Args,
 ) -> Result<Uuid, KclError> {
+    if args.ctx.is_mock {
+        return Ok(Uuid::new_v4());
+    }
     let tagged_path = extrude_group
         .sketch_group_values
         .iter()
