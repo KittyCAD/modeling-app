@@ -268,6 +268,14 @@ async fn inner_import(
         }
     }
 
+    if args.ctx.is_mock {
+        return Ok(ImportedGeometry {
+            id: uuid::Uuid::new_v4(),
+            value: import_files.iter().map(|f| f.path.to_string()).collect(),
+            meta: vec![args.source_range.into()],
+        });
+    }
+
     let id = uuid::Uuid::new_v4();
     let resp = args
         .send_modeling_cmd(

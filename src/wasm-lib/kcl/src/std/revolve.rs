@@ -314,6 +314,9 @@ pub async fn get_edge(args: Args) -> Result<MemoryItem, KclError> {
     name = "getEdge",
 }]
 async fn inner_get_edge(tag: String, extrude_group: Box<ExtrudeGroup>, args: Args) -> Result<Uuid, KclError> {
+    if args.ctx.is_mock {
+        return Ok(Uuid::new_v4());
+    }
     let tagged_path = extrude_group
         .sketch_group_values
         .iter()

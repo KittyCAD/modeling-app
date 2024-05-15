@@ -124,8 +124,9 @@ impl Configuration {
 
         let mut entries = tokio::fs::read_dir(main_dir).await?;
         while let Some(e) = entries.next_entry().await? {
-            if !e.file_type().await?.is_dir() {
-                // We don't care it's not a directory.
+            if !e.file_type().await?.is_dir() || e.file_name().to_string_lossy().starts_with('.') {
+                // We don't care it's not a directory
+                // or it's a hidden directory.
                 continue;
             }
 
