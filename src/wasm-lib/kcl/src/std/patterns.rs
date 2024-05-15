@@ -113,6 +113,10 @@ async fn inner_pattern_linear_2d(
         SketchGroupSet::SketchGroups(sketch_groups) => sketch_groups,
     };
 
+    if args.ctx.is_mock {
+        return Ok(starting_sketch_groups);
+    }
+
     let mut sketch_groups = Vec::new();
     for sketch_group in starting_sketch_groups.iter() {
         let geometries = pattern_linear(
@@ -376,6 +380,10 @@ async fn inner_pattern_circular_2d(
     sketch_group: Box<SketchGroup>,
     args: Args,
 ) -> Result<Vec<Box<SketchGroup>>, KclError> {
+    if args.ctx.is_mock {
+        return Ok(vec![sketch_group]);
+    }
+
     let geometries = pattern_circular(
         CircularPattern::TwoD(data),
         Geometry::SketchGroup(sketch_group),
@@ -424,6 +432,10 @@ async fn inner_pattern_circular_3d(
     extrude_group: Box<ExtrudeGroup>,
     args: Args,
 ) -> Result<Vec<Box<ExtrudeGroup>>, KclError> {
+    if args.ctx.is_mock {
+        return Ok(vec![extrude_group]);
+    }
+
     let geometries = pattern_circular(
         CircularPattern::ThreeD(data),
         Geometry::ExtrudeGroup(extrude_group),
