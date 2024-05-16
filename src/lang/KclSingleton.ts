@@ -188,7 +188,7 @@ export class KclManager {
       engineCommandManager: this.engineCommandManager,
     })
     sceneInfra.modelingSend({ type: 'code edit during sketch' })
-    enterEditMode(programMemory, this.engineCommandManager)
+    defaultSelectionFilter(programMemory, this.engineCommandManager)
     this.isExecuting = false
     // Check the cancellation token for this execution before applying side effects
     if (this._cancelTokens.get(currentExecutionId)) {
@@ -348,19 +348,12 @@ export class KclManager {
     void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, true)
     void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, true)
   }
-  enterEditMode() {
-    enterEditMode(this.programMemory, this.engineCommandManager)
-  }
-  exitEditMode() {
-    this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: { type: 'edit_mode_exit' },
-    })
+  defaultSelectionFilter() {
+    defaultSelectionFilter(this.programMemory, this.engineCommandManager)
   }
 }
 
-function enterEditMode(
+function defaultSelectionFilter(
   programMemory: ProgramMemory,
   engineCommandManager: EngineCommandManager
 ) {
@@ -369,24 +362,11 @@ function enterEditMode(
   ) as SketchGroup | ExtrudeGroup
   firstSketchOrExtrudeGroup &&
     engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_batch_req',
-      batch_id: uuidv4(),
-      responses: false,
-      requests: [
-        {
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'edit_mode_enter',
-            target: firstSketchOrExtrudeGroup.id,
-          },
-        },
-        {
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'set_selection_filter',
-            filter: ['face', 'edge', 'solid2d'],
-          },
-        },
-      ],
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'set_selection_filter',
+        filter: ['face', 'edge', 'solid2d'],
+      },
     })
 }

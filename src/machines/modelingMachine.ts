@@ -1045,7 +1045,8 @@ export const modelingMachine = createMachine(
             filter: ['face', 'plane'],
           },
         }),
-      'set selection filter to defaults': () => kclManager.enterEditMode(),
+      'set selection filter to defaults': () =>
+        kclManager.defaultSelectionFilter(),
     },
     // end actions
   }
