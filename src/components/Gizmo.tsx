@@ -63,9 +63,7 @@ export default function Gizmo() {
   }, [])
 
   return (
-    <div
-      className="grid place-content-center rounded-full overflow-hidden border border-solid border-primary/50 pointer-events-none"
-    >
+    <div className="grid place-content-center rounded-full overflow-hidden border border-solid border-primary/50 pointer-events-none">
       <canvas ref={canvasRef} />
     </div>
   )
