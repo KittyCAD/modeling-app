@@ -32,17 +32,10 @@ pub async fn circle(args: Args) -> Result<MemoryItem, KclError> {
 /// Sketch a circle.
 ///
 /// ```no_run
-/// const circles = startSketchOn('XY')
-///     |> circle([5, 5], 1, %)
-///     |> patternLinear2d({axis: [1,1], repetitions: 12, distance: 3}, %)
+/// const exampleSketch = startSketchOn("-XZ")
+///   |> circle([0, 0], 10, %)
 ///
-/// const rectangle = startSketchOn('XY')
-///     |> startProfileAt([0, 0], %)
-///     |> line([0, 50], %)
-///     |> line([50, 0], %)
-///     |> line([0, -50], %)
-///     |> close(%)
-///     |> hole(circles, %)
+/// const example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "circle",
