@@ -17,49 +17,56 @@ import { engineCommandManager } from 'lib/singletons'
 const ProjectSidebarMenu = ({
   project,
   file,
-  renderAsLink = false,
+  enableMenu = false,
 }: {
-  renderAsLink?: boolean
+  enableMenu?: boolean
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
 }) => {
-  const { onProjectClose } = useLspContext()
   return (
     <div className="!no-underline h-full mr-auto max-h-min min-h-12 min-w-max flex items-center gap-2">
-      <Link
-        onClick={() => {
-          onProjectClose(file || null, project?.path || null, false)
-          // Clear the scene and end the session.
-          engineCommandManager.endSession()
-        }}
-        to={paths.HOME}
-        className="relative h-full grid place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-2.5 before:z-[-1] before:bg-primary hover:before:brightness-110 before:rounded-b-sm"
-      >
-        <Logo className="w-auto h-4 text-chalkboard-10" />
-      </Link>
-      {renderAsLink ? (
-        <>
-          <Link
-            onClick={() => {
-              onProjectClose(file || null, project?.path || null, false)
-              // Clear the scene and end the session.
-              engineCommandManager.endSession()
-            }}
-            to={paths.HOME}
-            className="!no-underline"
-            data-testid="project-sidebar-link"
-          >
-            <span
-              className="hidden text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
-              data-testid="project-sidebar-link-name"
-            >
-              {project?.name ? project.name : APP_NAME}
-            </span>
-          </Link>
-        </>
-      ) : (
+      <AppLogoLink project={project} file={file} />
+      {enableMenu ? (
         <ProjectMenuPopover project={project} file={file} />
+      ) : (
+        <span
+          className="hidden select-none text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
+          data-testid="project-sidebar-link-name"
+        >
+          {project?.name ? project.name : APP_NAME}
+        </span>
       )}
+    </div>
+  )
+}
+
+function AppLogoLink({
+  project,
+  file,
+}: {
+  project?: IndexLoaderData['project']
+  file?: IndexLoaderData['file']
+}) {
+  const { onProjectClose } = useLspContext()
+  const wrapperClassName =
+    "relative h-full grid place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-2.5 before:z-[-1] before:bg-primary before:rounded-b-sm"
+  const logoClassName = 'w-auto h-4 text-chalkboard-10'
+
+  return isTauri() ? (
+    <Link
+      onClick={() => {
+        onProjectClose(file || null, project?.path || null, false)
+        // Clear the scene and end the session.
+        engineCommandManager.endSession()
+      }}
+      to={paths.HOME}
+      className={wrapperClassName + ' hover:before:brightness-110'}
+    >
+      <Logo className={logoClassName} />
+    </Link>
+  ) : (
+    <div className={wrapperClassName}>
+      <Logo className={logoClassName} />
     </div>
   )
 }
