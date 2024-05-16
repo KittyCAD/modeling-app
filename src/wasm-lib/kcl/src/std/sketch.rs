@@ -1224,7 +1224,7 @@ pub async fn profile_start_x(args: Args) -> Result<MemoryItem, KclError> {
     name = "profileStartX"
 }]
 pub(crate) fn inner_profile_start_x(sketch_group: Box<SketchGroup>) -> Result<f64, KclError> {
-    Ok(sketch_group.start.from[0])
+    Ok(sketch_group.start.to[0])
 }
 
 /// Returns the Y component of the sketch profile start point.
@@ -1244,7 +1244,7 @@ pub async fn profile_start_y(args: Args) -> Result<MemoryItem, KclError> {
     name = "profileStartY"
 }]
 pub(crate) fn inner_profile_start_y(sketch_group: Box<SketchGroup>) -> Result<f64, KclError> {
-    Ok(sketch_group.start.from[1])
+    Ok(sketch_group.start.to[1])
 }
 
 /// Returns the sketch profile start point.
@@ -1275,7 +1275,7 @@ pub async fn profile_start(args: Args) -> Result<MemoryItem, KclError> {
     name = "profileStart"
 }]
 pub(crate) fn inner_profile_start(sketch_group: Box<SketchGroup>) -> Result<[f64; 2], KclError> {
-    Ok(sketch_group.start.from)
+    Ok(sketch_group.start.to)
 }
 
 /// Close the current sketch.
