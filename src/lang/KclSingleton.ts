@@ -362,11 +362,24 @@ function defaultSelectionFilter(
   ) as SketchGroup | ExtrudeGroup
   firstSketchOrExtrudeGroup &&
     engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'set_selection_filter',
-        filter: ['face', 'edge', 'solid2d'],
-      },
+      type: 'modeling_cmd_batch_req',
+      batch_id: uuidv4(),
+      responses: false,
+      requests: [
+        {
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'edit_mode_enter',
+            target: firstSketchOrExtrudeGroup.id,
+          },
+        },
+        {
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'set_selection_filter',
+            filter: ['face', 'edge', 'solid2d'],
+          },
+        },
+      ],
     })
 }
