@@ -68,6 +68,9 @@ lazy_static! {
         Box::new(crate::std::sketch::StartSketchAt),
         Box::new(crate::std::sketch::StartSketchOn),
         Box::new(crate::std::sketch::StartProfileAt),
+        Box::new(crate::std::sketch::ProfileStartX),
+        Box::new(crate::std::sketch::ProfileStartY),
+        Box::new(crate::std::sketch::ProfileStart),
         Box::new(crate::std::sketch::Close),
         Box::new(crate::std::sketch::Arc),
         Box::new(crate::std::sketch::TangentialArc),
@@ -233,6 +236,10 @@ impl Args {
                 })
             },
         )?))
+    }
+
+    fn make_user_val_from_point2d(&self, p: [f64; 2]) -> Result<MemoryItem, KclError> {
+        self.make_user_val_from_json(serde_json::json!([p[0], p[1]]))
     }
 
     fn get_number(&self) -> Result<f64, KclError> {

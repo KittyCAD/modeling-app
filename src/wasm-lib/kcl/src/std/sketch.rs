@@ -1206,6 +1206,69 @@ pub(crate) async fn inner_start_profile_at(
     Ok(Box::new(sketch_group))
 }
 
+/// Returns the X component of the sketch profile start point.
+pub async fn profile_start_x(args: Args) -> Result<MemoryItem, KclError> {
+    let sketch_group: Box<SketchGroup> = args.get_sketch_group()?;
+    let x = inner_profile_start_x(sketch_group)?;
+    args.make_user_val_from_f64(x)
+}
+
+/// ```no_run
+/// const sketch001 = startSketchOn('XY')
+///  |> startProfileAt([5, 2], %)
+///  |> angledLine([26.6, 14], %)
+///  |> angledLineToX({ angle: 30, to: profileStartX(%) }, %)
+/// ```
+#[stdlib {
+    name = "profileStartX"
+}]
+pub(crate) fn inner_profile_start_x(sketch_group: Box<SketchGroup>) -> Result<f64, KclError> {
+    let from = sketch_group.start.from;
+    Ok(from[0])
+}
+
+/// Returns the Y component of the sketch profile start point.
+pub async fn profile_start_y(args: Args) -> Result<MemoryItem, KclError> {
+    let sketch_group: Box<SketchGroup> = args.get_sketch_group()?;
+    let x = inner_profile_start_y(sketch_group)?;
+    args.make_user_val_from_f64(x)
+}
+
+/// ```no_run
+/// const sketch001 = startSketchOn('XY')
+///  |> startProfileAt([5, 2], %)
+///  |> angledLine([-60, 14], %)
+///  |> angledLineToY({ angle: 30, to: profileStartY(%) }, %)
+/// ```
+#[stdlib {
+    name = "profileStartY"
+}]
+pub(crate) fn inner_profile_start_y(sketch_group: Box<SketchGroup>) -> Result<f64, KclError> {
+    let from = sketch_group.start.from;
+    Ok(from[1])
+}
+
+/// Returns the sketch profile start point.
+pub async fn profile_start(args: Args) -> Result<MemoryItem, KclError> {
+    let sketch_group: Box<SketchGroup> = args.get_sketch_group()?;
+    let point = inner_profile_start(sketch_group)?;
+    args.make_user_val_from_point2d(point)
+}
+
+/// ```no_run
+/// const sketch001 = startSketchOn('XY')
+///  |> startProfileAt([5, 2], %)
+///  |> angledLine([60, 14], %)
+///  |> angledLine([60, 14], %)
+///  |> angledLineTo(profileStart(%), %)
+/// ```
+#[stdlib {
+    name = "profileStart"
+}]
+pub(crate) fn inner_profile_start(sketch_group: Box<SketchGroup>) -> Result<[f64; 2], KclError> {
+    Ok(sketch_group.start.from)
+}
+
 /// Close the current sketch.
 pub async fn close(args: Args) -> Result<MemoryItem, KclError> {
     let (sketch_group, tag): (Box<SketchGroup>, Option<String>) = args.get_sketch_group_and_optional_tag()?;
