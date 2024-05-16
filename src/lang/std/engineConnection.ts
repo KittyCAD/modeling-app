@@ -1086,6 +1086,7 @@ export class EngineCommandManager {
             },
           })
           // make sure client camera syncs after zoom to fit since zoom to fit doesn't return camera settings
+          // TODO: https://github.com/KittyCAD/engine/issues/2098
           await this.sendSceneCommand({
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
