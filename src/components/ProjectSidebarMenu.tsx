@@ -63,6 +63,7 @@ function AppLogoLink({
       className={wrapperClassName + ' hover:before:brightness-110'}
     >
       <Logo className={logoClassName} />
+      <span className="sr-only">{APP_NAME}</span>
     </Link>
   ) : (
     <div className={wrapperClassName}>
