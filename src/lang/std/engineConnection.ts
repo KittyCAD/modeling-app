@@ -1360,7 +1360,6 @@ export class EngineCommandManager {
     this.lastArtifactMap = this.artifactMap
     this.artifactMap = {}
     await this.initPlanes()
-    // console.trace('zoom to fit?')
     await this.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
