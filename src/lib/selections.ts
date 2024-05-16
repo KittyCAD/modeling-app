@@ -95,9 +95,9 @@ export async function getEventForSelectWithPoint(
         cmd_id: uuidv4(),
       })
     )?.data?.data?.entity_id
-    const theParentArtifact = engineCommandManager.artifactMap[parentId]
-    if (theParentArtifact) {
-      _artifact = theParentArtifact
+    const parentArtifact = engineCommandManager.artifactMap[parentId]
+    if (parentArtifact) {
+      _artifact = parentArtifact
     }
   }
   const sourceRange = _artifact?.range
