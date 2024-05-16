@@ -1,5 +1,5 @@
 import { SceneInfra } from 'clientSideScene/sceneInfra'
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef } from 'react'
 import {
   WebGLRenderer,
   Scene,
@@ -64,8 +64,7 @@ export default function Gizmo() {
 
   return (
     <div
-      className="grid place-content-center rounded-full overflow-hidden border border-solid border-primary/50"
-      style={{ position: 'fixed', right: '20px', bottom: '50px' }}
+      className="grid place-content-center rounded-full overflow-hidden border border-solid border-primary/50 pointer-events-none"
     >
       <canvas ref={canvasRef} />
     </div>
