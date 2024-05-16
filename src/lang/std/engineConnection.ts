@@ -1063,15 +1063,6 @@ export class EngineCommandManager {
         })
         this._camControlsCameraChange()
         this.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'zoom_to_fit',
-            object_ids: [], // leave empty to zoom to all objects
-            padding: 0.1, // padding around the objects
-          },
-        })
-        this.sendSceneCommand({
           // CameraControls subscribes to default_camera_get_settings response events
           // firing this at connection ensure the camera's are synced initially
           type: 'modeling_cmd_req',
@@ -1081,10 +1072,25 @@ export class EngineCommandManager {
           },
         })
 
-        this.initPlanes().then(() => {
+        this.initPlanes().then(async () => {
           this.resolveReady()
           setIsStreamReady(true)
-          executeCode()
+          await executeCode()
+          await this.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'zoom_to_fit',
+              object_ids: [], // leave empty to zoom to all objects
+              padding: 0.1, // padding around the objects
+            },
+          })
+          // make sure client camera syncs after zoom to fit since zoom to fit doesn't return camera settings
+          await this.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: { type: 'default_camera_get_settings' },
+          })
         })
       },
       onClose: () => {
@@ -1353,6 +1359,7 @@ export class EngineCommandManager {
     this.lastArtifactMap = this.artifactMap
     this.artifactMap = {}
     await this.initPlanes()
+    // console.trace('zoom to fit?')
     await this.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
