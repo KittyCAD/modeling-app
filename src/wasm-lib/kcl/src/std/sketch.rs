@@ -12,7 +12,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
         BasePath, ExtrudeGroup, ExtrudeSurface, Face, GeoMeta, MemoryItem, Path, Plane, PlaneType, Point2d, Point3d,
-        Position, Rotation, SketchGroup, SketchGroupSet, SketchSurface, SourceRange, UserVal
+        Position, Rotation, SketchGroup, SketchGroupSet, SketchSurface, SourceRange, UserVal,
     },
     std::{
         utils::{
@@ -1258,7 +1258,7 @@ pub async fn profile_start(args: Args) -> Result<MemoryItem, KclError> {
                 source_ranges: vec![args.source_range],
             })
         })?,
-        meta:Default::default()
+        meta: Default::default(),
     }))
 }
 
