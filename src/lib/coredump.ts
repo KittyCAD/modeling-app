@@ -159,8 +159,30 @@ export class CoreDumpManager {
       modeling_machine: { meta: [] },
       settings_machine: { meta: [] },
     }
-    console.log('getClientState', clientState)
-    return Promise.resolve(JSON.stringify(clientState))
+    console.log('initialized clientState', clientState)
+
+    const xstateServices = new Set()
+    //globalThis?.__xstate__?.services
+    console.log('xstateServices', xstateServices)
+
+    xstateServices?.forEach((interpreter: any) => {
+      console.log('interpreter', interpreter)
+      // Command Bar Machine XState
+      if (interpreter.id('Command Bar')) {
+        clientState.command_bar_machine.meta.push(1)
+      }
+    })
+
+    console.log('final clientState', clientState)
+
+    //clientState.engine_command_manager.commandLogs = this.engineCommandManager.commandLogs
+    //console.dir(this.engineCommandManager.commandLogs)
+    try {
+      return Promise.resolve(JSON.stringify(clientState))
+    } catch (error) {
+      console.error('unable to return coredump data due to ', error)
+      return Promise.reject(error)
+    }
   }
 
   // Return a data URL (png format) of the screenshot of the current page.
