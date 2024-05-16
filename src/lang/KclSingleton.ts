@@ -348,6 +348,13 @@ export class KclManager {
     void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, true)
     void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, true)
   }
+  exitEditMode() {
+    this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: { type: 'edit_mode_exit' },
+    })
+  }
   defaultSelectionFilter() {
     defaultSelectionFilter(this.programMemory, this.engineCommandManager)
   }
