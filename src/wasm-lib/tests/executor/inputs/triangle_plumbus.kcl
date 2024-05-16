@@ -1,0 +1,54 @@
+fn make_circle = (face, tag, pos, radius) => {
+  const sg = startSketchOn(face, tag)
+  |> startProfileAt([pos[0] + radius, pos[1]], %)
+  |> arc({
+       angle_end: 360,
+       angle_start: 0,
+       radius: radius
+     }, %, 'arc-' + tag)
+  |> close(%)
+
+  return sg
+}
+
+fn triangle = (len) => {
+  const sg = startSketchOn('XY')
+  |> startProfileAt([-len / 2, -len / 2], %)
+  |> angledLine({ angle: 0, length: len }, %, 'a')
+  |> angledLine({
+       angle: segAng('a', %) + 180 - 60,
+       length: len
+     }, %, 'b')
+  |> angledLine({
+       angle: segAng('b', %) + 180 - 60,
+       length: len
+     }, %)
+
+  return sg
+}
+
+let triangleHeight = 200
+let plumbusPos = [0, triangleHeight/2]
+let plumbusRad = 40
+let plumbusLen = 100
+
+const p = triangle(100)
+  |> extrude(triangleHeight, %)
+  
+const plumbus_a = 
+  make_circle(p, 'a', plumbusPos, plumbusRad)
+  |> extrude(plumbusLen, %)
+  // |> fillet({
+  //      radius: 5,
+  //      tags: ['arc-a']
+  //    }, %)
+
+const plumbus_b = 
+  make_circle(p, 'b', plumbusPos, plumbusRad)
+  |> extrude(plumbusLen, %)
+  // |> fillet({
+  //      radius: 5,
+  //      tags: ['arc-b']
+  //    }, %)
+
+

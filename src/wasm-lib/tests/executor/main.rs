@@ -138,6 +138,15 @@ async fn serial_test_pentagon_fillet_desugar() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn serial_test_triangle_plumbus() {
+    let code = include_str!("inputs/triangle_plumbus.kcl");
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Cm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/triangle_plumbus.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_pentagon_fillet_sugar() {
     let code = include_str!("inputs/pentagon_fillet_sugar.kcl");
     let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Cm)
