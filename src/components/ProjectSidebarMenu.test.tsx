@@ -71,7 +71,7 @@ describe('ProjectSidebarMenu tests', () => {
           <SettingsAuthProviderJest>
             <ProjectSidebarMenu
               project={projectWellFormed}
-              renderAsLink={true}
+              enableMenu={false}
             />
           </SettingsAuthProviderJest>
         </CommandBarProvider>
