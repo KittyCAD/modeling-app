@@ -12,7 +12,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
         BasePath, ExtrudeGroup, ExtrudeSurface, Face, GeoMeta, MemoryItem, Path, Plane, PlaneType, Point2d, Point3d,
-        Position, Rotation, SketchGroup, SketchGroupSet, SketchSurface, SourceRange,
+        Position, Rotation, SketchGroup, SketchGroupSet, SketchSurface, SourceRange, UserVal
     },
     std::{
         utils::{
@@ -1216,15 +1216,15 @@ pub async fn profile_start_x(args: Args) -> Result<MemoryItem, KclError> {
 /// ```no_run
 /// const sketch001 = startSketchOn('XY')
 ///  |> startProfileAt([5, 2], %)
-///  |> angledLine([26.6, 14], %)
+///  |> angledLine([-26.6, 50], %)
+///  |> angledLine([90, 50], %)
 ///  |> angledLineToX({ angle: 30, to: profileStartX(%) }, %)
 /// ```
 #[stdlib {
     name = "profileStartX"
 }]
 pub(crate) fn inner_profile_start_x(sketch_group: Box<SketchGroup>) -> Result<f64, KclError> {
-    let from = sketch_group.start.from;
-    Ok(from[0])
+    Ok(sketch_group.start.from[0])
 }
 
 /// Returns the Y component of the sketch profile start point.
@@ -1237,30 +1237,39 @@ pub async fn profile_start_y(args: Args) -> Result<MemoryItem, KclError> {
 /// ```no_run
 /// const sketch001 = startSketchOn('XY')
 ///  |> startProfileAt([5, 2], %)
-///  |> angledLine([-60, 14], %)
+///  |> angledLine({ angle: -60, length: 14 }, %)
 ///  |> angledLineToY({ angle: 30, to: profileStartY(%) }, %)
 /// ```
 #[stdlib {
     name = "profileStartY"
 }]
 pub(crate) fn inner_profile_start_y(sketch_group: Box<SketchGroup>) -> Result<f64, KclError> {
-    let from = sketch_group.start.from;
-    Ok(from[1])
+    Ok(sketch_group.start.from[1])
 }
 
 /// Returns the sketch profile start point.
 pub async fn profile_start(args: Args) -> Result<MemoryItem, KclError> {
     let sketch_group: Box<SketchGroup> = args.get_sketch_group()?;
     let point = inner_profile_start(sketch_group)?;
-    args.make_user_val_from_point2d(point)
+    Ok(MemoryItem::UserVal(UserVal {
+        value: serde_json::to_value(point).map_err(|e| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Failed to convert point to json: {}", e),
+                source_ranges: vec![args.source_range],
+            })
+        })?,
+        meta:Default::default()
+    }))
 }
 
 /// ```no_run
 /// const sketch001 = startSketchOn('XY')
 ///  |> startProfileAt([5, 2], %)
-///  |> angledLine([60, 14], %)
-///  |> angledLine([60, 14], %)
-///  |> angledLineTo(profileStart(%), %)
+///  |> angledLine({ angle: 120, length: 50 }, %, 'seg01')
+///  |> angledLine({ angle: segAng('seg01', %) + 120, length: 50 }, %)
+///  |> lineTo(profileStart(%), %)
+///  |> close(%)
+///  |> extrude(20, %)
 /// ```
 #[stdlib {
     name = "profileStart"

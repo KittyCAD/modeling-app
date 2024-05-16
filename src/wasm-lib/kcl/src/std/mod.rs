@@ -238,10 +238,6 @@ impl Args {
         )?))
     }
 
-    fn make_user_val_from_point2d(&self, p: [f64; 2]) -> Result<MemoryItem, KclError> {
-        self.make_user_val_from_json(serde_json::json!([p[0], p[1]]))
-    }
-
     fn get_number(&self) -> Result<f64, KclError> {
         let first_value = self
             .args
