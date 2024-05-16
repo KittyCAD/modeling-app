@@ -271,6 +271,7 @@ const Overlay = ({
                 : 'bottom'
             }
             pathToNode={overlay.pathToNode}
+            stdLibFnName={constraints[0]?.stdLibFnName}
           />
         </div>
       )}
@@ -396,9 +397,11 @@ export async function deleteSegment({
 const SegmentMenu = ({
   verticalPosition,
   pathToNode,
+  stdLibFnName,
 }: {
   verticalPosition: 'top' | 'bottom'
   pathToNode: PathToNode
+  stdLibFnName: string
 }) => {
   const { send } = useModelingContext()
   const dependantSourceRanges = findUsesOfTagInPipe(kclManager.ast, pathToNode)
@@ -406,7 +409,11 @@ const SegmentMenu = ({
     <Popover className="relative">
       {({ open }) => (
         <>
-          <Popover.Button className="bg-white/50 hover:bg-white/80 text-black border-2 border-transparent hover:border-gray-400 h-[26px] w-[26px] rounded-sm p-0 m-0">
+          <Popover.Button
+            data-testId="overlay-menu"
+            data-stdLibFnName={stdLibFnName}
+            className="bg-white/50 hover:bg-white/80 text-black border-2 border-transparent hover:border-gray-400 h-[26px] w-[26px] rounded-sm p-0 m-0"
+          >
             <CustomIcon name={'three-dots'} />
           </Popover.Button>
           <Popover.Panel
@@ -446,7 +453,7 @@ const ConstraintSymbol = ({
     isConstrained,
     value,
     pathToNode,
-    stblidFnName,
+    stdLibFnName,
     argPosition,
   },
   verticalPosition,

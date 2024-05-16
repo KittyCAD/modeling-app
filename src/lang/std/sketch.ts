@@ -110,7 +110,7 @@ const constrainInfo = (
   a: ConstrainInfo['type'],
   b: ConstrainInfo['isConstrained'],
   c: ConstrainInfo['value'],
-  f: ConstrainInfo['stblidFnName'],
+  f: ConstrainInfo['stdLibFnName'],
   g: AbbreviatedInput,
   d: ConstrainInfo['sourceRange'],
   e: ConstrainInfo['pathToNode']
@@ -128,13 +128,13 @@ const constrainInfo = (
       ? { type: 'objectProperty', key: g }
       : undefined,
   pathToNode: e,
-  stblidFnName: f,
+  stdLibFnName: f,
 })
 
 const commonConstraintInfoHelper = (
   callExp: CallExpression,
   inputConstrainTypes: [ConstrainInfo['type'], ConstrainInfo['type']],
-  stblidFnName: ConstrainInfo['stblidFnName'],
+  stdLibFnName: ConstrainInfo['stdLibFnName'],
   abbreviatedInputs: [
     {
       arrayInput?: 0 | 1
@@ -205,7 +205,7 @@ const commonConstraintInfoHelper = (
         inputConstrainTypes[0],
         isNotLiteralArrayOrStatic(input1),
         code.slice(input1.start, input1.end),
-        stblidFnName,
+        stdLibFnName,
         isArr ? abbreviatedInputs[0].arrayInput : abbreviatedInputs[0].objInput,
         [input1.start, input1.end],
         pathToFirstArg
@@ -217,7 +217,7 @@ const commonConstraintInfoHelper = (
         inputConstrainTypes[1],
         isNotLiteralArrayOrStatic(input2),
         code.slice(input2.start, input2.end),
-        stblidFnName,
+        stdLibFnName,
         isArr ? abbreviatedInputs[1].arrayInput : abbreviatedInputs[1].objInput,
         [input2.start, input2.end],
         pathToSecondArg
@@ -230,7 +230,7 @@ const commonConstraintInfoHelper = (
 const horzVertConstraintInfoHelper = (
   callExp: CallExpression,
   inputConstrainTypes: [ConstrainInfo['type'], ConstrainInfo['type']],
-  stblidFnName: ConstrainInfo['stblidFnName'],
+  stdLibFnName: ConstrainInfo['stdLibFnName'],
   abbreviatedInput: AbbreviatedInput,
   code: string,
   pathToNode: PathToNode
@@ -249,7 +249,7 @@ const horzVertConstraintInfoHelper = (
       inputConstrainTypes[0],
       true,
       callee.name,
-      stblidFnName,
+      stdLibFnName,
       undefined,
       [callee.start, callee.end],
       pathToCallee
@@ -258,7 +258,7 @@ const horzVertConstraintInfoHelper = (
       inputConstrainTypes[1],
       isNotLiteralArrayOrStatic(callExp.arguments?.[0]),
       code.slice(firstArg.start, firstArg.end),
-      stblidFnName,
+      stdLibFnName,
       abbreviatedInput,
       [firstArg.start, firstArg.end],
       pathToFirstArg

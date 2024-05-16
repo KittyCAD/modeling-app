@@ -1964,6 +1964,15 @@ test('Extrude from command bar selects extrude line after', async ({
 
 test.describe('Testing segment overlays', () => {
   test.describe('Hover over a segment should show its overlay, hovering over the input overlays should show its popover, clicking the input overlay should constrain/unconstrain it:\nfor the following segments', () => {
+    /**
+     * Clicks on an constrained element
+     * @param {Page} page - The page to perform the action on
+     * @param {Object} options - The options for the action
+     * @param {Object} options.hoverPos - The position to hover over
+     * @param {Object} options.constraintType - The type of constraint
+     * @param {number} options.ang - The angle
+     * @param {number} options.steps - The number of steps to perform
+     */
     const _clickConstrained =
       (page: Page) =>
       async ({
@@ -2538,6 +2547,209 @@ test.describe('Testing segment overlays', () => {
         ang: -135,
         steps: 10,
       })
+    })
+  })
+  test.describe('testing deleting a segment', () => {
+    const _deleteSegmentSequence =
+      (page: Page) =>
+      async ({
+        hoverPos,
+        codeToBeDeleted,
+        stdLibFnName,
+        ang = 45,
+        steps = 6,
+      }: {
+        hoverPos: { x: number; y: number }
+        codeToBeDeleted: string
+        stdLibFnName: string
+        ang?: number
+        steps?: number
+      }) => {
+        await expect(page.getByText('Added variable')).not.toBeVisible()
+        const [x, y] = [
+          Math.cos((ang * Math.PI) / 180) * 45,
+          Math.sin((ang * Math.PI) / 180) * 45,
+        ]
+
+        await page.mouse.move(hoverPos.x + x, hoverPos.y + y)
+        await page.mouse.move(hoverPos.x, hoverPos.y, { steps })
+        await expect(page.locator('.cm-content')).toContainText(codeToBeDeleted)
+
+        await page.locator(`[data-stdLibFnName="${stdLibFnName}"]`).click()
+        await page.getByText('Delete Segment').click()
+
+        await expect(page.locator('.cm-content')).not.toContainText(
+          codeToBeDeleted
+        )
+      }
+    test('all segment types', async ({ page }) => {
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `const part001 = startSketchOn('-XZ')
+  |> startProfileAt([0, 0], %)
+  |> line([0.5, -14 + 0], %)
+  |> angledLine({ angle: 3 + 0, length: 32 + 0 }, %)
+  |> lineTo([33, 11.5 + 0], %)
+  |> xLineTo(9 - 5, %)
+  |> yLineTo(-10.77, %, 'a')
+  |> xLine(26.04, %)
+  |> yLine(21.14 + 0, %)
+  |> angledLineOfXLength({ angle: 181 + 0, length: 23.14 }, %)
+  |> angledLineOfYLength({ angle: -91, length: 19 + 0 }, %)
+  |> angledLineToX({ angle: 3 + 0, to: 26 }, %)
+  |> angledLineToY({ angle: 89, to: 9.14 + 0 }, %)
+  |> angledLineThatIntersects({
+       angle: 4.14,
+       intersectTag: 'a',
+       offset: 9
+     }, %)
+  |> tangentialArcTo([3.14 + 13, 1.14], %)
+        `
+        )
+        localStorage.setItem('playwright', 'true')
+      })
+      const u = getUtils(page)
+      await page.setViewportSize({ width: 1200, height: 500 })
+      await page.goto('/')
+      await u.waitForAuthSkipAppStart()
+
+      await page.getByText('xLineTo(9 - 5, %)').click()
+      await page.waitForTimeout(100)
+      await page.getByRole('button', { name: 'Edit Sketch' }).click()
+      await page.waitForTimeout(500)
+
+      await expect(page.getByTestId('segment-overlay')).toHaveCount(13)
+      const deleteSegmentSequence = _deleteSegmentSequence(page)
+
+      let segmentToDelete
+
+      const getOverlayByIndex = (index: number) =>
+        u.getBoundingBox(`[data-overlay-index="${index}"]`)
+      segmentToDelete = await getOverlayByIndex(12)
+      await deleteSegmentSequence({
+        hoverPos: { x: segmentToDelete.x - 10, y: segmentToDelete.y + 20 },
+        codeToBeDeleted: 'tangentialArcTo([3.14 + 13, 1.14], %)',
+        stdLibFnName: 'tangentialArcTo',
+        ang: -45,
+        steps: 6,
+      })
+
+      segmentToDelete = await getOverlayByIndex(0)
+      await deleteSegmentSequence({
+        hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y - 20 },
+        codeToBeDeleted: 'line([0.5, -14 + 0], %)',
+        stdLibFnName: 'line',
+        ang: -45,
+      })
+
+      segmentToDelete = await getOverlayByIndex(0)
+      await deleteSegmentSequence({
+        hoverPos: { x: segmentToDelete.x - 20, y: segmentToDelete.y },
+        codeToBeDeleted: 'angledLine({ angle: 3 + 0, length: 32 + 0 }, %)',
+        stdLibFnName: 'angledLine',
+        ang: 135,
+      })
+
+      await page.waitForTimeout(200)
+
+      segmentToDelete = await getOverlayByIndex(9)
+      await deleteSegmentSequence({
+        hoverPos: { x: segmentToDelete.x + 10, y: segmentToDelete.y },
+        codeToBeDeleted: `angledLineThatIntersects({
+      angle: 4.14,
+      intersectTag: 'a',
+      offset: 9
+    }, %)`,
+        stdLibFnName: 'angledLineThatIntersects',
+        ang: -45,
+        steps: 7,
+      })
+
+      segmentToDelete = await getOverlayByIndex(8)
+      await deleteSegmentSequence({
+        hoverPos: { x: segmentToDelete.x + 10, y: segmentToDelete.y },
+        codeToBeDeleted: 'angledLineToY({ angle: 89, to: 9.14 + 0 }, %)',
+        stdLibFnName: 'angledLineToY',
+      })
+
+      segmentToDelete = await getOverlayByIndex(7)
+      await deleteSegmentSequence({
+        hoverPos: { x: segmentToDelete.x - 10, y: segmentToDelete.y },
+        codeToBeDeleted: 'angledLineToX({ angle: 3 + 0, to: 26 }, %)',
+        stdLibFnName: 'angledLineToX',
+      })
+
+      segmentToDelete = await getOverlayByIndex(6)
+      await deleteSegmentSequence({
+        hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y - 10 },
+        codeToBeDeleted:
+          'angledLineOfYLength({ angle: -91, length: 19 + 0 }, %)',
+        stdLibFnName: 'angledLineOfYLength',
+      })
+
+      segmentToDelete = await getOverlayByIndex(5)
+      await deleteSegmentSequence({
+        hoverPos: { x: segmentToDelete.x + 10, y: segmentToDelete.y },
+        codeToBeDeleted:
+          'angledLineOfXLength({ angle: 181 + 0, length: 23.14 }, %)',
+        stdLibFnName: 'angledLineOfXLength',
+      })
+
+      segmentToDelete = await getOverlayByIndex(4)
+      await deleteSegmentSequence({
+        hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y + 10 },
+        codeToBeDeleted: 'yLine(21.14 + 0, %)',
+        stdLibFnName: 'yLine',
+      })
+
+      segmentToDelete = await getOverlayByIndex(3)
+      await deleteSegmentSequence({
+        hoverPos: { x: segmentToDelete.x - 10, y: segmentToDelete.y },
+        codeToBeDeleted: 'xLine(26.04, %)',
+        stdLibFnName: 'xLine',
+      })
+
+      segmentToDelete = await getOverlayByIndex(2)
+      await deleteSegmentSequence({
+        hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y - 10 },
+        codeToBeDeleted: "yLineTo(-10.77, %, 'a')",
+        stdLibFnName: 'yLineTo',
+      })
+
+      segmentToDelete = await getOverlayByIndex(1)
+      await deleteSegmentSequence({
+        hoverPos: { x: segmentToDelete.x + 10, y: segmentToDelete.y },
+        codeToBeDeleted: 'xLineTo(9 - 5, %)',
+        stdLibFnName: 'xLineTo',
+      })
+
+      for (let i = 0; i < 15; i++) {
+        await page.mouse.wheel(0, 100)
+        await page.waitForTimeout(25)
+      }
+
+      await page.waitForTimeout(200)
+
+      segmentToDelete = await getOverlayByIndex(0)
+      const hoverPos = { x: segmentToDelete.x - 10, y: segmentToDelete.y + 10 }
+      await expect(page.getByText('Added variable')).not.toBeVisible()
+      const [x, y] = [
+        Math.cos((45 * Math.PI) / 180) * 45,
+        Math.sin((45 * Math.PI) / 180) * 45,
+      ]
+
+      await page.mouse.move(hoverPos.x + x, hoverPos.y + y)
+      await page.mouse.move(hoverPos.x, hoverPos.y, { steps: 5 })
+      const codeToBeDeleted = 'lineTo([33, 11.5 + 0], %)'
+      await expect(page.locator('.cm-content')).toContainText(codeToBeDeleted)
+
+      await page.getByTestId('overlay-menu').click()
+      await page.getByText('Delete Segment').click()
+
+      await expect(page.locator('.cm-content')).not.toContainText(
+        codeToBeDeleted
+      )
     })
   })
 })

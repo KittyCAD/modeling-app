@@ -103,7 +103,7 @@ export type TransformCallback = (
 }
 
 export interface ConstrainInfo {
-  stblidFnName: ToolTip
+  stdLibFnName: ToolTip
   type: LineInputsType | 'vertical' | 'horizontal' | 'tangentialWithPrevious'
   isConstrained: boolean
   sourceRange: SourceRange
