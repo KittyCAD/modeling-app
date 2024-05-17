@@ -962,7 +962,7 @@ dependencies = [
 
 [[package]]
 name = "derive-docs"
-version = "0.1.17"
+version = "0.1.18"
 dependencies = [
  "Inflector",
  "anyhow",
