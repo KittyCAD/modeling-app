@@ -50,3 +50,5 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   SKETCH: 'sketch',
   EXTRUDE: 'extrude',
 } as const
+/** The default KCL length expression */
+export const KCL_DEFAULT_LENGTH = `5`

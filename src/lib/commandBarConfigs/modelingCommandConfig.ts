@@ -1,5 +1,6 @@
 import { Models } from '@kittycad/lib'
 import { CommandSetConfig, KclCommandValue } from 'lib/commandTypes'
+import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 import { Selections } from 'lib/selections'
 import { modelingMachine } from 'machines/modelingMachine'
 
@@ -135,7 +136,7 @@ export const modelingMachineConfig: CommandSetConfig<
       // },
       distance: {
         inputType: 'kcl',
-        defaultValue: '5 + 7',
+        defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
       },
     },

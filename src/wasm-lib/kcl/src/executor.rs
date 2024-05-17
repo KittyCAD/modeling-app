@@ -1413,7 +1413,7 @@ mod tests {
             fs: Arc::new(crate::fs::FileManager::new()),
             stdlib: Arc::new(crate::std::StdLib::new()),
             settings: Default::default(),
-            is_mock: false,
+            is_mock: true,
         };
         let memory = ctx.run(program, None).await?;
 
