@@ -299,3 +299,6 @@ PS: for the debug panel, the following JSON is useful for snapping the camera
 ```
 
 </details>
+
+## KCL
+For how to contribute to KCL, [see our KCL README](https://github.com/KittyCAD/modeling-app/tree/main/src/wasm-lib/kcl).
