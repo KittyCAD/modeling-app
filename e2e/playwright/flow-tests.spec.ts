@@ -1765,7 +1765,7 @@ test('Sketch on face', async ({ page }) => {
   |> line([-3.86, -2.73], %)
   |> line([-17.67, 0.85], %)
   |> close(%)
-  |> extrude(${KCL_DEFAULT_LENGTH}, %)`
+  |> extrude(5 + 7, %)`
     )
   })
 
