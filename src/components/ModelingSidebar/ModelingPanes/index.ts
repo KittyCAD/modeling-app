@@ -5,6 +5,7 @@ import {
   faFolderTree,
   faCodeCommit,
   faExclamationCircle,
+  faFolderTree,
   faSquareRootVariable,
 } from '@fortawesome/free-solid-svg-icons'
 import { KclEditorMenu } from 'components/ModelingSidebar/ModelingPanes/KclEditorMenu'
@@ -16,6 +17,7 @@ import { SceneTreePane } from './SceneTreePane'
 import { KclErrorsPane, LogsPane } from './LoggingPanes'
 import { DebugPane } from './DebugPane'
 import { FileTreeInner, FileTreeMenu } from 'components/FileTree'
+import { SceneTreePane } from './SceneTreePane'
 
 export type SidebarType =
   | 'code'
