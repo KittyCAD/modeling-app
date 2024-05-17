@@ -291,7 +291,7 @@ pub async fn get_edge(args: Args) -> Result<MemoryItem, KclError> {
 /// Get an edge on a 3D solid.
 ///
 /// ```no_run
-/// const box = startSketchOn('XZ')
+/// const box = startSketchOn('-XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([0, 10], %, 'revolveAxis')
 ///   |> line([10, 0], %)
@@ -299,7 +299,7 @@ pub async fn get_edge(args: Args) -> Result<MemoryItem, KclError> {
 ///   |> close(%)
 ///   |> extrude(10, %)
 ///
-/// const revolution = startSketchOn('XZ')
+/// const revolution = startSketchOn('-XZ')
 ///   |> startProfileAt([-10, 0], %)
 ///   |> line([0, 10], %)
 ///   |> line([2, 0], %)
@@ -307,7 +307,7 @@ pub async fn get_edge(args: Args) -> Result<MemoryItem, KclError> {
 ///   |> close(%)
 ///   |> revolve({
 ///        axis: getEdge('revolveAxis', box),
-///        angle: 90
+///        angle: -90
 ///      }, %)
 /// ```
 #[stdlib {
