@@ -2,6 +2,7 @@ import {
   IconDefinition,
   faBugSlash,
   faCode,
+  faFolderTree,
   faCodeCommit,
   faExclamationCircle,
   faSquareRootVariable,
@@ -11,6 +12,7 @@ import { CustomIconName } from 'components/CustomIcon'
 import { KclEditorPane } from 'components/ModelingSidebar/ModelingPanes/KclEditorPane'
 import { ReactNode } from 'react'
 import { MemoryPane } from './MemoryPane'
+import { SceneTreePane } from './SceneTreePane'
 import { KclErrorsPane, LogsPane } from './LoggingPanes'
 import { DebugPane } from './DebugPane'
 import { FileTreeInner, FileTreeMenu } from 'components/FileTree'
@@ -24,6 +26,7 @@ export type SidebarType =
   | 'logs'
   | 'lspMessages'
   | 'variables'
+  | 'sceneTree'
 
 export type SidebarPane = {
   id: SidebarType
@@ -83,5 +86,12 @@ export const bottomPanes: SidebarPane[] = [
     icon: faBugSlash,
     Content: DebugPane,
     keybinding: 'shift + d',
+  },
+  {
+    id: 'sceneTree',
+    title: 'Scene Tree',
+    icon: faFolderTree,
+    Content: SceneTreePane,
+    keybinding: 'shift + t',
   },
 ]
