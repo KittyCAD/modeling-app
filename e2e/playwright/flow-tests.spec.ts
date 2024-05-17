@@ -13,6 +13,7 @@ import {
 } from './storageStates'
 import * as TOML from '@iarna/toml'
 import { Coords2d } from 'lang/std/sketch'
+import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -1145,7 +1146,7 @@ test.describe('Command bar tests', () => {
 
     // Assert we're back on the distance step
     await expect(
-      page.getByRole('button', { name: 'Distance 12', exact: false })
+      page.getByRole('button', { name: 'Distance 5', exact: false })
     ).toBeDisabled()
 
     await continueButton.click()
@@ -1156,7 +1157,7 @@ test.describe('Command bar tests', () => {
     // Unfortunately this indentation seems to matter for the test
     await expect(page.locator('.cm-content')).toHaveText(
       `const distance = sqrt(20)
-const distance001 = 5 + 7
+const distance001 = ${KCL_DEFAULT_LENGTH}
 const part001 = startSketchOn('-XZ')
     |> startProfileAt([-6.95, 10.98], %)
     |> line([25.1, 0.41], %)
@@ -1353,7 +1354,7 @@ test('ProgramMemory can be serialised', async ({ page }) => {
 
 test('Hovering over 3d features highlights code', async ({ page }) => {
   const u = getUtils(page)
-  await page.addInitScript(async () => {
+  await page.addInitScript(async (KCL_DEFAULT_LENGTH) => {
     localStorage.setItem(
       'persistCode',
       `const part001 = startSketchOn('-XZ')
@@ -1378,7 +1379,7 @@ test('Hovering over 3d features highlights code', async ({ page }) => {
   |> extrude(5 + 7, %)    
 `
     )
-  })
+  }, KCL_DEFAULT_LENGTH)
   await page.setViewportSize({ width: 1000, height: 500 })
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
@@ -1957,6 +1958,6 @@ test('Extrude from command bar selects extrude line after', async ({
   await page.keyboard.press('Enter')
   await page.waitForTimeout(100)
   await expect(page.locator('.cm-activeLine')).toHaveText(
-    `  |> extrude(5 + 7, %)`
+    `  |> extrude(${KCL_DEFAULT_LENGTH}, %)`
   )
 })

@@ -4,7 +4,7 @@ import { getUtils } from './test-utils'
 import { Models } from '@kittycad/lib'
 import fsp from 'fs/promises'
 import { spawn } from 'child_process'
-import { APP_NAME } from 'lib/constants'
+import { APP_NAME, KCL_DEFAULT_LENGTH } from 'lib/constants'
 import JSZip from 'jszip'
 import path from 'path'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from './storageStates'
@@ -718,7 +718,7 @@ test.describe('Client side scene scale should match engine scale', () => {
 
 test('Sketch on face with none z-up', async ({ page, context }) => {
   const u = getUtils(page)
-  await context.addInitScript(async () => {
+  await context.addInitScript(async (KCL_DEFAULT_LENGTH) => {
     localStorage.setItem(
       'persistCode',
       `const part001 = startSketchOn('-XZ')
@@ -726,16 +726,16 @@ test('Sketch on face with none z-up', async ({ page, context }) => {
   |> line([9.31, 10.55], %, 'seg01')
   |> line([11.91, -10.42], %)
   |> close(%)
-  |> extrude(5 + 7, %)
+  |> extrude(${KCL_DEFAULT_LENGTH}, %)
 const part002 = startSketchOn(part001, 'seg01')
   |> startProfileAt([8, 8], %)
   |> line([4.68, 3.05], %)
   |> line([0, -7.79], %, 'seg02')
   |> close(%)
-  |> extrude(5 + 7, %)
+  |> extrude(${KCL_DEFAULT_LENGTH}, %)
 `
     )
-  })
+  }, KCL_DEFAULT_LENGTH)
 
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/')
