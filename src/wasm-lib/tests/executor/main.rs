@@ -2112,3 +2112,35 @@ const extrusion = startSketchOn('XY')
         r#"semantic: KclErrorDetails { source_ranges: [SourceRange([92, 364]), SourceRange([444, 477])], message: "Expected 2 arguments, got 3" }"#
     );
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_xz_plane() {
+    let code = r#"const part001 = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> lineTo([100, 100], %)
+  |> lineTo([100, 0], %)
+  |> close(%)
+  |> extrude(5 + 7, %)
+"#;
+
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/xz_plane.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_neg_xz_plane() {
+    let code = r#"const part001 = startSketchOn('-XZ')
+  |> startProfileAt([0, 0], %)
+  |> lineTo([100, 100], %)
+  |> lineTo([100, 0], %)
+  |> close(%)
+  |> extrude(5 + 7, %)
+"#;
+
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/neg_xz_plane.png", &result, 1.0);
+}
