@@ -338,6 +338,18 @@ export function createSettings() {
         },
       }),
       /**
+       * Whether to show the scene tree panel, which lets you see
+       * various states of the app to aid in development
+       */
+      showSceneTreePanel: new Setting<boolean>({
+        defaultValue: false,
+        description: 'Whether to show the scene tree panel, a development tool',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
+      /**
        * TODO: This setting is not yet implemented.
        * Whether to turn off animations and other motion effects
        */

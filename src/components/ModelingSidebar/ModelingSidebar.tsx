@@ -15,6 +15,9 @@ import { ActionIcon } from 'components/ActionIcon'
 import styles from './ModelingSidebar.module.css'
 import { ModelingPane } from './ModelingPane'
 import { isTauri } from 'lib/isTauri'
+import { Setting } from 'lib/settings/initialSettings'
+
+const TOGGLABLE_PANE_IDS = ['debug', 'sceneTree'] as const
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -74,7 +77,11 @@ function ModelingSidebarSection({
   alignButtons = 'start',
 }: ModelingSidebarSectionProps) {
   const { settings } = useSettingsAuthContext()
-  const showDebugPanel = settings.context.modeling.showDebugPanel
+  const { showDebugPanel, showSceneTreePanel } = settings.context.modeling
+  const togglablePanes: [string, Setting<boolean>][] = [
+    ['debug', showDebugPanel],
+    ['sceneTree', showSceneTreePanel],
+  ]
   const paneIds = panes.map((pane) => pane.id)
   const { openPanes, setOpenPanes } = useStore((s) => ({
     openPanes: s.openPanes,
@@ -103,15 +110,17 @@ function ModelingSidebarSection({
 
   // Filter out the debug panel if it's not supposed to be shown
   // TODO: abstract out for allowing user to configure which panes to show
-  const filteredPanes = (
-    showDebugPanel.current ? panes : panes.filter((pane) => pane.id !== 'debug')
-  ).filter(
-    (pane) =>
-      !pane.hideOnPlatform ||
-      (isTauri()
-        ? pane.hideOnPlatform === 'web'
-        : pane.hideOnPlatform === 'desktop')
-  )
+  const filteredPanes = panes
+    .filter((pane) =>
+      togglablePanes.every(([id, show]) => show.current || id !== pane.id)
+    )
+    .filter(
+      (pane) =>
+        !pane.hideOnPlatform ||
+        (isTauri()
+          ? pane.hideOnPlatform === 'web'
+          : pane.hideOnPlatform === 'desktop')
+    )
   useEffect(() => {
     if (
       !showDebugPanel.current &&
@@ -119,8 +128,19 @@ function ModelingSidebarSection({
       openPanes.includes('debug')
     ) {
       togglePane('debug')
+    } else if (
+      !showSceneTreePanel.current &&
+      currentPane === 'sceneTree' &&
+      openPanes.includes('sceneTree')
+    ) {
+      togglePane('sceneTree')
     }
-  }, [showDebugPanel.current, togglePane, openPanes])
+  }, [
+    showDebugPanel.current,
+    showSceneTreePanel.current,
+    togglePane,
+    openPanes,
+  ])
 
   return (
     <Tab.Group
