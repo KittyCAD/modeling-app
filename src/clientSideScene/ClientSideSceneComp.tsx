@@ -354,9 +354,9 @@ export async function deleteSegment({
   sketchDetails: SketchDetails | null
 }) {
   let modifiedAst: Program = kclManager.ast
-  const dependantRanges = findUsesOfTagInPipe(modifiedAst, pathToNode)
+  const dependentRanges = findUsesOfTagInPipe(modifiedAst, pathToNode)
 
-  const shouldContinueSegDelete = dependantRanges.length
+  const shouldContinueSegDelete = dependentRanges.length
     ? await confirmModal({
         text: "At least 2 segment rely on the segment you're deleting.\nDo you want to continue and unconstrain these segments?",
         isOpen: true,
@@ -365,7 +365,7 @@ export async function deleteSegment({
 
   if (!shouldContinueSegDelete) return
   modifiedAst = deleteSegmentFromPipeExpression(
-    dependantRanges,
+    dependentRanges,
     modifiedAst,
     kclManager.programMemory,
     codeManager.code,
@@ -404,7 +404,7 @@ const SegmentMenu = ({
   stdLibFnName: string
 }) => {
   const { send } = useModelingContext()
-  const dependantSourceRanges = findUsesOfTagInPipe(kclManager.ast, pathToNode)
+  const dependentSourceRanges = findUsesOfTagInPipe(kclManager.ast, pathToNode)
   return (
     <Popover className="relative">
       {({ open }) => (
@@ -427,10 +427,10 @@ const SegmentMenu = ({
               </button> */}
               <button
                 className="hover:bg-white/80 bg-white/50 rounded p-1 text-nowrap"
-                // disabled={dependantSourceRanges.length > 0}
+                // disabled={dependentSourceRanges.length > 0}
                 title={
-                  dependantSourceRanges.length > 0
-                    ? `At least ${dependantSourceRanges.length} segment rely on this segment's tag.`
+                  dependentSourceRanges.length > 0
+                    ? `At least ${dependentSourceRanges.length} segment rely on this segment's tag.`
                     : ''
                 }
                 onClick={() => {

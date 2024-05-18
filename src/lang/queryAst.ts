@@ -703,7 +703,7 @@ export function findUsesOfTagInPipe(
     pathToNode,
     'VariableDeclaration'
   ).node
-  const dependantRanges: SourceRange[] = []
+  const dependentRanges: SourceRange[] = []
 
   traverse(varDec, {
     enter: (node) => {
@@ -715,8 +715,8 @@ export function findUsesOfTagInPipe(
       const tagArg = node.arguments[0]
       if (tagArg.type !== 'Literal') return
       if (String(tagArg.value) === tag)
-        dependantRanges.push([node.start, node.end])
+        dependentRanges.push([node.start, node.end])
     },
   })
-  return dependantRanges
+  return dependentRanges
 }

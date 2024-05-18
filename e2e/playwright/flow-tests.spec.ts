@@ -2752,7 +2752,7 @@ test.describe('Testing segment overlays', () => {
       )
     })
   })
-  test.describe('Testing delete with dependant segments', () => {
+  test.describe('Testing delete with dependent segments', () => {
     const cases = [
       {
         lineOfInterest: "line([22, 2], %, 'seg01')",
