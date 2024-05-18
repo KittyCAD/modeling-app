@@ -2549,7 +2549,7 @@ test.describe('Testing segment overlays', () => {
       })
     })
   })
-  test.describe('testing deleting a segment', () => {
+  test.describe('Testing deleting a segment', () => {
     const _deleteSegmentSequence =
       (page: Page) =>
       async ({
@@ -2751,5 +2751,156 @@ test.describe('Testing segment overlays', () => {
         codeToBeDeleted
       )
     })
+  })
+  test.describe('Testing delete with dependant segments', () => {
+    const cases = [
+      {
+        lineOfInterest: "line([22, 2], %, 'seg01')",
+      },
+      {
+        lineOfInterest: "angledLine([5, 23.03], %, 'seg01')",
+      },
+      {
+        lineOfInterest: "xLine(23, %, 'seg01')",
+      },
+      {
+        lineOfInterest: "yLine(-8, %, 'seg01')",
+        isYLine: true,
+      },
+      {
+        lineOfInterest: "xLineTo(30, %, 'seg01')",
+      },
+      {
+        lineOfInterest: "yLineTo(-4, %, 'seg01')",
+        isYLine: true,
+      },
+      {
+        lineOfInterest: "angledLineOfXLength([3, 30], %, 'seg01')",
+      },
+      {
+        lineOfInterest:
+          "angledLineOfXLength({ angle: 3, length: 30 }, %, 'seg01')",
+        isObj: true,
+      },
+      {
+        lineOfInterest: "angledLineOfYLength([3, 1.5], %, 'seg01')",
+      },
+      {
+        lineOfInterest:
+          "angledLineOfYLength({ angle: 3, length: 1.5 }, %, 'seg01')",
+        isObj: true,
+      },
+      {
+        lineOfInterest: "angledLineToX([3, 30], %, 'seg01')",
+      },
+      {
+        lineOfInterest: "angledLineToX({ angle: 3, to: 30 }, %, 'seg01')",
+        isObj: true,
+      },
+      {
+        lineOfInterest: "angledLineToY([3, 7], %, 'seg01')",
+      },
+      {
+        lineOfInterest: "angledLineToY({ angle: 3, to: 7 }, %, 'seg01')",
+        isObj: true,
+      },
+    ]
+    for (const doesHaveTagOutsideSketch of [true, false]) {
+      for (const testInfo of cases) {
+        test(`${testInfo.lineOfInterest.split('(')[0]}${
+          testInfo?.isObj ? '-[obj-input]' : ''
+        }${doesHaveTagOutsideSketch ? '-[tagOutsideSketch]' : ''}`, async ({
+          page,
+        }) => {
+          await page.addInitScript(
+            async ({ lineToBeDeleted, extraLine }) => {
+              localStorage.setItem(
+                'persistCode',
+                `const part001 = startSketchOn('-XZ')
+  |> startProfileAt([5, 6], %)
+  |> ${lineToBeDeleted}
+  |> line([-10, -15], %)
+  |> angledLine([-176, segLen('seg01', %)], %)        
+${extraLine ? "const myVar = segLen('seg01', part001)" : ''}`
+              )
+            },
+            {
+              lineToBeDeleted: testInfo.lineOfInterest,
+              extraLine: doesHaveTagOutsideSketch,
+            }
+          )
+          const u = getUtils(page)
+          await page.setViewportSize({ width: 1200, height: 500 })
+          await page.goto('/')
+          await u.waitForAuthSkipAppStart()
+          await page.waitForTimeout(300)
+
+          await page.getByText(testInfo.lineOfInterest).click()
+          await page.waitForTimeout(100)
+          await page.getByRole('button', { name: 'Edit Sketch' }).click()
+          await page.waitForTimeout(500)
+
+          await expect(page.getByTestId('segment-overlay')).toHaveCount(3)
+          const segmentToDelete = await u.getBoundingBox(
+            `[data-overlay-index="0"]`
+          )
+
+          const hoverPos = {
+            x: segmentToDelete.x + (testInfo.isYLine ? 0 : -20),
+            y: segmentToDelete.y + (testInfo.isYLine ? -20 : 0),
+          }
+          await expect(page.getByText('Added variable')).not.toBeVisible()
+          const ang = testInfo.isYLine ? 45 : -45
+          const [x, y] = [
+            Math.cos((ang * Math.PI) / 180) * 45,
+            Math.sin((ang * Math.PI) / 180) * 45,
+          ]
+
+          await page.mouse.move(hoverPos.x + x, hoverPos.y + y)
+          await page.mouse.move(hoverPos.x, hoverPos.y, { steps: 5 })
+
+          await expect(page.locator('.cm-content')).toContainText(
+            testInfo.lineOfInterest
+          )
+
+          await page.getByTestId('overlay-menu').click()
+          await page.getByText('Delete Segment').click()
+
+          await page.getByText('Cancel').click()
+
+          await page.mouse.move(hoverPos.x + x, hoverPos.y + y)
+          await page.mouse.move(hoverPos.x, hoverPos.y, { steps: 5 })
+
+          await expect(page.locator('.cm-content')).toContainText(
+            testInfo.lineOfInterest
+          )
+
+          await page.getByTestId('overlay-menu').click()
+          await page.getByText('Delete Segment').click()
+
+          await page.getByText('Continue and unconstrain').last().click()
+
+          if (doesHaveTagOutsideSketch) {
+            // eslint-disable-next-line jest/no-conditional-expect
+            await expect(
+              page.getByText(
+                'Segment tag used outside of current Sketch. Could not delete.'
+              )
+            ).toBeTruthy()
+            // eslint-disable-next-line jest/no-conditional-expect
+            await expect(page.locator('.cm-content')).toContainText(
+              testInfo.lineOfInterest
+            )
+          } else {
+            // eslint-disable-next-line jest/no-conditional-expect
+            await expect(page.locator('.cm-content')).not.toContainText(
+              testInfo.lineOfInterest
+            )
+            // eslint-disable-next-line jest/no-conditional-expect
+            await expect(page.locator('.cm-content')).not.toContainText('seg01')
+          }
+        })
+      }
+    }
   })
 })
