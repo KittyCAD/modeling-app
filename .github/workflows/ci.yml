@@ -356,7 +356,7 @@ jobs:
       - name: Run e2e tests (linux only)
         if: ${{ matrix.os == 'ubuntu-latest' && github.event_name != 'release' && github.event_name != 'schedule' }}
         run: |
-          cargo install --force --git https://github.com/pierremtb/tauri --branch pierremtb/disable-webviewoptions
+          cargo install --force tauri-driver
           source .env.${{ env.BUILD_RELEASE == 'true' && 'production' || 'development' }}
           export VITE_KC_API_BASE_URL
           xvfb-run yarn test:e2e:tauri
@@ -364,6 +364,17 @@ jobs:
           E2E_APPLICATION: "./src-tauri/target/${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}/zoo-modeling-app"
           KITTYCAD_API_TOKEN: ${{ env.BUILD_RELEASE == 'true' && secrets.KITTYCAD_API_TOKEN || secrets.KITTYCAD_API_TOKEN_DEV }}
 
+      - name: Run e2e tests (windows only)
+        if: ${{ matrix.os == 'windows-latest' && github.event_name != 'release' && github.event_name != 'schedule' }}
+        run: |
+          cargo install --force --git https://github.com/pierremtb/tauri --branch pierremtb/disable-webviewoptions tauri-driver
+          yarn wdio run wdio.conf.ts
+        env:
+          E2E_APPLICATION: ".\\src-tauri\\target\\${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}\\Zoo Modeling App.exe"
+          KITTYCAD_API_TOKEN: ${{ env.BUILD_RELEASE == 'true' && secrets.KITTYCAD_API_TOKEN || secrets.KITTYCAD_API_TOKEN_DEV }}
+          VITE_KC_API_BASE_URL: ${{ env.BUILD_RELEASE == 'true' && 'https://api.zoo.dev' || 'https://api.dev.zoo.dev' }}
+          E2E_TAURI_ENABLED: true
+          TS_NODE_COMPILER_OPTIONS: '{"module": "commonjs"}'
 
   publish-apps-release:
     runs-on: ubuntu-latest
