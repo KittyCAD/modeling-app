@@ -1340,7 +1340,7 @@ test.describe('Command bar tests', () => {
       localStorage.setItem(
         'persistCode',
         `const distance = sqrt(20)
-      const part001 = startSketchOn('-XZ')
+      const part001 = startSketchOn('XZ')
       |> startProfileAt([-6.95, 10.98], %)
       |> line([25.1, 0.41], %)
       |> line([0.73, -20.93], %)
@@ -1410,7 +1410,7 @@ test.describe('Command bar tests', () => {
     await expect(page.locator('.cm-content')).toHaveText(
       `const distance = sqrt(20)
 const distance001 = ${KCL_DEFAULT_LENGTH}
-const part001 = startSketchOn('-XZ')
+const part001 = startSketchOn('XZ')
     |> startProfileAt([-6.95, 10.98], %)
     |> line([25.1, 0.41], %)
     |> line([0.73, -20.93], %)
@@ -1609,7 +1609,7 @@ test('Hovering over 3d features highlights code', async ({ page }) => {
   await page.addInitScript(async (KCL_DEFAULT_LENGTH) => {
     localStorage.setItem(
       'persistCode',
-      `const part001 = startSketchOn('-XZ')
+      `const part001 = startSketchOn('XZ')
   |> startProfileAt([20, 0], %)
   |> line([7.13, 4 + 0], %)
   |> angledLine({ angle: 3 + 0, length: 3.14 + 0 }, %)
@@ -2004,7 +2004,7 @@ test('Sketch on face', async ({ page }) => {
   await page.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
-      `const part001 = startSketchOn('-XZ')
+      `const part001 = startSketchOn('XZ')
   |> startProfileAt([3.29, 7.86], %)
   |> line([2.48, 2.44], %)
   |> line([2.66, 1.17], %)
