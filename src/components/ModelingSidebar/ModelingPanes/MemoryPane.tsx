@@ -83,6 +83,10 @@ export const processMemory = (programMemory: ProgramMemory) => {
         processedMemory[key] = val.value.map(({ ...rest }: ExtrudeSurface) => {
           return rest
         })
+      } else if ((val.type as any) === 'Function') {
+        processedMemory[key] = `__function(${(val as any)?.expression?.params
+          ?.map?.(({ identifier }: any) => identifier?.name || '')
+          .join(', ')})__`
       } else {
         processedMemory[key] = val.value
       }
