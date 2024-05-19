@@ -1628,7 +1628,7 @@ test('Hovering over 3d features highlights code', async ({ page }) => {
       }, %)
   |> tangentialArcTo([13.14 + 0, 13.14], %)
   |> close(%)
-  |> extrude(5 + 7, %)    
+  |> extrude(5 + 7, %)
 `
     )
   }, KCL_DEFAULT_LENGTH)
