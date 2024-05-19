@@ -239,7 +239,7 @@ pub async fn max(args: Args) -> Result<MemoryItem, KclError> {
     tags = ["math"],
 }]
 fn inner_max(args: Vec<f64>) -> f64 {
-    let mut max = std::f64::MAX;
+    let mut max = std::f64::MIN;
     for arg in args.iter() {
         if *arg > max {
             max = *arg;
