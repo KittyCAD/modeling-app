@@ -8,6 +8,7 @@ const application =
   process.env.E2E_APPLICATION || `./src-tauri/target/release/zoo-modeling-app`
 
 export const config = {
+  hostname: '127.0.0.1',
   port: 4444,
   specs: ['./e2e/tauri/specs/**/*.ts'],
   maxInstances: 1,

@@ -1,11 +1,14 @@
 import { browser, $, expect } from '@wdio/globals'
 import fs from 'fs/promises'
+import path from 'path'
 
 const documentsDir = `${process.env.HOME}/Documents`
 const userSettingsDir = `${process.env.HOME}/.config/dev.zoo.modeling-app`
 const defaultProjectDir = `${documentsDir}/zoo-modeling-app-projects`
 const newProjectDir = `${documentsDir}/a-different-directory`
-const userCodeDir = '/tmp/kittycad_user_code'
+const tmp = process.env.TEMP || '/tmp'
+const userCodeDir = path.join(tmp, 'kittycad_user_code')
+console.log(userCodeDir)
 
 async function click(element: WebdriverIO.Element): Promise<void> {
   // Workaround for .click(), see https://github.com/tauri-apps/tauri/issues/6541

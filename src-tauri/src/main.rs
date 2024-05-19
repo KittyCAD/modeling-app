@@ -266,7 +266,14 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
     let e2e_tauri_enabled = env::var("E2E_TAURI_ENABLED").is_ok();
     if e2e_tauri_enabled {
         log::warn!("E2E_TAURI_ENABLED is set, won't open {} externally", auth_uri.secret());
-        tokio::fs::write("/tmp/kittycad_user_code", details.user_code().secret())
+        let mut temp = String::from("/tmp");
+        // Overwrite with Windows variable
+        match env::var("TEMP") {
+            Ok(val) => temp = val,
+            Err(e) => println!("Fallback to default /tmp"),
+        }
+        let path = Path::new(&temp).join("kittycad_user_code");
+        tokio::fs::write(path, details.user_code().secret())
             .await
             .map_err(|e| InvokeError::from_anyhow(e.into()))?;
     } else {
