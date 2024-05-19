@@ -2755,64 +2755,27 @@ test.describe('Testing segment overlays', () => {
   })
   test.describe('Testing delete with dependent segments', () => {
     const cases = [
-      {
-        lineOfInterest: "line([22, 2], %, 'seg01')",
-      },
-      {
-        lineOfInterest: "angledLine([5, 23.03], %, 'seg01')",
-      },
-      {
-        lineOfInterest: "xLine(23, %, 'seg01')",
-      },
-      {
-        lineOfInterest: "yLine(-8, %, 'seg01')",
-        isYLine: true,
-      },
-      {
-        lineOfInterest: "xLineTo(30, %, 'seg01')",
-      },
-      {
-        lineOfInterest: "yLineTo(-4, %, 'seg01')",
-        isYLine: true,
-      },
-      {
-        lineOfInterest: "angledLineOfXLength([3, 30], %, 'seg01')",
-      },
-      {
-        lineOfInterest:
-          "angledLineOfXLength({ angle: 3, length: 30 }, %, 'seg01')",
-        isObj: true,
-      },
-      {
-        lineOfInterest: "angledLineOfYLength([3, 1.5], %, 'seg01')",
-      },
-      {
-        lineOfInterest:
-          "angledLineOfYLength({ angle: 3, length: 1.5 }, %, 'seg01')",
-        isObj: true,
-      },
-      {
-        lineOfInterest: "angledLineToX([3, 30], %, 'seg01')",
-      },
-      {
-        lineOfInterest: "angledLineToX({ angle: 3, to: 30 }, %, 'seg01')",
-        isObj: true,
-      },
-      {
-        lineOfInterest: "angledLineToY([3, 7], %, 'seg01')",
-      },
-      {
-        lineOfInterest: "angledLineToY({ angle: 3, to: 7 }, %, 'seg01')",
-        isObj: true,
-      },
+      "line([22, 2], %, 'seg01')",
+      "angledLine([5, 23.03], %, 'seg01')",
+      "xLine(23, %, 'seg01')",
+      "yLine(-8, %, 'seg01')",
+      "xLineTo(30, %, 'seg01')",
+      "yLineTo(-4, %, 'seg01')",
+      "angledLineOfXLength([3, 30], %, 'seg01')",
+      "angledLineOfXLength({ angle: 3, length: 30 }, %, 'seg01')",
+      "angledLineOfYLength([3, 1.5], %, 'seg01')",
+      "angledLineOfYLength({ angle: 3, length: 1.5 }, %, 'seg01')",
+      "angledLineToX([3, 30], %, 'seg01')",
+      "angledLineToX({ angle: 3, to: 30 }, %, 'seg01')",
+      "angledLineToY([3, 7], %, 'seg01')",
+      "angledLineToY({ angle: 3, to: 7 }, %, 'seg01')",
     ]
     for (const doesHaveTagOutsideSketch of [true, false]) {
-      for (const testInfo of cases) {
-        test(`${testInfo.lineOfInterest.split('(')[0]}${
-          testInfo?.isObj ? '-[obj-input]' : ''
-        }${doesHaveTagOutsideSketch ? '-[tagOutsideSketch]' : ''}`, async ({
-          page,
-        }) => {
+      for (const lineOfInterest of cases) {
+        const isObj = lineOfInterest.includes('{ angle: 3,')
+        test(`${lineOfInterest.split('(')[0]}${isObj ? '-[obj-input]' : ''}${
+          doesHaveTagOutsideSketch ? '-[tagOutsideSketch]' : ''
+        }`, async ({ page }) => {
           await page.addInitScript(
             async ({ lineToBeDeleted, extraLine }) => {
               localStorage.setItem(
@@ -2826,7 +2789,7 @@ ${extraLine ? "const myVar = segLen('seg01', part001)" : ''}`
               )
             },
             {
-              lineToBeDeleted: testInfo.lineOfInterest,
+              lineToBeDeleted: lineOfInterest,
               extraLine: doesHaveTagOutsideSketch,
             }
           )
@@ -2836,7 +2799,7 @@ ${extraLine ? "const myVar = segLen('seg01', part001)" : ''}`
           await u.waitForAuthSkipAppStart()
           await page.waitForTimeout(300)
 
-          await page.getByText(testInfo.lineOfInterest).click()
+          await page.getByText(lineOfInterest).click()
           await page.waitForTimeout(100)
           await page.getByRole('button', { name: 'Edit Sketch' }).click()
           await page.waitForTimeout(500)
@@ -2846,12 +2809,13 @@ ${extraLine ? "const myVar = segLen('seg01', part001)" : ''}`
             `[data-overlay-index="0"]`
           )
 
+          const isYLine = lineOfInterest.toLowerCase().includes('yline')
           const hoverPos = {
-            x: segmentToDelete.x + (testInfo.isYLine ? 0 : -20),
-            y: segmentToDelete.y + (testInfo.isYLine ? -20 : 0),
+            x: segmentToDelete.x + (isYLine ? 0 : -20),
+            y: segmentToDelete.y + (isYLine ? -20 : 0),
           }
           await expect(page.getByText('Added variable')).not.toBeVisible()
-          const ang = testInfo.isYLine ? 45 : -45
+          const ang = isYLine ? 45 : -45
           const [x, y] = [
             Math.cos((ang * Math.PI) / 180) * 45,
             Math.sin((ang * Math.PI) / 180) * 45,
@@ -2861,7 +2825,7 @@ ${extraLine ? "const myVar = segLen('seg01', part001)" : ''}`
           await page.mouse.move(hoverPos.x, hoverPos.y, { steps: 5 })
 
           await expect(page.locator('.cm-content')).toContainText(
-            testInfo.lineOfInterest
+            lineOfInterest
           )
 
           await page.getByTestId('overlay-menu').click()
@@ -2873,7 +2837,7 @@ ${extraLine ? "const myVar = segLen('seg01', part001)" : ''}`
           await page.mouse.move(hoverPos.x, hoverPos.y, { steps: 5 })
 
           await expect(page.locator('.cm-content')).toContainText(
-            testInfo.lineOfInterest
+            lineOfInterest
           )
 
           await page.getByTestId('overlay-menu').click()
@@ -2890,12 +2854,12 @@ ${extraLine ? "const myVar = segLen('seg01', part001)" : ''}`
             ).toBeTruthy()
             // eslint-disable-next-line jest/no-conditional-expect
             await expect(page.locator('.cm-content')).toContainText(
-              testInfo.lineOfInterest
+              lineOfInterest
             )
           } else {
             // eslint-disable-next-line jest/no-conditional-expect
             await expect(page.locator('.cm-content')).not.toContainText(
-              testInfo.lineOfInterest
+              lineOfInterest
             )
             // eslint-disable-next-line jest/no-conditional-expect
             await expect(page.locator('.cm-content')).not.toContainText('seg01')
