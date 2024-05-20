@@ -982,7 +982,6 @@ export const modelingMachine = createMachine(
           })
           .then(async () => {
             // there doesn't appear to be an animation, but if there was one we could add a wait here
-
             await engineCommandManager.sendSceneCommand({
               type: 'modeling_cmd_req',
               cmd_id: uuidv4(),
@@ -991,23 +990,6 @@ export const modelingMachine = createMachine(
               },
             })
             sceneInfra.camControls.syncDirection = 'engineToClient'
-            await engineCommandManager.sendSceneCommand({
-              type: 'modeling_cmd_req',
-              cmd_id: uuidv4(),
-              cmd: {
-                type: 'default_camera_set_perspective',
-              },
-            })
-            await engineCommandManager.sendSceneCommand({
-              type: 'modeling_cmd_req',
-              cmd_id: uuidv4(),
-              cmd: {
-                type: 'default_camera_look_at',
-                center: { x: 0, y: 0, z: 0 },
-                vantage: sceneInfra.camControls.camera.position,
-                up: { x: 0, y: 0, z: 1 },
-              },
-            })
             await engineCommandManager.sendSceneCommand({
               // CameraControls subscribes to default_camera_get_settings response events
               // firing this at connection ensure the camera's are synced initially
