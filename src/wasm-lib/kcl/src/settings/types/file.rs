@@ -117,7 +117,7 @@ impl ProjectState {
 // But we recommend you keep the import statement as it is.
 // For more information on the import statement, see the documentation at:
 // https://zoo.dev/docs/kcl/import
-import("{}")"#,
+const model = import("{}")"#,
                         import_file_name
                     )
                     .as_bytes(),
