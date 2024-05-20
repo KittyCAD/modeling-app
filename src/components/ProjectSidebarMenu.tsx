@@ -30,8 +30,8 @@ const ProjectSidebarMenu = ({
         <ProjectMenuPopover project={project} file={file} />
       ) : (
         <span
-          className="hidden select-none text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
-          data-testid="project-sidebar-link-name"
+          className="hidden select-none cursor-default text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
+          data-testid="project-name"
         >
           {project?.name ? project.name : APP_NAME}
         </span>

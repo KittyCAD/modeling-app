@@ -32,7 +32,7 @@ describe('ProjectSidebarMenu tests', () => {
       <BrowserRouter>
         <CommandBarProvider>
           <SettingsAuthProviderJest>
-            <ProjectSidebarMenu project={projectWellFormed} />
+            <ProjectSidebarMenu project={projectWellFormed} enableMenu={true} />
           </SettingsAuthProviderJest>
         </CommandBarProvider>
       </BrowserRouter>
@@ -53,7 +53,7 @@ describe('ProjectSidebarMenu tests', () => {
       <BrowserRouter>
         <CommandBarProvider>
           <SettingsAuthProviderJest>
-            <ProjectSidebarMenu />
+            <ProjectSidebarMenu enableMenu={true} />
           </SettingsAuthProviderJest>
         </CommandBarProvider>
       </BrowserRouter>
@@ -64,22 +64,18 @@ describe('ProjectSidebarMenu tests', () => {
     expect(screen.getByTestId('projectName')).toHaveTextContent(APP_NAME)
   })
 
-  test('Renders as a link if set to do so', () => {
+  test('Disables popover menu by default', () => {
     render(
       <BrowserRouter>
         <CommandBarProvider>
           <SettingsAuthProviderJest>
-            <ProjectSidebarMenu
-              project={projectWellFormed}
-              enableMenu={false}
-            />
+            <ProjectSidebarMenu project={projectWellFormed} />
           </SettingsAuthProviderJest>
         </CommandBarProvider>
       </BrowserRouter>
     )
 
-    expect(screen.getByTestId('project-sidebar-link')).toBeInTheDocument()
-    expect(screen.getByTestId('project-sidebar-link-name')).toHaveTextContent(
+    expect(screen.getByTestId('project-name')).toHaveTextContent(
       projectWellFormed.name
     )
   })
