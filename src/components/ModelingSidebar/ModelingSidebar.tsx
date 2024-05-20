@@ -47,6 +47,13 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
         right:
           (openPanes.length === 0 ? 'hidden ' : 'block ') +
           'translate-x-1/2 hover:bg-chalkboard-10 hover:dark:bg-chalkboard-110 bg-transparent transition-colors duration-75 transition-ease-out delay-100 ',
+        left: 'hidden',
+        top: 'hidden',
+        topLeft: 'hidden',
+        topRight: 'hidden',
+        bottom: 'hidden',
+        bottomLeft: 'hidden',
+        bottomRight: 'hidden',
       }}
     >
       <div className={styles.grid + ' flex-1'}>

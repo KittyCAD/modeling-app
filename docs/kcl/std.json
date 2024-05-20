@@ -36168,9 +36168,7 @@
     "name": "import",
     "summary": "Import a CAD file.",
     "description": "For formats lacking unit data (STL, OBJ, PLY), the default import unit is millimeters. Otherwise you can specify the unit by passing in the options parameter. If you import a gltf file, we will try to find the bin file and import it as well.\nImport paths are relative to the current project directory. This only works in the desktop app not in browser.",
-    "tags": [
-      "norun"
-    ],
+    "tags": [],
     "args": [
       {
         "name": "file_path",
@@ -36816,11 +36814,11 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const model = import(\"thing.obj\")",
-      "const model = import(\"cube.obj\", { type: \"obj\", units: \"m\" })",
-      "const model = import(\"my_model.gltf\")",
-      "const model = import(\"my_model.sldprt\")",
-      "const model = import(\"my_model.step\")"
+      "const model = import(\"tests/inputs/cube.obj\")",
+      "const model = import(\"tests/inputs/cube.obj\", { type: \"obj\", units: \"m\" })",
+      "const model = import(\"tests/inputs/cube.gltf\")",
+      "const model = import(\"tests/inputs/cube.sldprt\")",
+      "const model = import(\"tests/inputs/cube.step\")"
     ]
   },
   {
