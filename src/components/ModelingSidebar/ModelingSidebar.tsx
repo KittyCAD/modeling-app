@@ -59,7 +59,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
         bottomRight: 'hidden',
       }}
     >
-      <div className={styles.grid + ' flex-1'}>
+      <div id="modeling-sidebar" className={styles.grid + ' flex-1'}>
         <ModelingSidebarSection panes={topPanes} />
         <ModelingSidebarSection panes={bottomPanes} alignButtons="end" />
       </div>
@@ -82,11 +82,27 @@ function ModelingSidebarSection({
     ['debug', showDebugPanel],
     ['sceneTree', showSceneTreePanel],
   ]
-  const paneIds = panes.map((pane) => pane.id)
   const { openPanes, setOpenPanes } = useStore((s) => ({
     openPanes: s.openPanes,
     setOpenPanes: s.setOpenPanes,
   }))
+
+  // Filter out each panel controlled by a setting if it's not supposed to be shown
+  const filteredPanes = panes
+    .filter((pane) =>
+      togglablePanes.every(
+        ([id, showSetting]) => showSetting.current || id !== pane.id
+      )
+    )
+    .filter(
+      (pane) =>
+        !pane.hideOnPlatform ||
+        (isTauri()
+          ? pane.hideOnPlatform === 'web'
+          : pane.hideOnPlatform === 'desktop')
+    )
+  const paneIds = filteredPanes.map((pane) => pane.id)
+
   const foundOpenPane = openPanes.find((pane) => paneIds.includes(pane))
   const [currentPane, setCurrentPane] = useState(
     foundOpenPane || ('none' as SidebarType | 'none')
@@ -108,19 +124,6 @@ function ModelingSidebarSection({
     [openPanes, setOpenPanes, currentPane, setCurrentPane]
   )
 
-  // Filter out the debug panel if it's not supposed to be shown
-  // TODO: abstract out for allowing user to configure which panes to show
-  const filteredPanes = panes
-    .filter((pane) =>
-      togglablePanes.every(([id, show]) => show.current || id !== pane.id)
-    )
-    .filter(
-      (pane) =>
-        !pane.hideOnPlatform ||
-        (isTauri()
-          ? pane.hideOnPlatform === 'web'
-          : pane.hideOnPlatform === 'desktop')
-    )
   useEffect(() => {
     if (
       !showDebugPanel.current &&
@@ -162,12 +165,12 @@ function ModelingSidebarSection({
           (currentPane === 'none'
             ? ' rounded-r focus-within:!border-primary/50'
             : ' border-r-0') +
-          ' p-2 col-start-1 col-span-1 h-fit w-fit flex flex-col items-start gap-2 bg-chalkboard-10 border border-solid border-chalkboard-20 dark:bg-chalkboard-90 dark:border-chalkboard-80 ' +
+          ' p-2 col-start-1 col-span-1 h-fit w-fit flex flex-col items-start gap-2 bg-chalkboard-10 border border-solid border-chalkboard-30 dark:bg-chalkboard-90 dark:border-chalkboard-80 ' +
           (openPanes.length === 1 && currentPane === 'none' ? 'pr-0.5' : '')
         }
       >
         <Tab key="none" className="sr-only">
-          No panes open
+          No panes open{' '}
         </Tab>
         {filteredPanes.map((pane) => (
           <ModelingPaneButton
@@ -248,6 +251,7 @@ function ModelingPaneButton({
       <Tooltip position="right" hoverOnly delay={800}>
         <span>{paneConfig.title}</span>
         <br />
+        <span className="sr-only">, Shortcut: </span>
         <span className="text-xs capitalize">{paneConfig.keybinding}</span>
       </Tooltip>
     </Tab>
