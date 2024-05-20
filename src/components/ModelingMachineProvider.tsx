@@ -147,7 +147,6 @@ export const ModelingMachineProvider = ({
               const parent = getParentGroup(event.data.on, [
                 STRAIGHT_SEGMENT,
                 TANGENTIAL_ARC_TO_SEGMENT,
-                // PROFILE_START,
               ])
               const pathToNode = parent?.userData?.pathToNode
               const pathToNodeString = JSON.stringify(pathToNode)
@@ -205,7 +204,7 @@ export const ModelingMachineProvider = ({
               delete copy[data.pathToNodeString]
               return copy
             }
-            // data.type === 'clear
+            // data.type === 'clear'
             return {}
           },
         }),

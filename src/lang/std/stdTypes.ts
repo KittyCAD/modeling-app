@@ -111,7 +111,6 @@ export interface ConstrainInfo {
   value: string
   calculatedValue?: any
   argPosition?: SimplifiedVarValue
-  // linked?: SourceRange
 }
 
 export interface SketchLineHelper {

@@ -147,7 +147,6 @@ const commonConstraintInfoHelper = (
   ],
   code: string,
   pathToNode: PathToNode
-  // keyNames: [string, string] = ['', '']
 ) => {
   if (callExp.type !== 'CallExpression') return []
   const firstArg = callExp.arguments?.[0]

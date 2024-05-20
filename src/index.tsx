@@ -43,7 +43,7 @@ root.render(
           duration:
             typeof window !== 'undefined' &&
             window.localStorage.getItem('playwright') === 'true'
-              ? 10
+              ? 10 // speed up e2e tests
               : 1500,
         },
       }}
