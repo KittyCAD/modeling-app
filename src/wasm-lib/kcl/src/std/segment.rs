@@ -22,13 +22,15 @@ pub async fn segment_end_x(args: Args) -> Result<MemoryItem, KclError> {
 /// Returns the segment end of x.
 ///
 /// ```no_run
-/// startSketchOn("YZ")
-///     |> startProfileAt([0, 0], %)
-///     |> line([5, 0], %, "thing")
-///     |> line([5, 5], %)
-///     |> line([segEndX("thing", %), 5], %)
-///     |> close(%)
-///     |> extrude(5, %)
+/// const exampleSketch = startSketchOn('-XZ')
+///   |> startProfileAt([0, 0], %)
+///   |> line([20, 0], %, "thing")
+///   |> line([0, 5], %)
+///   |> line([segEndX("thing", %), 0], %)
+///   |> line([-20, 10], %)
+///   |> close(%)
+///  
+/// const example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "segEndX",
@@ -58,13 +60,16 @@ pub async fn segment_end_y(args: Args) -> Result<MemoryItem, KclError> {
 /// Returns the segment end of y.
 ///
 /// ```no_run
-/// startSketchOn("YZ")
-///     |> startProfileAt([0, 0], %)
-///     |> line([5, 0], %, "thing")
-///     |> line([5, 5], %)
-///     |> line([segEndY("thing", %), 5], %)
-///     |> close(%)
-///     |> extrude(5, %)
+/// const exampleSketch = startSketchOn('-XZ')
+///   |> startProfileAt([0, 0], %)
+///   |> line([20, 0], %)
+///   |> line([0, 3], %, "thing")
+///   |> line([-10, 0], %)
+///   |> line([0, segEndY("thing", %)], %)
+///   |> line([-10, 0], %)
+///   |> close(%)
+///  
+/// const example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "segEndY",
@@ -94,13 +99,15 @@ pub async fn last_segment_x(args: Args) -> Result<MemoryItem, KclError> {
 /// Returns the last segment of x.
 ///
 /// ```no_run
-/// startSketchOn("YZ")
-///     |> startProfileAt([0, 0], %)
-///     |> line([5, 0], %, "thing")
-///     |> line([5, 5], %)
-///     |> line([0, lastSegX(%)], %)
-///     |> close(%)
-///     |> extrude(5, %)
+/// const exampleSketch = startSketchOn("-XZ")
+///   |> startProfileAt([0, 0], %)
+///   |> line([5, 0], %)
+///   |> line([20, 5], %)
+///   |> line([0, lastSegX(%)], %)
+///   |> line([-15, 0], %)
+///   |> close(%)
+///
+/// const example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "lastSegX",
@@ -134,13 +141,15 @@ pub async fn last_segment_y(args: Args) -> Result<MemoryItem, KclError> {
 /// Returns the last segment of y.
 ///
 /// ```no_run
-/// startSketchOn("YZ")
-///     |> startProfileAt([0, 0], %)
-///     |> line([5, 0], %, "thing")
-///     |> line([5, 5], %)
-///     |> line([0, lastSegY(%)], %)
-///     |> close(%)
-///     |> extrude(5, %)
+/// const exampleSketch = startSketchOn("-XZ")
+///   |> startProfileAt([0, 0], %)
+///   |> line([5, 0], %)
+///   |> line([20, 5], %)
+///   |> line([0, lastSegY(%)], %)
+///   |> line([-15, 0], %)
+///   |> close(%)
+///
+/// const example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "lastSegY",
@@ -173,13 +182,23 @@ pub async fn segment_length(args: Args) -> Result<MemoryItem, KclError> {
 /// Returns the length of the segment.
 ///
 /// ```no_run
-/// startSketchOn("YZ")
-///     |> startProfileAt([0, 0], %)
-///     |> line([5, 0], %, "thing")
-///     |> line([5, 5], %)
-///     |> line([0, segLen("thing", %)], %)
-///     |> close(%)
-///     |> extrude(5, %)
+/// const exampleSketch = startSketchOn("-XZ")
+///   |> startProfileAt([0, 0], %)
+///   |> angledLine({
+///     angle: 60,
+///     length: 10,
+///   }, %, "thing")
+///   |> tangentialArc({
+///     offset: -120,
+///     radius: 5,
+///   }, %)
+///   |> angledLine({
+///     angle: -60,
+///     length: segLen("thing", %),
+///   }, %)
+///   |> close(%)
+///
+/// const example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "segLen",
@@ -212,15 +231,17 @@ pub async fn segment_angle(args: Args) -> Result<MemoryItem, KclError> {
 /// Returns the angle of the segment.
 ///
 /// ```no_run
-/// const part001 = startSketchOn('XY')
-///     |> startProfileAt([4.83, 12.56], %)
-///     |> line([15.1, 2.48], %)
-///     |> line([3.15, -9.85], %, 'seg01')
-///     |> line([-15.17, -4.1], %)
-///     |> angledLine([segAng('seg01', %), 12.35], %)
-///     |> line([-13.02, 10.03], %)
-///     |> close(%)
-///     |> extrude(4, %)
+/// const exampleSketch = startSketchOn('-XZ')
+///   |> startProfileAt([0, 0], %)
+///   |> line([10, 0], %)
+///   |> line([5, 10], %, 'seg01')
+///   |> line([-10, 0], %)
+///   |> angledLine([segAng('seg01', %), 10], %)
+///   |> line([-10, 0], %)
+///   |> angledLine([segAng('seg01', %), -15], %)
+///   |> close(%)
+///
+/// const example = extrude(4, exampleSketch)
 /// ```
 #[stdlib {
     name = "segAng",
@@ -252,15 +273,16 @@ pub async fn angle_to_match_length_x(args: Args) -> Result<MemoryItem, KclError>
 /// Returns the angle to match the given length for x.
 ///
 /// ```no_run
-/// const part001 = startSketchOn('XY')
-///     |> startProfileAt([0, 0], %)
-///     |> line([1, 3.82], %, 'seg01')
-///     |> angledLineToX([
-///         -angleToMatchLengthX('seg01', 10, %),
-///         5
-///         ], %)
-///     |> close(%)
-///     |> extrude(5, %)
+/// const sketch001 = startSketchOn('-XZ')
+///   |> startProfileAt([0, 0], %)
+///   |> line([2, 5], %, 'seg01')
+///   |> angledLineToX([
+///        -angleToMatchLengthX('seg01', 7, %),
+///        10
+///      ], %)
+///   |> close(%)
+///
+/// const extrusion = extrude(5, sketch001)
 /// ```
 #[stdlib {
     name = "angleToMatchLengthX",
@@ -319,15 +341,17 @@ pub async fn angle_to_match_length_y(args: Args) -> Result<MemoryItem, KclError>
 /// Returns the angle to match the given length for y.
 ///
 /// ```no_run
-/// const part001 = startSketchOn('XY')
-///     |> startProfileAt([0, 0], %)
-///     |> line([1, 3.82], %, 'seg01')
-///     |> angledLineToX([
-///         -angleToMatchLengthY('seg01', 10, %),
-///         5
-///         ], %)
-///     |> close(%)
-///     |> extrude(5, %)
+/// const sketch001 = startSketchOn('-XZ')
+///   |> startProfileAt([0, 0], %)
+///   |> line([1, 2], %, 'seg01')
+///   |> angledLine({
+///     angle: angleToMatchLengthY('seg01', 15, %),
+///     length: 5,
+///     }, %)
+///   |> yLineTo(0, %)
+///   |> close(%)
+///  
+/// const extrusion = extrude(5, sketch001)
 /// ```
 #[stdlib {
     name = "angleToMatchLengthY",
