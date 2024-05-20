@@ -54,6 +54,7 @@ function AppLogoLink({
 
   return isTauri() ? (
     <Link
+      data-testid="app-logo"
       onClick={() => {
         onProjectClose(file || null, project?.path || null, false)
         // Clear the scene and end the session.
@@ -66,8 +67,9 @@ function AppLogoLink({
       <span className="sr-only">{APP_NAME}</span>
     </Link>
   ) : (
-    <div className={wrapperClassName}>
+    <div className={wrapperClassName} data-testid="app-logo">
       <Logo className={logoClassName} />
+      <span className="sr-only">{APP_NAME}</span>
     </div>
   )
 }
