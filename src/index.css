@@ -134,6 +134,7 @@ code {
 #code-mirror-override > div,
 #code-mirror-override .cm-editor {
   @apply bg-transparent h-full;
+  @apply select-auto;
 }
 
 #code-mirror-override .cm-scroller {

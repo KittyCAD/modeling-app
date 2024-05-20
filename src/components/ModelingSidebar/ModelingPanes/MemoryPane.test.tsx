@@ -38,7 +38,7 @@ describe('processMemory', () => {
     expect(output.otherVar).toEqual(3)
     expect(output).toEqual({
       myVar: 5,
-      myFn: undefined,
+      myFn: '__function(a)__',
       otherVar: 3,
       theExtrude: [
         {
