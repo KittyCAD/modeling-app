@@ -213,11 +213,29 @@ pub struct WebrtcStats {
 
 /// Client State Singleton Structures
 
+/// The Engine Connection Type structure.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct EngineConnectionType {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub connection_type: Option<String>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct EngineConnectionState {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub state: EngineConnectionType,
+}
+
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct EngineCommandManagerState {
     pub meta: [u8; 0],
+    pub engine_connection: EngineConnectionState,
     // extra: HashMap<String, JValue>,
 }
 
