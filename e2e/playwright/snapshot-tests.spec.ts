@@ -273,6 +273,8 @@ const part001 = startSketchOn('-XZ')
   for (let { modelPath, imagePath, outputType } of exportLocations) {
     // May change depending on the file being dealt with
     let cliCommand = `export ZOO_TOKEN=${secrets.snapshottoken} && zoo file snapshot --output-format=png --src-format=${outputType} ${modelPath} ${imagePath}`
+    const fileSize = (await fsp.stat(modelPath)).size
+    console.log(`Size of the file at ${modelPath}: ${fileSize} bytes`)
 
     const parentPath = path.dirname(modelPath)
 
