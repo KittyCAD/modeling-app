@@ -417,29 +417,28 @@ const SegmentMenu = ({
             <CustomIcon name={'three-dots'} />
           </Popover.Button>
           <Popover.Panel
+            as="menu"
             className={`absolute ${
               verticalPosition === 'top' ? 'bottom-full' : 'top-full'
-            } z-10`}
+            } z-10 w-36 flex flex-col gap-1 divide-y divide-chalkboard-20 dark:divide-chalkboard-70 align-stretch px-0 py-1 bg-chalkboard-10 dark:bg-chalkboard-100 rounded-sm shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50`}
           >
-            <div className="text-black">
-              {/* <button className="hover:bg-white/80 bg-white/50 rounded p-1 text-nowrap">
+            {/* <button className="hover:bg-white/80 bg-white/50 rounded p-1 text-nowrap">
                 Remove segment constraints
               </button> */}
-              <button
-                className="hover:bg-white/80 bg-white/50 rounded p-1 text-nowrap"
-                // disabled={dependentSourceRanges.length > 0}
-                title={
-                  dependentSourceRanges.length > 0
-                    ? `At least ${dependentSourceRanges.length} segment rely on this segment's tag.`
-                    : ''
-                }
-                onClick={() => {
-                  send({ type: 'Delete segment', data: pathToNode })
-                }}
-              >
-                Delete Segment
-              </button>
-            </div>
+            <button
+              className="!border-transparent rounded-sm text-left p-1 text-nowrap"
+              // disabled={dependentSourceRanges.length > 0}
+              title={
+                dependentSourceRanges.length > 0
+                  ? `At least ${dependentSourceRanges.length} segment rely on this segment's tag.`
+                  : ''
+              }
+              onClick={() => {
+                send({ type: 'Delete segment', data: pathToNode })
+              }}
+            >
+              Delete Segment
+            </button>
           </Popover.Panel>
         </>
       )}
