@@ -11,7 +11,7 @@ import { KclEditorMenu } from 'components/ModelingSidebar/ModelingPanes/KclEdito
 import { CustomIconName } from 'components/CustomIcon'
 import { KclEditorPane } from 'components/ModelingSidebar/ModelingPanes/KclEditorPane'
 import { ReactNode } from 'react'
-import { MemoryPane } from './MemoryPane'
+import { MemoryPane, MemoryPaneMenu } from './MemoryPane'
 import { ArtifactMapPane } from './ArtifactMapPane'
 import { KclErrorsPane, LogsPane } from './LoggingPanes'
 import { DebugPane } from './DebugPane'
@@ -64,6 +64,7 @@ export const bottomPanes: SidebarPane[] = [
     title: 'Variables',
     icon: faSquareRootVariable,
     Content: MemoryPane,
+    Menu: MemoryPaneMenu,
     keybinding: 'shift + v',
   },
   {

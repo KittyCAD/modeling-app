@@ -18,12 +18,12 @@ once_cell = "1.19.0"
 proc-macro2 = "1"
 quote = "1"
 regex = "1.10"
-serde = { version = "1.0.201", features = ["derive"] }
+serde = { version = "1.0.202", features = ["derive"] }
 serde_tokenstream = "0.2"
-syn = { version = "2.0.64", features = ["full"] }
+syn = { version = "2.0.65", features = ["full"] }
 
 [dev-dependencies]
-anyhow = "1.0.83"
+anyhow = "1.0.86"
 expectorate = "1.1.0"
 pretty_assertions = "1.4.0"
 rustfmt-wrapper = "0.2.1"
