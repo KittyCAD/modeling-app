@@ -28,7 +28,12 @@ import {
   createUnaryExpression,
   giveSketchFnCallTag,
 } from '../modifyAst'
-import { createFirstArg, getFirstArg, replaceSketchLine } from './sketch'
+import {
+  createFirstArg,
+  getConstraintInfo,
+  getFirstArg,
+  replaceSketchLine,
+} from './sketch'
 import {
   getSketchSegmentFromPathToNode,
   getSketchSegmentFromSourceRange,
@@ -43,6 +48,7 @@ export type LineInputsType =
   | 'angle'
   | 'length'
   | 'intersectionOffset'
+  | 'intersectionTag'
 
 export type ConstraintType =
   | 'equalLength'
@@ -1537,7 +1543,6 @@ export function transformAstSketchLines({
     const varDec = getNode<VariableDeclarator>('VariableDeclarator').node
 
     const { val } = getFirstArg(callExp)
-    const firstInput = callExp.arguments[0]
     const callBackTag = callExp.arguments[2]
     const _referencedSegmentNameVal =
       callExp.arguments[0]?.type === 'ObjectExpression' &&
@@ -1553,82 +1558,36 @@ export function transformAstSketchLines({
     const [varValA, varValB] = Array.isArray(val) ? val : [val, val]
 
     const varValues: VarValues = []
-    const singleValueMap: { [key in ToolTip]?: LineInputsType } = {
-      xLine: 'xRelative',
-      yLine: 'yRelative',
-      xLineTo: 'xAbsolute',
-      yLineTo: 'yAbsolute',
-    }
-    const singleValueArgType = singleValueMap[callExp.callee.name as ToolTip]
-    if (singleValueArgType) {
-      varValues.push({
-        type: 'singleValue',
-        argType: singleValueArgType,
-        value: firstInput,
-      })
-    }
 
-    const arrayValueMap: {
-      [key in ToolTip]?: [LineInputsType, LineInputsType]
-      // todo spreading shit everywhere, put this in as a SketchLineHelper
-    } = {
-      angledLine: ['angle', 'length'],
-      angledLineOfXLength: ['angle', 'xRelative'],
-      angledLineToX: ['angle', 'xAbsolute'],
-      angledLineOfYLength: ['angle', 'yRelative'],
-      angledLineToY: ['angle', 'yAbsolute'],
-      line: ['xRelative', 'yRelative'],
-      lineTo: ['xAbsolute', 'yAbsolute'],
-      tangentialArcTo: ['xAbsolute', 'yAbsolute'],
-    }
-    const arrayValueArgTypes = arrayValueMap[callExp.callee.name as ToolTip]
-    if (arrayValueArgTypes && firstInput.type === 'ArrayExpression') {
-      varValues.push(
-        {
-          type: 'arrayItem',
-          index: 0,
-          value: firstInput.elements[0],
-          argType: arrayValueArgTypes[0],
-        },
-        {
-          type: 'arrayItem',
-          index: 1,
-          value: firstInput.elements[1],
-          argType: arrayValueArgTypes[1],
-        }
+    getConstraintInfo(callExp, '', _pathToNode).forEach((a) => {
+      if (
+        a.type === 'tangentialWithPrevious' ||
+        a.type === 'horizontal' ||
+        a.type === 'vertical'
       )
-    }
-
-    const objectValueMap: { [key in ToolTip]?: Array<LineInputsType> } = {
-      // todo spreading shit everywhere, put this in as a SketchLineHelper
-      angledLine: ['angle', 'length'],
-      angledLineOfXLength: ['angle', 'xRelative'],
-      angledLineOfYLength: ['angle', 'yRelative'],
-      angledLineToX: ['angle', 'xAbsolute'],
-      angledLineToY: ['angle', 'yAbsolute'],
-      angledLineThatIntersects: ['angle', 'length'],
-    }
-    const objectValueArgTypes = objectValueMap[callExp.callee.name as ToolTip]
-    console.log('objectValueArgTypes', objectValueArgTypes, firstInput)
-    if (objectValueArgTypes && firstInput.type === 'ObjectExpression') {
-      firstInput.properties.forEach((prop, index) => {
-        const name = prop.key.name as VarValueKeys
-        const allowedProps: Array<VarValueKeys> = [
-          'angle',
-          'offset',
-          'length',
-          'to',
-          'intersectTag',
-        ]
-        if (allowedProps.includes(name))
-          varValues.push({
-            type: 'objectProperty',
-            key: name as VarValueKeys,
-            value: prop.value,
-            argType: objectValueArgTypes[index],
-          })
-      })
-    }
+        return
+      if (a?.argPosition?.type === 'arrayItem') {
+        varValues.push({
+          type: 'arrayItem',
+          index: a.argPosition.index,
+          value: getNodeFromPath<Value>(ast, a.pathToNode).node,
+          argType: a.type,
+        })
+      } else if (a?.argPosition?.type === 'objectProperty') {
+        varValues.push({
+          type: 'objectProperty',
+          key: a.argPosition.key,
+          value: getNodeFromPath<Value>(ast, a.pathToNode).node,
+          argType: a.type,
+        })
+      } else if (a?.argPosition?.type === 'singleValue') {
+        varValues.push({
+          type: 'singleValue',
+          argType: a.type,
+          value: getNodeFromPath<Value>(ast, a.pathToNode).node,
+        })
+      }
+    })
 
     const varName = varDec.id.name
     const sketchGroup = programMemory.root?.[varName]

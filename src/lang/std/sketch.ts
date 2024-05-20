@@ -1416,6 +1416,9 @@ export const angledLineThatIntersects: SketchLineHelper = {
     const offsetIndex = firstArg.properties.findIndex(
       (p) => p.key.name === 'offset'
     )
+    const intersectTag = firstArg.properties.findIndex(
+      (p) => p.key.name === 'intersectTag'
+    )
     const returnVal = []
     const pathToObjectExp: PathToNode = [
       ...pathToNode,
@@ -1442,7 +1445,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
         )
       )
     }
-    if (offsetIndex) {
+    if (offsetIndex !== -1) {
       const offset = firstArg.properties[offsetIndex]?.value
       const pathToOffsetProp: PathToNode = [
         ...pathToObjectExp,
@@ -1458,6 +1461,25 @@ export const angledLineThatIntersects: SketchLineHelper = {
           'offset',
           [offset.start, offset.end],
           pathToOffsetProp
+        )
+      )
+    }
+    if (intersectTag !== -1) {
+      const tag = firstArg.properties[intersectTag]?.value
+      const pathToTagProp: PathToNode = [
+        ...pathToObjectExp,
+        [intersectTag, 'index'],
+        ['value', 'Property'],
+      ]
+      returnVal.push(
+        constrainInfo(
+          'intersectionTag',
+          isNotLiteralArrayOrStatic(tag),
+          code.slice(tag.start, tag.end),
+          'angledLineThatIntersects',
+          'intersectTag',
+          [tag.start, tag.end],
+          pathToTagProp
         )
       )
     }

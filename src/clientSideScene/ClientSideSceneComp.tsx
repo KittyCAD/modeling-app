@@ -358,7 +358,7 @@ export async function deleteSegment({
 
   const shouldContinueSegDelete = dependentRanges.length
     ? await confirmModal({
-        text: "At least 2 segment rely on the segment you're deleting.\nDo you want to continue and unconstrain these segments?",
+        text: `At least ${dependentRanges.length} segment rely on the segment you're deleting.\nDo you want to continue and unconstrain these segments?`,
         isOpen: true,
       })
     : true
@@ -525,6 +525,13 @@ const ConstraintSymbol = ({
       iconName: 'tangent',
       implicitConstraintDesc: 'tangential to previous segment',
     },
+
+    // we don't render this one
+    intersectionTag: {
+      varName: '',
+      displayName: '',
+      iconName: 'dimension',
+    },
   }
   const varName =
     _type in varNameMap ? varNameMap[_type as LineInputsType].varName : 'var'
@@ -539,6 +546,8 @@ const ConstraintSymbol = ({
     [ast, pathToNode]
   )
   const range: SourceRange = node ? [node.start, node.end] : [0, 0]
+
+  if (_type === 'intersectionTag') return null
 
   return (
     <div className="relative group">

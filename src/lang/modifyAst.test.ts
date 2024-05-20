@@ -528,8 +528,8 @@ describe('Testing removeSingleConstraintInfo', () => {
       [
         `angledLineThatIntersects({
        angle: 3.14 + 0,
-       intersectTag: 'a',
-       offset: 0
+       offset: 0,
+       intersectTag: 'a'
      }, %)`,
         'objectProperty',
         'offset',

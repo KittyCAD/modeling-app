@@ -2447,8 +2447,8 @@ test.describe('Testing segment overlays', () => {
     }, %)`,
         expectFinal: `angledLineThatIntersects({
       angle: -176,
-      intersectTag: 'a',
-      offset: 9
+      offset: 9,
+      intersectTag: 'a'
     }, %)`,
         ang: -45,
       })
@@ -2461,18 +2461,18 @@ test.describe('Testing segment overlays', () => {
         constraintType: 'intersectionOffset',
         expectBeforeUnconstrained: `angledLineThatIntersects({
       angle: -176,
-      intersectTag: 'a',
-      offset: 9
+      offset: 9,
+      intersectTag: 'a'
     }, %)`,
         expectAfterUnconstrained: `angledLineThatIntersects({
       angle: -176,
-      intersectTag: 'a',
-      offset: perpDist001
+      offset: perpDist001,
+      intersectTag: 'a'
     }, %)`,
         expectFinal: `angledLineThatIntersects({
       angle: -176,
-      intersectTag: 'a',
-      offset: 9
+      offset: 9,
+      intersectTag: 'a'
     }, %)`,
         ang: -25,
       })
