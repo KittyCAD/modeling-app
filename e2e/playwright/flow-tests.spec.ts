@@ -1961,3 +1961,89 @@ test('Extrude from command bar selects extrude line after', async ({
     `  |> extrude(${KCL_DEFAULT_LENGTH}, %)`
   )
 })
+
+test('Can edit visible sidebar panes and toggle panes reliably', async ({
+  page,
+}) => {
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'store',
+      JSON.stringify({
+        state: {
+          openPanes: ['code'],
+        },
+        version: 0,
+      })
+    )
+  })
+  const viewportHeight = 1080
+  await page.setViewportSize({ width: 1200, height: viewportHeight })
+  await page.goto('/')
+  await page.waitForURL(/\/file\//, { waitUntil: 'load' })
+  await page.getByTestId('initial-load').waitFor({ state: 'detached' })
+
+  const codePaneButton = page.getByRole('tab', {
+    name: 'KCL Code',
+    exact: false,
+  })
+  const debugPaneButton = page.getByRole('tab', { name: 'Debug', exact: false })
+  const debugPane = page
+    .getByRole('tabpanel')
+    .filter({ hasText: 'Debug' })
+    .first()
+  const sceneTreePaneButton = page.getByRole('tab', {
+    name: 'Scene Tree',
+    exact: false,
+  })
+  const sceneTreePane = page
+    .getByRole('tabpanel')
+    .filter({ hasText: 'Scene Tree' })
+    .first()
+
+  // Make sure the pane buttons are correctly shown/hidden
+  // based on the settings
+  await expect(debugPaneButton).toBeVisible()
+  await expect(sceneTreePaneButton).not.toBeVisible()
+
+  async function setPaneVisibility(setting: string, newValue: 'On' | 'Off') {
+    const modifierKey = process.platform === 'linux' ? 'Control' : 'Meta'
+    await page.keyboard.press(modifierKey + '+K')
+
+    await page.keyboard.type(setting)
+    await page.keyboard.press('Enter')
+    await page.getByRole('option', { name: newValue }).click()
+    await page.keyboard.press('Enter')
+  }
+
+  // Make sure the scene tree can be made visible
+  await setPaneVisibility('scene tree', 'On')
+  await expect(sceneTreePaneButton).toBeVisible()
+
+  // Open the debug pane
+  await debugPaneButton.click()
+  await expect(debugPane).toBeVisible()
+
+  // Make sure we safely close and hide the debug pane
+  // when its setting is turned off, even if it's open
+  await setPaneVisibility('debug', 'Off')
+  await expect(debugPane).not.toBeVisible()
+  await expect(debugPaneButton).not.toBeVisible()
+
+  // Make sure the new pane takes up half the space
+  await sceneTreePaneButton.click()
+  await expect(sceneTreePane).toBeVisible()
+  let sceneTreePaneHeight = await sceneTreePane
+    .boundingBox()
+    .then((s) => s?.height || 0)
+  await expect(sceneTreePaneHeight).toBeLessThan(viewportHeight / 2)
+
+  // Make sure it expands to fill the space
+  // when the code pane is closed
+  // There was a bug where the stale state of the removed debug pane
+  // would leave the scene tree pane at half height in this kind of scenario.
+  await codePaneButton.click()
+  sceneTreePaneHeight = await sceneTreePane
+    .boundingBox()
+    .then((s) => s?.height || 0)
+  await expect(sceneTreePaneHeight).toBeGreaterThan(viewportHeight / 2)
+})
