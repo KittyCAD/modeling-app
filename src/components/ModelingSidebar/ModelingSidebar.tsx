@@ -17,7 +17,7 @@ import { ModelingPane } from './ModelingPane'
 import { isTauri } from 'lib/isTauri'
 import { Setting } from 'lib/settings/initialSettings'
 
-const TOGGLABLE_PANE_IDS = ['debug', 'sceneTree'] as const
+const TOGGLABLE_PANE_IDS = ['debug', 'artifactMap'] as const
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -77,10 +77,11 @@ function ModelingSidebarSection({
   alignButtons = 'start',
 }: ModelingSidebarSectionProps) {
   const { settings } = useSettingsAuthContext()
-  const { showDebugPanel, showSceneTreePanel } = settings.context.modeling
+  const { showDebugPanel, showArtifactMapPanel: showSceneTreePanel } =
+    settings.context.modeling
   const togglablePanes: [string, Setting<boolean>][] = [
     ['debug', showDebugPanel],
-    ['sceneTree', showSceneTreePanel],
+    ['artifactMap', showSceneTreePanel],
   ]
   const { openPanes, setOpenPanes } = useStore((s) => ({
     openPanes: s.openPanes,
@@ -133,10 +134,10 @@ function ModelingSidebarSection({
       togglePane('debug')
     } else if (
       !showSceneTreePanel.current &&
-      currentPane === 'sceneTree' &&
-      openPanes.includes('sceneTree')
+      currentPane === 'artifactMap' &&
+      openPanes.includes('artifactMap')
     ) {
-      togglePane('sceneTree')
+      togglePane('artifactMap')
     }
   }, [
     showDebugPanel.current,

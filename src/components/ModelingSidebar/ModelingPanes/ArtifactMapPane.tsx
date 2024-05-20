@@ -2,7 +2,7 @@ import { useResolvedTheme } from 'hooks/useResolvedTheme'
 import { engineCommandManager } from 'lib/singletons'
 import ReactJson from 'react-json-view'
 
-export const SceneTreePane = () => {
+export const ArtifactMapPane = () => {
   const theme = useResolvedTheme()
   const { artifactMap } = engineCommandManager
   return (

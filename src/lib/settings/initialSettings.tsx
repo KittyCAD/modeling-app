@@ -338,12 +338,14 @@ export function createSettings() {
         },
       }),
       /**
-       * Whether to show the scene tree panel, which lets you see
-       * various states of the app to aid in development
+       * Whether to show the artifact map panel, which lets you see
+       * the stored engine commands and their resulting artifacts,
+       * and is useful for debugging.
        */
-      showSceneTreePanel: new Setting<boolean>({
+      showArtifactMapPanel: new Setting<boolean>({
         defaultValue: false,
-        description: 'Whether to show the scene tree panel, a development tool',
+        description:
+          'Whether to show the artifact map panel, a development tool',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',

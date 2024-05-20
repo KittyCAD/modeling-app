@@ -12,7 +12,7 @@ import { CustomIconName } from 'components/CustomIcon'
 import { KclEditorPane } from 'components/ModelingSidebar/ModelingPanes/KclEditorPane'
 import { ReactNode } from 'react'
 import { MemoryPane } from './MemoryPane'
-import { SceneTreePane } from './SceneTreePane'
+import { ArtifactMapPane } from './ArtifactMapPane'
 import { KclErrorsPane, LogsPane } from './LoggingPanes'
 import { DebugPane } from './DebugPane'
 import { FileTreeInner, FileTreeMenu } from 'components/FileTree'
@@ -26,7 +26,7 @@ export type SidebarType =
   | 'logs'
   | 'lspMessages'
   | 'variables'
-  | 'sceneTree'
+  | 'artifactMap'
 
 export type SidebarPane = {
   id: SidebarType
@@ -88,10 +88,10 @@ export const bottomPanes: SidebarPane[] = [
     keybinding: 'shift + d',
   },
   {
-    id: 'sceneTree',
-    title: 'Scene Tree',
+    id: 'artifactMap',
+    title: 'Artifact Map',
     icon: faFolderTree,
-    Content: SceneTreePane,
-    keybinding: 'shift + t',
+    Content: ArtifactMapPane,
+    keybinding: 'shift + a',
   },
 ]
