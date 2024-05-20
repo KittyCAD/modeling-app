@@ -412,7 +412,7 @@ const SegmentMenu = ({
           <Popover.Button
             data-testid="overlay-menu"
             data-stdlib-fn-name={stdLibFnName}
-            className="bg-white/50 hover:bg-white/80 text-black border-2 border-transparent hover:border-gray-400 h-[26px] w-[26px] rounded-sm p-0 m-0"
+            className="bg-chalkboard-10 dark:bg-chalkboard-100 border !border-transparent hover:!border-chalkboard-40 dark:hover:!border-chalkboard-70 ui-open:!border-chalkboard-40 dark:ui-open:!border-chalkboard-70 h-[26px] w-[26px] rounded-sm p-0 m-0"
           >
             <CustomIcon name={'three-dots'} />
           </Popover.Button>
@@ -558,10 +558,10 @@ const ConstraintSymbol = ({
         data-is-constrained={isConstrained ? 'true' : 'false'}
         className={`${
           implicitDesc
-            ? 'bg-[#1C1C1C]/90 border-transparent border-0 rounded'
+            ? 'bg-chalkboard-10 dark:bg-chalkboard-100 border-transparent border-0 rounded'
             : isConstrained
-            ? 'bg-white/50 group-hover:bg-white/80 text-black border-transparent group-hover:border-gray-400 rounded-sm'
-            : 'bg-primary/30 text-primary border-transparent group-hover:bg-primary/40 group-hover:border-primary/50 group-hover:brightness-125'
+            ? 'bg-chalkboard-10 dark:bg-chalkboard-90 dark:hover:bg-chalkboard-80 border-chalkboard-40 dark:border-chalkboard-70 rounded-sm'
+            : 'bg-primary/30 dark:bg-primary text-primary dark:text-chalkboard-10 dark:border-transparent group-hover:bg-primary/40 group-hover:border-primary/50 group-hover:brightness-125'
         } h-[26px] w-[26px] rounded-sm relative m-0 p-0`}
         onMouseEnter={() => {
           editorManager.setHighlightRange(range)
@@ -629,7 +629,7 @@ const ConstraintSymbol = ({
         }}
       >
         <div
-          className="bg-gray-800 p-2 px-3 rounded-sm"
+          className="bg-chalkboard-10 dark:bg-chalkboard-90 p-2 px-3 rounded-sm border border-solid border-chalkboard-20 dark:border-chalkboard-80 shadow-sm"
           data-testid="constraint-symbol-popover"
         >
           {implicitDesc ? (
@@ -657,7 +657,7 @@ const ConstraintSymbol = ({
                   <code className="text-primary">{value}</code>
                 </pre>
               </div>
-              <div className="text-sm text-white/70 text-nowrap">
+              <div className="text-sm text-chalkboard-70 dark:text-chalkboard-40 text-nowrap">
                 {isConstrained
                   ? 'Click to unconstrain with raw number'
                   : 'Click to constrain with variable'}
