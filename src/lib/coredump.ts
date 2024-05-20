@@ -1,4 +1,14 @@
-import { EngineCommandManager } from 'lang/std/engineConnection'
+import {
+  EngineCommandManager,
+  EngineConnectionState
+} from 'lang/std/engineConnection'
+//engineCommandManager, - TODO: Can we use this instead
+// import {
+//   kclManager,s
+//   sceneInfra,
+//   codeManager,
+//   editorManager,
+// } from 'lib/singletons'
 import { WebrtcStats } from 'wasm-lib/kcl/bindings/WebrtcStats'
 import { ClientState } from 'wasm-lib/kcl/bindings/ClientState'
 import { OsInfo } from 'wasm-lib/kcl/bindings/OsInfo'
@@ -160,7 +170,17 @@ export class CoreDumpManager {
       settings_machine: { meta: [] },
     }
     console.log('initialized clientState', clientState)
+    
+    // Singletons
 
+    // engine_command_manager
+    console.log('engineCommandManager', this.engineCommandManager)
+    if (this.engineCommandManager?.engineConnection?.state) {
+      //clientState.engine_command_manager.meta.push(1)
+      console.log('engine connection state', this.engineCommandManager?.engineConnection?.state)
+    }
+
+    // this.kclManager.kclErrors
     const xstateServices = new Set()
     //globalThis?.__xstate__?.services
     console.log('xstateServices', xstateServices)
@@ -169,7 +189,7 @@ export class CoreDumpManager {
       console.log('interpreter', interpreter)
       // Command Bar Machine XState
       if (interpreter.id('Command Bar')) {
-        clientState.command_bar_machine.meta.push(1)
+        // clientState.command_bar_machine.meta.push(1)
       }
     })
 
@@ -177,12 +197,13 @@ export class CoreDumpManager {
 
     //clientState.engine_command_manager.commandLogs = this.engineCommandManager.commandLogs
     //console.dir(this.engineCommandManager.commandLogs)
-    try {
-      return Promise.resolve(JSON.stringify(clientState))
-    } catch (error) {
-      console.error('unable to return coredump data due to ', error)
-      return Promise.reject(error)
-    }
+    // try {
+    //   return Promise.resolve(JSON.stringify(clientState))
+    // } catch (error) {
+    //   console.error('unable to return coredump data due to ', error)
+    //   return Promise.reject(error)
+    // }
+    return Promise.resolve(JSON.stringify(clientState))
   }
 
   // Return a data URL (png format) of the screenshot of the current page.
