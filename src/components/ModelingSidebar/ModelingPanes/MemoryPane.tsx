@@ -61,6 +61,7 @@ export const MemoryPane = () => {
             displayObjectSize={true}
             indentWidth={2}
             quotesOnKeys={false}
+            sortKeys={true}
             name={false}
             theme={theme === 'light' ? 'rjv-default' : 'monokai'}
           />
