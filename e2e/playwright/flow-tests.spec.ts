@@ -1013,6 +1013,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   // wait for execution done
 
   await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.updateCamPosition([0, -1378.01, 0.06])
   await u.closeDebugPanel()
 
   // select a line
@@ -1244,6 +1245,7 @@ test('Can add multiple sketches', async ({ page }) => {
   await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
   await page.waitForTimeout(400)
+  await u.updateCamPosition([583, 2000, 370])
   await page.mouse.click(650, 450)
 
   await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
@@ -1257,8 +1259,7 @@ test('Can add multiple sketches', async ({ page }) => {
 
   await page.waitForTimeout(100)
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  const startAt2 =
-    process.platform === 'darwin' ? '[9.75, -13.16]' : '[0.93, -1.25]'
+  const startAt2 = '[22.65, -30.57]'
   await expect(
     (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
   ).toBe(
@@ -1272,7 +1273,7 @@ const part002 = startSketchOn('${plane}')
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
   await page.waitForTimeout(100)
 
-  const num2 = process.platform === 'darwin' ? 9.84 : 0.94
+  const num2 = 22.87
   await expect(
     (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
   ).toBe(
@@ -1290,9 +1291,7 @@ const part002 = startSketchOn('${plane}')
 const part002 = startSketchOn('${plane}')
   |> startProfileAt(${startAt2}, %)
   |> line([${num2}, 0], %)
-  |> line([0, ${roundOff(
-    num2 + (process.platform === 'darwin' ? 0.01 : -0.01)
-  )}], %)`.replace(/\s/g, '')
+  |> line([0, ${roundOff(num2)}], %)`.replace(/\s/g, '')
   )
   await page.waitForTimeout(100)
   await page.mouse.click(startXPx, 500 - PUR * 20)
@@ -1303,13 +1302,8 @@ const part002 = startSketchOn('${plane}')
 const part002 = startSketchOn('${plane}')
   |> startProfileAt(${startAt2}, %)
   |> line([${num2}, 0], %)
-  |> line([0, ${roundOff(
-    num2 + (process.platform === 'darwin' ? 0.01 : -0.01)
-  )}], %)
-  |> line([-${process.platform === 'darwin' ? 19.59 : 1.87}, 0], %)`.replace(
-      /\s/g,
-      ''
-    )
+  |> line([0, ${roundOff(num2)}], %)
+  |> line([-45.52, 0], %)`.replace(/\s/g, '')
   )
 })
 
