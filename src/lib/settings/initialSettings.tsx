@@ -347,9 +347,6 @@ export function createSettings() {
         description:
           'Whether to show the artifact map panel, a development tool',
         validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
-        },
       }),
       /**
        * TODO: This setting is not yet implemented.
