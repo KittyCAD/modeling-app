@@ -88,7 +88,7 @@ export function Toolbar({
               .includes(eventName) || disableAllButtons,
         })),
 
-    [JSON.stringify(nextEvents)]
+    [JSON.stringify(nextEvents), state]
   )
   return (
     <menu className="max-w-full whitespace-nowrap rounded px-1.5 py-0.5 backdrop-blur-sm bg-chalkboard-10/80 dark:bg-chalkboard-110/70 relative">

@@ -2570,7 +2570,7 @@ test.describe('Testing segment overlays', () => {
         await page.mouse.move(hoverPos.x, hoverPos.y, { steps })
         await expect(page.locator('.cm-content')).toContainText(codeToBeDeleted)
 
-        await page.locator(`[data-stdLib-fn-name="${stdLibFnName}"]`).click()
+        await page.locator(`[data-stdlib-fn-name="${stdLibFnName}"]`).click()
         await page.getByText('Delete Segment').click()
 
         await expect(page.locator('.cm-content')).not.toContainText(
