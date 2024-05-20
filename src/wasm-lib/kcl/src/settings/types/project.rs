@@ -129,6 +129,7 @@ includeSettings = false
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
+                        show_artifact_map_panel: false,
                         enable_ssao: true.into(),
                     },
                     text_editor: TextEditorSettings {
