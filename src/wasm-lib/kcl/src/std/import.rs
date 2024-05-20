@@ -129,27 +129,27 @@ pub async fn import(args: Args) -> Result<MemoryItem, KclError> {
 /// not in browser.
 ///
 /// ```no_run
-/// const model = import("thing.obj")
+/// const model = import("tests/inputs/cube.obj")
 /// ```
 ///
 /// ```no_run
-/// const model = import("cube.obj", {type: "obj", units: "m"})
+/// const model = import("tests/inputs/cube.obj", {type: "obj", units: "m"})
 /// ```
 ///
 /// ```no_run
-/// const model = import("my_model.gltf")
+/// const model = import("tests/inputs/cube.gltf")
 /// ```
 ///
 /// ```no_run
-/// const model = import("my_model.sldprt")
+/// const model = import("tests/inputs/cube.sldprt")
 /// ```
 ///
 /// ```no_run
-/// const model = import("my_model.step")
+/// const model = import("tests/inputs/cube.step")
 /// ```
 #[stdlib {
     name = "import",
-    tags = ["norun"],
+    tags = [],
 }]
 async fn inner_import(
     file_path: String,
@@ -162,6 +162,9 @@ async fn inner_import(
             source_ranges: vec![args.source_range],
         }));
     }
+
+    //print the current working directory
+    println!("Current working directory: {:?}", std::env::current_dir().unwrap());
 
     // Make sure the file exists.
     if !args.ctx.fs.exists(&file_path, args.source_range).await? {
