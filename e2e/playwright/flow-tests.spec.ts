@@ -1013,6 +1013,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   // wait for execution done
 
   await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.updateCamPosition([0, -1378.01, 0.06])
   await u.closeDebugPanel()
 
   // select a line
