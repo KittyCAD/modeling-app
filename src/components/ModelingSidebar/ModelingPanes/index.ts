@@ -12,7 +12,7 @@ import { CustomIconName } from 'components/CustomIcon'
 import { KclEditorPane } from 'components/ModelingSidebar/ModelingPanes/KclEditorPane'
 import { ReactNode } from 'react'
 import { MemoryPane, MemoryPaneMenu } from './MemoryPane'
-import { ArtifactMapPane } from './ArtifactMapPane'
+import { ArtifactMapPane, ArtifactMapPaneMenu } from './ArtifactMapPane'
 import { KclErrorsPane, LogsPane } from './LoggingPanes'
 import { DebugPane } from './DebugPane'
 import { FileTreeInner, FileTreeMenu } from 'components/FileTree'
@@ -93,6 +93,7 @@ export const bottomPanes: SidebarPane[] = [
     title: 'Artifact Map',
     icon: faFolderTree,
     Content: ArtifactMapPane,
+    Menu: ArtifactMapPaneMenu,
     keybinding: 'shift + a',
   },
 ]

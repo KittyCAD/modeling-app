@@ -1,6 +1,13 @@
 import { useResolvedTheme } from 'hooks/useResolvedTheme'
 import { engineCommandManager } from 'lib/singletons'
 import ReactJson from 'react-json-view'
+import { CopyJsonMenu } from './CopyJsonMenu'
+
+export const ArtifactMapPaneMenu = () => {
+  const { artifactMap } = engineCommandManager
+
+  return <CopyJsonMenu json={artifactMap} label="artifact map" />
+}
 
 export const ArtifactMapPane = () => {
   const theme = useResolvedTheme()

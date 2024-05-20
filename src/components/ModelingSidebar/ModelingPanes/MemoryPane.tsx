@@ -3,42 +3,12 @@ import { useMemo } from 'react'
 import { ProgramMemory, Path, ExtrudeSurface } from 'lang/wasm'
 import { useKclContext } from 'lang/KclProvider'
 import { useResolvedTheme } from 'hooks/useResolvedTheme'
-import { ActionButton } from 'components/ActionButton'
-import toast from 'react-hot-toast'
-import Tooltip from 'components/Tooltip'
+import { CopyJsonMenu } from './CopyJsonMenu'
 
 export const MemoryPaneMenu = () => {
   const { programMemory } = useKclContext()
 
-  function copyProgramMemoryToClipboard() {
-    if (globalThis && 'navigator' in globalThis) {
-      try {
-        navigator.clipboard.writeText(JSON.stringify(programMemory))
-        toast.success('Program memory copied to clipboard')
-      } catch (e) {
-        toast.error('Failed to copy program memory to clipboard')
-      }
-    }
-  }
-
-  return (
-    <>
-      <ActionButton
-        Element="button"
-        iconStart={{
-          icon: 'clipboardPlus',
-          iconClassName: '!text-current',
-          bgClassName: 'bg-transparent',
-        }}
-        className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
-        onClick={copyProgramMemoryToClipboard}
-      >
-        <Tooltip position="bottom-right" delay={750}>
-          Copy to clipboard
-        </Tooltip>
-      </ActionButton>
-    </>
-  )
+  return <CopyJsonMenu json={programMemory} label="program memory" />
 }
 
 export const MemoryPane = () => {
