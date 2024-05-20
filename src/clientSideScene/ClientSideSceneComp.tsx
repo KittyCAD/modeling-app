@@ -410,8 +410,8 @@ const SegmentMenu = ({
       {({ open }) => (
         <>
           <Popover.Button
-            data-testId="overlay-menu"
-            data-stdLibFnName={stdLibFnName}
+            data-testid="overlay-menu"
+            data-stdLib-fn-name={stdLibFnName}
             className="bg-white/50 hover:bg-white/80 text-black border-2 border-transparent hover:border-gray-400 h-[26px] w-[26px] rounded-sm p-0 m-0"
           >
             <CustomIcon name={'three-dots'} />
