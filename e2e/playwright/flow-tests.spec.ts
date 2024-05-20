@@ -13,6 +13,7 @@ import {
 } from './storageStates'
 import * as TOML from '@iarna/toml'
 import { Coords2d } from 'lang/std/sketch'
+import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -345,6 +346,15 @@ test('if you use the format keyboard binding it formats your code', async ({
   |> line([0, 20], %)
   |> line([-20, 0], %)
   |> close(%)`)
+})
+
+test('ensure the Zoo logo is not a link in browser app', async ({ page }) => {
+  await page.setViewportSize({ width: 1000, height: 500 })
+  await page.goto('/')
+
+  const zooLogo = page.locator('[data-testid="app-logo"]')
+  // Make sure it's not a link
+  await expect(zooLogo).not.toHaveAttribute('href')
 })
 
 test('if you write invalid kcl you get inlined errors', async ({ page }) => {
@@ -1012,6 +1022,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   // wait for execution done
 
   await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.updateCamPosition([0, -1378.01, 0.06])
   await u.closeDebugPanel()
 
   // select a line
@@ -1145,7 +1156,7 @@ test.describe('Command bar tests', () => {
 
     // Assert we're back on the distance step
     await expect(
-      page.getByRole('button', { name: 'Distance 12', exact: false })
+      page.getByRole('button', { name: 'Distance 5', exact: false })
     ).toBeDisabled()
 
     await continueButton.click()
@@ -1156,7 +1167,7 @@ test.describe('Command bar tests', () => {
     // Unfortunately this indentation seems to matter for the test
     await expect(page.locator('.cm-content')).toHaveText(
       `const distance = sqrt(20)
-const distance001 = 5 + 7
+const distance001 = ${KCL_DEFAULT_LENGTH}
 const part001 = startSketchOn('-XZ')
     |> startProfileAt([-6.95, 10.98], %)
     |> line([25.1, 0.41], %)
@@ -1243,6 +1254,7 @@ test('Can add multiple sketches', async ({ page }) => {
   await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
   await page.waitForTimeout(400)
+  await u.updateCamPosition([583, 2000, 370])
   await page.mouse.click(650, 450)
 
   await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
@@ -1256,8 +1268,7 @@ test('Can add multiple sketches', async ({ page }) => {
 
   await page.waitForTimeout(100)
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  const startAt2 =
-    process.platform === 'darwin' ? '[9.75, -13.16]' : '[0.93, -1.25]'
+  const startAt2 = '[22.65, -30.57]'
   await expect(
     (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
   ).toBe(
@@ -1271,7 +1282,7 @@ const part002 = startSketchOn('${plane}')
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
   await page.waitForTimeout(100)
 
-  const num2 = process.platform === 'darwin' ? 9.84 : 0.94
+  const num2 = 22.87
   await expect(
     (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
   ).toBe(
@@ -1289,9 +1300,7 @@ const part002 = startSketchOn('${plane}')
 const part002 = startSketchOn('${plane}')
   |> startProfileAt(${startAt2}, %)
   |> line([${num2}, 0], %)
-  |> line([0, ${roundOff(
-    num2 + (process.platform === 'darwin' ? 0.01 : -0.01)
-  )}], %)`.replace(/\s/g, '')
+  |> line([0, ${roundOff(num2)}], %)`.replace(/\s/g, '')
   )
   await page.waitForTimeout(100)
   await page.mouse.click(startXPx, 500 - PUR * 20)
@@ -1302,13 +1311,8 @@ const part002 = startSketchOn('${plane}')
 const part002 = startSketchOn('${plane}')
   |> startProfileAt(${startAt2}, %)
   |> line([${num2}, 0], %)
-  |> line([0, ${roundOff(
-    num2 + (process.platform === 'darwin' ? 0.01 : -0.01)
-  )}], %)
-  |> line([-${process.platform === 'darwin' ? 19.59 : 1.87}, 0], %)`.replace(
-      /\s/g,
-      ''
-    )
+  |> line([0, ${roundOff(num2)}], %)
+  |> line([-45.52, 0], %)`.replace(/\s/g, '')
   )
 })
 
@@ -1353,7 +1357,7 @@ test('ProgramMemory can be serialised', async ({ page }) => {
 
 test('Hovering over 3d features highlights code', async ({ page }) => {
   const u = getUtils(page)
-  await page.addInitScript(async () => {
+  await page.addInitScript(async (KCL_DEFAULT_LENGTH) => {
     localStorage.setItem(
       'persistCode',
       `const part001 = startSketchOn('-XZ')
@@ -1378,7 +1382,7 @@ test('Hovering over 3d features highlights code', async ({ page }) => {
   |> extrude(5 + 7, %)    
 `
     )
-  })
+  }, KCL_DEFAULT_LENGTH)
   await page.setViewportSize({ width: 1000, height: 500 })
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
@@ -1957,6 +1961,6 @@ test('Extrude from command bar selects extrude line after', async ({
   await page.keyboard.press('Enter')
   await page.waitForTimeout(100)
   await expect(page.locator('.cm-activeLine')).toHaveText(
-    `  |> extrude(5 + 7, %)`
+    `  |> extrude(${KCL_DEFAULT_LENGTH}, %)`
   )
 })
