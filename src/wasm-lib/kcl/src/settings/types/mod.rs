@@ -366,6 +366,11 @@ pub struct ModelingSettings {
     /// of the app to aid in development.
     #[serde(default, alias = "showDebugPanel", skip_serializing_if = "is_default")]
     pub show_debug_panel: bool,
+    /// Whether to show the artifact map panel, which lets you see
+    /// the stored engine commands and their resulting artifacts,
+    /// and is useful for debugging.
+    #[serde(default, alias = "showArtifactMapPanel", skip_serializing_if = "is_default")]
+    pub show_artifact_map_panel: bool,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_ssao: DefaultTrue,
