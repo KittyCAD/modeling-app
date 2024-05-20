@@ -77,7 +77,29 @@ export async function getEventForSelectWithPoint(
       },
     }
   }
-  const _artifact = engineCommandManager.artifactMap[data.entity_id]
+  let _artifact = engineCommandManager.artifactMap[data.entity_id]
+  if (!_artifact) {
+    // This logic for getting the parent id is for solid2ds as in edit mode it return the face id
+    // but we don't recognise that in the artifact map because we store the path id when the path is
+    // created, the solid2d is implicitly created with the close stdlib function
+    // there's plans to get the faceId back from the solid2d creation
+    // https://github.com/KittyCAD/engine/issues/2094
+    // at which point we can add it to the artifact map and remove this logic
+    const parentId = (
+      await engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd: {
+          type: 'entity_get_parent_id',
+          entity_id: data.entity_id,
+        },
+        cmd_id: uuidv4(),
+      })
+    )?.data?.data?.entity_id
+    const parentArtifact = engineCommandManager.artifactMap[parentId]
+    if (parentArtifact) {
+      _artifact = parentArtifact
+    }
+  }
   const sourceRange = _artifact?.range
   if (_artifact) {
     if (_artifact.commandType === 'solid3d_get_extrusion_face_info') {
