@@ -11,7 +11,16 @@ export function AllKeybindingsFields() {
             className="flex gap-2 justify-between"
           >
             <h3>{item.title}</h3>
-            <p>{item.sequence}</p>
+            <div className="flex gap-3">
+              {item.sequence.split(' ').map((chord) => (
+                <kbd
+                  key={`${item.ownerId}-${item.name}-${chord}`}
+                  className="py-0.5 px-1.5 rounded bg-primary/10 dark:bg-chalkboard-80"
+                >
+                  {chord}
+                </kbd>
+              ))}
+            </div>
           </div>
         ))}
       </div>
