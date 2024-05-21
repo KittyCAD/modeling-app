@@ -183,9 +183,6 @@ jobs:
         with:
           workspaces: './src/wasm-lib'
 
-      - uses: browser-actions/setup-edge@v1
-        if: ${{ matrix.os == 'windows-latest' }}
-
       - name: Run build:wasm manually
         shell: bash
         env:
@@ -235,13 +232,12 @@ jobs:
         shell: cmd
 
       - name: Build the app (debug)
-        # uses: tauri-apps/tauri-action@v0
+        uses: tauri-apps/tauri-action@v0
         if: ${{ env.BUILD_RELEASE == 'false' }}
-        # with:
-        #   includeRelease: false
-        #   includeDebug: true
-        #   args: "${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
-        run: "yarn tauri build --debug ${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
+        with:
+          includeRelease: false
+          includeDebug: true
+          args: "${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
 
       - name: Build for Mac TestFlight (nightly)
         if: ${{ github.event_name == 'schedule' && matrix.os == 'macos-14' }}
@@ -372,6 +368,7 @@ jobs:
         if: ${{ matrix.os == 'windows-latest' && github.event_name != 'release' && github.event_name != 'schedule' }}
         run: |
           (Get-Item (Get-Command msedge).Source).VersionInfo.ProductVersion
+          yarn edgedriver --version
           cargo install --force --git https://github.com/pierremtb/tauri --branch pierremtb/disable-webviewoptions tauri-driver
           yarn wdio run wdio.conf.ts
         env:
@@ -380,6 +377,7 @@ jobs:
           VITE_KC_API_BASE_URL: ${{ env.BUILD_RELEASE == 'true' && 'https://api.zoo.dev' || 'https://api.dev.zoo.dev' }}
           E2E_TAURI_ENABLED: true
           TS_NODE_COMPILER_OPTIONS: '{"module": "commonjs"}'
+          EDGEDRIVER_VERSION: 119.0.2151.58
 
   publish-apps-release:
     runs-on: ubuntu-latest
