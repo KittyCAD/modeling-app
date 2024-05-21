@@ -26,10 +26,11 @@ export default function useHotkeyWrapper(
 // See: https://codemirror.net/docs/ref/#view.KeyBinding
 function mapHotkeyToCodeMirrorHotkey(hotkey: string): string {
   return hotkey
-    .replace('+', '-')
-    .replace(' ', '')
-    .replace('mod', 'Meta')
-    .replace('ctrl', 'Ctrl')
-    .replace('shift', 'Shift')
-    .replace('alt', 'Alt')
+    .replaceAll('+', '-')
+    .replaceAll(' ', '')
+    .replaceAll('mod', 'Meta')
+    .replaceAll('meta', 'Meta')
+    .replaceAll('ctrl', 'Ctrl')
+    .replaceAll('shift', 'Shift')
+    .replaceAll('alt', 'Alt')
 }
