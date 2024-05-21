@@ -186,9 +186,10 @@ export function InteractionMapMachineProvider({
       if (
         event.BUBBLING_PHASE &&
         !(
-          event instanceof MouseEvent &&
-          event.target instanceof HTMLElement &&
-          ['INPUT', 'BUTTON', 'ANCHOR'].includes(event.target.tagName)
+          (event.target instanceof HTMLElement &&
+            ['INPUT', 'BUTTON', 'ANCHOR'].includes(event.target.tagName)) ||
+          (event.target as HTMLElement).getAttribute('contenteditable') ===
+            'true'
         )
       ) {
         send({ type: 'Fire event', data: event })
