@@ -40,8 +40,8 @@ impl ts_rs::TS for dyn KclStdLibFn {
         StdLibFnData::inline_flattened()
     }
 
-    fn dependencies() -> Vec<ts_rs::Dependency> {
-        StdLibFnData::dependencies()
+    fn output_path() -> Option<&'static Path> {
+        StdLibFnData::output_path()
     }
 }
 
