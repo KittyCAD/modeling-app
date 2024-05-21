@@ -6,6 +6,7 @@ import { isTauri } from 'lib/isTauri'
 import { writeTextFile } from '@tauri-apps/plugin-fs'
 import toast from 'react-hot-toast'
 import { editorManager } from 'lib/singletons'
+import { KeyBinding } from '@uiw/react-codemirror'
 
 const PERSIST_CODE_TOKEN = 'persistCode'
 
@@ -51,6 +52,16 @@ export default class CodeManager {
 
   registerHotkey(hotkey: string, callback: () => void) {
     this._hotkeys[hotkey] = callback
+  }
+
+  getCodemirrorHotkeys(): KeyBinding[] {
+    return Object.keys(this._hotkeys).map((key) => ({
+      key,
+      run: () => {
+        this._hotkeys[key]()
+        return false
+      },
+    }))
   }
 
   updateCurrentFilePath(path: string) {

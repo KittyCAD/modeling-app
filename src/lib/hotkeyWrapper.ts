@@ -9,9 +9,27 @@ import { codeManager } from './singletons'
 // inside the editor.
 // TODO: would be nice if this didn't have to be a react hook. It's not needed
 // for the code mirror stuff but but it is needed for the useHotkeys hook.
-export default function useHotkeyWrapper(hotkey: string, callback: () => void) {
+export default function useHotkeyWrapper(
+  hotkey: string[],
+  callback: () => void
+) {
   useHotkeys(hotkey, callback)
   useEffect(() => {
-    codeManager.registerHotkey(hotkey, callback)
+    for (const key of hotkey) {
+      const keybinding = mapHotkeyToCodeMirrorHotkey(key)
+      codeManager.registerHotkey(keybinding, callback)
+    }
   })
+}
+
+// Convert hotkey to code mirror hotkey
+// See: https://codemirror.net/docs/ref/#view.KeyBinding
+function mapHotkeyToCodeMirrorHotkey(hotkey: string): string {
+  return hotkey
+    .replace('+', '-')
+    .replace(' ', '')
+    .replace('mod', 'Meta')
+    .replace('ctrl', 'Ctrl')
+    .replace('shift', 'Shift')
+    .replace('alt', 'Alt')
 }

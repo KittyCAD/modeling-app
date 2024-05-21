@@ -36,10 +36,6 @@ import {
 import interact from '@replit/codemirror-interact'
 import { kclManager, editorManager, codeManager } from 'lib/singletons'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { isTauri } from 'lib/isTauri'
-import { useNavigate } from 'react-router-dom'
-import { paths } from 'lib/paths'
-import makeUrlPathRelative from 'lib/makeUrlPathRelative'
 import { useLspContext } from 'components/LspProvider'
 import { Prec, EditorState, Extension } from '@codemirror/state'
 import {
@@ -67,7 +63,6 @@ export const KclEditorPane = () => {
       ? getSystemTheme()
       : context.app.theme.current
   const { copilotLSP, kclLSP } = useLspContext()
-  const navigate = useNavigate()
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -76,6 +71,8 @@ export const KclEditorPane = () => {
     return () => window.removeEventListener('online', onlineCallback)
   }, [])
 
+  // Since these already exist in the editor, we don't need to define them
+  // with the wrapper.
   useHotkeys('mod+z', (e) => {
     e.preventDefault()
     editorManager.undo()
@@ -106,20 +103,7 @@ export const KclEditorPane = () => {
         ...completionKeymap,
         ...lintKeymap,
         indentWithTab,
-        {
-          key: 'Meta-k',
-          run: () => {
-            editorManager.commandBarSend({ type: 'Open' })
-            return false
-          },
-        },
-        {
-          key: isTauri() ? 'Meta-,' : 'Meta-Shift-,',
-          run: () => {
-            navigate(makeUrlPathRelative(paths.SETTINGS))
-            return false
-          },
-        },
+        ...codeManager.getCodemirrorHotkeys(),
         {
           key: editorShortcutMeta.convertToVariable.codeMirror,
           run: () => {
