@@ -28,7 +28,7 @@ export const CommandBar = () => {
       {
         name: 'toggle',
         title: 'Toggle Command Bar',
-        sequence: 'meta+k',
+        sequence: 'meta+k g RightButton+shift',
         action: () => {
           const type = commandBarState.matches('Closed') ? 'Open' : 'Close'
           console.log('toggling command bar', type)

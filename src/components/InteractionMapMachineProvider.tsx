@@ -97,6 +97,8 @@ export function InteractionMapMachineProvider({
             ? mapKey(event.data.code)
             : mouseButtonToName(event.data.button)
 
+        console.log('action', action)
+
         // if the key is already a modifier key, skip everything else and reject
         if (isModifierKey(action)) {
           // We return an empty string so that we don't clear the currentSequence
@@ -120,6 +122,12 @@ export function InteractionMapMachineProvider({
         const matches = context.interactionMap.filter((item) =>
           item.sequence.startsWith(searchString)
         )
+
+        console.log('matches', {
+          matches,
+          interactionMap: context.interactionMap,
+          searchString,
+        })
 
         // If we have no matches, reject the promise
         if (matches.length === 0) {

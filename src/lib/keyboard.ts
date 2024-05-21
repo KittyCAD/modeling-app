@@ -28,6 +28,7 @@ const mappedKeys: Record<string, string> = {
 }
 
 export function mapKey(key: string): string {
+  if (key.includes('Button')) return key
   return (mappedKeys[key] || key)
     .trim()
     .toLowerCase()
