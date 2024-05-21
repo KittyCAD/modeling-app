@@ -1,5 +1,6 @@
 //! Functions for generating docs for our stdlib functions.
 
+use crate::std::Primitive;
 use anyhow::Result;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -8,9 +9,6 @@ use tower_lsp::lsp_types::{
     CompletionItem, CompletionItemKind, CompletionItemLabelDetails, Documentation, InsertTextFormat, MarkupContent,
     MarkupKind, ParameterInformation, ParameterLabel, SignatureHelp, SignatureInformation,
 };
-use ts_rs::typelist::TypeList;
-
-use crate::std::Primitive;
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, JsonSchema, ts_rs::TS)]
 #[ts(export)]
@@ -286,8 +284,8 @@ impl ts_rs::TS for dyn StdLibFn {
         StdLibFnData::inline_flattened()
     }
 
-    fn dependency_types() -> impl TypeList {
-        StdLibFnData::dependency_types()
+    fn dependencies() -> Vec<ts_rs::Dependency> {
+        StdLibFnData::dependencies()
     }
 }
 

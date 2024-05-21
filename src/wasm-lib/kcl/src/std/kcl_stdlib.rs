@@ -1,7 +1,6 @@
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
-use ts_rs::typelist::TypeList;
 
 use crate::{
     ast::types::{BodyItem, FunctionExpression, Program, Value},
@@ -41,8 +40,8 @@ impl ts_rs::TS for dyn KclStdLibFn {
         StdLibFnData::inline_flattened()
     }
 
-    fn dependency_types() -> impl TypeList {
-        StdLibFnData::dependency_types()
+    fn dependencies() -> Vec<ts_rs::Dependency> {
+        StdLibFnData::dependencies()
     }
 }
 
