@@ -57,9 +57,8 @@ export function App() {
   const {
     app: { onboardingStatus },
   } = settings.context
-  const { state, send } = useModelingContext()
+  const { state } = useModelingContext()
 
-  useHotkeys('esc', () => send('Cancel'))
   useHotkeys('backspace', (e) => {
     e.preventDefault()
   })
