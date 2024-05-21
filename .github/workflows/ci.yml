@@ -183,6 +183,9 @@ jobs:
         with:
           workspaces: './src/wasm-lib'
 
+      - uses: browser-actions/setup-edge@v1
+        if: ${{ matrix.os == 'windows-latest' }}
+
       - name: Run build:wasm manually
         shell: bash
         env:
@@ -363,9 +366,6 @@ jobs:
         env:
           E2E_APPLICATION: "./src-tauri/target/${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}/zoo-modeling-app"
           KITTYCAD_API_TOKEN: ${{ env.BUILD_RELEASE == 'true' && secrets.KITTYCAD_API_TOKEN || secrets.KITTYCAD_API_TOKEN_DEV }}
-
-      - uses: browser-actions/setup-edge@v1
-        if: ${{ matrix.os == 'windows-latest' && github.event_name != 'release' && github.event_name != 'schedule' }}
 
       - name: Run e2e tests (windows only)
         if: ${{ matrix.os == 'windows-latest' && github.event_name != 'release' && github.event_name != 'schedule' }}
