@@ -2057,3 +2057,27 @@ const bracket = startSketchOn('XY')
         r#"engine: KclErrorDetails { source_ranges: [SourceRange([1443, 1443])], message: "Modeling command failed: Some([ApiError { error_code: BadRequest, message: \"Fillet failed\" }])" }"#
     );
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_error_empty_start_sketch_on_string() {
+    let code = r#"const part001 = startSketchOn('-XZ')
+  |> startProfileAt([75.75, 184.25], %)
+  |> line([190.03, -118.13], %)
+  |> line([-33.38, -202.86], %)
+  |> line([-315.86, -64.2], %)
+  |> tangentialArcTo([-147.66, 121.34], %)
+  |> close(%)
+  |> extrude(100, %)
+
+const secondSketch = startSketchOn(part001, '')
+  |> circle([-20, 50], 40, %)
+  |> extrude(20, %)
+"#;
+
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([272, 298])], message: "Expected a non-empty tag for the face to sketch on" }"#
+    );
+}
