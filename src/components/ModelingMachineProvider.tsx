@@ -69,10 +69,10 @@ import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
 import { EditorSelection } from '@uiw/react-codemirror'
 import { CoreDumpManager } from 'lib/coredump'
-import { useHotkeys } from 'react-hotkeys-hook'
 import { useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { getVarNameModal } from 'hooks/useToolbarGuards'
+import useHotkeyWrapper from 'lib/hotkeyWrapper'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -118,7 +118,7 @@ export const ModelingMachineProvider = ({
     htmlRef,
     token
   )
-  useHotkeys('meta + shift + .', () => coreDump(coreDumpManager, true))
+  useHotkeyWrapper(['meta + shift + .'], () => coreDump(coreDumpManager, true))
 
   // Settings machine setup
   // const retrievedSettings = useRef(

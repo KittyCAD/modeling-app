@@ -776,6 +776,57 @@ test('Project settings can be set and override user settings', async ({
   await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
 })
 
+test('Project settings can be opened with keybinding from the editor', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/', { waitUntil: 'domcontentloaded' })
+  await page
+    .getByRole('button', { name: 'Start Sketch' })
+    .waitFor({ state: 'visible' })
+
+  // Put the cursor in the editor
+  await page.click('.cm-content')
+
+  // Open the settings modal with the browser keyboard shortcut
+  await page.keyboard.press('Meta+Shift+,')
+
+  await expect(
+    page.getByRole('heading', { name: 'Settings', exact: true })
+  ).toBeVisible()
+  await page
+    .locator('select[name="app-theme"]')
+    .selectOption({ value: 'light' })
+
+  // Verify the toast appeared
+  await expect(
+    page.getByText(`Set theme to "light" for this project`)
+  ).toBeVisible()
+  // Check that the theme changed
+  await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
+
+  // Check that the user setting was not changed
+  await page.getByRole('radio', { name: 'User' }).click()
+  await expect(page.locator('select[name="app-theme"]')).toHaveValue('dark')
+
+  // Roll back to default "system" theme
+  await page
+    .getByText(
+      'themeRoll back themeRoll back to match defaultThe overall appearance of the appl'
+    )
+    .hover()
+  await page
+    .getByRole('button', {
+      name: 'Roll back theme ; Has tooltip: Roll back to match default',
+    })
+    .click()
+  await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+
+  // Check that the project setting did not change
+  await page.getByRole('radio', { name: 'Project' }).click()
+  await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
+})
+
 test('Click through each onboarding step', async ({ page }) => {
   const u = getUtils(page)
 
@@ -1060,6 +1111,51 @@ test.describe('Command bar tests', () => {
     await expect(cmdSearchBar).toBeVisible()
     await page.keyboard.press('Escape')
     await expect(cmdSearchBar).not.toBeVisible()
+
+    // Now try the same, but with the keyboard shortcut, check focus
+    await page.keyboard.press('Meta+K')
+    await expect(cmdSearchBar).toBeVisible()
+    await expect(cmdSearchBar).toBeFocused()
+
+    // Try typing in the command bar
+    await page.keyboard.type('theme')
+    const themeOption = page.getByRole('option', {
+      name: 'Settings · app · theme',
+    })
+    await expect(themeOption).toBeVisible()
+    await themeOption.click()
+    const themeInput = page.getByPlaceholder('Select an option')
+    await expect(themeInput).toBeVisible()
+    await expect(themeInput).toBeFocused()
+    // Select dark theme
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await expect(page.getByRole('option', { name: 'system' })).toHaveAttribute(
+      'data-headlessui-state',
+      'active'
+    )
+    await page.keyboard.press('Enter')
+
+    // Check the toast appeared
+    await expect(
+      page.getByText(`Set theme to "system" for this project`)
+    ).toBeVisible()
+    // Check that the theme changed
+    await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
+  })
+
+  test('Command bar keybinding works from code editor and can change a setting', async ({
+    page,
+  }) => {
+    // Brief boilerplate
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/', { waitUntil: 'domcontentloaded' })
+
+    let cmdSearchBar = page.getByPlaceholder('Search commands')
+
+    // Put the cursor in the code editor
+    await page.click('.cm-content')
 
     // Now try the same, but with the keyboard shortcut, check focus
     await page.keyboard.press('Meta+K')
