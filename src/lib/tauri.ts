@@ -143,24 +143,20 @@ export async function writeAppSettingsFile(
 
 // Read project settings file.
 export async function readProjectSettingsFile(
-  appSettings: Configuration,
-  projectName: string
+  projectPath: string
 ): Promise<ProjectConfiguration> {
   return await invoke<ProjectConfiguration>('read_project_settings_file', {
-    appSettings,
-    projectName,
+    projectPath,
   })
 }
 
 // Write project settings file.
 export async function writeProjectSettingsFile(
-  appSettings: Configuration,
-  projectName: string,
+  projectPath: string,
   settings: ProjectConfiguration
 ): Promise<void> {
   return await invoke('write_project_settings_file', {
-    appSettings,
-    projectName,
+    projectPath,
     configuration: settings,
   })
 }

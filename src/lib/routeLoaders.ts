@@ -38,8 +38,8 @@ export const settingsLoader: LoaderFunction = async ({
       configuration
     )
     if (projectPathData) {
-      const { project_name } = projectPathData
-      const { settings: s } = await loadAndValidateSettings(project_name)
+      const { project_path } = projectPathData
+      const { settings: s } = await loadAndValidateSettings(project_path)
       settings = s
     }
   }

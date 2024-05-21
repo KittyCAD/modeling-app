@@ -121,11 +121,8 @@ async fn write_app_settings_file(app: tauri::AppHandle, configuration: Configura
     Ok(())
 }
 
-async fn get_project_settings_file_path(
-    app_settings: Configuration,
-    project_name: &str,
-) -> Result<PathBuf, InvokeError> {
-    let project_dir = app_settings.settings.project.directory.join(project_name);
+async fn get_project_settings_file_path(project_path: &str) -> Result<PathBuf, InvokeError> {
+    let project_dir = std::path::Path::new(project_path);
 
     if !project_dir.exists() {
         tokio::fs::create_dir_all(&project_dir)
@@ -137,11 +134,8 @@ async fn get_project_settings_file_path(
 }
 
 #[tauri::command]
-async fn read_project_settings_file(
-    app_settings: Configuration,
-    project_name: &str,
-) -> Result<ProjectConfiguration, InvokeError> {
-    let settings_path = get_project_settings_file_path(app_settings, project_name).await?;
+async fn read_project_settings_file(project_path: &str) -> Result<ProjectConfiguration, InvokeError> {
+    let settings_path = get_project_settings_file_path(project_path).await?;
 
     // Check if this file exists.
     if !settings_path.exists() {
@@ -159,11 +153,10 @@ async fn read_project_settings_file(
 
 #[tauri::command]
 async fn write_project_settings_file(
-    app_settings: Configuration,
-    project_name: &str,
+    project_path: &str,
     configuration: ProjectConfiguration,
 ) -> Result<(), InvokeError> {
-    let settings_path = get_project_settings_file_path(app_settings, project_name).await?;
+    let settings_path = get_project_settings_file_path(project_path).await?;
     let contents = toml::to_string_pretty(&configuration).map_err(|e| InvokeError::from_anyhow(e.into()))?;
     tokio::fs::write(settings_path, contents.as_bytes())
         .await
