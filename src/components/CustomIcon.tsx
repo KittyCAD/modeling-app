@@ -237,6 +237,14 @@ const CustomIconMap = {
       />
     </svg>
   ),
+  keyboard: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M16 12V15H13.5M16 12V9M16 12H13.5M4 12V15H6.5M4 12V9M4 12H6.5M4 9V6H6.5M4 9H6.5M16 9V6H13.5M16 9H13.5M6.5 12V15M6.5 12H7.5M6.5 15H13.5M13.5 15V12M13.5 12H12.5M7.5 12V9M7.5 12H10M7.5 9H8.75M7.5 9H6.5M10 12V9M10 12H12.5M10 9H11.25M10 9H8.75M12.5 12V9M12.5 9H13.5M12.5 9H11.25M13.5 9V6M13.5 6H11.25M11.25 9V6M11.25 6H8.75M8.75 9V6M8.75 6H6.5M6.5 9V6"
+        stroke="currentColor"
+      />
+    </svg>
+  ),
   line: (
     <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
