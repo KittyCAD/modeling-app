@@ -109,6 +109,7 @@ impl Configuration {
                 // Because we just created it and it's empty.
                 children: None,
             },
+            default_file: project_file.to_string_lossy().to_string(),
             metadata: Some(tokio::fs::metadata(&project_dir).await?.into()),
             kcl_file_count: 1,
             directory_count: 0,
@@ -156,11 +157,14 @@ impl Configuration {
             return Err(anyhow::anyhow!("Project path is not a directory: {}", project_path));
         }
 
+        let walked = crate::settings::utils::walk_dir(project_dir).await?;
+
         let mut project = crate::settings::types::file::Project {
-            file: crate::settings::utils::walk_dir(project_dir).await?,
+            file: walked.clone(),
             metadata: Some(tokio::fs::metadata(&project_dir).await?.into()),
             kcl_file_count: 0,
             directory_count: 0,
+            default_file: crate::settings::types::file::get_default_kcl_file_for_dir(project_dir, walked).await?,
         };
 
         // Populate the number of KCL files in the project.

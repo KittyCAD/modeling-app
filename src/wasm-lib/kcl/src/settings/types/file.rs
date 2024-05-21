@@ -1,5 +1,6 @@
 //! Types for interacting with files in projects.
 
+#[cfg(not(target_arch = "wasm32"))]
 use std::path::{Path, PathBuf};
 
 use anyhow::Result;
@@ -7,7 +8,7 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use crate::settings::types::{Configuration, DEFAULT_PROJECT_KCL_FILE};
+use crate::settings::types::Configuration;
 
 /// State management for the application.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq)]
@@ -48,7 +49,7 @@ impl ProjectState {
                 .map_err(|e| anyhow::anyhow!("Error loading project from path {}: {:?}", source_path.display(), e))?;
 
             // Check if we have a main.kcl file in the project.
-            let project_file = source_path.join(DEFAULT_PROJECT_KCL_FILE);
+            let project_file = source_path.join(crate::settings::types::DEFAULT_PROJECT_KCL_FILE);
 
             if !project_file.exists() {
                 // Create the default file in the project.
@@ -247,6 +248,8 @@ pub struct Project {
     #[serde(default)]
     #[ts(type = "number")]
     pub directory_count: u64,
+    /// The default file to open on load.
+    pub default_file: String,
 }
 
 impl Project {
@@ -266,12 +269,13 @@ impl Project {
         }
 
         let file = crate::settings::utils::walk_dir(&path).await?;
-        let metadata = std::fs::metadata(path).ok().map(|m| m.into());
+        let metadata = std::fs::metadata(&path).ok().map(|m| m.into());
         let mut project = Self {
-            file,
+            file: file.clone(),
             metadata,
             kcl_file_count: 0,
             directory_count: 0,
+            default_file: get_default_kcl_file_for_dir(path, file).await?,
         };
         project.populate_kcl_file_count()?;
         project.populate_directory_count()?;
@@ -307,6 +311,36 @@ impl Project {
         self.directory_count = count;
         Ok(())
     }
+}
+
+/// Get the default KCL file for a directory.
+/// This determines what the default file to open is.
+#[cfg(not(target_arch = "wasm32"))]
+pub async fn get_default_kcl_file_for_dir<P>(dir: P, file: FileEntry) -> Result<String>
+where
+    P: AsRef<Path> + Send,
+{
+    // Make sure the dir is a directory.
+    if !dir.as_ref().is_dir() {
+        return Err(anyhow::anyhow!("Path `{}` is not a directory", dir.as_ref().display()));
+    }
+
+    let default_file = dir.as_ref().join(crate::settings::types::DEFAULT_PROJECT_KCL_FILE);
+    if !default_file.exists() {
+        // Find a kcl file in the directory.
+        if let Some(children) = file.children {
+            for entry in children.iter() {
+                if entry.name.ends_with(".kcl") {
+                    return Ok(dir.as_ref().join(&entry.name).display().to_string());
+                }
+            }
+        }
+
+        // If we didn't find a kcl file, create one.
+        tokio::fs::write(&default_file, vec![]).await?;
+    }
+
+    Ok(default_file.display().to_string())
 }
 
 /// Information about a file or directory.
@@ -585,6 +619,27 @@ mod tests {
                 project_path: "/browser".to_string(),
                 current_file_name: None,
                 current_file_path: None,
+            }
+        );
+    }
+
+    #[test]
+    fn test_project_route_from_route_non_main_file() {
+        let mut configuration = crate::settings::types::Configuration::default();
+        configuration.settings.project.directory =
+            std::path::PathBuf::from("/Users/macinatormax/Documents/kittycad-modeling-projects");
+
+        let route = "/Users/macinatormax/Documents/kittycad-modeling-projects/assembly/thing.kcl";
+        let state = super::ProjectRoute::from_route(&configuration, route).unwrap();
+        assert_eq!(
+            state,
+            super::ProjectRoute {
+                project_name: Some("assembly".to_string()),
+                project_path: "/Users/macinatormax/Documents/kittycad-modeling-projects/assembly".to_string(),
+                current_file_name: Some("thing.kcl".to_string()),
+                current_file_path: Some(
+                    "/Users/macinatormax/Documents/kittycad-modeling-projects/assembly/thing.kcl".to_string()
+                ),
             }
         );
     }
