@@ -367,7 +367,6 @@ jobs:
       - name: Run e2e tests (windows only)
         if: ${{ matrix.os == 'windows-latest' && github.event_name != 'release' && github.event_name != 'schedule' }}
         run: |
-          (Get-Item (Get-Command msedge).Source).VersionInfo.ProductVersion
           yarn edgedriver --version
           cargo install --force --git https://github.com/pierremtb/tauri --branch pierremtb/disable-webviewoptions tauri-driver
           yarn wdio run wdio.conf.ts

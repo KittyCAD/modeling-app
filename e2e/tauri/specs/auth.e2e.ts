@@ -1,11 +1,16 @@
 import { browser, $, expect } from '@wdio/globals'
 import fs from 'fs/promises'
 import path from 'path'
+import os from 'os'
 
-const documentsDir = `${process.env.HOME}/Documents`
-const userSettingsDir = `${process.env.HOME}/.config/dev.zoo.modeling-app`
-const defaultProjectDir = `${documentsDir}/zoo-modeling-app-projects`
-const newProjectDir = `${documentsDir}/a-different-directory`
+const documentsDir = path.join(os.homedir(), 'Documents')
+const userSettingsDir = path.join(
+  os.homedir(),
+  '.config',
+  'dev.zoo.modeling-app'
+)
+const defaultProjectDir = path.join(documentsDir, 'zoo-modeling-app-projects')
+const newProjectDir = path.join(documentsDir, 'a-different-directory')
 const tmp = process.env.TEMP || '/tmp'
 const userCodeDir = path.join(tmp, 'kittycad_user_code')
 console.log(userCodeDir)
@@ -45,9 +50,7 @@ describe('ZMA (Tauri, Linux)', () => {
     await new Promise((resolve) => setTimeout(resolve, 2000))
 
     // Get from main.rs
-    const userCode = await (
-      await fs.readFile('/tmp/kittycad_user_code')
-    ).toString()
+    const userCode = await (await fs.readFile(userCodeDir)).toString()
     console.log(`Found user code ${userCode}`)
 
     // Device flow: verify
@@ -125,7 +128,9 @@ describe('ZMA (Tauri, Linux)', () => {
     await click(projectLink)
     const errorText = await $('[data-testid="unexpected-error"]')
     expect(await errorText.getText()).toContain('unexpected error')
-    await browser.execute('window.location.href = "tauri://localhost/home"')
+    const base =
+      os.platform() === 'win32' ? 'http://tauri.localhost' : 'tauri://localhost'
+    await browser.execute(`window.location.href = "${base}/home"`)
   })
 
   it('signs out', async () => {
