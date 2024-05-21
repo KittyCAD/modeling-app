@@ -424,6 +424,80 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
   await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 })
 
+test('error with 2 source ranges gets 2 diagnostics', async ({ page }) => {
+  const u = getUtils(page)
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const length = .750
+const width = 0.500
+const height = 0.500
+const dia = 4
+
+fn squareHole = (l, w) => {
+  const squareHoleSketch = startSketchOn('XY')
+  |> startProfileAt([-width / 2, -length / 2], %)
+  |> lineTo([width / 2, -length / 2], %)
+  |> lineTo([width / 2, length / 2], %)
+  |> lineTo([-width / 2, length / 2], %)
+  |> close(%)
+  return squareHoleSketch
+}
+`
+    )
+  })
+  await page.setViewportSize({ width: 1000, height: 500 })
+  await page.goto('/')
+  const lspStartPromise = page.waitForEvent('console', async (message) => {
+    // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
+    // but that doesn't seem to make it to the console for macos/safari :(
+    if (message.text().includes('start kcl lsp')) {
+      await new Promise((resolve) => setTimeout(resolve, 200))
+      return true
+    }
+    return false
+  })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await lspStartPromise
+
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
+
+  // check no error to begin with
+  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+  // Click on the bottom of the code editor to add a new line
+  await page.click('.cm-content')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('Enter')
+  await page.keyboard.type(`const extrusion = startSketchOn('XY')
+  |> circle([0, 0], dia/2, %)
+|> hole(squareHole(length, width, height), %)
+|> extrude(height, %)`)
+
+  // error in gutter
+  await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
+  await page.hover('.cm-lint-marker-error:first-child')
+  await expect(page.getByText('Expected 2 arguments, got 3')).toBeVisible()
+
+  // Make sure there are two diagnostics
+  await expect(page.locator('.cm-lint-marker-error')).toHaveCount(2)
+})
+
 test('if your kcl gets an error from the engine it is inlined', async ({
   page,
 }) => {

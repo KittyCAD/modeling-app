@@ -2081,3 +2081,34 @@ const secondSketch = startSketchOn(part001, '')
         r#"type: KclErrorDetails { source_ranges: [SourceRange([272, 298])], message: "Expected a non-empty tag for the face to sketch on" }"#
     );
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_error_user_function_wrong_args() {
+    let code = r#"const length = .750
+const width = 0.500
+const height = 0.500
+const dia = 4
+
+fn squareHole = (l, w) => {
+  const squareHoleSketch = startSketchOn('XY')
+  |> startProfileAt([-width / 2, -length / 2], %)
+  |> lineTo([width / 2, -length / 2], %)
+  |> lineTo([width / 2, length / 2], %)
+  |> lineTo([-width / 2, length / 2], %)
+  |> close(%)
+  return squareHoleSketch
+}
+
+const extrusion = startSketchOn('XY')
+  |> circle([0, 0], dia/2, %)
+  |> hole(squareHole(length, width, height), %)
+  |> extrude(height, %)
+"#;
+
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([92, 364]), SourceRange([444, 477])], message: "Expected 2 arguments, got 3" }"#
+    );
+}
