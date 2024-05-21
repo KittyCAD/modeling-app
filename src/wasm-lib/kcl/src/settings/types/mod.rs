@@ -130,7 +130,13 @@ impl Configuration {
                 continue;
             }
 
-            projects.push(self.get_project_info(&e.path().display().to_string()).await?);
+            // Make sure the project has at least one kcl file in it.
+            let project = self.get_project_info(&e.path().display().to_string()).await?;
+            if project.kcl_file_count == 0 {
+                continue;
+            }
+
+            projects.push(project);
         }
 
         Ok(projects)
