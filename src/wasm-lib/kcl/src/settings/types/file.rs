@@ -316,6 +316,7 @@ impl Project {
 /// Get the default KCL file for a directory.
 /// This determines what the default file to open is.
 #[cfg(not(target_arch = "wasm32"))]
+#[async_recursion::async_recursion]
 pub async fn get_default_kcl_file_for_dir<P>(dir: P, file: FileEntry) -> Result<String>
 where
     P: AsRef<Path> + Send,
@@ -332,6 +333,9 @@ where
             for entry in children.iter() {
                 if entry.name.ends_with(".kcl") {
                     return Ok(dir.as_ref().join(&entry.name).display().to_string());
+                } else if entry.children.is_some() {
+                    // Recursively find a kcl file in the directory.
+                    return get_default_kcl_file_for_dir(entry.path.clone(), entry.clone()).await;
                 }
             }
         }
@@ -642,5 +646,80 @@ mod tests {
                 ),
             }
         );
+    }
+
+    #[tokio::test]
+    async fn test_default_kcl_file_for_dir_non_exist() {
+        let name = format!("kittycad-modeling-projects-{}", uuid::Uuid::new_v4());
+        let dir = std::env::temp_dir().join(&name);
+        std::fs::create_dir_all(&dir).unwrap();
+        let file = crate::settings::utils::walk_dir(&dir).await.unwrap();
+
+        let default_file = super::get_default_kcl_file_for_dir(&dir, file).await.unwrap();
+        assert_eq!(default_file, dir.join("main.kcl").display().to_string());
+
+        std::fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_default_kcl_file_for_dir_main_kcl() {
+        let name = format!("kittycad-modeling-projects-{}", uuid::Uuid::new_v4());
+        let dir = std::env::temp_dir().join(&name);
+        std::fs::create_dir_all(&dir).unwrap();
+        std::fs::write(dir.join("main.kcl"), vec![]).unwrap();
+        let file = crate::settings::utils::walk_dir(&dir).await.unwrap();
+
+        let default_file = super::get_default_kcl_file_for_dir(&dir, file).await.unwrap();
+        assert_eq!(default_file, dir.join("main.kcl").display().to_string());
+
+        std::fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_default_kcl_file_for_dir_thing_kcl() {
+        let name = format!("kittycad-modeling-projects-{}", uuid::Uuid::new_v4());
+        let dir = std::env::temp_dir().join(&name);
+        std::fs::create_dir_all(&dir).unwrap();
+        std::fs::write(dir.join("thing.kcl"), vec![]).unwrap();
+        let file = crate::settings::utils::walk_dir(&dir).await.unwrap();
+
+        let default_file = super::get_default_kcl_file_for_dir(&dir, file).await.unwrap();
+        assert_eq!(default_file, dir.join("thing.kcl").display().to_string());
+        std::fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_default_kcl_file_for_dir_nested_main_kcl() {
+        let name = format!("kittycad-modeling-projects-{}", uuid::Uuid::new_v4());
+        let dir = std::env::temp_dir().join(&name);
+        std::fs::create_dir_all(&dir).unwrap();
+        std::fs::create_dir_all(dir.join("assembly")).unwrap();
+        std::fs::write(dir.join("assembly").join("main.kcl"), vec![]).unwrap();
+        let file = crate::settings::utils::walk_dir(&dir).await.unwrap();
+
+        let default_file = super::get_default_kcl_file_for_dir(&dir, file).await.unwrap();
+        assert_eq!(
+            default_file,
+            dir.join("assembly").join("main.kcl").display().to_string()
+        );
+
+        std::fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_default_kcl_file_for_dir_nested_thing_kcl() {
+        let name = format!("kittycad-modeling-projects-{}", uuid::Uuid::new_v4());
+        let dir = std::env::temp_dir().join(&name);
+        std::fs::create_dir_all(&dir).unwrap();
+        std::fs::create_dir_all(dir.join("assembly")).unwrap();
+        std::fs::write(dir.join("assembly").join("thing.kcl"), vec![]).unwrap();
+        let file = crate::settings::utils::walk_dir(&dir).await.unwrap();
+
+        let default_file = super::get_default_kcl_file_for_dir(&dir, file).await.unwrap();
+        assert_eq!(
+            default_file,
+            dir.join("assembly").join("thing.kcl").display().to_string()
+        );
+        std::fs::remove_dir_all(dir).unwrap();
     }
 }
