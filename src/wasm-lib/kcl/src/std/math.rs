@@ -548,11 +548,19 @@ mod tests {
     }
 
     #[test]
+    fn test_inner_max_with_neg() {
+        let nums = vec![4.0, -5.0];
+        let result = inner_max(nums);
+        assert_eq!(result, 4.0);
+    }
+
+    #[test]
     fn test_inner_min() {
         let nums = vec![4.0, 5.0, 6.0];
         let result = inner_min(nums);
         assert_eq!(result, 4.0);
     }
+
     #[test]
     fn test_inner_min_with_neg() {
         let nums = vec![4.0, -5.0];
