@@ -551,6 +551,7 @@ class EngineConnection {
           // Everything is now connected.
           this.state = { type: EngineConnectionStateType.ConnectionEstablished }
 
+          this.engineCommandManager.inSequence = 1
           this.onEngineConnectionOpen(this)
         })
 
