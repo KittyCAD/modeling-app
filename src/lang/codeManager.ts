@@ -13,6 +13,7 @@ export default class CodeManager {
   private _code: string = bracket
   #updateState: (arg: string) => void = () => {}
   private _currentFilePath: string | null = null
+  private _hotkeys: { [key: string]: () => void } = {}
 
   constructor() {
     if (isTauri()) {
@@ -46,6 +47,10 @@ export default class CodeManager {
 
   registerCallBacks({ setCode }: { setCode: (arg: string) => void }) {
     this.#updateState = setCode
+  }
+
+  registerHotkey(hotkey: string, callback: () => void) {
+    this._hotkeys[hotkey] = callback
   }
 
   updateCurrentFilePath(path: string) {
