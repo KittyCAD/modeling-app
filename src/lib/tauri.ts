@@ -8,23 +8,36 @@ import { Project } from 'wasm-lib/kcl/bindings/Project'
 import { FileEntry } from 'wasm-lib/kcl/bindings/FileEntry'
 import { ProjectState } from 'wasm-lib/kcl/bindings/ProjectState'
 import { ProjectRoute } from 'wasm-lib/kcl/bindings/ProjectRoute'
+import { isTauri } from './isTauri'
 
 // Get the app state from tauri.
 export async function getState(): Promise<ProjectState | undefined> {
+  if (!isTauri()) {
+    return undefined
+  }
   return await invoke<ProjectState | undefined>('get_state')
 }
 
 // Set the app state in tauri.
 export async function setState(state: ProjectState | undefined): Promise<void> {
+  if (!isTauri()) {
+    return
+  }
   return await invoke('set_state', { state })
 }
 
 // Get the initial default dir for holding all projects.
 export async function getInitialDefaultDir(): Promise<string> {
+  if (!isTauri()) {
+    return ''
+  }
   return invoke<string>('get_initial_default_dir')
 }
 
 export async function showInFolder(path: string | undefined): Promise<void> {
+  if (!isTauri()) {
+    return
+  }
   if (!path) {
     console.error('path is undefined cannot call tauri showInFolder')
     return
@@ -34,7 +47,10 @@ export async function showInFolder(path: string | undefined): Promise<void> {
 
 export async function initializeProjectDirectory(
   settings: Configuration
-): Promise<string> {
+): Promise<string | undefined> {
+  if (!isTauri()) {
+    return undefined
+  }
   return await invoke<string>('initialize_project_directory', {
     configuration: settings,
   })
