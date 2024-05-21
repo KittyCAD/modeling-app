@@ -646,8 +646,8 @@ test('Auto complete works', async ({ page }) => {
   await page.click('.cm-content')
   await page.keyboard.type('const part001 = start')
 
-  // expect there to be three auto complete options
-  await expect(page.locator('.cm-completionLabel')).toHaveCount(3)
+  // expect there to be six auto complete options
+  await expect(page.locator('.cm-completionLabel')).toHaveCount(6)
   await page.getByText('startSketchOn').click()
   await page.keyboard.type("'XZ'")
   await page.keyboard.press('Tab')
