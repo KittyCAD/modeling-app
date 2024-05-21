@@ -29,7 +29,7 @@ export const ErrorPage = () => {
             <ActionButton
               Element="link"
               to={'/'}
-              icon={{ icon: faHome }}
+              iconStart={{ icon: faHome }}
               data-testid="unexpected-error-home"
             >
               Go Home
@@ -37,14 +37,14 @@ export const ErrorPage = () => {
           )}
           <ActionButton
             Element="button"
-            icon={{ icon: faRefresh }}
+            iconStart={{ icon: faRefresh }}
             onClick={() => window.location.reload()}
           >
             Reload
           </ActionButton>
           <ActionButton
             Element="button"
-            icon={{ icon: faTrash }}
+            iconStart={{ icon: faTrash }}
             onClick={() => {
               window.localStorage.clear()
             }}
@@ -53,7 +53,7 @@ export const ErrorPage = () => {
           </ActionButton>
           <ActionButton
             Element="externalLink"
-            icon={{ icon: faBug }}
+            iconStart={{ icon: faBug }}
             to="https://github.com/KittyCAD/modeling-app/issues/new"
           >
             Report Bug

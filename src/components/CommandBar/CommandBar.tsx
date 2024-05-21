@@ -7,6 +7,7 @@ import CommandBarReview from './CommandBarReview'
 import { useLocation } from 'react-router-dom'
 import { InteractionMapItem } from 'machines/interactionMapMachine'
 import { useInteractionMap } from 'hooks/useInteractionMap'
+import useHotkeyWrapper from 'lib/hotkeyWrapper'
 
 export const CommandBar = () => {
   const { pathname } = useLocation()

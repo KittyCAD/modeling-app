@@ -70,9 +70,9 @@ function ProjectCard({
       className="group relative min-h-[5em] p-1 rounded-sm border border-chalkboard-20 dark:border-chalkboard-80 hover:!border-primary"
     >
       {isEditing ? (
-        <form onSubmit={handleSave} className="flex gap-2 items-center">
+        <form onSubmit={handleSave} className="flex items-center gap-2">
           <input
-            className="dark:bg-chalkboard-80 dark:border-chalkboard-40 min-w-0 p-1 focus:outline-none"
+            className="min-w-0 p-1 dark:bg-chalkboard-80 dark:border-chalkboard-40 focus:outline-none"
             type="text"
             id="newProjectName"
             name="newProjectName"
@@ -81,11 +81,11 @@ function ProjectCard({
             defaultValue={project.name}
             ref={inputRef}
           />
-          <div className="flex gap-1 items-center">
+          <div className="flex items-center gap-1">
             <ActionButton
               Element="button"
               type="submit"
-              icon={{
+              iconStart={{
                 icon: faCheck,
                 size: 'sm',
                 className: 'p-1',
@@ -99,7 +99,7 @@ function ProjectCard({
             </ActionButton>
             <ActionButton
               Element="button"
-              icon={{
+              iconStart={{
                 icon: faX,
                 size: 'sm',
                 iconClassName: 'dark:!text-chalkboard-20',
@@ -117,78 +117,76 @@ function ProjectCard({
         </form>
       ) : (
         <>
-          <div className="p-1 flex flex-col h-full gap-2">
-            <Link
-              className="flex-1 !no-underline !text-chalkboard-110 dark:!text-chalkboard-10 after:content-[''] after:absolute after:inset-0"
-              to={`${paths.FILE}/${encodeURIComponent(project.path)}`}
-              data-testid="project-link"
-            >
-              {project.name?.replace(FILE_EXT, '')}
-            </Link>
-            <span className="text-chalkboard-60 text-xs">
+          <Link
+            className="relative z-0 flex flex-col h-full gap-2 p-1 !no-underline !text-chalkboard-110 dark:!text-chalkboard-10"
+            to={`${paths.FILE}/${encodeURIComponent(project.path)}`}
+            data-testid="project-link"
+          >
+            <div className="flex-1">{project.name?.replace(FILE_EXT, '')}</div>
+            <span className="text-xs text-chalkboard-60">
               {numberOfFiles} file{numberOfFiles === 1 ? '' : 's'}{' '}
               {numberOfFolders > 0 &&
                 `/ ${numberOfFolders} folder${
                   numberOfFolders === 1 ? '' : 's'
                 }`}
             </span>
-            <span className="text-chalkboard-60 text-xs">
+            <span className="text-xs text-chalkboard-60">
               Edited{' '}
               {project.metadata && project.metadata?.modified
                 ? getDisplayedTime(project.metadata.modified)
                 : 'never'}
             </span>
-            <div className="absolute z-10 bottom-2 right-2 flex gap-1 items-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
-              <ActionButton
-                Element="button"
-                icon={{
-                  icon: faPenAlt,
-                  className: 'p-1',
-                  iconClassName: 'dark:!text-chalkboard-20',
-                  bgClassName: '!bg-transparent',
-                  size: 'xs',
-                }}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  e.nativeEvent.stopPropagation()
-                  setIsEditing(true)
-                }}
-                className="!p-0"
-              >
-                <Tooltip position="left" delay={1000}>
-                  Rename project
-                </Tooltip>
-              </ActionButton>
-              <ActionButton
-                Element="button"
-                icon={{
-                  icon: faTrashAlt,
-                  className: 'p-1',
-                  size: 'xs',
-                  bgClassName: '!bg-transparent',
-                  iconClassName: '!text-destroy-70',
-                }}
-                className="!p-0 hover:border-destroy-40 dark:hover:border-destroy-40"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  e.nativeEvent.stopPropagation()
-                  setIsConfirmingDelete(true)
-                }}
-              >
-                <Tooltip position="left" delay={1000}>
-                  Delete project
-                </Tooltip>
-              </ActionButton>
-            </div>
+          </Link>
+          <div className="absolute z-10 flex items-center gap-1 opacity-0 bottom-2 right-2 group-hover:opacity-100 group-focus-within:opacity-100">
+            <ActionButton
+              Element="button"
+              iconStart={{
+                icon: faPenAlt,
+                className: 'p-1',
+                iconClassName: 'dark:!text-chalkboard-20',
+                bgClassName: '!bg-transparent',
+                size: 'xs',
+              }}
+              onClick={(e) => {
+                e.stopPropagation()
+                e.nativeEvent.stopPropagation()
+                setIsEditing(true)
+              }}
+              className="!p-0"
+            >
+              <Tooltip position="left" delay={1000}>
+                Rename project
+              </Tooltip>
+            </ActionButton>
+            <ActionButton
+              Element="button"
+              iconStart={{
+                icon: faTrashAlt,
+                className: 'p-1',
+                size: 'xs',
+                bgClassName: '!bg-transparent',
+                iconClassName: '!text-destroy-70',
+              }}
+              className="!p-0 hover:border-destroy-40 dark:hover:border-destroy-40"
+              onClick={(e) => {
+                e.stopPropagation()
+                e.nativeEvent.stopPropagation()
+                setIsConfirmingDelete(true)
+              }}
+            >
+              <Tooltip position="left" delay={1000}>
+                Delete project
+              </Tooltip>
+            </ActionButton>
           </div>
           <Dialog
             open={isConfirmingDelete}
             onClose={() => setIsConfirmingDelete(false)}
             className="relative z-50"
           >
-            <div className="fixed inset-0 bg-chalkboard-110/80 grid place-content-center">
-              <Dialog.Panel className="rounded p-4 bg-chalkboard-10 dark:bg-chalkboard-100 border border-destroy-80 max-w-2xl">
-                <Dialog.Title as="h2" className="text-2xl font-bold mb-4">
+            <div className="fixed inset-0 grid bg-chalkboard-110/80 place-content-center">
+              <Dialog.Panel className="max-w-2xl p-4 border rounded bg-chalkboard-10 dark:bg-chalkboard-100 border-destroy-80">
+                <Dialog.Title as="h2" className="mb-4 text-2xl font-bold">
                   Delete File
                 </Dialog.Title>
                 <Dialog.Description>
@@ -207,7 +205,7 @@ function ProjectCard({
                       await handleDeleteProject(project)
                       setIsConfirmingDelete(false)
                     }}
-                    icon={{
+                    iconStart={{
                       icon: faTrashAlt,
                       bgClassName: 'bg-destroy-80',
                       className: 'p-1',

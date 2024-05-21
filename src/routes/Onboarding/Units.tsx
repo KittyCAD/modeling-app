@@ -51,7 +51,7 @@ export default function Units() {
           <ActionButton
             Element="button"
             onClick={dismiss}
-            icon={{
+            iconStart={{
               icon: faXmark,
               bgClassName: 'bg-destroy-80',
               iconClassName:
@@ -64,7 +64,7 @@ export default function Units() {
           <ActionButton
             Element="button"
             onClick={next}
-            icon={{ icon: faArrowRight }}
+            iconStart={{ icon: faArrowRight }}
           >
             Next: Camera
           </ActionButton>

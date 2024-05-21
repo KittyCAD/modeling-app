@@ -44,3 +44,5 @@ export const RELEVANT_FILE_TYPES = [
 export const ONBOARDING_PROJECT_NAME = 'Tutorial Project $nn'
 /** The separator between keys/buttons in an InteractionMapItem's step */
 export const INTERACTION_MAP_SEPARATOR = '+'
+/** The default KCL length expression */
+export const KCL_DEFAULT_LENGTH = `5`

@@ -8,14 +8,21 @@ use clap::ValueEnum;
 use crate::settings::types::file::FileEntry;
 
 lazy_static::lazy_static! {
-    pub static ref RELEVANT_EXTENSIONS: Vec<String> = {
-        let mut relevant_extensions = vec!["kcl".to_string(), "stp".to_string(), "glb".to_string(), "fbxb".to_string()];
+
+    pub static ref IMPORT_FILE_EXTENSIONS: Vec<String> = {
+        let mut import_file_extensions = vec!["stp".to_string(), "glb".to_string(), "fbxb".to_string()];
         let named_extensions = kittycad::types::FileImportFormat::value_variants()
             .iter()
             .map(|x| format!("{}", x))
             .collect::<Vec<String>>();
         // Add all the default import formats.
-        relevant_extensions.extend_from_slice(&named_extensions);
+        import_file_extensions.extend_from_slice(&named_extensions);
+        import_file_extensions
+    };
+
+    pub static ref RELEVANT_EXTENSIONS: Vec<String> = {
+        let mut relevant_extensions = IMPORT_FILE_EXTENSIONS.clone();
+        relevant_extensions.push("kcl".to_string());
         relevant_extensions
     };
 }

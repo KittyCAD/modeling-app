@@ -56,7 +56,7 @@ function CommandBarSelectionInput({
   // In future the engine's edit mode will go away and this will be handled differently.
   useEffect(() => {
     kclManager.exitEditMode()
-    return () => kclManager.enterEditMode()
+    return () => kclManager.defaultSelectionFilter()
   }, [])
 
   useEffect(() => {

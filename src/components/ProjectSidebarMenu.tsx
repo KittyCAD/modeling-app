@@ -17,49 +17,59 @@ import { engineCommandManager } from 'lib/singletons'
 const ProjectSidebarMenu = ({
   project,
   file,
-  renderAsLink = false,
+  enableMenu = false,
 }: {
-  renderAsLink?: boolean
+  enableMenu?: boolean
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
 }) => {
-  const { onProjectClose } = useLspContext()
   return (
     <div className="!no-underline h-full mr-auto max-h-min min-h-12 min-w-max flex items-center gap-2">
-      <Link
-        onClick={() => {
-          onProjectClose(file || null, project?.path || null, false)
-          // Clear the scene and end the session.
-          engineCommandManager.endSession()
-        }}
-        to={paths.HOME}
-        className="relative h-full grid place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-2.5 before:z-[-1] before:bg-primary hover:before:brightness-110 before:rounded-b-sm"
-      >
-        <Logo className="w-auto h-4 text-chalkboard-10" />
-      </Link>
-      {renderAsLink ? (
-        <>
-          <Link
-            onClick={() => {
-              onProjectClose(file || null, project?.path || null, false)
-              // Clear the scene and end the session.
-              engineCommandManager.endSession()
-            }}
-            to={paths.HOME}
-            className="!no-underline"
-            data-testid="project-sidebar-link"
-          >
-            <span
-              className="hidden text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
-              data-testid="project-sidebar-link-name"
-            >
-              {project?.name ? project.name : APP_NAME}
-            </span>
-          </Link>
-        </>
-      ) : (
+      <AppLogoLink project={project} file={file} />
+      {enableMenu ? (
         <ProjectMenuPopover project={project} file={file} />
+      ) : (
+        <span
+          className="hidden select-none cursor-default text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
+          data-testid="project-name"
+        >
+          {project?.name ? project.name : APP_NAME}
+        </span>
       )}
+    </div>
+  )
+}
+
+function AppLogoLink({
+  project,
+  file,
+}: {
+  project?: IndexLoaderData['project']
+  file?: IndexLoaderData['file']
+}) {
+  const { onProjectClose } = useLspContext()
+  const wrapperClassName =
+    "relative h-full grid place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-2.5 before:z-[-1] before:bg-primary before:rounded-b-sm"
+  const logoClassName = 'w-auto h-4 text-chalkboard-10'
+
+  return isTauri() ? (
+    <Link
+      data-testid="app-logo"
+      onClick={() => {
+        onProjectClose(file || null, project?.path || null, false)
+        // Clear the scene and end the session.
+        engineCommandManager.endSession()
+      }}
+      to={paths.HOME}
+      className={wrapperClassName + ' hover:before:brightness-110'}
+    >
+      <Logo className={logoClassName} />
+      <span className="sr-only">{APP_NAME}</span>
+    </Link>
+  ) : (
+    <div className={wrapperClassName} data-testid="app-logo">
+      <Logo className={logoClassName} />
+      <span className="sr-only">{APP_NAME}</span>
     </div>
   )
 }
@@ -165,7 +175,7 @@ function ProjectMenuPopover({
               <div className="flex flex-col gap-2 p-4 dark:bg-chalkboard-90">
                 <ActionButton
                   Element="button"
-                  icon={{ icon: 'exportFile', className: 'p-1' }}
+                  iconStart={{ icon: 'exportFile', className: 'p-1' }}
                   className="border-transparent dark:border-transparent"
                   disabled={!findCommand(exportCommandInfo)}
                   onClick={() =>
@@ -185,7 +195,7 @@ function ProjectMenuPopover({
                       // Clear the scene and end the session.
                       engineCommandManager.endSession()
                     }}
-                    icon={{
+                    iconStart={{
                       icon: 'arrowLeft',
                       className: 'p-1',
                     }}

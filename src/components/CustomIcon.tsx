@@ -71,6 +71,16 @@ const CustomIconMap = {
       />
     </svg>
   ),
+  caretDown: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M10 11.2929L6.35346 7.64642L5.64636 8.35354L9.64648 12.3536L10.3536 12.3536L14.3535 8.35353L13.6464 7.64643L10 11.2929Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   clipboardCheckmark: (
     <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
@@ -97,6 +107,16 @@ const CustomIconMap = {
         fillRule="evenodd"
         clipRule="evenodd"
         d="M9.2929 10L6.46448 7.17158L7.17158 6.46448L10 9.2929L12.8284 6.46448L13.5355 7.17158L10.7071 10L13.5355 12.8284L12.8284 13.5355L10 10.7071L7.17158 13.5355L6.46448 12.8284L9.2929 10Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  dimension: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M15.6455 3.6455L14 2V5.291L5.291 14H2L6 18V14.7052L14.7052 6H18L16.3526 4.35261L16.3546 4.35065L15.6475 3.64354L15.6455 3.6455Z"
         fill="currentColor"
       />
     </svg>

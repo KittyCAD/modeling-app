@@ -17,7 +17,7 @@ kcl-lib = { path = "kcl" }
 kittycad = { workspace = true }
 serde_json = "1.0.116"
 tokio = { version = "1.37.0", features = ["sync"] }
-toml = "0.8.12"
+toml = "0.8.13"
 uuid = { version = "1.8.0", features = ["v4", "js", "serde"] }
 wasm-bindgen = "0.2.91"
 wasm-bindgen-futures = "0.4.42"
@@ -66,7 +66,7 @@ kittycad = { version = "0.3.1", default-features = false, features = ["js", "req
 kittycad-execution-plan = "0.1.6"
 kittycad-execution-plan-macros = "0.1.9"
 kittycad-execution-plan-traits = "0.1.14"
-kittycad-modeling-cmds = "0.2.23"
+kittycad-modeling-cmds = "0.2.24"
 kittycad-modeling-session = "0.1.4"
 
 [[test]]

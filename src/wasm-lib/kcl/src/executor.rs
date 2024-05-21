@@ -144,8 +144,6 @@ pub enum MemoryItem {
     },
     ImportedGeometry(ImportedGeometry),
     #[ts(skip)]
-    ExtrudeTransform(Box<ExtrudeTransform>),
-    #[ts(skip)]
     Function {
         #[serde(skip)]
         func: Option<MemoryFunction>,
@@ -300,16 +298,6 @@ pub struct UserVal {
     pub meta: Vec<Metadata>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(tag = "type", rename_all = "camelCase")]
-pub struct ExtrudeTransform {
-    pub position: Position,
-    pub rotation: Rotation,
-    #[serde(rename = "__meta")]
-    pub meta: Vec<Metadata>,
-}
-
 pub type MemoryFunction =
     fn(
         s: Vec<MemoryItem>,
@@ -348,7 +336,6 @@ impl From<MemoryItem> for Vec<SourceRange> {
                 .flat_map(|eg| eg.meta.iter().map(|m| m.source_range))
                 .collect(),
             MemoryItem::ImportedGeometry(i) => i.meta.iter().map(|m| m.source_range).collect(),
-            MemoryItem::ExtrudeTransform(e) => e.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::Function { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::Plane(p) => p.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::Face(f) => f.meta.iter().map(|m| m.source_range).collect(),
@@ -1426,7 +1413,7 @@ mod tests {
             fs: Arc::new(crate::fs::FileManager::new()),
             stdlib: Arc::new(crate::std::StdLib::new()),
             settings: Default::default(),
-            is_mock: false,
+            is_mock: true,
         };
         let memory = ctx.run(program, None).await?;
 

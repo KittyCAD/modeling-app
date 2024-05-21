@@ -8,7 +8,6 @@ import { Dialog, Disclosure } from '@headlessui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronRight, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { useFileContext } from 'hooks/useFileContext'
-import { useHotkeys } from 'react-hotkeys-hook'
 import styles from './FileTree.module.css'
 import { sortProject } from 'lib/tauriFS'
 import { FILE_EXT } from 'lib/constants'
@@ -16,6 +15,7 @@ import { CustomIcon } from './CustomIcon'
 import { codeManager, kclManager } from 'lib/singletons'
 import { useDocumentHasFocus } from 'hooks/useDocumentHasFocus'
 import { useLspContext } from './LspProvider'
+import useHotkeyWrapper from 'lib/hotkeyWrapper'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -109,7 +109,7 @@ function DeleteConfirmationDialog({
                 send({ type: 'Delete file', data: fileOrDir })
                 setIsOpen(false)
               }}
-              icon={{
+              iconStart={{
                 icon: faTrashAlt,
                 bgClassName: 'bg-destroy-80',
                 iconClassName:
@@ -333,14 +333,14 @@ export const FileTreeMenu = () => {
     send({ type: 'Create file', data: { name: '', makeDir: true } })
   }
 
-  useHotkeys('meta + n', createFile)
-  useHotkeys('meta + shift + n', createFolder)
+  useHotkeyWrapper(['meta + n'], createFile)
+  useHotkeyWrapper(['meta + shift + n'], createFolder)
 
   return (
     <>
       <ActionButton
         Element="button"
-        icon={{
+        iconStart={{
           icon: 'filePlus',
           iconClassName: '!text-current',
           bgClassName: 'bg-transparent',
@@ -355,7 +355,7 @@ export const FileTreeMenu = () => {
 
       <ActionButton
         Element="button"
-        icon={{
+        iconStart={{
           icon: 'folderPlus',
           iconClassName: '!text-current',
           bgClassName: 'bg-transparent',
