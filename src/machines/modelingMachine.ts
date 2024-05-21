@@ -1119,7 +1119,7 @@ export const modelingMachine = createMachine(
             filter: ['face', 'plane'],
           },
         }),
-      'set selection filter to defaults': () => kclManager.enterEditMode(),
+      'set selection filter to defaults': () => kclManager.defaultSelectionFilter(),
       'Delete segment': ({ sketchDetails }, { data: pathToNode }) =>
         deleteSegment({ pathToNode, sketchDetails }),
       'Reset Segment Overlays': () => sceneEntitiesManager.resetOverlays(),

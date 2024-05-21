@@ -349,6 +349,15 @@ test('if you use the format keyboard binding it formats your code', async ({
   |> close(%)`)
 })
 
+test('ensure the Zoo logo is not a link in browser app', async ({ page }) => {
+  await page.setViewportSize({ width: 1000, height: 500 })
+  await page.goto('/')
+
+  const zooLogo = page.locator('[data-testid="app-logo"]')
+  // Make sure it's not a link
+  await expect(zooLogo).not.toHaveAttribute('href')
+})
+
 test('if you write invalid kcl you get inlined errors', async ({ page }) => {
   const u = getUtils(page)
   await page.setViewportSize({ width: 1000, height: 500 })
