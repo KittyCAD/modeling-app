@@ -553,7 +553,7 @@ mod tests {
         let result = inner_min(nums);
         assert_eq!(result, 4.0);
     }
-        #[test]
+    #[test]
     fn test_inner_min_with_neg() {
         let nums = vec![4.0, -5.0];
         let result = inner_min(nums);
