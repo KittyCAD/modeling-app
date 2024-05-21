@@ -34,8 +34,6 @@ import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import { ConstrainInfo } from 'lang/std/stdTypes'
 import { getConstraintInfo } from 'lang/std/sketch'
 import { Dialog, Popover, Transition } from '@headlessui/react'
-import { useConvertToVariable } from 'hooks/useToolbarGuards'
-import { useKclContext } from 'lang/KclProvider'
 import { LineInputsType } from 'lang/std/sketchcombos'
 import toast from 'react-hot-toast'
 import { InstanceProps, create } from 'react-modal-promise'
@@ -447,14 +445,7 @@ const SegmentMenu = ({
 }
 
 const ConstraintSymbol = ({
-  constrainInfo: {
-    type: _type,
-    isConstrained,
-    value,
-    pathToNode,
-    stdLibFnName,
-    argPosition,
-  },
+  constrainInfo: { type: _type, isConstrained, value, pathToNode, argPosition },
   verticalPosition,
 }: {
   constrainInfo: ConstrainInfo
@@ -538,11 +529,11 @@ const ConstraintSymbol = ({
   const displayName = varNameMap[_type as LineInputsType]?.displayName
   const implicitDesc =
     varNameMap[_type as LineInputsType]?.implicitConstraintDesc
-  const { ast } = useKclContext()
 
   const node = useMemo(
-    () => getNodeFromPath<Value>(parse(recast(ast)), pathToNode).node,
-    [ast, pathToNode]
+    () =>
+      getNodeFromPath<Value>(parse(recast(kclManager.ast)), pathToNode).node,
+    [kclManager.ast, pathToNode]
   )
   const range: SourceRange = node ? [node.start, node.end] : [0, 0]
 
