@@ -4394,6 +4394,7 @@ version = "8.1.0"
 source = "git+https://github.com/Aleph-Alpha/ts-rs#badbac08e61e65b312880aa64e9ece2976f1bbef"
 dependencies = [
  "chrono",
+ "serde_json",
  "thiserror",
  "ts-rs-macros",
  "url",
