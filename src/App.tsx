@@ -64,8 +64,12 @@ export function App() {
   useHotkeys('backspace', (e) => {
     e.preventDefault()
   })
-  useHotkeyWrapper([isTauri() ? 'mod + ,' : 'shift + mod + ,'], () =>
-    navigate(filePath + paths.SETTINGS)
+  useHotkeyWrapper(
+    [isTauri() ? 'mod + ,' : 'shift + mod + ,'],
+    () => navigate(filePath + paths.SETTINGS),
+    {
+      splitKey: '|',
+    }
   )
 
   const paneOpacity = [onboardingPaths.CAMERA, onboardingPaths.STREAMING].some(

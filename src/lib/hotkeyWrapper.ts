@@ -1,4 +1,4 @@
-import { useHotkeys } from 'react-hotkeys-hook'
+import { Options, useHotkeys } from 'react-hotkeys-hook'
 import { useEffect } from 'react'
 import { codeManager } from './singletons'
 
@@ -11,9 +11,10 @@ import { codeManager } from './singletons'
 // for the code mirror stuff but but it is needed for the useHotkeys hook.
 export default function useHotkeyWrapper(
   hotkey: string[],
-  callback: () => void
+  callback: () => void,
+  additionalOptions?: Options
 ) {
-  useHotkeys(hotkey, callback)
+  useHotkeys(hotkey, callback, additionalOptions)
   useEffect(() => {
     for (const key of hotkey) {
       const keybinding = mapHotkeyToCodeMirrorHotkey(key)

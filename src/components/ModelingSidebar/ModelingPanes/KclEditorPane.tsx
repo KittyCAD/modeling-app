@@ -84,6 +84,7 @@ export const KclEditorPane = () => {
 
   const textWrapping = context.textEditor.textWrapping
   const cursorBlinking = context.textEditor.blinkingCursor
+  const codeMirrorHotkeys = codeManager.getCodemirrorHotkeys()
 
   const editorExtensions = useMemo(() => {
     const extensions = [
@@ -103,7 +104,7 @@ export const KclEditorPane = () => {
         ...completionKeymap,
         ...lintKeymap,
         indentWithTab,
-        ...codeManager.getCodemirrorHotkeys(),
+        ...codeMirrorHotkeys,
         {
           key: editorShortcutMeta.convertToVariable.codeMirror,
           run: () => {
@@ -172,7 +173,13 @@ export const KclEditorPane = () => {
     }
 
     return extensions
-  }, [kclLSP, copilotLSP, textWrapping.current, cursorBlinking.current])
+  }, [
+    kclLSP,
+    copilotLSP,
+    textWrapping.current,
+    cursorBlinking.current,
+    codeMirrorHotkeys,
+  ])
 
   const initialCode = useRef(codeManager.code)
 
