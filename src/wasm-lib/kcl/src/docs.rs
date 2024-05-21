@@ -3,10 +3,12 @@
 use anyhow::Result;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use std::path::{Path, PathBuf};
 use tower_lsp::lsp_types::{
     CompletionItem, CompletionItemKind, CompletionItemLabelDetails, Documentation, InsertTextFormat, MarkupContent,
     MarkupKind, ParameterInformation, ParameterLabel, SignatureHelp, SignatureInformation,
 };
+use ts_rs::typelist::TypeList;
 
 use crate::std::Primitive;
 
@@ -284,7 +286,7 @@ impl ts_rs::TS for dyn StdLibFn {
         StdLibFnData::inline_flattened()
     }
 
-    fn dependency_types() -> impl ts_rs::typelist::TypeList {
+    fn dependency_types() -> impl TypeList {
         StdLibFnData::dependency_types()
     }
 }
