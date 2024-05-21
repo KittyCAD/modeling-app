@@ -39,7 +39,7 @@ export const settingsLoader: LoaderFunction = async ({
     )
     if (projectPathData) {
       const { project_name } = projectPathData
-      const { settings: s } = await loadAndValidateSettings(project_name)
+      const { settings: s } = await loadAndValidateSettings(project_name || undefined)
       settings = s
     }
   }
