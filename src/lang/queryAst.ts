@@ -392,6 +392,41 @@ export function findAllPreviousVariables(
   }
 }
 
+export function findUnusedVariables(ast: Program): Array<VariableDeclarator> {
+  const declaredVariables = new Map<string, VariableDeclarator>() // Map to store declared variables
+  const usedVariables = new Set<string>() // Set to track used variables
+
+  // 1. Traverse and populate
+  ast.body.forEach((node) => {
+    traverse(node, {
+      enter(node) {
+        if (node.type === 'VariableDeclarator') {
+          // if node is a VariableDeclarator,
+          // add it to declaredVariables
+          declaredVariables.set(node.id.name, node)
+        } else if (node.type === 'Identifier') {
+          // if the node is Identifier, (use of a variable)
+          // check if it is a declared value,
+          // just in case...
+          // to be sure it's a part of the declared variables
+          if (declaredVariables.has(node.name)) {
+            // if yes - mark it as used
+            usedVariables.add(node.name)
+          }
+        }
+      },
+    })
+  })
+
+  // 2. Remove used variables from declaredVariables
+  usedVariables.forEach((name) => {
+    declaredVariables.delete(name)
+  })
+
+  // 3. Return the unused variables
+  return Array.from(declaredVariables.values())
+}
+
 type ReplacerFn = (_ast: Program, varName: string) => { modifiedAst: Program }
 
 export function isNodeSafeToReplace(
