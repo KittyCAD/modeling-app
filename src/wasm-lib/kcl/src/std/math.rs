@@ -239,7 +239,7 @@ pub async fn max(args: Args) -> Result<MemoryItem, KclError> {
     tags = ["math"],
 }]
 fn inner_max(args: Vec<f64>) -> f64 {
-    let mut max = std::f64::MAX;
+    let mut max = std::f64::MIN;
     for arg in args.iter() {
         if *arg > max {
             max = *arg;
@@ -532,4 +532,39 @@ pub async fn to_degrees(args: Args) -> Result<MemoryItem, KclError> {
 }]
 fn inner_to_degrees(num: f64) -> Result<f64, KclError> {
     Ok(num.to_degrees())
+}
+
+#[cfg(test)]
+mod tests {
+    use pretty_assertions::assert_eq;
+
+    use super::*;
+
+    #[test]
+    fn test_inner_max() {
+        let nums = vec![4.0, 5.0, 6.0];
+        let result = inner_max(nums);
+        assert_eq!(result, 6.0);
+    }
+
+    #[test]
+    fn test_inner_max_with_neg() {
+        let nums = vec![4.0, -5.0];
+        let result = inner_max(nums);
+        assert_eq!(result, 4.0);
+    }
+
+    #[test]
+    fn test_inner_min() {
+        let nums = vec![4.0, 5.0, 6.0];
+        let result = inner_min(nums);
+        assert_eq!(result, 4.0);
+    }
+
+    #[test]
+    fn test_inner_min_with_neg() {
+        let nums = vec![4.0, -5.0];
+        let result = inner_min(nums);
+        assert_eq!(result, -5.0);
+    }
 }

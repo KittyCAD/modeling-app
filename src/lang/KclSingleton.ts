@@ -188,7 +188,7 @@ export class KclManager {
       engineCommandManager: this.engineCommandManager,
     })
     sceneInfra.modelingSend({ type: 'code edit during sketch' })
-    enterEditMode(programMemory, this.engineCommandManager)
+    defaultSelectionFilter(programMemory, this.engineCommandManager)
     this.isExecuting = false
     // Check the cancellation token for this execution before applying side effects
     if (this._cancelTokens.get(currentExecutionId)) {
@@ -348,9 +348,6 @@ export class KclManager {
     void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, true)
     void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, true)
   }
-  enterEditMode() {
-    enterEditMode(this.programMemory, this.engineCommandManager)
-  }
   exitEditMode() {
     this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
@@ -358,9 +355,12 @@ export class KclManager {
       cmd: { type: 'edit_mode_exit' },
     })
   }
+  defaultSelectionFilter() {
+    defaultSelectionFilter(this.programMemory, this.engineCommandManager)
+  }
 }
 
-function enterEditMode(
+function defaultSelectionFilter(
   programMemory: ProgramMemory,
   engineCommandManager: EngineCommandManager
 ) {

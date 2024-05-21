@@ -3,6 +3,43 @@ import { useMemo } from 'react'
 import { ProgramMemory, Path, ExtrudeSurface } from 'lang/wasm'
 import { useKclContext } from 'lang/KclProvider'
 import { useResolvedTheme } from 'hooks/useResolvedTheme'
+import { ActionButton } from 'components/ActionButton'
+import toast from 'react-hot-toast'
+import Tooltip from 'components/Tooltip'
+
+export const MemoryPaneMenu = () => {
+  const { programMemory } = useKclContext()
+
+  function copyProgramMemoryToClipboard() {
+    if (globalThis && 'navigator' in globalThis) {
+      try {
+        navigator.clipboard.writeText(JSON.stringify(programMemory))
+        toast.success('Program memory copied to clipboard')
+      } catch (e) {
+        toast.error('Failed to copy program memory to clipboard')
+      }
+    }
+  }
+
+  return (
+    <>
+      <ActionButton
+        Element="button"
+        iconStart={{
+          icon: 'clipboardPlus',
+          iconClassName: '!text-current',
+          bgClassName: 'bg-transparent',
+        }}
+        className="!p-0 !bg-transparent hover:text-primary border-transparent hover:border-primary !outline-none"
+        onClick={copyProgramMemoryToClipboard}
+      >
+        <Tooltip position="bottom-right" delay={750}>
+          Copy to clipboard
+        </Tooltip>
+      </ActionButton>
+    </>
+  )
+}
 
 export const MemoryPane = () => {
   const theme = useResolvedTheme()
@@ -24,6 +61,7 @@ export const MemoryPane = () => {
             displayObjectSize={true}
             indentWidth={2}
             quotesOnKeys={false}
+            sortKeys={true}
             name={false}
             theme={theme === 'light' ? 'rjv-default' : 'monokai'}
           />
@@ -46,6 +84,10 @@ export const processMemory = (programMemory: ProgramMemory) => {
         processedMemory[key] = val.value.map(({ ...rest }: ExtrudeSurface) => {
           return rest
         })
+      } else if ((val.type as any) === 'Function') {
+        processedMemory[key] = `__function(${(val as any)?.expression?.params
+          ?.map?.(({ identifier }: any) => identifier?.name || '')
+          .join(', ')})__`
       } else {
         processedMemory[key] = val.value
       }
