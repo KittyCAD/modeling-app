@@ -1,11 +1,11 @@
 import { Dialog, Popover, Transition } from '@headlessui/react'
 import { Fragment, useEffect } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import CommandBarArgument from './CommandBarArgument'
 import CommandComboBox from '../CommandComboBox'
 import CommandBarReview from './CommandBarReview'
 import { useLocation } from 'react-router-dom'
+import useHotkeyWrapper from 'lib/hotkeyWrapper'
 
 export const CommandBar = () => {
   const { pathname } = useLocation()
@@ -22,7 +22,7 @@ export const CommandBar = () => {
   }, [pathname])
 
   // Hook up keyboard shortcuts
-  useHotkeys(['mod+k', 'mod+/'], () => {
+  useHotkeyWrapper(['mod+k', 'mod+/'], () => {
     if (commandBarState.context.commands.length === 0) return
     if (commandBarState.matches('Closed')) {
       commandBarSend({ type: 'Open' })

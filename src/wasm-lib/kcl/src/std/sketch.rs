@@ -995,27 +995,35 @@ async fn start_sketch_on_face(
     args: Args,
 ) -> Result<Box<Face>, KclError> {
     let extrude_plane_id = match tag {
-        SketchOnFaceTag::String(ref s) => extrude_group
-            .value
-            .iter()
-            .find_map(|extrude_surface| match extrude_surface {
-                ExtrudeSurface::ExtrudePlane(extrude_plane) if extrude_plane.name == *s => {
-                    Some(Ok(extrude_plane.face_id))
-                }
-                ExtrudeSurface::ExtrudeArc(extrude_arc) if extrude_arc.name == *s => {
-                    Some(Err(KclError::Type(KclErrorDetails {
-                        message: format!("Cannot sketch on a non-planar surface: `{}`", tag),
-                        source_ranges: vec![args.source_range],
-                    })))
-                }
-                ExtrudeSurface::ExtrudePlane(_) | ExtrudeSurface::ExtrudeArc(_) => None,
-            })
-            .ok_or_else(|| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Expected a face with the tag `{}`", tag),
+        SketchOnFaceTag::String(ref s) => {
+            if s.is_empty() {
+                return Err(KclError::Type(KclErrorDetails {
+                    message: "Expected a non-empty tag for the face to sketch on".to_string(),
                     source_ranges: vec![args.source_range],
+                }));
+            }
+            extrude_group
+                .value
+                .iter()
+                .find_map(|extrude_surface| match extrude_surface {
+                    ExtrudeSurface::ExtrudePlane(extrude_plane) if extrude_plane.name == *s => {
+                        Some(Ok(extrude_plane.face_id))
+                    }
+                    ExtrudeSurface::ExtrudeArc(extrude_arc) if extrude_arc.name == *s => {
+                        Some(Err(KclError::Type(KclErrorDetails {
+                            message: format!("Cannot sketch on a non-planar surface: `{}`", tag),
+                            source_ranges: vec![args.source_range],
+                        })))
+                    }
+                    ExtrudeSurface::ExtrudePlane(_) | ExtrudeSurface::ExtrudeArc(_) => None,
                 })
-            })??,
+                .ok_or_else(|| {
+                    KclError::Type(KclErrorDetails {
+                        message: format!("Expected a face with the tag `{}`", tag),
+                        source_ranges: vec![args.source_range],
+                    })
+                })??
+        }
         SketchOnFaceTag::StartOrEnd(StartOrEnd::Start) => extrude_group.start_cap_id.ok_or_else(|| {
             KclError::Type(KclErrorDetails {
                 message: "Expected a start face to sketch on".to_string(),
