@@ -41,8 +41,7 @@ root.render(
             secondary: 'oklch(48.62% 0.1654 142.5deg)',
           },
           duration:
-            typeof window !== 'undefined' &&
-            window.localStorage.getItem('playwright') === 'true'
+            window?.localStorage.getItem('playwright') === 'true'
               ? 10 // speed up e2e tests
               : 1500,
         },
