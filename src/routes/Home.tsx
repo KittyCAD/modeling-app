@@ -1,11 +1,9 @@
 import { FormEvent, useEffect } from 'react'
-import { remove, rename } from '@tauri-apps/plugin-fs'
+import { remove } from '@tauri-apps/plugin-fs'
 import {
-  createNewProject,
   getNextProjectIndex,
   interpolateProjectNameWithIndex,
   doesProjectNameNeedInterpolated,
-  getProjectsInDir,
 } from '../lib/tauriFS'
 import { ActionButton } from '../components/ActionButton'
 import { faArrowDown, faPlus } from '@fortawesome/free-solid-svg-icons'
@@ -14,10 +12,7 @@ import { AppHeader } from '../components/AppHeader'
 import ProjectCard from '../components/ProjectCard'
 import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-import {
-  type ProjectWithEntryPointMetadata,
-  type HomeLoaderData,
-} from 'lib/types'
+import { type HomeLoaderData } from 'lib/types'
 import Loading from '../components/Loading'
 import { useMachine } from '@xstate/react'
 import { homeMachine } from '../machines/homeMachine'
@@ -38,6 +33,13 @@ import { isTauri } from 'lib/isTauri'
 import { kclManager } from 'lib/singletons'
 import { useLspContext } from 'components/LspProvider'
 import { useRefreshSettings } from 'hooks/useRefreshSettings'
+import { LowerRightControls } from 'components/LowerRightControls'
+import { Project } from 'wasm-lib/kcl/bindings/Project'
+import {
+  createNewProjectDirectory,
+  listProjects,
+  renameProjectDirectory,
+} from 'lib/tauri'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
@@ -93,7 +95,7 @@ const Home = () => {
     },
     services: {
       readProjects: async (context: ContextFrom<typeof homeMachine>) =>
-        getProjectsInDir(context.defaultDirectory),
+        listProjects(),
       createProject: async (
         context: ContextFrom<typeof homeMachine>,
         event: EventFrom<typeof homeMachine, 'Create project'>
@@ -109,7 +111,7 @@ const Home = () => {
           name = interpolateProjectNameWithIndex(name, nextIndex)
         }
 
-        await createNewProject(await join(context.defaultDirectory, name))
+        await createNewProjectDirectory(name)
 
         return `Successfully created "${name}"`
       },
@@ -124,10 +126,9 @@ const Home = () => {
           name = interpolateProjectNameWithIndex(name, nextIndex)
         }
 
-        await rename(
+        await renameProjectDirectory(
           await join(context.defaultDirectory, oldName),
-          await join(context.defaultDirectory, name),
-          {}
+          name
         )
         return `Successfully renamed "${oldName}" to "${name}"`
       },
@@ -180,7 +181,7 @@ const Home = () => {
 
   async function handleRenameProject(
     e: FormEvent<HTMLFormElement>,
-    project: ProjectWithEntryPointMetadata
+    project: Project
   ) {
     const { newProjectName } = Object.fromEntries(
       new FormData(e.target as HTMLFormElement)
@@ -191,7 +192,7 @@ const Home = () => {
     })
   }
 
-  async function handleDeleteProject(project: ProjectWithEntryPointMetadata) {
+  async function handleDeleteProject(project: Project) {
     send('Delete project', { data: { name: project.name || '' } })
   }
 
@@ -212,7 +213,7 @@ const Home = () => {
                   : '')
               }
               onClick={() => setSearchParams(getNextSearchParams(sort, 'name'))}
-              icon={{
+              iconStart={{
                 icon: getSortIcon(sort, 'name'),
                 className: 'p-1.5',
                 iconClassName: !sort.includes('name')
@@ -234,7 +235,7 @@ const Home = () => {
               onClick={() =>
                 setSearchParams(getNextSearchParams(sort, 'modified'))
               }
-              icon={{
+              iconStart={{
                 icon: sort ? getSortIcon(sort, 'modified') : faArrowDown,
                 className: 'p-1.5',
                 iconClassName: !isSortByModified ? '!text-chalkboard-40' : '',
@@ -280,14 +281,15 @@ const Home = () => {
               <ActionButton
                 Element="button"
                 onClick={() => send('Create project')}
-                icon={{ icon: faPlus, iconClassName: 'p-1 w-4' }}
+                iconStart={{ icon: faPlus, iconClassName: 'p-1 w-4' }}
                 data-testid="home-new-file"
               >
-                New file
+                New project
               </ActionButton>
             </>
           )}
         </section>
+        <LowerRightControls />
       </div>
     </div>
   )

@@ -30,30 +30,52 @@ import SettingsAuthProvider from 'components/SettingsAuthProvider'
 import LspProvider from 'components/LspProvider'
 import { KclContextProvider } from 'lang/KclProvider'
 import { BROWSER_PROJECT_NAME } from 'lib/constants'
+import { getState, setState } from 'lib/tauri'
 
 const router = createBrowserRouter([
   {
     loader: settingsLoader,
     id: paths.INDEX,
+    /* Make sure auth is the outermost provider or else we will have
+     * inefficient re-renders, use the react profiler to see. */
     element: (
       <CommandBarProvider>
-        <KclContextProvider>
-          <SettingsAuthProvider>
-            <LspProvider>
+        <SettingsAuthProvider>
+          <LspProvider>
+            <KclContextProvider>
               <Outlet />
-            </LspProvider>
-          </SettingsAuthProvider>
-        </KclContextProvider>
+            </KclContextProvider>
+          </LspProvider>
+        </SettingsAuthProvider>
       </CommandBarProvider>
     ),
     errorElement: <ErrorPage />,
     children: [
       {
         path: paths.INDEX,
-        loader: () =>
-          isTauri()
+        loader: async () => {
+          const inTauri = isTauri()
+          if (inTauri) {
+            const appState = await getState()
+
+            if (appState) {
+              // Reset the state.
+              // We do this so that we load the initial state from the cli but everything
+              // else we can ignore.
+              await setState(undefined)
+              // Redirect to the file if we have a file path.
+              if (appState.current_file) {
+                return redirect(
+                  paths.FILE + '/' + encodeURIComponent(appState.current_file)
+                )
+              }
+            }
+          }
+
+          return inTauri
             ? redirect(paths.HOME)
-            : redirect(paths.FILE + '/%2F' + BROWSER_PROJECT_NAME),
+            : redirect(paths.FILE + '/%2F' + BROWSER_PROJECT_NAME)
+        },
       },
       {
         loader: fileLoader,

@@ -9,7 +9,7 @@ use pretty_assertions::assert_eq;
 use super::*;
 
 fn must_plan(program: &str) -> (Vec<Instruction>, BindingScope, Address) {
-    let tokens = kcl_lib::token::lexer(program);
+    let tokens = kcl_lib::token::lexer(program).unwrap();
     let parser = kcl_lib::parser::Parser::new(tokens);
     let ast = parser.ast().unwrap();
     let mut p = Planner::new();
@@ -18,7 +18,7 @@ fn must_plan(program: &str) -> (Vec<Instruction>, BindingScope, Address) {
 }
 
 fn should_not_compile(program: &str) -> CompileError {
-    let tokens = kcl_lib::token::lexer(program);
+    let tokens = kcl_lib::token::lexer(program).unwrap();
     let parser = kcl_lib::parser::Parser::new(tokens);
     let ast = parser.ast().unwrap();
     let mut p = Planner::new();
@@ -392,7 +392,7 @@ async fn computed_object_property() {
     let Some(EpBinding::Single(address_of_val)) = scope.get("val") else {
         panic!("Unexpected binding for variable 'val': {:?}", scope.get("val"));
     };
-    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program).unwrap())
         .ast()
         .unwrap();
     let mem = crate::execute(ast, &mut None).await.unwrap();
@@ -414,7 +414,7 @@ async fn computed_array_in_object() {
     let Some(EpBinding::Single(address_of_val)) = scope.get("val") else {
         panic!("Unexpected binding for variable 'val': {:?}", scope.get("val"));
     };
-    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program).unwrap())
         .ast()
         .unwrap();
     let mem = crate::execute(ast, &mut None).await.unwrap();
@@ -436,7 +436,7 @@ async fn computed_object_in_array() {
     let Some(EpBinding::Single(address_of_val)) = scope.get("val") else {
         panic!("Unexpected binding for variable 'val': {:?}", scope.get("val"));
     };
-    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program).unwrap())
         .ast()
         .unwrap();
     let mem = crate::execute(ast, &mut None).await.unwrap();
@@ -457,7 +457,7 @@ async fn computed_nested_object_property() {
     let Some(EpBinding::Single(address_of_val)) = scope.get("val") else {
         panic!("Unexpected binding for variable 'val': {:?}", scope.get("val"));
     };
-    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program).unwrap())
         .ast()
         .unwrap();
     let mem = crate::execute(ast, &mut None).await.unwrap();
@@ -588,7 +588,7 @@ async fn computed_array_index() {
         ]
     );
     // Now let's run the program and check what's actually in the memory afterwards.
-    let tokens = kcl_lib::token::lexer(program);
+    let tokens = kcl_lib::token::lexer(program).unwrap();
     let parser = kcl_lib::parser::Parser::new(tokens);
     let ast = parser.ast().unwrap();
     let mem = crate::execute(ast, &mut None).await.unwrap();
@@ -1325,7 +1325,7 @@ async fn stdlib_cube_partial() {
         |> close(%)
         |> extrude(100.0, %)
     "#;
-    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program).unwrap())
         .ast()
         .unwrap();
     let mut client = Some(test_client().await);
@@ -1406,7 +1406,7 @@ async fn stdlib_cube_xline_yline() {
     "#;
     let (_plan, _scope, _last_address) = must_plan(program);
 
-    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program).unwrap())
         .ast()
         .unwrap();
     let mut client = Some(test_client().await);
@@ -1488,7 +1488,7 @@ async fn stdlib_cube_with_tangential_arc_to() {
     "#;
     let (_plan, _scope, last_address) = must_plan(program);
     assert_eq!(last_address, Address::ZERO + 76);
-    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program).unwrap())
         .ast()
         .unwrap();
     let mut client = Some(test_client().await);
@@ -1818,7 +1818,7 @@ async fn cos_sin_pi() {
     let Some(EpBinding::Constant(z)) = scope.get("z") else {
         panic!("Unexpected binding for variable 'z': {:?}", scope.get("z"));
     };
-    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program))
+    let ast = kcl_lib::parser::Parser::new(kcl_lib::token::lexer(program).unwrap())
         .ast()
         .unwrap();
     let mem = crate::execute(ast, &mut None).await.unwrap();

@@ -16,7 +16,7 @@ export const ErrorPage = () => {
   return (
     <div className="flex flex-col items-center justify-center h-screen">
       <section className="max-w-full xl:max-w-4xl mx-auto">
-        <h1 className="text-4xl mb-8 font-bold">
+        <h1 className="text-4xl mb-8 font-bold" data-testid="unexpected-error">
           An unexpected error occurred
         </h1>
         {isRouteErrorResponse(error) && (
@@ -26,20 +26,25 @@ export const ErrorPage = () => {
         )}
         <div className="flex justify-between gap-2 mt-6">
           {isTauri() && (
-            <ActionButton Element="link" to={'/'} icon={{ icon: faHome }}>
+            <ActionButton
+              Element="link"
+              to={'/'}
+              iconStart={{ icon: faHome }}
+              data-testid="unexpected-error-home"
+            >
               Go Home
             </ActionButton>
           )}
           <ActionButton
             Element="button"
-            icon={{ icon: faRefresh }}
+            iconStart={{ icon: faRefresh }}
             onClick={() => window.location.reload()}
           >
             Reload
           </ActionButton>
           <ActionButton
             Element="button"
-            icon={{ icon: faTrash }}
+            iconStart={{ icon: faTrash }}
             onClick={() => {
               window.localStorage.clear()
             }}
@@ -48,7 +53,7 @@ export const ErrorPage = () => {
           </ActionButton>
           <ActionButton
             Element="externalLink"
-            icon={{ icon: faBug }}
+            iconStart={{ icon: faBug }}
             to="https://github.com/KittyCAD/modeling-app/issues/new"
           >
             Report Bug

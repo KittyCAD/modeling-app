@@ -3,7 +3,9 @@ import { engineCommandManager } from 'lib/singletons'
 import { useState, useEffect } from 'react'
 
 function useEngineCommands(): [CommandLog[], () => void] {
-  const [engineCommands, setEngineCommands] = useState<CommandLog[]>([])
+  const [engineCommands, setEngineCommands] = useState<CommandLog[]>(
+    engineCommandManager.commandLogs
+  )
 
   useEffect(() => {
     engineCommandManager.registerCommandLogCallback((commands) =>

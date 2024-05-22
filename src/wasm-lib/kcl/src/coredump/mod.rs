@@ -6,12 +6,20 @@ pub mod local;
 pub mod wasm;
 
 use anyhow::Result;
+use base64::Engine;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-#[async_trait::async_trait]
+#[async_trait::async_trait(?Send)]
 pub trait CoreDump: Clone {
+    /// Return the authentication token.
+    fn token(&self) -> Result<String>;
+
+    fn base_api_url(&self) -> Result<String>;
+
     fn version(&self) -> Result<String>;
+
+    fn pool(&self) -> Result<String>;
 
     async fn os(&self) -> Result<OsInfo>;
 
@@ -19,10 +27,43 @@ pub trait CoreDump: Clone {
 
     async fn get_webrtc_stats(&self) -> Result<WebrtcStats>;
 
+    /// Return a screenshot of the app.
+    async fn screenshot(&self) -> Result<String>;
+
+    /// Get a screenshot of the app and upload it to public cloud storage.
+    async fn upload_screenshot(&self) -> Result<String> {
+        let screenshot = self.screenshot().await?;
+        let cleaned = screenshot.trim_start_matches("data:image/png;base64,");
+        // Create the zoo client.
+        let mut zoo = kittycad::Client::new(self.token()?);
+        zoo.set_base_url(&self.base_api_url()?);
+
+        // Base64 decode the screenshot.
+        let data = base64::engine::general_purpose::STANDARD.decode(cleaned)?;
+        // Upload the screenshot.
+        let links = zoo
+            .meta()
+            .create_debug_uploads(vec![kittycad::types::multipart::Attachment {
+                name: "".to_string(),
+                filename: Some("modeling-app/core-dump-screenshot.png".to_string()),
+                content_type: Some("image/png".to_string()),
+                data,
+            }])
+            .await
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+
+        if links.is_empty() {
+            anyhow::bail!("Failed to upload screenshot");
+        }
+
+        Ok(links[0].clone())
+    }
+
     /// Dump the app info.
     async fn dump(&self) -> Result<AppInfo> {
         let webrtc_stats = self.get_webrtc_stats().await?;
         let os = self.os().await?;
+        let screenshot_url = self.upload_screenshot().await?;
 
         let mut app_info = AppInfo {
             version: self.version()?,
@@ -32,8 +73,9 @@ pub trait CoreDump: Clone {
             os,
             webrtc_stats,
             github_issue_url: None,
+            pool: self.pool()?,
         };
-        app_info.set_github_issue_url()?;
+        app_info.set_github_issue_url(&screenshot_url)?;
 
         Ok(app_info)
     }
@@ -64,15 +106,20 @@ pub struct AppInfo {
     /// This gets prepoulated with all the core dump info.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub github_issue_url: Option<String>,
+
+    /// Engine pool the client is connected to.
+    pub pool: String,
 }
 
 impl AppInfo {
     /// Set the github issue url.
-    pub fn set_github_issue_url(&mut self) -> Result<()> {
+    pub fn set_github_issue_url(&mut self, screenshot_url: &str) -> Result<()> {
         let tauri_or_browser_label = if self.tauri { "tauri" } else { "browser" };
         let labels = ["coredump", "bug", tauri_or_browser_label];
         let body = format!(
             r#"[Insert a description of the issue here]
+
+![Screenshot]({})
 
 <details>
 <summary><b>Core Dump</b></summary>
@@ -82,6 +129,7 @@ impl AppInfo {
 ```
 </details>
 "#,
+            screenshot_url,
             serde_json::to_string_pretty(&self)?
         );
         let urlencoded: String = form_urlencoded::byte_serialize(body.as_bytes()).collect();

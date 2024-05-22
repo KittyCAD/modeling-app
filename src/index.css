@@ -46,6 +46,15 @@ select {
   @apply bg-chalkboard-90;
 }
 
+/* We hide the cursor if the user has turned off the textEditor.blinkingCursor setting
+ * any elements that could present a blinking cursor to the user
+*/
+input,
+textarea,
+*[contenteditable] {
+  caret-color: var(--cursor-color, auto);
+}
+
 ::-webkit-scrollbar {
   @apply w-2 h-2 rounded-sm;
   @apply bg-chalkboard-20;
@@ -87,12 +96,17 @@ button:disabled {
   @apply bg-chalkboard-90 text-chalkboard-40 border-chalkboard-70;
 }
 
-a:not(.action-button) {
+a {
   @apply text-primary underline hover:hue-rotate-15;
 }
 
-.dark a:not(.action-button) {
+.dark a {
   @apply hover:brightness-110 hover:hue-rotate-0;
+}
+
+a.action-button,
+.dark a.action-button {
+  @apply text-inherit no-underline hover:hue-rotate-0;
 }
 
 input {
@@ -113,32 +127,33 @@ code {
     monospace;
 }
 
-.full-height-subtract {
-  --height-subtract: 2.25rem;
-  height: 100%;
-  max-height: calc(100% - var(--height-subtract));
-}
-
+/*
+ * The first descendent of the CodeMirror wrapper is the theme,
+ * but its identifying class can change depending on the theme.
+*/
+#code-mirror-override > div,
 #code-mirror-override .cm-editor {
-  @apply h-full bg-transparent;
+  @apply bg-transparent h-full;
+  @apply select-auto;
 }
 
 #code-mirror-override .cm-scroller {
-  @apply h-full;
+  overflow: auto;
 }
 
-#code-mirror-override .cm-scroller::-webkit-scrollbar {
-  @apply h-0;
+#code-mirror-override .cm-gutter {
+  @apply select-none;
 }
 
 #code-mirror-override .cm-activeLine,
 #code-mirror-override .cm-activeLineGutter {
-  @apply bg-liquid-10/50;
+  @apply bg-primary/10;
 }
 
 .dark #code-mirror-override .cm-activeLine,
 .dark #code-mirror-override .cm-activeLineGutter {
-  @apply bg-liquid-80/50;
+  @apply bg-primary/20;
+  mix-blend-mode: lighten;
 }
 
 #code-mirror-override .cm-gutters {
@@ -149,19 +164,29 @@ code {
   @apply bg-chalkboard-110/50;
 }
 
+#code-mirror-override .cm-content {
+  @apply caret-primary;
+}
+.dark #code-mirror-override .cm-content {
+  @apply caret-chalkboard-10;
+}
+
 #code-mirror-override .cm-focused .cm-cursor {
   width: 0px;
 }
 #code-mirror-override .cm-cursor {
   display: block;
   width: 1ch;
-  @apply bg-liquid-40 mix-blend-multiply;
-
-  animation: blink 2s ease-out infinite;
+  @apply mix-blend-multiply;
+  @apply border-l-primary;
 }
 
 .dark #code-mirror-override .cm-cursor {
-  @apply bg-liquid-50;
+  @apply border-l-chalkboard-10;
+}
+
+#code-mirror-override.blink .cm-cursor {
+  animation: blink 1200ms ease-out infinite;
 }
 
 @keyframes blink {
@@ -169,8 +194,8 @@ code {
   100% {
     opacity: 0;
   }
-  15% {
-    opacity: 0.75;
+  10% {
+    opacity: 1;
   }
 }
 

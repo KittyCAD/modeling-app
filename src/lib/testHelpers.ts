@@ -4,9 +4,19 @@ import {
   EngineCommand,
 } from '../lang/std/engineConnection'
 import { Models } from '@kittycad/lib'
-import { Themes } from './theme'
+import { v4 as uuidv4 } from 'uuid'
+import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 
 type WebSocketResponse = Models['WebSocketResponse_type']
+
+const defaultPlanes: DefaultPlanes = {
+  xy: uuidv4(),
+  xz: uuidv4(),
+  yz: uuidv4(),
+  negXy: uuidv4(),
+  negXz: uuidv4(),
+  negYz: uuidv4(),
+}
 
 class MockEngineCommandManager {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
@@ -36,6 +46,9 @@ class MockEngineCommandManager {
       },
     }
     return Promise.resolve(JSON.stringify(response))
+  }
+  async wasmGetDefaultPlanes(): Promise<string> {
+    return JSON.stringify(defaultPlanes)
   }
   sendModelingCommandFromWasm(
     id: string,
@@ -85,7 +98,9 @@ export async function executor(
     width: 0,
     height: 0,
     executeCode: () => {},
-    theme: Themes.Dark,
+    makeDefaultPlanes: () => {
+      return new Promise((resolve) => resolve(defaultPlanes))
+    },
   })
   await engineCommandManager.waitForReady
   engineCommandManager.startNewSession()

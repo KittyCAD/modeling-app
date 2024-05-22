@@ -1,5 +1,6 @@
 import { Models } from '@kittycad/lib'
 import {
+  codeManager,
   engineCommandManager,
   kclManager,
   sceneEntitiesManager,
@@ -76,7 +77,29 @@ export async function getEventForSelectWithPoint(
       },
     }
   }
-  const _artifact = engineCommandManager.artifactMap[data.entity_id]
+  let _artifact = engineCommandManager.artifactMap[data.entity_id]
+  if (!_artifact) {
+    // This logic for getting the parent id is for solid2ds as in edit mode it return the face id
+    // but we don't recognise that in the artifact map because we store the path id when the path is
+    // created, the solid2d is implicitly created with the close stdlib function
+    // there's plans to get the faceId back from the solid2d creation
+    // https://github.com/KittyCAD/engine/issues/2094
+    // at which point we can add it to the artifact map and remove this logic
+    const parentId = (
+      await engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd: {
+          type: 'entity_get_parent_id',
+          entity_id: data.entity_id,
+        },
+        cmd_id: uuidv4(),
+      })
+    )?.data?.data?.entity_id
+    const parentArtifact = engineCommandManager.artifactMap[parentId]
+    if (parentArtifact) {
+      _artifact = parentArtifact
+    }
+  }
   const sourceRange = _artifact?.range
   if (_artifact) {
     if (_artifact.commandType === 'solid3d_get_extrusion_face_info') {
@@ -142,7 +165,7 @@ export function getEventForSegmentSelection(
   // previous drags don't update ast for efficiency reasons
   // So we want to make sure we have and updated ast with
   // accurate source ranges
-  const updatedAst = parse(kclManager.code)
+  const updatedAst = parse(codeManager.code)
   const node = getNodeFromPath<CallExpression>(
     updatedAst,
     pathToNode,
@@ -192,7 +215,7 @@ export function handleSelectionBatch({
 
   return {
     codeMirrorSelection: EditorSelection.create(
-      [EditorSelection.cursor(kclManager.code.length)],
+      [EditorSelection.cursor(codeManager.code.length)],
       0
     ),
     engineEvents,
@@ -419,7 +442,13 @@ export function getSelectionTypeDisplayText(
   const selectionsByType = getSelectionType(selection)
 
   return (selectionsByType as Exclude<typeof selectionsByType, 'none'>)
-    .map(([type, count]) => `${count} ${type}${count > 1 ? 's' : ''}`)
+    .map(
+      // Hack for showing "face" instead of "extrude-wall" in command bar text
+      ([type, count]) =>
+        `${count} ${type.replace('extrude-wall', 'face')}${
+          count > 1 ? 's' : ''
+        }`
+    )
     .join(', ')
 }
 

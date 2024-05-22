@@ -1,7 +1,6 @@
 import { OnboardingButtons, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useStore } from '../../useStore'
-import { useBackdropHighlight } from 'hooks/useBackdropHighlight'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { bracketThicknessCalculationLine } from 'lib/exampleKcl'
@@ -30,12 +29,8 @@ export default function ParametricModeling() {
   return (
     <div className="fixed grid justify-end items-center inset-0 z-50 pointer-events-none">
       <div
-        className="fixed inset-0 bg-black dark:bg-black-80 opacity-50 pointer-events-none"
-        style={{ clipPath: useBackdropHighlight('code-pane') }}
-      ></div>
-      <div
         className={
-          'z-10 max-w-xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg h-3/4 flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
+          'z-10 max-w-xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg h-[75vh] flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
           (buttonDownInStream ? '' : ' pointer-events-auto')
         }
       >
@@ -69,6 +64,15 @@ export default function ParametricModeling() {
             </em>
             .
           </p>
+          <figure className="my-4 w-2/3 mx-auto">
+            <img
+              src={`/onboarding-bracket-dimensions${getImageTheme()}.png`}
+              alt="Bracket Dimensions"
+            />
+            <figcaption className="text-small italic text-center">
+              Bracket Dimensions
+            </figcaption>
+          </figure>
         </section>
         <OnboardingButtons
           currentSlug={onboardingPaths.PARAMETRIC_MODELING}

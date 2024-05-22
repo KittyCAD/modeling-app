@@ -110,14 +110,6 @@ export class CameraControls {
     }, 400) as any as number
   }
 
-  // reacts hooks into some of this singleton's properties
-  reactCameraProperties: ReactCameraProperties = {
-    type: 'perspective',
-    fov: 12,
-    position: [0, 0, 0],
-    quaternion: [0, 0, 0, 1],
-  }
-
   setCam = (camProps: ReactCameraProperties) => {
     if (
       camProps.type === 'perspective' &&
@@ -254,13 +246,31 @@ export class CameraControls {
         camSettings.center.y,
         camSettings.center.z
       )
+      this.camera.up.set(camSettings.up.x, camSettings.up.y, camSettings.up.z)
+      if (this.camera instanceof PerspectiveCamera && camSettings.ortho) {
+        this.useOrthographicCamera()
+      }
+      if (this.camera instanceof OrthographicCamera && !camSettings.ortho) {
+        this.usePerspectiveCamera()
+      }
       if (this.camera instanceof PerspectiveCamera && camSettings.fov_y) {
         this.camera.fov = camSettings.fov_y
       } else if (
         this.camera instanceof OrthographicCamera &&
         camSettings.ortho_scale
       ) {
-        this.camera.zoom = camSettings.ortho_scale
+        const distanceToTarget = new Vector3(
+          camSettings.pos.x,
+          camSettings.pos.y,
+          camSettings.pos.z
+        ).distanceTo(
+          new Vector3(
+            camSettings.center.x,
+            camSettings.center.y,
+            camSettings.center.z
+          )
+        )
+        this.camera.zoom = (camSettings.ortho_scale * 40) / distanceToTarget
       }
       this.onCameraChange()
     }
@@ -910,6 +920,26 @@ export class CameraControls {
         .start()
     })
 
+  get reactCameraProperties(): ReactCameraProperties {
+    return {
+      type: this.isPerspective ? 'perspective' : 'orthographic',
+      [this.isPerspective ? 'fov' : 'zoom']:
+        this.camera instanceof PerspectiveCamera
+          ? this.camera.fov
+          : this.camera.zoom,
+      position: [
+        roundOff(this.camera.position.x, 2),
+        roundOff(this.camera.position.y, 2),
+        roundOff(this.camera.position.z, 2),
+      ],
+      quaternion: [
+        roundOff(this.camera.quaternion.x, 2),
+        roundOff(this.camera.quaternion.y, 2),
+        roundOff(this.camera.quaternion.z, 2),
+        roundOff(this.camera.quaternion.w, 2),
+      ],
+    }
+  }
   reactCameraPropertiesCallback: (a: ReactCameraProperties) => void = () => {}
   setReactCameraPropertiesCallback = (
     cb: (a: ReactCameraProperties) => void
@@ -937,24 +967,7 @@ export class CameraControls {
         isPerspective: this.isPerspective,
         target: this.target,
       })
-    this.deferReactUpdate({
-      type: this.isPerspective ? 'perspective' : 'orthographic',
-      [this.isPerspective ? 'fov' : 'zoom']:
-        this.camera instanceof PerspectiveCamera
-          ? this.camera.fov
-          : this.camera.zoom,
-      position: [
-        roundOff(this.camera.position.x, 2),
-        roundOff(this.camera.position.y, 2),
-        roundOff(this.camera.position.z, 2),
-      ],
-      quaternion: [
-        roundOff(this.camera.quaternion.x, 2),
-        roundOff(this.camera.quaternion.y, 2),
-        roundOff(this.camera.quaternion.z, 2),
-        roundOff(this.camera.quaternion.w, 2),
-      ],
-    })
+    this.deferReactUpdate(this.reactCameraProperties)
     Object.values(this._camChangeCallbacks).forEach((cb) => cb())
   }
   getInteractionType = (event: any) =>
@@ -970,10 +983,10 @@ export class CameraControls {
 // Pure function helpers
 
 function calculateNearFarFromFOV(fov: number) {
-  const nearFarRatio = (fov - 3) / (45 - 3)
+  // const nearFarRatio = (fov - 3) / (45 - 3)
   // const z_near = 0.1 + nearFarRatio * (5 - 0.1)
-  const z_far = 1000 + nearFarRatio * (100000 - 1000)
-  return { z_near: 0.1, z_far }
+  // const z_far = 1000 + nearFarRatio * (100000 - 1000)
+  return { z_near: 0.1, z_far: 1000 }
 }
 
 function convertThreeCamValuesToEngineCam({
@@ -1047,4 +1060,63 @@ function _getInteractionType(
   if (enableRotate && interactionGuards.rotate.callback(event)) return 'rotate'
   if (enableZoom && interactionGuards.zoom.dragCallback(event)) return 'zoom'
   return state
+}
+
+/**
+ * Tells the engine to fire it's animation waits for it to finish and then requests camera settings
+ * to ensure the client-side camera is synchronized with the engine's camera state.
+ *
+ * @param engineCommandManager Our websocket singleton
+ * @param entityId - The ID of face or sketchPlane.
+ */
+
+export async function letEngineAnimateAndSyncCamAfter(
+  engineCommandManager: EngineCommandManager,
+  entityId: string
+) {
+  await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'enable_sketch_mode',
+      adjust_camera: true,
+      animated: !isReducedMotion(),
+      ortho: false,
+      entity_id: entityId,
+    },
+  })
+  // wait 600ms (animation takes 500, + 100 for safety)
+  await new Promise((resolve) =>
+    setTimeout(resolve, isReducedMotion() ? 100 : 600)
+  )
+  await engineCommandManager.sendSceneCommand({
+    // CameraControls subscribes to default_camera_get_settings response events
+    // firing this at connection ensure the camera's are synced initially
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_get_settings',
+    },
+  })
+  await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'enable_sketch_mode',
+      adjust_camera: true,
+      animated: false,
+      ortho: true,
+      entity_id: entityId,
+    },
+  })
+  await new Promise((resolve) => setTimeout(resolve, 50))
+  await engineCommandManager.sendSceneCommand({
+    // CameraControls subscribes to default_camera_get_settings response events
+    // firing this at connection ensure the camera's are synced initially
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_get_settings',
+    },
+  })
 }

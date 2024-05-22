@@ -1,6 +1,6 @@
 import { Popover, Transition } from '@headlessui/react'
 import { ActionButton } from './ActionButton'
-import { faBars, faBug, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+import { faBug, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment, useState } from 'react'
@@ -8,6 +8,7 @@ import { paths } from 'lib/paths'
 import { Models } from '@kittycad/lib'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
+import Tooltip from './Tooltip'
 
 type User = Models['User_type']
 
@@ -54,11 +55,13 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
       ) : (
         <ActionButton
           Element={Popover.Button}
-          icon={{ icon: faBars }}
-          className="border-transparent"
+          iconStart={{ icon: 'menu' }}
+          className="border-transparent !px-0"
           data-testid="user-sidebar-toggle"
         >
-          Menu
+          <Tooltip position="left" delay={1000}>
+            User menu
+          </Tooltip>
         </ActionButton>
       )}
       <Transition
@@ -117,7 +120,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
               <div className="p-4 flex flex-col gap-2">
                 <ActionButton
                   Element="button"
-                  icon={{ icon: 'settings' }}
+                  iconStart={{ icon: 'settings' }}
                   className="border-transparent dark:border-transparent hover:bg-transparent"
                   onClick={() => {
                     // since /settings is a nested route the sidebar doesn't close
@@ -135,7 +138,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                 <ActionButton
                   Element="externalLink"
                   to="https://github.com/KittyCAD/modeling-app/discussions"
-                  icon={{ icon: faGithub, className: 'p-1', size: 'sm' }}
+                  iconStart={{ icon: faGithub, className: 'p-1', size: 'sm' }}
                   className="border-transparent dark:border-transparent"
                 >
                   Request a feature
@@ -143,7 +146,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                 <ActionButton
                   Element="externalLink"
                   to="https://github.com/KittyCAD/modeling-app/issues/new/choose"
-                  icon={{ icon: faBug, className: 'p-1', size: 'sm' }}
+                  iconStart={{ icon: faBug, className: 'p-1', size: 'sm' }}
                   className="border-transparent dark:border-transparent"
                 >
                   Report a bug
@@ -151,7 +154,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                 <ActionButton
                   Element="button"
                   onClick={() => send('Log out')}
-                  icon={{
+                  iconStart={{
                     icon: faSignOutAlt,
                     className: 'p-1',
                     bgClassName: '!bg-transparent',

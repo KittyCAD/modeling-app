@@ -31,18 +31,11 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
         client.set_base_url(addr);
     }
 
-    let ws = client
-        .modeling()
-        .commands_ws(None, None, None, None, None, Some(false))
-        .await?;
-
-    let tokens = kcl_lib::token::lexer(code);
+    let tokens = kcl_lib::token::lexer(code)?;
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
-    let mut mem: kcl_lib::executor::ProgramMemory = Default::default();
-    let ctx = kcl_lib::executor::ExecutorContext::new(ws, kittycad::types::UnitLength::Mm).await?;
-    let memory =
-        kcl_lib::executor::execute_outer(program.clone(), &mut mem, kcl_lib::executor::BodyType::Root, &ctx).await?;
+    let ctx = kcl_lib::executor::ExecutorContext::new(&client, Default::default()).await?;
+    let memory = ctx.run(program.clone(), None).await?;
 
     // We need to get the sketch ID.
     // Get the sketch group ID from memory.
@@ -74,22 +67,13 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             SourceRange::default(),
-            ModelingCmd::SketchModeEnable {
+            ModelingCmd::EnableSketchMode {
                 animated: false,
                 ortho: true,
-                plane_id,
-                disable_camera_with_plane: Some(Point3D { x: 0.0, y: 0.0, z: 1.0 }),
+                entity_id: plane_id,
+                planar_normal: Some(Point3D { x: 0.0, y: 0.0, z: 1.0 }),
+                adjust_camera: false,
             },
-        )
-        .await?;
-
-    // Enter edit mode.
-    // We can't get control points of an existing sketch without being in edit mode.
-    ctx.engine
-        .send_modeling_cmd(
-            uuid::Uuid::new_v4(),
-            SourceRange::default(),
-            ModelingCmd::EditModeEnter { target: sketch_id },
         )
         .await?;
 

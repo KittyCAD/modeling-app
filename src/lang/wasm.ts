@@ -7,10 +7,14 @@ import init, {
   is_points_ccw,
   get_tangential_arc_to_info,
   program_memory_init,
-  ServerConfig,
-  copilot_lsp_run,
-  kcl_lsp_run,
+  make_default_planes,
   coredump,
+  toml_stringify,
+  default_app_settings,
+  parse_app_settings,
+  parse_project_settings,
+  default_project_settings,
+  parse_project_route,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
@@ -21,10 +25,14 @@ import type { Program } from '../wasm-lib/kcl/bindings/Program'
 import type { Token } from '../wasm-lib/kcl/bindings/Token'
 import { Coords2d } from './std/sketch'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
-import { DEV } from 'env'
 import { AppInfo } from 'wasm-lib/kcl/bindings/AppInfo'
 import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
+import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
+import { TEST } from 'env'
+import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
+import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
+import { ProjectRoute } from 'wasm-lib/kcl/bindings/ProjectRoute'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Value } from '../wasm-lib/kcl/bindings/Value'
@@ -74,8 +82,7 @@ export type { ExtrudeGroup } from '../wasm-lib/kcl/bindings/ExtrudeGroup'
 export type { MemoryItem } from '../wasm-lib/kcl/bindings/MemoryItem'
 export type { ExtrudeSurface } from '../wasm-lib/kcl/bindings/ExtrudeSurface'
 
-// Initialise the wasm module.
-const initialise = async () => {
+export const wasmUrl = () => {
   const baseUrl =
     typeof window === 'undefined'
       ? 'http://127.0.0.1:3000'
@@ -90,9 +97,21 @@ const initialise = async () => {
       : 'http://localhost:3000'
   const fullUrl = baseUrl + '/wasm_lib_bg.wasm'
   console.log(`Full URL for WASM: ${fullUrl}`)
-  const input = await fetch(fullUrl)
-  const buffer = await input.arrayBuffer()
-  return init(buffer)
+
+  return fullUrl
+}
+
+// Initialise the wasm module.
+const initialise = async () => {
+  try {
+    const fullUrl = wasmUrl()
+    const input = await fetch(fullUrl)
+    const buffer = await input.arrayBuffer()
+    return await init(buffer)
+  } catch (e) {
+    console.log('Error initialising WASM', e)
+    throw e
+  }
 }
 
 export const initPromise = initialise()
@@ -147,10 +166,6 @@ export const executor = async (
   return _programMemory
 }
 
-const getSettingsState = import('components/SettingsAuthProvider').then(
-  (module) => module.getSettingsState
-)
-
 export const _executor = async (
   node: Program,
   programMemory: ProgramMemory = { root: {}, return: null },
@@ -158,8 +173,14 @@ export const _executor = async (
   isMock: boolean
 ): Promise<ProgramMemory> => {
   try {
-    const baseUnit =
-      (await getSettingsState)()?.modeling.defaultUnit.current || 'mm'
+    let baseUnit = 'mm'
+    if (!TEST) {
+      const getSettingsState = import('components/SettingsAuthProvider').then(
+        (module) => module.getSettingsState
+      )
+      baseUnit =
+        (await getSettingsState)()?.modeling.defaultUnit.current || 'mm'
+    }
     const memory: ProgramMemory = await execute_wasm(
       JSON.stringify(node),
       JSON.stringify(programMemory),
@@ -190,6 +211,21 @@ export const recast = (ast: Program): string => {
   } catch (e) {
     // TODO: do something real with the error.
     console.log('recast error', e)
+    throw e
+  }
+}
+
+export const makeDefaultPlanes = async (
+  engineCommandManager: EngineCommandManager
+): Promise<DefaultPlanes> => {
+  try {
+    const planes: DefaultPlanes = await make_default_planes(
+      engineCommandManager
+    )
+    return planes
+  } catch (e) {
+    // TODO: do something real with the error.
+    console.log('make default planes error', e)
     throw e
   }
 }
@@ -296,26 +332,6 @@ export function programMemoryInit(): ProgramMemory {
   }
 }
 
-export async function copilotLspRun(config: ServerConfig, token: string) {
-  try {
-    console.log('starting copilot lsp')
-    await copilot_lsp_run(config, token, DEV)
-  } catch (e: any) {
-    console.log('copilot lsp failed', e)
-    // We can't restart here because a moved value, we should do this another way.
-  }
-}
-
-export async function kclLspRun(config: ServerConfig, token: string) {
-  try {
-    console.log('start kcl lsp')
-    await kcl_lsp_run(config, token, DEV)
-  } catch (e: any) {
-    console.log('kcl lsp failed', e)
-    // We can't restart here because a moved value, we should do this another way.
-  }
-}
-
 export async function coreDump(
   coreDumpManager: CoreDumpManager,
   openGithubIssue: boolean = false
@@ -328,5 +344,65 @@ export async function coreDump(
     return dump
   } catch (e: any) {
     throw new Error(`Error getting core dump: ${e}`)
+  }
+}
+
+export function tomlStringify(toml: any): string {
+  try {
+    const s: string = toml_stringify(JSON.stringify(toml))
+    return s
+  } catch (e: any) {
+    throw new Error(`Error stringifying toml: ${e}`)
+  }
+}
+
+export function defaultAppSettings(): Configuration {
+  try {
+    const settings: Configuration = default_app_settings()
+    return settings
+  } catch (e: any) {
+    throw new Error(`Error getting default app settings: ${e}`)
+  }
+}
+
+export function parseAppSettings(toml: string): Configuration {
+  try {
+    const settings: Configuration = parse_app_settings(toml)
+    return settings
+  } catch (e: any) {
+    throw new Error(`Error parsing app settings: ${e}`)
+  }
+}
+
+export function defaultProjectSettings(): ProjectConfiguration {
+  try {
+    const settings: ProjectConfiguration = default_project_settings()
+    return settings
+  } catch (e: any) {
+    throw new Error(`Error getting default project settings: ${e}`)
+  }
+}
+
+export function parseProjectSettings(toml: string): ProjectConfiguration {
+  try {
+    const settings: ProjectConfiguration = parse_project_settings(toml)
+    return settings
+  } catch (e: any) {
+    throw new Error(`Error parsing project settings: ${e}`)
+  }
+}
+
+export function parseProjectRoute(
+  configuration: Configuration,
+  route_str: string
+): ProjectRoute {
+  try {
+    const route: ProjectRoute = parse_project_route(
+      JSON.stringify(configuration),
+      route_str
+    )
+    return route
+  } catch (e: any) {
+    throw new Error(`Error parsing project route: ${e}`)
   }
 }

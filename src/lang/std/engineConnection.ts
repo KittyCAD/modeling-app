@@ -4,7 +4,8 @@ import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
 import { uuidv4 } from 'lib/utils'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
-import { Themes, getThemeColorForEngine } from 'lib/theme'
+import { Themes, getThemeColorForEngine, getOppositeTheme } from 'lib/theme'
+import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 
 let lastMessage = ''
 
@@ -53,8 +54,16 @@ interface PendingCommand extends CommandInfo {
   resolve: (val: ResolveCommand) => void
 }
 
+/**
+ * The ArtifactMap is a client-side representation of the artifacts that
+ * have been sent to the server-side engine. It is used to keep track of
+ * the state of each command, and to resolve the promise that was returned.
+ * It is also used to keep track of what entities are in the engine scene,
+ * so that we can associate IDs returned from the engine with the
+ * lines of KCL code that generated them.
+ */
 export interface ArtifactMap {
-  [key: string]: ResultCommand | PendingCommand | FailedCommand
+  [commandId: string]: ResultCommand | PendingCommand | FailedCommand
 }
 
 interface NewTrackArgs {
@@ -62,10 +71,11 @@ interface NewTrackArgs {
   mediaStream: MediaStream
 }
 
-// This looks funny, I know. This is needed because node and the browser
-// disagree as to the type. In a browser it's a number, but in node it's a
-// "Timeout".
-type Timeout = ReturnType<typeof setTimeout>
+/** This looks funny, I know. This is needed because node and the browser
+ * disagree as to the type. In a browser it's a number, but in node it's a
+ * "Timeout".
+ */
+type IsomorphicTimeout = ReturnType<typeof setTimeout>
 
 type ClientMetrics = Models['ClientMetrics_type']
 
@@ -187,9 +197,11 @@ export type EngineConnectionState =
   | State<EngineConnectionStateType.Disconnecting, DisconnectingValue>
   | State<EngineConnectionStateType.Disconnected, void>
 
-// EngineConnection encapsulates the connection(s) to the Engine
-// for the EngineCommandManager; namely, the underlying WebSocket
-// and WebRTC connections.
+/**
+ * EngineConnection encapsulates the connection(s) to the Engine
+ * for the EngineCommandManager; namely, the underlying WebSocket
+ * and WebRTC connections.
+ */
 class EngineConnection {
   websocket?: WebSocket
   pc?: RTCPeerConnection
@@ -226,23 +238,40 @@ class EngineConnection {
     this.onConnectionStateChange(this._state)
   }
 
-  private failedConnTimeout: Timeout | null
+  private failedConnTimeout: IsomorphicTimeout | null
 
   readonly url: string
   private readonly token?: string
 
-  // For now, this is only used by the NetworkHealthIndicator.
-  // We can eventually use it for more, but one step at a time.
+  /**For now, this is only used by the NetworkHealthIndicator.
+   * We can eventually use it for more, but one step at a time.
+   */
   private onConnectionStateChange: (state: EngineConnectionState) => void
 
-  // These are used for the EngineCommandManager and were created
-  // before onConnectionStateChange existed.
+  /**
+   * Used for the EngineCommandManager, created before
+   * onConnectionStateChange existed.
+   */
   private onEngineConnectionOpen: (engineConnection: EngineConnection) => void
+  /**
+   * Used for the EngineCommandManager, created before
+   * onConnectionStateChange existed.
+   */
   private onConnectionStarted: (engineConnection: EngineConnection) => void
+  /**
+   * Used for the EngineCommandManager, created before
+   * onConnectionStateChange existed.
+   */
   private onClose: (engineConnection: EngineConnection) => void
+  /**
+   * Used for the EngineCommandManager, created before
+   * onConnectionStateChange existed.
+   */
   private onNewTrack: (track: NewTrackArgs) => void
 
-  // TODO: actual type is ClientMetrics
+  /**
+   * @todo actual type is `ClientMetrics`
+   */
   public webrtcStatsCollector?: () => Promise<WebRTCClientMetrics>
   private engineCommandManager: EngineCommandManager
 
@@ -321,11 +350,13 @@ class EngineConnection {
     }
   }
 
-  // connect will attempt to connect to the Engine over a WebSocket, and
-  // establish the WebRTC connections.
-  //
-  // This will attempt the full handshake, and retry if the connection
-  // did not establish.
+  /**
+   * Attempts to connect to the Engine over a WebSocket, and
+   * establish the WebRTC connections.
+   *
+   * This will attempt the full handshake, and retry if the connection
+   * did not establish.
+   */
   connect() {
     if (this.isConnecting() || this.isReady()) {
       return
@@ -334,7 +365,9 @@ class EngineConnection {
     // Information on the connect transaction
 
     const createPeerConnection = () => {
-      this.pc = new RTCPeerConnection()
+      this.pc = new RTCPeerConnection({
+        bundlePolicy: 'max-bundle',
+      })
 
       // Data channels MUST BE specified before SDP offers because requesting
       // them affects what our needs are!
@@ -364,7 +397,12 @@ class EngineConnection {
         // Request a candidate to use
         this.send({
           type: 'trickle_ice',
-          candidate: event.candidate.toJSON(),
+          candidate: {
+            candidate: event.candidate.candidate,
+            sdpMid: event.candidate.sdpMid || undefined,
+            sdpMLineIndex: event.candidate.sdpMLineIndex || undefined,
+            usernameFragment: event.candidate.usernameFragment || undefined,
+          },
         })
       })
 
@@ -513,6 +551,7 @@ class EngineConnection {
           // Everything is now connected.
           this.state = { type: EngineConnectionStateType.ConnectionEstablished }
 
+          this.engineCommandManager.inSequence = 1
           this.onEngineConnectionOpen(this)
         })
 
@@ -533,6 +572,27 @@ class EngineConnection {
               },
             },
           }
+        })
+        this.unreliableDataChannel.addEventListener('message', (event) => {
+          const result: UnreliableResponses = JSON.parse(event.data)
+          Object.values(
+            this.engineCommandManager.unreliableSubscriptions[result.type] || {}
+          ).forEach(
+            // TODO: There is only one response that uses the unreliable channel atm,
+            // highlight_set_entity, if there are more it's likely they will all have the same
+            // sequence logic, but I'm not sure if we use a single global sequence or a sequence
+            // per unreliable subscription.
+            (callback) => {
+              if (
+                result.type === 'highlight_set_entity' &&
+                result?.data?.sequence &&
+                result?.data.sequence > this.engineCommandManager.inSequence
+              ) {
+                this.engineCommandManager.inSequence = result.data.sequence
+                callback(result)
+              }
+            }
+          )
         })
       })
     }
@@ -559,7 +619,10 @@ class EngineConnection {
       // Otherwise when run in a browser, the token is sent implicitly via
       // the Cookie header.
       if (this.token) {
-        this.send({ headers: { Authorization: `Bearer ${this.token}` } })
+        this.send({
+          type: 'headers',
+          headers: { Authorization: `Bearer ${this.token}` },
+        })
       }
     })
 
@@ -610,7 +673,6 @@ class EngineConnection {
             `Error in response to request ${message.request_id}:\n${errorsString}
 failed cmd type was ${artifactThatFailed?.commandType}`
           )
-          console.log(artifactThatFailed)
         } else {
           console.error(`Error from server:\n${errorsString}`)
         }
@@ -644,7 +706,9 @@ failed cmd type was ${artifactThatFailed?.commandType}`
           // No ICE servers can be valid in a local dev. env.
           if (ice_servers?.length === 0) {
             console.warn('No ICE servers')
-            this.pc?.setConfiguration({})
+            this.pc?.setConfiguration({
+              bundlePolicy: 'max-bundle',
+            })
           } else {
             // When we set the Configuration, we want to always force
             // iceTransportPolicy to 'relay', since we know the topology
@@ -652,6 +716,7 @@ failed cmd type was ${artifactThatFailed?.commandType}`
             // talk to the engine in any configuration /other/ than relay
             // from a infra POV.
             this.pc?.setConfiguration({
+              bundlePolicy: 'max-bundle',
               iceServers: ice_servers,
               iceTransportPolicy: 'relay',
             })
@@ -691,7 +756,10 @@ failed cmd type was ${artifactThatFailed?.commandType}`
               return this.pc?.setLocalDescription(offer).then(() => {
                 this.send({
                   type: 'sdp_offer',
-                  offer,
+                  offer: {
+                    sdp: offer.sdp || '',
+                    type: offer.type,
+                  },
                 })
                 this.state = {
                   type: EngineConnectionStateType.Connecting,
@@ -794,14 +862,18 @@ failed cmd type was ${artifactThatFailed?.commandType}`
 
     this.onConnectionStarted(this)
   }
-  unreliableSend(message: object | string) {
+  // Do not change this back to an object or any, we should only be sending the
+  // WebSocketRequest type!
+  unreliableSend(message: Models['WebSocketRequest_type']) {
     // TODO(paultag): Add in logic to determine the connection state and
     // take actions if needed?
     this.unreliableDataChannel?.send(
       typeof message === 'string' ? message : JSON.stringify(message)
     )
   }
-  send(message: object | string) {
+  // Do not change this back to an object or any, we should only be sending the
+  // WebSocketRequest type!
+  send(message: Models['WebSocketRequest_type']) {
     // TODO(paultag): Add in logic to determine the connection state and
     // take actions if needed?
     this.websocket?.send(
@@ -816,7 +888,6 @@ failed cmd type was ${artifactThatFailed?.commandType}`
     this.webrtcStatsCollector = undefined
   }
   finalizeIfAllConnectionsClosed() {
-    console.log(this.websocket, this.pc, this.unreliableDataChannel)
     const allClosed =
       this.websocket?.readyState === 3 &&
       this.pc?.connectionState === 'closed' &&
@@ -834,7 +905,7 @@ type CommandTypes = Models['ModelingCmd_type']['type'] | 'batch'
 
 type UnreliableResponses = Extract<
   Models['OkModelingCmdResponse_type'],
-  { type: 'highlight_set_entity' }
+  { type: 'highlight_set_entity' | 'camera_drag_move' }
 >
 interface UnreliableSubscription<T extends UnreliableResponses['type']> {
   event: T
@@ -868,20 +939,66 @@ export type CommandLog =
       data: null
     }
 
+/**
+ * The EngineCommandManager is the main interface to the Engine for Modeling App.
+ *
+ * It is responsible for sending commands to the Engine, and managing the state
+ * of those commands. It also sets up and tears down the connection to the Engine
+ * through the {@link EngineConnection} class.
+ *
+ * It also maintains an {@link artifactMap} that keeps track of the state of each
+ * command, and the artifacts that have been generated by those commands.
+ */
 export class EngineCommandManager {
+  /**
+   * The artifactMap is a client-side representation of the commands that have been sent
+   * to the server-side geometry engine, and the state of their resulting artifacts.
+   *
+   * It is used to keep track of the state of each command, which can fail, succeed, or be
+   * pending.
+   *
+   * It is also used to keep track of our client's understanding of what is in the engine scene
+   * so that we can map to and from KCL code. Each artifact maintains a source range to the part
+   * of the KCL code that generated it.
+   */
   artifactMap: ArtifactMap = {}
+  /**
+   * The {@link ArtifactMap} from the previous engine connection. This is used as a fallback
+   * when the engine connection is reset without a full client-side refresh.
+   *
+   * @deprecated This was used during a short time when we were choosing to not execute the engine in certain cases.
+   */
   lastArtifactMap: ArtifactMap = {}
+  /**
+   * The client-side representation of the scene command artifacts that have been sent to the server;
+   * that is, the *non-modeling* commands and corresponding artifacts.
+   *
+   * For modeling commands, see {@link artifactMap}.
+   */
   sceneCommandArtifacts: ArtifactMap = {}
+  /**
+   * A counter that is incremented with each command sent over the *unreliable* channel to the engine.
+   * This is compared to the latest received {@link inSequence} number to determine if we should ignore
+   * any out-of-order late responses in the unreliable channel.
+   */
   outSequence = 1
+  /**
+   * The latest sequence number received from the engine over the *unreliable* channel.
+   * This is compared to the {@link outSequence} number to determine if we should ignore
+   * any out-of-order late responses in the unreliable channel.
+   */
   inSequence = 1
+  pool?: string
   engineConnection?: EngineConnection
-  defaultPlanes: { xy: string; yz: string; xz: string } | null = null
-  _commandLogs: CommandLog[] = []
+  defaultPlanes: DefaultPlanes | null = null
+  commandLogs: CommandLog[] = []
   _commandLogCallBack: (command: CommandLog[]) => void = () => {}
-  // Folks should realize that wait for ready does not get called _everytime_
-  // the connection resets and restarts, it only gets called the first time.
-  // Be careful what you put here.
   private resolveReady = () => {}
+  /** Folks should realize that wait for ready does not get called _everytime_
+   *  the connection resets and restarts, it only gets called the first time.
+   *
+   *  Be careful what you put here.
+   */
   waitForReady: Promise<void> = new Promise((resolve) => {
     this.resolveReady = resolve
   })
@@ -900,8 +1017,9 @@ export class EngineCommandManager {
   callbacksEngineStateConnection: ((state: EngineConnectionState) => void)[] =
     []
 
-  constructor() {
+  constructor(pool?: string) {
     this.engineConnection = undefined
+    this.pool = pool
   }
 
   private _camControlsCameraChange = () => {}
@@ -914,6 +1032,7 @@ export class EngineCommandManager {
   set getAstCb(cb: () => Program) {
     this.getAst = cb
   }
+  private makeDefaultPlanes: () => Promise<DefaultPlanes> | null = () => null
 
   start({
     setMediaStream,
@@ -922,16 +1041,27 @@ export class EngineCommandManager {
     height,
     executeCode,
     token,
-    theme = Themes.Dark,
+    makeDefaultPlanes,
+    settings = {
+      theme: Themes.Dark,
+      highlightEdges: true,
+      enableSSAO: true,
+    },
   }: {
     setMediaStream: (stream: MediaStream) => void
     setIsStreamReady: (isStreamReady: boolean) => void
     width: number
     height: number
-    executeCode: (code?: string, force?: boolean) => void
+    executeCode: () => void
     token?: string
-    theme?: Themes
+    makeDefaultPlanes: () => Promise<DefaultPlanes>
+    settings?: {
+      theme: Themes
+      highlightEdges: boolean
+      enableSSAO: boolean
+    }
   }) {
+    this.makeDefaultPlanes = makeDefaultPlanes
     if (width === 0 || height === 0) {
       return
     }
@@ -945,7 +1075,9 @@ export class EngineCommandManager {
       return
     }
 
-    const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}`
+    const additionalSettings = settings.enableSSAO ? '&post_effect=ssao' : ''
+    const pool = this.pool === undefined ? '' : `&pool=${this.pool}`
+    const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}${additionalSettings}${pool}`
     this.engineConnection = new EngineConnection({
       engineCommandManager: this,
       url,
@@ -957,15 +1089,33 @@ export class EngineCommandManager {
       },
       onEngineConnectionOpen: () => {
         // Set the stream background color
-        // This takes RGBA values from 0-1
-        // So we convert from the conventional 0-255 found in Figma
-
         this.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
             type: 'set_background_color',
-            color: getThemeColorForEngine(theme),
+            color: getThemeColorForEngine(settings.theme),
+          },
+        })
+
+        // Sets the default line colors
+        const opposingTheme = getOppositeTheme(settings.theme)
+        this.sendSceneCommand({
+          cmd_id: uuidv4(),
+          type: 'modeling_cmd_req',
+          cmd: {
+            type: 'set_default_system_properties',
+            color: getThemeColorForEngine(opposingTheme),
+          },
+        })
+
+        // Set the edge lines visibility
+        this.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'edge_lines_visible' as any, // TODO: update kittycad.ts to use the correct type
+            hidden: !settings.highlightEdges,
           },
         })
 
@@ -1001,39 +1151,13 @@ export class EngineCommandManager {
         this.initPlanes().then(() => {
           this.resolveReady()
           setIsStreamReady(true)
-          executeCode(undefined, true)
+          executeCode()
         })
       },
       onClose: () => {
         setIsStreamReady(false)
       },
       onConnectionStarted: (engineConnection) => {
-        engineConnection?.pc?.addEventListener('datachannel', (event) => {
-          let unreliableDataChannel = event.channel
-
-          unreliableDataChannel.addEventListener('message', (event) => {
-            const result: UnreliableResponses = JSON.parse(event.data)
-            Object.values(
-              this.unreliableSubscriptions[result.type] || {}
-            ).forEach(
-              // TODO: There is only one response that uses the unreliable channel atm,
-              // highlight_set_entity, if there are more it's likely they will all have the same
-              // sequence logic, but I'm not sure if we use a single global sequence or a sequence
-              // per unreliable subscription.
-              (callback) => {
-                if (
-                  result?.data?.sequence &&
-                  result?.data.sequence > this.inSequence &&
-                  result.type === 'highlight_set_entity'
-                ) {
-                  this.inSequence = result.data.sequence
-                  callback(result)
-                }
-              }
-            )
-          })
-        })
-
         // When the EngineConnection starts a connection, we want to register
         // callbacks into the WebSocket/PeerConnection.
         engineConnection.websocket?.addEventListener('message', (event) => {
@@ -1062,7 +1186,7 @@ export class EngineCommandManager {
               message.request_id &&
               this.artifactMap[message.request_id]
             ) {
-              this.handleFailedModelingCommand(message)
+              this.handleFailedModelingCommand(message.request_id, message)
             }
           }
         })
@@ -1141,7 +1265,10 @@ export class EngineCommandManager {
       type: 'receive-reliable',
       data: message,
       id,
-      cmd_type: command?.commandType || this.lastArtifactMap[id]?.commandType,
+      cmd_type:
+        command?.commandType ||
+        this.lastArtifactMap[id]?.commandType ||
+        sceneCommand?.commandType,
     })
     Object.values(this.subscriptions[modelingResponse.type] || {}).forEach(
       (callback) => callback(modelingResponse)
@@ -1174,7 +1301,6 @@ export class EngineCommandManager {
         command?.commandType === 'solid3d_get_extrusion_face_info' &&
         modelingResponse.type === 'solid3d_get_extrusion_face_info'
       ) {
-        console.log('modelingResposne', modelingResponse)
         const parent = this.artifactMap[command?.parentId || '']
         modelingResponse.data.faces.forEach((face) => {
           if (face.cap !== 'none' && face.face_id && parent) {
@@ -1242,14 +1368,12 @@ export class EngineCommandManager {
       }
     }
   }
-  handleFailedModelingCommand(raw: WebSocketResponse) {
-    const id = raw.request_id
+  handleFailedModelingCommand(id: string, raw: WebSocketResponse) {
     const failed = raw as Models['FailureWebSocketResponse_type']
     const errors = failed.errors
     if (!id) return
     const command = this.artifactMap[id]
     if (command && command.type === 'pending') {
-      const resolve = command.resolve
       this.artifactMap[id] = {
         type: 'failed',
         range: command.range,
@@ -1258,6 +1382,19 @@ export class EngineCommandManager {
         parentId: command.parentId ? command.parentId : undefined,
         errors,
       }
+      if (
+        command?.type === 'pending' &&
+        command.commandType === 'batch' &&
+        command?.additionalData?.type === 'batch-ids'
+      ) {
+        command.additionalData.ids.forEach((id) => {
+          this.handleFailedModelingCommand(id, raw)
+        })
+      }
+      // batch artifact is just a container, we don't need to keep it
+      // once we process all the commands inside it
+      const resolve = command.resolve
+      delete this.artifactMap[id]
       resolve({
         id,
         commandType: command.commandType,
@@ -1279,24 +1416,32 @@ export class EngineCommandManager {
   tearDown() {
     this.engineConnection?.tearDown()
   }
-  startNewSession() {
+  async startNewSession() {
     this.lastArtifactMap = this.artifactMap
     this.artifactMap = {}
-    this.initPlanes()
+    await this.initPlanes()
+    await this.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'make_axes_gizmo',
+        clobber: false,
+        // If true, axes gizmo will be placed in the corner of the screen.
+        // If false, it will be placed at the origin of the scene.
+        gizmo_mode: true,
+      },
+    })
   }
   subscribeTo<T extends ModelTypes>({
     event,
     callback,
   }: Subscription<T>): () => void {
     const localUnsubscribeId = uuidv4()
-    const otherEventCallbacks = this.subscriptions[event]
-    if (otherEventCallbacks) {
-      otherEventCallbacks[localUnsubscribeId] = callback
-    } else {
-      this.subscriptions[event] = {
-        [localUnsubscribeId]: callback,
-      }
+    if (!this.subscriptions[event]) {
+      this.subscriptions[event] = {}
     }
+    this.subscriptions[event][localUnsubscribeId] = callback
+
     return () => this.unSubscribeTo(event, localUnsubscribeId)
   }
   private unSubscribeTo(event: ModelTypes, id: string) {
@@ -1307,14 +1452,10 @@ export class EngineCommandManager {
     callback,
   }: UnreliableSubscription<T>): () => void {
     const localUnsubscribeId = uuidv4()
-    const otherEventCallbacks = this.unreliableSubscriptions[event]
-    if (otherEventCallbacks) {
-      otherEventCallbacks[localUnsubscribeId] = callback
-    } else {
-      this.unreliableSubscriptions[event] = {
-        [localUnsubscribeId]: callback,
-      }
+    if (!this.unreliableSubscriptions[event]) {
+      this.unreliableSubscriptions[event] = {}
     }
+    this.unreliableSubscriptions[event][localUnsubscribeId] = callback
     return () => this.unSubscribeToUnreliable(event, localUnsubscribeId)
   }
   private unSubscribeToUnreliable(
@@ -1326,6 +1467,16 @@ export class EngineCommandManager {
   onConnectionStateChange(callback: (state: EngineConnectionState) => void) {
     this.callbacksEngineStateConnection.push(callback)
   }
+  // We make this a separate function so we can call it from wasm.
+  clearDefaultPlanes() {
+    this.defaultPlanes = null
+  }
+  async wasmGetDefaultPlanes(): Promise<string> {
+    if (this.defaultPlanes === null) {
+      await this.initPlanes()
+    }
+    return JSON.stringify(this.defaultPlanes)
+  }
   endSession() {
     const deleteCmd: EngineCommand = {
       type: 'modeling_cmd_req',
@@ -1334,20 +1485,20 @@ export class EngineCommandManager {
         type: 'scene_clear_all',
       },
     }
-    this.defaultPlanes = null
+    this.clearDefaultPlanes()
     this.engineConnection?.send(deleteCmd)
   }
   addCommandLog(message: CommandLog) {
-    if (this._commandLogs.length > 500) {
-      this._commandLogs.shift()
+    if (this.commandLogs.length > 500) {
+      this.commandLogs.shift()
     }
-    this._commandLogs.push(message)
+    this.commandLogs.push(message)
 
-    this._commandLogCallBack([...this._commandLogs])
+    this._commandLogCallBack([...this.commandLogs])
   }
   clearCommandLogs() {
-    this._commandLogs = []
-    this._commandLogCallBack(this._commandLogs)
+    this.commandLogs = []
+    this._commandLogCallBack(this.commandLogs)
   }
   registerCommandLogCallback(callback: (command: CommandLog[]) => void) {
     this._commandLogCallBack = callback
@@ -1444,7 +1595,7 @@ export class EngineCommandManager {
   }: {
     id: string
     range: SourceRange
-    command: EngineCommand | string
+    command: EngineCommand
     ast: Program
     idToRangeMap?: { [key: string]: SourceRange }
   }): Promise<any> {
@@ -1607,11 +1758,13 @@ export class EngineCommandManager {
     const idToRangeMap: { [key: string]: SourceRange } =
       JSON.parse(idToRangeStr)
 
+    const command: EngineCommand = JSON.parse(commandStr)
+
     // We only care about the modeling command response.
     return this.sendModelingCommand({
       id,
       range,
-      command: commandStr,
+      command,
       ast: this.getAst(),
       idToRangeMap,
     }).then(({ raw }: { raw: WebSocketResponse | undefined | null }) => {
@@ -1650,30 +1803,15 @@ export class EngineCommandManager {
   }
   private async initPlanes() {
     if (this.planesInitialized()) return
-    const [xy, yz, xz] = [
-      await this.createPlane({
-        x_axis: { x: 1, y: 0, z: 0 },
-        y_axis: { x: 0, y: 1, z: 0 },
-        color: { r: 0.7, g: 0.28, b: 0.28, a: 0.4 },
-      }),
-      await this.createPlane({
-        x_axis: { x: 0, y: 1, z: 0 },
-        y_axis: { x: 0, y: 0, z: 1 },
-        color: { r: 0.28, g: 0.7, b: 0.28, a: 0.4 },
-      }),
-      await this.createPlane({
-        x_axis: { x: 1, y: 0, z: 0 },
-        y_axis: { x: 0, y: 0, z: 1 },
-        color: { r: 0.28, g: 0.28, b: 0.7, a: 0.4 },
-      }),
-    ]
-    this.defaultPlanes = { xy, yz, xz }
+    const planes = await this.makeDefaultPlanes()
+    this.defaultPlanes = planes
 
     this.subscribeTo({
       event: 'select_with_point',
       callback: ({ data }) => {
         if (!data?.entity_id) return
-        if (![xy, yz, xz].includes(data.entity_id)) return
+        if (!planes) return
+        if (![planes.xy, planes.yz, planes.xz].includes(data.entity_id)) return
         this.onPlaneSelectCallback(data.entity_id)
       },
     })
@@ -1702,41 +1840,5 @@ export class EngineCommandManager {
         hidden: hidden,
       },
     })
-  }
-
-  private async createPlane({
-    x_axis,
-    y_axis,
-    color,
-  }: {
-    x_axis: Models['Point3d_type']
-    y_axis: Models['Point3d_type']
-    color: Models['Color_type']
-  }): Promise<string> {
-    const planeId = uuidv4()
-    await this.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'make_plane',
-        size: 100,
-        origin: { x: 0, y: 0, z: 0 },
-        x_axis,
-        y_axis,
-        clobber: false,
-        hide: true,
-      },
-      cmd_id: planeId,
-    })
-    await this.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'plane_set_color',
-        plane_id: planeId,
-        color,
-      },
-      cmd_id: uuidv4(),
-    })
-    await this.setPlaneHidden(planeId, true)
-    return planeId
   }
 }

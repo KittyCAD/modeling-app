@@ -13,11 +13,11 @@ export default function Streaming() {
     <div className="fixed grid justify-start items-center inset-0 z-50 pointer-events-none">
       <div
         className={
-          'max-w-xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg h-3/4 flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
+          'max-w-xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg h-[75vh] flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
           (buttonDownInStream ? '' : ' pointer-events-auto')
         }
       >
-        <section className="flex-1">
+        <section className="flex-1 overflow-y-auto">
           <h2 className="text-3xl font-bold">Streaming Video</h2>
           <p className="my-4">
             Historically, CAD programs run on your computer, so to run

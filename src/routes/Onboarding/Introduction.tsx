@@ -1,53 +1,38 @@
-import {
-  ONBOARDING_PROJECT_NAME,
-  OnboardingButtons,
-  useDismiss,
-  useNextClick,
-} from '.'
+import { OnboardingButtons, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { bracket } from 'lib/exampleKcl'
 import {
-  createNewProject,
   getNextProjectIndex,
-  getProjectsInDir,
   interpolateProjectNameWithIndex,
 } from 'lib/tauriFS'
 import { isTauri } from 'lib/isTauri'
 import { useNavigate } from 'react-router-dom'
 import { paths } from 'lib/paths'
 import { useEffect } from 'react'
-import { kclManager } from 'lib/singletons'
+import { codeManager, kclManager } from 'lib/singletons'
 import { join } from '@tauri-apps/api/path'
-import { APP_NAME, PROJECT_ENTRYPOINT } from 'lib/constants'
+import {
+  APP_NAME,
+  ONBOARDING_PROJECT_NAME,
+  PROJECT_ENTRYPOINT,
+} from 'lib/constants'
+import { createNewProjectDirectory, listProjects } from 'lib/tauri'
 
 function OnboardingWithNewFile() {
   const navigate = useNavigate()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.INDEX)
-  const {
-    settings: {
-      context: {
-        app: { projectDirectory },
-      },
-    },
-  } = useSettingsAuthContext()
 
   async function createAndOpenNewProject() {
-    const projects = await getProjectsInDir(projectDirectory.current)
-    const nextIndex = await getNextProjectIndex(
-      ONBOARDING_PROJECT_NAME,
-      projects
-    )
+    const projects = await listProjects()
+    const nextIndex = getNextProjectIndex(ONBOARDING_PROJECT_NAME, projects)
     const name = interpolateProjectNameWithIndex(
       ONBOARDING_PROJECT_NAME,
       nextIndex
     )
-    const newFile = await createNewProject(
-      await join(projectDirectory.current, name),
-      bracket
-    )
+    const newFile = await createNewProjectDirectory(name, bracket)
     navigate(
       `${paths.FILE}/${encodeURIComponent(
         await join(newFile.path, PROJECT_ENTRYPOINT)
@@ -70,7 +55,9 @@ function OnboardingWithNewFile() {
               className="mt-6"
               dismiss={dismiss}
               next={() => {
-                kclManager.setCodeAndExecute(bracket)
+                // We do want to update both the state and editor here.
+                codeManager.updateCodeEditor(bracket)
+                kclManager.executeCode(true)
                 next()
               }}
               nextText="Overwrite code and continue"
@@ -93,7 +80,7 @@ function OnboardingWithNewFile() {
               dismiss={dismiss}
               next={() => {
                 void createAndOpenNewProject()
-                kclManager.setCode(bracket, false)
+                codeManager.updateCodeEditor(bracket)
                 dismiss()
               }}
               nextText="Make a new project"
@@ -122,10 +109,11 @@ export default function Introduction() {
       : ''
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.CAMERA)
-  const isStarterCode = kclManager.code === '' || kclManager.code === bracket
+  const currentCode = codeManager.code
+  const isStarterCode = currentCode === '' || currentCode === bracket
 
   useEffect(() => {
-    if (kclManager.code === '') kclManager.setCode(bracket)
+    if (codeManager.code === '') codeManager.updateCodeEditor(bracket)
   }, [])
 
   return isStarterCode ? (

@@ -1,7 +1,9 @@
 import { parse, initPromise } from './wasm'
 import { enginelessExecutor } from '../lib/testHelpers'
 
-beforeAll(() => initPromise)
+beforeAll(async () => {
+  await initPromise
+})
 
 describe('testing artifacts', () => {
   // Enable rotations #152

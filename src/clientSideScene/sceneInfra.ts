@@ -24,13 +24,13 @@ import {
 import { compareVec2Epsilon2 } from 'lang/std/sketch'
 import { useModelingContext } from 'hooks/useModelingContext'
 import * as TWEEN from '@tweenjs/tween.js'
-import { SourceRange } from 'lang/wasm'
 import { Axis } from 'lib/selections'
 import { type BaseUnit } from 'lib/settings/settingsTypes'
 import { CameraControls } from './CameraControls'
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import { settings } from 'lib/settings/initialSettings'
 import { MouseState } from 'machines/modelingMachine'
+import { Themes } from 'lib/theme'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -102,6 +102,7 @@ export class SceneInfra {
   isFovAnimationInProgress = false
   _baseUnit: BaseUnit = 'mm'
   _baseUnitMultiplier = 1
+  _theme: Themes = Themes.System
   extraSegmentTexture: Texture
   lastMouseState: MouseState = { type: 'idle' }
   onDragStartCallback: (arg: OnDragCallbackArgs) => void = () => {}
@@ -138,6 +139,9 @@ export class SceneInfra {
       this._baseUnitMultiplier
     )
   }
+  set theme(theme: Themes) {
+    this._theme = theme
+  }
   resetMouseListeners = () => {
     this.setCallbacks({
       onDragStart: () => {},
@@ -148,10 +152,6 @@ export class SceneInfra {
       onMouseEnter: () => {},
       onMouseLeave: () => {},
     })
-  }
-  highlightCallback: (a: SourceRange) => void = () => {}
-  setHighlightCallback(cb: (a: SourceRange) => void) {
-    this.highlightCallback = cb
   }
 
   modelingSend: SendType = (() => {}) as any

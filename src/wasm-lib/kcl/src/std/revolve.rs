@@ -45,13 +45,13 @@ pub enum RevolveAxis {
 #[serde(rename_all = "camelCase")]
 pub enum RevolveAxisAndOrigin {
     /// X-axis.
-    #[serde(alias = "X")]
+    #[serde(rename = "X", alias = "x")]
     X,
     /// Y-axis.
-    #[serde(alias = "Y")]
+    #[serde(rename = "Y", alias = "y")]
     Y,
     /// Z-axis.
-    #[serde(alias = "Z")]
+    #[serde(rename = "Z", alias = "z")]
     Z,
     /// Flip the X-axis.
     #[serde(rename = "-X", alias = "-x")]
@@ -291,26 +291,32 @@ pub async fn get_edge(args: Args) -> Result<MemoryItem, KclError> {
 /// Get an edge on a 3D solid.
 ///
 /// ```no_run
-/// const box = startSketchOn('XY')
-///     |> startProfileAt([0, 0], %)
-///     |> line([0, 10], %)
-///     |> line([10, 0], %)
-///     |> line([0, -10], %, 'revolveAxis')
-///     |> close(%)
-///     |> extrude(10, %)
+/// const box = startSketchOn('XZ')
+///   |> startProfileAt([0, 0], %)
+///   |> line([0, 10], %, 'revolveAxis')
+///   |> line([10, 0], %)
+///   |> line([0, -10], %)
+///   |> close(%)
+///   |> extrude(10, %)
 ///
-/// const sketch001 = startSketchOn(box, "revolveAxis")
-///     |> startProfileAt([5, 10], %)
-///     |> line([0, -10], %)
-///     |> line([2, 0], %)
-///     |> line([0, 10], %)
-///     |> close(%)
-///     |> revolve({ axis: getEdge('revolveAxis', box), angle: 90 }, %)
+/// const revolution = startSketchOn('XZ')
+///   |> startProfileAt([-10, 0], %)
+///   |> line([0, 10], %)
+///   |> line([2, 0], %)
+///   |> line([0, -10], %)
+///   |> close(%)
+///   |> revolve({
+///        axis: getEdge('revolveAxis', box),
+///        angle: 90
+///      }, %)
 /// ```
 #[stdlib {
     name = "getEdge",
 }]
 async fn inner_get_edge(tag: String, extrude_group: Box<ExtrudeGroup>, args: Args) -> Result<Uuid, KclError> {
+    if args.ctx.is_mock {
+        return Ok(Uuid::new_v4());
+    }
     let tagged_path = extrude_group
         .sketch_group_values
         .iter()
@@ -337,7 +343,7 @@ mod tests {
     fn test_deserialize_revolve_axis() {
         let data = RevolveAxis::Axis(RevolveAxisAndOrigin::X);
         let mut str_json = serde_json::to_string(&data).unwrap();
-        assert_eq!(str_json, "\"x\"");
+        assert_eq!(str_json, "\"X\"");
 
         str_json = "\"Y\"".to_string();
         let data: RevolveAxis = serde_json::from_str(&str_json).unwrap();

@@ -37,22 +37,26 @@ import {
 } from './sceneEntities'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import { ARROWHEAD } from './sceneInfra'
+import { Themes, getThemeColorForThreeJs } from 'lib/theme'
 
 export function profileStart({
   from,
   id,
   pathToNode,
   scale = 1,
+  theme,
 }: {
   from: Coords2d
   id: string
   pathToNode: PathToNode
   scale?: number
+  theme: Themes
 }) {
   const group = new Group()
 
   const geometry = new BoxGeometry(12, 12, 12) // in pixels scaled later
-  const body = new MeshBasicMaterial({ color: 0xffffff })
+  const baseColor = getThemeColorForThreeJs(theme)
+  const body = new MeshBasicMaterial({ color: baseColor })
   const mesh = new Mesh(geometry, body)
 
   group.add(mesh)
@@ -79,6 +83,7 @@ export function straightSegment({
   scale = 1,
   callExpName,
   texture,
+  theme,
 }: {
   from: Coords2d
   to: Coords2d
@@ -88,6 +93,7 @@ export function straightSegment({
   scale?: number
   callExpName: string
   texture: Texture
+  theme: Themes
 }): Group {
   const group = new Group()
 
@@ -111,7 +117,8 @@ export function straightSegment({
     })
   }
 
-  const baseColor = callExpName === 'close' ? 0x444444 : 0xffffff
+  const baseColor =
+    callExpName === 'close' ? 0x444444 : getThemeColorForThreeJs(theme)
   const body = new MeshBasicMaterial({ color: baseColor })
   const mesh = new Mesh(geometry, body)
   mesh.userData.type = isDraftSegment
@@ -134,7 +141,7 @@ export function straightSegment({
   const length = Math.sqrt(
     Math.pow(to[0] - from[0], 2) + Math.pow(to[1] - from[1], 2)
   )
-  const arrowGroup = createArrowhead(scale)
+  const arrowGroup = createArrowhead(scale, theme)
   arrowGroup.position.set(to[0], to[1], 0)
   const dir = new Vector3()
     .subVectors(new Vector3(to[0], to[1], 0), new Vector3(from[0], from[1], 0))
@@ -147,7 +154,7 @@ export function straightSegment({
   group.add(mesh)
   if (callExpName !== 'close') group.add(arrowGroup)
 
-  const extraSegmentGroup = createExtraSegmentHandle(scale, texture)
+  const extraSegmentGroup = createExtraSegmentHandle(scale, texture, theme)
   const offsetFromBase = new Vector2(to[0] - from[0], to[1] - from[1])
     .normalize()
     .multiplyScalar(EXTRA_SEGMENT_OFFSET_PX * scale)
@@ -162,8 +169,10 @@ export function straightSegment({
   return group
 }
 
-function createArrowhead(scale = 1): Group {
-  const arrowMaterial = new MeshBasicMaterial({ color: 0xffffff })
+function createArrowhead(scale = 1, theme: Themes): Group {
+  const arrowMaterial = new MeshBasicMaterial({
+    color: getThemeColorForThreeJs(theme),
+  })
   // specify the size of the geometry in pixels (i.e. cone height = 20px, cone radius = 4.5px)
   // we'll scale the group to the correct size later to match these sizes in screen space
   const arrowheadMesh = new Mesh(new ConeGeometry(4.5, 20, 12), arrowMaterial)
@@ -179,7 +188,11 @@ function createArrowhead(scale = 1): Group {
   return arrowGroup
 }
 
-function createExtraSegmentHandle(scale: number, texture: Texture): Group {
+function createExtraSegmentHandle(
+  scale: number,
+  texture: Texture,
+  theme: Themes
+): Group {
   const particleMaterial = new PointsMaterial({
     size: 12, // in pixels
     map: texture,
@@ -189,7 +202,7 @@ function createExtraSegmentHandle(scale: number, texture: Texture): Group {
   })
   const mat = new MeshBasicMaterial({
     transparent: true,
-    color: 0xffffff,
+    color: getThemeColorForThreeJs(theme),
     opacity: 0,
   })
   const particleGeometry = new BufferGeometry().setFromPoints([
@@ -218,6 +231,7 @@ export function tangentialArcToSegment({
   isDraftSegment,
   scale = 1,
   texture,
+  theme,
 }: {
   prevSegment: SketchGroup['value'][number]
   from: Coords2d
@@ -227,6 +241,7 @@ export function tangentialArcToSegment({
   isDraftSegment?: boolean
   scale?: number
   texture: Texture
+  theme: Themes
 }): Group {
   const group = new Group()
 
@@ -257,7 +272,8 @@ export function tangentialArcToSegment({
     scale,
   })
 
-  const body = new MeshBasicMaterial({ color: 0xffffff })
+  const baseColor = getThemeColorForThreeJs(theme)
+  const body = new MeshBasicMaterial({ color: baseColor })
   const mesh = new Mesh(geometry, body)
   mesh.userData.type = isDraftSegment
     ? TANGENTIAL_ARC_TO__SEGMENT_DASH
@@ -271,10 +287,11 @@ export function tangentialArcToSegment({
     prevSegment,
     pathToNode,
     isSelected: false,
+    baseColor,
   }
   group.name = TANGENTIAL_ARC_TO_SEGMENT
 
-  const arrowGroup = createArrowhead(scale)
+  const arrowGroup = createArrowhead(scale, theme)
   arrowGroup.position.set(to[0], to[1], 0)
   const arrowheadAngle = endAngle + (Math.PI / 2) * (ccw ? 1 : -1)
   arrowGroup.quaternion.setFromUnitVectors(
@@ -285,7 +302,7 @@ export function tangentialArcToSegment({
   const shouldHide = pxLength < HIDE_SEGMENT_LENGTH
   arrowGroup.visible = !shouldHide
 
-  const extraSegmentGroup = createExtraSegmentHandle(scale, texture)
+  const extraSegmentGroup = createExtraSegmentHandle(scale, texture, theme)
   const circumferenceInPx = (2 * Math.PI * radius) / scale
   const extraSegmentAngleDelta =
     (EXTRA_SEGMENT_OFFSET_PX / circumferenceInPx) * Math.PI * 2

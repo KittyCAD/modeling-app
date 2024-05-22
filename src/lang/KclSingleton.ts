@@ -1,6 +1,6 @@
-import { executeAst, executeCode } from 'useStore'
+import { executeAst } from 'useStore'
 import { Selections } from 'lib/selections'
-import { KCLError } from './errors'
+import { KCLError, kclErrorsToDiagnostics } from './errors'
 import { uuidv4 } from 'lib/utils'
 import { EngineCommandManager } from './std/engineConnection'
 
@@ -16,17 +16,10 @@ import {
   SketchGroup,
   ExtrudeGroup,
 } from 'lang/wasm'
-import { bracket } from 'lib/exampleKcl'
 import { getNodeFromPath } from './queryAst'
-import { Params } from 'react-router-dom'
-import { isTauri } from 'lib/isTauri'
-import { writeTextFile } from '@tauri-apps/plugin-fs'
-import { toast } from 'react-hot-toast'
-
-const PERSIST_CODE_TOKEN = 'persistCode'
+import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
 
 export class KclManager {
-  private _code = bracket
   private _ast: Program = {
     body: [],
     start: 0,
@@ -44,7 +37,6 @@ export class KclManager {
   private _kclErrors: KCLError[] = []
   private _isExecuting = false
   private _wasmInitFailed = true
-  private _params: Params<string> = {}
 
   engineCommandManager: EngineCommandManager
   private _defferer = deferExecution((code: string) => {
@@ -62,7 +54,6 @@ export class KclManager {
   }, 600)
 
   private _isExecutingCallback: (arg: boolean) => void = () => {}
-  private _codeCallBack: (arg: string) => void = () => {}
   private _astCallBack: (arg: Program) => void = () => {}
   private _programMemoryCallBack: (arg: ProgramMemory) => void = () => {}
   private _logsCallBack: (arg: string[]) => void = () => {}
@@ -76,28 +67,6 @@ export class KclManager {
   set ast(ast) {
     this._ast = ast
     this._astCallBack(ast)
-  }
-
-  get code() {
-    return this._code
-  }
-  set code(code) {
-    this._code = code
-    this._codeCallBack(code)
-    if (isTauri()) {
-      setTimeout(() => {
-        // Wait one event loop to give a chance for params to be set
-        // Save the file to disk
-        this._params.id &&
-          writeTextFile(this._params.id, code).catch((err) => {
-            // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
-            console.error('error saving file', err)
-            toast.error('Error saving file, please check file permissions')
-          })
-      })
-    } else {
-      safteLSSetItem(PERSIST_CODE_TOKEN, code)
-    }
   }
 
   get programMemory() {
@@ -121,6 +90,8 @@ export class KclManager {
   }
   set kclErrors(kclErrors) {
     this._kclErrors = kclErrors
+    let diagnostics = kclErrorsToDiagnostics(kclErrors)
+    editorManager.setDiagnostics(diagnostics)
     this._kclErrorsCallBack(kclErrors)
   }
 
@@ -140,38 +111,15 @@ export class KclManager {
     this._wasmInitFailedCallback(wasmInitFailed)
   }
 
-  setParams(params: Params<string>) {
-    this._params = params
-  }
-
   constructor(engineCommandManager: EngineCommandManager) {
     this.engineCommandManager = engineCommandManager
 
-    if (isTauri()) {
-      this.code = ''
-      return
-    }
-    const storedCode = safeLSGetItem(PERSIST_CODE_TOKEN) || ''
-    // TODO #819 remove zustand persistence logic in a few months
-    // short term migration, shouldn't make a difference for tauri app users
-    // anyway since that's filesystem based.
-    const zustandStore = JSON.parse(safeLSGetItem('store') || '{}')
-    if (storedCode === null && zustandStore?.state?.code) {
-      this.code = zustandStore.state.code
-      safteLSSetItem(PERSIST_CODE_TOKEN, this._code)
-      zustandStore.state.code = ''
-      safteLSSetItem('store', JSON.stringify(zustandStore))
-    } else if (storedCode === null) {
-      this.code = bracket
-    } else {
-      this.code = storedCode
-    }
     this.ensureWasmInit().then(() => {
-      this.ast = this.safeParse(this.code) || this.ast
+      this.ast = this.safeParse(codeManager.code) || this.ast
     })
   }
+
   registerCallBacks({
-    setCode,
     setProgramMemory,
     setAst,
     setLogs,
@@ -179,7 +127,6 @@ export class KclManager {
     setIsExecuting,
     setWasmInitFailed,
   }: {
-    setCode: (arg: string) => void
     setProgramMemory: (arg: ProgramMemory) => void
     setAst: (arg: Program) => void
     setLogs: (arg: string[]) => void
@@ -187,7 +134,6 @@ export class KclManager {
     setIsExecuting: (arg: boolean) => void
     setWasmInitFailed: (arg: boolean) => void
   }) {
-    this._codeCallBack = setCode
     this._programMemoryCallBack = setProgramMemory
     this._astCallBack = setAst
     this._logsCallBack = setLogs
@@ -227,11 +173,11 @@ export class KclManager {
 
   private _cancelTokens: Map<number, boolean> = new Map()
 
-  async executeAst(
-    ast: Program = this._ast,
-    updateCode = false,
-    executionId?: number
-  ) {
+  // This NEVER updates the code, if you want to update the code DO NOT add to
+  // this function, too many other things that don't want it exist.
+  // just call to codeManager from wherever you want in other files.
+  async executeAst(ast: Program = this._ast, executionId?: number) {
+    await this?.engineCommandManager?.waitForReady
     const currentExecutionId = executionId || Date.now()
     this._cancelTokens.set(currentExecutionId, false)
 
@@ -241,7 +187,8 @@ export class KclManager {
       ast,
       engineCommandManager: this.engineCommandManager,
     })
-    enterEditMode(programMemory, this.engineCommandManager)
+    sceneInfra.modelingSend({ type: 'code edit during sketch' })
+    defaultSelectionFilter(programMemory, this.engineCommandManager)
     this.isExecuting = false
     // Check the cancellation token for this execution before applying side effects
     if (this._cancelTokens.get(currentExecutionId)) {
@@ -252,9 +199,6 @@ export class KclManager {
     this.kclErrors = errors
     this.programMemory = programMemory
     this.ast = { ...ast }
-    if (updateCode) {
-      this.code = recast(ast)
-    }
     this._executeCallback()
     this.engineCommandManager.addCommandLog({
       type: 'execution-done',
@@ -262,22 +206,24 @@ export class KclManager {
     })
     this._cancelTokens.delete(currentExecutionId)
   }
+  // NOTE: this always updates the code state and editor.
+  // DO NOT CALL THIS from codemirror ever.
   async executeAstMock(
     ast: Program = this._ast,
     {
       updates,
     }: {
-      updates: 'none' | 'code' | 'codeAndArtifactRanges'
+      updates: 'none' | 'artifactRanges'
     } = { updates: 'none' }
   ) {
     await this.ensureWasmInit()
     const newCode = recast(ast)
     const newAst = this.safeParse(newCode)
     if (!newAst) return
+    codeManager.updateCodeEditor(newCode)
+    // Write the file to disk.
+    await codeManager.writeToFile()
     await this?.engineCommandManager?.waitForReady
-    if (updates !== 'none') {
-      this.setCode(recast(ast))
-    }
     this._ast = { ...newAst }
 
     const { logs, errors, programMemory } = await executeAst({
@@ -288,7 +234,7 @@ export class KclManager {
     this._logs = logs
     this._kclErrors = errors
     this._programMemory = programMemory
-    if (updates !== 'codeAndArtifactRanges') return
+    if (updates !== 'artifactRanges') return
     Object.entries(this.engineCommandManager.artifactMap).forEach(
       ([commandId, artifact]) => {
         if (!artifact.pathToNode) return
@@ -308,79 +254,36 @@ export class KclManager {
       }
     )
   }
-  executeCode = async (code?: string, executionId?: number) => {
-    const currentExecutionId = executionId || Date.now()
-    this._cancelTokens.set(currentExecutionId, false)
-    if (this._cancelTokens.get(currentExecutionId)) {
-      this._cancelTokens.delete(currentExecutionId)
-      return
-    }
-    await this.ensureWasmInit()
-    await this?.engineCommandManager?.waitForReady
-    const result = await executeCode({
-      engineCommandManager: this.engineCommandManager,
-      code: code || this._code,
-      lastAst: this._ast,
-      force: false,
-    })
-    // Check the cancellation token for this execution before applying side effects
-    if (this._cancelTokens.get(currentExecutionId)) {
-      this._cancelTokens.delete(currentExecutionId)
-      return
-    }
-    if (!result.isChange) return
-    const { logs, errors, programMemory, ast } = result
-    enterEditMode(programMemory, this.engineCommandManager)
-    this.logs = logs
-    this.kclErrors = errors
-    this.programMemory = programMemory
-    this.ast = ast
-    if (code) this.code = code
-    this._cancelTokens.delete(currentExecutionId)
-  }
   cancelAllExecutions() {
     this._cancelTokens.forEach((_, key) => {
       this._cancelTokens.set(key, true)
     })
   }
-  setCode(code: string, shouldWriteFile = true) {
-    if (shouldWriteFile) {
-      // use the normal code setter
-      this.code = code
-      return
-    }
-    this._code = code
-    this._codeCallBack(code)
-  }
-  setCodeAndExecute(code: string, shouldWriteFile = true) {
-    this.setCode(code, shouldWriteFile)
-    if (code.trim()) {
-      this._defferer(code)
-      return
-    }
-    this._ast = {
-      body: [],
-      start: 0,
-      end: 0,
-      nonCodeMeta: {
-        nonCodeNodes: {},
-        start: [],
-      },
-    }
-    this._programMemory = {
-      root: {},
-      return: null,
-    }
-    this.engineCommandManager.endSession()
+  executeCode(force?: boolean) {
+    // If we want to force it we don't want to defer it.
+    if (!force) return this._defferer(codeManager.code)
+
+    const ast = this.safeParse(codeManager.code)
+    if (!ast) return
+    this.ast = { ...ast }
+    return this.executeAst(ast)
   }
   format() {
-    const ast = this.safeParse(this.code)
+    const originalCode = codeManager.code
+    const ast = this.safeParse(originalCode)
     if (!ast) return
-    this.code = recast(ast)
+    const code = recast(ast)
+    if (originalCode === code) return
+
+    // Update the code state and the editor.
+    codeManager.updateCodeStateEditor(code)
+    // Write back to the file system.
+    codeManager.writeToFile()
   }
   // There's overlapping responsibility between updateAst and executeAst.
   // updateAst was added as it was used a lot before xState migration so makes the port easier.
   // but should probably have think about which of the function to keep
+  // This always updates the code state and editor and writes to the file system.
   async updateAst(
     ast: Program,
     execute: boolean,
@@ -413,12 +316,17 @@ export class KclManager {
 
     if (execute) {
       // Call execute on the set ast.
-      await this.executeAst(astWithUpdatedSource, true)
+      // Update the code state and editor.
+      codeManager.updateCodeEditor(newCode)
+      // Write the file to disk.
+      await codeManager.writeToFile()
+      await this.executeAst(astWithUpdatedSource)
     } else {
       // When we don't re-execute, we still want to update the program
       // memory with the new ast. So we will hit the mock executor
-      // instead.
-      await this.executeAstMock(astWithUpdatedSource, { updates: 'code' })
+      // instead..
+      // Execute ast mock will update the code state and editor.
+      await this.executeAstMock(astWithUpdatedSource)
     }
     return returnVal
   }
@@ -440,19 +348,19 @@ export class KclManager {
     void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, true)
     void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, true)
   }
+  exitEditMode() {
+    this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: { type: 'edit_mode_exit' },
+    })
+  }
+  defaultSelectionFilter() {
+    defaultSelectionFilter(this.programMemory, this.engineCommandManager)
+  }
 }
 
-function safeLSGetItem(key: string) {
-  if (typeof window === 'undefined') return null
-  return localStorage?.getItem(key)
-}
-
-function safteLSSetItem(key: string, value: string) {
-  if (typeof window === 'undefined') return
-  localStorage?.setItem(key, value)
-}
-
-function enterEditMode(
+function defaultSelectionFilter(
   programMemory: ProgramMemory,
   engineCommandManager: EngineCommandManager
 ) {
@@ -463,6 +371,7 @@ function enterEditMode(
     engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_batch_req',
       batch_id: uuidv4(),
+      responses: false,
       requests: [
         {
           cmd_id: uuidv4(),

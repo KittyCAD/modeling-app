@@ -6,6 +6,11 @@ import { CopilotLspCompletionParams } from 'wasm-lib/kcl/bindings/CopilotLspComp
 import { CopilotCompletionResponse } from 'wasm-lib/kcl/bindings/CopilotCompletionResponse'
 import { CopilotAcceptCompletionParams } from 'wasm-lib/kcl/bindings/CopilotAcceptCompletionParams'
 import { CopilotRejectCompletionParams } from 'wasm-lib/kcl/bindings/CopilotRejectCompletionParams'
+import { UpdateUnitsParams } from 'wasm-lib/kcl/bindings/UpdateUnitsParams'
+import { UpdateCanExecuteParams } from 'wasm-lib/kcl/bindings/UpdateCanExecuteParams'
+import { UpdateUnitsResponse } from 'wasm-lib/kcl/bindings/UpdateUnitsResponse'
+import { UpdateCanExecuteResponse } from 'wasm-lib/kcl/bindings/UpdateCanExecuteResponse'
+import { LspWorker } from './types'
 
 // https://microsoft.github.io/language-server-protocol/specifications/specification-current/
 
@@ -21,9 +26,17 @@ interface LSPRequestMap {
     LSP.SemanticTokensParams,
     LSP.SemanticTokens
   ]
-  getCompletions: [CopilotLspCompletionParams, CopilotCompletionResponse]
-  notifyAccepted: [CopilotAcceptCompletionParams, any]
-  notifyRejected: [CopilotRejectCompletionParams, any]
+  'textDocument/formatting': [
+    LSP.DocumentFormattingParams,
+    LSP.TextEdit[] | null
+  ]
+  'textDocument/foldingRange': [LSP.FoldingRangeParams, LSP.FoldingRange[]]
+  'copilot/getCompletions': [
+    CopilotLspCompletionParams,
+    CopilotCompletionResponse
+  ]
+  'kcl/updateUnits': [UpdateUnitsParams, UpdateUnitsResponse | null]
+  'kcl/updateCanExecute': [UpdateCanExecuteParams, UpdateCanExecuteResponse]
 }
 
 // Client to server
@@ -36,11 +49,13 @@ interface LSPNotifyMap {
   'workspace/didCreateFiles': LSP.CreateFilesParams
   'workspace/didRenameFiles': LSP.RenameFilesParams
   'workspace/didDeleteFiles': LSP.DeleteFilesParams
+  'copilot/notifyAccepted': CopilotAcceptCompletionParams
+  'copilot/notifyRejected': CopilotRejectCompletionParams
 }
 
 export interface LanguageServerClientOptions {
   client: Client
-  name: string
+  name: LspWorker
 }
 
 export interface LanguageServerOptions {
@@ -53,11 +68,11 @@ export interface LanguageServerOptions {
 
 export class LanguageServerClient {
   private client: Client
-  private name: string
+  readonly name: string
 
   public ready: boolean
 
-  private plugins: LanguageServerPlugin[]
+  readonly plugins: LanguageServerPlugin[]
 
   public initializePromise: Promise<void>
 
@@ -182,12 +197,29 @@ export class LanguageServerClient {
     return await this.request('textDocument/hover', params)
   }
 
+  async textDocumentFormatting(params: LSP.DocumentFormattingParams) {
+    const serverCapabilities = this.getServerCapabilities()
+    if (!serverCapabilities.documentFormattingProvider) {
+      return
+    }
+    return await this.request('textDocument/formatting', params)
+  }
+
+  async textDocumentFoldingRange(params: LSP.FoldingRangeParams) {
+    const serverCapabilities = this.getServerCapabilities()
+    if (!serverCapabilities.foldingRangeProvider) {
+      return
+    }
+    return await this.request('textDocument/foldingRange', params)
+  }
+
   async textDocumentCompletion(params: LSP.CompletionParams) {
     const serverCapabilities = this.getServerCapabilities()
     if (!serverCapabilities.completionProvider) {
       return
     }
-    return await this.request('textDocument/completion', params)
+    const response = await this.request('textDocument/completion', params)
+    return response
   }
 
   attachPlugin(plugin: LanguageServerPlugin) {
@@ -215,7 +247,7 @@ export class LanguageServerClient {
   }
 
   async getCompletion(params: CopilotLspCompletionParams) {
-    const response = await this.request('getCompletions', params)
+    const response = await this.request('copilot/getCompletions', params)
     //
     this.queuedUids = [...response.completions.map((c) => c.uuid)]
     return response
@@ -224,22 +256,34 @@ export class LanguageServerClient {
   async accept(uuid: string) {
     const badUids = this.queuedUids.filter((u) => u !== uuid)
     this.queuedUids = []
-    await this.acceptCompletion({ uuid })
-    await this.rejectCompletions({ uuids: badUids })
+    this.acceptCompletion({ uuid })
+    this.rejectCompletions({ uuids: badUids })
   }
 
   async reject() {
     const badUids = this.queuedUids
     this.queuedUids = []
-    return await this.rejectCompletions({ uuids: badUids })
+    this.rejectCompletions({ uuids: badUids })
   }
 
-  async acceptCompletion(params: CopilotAcceptCompletionParams) {
-    return await this.request('notifyAccepted', params)
+  acceptCompletion(params: CopilotAcceptCompletionParams) {
+    this.notify('copilot/notifyAccepted', params)
   }
 
-  async rejectCompletions(params: CopilotRejectCompletionParams) {
-    return await this.request('notifyRejected', params)
+  rejectCompletions(params: CopilotRejectCompletionParams) {
+    this.notify('copilot/notifyRejected', params)
+  }
+
+  async updateUnits(
+    params: UpdateUnitsParams
+  ): Promise<UpdateUnitsResponse | null> {
+    return await this.request('kcl/updateUnits', params)
+  }
+
+  async updateCanExecute(
+    params: UpdateCanExecuteParams
+  ): Promise<UpdateCanExecuteResponse> {
+    return await this.request('kcl/updateCanExecute', params)
   }
 
   private processNotifications(notification: LSP.NotificationMessage) {

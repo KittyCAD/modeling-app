@@ -1,13 +1,13 @@
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
-import { secrets } from './secrets'
-import * as TOML from '@iarna/toml'
 import { Themes } from 'lib/theme'
 
-export const basicSettings = {
+export const TEST_SETTINGS_KEY = '/settings.toml'
+export const TEST_SETTINGS = {
   app: {
     theme: Themes.Dark,
     onboardingStatus: 'dismissed',
     projectDirectory: '',
+    enableSSAO: false,
   },
   modeling: {
     defaultUnit: 'in',
@@ -22,19 +22,31 @@ export const basicSettings = {
   },
 } satisfies Partial<SaveSettingsPayload>
 
-export const basicStorageState = {
-  cookies: [],
-  origins: [
-    {
-      origin: 'http://localhost:3000',
-      localStorage: [
-        { name: 'TOKEN_PERSIST_KEY', value: secrets.token },
-        { name: 'persistCode', value: '' },
-        {
-          name: '/user.toml',
-          value: TOML.stringify({ settings: basicSettings }),
-        },
-      ],
-    },
-  ],
-}
+export const TEST_SETTINGS_ONBOARDING_EXPORT = {
+  ...TEST_SETTINGS,
+  app: { ...TEST_SETTINGS.app, onboardingStatus: '/export' },
+} satisfies Partial<SaveSettingsPayload>
+
+export const TEST_SETTINGS_ONBOARDING_START = {
+  ...TEST_SETTINGS,
+  app: { ...TEST_SETTINGS.app, onboardingStatus: '' },
+} satisfies Partial<SaveSettingsPayload>
+
+export const TEST_SETTINGS_CORRUPTED = {
+  app: {
+    theme: Themes.Dark,
+    onboardingStatus: 'dismissed',
+    projectDirectory: 123 as any,
+  },
+  modeling: {
+    defaultUnit: 'invalid' as any,
+    mouseControls: `() => alert('hack the planet')` as any,
+    showDebugPanel: true,
+  },
+  projects: {
+    defaultProjectName: false as any,
+  },
+  textEditor: {
+    textWrapping: true,
+  },
+} satisfies Partial<SaveSettingsPayload>

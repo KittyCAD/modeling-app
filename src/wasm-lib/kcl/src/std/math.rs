@@ -125,7 +125,23 @@ pub async fn abs(args: Args) -> Result<MemoryItem, KclError> {
 /// Computes the absolute value of a number.
 ///
 /// ```no_run
-/// const myVar = abs(-4)
+/// const myAngle = -120
+///
+/// const sketch001 = startSketchOn('-XZ')
+///   |> startProfileAt([0, 0], %)
+///   |> line([8, 0], %)
+///   |> angledLine({
+///     angle: abs(myAngle),
+///     length: 5,
+///   }, %)
+///   |> line([-5, 0], %)
+///   |> angledLine({
+///     angle: myAngle,
+///     length: 5,
+///   }, %)
+///   |> close(%)
+///
+/// const baseExtrusion = extrude(5, sketch001)
 /// ```
 #[stdlib {
     name = "abs",
@@ -223,7 +239,7 @@ pub async fn max(args: Args) -> Result<MemoryItem, KclError> {
     tags = ["math"],
 }]
 fn inner_max(args: Vec<f64>) -> f64 {
-    let mut max = std::f64::MAX;
+    let mut max = std::f64::MIN;
     for arg in args.iter() {
         if *arg > max {
             max = *arg;
@@ -516,4 +532,39 @@ pub async fn to_degrees(args: Args) -> Result<MemoryItem, KclError> {
 }]
 fn inner_to_degrees(num: f64) -> Result<f64, KclError> {
     Ok(num.to_degrees())
+}
+
+#[cfg(test)]
+mod tests {
+    use pretty_assertions::assert_eq;
+
+    use super::*;
+
+    #[test]
+    fn test_inner_max() {
+        let nums = vec![4.0, 5.0, 6.0];
+        let result = inner_max(nums);
+        assert_eq!(result, 6.0);
+    }
+
+    #[test]
+    fn test_inner_max_with_neg() {
+        let nums = vec![4.0, -5.0];
+        let result = inner_max(nums);
+        assert_eq!(result, 4.0);
+    }
+
+    #[test]
+    fn test_inner_min() {
+        let nums = vec![4.0, 5.0, 6.0];
+        let result = inner_min(nums);
+        assert_eq!(result, 4.0);
+    }
+
+    #[test]
+    fn test_inner_min_with_neg() {
+        let nums = vec![4.0, -5.0];
+        let result = inner_min(nums);
+        assert_eq!(result, -5.0);
+    }
 }

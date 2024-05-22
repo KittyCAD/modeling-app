@@ -44,26 +44,44 @@ async function waitForDefaultPlanesToBeVisible(page: Page) {
   )
 }
 
-async function openDebugPanel(page: Page) {
-  const isOpen =
-    (await page
-      .locator('[data-testid="debug-panel"]')
-      ?.getAttribute('open')) === ''
+async function openKclCodePanel(page: Page) {
+  const paneLocator = page.getByRole('tab', { name: 'KCL Code', exact: false })
+  const isOpen = (await paneLocator?.getAttribute('aria-selected')) === 'true'
 
   if (!isOpen) {
-    await page.getByText('Debug').click()
-    await page.getByTestId('debug-panel').and(page.locator('[open]')).waitFor()
+    await paneLocator.click()
+    await paneLocator.and(page.locator('[aria-selected="true"]')).waitFor()
+  }
+}
+
+async function closeKclCodePanel(page: Page) {
+  const paneLocator = page.getByRole('tab', { name: 'KCL Code', exact: false })
+  const isOpen = (await paneLocator?.getAttribute('aria-selected')) === 'true'
+  if (isOpen) {
+    await paneLocator.click()
+    await paneLocator
+      .and(page.locator(':not([aria-selected="true"])'))
+      .waitFor()
+  }
+}
+
+async function openDebugPanel(page: Page) {
+  const debugLocator = page.getByRole('tab', { name: 'Debug', exact: false })
+  const isOpen = (await debugLocator?.getAttribute('aria-selected')) === 'true'
+
+  if (!isOpen) {
+    await debugLocator.click()
+    await debugLocator.and(page.locator('[aria-selected="true"]')).waitFor()
   }
 }
 
 async function closeDebugPanel(page: Page) {
-  const isOpen =
-    (await page.getByTestId('debug-panel')?.getAttribute('open')) === ''
+  const debugLocator = page.getByRole('tab', { name: 'Debug', exact: false })
+  const isOpen = (await debugLocator?.getAttribute('aria-selected')) === 'true'
   if (isOpen) {
-    await page.getByText('Debug').click()
-    await page
-      .getByTestId('debug-panel')
-      .and(page.locator(':not([open])'))
+    await debugLocator.click()
+    await debugLocator
+      .and(page.locator(':not([aria-selected="true"])'))
       .waitFor()
   }
 }
@@ -81,20 +99,19 @@ export function getUtils(page: Page) {
     removeCurrentCode: () => removeCurrentCode(page),
     sendCustomCmd: (cmd: EngineCommand) => sendCustomCmd(page, cmd),
     updateCamPosition: async (xyz: [number, number, number]) => {
-      const fillInput = async () => {
-        await page.fill('[data-testid="cam-x-position"]', String(xyz[0]))
-        await page.fill('[data-testid="cam-y-position"]', String(xyz[1]))
-        await page.fill('[data-testid="cam-z-position"]', String(xyz[2]))
+      const fillInput = async (axis: 'x' | 'y' | 'z', value: number) => {
+        await page.fill(`[data-testid="cam-${axis}-position"]`, String(value))
+        await page.waitForTimeout(100)
       }
-      await fillInput()
-      await page.waitForTimeout(100)
-      await fillInput()
-      await page.waitForTimeout(100)
-      await fillInput()
-      await page.waitForTimeout(100)
+
+      await fillInput('x', xyz[0])
+      await fillInput('y', xyz[1])
+      await fillInput('z', xyz[2])
     },
     clearCommandLogs: () => clearCommandLogs(page),
     expectCmdLog: (locatorStr: string) => expectCmdLog(page, locatorStr),
+    openKclCodePanel: () => openKclCodePanel(page),
+    closeKclCodePanel: () => closeKclCodePanel(page),
     openDebugPanel: () => openDebugPanel(page),
     closeDebugPanel: () => closeDebugPanel(page),
     openAndClearDebugPanel: async () => {
@@ -163,5 +180,78 @@ export function getUtils(page: Page) {
           }
         }, 50)
       }),
+  }
+}
+
+type TemplateOptions = Array<number | Array<number>>
+
+type makeTemplateReturn = {
+  regExp: RegExp
+  genNext: (
+    templateParts: TemplateStringsArray,
+    ...options: TemplateOptions
+  ) => makeTemplateReturn
+}
+
+const escapeRegExp = (string: string) => {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // $& means the whole matched string
+}
+
+const _makeTemplate = (
+  templateParts: TemplateStringsArray,
+  ...options: TemplateOptions
+) => {
+  const length = Math.max(...options.map((a) => (Array.isArray(a) ? a[0] : 0)))
+  let reExpTemplate = ''
+  for (let i = 0; i < length; i++) {
+    const currentStr = templateParts.map((str, index) => {
+      const currentOptions = options[index]
+      return (
+        escapeRegExp(str) +
+        String(
+          Array.isArray(currentOptions)
+            ? currentOptions[i]
+            : typeof currentOptions === 'number'
+            ? currentOptions
+            : ''
+        )
+      )
+    })
+    reExpTemplate += '|' + currentStr.join('')
+  }
+  return new RegExp(reExpTemplate)
+}
+
+/**
+ * Tool for making templates to match code snippets in the editor with some fudge factor,
+ * as there's some level of non-determinism.
+ *
+ * Usage is as such:
+ * ```typescript
+ * const result = makeTemplate`const myVar = aFunc(${[1, 2, 3]})`
+ * await expect(page.locator('.cm-content')).toHaveText(result.regExp)
+ * ```
+ * Where the value `1`, `2` or `3` are all valid and should make the test pass.
+ *
+ * The function also has a `genNext` function that allows you to chain multiple templates
+ * together without having to repeat previous parts of the template.
+ * ```typescript
+ * const result2 = result.genNext`const myVar2 = aFunc(${[4, 5, 6]})`
+ * ```
+ */
+export const makeTemplate: (
+  templateParts: TemplateStringsArray,
+  ...values: TemplateOptions
+) => makeTemplateReturn = (templateParts, ...options) => {
+  return {
+    regExp: _makeTemplate(templateParts, ...options),
+    genNext: (
+      nextTemplateParts: TemplateStringsArray,
+      ...nextOptions: TemplateOptions
+    ) =>
+      makeTemplate(
+        [...templateParts, ...nextTemplateParts] as any as TemplateStringsArray,
+        [...options, ...nextOptions] as any
+      ),
   }
 }

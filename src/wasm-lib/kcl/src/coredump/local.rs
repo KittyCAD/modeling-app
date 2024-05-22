@@ -19,10 +19,22 @@ impl Default for CoreDumper {
     }
 }
 
-#[async_trait::async_trait]
+#[async_trait::async_trait(?Send)]
 impl CoreDump for CoreDumper {
+    fn token(&self) -> Result<String> {
+        Ok(std::env::var("KITTYCAD_API_TOKEN").unwrap_or_default())
+    }
+
+    fn base_api_url(&self) -> Result<String> {
+        Ok("https://api.zoo.dev".to_string())
+    }
+
     fn version(&self) -> Result<String> {
         Ok(env!("CARGO_PKG_VERSION").to_string())
+    }
+
+    fn pool(&self) -> Result<String> {
+        Ok("".to_owned())
     }
 
     async fn os(&self) -> Result<crate::coredump::OsInfo> {
@@ -41,5 +53,10 @@ impl CoreDump for CoreDumper {
     async fn get_webrtc_stats(&self) -> Result<crate::coredump::WebrtcStats> {
         // TODO: we could actually implement this.
         Ok(crate::coredump::WebrtcStats::default())
+    }
+
+    async fn screenshot(&self) -> Result<String> {
+        // Take a screenshot of the engine.
+        todo!()
     }
 }

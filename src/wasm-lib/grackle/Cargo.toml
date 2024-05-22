@@ -14,11 +14,11 @@ kittycad-execution-plan-traits = { workspace = true }
 kittycad-execution-plan-macros = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
 kittycad-modeling-session = { workspace = true }
-thiserror = "1.0.58"
+thiserror = "1.0.61"
 tokio = { version = "1.37.0", features = ["macros", "rt"] }
 twenty-twenty = "0.7.0"
 uuid = "1.8"
 
 [dev-dependencies]
 pretty_assertions = "1"
-serde_json = "1.0.115"
+serde_json = "1.0.116"

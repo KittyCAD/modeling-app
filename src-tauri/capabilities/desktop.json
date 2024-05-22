@@ -7,6 +7,9 @@
     "main"
   ],
   "permissions": [
+    "cli:default",
+    "deep-link:default",
+    "log:default",
     "path:default",
     "event:default",
     "window:default",
@@ -22,7 +25,6 @@
     "fs:allow-read-dir",
     "fs:allow-copy-file",
     "fs:allow-mkdir",
-    "fs:allow-remove",
     "fs:allow-remove",
     "fs:allow-rename",
     "fs:allow-exists",
@@ -77,7 +79,9 @@
     "os:allow-arch",
     "os:allow-exe-extension",
     "os:allow-locale",
-    "os:allow-hostname"
+    "os:allow-hostname",
+    "process:allow-restart",
+    "updater:default"
   ],
   "platforms": [
     "linux",

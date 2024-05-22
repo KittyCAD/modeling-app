@@ -4,19 +4,39 @@ import { getUtils } from './test-utils'
 import { Models } from '@kittycad/lib'
 import fsp from 'fs/promises'
 import { spawn } from 'child_process'
-import { APP_NAME } from 'lib/constants'
+import { APP_NAME, KCL_DEFAULT_LENGTH } from 'lib/constants'
 import JSZip from 'jszip'
 import path from 'path'
-import { basicSettings, basicStorageState } from './storageStates'
+import { TEST_SETTINGS, TEST_SETTINGS_KEY } from './storageStates'
 import * as TOML from '@iarna/toml'
 
 test.beforeEach(async ({ page }) => {
   // reducedMotion kills animations, which speeds up tests and reduces flakiness
   await page.emulateMedia({ reducedMotion: 'reduce' })
-})
 
-test.use({
-  storageState: structuredClone(basicStorageState),
+  // set the default settings
+  await page.addInitScript(
+    async ({ token, settingsKey, settings }) => {
+      localStorage.setItem('TOKEN_PERSIST_KEY', token)
+      localStorage.setItem('persistCode', ``)
+      localStorage.setItem(settingsKey, settings)
+    },
+    {
+      token: secrets.token,
+      settingsKey: TEST_SETTINGS_KEY,
+      settings: TOML.stringify({ settings: TEST_SETTINGS }),
+    }
+  )
+
+  // Make the user avatar image always 404
+  // so we see the fallback menu icon for all snapshot tests
+  await page.route('https://lh3.googleusercontent.com/**', async (route) => {
+    await route.fulfill({
+      status: 404,
+      contentType: 'text/plain',
+      body: 'Not Found!',
+    })
+  })
 })
 
 test.setTimeout(60_000)
@@ -253,6 +273,8 @@ const part001 = startSketchOn('-XZ')
   for (let { modelPath, imagePath, outputType } of exportLocations) {
     // May change depending on the file being dealt with
     let cliCommand = `export ZOO_TOKEN=${secrets.snapshottoken} && zoo file snapshot --output-format=png --src-format=${outputType} ${modelPath} ${imagePath}`
+    const fileSize = (await fsp.stat(modelPath)).size
+    console.log(`Size of the file at ${modelPath}: ${fileSize} bytes`)
 
     const parentPath = path.dirname(modelPath)
 
@@ -316,10 +338,7 @@ const part001 = startSketchOn('-XZ')
   }
 })
 
-test('extrude on each default plane should be stable', async ({
-  page,
-  context,
-}) => {
+const extrudeDefaultPlane = async (context: any, page: any, plane: string) => {
   await context.addInitScript(async () => {
     localStorage.setItem(
       'SETTINGS_PERSIST_KEY',
@@ -336,8 +355,8 @@ test('extrude on each default plane should be stable', async ({
       })
     )
   })
-  const u = getUtils(page)
-  const makeCode = (plane = 'XY') => `const part001 = startSketchOn('${plane}')
+
+  const code = `const part001 = startSketchOn('${plane}')
   |> startProfileAt([7.00, 4.40], %)
   |> line([6.60, -0.20], %)
   |> line([2.80, 5.00], %)
@@ -346,9 +365,11 @@ test('extrude on each default plane should be stable', async ({
   |> close(%)
   |> extrude(10.00, %)
 `
-  await context.addInitScript(async (code) => {
+  await page.addInitScript(async (code: string) => {
     localStorage.setItem('persistCode', code)
-  }, makeCode('XY'))
+  })
+
+  const u = getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
@@ -358,34 +379,48 @@ test('extrude on each default plane should be stable', async ({
   await u.expectCmdLog('[data-message-type="execution-done"]')
   await u.clearAndCloseDebugPanel()
   await page.waitForTimeout(200)
+  // clear code
+  await u.removeCurrentCode()
+  await u.openAndClearDebugPanel()
+  await u.doAndWaitForImageDiff(
+    () => page.locator('.cm-content').fill(code),
+    200
+  )
+  // wait for execution done
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.clearAndCloseDebugPanel()
 
-  const runSnapshotsForOtherPlanes = async (plane = 'XY') => {
-    // clear code
-    await u.removeCurrentCode()
-    // add makeCode('XZ')
-    await u.openAndClearDebugPanel()
-    await u.doAndWaitForImageDiff(
-      () => page.locator('.cm-content').fill(makeCode(plane)),
-      200
-    )
-    // wait for execution done
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.clearAndCloseDebugPanel()
+  await u.closeKclCodePanel()
+  await expect(page).toHaveScreenshot({
+    maxDiffPixels: 100,
+  })
+  await u.openKclCodePanel()
+}
 
-    await page.getByText('Code').click()
-    await expect(page).toHaveScreenshot({
-      maxDiffPixels: 100,
-    })
-    await page.getByText('Code').click()
-  }
-  await runSnapshotsForOtherPlanes('XY')
-  await runSnapshotsForOtherPlanes('-XY')
+test.describe('extrude on default planes should be stable', () => {
+  test('XY', async ({ page, context }) => {
+    await extrudeDefaultPlane(context, page, 'XY')
+  })
 
-  await runSnapshotsForOtherPlanes('XZ')
-  await runSnapshotsForOtherPlanes('-XZ')
+  test('XZ', async ({ page, context }) => {
+    await extrudeDefaultPlane(context, page, 'XZ')
+  })
 
-  await runSnapshotsForOtherPlanes('YZ')
-  await runSnapshotsForOtherPlanes('-YZ')
+  test('YZ', async ({ page, context }) => {
+    await extrudeDefaultPlane(context, page, 'YZ')
+  })
+
+  test('-XY', async ({ page, context }) => {
+    await extrudeDefaultPlane(context, page, '-XY')
+  })
+
+  test('-XZ', async ({ page, context }) => {
+    await extrudeDefaultPlane(context, page, '-XZ')
+  })
+
+  test('-YZ', async ({ page, context }) => {
+    await extrudeDefaultPlane(context, page, '-YZ')
+  })
 })
 
 test('Draft segments should look right', async ({ page, context }) => {
@@ -447,9 +482,7 @@ test('Draft segments should look right', async ({ page, context }) => {
   })
 })
 
-test('Client side scene scale should match engine scale - Inch', async ({
-  page,
-}) => {
+test('Draft rectangles should look right', async ({ page, context }) => {
   const u = getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -476,76 +509,130 @@ test('Client side scene scale should match engine scale - Inch', async ({
     `const part001 = startSketchOn('-XZ')`
   )
 
-  await page.waitForTimeout(300) // TODO detect animation ending, or disable animation
-
-  const startXPx = 600
-  await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt([9.06, -12.22], %)`)
-  await page.waitForTimeout(100)
-
+  await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
   await u.closeDebugPanel()
 
-  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
-  await page.waitForTimeout(100)
+  const startXPx = 600
 
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt([9.06, -12.22], %)
-  |> line([9.14, 0], %)`)
+  // Equip the rectangle tool
+  await page.getByRole('button', { name: 'Line' }).click()
+  await page.getByRole('button', { name: 'Rectangle' }).click()
 
-  await page.getByRole('button', { name: 'Tangential Arc' }).click()
-  await page.waitForTimeout(100)
+  // Draw the rectangle
+  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 30)
+  await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 10, { steps: 5 })
 
-  await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
-
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt([9.06, -12.22], %)
-  |> line([9.14, 0], %)
-  |> tangentialArcTo([27.34, -3.08], %)`)
-
-  // click tangential arc tool again to unequip it
-  await page.getByRole('button', { name: 'Tangential Arc' }).click()
-  await page.waitForTimeout(100)
-
-  // screen shot should show the sketch
-  await expect(page).toHaveScreenshot({
-    maxDiffPixels: 100,
-  })
-
-  // exit sketch
-  await u.openAndClearDebugPanel()
-  await page.getByRole('button', { name: 'Exit Sketch' }).click()
-
-  // wait for execution done
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-  await u.clearAndCloseDebugPanel()
-  await page.waitForTimeout(200)
-
-  // second screen shot should look almost identical, i.e. scale should be the same.
+  // Ensure the draft rectangle looks the same as it usually does
   await expect(page).toHaveScreenshot({
     maxDiffPixels: 100,
   })
 })
 
-test.describe('Client side scene scale should match engine scale - Millimeters', () => {
-  const storageState = structuredClone(basicStorageState)
-  storageState.origins[0].localStorage[2].value = TOML.stringify({
-    settings: {
-      ...basicSettings,
-      modeling: {
-        ...basicSettings.modeling,
-        defaultUnit: 'mm',
-      },
-    },
-  })
-  test.use({
-    storageState,
+test.describe('Client side scene scale should match engine scale', () => {
+  test('Inch scale', async ({ page }) => {
+    const u = getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+    const PUR = 400 / 37.5 //pixeltoUnitRatio
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+    await u.openDebugPanel()
+
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).toBeVisible()
+
+    // click on "Start Sketch" button
+    await u.clearCommandLogs()
+    await u.doAndWaitForImageDiff(
+      () => page.getByRole('button', { name: 'Start Sketch' }).click(),
+      200
+    )
+
+    // select a plane
+    await page.mouse.click(700, 200)
+
+    await expect(page.locator('.cm-content')).toHaveText(
+      `const part001 = startSketchOn('-XZ')`
+    )
+
+    await page.waitForTimeout(300) // TODO detect animation ending, or disable animation
+
+    const startXPx = 600
+    await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const part001 = startSketchOn('-XZ')
+    |> startProfileAt([9.06, -12.22], %)`)
+    await page.waitForTimeout(100)
+
+    await u.closeDebugPanel()
+
+    await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
+    await page.waitForTimeout(100)
+
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const part001 = startSketchOn('-XZ')
+    |> startProfileAt([9.06, -12.22], %)
+    |> line([9.14, 0], %)`)
+
+    await page.getByRole('button', { name: 'Tangential Arc' }).click()
+    await page.waitForTimeout(100)
+
+    await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
+
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`const part001 = startSketchOn('-XZ')
+    |> startProfileAt([9.06, -12.22], %)
+    |> line([9.14, 0], %)
+    |> tangentialArcTo([27.34, -3.08], %)`)
+
+    // click tangential arc tool again to unequip it
+    await page.getByRole('button', { name: 'Tangential Arc' }).click()
+    await page.waitForTimeout(100)
+
+    // screen shot should show the sketch
+    await expect(page).toHaveScreenshot({
+      maxDiffPixels: 100,
+    })
+
+    // exit sketch
+    await u.openAndClearDebugPanel()
+    await u.doAndWaitForImageDiff(
+      () => page.getByRole('button', { name: 'Exit Sketch' }).click(),
+      200
+    )
+
+    // wait for execution done
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.clearAndCloseDebugPanel()
+    await page.waitForTimeout(300)
+
+    // second screen shot should look almost identical, i.e. scale should be the same.
+    await expect(page).toHaveScreenshot({
+      maxDiffPixels: 100,
+    })
   })
 
-  test('Millimeters', async ({ page }) => {
+  test('Millimeter scale', async ({ page }) => {
+    await page.addInitScript(
+      async ({ settingsKey, settings }) => {
+        localStorage.setItem(settingsKey, settings)
+      },
+      {
+        settingsKey: TEST_SETTINGS_KEY,
+        settings: TOML.stringify({
+          settings: {
+            ...TEST_SETTINGS,
+            modeling: {
+              ...TEST_SETTINGS.modeling,
+              defaultUnit: 'mm',
+            },
+          },
+        }),
+      }
+    )
     const u = getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -614,12 +701,15 @@ test.describe('Client side scene scale should match engine scale - Millimeters',
 
     // exit sketch
     await u.openAndClearDebugPanel()
-    await page.getByRole('button', { name: 'Exit Sketch' }).click()
+    await u.doAndWaitForImageDiff(
+      () => page.getByRole('button', { name: 'Exit Sketch' }).click(),
+      200
+    )
 
     // wait for execution done
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.clearAndCloseDebugPanel()
-    await page.waitForTimeout(200)
+    await page.waitForTimeout(300)
 
     // second screen shot should look almost identical, i.e. scale should be the same.
     await expect(page).toHaveScreenshot({
@@ -630,7 +720,7 @@ test.describe('Client side scene scale should match engine scale - Millimeters',
 
 test('Sketch on face with none z-up', async ({ page, context }) => {
   const u = getUtils(page)
-  await context.addInitScript(async () => {
+  await context.addInitScript(async (KCL_DEFAULT_LENGTH) => {
     localStorage.setItem(
       'persistCode',
       `const part001 = startSketchOn('-XZ')
@@ -638,20 +728,33 @@ test('Sketch on face with none z-up', async ({ page, context }) => {
   |> line([9.31, 10.55], %, 'seg01')
   |> line([11.91, -10.42], %)
   |> close(%)
-  |> extrude(5 + 7, %)
+  |> extrude(${KCL_DEFAULT_LENGTH}, %)
 const part002 = startSketchOn(part001, 'seg01')
-  |> startProfileAt([-2.89, 1.82], %)
+  |> startProfileAt([8, 8], %)
   |> line([4.68, 3.05], %)
   |> line([0, -7.79], %, 'seg02')
   |> close(%)
-  |> extrude(5 + 7, %)
+  |> extrude(${KCL_DEFAULT_LENGTH}, %)
 `
     )
-  })
+  }, KCL_DEFAULT_LENGTH)
 
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
+
+  await u.openDebugPanel()
+  // wait for execution done
+  await expect(
+    page.locator('[data-message-type="execution-done"]')
+  ).toHaveCount(2)
+  await u.closeDebugPanel()
+
+  // Wait for the second extrusion to appear
+  // TODO: Find a way to truly know that the objects have finished
+  // rendering, because an execution-done message is not sufficient.
+  await page.waitForTimeout(1000)
+
   await expect(
     page.getByRole('button', { name: 'Start Sketch' })
   ).not.toBeDisabled()

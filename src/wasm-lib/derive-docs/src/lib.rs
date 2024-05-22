@@ -166,7 +166,7 @@ fn do_stdlib_inner(
         quote! {
             let code_blocks = vec![#(#cb),*];
             code_blocks.iter().map(|cb| {
-                let tokens = crate::token::lexer(cb);
+                let tokens = crate::token::lexer(cb).unwrap();
                 let parser = crate::parser::Parser::new(tokens);
                 let program = parser.ast().unwrap();
 
@@ -201,7 +201,7 @@ fn do_stdlib_inner(
         .code_blocks
         .iter()
         .enumerate()
-        .map(|(index, code_block)| generate_code_block_test(&fn_name_str, code_block, index, &metadata.tags))
+        .map(|(index, code_block)| generate_code_block_test(&fn_name_str, code_block, index))
         .collect::<Vec<_>>();
 
     let tags = metadata
@@ -383,7 +383,7 @@ fn do_stdlib_inner(
         fn #boxed_fn_name_ident(
             args: crate::std::Args,
         ) -> std::pin::Pin<
-            Box<dyn std::future::Future<Output = anyhow::Result<crate::executor::MemoryItem, crate::errors::KclError>>>,
+            Box<dyn std::future::Future<Output = anyhow::Result<crate::executor::MemoryItem, crate::errors::KclError>> + Send>,
         > {
             Box::pin(#fn_name_ident(args))
         }
@@ -731,26 +731,29 @@ fn parse_array_type(type_name: &str) -> Option<(&str, usize)> {
 
 // For each kcl code block, we want to generate a test that checks that the
 // code block is valid kcl code and compiles and executes.
-fn generate_code_block_test(
-    fn_name: &str,
-    code_block: &str,
-    index: usize,
-    tags: &[String],
-) -> proc_macro2::TokenStream {
+fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> proc_macro2::TokenStream {
     let test_name = format_ident!("serial_test_example_{}{}", fn_name, index);
+    let test_name_mock = format_ident!("test_mock_example_{}{}", fn_name, index);
     let test_name_str = format!("serial_test_example_{}{}", fn_name, index);
 
-    // TODO: We ignore import for now, because the files don't exist and we just want
-    // to show easy imports.
-    let ignored = if tags.contains(&"norun".to_string()) {
-        quote! { #[ignore] }
-    } else {
-        quote! {}
-    };
-
     quote! {
+        #[tokio::test(flavor = "multi_thread")]
+        async fn #test_name_mock() {
+            let tokens = crate::token::lexer(#code_block).unwrap();
+            let parser = crate::parser::Parser::new(tokens);
+            let program = parser.ast().unwrap();
+            let ctx = crate::executor::ExecutorContext {
+                engine: std::sync::Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await.unwrap())),
+                fs: std::sync::Arc::new(crate::fs::FileManager::new()),
+                stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
+                settings: Default::default(),
+                is_mock: true,
+            };
+
+            ctx.run(program, None).await.unwrap();
+        }
+
         #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
-        #ignored
         async fn #test_name() {
             let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
             let http_client = reqwest::Client::builder()
@@ -775,31 +778,22 @@ fn generate_code_block_test(
             if let Ok(addr) = std::env::var("LOCAL_ENGINE_ADDR") {
                 client.set_base_url(addr);
             }
-            let ws = client
-                .modeling()
-                .commands_ws(None, None, None, None, None, Some(false))
-                .await.unwrap();
 
-            let tokens = crate::token::lexer(#code_block);
+            let tokens = crate::token::lexer(#code_block).unwrap();
             let parser = crate::parser::Parser::new(tokens);
             let program = parser.ast().unwrap();
-            let mut mem: crate::executor::ProgramMemory = Default::default();
-            let units = kittycad::types::UnitLength::Mm;
-            let ctx = crate::executor::ExecutorContext::new(ws, units.clone()).await.unwrap();
+            let ctx = crate::executor::ExecutorContext::new(&client, Default::default()).await.unwrap();
 
-            crate::executor::execute(program, &mut mem, crate::executor::BodyType::Root, &ctx).await.unwrap();
+            ctx.run(program, None).await.unwrap();
 
-            let (x, y) = crate::std::utils::get_camera_zoom_magnitude_per_unit_length(units);
-
+            // Zoom to fit.
             ctx.engine
                 .send_modeling_cmd(
                     uuid::Uuid::new_v4(),
                     crate::executor::SourceRange::default(),
-                    kittycad::types::ModelingCmd::DefaultCameraLookAt {
-                        center: kittycad::types::Point3D { x: 0.0, y: 0.0, z: 0.0 },
-                        up: kittycad::types::Point3D { x: 0.0, y: 0.0, z: 1.0 },
-                        vantage: kittycad::types::Point3D { x: 0.0, y: -x, z: y },
-                        sequence: None,
+                    kittycad::types::ModelingCmd::ZoomToFit {
+                        object_ids: Default::default(),
+                        padding: 0.1,
                     },
                 )
                 .await.unwrap();

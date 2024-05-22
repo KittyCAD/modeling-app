@@ -1,14 +1,24 @@
 import { useLayoutEffect, useEffect, useRef } from 'react'
-import { parse } from '../lang/wasm'
 import { useStore } from '../useStore'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { deferExecution } from 'lib/utils'
 import { Themes } from 'lib/theme'
+import { makeDefaultPlanes } from 'lang/wasm'
 
 export function useSetupEngineManager(
   streamRef: React.RefObject<HTMLDivElement>,
   token?: string,
-  theme = Themes.System
+  settings = {
+    pool: null,
+    theme: Themes.System,
+    highlightEdges: true,
+    enableSSAO: true,
+  } as {
+    pool: string | null
+    theme: Themes
+    highlightEdges: boolean
+    enableSSAO: boolean
+  }
 ) {
   const {
     setMediaStream,
@@ -27,6 +37,12 @@ export function useSetupEngineManager(
 
   const hasSetNonZeroDimensions = useRef<boolean>(false)
 
+  if (settings.pool) {
+    // override the pool param (?pool=) to request a specific engine instance
+    // from a particular pool.
+    engineCommandManager.pool = settings.pool
+  }
+
   useLayoutEffect(() => {
     // Load the engine command manager once with the initial width and height,
     // then we do not want to reload it.
@@ -40,12 +56,16 @@ export function useSetupEngineManager(
         setIsStreamReady,
         width: quadWidth,
         height: quadHeight,
-        executeCode: (code?: string) => {
-          const _ast = parse(code || kclManager.code)
-          return kclManager.executeAst(_ast, true)
+        executeCode: () => {
+          // We only want to execute the code here that we already have set.
+          // Nothing else.
+          return kclManager.executeCode(true)
         },
         token,
-        theme,
+        settings,
+        makeDefaultPlanes: () => {
+          return makeDefaultPlanes(kclManager.engineCommandManager)
+        },
       })
       setStreamDimensions({
         streamWidth: quadWidth,

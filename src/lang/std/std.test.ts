@@ -1,7 +1,9 @@
 import { parse, initPromise } from '../wasm'
 import { enginelessExecutor } from '../../lib/testHelpers'
 
-beforeAll(() => initPromise)
+beforeAll(async () => {
+  await initPromise
+})
 
 describe('testing angledLineThatIntersects', () => {
   it('angledLineThatIntersects should intersect with another line', async () => {

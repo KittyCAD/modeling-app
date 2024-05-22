@@ -137,7 +137,13 @@ export function createSettings() {
         description: 'The hue of the primary theme color for the app',
         validate: (v) => Number(v) >= 0 && Number(v) < 360,
         Component: ({ value, updateValue }) => (
-          <div className="flex item-center gap-2 px-2">
+          <div className="flex item-center gap-4 px-2 m-0 py-0">
+            <div
+              className="w-4 h-4 rounded-full bg-primary border border-solid border-chalkboard-100 dark:border-chalkboard-30"
+              style={{
+                backgroundColor: `oklch(var(--primary-lightness) var(--primary-chroma) ${value})`,
+              }}
+            />
             <input
               type="range"
               onChange={(e) => updateValue(e.currentTarget.value)}
@@ -147,15 +153,15 @@ export function createSettings() {
               step={1}
               className="block flex-1"
             />
-            <span className="text-xs block w-[6ch] text-right">{value}º</span>
-            <div
-              className="w-3 h-3 rounded-full bg-primary"
-              style={{
-                backgroundColor: `oklch(var(--primary-lightness) var(--primary-chroma) ${value})`,
-              }}
-            />
           </div>
         ),
+      }),
+      enableSSAO: new Setting<boolean>({
+        defaultValue: true,
+        description:
+          'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled',
+        validate: (v) => typeof v === 'boolean',
+        hideOnPlatform: 'both', //for now
       }),
       onboardingStatus: new Setting<string>({
         defaultValue: '',
@@ -213,7 +219,7 @@ export function createSettings() {
                 data-testid="project-directory-button"
               >
                 <CustomIcon name="folder" className="w-5 h-5" />
-                <Tooltip position="inlineStart">Choose a folder</Tooltip>
+                <Tooltip position="top-right">Choose a folder</Tooltip>
               </button>
             </div>
           )
@@ -308,6 +314,18 @@ export function createSettings() {
         ),
       }),
       /**
+       * Whether to highlight edges of 3D objects
+       */
+      highlightEdges: new Setting<boolean>({
+        defaultValue: true,
+        description: 'Whether to highlight edges of 3D objects',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+        hideOnLevel: 'project',
+      }),
+      /**
        * Whether to show the debug panel, which lets you see
        * various states of the app to aid in development
        */
@@ -357,6 +375,17 @@ export function createSettings() {
         defaultValue: true,
         description:
           'Whether to wrap text in the editor or overflow with scroll',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
+      /**
+       * Whether to make the cursor blink in the editor
+       */
+      blinkingCursor: new Setting<boolean>({
+        defaultValue: true,
+        description: 'Whether to make the cursor blink in the editor',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',

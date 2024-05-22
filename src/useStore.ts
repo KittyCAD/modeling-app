@@ -1,17 +1,15 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { addLineHighlight, EditorView } from './editor/highlightextension'
 import {
-  parse,
   Program,
   _executor,
   ProgramMemory,
   programMemoryInit,
 } from './lang/wasm'
-import { Selection } from 'lib/selections'
 import { enginelessExecutor } from './lib/testHelpers'
 import { EngineCommandManager } from './lang/std/engineConnection'
 import { KCLError } from './lang/errors'
+import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
 
 export type ToolTip =
   | 'lineTo'
@@ -47,21 +45,7 @@ export const toolTips = [
   'tangentialArcTo',
 ] as any as ToolTip[]
 
-export type PaneType =
-  | 'code'
-  | 'variables'
-  | 'debug'
-  | 'kclErrors'
-  | 'logs'
-  | 'lspMessages'
-
 export interface StoreState {
-  editorView: EditorView | null
-  setEditorView: (editorView: EditorView) => void
-  highlightRange: [number, number]
-  setHighlightRange: (range: Selection['range']) => void
-  isShiftDown: boolean
-  setIsShiftDown: (isShiftDown: boolean) => void
   mediaStream?: MediaStream
   setMediaStream: (mediaStream: MediaStream) => void
   isStreamReady: boolean
@@ -81,44 +65,24 @@ export interface StoreState {
     streamWidth: number
     streamHeight: number
   }) => void
+  setHtmlRef: (ref: React.RefObject<HTMLDivElement>) => void
+  htmlRef: React.RefObject<HTMLDivElement> | null
 
   showHomeMenu: boolean
   setHomeShowMenu: (showMenu: boolean) => void
-  openPanes: PaneType[]
-  setOpenPanes: (panes: PaneType[]) => void
+  openPanes: SidebarType[]
+  setOpenPanes: (panes: SidebarType[]) => void
   homeMenuItems: {
     name: string
     path: string
   }[]
   setHomeMenuItems: (items: { name: string; path: string }[]) => void
-  lastCodeMirrorSelectionUpdatedFromScene: number
-  setLastCodeMirrorSelectionUpdatedFromScene: (time: number) => void
 }
 
 export const useStore = create<StoreState>()(
   persist(
     (set, get) => {
       return {
-        editorView: null,
-        setEditorView: (editorView) => {
-          set({ editorView })
-        },
-        highlightRange: [0, 0],
-        setHighlightRange: (selection) => {
-          set({ highlightRange: selection })
-          const editorView = get().editorView
-          const safeEnd = Math.min(
-            selection[1],
-            editorView?.state.doc.length || selection[1]
-          )
-          if (editorView) {
-            editorView.dispatch({
-              effects: addLineHighlight.of([selection[0], safeEnd]),
-            })
-          }
-        },
-        isShiftDown: false,
-        setIsShiftDown: (isShiftDown) => set({ isShiftDown }),
         setMediaStream: (mediaStream) => set({ mediaStream }),
         isStreamReady: false,
         setIsStreamReady: (isStreamReady) => set({ isStreamReady }),
@@ -132,6 +96,10 @@ export const useStore = create<StoreState>()(
         setButtonDownInStream: (buttonDownInStream) => {
           set({ buttonDownInStream })
         },
+        setHtmlRef: (htmlRef) => {
+          set({ htmlRef })
+        },
+        htmlRef: null,
         didDragInStream: false,
         setDidDragInStream: (didDragInStream) => {
           set({ didDragInStream })
@@ -154,9 +122,6 @@ export const useStore = create<StoreState>()(
         setHomeShowMenu: (showHomeMenu) => set({ showHomeMenu }),
         homeMenuItems: [],
         setHomeMenuItems: (homeMenuItems) => set({ homeMenuItems }),
-        lastCodeMirrorSelectionUpdatedFromScene: Date.now(),
-        setLastCodeMirrorSelectionUpdatedFromScene: (time) =>
-          set({ lastCodeMirrorSelectionUpdatedFromScene: time }),
       }
     },
     {
@@ -168,74 +133,6 @@ export const useStore = create<StoreState>()(
     }
   )
 )
-
-export async function executeCode({
-  engineCommandManager,
-  code,
-  lastAst,
-  force,
-}: {
-  code: string
-  lastAst: Program
-  engineCommandManager: EngineCommandManager
-  force?: boolean
-}): Promise<
-  | {
-      logs: string[]
-      errors: KCLError[]
-      programMemory: ProgramMemory
-      ast: Program
-      isChange: true
-    }
-  | { isChange: false }
-> {
-  let ast: Program
-  try {
-    ast = parse(code)
-  } catch (e) {
-    let errors: KCLError[] = []
-    let logs: string[] = [JSON.stringify(e)]
-    if (e instanceof KCLError) {
-      errors = [e]
-      logs = []
-      if (e.msg === 'file is empty') engineCommandManager.endSession()
-    }
-    return {
-      isChange: true,
-      logs,
-      errors,
-      programMemory: {
-        root: {},
-        return: null,
-      },
-      ast: {
-        start: 0,
-        end: 0,
-        body: [],
-        nonCodeMeta: {
-          nonCodeNodes: {},
-          start: [],
-        },
-      },
-    }
-  }
-  // Check if the ast we have is equal to the ast in the storage.
-  // If it is, we don't need to update the ast.
-  if (JSON.stringify(ast) === JSON.stringify(lastAst) && !force)
-    return { isChange: false }
-
-  const { logs, errors, programMemory } = await executeAst({
-    ast,
-    engineCommandManager,
-  })
-  return {
-    ast,
-    logs,
-    errors,
-    programMemory,
-    isChange: true,
-  }
-}
 
 export async function executeAst({
   ast,

@@ -1,17 +1,19 @@
 export const bracket = `// Shelf Bracket
 // This is a shelf bracket made out of 6061-T6 aluminum sheet metal. The required thickness is calculated based on a point load of 300 lbs applied to the end of the shelf. There are two brackets holding up the shelf, so the moment experienced is divided by 2. The shelf is 1 foot long from the wall.
 
+// Define our bracket feet lengths
+const shelfMountL = 8 // The length of the bracket holding up the shelf is 6 inches
+const wallMountL = 6 // the length of the bracket
+
+// Define constants required to calculate the thickness needed to support 300 lbs
 const sigmaAllow = 35000 // psi
 const width = 6 // inch
 const p = 300 // Force on shelf - lbs
-const distance = 12 // inches
-const M = 12 * 300 / 2 // Moment experienced at fixed end of bracket
-const FOS = 2 // Factor of safety of 2
-const shelfMountL = 8 // The length of the bracket holding up the shelf is 6 inches
-const wallMountL = 8 // the length of the bracket
+const L = 12 // inches
+const M = L * p / 2 // Moment experienced at fixed end of bracket
+const FOS = 2 // Factor of safety of 2 to be conservative
 
-
-// Calculate the thickness off the allowable bending stress and factor of safety
+// Calculate the thickness off the bending stress and factor of safety
 const thickness = sqrt(6 * M * FOS / (width * sigmaAllow))
 
 // 0.25 inch fillet radius
@@ -29,11 +31,11 @@ const bracket = startSketchOn('XY')
   |> extrude(width, %)
   |> fillet({
        radius: filletR,
-       tags: [getNextAdjacentEdge('innerEdge', %)]
+       tags: [getPreviousAdjacentEdge('innerEdge', %)]
      }, %)
   |> fillet({
        radius: filletR + thickness,
-       tags: [getNextAdjacentEdge('outerEdge', %)]
+       tags: [getPreviousAdjacentEdge('outerEdge', %)]
      }, %)`
 
 function findLineInExampleCode({

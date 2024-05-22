@@ -8,7 +8,9 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value as JValue};
-use tower_lsp::lsp_types::{CompletionItem, CompletionItemKind, DocumentSymbol, Range as LspRange, SymbolKind};
+use tower_lsp::lsp_types::{
+    CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange, FoldingRangeKind, Range as LspRange, SymbolKind,
+};
 
 pub use crate::ast::types::{literal_value::LiteralValue, none::KclNone};
 use crate::{
@@ -22,7 +24,7 @@ use crate::{
 mod literal_value;
 mod none;
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
@@ -34,98 +36,109 @@ pub struct Program {
 }
 
 impl Program {
+    pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
+        // Check if we are in the non code meta.
+        if let Some(meta) = self.get_non_code_meta_for_position(pos) {
+            for node in &meta.start {
+                if node.contains(pos) {
+                    // We only care about the shebang.
+                    if let NonCodeValue::Shebang { value: _ } = &node.value {
+                        let source_range: SourceRange = node.into();
+                        return Some(Hover::Comment {
+                            value: r#"The `#!` at the start of a script, known as a shebang, specifies the path to the interpreter that should execute the script. This line is not necessary for your `kcl` to run in the modeling-app. You can safely delete it. If you wish to learn more about what you _can_ do with a shebang, read this doc: [zoo.dev/docs/faq/shebang](https://zoo.dev/docs/faq/shebang)."#.to_string(),
+                            range: source_range.to_lsp_range(code),
+                        });
+                    }
+                }
+            }
+        }
+
+        let value = self.get_value_for_position(pos)?;
+
+        value.get_hover_value_for_position(pos, code)
+    }
+
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         let indentation = options.get_indentation(indentation_level);
-        let result =
-            self.body
-                .iter()
-                .map(|statement| match statement.clone() {
-                    BodyItem::ExpressionStatement(expression_statement) => {
-                        expression_statement
-                            .expression
-                            .recast(options, indentation_level, false)
-                    }
-                    BodyItem::VariableDeclaration(variable_declaration) => variable_declaration
-                        .declarations
-                        .iter()
-                        .fold(String::new(), |mut output, declaration| {
-                            let _ = write!(
-                                output,
-                                "{}{} {} = {}",
-                                indentation,
-                                variable_declaration.kind,
-                                declaration.id.name,
-                                declaration.init.recast(options, 0, false)
-                            );
-                            output
-                        }),
-                    BodyItem::ReturnStatement(return_statement) => {
-                        format!(
-                            "{}return {}",
-                            indentation,
-                            return_statement.argument.recast(options, 0, false)
-                        )
-                    }
-                })
-                .enumerate()
-                .fold(String::new(), |mut output, (index, recast_str)| {
-                    let start_string = if index == 0 {
-                        // We need to indent.
-                        if self.non_code_meta.start.is_empty() {
-                            indentation.to_string()
-                        } else {
-                            self.non_code_meta
-                                .start
-                                .iter()
-                                .map(|start| start.format(&indentation))
-                                .collect()
-                        }
+        let result = self
+            .body
+            .iter()
+            .map(|statement| match statement.clone() {
+                BodyItem::ExpressionStatement(expression_statement) => {
+                    expression_statement
+                        .expression
+                        .recast(options, indentation_level, false)
+                }
+                BodyItem::VariableDeclaration(variable_declaration) => {
+                    variable_declaration.recast(options, indentation_level)
+                }
+                BodyItem::ReturnStatement(return_statement) => {
+                    format!(
+                        "{}return {}",
+                        indentation,
+                        return_statement.argument.recast(options, 0, false)
+                    )
+                }
+            })
+            .enumerate()
+            .fold(String::new(), |mut output, (index, recast_str)| {
+                let start_string = if index == 0 {
+                    // We need to indent.
+                    if self.non_code_meta.start.is_empty() {
+                        indentation.to_string()
                     } else {
-                        // Do nothing, we already applied the indentation elsewhere.
-                        String::new()
-                    };
-
-                    // determine the value of the end string
-                    // basically if we are inside a nested function we want to end with a new line
-                    let maybe_line_break: String = if index == self.body.len() - 1 && indentation_level == 0 {
-                        String::new()
-                    } else {
-                        "\n".to_string()
-                    };
-
-                    let custom_white_space_or_comment = match self.non_code_meta.non_code_nodes.get(&index) {
-                        Some(noncodes) => noncodes
+                        self.non_code_meta
+                            .start
                             .iter()
-                            .enumerate()
-                            .map(|(i, custom_white_space_or_comment)| {
-                                let formatted = custom_white_space_or_comment.format(&indentation);
-                                if i == 0 && !formatted.trim().is_empty() {
-                                    if let NonCodeValue::BlockComment { .. } = custom_white_space_or_comment.value {
-                                        format!("\n{}", formatted)
-                                    } else {
-                                        formatted
-                                    }
+                            .map(|start| start.format(&indentation))
+                            .collect()
+                    }
+                } else {
+                    // Do nothing, we already applied the indentation elsewhere.
+                    String::new()
+                };
+
+                // determine the value of the end string
+                // basically if we are inside a nested function we want to end with a new line
+                let maybe_line_break: String = if index == self.body.len() - 1 && indentation_level == 0 {
+                    String::new()
+                } else {
+                    "\n".to_string()
+                };
+
+                let custom_white_space_or_comment = match self.non_code_meta.non_code_nodes.get(&index) {
+                    Some(noncodes) => noncodes
+                        .iter()
+                        .enumerate()
+                        .map(|(i, custom_white_space_or_comment)| {
+                            let formatted = custom_white_space_or_comment.format(&indentation);
+                            if i == 0 && !formatted.trim().is_empty() {
+                                if let NonCodeValue::BlockComment { .. } = custom_white_space_or_comment.value {
+                                    format!("\n{}", formatted)
                                 } else {
                                     formatted
                                 }
-                            })
-                            .collect::<String>(),
-                        None => String::new(),
-                    };
-                    let end_string = if custom_white_space_or_comment.is_empty() {
-                        maybe_line_break
-                    } else {
-                        custom_white_space_or_comment
-                    };
+                            } else {
+                                formatted
+                            }
+                        })
+                        .collect::<String>(),
+                    None => String::new(),
+                };
+                let end_string = if custom_white_space_or_comment.is_empty() {
+                    maybe_line_break
+                } else {
+                    custom_white_space_or_comment
+                };
 
-                    let _ = write!(output, "{}{}{}", start_string, recast_str, end_string);
-                    output
-                })
-                .trim()
-                .to_string();
+                let _ = write!(output, "{}{}{}", start_string, recast_str, end_string);
+                output
+            })
+            .trim()
+            .to_string();
 
         // Insert a final new line if the user wants it.
-        if options.insert_final_newline {
+        if options.insert_final_newline && !result.is_empty() {
             format!("{}\n", result)
         } else {
             result
@@ -212,6 +225,29 @@ impl Program {
         }
 
         symbols
+    }
+
+    // Return all the lsp folding ranges in the program.
+    pub fn get_lsp_folding_ranges(&self) -> Vec<FoldingRange> {
+        let mut ranges = vec![];
+        // We only care about the top level things in the program.
+        for item in &self.body {
+            match item {
+                BodyItem::ExpressionStatement(expression_statement) => {
+                    if let Some(folding_range) = expression_statement.expression.get_lsp_folding_range() {
+                        ranges.push(folding_range)
+                    }
+                }
+                BodyItem::VariableDeclaration(variable_declaration) => {
+                    if let Some(folding_range) = variable_declaration.get_lsp_folding_range() {
+                        ranges.push(folding_range)
+                    }
+                }
+                BodyItem::ReturnStatement(_return_statement) => continue,
+            }
+        }
+
+        ranges
     }
 
     /// Rename the variable declaration at the given position.
@@ -468,6 +504,26 @@ impl Value {
         }
     }
 
+    pub fn get_lsp_folding_range(&self) -> Option<FoldingRange> {
+        let recasted = self.recast(&FormatOptions::default(), 0, false);
+        // If the code only has one line then we don't need to fold it.
+        if recasted.lines().count() <= 1 {
+            return None;
+        }
+
+        // This unwrap is safe because we know that the code has at least one line.
+        let first_line = recasted.lines().next().unwrap().to_string();
+
+        Some(FoldingRange {
+            start_line: (self.start() + first_line.len()) as u32,
+            start_character: None,
+            end_line: self.end() as u32,
+            end_character: None,
+            kind: Some(FoldingRangeKind::Region),
+            collapsed_text: Some(first_line),
+        })
+    }
+
     // Get the non code meta for the value.
     pub fn get_non_code_meta(&self) -> Option<&NonCodeMeta> {
         match self {
@@ -711,7 +767,7 @@ impl BinaryPart {
         }
     }
 
-    #[async_recursion::async_recursion(?Send)]
+    #[async_recursion::async_recursion]
     pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
@@ -780,6 +836,18 @@ pub struct NonCodeNode {
     pub value: NonCodeValue,
 }
 
+impl From<NonCodeNode> for SourceRange {
+    fn from(value: NonCodeNode) -> Self {
+        Self([value.start, value.end])
+    }
+}
+
+impl From<&NonCodeNode> for SourceRange {
+    fn from(value: &NonCodeNode) -> Self {
+        Self([value.start, value.end])
+    }
+}
+
 impl NonCodeNode {
     pub fn contains(&self, pos: usize) -> bool {
         self.start <= pos && pos <= self.end
@@ -787,6 +855,7 @@ impl NonCodeNode {
 
     pub fn value(&self) -> String {
         match &self.value {
+            NonCodeValue::Shebang { value } => value.clone(),
             NonCodeValue::InlineComment { value, style: _ } => value.clone(),
             NonCodeValue::BlockComment { value, style: _ } => value.clone(),
             NonCodeValue::NewLineBlockComment { value, style: _ } => value.clone(),
@@ -796,6 +865,7 @@ impl NonCodeNode {
 
     pub fn format(&self, indentation: &str) -> String {
         match &self.value {
+            NonCodeValue::Shebang { value } => format!("{}\n\n", value),
             NonCodeValue::InlineComment {
                 value,
                 style: CommentStyle::Line,
@@ -848,6 +918,15 @@ pub enum CommentStyle {
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum NonCodeValue {
+    /// A shebang.
+    /// This is a special type of comment that is at the top of the file.
+    /// It looks like this:
+    /// ```python,no_run
+    /// #!/usr/bin/env python
+    /// ```
+    Shebang {
+        value: String,
+    },
     /// An inline comment.
     /// Here are examples:
     /// `1 + 1 // This is an inline comment`.
@@ -1005,7 +1084,7 @@ impl CallExpression {
         )
     }
 
-    #[async_recursion::async_recursion(?Send)]
+    #[async_recursion::async_recursion]
     pub async fn execute(
         &self,
         memory: &mut ProgramMemory,
@@ -1112,7 +1191,7 @@ impl CallExpression {
 
                 // Call the stdlib function
                 let p = func.function().clone().body;
-                let results = match crate::executor::execute(p, &mut fn_memory, BodyType::Block, ctx).await {
+                let results = match ctx.inner_execute(p, &mut fn_memory, BodyType::Block).await {
                     Ok(results) => results,
                     Err(err) => {
                         // We need to override the source ranges so we don't get the embedded kcl
@@ -1135,7 +1214,11 @@ impl CallExpression {
                 let func = memory.get(&fn_name, self.into())?;
                 let result = func
                     .call_fn(fn_args, memory.clone(), ctx.clone())
-                    .await?
+                    .await
+                    .map_err(|e| {
+                        // Add the call expression to the source ranges.
+                        e.add_source_ranges(vec![self.into()])
+                    })?
                     .ok_or_else(|| {
                         KclError::UndefinedValue(KclErrorDetails {
                             message: format!("Result of user-defined function {} is undefined", fn_name),
@@ -1252,6 +1335,41 @@ impl VariableDeclaration {
             declarations,
             kind,
         }
+    }
+
+    pub fn get_lsp_folding_range(&self) -> Option<FoldingRange> {
+        let recasted = self.recast(&FormatOptions::default(), 0);
+        // If the recasted value only has one line, don't fold it.
+        if recasted.lines().count() <= 1 {
+            return None;
+        }
+
+        // This unwrap is safe because we know that the code has at least one line.
+        let first_line = recasted.lines().next().unwrap().to_string();
+
+        Some(FoldingRange {
+            start_line: (self.start() + first_line.len()) as u32,
+            start_character: None,
+            end_line: self.end() as u32,
+            end_character: None,
+            kind: Some(FoldingRangeKind::Region),
+            collapsed_text: Some(first_line),
+        })
+    }
+
+    pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
+        let indentation = options.get_indentation(indentation_level);
+        self.declarations.iter().fold(String::new(), |mut output, declaration| {
+            let _ = write!(
+                output,
+                "{}{} {} = {}",
+                indentation,
+                self.kind,
+                declaration.id.name,
+                declaration.init.recast(options, indentation_level, false)
+            );
+            output
+        })
     }
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
@@ -1690,7 +1808,7 @@ impl ArrayExpression {
         None
     }
 
-    #[async_recursion::async_recursion(?Send)]
+    #[async_recursion::async_recursion]
     pub async fn execute(
         &self,
         memory: &mut ProgramMemory,
@@ -1795,7 +1913,13 @@ impl ObjectExpression {
             "{{ {} }}",
             self.properties
                 .iter()
-                .map(|prop| { format!("{}: {}", prop.key.name, prop.value.recast(options, 0, false)) })
+                .map(|prop| {
+                    format!(
+                        "{}: {}",
+                        prop.key.name,
+                        prop.value.recast(options, indentation_level + 1, is_in_pipe)
+                    )
+                })
                 .collect::<Vec<String>>()
                 .join(", ")
         );
@@ -1811,7 +1935,13 @@ impl ObjectExpression {
                 inner_indentation,
                 self.properties
                     .iter()
-                    .map(|prop| { format!("{}: {}", prop.key.name, prop.value.recast(options, 0, false)) })
+                    .map(|prop| {
+                        format!(
+                            "{}: {}",
+                            prop.key.name,
+                            prop.value.recast(options, indentation_level + 1, is_in_pipe)
+                        )
+                    })
                     .collect::<Vec<String>>()
                     .join(format!(",\n{}", inner_indentation).as_str()),
                 if is_in_pipe {
@@ -1837,7 +1967,7 @@ impl ObjectExpression {
         None
     }
 
-    #[async_recursion::async_recursion(?Send)]
+    #[async_recursion::async_recursion]
     pub async fn execute(
         &self,
         memory: &mut ProgramMemory,
@@ -2271,14 +2401,16 @@ impl BinaryExpression {
 
         if left_source_range.contains(pos) {
             return self.left.get_hover_value_for_position(pos, code);
-        } else if right_source_range.contains(pos) {
+        }
+
+        if right_source_range.contains(pos) {
             return self.right.get_hover_value_for_position(pos, code);
         }
 
         None
     }
 
-    #[async_recursion::async_recursion(?Send)]
+    #[async_recursion::async_recursion]
     pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
@@ -2586,7 +2718,12 @@ impl PipeExpression {
                 let non_code_meta = self.non_code_meta.clone();
                 if let Some(non_code_meta_value) = non_code_meta.non_code_nodes.get(&index) {
                     for val in non_code_meta_value {
-                        let formatted = val.format(&indentation).trim_end_matches('\n').to_string();
+                        let formatted = if val.end == self.end {
+                            let indentation = options.get_indentation(indentation_level);
+                            val.format(&indentation).trim_end_matches('\n').to_string()
+                        } else {
+                            val.format(&indentation).trim_end_matches('\n').to_string()
+                        };
                         if let NonCodeValue::BlockComment { .. } = val.value {
                             s += "\n";
                             s += &formatted;
@@ -2636,7 +2773,6 @@ impl PipeExpression {
     }
 }
 
-#[async_recursion::async_recursion(?Send)]
 async fn execute_pipe_body(
     memory: &mut ProgramMemory,
     body: &[Value],
@@ -2889,6 +3025,10 @@ pub enum Hover {
         parameter_index: u32,
         range: LspRange,
     },
+    Comment {
+        value: String,
+        range: LspRange,
+    },
 }
 
 /// Format options.
@@ -3095,6 +3235,50 @@ mod tests {
     }
 
     #[test]
+    fn test_get_lsp_folding_ranges() {
+        let code = r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([0.0000000000, 5.0000000000], %)
+    |> line([0.4900857016, -0.0240763666], %)
+
+startSketchOn('XY')
+  |> startProfileAt([0.0000000000, 5.0000000000], %)
+    |> line([0.4900857016, -0.0240763666], %)
+
+const part002 = "part002"
+const things = [part001, 0.0]
+let blah = 1
+const foo = false
+let baz = {a: 1, b: "thing"}
+
+fn ghi = (x) => {
+  return x
+}
+
+ghi("things")
+"#;
+        let tokens = crate::token::lexer(code).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+        let folding_ranges = program.get_lsp_folding_ranges();
+        assert_eq!(folding_ranges.len(), 3);
+        assert_eq!(folding_ranges[0].start_line, 35);
+        assert_eq!(folding_ranges[0].end_line, 134);
+        assert_eq!(
+            folding_ranges[0].collapsed_text,
+            Some("const part001 = startSketchOn('XY')".to_string())
+        );
+        assert_eq!(folding_ranges[1].start_line, 155);
+        assert_eq!(folding_ranges[1].end_line, 254);
+        assert_eq!(
+            folding_ranges[1].collapsed_text,
+            Some("startSketchOn('XY')".to_string())
+        );
+        assert_eq!(folding_ranges[2].start_line, 390);
+        assert_eq!(folding_ranges[2].end_line, 403);
+        assert_eq!(folding_ranges[2].collapsed_text, Some("fn ghi = (x) => {".to_string()));
+    }
+
+    #[test]
     fn test_get_lsp_symbols() {
         let code = r#"const part001 = startSketchOn('XY')
   |> startProfileAt([0.0000000000, 5.0000000000], %)
@@ -3110,11 +3294,554 @@ fn ghi = (x) => {
   return x
 }
 "#;
-        let tokens = crate::token::lexer(code);
+        let tokens = crate::token::lexer(code).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
         let symbols = program.get_lsp_symbols(code);
         assert_eq!(symbols.len(), 7);
+    }
+
+    #[test]
+    fn test_recast_bug_extra_parens() {
+        let some_program_string = r#"// Ball Bearing
+// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads. 
+
+// Define constants like ball diameter, inside diameter, overhange length, and thickness
+const sphereDia = 0.5
+const insideDia = 1
+const thickness = 0.25
+const overHangLength = .4
+
+// Sketch and revolve the inside bearing piece
+const insideRevolve = startSketchOn('XZ')
+  |> startProfileAt([insideDia / 2, 0], %)
+  |> line([0, thickness + sphereDia / 2], %)
+  |> line([overHangLength, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-overHangLength + thickness, 0], %)
+  |> line([0, -sphereDia], %)
+  |> line([overHangLength - thickness, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-overHangLength, 0], %)
+  |> close(%)
+  |> revolve({ axis: 'y' }, %)
+
+// Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
+const sphere = startSketchOn('XZ')
+  |> startProfileAt([
+       0.05 + insideDia / 2 + thickness,
+       0 - 0.05
+     ], %)
+  |> line([sphereDia - 0.1, 0], %)
+  |> arc({
+       angle_start: 0,
+       angle_end: -180,
+       radius: sphereDia / 2 - 0.05
+     }, %)
+  |> close(%)
+  |> revolve({ axis: 'x' }, %)
+  |> patternCircular3d({
+       axis: [0, 0, 1],
+       center: [0, 0, 0],
+       repetitions: 10,
+       arcDegrees: 360,
+       rotateDuplicates: true
+     }, %)
+
+// Sketch and revolve the outside bearing
+const outsideRevolve = startSketchOn('XZ')
+  |> startProfileAt([
+       insideDia / 2 + thickness + sphereDia,
+       0
+     ], %)
+  |> line([0, sphereDia / 2], %)
+  |> line([-overHangLength + thickness, 0], %)
+  |> line([0, thickness], %)
+  |> line([overHangLength, 0], %)
+  |> line([0, -2 * thickness - sphereDia], %)
+  |> line([-overHangLength, 0], %)
+  |> line([0, thickness], %)
+  |> line([overHangLength - thickness, 0], %)
+  |> close(%)
+  |> revolve({ axis: 'y' }, %)"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        println!("{:#?}", program);
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"// Ball Bearing
+// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads.
+
+
+// Define constants like ball diameter, inside diameter, overhange length, and thickness
+const sphereDia = 0.5
+const insideDia = 1
+const thickness = 0.25
+const overHangLength = .4
+
+// Sketch and revolve the inside bearing piece
+const insideRevolve = startSketchOn('XZ')
+  |> startProfileAt([insideDia / 2, 0], %)
+  |> line([0, thickness + sphereDia / 2], %)
+  |> line([overHangLength, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-overHangLength + thickness, 0], %)
+  |> line([0, -sphereDia], %)
+  |> line([overHangLength - thickness, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-overHangLength, 0], %)
+  |> close(%)
+  |> revolve({ axis: 'y' }, %)
+
+// Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
+const sphere = startSketchOn('XZ')
+  |> startProfileAt([
+       0.05 + insideDia / 2 + thickness,
+       0 - 0.05
+     ], %)
+  |> line([sphereDia - 0.1, 0], %)
+  |> arc({
+       angle_start: 0,
+       angle_end: -180,
+       radius: sphereDia / 2 - 0.05
+     }, %)
+  |> close(%)
+  |> revolve({ axis: 'x' }, %)
+  |> patternCircular3d({
+       axis: [0, 0, 1],
+       center: [0, 0, 0],
+       repetitions: 10,
+       arcDegrees: 360,
+       rotateDuplicates: true
+     }, %)
+
+// Sketch and revolve the outside bearing
+const outsideRevolve = startSketchOn('XZ')
+  |> startProfileAt([
+       insideDia / 2 + thickness + sphereDia,
+       0
+     ], %)
+  |> line([0, sphereDia / 2], %)
+  |> line([-overHangLength + thickness, 0], %)
+  |> line([0, thickness], %)
+  |> line([overHangLength, 0], %)
+  |> line([0, -2 * thickness - sphereDia], %)
+  |> line([-overHangLength, 0], %)
+  |> line([0, thickness], %)
+  |> line([overHangLength - thickness, 0], %)
+  |> close(%)
+  |> revolve({ axis: 'y' }, %)
+"#
+        );
+    }
+
+    #[test]
+    fn test_recast_empty_file() {
+        let some_program_string = r#""#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        // Its VERY important this comes back with zero new lines.
+        assert_eq!(recasted, r#""#);
+    }
+
+    #[test]
+    fn test_recast_empty_file_new_line() {
+        let some_program_string = r#"
+"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        // Its VERY important this comes back with zero new lines.
+        assert_eq!(recasted, r#""#);
+    }
+
+    #[test]
+    fn test_recast_shebang_only() {
+        let some_program_string = r#"#!/usr/local/env zoo kcl"#;
+
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let result = parser.ast();
+
+        assert!(result.is_err());
+        assert_eq!(
+            result.unwrap_err().to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([21, 24])], message: "Unexpected end of file. The compiler expected a function body items (functions are made up of variable declarations, expressions, and return statements, each of those is a possible body item" }"#
+        );
+    }
+
+    #[test]
+    fn test_recast_shebang() {
+        let some_program_string = r#"#!/usr/local/env zoo kcl
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+"#;
+
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"#!/usr/local/env zoo kcl
+
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+"#
+        );
+    }
+
+    #[test]
+    fn test_recast_shebang_new_lines() {
+        let some_program_string = r#"#!/usr/local/env zoo kcl
+        
+
+
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+"#;
+
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"#!/usr/local/env zoo kcl
+
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+"#
+        );
+    }
+
+    #[test]
+    fn test_recast_shebang_with_comments() {
+        let some_program_string = r#"#!/usr/local/env zoo kcl
+        
+// Yo yo my comments.
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+"#;
+
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"#!/usr/local/env zoo kcl
+
+// Yo yo my comments.
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+"#
+        );
+    }
+
+    #[test]
+    fn test_recast_large_file() {
+        let some_program_string = r#"// define constants
+const radius = 6.0
+const width = 144.0
+const length = 83.0
+const depth = 45.0
+const thk = 5
+const hole_diam = 5
+// define a rectangular shape func
+fn rectShape = (pos, w, l) => {
+  const rr = startSketchOn('xy')
+    |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
+    |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, "edge1")
+    |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, "edge2")
+    |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, "edge3")
+    |> close(%, "edge4")
+  return rr
+}
+// build the body of the focusrite scarlett solo gen 4
+// only used for visualization
+const scarlett_body = rectShape([0, 0], width, length)
+  |> extrude(depth, %)
+  |> fillet({
+       radius: radius,
+       tags: [
+  getEdge("edge2", %),
+  getEdge("edge4", %),
+  getOppositeEdge("edge2", %),
+  getOppositeEdge("edge4", %)
+]
+     }, %)
+  // build the bracket sketch around the body
+fn bracketSketch = (w, d, t) => {
+  const s = startSketchOn({
+         plane: {
+  origin: { x: 0, y: length / 2 + thk, z: 0 },
+  x_axis: { x: 1, y: 0, z: 0 },
+  y_axis: { x: 0, y: 0, z: 1 },
+  z_axis: { x: 0, y: 1, z: 0 }
+}
+       })
+    |> startProfileAt([-w / 2 - t, d + t], %)
+    |> lineTo([-w / 2 - t, -t], %, "edge1")
+    |> lineTo([w / 2 + t, -t], %, "edge2")
+    |> lineTo([w / 2 + t, d + t], %, "edge3")
+    |> lineTo([w / 2, d + t], %, "edge4")
+    |> lineTo([w / 2, 0], %, "edge5")
+    |> lineTo([-w / 2, 0], %, "edge6")
+    |> lineTo([-w / 2, d + t], %, "edge7")
+    |> close(%, "edge8")
+  return s
+}
+// build the body of the bracket
+const bracket_body = bracketSketch(width, depth, thk)
+  |> extrude(length + 10, %)
+  |> fillet({
+       radius: radius,
+       tags: [
+  getNextAdjacentEdge("edge7", %),
+  getNextAdjacentEdge("edge2", %),
+  getNextAdjacentEdge("edge3", %),
+  getNextAdjacentEdge("edge6", %)
+]
+     }, %)
+  // build the tabs of the mounting bracket (right side)
+const tabs_r = startSketchOn({
+       plane: {
+  origin: { x: 0, y: 0, z: depth + thk },
+  x_axis: { x: 1, y: 0, z: 0 },
+  y_axis: { x: 0, y: 1, z: 0 },
+  z_axis: { x: 0, y: 0, z: 1 }
+}
+     })
+  |> startProfileAt([width / 2 + thk, length / 2 + thk], %)
+  |> line([10, -5], %)
+  |> line([0, -10], %)
+  |> line([-10, -5], %)
+  |> close(%)
+  |> hole(circle([
+       width / 2 + thk + hole_diam,
+       length / 2 - hole_diam
+     ], hole_diam / 2, %), %)
+  |> extrude(-thk, %)
+  |> patternLinear3d({
+       axis: [0, -1, 0],
+       repetitions: 1,
+       distance: length - 10
+     }, %)
+  // build the tabs of the mounting bracket (left side)
+const tabs_l = startSketchOn({
+       plane: {
+  origin: { x: 0, y: 0, z: depth + thk },
+  x_axis: { x: 1, y: 0, z: 0 },
+  y_axis: { x: 0, y: 1, z: 0 },
+  z_axis: { x: 0, y: 0, z: 1 }
+}
+     })
+  |> startProfileAt([-width / 2 - thk, length / 2 + thk], %)
+  |> line([-10, -5], %)
+  |> line([0, -10], %)
+  |> line([10, -5], %)
+  |> close(%)
+  |> hole(circle([
+       -width / 2 - thk - hole_diam,
+       length / 2 - hole_diam
+     ], hole_diam / 2, %), %)
+  |> extrude(-thk, %)
+  |> patternLinear3d({
+       axis: [0, -1, 0],
+       repetitions: 1,
+       distance: length - 10
+     }, %)
+"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+        println!("{:#?}", program);
+
+        let recasted = program.recast(&Default::default(), 0);
+        // Its VERY important this comes back with zero new lines.
+        assert_eq!(
+            recasted,
+            r#"// define constants
+const radius = 6.0
+const width = 144.0
+const length = 83.0
+const depth = 45.0
+const thk = 5
+const hole_diam = 5
+// define a rectangular shape func
+fn rectShape = (pos, w, l) => {
+  const rr = startSketchOn('xy')
+    |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
+    |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, "edge1")
+    |> lineTo([pos[0] + w / 2, pos[1] + l / 2], %, "edge2")
+    |> lineTo([pos[0] - (w / 2), pos[1] + l / 2], %, "edge3")
+    |> close(%, "edge4")
+  return rr
+}
+// build the body of the focusrite scarlett solo gen 4
+// only used for visualization
+const scarlett_body = rectShape([0, 0], width, length)
+  |> extrude(depth, %)
+  |> fillet({
+       radius: radius,
+       tags: [
+         getEdge("edge2", %),
+         getEdge("edge4", %),
+         getOppositeEdge("edge2", %),
+         getOppositeEdge("edge4", %)
+       ]
+     }, %)
+// build the bracket sketch around the body
+fn bracketSketch = (w, d, t) => {
+  const s = startSketchOn({
+         plane: {
+           origin: { x: 0, y: length / 2 + thk, z: 0 },
+           x_axis: { x: 1, y: 0, z: 0 },
+           y_axis: { x: 0, y: 0, z: 1 },
+           z_axis: { x: 0, y: 1, z: 0 }
+         }
+       })
+    |> startProfileAt([-w / 2 - t, d + t], %)
+    |> lineTo([-w / 2 - t, -t], %, "edge1")
+    |> lineTo([w / 2 + t, -t], %, "edge2")
+    |> lineTo([w / 2 + t, d + t], %, "edge3")
+    |> lineTo([w / 2, d + t], %, "edge4")
+    |> lineTo([w / 2, 0], %, "edge5")
+    |> lineTo([-w / 2, 0], %, "edge6")
+    |> lineTo([-w / 2, d + t], %, "edge7")
+    |> close(%, "edge8")
+  return s
+}
+// build the body of the bracket
+const bracket_body = bracketSketch(width, depth, thk)
+  |> extrude(length + 10, %)
+  |> fillet({
+       radius: radius,
+       tags: [
+         getNextAdjacentEdge("edge7", %),
+         getNextAdjacentEdge("edge2", %),
+         getNextAdjacentEdge("edge3", %),
+         getNextAdjacentEdge("edge6", %)
+       ]
+     }, %)
+// build the tabs of the mounting bracket (right side)
+const tabs_r = startSketchOn({
+       plane: {
+         origin: { x: 0, y: 0, z: depth + thk },
+         x_axis: { x: 1, y: 0, z: 0 },
+         y_axis: { x: 0, y: 1, z: 0 },
+         z_axis: { x: 0, y: 0, z: 1 }
+       }
+     })
+  |> startProfileAt([width / 2 + thk, length / 2 + thk], %)
+  |> line([10, -5], %)
+  |> line([0, -10], %)
+  |> line([-10, -5], %)
+  |> close(%)
+  |> hole(circle([
+       width / 2 + thk + hole_diam,
+       length / 2 - hole_diam
+     ], hole_diam / 2, %), %)
+  |> extrude(-thk, %)
+  |> patternLinear3d({
+       axis: [0, -1, 0],
+       repetitions: 1,
+       distance: length - 10
+     }, %)
+// build the tabs of the mounting bracket (left side)
+const tabs_l = startSketchOn({
+       plane: {
+         origin: { x: 0, y: 0, z: depth + thk },
+         x_axis: { x: 1, y: 0, z: 0 },
+         y_axis: { x: 0, y: 1, z: 0 },
+         z_axis: { x: 0, y: 0, z: 1 }
+       }
+     })
+  |> startProfileAt([-width / 2 - thk, length / 2 + thk], %)
+  |> line([-10, -5], %)
+  |> line([0, -10], %)
+  |> line([10, -5], %)
+  |> close(%)
+  |> hole(circle([
+       -width / 2 - thk - hole_diam,
+       length / 2 - hole_diam
+     ], hole_diam / 2, %), %)
+  |> extrude(-thk, %)
+  |> patternLinear3d({
+       axis: [0, -1, 0],
+       repetitions: 1,
+       distance: length - 10
+     }, %)
+"#
+        );
+    }
+
+    #[test]
+    fn test_recast_nested_var_declaration_in_fn_body() {
+        let some_program_string = r#"fn cube = (pos, scale) => {
+   const sg = startSketchOn('XY')
+  |> startProfileAt(pos, %)
+  |> line([0, scale], %)
+  |> line([scale, 0], %)
+  |> line([0, -scale], %)
+  |> close(%)
+  |> extrude(scale, %)
+}"#;
+        let tokens = crate::token::lexer(some_program_string).unwrap();
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"fn cube = (pos, scale) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+    |> close(%)
+    |> extrude(scale, %)
+}
+"#
+        );
     }
 
     #[test]
@@ -3123,7 +3850,7 @@ fn ghi = (x) => {
   |> startProfileAt([0.0, 5.0], %)
               |> line([0.4900857016, -0.0240763666], %)
     |> line([0.6804562304, 0.9087880491], %)"#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3144,7 +3871,7 @@ fn ghi = (x) => {
   |> startProfileAt([0.0, 5.0], %)
               |> line([0.4900857016, -0.0240763666], %) // hello world
     |> line([0.6804562304, 0.9087880491], %)"#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3165,7 +3892,7 @@ fn ghi = (x) => {
               |> line([0.4900857016, -0.0240763666], %)
         // hello world
     |> line([0.6804562304, 0.9087880491], %)"#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3192,7 +3919,7 @@ fn ghi = (x) => {
   // this is also a comment
     return things
 }"#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3218,7 +3945,7 @@ fn ghi = (x) => {
 // this is also a comment
 const thing = 'foo'
 "#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3241,7 +3968,7 @@ const key = 'c'
 // hello
 const thing = 'foo'
 "#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3271,7 +3998,7 @@ const thing = 'c'
 
 const foo = 'bar' //
 "#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3299,7 +4026,7 @@ const foo = 'bar' //
 // hello
 const thing = 'foo'
 "#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3320,7 +4047,7 @@ const thing = 'foo'
 /* comment at start */
 
 const mySk1 = startSketchAt([0, 0])"#;
-        let tokens = crate::token::lexer(test_program);
+        let tokens = crate::token::lexer(test_program).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3352,7 +4079,7 @@ const mySk1 = startSketchOn('XY')
   |> ry(45, %)
   |> rx(45, %)
 // one more for good measure"#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3373,7 +4100,7 @@ const mySk1 = startSketchOn('XY')
   // and another with just white space between others below
   |> ry(45, %)
   |> rx(45, %)
-  // one more for good measure
+// one more for good measure
 "#
         );
     }
@@ -3390,7 +4117,7 @@ const mySk1 = startSketchOn('XY')
        intersectTag: 'seg01'
      }, %)
   |> line([-0.42, -1.72], %)"#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3416,7 +4143,7 @@ const yo = [
   "  hey oooooo really long long long"
 ]
 "#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3434,7 +4161,7 @@ const key = 'c'
 const things = "things"
 
 // this is also a comment"#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3455,7 +4182,7 @@ const things = "things"
  // a comment
    "
 }"#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3481,7 +4208,7 @@ const part001 = startSketchOn('XY')
        -angleToMatchLengthY('seg01', myVar, %),
        myVar
      ], %) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper"#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3508,7 +4235,7 @@ const part001 = startSketchOn('XY')
          myVar
       ], %) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper
 "#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3539,7 +4266,7 @@ fn ghi = (part001) => {
   return part001
 }
 "#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let mut program = parser.ast().unwrap();
         program.rename_symbol("mySuperCoolPart", 6);
@@ -3569,7 +4296,7 @@ fn ghi = (part001) => {
         let some_program_string = r#"fn ghi = (x, y, z) => {
   return x
 }"#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let mut program = parser.ast().unwrap();
         program.rename_symbol("newName", 10);
@@ -3593,7 +4320,7 @@ fn ghi = (part001) => {
     angle_start: 0,
     angle_end: 180,
   }, %)"#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3626,7 +4353,7 @@ const cylinder = startSketchOn('-XZ')
      }, %)
   |> extrude(h, %)
 "#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3651,7 +4378,7 @@ const cylinder = startSketchOn('-XZ')
      }, %)
   |> extrude(h, %)
 "#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3666,7 +4393,7 @@ const cylinder = startSketchOn('-XZ')
   |> startProfileAt([0,0], %)
   |> xLine(5, %) // lin
 "#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3689,7 +4416,7 @@ const firstExtrude = startSketchOn('XY')
   |> close(%)
   |> extrude(h, %)
 "#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3728,7 +4455,7 @@ const firstExtrude = startSketchOn('XY')
   |> close(%)
   |> extrude(h, %)
 "#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3756,7 +4483,7 @@ const firstExtrude = startSketchOn('XY')
     #[tokio::test(flavor = "multi_thread")]
     async fn test_recast_math_start_negative() {
         let some_program_string = r#"const myVar = -5 + 6"#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3769,7 +4496,7 @@ const firstExtrude = startSketchOn('XY')
         let some_program_string = r#"fn thing = (arg0: number, arg1: string, tag?: string) => {
     return arg0
 }"#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3793,7 +4520,7 @@ const firstExtrude = startSketchOn('XY')
         let some_program_string = r#"fn thing = (arg0: number[], arg1: string[], tag?: string) => {
     return arg0
 }"#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3817,7 +4544,7 @@ const firstExtrude = startSketchOn('XY')
         let some_program_string = r#"fn thing = (arg0: number[], arg1: {thing: number, things: string[], more?: string}, tag?: string) => {
     return arg0
 }"#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3874,7 +4601,7 @@ const firstExtrude = startSketchOn('XY')
         let some_program_string = r#"fn thing = () => {thing: number, things: string[], more?: string} {
     return 1
 }"#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3935,7 +4662,7 @@ startSketchOn('XY')
   |> line([0, -(5 - thickness)], %)
   |> line([0, -(5 - 1)], %)
   |> line([0, -(-5 - 1)], %)"#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3951,7 +4678,7 @@ const FOS = 2
 const sigmaAllow = 8
 const width = 20
 const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3983,7 +4710,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
         .into_iter()
         .enumerate()
         {
-            let tokens = crate::token::lexer(raw);
+            let tokens = crate::token::lexer(raw).unwrap();
             let literal = crate::parser::parser_impl::unsigned_number_literal
                 .parse(&tokens)
                 .unwrap();
@@ -4109,7 +4836,7 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_object_bool() {
         let some_program_string = r#"some_func({thing: true, other_thing: false})"#;
-        let tokens = crate::token::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string).unwrap();
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 

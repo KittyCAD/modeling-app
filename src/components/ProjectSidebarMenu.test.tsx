@@ -1,10 +1,10 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
-import { type ProjectWithEntryPointMetadata } from 'lib/types'
 import { SettingsAuthProviderJest } from './SettingsAuthProvider'
 import { APP_NAME } from 'lib/constants'
 import { CommandBarProvider } from './CommandBar/CommandBarProvider'
+import { Project } from 'wasm-lib/kcl/bindings/Project'
 
 const now = new Date()
 const projectWellFormed = {
@@ -14,29 +14,18 @@ const projectWellFormed = {
     {
       name: 'main.kcl',
       path: '/some/path/Simple Box/main.kcl',
+      children: [],
     },
   ],
-  entrypointMetadata: {
-    atime: now,
-    blksize: 32,
-    blocks: 32,
-    birthtime: now,
-    dev: 1,
-    gid: 1,
-    ino: 1,
-    isDirectory: false,
-    isFile: true,
-    isSymlink: false,
-    mode: 1,
-    mtime: now,
-    nlink: 1,
-    readonly: false,
-    rdev: 1,
+  metadata: {
+    created: now.toISOString(),
+    modified: now.toISOString(),
     size: 32,
-    uid: 1,
-    fileAttributes: null,
   },
-} satisfies ProjectWithEntryPointMetadata
+  kcl_file_count: 1,
+  directory_count: 0,
+  default_file: '/some/path/Simple Box/main.kcl',
+} satisfies Project
 
 describe('ProjectSidebarMenu tests', () => {
   test('Renders the project name', () => {
@@ -44,7 +33,7 @@ describe('ProjectSidebarMenu tests', () => {
       <BrowserRouter>
         <CommandBarProvider>
           <SettingsAuthProviderJest>
-            <ProjectSidebarMenu project={projectWellFormed} />
+            <ProjectSidebarMenu project={projectWellFormed} enableMenu={true} />
           </SettingsAuthProviderJest>
         </CommandBarProvider>
       </BrowserRouter>
@@ -65,7 +54,7 @@ describe('ProjectSidebarMenu tests', () => {
       <BrowserRouter>
         <CommandBarProvider>
           <SettingsAuthProviderJest>
-            <ProjectSidebarMenu />
+            <ProjectSidebarMenu enableMenu={true} />
           </SettingsAuthProviderJest>
         </CommandBarProvider>
       </BrowserRouter>
@@ -76,22 +65,18 @@ describe('ProjectSidebarMenu tests', () => {
     expect(screen.getByTestId('projectName')).toHaveTextContent(APP_NAME)
   })
 
-  test('Renders as a link if set to do so', () => {
+  test('Disables popover menu by default', () => {
     render(
       <BrowserRouter>
         <CommandBarProvider>
           <SettingsAuthProviderJest>
-            <ProjectSidebarMenu
-              project={projectWellFormed}
-              renderAsLink={true}
-            />
+            <ProjectSidebarMenu project={projectWellFormed} />
           </SettingsAuthProviderJest>
         </CommandBarProvider>
       </BrowserRouter>
     )
 
-    expect(screen.getByTestId('project-sidebar-link')).toBeInTheDocument()
-    expect(screen.getByTestId('project-sidebar-link-name')).toHaveTextContent(
+    expect(screen.getByTestId('project-name')).toHaveTextContent(
       projectWellFormed.name
     )
   })
