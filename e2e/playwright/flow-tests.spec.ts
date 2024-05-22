@@ -2215,6 +2215,10 @@ test('Extrude from command bar selects extrude line after', async ({
 })
 
 test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
+  // This test can run long if it takes a little too long to load
+  // the engine.
+  test.setTimeout(90000)
+  // This test has a weird bug on ubuntu
   test.skip(
     process.platform === 'linux',
     'weird playwright bug on ubuntu https://github.com/KittyCAD/modeling-app/issues/2444'
