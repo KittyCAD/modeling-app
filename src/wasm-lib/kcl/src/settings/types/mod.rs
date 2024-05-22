@@ -937,4 +937,169 @@ color = 1567.4"#;
             .to_string()
             .contains("color: Validation error: color"));
     }
+
+    #[tokio::test]
+    async fn test_create_new_project_directory_no_initial_code() {
+        let mut settings = Configuration::default();
+        settings.settings.project.directory =
+            std::env::temp_dir().join(format!("test_project_{}", uuid::Uuid::new_v4()));
+
+        let project_name = format!("test_project_{}", uuid::Uuid::new_v4());
+        let project = settings
+            .create_new_project_directory(&project_name, None)
+            .await
+            .unwrap();
+
+        assert_eq!(project.file.name, project_name);
+        assert_eq!(
+            project.file.path,
+            settings
+                .settings
+                .project
+                .directory
+                .join(&project_name)
+                .to_string_lossy()
+        );
+        assert_eq!(project.kcl_file_count, 1);
+        assert_eq!(project.directory_count, 0);
+        assert_eq!(
+            project.default_file,
+            std::path::Path::new(&project.file.path)
+                .join(super::DEFAULT_PROJECT_KCL_FILE)
+                .to_string_lossy()
+        );
+
+        std::fs::remove_dir_all(&settings.settings.project.directory).unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_create_new_project_directory_empty_name() {
+        let mut settings = Configuration::default();
+        settings.settings.project.directory =
+            std::env::temp_dir().join(format!("test_project_{}", uuid::Uuid::new_v4()));
+
+        let project_name = "";
+        let project = settings.create_new_project_directory(project_name, None).await;
+
+        assert!(project.is_err());
+        assert_eq!(project.unwrap_err().to_string(), "Project name cannot be empty.");
+
+        std::fs::remove_dir_all(&settings.settings.project.directory).unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_create_new_project_directory_with_initial_code() {
+        let mut settings = Configuration::default();
+        settings.settings.project.directory =
+            std::env::temp_dir().join(format!("test_project_{}", uuid::Uuid::new_v4()));
+
+        let project_name = format!("test_project_{}", uuid::Uuid::new_v4());
+        let initial_code = "initial code";
+        let project = settings
+            .create_new_project_directory(&project_name, Some(initial_code))
+            .await
+            .unwrap();
+
+        assert_eq!(project.file.name, project_name);
+        assert_eq!(
+            project.file.path,
+            settings
+                .settings
+                .project
+                .directory
+                .join(&project_name)
+                .to_string_lossy()
+        );
+        assert_eq!(project.kcl_file_count, 1);
+        assert_eq!(project.directory_count, 0);
+        assert_eq!(
+            project.default_file,
+            std::path::Path::new(&project.file.path)
+                .join(super::DEFAULT_PROJECT_KCL_FILE)
+                .to_string_lossy()
+        );
+        assert_eq!(
+            tokio::fs::read_to_string(&project.default_file).await.unwrap(),
+            initial_code
+        );
+
+        std::fs::remove_dir_all(&settings.settings.project.directory).unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_list_projects() {
+        let mut settings = Configuration::default();
+        settings.settings.project.directory =
+            std::env::temp_dir().join(format!("test_project_{}", uuid::Uuid::new_v4()));
+
+        let project_name = format!("test_project_{}", uuid::Uuid::new_v4());
+        let project = settings
+            .create_new_project_directory(&project_name, None)
+            .await
+            .unwrap();
+
+        let projects = settings.list_projects().await.unwrap();
+        assert_eq!(projects.len(), 1);
+        assert_eq!(projects[0].file.name, project_name);
+        assert_eq!(projects[0].file.path, project.file.path);
+        assert_eq!(projects[0].kcl_file_count, 1);
+        assert_eq!(projects[0].directory_count, 0);
+        assert_eq!(projects[0].default_file, project.default_file);
+
+        std::fs::remove_dir_all(&settings.settings.project.directory).unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_list_projects_with_rando_files() {
+        let mut settings = Configuration::default();
+        settings.settings.project.directory =
+            std::env::temp_dir().join(format!("test_project_{}", uuid::Uuid::new_v4()));
+
+        let project_name = format!("test_project_{}", uuid::Uuid::new_v4());
+        let project = settings
+            .create_new_project_directory(&project_name, None)
+            .await
+            .unwrap();
+
+        // Create a random file in the root project directory.
+        let random_file = std::path::Path::new(&settings.settings.project.directory).join("random_file.txt");
+        tokio::fs::write(&random_file, "random file").await.unwrap();
+
+        let projects = settings.list_projects().await.unwrap();
+        assert_eq!(projects.len(), 1);
+        assert_eq!(projects[0].file.name, project_name);
+        assert_eq!(projects[0].file.path, project.file.path);
+        assert_eq!(projects[0].kcl_file_count, 1);
+        assert_eq!(projects[0].directory_count, 0);
+        assert_eq!(projects[0].default_file, project.default_file);
+
+        std::fs::remove_dir_all(&settings.settings.project.directory).unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_list_projects_with_hidden_dir() {
+        let mut settings = Configuration::default();
+        settings.settings.project.directory =
+            std::env::temp_dir().join(format!("test_project_{}", uuid::Uuid::new_v4()));
+
+        let project_name = format!("test_project_{}", uuid::Uuid::new_v4());
+        let project = settings
+            .create_new_project_directory(&project_name, None)
+            .await
+            .unwrap();
+
+        // Create a hidden directory in the project directory.
+        let hidden_dir = std::path::Path::new(&settings.settings.project.directory).join(".git");
+        tokio::fs::create_dir_all(&hidden_dir).await.unwrap();
+
+        let projects = settings.list_projects().await.unwrap();
+        assert_eq!(projects.len(), 1);
+        assert_eq!(projects[0].file.name, project_name);
+        assert_eq!(projects[0].file.path, project.file.path);
+        assert_eq!(projects[0].kcl_file_count, 1);
+        assert_eq!(projects[0].directory_count, 0);
+        assert_eq!(projects[0].default_file, project.default_file);
+
+        std::fs::remove_dir_all(&settings.settings.project.directory).unwrap();
+    }
 }
