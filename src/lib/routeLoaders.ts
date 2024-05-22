@@ -118,6 +118,7 @@ export const fileLoader: LoaderFunction = async ({
             children: [],
             kcl_file_count: 0,
             directory_count: 0,
+            metadata: null,
           },
       file: {
         name: current_file_name,
