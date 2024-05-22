@@ -12,7 +12,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
         BasePath, ExtrudeGroup, ExtrudeSurface, Face, GeoMeta, MemoryItem, Path, Plane, PlaneType, Point2d, Point3d,
-        Position, Rotation, SketchGroup, SketchGroupSet, SketchSurface, SourceRange,
+        Position, Rotation, SketchGroup, SketchGroupSet, SketchSurface, SourceRange, UserVal,
     },
     std::{
         utils::{
@@ -995,27 +995,35 @@ async fn start_sketch_on_face(
     args: Args,
 ) -> Result<Box<Face>, KclError> {
     let extrude_plane_id = match tag {
-        SketchOnFaceTag::String(ref s) => extrude_group
-            .value
-            .iter()
-            .find_map(|extrude_surface| match extrude_surface {
-                ExtrudeSurface::ExtrudePlane(extrude_plane) if extrude_plane.name == *s => {
-                    Some(Ok(extrude_plane.face_id))
-                }
-                ExtrudeSurface::ExtrudeArc(extrude_arc) if extrude_arc.name == *s => {
-                    Some(Err(KclError::Type(KclErrorDetails {
-                        message: format!("Cannot sketch on a non-planar surface: `{}`", tag),
-                        source_ranges: vec![args.source_range],
-                    })))
-                }
-                ExtrudeSurface::ExtrudePlane(_) | ExtrudeSurface::ExtrudeArc(_) => None,
-            })
-            .ok_or_else(|| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Expected a face with the tag `{}`", tag),
+        SketchOnFaceTag::String(ref s) => {
+            if s.is_empty() {
+                return Err(KclError::Type(KclErrorDetails {
+                    message: "Expected a non-empty tag for the face to sketch on".to_string(),
                     source_ranges: vec![args.source_range],
+                }));
+            }
+            extrude_group
+                .value
+                .iter()
+                .find_map(|extrude_surface| match extrude_surface {
+                    ExtrudeSurface::ExtrudePlane(extrude_plane) if extrude_plane.name == *s => {
+                        Some(Ok(extrude_plane.face_id))
+                    }
+                    ExtrudeSurface::ExtrudeArc(extrude_arc) if extrude_arc.name == *s => {
+                        Some(Err(KclError::Type(KclErrorDetails {
+                            message: format!("Cannot sketch on a non-planar surface: `{}`", tag),
+                            source_ranges: vec![args.source_range],
+                        })))
+                    }
+                    ExtrudeSurface::ExtrudePlane(_) | ExtrudeSurface::ExtrudeArc(_) => None,
                 })
-            })??,
+                .ok_or_else(|| {
+                    KclError::Type(KclErrorDetails {
+                        message: format!("Expected a face with the tag `{}`", tag),
+                        source_ranges: vec![args.source_range],
+                    })
+                })??
+        }
         SketchOnFaceTag::StartOrEnd(StartOrEnd::Start) => extrude_group.start_cap_id.ok_or_else(|| {
             KclError::Type(KclErrorDetails {
                 message: "Expected a start face to sketch on".to_string(),
@@ -1204,6 +1212,78 @@ pub(crate) async fn inner_start_profile_at(
         meta: vec![args.source_range.into()],
     };
     Ok(Box::new(sketch_group))
+}
+
+/// Returns the X component of the sketch profile start point.
+pub async fn profile_start_x(args: Args) -> Result<MemoryItem, KclError> {
+    let sketch_group: Box<SketchGroup> = args.get_sketch_group()?;
+    let x = inner_profile_start_x(sketch_group)?;
+    args.make_user_val_from_f64(x)
+}
+
+/// ```no_run
+/// const sketch001 = startSketchOn('XY')
+///  |> startProfileAt([5, 2], %)
+///  |> angledLine([-26.6, 50], %)
+///  |> angledLine([90, 50], %)
+///  |> angledLineToX({ angle: 30, to: profileStartX(%) }, %)
+/// ```
+#[stdlib {
+    name = "profileStartX"
+}]
+pub(crate) fn inner_profile_start_x(sketch_group: Box<SketchGroup>) -> Result<f64, KclError> {
+    Ok(sketch_group.start.to[0])
+}
+
+/// Returns the Y component of the sketch profile start point.
+pub async fn profile_start_y(args: Args) -> Result<MemoryItem, KclError> {
+    let sketch_group: Box<SketchGroup> = args.get_sketch_group()?;
+    let x = inner_profile_start_y(sketch_group)?;
+    args.make_user_val_from_f64(x)
+}
+
+/// ```no_run
+/// const sketch001 = startSketchOn('XY')
+///  |> startProfileAt([5, 2], %)
+///  |> angledLine({ angle: -60, length: 14 }, %)
+///  |> angledLineToY({ angle: 30, to: profileStartY(%) }, %)
+/// ```
+#[stdlib {
+    name = "profileStartY"
+}]
+pub(crate) fn inner_profile_start_y(sketch_group: Box<SketchGroup>) -> Result<f64, KclError> {
+    Ok(sketch_group.start.to[1])
+}
+
+/// Returns the sketch profile start point.
+pub async fn profile_start(args: Args) -> Result<MemoryItem, KclError> {
+    let sketch_group: Box<SketchGroup> = args.get_sketch_group()?;
+    let point = inner_profile_start(sketch_group)?;
+    Ok(MemoryItem::UserVal(UserVal {
+        value: serde_json::to_value(point).map_err(|e| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Failed to convert point to json: {}", e),
+                source_ranges: vec![args.source_range],
+            })
+        })?,
+        meta: Default::default(),
+    }))
+}
+
+/// ```no_run
+/// const sketch001 = startSketchOn('XY')
+///  |> startProfileAt([5, 2], %)
+///  |> angledLine({ angle: 120, length: 50 }, %, 'seg01')
+///  |> angledLine({ angle: segAng('seg01', %) + 120, length: 50 }, %)
+///  |> lineTo(profileStart(%), %)
+///  |> close(%)
+///  |> extrude(20, %)
+/// ```
+#[stdlib {
+    name = "profileStart"
+}]
+pub(crate) fn inner_profile_start(sketch_group: Box<SketchGroup>) -> Result<[f64; 2], KclError> {
+    Ok(sketch_group.start.to)
 }
 
 /// Close the current sketch.

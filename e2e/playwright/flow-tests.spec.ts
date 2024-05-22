@@ -424,6 +424,80 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
   await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 })
 
+test('error with 2 source ranges gets 2 diagnostics', async ({ page }) => {
+  const u = getUtils(page)
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const length = .750
+const width = 0.500
+const height = 0.500
+const dia = 4
+
+fn squareHole = (l, w) => {
+  const squareHoleSketch = startSketchOn('XY')
+  |> startProfileAt([-width / 2, -length / 2], %)
+  |> lineTo([width / 2, -length / 2], %)
+  |> lineTo([width / 2, length / 2], %)
+  |> lineTo([-width / 2, length / 2], %)
+  |> close(%)
+  return squareHoleSketch
+}
+`
+    )
+  })
+  await page.setViewportSize({ width: 1000, height: 500 })
+  await page.goto('/')
+  const lspStartPromise = page.waitForEvent('console', async (message) => {
+    // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
+    // but that doesn't seem to make it to the console for macos/safari :(
+    if (message.text().includes('start kcl lsp')) {
+      await new Promise((resolve) => setTimeout(resolve, 200))
+      return true
+    }
+    return false
+  })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await lspStartPromise
+
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
+
+  // check no error to begin with
+  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+  // Click on the bottom of the code editor to add a new line
+  await page.click('.cm-content')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('Enter')
+  await page.keyboard.type(`const extrusion = startSketchOn('XY')
+  |> circle([0, 0], dia/2, %)
+|> hole(squareHole(length, width, height), %)
+|> extrude(height, %)`)
+
+  // error in gutter
+  await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
+  await page.hover('.cm-lint-marker-error:first-child')
+  await expect(page.getByText('Expected 2 arguments, got 3')).toBeVisible()
+
+  // Make sure there are two diagnostics
+  await expect(page.locator('.cm-lint-marker-error')).toHaveCount(2)
+})
+
 test('if your kcl gets an error from the engine it is inlined', async ({
   page,
 }) => {
@@ -646,8 +720,8 @@ test('Auto complete works', async ({ page }) => {
   await page.click('.cm-content')
   await page.keyboard.type('const part001 = start')
 
-  // expect there to be three auto complete options
-  await expect(page.locator('.cm-completionLabel')).toHaveCount(3)
+  // expect there to be six auto complete options
+  await expect(page.locator('.cm-completionLabel')).toHaveCount(6)
   await page.getByText('startSketchOn').click()
   await page.keyboard.type("'XZ'")
   await page.keyboard.press('Tab')
@@ -773,6 +847,130 @@ test('Project settings can be set and override user settings', async ({
   // Check that the project setting did not change
   await page.getByRole('radio', { name: 'Project' }).click()
   await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
+})
+
+test('Project settings can be opened with keybinding from the editor', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/', { waitUntil: 'domcontentloaded' })
+  await page
+    .getByRole('button', { name: 'Start Sketch' })
+    .waitFor({ state: 'visible' })
+
+  // Put the cursor in the editor
+  await page.click('.cm-content')
+
+  // Open the settings modal with the browser keyboard shortcut
+  await page.keyboard.press('Meta+Shift+,')
+
+  await expect(
+    page.getByRole('heading', { name: 'Settings', exact: true })
+  ).toBeVisible()
+  await page
+    .locator('select[name="app-theme"]')
+    .selectOption({ value: 'light' })
+
+  // Verify the toast appeared
+  await expect(
+    page.getByText(`Set theme to "light" for this project`)
+  ).toBeVisible()
+  // Check that the theme changed
+  await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
+
+  // Check that the user setting was not changed
+  await page.getByRole('radio', { name: 'User' }).click()
+  await expect(page.locator('select[name="app-theme"]')).toHaveValue('dark')
+
+  // Roll back to default "system" theme
+  await page
+    .getByText(
+      'themeRoll back themeRoll back to match defaultThe overall appearance of the appl'
+    )
+    .hover()
+  await page
+    .getByRole('button', {
+      name: 'Roll back theme ; Has tooltip: Roll back to match default',
+    })
+    .click()
+  await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+
+  // Check that the project setting did not change
+  await page.getByRole('radio', { name: 'Project' }).click()
+  await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
+})
+
+test('Project and user settings can be reset', async ({ page }) => {
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/', { waitUntil: 'domcontentloaded' })
+  await page
+    .getByRole('button', { name: 'Start Sketch' })
+    .waitFor({ state: 'visible' })
+
+  // Put the cursor in the editor
+  await page.click('.cm-content')
+
+  // Open the settings modal with the browser keyboard shortcut
+  await page.keyboard.press('Meta+Shift+,')
+
+  await expect(
+    page.getByRole('heading', { name: 'Settings', exact: true })
+  ).toBeVisible()
+
+  // Click the reset settings button.
+  await page.getByRole('button', { name: 'Restore default settings' }).click()
+
+  await page
+    .locator('select[name="app-theme"]')
+    .selectOption({ value: 'light' })
+
+  // Verify the toast appeared
+  await expect(
+    page.getByText(`Set theme to "light" for this project`)
+  ).toBeVisible()
+  // Check that the theme changed
+  await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
+  await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
+
+  // Check that the user setting was not changed
+  await page.getByRole('radio', { name: 'User' }).click()
+  await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+
+  // Click the reset settings button.
+  await page.getByRole('button', { name: 'Restore default settings' }).click()
+
+  // Verify it is now set to the default value
+  await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+
+  // Set the user theme to light.
+  await page
+    .locator('select[name="app-theme"]')
+    .selectOption({ value: 'light' })
+
+  // Verify the toast appeared
+  await expect(
+    page.getByText(`Set theme to "light" as a user default`)
+  ).toBeVisible()
+  // Check that the theme changed
+  await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
+  await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
+
+  await page.getByRole('radio', { name: 'Project' }).click()
+  await expect(page.locator('select[name="app-theme"]')).toHaveValue('light')
+
+  // Click the reset settings button.
+  await page.getByRole('button', { name: 'Restore default settings' }).click()
+  // Verify it is now set to the default value
+  await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+
+  await page.getByRole('radio', { name: 'User' }).click()
+  await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
+
+  // Click the reset settings button.
+  await page.getByRole('button', { name: 'Restore default settings' }).click()
+
+  // Verify it is now set to the default value
+  await expect(page.locator('select[name="app-theme"]')).toHaveValue('system')
 })
 
 test('Click through each onboarding step', async ({ page }) => {
@@ -1022,7 +1220,6 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   // wait for execution done
 
   await u.expectCmdLog('[data-message-type="execution-done"]')
-  await u.updateCamPosition([0, -1378.01, 0.06])
   await u.closeDebugPanel()
 
   // select a line
@@ -1059,6 +1256,51 @@ test.describe('Command bar tests', () => {
     await expect(cmdSearchBar).toBeVisible()
     await page.keyboard.press('Escape')
     await expect(cmdSearchBar).not.toBeVisible()
+
+    // Now try the same, but with the keyboard shortcut, check focus
+    await page.keyboard.press('Meta+K')
+    await expect(cmdSearchBar).toBeVisible()
+    await expect(cmdSearchBar).toBeFocused()
+
+    // Try typing in the command bar
+    await page.keyboard.type('theme')
+    const themeOption = page.getByRole('option', {
+      name: 'Settings · app · theme',
+    })
+    await expect(themeOption).toBeVisible()
+    await themeOption.click()
+    const themeInput = page.getByPlaceholder('Select an option')
+    await expect(themeInput).toBeVisible()
+    await expect(themeInput).toBeFocused()
+    // Select dark theme
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await expect(page.getByRole('option', { name: 'system' })).toHaveAttribute(
+      'data-headlessui-state',
+      'active'
+    )
+    await page.keyboard.press('Enter')
+
+    // Check the toast appeared
+    await expect(
+      page.getByText(`Set theme to "system" for this project`)
+    ).toBeVisible()
+    // Check that the theme changed
+    await expect(page.locator('body')).not.toHaveClass(`body-bg dark`)
+  })
+
+  test('Command bar keybinding works from code editor and can change a setting', async ({
+    page,
+  }) => {
+    // Brief boilerplate
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/', { waitUntil: 'domcontentloaded' })
+
+    let cmdSearchBar = page.getByPlaceholder('Search commands')
+
+    // Put the cursor in the code editor
+    await page.click('.cm-content')
 
     // Now try the same, but with the keyboard shortcut, check focus
     await page.keyboard.press('Meta+K')
@@ -1254,7 +1496,6 @@ test('Can add multiple sketches', async ({ page }) => {
   await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
   await page.waitForTimeout(400)
-  await u.updateCamPosition([583, 2000, 370])
   await page.mouse.click(650, 450)
 
   await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
@@ -1268,7 +1509,8 @@ test('Can add multiple sketches', async ({ page }) => {
 
   await page.waitForTimeout(100)
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  const startAt2 = '[22.65, -30.57]'
+  const startAt2 =
+    process.platform === 'darwin' ? '[9.75, -13.16]' : '[0.93, -1.25]'
   await expect(
     (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
   ).toBe(
@@ -1282,7 +1524,7 @@ const part002 = startSketchOn('${plane}')
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
   await page.waitForTimeout(100)
 
-  const num2 = 22.87
+  const num2 = process.platform === 'darwin' ? 9.84 : 0.94
   await expect(
     (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
   ).toBe(
@@ -1300,7 +1542,9 @@ const part002 = startSketchOn('${plane}')
 const part002 = startSketchOn('${plane}')
   |> startProfileAt(${startAt2}, %)
   |> line([${num2}, 0], %)
-  |> line([0, ${roundOff(num2)}], %)`.replace(/\s/g, '')
+  |> line([0, ${roundOff(
+    num2 + (process.platform === 'darwin' ? 0.01 : -0.01)
+  )}], %)`.replace(/\s/g, '')
   )
   await page.waitForTimeout(100)
   await page.mouse.click(startXPx, 500 - PUR * 20)
@@ -1311,8 +1555,13 @@ const part002 = startSketchOn('${plane}')
 const part002 = startSketchOn('${plane}')
   |> startProfileAt(${startAt2}, %)
   |> line([${num2}, 0], %)
-  |> line([0, ${roundOff(num2)}], %)
-  |> line([-45.52, 0], %)`.replace(/\s/g, '')
+  |> line([0, ${roundOff(
+    num2 + (process.platform === 'darwin' ? 0.01 : -0.01)
+  )}], %)
+  |> line([-${process.platform === 'darwin' ? 19.59 : 1.87}, 0], %)`.replace(
+      /\s/g,
+      ''
+    )
   )
 })
 

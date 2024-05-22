@@ -119,7 +119,7 @@ function ProjectCard({
         <>
           <Link
             className="relative z-0 flex flex-col h-full gap-2 p-1 !no-underline !text-chalkboard-110 dark:!text-chalkboard-10"
-            to={`${paths.FILE}/${encodeURIComponent(project.path)}`}
+            to={`${paths.FILE}/${encodeURIComponent(project.default_file)}`}
             data-testid="project-link"
           >
             <div className="flex-1">{project.name?.replace(FILE_EXT, '')}</div>

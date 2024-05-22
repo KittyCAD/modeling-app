@@ -23,6 +23,7 @@ import { useRefreshSettings } from 'hooks/useRefreshSettings'
 import { ModelingSidebar } from 'components/ModelingSidebar/ModelingSidebar'
 import { LowerRightControls } from 'components/LowerRightControls'
 import ModalContainer from 'react-modal-promise'
+import useHotkeyWrapper from 'lib/hotkeyWrapper'
 
 export function App() {
   useRefreshSettings(paths.FILE + 'SETTINGS')
@@ -62,8 +63,8 @@ export function App() {
   useHotkeys('backspace', (e) => {
     e.preventDefault()
   })
-  useHotkeys(
-    isTauri() ? 'mod + ,' : 'shift + mod + ,',
+  useHotkeyWrapper(
+    [isTauri() ? 'mod + ,' : 'shift + mod + ,'],
     () => navigate(filePath + paths.SETTINGS),
     {
       splitKey: '|',

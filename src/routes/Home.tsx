@@ -1,5 +1,5 @@
 import { FormEvent, useEffect } from 'react'
-import { remove, rename } from '@tauri-apps/plugin-fs'
+import { remove } from '@tauri-apps/plugin-fs'
 import {
   getNextProjectIndex,
   interpolateProjectNameWithIndex,
@@ -35,7 +35,11 @@ import { useLspContext } from 'components/LspProvider'
 import { useRefreshSettings } from 'hooks/useRefreshSettings'
 import { LowerRightControls } from 'components/LowerRightControls'
 import { Project } from 'wasm-lib/kcl/bindings/Project'
-import { createNewProjectDirectory, listProjects } from 'lib/tauri'
+import {
+  createNewProjectDirectory,
+  listProjects,
+  renameProjectDirectory,
+} from 'lib/tauri'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
@@ -122,10 +126,9 @@ const Home = () => {
           name = interpolateProjectNameWithIndex(name, nextIndex)
         }
 
-        await rename(
+        await renameProjectDirectory(
           await join(context.defaultDirectory, oldName),
-          await join(context.defaultDirectory, name),
-          {}
+          name
         )
         return `Successfully renamed "${oldName}" to "${name}"`
       },
