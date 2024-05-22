@@ -26,6 +26,13 @@ export async function setState(state: ProjectState | undefined): Promise<void> {
   return await invoke('set_state', { state })
 }
 
+export async function renameProjectDirectory(
+  projectPath: string,
+  newName: string
+): Promise<string> {
+  return invoke<string>('rename_project_directory', { projectPath, newName })
+}
+
 // Get the initial default dir for holding all projects.
 export async function getInitialDefaultDir(): Promise<string> {
   if (!isTauri()) {
