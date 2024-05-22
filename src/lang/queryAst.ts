@@ -392,7 +392,7 @@ export function findAllPreviousVariables(
   }
 }
 
-export function findUnusedVariables(ast: Program): Array<VariableDeclarator> {
+export function findUnusedVariables(ast: Program): Array<VariableDeclaration> {
   const declaredVariables = new Map<string, VariableDeclarator>() // Map to store declared variables
   const usedVariables = new Set<string>() // Set to track used variables
 
@@ -413,6 +413,17 @@ export function findUnusedVariables(ast: Program): Array<VariableDeclarator> {
             // if yes - mark it as used
             usedVariables.add(node.name)
           }
+        } else if (node.type === 'VariableDeclaration') {
+          // check if the declaration is model-defining (contains PipeExpression)
+          const isModelDefining = node.declarations.some(
+            (decl) => decl.init?.type === 'PipeExpression'
+          )
+          if (isModelDefining) {
+            // If it is, mark all contained variables as used
+            node.declarations.forEach((decl) => {
+              usedVariables.add(decl.id.name)
+            })
+          }
         }
       },
     })
@@ -423,8 +434,24 @@ export function findUnusedVariables(ast: Program): Array<VariableDeclarator> {
     declaredVariables.delete(name)
   })
 
-  // 3. Return the unused variables
-  return Array.from(declaredVariables.values())
+  // 3. collect unused VariableDeclarations
+  const unusedVariableDeclarations: Array<VariableDeclaration> = []
+  ast.body.forEach((node) => {
+    if (node.type === 'VariableDeclaration') {
+      const unusedDeclarators = node.declarations.filter((declarator) =>
+        declaredVariables.has(declarator.id.name)
+      )
+      if (unusedDeclarators.length > 0) {
+        unusedVariableDeclarations.push({
+          ...node,
+          declarations: unusedDeclarators,
+        })
+      }
+    }
+  })
+
+  // 4. Return the unused variables
+  return unusedVariableDeclarations
 }
 
 type ReplacerFn = (_ast: Program, varName: string) => { modifiedAst: Program }

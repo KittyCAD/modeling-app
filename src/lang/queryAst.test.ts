@@ -66,14 +66,23 @@ describe('findUnusedVariables', () => {
     // example code
     const code = `
       const xRel001 = -20
-      const xRel002 = xRel001-50
+      const xRel002 = -50
+      const part001 = startSketchOn('-XZ')
+        |> startProfileAt([175.73, 109.38], %)
+        |> line([xRel001, 178.25], %)
+        |> line([-265.39, -87.86], %)
+        |> tangentialArcTo([543.32, -355.04], %)
     `
     // parse into ast
     const ast = parse(code)
     // find unused variables
     const unusedVariables = findUnusedVariables(ast)
     // check wether unused variables match the expected result
-    expect(unusedVariables.map((node) => node.id.name)).toEqual(['xRel002'])
+    expect(
+      unusedVariables
+        .map((node) => node.declarations.map((decl) => decl.id.name))
+        .flat()
+    ).toEqual(['xRel002'])
   })
 })
 
