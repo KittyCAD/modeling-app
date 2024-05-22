@@ -796,6 +796,21 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn test_rename_project_directory_non_empty_dir_recursive() {
+        let name = format!("kittycad-modeling-projects-{}", uuid::Uuid::new_v4());
+        let dir = std::env::temp_dir().join(&name);
+        std::fs::create_dir_all(&dir).unwrap();
+        std::fs::create_dir_all(dir.join("assembly")).unwrap();
+        std::fs::write(dir.join("assembly").join("main.kcl"), vec![]).unwrap();
+
+        let new_name = format!("kittycad-modeling-projects-{}", uuid::Uuid::new_v4());
+        let new_dir = super::rename_project_directory(&dir, &new_name).await.unwrap();
+        assert_eq!(new_dir, std::env::temp_dir().join(&new_name));
+
+        std::fs::remove_dir_all(new_dir).unwrap();
+    }
+
+    #[tokio::test]
     async fn test_rename_project_directory_dir_is_file() {
         let name = format!("kittycad-modeling-projects-{}", uuid::Uuid::new_v4());
         let dir = std::env::temp_dir().join(&name);
