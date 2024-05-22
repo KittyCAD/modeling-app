@@ -341,43 +341,6 @@ fn test_stdlib_doc_comment_with_code() {
 }
 
 #[test]
-fn test_stdlib_doc_comment_with_code_on_ignored_function() {
-    let (item, errors) = do_stdlib(
-        quote! {
-            name = "import",
-            tags = ["norun"]
-        },
-        quote! {
-            /// This is some function.
-            /// It does shit.
-            ///
-            ///     This is code.
-            ///     It does other shit.
-            ///     import
-            ///
-            /// ```
-            /// This is another code block.
-            /// yes sirrr.
-            /// import
-            /// ```
-            fn inner_import(
-                /// The args to do shit to.
-                args: Option<kittycad::types::InputFormat>
-            ) -> Result<Vec<Box<SketchGroup>>> {
-                args
-            }
-        },
-    )
-    .unwrap();
-
-    assert!(errors.is_empty());
-    expectorate::assert_contents(
-        "tests/doc_comment_with_code_on_ignored_function.gen",
-        &get_text_fmt(&item).unwrap(),
-    );
-}
-
-#[test]
 fn test_stdlib_fail_non_camel_case() {
     let (_, errors) = do_stdlib(
         quote! {

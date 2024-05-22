@@ -1,20 +1,21 @@
 import { ToolTip } from '../useStore'
 import { Selection, Selections } from 'lib/selections'
 import {
+  ArrayExpression,
   BinaryExpression,
-  Program,
-  SyntaxType,
-  Value,
   CallExpression,
   ExpressionStatement,
-  VariableDeclaration,
-  ReturnStatement,
-  ArrayExpression,
   PathToNode,
+  PipeExpression,
+  Program,
   ProgramMemory,
+  ReturnStatement,
   SketchGroup,
   SourceRange,
-  PipeExpression,
+  SyntaxType,
+  Value,
+  VariableDeclaration,
+  VariableDeclarator,
 } from './wasm'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
 import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
@@ -293,6 +294,58 @@ export function getNodePathFromSourceRange(
     }
   }
   return path
+}
+
+type KCLNode =
+  | Value
+  | ExpressionStatement
+  | VariableDeclaration
+  | VariableDeclarator
+  | ReturnStatement
+
+export function traverse(
+  node: KCLNode,
+  option: {
+    enter?: (node: KCLNode) => void
+    leave?: (node: KCLNode) => void
+  }
+) {
+  option?.enter?.(node)
+  const _traverse = (node: KCLNode) => traverse(node, option)
+
+  if (node.type === 'VariableDeclaration') {
+    node.declarations.forEach(_traverse)
+  } else if (node.type === 'VariableDeclarator') {
+    _traverse(node.init)
+  } else if (node.type === 'PipeExpression') {
+    node.body.forEach(_traverse)
+  } else if (node.type === 'CallExpression') {
+    _traverse(node.callee)
+    node.arguments.forEach(_traverse)
+  } else if (node.type === 'BinaryExpression') {
+    _traverse(node.left)
+    _traverse(node.right)
+  } else if (node.type === 'Identifier') {
+    // do nothing
+  } else if (node.type === 'Literal') {
+    // do nothing
+  } else if (node.type === 'ArrayExpression') {
+    node.elements.forEach(_traverse)
+  } else if (node.type === 'ObjectExpression') {
+    node.properties.forEach(({ key, value }) => {
+      _traverse(key)
+      _traverse(value)
+    })
+  } else if (node.type === 'UnaryExpression') {
+    _traverse(node.argument)
+  } else if (node.type === 'MemberExpression') {
+    // hmm this smell
+    _traverse(node.object)
+    _traverse(node.property)
+  } else if ('body' in node && Array.isArray(node.body)) {
+    node.body.forEach(_traverse)
+  }
+  option?.leave?.(node)
 }
 
 export interface PrevVariable<T> {

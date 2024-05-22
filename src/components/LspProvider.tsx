@@ -22,8 +22,7 @@ import {
   LspWorker,
 } from 'editor/plugins/lsp/types'
 import { wasmUrl } from 'lang/wasm'
-
-const DEFAULT_FILE_NAME: string = 'main.kcl'
+import { PROJECT_ENTRYPOINT } from 'lib/constants'
 
 function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
   return []
@@ -137,7 +136,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     if (isKclLspServerReady && !TEST && kclLspClient) {
       // Set up the lsp plugin.
       const lsp = kclLanguage({
-        documentUri: `file:///${DEFAULT_FILE_NAME}`,
+        documentUri: `file:///${PROJECT_ENTRYPOINT}`,
         workspaceFolders: getWorkspaceFolders(),
         client: kclLspClient,
       })
@@ -211,7 +210,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     if (isCopilotLspServerReady && !TEST && copilotLspClient) {
       // Set up the lsp plugin.
       const lsp = copilotPlugin({
-        documentUri: `file:///${DEFAULT_FILE_NAME}`,
+        documentUri: `file:///${PROJECT_ENTRYPOINT}`,
         workspaceFolders: getWorkspaceFolders(),
         client: copilotLspClient,
         allowHTMLContent: true,
@@ -236,7 +235,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     redirect: boolean
   ) => {
     const currentFilePath = projectBasename(
-      file?.path || DEFAULT_FILE_NAME,
+      file?.path || PROJECT_ENTRYPOINT,
       projectPath || ''
     )
     lspClients.forEach((lspClient) => {
@@ -267,7 +266,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     if (file) {
       // Send that the file was opened.
       const filename = projectBasename(
-        file?.path || DEFAULT_FILE_NAME,
+        file?.path || PROJECT_ENTRYPOINT,
         project?.path || ''
       )
       lspClients.forEach((lspClient) => {
@@ -285,7 +284,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
 
   const onFileOpen = (filePath: string | null, projectPath: string | null) => {
     const currentFilePath = projectBasename(
-      filePath || DEFAULT_FILE_NAME,
+      filePath || PROJECT_ENTRYPOINT,
       projectPath || ''
     )
     lspClients.forEach((lspClient) => {
@@ -302,7 +301,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
 
   const onFileClose = (filePath: string | null, projectPath: string | null) => {
     const currentFilePath = projectBasename(
-      filePath || DEFAULT_FILE_NAME,
+      filePath || PROJECT_ENTRYPOINT,
       projectPath || ''
     )
     lspClients.forEach((lspClient) => {
