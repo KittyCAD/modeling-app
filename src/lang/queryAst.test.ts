@@ -1,6 +1,7 @@
 import { parse, recast, initPromise } from './wasm'
 import {
   findAllPreviousVariables,
+  findUnusedVariables,
   isNodeSafeToReplace,
   isTypeInValue,
   getNodePathFromSourceRange,
@@ -57,6 +58,22 @@ const variableBelowShouldNotBeIncluded = 3
     // ∴ the insert index should be 6
     expect(insertIndex).toEqual(6)
     expect(bodyPath).toEqual([['body', '']])
+  })
+})
+
+describe('findUnusedVariables', () => {
+  it('should find unused vairiables', () => {
+    // example code
+    const code = `
+      const xRel001 = -20
+      const xRel002 = xRel001-50
+    `
+    // parse into ast
+    const ast = parse(code)
+    // find unused variables
+    const unusedVariables = findUnusedVariables(ast)
+    // check wether unused variables match the expected result
+    expect(unusedVariables.map((node) => node.id.name)).toEqual(['xRel002'])
   })
 })
 
