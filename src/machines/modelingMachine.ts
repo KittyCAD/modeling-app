@@ -906,7 +906,7 @@ export const modelingMachine = createMachine(
                 type: 'default_camera_set_perspective',
               },
             })
-            const center =  { x: 0, y: 0, z: 0 }
+            const center = { x: 0, y: 0, z: 0 }
             const camPos = sceneInfra.camControls.camera.position
             if (camPos.x === 0 && camPos.y === 0) {
               // looking straight up or down is going to cause issues with the engine
