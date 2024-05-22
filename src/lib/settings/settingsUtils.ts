@@ -147,7 +147,7 @@ export interface AppSettings {
 }
 
 export async function loadAndValidateSettings(
-  projectName?: string
+  projectPath?: string
 ): Promise<AppSettings> {
   const settings = createSettings()
   const inTauri = isTauri()
@@ -166,9 +166,9 @@ export async function loadAndValidateSettings(
   setSettingsAtLevel(settings, 'user', appSettingsPayload)
 
   // Load the project settings if they exist
-  if (projectName) {
+  if (projectPath) {
     const projectSettings = inTauri
-      ? await readProjectSettingsFile(appSettings, projectName)
+      ? await readProjectSettingsFile(projectPath)
       : readLocalStorageProjectSettingsFile()
 
     const projectSettingsPayload =
@@ -182,7 +182,7 @@ export async function loadAndValidateSettings(
 
 export async function saveSettings(
   allSettings: typeof settings,
-  projectName?: string
+  projectPath?: string
 ) {
   // Make sure we have wasm initialized.
   await initPromise
@@ -204,7 +204,7 @@ export async function saveSettings(
     )
   }
 
-  if (!projectName) {
+  if (!projectPath) {
     // If we're not saving project settings, we're done.
     return
   }
@@ -217,7 +217,7 @@ export async function saveSettings(
 
   // Write the project settings.
   if (inTauri) {
-    await writeProjectSettingsFile(appSettings, projectName, projectSettings)
+    await writeProjectSettingsFile(projectPath, projectSettings)
   } else {
     localStorage.setItem(
       localStorageProjectSettingsPath(),

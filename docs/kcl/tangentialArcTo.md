@@ -15,7 +15,7 @@ tangentialArcTo(to: [number], sketch_group: SketchGroup, tag?: String) -> Sketch
 ### Examples
 
 ```js
-const exampleSketch = startSketchOn('-XZ')
+const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLine({ angle: 60, length: 10 }, %)
   |> tangentialArcTo([15, 15], %)

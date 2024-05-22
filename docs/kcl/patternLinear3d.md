@@ -15,7 +15,7 @@ patternLinear3d(data: LinearPattern3dData, extrude_group: ExtrudeGroup) -> [Extr
 ### Examples
 
 ```js
-const exampleSketch = startSketchOn('-XZ')
+const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([0, 2], %)
   |> line([3, 1], %)
