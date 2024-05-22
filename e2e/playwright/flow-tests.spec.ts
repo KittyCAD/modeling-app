@@ -1924,7 +1924,6 @@ const part002 = startSketchOn('-XZ')
   await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
 })
 
-
 test('Can edit segments by dragging their handles', async ({ page }) => {
   const u = getUtils(page)
   await page.addInitScript(async () => {
