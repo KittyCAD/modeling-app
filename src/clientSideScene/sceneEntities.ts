@@ -1396,7 +1396,7 @@ export class SceneEntities {
           zAxis = posNorm ? [1, 0, 0] : [-1, 0, 0]
           yAxis = [0, 0, 1]
         } else if (type === XZ_PLANE) {
-          planeString = posNorm ? 'XZ' : '-XZ'
+          planeString = posNorm ? '-XZ' : 'XZ'
           zAxis = posNorm ? [0, 1, 0] : [0, -1, 0]
           yAxis = [0, 0, 1]
         }
