@@ -1,6 +1,6 @@
 import {
   EngineCommandManager,
-  EngineConnectionState
+  EngineConnectionState,
 } from 'lang/std/engineConnection'
 //engineCommandManager, - TODO: Can we use this instead
 // import {
@@ -158,8 +158,10 @@ export class CoreDumpManager {
   // Currently just a placeholder to begin loading singleton and xstate data into
   getClientState(): Promise<string> {
     // TODO: dshaw set to ClientState once ts-rs bindings get set
-    const clientState: ClientState = {
-      engine_command_manager: { meta: [] },
+    let clientState: ClientState = {
+      engine_command_manager: {
+        engine_connection: { state: { type: '' } },
+      },
       kcl_manager: { meta: [] },
       scene_infra: { meta: [] },
       auth_machine: { meta: [] },
@@ -170,20 +172,34 @@ export class CoreDumpManager {
       settings_machine: { meta: [] },
     }
     console.log('initialized clientState', clientState)
-    
+
     // Singletons
 
     // engine_command_manager
-    console.log('engineCommandManager', this.engineCommandManager)
+    console.log('global engineCommandManager', this.engineCommandManager)
+
+    // engine_connection
+
+    // engine connection state
     if (this.engineCommandManager?.engineConnection?.state) {
-      //clientState.engine_command_manager.meta.push(1)
-      console.log('engine connection state', this.engineCommandManager?.engineConnection?.state)
+      clientState.engine_command_manager.engine_connection.state =
+        this.engineCommandManager?.engineConnection?.state
+      console.log(
+        'engine connection state',
+        this.engineCommandManager?.engineConnection?.state
+      )
     }
 
+    // engine command logs
+    // console.log('engine command logs', this.engineCommandManager?.commandLogs)
+    // if (this.engineCommandManager?.commandLogs) {
+    //     clientState.engine_command_manager.command_logs =
+    //       this.engineCommandManager.commandLogs
+    // }
+
     // this.kclManager.kclErrors
-    const xstateServices = new Set()
-    //globalThis?.__xstate__?.services
-    console.log('xstateServices', xstateServices)
+    console.log('xstateServices', this?.__xstate__?.services)
+    let xstateServices = this?.__xstate__?.services || new Set()
 
     xstateServices?.forEach((interpreter: any) => {
       console.log('interpreter', interpreter)
@@ -195,15 +211,12 @@ export class CoreDumpManager {
 
     console.log('final clientState', clientState)
 
-    //clientState.engine_command_manager.commandLogs = this.engineCommandManager.commandLogs
-    //console.dir(this.engineCommandManager.commandLogs)
-    // try {
-    //   return Promise.resolve(JSON.stringify(clientState))
-    // } catch (error) {
-    //   console.error('unable to return coredump data due to ', error)
-    //   return Promise.reject(error)
-    // }
-    return Promise.resolve(JSON.stringify(clientState))
+    try {
+      return Promise.resolve(JSON.stringify(clientState))
+    } catch (error) {
+      console.error('unable to return coredump data due to ', error)
+      return Promise.reject(JSON.stringify(error))
+    }
   }
 
   // Return a data URL (png format) of the screenshot of the current page.
