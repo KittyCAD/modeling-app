@@ -2306,8 +2306,9 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await page.mouse.click(750, 150)
   await expect(extrudeButton).not.toBeDisabled()
   await page.keyboard.press('e')
-  await page.mouse.move(720, 220, { steps: 5 })
-  await page.mouse.click(720, 220)
+  await page.mouse.move(850, 180, { steps: 5 })
+  await page.mouse.click(850, 180)
+  await page.waitForTimeout(100)
   await page.getByRole('button', { name: 'Continue' }).click()
   await page.getByRole('button', { name: 'Submit command' }).click()
 
