@@ -1966,7 +1966,10 @@ test('Extrude from command bar selects extrude line after', async ({
 })
 
 test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
-  test.skip(process.platform === 'linux', 'weird playwright bug on ubuntu https://github.com/KittyCAD/modeling-app/issues/2444')
+  test.skip(
+    process.platform === 'linux',
+    'weird playwright bug on ubuntu https://github.com/KittyCAD/modeling-app/issues/2444'
+  )
   // Load the app with the code pane open
   await page.addInitScript(async () => {
     localStorage.setItem(
