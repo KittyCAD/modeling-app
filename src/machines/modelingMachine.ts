@@ -906,12 +906,20 @@ export const modelingMachine = createMachine(
                 type: 'default_camera_set_perspective',
               },
             })
+            const center =  { x: 0, y: 0, z: 0 }
+            const camPos = sceneInfra.camControls.camera.position
+            if (camPos.x === 0 && camPos.y === 0) {
+              // looking straight up or down is going to cause issues with the engine
+              // tweaking the center to be a little off center
+              // TODO come up with a proper fix
+              center.y = 0.05
+            }
             await engineCommandManager.sendSceneCommand({
               type: 'modeling_cmd_req',
               cmd_id: uuidv4(),
               cmd: {
                 type: 'default_camera_look_at',
-                center: { x: 0, y: 0, z: 0 },
+                center,
                 vantage: sceneInfra.camControls.camera.position,
                 up: { x: 0, y: 0, z: 1 },
               },
