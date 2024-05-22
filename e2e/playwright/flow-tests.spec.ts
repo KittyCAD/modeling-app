@@ -1964,3 +1964,96 @@ test('Extrude from command bar selects extrude line after', async ({
     `  |> extrude(${KCL_DEFAULT_LENGTH}, %)`
   )
 })
+
+test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
+  // Load the app with the code pane open
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'store',
+      JSON.stringify({
+        state: {
+          openPanes: ['code'],
+        },
+        version: 0,
+      })
+    )
+  })
+
+  // Wait for the app to be ready for use
+  const u = getUtils(page)
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
+
+  const codePane = page.getByRole('textbox').locator('div')
+  const codePaneButton = page.getByRole('tab', { name: 'KCL Code' })
+  const lineButton = page.getByRole('button', { name: 'Line' })
+  const arcButton = page.getByRole('button', { name: 'Tangential Arc' })
+  const extrudeButton = page.getByRole('button', { name: 'Extrude' })
+
+  // Test that the hotkeys do nothing when
+  // focus is on the code pane
+  await codePane.click()
+  await page.keyboard.press('s')
+  await page.keyboard.press('l')
+  await page.keyboard.press('a')
+  await page.keyboard.press('e')
+  await expect(page.locator('.cm-content')).toHaveText('slae')
+  await page.keyboard.press('Meta+/')
+
+  // Test these hotkeys perform actions when
+  // focus is on the canvas
+  await page.mouse.move(600, 250)
+  await page.mouse.click(600, 250)
+  // Start a sketch
+  await page.keyboard.press('s')
+  await page.mouse.move(800, 300)
+  await page.mouse.click(800, 300)
+  await page.waitForTimeout(1000)
+  await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
+  /**
+   * TODO: There is a bug somewhere that causes this test to fail
+   * if you toggle the codePane closed before your trigger the
+   * start of the sketch.
+   */
+  await codePaneButton.click()
+
+  // Draw a line
+  await page.mouse.move(700, 200, { steps: 5 })
+  await page.mouse.click(700, 200)
+  await page.mouse.move(800, 250, { steps: 5 })
+  await page.mouse.click(800, 250)
+  // Unequip line tool
+  await page.keyboard.press('l')
+  await expect(lineButton).not.toHaveAttribute('aria-pressed', 'true')
+  // Equip arc tool
+  await page.keyboard.press('a')
+  await expect(arcButton).toHaveAttribute('aria-pressed', 'true')
+  await page.mouse.move(1000, 100, { steps: 5 })
+  await page.mouse.click(1000, 100)
+  await page.keyboard.press('Escape')
+  await page.keyboard.press('l')
+  await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
+  // Close profile
+  await page.mouse.move(700, 200, { steps: 5 })
+  await page.mouse.click(700, 200)
+  // Unequip line tool
+  await page.keyboard.press('Escape')
+  // Exit sketch
+  await page.keyboard.press('Escape')
+
+  // Extrude
+  await page.mouse.click(750, 150)
+  await expect(extrudeButton).not.toBeDisabled()
+  await page.keyboard.press('e')
+  await page.mouse.move(720, 220, { steps: 5 })
+  await page.mouse.click(720, 220)
+  await page.getByRole('button', { name: 'Continue' }).click()
+  await page.getByRole('button', { name: 'Submit command' }).click()
+
+  await codePaneButton.click()
+  await expect(page.locator('.cm-content')).toContainText('extrude(')
+})

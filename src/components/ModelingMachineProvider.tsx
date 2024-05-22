@@ -290,7 +290,7 @@ export const ModelingMachineProvider = ({
             kclManager.ast,
             sketchDetails?.sketchPathToNode || [],
             'VariableDeclaration'
-          )?.node?.declarations[0]?.init.type !== 'PipeExpression',
+          )?.node?.declarations?.[0]?.init.type !== 'PipeExpression',
         'Selection is on face': ({ selectionRanges }, { data }) => {
           if (data?.forceNewSketch) return false
           if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))
