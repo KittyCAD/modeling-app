@@ -1,46 +1,57 @@
-fn make_circle = (face, tag, pos, radius) => {
-  const sg = startSketchOn(face, tag)
-  |> startProfileAt([pos[0] + radius, pos[1]], %)
-  |> arc({
-       angle_end: 360,
-       angle_start: 0,
-       radius: radius
-     }, %, 'arc-' + tag)
-  |> close(%)
-
-  return sg
-}
-
-fn pentagon = (len) => {
-  const sg = startSketchOn('XY')
+fn triangle = (len) => {
+  return startSketchOn('XY')
   |> startProfileAt([-len / 2, -len / 2], %)
   |> angledLine({ angle: 0, length: len }, %, 'a')
   |> angledLine({
-       angle: segAng('a', %) + 180 - 108,
+       angle: segAng('a', %) + 120,
        length: len
      }, %, 'b')
   |> angledLine({
-       angle: segAng('b', %) + 180 - 108,
+       angle: segAng('b', %) + 120,
        length: len
      }, %, 'c')
-  |> angledLine({
-       angle: segAng('c', %) + 180 - 108,
-       length: len
-     }, %, 'd')
-  |> angledLine({
-       angle: segAng('d', %) + 180 - 108,
-       length: len
-     }, %)
-
-  return sg
 }
 
-const p = pentagon(48)
-  |> extrude(30, %)
+let triangleHeight = 200
+let lenPlumbus = 100
+let circlePos = [0, triangleHeight/2]
+let radius = 80
+let circ = {angle_start: 0, angle_end: 360, radius: radius}
 
-const plumbus0 = make_circle(p, 'a', [0, 0], 9)
-  |> extrude(18, %)
+const p = triangle(500)
+  |> extrude(triangleHeight, %)
+
+fn circl = (tag) => {
+return startSketchOn(p, tag)
+  |> startProfileAt([circlePos[0] + radius, circlePos[1]], %)
+  |> arc(circ, %, 'arc-' + tag)
+  |> close(%)
+}
+
+const plumbus1 = 
+  circl('a')
+  |> extrude(lenPlumbus, %)
   |> fillet({
-       radius: 0.5,
-       tags: ['arc-a', getOppositeEdge('arc-a', %)]
+       radius: 5,
+       tags: ['arc-a']
      }, %)
+
+const plumbus0 = 
+startSketchOn(p, 'b')
+  |> startProfileAt([circlePos[0] + radius, circlePos[1]], %)
+  |> arc(circ, %, 'arc-' + 'b')
+  |> close(%)
+  |> extrude(lenPlumbus, %)
+  // |> fillet({
+  //      radius: 5,
+  //      tags: ['arc-b']
+  //    }, %)
+
+// const plumbus0 = 
+//   circl('b')
+//   |> extrude(lenPlumbus, %)
+//   // |> fillet({
+//   //      radius: 5,
+//   //      tags: ['arc-b']
+//   //    }, %)
+
