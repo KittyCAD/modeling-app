@@ -209,13 +209,12 @@ const Home = () => {
               <ActionButton
                 Element="button"
                 onClick={() => send('Create project')}
-                className="group !bg-primary !text-chalkboard-10 !border-primary hover:shadow-inner"
+                className="group !bg-primary !text-chalkboard-10 !border-primary hover:shadow-inner hover:hue-rotate-15"
                 iconStart={{
                   icon: 'plus',
-                  bgClassName:
-                    '!bg-transparent group-hover:!bg-chalkboard-10 group-active:!bg-chalkboard-10 rounded-sm group-hover:shadow-sm',
+                  bgClassName: '!bg-transparent rounded-sm',
                   iconClassName:
-                    '!text-chalkboard-10 group-hover:!text-primary transition-transform group-active:rotate-90',
+                    '!text-chalkboard-10 transition-transform group-active:rotate-90',
                 }}
                 data-testid="home-new-file"
               >
@@ -241,7 +240,6 @@ const Home = () => {
                   iconClassName: !sort.includes('name')
                     ? '!text-chalkboard-90 dark:!text-chalkboard-30'
                     : '',
-                  size: 'sm',
                 }}
               >
                 Name
@@ -263,7 +261,6 @@ const Home = () => {
                   iconClassName: !isSortByModified
                     ? '!text-chalkboard-90 dark:!text-chalkboard-30'
                     : '',
-                  size: 'sm',
                 }}
               >
                 Last Modified
