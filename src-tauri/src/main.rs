@@ -273,6 +273,7 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
             Err(e) => println!("Fallback to default /tmp"),
         }
         let path = Path::new(&temp).join("kittycad_user_code");
+        println!("Writing to {}", path.to_string_lossy());
         tokio::fs::write(path, details.user_code().secret())
             .await
             .map_err(|e| InvokeError::from_anyhow(e.into()))?;

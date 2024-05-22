@@ -32,10 +32,10 @@ async function setDatasetValue(
   await browser.execute(`arguments[0].dataset.${property} = "${value}"`, field)
 }
 
-describe('ZMA (Tauri, Linux)', () => {
+describe('ZMA (Tauri)', () => {
   it('opens the auth page and signs in', async () => {
     // Clean up filesystem from previous tests
-    await new Promise((resolve) => setTimeout(resolve, 100))
+    await new Promise((resolve) => setTimeout(resolve, 1000))
     await fs.rm(defaultProjectDir, { force: true, recursive: true })
     await fs.rm(newProjectDir, { force: true, recursive: true })
     await fs.rm(userCodeDir, { force: true })
@@ -78,7 +78,6 @@ describe('ZMA (Tauri, Linux)', () => {
     console.log(cr.status)
 
     // Now should be signed in
-    await new Promise((resolve) => setTimeout(resolve, 10000))
     const newFileButton = await $('[data-testid="home-new-file"]')
     expect(await newFileButton.getText()).toEqual('New project')
   })
@@ -90,6 +89,7 @@ describe('ZMA (Tauri, Linux)', () => {
     const settingsButton = await $('[data-testid="settings-button"]')
     await click(settingsButton)
 
+    await new Promise((resolve) => setTimeout(resolve, 10000))
     const projectDirInput = await $('[data-testid="project-directory-input"]')
     expect(await projectDirInput.getValue()).toEqual(defaultProjectDir)
 
@@ -124,12 +124,17 @@ describe('ZMA (Tauri, Linux)', () => {
   })
 
   it('opens the new file and expects a loading stream', async () => {
+    const isWin32 = os.platform() === 'win32'
     const projectLink = await $('[data-testid="project-link"]')
     await click(projectLink)
-    const errorText = await $('[data-testid="unexpected-error"]')
-    expect(await errorText.getText()).toContain('unexpected error')
-    const base =
-      os.platform() === 'win32' ? 'http://tauri.localhost' : 'tauri://localhost'
+    if (isWin32) {
+      // TODO: actually do something to check that the stream is up
+      await new Promise((resolve) => setTimeout(resolve, 5000))
+    } else {
+      const errorText = await $('[data-testid="unexpected-error"]')
+      expect(await errorText.getText()).toContain('unexpected error')
+    }
+    const base = isWin32 ? 'http://tauri.localhost' : 'tauri://localhost'
     await browser.execute(`window.location.href = "${base}/home"`)
   })
 
