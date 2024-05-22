@@ -33,6 +33,16 @@ pub async fn walk_dir<P>(dir: P) -> Result<FileEntry>
 where
     P: AsRef<Path> + Send,
 {
+    // Make sure the path is a directory.
+    if !dir.as_ref().is_dir() {
+        return Err(anyhow::anyhow!("Path `{}` is not a directory", dir.as_ref().display()));
+    }
+
+    // Make sure the directory exists.
+    if !dir.as_ref().exists() {
+        return Err(anyhow::anyhow!("Directory `{}` does not exist", dir.as_ref().display()));
+    }
+
     let mut entry = FileEntry {
         name: dir
             .as_ref()
