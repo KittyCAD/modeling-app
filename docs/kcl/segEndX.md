@@ -15,7 +15,7 @@ segEndX(segment_name: string, sketch_group: SketchGroup) -> number
 ### Examples
 
 ```js
-const exampleSketch = startSketchOn('-XZ')
+const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([20, 0], %, "thing")
   |> line([0, 5], %)

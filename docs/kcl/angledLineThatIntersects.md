@@ -15,7 +15,7 @@ angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: Sketc
 ### Examples
 
 ```js
-const exampleSketch = startSketchOn('-XZ')
+const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> lineTo([5, 10], %)
   |> lineTo([-10, 10], %, "lineToIntersect")

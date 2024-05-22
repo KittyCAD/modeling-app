@@ -39,7 +39,9 @@ export const settingsLoader: LoaderFunction = async ({
     )
     if (projectPathData) {
       const { project_path } = projectPathData
-      const { settings: s } = await loadAndValidateSettings(project_path)
+      const { settings: s } = await loadAndValidateSettings(
+        project_path || undefined
+      )
       settings = s
     }
   }
@@ -118,6 +120,7 @@ export const fileLoader: LoaderFunction = async ({
             children: [],
             kcl_file_count: 0,
             directory_count: 0,
+            metadata: null,
             default_file: project_path,
           },
       file: {

@@ -15,7 +15,7 @@ lastSegX(sketch_group: SketchGroup) -> number
 ### Examples
 
 ```js
-const exampleSketch = startSketchOn("-XZ")
+const exampleSketch = startSketchOn("XZ")
   |> startProfileAt([0, 0], %)
   |> line([5, 0], %)
   |> line([20, 5], %)

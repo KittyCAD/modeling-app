@@ -1842,6 +1842,88 @@ test('Deselecting line tool should mean nothing happens on click', async ({
   previousCodeContent = await page.locator('.cm-content').innerText()
 })
 
+test('multi-sketch file shows multiple Edit Sketch buttons', async ({
+  page,
+  context,
+}) => {
+  const u = getUtils(page)
+  const selectionsSnippets = {
+    startProfileAt1:
+      '|> startProfileAt([-width / 4 + screwRadius, height / 2], %)',
+    startProfileAt2: '|> startProfileAt([-width / 2, 0], %)',
+    startProfileAt3: '|> startProfileAt([0, thickness], %)',
+  }
+  await context.addInitScript(
+    async ({ startProfileAt1, startProfileAt2, startProfileAt3 }: any) => {
+      localStorage.setItem(
+        'persistCode',
+        `
+const width = 20
+const height = 10
+const thickness = 5
+const screwRadius = 3
+const wireRadius = 2
+const wireOffset = 0.5
+
+const screwHole = startSketchOn('XY')
+  ${startProfileAt1}
+  |> arc({
+        radius: screwRadius,
+        angle_start: 0,
+        angle_end: 360
+      }, %)
+
+const part001 = startSketchOn('XY')
+  ${startProfileAt2}
+  |> xLine(width * .5, %)
+  |> yLine(height, %)
+  |> xLine(-width * .5, %)
+  |> close(%)
+  |> hole(screwHole, %)
+  |> extrude(thickness, %)
+
+const part002 = startSketchOn('-XZ')
+  ${startProfileAt3}
+  |> xLine(width / 4, %)
+  |> tangentialArcTo([width / 2, 0], %)
+  |> xLine(-width / 4 + wireRadius, %)
+  |> yLine(wireOffset, %)
+  |> arc({
+        radius: wireRadius,
+        angle_start: 0,
+        angle_end: 180
+      }, %)
+  |> yLine(-wireOffset, %)
+  |> xLine(-width / 4, %)
+  |> close(%)
+  |> extrude(-height, %)
+`
+      )
+    },
+    selectionsSnippets
+  )
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+
+  // wait for execution done
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
+
+  await page.getByText(selectionsSnippets.startProfileAt1).click()
+  await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+  await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
+
+  await page.getByText(selectionsSnippets.startProfileAt2).click()
+  await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+  await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
+
+  await page.getByText(selectionsSnippets.startProfileAt3).click()
+  await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+  await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
+})
+
 test('Can edit segments by dragging their handles', async ({ page }) => {
   const u = getUtils(page)
   await page.addInitScript(async () => {
@@ -2212,4 +2294,106 @@ test('Extrude from command bar selects extrude line after', async ({
   await expect(page.locator('.cm-activeLine')).toHaveText(
     `  |> extrude(${KCL_DEFAULT_LENGTH}, %)`
   )
+})
+
+test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
+  // This test can run long if it takes a little too long to load
+  // the engine.
+  test.setTimeout(90000)
+  // This test has a weird bug on ubuntu
+  test.skip(
+    process.platform === 'linux',
+    'weird playwright bug on ubuntu https://github.com/KittyCAD/modeling-app/issues/2444'
+  )
+  // Load the app with the code pane open
+  await page.addInitScript(async () => {
+    localStorage.setItem(
+      'store',
+      JSON.stringify({
+        state: {
+          openPanes: ['code'],
+        },
+        version: 0,
+      })
+    )
+  })
+
+  // Wait for the app to be ready for use
+  const u = getUtils(page)
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
+
+  const codePane = page.getByRole('textbox').locator('div')
+  const codePaneButton = page.getByRole('tab', { name: 'KCL Code' })
+  const lineButton = page.getByRole('button', { name: 'Line' })
+  const arcButton = page.getByRole('button', { name: 'Tangential Arc' })
+  const extrudeButton = page.getByRole('button', { name: 'Extrude' })
+
+  // Test that the hotkeys do nothing when
+  // focus is on the code pane
+  await codePane.click()
+  await page.keyboard.press('s')
+  await page.keyboard.press('l')
+  await page.keyboard.press('a')
+  await page.keyboard.press('e')
+  await expect(page.locator('.cm-content')).toHaveText('slae')
+  await page.keyboard.press('Meta+/')
+
+  // Test these hotkeys perform actions when
+  // focus is on the canvas
+  await page.mouse.move(600, 250)
+  await page.mouse.click(600, 250)
+  // Start a sketch
+  await page.keyboard.press('s')
+  await page.mouse.move(800, 300)
+  await page.mouse.click(800, 300)
+  await page.waitForTimeout(1000)
+  await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
+  /**
+   * TODO: There is a bug somewhere that causes this test to fail
+   * if you toggle the codePane closed before your trigger the
+   * start of the sketch.
+   */
+  await codePaneButton.click()
+
+  // Draw a line
+  await page.mouse.move(700, 200, { steps: 5 })
+  await page.mouse.click(700, 200)
+  await page.mouse.move(800, 250, { steps: 5 })
+  await page.mouse.click(800, 250)
+  // Unequip line tool
+  await page.keyboard.press('l')
+  await expect(lineButton).not.toHaveAttribute('aria-pressed', 'true')
+  // Equip arc tool
+  await page.keyboard.press('a')
+  await expect(arcButton).toHaveAttribute('aria-pressed', 'true')
+  await page.mouse.move(1000, 100, { steps: 5 })
+  await page.mouse.click(1000, 100)
+  await page.keyboard.press('Escape')
+  await page.keyboard.press('l')
+  await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
+  // Close profile
+  await page.mouse.move(700, 200, { steps: 5 })
+  await page.mouse.click(700, 200)
+  // Unequip line tool
+  await page.keyboard.press('Escape')
+  // Exit sketch
+  await page.keyboard.press('Escape')
+
+  // Extrude
+  await page.mouse.click(750, 150)
+  await expect(extrudeButton).not.toBeDisabled()
+  await page.keyboard.press('e')
+  await page.mouse.move(850, 180, { steps: 5 })
+  await page.mouse.click(850, 180)
+  await page.waitForTimeout(100)
+  await page.getByRole('button', { name: 'Continue' }).click()
+  await page.getByRole('button', { name: 'Submit command' }).click()
+
+  await codePaneButton.click()
+  await expect(page.locator('.cm-content')).toContainText('extrude(')
 })

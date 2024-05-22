@@ -15,7 +15,7 @@ angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup)
 ### Examples
 
 ```js
-const sketch001 = startSketchOn('-XZ')
+const sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([1, 2], %, 'seg01')
   |> angledLine({

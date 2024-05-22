@@ -15,7 +15,7 @@ tangentialArc(data: TangentialArcData, sketch_group: SketchGroup, tag?: String) 
 ### Examples
 
 ```js
-const exampleSketch = startSketchOn('-XZ')
+const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLine({ angle: 60, length: 10 }, %)
   |> tangentialArc({ radius: 10, offset: -120 }, %)

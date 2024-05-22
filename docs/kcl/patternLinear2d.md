@@ -15,7 +15,7 @@ patternLinear2d(data: LinearPattern2dData, sketch_group_set: SketchGroupSet) -> 
 ### Examples
 
 ```js
-const exampleSketch = startSketchOn('-XZ')
+const exampleSketch = startSketchOn('XZ')
   |> circle([0, 0], 1, %)
   |> patternLinear2d({
        axis: [1, 0],

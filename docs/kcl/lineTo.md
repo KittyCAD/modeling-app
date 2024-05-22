@@ -15,7 +15,7 @@ lineTo(to: [number], sketch_group: SketchGroup, tag?: String) -> SketchGroup
 ### Examples
 
 ```js
-const exampleSketch = startSketchOn("-XZ")
+const exampleSketch = startSketchOn("XZ")
   |> startProfileAt([0, 0], %)
   |> lineTo([10, 0], %)
   |> lineTo([0, 10], %)

@@ -15,7 +15,7 @@ startProfileAt(to: [number], sketch_surface: SketchSurface, tag?: String) -> Ske
 ### Examples
 
 ```js
-const exampleSketch = startSketchOn('-XZ')
+const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([10, 0], %)
   |> line([0, 10], %)

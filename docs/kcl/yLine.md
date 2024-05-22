@@ -15,7 +15,7 @@ yLine(length: number, sketch_group: SketchGroup, tag?: String) -> SketchGroup
 ### Examples
 
 ```js
-const exampleSketch = startSketchOn('-XZ')
+const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> yLine(15, %)
   |> angledLine({ angle: 30, length: 15 }, %)

@@ -45,7 +45,7 @@ export function sortProject(project: FileEntry[]): FileEntry[] {
     if ('children' in fileOrDir && fileOrDir.children !== undefined) {
       return {
         ...fileOrDir,
-        children: sortProject(fileOrDir.children),
+        children: sortProject(fileOrDir.children || []),
       }
     } else {
       return fileOrDir
