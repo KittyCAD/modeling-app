@@ -8,13 +8,11 @@ import { ClientSideScene } from 'clientSideScene/ClientSideSceneComp'
 import { NetworkHealthState, useNetworkStatus } from './NetworkHealthIndicator'
 import { butName } from 'lib/cameraControls'
 import { sendSelectEventToEngine } from 'lib/selections'
-import { useSaveVideoFrame } from 'hooks/useSaveVideoFrame'
 
 export const Stream = ({ className = '' }: { className?: string }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [clickCoords, setClickCoords] = useState<{ x: number; y: number }>()
   const videoRef = useRef<HTMLVideoElement>(null)
-  useSaveVideoFrame(videoRef)
   const {
     mediaStream,
     setButtonDownInStream,
