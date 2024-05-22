@@ -22,7 +22,7 @@ pub async fn segment_end_x(args: Args) -> Result<MemoryItem, KclError> {
 /// Returns the segment end of x.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([20, 0], %, "thing")
 ///   |> line([0, 5], %)
@@ -60,7 +60,7 @@ pub async fn segment_end_y(args: Args) -> Result<MemoryItem, KclError> {
 /// Returns the segment end of y.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([20, 0], %)
 ///   |> line([0, 3], %, "thing")
@@ -99,7 +99,7 @@ pub async fn last_segment_x(args: Args) -> Result<MemoryItem, KclError> {
 /// Returns the last segment of x.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("-XZ")
+/// const exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([5, 0], %)
 ///   |> line([20, 5], %)
@@ -141,7 +141,7 @@ pub async fn last_segment_y(args: Args) -> Result<MemoryItem, KclError> {
 /// Returns the last segment of y.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("-XZ")
+/// const exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([5, 0], %)
 ///   |> line([20, 5], %)
@@ -182,7 +182,7 @@ pub async fn segment_length(args: Args) -> Result<MemoryItem, KclError> {
 /// Returns the length of the segment.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("-XZ")
+/// const exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle: 60,
@@ -231,7 +231,7 @@ pub async fn segment_angle(args: Args) -> Result<MemoryItem, KclError> {
 /// Returns the angle of the segment.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> line([5, 10], %, 'seg01')
@@ -273,7 +273,7 @@ pub async fn angle_to_match_length_x(args: Args) -> Result<MemoryItem, KclError>
 /// Returns the angle to match the given length for x.
 ///
 /// ```no_run
-/// const sketch001 = startSketchOn('-XZ')
+/// const sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([2, 5], %, 'seg01')
 ///   |> angledLineToX([
@@ -341,7 +341,7 @@ pub async fn angle_to_match_length_y(args: Args) -> Result<MemoryItem, KclError>
 /// Returns the angle to match the given length for y.
 ///
 /// ```no_run
-/// const sketch001 = startSketchOn('-XZ')
+/// const sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([1, 2], %, 'seg01')
 ///   |> angledLine({

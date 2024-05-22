@@ -90,7 +90,7 @@ pub async fn pattern_linear_2d(args: Args) -> Result<MemoryItem, KclError> {
 /// A linear pattern on a 2D sketch.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> circle([0, 0], 1, %)
 ///   |> patternLinear2d({
 ///        axis: [1, 0],
@@ -159,7 +159,7 @@ pub async fn pattern_linear_3d(args: Args) -> Result<MemoryItem, KclError> {
 /// A linear pattern on a 3D model.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([0, 2], %)
 ///   |> line([3, 1], %)
@@ -357,7 +357,7 @@ pub async fn pattern_circular_2d(args: Args) -> Result<MemoryItem, KclError> {
 /// A circular pattern on a 2D sketch.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([.5, 25], %)
 ///   |> line([0, 5], %)
 ///   |> line([-1, 0], %)
@@ -412,7 +412,7 @@ pub async fn pattern_circular_3d(args: Args) -> Result<MemoryItem, KclError> {
 /// A circular pattern on a 3D model.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> circle([0, 0], 1, %)
 ///
 /// const example = extrude(-5, exampleSketch)
