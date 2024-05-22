@@ -187,9 +187,11 @@ const Home = () => {
       new FormData(e.target as HTMLFormElement)
     )
 
-    send('Rename project', {
-      data: { oldName: project.name, newName: newProjectName },
-    })
+    if (newProjectName !== project.name) {
+      send('Rename project', {
+        data: { oldName: project.name, newName: newProjectName },
+      })
+    }
   }
 
   async function handleDeleteProject(project: Project) {
@@ -208,7 +210,7 @@ const Home = () => {
                 Element="button"
                 onClick={() => send('Create project')}
                 className="group !bg-primary !text-chalkboard-10 !border-primary hover:shadow-inner"
-                icon={{
+                iconStart={{
                   icon: 'plus',
                   bgClassName:
                     '!bg-transparent group-hover:!bg-chalkboard-10 group-active:!bg-chalkboard-10 rounded-sm group-hover:shadow-sm',

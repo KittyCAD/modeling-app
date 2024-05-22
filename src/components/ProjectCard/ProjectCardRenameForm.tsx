@@ -17,14 +17,21 @@ export const ProjectCardRenameForm = forwardRef(
     return (
       <form {...props}>
         <input
-          className="min-w-0 p-1 dark:bg-chalkboard-80 dark:border-chalkboard-40 focus:outline-none"
+          className="min-w-0 dark:bg-chalkboard-80 dark:border-chalkboard-40 focus:outline-none"
           type="text"
           id="newProjectName"
+          onClickCapture={(e) => e.preventDefault()}
           name="newProjectName"
+          required
           autoCorrect="off"
           autoCapitalize="off"
           defaultValue={project.name}
           ref={ref}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              onDismiss()
+            }
+          }}
         />
         <div className="flex items-center gap-1">
           <ActionButton
@@ -32,8 +39,6 @@ export const ProjectCardRenameForm = forwardRef(
             type="submit"
             iconStart={{
               icon: 'checkmark',
-              size: 'sm',
-              className: 'p-1',
               bgClassName: '!bg-transparent',
             }}
             className="!p-0"
@@ -46,10 +51,8 @@ export const ProjectCardRenameForm = forwardRef(
             Element="button"
             iconStart={{
               icon: 'close',
-              size: 'sm',
               iconClassName: 'dark:!text-chalkboard-20',
               bgClassName: '!bg-transparent',
-              className: 'p-1',
             }}
             className="!p-0"
             onClick={onDismiss}
