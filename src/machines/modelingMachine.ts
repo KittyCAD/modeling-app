@@ -890,6 +890,7 @@ export const modelingMachine = createMachine(
           })
           .then(async () => {
             // there doesn't appear to be an animation, but if there was one we could add a wait here
+
             await engineCommandManager.sendSceneCommand({
               type: 'modeling_cmd_req',
               cmd_id: uuidv4(),
@@ -898,6 +899,31 @@ export const modelingMachine = createMachine(
               },
             })
             sceneInfra.camControls.syncDirection = 'engineToClient'
+            await engineCommandManager.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: {
+                type: 'default_camera_set_perspective',
+              },
+            })
+            const center = { x: 0, y: 0, z: 0 }
+            const camPos = sceneInfra.camControls.camera.position
+            if (camPos.x === 0 && camPos.y === 0) {
+              // looking straight up or down is going to cause issues with the engine
+              // tweaking the center to be a little off center
+              // TODO come up with a proper fix
+              center.y = 0.05
+            }
+            await engineCommandManager.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: {
+                type: 'default_camera_look_at',
+                center,
+                vantage: sceneInfra.camControls.camera.position,
+                up: { x: 0, y: 0, z: 1 },
+              },
+            })
             await engineCommandManager.sendSceneCommand({
               // CameraControls subscribes to default_camera_get_settings response events
               // firing this at connection ensure the camera's are synced initially
