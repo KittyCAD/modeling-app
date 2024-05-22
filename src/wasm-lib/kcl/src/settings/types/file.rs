@@ -163,8 +163,7 @@ impl ProjectRoute {
         {
             // Get the project name.
             if let Some(project_name) = path
-                .strip_prefix(&configuration.settings.project.directory)
-                .unwrap()
+                .strip_prefix(&configuration.settings.project.directory)?
                 .iter()
                 .next()
             {
@@ -345,6 +344,39 @@ where
     }
 
     Ok(default_file.display().to_string())
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+/// Rename a directory for a project.
+/// This returns the new path of the directory.
+pub async fn rename_project_directory<P>(path: P, new_name: &str) -> Result<std::path::PathBuf>
+where
+    P: AsRef<Path> + Send,
+{
+    if new_name.is_empty() {
+        return Err(anyhow::anyhow!("New name for project cannot be empty"));
+    }
+
+    // Make sure the path is a directory.
+    if !path.as_ref().is_dir() {
+        return Err(anyhow::anyhow!("Path `{}` is not a directory", path.as_ref().display()));
+    }
+
+    // Make sure the new name does not exist.
+    let new_path = path
+        .as_ref()
+        .parent()
+        .ok_or_else(|| anyhow::anyhow!("Parent directory of `{}` not found", path.as_ref().display()))?
+        .join(new_name);
+    if new_path.exists() {
+        return Err(anyhow::anyhow!(
+            "Path `{}` already exists, cannot rename to an existing path",
+            new_path.display()
+        ));
+    }
+
+    tokio::fs::rename(path.as_ref(), &new_path).await?;
+    Ok(new_path)
 }
 
 /// Information about a file or directory.
@@ -721,5 +753,85 @@ mod tests {
             dir.join("assembly").join("thing.kcl").display().to_string()
         );
         std::fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_rename_project_directory_empty_dir() {
+        let name = format!("kittycad-modeling-projects-{}", uuid::Uuid::new_v4());
+        let dir = std::env::temp_dir().join(&name);
+        std::fs::create_dir_all(&dir).unwrap();
+
+        let new_name = format!("kittycad-modeling-projects-{}", uuid::Uuid::new_v4());
+        let new_dir = super::rename_project_directory(&dir, &new_name).await.unwrap();
+        assert_eq!(new_dir, std::env::temp_dir().join(&new_name));
+
+        std::fs::remove_dir_all(new_dir).unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_rename_project_directory_empty_name() {
+        let name = format!("kittycad-modeling-projects-{}", uuid::Uuid::new_v4());
+        let dir = std::env::temp_dir().join(&name);
+        std::fs::create_dir_all(&dir).unwrap();
+
+        let result = super::rename_project_directory(&dir, "").await;
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err().to_string(), "New name for project cannot be empty");
+
+        std::fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_rename_project_directory_non_empty_dir() {
+        let name = format!("kittycad-modeling-projects-{}", uuid::Uuid::new_v4());
+        let dir = std::env::temp_dir().join(&name);
+        std::fs::create_dir_all(&dir).unwrap();
+        std::fs::write(dir.join("main.kcl"), vec![]).unwrap();
+
+        let new_name = format!("kittycad-modeling-projects-{}", uuid::Uuid::new_v4());
+        let new_dir = super::rename_project_directory(&dir, &new_name).await.unwrap();
+        assert_eq!(new_dir, std::env::temp_dir().join(&new_name));
+
+        std::fs::remove_dir_all(new_dir).unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_rename_project_directory_dir_is_file() {
+        let name = format!("kittycad-modeling-projects-{}", uuid::Uuid::new_v4());
+        let dir = std::env::temp_dir().join(&name);
+        std::fs::write(&dir, vec![]).unwrap();
+
+        let new_name = format!("kittycad-modeling-projects-{}", uuid::Uuid::new_v4());
+        let result = super::rename_project_directory(&dir, &new_name).await;
+        assert!(result.is_err());
+        assert_eq!(
+            result.unwrap_err().to_string(),
+            format!("Path `{}` is not a directory", dir.display())
+        );
+
+        std::fs::remove_file(dir).unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_rename_project_directory_new_name_exists() {
+        let name = format!("kittycad-modeling-projects-{}", uuid::Uuid::new_v4());
+        let dir = std::env::temp_dir().join(&name);
+        std::fs::create_dir_all(&dir).unwrap();
+
+        let new_name = format!("kittycad-modeling-projects-{}", uuid::Uuid::new_v4());
+        let new_dir = std::env::temp_dir().join(&new_name);
+        std::fs::create_dir_all(&new_dir).unwrap();
+
+        let result = super::rename_project_directory(&dir, &new_name).await;
+        assert!(result.is_err());
+        assert_eq!(
+            result.unwrap_err().to_string(),
+            format!(
+                "Path `{}` already exists, cannot rename to an existing path",
+                new_dir.display()
+            )
+        );
+
+        std::fs::remove_dir_all(new_dir).unwrap();
     }
 }
