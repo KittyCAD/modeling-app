@@ -77,16 +77,6 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
         )
         .await?;
 
-    // Enter edit mode.
-    // We can't get control points of an existing sketch without being in edit mode.
-    ctx.engine
-        .send_modeling_cmd(
-            uuid::Uuid::new_v4(),
-            SourceRange::default(),
-            ModelingCmd::EditModeEnter { target: sketch_id },
-        )
-        .await?;
-
     Ok((ctx, program, sketch_id))
 }
 
