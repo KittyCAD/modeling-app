@@ -1,54 +1,41 @@
 fn triangle = (len) => {
   return startSketchOn('XY')
-  |> startProfileAt([-len / 2, -len / 2], %)
-  |> angledLine({ angle: 0, length: len }, %, 'a')
-  |> angledLine({
-       angle: segAng('a', %) + 120,
-       length: len
-     }, %, 'b')
-  |> angledLine({
-       angle: segAng('b', %) + 120,
-       length: len
-     }, %, 'c')
+  |> startProfileAt([0, 0], %)
+  |> angledLine({angle: 60, length: len}, %, 'a')
+  |> angledLine({angle: 180, length: len}, %, 'b')
+  |> angledLine({angle: 300, length: len}, %, 'c')
 }
 
 let triangleHeight = 200
-let lenPlumbus = 100
-let circlePos = [0, triangleHeight/2]
-let radius = 40
+let plumbusLen = 100
+let radius = 80
 let circ = {angle_start: 0, angle_end: 360, radius: radius}
 
-const p = triangle(100)
+let triangleLen = 500
+const p = triangle(triangleLen)
   |> extrude(triangleHeight, %)
 
-fn circl = (tag) => {
+fn circl = (x, tag) => {
 return startSketchOn(p, tag)
-  |> startProfileAt([circlePos[0] + radius, circlePos[1]], %)
+  |> startProfileAt([x + radius, triangleHeight/2], %)
   |> arc(circ, %, 'arc-' + tag)
   |> close(%)
 }
 
 const plumbus1 = 
-  circl('a')
-  |> extrude(lenPlumbus, %)
+  circl(-200, 'c')
+  |> extrude(plumbusLen, %)
+  |> fillet({
+       radius: 5,
+       tags: ['arc-c', getOppositeEdge('arc-c', %)]
+     }, %)
+
+const plumbus0 = 
+  circl(200, 'a')
+  |> extrude(plumbusLen, %)
   |> fillet({
        radius: 5,
        tags: ['arc-a', getOppositeEdge('arc-a', %)]
      }, %)
 
-const plumbus0 = 
-  circl('b')
-  |> extrude(lenPlumbus, %)
-  |> fillet({
-       radius: 5,
-       tags: ['arc-b', getOppositeEdge('arc-b', %)]
-     }, %)
-
-// const plumbus0 = 
-//   circl('b')
-//   |> extrude(lenPlumbus, %)
-//   // |> fillet({
-//   //      radius: 5,
-//   //      tags: ['arc-b', getOppositeEdge('arc-b', %)]
-//   //    }, %)
 
