@@ -25,7 +25,13 @@
   },
   "pool": "",
   "client_state": {
-    "engine_command_manager": {},
+    "engine_command_manager": {
+      "engine_connection": {
+        "state": {
+          "type": "connection-established"
+        }
+      }
+    },
     "kcl_manager": {},
     "scene_infra": {},
     "auth_machine": {},
