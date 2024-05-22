@@ -244,11 +244,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::Xz,
                 (
-                    Point3d {
-                        x: -1.0,
-                        y: 0.0,
-                        z: 0.0,
-                    },
+                    Point3d { x: 1.0, y: 0.0, z: 0.0 },
                     Point3d { x: 0.0, y: 0.0, z: 1.0 },
                     Some(Color {
                         r: 0.28,
@@ -286,7 +282,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                 PlaneName::NegXz,
                 (
                     Point3d {
-                        x: 1.0, // TODO this should be -1.0
+                        x: -1.0,
                         y: 0.0,
                         z: 0.0,
                     },
