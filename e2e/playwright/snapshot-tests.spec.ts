@@ -4,7 +4,7 @@ import { getUtils } from './test-utils'
 import { Models } from '@kittycad/lib'
 import fsp from 'fs/promises'
 import { spawn } from 'child_process'
-import { APP_NAME } from 'lib/constants'
+import { APP_NAME, KCL_DEFAULT_LENGTH } from 'lib/constants'
 import JSZip from 'jszip'
 import path from 'path'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from './storageStates'
@@ -273,6 +273,8 @@ const part001 = startSketchOn('-XZ')
   for (let { modelPath, imagePath, outputType } of exportLocations) {
     // May change depending on the file being dealt with
     let cliCommand = `export ZOO_TOKEN=${secrets.snapshottoken} && zoo file snapshot --output-format=png --src-format=${outputType} ${modelPath} ${imagePath}`
+    const fileSize = (await fsp.stat(modelPath)).size
+    console.log(`Size of the file at ${modelPath}: ${fileSize} bytes`)
 
     const parentPath = path.dirname(modelPath)
 
@@ -445,7 +447,7 @@ test('Draft segments should look right', async ({ page, context }) => {
   await page.mouse.click(700, 200)
 
   await expect(page.locator('.cm-content')).toHaveText(
-    `const part001 = startSketchOn('-XZ')`
+    `const part001 = startSketchOn('XZ')`
   )
 
   await page.waitForTimeout(300) // TODO detect animation ending, or disable animation
@@ -453,7 +455,7 @@ test('Draft segments should look right', async ({ page, context }) => {
   const startXPx = 600
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('-XZ')
+    .toHaveText(`const part001 = startSketchOn('XZ')
   |> startProfileAt([9.06, -12.22], %)`)
   await page.waitForTimeout(100)
 
@@ -467,7 +469,7 @@ test('Draft segments should look right', async ({ page, context }) => {
   await page.waitForTimeout(100)
 
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('-XZ')
+    .toHaveText(`const part001 = startSketchOn('XZ')
   |> startProfileAt([9.06, -12.22], %)
   |> line([9.14, 0], %)`)
 
@@ -504,7 +506,7 @@ test('Draft rectangles should look right', async ({ page, context }) => {
   await page.mouse.click(700, 200)
 
   await expect(page.locator('.cm-content')).toHaveText(
-    `const part001 = startSketchOn('-XZ')`
+    `const part001 = startSketchOn('XZ')`
   )
 
   await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
@@ -553,7 +555,7 @@ test.describe('Client side scene scale should match engine scale', () => {
     await page.mouse.click(700, 200)
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `const part001 = startSketchOn('-XZ')`
+      `const part001 = startSketchOn('XZ')`
     )
 
     await page.waitForTimeout(300) // TODO detect animation ending, or disable animation
@@ -561,7 +563,7 @@ test.describe('Client side scene scale should match engine scale', () => {
     const startXPx = 600
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const part001 = startSketchOn('-XZ')
+      .toHaveText(`const part001 = startSketchOn('XZ')
     |> startProfileAt([9.06, -12.22], %)`)
     await page.waitForTimeout(100)
 
@@ -571,7 +573,7 @@ test.describe('Client side scene scale should match engine scale', () => {
     await page.waitForTimeout(100)
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const part001 = startSketchOn('-XZ')
+      .toHaveText(`const part001 = startSketchOn('XZ')
     |> startProfileAt([9.06, -12.22], %)
     |> line([9.14, 0], %)`)
 
@@ -581,7 +583,7 @@ test.describe('Client side scene scale should match engine scale', () => {
     await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const part001 = startSketchOn('-XZ')
+      .toHaveText(`const part001 = startSketchOn('XZ')
     |> startProfileAt([9.06, -12.22], %)
     |> line([9.14, 0], %)
     |> tangentialArcTo([27.34, -3.08], %)`)
@@ -656,7 +658,7 @@ test.describe('Client side scene scale should match engine scale', () => {
     await page.mouse.click(700, 200)
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `const part001 = startSketchOn('-XZ')`
+      `const part001 = startSketchOn('XZ')`
     )
 
     await page.waitForTimeout(300) // TODO detect animation ending, or disable animation
@@ -664,7 +666,7 @@ test.describe('Client side scene scale should match engine scale', () => {
     const startXPx = 600
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const part001 = startSketchOn('-XZ')
+      .toHaveText(`const part001 = startSketchOn('XZ')
       |> startProfileAt([230.03, -310.32], %)`)
     await page.waitForTimeout(100)
 
@@ -674,7 +676,7 @@ test.describe('Client side scene scale should match engine scale', () => {
     await page.waitForTimeout(100)
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const part001 = startSketchOn('-XZ')
+      .toHaveText(`const part001 = startSketchOn('XZ')
       |> startProfileAt([230.03, -310.32], %)
       |> line([232.2, 0], %)`)
 
@@ -684,7 +686,7 @@ test.describe('Client side scene scale should match engine scale', () => {
     await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const part001 = startSketchOn('-XZ')
+      .toHaveText(`const part001 = startSketchOn('XZ')
       |> startProfileAt([230.03, -310.32], %)
       |> line([232.2, 0], %)
       |> tangentialArcTo([694.43, -78.12], %)`)
@@ -718,7 +720,7 @@ test.describe('Client side scene scale should match engine scale', () => {
 
 test('Sketch on face with none z-up', async ({ page, context }) => {
   const u = getUtils(page)
-  await context.addInitScript(async () => {
+  await context.addInitScript(async (KCL_DEFAULT_LENGTH) => {
     localStorage.setItem(
       'persistCode',
       `const part001 = startSketchOn('-XZ')
@@ -726,16 +728,16 @@ test('Sketch on face with none z-up', async ({ page, context }) => {
   |> line([9.31, 10.55], %, 'seg01')
   |> line([11.91, -10.42], %)
   |> close(%)
-  |> extrude(5 + 7, %)
+  |> extrude(${KCL_DEFAULT_LENGTH}, %)
 const part002 = startSketchOn(part001, 'seg01')
   |> startProfileAt([8, 8], %)
   |> line([4.68, 3.05], %)
   |> line([0, -7.79], %, 'seg02')
   |> close(%)
-  |> extrude(5 + 7, %)
+  |> extrude(${KCL_DEFAULT_LENGTH}, %)
 `
     )
-  })
+  }, KCL_DEFAULT_LENGTH)
 
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/')

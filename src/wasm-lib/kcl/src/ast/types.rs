@@ -1214,7 +1214,11 @@ impl CallExpression {
                 let func = memory.get(&fn_name, self.into())?;
                 let result = func
                     .call_fn(fn_args, memory.clone(), ctx.clone())
-                    .await?
+                    .await
+                    .map_err(|e| {
+                        // Add the call expression to the source ranges.
+                        e.add_source_ranges(vec![self.into()])
+                    })?
                     .ok_or_else(|| {
                         KclError::UndefinedValue(KclErrorDetails {
                             message: format!("Result of user-defined function {} is undefined", fn_name),

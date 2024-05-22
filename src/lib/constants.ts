@@ -44,3 +44,5 @@ export const RELEVANT_FILE_TYPES = [
 ] as const
 /** The default name for a tutorial project */
 export const ONBOARDING_PROJECT_NAME = 'Tutorial Project $nn'
+/** The default KCL length expression */
+export const KCL_DEFAULT_LENGTH = `5`

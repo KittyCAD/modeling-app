@@ -68,6 +68,9 @@ lazy_static! {
         Box::new(crate::std::sketch::StartSketchAt),
         Box::new(crate::std::sketch::StartSketchOn),
         Box::new(crate::std::sketch::StartProfileAt),
+        Box::new(crate::std::sketch::ProfileStartX),
+        Box::new(crate::std::sketch::ProfileStartY),
+        Box::new(crate::std::sketch::ProfileStart),
         Box::new(crate::std::sketch::Close),
         Box::new(crate::std::sketch::Arc),
         Box::new(crate::std::sketch::TangentialArc),
@@ -1058,9 +1061,7 @@ layout: manual
             fn_docs.push_str("\n```\n\n");
 
             // If the function has tags, we should add them to the docs.
-            let mut tags = internal_fn.tags().clone();
-            // Remove norun tag from the list of tags.
-            tags.retain(|tag| tag != "norun");
+            let tags = internal_fn.tags().clone();
             if !tags.is_empty() {
                 fn_docs.push_str("### Tags\n\n");
                 for tag in tags {
@@ -1077,12 +1078,9 @@ layout: manual
                     fn_docs.push_str(example);
                     fn_docs.push_str("\n```\n\n");
 
-                    // If this is not a "math" or "utilities" function,
+                    // If this is not a "utilities" function,
                     // we should add the image to the docs.
-                    if !internal_fn.tags().contains(&"math".to_string())
-                        && !internal_fn.tags().contains(&"utilities".to_string())
-                        && !internal_fn.tags().contains(&"norun".to_string())
-                    {
+                    if !internal_fn.tags().contains(&"utilities".to_string()) {
                         // Get the path to this specific rust file.
                         let dir = env!("CARGO_MANIFEST_DIR");
 
@@ -1101,6 +1099,8 @@ layout: manual
                             fn_name = "segment_length".to_string();
                         } else if fn_name.starts_with("seg_") {
                             fn_name = fn_name.replace("seg_", "segment_");
+                        } else if fn_name.starts_with("log_") {
+                            fn_name = fn_name.replace("log_", "log");
                         }
 
                         // Read the image file and encode as base64.
