@@ -4,7 +4,7 @@ use crate::std::Primitive;
 use anyhow::Result;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use tower_lsp::lsp_types::{
     CompletionItem, CompletionItemKind, CompletionItemLabelDetails, Documentation, InsertTextFormat, MarkupContent,
     MarkupKind, ParameterInformation, ParameterLabel, SignatureHelp, SignatureInformation,
