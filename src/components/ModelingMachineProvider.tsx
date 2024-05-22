@@ -322,6 +322,7 @@ export const ModelingMachineProvider = ({
               sketchOnExtrudedFace(
                 kclManager.ast,
                 data.extrudeSegmentPathToNode,
+                data.otherPathToNode,
                 kclManager.programMemory,
                 data.cap
               )

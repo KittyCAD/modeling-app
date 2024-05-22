@@ -309,7 +309,8 @@ export function extrudeSketch(
 
 export function sketchOnExtrudedFace(
   node: Program,
-  pathToNode: PathToNode,
+  SketchPathToNode: PathToNode,
+  extrudePathToNode: PathToNode,
   programMemory: ProgramMemory,
   cap: 'none' | 'start' | 'end' = 'none'
 ): { modifiedAst: Program; pathToNode: PathToNode } {
@@ -317,23 +318,29 @@ export function sketchOnExtrudedFace(
   const newSketchName = findUniqueName(node, 'part')
   const { node: oldSketchNode } = getNodeFromPath<VariableDeclarator>(
     _node,
-    pathToNode,
+    SketchPathToNode,
     'VariableDeclarator',
     true
   )
   const oldSketchName = oldSketchNode.id.name
   const { node: expression } = getNodeFromPath<CallExpression>(
     _node,
-    pathToNode,
+    SketchPathToNode,
     'CallExpression'
   )
+  const { node: extrudeVarDec } = getNodeFromPath<VariableDeclarator>(
+    _node,
+    extrudePathToNode,
+    'VariableDeclarator'
+  )
+  console.log('extrudeVarDec', extrudeVarDec)
 
   let _tag = ''
   if (cap === 'none') {
     const { modifiedAst, tag } = addTagForSketchOnFace(
       {
         previousProgramMemory: programMemory,
-        pathToNode,
+        pathToNode: SketchPathToNode,
         node: _node,
       },
       expression.callee.name
@@ -353,7 +360,7 @@ export function sketchOnExtrudedFace(
     'const'
   )
 
-  const expressionIndex = pathToNode[1][0] as number
+  const expressionIndex = SketchPathToNode[1][0] as number
   _node.body.splice(expressionIndex + 1, 0, newSketch)
   const newpathToNode: PathToNode = [
     ['body', ''],

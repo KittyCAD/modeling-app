@@ -108,6 +108,7 @@ export type ModelingMachineEvent =
             type: 'extrudeFace'
             position: [number, number, number]
             extrudeSegmentPathToNode: PathToNode
+            otherPathToNode: PathToNode
             cap: 'start' | 'end' | 'none'
             faceId: string
           }

@@ -9,7 +9,28 @@ import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 
 let lastMessage = ''
 
-interface CommandInfo {
+type CommandTypes = Models['ModelingCmd_type']['type'] | 'batch'
+
+type CommandInfo  = |
+{
+  commandType: 'extrude'
+  // commandType: CommandTypes
+  range: SourceRange
+  pathToNode: PathToNode
+  /// uuid of the entity to extrude
+  target: string
+  parentId?: string
+}|
+{
+  commandType: 'start_path'
+  // commandType: CommandTypes
+  range: SourceRange
+  pathToNode: PathToNode
+  /// uuid of the entity that have been extruded
+  extrusions: string[]
+  parentId?: string
+}|
+{
   commandType: CommandTypes
   range: SourceRange
   pathToNode: PathToNode
@@ -29,13 +50,13 @@ interface CommandInfo {
 type WebSocketResponse = Models['WebSocketResponse_type']
 type OkWebSocketResponseData = Models['OkWebSocketResponseData_type']
 
-interface ResultCommand extends CommandInfo {
+type ResultCommand = CommandInfo & {
   type: 'result'
   data: any
   raw: WebSocketResponse
   headVertexId?: string
 }
-interface FailedCommand extends CommandInfo {
+type FailedCommand = CommandInfo & {
   type: 'failed'
   errors: Models['FailureWebSocketResponse_type']['errors']
 }
@@ -48,7 +69,7 @@ interface ResolveCommand {
   data?: Models['OkModelingCmdResponse_type']
   errors?: Models['FailureWebSocketResponse_type']['errors']
 }
-interface PendingCommand extends CommandInfo {
+type PendingCommand = CommandInfo  & {
   type: 'pending'
   promise: Promise<any>
   resolve: (val: ResolveCommand) => void
@@ -901,8 +922,6 @@ failed cmd type was ${artifactThatFailed?.commandType}`
 export type EngineCommand = Models['WebSocketRequest_type']
 type ModelTypes = Models['OkModelingCmdResponse_type']['type']
 
-type CommandTypes = Models['ModelingCmd_type']['type'] | 'batch'
-
 type UnreliableResponses = Extract<
   Models['OkModelingCmdResponse_type'],
   { type: 'highlight_set_entity' | 'camera_drag_move' }
@@ -1260,6 +1279,11 @@ export class EngineCommandManager {
       })
       return
     }
+    if (
+      command?.type === 'pending' && command.commandType === 'batch'
+    ) {
+      console.log('pending batch', command)
+    }
     const sceneCommand = this.sceneCommandArtifacts[id]
     this.addCommandLog({
       type: 'receive-reliable',
@@ -1281,7 +1305,7 @@ export class EngineCommandManager {
         range: command.range,
         pathToNode: command.pathToNode,
         commandType: command.commandType,
-        parentId: command.parentId ? command.parentId : undefined,
+        parentId: command?.parentId ? command?.parentId : undefined,
         data: modelingResponse,
         raw,
       } as const
@@ -1321,6 +1345,12 @@ export class EngineCommandManager {
             }
           }
         })
+      }
+      if (command?.commandType === 'extrude') {
+        console.log('extrude command', modelingResponse)
+      }
+      if ((message.data.modeling_response.type as any) === 'extrude') {
+        console.log('extrude command', modelingResponse, message)
       }
       resolve({
         id,
@@ -1682,6 +1712,7 @@ export class EngineCommandManager {
       if (command.type === 'close_path') return command.path_id
       // handle other commands that have a parent here
     }
+    
     const pathToNode = ast
       ? getNodePathFromSourceRange(ast, range || [0, 0])
       : []
@@ -1693,6 +1724,28 @@ export class EngineCommandManager {
       parentId: getParentId(),
       promise,
       resolve,
+    }
+    if (command.type === 'extrude') {
+      this.artifactMap[id] = {
+        range: range || [0, 0],
+        pathToNode,
+        type: 'pending',
+        commandType: 'extrude',
+        parentId: getParentId(),
+        promise,
+        target: command.target,
+        resolve,
+      } 
+      const target = this.artifactMap[command.target]
+      if (target.commandType === 'start_path') {
+        const temp = target as any
+        if (temp?.extrusions?.length) {
+          temp.extrusions.push(id)
+        } else {
+          temp.extrusions = [id]
+        }
+      }
+      console.log('extrude command', command, this.artifactMap[id], target)
     }
     return promise
   }
