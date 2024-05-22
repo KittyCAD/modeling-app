@@ -2,17 +2,9 @@ import { FormEvent, useEffect, useRef, useState } from 'react'
 import { paths } from 'lib/paths'
 import { Link } from 'react-router-dom'
 import { ActionButton } from './ActionButton'
-import {
-  faCheck,
-  faPenAlt,
-  faTrashAlt,
-  faX,
-} from '@fortawesome/free-solid-svg-icons'
-import { FILE_EXT, PROJECT_IMAGE_NAME } from 'lib/constants'
+import { FILE_EXT } from 'lib/constants'
 import { useHotkeys } from 'react-hotkeys-hook'
 import Tooltip from './Tooltip'
-import { join } from '@tauri-apps/api/path'
-import { exists, readFile } from '@tauri-apps/plugin-fs'
 import { Project } from 'wasm-lib/kcl/bindings/Project'
 import { DeleteProjectDialog } from './ProjectCard/DeleteProjectDialog'
 import { ProjectCardRenameForm } from './ProjectCard/ProjectCardRenameForm'
