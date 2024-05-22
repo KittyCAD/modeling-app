@@ -34,21 +34,21 @@ let plumbusLen = 100
 
 const p = triangle(100)
   |> extrude(triangleHeight, %)
-  
-const plumbus_a = 
+
+const plumbus_a =
   make_circle(p, 'a', plumbusPos, plumbusRad)
   |> extrude(plumbusLen, %)
-  // |> fillet({
-  //      radius: 5,
-  //      tags: ['arc-a']
-  //    }, %)
+   |> fillet({
+        radius: 5,
+        tags: ['arc-a']
+      }, %)
 
-const plumbus_b = 
+const plumbus_b =
   make_circle(p, 'b', plumbusPos, plumbusRad)
   |> extrude(plumbusLen, %)
-  // |> fillet({
-  //      radius: 5,
-  //      tags: ['arc-b']
-  //    }, %)
+   |> fillet({
+        radius: 5,
+        tags: ['arc-b']
+      }, %)
 
 
