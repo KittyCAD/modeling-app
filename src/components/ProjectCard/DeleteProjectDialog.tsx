@@ -1,4 +1,3 @@
-import { faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { Dialog } from '@headlessui/react'
 import { ActionButton } from 'components/ActionButton'
 
@@ -35,13 +34,11 @@ export function DeleteProjectDialog({
               Element="button"
               onClick={onConfirm}
               iconStart={{
-                icon: faTrashAlt,
-                bgClassName: 'bg-destroy-80',
-                className: 'p-1',
-                size: 'sm',
-                iconClassName: '!text-destroy-70 dark:!text-destroy-40',
+                icon: 'trash',
+                bgClassName: 'bg-destroy-10 dark:bg-destroy-80',
+                iconClassName: '!text-destroy-80 dark:!text-destroy-20',
               }}
-              className="hover:border-destroy-40 dark:hover:border-destroy-40"
+              className="hover:border-destroy-40 dark:hover:border-destroy-40 hover:bg-destroy-10/20 dark:hover:bg-destroy-80/20"
             >
               Delete
             </ActionButton>

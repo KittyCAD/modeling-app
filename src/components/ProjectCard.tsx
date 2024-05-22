@@ -143,10 +143,10 @@ function ProjectCard({
             Element="button"
             iconStart={{
               icon: 'trash',
+              iconClassName: 'dark:!text-chalkboard-30',
               bgClassName: '!bg-transparent',
-              iconClassName: '!text-destroy-70',
             }}
-            className="!p-0 hover:border-destroy-40 dark:hover:border-destroy-40"
+            className="!p-0"
             onClick={(e) => {
               e.stopPropagation()
               e.nativeEvent.stopPropagation()

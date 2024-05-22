@@ -1,4 +1,3 @@
-import { faX } from '@fortawesome/free-solid-svg-icons'
 import { Project } from '@playwright/test'
 import { ActionButton } from 'components/ActionButton'
 import Tooltip from 'components/Tooltip'
