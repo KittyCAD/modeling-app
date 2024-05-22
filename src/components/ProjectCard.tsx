@@ -5,9 +5,9 @@ import { ActionButton } from './ActionButton'
 import { FILE_EXT } from 'lib/constants'
 import { useHotkeys } from 'react-hotkeys-hook'
 import Tooltip from './Tooltip'
-import { Project } from 'wasm-lib/kcl/bindings/Project'
 import { DeleteProjectDialog } from './ProjectCard/DeleteProjectDialog'
 import { ProjectCardRenameForm } from './ProjectCard/ProjectCardRenameForm'
+import { Project } from 'wasm-lib/kcl/bindings/Project'
 
 function ProjectCard({
   project,
