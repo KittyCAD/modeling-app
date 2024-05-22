@@ -15,10 +15,10 @@ fn triangle = (len) => {
 let triangleHeight = 200
 let lenPlumbus = 100
 let circlePos = [0, triangleHeight/2]
-let radius = 80
+let radius = 40
 let circ = {angle_start: 0, angle_end: 360, radius: radius}
 
-const p = triangle(500)
+const p = triangle(100)
   |> extrude(triangleHeight, %)
 
 fn circl = (tag) => {
@@ -33,25 +33,22 @@ const plumbus1 =
   |> extrude(lenPlumbus, %)
   |> fillet({
        radius: 5,
-       tags: ['arc-a']
+       tags: ['arc-a', getOppositeEdge('arc-a', %)]
      }, %)
 
 const plumbus0 = 
-startSketchOn(p, 'b')
-  |> startProfileAt([circlePos[0] + radius, circlePos[1]], %)
-  |> arc(circ, %, 'arc-' + 'b')
-  |> close(%)
+  circl('b')
   |> extrude(lenPlumbus, %)
-  // |> fillet({
-  //      radius: 5,
-  //      tags: ['arc-b']
-  //    }, %)
+  |> fillet({
+       radius: 5,
+       tags: ['arc-b', getOppositeEdge('arc-b', %)]
+     }, %)
 
 // const plumbus0 = 
 //   circl('b')
 //   |> extrude(lenPlumbus, %)
 //   // |> fillet({
 //   //      radius: 5,
-//   //      tags: ['arc-b']
+//   //      tags: ['arc-b', getOppositeEdge('arc-b', %)]
 //   //    }, %)
 
