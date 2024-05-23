@@ -2567,7 +2567,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.1.56"
+version = "0.1.57"
 dependencies = [
  "anyhow",
  "approx",
@@ -6059,9 +6059,8 @@ checksum = "e421abadd41a4225275504ea4d6566923418b7f05506fbc9c0fe86ba7396114b"
 
 [[package]]
 name = "ts-rs"
-version = "7.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fc2cae1fc5d05d47aa24b64f9a4f7cba24cdc9187a2084dd97ac57bef5eccae6"
+version = "8.1.0"
+source = "git+https://github.com/Aleph-Alpha/ts-rs#f898578d80d3e2a54080c1c046c45f9eaa2435c3"
 dependencies = [
  "chrono",
  "thiserror",
@@ -6072,11 +6071,9 @@ dependencies = [
 
 [[package]]
 name = "ts-rs-macros"
-version = "7.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "73f7f9b821696963053a89a7bd8b292dc34420aea8294d7b225274d488f3ec92"
+version = "8.1.0"
+source = "git+https://github.com/Aleph-Alpha/ts-rs#f898578d80d3e2a54080c1c046c45f9eaa2435c3"
 dependencies = [
- "Inflector",
  "proc-macro2",
  "quote",
  "syn 2.0.65",
