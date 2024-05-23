@@ -2398,9 +2398,7 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await expect(page.locator('.cm-content')).toContainText('extrude(')
 })
 
-test('simulate network down and network little widget', async ({
-  page,
-}) => {
+test('simulate network down and network little widget', async ({ page }) => {
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/')
@@ -2444,11 +2442,9 @@ test('simulate network down and network little widget', async ({
   // Check the modal opened.
   await expect(networkPopover).toBeVisible()
 
-
   // Click off the modal.
   await page.mouse.click(100, 100)
   await expect(networkPopover).not.toBeVisible()
-
 
   // Turn back on the network
   await u.emulateNetworkConditions({
