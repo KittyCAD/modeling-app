@@ -63,7 +63,6 @@ export const KclEditorPane = () => {
       ? getSystemTheme()
       : context.app.theme.current
   const { copilotLSP, kclLSP } = useLspContext()
-  const navigate = useNavigate()
 
   useEffect(() => {
     if (typeof window === 'undefined') return
