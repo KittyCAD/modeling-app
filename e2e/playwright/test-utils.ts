@@ -1,8 +1,9 @@
-import { expect, Page } from '@playwright/test'
+import { test, expect, Page } from '@playwright/test'
 import { EngineCommand } from '../../src/lang/std/engineConnection'
 import fsp from 'fs/promises'
 import pixelMatch from 'pixelmatch'
 import { PNG } from 'pngjs'
+import { Protocol } from 'playwright-core/types/protocol'
 
 async function waitForPageLoad(page: Page) {
   // wait for 'Loading stream...' spinner
@@ -93,7 +94,9 @@ async function waitForCmdReceive(page: Page, commandType: string) {
     .waitFor()
 }
 
-export function getUtils(page: Page) {
+export async function getUtils(page: Page) {
+  const cdpSession = await page.context().newCDPSession(page)
+
   return {
     waitForAuthSkipAppStart: () => waitForPageLoad(page),
     removeCurrentCode: () => removeCurrentCode(page),
@@ -180,6 +183,17 @@ export function getUtils(page: Page) {
           }
         }, 50)
       }),
+    emulateNetworkConditions: async (
+      networkOptions: Protocol.Network.emulateNetworkConditionsParameters
+    ) => {
+      // Skip on non-Chromium browsers, since we need to use the CDP.
+      /*test.skip(
+        process.platform === 'darwin',
+        'Network emulation is only supported in Chromium'
+      )*/
+
+      cdpSession.send('Network.emulateNetworkConditions', networkOptions)
+    },
   }
 }
 
