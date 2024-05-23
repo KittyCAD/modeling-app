@@ -32,6 +32,12 @@ interface CommandInfo {
       }
 }
 
+function isHighlightSetEntity_type(
+  data: any
+): data is Models['HighlightSetEntity_type'] {
+  return data.entity_id && data.sequence
+}
+
 type WebSocketResponse = Models['WebSocketResponse_type']
 type OkWebSocketResponseData = Models['OkWebSocketResponseData_type']
 
@@ -655,7 +661,10 @@ class EngineConnection extends EventTarget {
         // Otherwise when run in a browser, the token is sent implicitly via
         // the Cookie header.
         if (this.token) {
-          this.send({ headers: { Authorization: `Bearer ${this.token}` } })
+          this.send({
+            type: 'headers',
+            headers: { Authorization: `Bearer ${this.token}` },
+          })
         }
 
         // Send an initial ping
@@ -819,7 +828,7 @@ class EngineConnection extends EventTarget {
                 return this.pc?.setLocalDescription(offer).then(() => {
                   this.send({
                     type: 'sdp_offer',
-                    offer,
+                    offer: offer as Models['RtcSessionDescription_type'],
                   })
                   this.state = {
                     type: EngineConnectionStateType.Connecting,
@@ -1287,13 +1296,15 @@ export class EngineCommandManager extends EventTarget {
                   // sequence logic, but I'm not sure if we use a single global sequence or a sequence
                   // per unreliable subscription.
                   (callback) => {
-                    if (
-                      result?.data?.sequence &&
-                      result?.data.sequence > this.inSequence &&
-                      result.type === 'highlight_set_entity'
-                    ) {
-                      this.inSequence = result.data.sequence
-                      callback(result)
+                    let data = result?.data
+                    if (isHighlightSetEntity_type(data)) {
+                      if (
+                        data.sequence !== undefined &&
+                        data.sequence > this.inSequence
+                      ) {
+                        this.inSequence = data.sequence
+                        callback(result)
+                      }
                     }
                   }
                 )
