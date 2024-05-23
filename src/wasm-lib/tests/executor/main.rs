@@ -129,6 +129,15 @@ async fn serial_test_lego() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn serial_test_pipe_as_arg() {
+    let code = include_str!("inputs/pipe_as_arg.kcl");
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/pipe_as_arg.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_pentagon_fillet_sugar() {
     let code = include_str!("inputs/pentagon_fillet_sugar.kcl");
     let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Cm)
