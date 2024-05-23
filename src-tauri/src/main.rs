@@ -18,7 +18,6 @@ use oauth2::TokenResponse;
 use tauri::{ipc::InvokeError, Manager};
 use tauri_plugin_cli::CliExt;
 use tauri_plugin_shell::ShellExt;
-use tokio::process::Command;
 
 const DEFAULT_HOST: &str = "https://api.zoo.dev";
 const SETTINGS_FILE_NAME: &str = "settings.toml";
@@ -332,10 +331,20 @@ async fn get_user(token: &str, hostname: &str) -> Result<kittycad::types::User, 
 /// From this GitHub comment: https://github.com/tauri-apps/tauri/issues/4062#issuecomment-1338048169
 /// But with the Linux support removed since we don't need it for now.
 #[tauri::command]
-fn show_in_folder(path: &str) -> Result<(), InvokeError> {
+fn show_in_folder(app: tauri::AppHandle, path: &str) -> Result<(), InvokeError> {
+    // Check if the file exists.
+    // If it doesn't, return an error.
+    if !Path::new(path).exists() {
+        return Err(InvokeError::from_anyhow(anyhow::anyhow!(
+            "The file `{}` does not exist",
+            path
+        )));
+    }
+
     #[cfg(not(unix))]
     {
-        Command::new("explorer")
+        app.shell()
+            .command("explorer")
             .args(["/select,", path]) // The comma after select is not a typo
             .spawn()
             .map_err(|e| InvokeError::from_anyhow(e.into()))?;
@@ -343,7 +352,8 @@ fn show_in_folder(path: &str) -> Result<(), InvokeError> {
 
     #[cfg(unix)]
     {
-        Command::new("open")
+        app.shell()
+            .command("open")
             .args(["-R", path])
             .spawn()
             .map_err(|e| InvokeError::from_anyhow(e.into()))?;
