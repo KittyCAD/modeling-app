@@ -262,12 +262,7 @@ export class CameraControls {
         camSettings.orientation.z,
         camSettings.orientation.w
       ).invert()
-      const yo = new Vector3(0, 1, 0).applyQuaternion(quat)
-      if (yo.z < 0) {
-        this.camera.up.set(0, 0, -1)
-      } else {
-        this.camera.up.set(0, 0, 1)
-      }
+      this.camera.up.copy(new Vector3(0, 1, 0).applyQuaternion(quat))
       if (this.camera instanceof PerspectiveCamera && camSettings.ortho) {
         this.useOrthographicCamera()
       }
