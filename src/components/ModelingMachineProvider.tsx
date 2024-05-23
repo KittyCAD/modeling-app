@@ -301,7 +301,10 @@ export const ModelingMachineProvider = ({
           )
         },
         'Has exportable geometry': () => {
-          if (kclManager.kclErrors.length === 0 && kclManager.ast.body.length > 0)
+          if (
+            kclManager.kclErrors.length === 0 &&
+            kclManager.ast.body.length > 0
+          )
             return true
           else {
             let errorMessage = 'Unable to Export '
