@@ -2348,24 +2348,39 @@ test('Can code mod a line length', async ({ page }) => {
   await u.expectCmdLog('[data-message-type="execution-done"]')
   await u.closeDebugPanel()
 
-  // Click the line of code for xLine.
-  await page.getByText(`xLine(-20, %)`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
+  // Click the line of code for line.
+  await page.getByText(`line([0, 20], %)`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
   await page.waitForTimeout(100)
 
   // enter sketch again
   await page.getByRole('button', { name: 'Edit Sketch' }).click()
-  await page.waitForTimeout(350) // wait for animation
+  await page.waitForTimeout(500) // wait for animation
 
   const startXPx = 500
   await page.mouse.move(startXPx + PUR * 15, 250 - PUR * 10)
-  await page.mouse.click(615, 102)
+  await page.keyboard.down('Shift')
+  await page.mouse.click(834, 244)
+  await page.keyboard.up('Shift')
+
   await page.getByRole('button', { name: 'Constrain', exact: true }).click()
   await page.getByRole('button', { name: 'length', exact: true }).click()
   await page.getByText('Add constraining value').click()
 
   await expect(page.locator('.cm-content')).toHaveText(
-    `const length001 = 20const part001 = startSketchOn('XY')  |> startProfileAt([-10, -10], %)  |> line([20, 0], %)  |> line([0, 20], %)  |> xLine(-length001, %)`
+    `const length001 = 20const part001 = startSketchOn('XY')  |> startProfileAt([-10, -10], %)  |> line([20, 0], %)  |> angledLine([90, length001], %)  |> xLine(-20, %)`
   )
+
+  // Make sure we didn't pop out of sketch mode.
+  await expect(page.getByRole('button', { name: 'Exit Sketch' })).toBeVisible()
+
+  await page.waitForTimeout(500) // wait for animation
+
+  // Exit sketch
+  await page.mouse.move(startXPx + PUR * 15, 250 - PUR * 10)
+  await page.keyboard.press('Escape')
+  await expect(
+    page.getByRole('button', { name: 'Exit Sketch' })
+  ).not.toBeVisible()
 })
 
 test('Extrude from command bar selects extrude line after', async ({
@@ -2492,8 +2507,13 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await page.mouse.click(700, 200)
   // Unequip line tool
   await page.keyboard.press('Escape')
+  // Make sure we didn't pop out of sketch mode.
+  await expect(page.getByRole('button', { name: 'Exit Sketch' })).toBeVisible()
   // Exit sketch
   await page.keyboard.press('Escape')
+  await expect(
+    page.getByRole('button', { name: 'Exit Sketch' })
+  ).not.toBeVisible()
 
   // Extrude
   await page.mouse.click(750, 150)
