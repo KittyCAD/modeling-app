@@ -12,6 +12,7 @@ use serde::{Deserialize, Serialize};
 /// "Value" would be OK. This is imported as "JValue" throughout the rest of this crate.
 use serde_json::Value as JValue;
 use std::collections::HashMap;
+// use std::collections::HashMap;
 
 #[async_trait::async_trait(?Send)]
 pub trait CoreDump: Clone {
@@ -217,6 +218,7 @@ pub struct WebrtcStats {
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct EngineCommandManagerState {
+    pub artifact_map: JValue,
     pub engine_connection: EngineConnectionState,
 
     // #[serde(flatten)]
@@ -246,7 +248,7 @@ pub struct EngineConnectionType {
 #[serde(rename_all = "snake_case")]
 pub struct KclManagerState {
     pub meta: [u8; 0],
-    pub artifact_map: Vec<HashMap<String, JValue>>,
+
     //#[serde(flatten)]
     //extra: Option<HashMap<String, JValue>>
 }

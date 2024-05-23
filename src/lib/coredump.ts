@@ -40,6 +40,8 @@ export class CoreDumpManager {
     this.engineCommandManager = engineCommandManager
     this.htmlRef = htmlRef
     this.token = token
+
+    console.log('constructor token', token)
   }
 
   // Get the token.
@@ -157,15 +159,15 @@ export class CoreDumpManager {
 
   // Currently just a placeholder to begin loading singleton and xstate data into
   getClientState(): Promise<string> {
+    const deepClone = (obj) => JSON.parse(JSON.stringify(obj))
+
     // TODO: dshaw set to ClientState once ts-rs bindings get set
     let clientState: ClientState = {
       engine_command_manager: {
+        artifact_map: {},
         engine_connection: { state: { type: '' } },
       },
-      kcl_manager: {
-        meta: [],
-        artifact_map: {},
-      },
+      kcl_manager: { meta: [] },
       scene_infra: { meta: [] },
       auth_machine: { meta: [] },
       command_bar_machine: { meta: [] },
@@ -181,7 +183,13 @@ export class CoreDumpManager {
     // engine_command_manager
     console.log('global engineCommandManager', this.engineCommandManager)
 
-    // engine_connection
+    // artifact map - this.engineCommandManager.artifactMap
+    if (this.engineCommandManager?.artifactMap) {
+      console.log('artifact map', this.engineCommandManager?.artifactMap)
+      clientState.engine_command_manager.artifact_map = deepClone(
+        this.engineCommandManager.artifactMap
+      )
+    }
 
     // engine connection state
     if (this.engineCommandManager?.engineConnection?.state) {
@@ -201,14 +209,6 @@ export class CoreDumpManager {
     // }
 
     // KCL Manager
-
-    // Artifact Map
-    console.log('Artifact Map', this?.kclManager?.artifactMap)
-    if (this?.kclManager?.artifactMap) {
-      clientState.kcl_manager.artifact_map = JSON.parse(
-        JSON.stringify(this?.kclManager?.artifactMap)
-      )
-    }
 
     // this.kclManager.kclErrors
     console.log('KCL Errors', this?.kclManager?.kclErrors)
