@@ -2226,7 +2226,7 @@ test('Sketch on face', async ({ page }) => {
 
   await u.openAndClearDebugPanel()
   await u.doAndWaitForCmd(
-    () => page.mouse.click(793, 133),
+    () => page.mouse.click(625, 133),
     'default_camera_get_settings',
     true
   )
@@ -2257,9 +2257,9 @@ test('Sketch on face', async ({ page }) => {
 
   await expect(page.locator('.cm-content'))
     .toContainText(`const part002 = startSketchOn(part001, 'seg01')
-  |> startProfileAt([-12.83, 6.7], %)
-  |> line([2.87, -0.23], %)
-  |> line([-3.05, -1.47], %)
+  |> startProfileAt([-13.02, 6.52], %)
+  |> line([2.1, -0.18], %)
+  |> line([-2.23, -1.07], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)`)
 
@@ -2270,7 +2270,7 @@ test('Sketch on face', async ({ page }) => {
   await u.updateCamPosition([1049, 239, 686])
   await u.closeDebugPanel()
 
-  await page.getByText('startProfileAt([-12.83, 6.7], %)').click()
+  await page.getByText('startProfileAt([-13.02, 6.52], %)').click()
   await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
   await u.doAndWaitForCmd(
     () => page.getByRole('button', { name: 'Edit Sketch' }).click(),
@@ -2309,15 +2309,17 @@ test('Sketch on face', async ({ page }) => {
   await page.getByRole('button', { name: 'Exit Sketch' }).click()
   await u.expectCmdLog('[data-message-type="execution-done"]')
 
-  await page.getByText('startProfileAt([-12.83, 6.7], %)').click()
+  await page.getByText('startProfileAt([-13.02, 6.52], %)').click()
 
   await expect(page.getByRole('button', { name: 'Extrude' })).not.toBeDisabled()
+  await page.waitForTimeout(100)
   await page.getByRole('button', { name: 'Extrude' }).click()
 
   await expect(page.getByTestId('command-bar')).toBeVisible()
   await page.waitForTimeout(100)
 
   await page.keyboard.press('Enter')
+  await page.waitForTimeout(100)
   await expect(page.getByText('Confirm Extrude')).toBeVisible()
   await page.keyboard.press('Enter')
 
