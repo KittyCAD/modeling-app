@@ -14,9 +14,10 @@ import {
   CopilotWorkerOptions,
 } from 'editor/plugins/lsp/types'
 import { EngineCommandManager } from 'lang/std/engineConnection'
+import { trap } from 'lib/trap'
 
 const intoServer: IntoServer = new IntoServer()
-const fromServer: FromServer = FromServer.create()
+const fromServer: FromServer | undefined = FromServer.create()
 
 // Initialise the wasm module.
 const initialise = async (wasmUrl: string) => {

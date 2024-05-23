@@ -22,6 +22,7 @@ import {
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { normaliseAngle } from '../../lib/utils'
 import { kclManager } from 'lib/singletons'
+import { trap } from 'lib/trap'
 
 const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
 
@@ -75,7 +76,7 @@ export async function applyConstraintAngleLength({
     programMemory: kclManager.programMemory,
     referenceSegName: '',
   })
-  try {
+  trap('', async () => {
     const isReferencingYAxis =
       selectionRanges.otherSelections.length === 1 &&
       selectionRanges.otherSelections[0] === 'y-axis'
@@ -147,8 +148,5 @@ export async function applyConstraintAngleLength({
       modifiedAst: _modifiedAst,
       pathToNodeMap,
     }
-  } catch (e) {
-    console.log('error', e)
-    throw e
-  }
+  }).fail('Failed to set angle length')
 }

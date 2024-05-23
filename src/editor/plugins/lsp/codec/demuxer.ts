@@ -38,6 +38,7 @@ export default class StreamDemuxer extends Queue<Uint8Array> {
 
           // try to parse the content-length from the headers
           const length = parseInt(match[1])
+
           if (isNaN(length)) throw new Error('invalid content length')
 
           // slice the headers since we now have the content length

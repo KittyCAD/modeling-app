@@ -1835,7 +1835,7 @@ export async function getSketchOrientationDetails(
     const faceInfo = await getFaceDetails(sketchGroup.on.faceId)
 
     if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
-      throw new Error('faceInfo')
+      return Promise.reject("face info")
     const { z_axis, y_axis, origin } = faceInfo
     const quaternion = quaternionFromUpNForward(
       new Vector3(y_axis.x, y_axis.y, y_axis.z),
@@ -1852,7 +1852,7 @@ export async function getSketchOrientationDetails(
       },
     }
   }
-  throw new Error(
+  return Promise.reject(
     'sketchGroup.on.type not recognized, has a new type been added?'
   )
 }

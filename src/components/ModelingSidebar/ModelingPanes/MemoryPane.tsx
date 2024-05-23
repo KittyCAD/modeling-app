@@ -4,7 +4,7 @@ import { ProgramMemory, Path, ExtrudeSurface } from 'lang/wasm'
 import { useKclContext } from 'lang/KclProvider'
 import { useResolvedTheme } from 'hooks/useResolvedTheme'
 import { ActionButton } from 'components/ActionButton'
-import toast from 'react-hot-toast'
+import { trap } from 'lib/trap'
 import Tooltip from 'components/Tooltip'
 import { useModelingContext } from 'hooks/useModelingContext'
 
@@ -13,12 +13,10 @@ export const MemoryPaneMenu = () => {
 
   function copyProgramMemoryToClipboard() {
     if (globalThis && 'navigator' in globalThis) {
-      try {
-        navigator.clipboard.writeText(JSON.stringify(programMemory))
-        toast.success('Program memory copied to clipboard')
-      } catch (e) {
-        toast.error('Failed to copy program memory to clipboard')
-      }
+      trap(
+        'Program memory copied to clipboard',
+        () => navigator.clipboard.writeText(JSON.stringify(programMemory))
+      ).fail('Failed to copy program memory to clipboard')
     }
   }
 
