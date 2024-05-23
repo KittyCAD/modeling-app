@@ -166,7 +166,26 @@ test('Can moving camera', async ({ page, context }) => {
     // We could break them out into separate tests, but the longest past of the test is waiting
     // for the stream to start, so it can be good to bundle related things together.
 
-    await u.updateCamPosition(camPos)
+    const camCommand: EngineCommand = {
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        center: { x: 0, y: 0, z: 0 },
+        vantage: { x: camPos[0], y: camPos[1], z: camPos[2] },
+        up: { x: 0, y: 0, z: 1 },
+      },
+    }
+    const updateCamCommand: EngineCommand = {
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    }
+    await u.sendCustomCmd(camCommand)
+    await page.waitForTimeout(100)
+    await u.sendCustomCmd(updateCamCommand)
     await page.waitForTimeout(100)
 
     // rotate
@@ -226,9 +245,29 @@ test('Can moving camera', async ({ page, context }) => {
     await page.mouse.move(700, 200, { steps: 2 })
     await page.mouse.up({ button: 'right' })
     await page.keyboard.up('Shift')
-  }, [-10, -85, -85])
+  }, [-19, -85, -85])
 
-  await u.updateCamPosition(camPos)
+  const camCommand: EngineCommand = {
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_look_at',
+      center: { x: 0, y: 0, z: 0 },
+      vantage: { x: camPos[0], y: camPos[1], z: camPos[2] },
+      up: { x: 0, y: 0, z: 1 },
+    },
+  }
+  const updateCamCommand: EngineCommand = {
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_get_settings',
+    },
+  }
+  await u.sendCustomCmd(camCommand)
+  await page.waitForTimeout(100)
+  await u.sendCustomCmd(updateCamCommand)
+  await page.waitForTimeout(100)
 
   await u.clearCommandLogs()
   await u.closeDebugPanel()
@@ -264,7 +303,7 @@ test('Can moving camera', async ({ page, context }) => {
   await bakeInRetries(async () => {
     await page.mouse.move(700, 400)
     await page.mouse.wheel(0, -100)
-  }, [1, -94, -94])
+  }, [1, -68, -68])
 })
 
 test('if you click the format button it formats your code', async ({
