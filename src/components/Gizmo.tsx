@@ -1,4 +1,4 @@
-import { SceneInfra } from 'clientSideScene/sceneInfra'
+import { sceneInfra } from 'lib/singletons'
 import { useEffect, useRef } from 'react'
 import {
   WebGLRenderer,
@@ -42,7 +42,7 @@ export default function Gizmo() {
     scene.add(...gizmoAxes, ...gizmoAxisHeads)
 
     const clock = new Clock()
-    const clientCamera = SceneInfra.instance.camControls.camera
+    const clientCamera = sceneInfra.camControls.camera
     let currentQuaternion = new Quaternion().copy(clientCamera.quaternion)
 
     const animate = () => {
@@ -50,7 +50,7 @@ export default function Gizmo() {
       updateCameraOrientation(
         camera,
         currentQuaternion,
-        clientCamera.quaternion,
+        sceneInfra.camControls.camera.quaternion,
         clock.getDelta()
       )
       renderer.render(scene, camera)

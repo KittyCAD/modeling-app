@@ -256,7 +256,13 @@ export class CameraControls {
         camSettings.center.y,
         camSettings.center.z
       )
-      this.camera.up.set(camSettings.up.x, camSettings.up.y, camSettings.up.z)
+      const quat = new Quaternion(
+        camSettings.orientation.x,
+        camSettings.orientation.y,
+        camSettings.orientation.z,
+        camSettings.orientation.w
+      ).invert()
+      this.camera.up.copy(new Vector3(0, 1, 0).applyQuaternion(quat))
       if (this.camera instanceof PerspectiveCamera && camSettings.ortho) {
         this.useOrthographicCamera()
       }
