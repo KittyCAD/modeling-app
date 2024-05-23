@@ -1096,44 +1096,48 @@ impl CallExpression {
         let mut fn_args: Vec<MemoryItem> = Vec::with_capacity(self.arguments.len());
 
         for arg in &self.arguments {
-            let result: MemoryItem = match arg {
-                Value::None(none) => none.into(),
-                Value::Literal(literal) => literal.into(),
-                Value::Identifier(identifier) => {
-                    let value = memory.get(&identifier.name, identifier.into())?;
-                    value.clone()
-                }
-                Value::BinaryExpression(binary_expression) => {
-                    binary_expression.get_result(memory, pipe_info, ctx).await?
-                }
-                Value::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, ctx).await?,
-                Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, ctx).await?,
-                Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, ctx).await?,
-                Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, ctx).await?,
-                Value::PipeExpression(pipe_expression) => {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!("PipeExpression not implemented here: {:?}", pipe_expression),
-                        source_ranges: vec![pipe_expression.into()],
-                    }));
-                }
-                Value::PipeSubstitution(pipe_substitution) => pipe_info
-                    .previous_results
-                    .as_ref()
-                    .ok_or_else(|| {
-                        KclError::Semantic(KclErrorDetails {
-                            message: format!("PipeSubstitution index out of bounds: {:?}", pipe_info),
-                            source_ranges: vec![pipe_substitution.into()],
-                        })
-                    })?
-                    .clone(),
-                Value::MemberExpression(member_expression) => member_expression.get_result(memory)?,
-                Value::FunctionExpression(function_expression) => {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!("FunctionExpression not implemented here: {:?}", function_expression),
-                        source_ranges: vec![function_expression.into()],
-                    }));
-                }
+            let metadata = Metadata {
+                source_range: SourceRange([arg.start(), arg.end()]),
             };
+            let result = ctx.arg_into_mem_item(arg, memory, pipe_info, &metadata, None).await?;
+            // let result: MemoryItem = match arg {
+            //     Value::None(none) => none.into(),
+            //     Value::Literal(literal) => literal.into(),
+            //     Value::Identifier(identifier) => {
+            //         let value = memory.get(&identifier.name, identifier.into())?;
+            //         value.clone()
+            //     }
+            //     Value::BinaryExpression(binary_expression) => {
+            //         binary_expression.get_result(memory, pipe_info, ctx).await?
+            //     }
+            //     Value::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, ctx).await?,
+            //     Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, ctx).await?,
+            //     Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, ctx).await?,
+            //     Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, ctx).await?,
+            //     Value::PipeExpression(pipe_expression) => {
+            //         return Err(KclError::Semantic(KclErrorDetails {
+            //             message: format!("PipeExpression top not implemented here: {:?}", pipe_expression),
+            //             source_ranges: vec![pipe_expression.into()],
+            //         }));
+            //     }
+            //     Value::PipeSubstitution(pipe_substitution) => pipe_info
+            //         .previous_results
+            //         .as_ref()
+            //         .ok_or_else(|| {
+            //             KclError::Semantic(KclErrorDetails {
+            //                 message: format!("PipeSubstitution index out of bounds: {:?}", pipe_info),
+            //                 source_ranges: vec![pipe_substitution.into()],
+            //             })
+            //         })?
+            //         .clone(),
+            //     Value::MemberExpression(member_expression) => member_expression.get_result(memory)?,
+            //     Value::FunctionExpression(function_expression) => {
+            //         return Err(KclError::Semantic(KclErrorDetails {
+            //             message: format!("FunctionExpression not implemented here: {:?}", function_expression),
+            //             source_ranges: vec![function_expression.into()],
+            //         }));
+            //     }
+            // };
 
             fn_args.push(result);
         }
@@ -2798,7 +2802,7 @@ async fn execute_pipe_body(
         _ => {
             // Return an error this should not happen.
             return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("PipeExpression not implemented here: {:?}", first),
+                message: format!("This cannot be the start of a PipeExpression: {:?}", first),
                 source_ranges: vec![first.into()],
             }));
         }
@@ -2819,7 +2823,7 @@ async fn execute_pipe_body(
             _ => {
                 // Return an error this should not happen.
                 return Err(KclError::Semantic(KclErrorDetails {
-                    message: format!("PipeExpression not implemented here: {:?}", expression),
+                    message: format!("This cannot be in a PipeExpression: {:?}", expression),
                     source_ranges: vec![expression.into()],
                 }));
             }

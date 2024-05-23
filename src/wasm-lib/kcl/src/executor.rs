@@ -1234,7 +1234,7 @@ impl ExecutorContext {
         Ok(memory.clone())
     }
 
-    async fn arg_into_mem_item(
+    pub async fn arg_into_mem_item(
         &self,
         init: &Value,
         memory: &mut ProgramMemory,
