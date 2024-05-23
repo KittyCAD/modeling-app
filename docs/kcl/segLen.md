@@ -15,7 +15,7 @@ segLen(segment_name: string, sketch_group: SketchGroup) -> number
 ### Examples
 
 ```js
-const exampleSketch = startSketchOn("-XZ")
+const exampleSketch = startSketchOn("XZ")
   |> startProfileAt([0, 0], %)
   |> angledLine({ angle: 60, length: 10 }, %, "thing")
   |> tangentialArc({ offset: -120, radius: 5 }, %)

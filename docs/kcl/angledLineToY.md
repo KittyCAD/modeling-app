@@ -15,7 +15,7 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup, tag?: String) -
 ### Examples
 
 ```js
-const exampleSketch = startSketchOn('-XZ')
+const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLineToY({ angle: 60, to: 20 }, %)
   |> line([-20, 0], %)

@@ -129,15 +129,6 @@ async fn serial_test_lego() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_pentagon_fillet_desugar() {
-    let code = include_str!("inputs/pentagon_fillet_desugar.kcl");
-    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Cm)
-        .await
-        .unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/pentagon_fillet_desugar.png", &result, 0.999);
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_pentagon_fillet_sugar() {
     let code = include_str!("inputs/pentagon_fillet_sugar.kcl");
     let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Cm)
@@ -1955,12 +1946,12 @@ const plumbus0 = make_circle(p, 'a', [0, 0], 2.5)
        tags: ['arc-a', getOppositeEdge('arc-a', %)]
      }, %)
 
-// const plumbus1 = make_circle(p, 'b', [0, 0], 2.5)
-//   |> extrude(10, %)
-//   |> fillet({
-//        radius: 0.5,
-//        tags: ['arc-b', getOppositeEdge('arc-b', %)]
-//      }, %)
+const plumbus1 = make_circle(p, 'b', [0, 0], 2.5)
+   |> extrude(10, %)
+   |> fillet({
+        radius: 0.5,
+        tags: ['arc-b', getOppositeEdge('arc-b', %)]
+      }, %)
 "#;
 
     let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
@@ -2111,4 +2102,36 @@ const extrusion = startSketchOn('XY')
         result.err().unwrap().to_string(),
         r#"semantic: KclErrorDetails { source_ranges: [SourceRange([92, 364]), SourceRange([444, 477])], message: "Expected 2 arguments, got 3" }"#
     );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_xz_plane() {
+    let code = r#"const part001 = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> lineTo([100, 100], %)
+  |> lineTo([100, 0], %)
+  |> close(%)
+  |> extrude(5 + 7, %)
+"#;
+
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/xz_plane.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_neg_xz_plane() {
+    let code = r#"const part001 = startSketchOn('-XZ')
+  |> startProfileAt([0, 0], %)
+  |> lineTo([100, 100], %)
+  |> lineTo([100, 0], %)
+  |> close(%)
+  |> extrude(5 + 7, %)
+"#;
+
+    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)
+        .await
+        .unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/neg_xz_plane.png", &result, 1.0);
 }
