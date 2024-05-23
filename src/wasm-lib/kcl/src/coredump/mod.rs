@@ -10,8 +10,8 @@ use base64::Engine;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 /// "Value" would be OK. This is imported as "JValue" throughout the rest of this crate.
-// use serde_json::Value as JValue;
-// use std::collections::HashMap;
+use serde_json::Value as JValue;
+use std::collections::HashMap;
 
 #[async_trait::async_trait(?Send)]
 pub trait CoreDump: Clone {
@@ -246,6 +246,9 @@ pub struct EngineConnectionType {
 #[serde(rename_all = "snake_case")]
 pub struct KclManagerState {
     pub meta: [u8; 0],
+    pub artifact_map: Vec<HashMap<String, JValue>>,
+    //#[serde(flatten)]
+    //extra: Option<HashMap<String, JValue>>
 }
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]

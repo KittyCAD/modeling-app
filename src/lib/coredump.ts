@@ -162,7 +162,10 @@ export class CoreDumpManager {
       engine_command_manager: {
         engine_connection: { state: { type: '' } },
       },
-      kcl_manager: { meta: [] },
+      kcl_manager: {
+        meta: [],
+        artifact_map: {},
+      },
       scene_infra: { meta: [] },
       auth_machine: { meta: [] },
       command_bar_machine: { meta: [] },
@@ -197,7 +200,21 @@ export class CoreDumpManager {
     //       this.engineCommandManager.commandLogs
     // }
 
+    // KCL Manager
+
+    // Artifact Map
+    console.log('Artifact Map', this?.kclManager?.artifactMap)
+    if (this?.kclManager?.artifactMap) {
+      clientState.kcl_manager.artifact_map = JSON.parse(
+        JSON.stringify(this?.kclManager?.artifactMap)
+      )
+    }
+
     // this.kclManager.kclErrors
+    console.log('KCL Errors', this?.kclManager?.kclErrors)
+
+    // XState Machines
+
     console.log('xstateServices', this?.__xstate__?.services)
     let xstateServices = this?.__xstate__?.services || new Set()
 
