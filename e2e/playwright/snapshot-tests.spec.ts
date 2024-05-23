@@ -44,7 +44,7 @@ test.setTimeout(60_000)
 test('exports of each format should work', async ({ page, context }) => {
   // FYI this test doesn't work with only engine running locally
   // And you will need to have the KittyCAD CLI installed
-  const u = getUtils(page)
+  const u = await getUtils(page)
   await context.addInitScript(async () => {
     ;(window as any).playwrightSkipFilePicker = true
     localStorage.setItem(
@@ -369,7 +369,7 @@ const extrudeDefaultPlane = async (context: any, page: any, plane: string) => {
     localStorage.setItem('persistCode', code)
   })
 
-  const u = getUtils(page)
+  const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
@@ -424,7 +424,7 @@ test.describe('extrude on default planes should be stable', () => {
 })
 
 test('Draft segments should look right', async ({ page, context }) => {
-  const u = getUtils(page)
+  const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
   await page.goto('/')
@@ -483,7 +483,7 @@ test('Draft segments should look right', async ({ page, context }) => {
 })
 
 test('Draft rectangles should look right', async ({ page, context }) => {
-  const u = getUtils(page)
+  const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
   await page.goto('/')
@@ -530,7 +530,7 @@ test('Draft rectangles should look right', async ({ page, context }) => {
 
 test.describe('Client side scene scale should match engine scale', () => {
   test('Inch scale', async ({ page }) => {
-    const u = getUtils(page)
+    const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
     await page.goto('/')
@@ -633,7 +633,7 @@ test.describe('Client side scene scale should match engine scale', () => {
         }),
       }
     )
-    const u = getUtils(page)
+    const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
     await page.goto('/')
@@ -719,7 +719,7 @@ test.describe('Client side scene scale should match engine scale', () => {
 })
 
 test('Sketch on face with none z-up', async ({ page, context }) => {
-  const u = getUtils(page)
+  const u = await getUtils(page)
   await context.addInitScript(async (KCL_DEFAULT_LENGTH) => {
     localStorage.setItem(
       'persistCode',
