@@ -11,6 +11,7 @@ import { engineCommandManager, kclManager } from 'lib/singletons'
 import { useKclContext } from 'lang/KclProvider'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { executeAst } from 'useStore'
+import { trap } from 'lib/trap'
 
 export const AvailableVars = ({
   onVarClick,
@@ -141,6 +142,7 @@ export function useCalc({
     try {
       const code = `const __result__ = ${value}`
       const ast = parse(code)
+      if (trap(ast)) return
       const _programMem: any = { root: {}, return: null }
       availableVarInfo.variables.forEach(({ key, value }) => {
         _programMem.root[key] = { type: 'userVal', value, __meta: [] }

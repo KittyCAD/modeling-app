@@ -5,7 +5,7 @@ import { Diagnostic as LspDiagnostic } from 'vscode-languageserver-protocol'
 import { Text } from '@codemirror/state'
 
 type ExtractKind<T> = T extends { kind: infer K } ? K : never
-export class KCLError {
+export class KCLError extends Error {
   kind: ExtractKind<RustKclError> | 'name'
   sourceRanges: [number, number][]
   msg: string
@@ -14,6 +14,7 @@ export class KCLError {
     msg: string,
     sourceRanges: [number, number][]
   ) {
+    super()
     this.kind = kind
     this.msg = msg
     this.sourceRanges = sourceRanges
