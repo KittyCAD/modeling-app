@@ -61,8 +61,8 @@ const variableBelowShouldNotBeIncluded = 3
   })
 })
 
-describe('findUnusedVariables', () => {
-  it('should find unused vairiables', () => {
+describe('Test findUnusedVariables', () => {
+  it('should find unused variable in common kcl code', () => {
     // example code
     const code = `
       const xRel001 = -20
@@ -84,6 +84,66 @@ describe('findUnusedVariables', () => {
         .flat()
     ).toEqual(['xRel002'])
   })
+  it("should not find used variable, even if it's heavy nested", () => {
+    // example code
+    const code = `
+  const deepWithin = 1
+  const veryNested = [
+    { key: [{ key2: max(5, deepWithin) }] }
+  ]
+    `
+    // parse into ast
+    const ast = parse(code)
+    // find unused variables
+    const unusedVariables = findUnusedVariables(ast)
+    // check wether unused variables match the expected result
+    expect(
+      unusedVariables.find((node) =>
+        node.declarations.find((decl) => decl.id.name === 'deepWithin')
+      )
+    ).toBeFalsy()
+  })
+  it('should not find used variable, even if used in a closure', () => {
+    // example code
+    const code = `const usedInClosure = 1
+  fn myFunction = () => {
+    return usedInClosure
+  }    
+    `
+    // parse into ast
+    const ast = parse(code)
+    // find unused variables
+    const unusedVariables = findUnusedVariables(ast)
+    // check wether unused variables match the expected result
+    expect(
+      unusedVariables.find((node) =>
+        node.declarations.find((decl) => decl.id.name === 'usedInClosure')
+      )
+    ).toBeFalsy()
+  })
+  // TODO: The commented code in the below does not even parse due to a KCL bug
+  // When it does parse correctly we'de expect 'a' to be defined but unused
+  // as it's shadowed by the 'a' in the inner scope
+  // it('should find unused variable when the same identifier is used in deeper scope', () => {
+  //   const code = `const a = 1
+  // const b = 2
+  // fn (a) => {
+  //   return a + 1
+  // }
+  // const myVar = b + 5`
+  //   // parse into ast
+  //   const ast = parse(code)
+  //   console.log('ast', ast)
+  //   // find unused variables
+  //   const unusedVariables = findUnusedVariables(ast)
+  //   console.log('unusedVariables', unusedVariables)
+  //   // check wether unused variables match the expected result
+  //   expect(
+  //     unusedVariables
+  //       .map((node) => node.declarations.map((decl) => decl.id.name))
+  //       .flat()
+  //   ).toEqual(['a'])
+  // })
 })
 
 describe('testing argIsNotIdentifier', () => {
