@@ -267,7 +267,12 @@ export const ModelingMachineProvider = ({
 
           exportFromEngine({
             format: format as Models['OutputFormat_type'],
-          }).catch((e) => toast.error('Error while exporting', e)) // TODO I think we need to throw the error from engineCommandManager
+          }).catch((e: any) => {
+            // TODO I think we need to throw the error from engineCommandManager
+            let errorMessage = 'Error while exporting: ' + e?.message
+            console.error(errorMessage)
+            toast.error(errorMessage)
+          })
         },
       },
       guards: {
