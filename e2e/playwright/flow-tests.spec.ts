@@ -2011,6 +2011,7 @@ const doSnapAtDifferentScales = async (
 |> startProfileAt([${roundOff(scale * 87.68)}, ${roundOff(scale * 43.84)}], %)
 |> line([${roundOff(scale * 175.36)}, 0], %)
 |> line([0, -${roundOff(scale * 175.36) + fudge}], %)
+|> lineTo([profileStartX(%), profileStartY(%)], %)
 |> close(%)`
 
   await expect(
@@ -2063,6 +2064,11 @@ const doSnapAtDifferentScales = async (
   prevContent = await page.locator('.cm-content').innerText()
 
   await expect(page.locator('.cm-content')).toHaveText(code)
+  // Assert the tool was unequipped
+  await expect(page.getByRole('button', { name: 'Line' })).not.toHaveAttribute(
+    'aria-pressed',
+    'true'
+  )
 
   // exit sketch
   await u.openAndClearDebugPanel()
@@ -2151,6 +2157,7 @@ test('Sketch on face', async ({ page }) => {
   |> startProfileAt([-12.83, 6.7], %)
   |> line([2.87, -0.23], %)
   |> line([-3.05, -1.47], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)`)
 
   await u.openAndClearDebugPanel()
@@ -2189,6 +2196,7 @@ test('Sketch on face', async ({ page }) => {
   |> startProfileAt([-12.83, 6.7], %)
   |> line([${[2.28, 2.35]}, -${0.07}], %)
   |> line([-3.05, -1.47], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)`
 
   await expect(page.locator('.cm-content')).toHaveText(result.regExp)
