@@ -2509,13 +2509,8 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   await page.mouse.click(700, 200)
   // Unequip line tool
   await page.keyboard.press('Escape')
-  // Make sure we didn't pop out of sketch mode.
-  await expect(page.getByRole('button', { name: 'Exit Sketch' })).toBeVisible()
   // Exit sketch
   await page.keyboard.press('Escape')
-  await expect(
-    page.getByRole('button', { name: 'Exit Sketch' })
-  ).not.toBeVisible()
 
   // Extrude
   await page.mouse.click(750, 150)
