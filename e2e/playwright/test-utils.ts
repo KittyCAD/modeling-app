@@ -95,7 +95,10 @@ async function waitForCmdReceive(page: Page, commandType: string) {
 }
 
 export async function getUtils(page: Page) {
-  const cdpSession = await page.context().newCDPSession(page)
+  const cdpSession =
+    process.platform === 'darwin'
+      ? null
+      : await page.context().newCDPSession(page)
 
   return {
     waitForAuthSkipAppStart: () => waitForPageLoad(page),
@@ -187,12 +190,12 @@ export async function getUtils(page: Page) {
       networkOptions: Protocol.Network.emulateNetworkConditionsParameters
     ) => {
       // Skip on non-Chromium browsers, since we need to use the CDP.
-      /*test.skip(
-        process.platform === 'darwin',
+      test.skip(
+        cdpSession === null,
         'Network emulation is only supported in Chromium'
-      )*/
+      )
 
-      cdpSession.send('Network.emulateNetworkConditions', networkOptions)
+      cdpSession?.send('Network.emulateNetworkConditions', networkOptions)
     },
   }
 }
