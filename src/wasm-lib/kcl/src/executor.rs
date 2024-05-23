@@ -1121,7 +1121,7 @@ impl ExecutorContext {
         &self,
         program: crate::ast::types::Program,
         memory: &mut ProgramMemory,
-        _body_type: BodyType,
+        body_type: BodyType,
     ) -> Result<ProgramMemory, KclError> {
         let pipe_info = PipeInfo::default();
 
@@ -1328,8 +1328,10 @@ impl ExecutorContext {
             }
         }
 
-        // Flush the batch queue.
-        self.engine.flush_batch(SourceRange([program.end, program.end])).await?;
+        if BodyType::Root == body_type {
+            // Flush the batch queue.
+            self.engine.flush_batch(SourceRange([program.end, program.end])).await?;
+        }
 
         Ok(memory.clone())
     }

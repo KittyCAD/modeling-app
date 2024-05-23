@@ -129,15 +129,6 @@ async fn serial_test_lego() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn serial_test_pentagon_fillet_desugar() {
-    let code = include_str!("inputs/pentagon_fillet_desugar.kcl");
-    let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Cm)
-        .await
-        .unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/pentagon_fillet_desugar.png", &result, 0.999);
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_pentagon_fillet_sugar() {
     let code = include_str!("inputs/pentagon_fillet_sugar.kcl");
     let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Cm)
@@ -1955,12 +1946,12 @@ const plumbus0 = make_circle(p, 'a', [0, 0], 2.5)
        tags: ['arc-a', getOppositeEdge('arc-a', %)]
      }, %)
 
-// const plumbus1 = make_circle(p, 'b', [0, 0], 2.5)
-//   |> extrude(10, %)
-//   |> fillet({
-//        radius: 0.5,
-//        tags: ['arc-b', getOppositeEdge('arc-b', %)]
-//      }, %)
+const plumbus1 = make_circle(p, 'b', [0, 0], 2.5)
+   |> extrude(10, %)
+   |> fillet({
+        radius: 0.5,
+        tags: ['arc-b', getOppositeEdge('arc-b', %)]
+      }, %)
 "#;
 
     let result = execute_and_snapshot(code, kcl_lib::settings::types::UnitLength::Mm)

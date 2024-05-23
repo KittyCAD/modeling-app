@@ -204,19 +204,6 @@ async fn inner_pattern_linear_3d(
 
 async fn pattern_linear(data: LinearPattern, geometry: Geometry, args: Args) -> Result<Geometries, KclError> {
     let id = uuid::Uuid::new_v4();
-    println!(
-        "id: {:#?}",
-        ModelingCmd::EntityLinearPattern {
-            axis: kittycad::types::Point3D {
-                x: data.axis()[0],
-                y: data.axis()[1],
-                z: data.axis()[2],
-            },
-            entity_id: geometry.id(),
-            num_repetitions: data.repetitions(),
-            spacing: data.distance(),
-        }
-    );
 
     let resp = args
         .send_modeling_cmd(
