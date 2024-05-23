@@ -425,6 +425,7 @@ fn main() -> Result<()> {
                 .build(),
         )
         .plugin(tauri_plugin_os::init())
+        .plugin(tauri_plugin_persisted_scope::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_shell::init())
         .setup(|app| {

@@ -33,6 +33,15 @@
       "identifier": "fs:scope",
       "allow": [
         {
+          "path": "$TEMP"
+        },
+        {
+          "path": "$TEMP/**/*"
+        },
+        {
+          "path": "$HOME"
+        },
+        {
           "path": "$HOME/**/*"
         },
         {
