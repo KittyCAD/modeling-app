@@ -4,16 +4,15 @@ import {
   getNextProjectIndex,
   interpolateProjectNameWithIndex,
   doesProjectNameNeedInterpolated,
-} from '../lib/tauriFS'
-import { ActionButton } from '../components/ActionButton'
-import { faArrowDown, faPlus } from '@fortawesome/free-solid-svg-icons'
+} from 'lib/tauriFS'
+import { ActionButton } from 'components/ActionButton'
 import { toast } from 'react-hot-toast'
-import { AppHeader } from '../components/AppHeader'
-import ProjectCard from '../components/ProjectCard'
+import { AppHeader } from 'components/AppHeader'
+import ProjectCard from 'components/ProjectCard/ProjectCard'
 import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import { type HomeLoaderData } from 'lib/types'
-import Loading from '../components/Loading'
+import Loading from 'components/Loading'
 import { useMachine } from '@xstate/react'
 import { homeMachine } from '../machines/homeMachine'
 import { ContextFrom, EventFrom } from 'xstate'
@@ -269,9 +268,12 @@ const Home = () => {
           </div>
           <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
             Loaded from{' '}
-            <span className="text-chalkboard-90 dark:text-chalkboard-20">
+            <Link
+              to="settings?tab=user#projectDirectory"
+              className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
+            >
               {settings.app.projectDirectory.current}
-            </span>
+            </Link>
             .
           </p>
         </section>
