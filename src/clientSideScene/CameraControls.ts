@@ -239,7 +239,7 @@ export class CameraControls {
             | 'default_camera_zoom'
             | 'camera_drag_end'
             | 'default_camera_get_settings'
-            // | 'zoom_to_fit' TODO once types are fix, follow up for #2201
+            | 'zoom_to_fit'
           >
         | UnreliableSubscription<'camera_drag_move'>
       )['callback']
@@ -305,7 +305,7 @@ export class CameraControls {
         callback: cb,
       })
       this.engineCommandManager.subscribeTo({
-        event: 'zoom_to_fit' as 'default_camera_get_settings', // this is not the string you're looking for. TODO follow up for #2201
+        event: 'zoom_to_fit',
         callback: cb,
       })
       this.engineCommandManager.subscribeToUnreliable({
