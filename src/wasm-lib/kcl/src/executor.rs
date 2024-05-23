@@ -1135,35 +1135,13 @@ impl ExecutorContext {
                         let fn_name = call_expr.callee.name.to_string();
                         let mut args: Vec<MemoryItem> = Vec::new();
                         for arg in &call_expr.arguments {
-                            match arg {
-                                Value::Literal(literal) => args.push(literal.into()),
-                                Value::Identifier(identifier) => {
-                                    let memory_item = memory.get(&identifier.name, identifier.into())?;
-                                    args.push(memory_item.clone());
-                                }
-                                Value::CallExpression(call_expr) => {
-                                    let result = call_expr.execute(memory, &pipe_info, self).await?;
-                                    args.push(result);
-                                }
-                                Value::BinaryExpression(binary_expression) => {
-                                    let result = binary_expression.get_result(memory, &pipe_info, self).await?;
-                                    args.push(result);
-                                }
-                                Value::UnaryExpression(unary_expression) => {
-                                    let result = unary_expression.get_result(memory, &pipe_info, self).await?;
-                                    args.push(result);
-                                }
-                                Value::ObjectExpression(object_expression) => {
-                                    let result = object_expression.execute(memory, &pipe_info, self).await?;
-                                    args.push(result);
-                                }
-                                Value::ArrayExpression(array_expression) => {
-                                    let result = array_expression.execute(memory, &pipe_info, self).await?;
-                                    args.push(result);
-                                }
-                                // We do nothing for the rest.
-                                _ => (),
-                            }
+                            let metadata = Metadata {
+                                source_range: SourceRange([arg.start(), arg.end()]),
+                            };
+                            let mem_item = self
+                                .arg_into_mem_item(arg, memory, &pipe_info, &metadata, StatementKind::Expression)
+                                .await?;
+                            args.push(mem_item);
                         }
                         match self.stdlib.get_either(&call_expr.callee.name) {
                             FunctionKind::Core(func) => {
@@ -1199,88 +1177,16 @@ impl ExecutorContext {
                         let source_range: SourceRange = declaration.init.clone().into();
                         let metadata = Metadata { source_range };
 
-                        match &declaration.init {
-                            Value::None(none) => {
-                                memory.add(&var_name, none.into(), source_range)?;
-                            }
-                            Value::Literal(literal) => {
-                                memory.add(&var_name, literal.into(), source_range)?;
-                            }
-                            Value::Identifier(identifier) => {
-                                let value = memory.get(&identifier.name, identifier.into())?;
-                                memory.add(&var_name, value.clone(), source_range)?;
-                            }
-                            Value::BinaryExpression(binary_expression) => {
-                                let result = binary_expression.get_result(memory, &pipe_info, self).await?;
-                                memory.add(&var_name, result, source_range)?;
-                            }
-                            Value::FunctionExpression(function_expression) => {
-                                let mem_func = force_memory_function(
-                                    |args: Vec<MemoryItem>,
-                                     memory: ProgramMemory,
-                                     function_expression: Box<FunctionExpression>,
-                                     _metadata: Vec<Metadata>,
-                                     ctx: ExecutorContext| {
-                                        Box::pin(async move {
-                                            let mut fn_memory =
-                                                assign_args_to_params(&function_expression, args, memory.clone())?;
-
-                                            let result = ctx
-                                                .inner_execute(
-                                                    function_expression.body.clone(),
-                                                    &mut fn_memory,
-                                                    BodyType::Block,
-                                                )
-                                                .await?;
-
-                                            Ok(result.return_)
-                                        })
-                                    },
-                                );
-                                memory.add(
-                                    &var_name,
-                                    MemoryItem::Function {
-                                        expression: function_expression.clone(),
-                                        meta: vec![metadata],
-                                        func: Some(mem_func),
-                                    },
-                                    source_range,
-                                )?;
-                            }
-                            Value::CallExpression(call_expression) => {
-                                let result = call_expression.execute(memory, &pipe_info, self).await?;
-                                memory.add(&var_name, result, source_range)?;
-                            }
-                            Value::PipeExpression(pipe_expression) => {
-                                let result = pipe_expression.get_result(memory, &pipe_info, self).await?;
-                                memory.add(&var_name, result, source_range)?;
-                            }
-                            Value::PipeSubstitution(pipe_substitution) => {
-                                return Err(KclError::Semantic(KclErrorDetails {
-                                    message: format!(
-                                        "pipe substitution not implemented for declaration of variable {}",
-                                        var_name
-                                    ),
-                                    source_ranges: vec![pipe_substitution.into()],
-                                }));
-                            }
-                            Value::ArrayExpression(array_expression) => {
-                                let result = array_expression.execute(memory, &pipe_info, self).await?;
-                                memory.add(&var_name, result, source_range)?;
-                            }
-                            Value::ObjectExpression(object_expression) => {
-                                let result = object_expression.execute(memory, &pipe_info, self).await?;
-                                memory.add(&var_name, result, source_range)?;
-                            }
-                            Value::MemberExpression(member_expression) => {
-                                let result = member_expression.get_result(memory)?;
-                                memory.add(&var_name, result, source_range)?;
-                            }
-                            Value::UnaryExpression(unary_expression) => {
-                                let result = unary_expression.get_result(memory, &pipe_info, self).await?;
-                                memory.add(&var_name, result, source_range)?;
-                            }
-                        }
+                        let memory_item = self
+                            .arg_into_mem_item(
+                                &declaration.init,
+                                memory,
+                                &pipe_info,
+                                &metadata,
+                                StatementKind::Declaration { name: &var_name },
+                            )
+                            .await?;
+                        memory.add(&var_name, memory_item, source_range)?;
                     }
                 }
                 BodyItem::ReturnStatement(return_statement) => match &return_statement.argument {
@@ -1334,6 +1240,77 @@ impl ExecutorContext {
         }
 
         Ok(memory.clone())
+    }
+
+    pub async fn arg_into_mem_item<'a>(
+        &self,
+        init: &Value,
+        memory: &mut ProgramMemory,
+        pipe_info: &PipeInfo,
+        metadata: &Metadata,
+        statement_kind: StatementKind<'a>,
+    ) -> Result<MemoryItem, KclError> {
+        let item = match init {
+            Value::None(none) => none.into(),
+            Value::Literal(literal) => literal.into(),
+            Value::Identifier(identifier) => {
+                let value = memory.get(&identifier.name, identifier.into())?;
+                value.clone()
+            }
+            Value::BinaryExpression(binary_expression) => binary_expression.get_result(memory, pipe_info, self).await?,
+            Value::FunctionExpression(function_expression) => {
+                let mem_func = force_memory_function(
+                    |args: Vec<MemoryItem>,
+                     memory: ProgramMemory,
+                     function_expression: Box<FunctionExpression>,
+                     _metadata: Vec<Metadata>,
+                     ctx: ExecutorContext| {
+                        Box::pin(async move {
+                            let mut fn_memory = assign_args_to_params(&function_expression, args, memory.clone())?;
+
+                            let result = ctx
+                                .inner_execute(function_expression.body.clone(), &mut fn_memory, BodyType::Block)
+                                .await?;
+
+                            Ok(result.return_)
+                        })
+                    },
+                );
+                MemoryItem::Function {
+                    expression: function_expression.clone(),
+                    meta: vec![metadata.to_owned()],
+                    func: Some(mem_func),
+                }
+            }
+            Value::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, self).await?,
+            Value::PipeExpression(pipe_expression) => pipe_expression.get_result(memory, pipe_info, self).await?,
+            Value::PipeSubstitution(pipe_substitution) => match statement_kind {
+                StatementKind::Declaration { name } => {
+                    let message = format!(
+                        "you cannot declare variable {name} as %, because % can only be used in function calls"
+                    );
+
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        message,
+                        source_ranges: vec![pipe_substitution.into()],
+                    }));
+                }
+                StatementKind::Expression => match pipe_info.previous_results.clone() {
+                    Some(x) => x,
+                    None => {
+                        return Err(KclError::Semantic(KclErrorDetails {
+                            message: "cannot use % outside a pipe expression".to_owned(),
+                            source_ranges: vec![pipe_substitution.into()],
+                        }));
+                    }
+                },
+            },
+            Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, self).await?,
+            Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, self).await?,
+            Value::MemberExpression(member_expression) => member_expression.get_result(memory)?,
+            Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, self).await?,
+        };
+        Ok(item)
     }
 
     /// Update the units for the executor.
@@ -1395,6 +1372,11 @@ fn assign_args_to_params(
         }
     }
     Ok(fn_memory)
+}
+
+pub enum StatementKind<'a> {
+    Declaration { name: &'a str },
+    Expression,
 }
 
 #[cfg(test)]
