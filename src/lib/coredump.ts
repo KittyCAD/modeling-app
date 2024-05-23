@@ -40,8 +40,6 @@ export class CoreDumpManager {
     this.engineCommandManager = engineCommandManager
     this.htmlRef = htmlRef
     this.token = token
-
-    console.log('constructor token', token)
   }
 
   // Get the token.
