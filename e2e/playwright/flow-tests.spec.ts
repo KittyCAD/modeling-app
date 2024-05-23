@@ -1693,6 +1693,28 @@ test('Hovering over 3d features highlights code', async ({ page }) => {
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
 
+  await page.waitForTimeout(100)
+  await u.openAndClearDebugPanel()
+  await u.sendCustomCmd({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_look_at',
+      vantage: { x: 0, y: -1250, z: 580 },
+      center: { x: 0, y: 0, z: 0 },
+      up: { x: 0, y: 0, z: 1 },
+    },
+  })
+  await page.waitForTimeout(100)
+  await u.sendCustomCmd({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_get_settings',
+    },
+  })
+  await page.waitForTimeout(100)
+
   const extrusionTop: Coords2d = [800, 240]
   const flatExtrusionFace: Coords2d = [960, 160]
   const arc: Coords2d = [840, 160]
@@ -1827,7 +1849,9 @@ fn yohey = (pos) => {
   // selecting an editable sketch but clicking "start sktech" should start a new sketch and not edit the existing one
   await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await page.mouse.click(700, 200)
+  await page.getByTestId('KCL Code').click()
+  await page.mouse.click(300, 500)
+  await page.getByTestId('KCL Code').click()
   // expect main content to contain `part005` i.e. started a new sketch
   await expect(page.locator('.cm-content')).toHaveText(
     /part005 = startSketchOn\('XZ'\)/
@@ -1999,6 +2023,28 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
   await expect(
     page.getByRole('button', { name: 'Start Sketch' })
   ).not.toBeDisabled()
+
+  await page.waitForTimeout(100)
+  await u.openAndClearDebugPanel()
+  await u.sendCustomCmd({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_look_at',
+      vantage: { x: 0, y: -1250, z: 580 },
+      center: { x: 0, y: 0, z: 0 },
+      up: { x: 0, y: 0, z: 1 },
+    },
+  })
+  await page.waitForTimeout(100)
+  await u.sendCustomCmd({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_get_settings',
+    },
+  })
+  await page.waitForTimeout(100)
 
   const startPX = [665, 458]
   const lineEndPX = [842, 458]
