@@ -1,19 +1,18 @@
-import {
-  faArrowDown,
-  faArrowUp,
-  faCircle,
-} from '@fortawesome/free-solid-svg-icons'
+import { CustomIconName } from 'components/CustomIcon'
 import { Project } from 'wasm-lib/kcl/bindings/Project'
 
 const DESC = ':desc'
 
-export function getSortIcon(currentSort: string, newSort: string) {
+export function getSortIcon(
+  currentSort: string,
+  newSort: string
+): CustomIconName {
   if (currentSort === newSort) {
-    return faArrowUp
+    return 'arrowUp'
   } else if (currentSort === newSort + DESC) {
-    return faArrowDown
+    return 'arrowDown'
   }
-  return faCircle
+  return 'horizontalDash'
 }
 
 export function getNextSearchParams(currentSort: string, newSort: string) {
