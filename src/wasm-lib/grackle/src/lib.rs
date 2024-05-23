@@ -465,7 +465,7 @@ impl Planner {
                 }
             }
             SingleValue::PipeExpression(expr) => {
-                let mut bodies = expr.body.into_iter();
+                let mut bodies = (*expr).all_children();
 
                 // Get the first expression (i.e. body) of the pipeline.
                 let first = bodies.next().expect("Pipe expression must have > 1 item");

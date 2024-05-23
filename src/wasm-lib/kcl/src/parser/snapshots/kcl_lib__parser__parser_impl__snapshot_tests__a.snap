@@ -25,48 +25,48 @@ expression: actual
           "init": {
             "type": "PipeExpression",
             "type": "PipeExpression",
-            "start": 18,
+            "start": 47,
             "end": 143,
-            "body": [
-              {
-                "type": "CallExpression",
-                "type": "CallExpression",
+            "head": {
+              "type": "CallExpression",
+              "type": "CallExpression",
+              "start": 18,
+              "end": 39,
+              "callee": {
+                "type": "Identifier",
                 "start": 18,
-                "end": 39,
-                "callee": {
-                  "type": "Identifier",
-                  "start": 18,
-                  "end": 31,
-                  "name": "startSketchAt"
-                },
-                "arguments": [
-                  {
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression",
-                    "start": 32,
-                    "end": 38,
-                    "elements": [
-                      {
-                        "type": "Literal",
-                        "type": "Literal",
-                        "start": 33,
-                        "end": 34,
-                        "value": 0,
-                        "raw": "0"
-                      },
-                      {
-                        "type": "Literal",
-                        "type": "Literal",
-                        "start": 36,
-                        "end": 37,
-                        "value": 0,
-                        "raw": "0"
-                      }
-                    ]
-                  }
-                ],
-                "optional": false
+                "end": 31,
+                "name": "startSketchAt"
               },
+              "arguments": [
+                {
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression",
+                  "start": 32,
+                  "end": 38,
+                  "elements": [
+                    {
+                      "type": "Literal",
+                      "type": "Literal",
+                      "start": 33,
+                      "end": 34,
+                      "value": 0,
+                      "raw": "0"
+                    },
+                    {
+                      "type": "Literal",
+                      "type": "Literal",
+                      "start": 36,
+                      "end": 37,
+                      "value": 0,
+                      "raw": "0"
+                    }
+                  ]
+                }
+              ],
+              "optional": false
+            },
+            "tail": [
               {
                 "type": "CallExpression",
                 "type": "CallExpression",
