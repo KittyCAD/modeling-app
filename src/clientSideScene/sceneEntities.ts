@@ -69,6 +69,7 @@ import {
   tangentialArcToSegment,
 } from './segments'
 import {
+  addCallExpressionsToPipe,
   addCloseToPipe,
   addNewSketchLn,
   changeSketchArguments,
@@ -536,8 +537,32 @@ export class SceneEntities {
 
         let modifiedAst
         if (profileStart) {
-          modifiedAst = addCloseToPipe({
+          const lastSegment = sketchGroup.value.slice(-1)[0]
+          modifiedAst = addCallExpressionsToPipe({
             node: kclManager.ast,
+            programMemory: kclManager.programMemory,
+            pathToNode: sketchPathToNode,
+            expressions: [
+              createCallExpressionStdLib(
+                lastSegment.type === 'TangentialArcTo'
+                  ? 'tangentialArcTo'
+                  : 'lineTo',
+                [
+                  createArrayExpression([
+                    createCallExpressionStdLib('profileStartX', [
+                      createPipeSubstitution(),
+                    ]),
+                    createCallExpressionStdLib('profileStartY', [
+                      createPipeSubstitution(),
+                    ]),
+                  ]),
+                  createPipeSubstitution(),
+                ]
+              ),
+            ],
+          })
+          modifiedAst = addCloseToPipe({
+            node: modifiedAst,
             programMemory: kclManager.programMemory,
             pathToNode: sketchPathToNode,
           })
@@ -560,13 +585,17 @@ export class SceneEntities {
         }
 
         await kclManager.executeAstMock(modifiedAst)
-        this.setUpDraftSegment(
-          sketchPathToNode,
-          forward,
-          up,
-          origin,
-          segmentName
-        )
+        if (profileStart) {
+          sceneInfra.modelingSend({ type: 'CancelSketch' })
+        } else {
+          this.setUpDraftSegment(
+            sketchPathToNode,
+            forward,
+            up,
+            origin,
+            segmentName
+          )
+        }
       },
       onMove: (args) => {
         this.onDragSegment({
@@ -1396,7 +1425,7 @@ export class SceneEntities {
           zAxis = posNorm ? [1, 0, 0] : [-1, 0, 0]
           yAxis = [0, 0, 1]
         } else if (type === XZ_PLANE) {
-          planeString = posNorm ? 'XZ' : '-XZ'
+          planeString = posNorm ? '-XZ' : 'XZ'
           zAxis = posNorm ? [0, 1, 0] : [0, -1, 0]
           yAxis = [0, 0, 1]
         }

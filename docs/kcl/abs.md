@@ -21,7 +21,7 @@ abs(num: number) -> number
 ```js
 const myAngle = -120
 
-const sketch001 = startSketchOn('-XZ')
+const sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([8, 0], %)
   |> angledLine({ angle: abs(myAngle), length: 5 }, %)

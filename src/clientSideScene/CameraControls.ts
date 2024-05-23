@@ -20,6 +20,7 @@ import {
   EngineCommand,
   Subscription,
   EngineCommandManager,
+  UnreliableSubscription,
 } from 'lang/std/engineConnection'
 import { uuidv4 } from 'lib/utils'
 import { deg2Rad } from 'lib/utils2d'
@@ -232,9 +233,18 @@ export class CameraControls {
     this.update()
     this._usePerspectiveCamera()
 
-    const cb: Subscription<
-      'default_camera_zoom' | 'camera_drag_end' | 'default_camera_get_settings'
-    >['callback'] = ({ data, type }) => {
+    type CallBackParam = Parameters<
+      (
+        | Subscription<
+            | 'default_camera_zoom'
+            | 'camera_drag_end'
+            | 'default_camera_get_settings'
+          >
+        | UnreliableSubscription<'camera_drag_move'>
+      )['callback']
+    >[0]
+
+    const cb = ({ data, type }: CallBackParam) => {
       const camSettings = data.settings
       this.camera.position.set(
         camSettings.pos.x,
@@ -246,7 +256,13 @@ export class CameraControls {
         camSettings.center.y,
         camSettings.center.z
       )
-      this.camera.up.set(camSettings.up.x, camSettings.up.y, camSettings.up.z)
+      const quat = new Quaternion(
+        camSettings.orientation.x,
+        camSettings.orientation.y,
+        camSettings.orientation.z,
+        camSettings.orientation.w
+      ).invert()
+      this.camera.up.copy(new Vector3(0, 1, 0).applyQuaternion(quat))
       if (this.camera instanceof PerspectiveCamera && camSettings.ortho) {
         this.useOrthographicCamera()
       }
@@ -285,6 +301,10 @@ export class CameraControls {
       })
       this.engineCommandManager.subscribeTo({
         event: 'default_camera_get_settings',
+        callback: cb,
+      })
+      this.engineCommandManager.subscribeToUnreliable({
+        event: 'camera_drag_move',
         callback: cb,
       })
     })

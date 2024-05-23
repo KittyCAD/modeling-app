@@ -15,7 +15,7 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup, tag?: String) -> Sketch
 ### Examples
 
 ```js
-const exampleSketch = startSketchOn('-XZ')
+const exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
   |> bezierCurve({

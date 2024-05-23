@@ -15,7 +15,7 @@ patternCircular3d(data: CircularPattern3dData, extrude_group: ExtrudeGroup) -> [
 ### Examples
 
 ```js
-const exampleSketch = startSketchOn('-XZ')
+const exampleSketch = startSketchOn('XZ')
   |> circle([0, 0], 1, %)
 
 const example = extrude(-5, exampleSketch)

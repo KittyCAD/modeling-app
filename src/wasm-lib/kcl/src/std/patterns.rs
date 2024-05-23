@@ -90,7 +90,7 @@ pub async fn pattern_linear_2d(args: Args) -> Result<MemoryItem, KclError> {
 /// A linear pattern on a 2D sketch.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> circle([0, 0], 1, %)
 ///   |> patternLinear2d({
 ///        axis: [1, 0],
@@ -159,7 +159,7 @@ pub async fn pattern_linear_3d(args: Args) -> Result<MemoryItem, KclError> {
 /// A linear pattern on a 3D model.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([0, 2], %)
 ///   |> line([3, 1], %)
@@ -204,19 +204,6 @@ async fn inner_pattern_linear_3d(
 
 async fn pattern_linear(data: LinearPattern, geometry: Geometry, args: Args) -> Result<Geometries, KclError> {
     let id = uuid::Uuid::new_v4();
-    println!(
-        "id: {:#?}",
-        ModelingCmd::EntityLinearPattern {
-            axis: kittycad::types::Point3D {
-                x: data.axis()[0],
-                y: data.axis()[1],
-                z: data.axis()[2],
-            },
-            entity_id: geometry.id(),
-            num_repetitions: data.repetitions(),
-            spacing: data.distance(),
-        }
-    );
 
     let resp = args
         .send_modeling_cmd(
@@ -357,7 +344,7 @@ pub async fn pattern_circular_2d(args: Args) -> Result<MemoryItem, KclError> {
 /// A circular pattern on a 2D sketch.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([.5, 25], %)
 ///   |> line([0, 5], %)
 ///   |> line([-1, 0], %)
@@ -412,7 +399,7 @@ pub async fn pattern_circular_3d(args: Args) -> Result<MemoryItem, KclError> {
 /// A circular pattern on a 3D model.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> circle([0, 0], 1, %)
 ///
 /// const example = extrude(-5, exampleSketch)

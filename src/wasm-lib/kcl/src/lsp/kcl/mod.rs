@@ -498,14 +498,13 @@ impl Backend {
         for (entry, value) in self.code_map.inner().await.iter() {
             let file_name = entry.replace("file://", "").to_string();
 
-            let options = zip::write::FileOptions::default().compression_method(zip::CompressionMethod::Stored);
+            let options = zip::write::SimpleFileOptions::default().compression_method(zip::CompressionMethod::Stored);
             zip.start_file(file_name, options)?;
             zip.write_all(value)?;
         }
         // Apply the changes you've made.
         // Dropping the `ZipWriter` will have the same effect, but may silently fail
         zip.finish()?;
-        drop(zip);
 
         Ok(buf)
     }
