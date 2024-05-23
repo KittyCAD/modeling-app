@@ -23,6 +23,18 @@ impl From<ParseError<Located<&str>, winnow::error::ContextError>> for KclError {
     fn from(err: ParseError<Located<&str>, winnow::error::ContextError>) -> Self {
         let (input, offset): (Vec<char>, usize) = (err.input().chars().collect(), err.offset());
 
+        if offset == input.len() {
+            // From the winnow docs:
+            //
+            // This is an offset, not an index, and may point to
+            // the end of input (input.len()) on eof errors.
+
+            return KclError::Lexical(KclErrorDetails {
+                source_ranges: vec![SourceRange([offset, offset])],
+                message: "unexpected EOF while parsing".to_string(),
+            });
+        }
+
         // TODO: Add the Winnow tokenizer context to the error.
         // See https://github.com/KittyCAD/modeling-app/issues/784
         let bad_token = &input[offset];
