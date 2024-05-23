@@ -16,7 +16,9 @@ pub use crate::ast::types::{literal_value::LiteralValue, none::KclNone};
 use crate::{
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
-    executor::{BodyType, ExecutorContext, MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange, UserVal},
+    executor::{
+        BodyType, ExecutorContext, MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange, StatementKind, UserVal,
+    },
     parser::PIPE_OPERATOR,
     std::{kcl_stdlib::KclStdLibFn, FunctionKind},
 };
@@ -1099,7 +1101,9 @@ impl CallExpression {
             let metadata = Metadata {
                 source_range: SourceRange([arg.start(), arg.end()]),
             };
-            let result = ctx.arg_into_mem_item(arg, memory, pipe_info, &metadata, None).await?;
+            let result = ctx
+                .arg_into_mem_item(arg, memory, pipe_info, &metadata, StatementKind::Expression)
+                .await?;
             // let result: MemoryItem = match arg {
             //     Value::None(none) => none.into(),
             //     Value::Literal(literal) => literal.into(),
@@ -2802,7 +2806,7 @@ async fn execute_pipe_body(
         _ => {
             // Return an error this should not happen.
             return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("This cannot be the start of a PipeExpression: {:?}", first),
+                message: format!("cannot start a PipeExpression with this value: {:?}", first),
                 source_ranges: vec![first.into()],
             }));
         }

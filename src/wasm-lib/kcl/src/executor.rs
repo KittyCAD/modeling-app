@@ -1138,7 +1138,9 @@ impl ExecutorContext {
                             let metadata = Metadata {
                                 source_range: SourceRange([arg.start(), arg.end()]),
                             };
-                            let mem_item = self.arg_into_mem_item(arg, memory, &pipe_info, &metadata, None).await?;
+                            let mem_item = self
+                                .arg_into_mem_item(arg, memory, &pipe_info, &metadata, StatementKind::Expression)
+                                .await?;
                             args.push(mem_item);
                         }
                         match self.stdlib.get_either(&call_expr.callee.name) {
@@ -1176,7 +1178,13 @@ impl ExecutorContext {
                         let metadata = Metadata { source_range };
 
                         let memory_item = self
-                            .arg_into_mem_item(&declaration.init, memory, &pipe_info, &metadata, Some(&var_name))
+                            .arg_into_mem_item(
+                                &declaration.init,
+                                memory,
+                                &pipe_info,
+                                &metadata,
+                                StatementKind::Declaration { name: &var_name },
+                            )
                             .await?;
                         memory.add(&var_name, memory_item, source_range)?;
                     }
@@ -1234,13 +1242,13 @@ impl ExecutorContext {
         Ok(memory.clone())
     }
 
-    pub async fn arg_into_mem_item(
+    pub async fn arg_into_mem_item<'a>(
         &self,
         init: &Value,
         memory: &mut ProgramMemory,
         pipe_info: &PipeInfo,
         metadata: &Metadata,
-        var_name: Option<&str>,
+        statement_kind: StatementKind<'a>,
     ) -> Result<MemoryItem, KclError> {
         let item = match init {
             Value::None(none) => none.into(),
@@ -1276,18 +1284,27 @@ impl ExecutorContext {
             }
             Value::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, self).await?,
             Value::PipeExpression(pipe_expression) => pipe_expression.get_result(memory, pipe_info, self).await?,
-            Value::PipeSubstitution(pipe_substitution) => {
-                let message = match var_name {
-                    Some(name) => {
-                        format!("you cannot declare variable {name} as %, because % can only be used in function calls",)
+            Value::PipeSubstitution(pipe_substitution) => match statement_kind {
+                StatementKind::Declaration { name } => {
+                    let message = format!(
+                        "you cannot declare variable {name} as %, because % can only be used in function calls"
+                    );
+
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        message,
+                        source_ranges: vec![pipe_substitution.into()],
+                    }));
+                }
+                StatementKind::Expression => match pipe_info.previous_results.clone() {
+                    Some(x) => x,
+                    None => {
+                        return Err(KclError::Semantic(KclErrorDetails {
+                            message: "cannot use % outside a pipe expression".to_owned(),
+                            source_ranges: vec![pipe_substitution.into()],
+                        }));
                     }
-                    None => "you cannot use % here".to_owned(),
-                };
-                return Err(KclError::Semantic(KclErrorDetails {
-                    message,
-                    source_ranges: vec![pipe_substitution.into()],
-                }));
-            }
+                },
+            },
             Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, self).await?,
             Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, self).await?,
             Value::MemberExpression(member_expression) => member_expression.get_result(memory)?,
@@ -1355,6 +1372,11 @@ fn assign_args_to_params(
         }
     }
     Ok(fn_memory)
+}
+
+pub enum StatementKind<'a> {
+    Declaration { name: &'a str },
+    Expression,
 }
 
 #[cfg(test)]
