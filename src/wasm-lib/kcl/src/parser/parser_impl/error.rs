@@ -23,7 +23,7 @@ impl From<ParseError<Located<&str>, winnow::error::ContextError>> for KclError {
     fn from(err: ParseError<Located<&str>, winnow::error::ContextError>) -> Self {
         let (input, offset): (Vec<char>, usize) = (err.input().chars().collect(), err.offset());
 
-        if offset == input.len() {
+        if offset >= input.len() {
             // From the winnow docs:
             //
             // This is an offset, not an index, and may point to

@@ -12,5 +12,6 @@ mod tests {
         };
     }
 
-    parse_and_lex!(crash_1, "{\"ގގ\0\0\0\"\".");
+    parse_and_lex!(crash_eof_1, "{\"ގގ\0\0\0\"\".");
+    parse_and_lex!(crash_eof_2, "(/=e\"\u{616}ݝ\"\"");
 }
