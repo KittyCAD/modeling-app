@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 import { makeTemplate, getUtils } from './test-utils'
 import waitOn from 'wait-on'
-import { roundOff } from 'lib/utils'
+import { roundOff, uuidv4 } from 'lib/utils'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { secrets } from './secrets'
 import {
@@ -14,6 +14,7 @@ import {
 import * as TOML from '@iarna/toml'
 import { Coords2d } from 'lang/std/sketch'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
+import { EngineCommand } from 'lang/std/engineConnection'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -626,10 +627,24 @@ const sketchOnPlaneAndBackSideTest = async (
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
 
-  const camCmdBackSide: [number, number, number] = [-100, -100, -100]
-  let camPos: [number, number, number] = [100, 100, 100]
-  if (plane === '-XY' || plane === '-YZ' || plane === 'XZ') {
-    camPos = camCmdBackSide
+  const coord =
+    plane === '-XY' || plane === '-YZ' || plane === 'XZ' ? -100 : 100
+  const camCommand: EngineCommand = {
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_look_at',
+      center: { x: 0, y: 0, z: 0 },
+      vantage: { x: coord, y: coord, z: coord },
+      up: { x: 0, y: 0, z: 1 },
+    },
+  }
+  const updateCamCommand: EngineCommand = {
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_get_settings',
+    },
   }
 
   const code = `const part001 = startSketchOn('${plane}')
@@ -639,7 +654,10 @@ const sketchOnPlaneAndBackSideTest = async (
 
   await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await u.updateCamPosition(camPos)
+
+  await u.sendCustomCmd(camCommand)
+  await page.waitForTimeout(100)
+  await u.sendCustomCmd(updateCamCommand)
 
   await u.closeDebugPanel()
   await page.mouse.click(clickCoords.x, clickCoords.y)
