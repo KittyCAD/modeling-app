@@ -2712,9 +2712,7 @@ test.describe('Testing segment overlays', () => {
         steps: 8,
       })
     })
-    test('for segments [yLineTo, xLine]', async ({
-      page,
-    }) => {
+    test('for segments [yLineTo, xLine]', async ({ page }) => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
