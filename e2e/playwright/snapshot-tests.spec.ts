@@ -20,6 +20,7 @@ test.beforeEach(async ({ page }) => {
       localStorage.setItem('TOKEN_PERSIST_KEY', token)
       localStorage.setItem('persistCode', ``)
       localStorage.setItem(settingsKey, settings)
+      localStorage.setItem('playwright', 'true')
     },
     {
       token: secrets.token,
@@ -768,6 +769,79 @@ const part002 = startSketchOn(part001, 'seg01')
   previousCodeContent = await page.locator('.cm-content').innerText()
 
   await page.waitForTimeout(300)
+
+  await expect(page).toHaveScreenshot({
+    maxDiffPixels: 100,
+  })
+})
+
+test('Zoom to fit on load - solid 2d', async ({ page, context }) => {
+  const u = await getUtils(page)
+  await context.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+`
+    )
+  }, KCL_DEFAULT_LENGTH)
+
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+
+  await u.openDebugPanel()
+  // wait for execution done
+  await expect(
+    page.locator('[data-message-type="execution-done"]')
+  ).toHaveCount(2)
+  await u.closeDebugPanel()
+
+  // Wait for the second extrusion to appear
+  // TODO: Find a way to truly know that the objects have finished
+  // rendering, because an execution-done message is not sufficient.
+  await page.waitForTimeout(1000)
+
+  await expect(page).toHaveScreenshot({
+    maxDiffPixels: 100,
+  })
+})
+
+test('Zoom to fit on load - solid 3d', async ({ page, context }) => {
+  const u = await getUtils(page)
+  await context.addInitScript(async () => {
+    localStorage.setItem(
+      'persistCode',
+      `const part001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)
+  |> extrude(10, %)
+`
+    )
+  }, KCL_DEFAULT_LENGTH)
+
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+
+  await u.openDebugPanel()
+  // wait for execution done
+  await expect(
+    page.locator('[data-message-type="execution-done"]')
+  ).toHaveCount(2)
+  await u.closeDebugPanel()
+
+  // Wait for the second extrusion to appear
+  // TODO: Find a way to truly know that the objects have finished
+  // rendering, because an execution-done message is not sufficient.
+  await page.waitForTimeout(1000)
 
   await expect(page).toHaveScreenshot({
     maxDiffPixels: 100,

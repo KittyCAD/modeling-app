@@ -21,15 +21,15 @@ import {
   TextureLoader,
   Texture,
 } from 'three'
-import { compareVec2Epsilon2 } from 'lang/std/sketch'
+import { Coords2d, compareVec2Epsilon2 } from 'lang/std/sketch'
 import { useModelingContext } from 'hooks/useModelingContext'
 import * as TWEEN from '@tweenjs/tween.js'
 import { Axis } from 'lib/selections'
 import { type BaseUnit } from 'lib/settings/settingsTypes'
 import { CameraControls } from './CameraControls'
 import { EngineCommandManager } from 'lang/std/engineConnection'
-import { settings } from 'lib/settings/initialSettings'
-import { MouseState } from 'machines/modelingMachine'
+import { MouseState, SegmentOverlayPayload } from 'machines/modelingMachine'
+import { getAngle, throttle } from 'lib/utils'
 import { Themes } from 'lib/theme'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
@@ -155,8 +155,88 @@ export class SceneInfra {
   }
 
   modelingSend: SendType = (() => {}) as any
+  throttledModelingSend: any = (() => {}) as any
   setSend(send: SendType) {
     this.modelingSend = send
+    this.throttledModelingSend = throttle(send, 100)
+  }
+  overlayTimeout = 0
+  callbacks: (() => SegmentOverlayPayload | null)[] = []
+  _overlayCallbacks(callbacks: (() => SegmentOverlayPayload | null)[]) {
+    const segmentOverlayPayload: SegmentOverlayPayload = {
+      type: 'set-many',
+      overlays: {},
+    }
+    callbacks.forEach((cb) => {
+      const overlay = cb()
+      if (overlay?.type === 'set-one') {
+        segmentOverlayPayload.overlays[overlay.pathToNodeString] = overlay.seg
+      }
+    })
+    this.modelingSend({
+      type: 'Set Segment Overlays',
+      data: segmentOverlayPayload,
+    })
+  }
+  overlayCallbacks(
+    callbacks: (() => SegmentOverlayPayload | null)[],
+    instant = false
+  ) {
+    if (instant) {
+      this._overlayCallbacks(callbacks)
+      return
+    }
+    this.callbacks = callbacks
+    if (this.overlayTimeout) clearTimeout(this.overlayTimeout)
+    this.overlayTimeout = setTimeout(() => {
+      this._overlayCallbacks(this.callbacks)
+    }, 100) as unknown as number
+  }
+
+  overlayThrottleMap: { [pathToNodeString: string]: number } = {}
+  updateOverlayDetails({
+    arrowGroup,
+    group,
+    isHandlesVisible,
+    from,
+    to,
+    angle,
+  }: {
+    arrowGroup: Group
+    group: Group
+    isHandlesVisible: boolean
+    from: Coords2d
+    to: Coords2d
+    angle?: number
+  }): SegmentOverlayPayload | null {
+    if (group.userData.pathToNode && arrowGroup) {
+      const vector = new Vector3(0, 0, 0)
+
+      // Get the position of the object3D in world space
+      // console.log('arrowGroup', arrowGroup)
+      arrowGroup.getWorldPosition(vector)
+
+      // Project that position to screen space
+      vector.project(this.camControls.camera)
+
+      const _angle = typeof angle === 'number' ? angle : getAngle(from, to)
+
+      const x = (vector.x * 0.5 + 0.5) * window.innerWidth
+      const y = (-vector.y * 0.5 + 0.5) * window.innerHeight
+      const pathToNodeString = JSON.stringify(group.userData.pathToNode)
+      return {
+        type: 'set-one',
+        pathToNodeString,
+        seg: {
+          windowCoords: [x, y],
+          angle: _angle,
+          group,
+          pathToNode: group.userData.pathToNode,
+          visible: isHandlesVisible,
+        },
+      }
+    }
+    return null
   }
 
   hoveredObject: null | any = null
@@ -182,15 +262,6 @@ export class SceneInfra {
     this.renderer.setClearColor(0x000000, 0) // Set clear color to black with 0 alpha (fully transparent)
     window.addEventListener('resize', this.onWindowResize)
 
-    // CAMERA
-    const camHeightDistanceRatio = 0.5
-    const baseUnit: BaseUnit = settings.modeling.defaultUnit.current
-    const baseRadius = 5.6
-    const length = baseUnitTomm(baseUnit) * baseRadius
-    const ang = Math.atan(camHeightDistanceRatio)
-    const x = Math.cos(ang) * length
-    const y = Math.sin(ang) * length
-
     this.camControls = new CameraControls(
       false,
       this.renderer.domElement,
@@ -198,7 +269,6 @@ export class SceneInfra {
     )
     this.camControls.subscribeToCamChange(() => this.onCameraChange())
     this.camControls.camera.layers.enable(SKETCH_LAYER)
-    this.camControls.camera.position.set(0, -x, y)
     if (DEBUG_SHOW_INTERSECTION_PLANE)
       this.camControls.camera.layers.enable(INTERSECTION_PLANE_LAYER)
 
