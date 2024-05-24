@@ -1229,6 +1229,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     await page.keyboard.down('Shift')
     await page.waitForTimeout(100)
     await topHorzSegmentClick()
+    await page.waitForTimeout(100)
 
     await page.keyboard.up('Shift')
     await constrainButton.click()
@@ -2473,6 +2474,7 @@ test.describe('Testing segment overlays', () => {
         const constrainedLocator = page.locator(
           `[data-constraint-type="${constraintType}"][data-is-constrained="true"]`
         )
+        await expect(constrainedLocator).toBeVisible()
         await constrainedLocator.hover()
         await expect(
           await page.getByTestId('constraint-symbol-popover').count()
@@ -2484,6 +2486,7 @@ test.describe('Testing segment overlays', () => {
         const unconstrainedLocator = page.locator(
           `[data-constraint-type="${constraintType}"][data-is-constrained="false"]`
         )
+        await expect(unconstrainedLocator).toBeVisible()
         await unconstrainedLocator.hover()
         await expect(
           await page.getByTestId('constraint-symbol-popover').count()
@@ -2539,6 +2542,7 @@ test.describe('Testing segment overlays', () => {
         const unconstrainedLocator = page.locator(
           `[data-constraint-type="${constraintType}"][data-is-constrained="false"]`
         )
+        await expect(unconstrainedLocator).toBeVisible()
         await unconstrainedLocator.hover()
         await expect(
           await page.getByTestId('constraint-symbol-popover').count()
@@ -2553,6 +2557,7 @@ test.describe('Testing segment overlays', () => {
         const constrainedLocator = page.locator(
           `[data-constraint-type="${constraintType}"][data-is-constrained="true"]`
         )
+        await expect(constrainedLocator).toBeVisible()
         await constrainedLocator.hover()
         await expect(
           await page.getByTestId('constraint-symbol-popover').count()
@@ -2560,7 +2565,7 @@ test.describe('Testing segment overlays', () => {
         await constrainedLocator.click()
         await expect(page.locator('.cm-content')).toContainText(expectFinal)
       }
-    test('for segments [line, angledLine, lineTo, xLineTo, yLineTo, xLine]', async ({
+    test('for segments [line, angledLine, lineTo, xLineTo]', async ({
       page,
     }) => {
       await page.addInitScript(async () => {
@@ -2667,22 +2672,32 @@ test.describe('Testing segment overlays', () => {
         expectFinal: 'angledLine({ angle: angle001, length: len001 }, %)',
       })
 
+      await page.mouse.move(700, 250)
+      for (let i = 0; i < 5; i++) {
+        await page.mouse.wheel(0, 100)
+        await page.waitForTimeout(25)
+      }
+      await page.waitForTimeout(200)
+
       const lineTo = await u.getBoundingBox(`[data-overlay-index="2"]`)
       console.log('lineTo1')
       await clickConstrained({
-        hoverPos: { x: lineTo.x, y: lineTo.y + 15 },
+        hoverPos: { x: lineTo.x, y: lineTo.y + 21 },
         constraintType: 'yAbsolute',
         expectBeforeUnconstrained: 'lineTo([33, 11.5 + 0], %)',
         expectAfterUnconstrained: 'lineTo([33, 11.5], %)',
         expectFinal: 'lineTo([33, yAbs001], %)',
+        steps: 8,
+        ang: 55,
       })
       console.log('lineTo2')
       await clickUnconstrained({
-        hoverPos: { x: lineTo.x, y: lineTo.y + 15 },
+        hoverPos: { x: lineTo.x, y: lineTo.y + 25 },
         constraintType: 'xAbsolute',
         expectBeforeUnconstrained: 'lineTo([33, yAbs001], %)',
         expectAfterUnconstrained: 'lineTo([xAbs001, yAbs001], %)',
         expectFinal: 'lineTo([33, yAbs001], %)',
+        steps: 8,
       })
 
       const xLineTo = await u.getBoundingBox(`[data-overlay-index="3"]`)
@@ -2694,7 +2709,57 @@ test.describe('Testing segment overlays', () => {
         expectAfterUnconstrained: 'xLineTo(4, %)',
         expectFinal: 'xLineTo(xAbs002, %)',
         ang: -45,
+        steps: 8,
       })
+    })
+    test('for segments [yLineTo, xLine]', async ({
+      page,
+    }) => {
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `const yRel001 = -14
+const xRel001 = 0.5
+const angle001 = 3
+const len001 = 32
+const yAbs001 = 11.5
+const xAbs001 = 33
+const xAbs002 = 4
+const part001 = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> line([0.5, yRel001], %)
+  |> angledLine({ angle: angle001, length: len001 }, %)
+  |> lineTo([33, yAbs001], %)
+  |> xLineTo(xAbs002, %)
+  |> yLineTo(-10.77, %, 'a')
+  |> xLine(26.04, %)
+  |> yLine(21.14 + 0, %)
+  |> angledLineOfXLength({ angle: 181 + 0, length: 23.14 }, %)
+        `
+        )
+        localStorage.setItem('playwright', 'true')
+      })
+      const u = await getUtils(page)
+      await page.setViewportSize({ width: 1200, height: 500 })
+      await page.goto('/')
+      await u.waitForAuthSkipAppStart()
+
+      await page.getByText('xLine(26.04, %)').click()
+      await page.waitForTimeout(100)
+      await page.getByRole('button', { name: 'Edit Sketch' }).click()
+      await page.waitForTimeout(500)
+
+      await expect(page.getByTestId('segment-overlay')).toHaveCount(8)
+
+      const clickUnconstrained = _clickUnconstrained(page)
+
+      await page.mouse.move(700, 250)
+      for (let i = 0; i < 7; i++) {
+        await page.mouse.wheel(0, 100)
+        await page.waitForTimeout(25)
+      }
+
+      await page.waitForTimeout(300)
 
       const yLineTo = await u.getBoundingBox(`[data-overlay-index="4"]`)
       console.log('ylineTo1')
@@ -2704,7 +2769,6 @@ test.describe('Testing segment overlays', () => {
         expectBeforeUnconstrained: "yLineTo(-10.77, %, 'a')",
         expectAfterUnconstrained: "yLineTo(yAbs002, %, 'a')",
         expectFinal: "yLineTo(-10.77, %, 'a')",
-        steps: 6,
       })
 
       const xLine = await u.getBoundingBox(`[data-overlay-index="5"]`)
@@ -2715,8 +2779,7 @@ test.describe('Testing segment overlays', () => {
         expectBeforeUnconstrained: 'xLine(26.04, %)',
         expectAfterUnconstrained: 'xLine(xRel002, %)',
         expectFinal: 'xLine(26.04, %)',
-        ang: 135,
-        steps: 7,
+        steps: 8,
       })
     })
     test('for segments [yLine, angledLineOfXLength, angledLineOfYLength]', async ({
@@ -2902,7 +2965,8 @@ test.describe('Testing segment overlays', () => {
         expectAfterUnconstrained:
           'angledLineToY({ angle: angle002, to: 9.14 + 0 }, %)',
         expectFinal: 'angledLineToY({ angle: 89, to: 9.14 + 0 }, %)',
-        steps: 7,
+        steps: 8,
+        ang: 135,
       })
       console.log('angledLineToY2')
       await clickConstrained({
