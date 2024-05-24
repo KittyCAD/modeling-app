@@ -2463,15 +2463,6 @@ dependencies = [
 
 [[package]]
 name = "itertools"
-version = "0.10.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b0fd2260e829bddf4cb6ea802289de2f86d6a7a690192fbe91b3f46e0f2c8473"
-dependencies = [
- "either",
-]
-
-[[package]]
-name = "itertools"
 version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ba291022dbbd398a455acf126c1e341954079855bc60dfdda641363bd6922569"
@@ -2568,7 +2559,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.1.57"
+version = "0.1.58"
 dependencies = [
  "anyhow",
  "approx",
@@ -2591,7 +2582,7 @@ dependencies = [
  "kittycad-execution-plan-traits",
  "lazy_static",
  "mime_guess",
- "parse-display 0.9.0",
+ "parse-display",
  "reqwest 0.11.27",
  "ropey",
  "schemars",
@@ -2627,13 +2618,13 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.3.1"
+version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2c6e12eb45fd9a28c8e99dbdef54556246b39acee14e4aa6f0fc43636caa62d9"
+checksum = "b0cbef813153197e60c0e96f59eea0b75f8418380f414b20250ee81b60e522c3"
 dependencies = [
  "anyhow",
  "async-trait",
- "base64 0.21.7",
+ "base64 0.22.1",
  "bigdecimal",
  "bytes",
  "chrono",
@@ -2642,10 +2633,10 @@ dependencies = [
  "format_serde_error",
  "futures",
  "http 0.2.12",
- "itertools 0.10.5",
+ "itertools",
  "log",
  "mime_guess",
- "parse-display 0.8.2",
+ "parse-display",
  "phonenumber",
  "rand 0.8.5",
  "reqwest 0.11.27",
@@ -3362,39 +3353,13 @@ dependencies = [
 
 [[package]]
 name = "parse-display"
-version = "0.8.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c6509d08722b53e8dafe97f2027b22ccbe3a5db83cb352931e9716b0aa44bc5c"
-dependencies = [
- "once_cell",
- "parse-display-derive 0.8.2",
- "regex",
-]
-
-[[package]]
-name = "parse-display"
 version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "06af5f9333eb47bd9ba8462d612e37a8328a5cb80b13f0af4de4c3b89f52dee5"
 dependencies = [
- "parse-display-derive 0.9.0",
+ "parse-display-derive",
  "regex",
  "regex-syntax 0.8.3",
-]
-
-[[package]]
-name = "parse-display-derive"
-version = "0.8.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "68517892c8daf78da08c0db777fcc17e07f2f63ef70041718f8a7630ad84f341"
-dependencies = [
- "once_cell",
- "proc-macro2",
- "quote",
- "regex",
- "regex-syntax 0.7.5",
- "structmeta 0.2.0",
- "syn 2.0.65",
 ]
 
 [[package]]
@@ -3407,7 +3372,7 @@ dependencies = [
  "quote",
  "regex",
  "regex-syntax 0.8.3",
- "structmeta 0.3.0",
+ "structmeta",
  "syn 2.0.65",
 ]
 
@@ -3582,14 +3547,14 @@ dependencies = [
 
 [[package]]
 name = "phonenumber"
-version = "0.3.4+8.13.34"
+version = "0.3.5+8.13.36"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8d888d375f2963bf06c5079665fbe53db69860879ff5a78524fe3c93c54fb7b8"
+checksum = "f174c8db59b620032bd52b655fc97000458850fec0db35fcd4e802b668517ec0"
 dependencies = [
  "bincode",
  "either",
  "fnv",
- "itertools 0.12.1",
+ "itertools",
  "lazy_static",
  "nom",
  "quick-xml",
@@ -4001,12 +3966,6 @@ name = "regex-syntax"
 version = "0.6.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f162c6dd7b008981e4d40210aca20b4bd0f9b60ca9271061b07f78537722f2e1"
-
-[[package]]
-name = "regex-syntax"
-version = "0.7.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dbb5fb1acd8a1a18b3dd5be62d25485eb770e05afb408a9627d14d451bae12da"
 
 [[package]]
 name = "regex-syntax"
@@ -4933,36 +4892,13 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 
 [[package]]
 name = "structmeta"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "78ad9e09554f0456d67a69c1584c9798ba733a5b50349a6c0d0948710523922d"
-dependencies = [
- "proc-macro2",
- "quote",
- "structmeta-derive 0.2.0",
- "syn 2.0.65",
-]
-
-[[package]]
-name = "structmeta"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2e1575d8d40908d70f6fd05537266b90ae71b15dbbe7a8b7dffa2b759306d329"
 dependencies = [
  "proc-macro2",
  "quote",
- "structmeta-derive 0.3.0",
- "syn 2.0.65",
-]
-
-[[package]]
-name = "structmeta-derive"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a60bcaff7397072dca0017d1db428e30d5002e00b6847703e2e42005c95fbe00"
-dependencies = [
- "proc-macro2",
- "quote",
+ "structmeta-derive",
  "syn 2.0.65",
 ]
 
