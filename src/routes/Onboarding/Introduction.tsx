@@ -57,7 +57,7 @@ function OnboardingWithNewFile() {
               next={() => {
                 // We do want to update both the state and editor here.
                 codeManager.updateCodeEditor(bracket)
-                kclManager.executeCode(true)
+                kclManager.executeCode(true, true)
                 next()
               }}
               nextText="Overwrite code and continue"
