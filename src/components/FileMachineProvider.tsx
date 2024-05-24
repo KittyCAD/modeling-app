@@ -54,7 +54,12 @@ export const FileMachineProvider = ({
               context.selectedDirectory + sep() + event.data.name
             )}`
           )
-        } else if (event.data && 'path' in event.data) {
+        } else if (
+          event.data &&
+          'path' in event.data &&
+          event.data.path.endsWith(FILE_EXT)
+        ) {
+          // Don't navigate to newly created directories
           navigate(`${paths.FILE}/${encodeURIComponent(event.data.path)}`)
         }
       },
