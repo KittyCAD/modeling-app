@@ -196,7 +196,7 @@ export async function getUtils(page: Page) {
     ) => {
       // Skip on non-Chromium browsers, since we need to use the CDP.
       test.skip(
-        browserType !== 'chromium',
+        cdpSession === null,
         'Network emulation is only supported in Chromium'
       )
 
