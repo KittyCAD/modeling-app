@@ -20,6 +20,7 @@ test.beforeEach(async ({ page }) => {
       localStorage.setItem('TOKEN_PERSIST_KEY', token)
       localStorage.setItem('persistCode', ``)
       localStorage.setItem(settingsKey, settings)
+      localStorage.setItem('playwright', 'true')
     },
     {
       token: secrets.token,

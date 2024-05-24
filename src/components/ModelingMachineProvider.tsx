@@ -18,6 +18,7 @@ import {
   engineCommandManager,
   codeManager,
   editorManager,
+  sceneEntitiesManager,
 } from 'lib/singletons'
 import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
 import {
@@ -39,11 +40,24 @@ import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
 import useStateMachineCommands from 'hooks/useStateMachineCommands'
 import { modelingMachineConfig } from 'lib/commandBarConfigs/modelingCommandConfig'
 import {
+  STRAIGHT_SEGMENT,
+  TANGENTIAL_ARC_TO_SEGMENT,
+  getParentGroup,
   getSketchOrientationDetails,
   getSketchQuaternion,
 } from 'clientSideScene/sceneEntities'
-import { sketchOnExtrudedFace, startSketchOnDefault } from 'lang/modifyAst'
-import { Program, VariableDeclaration, coreDump } from 'lang/wasm'
+import {
+  moveValueIntoNewVariablePath,
+  sketchOnExtrudedFace,
+  startSketchOnDefault,
+} from 'lang/modifyAst'
+import {
+  Program,
+  VariableDeclaration,
+  coreDump,
+  parse,
+  recast,
+} from 'lang/wasm'
 import {
   getNodeFromPath,
   getNodePathFromSourceRange,
@@ -57,6 +71,7 @@ import { EditorSelection } from '@uiw/react-codemirror'
 import { CoreDumpManager } from 'lib/coredump'
 import { useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
+import { getVarNameModal } from 'hooks/useToolbarGuards'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
 
 type MachineContext<T extends AnyStateMachine> = {
@@ -127,7 +142,82 @@ export const ModelingMachineProvider = ({
         },
         'Set mouse state': assign({
           mouseState: (_, event) => event.data,
+          segmentHoverMap: ({ mouseState, segmentHoverMap }, event) => {
+            if (event.data.type === 'isHovering') {
+              const parent = getParentGroup(event.data.on, [
+                STRAIGHT_SEGMENT,
+                TANGENTIAL_ARC_TO_SEGMENT,
+              ])
+              const pathToNode = parent?.userData?.pathToNode
+              const pathToNodeString = JSON.stringify(pathToNode)
+              if (!parent || !pathToNode) return {}
+              if (segmentHoverMap[pathToNodeString] !== undefined)
+                clearTimeout(segmentHoverMap[JSON.stringify(pathToNode)])
+              return {
+                ...segmentHoverMap,
+                [pathToNodeString]: 0,
+              }
+            } else if (
+              event.data.type === 'idle' &&
+              mouseState.type === 'isHovering'
+            ) {
+              const mouseOnParent = getParentGroup(mouseState.on, [
+                STRAIGHT_SEGMENT,
+                TANGENTIAL_ARC_TO_SEGMENT,
+              ])
+              if (!mouseOnParent || !mouseOnParent?.userData?.pathToNode)
+                return segmentHoverMap
+              const pathToNodeString = JSON.stringify(
+                mouseOnParent?.userData?.pathToNode
+              )
+              const timeoutId = setTimeout(() => {
+                sceneInfra.modelingSend({
+                  type: 'Set mouse state',
+                  data: {
+                    type: 'timeoutEnd',
+                    pathToNodeString,
+                  },
+                })
+              }, 800) as unknown as number
+              return {
+                ...segmentHoverMap,
+                [pathToNodeString]: timeoutId,
+              }
+            } else if (event.data.type === 'timeoutEnd') {
+              const copy = { ...segmentHoverMap }
+              delete copy[event.data.pathToNodeString]
+              return copy
+            }
+            return {}
+          },
         }),
+        'Set Segment Overlays': assign({
+          segmentOverlays: ({ segmentOverlays }, { data }) => {
+            if (data.type === 'set-many') return data.overlays
+            if (data.type === 'set-one')
+              return {
+                ...segmentOverlays,
+                [data.pathToNodeString]: data.seg,
+              }
+            if (data.type === 'delete-one') {
+              const copy = { ...segmentOverlays }
+              delete copy[data.pathToNodeString]
+              return copy
+            }
+            // data.type === 'clear'
+            return {}
+          },
+        }),
+        'Set sketchDetails': assign(({ sketchDetails }, event) =>
+          sketchDetails
+            ? {
+                sketchDetails: {
+                  ...sketchDetails,
+                  sketchPathToNode: event.data,
+                },
+              }
+            : {}
+        ),
         'Set selection': assign(({ selectionRanges }, event) => {
           if (event.type !== 'Set selection') return {} // this was needed for ts after adding 'Set selection' action to on done modal events
           const setSelections = event.data
@@ -516,6 +606,27 @@ export const ModelingMachineProvider = ({
               pathToNodeMap
             ),
           }
+        },
+        'Get convert to variable info': async ({ sketchDetails }, { data }) => {
+          if (!sketchDetails) return []
+          const { variableName } = await getVarNameModal({
+            valueName: data.variableName || 'var',
+          })
+          const { modifiedAst: _modifiedAst, pathToReplacedNode } =
+            moveValueIntoNewVariablePath(
+              parse(recast(kclManager.ast)),
+              kclManager.programMemory,
+              data.pathToNode,
+              variableName
+            )
+          await sceneEntitiesManager.updateAstAndRejigSketch(
+            pathToReplacedNode || [],
+            parse(recast(_modifiedAst)),
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin
+          )
+          return pathToReplacedNode || sketchDetails.sketchPathToNode
         },
       },
       devTools: true,

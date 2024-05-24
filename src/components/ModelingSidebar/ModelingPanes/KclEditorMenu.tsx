@@ -48,7 +48,7 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
           {convertToVarEnabled && (
             <Menu.Item>
               <button
-                onClick={handleConvertToVarClick}
+                onClick={() => handleConvertToVarClick()}
                 className={styles.button}
               >
                 <span>Convert to Variable</span>

@@ -130,6 +130,11 @@ export async function getUtils(page: Page) {
     },
     waitForCmdReceive: (commandType: string) =>
       waitForCmdReceive(page, commandType),
+    getBoundingBox: async (locator: string) =>
+      page
+        .locator(locator)
+        .boundingBox()
+        .then((box) => ({ x: box?.x || 0, y: box?.y || 0 })),
     doAndWaitForCmd: async (
       fn: () => Promise<void>,
       commandType: string,
