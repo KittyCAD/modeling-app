@@ -273,6 +273,7 @@ export class CoreDumpManager {
     })
 
     console.log('final clientState', clientState)
+    console.log('JSON', JSON.stringify(clientState))
 
     try {
       return Promise.resolve(JSON.stringify(clientState))
