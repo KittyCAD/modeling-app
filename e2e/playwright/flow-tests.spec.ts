@@ -3331,6 +3331,68 @@ ${extraLine ? "const myVar = segLen('seg01', part001)" : ''}`
     }
   })
 })
+test('First escape in tool pops you out of tool, second exits sketch mode', async ({
+  page,
+}) => {
+  // Wait for the app to be ready for use
+  const u = await getUtils(page)
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
+
+  const lineButton = page.getByRole('button', { name: 'Line' })
+  const arcButton = page.getByRole('button', { name: 'Tangential Arc' })
+
+  // Test these hotkeys perform actions when
+  // focus is on the canvas
+  await page.mouse.move(600, 250)
+  await page.mouse.click(600, 250)
+
+  // Start a sketch
+  await page.keyboard.press('s')
+  await page.mouse.move(800, 300)
+  await page.mouse.click(800, 300)
+  await page.waitForTimeout(1000)
+  await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
+
+  // Draw a line
+  await page.mouse.move(700, 200, { steps: 5 })
+  await page.mouse.click(700, 200)
+  await page.mouse.move(800, 250, { steps: 5 })
+  await page.mouse.click(800, 250)
+  // Unequip line tool
+  await page.keyboard.press('Escape')
+  // Make sure we didn't pop out of sketch mode.
+  await expect(page.getByRole('button', { name: 'Exit Sketch' })).toBeVisible()
+  await expect(lineButton).not.toHaveAttribute('aria-pressed', 'true')
+  // Equip arc tool
+  await page.keyboard.press('a')
+  await expect(arcButton).toHaveAttribute('aria-pressed', 'true')
+  await page.mouse.move(1000, 100, { steps: 5 })
+  await page.mouse.click(1000, 100)
+  await page.keyboard.press('Escape')
+  await page.keyboard.press('l')
+  await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
+
+  // Do not close the sketch.
+  // On close it will exit sketch mode.
+
+  // Unequip line tool
+  await page.keyboard.press('Escape')
+  await expect(lineButton).toHaveAttribute('aria-pressed', 'false')
+  await expect(arcButton).toHaveAttribute('aria-pressed', 'false')
+  // Make sure we didn't pop out of sketch mode.
+  await expect(page.getByRole('button', { name: 'Exit Sketch' })).toBeVisible()
+  // Exit sketch
+  await page.keyboard.press('Escape')
+  await expect(
+    page.getByRole('button', { name: 'Exit Sketch' })
+  ).not.toBeVisible()
+})
+
 test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   // This test can run long if it takes a little too long to load
   // the engine.
@@ -3414,10 +3476,13 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
   // Close profile
   await page.mouse.move(700, 200, { steps: 5 })
   await page.mouse.click(700, 200)
-  // Unequip line tool
-  await page.keyboard.press('Escape')
+  // On  close it will unequip the line tool.
+  await expect(lineButton).toHaveAttribute('aria-pressed', 'false')
   // Exit sketch
   await page.keyboard.press('Escape')
+  await expect(
+    page.getByRole('button', { name: 'Exit Sketch' })
+  ).not.toBeVisible()
 
   // Extrude
   await page.mouse.click(750, 150)
