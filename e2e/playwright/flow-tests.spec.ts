@@ -3535,6 +3535,10 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
    * TODO: There is a bug somewhere that causes this test to fail
    * if you toggle the codePane closed before your trigger the
    * start of the sketch.
+   * and a separate Safari-only bug that causes the test to fail
+   * if the pane is open the entire test. The maintainer of CodeMirror
+   * has pinpointed this to the unusual browser behavior:
+   * https://discuss.codemirror.net/t/how-to-force-unfocus-of-the-codemirror-element-in-safari/8095/3
    */
   await codePaneButton.click()
 
