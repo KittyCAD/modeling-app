@@ -1,7 +1,6 @@
 import { APP_VERSION } from 'routes/Settings'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
-import Gizmo from 'components/Gizmo'
 import { paths } from 'lib/paths'
 import { NetworkHealthIndicator } from 'components/NetworkHealthIndicator'
 import { HelpMenu } from './HelpMenu'
@@ -17,7 +16,6 @@ export function LowerRightControls(props: React.PropsWithChildren) {
   return (
     <section className="fixed bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
       {props.children}
-      <Gizmo />
       <menu className="flex items-center justify-end gap-3 pointer-events-auto">
         <a
           href={`https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`}
