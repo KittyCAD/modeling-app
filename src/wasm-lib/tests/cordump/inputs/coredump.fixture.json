@@ -297,7 +297,7 @@
             }
           }
         }
-      }, 
+      },
       "engine_connection": {
         "state": {
           "type": "connection-established"
