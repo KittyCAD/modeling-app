@@ -2704,7 +2704,6 @@ test.describe('Testing segment overlays', () => {
         expectBeforeUnconstrained: "yLineTo(-10.77, %, 'a')",
         expectAfterUnconstrained: "yLineTo(yAbs002, %, 'a')",
         expectFinal: "yLineTo(-10.77, %, 'a')",
-        ang: 110,
         steps: 6,
       })
 
