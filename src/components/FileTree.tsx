@@ -16,6 +16,7 @@ import { codeManager, kclManager } from 'lib/singletons'
 import { useDocumentHasFocus } from 'hooks/useDocumentHasFocus'
 import { useLspContext } from './LspProvider'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
+import { useModelingContext } from 'hooks/useModelingContext'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -394,12 +395,13 @@ export const FileTreeInner = ({
   onNavigateToFile?: () => void
 }) => {
   const loaderData = useRouteLoaderData(paths.FILE) as IndexLoaderData
-  const { send, context } = useFileContext()
+  const { send: fileSend, context: fileContext } = useFileContext()
+  const { send: modelingSend } = useModelingContext()
   const documentHasFocus = useDocumentHasFocus()
 
   // Refresh the file tree when the document gets focus
   useEffect(() => {
-    send({ type: 'Refresh' })
+    fileSend({ type: 'Refresh' })
   }, [documentHasFocus])
 
   return (
@@ -407,15 +409,22 @@ export const FileTreeInner = ({
       <ul
         className="m-0 p-0 text-sm"
         onClickCapture={(e) => {
-          send({ type: 'Set selected directory', data: context.project })
+          fileSend({
+            type: 'Set selected directory',
+            data: fileContext.project,
+          })
         }}
       >
-        {sortProject(context.project.children || []).map((fileOrDir) => (
+        {sortProject(fileContext.project.children || []).map((fileOrDir) => (
           <FileTreeItem
-            project={context.project}
+            project={fileContext.project}
             currentFile={loaderData?.file}
             fileOrDir={fileOrDir}
-            onNavigateToFile={onNavigateToFile}
+            onNavigateToFile={() => {
+              // Reset modeling state when navigating to a new file
+              modelingSend({ type: 'Cancel' })
+              onNavigateToFile?.()
+            }}
             key={fileOrDir.path}
           />
         ))}
