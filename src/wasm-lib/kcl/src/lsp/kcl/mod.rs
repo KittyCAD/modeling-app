@@ -36,9 +36,9 @@ use tower_lsp::{
 use super::backend::{InnerHandle, UpdateHandle};
 use crate::{
     ast::types::VariableKind,
-    errors::KclError,
     executor::SourceRange,
-    lsp::{backend::Backend as _, safemap::SafeMap},
+    lint::{checks, lint},
+    lsp::{backend::Backend as _, safemap::SafeMap, util::IntoDiagnostic},
     parser::PIPE_OPERATOR,
 };
 
@@ -166,6 +166,8 @@ impl crate::lsp::backend::Backend for Backend {
     }
 
     async fn inner_on_change(&self, params: TextDocumentItem, force: bool) {
+        self.clear_diagnostics(&params.uri).await;
+
         // We already updated the code map in the shared backend.
 
         // Lets update the tokens.
@@ -217,6 +219,10 @@ impl crate::lsp::backend::Backend for Backend {
             }
         };
 
+        for discovered_finding in lint(&ast, checks::lint_variables).into_iter().flatten() {
+            self.add_to_diagnostics(&params, discovered_finding).await;
+        }
+
         // Check if the ast changed.
         let ast_changed = match self.ast_map.get(&params.uri.to_string()).await {
             Some(old_ast) => {
@@ -256,9 +262,6 @@ impl crate::lsp::backend::Backend for Backend {
             // We return early because we got errors, and we don't want to clear the diagnostics.
             return;
         }
-
-        // Lets update the diagnostics, since we got no errors.
-        self.clear_diagnostics(&params.uri).await;
     }
 }
 
@@ -356,8 +359,8 @@ impl Backend {
             .await;
     }
 
-    async fn add_to_diagnostics(&self, params: &TextDocumentItem, err: KclError) {
-        let diagnostic = err.to_lsp_diagnostic(&params.text);
+    async fn add_to_diagnostics<DiagT: IntoDiagnostic>(&self, params: &TextDocumentItem, diagnostic: DiagT) {
+        let diagnostic = diagnostic.to_lsp_diagnostic(&params.text);
         // We got errors, update the diagnostics.
         self.diagnostics_map
             .insert(

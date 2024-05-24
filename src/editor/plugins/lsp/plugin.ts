@@ -382,9 +382,9 @@ export class LanguageServerPlugin implements PluginValue {
     try {
       switch (notification.method) {
         case 'textDocument/publishDiagnostics':
-          //const params = notification.params as PublishDiagnosticsParams
+          const params = notification.params as PublishDiagnosticsParams
           // this is sometimes slower than our actual typing.
-          //this.processDiagnostics(params)
+          this.processDiagnostics(params)
           break
         case 'window/logMessage':
           console.log(
