@@ -21,14 +21,15 @@ import {
   TextureLoader,
   Texture,
 } from 'three'
-import { compareVec2Epsilon2 } from 'lang/std/sketch'
+import { Coords2d, compareVec2Epsilon2 } from 'lang/std/sketch'
 import { useModelingContext } from 'hooks/useModelingContext'
 import * as TWEEN from '@tweenjs/tween.js'
 import { Axis } from 'lib/selections'
 import { type BaseUnit } from 'lib/settings/settingsTypes'
 import { CameraControls } from './CameraControls'
 import { EngineCommandManager } from 'lang/std/engineConnection'
-import { MouseState } from 'machines/modelingMachine'
+import { MouseState, SegmentOverlayPayload } from 'machines/modelingMachine'
+import { getAngle, throttle } from 'lib/utils'
 import { Themes } from 'lib/theme'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
@@ -154,8 +155,88 @@ export class SceneInfra {
   }
 
   modelingSend: SendType = (() => {}) as any
+  throttledModelingSend: any = (() => {}) as any
   setSend(send: SendType) {
     this.modelingSend = send
+    this.throttledModelingSend = throttle(send, 100)
+  }
+  overlayTimeout = 0
+  callbacks: (() => SegmentOverlayPayload | null)[] = []
+  _overlayCallbacks(callbacks: (() => SegmentOverlayPayload | null)[]) {
+    const segmentOverlayPayload: SegmentOverlayPayload = {
+      type: 'set-many',
+      overlays: {},
+    }
+    callbacks.forEach((cb) => {
+      const overlay = cb()
+      if (overlay?.type === 'set-one') {
+        segmentOverlayPayload.overlays[overlay.pathToNodeString] = overlay.seg
+      }
+    })
+    this.modelingSend({
+      type: 'Set Segment Overlays',
+      data: segmentOverlayPayload,
+    })
+  }
+  overlayCallbacks(
+    callbacks: (() => SegmentOverlayPayload | null)[],
+    instant = false
+  ) {
+    if (instant) {
+      this._overlayCallbacks(callbacks)
+      return
+    }
+    this.callbacks = callbacks
+    if (this.overlayTimeout) clearTimeout(this.overlayTimeout)
+    this.overlayTimeout = setTimeout(() => {
+      this._overlayCallbacks(this.callbacks)
+    }, 100) as unknown as number
+  }
+
+  overlayThrottleMap: { [pathToNodeString: string]: number } = {}
+  updateOverlayDetails({
+    arrowGroup,
+    group,
+    isHandlesVisible,
+    from,
+    to,
+    angle,
+  }: {
+    arrowGroup: Group
+    group: Group
+    isHandlesVisible: boolean
+    from: Coords2d
+    to: Coords2d
+    angle?: number
+  }): SegmentOverlayPayload | null {
+    if (group.userData.pathToNode && arrowGroup) {
+      const vector = new Vector3(0, 0, 0)
+
+      // Get the position of the object3D in world space
+      // console.log('arrowGroup', arrowGroup)
+      arrowGroup.getWorldPosition(vector)
+
+      // Project that position to screen space
+      vector.project(this.camControls.camera)
+
+      const _angle = typeof angle === 'number' ? angle : getAngle(from, to)
+
+      const x = (vector.x * 0.5 + 0.5) * window.innerWidth
+      const y = (-vector.y * 0.5 + 0.5) * window.innerHeight
+      const pathToNodeString = JSON.stringify(group.userData.pathToNode)
+      return {
+        type: 'set-one',
+        pathToNodeString,
+        seg: {
+          windowCoords: [x, y],
+          angle: _angle,
+          group,
+          pathToNode: group.userData.pathToNode,
+          visible: isHandlesVisible,
+        },
+      }
+    }
+    return null
   }
 
   hoveredObject: null | any = null

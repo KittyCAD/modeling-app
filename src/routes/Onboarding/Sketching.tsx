@@ -14,7 +14,7 @@ export default function Sketching() {
     codeManager.updateCodeEditor('')
     if (kclManager.engineCommandManager.engineConnection?.isReady()) {
       // If the engine is ready, promptly execute the loaded code
-      kclManager.executeCode(true)
+      kclManager.executeCode(true, true)
     }
   }, [])
 

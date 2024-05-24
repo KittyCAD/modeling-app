@@ -6,6 +6,7 @@ import { useResolvedTheme } from 'hooks/useResolvedTheme'
 import { ActionButton } from 'components/ActionButton'
 import toast from 'react-hot-toast'
 import Tooltip from 'components/Tooltip'
+import { useModelingContext } from 'hooks/useModelingContext'
 
 export const MemoryPaneMenu = () => {
   const { programMemory } = useKclContext()
@@ -44,6 +45,7 @@ export const MemoryPaneMenu = () => {
 export const MemoryPane = () => {
   const theme = useResolvedTheme()
   const { programMemory } = useKclContext()
+  const { state } = useModelingContext()
   const ProcessedMemory = useMemo(
     () => processMemory(programMemory),
     [programMemory]
@@ -67,6 +69,12 @@ export const MemoryPane = () => {
           />
         </div>
       </div>
+      {state.matches('Sketch') && (
+        <div
+          className="absolute inset-0 dark:bg-chalkboard-90/80 bg-chalkboard-10/80 cursor-not-allowed"
+          title="Variables won't update in sketch mode"
+        ></div>
+      )}
     </div>
   )
 }
