@@ -2772,12 +2772,13 @@ const part001 = startSketchOn('XZ')
       const xLine = await u.getBoundingBox(`[data-overlay-index="5"]`)
       console.log('xline')
       await clickUnconstrained({
-        hoverPos: { x: xLine.x - 30, y: xLine.y },
+        hoverPos: { x: xLine.x - 25, y: xLine.y },
         constraintType: 'xRelative',
         expectBeforeUnconstrained: 'xLine(26.04, %)',
         expectAfterUnconstrained: 'xLine(xRel002, %)',
         expectFinal: 'xLine(26.04, %)',
-        steps: 8,
+        steps: 10,
+        ang: 50,
       })
     })
     test('for segments [yLine, angledLineOfXLength, angledLineOfYLength]', async ({
@@ -2963,7 +2964,7 @@ const part001 = startSketchOn('XZ')
         expectAfterUnconstrained:
           'angledLineToY({ angle: angle002, to: 9.14 + 0 }, %)',
         expectFinal: 'angledLineToY({ angle: 89, to: 9.14 + 0 }, %)',
-        steps: 8,
+        steps: 9,
         ang: 135,
       })
       console.log('angledLineToY2')
@@ -3026,6 +3027,7 @@ const part001 = startSketchOn('XZ')
       intersectTag: 'a'
     }, %)`,
         ang: -25,
+        steps: 7,
       })
     })
     test('for segment [tangentialArcTo]', async ({ page }) => {
