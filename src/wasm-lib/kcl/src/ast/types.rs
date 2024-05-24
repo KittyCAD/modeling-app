@@ -2742,6 +2742,7 @@ impl PipeExpression {
     }
 }
 
+#[async_recursion::async_recursion]
 async fn execute_pipe_body(
     memory: &mut ProgramMemory,
     body: &[Value],
@@ -2760,18 +2761,12 @@ async fn execute_pipe_body(
     // They use the `pipe_info` from some AST node above this, so that if pipe expression is nested in a larger pipe expression,
     // they use the % from the parent. After all, this pipe expression hasn't been executed yet, so it doesn't have any % value
     // of its own.
-    let output = match first {
-        Value::BinaryExpression(binary_expression) => binary_expression.get_result(memory, pipe_info, ctx).await?,
-        Value::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, ctx).await?,
-        Value::Identifier(identifier) => memory.get(&identifier.name, identifier.into())?.clone(),
-        _ => {
-            // Return an error this should not happen.
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("cannot start a PipeExpression with this value: {:?}", first),
-                source_ranges: vec![first.into()],
-            }));
-        }
+    let meta = Metadata {
+        source_range: SourceRange([first.start(), first.end()]),
     };
+    let output = ctx
+        .arg_into_mem_item(first, memory, pipe_info, &meta, StatementKind::Expression)
+        .await?;
     // Now that we've evaluated the first child expression in the pipeline, following child expressions
     // should use the previous child expression for %.
     // This means there's no more need for the previous `pipe_info` from the parent AST node above this one.
