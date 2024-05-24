@@ -1,33 +1,26 @@
 import { Dialog } from '@headlessui/react'
 import { ActionButton } from 'components/ActionButton'
 
-interface DeleteProjectDialogProps {
-  projectName: string
+interface DeleteConfirmationDialogProps extends React.PropsWithChildren<{}> {
+  title: string
   onConfirm: () => void
   onDismiss: () => void
 }
 
-export function DeleteProjectDialog({
-  projectName,
+export function DeleteConfirmationDialog({
+  title,
   onConfirm,
   onDismiss,
-}: DeleteProjectDialogProps) {
+  children,
+}: DeleteConfirmationDialogProps) {
   return (
     <Dialog open={true} onClose={onDismiss} className="relative z-50">
       <div className="fixed inset-0 grid bg-chalkboard-110/80 place-content-center">
         <Dialog.Panel className="max-w-2xl p-4 border rounded bg-chalkboard-10 dark:bg-chalkboard-100 border-destroy-80">
           <Dialog.Title as="h2" className="mb-4 text-2xl font-bold">
-            Delete File
+            {title}
           </Dialog.Title>
-          <Dialog.Description>
-            This will permanently delete "{projectName || 'this file'}
-            ".
-          </Dialog.Description>
-
-          <p className="my-4">
-            Are you sure you want to delete "{projectName || 'this file'}
-            "? This action cannot be undone.
-          </p>
+          <Dialog.Description>{children}</Dialog.Description>
 
           <div className="flex justify-between">
             <ActionButton
