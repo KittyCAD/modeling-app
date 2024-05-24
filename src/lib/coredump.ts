@@ -159,13 +159,23 @@ export class CoreDumpManager {
   getClientState(): Promise<string> {
     const deepClone = (obj: any) => JSON.parse(JSON.stringify(obj))
 
-    // TODO: dshaw set to ClientState once ts-rs bindings get set
+    console.warn('Gathering client state for coredump')
+
+    // Initialize the clientState object
     let clientState: ClientState = {
       engine_command_manager: {
         artifact_map: {},
+        command_logs: [],
         engine_connection: { state: { type: '' } },
+        default_planes: {},
+        in_sequence: 0, // TODO: is this actually a good default value
+        out_sequence: 0, // TODO: is this actually a good default value
+        scene_command_artifacts: {},
       },
-      kcl_manager: { meta: [] },
+      kcl_manager: {
+        ast: {},
+        kcl_errors: [],
+      },
       scene_infra: { meta: [] },
       auth_machine: { meta: [] },
       command_bar_machine: { meta: [] },
@@ -179,34 +189,72 @@ export class CoreDumpManager {
     // Singletons
 
     // engine_command_manager
-    console.log('global engineCommandManager', this.engineCommandManager)
+    console.log('engineCommandManager', this.engineCommandManager)
 
     // artifact map - this.engineCommandManager.artifactMap
     if (this.engineCommandManager?.artifactMap) {
-      console.log('artifact map', this.engineCommandManager?.artifactMap)
+      console.log('artifact map', this.engineCommandManager.artifactMap)
       clientState.engine_command_manager.artifact_map = deepClone(
         this.engineCommandManager.artifactMap
+      )
+    }
+
+    // command logs - this.engineCommandManager.commandLogs
+    if (this.engineCommandManager?.commandLogs) {
+      console.log('command logs', this.engineCommandManager.commandLogs)
+      clientState.engine_command_manager.command_logs = deepClone(
+        this.engineCommandManager.commandLogs
+      )
+    }
+
+    // default planes - this.engineCommandManager.defaultPlanes
+    if (this.engineCommandManager?.defaultPlanes) {
+      console.log('default planes', this.engineCommandManager.defaultPlanes)
+      clientState.engine_command_manager.default_planes = deepClone(
+        this.engineCommandManager.defaultPlanes
       )
     }
 
     // engine connection state
     if (this.engineCommandManager?.engineConnection?.state) {
       clientState.engine_command_manager.engine_connection.state =
-        this.engineCommandManager?.engineConnection?.state
+        this.engineCommandManager.engineConnection.state
       console.log(
         'engine connection state',
-        this.engineCommandManager?.engineConnection?.state
+        this.engineCommandManager.engineConnection.state
       )
     }
 
-    // engine command logs
-    // console.log('engine command logs', this.engineCommandManager?.commandLogs)
-    // if (this.engineCommandManager?.commandLogs) {
-    //     clientState.engine_command_manager.command_logs =
-    //       this.engineCommandManager.commandLogs
-    // }
+    // in sequence - this.engineCommandManager.inSequence
+    if (this.engineCommandManager?.inSequence) {
+      console.log('in sequence', this.engineCommandManager.inSequence)
+      clientState.engine_command_manager.in_sequence =
+        this.engineCommandManager.inSequence
+    }
+
+    // out sequence - this.engineCommandManager.outSequence
+    if (this.engineCommandManager?.inSequence) {
+      console.log('out sequence', this.engineCommandManager.outSequence)
+      clientState.engine_command_manager.out_sequence =
+        this.engineCommandManager.inSequence
+    }
+
+    // scene command artifacts - this.engineCommandManager.sceneCommandArtifacts
+    if (this.engineCommandManager?.sceneCommandArtifacts) {
+      console.log(
+        'scene command artifacts',
+        this.engineCommandManager.sceneCommandArtifacts
+      )
+      clientState.engine_command_manager.scene_command_artifacts = deepClone(
+        this.engineCommandManager.sceneCommandArtifacts
+      )
+    }
 
     // KCL Manager
+    console.log('kclManager', this.kclManager)
+
+    // this.kclManager.ast
+    console.log('KCL Manager AST', this?.kclManager?.ast)
 
     // this.kclManager.kclErrors
     console.log('KCL Errors', this?.kclManager?.kclErrors)
