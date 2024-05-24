@@ -2,7 +2,7 @@ import type { FileEntry, IndexLoaderData } from 'lib/types'
 import { paths } from 'lib/paths'
 import { ActionButton } from './ActionButton'
 import Tooltip from './Tooltip'
-import { Dispatch, useEffect, useRef, useState } from 'react'
+import { Dispatch, useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { Dialog, Disclosure } from '@headlessui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -24,11 +24,11 @@ function getIndentationCSS(level: number) {
 
 function RenameForm({
   fileOrDir,
-  setIsRenaming,
+  onSubmit,
   level = 0,
 }: {
   fileOrDir: FileEntry
-  setIsRenaming: Dispatch<React.SetStateAction<boolean>>
+  onSubmit: () => void
   level?: number
 }) {
   const { send } = useFileContext()
@@ -36,7 +36,6 @@ function RenameForm({
 
   function handleRenameSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    setIsRenaming(false)
     send({
       type: 'Rename file',
       data: {
@@ -50,7 +49,7 @@ function RenameForm({
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Escape') {
       e.stopPropagation()
-      setIsRenaming(false)
+      onSubmit()
     }
   }
 
@@ -65,7 +64,7 @@ function RenameForm({
           placeholder={fileOrDir.name}
           className="w-full py-1 bg-transparent text-chalkboard-100 placeholder:text-chalkboard-70 dark:text-chalkboard-10 dark:placeholder:text-chalkboard-50 focus:outline-none focus:ring-0"
           onKeyDown={handleKeyDown}
-          onBlur={() => setIsRenaming(false)}
+          onBlur={onSubmit}
           style={{ paddingInlineStart: getIndentationCSS(level) }}
         />
       </label>
@@ -143,12 +142,33 @@ const FileTreeItem = ({
   onNavigateToFile?: () => void
   level?: number
 }) => {
-  const { send, context } = useFileContext()
+  const { send: fileSend, context: fileContext } = useFileContext()
   const { onFileOpen, onFileClose } = useLspContext()
   const navigate = useNavigate()
-  const [isRenaming, setIsRenaming] = useState(false)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
   const isCurrentFile = fileOrDir.path === currentFile?.path
+
+  const isRenaming = fileContext.itemsBeingRenamed.includes(fileOrDir.path)
+  const removeCurrentItemFromRenaming = useCallback(
+    () =>
+      fileSend({
+        type: 'assign',
+        data: {
+          itemsBeingRenamed: fileContext.itemsBeingRenamed.filter(
+            (path) => path !== fileOrDir.path
+          ),
+        },
+      }),
+    [fileContext.itemsBeingRenamed, fileOrDir.path, fileSend]
+  )
+  const addCurrentItemToRenaming = useCallback(() => {
+    fileSend({
+      type: 'assign',
+      data: {
+        itemsBeingRenamed: [...fileContext.itemsBeingRenamed, fileOrDir.path],
+      },
+    })
+  }, [fileContext.itemsBeingRenamed, fileOrDir.path, fileSend])
 
   function handleKeyUp(e: React.KeyboardEvent<HTMLButtonElement>) {
     if (e.metaKey && e.key === 'Backspace') {
@@ -156,7 +176,7 @@ const FileTreeItem = ({
       setIsConfirmingDelete(true)
     } else if (e.key === 'Enter') {
       // Show the renaming form
-      setIsRenaming(true)
+      addCurrentItemToRenaming()
     } else if (e.code === 'Space') {
       handleClick()
     }
@@ -215,7 +235,7 @@ const FileTreeItem = ({
           ) : (
             <RenameForm
               fileOrDir={fileOrDir}
-              setIsRenaming={setIsRenaming}
+              onSubmit={removeCurrentItemFromRenaming}
               level={level}
             />
           )}
@@ -228,17 +248,23 @@ const FileTreeItem = ({
                 <Disclosure.Button
                   className={
                     ' group border-none text-sm rounded-none p-0 m-0 flex items-center justify-start w-full py-0.5 hover:text-primary hover:bg-primary/5 dark:hover:text-inherit dark:hover:bg-primary/10' +
-                    (context.selectedDirectory.path.includes(fileOrDir.path)
+                    (fileContext.selectedDirectory.path.includes(fileOrDir.path)
                       ? ' ui-open:bg-primary/10'
                       : '')
                   }
                   style={{ paddingInlineStart: getIndentationCSS(level) }}
                   onClick={(e) => e.currentTarget.focus()}
                   onClickCapture={(e) =>
-                    send({ type: 'Set selected directory', data: fileOrDir })
+                    fileSend({
+                      type: 'Set selected directory',
+                      data: fileOrDir,
+                    })
                   }
                   onFocusCapture={(e) =>
-                    send({ type: 'Set selected directory', data: fileOrDir })
+                    fileSend({
+                      type: 'Set selected directory',
+                      data: fileOrDir,
+                    })
                   }
                   onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
                   onKeyUp={handleKeyUp}
@@ -266,7 +292,7 @@ const FileTreeItem = ({
                   />
                   <RenameForm
                     fileOrDir={fileOrDir}
-                    setIsRenaming={setIsRenaming}
+                    onSubmit={removeCurrentItemFromRenaming}
                     level={-1}
                   />
                 </div>
@@ -282,10 +308,16 @@ const FileTreeItem = ({
                 <ul
                   className="m-0 p-0"
                   onClickCapture={(e) => {
-                    send({ type: 'Set selected directory', data: fileOrDir })
+                    fileSend({
+                      type: 'Set selected directory',
+                      data: fileOrDir,
+                    })
                   }}
                   onFocusCapture={(e) =>
-                    send({ type: 'Set selected directory', data: fileOrDir })
+                    fileSend({
+                      type: 'Set selected directory',
+                      data: fileOrDir,
+                    })
                   }
                 >
                   {fileOrDir.children?.map((child) => (
@@ -415,7 +447,7 @@ export const FileTreeInner = ({
           })
         }}
       >
-        {sortProject(fileContext.project.children || []).map((fileOrDir) => (
+        {sortProject(fileContext.project?.children || []).map((fileOrDir) => (
           <FileTreeItem
             project={fileContext.project}
             currentFile={loaderData?.file}

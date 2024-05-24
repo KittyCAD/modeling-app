@@ -4,7 +4,7 @@ import { Project } from 'wasm-lib/kcl/bindings/Project'
 
 export const fileMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QDECWAbMACAtgQwGMALVAOzAGI9ZZUpSBtABgF1FQAHAe1oBdUupdiAAeiAKwBGcQDoALACYAHAE4AzGoUA2JXK1yANCACeiabOmSlGpkqsqAvg6NpMuQiXIyAEtSykuLAAzDDgKAGEAJzA8XmwQzGY2JBBuPgEhFLEESTVxWS1xBWVVcTU5PXEjUwRNFRkFWwB2FQVxJia5JnE5JxdQ92IyMB8-BLCAJTBSPBx40KThNNR+QWFslSVZJS1u3TUVSR1xJurEXSYZJslipismbTklPpBXbHwhr19YYNDYCOisXmiVYSx4Kwy6zMeQKRRKKjKFUKZwQPXqkjkmjUTCYWi0TQOCheb0GnhG31+mH+ABEwJg4pSwIsUstVplQNlcvkZIVikpSuVKijdFoZOItJJpEomtcYUTnK8Bh8yaMfuN-gB5DjTRnMzjgtlQnIwnlw-kIwXIkyIdSSGRKHF5XFqSwdYlKjzDVWM-4AZTAvCwsDpYAIcQgWAgqGiYa4kWMetSBshWTMNyaMkOuV0ChUBJUEpRnUuux6WmxGkkTF6CpJyq9URi-FIUEZFAgghGZAAblwANYjAiAuIAWnGidZKY50O5vPhiKF1oQcnF9q0myYCN2FSa4ndbnrXkbsTIrfGFDAkUicZkHHQsSCcZwMiHTbAY4WoJZybWqeNq82ddygUaQHiqJc7BkTRcwUOQjmKHR133d5PS8KYZhwU82w7Lwe37EZogw99xy-fV0l-adalzeQVForY1Ada4ni0FE5CaJRM0UAlmm6LRkNJL10NmLDz0va9Ilve9eEfSJn0I2ZiM-ZIyIhCjREQOoaLospGIxHYUQY0U8VaVoJUdB5+MPEZaXpETQnbTsZDwgcZAgENRxI5Sk3I9l1P-UVci6cUbg0JRlBRcRNkzHRdwUGVaPEOxLNQ6z3LszALyvG87wfJ9XPcxSQS8yc1M5PIMz0aU7gYuQCyOIsegaaUCTCwpnT42sPU+EYpjwKMWx9BzcNIXsXMBCAPypCcf187I7DUGQqweWDGgJNR8SLJ55AY9ibgLPJy2S7qZF6-qzz+IauxG-CZHGya4AYSRipmo15sWnFikUDoNA2pcXVkBQbFo7FuMkJojpVU70rCMTsqkmS5JiCb1WmnzXtyd7lq+tbfpqYoFEzSL9DqNofo6-oDxSigpiCaJYCIVHVNmxAtEaBpyxuZQ8iOaQUTBjNpWJxo2l3TpnheAI3PgFI6xSsE0b-EcWKXJWZBxHF2hAip0ySzrKeOikAh9eWmaNSVriappqy2CpWkkAzqLUJp8Q5h4DgRGsKZQg2xj+E3DT-c2OIlGVdwqFc4rUYUuntB0wesaQmhAvc9e9lVj2bc7MH9qc-OkNjMwFfkygLWqIpxe0cTsWCOiOE4IcE6ZhIG8Yc9KxBFFYlp5EkWirFB6Q1AbrwbIDaG2+ZnIegzTYLWLg59BUYUmAWwHKo3B51HlL2BLQpHoellSA8oooOOsSLGiRdowdY2r7RWu5OhdQLycVfWVS1aZx+-BXKPzmei70VLkvJcKhbBijKHicq3QQLiycEAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QDECWAbMACAtgQwGMALVAOzAGI9ZZUpSBtABgF1FQAHAe1oBdUupdiAAeiAKwBGcQDoALACYAHAE4AzGoUA2JXK1yANCACeiabOmSlGpkqsqAvg6NpMuQiXIUASmABmAE5wRMxsSCDcfAJC4WIIWgpMMtpqkgrKalJa0kamCJIA7AUySgX6mkwK4gXVckpOLhjY+MRkYDIAEtRYpFxYfk2wFADCQXi82AOYocKRqPyCwnGSmbJa4ulKquJqcnriuYiaKsm2BSpVTAVyTOJyDSCuzR5tnd1TcD5gpHg4k00zcJzBYxUBxFRKWRKLS3XRqFSSHTVQ4IXRJAppRJWSr6erOR5NdytchvWD9QYjMYTcnTVizHjzaJLMyrGTrTbbXb7FF3E6SOSaNRMJhaLQFeEKB5PImedpdMkfIYAETAmGpH0BnAZIOZ+VZ7OUnL26xRui0MnE2WkpQxq0l+OlLVlpJpnwA8hxvq7NRFtUzYizxGsNoaVDtjQcTIh1JISsLMiLUlIrlLCU7XvLXUMAMpgXhYWCqsAECYQLAQVBBEtcALGH3A-1gsxpYoIla6BQqcUqbIo65JGF3LRCjSSJj3B1pl4k0ZgcZkKCuigQQTtMgANy4AGt2gQqWAALQaulAv2LAN6vbJLtXc7KDYXFE3YoihQFJhqcXiJiFPGNNzpjOVILkuYABAENYyBw6DjH4NY4DIe5zhMR4AieWpROeTZ6paMgQlo6iKNIlSRnkdgyJonYKHIiLpDoBGpgB07tL4Pw4CBHzLquMgbtu7RBGxh7HmEGGMlhohHB+8hVDUVwQvy2gogk5ppBc9jZNY4h-gSTHEix3y-BxTQUGBEEBFBMG8HBAQIQJvxCWhIm+phoISQgxzyCoXmQmoShXPy0Ior55qihcFzZPGlSMc8ekyCqapGZgXEkrxO4yBARYocJ9IubqKy4SsNyWmkGhKMoPIQnhOg1G+5xhnY0Uyq88V5ollCmZB0GwfB6WZQ5tJOQ24nLJkxR6KUP6+XIPaIn2dzJDavnaN+w5aI1gH6XgFakIuirJWupCbmlYwQKhmCwPWZ6uXEdhqDIY6VNRiTimoYp9nU8i+QUdidsOlpqOtzEyL4W1tUMK4pYdfEyCdZ1wAwkiDVduq3fdwrpIoVwaG9UbudIyQ2F5Qrij+BSA7FIPbbtFIdeZXVWT1sOKpduUXqjD0Y892MFCi6QKHh4g9gKVE7K9a0PL0GXwOEjrMTlYnXYgCiaBa1xVHIdywtRKIHlC5QadRdjTRc5POpmvRZvLOoXpIhSxso751Hc00KJIQWdhRZRlKklTwmGE7-jFZvvIMVuNm5tvfWyhRFM7Gtvmopo3CUfm-kmBSu+IpuvLO847a6YfDWYdytpyWw7ELKg8sKca2Gkz6ItU2ckqxhn5x8heKwgyhJLU6ua1p2u43YsbWEVjsftY9qB01JItfw7dNJ3eUl3hZc+ZXppScr40Quj6jTzpQevJTYPLxeGxKCUmQXOO+yk0+00lE9pMCrbuzizPG0yB63xtef2FpByFLmGXyG99BV1xioWwFodiilGrcV2eInBAA */
     id: 'File machine',
 
     initial: 'Reading files',
@@ -12,6 +12,7 @@ export const fileMachine = createMachine(
     context: {
       project: {} as Project,
       selectedDirectory: {} as FileEntry,
+      itemsBeingRenamed: [] as string[],
     },
 
     on: {
@@ -65,7 +66,7 @@ export const fileMachine = createMachine(
           onDone: [
             {
               target: 'Reading files',
-              actions: ['toastSuccess'],
+              actions: ['toastSuccess', 'addFileToRenamingQueue'],
             },
           ],
           onError: [
@@ -84,7 +85,7 @@ export const fileMachine = createMachine(
           onDone: [
             {
               target: '#File machine.Reading files',
-              actions: ['toastSuccess'],
+              actions: ['renameToastSuccess'],
             },
           ],
           onError: [
@@ -94,6 +95,8 @@ export const fileMachine = createMachine(
             },
           ],
         },
+
+        exit: 'removeFileFromRenamingQueue',
       },
 
       'Deleting file': {
@@ -157,6 +160,7 @@ export const fileMachine = createMachine(
             type: 'done.invoke.read-files'
             data: Project
           }
+        | { type: 'done.invoke.create-file'; data: string }
         | { type: 'assign'; data: { [key: string]: any } }
         | { type: 'Refresh' },
     },

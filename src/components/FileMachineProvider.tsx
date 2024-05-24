@@ -11,6 +11,7 @@ import {
   InterpreterFrom,
   Prop,
   StateFrom,
+  assign,
 } from 'xstate'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { fileMachine } from 'machines/fileMachine'
@@ -55,6 +56,30 @@ export const FileMachineProvider = ({
           )
         }
       },
+      addFileToRenamingQueue: assign({
+        itemsBeingRenamed: (context, event) => [
+          ...context.itemsBeingRenamed,
+          event.data.match(`^Successfully created "(.*)"$`)![1],
+        ],
+      }),
+      removeFileFromRenamingQueue: assign({
+        itemsBeingRenamed: (context, event) =>
+          'data' in event && typeof event.data === 'string'
+            ? context.itemsBeingRenamed.filter(
+                (item) =>
+                  item !==
+                  (event.data as string).match(
+                    `^Successfully renamed ".*" to "(.*)"$`
+                  )![1]
+              )
+            : context.itemsBeingRenamed,
+      }),
+      renameToastSuccess: (_, event) =>
+        event.data &&
+        event.data instanceof Object &&
+        'message' in event.data &&
+        typeof event.data.message === 'string' &&
+        toast.success(event.data.message),
       toastSuccess: (_, event) =>
         event.data && toast.success((event.data || '') + ''),
       toastError: (_, event) => toast.error((event.data || '') + ''),
@@ -90,17 +115,19 @@ export const FileMachineProvider = ({
         event: EventFrom<typeof fileMachine, 'Rename file'>
       ) => {
         const { oldName, newName, isDir } = event.data
-        let name = newName ? newName : DEFAULT_FILE_NAME
+        const name = newName ? newName : DEFAULT_FILE_NAME
+        const oldPath = await join(context.selectedDirectory.path, oldName)
+        const newDirPath = await join(context.selectedDirectory.path, name)
+        const newPath =
+          newDirPath + (name.endsWith(FILE_EXT) || isDir ? '' : FILE_EXT)
 
-        await rename(
-          await join(context.selectedDirectory.path, oldName),
-          (await join(context.selectedDirectory.path, name)) +
-            (name.endsWith(FILE_EXT) || isDir ? '' : FILE_EXT),
-          {}
-        )
-        return (
-          oldName !== name && `Successfully renamed "${oldName}" to "${name}"`
-        )
+        await rename(oldPath, newPath, {})
+        return {
+          message:
+            oldName !== name &&
+            `Successfully renamed "${oldName}" to "${name}"`,
+          path: newPath,
+        }
       },
       deleteFile: async (
         context: ContextFrom<typeof fileMachine>,
