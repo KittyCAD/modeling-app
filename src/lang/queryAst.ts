@@ -392,6 +392,68 @@ export function findAllPreviousVariables(
   }
 }
 
+export function findUnusedVariables(ast: Program): Array<VariableDeclaration> {
+  const declaredVariables = new Map<string, VariableDeclarator>() // Map to store declared variables
+  const usedVariables = new Set<string>() // Set to track used variables
+
+  // 1. Traverse and populate
+  ast.body.forEach((node) => {
+    traverse(node, {
+      enter(node) {
+        if (node.type === 'VariableDeclarator') {
+          // if node is a VariableDeclarator,
+          // add it to declaredVariables
+          declaredVariables.set(node.id.name, node)
+        } else if (node.type === 'Identifier') {
+          // if the node is Identifier, (use of a variable)
+          // check if it is a declared value,
+          // just in case...
+          // to be sure it's a part of the declared variables
+          if (declaredVariables.has(node.name)) {
+            // if yes - mark it as used
+            usedVariables.add(node.name)
+          }
+        } else if (node.type === 'VariableDeclaration') {
+          // check if the declaration is model-defining (contains PipeExpression)
+          const isModelDefining = node.declarations.some(
+            (decl) => decl.init?.type === 'PipeExpression'
+          )
+          if (isModelDefining) {
+            // If it is, mark all contained variables as used
+            node.declarations.forEach((decl) => {
+              usedVariables.add(decl.id.name)
+            })
+          }
+        }
+      },
+    })
+  })
+
+  // 2. Remove used variables from declaredVariables
+  usedVariables.forEach((name) => {
+    declaredVariables.delete(name)
+  })
+
+  // 3. collect unused VariableDeclarations
+  const unusedVariableDeclarations: Array<VariableDeclaration> = []
+  ast.body.forEach((node) => {
+    if (node.type === 'VariableDeclaration') {
+      const unusedDeclarators = node.declarations.filter((declarator) =>
+        declaredVariables.has(declarator.id.name)
+      )
+      if (unusedDeclarators.length > 0) {
+        unusedVariableDeclarations.push({
+          ...node,
+          declarations: unusedDeclarators,
+        })
+      }
+    }
+  })
+
+  // 4. Return the unused variables
+  return unusedVariableDeclarations
+}
+
 type ReplacerFn = (_ast: Program, varName: string) => { modifiedAst: Program }
 
 export function isNodeSafeToReplace(
