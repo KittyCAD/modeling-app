@@ -2964,7 +2964,7 @@ const part001 = startSketchOn('XZ')
         expectAfterUnconstrained:
           'angledLineToY({ angle: angle002, to: 9.14 + 0 }, %)',
         expectFinal: 'angledLineToY({ angle: 89, to: 9.14 + 0 }, %)',
-        steps: 9,
+        steps: process.platform === 'darwin' ? 20 : 9,
         ang: 135,
       })
       console.log('angledLineToY2')
