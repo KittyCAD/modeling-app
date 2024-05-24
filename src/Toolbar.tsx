@@ -15,10 +15,12 @@ import { ActionButtonDropdown } from 'components/ActionButtonDropdown'
 import { useHotkeys } from 'react-hotkeys-hook'
 import Tooltip from 'components/Tooltip'
 
-export const Toolbar = () => {
-  const { commandBarSend } = useCommandsContext()
+export function Toolbar({
+  className = '',
+  ...props
+}: React.HTMLAttributes<HTMLElement>) {
   const { state, send, context } = useModelingContext()
-  const toolbarButtonsRef = useRef<HTMLUListElement>(null)
+  const { commandBarSend } = useCommandsContext()
   const iconClassName =
     'group-disabled:text-chalkboard-50 group-enabled:group-hover:!text-primary dark:group-enabled:group-hover:!text-inherit group-pressed:!text-chalkboard-10 group-ui-open:!text-chalkboard-10 dark:group-ui-open:!text-chalkboard-10'
   const bgClassName =
@@ -34,6 +36,9 @@ export const Toolbar = () => {
       context.selectionRanges
     )
   }, [engineCommandManager.artifactMap, context.selectionRanges])
+
+  const toolbarButtonsRef = useRef<HTMLUListElement>(null)
+
   const { overallState } = useNetworkStatus()
   const { isExecuting } = useKclContext()
   const { isStreamReady } = useStore((s) => ({
@@ -100,12 +105,45 @@ export const Toolbar = () => {
 
     span.scrollLeft = span.scrollLeft += ev.deltaY
   }
+  const nextEvents = useMemo(() => state.nextEvents, [state.nextEvents])
+  const splitMenuItems = useMemo(
+    () =>
+      nextEvents
+        .filter(
+          (eventName) =>
+            eventName.includes('Make segment') ||
+            eventName.includes('Constrain')
+        )
+        .sort((a, b) => {
+          const aisEnabled = nextEvents
+            .filter((event) => state.can(event as any))
+            .includes(a)
+          const bIsEnabled = nextEvents
+            .filter((event) => state.can(event as any))
+            .includes(b)
+          if (aisEnabled && !bIsEnabled) {
+            return -1
+          }
+          if (!aisEnabled && bIsEnabled) {
+            return 1
+          }
+          return 0
+        })
+        .map((eventName) => ({
+          label: eventName
+            .replace('Make segment ', '')
+            .replace('Constrain ', ''),
+          onClick: () => send(eventName),
+          disabled:
+            !nextEvents
+              .filter((event) => state.can(event as any))
+              .includes(eventName) || disableAllButtons,
+        })),
 
-  function ToolbarButtons({
-    className = '',
-    ...props
-  }: React.HTMLAttributes<HTMLElement>) {
-    return (
+    [JSON.stringify(nextEvents), state]
+  )
+  return (
+    <menu className="max-w-full whitespace-nowrap rounded px-1.5 py-0.5 backdrop-blur-sm bg-chalkboard-10/80 dark:bg-chalkboard-110/70 relative">
       <ul
         {...props}
         ref={toolbarButtonsRef}
@@ -113,7 +151,7 @@ export const Toolbar = () => {
         className={'m-0 py-1 rounded-l-sm flex gap-2 items-center ' + className}
         style={{ scrollbarWidth: 'thin' }}
       >
-        {state.nextEvents.includes('Enter sketch') && (
+        {nextEvents.includes('Enter sketch') && (
           <li className="contents">
             <ActionButton
               className={buttonClassName}
@@ -139,7 +177,7 @@ export const Toolbar = () => {
             </ActionButton>
           </li>
         )}
-        {state.nextEvents.includes('Enter sketch') && pathId && (
+        {nextEvents.includes('Enter sketch') && pathId && (
           <li className="contents">
             <ActionButton
               className={buttonClassName}
@@ -163,7 +201,7 @@ export const Toolbar = () => {
             </ActionButton>
           </li>
         )}
-        {state.nextEvents.includes('Cancel') && !state.matches('idle') && (
+        {nextEvents.includes('Cancel') && !state.matches('idle') && (
           <li className="contents">
             <ActionButton
               className={buttonClassName}
@@ -286,43 +324,13 @@ export const Toolbar = () => {
           </>
         )}
         {state.matches('Sketch.SketchIdle') &&
-          state.nextEvents.filter(
+          nextEvents.filter(
             (eventName) =>
               eventName.includes('Make segment') ||
               eventName.includes('Constrain')
           ).length > 0 && (
             <ActionButtonDropdown
-              splitMenuItems={state.nextEvents
-                .filter(
-                  (eventName) =>
-                    eventName.includes('Make segment') ||
-                    eventName.includes('Constrain')
-                )
-                .sort((a, b) => {
-                  const aisEnabled = state.nextEvents
-                    .filter((event) => state.can(event as any))
-                    .includes(a)
-                  const bIsEnabled = state.nextEvents
-                    .filter((event) => state.can(event as any))
-                    .includes(b)
-                  if (aisEnabled && !bIsEnabled) {
-                    return -1
-                  }
-                  if (!aisEnabled && bIsEnabled) {
-                    return 1
-                  }
-                  return 0
-                })
-                .map((eventName) => ({
-                  label: eventName
-                    .replace('Make segment ', '')
-                    .replace('Constrain ', ''),
-                  onClick: () => send(eventName),
-                  disabled:
-                    !state.nextEvents
-                      .filter((event) => state.can(event as any))
-                      .includes(eventName) || disableAllButtons,
-                }))}
+              splitMenuItems={splitMenuItems}
               className={buttonClassName}
               Element="button"
               iconStart={{
@@ -369,12 +377,6 @@ export const Toolbar = () => {
           </li>
         )}
       </ul>
-    )
-  }
-
-  return (
-    <menu className="max-w-full whitespace-nowrap rounded px-1.5 py-0.5 backdrop-blur-sm bg-chalkboard-10/80 dark:bg-chalkboard-110/70 relative">
-      <ToolbarButtons />
     </menu>
   )
 }

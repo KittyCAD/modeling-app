@@ -66,7 +66,7 @@ export const KclEditorPane = () => {
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    const onlineCallback = () => kclManager.executeCode(true)
+    const onlineCallback = () => kclManager.executeCode(true, true)
     window.addEventListener('online', onlineCallback)
     return () => window.removeEventListener('online', onlineCallback)
   }, [])

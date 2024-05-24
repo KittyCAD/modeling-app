@@ -170,7 +170,7 @@ export const SettingsAuthProviderBase = ({
             id: `${event.type}.success`,
           })
         },
-        'Execute AST': () => kclManager.executeCode(true),
+        'Execute AST': () => kclManager.executeCode(true, true),
         persistSettings: (context) =>
           saveSettings(context, loadedProject?.project?.path),
       },
