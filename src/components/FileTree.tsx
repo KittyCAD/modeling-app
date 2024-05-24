@@ -157,11 +157,11 @@ const FileTreeItem = ({
       // Show the renaming form
       setIsRenaming(true)
     } else if (e.code === 'Space') {
-      handleDoubleClick()
+      handleClick()
     }
   }
 
-  function handleDoubleClick() {
+  function handleClick() {
     if (fileOrDir.children !== undefined) return // Don't open directories
 
     if (fileOrDir.name?.endsWith(FILE_EXT) === false && project?.path) {
@@ -199,8 +199,10 @@ const FileTreeItem = ({
             <button
               className="flex gap-1 items-center py-0.5 rounded-none border-none p-0 m-0 text-sm w-full hover:!bg-transparent text-left !text-inherit"
               style={{ paddingInlineStart: getIndentationCSS(level) }}
-              onDoubleClick={handleDoubleClick}
-              onClick={(e) => e.currentTarget.focus()}
+              onClick={(e) => {
+                e.currentTarget.focus()
+                handleClick()
+              }}
               onKeyUp={handleKeyUp}
             >
               <CustomIcon
