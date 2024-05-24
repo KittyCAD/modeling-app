@@ -123,9 +123,16 @@ export const FileMachineProvider = ({
 
         await rename(oldPath, newPath, {})
 
-        // If we just renamed the current file, navigate to the new path
         if (oldPath === file?.path && project?.path) {
+          // If we just renamed the current file, navigate to the new path
           navigate(paths.FILE + '/' + encodeURIComponent(newPath))
+        } else if (file?.path.includes(oldPath)) {
+          // If we just renamed a directory that the current file is in, navigate to the new path
+          navigate(
+            paths.FILE +
+              '/' +
+              encodeURIComponent(file.path.replace(oldPath, newDirPath))
+          )
         }
 
         return {
