@@ -14,9 +14,9 @@ export function LowerRightControls(props: React.PropsWithChildren) {
     '!text-chalkboard-70 hover:!text-chalkboard-80 dark:!text-chalkboard-40 dark:hover:!text-chalkboard-30'
 
   return (
-    <section className="fixed bottom-2 right-2 flex flex-col items-end gap-3">
+    <section className="fixed bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
       {props.children}
-      <menu className="flex items-center justify-end gap-3">
+      <menu className="flex items-center justify-end gap-3 pointer-events-auto">
         <a
           href={`https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`}
           target="_blank"

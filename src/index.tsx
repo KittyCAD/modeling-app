@@ -40,7 +40,10 @@ root.render(
             primary: 'oklch(89% 0.16 143.4deg)',
             secondary: 'oklch(48.62% 0.1654 142.5deg)',
           },
-          duration: 1500,
+          duration:
+            window?.localStorage.getItem('playwright') === 'true'
+              ? 10 // speed up e2e tests
+              : 1500,
         },
       }}
     />
