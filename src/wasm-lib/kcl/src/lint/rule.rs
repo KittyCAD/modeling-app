@@ -107,6 +107,24 @@ macro_rules! finding {
 pub(crate) use finding;
 
 #[cfg(test)]
+pub(crate) use test::{assert_finding, assert_no_finding, test_finding, test_no_finding};
+
+/// Check the provided Program for any Findings.
+pub fn lint<'a, RuleT>(prog: &'a Program, rule: RuleT) -> Result<Vec<Discovered>>
+where
+    RuleT: Rule<'a>,
+{
+    let v = Arc::new(Mutex::new(vec![]));
+    walk(prog, &|node: Node<'a>| {
+        let mut findings = v.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+        findings.append(&mut rule.check(node)?);
+        Ok(true)
+    })?;
+    let x = v.lock().unwrap();
+    Ok(x.clone())
+}
+
+#[cfg(test)]
 mod test {
 
     macro_rules! assert_no_finding {
@@ -159,22 +177,4 @@ mod test {
     pub(crate) use assert_no_finding;
     pub(crate) use test_finding;
     pub(crate) use test_no_finding;
-}
-
-#[cfg(test)]
-pub(crate) use test::{assert_finding, assert_no_finding, test_finding, test_no_finding};
-
-/// Check the provided Program for any Findings.
-pub fn lint<'a, RuleT>(prog: &'a Program, rule: RuleT) -> Result<Vec<Discovered>>
-where
-    RuleT: Rule<'a>,
-{
-    let v = Arc::new(Mutex::new(vec![]));
-    walk(prog, &|node: Node<'a>| {
-        let mut findings = v.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
-        findings.append(&mut rule.check(node)?);
-        Ok(true)
-    })?;
-    let x = v.lock().unwrap();
-    Ok(x.clone())
 }
