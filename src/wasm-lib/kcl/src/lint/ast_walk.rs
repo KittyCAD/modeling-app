@@ -173,7 +173,7 @@ where
     Ok(())
 }
 
-///
+/// Walk through an [ObjectProperty].
 fn walk_object_property<'a, WalkT>(node: &'a ObjectProperty, f: &WalkT) -> Result<()>
 where
     WalkT: Walker<'a>,
@@ -183,7 +183,7 @@ where
     Ok(())
 }
 
-///
+/// Walk through an [ObjectExpression].
 fn walk_object_expression<'a, WalkT>(node: &'a ObjectExpression, f: &WalkT) -> Result<()>
 where
     WalkT: Walker<'a>,
@@ -195,7 +195,7 @@ where
     Ok(())
 }
 
-///
+/// walk through an [UnaryExpression].
 fn walk_unary_expression<'a, WalkT>(node: &'a UnaryExpression, f: &WalkT) -> Result<()>
 where
     WalkT: Walker<'a>,
@@ -205,7 +205,7 @@ where
     Ok(())
 }
 
-///
+/// walk through a [BodyItem].
 fn walk_body_item<'a, WalkT>(node: &'a BodyItem, f: &WalkT) -> Result<()>
 where
     WalkT: Walker<'a>,
