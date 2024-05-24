@@ -4,9 +4,9 @@ import { ActionButton } from './ActionButton'
 import Tooltip from './Tooltip'
 import { Dispatch, useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
-import { Dialog, Disclosure } from '@headlessui/react'
+import { Disclosure } from '@headlessui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronRight, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import { useFileContext } from 'hooks/useFileContext'
 import styles from './FileTree.module.css'
 import { sortProject } from 'lib/tauriFS'
@@ -17,6 +17,7 @@ import { useDocumentHasFocus } from 'hooks/useDocumentHasFocus'
 import { useLspContext } from './LspProvider'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import { useModelingContext } from 'hooks/useModelingContext'
+import { DeleteConfirmationDialog } from './ProjectCard/DeleteProjectDialog'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -77,7 +78,7 @@ function RenameForm({
   )
 }
 
-function DeleteConfirmationDialog({
+function DeleteFileTreeItemDialog({
   fileOrDir,
   setIsOpen,
 }: {
@@ -86,48 +87,23 @@ function DeleteConfirmationDialog({
 }) {
   const { send } = useFileContext()
   return (
-    <Dialog
-      open={true}
-      onClose={() => setIsOpen(false)}
-      className="relative z-50"
+    <DeleteConfirmationDialog
+      title={`Delete ${fileOrDir.children !== undefined ? 'folder' : 'file'}`}
+      onDismiss={() => setIsOpen(false)}
+      onConfirm={() => {
+        send({ type: 'Delete file', data: fileOrDir })
+        setIsOpen(false)
+      }}
     >
-      <div className="fixed inset-0 bg-chalkboard-110/80 grid place-content-center">
-        <Dialog.Panel className="rounded p-4 bg-chalkboard-10 dark:bg-chalkboard-100 border border-destroy-80 max-w-2xl">
-          <Dialog.Title as="h2" className="text-2xl font-bold mb-4">
-            Delete {fileOrDir.children !== undefined ? 'Folder' : 'File'}
-          </Dialog.Title>
-          <Dialog.Description className="my-6">
-            This will permanently delete "{fileOrDir.name || 'this file'}"
-            {fileOrDir.children !== undefined
-              ? ' and all of its contents. '
-              : '. '}
-            This action cannot be undone.
-          </Dialog.Description>
-
-          <div className="flex justify-between">
-            <ActionButton
-              Element="button"
-              onClick={async () => {
-                send({ type: 'Delete file', data: fileOrDir })
-                setIsOpen(false)
-              }}
-              iconStart={{
-                icon: faTrashAlt,
-                bgClassName: 'bg-destroy-80',
-                iconClassName:
-                  'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10 dark:text-destroy-20 dark:group-hover:text-destroy-10 dark:hover:text-destroy-10',
-              }}
-              className="hover:border-destroy-40 dark:hover:border-destroy-40"
-            >
-              Delete
-            </ActionButton>
-            <ActionButton Element="button" onClick={() => setIsOpen(false)}>
-              Cancel
-            </ActionButton>
-          </div>
-        </Dialog.Panel>
-      </div>
-    </Dialog>
+      <p className="my-4">
+        This will permanently delete "{fileOrDir.name || 'this file'}"
+        {fileOrDir.children !== undefined ? ' and all of its contents. ' : '. '}
+      </p>
+      <p className="my-4">
+        Are you sure you want to delete "{fileOrDir.name || 'this file'}
+        "? This action cannot be undone.
+      </p>
+    </DeleteConfirmationDialog>
   )
 }
 
@@ -340,7 +316,7 @@ const FileTreeItem = ({
         </Disclosure>
       )}
       {isConfirmingDelete && (
-        <DeleteConfirmationDialog
+        <DeleteFileTreeItemDialog
           fileOrDir={fileOrDir}
           setIsOpen={setIsConfirmingDelete}
         />
