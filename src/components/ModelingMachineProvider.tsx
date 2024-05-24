@@ -380,7 +380,7 @@ export const ModelingMachineProvider = ({
             kclManager.ast,
             sketchDetails?.sketchPathToNode || [],
             'VariableDeclaration'
-          )?.node?.declarations[0]?.init.type !== 'PipeExpression',
+          )?.node?.declarations?.[0]?.init.type !== 'PipeExpression',
         'Selection is on face': ({ selectionRanges }, { data }) => {
           if (data?.forceNewSketch) return false
           if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))
@@ -390,8 +390,23 @@ export const ModelingMachineProvider = ({
             selectionRanges
           )
         },
-        'Has exportable geometry': () =>
-          kclManager.kclErrors.length === 0 && kclManager.ast.body.length > 0,
+        'Has exportable geometry': () => {
+          if (
+            kclManager.kclErrors.length === 0 &&
+            kclManager.ast.body.length > 0
+          )
+            return true
+          else {
+            let errorMessage = 'Unable to Export '
+            if (kclManager.kclErrors.length > 0)
+              errorMessage += 'due to KCL Errors'
+            else if (kclManager.ast.body.length === 0)
+              errorMessage += 'due to Empty Scene'
+            console.error(errorMessage)
+            toast.error(errorMessage)
+            return false
+          }
+        },
       },
       services: {
         'AST-undo-startSketchOn': async ({ sketchDetails }) => {

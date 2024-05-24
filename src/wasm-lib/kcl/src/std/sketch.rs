@@ -35,7 +35,7 @@ pub async fn line_to(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw a line to a point.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("-XZ")
+/// const exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> lineTo([10, 0], %)
 ///   |> lineTo([0, 10], %)
@@ -101,7 +101,7 @@ pub async fn x_line_to(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw a line to a point on the x-axis.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> xLineTo(15, %)
 ///   |> angledLine({
@@ -146,13 +146,16 @@ pub async fn y_line_to(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw a line to a point on the y-axis.
 ///
 /// ```no_run
-/// startSketchOn('XZ')
+/// const exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
-///   |> yLineTo(10, %, "edge1")
-///   |> line([10, 10], %)
-///   |> close(%, "edge2")
-///   |> extrude(10, %)
-///   |> fillet({radius: 2, tags: ["edge2"]}, %)
+///   |> angledLine({
+///     angle: 50,
+///     length: 45,
+///   }, %)
+///   |> yLineTo(0, %)
+///   |> close(%)
+///
+/// const example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "yLineTo",
@@ -181,7 +184,18 @@ pub async fn line(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw a line.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("-XZ")
+/// const exampleSketch = startSketchOn("XZ")
+///   |> startProfileAt([0, 0], %)
+///   |> line([25, 15], %)
+///   |> line([5, -6], %)
+///   |> line([-10, -10], %)
+///   |> close(%)
+///
+/// const example = extrude(5, exampleSketch)
+/// ```
+///
+/// ```no_run
+/// const exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> line([0, 10], %)
@@ -250,7 +264,7 @@ pub async fn x_line(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw a line on the x-axis.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> xLine(15, %)
 ///   |> angledLine({
@@ -292,7 +306,7 @@ pub async fn y_line(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw a line on the y-axis.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> yLine(15, %)
 ///   |> angledLine({
@@ -345,7 +359,7 @@ pub async fn angled_line(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw an angled line.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> yLineTo(15, %)
 ///   |> angledLine({
@@ -482,7 +496,7 @@ pub async fn angled_line_to_x(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw an angled line to a given x coordinate.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLineToX({ angle: 30, to: 10 }, %)
 ///   |> line([0, 10], %)
@@ -568,7 +582,7 @@ pub async fn angled_line_to_y(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw an angled line to a given y coordinate.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLineToY({ angle: 60, to: 20 }, %)
 ///   |> line([-20, 0], %)
@@ -622,7 +636,7 @@ pub async fn angled_line_that_intersects(args: Args) -> Result<MemoryItem, KclEr
 /// Draw an angled line that intersects with a given line.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> lineTo([5, 10], %)
 ///   |> lineTo([-10, 10], %, "lineToIntersect")
@@ -1131,7 +1145,7 @@ pub async fn start_profile_at(args: Args) -> Result<MemoryItem, KclError> {
 /// Start a profile at a given point.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> line([0, 10], %)
@@ -1396,7 +1410,7 @@ pub async fn arc(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw an arc.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> arc({
@@ -1405,7 +1419,7 @@ pub async fn arc(args: Args) -> Result<MemoryItem, KclError> {
 ///        radius: 16
 ///      }, %)
 ///   |> close(%)
-///     
+///
 // const example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
@@ -1499,7 +1513,7 @@ pub async fn tangential_arc(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw an arc.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle: 60,
@@ -1623,7 +1637,7 @@ pub async fn tangential_arc_to(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw an arc.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle: 60,
@@ -1708,7 +1722,7 @@ pub async fn bezier_curve(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw a bezier curve.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([0, 10], %)
 ///   |> bezierCurve({
@@ -1815,11 +1829,11 @@ pub async fn hole(args: Args) -> Result<MemoryItem, KclError> {
 ///       |> close(%)
 ///     return squareSketch
 ///   }
-///  
-///   const exampleSketch = startSketchOn('-XZ')
+///
+///  const exampleSketch = startSketchOn('-XZ')
 ///     |> circle([0, 0], 3, %)
 ///     |> hole(squareHoleSketch(), %)
-//   const example = extrude(1, exampleSketch)
+///  const example = extrude(1, exampleSketch)
 /// ```
 #[stdlib {
     name = "hole",

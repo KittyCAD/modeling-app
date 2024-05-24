@@ -1636,6 +1636,28 @@ export function addNewSketchLn({
   })
 }
 
+export function addCallExpressionsToPipe({
+  node,
+  pathToNode,
+  expressions,
+}: {
+  node: Program
+  programMemory: ProgramMemory
+  pathToNode: PathToNode
+  expressions: CallExpression[]
+}) {
+  const _node = { ...node }
+  const pipeExpression = getNodeFromPath<PipeExpression>(
+    _node,
+    pathToNode,
+    'PipeExpression'
+  ).node
+  if (pipeExpression.type !== 'PipeExpression')
+    throw new Error('not a pipe expression')
+  pipeExpression.body = [...pipeExpression.body, ...expressions]
+  return _node
+}
+
 export function addCloseToPipe({
   node,
   pathToNode,

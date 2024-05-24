@@ -425,6 +425,14 @@ const CustomIconMap = {
       />
     </svg>
   ),
+  trash: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M8.5 6H5V8H6M8.5 6V4H11.5V6M8.5 6H11.5M11.5 6H15V8H14M6 8V15.5H8M6 8H14M14 8V15.5H12M8 15.5V10M8 15.5H10M12 15.5V10M12 15.5H10M10 15.5V12"
+        stroke="currentColor"
+      />
+    </svg>
+  ),
   vertical: (
     <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path

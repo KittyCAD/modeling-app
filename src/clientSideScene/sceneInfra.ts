@@ -28,7 +28,6 @@ import { Axis } from 'lib/selections'
 import { type BaseUnit } from 'lib/settings/settingsTypes'
 import { CameraControls } from './CameraControls'
 import { EngineCommandManager } from 'lang/std/engineConnection'
-import { settings } from 'lib/settings/initialSettings'
 import { MouseState, SegmentOverlayPayload } from 'machines/modelingMachine'
 import { getAngle, throttle } from 'lib/utils'
 import { Themes } from 'lib/theme'
@@ -263,15 +262,6 @@ export class SceneInfra {
     this.renderer.setClearColor(0x000000, 0) // Set clear color to black with 0 alpha (fully transparent)
     window.addEventListener('resize', this.onWindowResize)
 
-    // CAMERA
-    const camHeightDistanceRatio = 0.5
-    const baseUnit: BaseUnit = settings.modeling.defaultUnit.current
-    const baseRadius = 5.6
-    const length = baseUnitTomm(baseUnit) * baseRadius
-    const ang = Math.atan(camHeightDistanceRatio)
-    const x = Math.cos(ang) * length
-    const y = Math.sin(ang) * length
-
     this.camControls = new CameraControls(
       false,
       this.renderer.domElement,
@@ -279,7 +269,6 @@ export class SceneInfra {
     )
     this.camControls.subscribeToCamChange(() => this.onCameraChange())
     this.camControls.camera.layers.enable(SKETCH_LAYER)
-    this.camControls.camera.position.set(0, -x, y)
     if (DEBUG_SHOW_INTERSECTION_PLANE)
       this.camControls.camera.layers.enable(INTERSECTION_PLANE_LAYER)
 

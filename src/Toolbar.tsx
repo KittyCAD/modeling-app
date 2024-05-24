@@ -12,6 +12,8 @@ import {
 } from 'components/NetworkHealthIndicator'
 import { useStore } from 'useStore'
 import { ActionButtonDropdown } from 'components/ActionButtonDropdown'
+import { useHotkeys } from 'react-hotkeys-hook'
+import Tooltip from 'components/Tooltip'
 
 export function Toolbar({
   className = '',
@@ -44,6 +46,56 @@ export function Toolbar({
   }))
   const disableAllButtons =
     overallState !== NetworkHealthState.Ok || isExecuting || !isStreamReady
+
+  useHotkeys(
+    'l',
+    () =>
+      state.matches('Sketch.Line tool')
+        ? send('CancelSketch')
+        : send('Equip Line tool'),
+    { enabled: !disableAllButtons, scopes: ['sketch'] }
+  )
+  useHotkeys(
+    'a',
+    () =>
+      state.matches('Sketch.Tangential arc to')
+        ? send('CancelSketch')
+        : send('Equip tangential arc to'),
+    { enabled: !disableAllButtons, scopes: ['sketch'] }
+  )
+  useHotkeys(
+    'r',
+    () =>
+      state.matches('Sketch.Rectangle tool')
+        ? send('CancelSketch')
+        : send('Equip rectangle tool'),
+    { enabled: !disableAllButtons, scopes: ['sketch'] }
+  )
+  useHotkeys(
+    's',
+    () =>
+      state.nextEvents.includes('Enter sketch') && pathId
+        ? send({ type: 'Enter sketch' })
+        : send({ type: 'Enter sketch', data: { forceNewSketch: true } }),
+    { enabled: !disableAllButtons, scopes: ['modeling'] }
+  )
+  useHotkeys(
+    'esc',
+    () =>
+      state.matches('Sketch.SketchIdle')
+        ? send('Cancel')
+        : send('CancelSketch'),
+    { enabled: !disableAllButtons, scopes: ['sketch'] }
+  )
+  useHotkeys(
+    'e',
+    () =>
+      commandBarSend({
+        type: 'Find and select command',
+        data: { name: 'Extrude', ownerMachine: 'modeling' },
+      }),
+    { enabled: !disableAllButtons, scopes: ['modeling'] }
+  )
 
   function handleToolbarButtonsWheelEvent(ev: WheelEvent<HTMLSpanElement>) {
     const span = toolbarButtonsRef.current
@@ -115,6 +167,13 @@ export function Toolbar({
               disabled={disableAllButtons}
             >
               <span data-testid="start-sketch">Start Sketch</span>
+              <Tooltip
+                delay={1250}
+                position="bottom"
+                className="!px-2 !text-xs"
+              >
+                Shortcut: S
+              </Tooltip>
             </ActionButton>
           </li>
         )}
@@ -132,6 +191,13 @@ export function Toolbar({
               disabled={disableAllButtons}
             >
               Edit Sketch
+              <Tooltip
+                delay={1250}
+                position="bottom"
+                className="!px-2 !text-xs"
+              >
+                Shortcut: S
+              </Tooltip>
             </ActionButton>
           </li>
         )}
@@ -149,6 +215,13 @@ export function Toolbar({
               disabled={disableAllButtons}
             >
               Exit Sketch
+              <Tooltip
+                delay={1250}
+                position="bottom"
+                className="!px-2 !text-xs"
+              >
+                Shortcut: Esc
+              </Tooltip>
             </ActionButton>
           </li>
         )}
@@ -172,6 +245,13 @@ export function Toolbar({
                 disabled={disableAllButtons}
               >
                 Line
+                <Tooltip
+                  delay={1250}
+                  position="bottom"
+                  className="!px-2 !text-xs"
+                >
+                  Shortcut: L
+                </Tooltip>
               </ActionButton>
             </li>
             <li className="contents" key="tangential-arc-button">
@@ -196,6 +276,13 @@ export function Toolbar({
                 }
               >
                 Tangential Arc
+                <Tooltip
+                  delay={1250}
+                  position="bottom"
+                  className="!px-2 !text-xs"
+                >
+                  Shortcut: A
+                </Tooltip>
               </ActionButton>
             </li>
             <li className="contents" key="rectangle-button">
@@ -225,6 +312,13 @@ export function Toolbar({
                 }
               >
                 Rectangle
+                <Tooltip
+                  delay={1250}
+                  position="bottom"
+                  className="!px-2 !text-xs"
+                >
+                  Shortcut: R
+                </Tooltip>
               </ActionButton>
             </li>
           </>
@@ -272,6 +366,13 @@ export function Toolbar({
               }}
             >
               Extrude
+              <Tooltip
+                delay={1250}
+                position="bottom"
+                className="!px-2 !text-xs"
+              >
+                Shortcut: E
+              </Tooltip>
             </ActionButton>
           </li>
         )}
