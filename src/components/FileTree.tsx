@@ -61,6 +61,8 @@ function RenameForm({
           ref={inputRef}
           type="text"
           autoFocus
+          autoCapitalize="off"
+          autoCorrect="off"
           placeholder={fileOrDir.name}
           className="w-full py-1 bg-transparent text-chalkboard-100 placeholder:text-chalkboard-70 dark:text-chalkboard-10 dark:placeholder:text-chalkboard-50 focus:outline-none focus:ring-0"
           onKeyDown={handleKeyDown}
