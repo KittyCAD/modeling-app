@@ -157,8 +157,13 @@ export const FileMachineProvider = ({
           )
         }
 
-        // If we just deleted the current file, navigate to the project root
-        if (event.data.path === file?.path && project?.path) {
+        // If we just deleted the current file or one of its parent directories,
+        // navigate to the project root
+        if (
+          (event.data.path === file?.path ||
+            file?.path.includes(event.data.path)) &&
+          project?.path
+        ) {
           navigate(paths.FILE + '/' + encodeURIComponent(project.path))
         }
 
