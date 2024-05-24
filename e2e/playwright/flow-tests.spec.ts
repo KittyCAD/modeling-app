@@ -47,6 +47,7 @@ test.beforeEach(async ({ context, page }) => {
       localStorage.setItem('TOKEN_PERSIST_KEY', token)
       localStorage.setItem('persistCode', ``)
       localStorage.setItem(settingsKey, settings)
+      localStorage.setItem('playwright', 'true')
     },
     {
       token: secrets.token,
@@ -2592,7 +2593,6 @@ test.describe('Testing segment overlays', () => {
     |> tangentialArcTo([3.14 + 13, 3.14], %)
         `
         )
-        localStorage.setItem('playwright', 'true')
       })
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
@@ -2735,7 +2735,6 @@ const part001 = startSketchOn('XZ')
   |> angledLineOfXLength({ angle: 181 + 0, length: 23.14 }, %)
         `
         )
-        localStorage.setItem('playwright', 'true')
       })
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
@@ -2808,7 +2807,6 @@ const part001 = startSketchOn('XZ')
     |> tangentialArcTo([3.14 + 13, 3.14], %)
         `
         )
-        localStorage.setItem('playwright', 'true')
       })
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
@@ -2918,7 +2916,6 @@ const part001 = startSketchOn('XZ')
     |> tangentialArcTo([3.14 + 13, 1.14], %)
         `
         )
-        localStorage.setItem('playwright', 'true')
       })
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
@@ -3056,7 +3053,6 @@ const part001 = startSketchOn('XZ')
     |> tangentialArcTo([3.14 + 13, -3.14], %)
         `
         )
-        localStorage.setItem('playwright', 'true')
       })
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
@@ -3156,7 +3152,6 @@ const part001 = startSketchOn('XZ')
   |> tangentialArcTo([3.14 + 13, 1.14], %)
         `
         )
-        localStorage.setItem('playwright', 'true')
       })
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
