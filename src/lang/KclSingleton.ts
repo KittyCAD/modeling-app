@@ -204,13 +204,6 @@ export class KclManager {
           padding: 0.1, // padding around the objects
         },
       })
-      // make sure client camera syncs after zoom to fit since zoom to fit doesn't return camera settings
-      // TODO: https://github.com/KittyCAD/engine/issues/2098
-      await this.engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: { type: 'default_camera_get_settings' },
-      })
     }
 
     this.isExecuting = false
