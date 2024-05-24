@@ -3794,7 +3794,7 @@ test('Engine disconnect & reconnect in sketch mode', async ({ page }) => {
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([-11.59, 11.1], %)
-  |> line([-14.44, 0], %)`)
+  |> line([-6.61, 0], %)`)
 
   // Unequip line tool
   await page.keyboard.press('Escape')
