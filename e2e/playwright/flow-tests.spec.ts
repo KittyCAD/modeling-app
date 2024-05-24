@@ -1696,7 +1696,11 @@ test('Hovering over 3d features highlights code', async ({ page }) => {
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
 
-  await page.waitForTimeout(100)
+  // wait for execution done
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
+
   await u.openAndClearDebugPanel()
   await u.sendCustomCmd({
     type: 'modeling_cmd_req',
@@ -1853,7 +1857,7 @@ fn yohey = (pos) => {
   await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
   await page.getByTestId('KCL Code').click()
-  await page.mouse.click(300, 500)
+  await page.mouse.click(734, 134)
   await page.getByTestId('KCL Code').click()
   // expect main content to contain `part005` i.e. started a new sketch
   await expect(page.locator('.cm-content')).toHaveText(
@@ -2218,6 +2222,12 @@ test('Sketch on face', async ({ page }) => {
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
+
+  // wait for execution done
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
+
   await expect(
     page.getByRole('button', { name: 'Start Sketch' })
   ).not.toBeDisabled()
@@ -2260,9 +2270,9 @@ test('Sketch on face', async ({ page }) => {
 
   await expect(page.locator('.cm-content'))
     .toContainText(`const part002 = startSketchOn(part001, 'seg01')
-  |> startProfileAt([-13.02, 6.52], %)
-  |> line([2.1, -0.18], %)
-  |> line([-2.23, -1.07], %)
+  |> startProfileAt([-12.94, 6.6], %)
+  |> line([2.45, -0.2], %)
+  |> line([-2.6, -1.25], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)`)
 
@@ -2273,7 +2283,7 @@ test('Sketch on face', async ({ page }) => {
   await u.updateCamPosition([1049, 239, 686])
   await u.closeDebugPanel()
 
-  await page.getByText('startProfileAt([-13.02, 6.52], %)').click()
+  await page.getByText('startProfileAt([-12.94, 6.6], %)').click()
   await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
   await u.doAndWaitForCmd(
     () => page.getByRole('button', { name: 'Edit Sketch' }).click(),
@@ -2312,7 +2322,7 @@ test('Sketch on face', async ({ page }) => {
   await page.getByRole('button', { name: 'Exit Sketch' }).click()
   await u.expectCmdLog('[data-message-type="execution-done"]')
 
-  await page.getByText('startProfileAt([-13.02, 6.52], %)').click()
+  await page.getByText('startProfileAt([-12.94, 6.6], %)').click()
 
   await expect(page.getByRole('button', { name: 'Extrude' })).not.toBeDisabled()
   await page.waitForTimeout(100)
@@ -2349,6 +2359,7 @@ test('Can code mod a line length', async ({ page }) => {
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
+
   await u.openDebugPanel()
   await u.expectCmdLog('[data-message-type="execution-done"]')
   await u.closeDebugPanel()
@@ -2408,6 +2419,7 @@ test('Extrude from command bar selects extrude line after', async ({
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
+
   await u.openDebugPanel()
   await u.expectCmdLog('[data-message-type="execution-done"]')
   await u.closeDebugPanel()
@@ -2599,7 +2611,11 @@ test.describe('Testing segment overlays', () => {
       await page.goto('/')
       await u.waitForAuthSkipAppStart()
 
-      await page.waitForTimeout(1000)
+      // wait for execution done
+      await u.openDebugPanel()
+      await u.expectCmdLog('[data-message-type="execution-done"]')
+      await u.closeDebugPanel()
+
       await u.openAndClearDebugPanel()
       await u.sendCustomCmd({
         type: 'modeling_cmd_req',
@@ -2741,6 +2757,11 @@ const part001 = startSketchOn('XZ')
       await page.goto('/')
       await u.waitForAuthSkipAppStart()
 
+      // wait for execution done
+      await u.openDebugPanel()
+      await u.expectCmdLog('[data-message-type="execution-done"]')
+      await u.closeDebugPanel()
+
       await page.getByText('xLine(26.04, %)').click()
       await page.waitForTimeout(100)
       await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -2812,6 +2833,11 @@ const part001 = startSketchOn('XZ')
       await page.setViewportSize({ width: 1200, height: 500 })
       await page.goto('/')
       await u.waitForAuthSkipAppStart()
+
+      // wait for execution done
+      await u.openDebugPanel()
+      await u.expectCmdLog('[data-message-type="execution-done"]')
+      await u.closeDebugPanel()
 
       await page.getByText('xLineTo(9 - 5, %)').click()
       await page.waitForTimeout(100)
@@ -2921,6 +2947,11 @@ const part001 = startSketchOn('XZ')
       await page.setViewportSize({ width: 1200, height: 500 })
       await page.goto('/')
       await u.waitForAuthSkipAppStart()
+
+      // wait for execution done
+      await u.openDebugPanel()
+      await u.expectCmdLog('[data-message-type="execution-done"]')
+      await u.closeDebugPanel()
 
       await page.getByText('xLineTo(9 - 5, %)').click()
       await page.waitForTimeout(100)
@@ -3059,6 +3090,11 @@ const part001 = startSketchOn('XZ')
       await page.goto('/')
       await u.waitForAuthSkipAppStart()
 
+      // wait for execution done
+      await u.openDebugPanel()
+      await u.expectCmdLog('[data-message-type="execution-done"]')
+      await u.closeDebugPanel()
+
       await page.getByText('xLineTo(9 - 5, %)').click()
       await page.waitForTimeout(100)
       await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -3157,6 +3193,11 @@ const part001 = startSketchOn('XZ')
       await page.setViewportSize({ width: 1200, height: 500 })
       await page.goto('/')
       await u.waitForAuthSkipAppStart()
+
+      // wait for execution done
+      await u.openDebugPanel()
+      await u.expectCmdLog('[data-message-type="execution-done"]')
+      await u.closeDebugPanel()
 
       await page.getByText('xLineTo(9 - 5, %)').click()
       await page.waitForTimeout(100)
