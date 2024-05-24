@@ -1136,22 +1136,6 @@ export class EngineCommandManager {
           this.resolveReady()
           setIsStreamReady(true)
           await executeCode()
-          await this.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'zoom_to_fit',
-              object_ids: [], // leave empty to zoom to all objects
-              padding: 0.1, // padding around the objects
-            },
-          })
-          // make sure client camera syncs after zoom to fit since zoom to fit doesn't return camera settings
-          // TODO: https://github.com/KittyCAD/engine/issues/2098
-          await this.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: { type: 'default_camera_get_settings' },
-          })
         })
       },
       onClose: () => {
