@@ -1,4 +1,4 @@
-import { TransformCallback, VarValueKeys, VarValues } from './stdTypes'
+import { TransformCallback, VarValues } from './stdTypes'
 import { toolTips, ToolTip } from '../../useStore'
 import { Selections, Selection } from 'lib/selections'
 import {

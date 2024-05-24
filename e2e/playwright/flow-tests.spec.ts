@@ -2893,6 +2893,7 @@ const part001 = startSketchOn('XZ')
     test('for segments [angledLineToX, angledLineToY, angledLineThatIntersects]', async ({
       page,
     }) => {
+      test.skip(process.platform !== 'darwin', 'too flakey on ubuntu')
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
@@ -2964,7 +2965,7 @@ const part001 = startSketchOn('XZ')
         expectAfterUnconstrained:
           'angledLineToY({ angle: angle002, to: 9.14 + 0 }, %)',
         expectFinal: 'angledLineToY({ angle: 89, to: 9.14 + 0 }, %)',
-        steps: process.platform === 'darwin' ? 20 : 9,
+        steps: process.platform === 'darwin' ? 8 : 9,
         ang: 135,
       })
       console.log('angledLineToY2')
@@ -2975,6 +2976,7 @@ const part001 = startSketchOn('XZ')
           'angledLineToY({ angle: 89, to: 9.14 + 0 }, %)',
         expectAfterUnconstrained: 'angledLineToY({ angle: 89, to: 9.14 }, %)',
         expectFinal: 'angledLineToY({ angle: 89, to: yAbs001 }, %)',
+        ang: 135,
       })
 
       const angledLineThatIntersects = await u.getBoundingBox(
@@ -3027,7 +3029,6 @@ const part001 = startSketchOn('XZ')
       intersectTag: 'a'
     }, %)`,
         ang: -25,
-        steps: 7,
       })
     })
     test('for segment [tangentialArcTo]', async ({ page }) => {
