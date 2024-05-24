@@ -54,6 +54,8 @@ export const FileMachineProvider = ({
               context.selectedDirectory + sep() + event.data.name
             )}`
           )
+        } else if (event.data && 'path' in event.data) {
+          navigate(`${paths.FILE}/${encodeURIComponent(event.data.path)}`)
         }
       },
       addFileToRenamingQueue: assign({
