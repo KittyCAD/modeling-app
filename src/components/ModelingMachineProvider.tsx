@@ -511,6 +511,12 @@ export const ModelingMachineProvider = ({
     kclManager.registerExecuteCallback(() => {
       modelingSend({ type: 'Re-execute' })
     })
+
+    // Before this component unmounts, call the 'Cancel'
+    // event to clean up any state in the modeling machine.
+    return () => {
+      modelingSend({ type: 'Cancel' })
+    }
   }, [modelingSend])
 
   // Give the state back to the editorManager.
@@ -533,6 +539,10 @@ export const ModelingMachineProvider = ({
     actor: modelingActor,
     commandBarConfig: modelingMachineConfig,
     allCommandsRequireNetwork: true,
+    // TODO for when sketch tools are in the toolbar: This was added when we used one "Cancel" event,
+    // but we need to support "SketchCancel" and basically
+    // make this function take the actor or state so it
+    // can call the correct event.
     onCancel: () => modelingSend({ type: 'Cancel' }),
   })
 
