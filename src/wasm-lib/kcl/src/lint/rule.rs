@@ -41,7 +41,7 @@ pub struct Discovered {
 impl IntoDiagnostic for Discovered {
     fn to_lsp_diagnostic(&self, code: &str) -> Diagnostic {
         let message = self.finding.title.to_owned();
-        let source_range = self.pos.clone();
+        let source_range = self.pos;
 
         Diagnostic {
             range: source_range.to_lsp_range(code),
