@@ -239,6 +239,7 @@ export class CameraControls {
             | 'default_camera_zoom'
             | 'camera_drag_end'
             | 'default_camera_get_settings'
+            | 'zoom_to_fit'
           >
         | UnreliableSubscription<'camera_drag_move'>
       )['callback']
@@ -301,6 +302,10 @@ export class CameraControls {
       })
       this.engineCommandManager.subscribeTo({
         event: 'default_camera_get_settings',
+        callback: cb,
+      })
+      this.engineCommandManager.subscribeTo({
+        event: 'zoom_to_fit',
         callback: cb,
       })
       this.engineCommandManager.subscribeToUnreliable({

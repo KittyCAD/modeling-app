@@ -12,7 +12,7 @@ import { loadAndValidateSettings } from './settings/settingsUtils'
 import makeUrlPathRelative from './makeUrlPathRelative'
 import { sep } from '@tauri-apps/api/path'
 import { readTextFile } from '@tauri-apps/plugin-fs'
-import { codeManager, kclManager } from 'lib/singletons'
+import { codeManager, engineCommandManager, kclManager } from 'lib/singletons'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import {
   getProjectInfo,
@@ -20,6 +20,7 @@ import {
   listProjects,
 } from './tauri'
 import { createSettings } from './settings/initialSettings'
+import { uuidv4 } from './utils'
 
 // The root loader simply resolves the settings and any errors that
 // occurred during the settings load
@@ -105,6 +106,22 @@ export const fileLoader: LoaderFunction = async ({
     codeManager.updateCurrentFilePath(current_file_path)
     codeManager.updateCodeStateEditor(code)
     kclManager.executeCode(true)
+    await engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'zoom_to_fit',
+        object_ids: [], // leave empty to zoom to all objects
+        padding: 0.1, // padding around the objects
+      },
+    })
+    // make sure client camera syncs after zoom to fit since zoom to fit doesn't return camera settings
+    // TODO: https://github.com/KittyCAD/engine/issues/2098
+    await engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: { type: 'default_camera_get_settings' },
+    })
 
     // Set the file system manager to the project path
     // So that WASM gets an updated path for operations
