@@ -3782,14 +3782,14 @@ test('Engine disconnect & reconnect in sketch mode', async ({ page }) => {
     .toHaveText(`const part001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
-  |> line([-3.76, 9.78], %)`)
+  |> line([-11.59, 11.1], %)`)
   await page.waitForTimeout(100)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
-  |> line([-3.76, 9.78], %)
+  |> line([-11.59, 11.1], %)
   |> line([-14.44, 0], %)`)
 
   // Unequip line tool
