@@ -133,7 +133,7 @@
     "@types/wait-on": "^5.3.4",
     "@types/wicg-file-system-access": "^2023.10.5",
     "@types/ws": "^8.5.10",
-    "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-react": "^4.3.0",
     "@vitest/web-worker": "^1.5.0",
     "@wdio/cli": "^8.24.3",
     "@wdio/globals": "^8.36.0",
