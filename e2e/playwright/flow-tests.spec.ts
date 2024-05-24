@@ -2566,7 +2566,7 @@ test.describe('Testing segment overlays', () => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `const part001 = startSketchOn('-XZ')
+          `const part001 = startSketchOn('XZ')
     |> startProfileAt([0, 0], %)
     |> line([0.5, -14 + 0], %)
     |> angledLine({ angle: 3 + 0, length: 32 + 0 }, %)
@@ -2593,6 +2593,28 @@ test.describe('Testing segment overlays', () => {
       await page.setViewportSize({ width: 1200, height: 500 })
       await page.goto('/')
       await u.waitForAuthSkipAppStart()
+
+      await page.waitForTimeout(1000)
+      await u.openAndClearDebugPanel()
+      await u.sendCustomCmd({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_look_at',
+          vantage: { x: 0, y: -1250, z: 580 },
+          center: { x: 0, y: 0, z: 0 },
+          up: { x: 0, y: 0, z: 1 },
+        },
+      })
+      await page.waitForTimeout(100)
+      await u.sendCustomCmd({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_get_settings',
+        },
+      })
+      await page.waitForTimeout(100)
 
       await page.getByText('xLineTo(9 - 5, %)').click()
       await page.waitForTimeout(100)
@@ -2704,7 +2726,7 @@ test.describe('Testing segment overlays', () => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `const part001 = startSketchOn('-XZ')
+          `const part001 = startSketchOn('XZ')
     |> startProfileAt([0, 0], %)
     |> line([0.5, -14 + 0], %)
     |> angledLine({ angle: 3 + 0, length: 32 + 0 }, %)
@@ -2813,7 +2835,7 @@ test.describe('Testing segment overlays', () => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `const part001 = startSketchOn('-XZ')
+          `const part001 = startSketchOn('XZ')
     |> startProfileAt([0, 0], %)
     |> line([0.5, -14 + 0], %)
     |> angledLine({ angle: 3 + 0, length: 32 + 0 }, %)
@@ -2949,7 +2971,7 @@ test.describe('Testing segment overlays', () => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `const part001 = startSketchOn('-XZ')
+          `const part001 = startSketchOn('XZ')
     |> startProfileAt([0, 0], %)
     |> line([0.5, -14 + 0], %)
     |> angledLine({ angle: 3 + 0, length: 32 + 0 }, %)
@@ -3049,7 +3071,7 @@ test.describe('Testing segment overlays', () => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `const part001 = startSketchOn('-XZ')
+          `const part001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([0.5, -14 + 0], %)
   |> angledLine({ angle: 3 + 0, length: 32 + 0 }, %)
@@ -3242,7 +3264,7 @@ test.describe('Testing segment overlays', () => {
             async ({ lineToBeDeleted, extraLine }) => {
               localStorage.setItem(
                 'persistCode',
-                `const part001 = startSketchOn('-XZ')
+                `const part001 = startSketchOn('XZ')
   |> startProfileAt([5, 6], %)
   |> ${lineToBeDeleted}
   |> line([-10, -15], %)
