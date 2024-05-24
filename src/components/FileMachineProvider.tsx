@@ -38,7 +38,7 @@ export const FileMachineProvider = ({
 }) => {
   const navigate = useNavigate()
   const { commandBarSend } = useCommandsContext()
-  const { project } = useRouteLoaderData(paths.FILE) as IndexLoaderData
+  const { project, file } = useRouteLoaderData(paths.FILE) as IndexLoaderData
 
   const [state, send] = useMachine(fileMachine, {
     context: {
@@ -122,6 +122,12 @@ export const FileMachineProvider = ({
           newDirPath + (name.endsWith(FILE_EXT) || isDir ? '' : FILE_EXT)
 
         await rename(oldPath, newPath, {})
+
+        // If we just renamed the current file, navigate to the new path
+        if (oldPath === file?.path && project?.path) {
+          navigate(paths.FILE + '/' + encodeURIComponent(newPath))
+        }
+
         return {
           message:
             oldName !== name &&
@@ -144,6 +150,12 @@ export const FileMachineProvider = ({
             console.error('Error deleting file', e)
           )
         }
+
+        // If we just deleted the current file, navigate to the project root
+        if (event.data.path === file?.path && project?.path) {
+          navigate(paths.FILE + '/' + encodeURIComponent(project.path))
+        }
+
         return `Successfully deleted ${isDir ? 'folder' : 'file'} "${
           event.data.name
         }"`
