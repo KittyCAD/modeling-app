@@ -1693,6 +1693,28 @@ test('Hovering over 3d features highlights code', async ({ page }) => {
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
 
+  await page.waitForTimeout(100)
+  await u.openAndClearDebugPanel()
+  await u.sendCustomCmd({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_look_at',
+      vantage: { x: 0, y: -1250, z: 580 },
+      center: { x: 0, y: 0, z: 0 },
+      up: { x: 0, y: 0, z: 1 },
+    },
+  })
+  await page.waitForTimeout(100)
+  await u.sendCustomCmd({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_get_settings',
+    },
+  })
+  await page.waitForTimeout(100)
+
   const extrusionTop: Coords2d = [800, 240]
   const flatExtrusionFace: Coords2d = [960, 160]
   const arc: Coords2d = [840, 160]
@@ -1827,7 +1849,9 @@ fn yohey = (pos) => {
   // selecting an editable sketch but clicking "start sktech" should start a new sketch and not edit the existing one
   await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await page.mouse.click(700, 200)
+  await page.getByTestId('KCL Code').click()
+  await page.mouse.click(300, 500)
+  await page.getByTestId('KCL Code').click()
   // expect main content to contain `part005` i.e. started a new sketch
   await expect(page.locator('.cm-content')).toHaveText(
     /part005 = startSketchOn\('XZ'\)/
@@ -1999,6 +2023,28 @@ test('Can edit segments by dragging their handles', async ({ page }) => {
   await expect(
     page.getByRole('button', { name: 'Start Sketch' })
   ).not.toBeDisabled()
+
+  await page.waitForTimeout(100)
+  await u.openAndClearDebugPanel()
+  await u.sendCustomCmd({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_look_at',
+      vantage: { x: 0, y: -1250, z: 580 },
+      center: { x: 0, y: 0, z: 0 },
+      up: { x: 0, y: 0, z: 1 },
+    },
+  })
+  await page.waitForTimeout(100)
+  await u.sendCustomCmd({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_get_settings',
+    },
+  })
+  await page.waitForTimeout(100)
 
   const startPX = [665, 458]
   const lineEndPX = [842, 458]
@@ -2180,7 +2226,7 @@ test('Sketch on face', async ({ page }) => {
 
   await u.openAndClearDebugPanel()
   await u.doAndWaitForCmd(
-    () => page.mouse.click(793, 133),
+    () => page.mouse.click(625, 133),
     'default_camera_get_settings',
     true
   )
@@ -2211,9 +2257,9 @@ test('Sketch on face', async ({ page }) => {
 
   await expect(page.locator('.cm-content'))
     .toContainText(`const part002 = startSketchOn(part001, 'seg01')
-  |> startProfileAt([-12.83, 6.7], %)
-  |> line([2.87, -0.23], %)
-  |> line([-3.05, -1.47], %)
+  |> startProfileAt([-13.02, 6.52], %)
+  |> line([2.1, -0.18], %)
+  |> line([-2.23, -1.07], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)`)
 
@@ -2224,7 +2270,7 @@ test('Sketch on face', async ({ page }) => {
   await u.updateCamPosition([1049, 239, 686])
   await u.closeDebugPanel()
 
-  await page.getByText('startProfileAt([-12.83, 6.7], %)').click()
+  await page.getByText('startProfileAt([-13.02, 6.52], %)').click()
   await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
   await u.doAndWaitForCmd(
     () => page.getByRole('button', { name: 'Edit Sketch' }).click(),
@@ -2263,15 +2309,17 @@ test('Sketch on face', async ({ page }) => {
   await page.getByRole('button', { name: 'Exit Sketch' }).click()
   await u.expectCmdLog('[data-message-type="execution-done"]')
 
-  await page.getByText('startProfileAt([-12.83, 6.7], %)').click()
+  await page.getByText('startProfileAt([-13.02, 6.52], %)').click()
 
   await expect(page.getByRole('button', { name: 'Extrude' })).not.toBeDisabled()
+  await page.waitForTimeout(100)
   await page.getByRole('button', { name: 'Extrude' }).click()
 
   await expect(page.getByTestId('command-bar')).toBeVisible()
   await page.waitForTimeout(100)
 
   await page.keyboard.press('Enter')
+  await page.waitForTimeout(100)
   await expect(page.getByText('Confirm Extrude')).toBeVisible()
   await page.keyboard.press('Enter')
 
@@ -2302,24 +2350,39 @@ test('Can code mod a line length', async ({ page }) => {
   await u.expectCmdLog('[data-message-type="execution-done"]')
   await u.closeDebugPanel()
 
-  // Click the line of code for xLine.
-  await page.getByText(`xLine(-20, %)`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
+  // Click the line of code for line.
+  await page.getByText(`line([0, 20], %)`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
   await page.waitForTimeout(100)
 
   // enter sketch again
   await page.getByRole('button', { name: 'Edit Sketch' }).click()
-  await page.waitForTimeout(350) // wait for animation
+  await page.waitForTimeout(500) // wait for animation
 
   const startXPx = 500
   await page.mouse.move(startXPx + PUR * 15, 250 - PUR * 10)
-  await page.mouse.click(615, 102)
+  await page.keyboard.down('Shift')
+  await page.mouse.click(834, 244)
+  await page.keyboard.up('Shift')
+
   await page.getByRole('button', { name: 'Constrain', exact: true }).click()
   await page.getByRole('button', { name: 'length', exact: true }).click()
   await page.getByText('Add constraining value').click()
 
   await expect(page.locator('.cm-content')).toHaveText(
-    `const length001 = 20const part001 = startSketchOn('XY')  |> startProfileAt([-10, -10], %)  |> line([20, 0], %)  |> line([0, 20], %)  |> xLine(-length001, %)`
+    `const length001 = 20const part001 = startSketchOn('XY')  |> startProfileAt([-10, -10], %)  |> line([20, 0], %)  |> angledLine([90, length001], %)  |> xLine(-20, %)`
   )
+
+  // Make sure we didn't pop out of sketch mode.
+  await expect(page.getByRole('button', { name: 'Exit Sketch' })).toBeVisible()
+
+  await page.waitForTimeout(500) // wait for animation
+
+  // Exit sketch
+  await page.mouse.move(startXPx + PUR * 15, 250 - PUR * 10)
+  await page.keyboard.press('Escape')
+  await expect(
+    page.getByRole('button', { name: 'Exit Sketch' })
+  ).not.toBeVisible()
 })
 
 test('Extrude from command bar selects extrude line after', async ({
