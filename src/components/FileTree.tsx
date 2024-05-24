@@ -133,13 +133,13 @@ const FileTreeItem = ({
   project,
   currentFile,
   fileOrDir,
-  onDoubleClick,
+  onNavigateToFile,
   level = 0,
 }: {
   project?: IndexLoaderData['project']
   currentFile?: IndexLoaderData['file']
   fileOrDir: FileEntry
-  onDoubleClick?: () => void
+  onNavigateToFile?: () => void
   level?: number
 }) => {
   const { send, context } = useFileContext()
@@ -181,7 +181,7 @@ const FileTreeItem = ({
       // Open kcl files
       navigate(`${paths.FILE}/${encodeURIComponent(fileOrDir.path)}`)
     }
-    onDoubleClick?.()
+    onNavigateToFile?.()
   }
 
   return (
@@ -292,7 +292,7 @@ const FileTreeItem = ({
                       fileOrDir={child}
                       project={project}
                       currentFile={currentFile}
-                      onDoubleClick={onDoubleClick}
+                      onNavigateToFile={onNavigateToFile}
                       level={level + 1}
                       key={level + '-' + child.path}
                     />
@@ -316,7 +316,7 @@ const FileTreeItem = ({
 interface FileTreeProps {
   className?: string
   file?: IndexLoaderData['file']
-  closePanel: (
+  onNavigateToFile: (
     focusableElement?:
       | HTMLElement
       | React.MutableRefObject<HTMLElement | null>
@@ -373,22 +373,25 @@ export const FileTreeMenu = () => {
   )
 }
 
-export const FileTree = ({ className = '', closePanel }: FileTreeProps) => {
+export const FileTree = ({
+  className = '',
+  onNavigateToFile: closePanel,
+}: FileTreeProps) => {
   return (
     <div className={className}>
       <div className="flex items-center gap-1 px-4 py-1 bg-chalkboard-20/40 dark:bg-chalkboard-80/50 border-b border-b-chalkboard-30 dark:border-b-chalkboard-80">
         <h2 className="flex-1 m-0 p-0 text-sm mono">Files</h2>
         <FileTreeMenu />
       </div>
-      <FileTreeInner onDoubleClick={closePanel} />
+      <FileTreeInner onNavigateToFile={closePanel} />
     </div>
   )
 }
 
 export const FileTreeInner = ({
-  onDoubleClick,
+  onNavigateToFile,
 }: {
-  onDoubleClick?: () => void
+  onNavigateToFile?: () => void
 }) => {
   const loaderData = useRouteLoaderData(paths.FILE) as IndexLoaderData
   const { send, context } = useFileContext()
@@ -412,7 +415,7 @@ export const FileTreeInner = ({
             project={context.project}
             currentFile={loaderData?.file}
             fileOrDir={fileOrDir}
-            onDoubleClick={onDoubleClick}
+            onNavigateToFile={onNavigateToFile}
             key={fileOrDir.path}
           />
         ))}
