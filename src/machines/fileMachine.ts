@@ -4,7 +4,7 @@ import { Project } from 'wasm-lib/kcl/bindings/Project'
 
 export const fileMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QDECWAbMACAtgQwGMALVAOzAGI9ZZUpSBtABgF1FQAHAe1oBdUupdiAAeiAKwBGcQDoALACYAHAE4AzGoUA2JXK1yANCACeiabOmSlGpkqsqAvg6NpMuQiXIUASmABmAE5wRMxsSCDcfAJC4WIIWgpMMtpqkgrKalJa0kamCJIA7AUySgX6mkwK4gXVckpOLhjY+MRkYDIAEtRYpFxYfk2wFADCQXi82AOYocKRqPyCwnGSmbJa4ulKquJqcnriuYiaKsm2BSpVTAVyTOJyDSCuzR5tnd1TcD5gpHg4k00zcJzBYxUBxFRKWRKLS3XRqFSSHTVQ4IXRJAppRJWSr6erOR5NdytchvWD9QYjMYTcnTVizHjzaJLMyrGTrTbbXb7FF3E6SOSaNRMJhaLQFeEKB5PImedpdMkfIYAETAmGpH0BnAZIOZ+VZ7OUnL26xRui0MnE2WkpQxq0l+OlLVlpJpnwA8hxvq7NRFtUzYizxGsNoaVDtjQcTIh1JISsLMiLUlIrlLCU7XvLXUMAMpgXhYWCqsAECYQLAQVBBEtcALGH3A-1gsxpYoIla6BQqcUqbIo65JGF3LRCjSSJj3B1pl4k0ZgcZkKCuigQQTtMgANy4AGt2gQqWAALQaulAv2LAN6vbJLtXc7KDYXFE3YoihQFJhqcXiJiFPGNNzpjOVILkuYABAENYyBw6DjH4NY4DIe5zhMR4AieWpROeTZ6paMgQlo6iKNIlSRnkdgyJonYKHIiLpDoBGpgB07tL4Pw4CBHzLquMgbtu7RBGxh7HmEGGMlhohHB+8hVDUVwQvy2gogk5ppBc9jZNY4h-gSTHEix3y-BxTQUGBEEBFBMG8HBAQIQJvxCWhIm+phoISQgxzyCoXmQmoShXPy0Ior55qihcFzZPGlSMc8ekyCqapGZgXEkrxO4yBARYocJ9IubqKy4SsNyWmkGhKMoPIQnhOg1G+5xhnY0Uyq88V5ollCmZB0GwfB6WZQ5tJOQ24nLJkxR6KUP6+XIPaIn2dzJDavnaN+w5aI1gH6XgFakIuirJWupCbmlYwQKhmCwPWZ6uXEdhqDIY6VNRiTimoYp9nU8i+QUdidsOlpqOtzEyL4W1tUMK4pYdfEyCdZ1wAwkiDVduq3fdwrpIoVwaG9UbudIyQ2F5Qrij+BSA7FIPbbtFIdeZXVWT1sOKpduUXqjD0Y892MFCi6QKHh4g9gKVE7K9a0PL0GXwOEjrMTlYnXYgCiaBa1xVHIdywtRKIHlC5QadRdjTRc5POpmvRZvLOoXpIhSxso751Hc00KJIQWdhRZRlKklTwmGE7-jFZvvIMVuNm5tvfWyhRFM7Gtvmopo3CUfm-kmBSu+IpuvLO847a6YfDWYdytpyWw7ELKg8sKca2Gkz6ItU2ckqxhn5x8heKwgyhJLU6ua1p2u43YsbWEVjsftY9qB01JItfw7dNJ3eUl3hZc+ZXppScr40Quj6jTzpQevJTYPLxeGxKCUmQXOO+yk0+00lE9pMCrbuzizPG0yB63xtef2FpByFLmGXyG99BV1xioWwFodiilGrcV2eInBAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QDECWAbMACAtgQwGMALVAOzAGI9ZZUpSBtABgF1FQAHAe1oBdUupdiAAeiAKwBGcQDoALACYAHAE4AzGoUA2JXK1yANCACeiabOmSlGpkqsqAvg6NpMuQiXIUASmABmAE5wRMxsSCDcfAJC4WIIWgpMMtpqkgrKalJa0kamCJIA7AUySgX6mkwK4gXVckpOLhjY+MRkYDIAEtRYpFxYfk2wFADCQXi82AOYocKRqPyCwnGSmbJa4ulKquJqcnriuYiaKsm2BSpVTAVyTOJyDSCuzR5tnd1TcD5gpHg4k00zcJzBYxUBxFRKWRKLS3XRqFSSHTVQ4IXRJAppRJWSr6erOR5NdytchvWD9QYjMYTcnTVizHjzaJLMyrGTrTbbXb7FF3E6SOSaNRMJhaLQFeEKB5PImedpdMkfIYAETAmGpH0BnAZIOZ+VZ7OUnL26xRui0MnE2WkpQxq0l+OlLVlpJpnwA8hxvq7NRFtUzYizxGsNoaVDtjQcTIh1JISsLMiLUlIrlLCU7XvLXUMAMpgXhYWCqsAECYQLAQVBBEtcALGH3A-1gsxpYoIla6BQqcUqbIo65JGF3LRCjSSJj3B1pl4k0ZgcZkKCuigQQTtMgANy4AGt2gQqWAALQaulAv2LAN6vbJLtXc7KDYXFE3YoihQFJhqcXiJiFPGNNzpjOVILkuYABAENYyBw6DjH4NY4DIe5zhMR4AieWpROeTZ6paMgQlo6iKNIlSRnkdgyJonYKHIiLpDoBGpgB07tL4Pw4CBHzLquMgbtu7RBGxh7HmEGGMlhohHB+8hVDUVwQvy2gogk5ppBc9jZNY4h-gSTHEix3y-BxTQUGBEEBFBMG8HBAQIQJvxCWhIm+phoISQgxzyCoXmQmoShXPy0Ior55qihcFzZPGlSMc8ekyCqapGZgXEkrxO4yBARYocJ9IubqKy4SsNyWmkGhKMoPIQnhOg1G+5xhnY0Uyq88V5ollCmZB0GwfB6WZQ5tJOQ24nLJkxR6KUP6+XIPaIn2dzJDavnaN+w5aI1gH6XgFakIuirJWupCbmlYwQKhmCwPWZ6uXEdhqDIY6VNRiTimoYp9nU8i+QUdidsOlpqOtzEyL4W1tUMK4pYdfEyCdZ1wAwkiDVduq3fdwrpIoVwaG9UbudIyQ2F5Qrij+BSA7FIPbbtFIdeZXVWT1sOKpduUXqjD0Y892MFCi6QKHh4g9gKVE7K9a0PL0GXwOEjrMTlYnXYgCiaBa1xVHIdywtRKIHlC5SWmGH4qBrezk86ma9Fm8s6hekiFLGyjvnUdzTQokhBZ2FFlGUqSVPCYYTv+MXm+8gzW42bl299bKFEULsa2+aimjcJR+b+SYFG74hm68s7zjtrrh8NZh3K2nJbDsQsqDywpxrYaTPoi1Q5ySrGGQXHxF4rCDKEktTq5rWna7jdixtYRVOx+1j2kHTUki1-Ad00Xd5aXeHlz5VemlJyvjRC6PqDPOnB68lNgyvF4bEoJSZBc477KTT7TSUT2kwKdu7OLs8bTIHrfG1F9sLSDkGXMMvlN76GrrjFQtgLQ7FFKNW4bs8ROCAA */
     id: 'File machine',
 
     initial: 'Reading files',
@@ -66,7 +66,7 @@ export const fileMachine = createMachine(
           onDone: [
             {
               target: 'Reading files',
-              actions: ['toastSuccess', 'addFileToRenamingQueue'],
+              actions: ["createToastSuccess", 'addFileToRenamingQueue'],
             },
           ],
           onError: [
@@ -160,7 +160,21 @@ export const fileMachine = createMachine(
             type: 'done.invoke.read-files'
             data: Project
           }
-        | { type: 'done.invoke.create-file'; data: string }
+        | {
+            type: 'done.invoke.rename-file'
+            data: {
+              message: string
+              oldPath: string
+              newPath: string
+            }
+          }
+        | {
+            type: 'done.invoke.create-file'
+            data: {
+              message: string
+              path: string
+            }
+          }
         | { type: 'assign'; data: { [key: string]: any } }
         | { type: 'Refresh' },
     },

@@ -59,27 +59,20 @@ export const FileMachineProvider = ({
       addFileToRenamingQueue: assign({
         itemsBeingRenamed: (context, event) => [
           ...context.itemsBeingRenamed,
-          event.data.match(`^Successfully created "(.*)"$`)![1],
+          event.data.path,
         ],
       }),
       removeFileFromRenamingQueue: assign({
-        itemsBeingRenamed: (context, event) =>
-          'data' in event && typeof event.data === 'string'
-            ? context.itemsBeingRenamed.filter(
-                (item) =>
-                  item !==
-                  (event.data as string).match(
-                    `^Successfully renamed ".*" to "(.*)"$`
-                  )![1]
-              )
-            : context.itemsBeingRenamed,
+        itemsBeingRenamed: (
+          context,
+          event: EventFrom<typeof fileMachine, 'done.invoke.rename-file'>
+        ) =>
+          context.itemsBeingRenamed.filter(
+            (path) => path !== event.data.oldPath
+          ),
       }),
-      renameToastSuccess: (_, event) =>
-        event.data &&
-        event.data instanceof Object &&
-        'message' in event.data &&
-        typeof event.data.message === 'string' &&
-        toast.success(event.data.message),
+      renameToastSuccess: (_, event) => toast.success(event.data.message),
+      createToastSuccess: (_, event) => toast.success(event.data.message),
       toastSuccess: (_, event) =>
         event.data && toast.success((event.data || '') + ''),
       toastError: (_, event) => toast.error((event.data || '') + ''),
@@ -95,20 +88,25 @@ export const FileMachineProvider = ({
         }
       },
       createFile: async (context, event) => {
-        let name = event.data.name.trim() || DEFAULT_FILE_NAME
+        let createdName = event.data.name.trim() || DEFAULT_FILE_NAME
+        let createdPath: string
 
         if (event.data.makeDir) {
-          await mkdir(await join(context.selectedDirectory.path, name))
+          createdPath = await join(context.selectedDirectory.path, createdName)
+          await mkdir(createdPath)
         } else {
-          await create(
+          createdPath =
             context.selectedDirectory.path +
-              sep() +
-              name +
-              (name.endsWith(FILE_EXT) ? '' : FILE_EXT)
-          )
+            sep() +
+            createdName +
+            (createdName.endsWith(FILE_EXT) ? '' : FILE_EXT)
+          await create(createdPath)
         }
 
-        return `Successfully created "${name}"`
+        return {
+          message: `Successfully created "${createdName}"`,
+          path: createdPath,
+        }
       },
       renameFile: async (
         context: ContextFrom<typeof fileMachine>,
@@ -136,10 +134,9 @@ export const FileMachineProvider = ({
         }
 
         return {
-          message:
-            oldName !== name &&
-            `Successfully renamed "${oldName}" to "${name}"`,
-          path: newPath,
+          message: `Successfully renamed "${oldName}" to "${name}"`,
+          newPath,
+          oldPath,
         }
       },
       deleteFile: async (

@@ -163,6 +163,13 @@ const FileTreeItem = ({
       }),
     [fileContext.itemsBeingRenamed, fileOrDir.path, fileSend]
   )
+
+  useEffect(
+    () =>
+      console.log('context.itemsBeingRenamed', fileContext.itemsBeingRenamed),
+    [fileContext.itemsBeingRenamed]
+  )
+
   const addCurrentItemToRenaming = useCallback(() => {
     fileSend({
       type: 'assign',
