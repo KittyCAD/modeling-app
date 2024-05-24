@@ -157,7 +157,7 @@ export class CoreDumpManager {
 
   // Currently just a placeholder to begin loading singleton and xstate data into
   getClientState(): Promise<string> {
-    const deepClone = (obj) => JSON.parse(JSON.stringify(obj))
+    const deepClone = (obj: any) => JSON.parse(JSON.stringify(obj))
 
     // TODO: dshaw set to ClientState once ts-rs bindings get set
     let clientState: ClientState = {
