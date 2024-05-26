@@ -773,6 +773,78 @@ export class CameraControls {
     })
   }
 
+  async updateCameraToAxis(
+    axis: 'x' | 'y' | 'z' | '-x' | '-y' | '-z' | 'reset'
+  ): Promise<void> {
+    if (axis === 'reset') {
+      await this.resetCameraPosition()
+      return
+    }
+
+    const distance = this.camera.position.distanceTo(this.target)
+
+    let vantage = { x: 0, y: 0, z: 0 }
+    let up = { x: 0, y: 0, z: 0 }
+
+    if (axis === 'x') {
+      vantage = { x: distance, y: 0, z: 0 }
+      up = { x: 0, y: 0, z: 1 }
+    } else if (axis === 'y') {
+      vantage = { x: 0, y: distance, z: 0 }
+      up = { x: 0, y: 0, z: 1 }
+    } else if (axis === 'z') {
+      vantage = { x: 0, y: 0, z: distance }
+      up = { x: -1, y: 0, z: 0 }
+    } else if (axis === '-x') {
+      vantage = { x: -distance, y: 0, z: 0 }
+      up = { x: 0, y: 0, z: 1 }
+    } else if (axis === '-y') {
+      vantage = { x: 0, y: -distance, z: 0 }
+      up = { x: 0, y: 0, z: 1 }
+    } else if (axis === '-z') {
+      vantage = { x: 0, y: 0, z: -distance }
+      up = { x: -1, y: 0, z: 0 }
+    }
+
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        center: { x: 0, y: 0, z: 0 },
+        vantage: vantage,
+        up: up,
+      },
+    })
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+  }
+
+  async resetCameraPosition(): Promise<void> {
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        center: { x: 0, y: 0, z: 0 },
+        vantage: { x: 5, y: 5, z: 5 },
+        up: { x: 0, y: 0, z: 1 },
+      },
+    })
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+  }
+
   async tweenCameraToQuaternion(
     targetQuaternion: Quaternion,
     targetPosition = new Vector3(),
