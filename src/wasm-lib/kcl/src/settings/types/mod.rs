@@ -1102,4 +1102,31 @@ color = 1567.4"#;
 
         std::fs::remove_dir_all(&settings.settings.project.directory).unwrap();
     }
+
+    #[tokio::test]
+    async fn test_list_projects_with_dir_not_containing_kcl_file() {
+        let mut settings = Configuration::default();
+        settings.settings.project.directory =
+            std::env::temp_dir().join(format!("test_project_{}", uuid::Uuid::new_v4()));
+
+        let project_name = format!("test_project_{}", uuid::Uuid::new_v4());
+        let project = settings
+            .create_new_project_directory(&project_name, None)
+            .await
+            .unwrap();
+
+        // Create a directory in the project directory that doesn't contain a KCL file.
+        let random_dir = std::path::Path::new(&settings.settings.project.directory).join("random_dir");
+        tokio::fs::create_dir_all(&random_dir).await.unwrap();
+
+        let projects = settings.list_projects().await.unwrap();
+        assert_eq!(projects.len(), 1);
+        assert_eq!(projects[0].file.name, project_name);
+        assert_eq!(projects[0].file.path, project.file.path);
+        assert_eq!(projects[0].kcl_file_count, 1);
+        assert_eq!(projects[0].directory_count, 0);
+        assert_eq!(projects[0].default_file, project.default_file);
+
+        std::fs::remove_dir_all(&settings.settings.project.directory).unwrap();
+    }
 }

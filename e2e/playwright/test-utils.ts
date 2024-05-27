@@ -95,10 +95,10 @@ async function waitForCmdReceive(page: Page, commandType: string) {
 }
 
 export async function getUtils(page: Page) {
+  // Chrome devtools protocol session only works in Chromium
+  const browserType = page.context().browser()?.browserType().name()
   const cdpSession =
-    process.platform === 'darwin'
-      ? null
-      : await page.context().newCDPSession(page)
+    browserType !== 'chromium' ? null : await page.context().newCDPSession(page)
 
   return {
     waitForAuthSkipAppStart: () => waitForPageLoad(page),

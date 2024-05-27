@@ -73,6 +73,10 @@ import { useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { getVarNameModal } from 'hooks/useToolbarGuards'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
+import {
+  EngineConnectionState,
+  EngineConnectionStateType,
+} from 'lang/std/engineConnection'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -637,6 +641,12 @@ export const ModelingMachineProvider = ({
     kclManager.registerExecuteCallback(() => {
       modelingSend({ type: 'Re-execute' })
     })
+
+    // Before this component unmounts, call the 'Cancel'
+    // event to clean up any state in the modeling machine.
+    return () => {
+      modelingSend({ type: 'Cancel' })
+    }
   }, [modelingSend])
 
   // Give the state back to the editorManager.
@@ -652,6 +662,19 @@ export const ModelingMachineProvider = ({
     editorManager.selectionRanges = modelingState.context.selectionRanges
   }, [modelingState.context.selectionRanges])
 
+  useEffect(() => {
+    const offlineCallback = () => {
+      // If we are in sketch mode we need to exit it.
+      // TODO: how do i check if we are in a sketch mode, I only want to call
+      // this then.
+      modelingSend({ type: 'Cancel' })
+    }
+    window.addEventListener('offline', offlineCallback)
+    return () => {
+      window.removeEventListener('offline', offlineCallback)
+    }
+  }, [modelingSend])
+
   useStateMachineCommands({
     machineId: 'modeling',
     state: modelingState,
@@ -659,6 +682,10 @@ export const ModelingMachineProvider = ({
     actor: modelingActor,
     commandBarConfig: modelingMachineConfig,
     allCommandsRequireNetwork: true,
+    // TODO for when sketch tools are in the toolbar: This was added when we used one "Cancel" event,
+    // but we need to support "SketchCancel" and basically
+    // make this function take the actor or state so it
+    // can call the correct event.
     onCancel: () => modelingSend({ type: 'Cancel' }),
   })
 
