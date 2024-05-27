@@ -58,21 +58,45 @@ export default function Gizmo() {
     scene.add(...gizmoAxes, ...gizmoAxisHeads)
 
     const raycaster = new Raycaster()
-    const mouse = initializeMouseEvents(canvas, raycasterIntersect, sceneInfra)
+    const { mouse, disposeMouseEvents } = initializeMouseEvents(
+      canvas,
+      raycasterIntersect,
+      sceneInfra
+    )
     const raycasterObjects = [...gizmoAxisHeads]
 
     const clock = new Clock()
     const clientCamera = sceneInfra.camControls.camera
     let currentQuaternion = new Quaternion().copy(clientCamera.quaternion)
 
-    const animate = () => {
-      requestAnimationFrame(animate)
-      updateCameraOrientation(
-        camera,
-        currentQuaternion,
-        sceneInfra.camControls.camera.quaternion,
-        clock.getDelta()
+    const quaternionsEqual = (
+      q1: Quaternion,
+      q2: Quaternion,
+      tolerance: number = 0.001
+    ): boolean => {
+      return (
+        Math.abs(q1.x - q2.x) < tolerance &&
+        Math.abs(q1.y - q2.y) < tolerance &&
+        Math.abs(q1.z - q2.z) < tolerance &&
+        Math.abs(q1.w - q2.w) < tolerance
       )
+    }
+
+    const animate = () => {
+      const delta = clock.getDelta()
+      if (
+        !quaternionsEqual(
+          currentQuaternion,
+          sceneInfra.camControls.camera.quaternion
+        )
+      ) {
+        updateCameraOrientation(
+          camera,
+          currentQuaternion,
+          sceneInfra.camControls.camera.quaternion,
+          delta
+        )
+      }
       updateRayCaster(
         raycasterObjects,
         raycaster,
@@ -81,11 +105,13 @@ export default function Gizmo() {
         raycasterIntersect
       )
       renderer.render(scene, camera)
+      requestAnimationFrame(animate)
     }
     animate()
 
     return () => {
       renderer.dispose()
+      disposeMouseEvents()
     }
   }, [])
 
@@ -176,7 +202,7 @@ const initializeMouseEvents = (
   canvas: HTMLCanvasElement,
   raycasterIntersect: MutableRefObject<Intersection<Object3D> | null>,
   sceneInfra: SceneInfra
-): Vector2 => {
+): { mouse: Vector2; disposeMouseEvents: () => void } => {
   const mouse = new Vector2()
   mouse.x = 1 // fix initial mouse position issue
 
@@ -196,7 +222,12 @@ const initializeMouseEvents = (
   window.addEventListener('mousemove', handleMouseMove)
   window.addEventListener('click', handleClick)
 
-  return mouse
+  const disposeMouseEvents = () => {
+    window.removeEventListener('mousemove', handleMouseMove)
+    window.removeEventListener('click', handleClick)
+  }
+
+  return { mouse, disposeMouseEvents }
 }
 
 const updateRayCaster = (
@@ -211,7 +242,7 @@ const updateRayCaster = (
     raycasterIntersect.current = null
     return
   }
-  
+
   raycaster.setFromCamera(mouse, camera)
   const intersects = raycaster.intersectObjects(objects)
 
