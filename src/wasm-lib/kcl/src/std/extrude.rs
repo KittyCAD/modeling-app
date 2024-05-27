@@ -29,7 +29,7 @@ pub async fn extrude(args: Args) -> Result<MemoryItem, KclError> {
 /// Extrudes by a given amount.
 ///
 /// ```no_run
-/// const example = startSketchOn('-XZ')
+/// const example = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> arc({
@@ -50,7 +50,7 @@ pub async fn extrude(args: Args) -> Result<MemoryItem, KclError> {
 /// ```
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([-10, 0], %)
 ///   |> arc({
 ///     angle_end: -60,

@@ -33,6 +33,15 @@
       "identifier": "fs:scope",
       "allow": [
         {
+          "path": "$TEMP"
+        },
+        {
+          "path": "$TEMP/**/*"
+        },
+        {
+          "path": "$HOME"
+        },
+        {
           "path": "$HOME/**/*"
         },
         {
@@ -56,6 +65,33 @@
       ]
     },
     "shell:allow-open",
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "open",
+          "cmd": "open",
+          "args": [
+            "-R",
+            {
+              "validator": "\\S+"
+            }
+          ],
+          "sidecar": false
+        },
+        {
+          "name": "explorer",
+          "cmd": "explorer",
+          "args": [
+            "/select",
+            {
+              "validator": "\\S+"
+            }
+          ],
+          "sidecar": false
+        }
+      ]
+    },
     "dialog:allow-open",
     "dialog:allow-save",
     "dialog:allow-message",

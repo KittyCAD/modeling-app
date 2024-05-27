@@ -8,23 +8,43 @@ import { Project } from 'wasm-lib/kcl/bindings/Project'
 import { FileEntry } from 'wasm-lib/kcl/bindings/FileEntry'
 import { ProjectState } from 'wasm-lib/kcl/bindings/ProjectState'
 import { ProjectRoute } from 'wasm-lib/kcl/bindings/ProjectRoute'
+import { isTauri } from './isTauri'
 
 // Get the app state from tauri.
 export async function getState(): Promise<ProjectState | undefined> {
+  if (!isTauri()) {
+    return undefined
+  }
   return await invoke<ProjectState | undefined>('get_state')
 }
 
 // Set the app state in tauri.
 export async function setState(state: ProjectState | undefined): Promise<void> {
+  if (!isTauri()) {
+    return
+  }
   return await invoke('set_state', { state })
+}
+
+export async function renameProjectDirectory(
+  projectPath: string,
+  newName: string
+): Promise<string> {
+  return invoke<string>('rename_project_directory', { projectPath, newName })
 }
 
 // Get the initial default dir for holding all projects.
 export async function getInitialDefaultDir(): Promise<string> {
+  if (!isTauri()) {
+    return ''
+  }
   return invoke<string>('get_initial_default_dir')
 }
 
 export async function showInFolder(path: string | undefined): Promise<void> {
+  if (!isTauri()) {
+    return
+  }
   if (!path) {
     console.error('path is undefined cannot call tauri showInFolder')
     return
@@ -34,7 +54,10 @@ export async function showInFolder(path: string | undefined): Promise<void> {
 
 export async function initializeProjectDirectory(
   settings: Configuration
-): Promise<string> {
+): Promise<string | undefined> {
+  if (!isTauri()) {
+    return undefined
+  }
   return await invoke<string>('initialize_project_directory', {
     configuration: settings,
   })
@@ -127,24 +150,20 @@ export async function writeAppSettingsFile(
 
 // Read project settings file.
 export async function readProjectSettingsFile(
-  appSettings: Configuration,
-  projectName: string
+  projectPath: string
 ): Promise<ProjectConfiguration> {
   return await invoke<ProjectConfiguration>('read_project_settings_file', {
-    appSettings,
-    projectName,
+    projectPath,
   })
 }
 
 // Write project settings file.
 export async function writeProjectSettingsFile(
-  appSettings: Configuration,
-  projectName: string,
+  projectPath: string,
   settings: ProjectConfiguration
 ): Promise<void> {
   return await invoke('write_project_settings_file', {
-    appSettings,
-    projectName,
+    projectPath,
     configuration: settings,
   })
 }

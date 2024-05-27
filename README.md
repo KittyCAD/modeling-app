@@ -59,7 +59,9 @@ followed by:
 ```
 yarn build:wasm-dev
 ```
+
 or if you have the gh cli installed
+
 ```
 ./get-latest-wasm-bundle.sh # this will download the latest main wasm bundle
 ```
@@ -100,6 +102,7 @@ yarn test
 Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testing Library E2E](https://testing-library.com/docs/react-testing-library/intro/) tests, in interactive mode by default.
 
 For running the rust (not tauri rust though) only, you can
+
 ```bash
 cd src/wasm-lib
 cargo test
@@ -162,6 +165,7 @@ console.log(
 - `)
 )
 ```
+
 grab the md list and delete any that are older than the last bump
 
 2. Merge the PR
@@ -191,23 +195,26 @@ $ cargo +nightly fuzz run parser
 For more information on fuzzing you can check out
 [this guide](https://rust-fuzz.github.io/book/cargo-fuzz.html).
 
-
 ### Playwright
 
 First time running plawright locally, you'll need to add the secrets file
+
 ```bash
 touch ./e2e/playwright/playwright-secrets.env
 printf 'token="your-token"\nsnapshottoken="your-snapshot-token"' > ./e2e/playwright/playwright-secrets.env
 ```
+
 then replace "your-token" with a dev token from dev.zoo.dev/account/api-tokens
 
 then:
 run playwright
+
 ```
 yarn playwright test
 ```
 
 run a specific test suite
+
 ```
 yarn playwright test src/e2e-tests/example.spec.ts
 ```
@@ -216,14 +223,17 @@ run a specific test change the test from `test('...` to `test.only('...`
 (note if you commit this, the tests will instantly fail without running any of the tests)
 
 run headed
+
 ```
 yarn playwright test --headed
 ```
 
 run with step through debugger
+
 ```
 PWDEBUG=1 yarn playwright test
 ```
+
 However, if you want a debugger I recommend using VSCode and the `playwright` extension, as the above command is a cruder debugger that steps into every function call which is annoying.
 With the extension you can set a breakpoint after `waitForDefaultPlanesVisibilityChange` in order to skip app loading, then the vscode debugger's "step over" is much better for being able to stay at the right level of abstraction as you debug the code.
 
@@ -268,12 +278,11 @@ Where `./store` should look like this
 
 </details>
 
-
 However because much of our tests involve clicking in the stream at specific locations, it's code-gen looks `await page.locator('video').click();` when really we need to use a pixel coord, so I think it's of limited use.
 
 #### Some notes on CI
 
-The tests are broken into snapshot tests and non-snapshot tests, and they run in that order, they automatically commit new snap shots, so if you see an image commit check it was an intended change. If we have non-determinism in the snapshots such that they are always committing new images, hopefully this annoyance makes us fix them asap, if you notice this happening let Kurt know. But for the odd occasion  `git reset --hard HEAD~ && git push -f` is your friend.
+The tests are broken into snapshot tests and non-snapshot tests, and they run in that order, they automatically commit new snap shots, so if you see an image commit check it was an intended change. If we have non-determinism in the snapshots such that they are always committing new images, hopefully this annoyance makes us fix them asap, if you notice this happening let Kurt know. But for the odd occasion `git reset --hard HEAD~ && git push -f` is your friend.
 
 How to interpret failing playwright tests?
 If your tests fail, click through to the action and see that the tests failed on a line that includes `await page.getByTestId('loading').waitFor({ state: 'detached' })`, this means the test fail because the stream never started. It's you choice if you want to re-run the test, or ignore the failure.
@@ -300,7 +309,6 @@ PS: for the debug panel, the following JSON is useful for snapping the camera
 
 </details>
 
-
 ### Tauri e2e tests
 
 #### Windows (local only until the CI edge version mismatch is fixed)
@@ -319,3 +327,7 @@ $env:E2E_APPLICATION=".\src-tauri\target\debug\Zoo Modeling App.exe"
 Stop-Process -Name msedgedriver
 yarn wdio run wdio.conf.ts
 ```
+
+## KCL
+
+For how to contribute to KCL, [see our KCL README](https://github.com/KittyCAD/modeling-app/tree/main/src/wasm-lib/kcl).

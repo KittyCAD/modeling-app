@@ -176,7 +176,11 @@ export class KclManager {
   // This NEVER updates the code, if you want to update the code DO NOT add to
   // this function, too many other things that don't want it exist.
   // just call to codeManager from wherever you want in other files.
-  async executeAst(ast: Program = this._ast, executionId?: number) {
+  async executeAst(
+    ast: Program = this._ast,
+    zoomToFit?: boolean,
+    executionId?: number
+  ): Promise<void> {
     await this?.engineCommandManager?.waitForReady
     const currentExecutionId = executionId || Date.now()
     this._cancelTokens.set(currentExecutionId, false)
@@ -188,7 +192,20 @@ export class KclManager {
       engineCommandManager: this.engineCommandManager,
     })
     sceneInfra.modelingSend({ type: 'code edit during sketch' })
-    enterEditMode(programMemory, this.engineCommandManager)
+    defaultSelectionFilter(programMemory, this.engineCommandManager)
+
+    if (zoomToFit) {
+      await this.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'zoom_to_fit',
+          object_ids: [], // leave empty to zoom to all objects
+          padding: 0.1, // padding around the objects
+        },
+      })
+    }
+
     this.isExecuting = false
     // Check the cancellation token for this execution before applying side effects
     if (this._cancelTokens.get(currentExecutionId)) {
@@ -259,14 +276,14 @@ export class KclManager {
       this._cancelTokens.set(key, true)
     })
   }
-  executeCode(force?: boolean) {
+  async executeCode(force?: boolean, zoomToFit?: boolean): Promise<void> {
     // If we want to force it we don't want to defer it.
     if (!force) return this._defferer(codeManager.code)
 
     const ast = this.safeParse(codeManager.code)
     if (!ast) return
     this.ast = { ...ast }
-    return this.executeAst(ast)
+    return this.executeAst(ast, zoomToFit)
   }
   format() {
     const originalCode = codeManager.code
@@ -348,9 +365,6 @@ export class KclManager {
     void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, true)
     void this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, true)
   }
-  enterEditMode() {
-    enterEditMode(this.programMemory, this.engineCommandManager)
-  }
   exitEditMode() {
     this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
@@ -358,9 +372,12 @@ export class KclManager {
       cmd: { type: 'edit_mode_exit' },
     })
   }
+  defaultSelectionFilter() {
+    defaultSelectionFilter(this.programMemory, this.engineCommandManager)
+  }
 }
 
-function enterEditMode(
+function defaultSelectionFilter(
   programMemory: ProgramMemory,
   engineCommandManager: EngineCommandManager
 ) {

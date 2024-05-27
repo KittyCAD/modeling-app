@@ -37,6 +37,18 @@ pub async fn circle(args: Args) -> Result<MemoryItem, KclError> {
 ///
 /// const example = extrude(5, exampleSketch)
 /// ```
+///
+/// ```no_run
+/// const exampleSketch = startSketchOn("XZ")
+///   |> startProfileAt([-15, 0], %)
+///   |> line([30, 0], %)
+///   |> line([0, 30], %)
+///   |> line([-30, 0], %)
+///   |> close(%)
+///   |> hole(circle([0, 15], 5, %), %)
+///
+/// const example = extrude(5, exampleSketch)
+///
 #[stdlib {
     name = "circle",
 }]

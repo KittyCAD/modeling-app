@@ -13,17 +13,19 @@ export function LowerRightControls(props: React.PropsWithChildren) {
   const linkOverrideClassName =
     '!text-chalkboard-70 hover:!text-chalkboard-80 dark:!text-chalkboard-40 dark:hover:!text-chalkboard-30'
 
+  const isPlayWright = window?.localStorage.getItem('playwright') === 'true'
+
   return (
-    <section className="fixed bottom-2 right-2">
+    <section className="fixed bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
       {props.children}
-      <menu className="flex items-center justify-end gap-3">
+      <menu className="flex items-center justify-end gap-3 pointer-events-auto">
         <a
           href={`https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`}
           target="_blank"
           rel="noopener noreferrer"
           className={'!no-underline font-mono text-xs ' + linkOverrideClassName}
         >
-          v{APP_VERSION}
+          v{isPlayWright ? '11.22.33' : APP_VERSION}
         </a>
         <a
           href="https://github.com/KittyCAD/modeling-app/issues/new/choose"
