@@ -7,6 +7,7 @@ import { NetworkHealthState } from '../hooks/useNetworkStatus'
 
 export const NETWORK_HEALTH_TEXT: Record<NetworkHealthState, string> = {
   [NetworkHealthState.Ok]: 'Connected',
+  [NetworkHealthState.Weak]: 'Weak',
   [NetworkHealthState.Issue]: 'Problem',
   [NetworkHealthState.Disconnected]: 'Offline',
 }
@@ -47,6 +48,10 @@ const overallConnectionStateColor: Record<NetworkHealthState, IconColorConfig> =
       icon: 'text-succeed-80 dark:text-succeed-10',
       bg: 'bg-succeed-10/30 dark:bg-succeed-80/50',
     },
+    [NetworkHealthState.Weak]: {
+      icon: 'text-warn-80 dark:text-warn-10',
+      bg: 'bg-warn-10 dark:bg-warn-80/80',
+    },
     [NetworkHealthState.Issue]: {
       icon: 'text-destroy-80 dark:text-destroy-10',
       bg: 'bg-destroy-10 dark:bg-destroy-80/80',
@@ -62,6 +67,7 @@ const overallConnectionStateIcon: Record<
   ActionIconProps['icon']
 > = {
   [NetworkHealthState.Ok]: 'network',
+  [NetworkHealthState.Weak]: 'network',
   [NetworkHealthState.Issue]: 'networkCrossedOut',
   [NetworkHealthState.Disconnected]: 'networkCrossedOut',
 }
@@ -76,6 +82,7 @@ export const NetworkHealthIndicator = () => {
     error,
     setHasCopied,
     hasCopied,
+    pingPongHealth,
   } = useNetworkContext()
 
   return (
