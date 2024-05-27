@@ -28,7 +28,7 @@
     "@testing-library/user-event": "^14.5.2",
     "@ts-stack/markdown": "^1.5.0",
     "@tweenjs/tween.js": "^23.1.1",
-    "@types/node": "^18.19.31",
+    "@types/node": "^18.19.33",
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.2.25",
     "@uiw/react-codemirror": "^4.21.25",
