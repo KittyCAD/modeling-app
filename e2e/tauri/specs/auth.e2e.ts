@@ -3,6 +3,7 @@ import fs from 'fs/promises'
 import path from 'path'
 import os from 'os'
 
+const isWin32 = os.platform() === 'win32'
 const documentsDir = path.join(os.homedir(), 'Documents')
 const userSettingsDir = path.join(
   os.homedir(),
@@ -78,6 +79,7 @@ describe('ZMA (Tauri)', () => {
     console.log(cr.status)
 
     // Now should be signed in
+    await new Promise((resolve) => setTimeout(resolve, 1000))
     const newFileButton = await $('[data-testid="home-new-file"]')
     expect(await newFileButton.getText()).toEqual('New project')
   })
@@ -89,7 +91,6 @@ describe('ZMA (Tauri)', () => {
     const settingsButton = await $('[data-testid="settings-button"]')
     await click(settingsButton)
 
-    await new Promise((resolve) => setTimeout(resolve, 10000))
     const projectDirInput = await $('[data-testid="project-directory-input"]')
     expect(await projectDirInput.getValue()).toEqual(defaultProjectDir)
 
@@ -98,7 +99,8 @@ describe('ZMA (Tauri)', () => {
      * to be able to skip the folder selection dialog if data-testValue
      * has a value, allowing us to test the input otherwise works.
      */
-    await setDatasetValue(projectDirInput, 'testValue', newProjectDir)
+    // TODO: understand why we need to force double \ on Windows
+    await setDatasetValue(projectDirInput, 'testValue', isWin32 ? newProjectDir.replaceAll('\\', '\\\\') : newProjectDir)
     const projectDirButton = await $('[data-testid="project-directory-button"]')
     await click(projectDirButton)
     await new Promise((resolve) => setTimeout(resolve, 500))
@@ -107,6 +109,11 @@ describe('ZMA (Tauri)', () => {
 
     const nameInput = await $('[data-testid="projects-defaultProjectName"]')
     expect(await nameInput.getValue()).toEqual('project-$nnn')
+
+    // Setting it back (for back to back local tests)
+    await new Promise((resolve) => setTimeout(resolve, 5000))
+    await setDatasetValue(projectDirInput, 'testValue', isWin32 ? defaultProjectDir.replaceAll('\\', '\\\\') : newProjectDir)
+    await click(projectDirButton)
 
     const closeButton = await $('[data-testid="settings-close-button"]')
     await click(closeButton)
@@ -124,7 +131,6 @@ describe('ZMA (Tauri)', () => {
   })
 
   it('opens the new file and expects a loading stream', async () => {
-    const isWin32 = os.platform() === 'win32'
     const projectLink = await $('[data-testid="project-link"]')
     await click(projectLink)
     if (isWin32) {
