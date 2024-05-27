@@ -178,6 +178,7 @@ const initializeMouseEvents = (
   sceneInfra: SceneInfra
 ): Vector2 => {
   const mouse = new Vector2()
+  mouse.x = 1 // fix initial mouse position issue
 
   const handleMouseMove = (event: MouseEvent) => {
     const { left, top, width, height } = canvas.getBoundingClientRect()
