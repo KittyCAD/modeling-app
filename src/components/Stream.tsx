@@ -31,7 +31,9 @@ export const Stream = ({ className = '' }: { className?: string }) => {
   const { state } = useModelingContext()
   const { overallState } = useNetworkContext()
 
-  const isNetworkOkay = overallState === NetworkHealthState.Ok
+  const isNetworkOkay =
+    overallState === NetworkHealthState.Ok ||
+    overallState === NetworkHealthState.Weak
 
   useEffect(() => {
     if (
@@ -117,7 +119,7 @@ export const Stream = ({ className = '' }: { className?: string }) => {
       {!isNetworkOkay && !isLoading && (
         <div className="text-center absolute inset-0">
           <Loading>
-            <span data-testid="loading-stream">Stream disconnected</span>
+            <span data-testid="loading-stream">Stream disconnected...</span>
           </Loading>
         </div>
       )}

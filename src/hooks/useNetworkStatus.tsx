@@ -13,6 +13,7 @@ import { engineCommandManager } from '../lib/singletons'
 
 export enum NetworkHealthState {
   Ok,
+  Weak,
   Issue,
   Disconnected,
 }
@@ -52,9 +53,11 @@ export function useNetworkStatus() {
         ? NetworkHealthState.Disconnected
         : hasIssues || hasIssues === undefined
         ? NetworkHealthState.Issue
+        : pingPongHealth === 'TIMEOUT'
+        ? NetworkHealthState.Weak
         : NetworkHealthState.Ok
     )
-  }, [hasIssues, internetConnected])
+  }, [hasIssues, internetConnected, pingPongHealth])
 
   useEffect(() => {
     const onlineCallback = () => {

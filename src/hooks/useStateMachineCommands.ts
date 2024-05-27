@@ -53,7 +53,10 @@ export default function useStateMachineCommands<
 
   useEffect(() => {
     const disableAllButtons =
-      overallState !== NetworkHealthState.Ok || isExecuting || !isStreamReady
+      (overallState !== NetworkHealthState.Ok &&
+        overallState !== NetworkHealthState.Weak) ||
+      isExecuting ||
+      !isStreamReady
     const newCommands = state.nextEvents
       .filter((_) => !allCommandsRequireNetwork || !disableAllButtons)
       .filter((e) => !['done.', 'error.'].some((n) => e.includes(n)))

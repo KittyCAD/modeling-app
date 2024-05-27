@@ -42,7 +42,10 @@ export function Toolbar({
     isStreamReady: s.isStreamReady,
   }))
   const disableAllButtons =
-    overallState !== NetworkHealthState.Ok || isExecuting || !isStreamReady
+    (overallState !== NetworkHealthState.Ok &&
+      overallState !== NetworkHealthState.Weak) ||
+    isExecuting ||
+    !isStreamReady
 
   useHotkeys(
     'l',

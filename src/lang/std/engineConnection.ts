@@ -1,11 +1,8 @@
 import { PathToNode, Program, SourceRange } from 'lang/wasm'
-import { invoke } from '@tauri-apps/api/core'
-import { VITE_KC_API_WS_MODELING_URL, VITE_KC_API_BASE_URL } from 'env'
+import { VITE_KC_API_WS_MODELING_URL } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
 import { uuidv4 } from 'lib/utils'
-import withBaseURL from 'lib/withBaseURL'
-import { isTauri } from 'lib/isTauri'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { Themes, getThemeColorForEngine, getOppositeTheme } from 'lib/theme'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
@@ -127,6 +124,7 @@ export enum ConnectionError {
   Unset = 0,
   LongLoadingTime,
 
+  LostVideoStream,
   ICENegotiate,
   DataChannelError,
   WebSocketError,
@@ -134,6 +132,7 @@ export enum ConnectionError {
 
   // These are more severe than protocol errors because they don't even allow
   // the program to do any protocol messages in the first place if they occur.
+  MissingAuthToken,
   BadAuthToken,
   TooManyConnections,
 
@@ -146,11 +145,15 @@ export const CONNECTION_ERROR_TEXT: Record<ConnectionError, string> = {
   [ConnectionError.Unset]: '',
   [ConnectionError.LongLoadingTime]:
     'Loading is taking longer than expected...',
+  [ConnectionError.LostVideoStream]:
+    'Lost connection to video stream... Reconnecting...',
   [ConnectionError.ICENegotiate]: 'ICE negotiation failed.',
   [ConnectionError.DataChannelError]: 'The data channel signaled an error.',
   [ConnectionError.WebSocketError]: 'The websocket signaled an error.',
   [ConnectionError.LocalDescriptionInvalid]:
     'The local description is invalid.',
+  [ConnectionError.MissingAuthToken]:
+    'Your authorization token is missing; please login again.',
   [ConnectionError.BadAuthToken]:
     'Your authorization token is invalid; please login again.',
   [ConnectionError.TooManyConnections]: 'There are too many connections.',
@@ -344,8 +347,39 @@ class EngineConnection extends EventTarget {
     setInterval(() => {
       switch (this.state.type as EngineConnectionStateType) {
         case EngineConnectionStateType.ConnectionEstablished:
+          // If there was no reply to the last ping, report a timeout.
+          if (this.pingPongSpan.ping && !this.pingPongSpan.pong) {
+            this.dispatchEvent(
+              new CustomEvent(EngineConnectionEvents.PingPongChanged, {
+                detail: 'TIMEOUT',
+              })
+            )
+            // Otherwise check the time between was >= pingIntervalMs,
+            // and if it was, then it's bad network health.
+          } else if (this.pingPongSpan.ping && this.pingPongSpan.pong) {
+            if (
+              Math.abs(
+                this.pingPongSpan.pong.valueOf() -
+                  this.pingPongSpan.ping.valueOf()
+              ) >= pingIntervalMs
+            ) {
+              this.dispatchEvent(
+                new CustomEvent(EngineConnectionEvents.PingPongChanged, {
+                  detail: 'TIMEOUT',
+                })
+              )
+            } else {
+              this.dispatchEvent(
+                new CustomEvent(EngineConnectionEvents.PingPongChanged, {
+                  detail: 'OK',
+                })
+              )
+            }
+          }
+
           this.send({ type: 'ping' })
           this.pingPongSpan.ping = new Date()
+          this.pingPongSpan.pong = undefined
           break
         case EngineConnectionStateType.Disconnecting:
         case EngineConnectionStateType.Disconnected:
@@ -726,6 +760,21 @@ class EngineConnection extends EventTarget {
           } else {
             console.error(`Error from server:\n${errorsString}`)
           }
+
+          const firstError = message?.errors[0]
+          if (firstError.error_code === 'auth_token_invalid') {
+            this.state = {
+              type: EngineConnectionStateType.Disconnecting,
+              value: {
+                type: DisconnectingType.Error,
+                value: {
+                  error: ConnectionError.BadAuthToken,
+                  context: firstError.message,
+                },
+              },
+            }
+            this.disconnectAll()
+          }
           return
         }
 
@@ -739,26 +788,6 @@ class EngineConnection extends EventTarget {
         switch (resp.type) {
           case 'pong':
             this.pingPongSpan.pong = new Date()
-            if (this.pingPongSpan.ping && this.pingPongSpan.pong) {
-              if (
-                Math.abs(
-                  this.pingPongSpan.pong.valueOf() -
-                    this.pingPongSpan.ping.valueOf()
-                ) >= pingIntervalMs
-              ) {
-                this.dispatchEvent(
-                  new CustomEvent(EngineConnectionEvents.PingPongChanged, {
-                    detail: 'TIMEOUT',
-                  })
-                )
-              } else {
-                this.dispatchEvent(
-                  new CustomEvent(EngineConnectionEvents.PingPongChanged, {
-                    detail: 'OK',
-                  })
-                )
-              }
-            }
             break
           case 'ice_server_info':
             let ice_servers = resp.data?.ice_servers
@@ -910,53 +939,7 @@ class EngineConnection extends EventTarget {
       })
     }
 
-    // api-deux currently doesn't report if an auth token is invalid on the
-    // websocket. As a workaround we can invoke two endpoints: /user and
-    // /user/session/{token} . Former for regular operations, latter for
-    // development.
-    // Resolver: https://github.com/KittyCAD/api-deux/issues/1628
-    const promiseIsAuthed = this.token
-      ? // We can't check tokens in localStorage, at least not yet.
-        // Resolver: https://github.com/KittyCAD/api-deux/issues/1629
-        Promise.resolve({ status: 200 })
-      : !isTauri()
-      ? fetch(withBaseURL('/user'))
-      : invoke<Models['User_type'] | Record<'error_code', unknown>>(
-          'get_user',
-          {
-            token: this.token,
-            hostname: VITE_KC_API_BASE_URL,
-          }
-        )
-
-    // The type of e is complex due to two separate functions to check user info.
-    promiseIsAuthed.then((e: any) => {
-      if (e.status >= 200 && e.status < 400) {
-        createWebSocketConnection()
-      } else if (e.status === 401) {
-        this.state = {
-          type: EngineConnectionStateType.Disconnecting,
-          value: {
-            type: DisconnectingType.Error,
-            value: {
-              error: ConnectionError.BadAuthToken,
-              context: e,
-            },
-          },
-        }
-      } else {
-        this.state = {
-          type: EngineConnectionStateType.Disconnecting,
-          value: {
-            type: DisconnectingType.Error,
-            value: {
-              error: ConnectionError.Unknown,
-              context: e,
-            },
-          },
-        }
-      }
-    })
+    createWebSocketConnection()
   }
   // Do not change this back to an object or any, we should only be sending the
   // WebSocketRequest type!
@@ -1352,13 +1335,21 @@ export class EngineCommandManager extends EventTarget {
 
         this.engineConnection?.addEventListener(
           EngineConnectionEvents.NewTrack,
-          (({ detail: { mediaStream } }: any) => {
+          (({ detail: { mediaStream } }: CustomEvent<NewTrackArgs>) => {
             console.log('received track', mediaStream)
 
             mediaStream.getVideoTracks()[0].addEventListener('mute', () => {
-              console.log('peer is not sending video to us')
-              // this.engineConnection?.close()
-              // this.engineConnection?.connect()
+              if (this.engineConnection) {
+                this.engineConnection.state = {
+                  type: EngineConnectionStateType.Disconnecting,
+                  value: {
+                    type: DisconnectingType.Error,
+                    value: {
+                      error: ConnectionError.LostVideoStream,
+                    },
+                  },
+                }
+              }
             })
 
             setMediaStream(mediaStream)
