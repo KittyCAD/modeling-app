@@ -232,12 +232,9 @@ jobs:
         shell: cmd
 
       - name: Build the app (debug)
-        uses: tauri-apps/tauri-action@v0
         if: ${{ env.BUILD_RELEASE == 'false' }}
-        with:
-          includeRelease: false
-          includeDebug: true
-          args: "${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
+        run: |
+          "yarn tauri build --debug ${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
 
       - name: Build for Mac TestFlight (nightly)
         if: ${{ github.event_name == 'schedule' && matrix.os == 'macos-14' }}
