@@ -14,7 +14,6 @@ const defaultProjectDir = path.join(documentsDir, 'zoo-modeling-app-projects')
 const newProjectDir = path.join(documentsDir, 'a-different-directory')
 const tmp = process.env.TEMP || '/tmp'
 const userCodeDir = path.join(tmp, 'kittycad_user_code')
-console.log(userCodeDir)
 
 async function click(element: WebdriverIO.Element): Promise<void> {
   // Workaround for .click(), see https://github.com/tauri-apps/tauri/issues/6541
@@ -100,7 +99,11 @@ describe('ZMA (Tauri)', () => {
      * has a value, allowing us to test the input otherwise works.
      */
     // TODO: understand why we need to force double \ on Windows
-    await setDatasetValue(projectDirInput, 'testValue', isWin32 ? newProjectDir.replaceAll('\\', '\\\\') : newProjectDir)
+    await setDatasetValue(
+      projectDirInput,
+      'testValue',
+      isWin32 ? newProjectDir.replaceAll('\\', '\\\\') : newProjectDir
+    )
     const projectDirButton = await $('[data-testid="project-directory-button"]')
     await click(projectDirButton)
     await new Promise((resolve) => setTimeout(resolve, 500))
@@ -112,7 +115,11 @@ describe('ZMA (Tauri)', () => {
 
     // Setting it back (for back to back local tests)
     await new Promise((resolve) => setTimeout(resolve, 5000))
-    await setDatasetValue(projectDirInput, 'testValue', isWin32 ? defaultProjectDir.replaceAll('\\', '\\\\') : newProjectDir)
+    await setDatasetValue(
+      projectDirInput,
+      'testValue',
+      isWin32 ? defaultProjectDir.replaceAll('\\', '\\\\') : newProjectDir
+    )
     await click(projectDirButton)
 
     const closeButton = await $('[data-testid="settings-close-button"]')
