@@ -832,7 +832,7 @@ export class CameraControls {
       cmd: {
         type: 'default_camera_look_at',
         center: { x: 0, y: 0, z: 0 },
-        vantage: { x: 5, y: 5, z: 5 },
+        vantage: { x: 0, y: -128, z: 64 },
         up: { x: 0, y: 0, z: 1 },
       },
     })
@@ -840,7 +840,9 @@ export class CameraControls {
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
       cmd: {
-        type: 'default_camera_get_settings',
+        type: 'zoom_to_fit',
+        object_ids: [], // leave empty to zoom to all objects
+        padding: 0.2, // padding around the objects
       },
     })
   }
