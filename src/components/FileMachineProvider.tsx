@@ -11,6 +11,7 @@ import {
   InterpreterFrom,
   Prop,
   StateFrom,
+  assign,
 } from 'xstate'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { fileMachine } from 'machines/fileMachine'
@@ -37,7 +38,7 @@ export const FileMachineProvider = ({
 }) => {
   const navigate = useNavigate()
   const { commandBarSend } = useCommandsContext()
-  const { project } = useRouteLoaderData(paths.FILE) as IndexLoaderData
+  const { project, file } = useRouteLoaderData(paths.FILE) as IndexLoaderData
 
   const [state, send] = useMachine(fileMachine, {
     context: {
@@ -53,8 +54,32 @@ export const FileMachineProvider = ({
               context.selectedDirectory + sep() + event.data.name
             )}`
           )
+        } else if (
+          event.data &&
+          'path' in event.data &&
+          event.data.path.endsWith(FILE_EXT)
+        ) {
+          // Don't navigate to newly created directories
+          navigate(`${paths.FILE}/${encodeURIComponent(event.data.path)}`)
         }
       },
+      addFileToRenamingQueue: assign({
+        itemsBeingRenamed: (context, event) => [
+          ...context.itemsBeingRenamed,
+          event.data.path,
+        ],
+      }),
+      removeFileFromRenamingQueue: assign({
+        itemsBeingRenamed: (
+          context,
+          event: EventFrom<typeof fileMachine, 'done.invoke.rename-file'>
+        ) =>
+          context.itemsBeingRenamed.filter(
+            (path) => path !== event.data.oldPath
+          ),
+      }),
+      renameToastSuccess: (_, event) => toast.success(event.data.message),
+      createToastSuccess: (_, event) => toast.success(event.data.message),
       toastSuccess: (_, event) =>
         event.data && toast.success((event.data || '') + ''),
       toastError: (_, event) => toast.error((event.data || '') + ''),
@@ -70,37 +95,56 @@ export const FileMachineProvider = ({
         }
       },
       createFile: async (context, event) => {
-        let name = event.data.name.trim() || DEFAULT_FILE_NAME
+        let createdName = event.data.name.trim() || DEFAULT_FILE_NAME
+        let createdPath: string
 
         if (event.data.makeDir) {
-          await mkdir(await join(context.selectedDirectory.path, name))
+          createdPath = await join(context.selectedDirectory.path, createdName)
+          await mkdir(createdPath)
         } else {
-          await create(
+          createdPath =
             context.selectedDirectory.path +
-              sep() +
-              name +
-              (name.endsWith(FILE_EXT) ? '' : FILE_EXT)
-          )
+            sep() +
+            createdName +
+            (createdName.endsWith(FILE_EXT) ? '' : FILE_EXT)
+          await create(createdPath)
         }
 
-        return `Successfully created "${name}"`
+        return {
+          message: `Successfully created "${createdName}"`,
+          path: createdPath,
+        }
       },
       renameFile: async (
         context: ContextFrom<typeof fileMachine>,
         event: EventFrom<typeof fileMachine, 'Rename file'>
       ) => {
         const { oldName, newName, isDir } = event.data
-        let name = newName ? newName : DEFAULT_FILE_NAME
+        const name = newName ? newName : DEFAULT_FILE_NAME
+        const oldPath = await join(context.selectedDirectory.path, oldName)
+        const newDirPath = await join(context.selectedDirectory.path, name)
+        const newPath =
+          newDirPath + (name.endsWith(FILE_EXT) || isDir ? '' : FILE_EXT)
 
-        await rename(
-          await join(context.selectedDirectory.path, oldName),
-          (await join(context.selectedDirectory.path, name)) +
-            (name.endsWith(FILE_EXT) || isDir ? '' : FILE_EXT),
-          {}
-        )
-        return (
-          oldName !== name && `Successfully renamed "${oldName}" to "${name}"`
-        )
+        await rename(oldPath, newPath, {})
+
+        if (oldPath === file?.path && project?.path) {
+          // If we just renamed the current file, navigate to the new path
+          navigate(paths.FILE + '/' + encodeURIComponent(newPath))
+        } else if (file?.path.includes(oldPath)) {
+          // If we just renamed a directory that the current file is in, navigate to the new path
+          navigate(
+            paths.FILE +
+              '/' +
+              encodeURIComponent(file.path.replace(oldPath, newDirPath))
+          )
+        }
+
+        return {
+          message: `Successfully renamed "${oldName}" to "${name}"`,
+          newPath,
+          oldPath,
+        }
       },
       deleteFile: async (
         context: ContextFrom<typeof fileMachine>,
@@ -117,6 +161,17 @@ export const FileMachineProvider = ({
             console.error('Error deleting file', e)
           )
         }
+
+        // If we just deleted the current file or one of its parent directories,
+        // navigate to the project root
+        if (
+          (event.data.path === file?.path ||
+            file?.path.includes(event.data.path)) &&
+          project?.path
+        ) {
+          navigate(paths.FILE + '/' + encodeURIComponent(project.path))
+        }
+
         return `Successfully deleted ${isDir ? 'folder' : 'file'} "${
           event.data.name
         }"`

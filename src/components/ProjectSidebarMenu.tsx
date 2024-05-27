@@ -158,7 +158,7 @@ function ProjectMenuPopover({
                 <FileTree
                   file={file}
                   className="overflow-hidden border-0 border-y border-chalkboard-30 dark:border-chalkboard-80"
-                  closePanel={close}
+                  onNavigateToFile={close}
                 />
               ) : (
                 <div className="flex-1 p-4 text-sm overflow-hidden">

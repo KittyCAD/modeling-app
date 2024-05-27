@@ -1,6 +1,6 @@
 {
   "name": "untitled-app",
-  "version": "0.21.8",
+  "version": "0.21.9",
   "private": true,
   "dependencies": {
     "@codemirror/autocomplete": "^6.16.0",
@@ -37,7 +37,7 @@
     "crypto-js": "^4.2.0",
     "debounce-promise": "^3.1.2",
     "decamelize": "^6.0.0",
-    "formik": "^2.4.5",
+    "formik": "^2.4.6",
     "fuse.js": "^7.0.0",
     "html2canvas-pro": "^1.4.3",
     "http-server": "^14.1.1",
@@ -133,7 +133,7 @@
     "@types/wait-on": "^5.3.4",
     "@types/wicg-file-system-access": "^2023.10.5",
     "@types/ws": "^8.5.10",
-    "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-react": "^4.3.0",
     "@vitest/web-worker": "^1.5.0",
     "@wdio/cli": "^8.24.3",
     "@wdio/globals": "^8.36.0",
