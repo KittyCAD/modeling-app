@@ -1,6 +1,12 @@
 import { useMachine } from '@xstate/react'
 import { INTERACTION_MAP_SEPARATOR } from 'lib/constants'
-import { isModifierKey, mapKey, sortKeys } from 'lib/keyboard'
+import {
+  isModifierKey,
+  mapKey,
+  mouseButtonToName,
+  resolveInteractionEvent,
+  sortKeys,
+} from 'lib/keyboard'
 import {
   MouseButtonName,
   interactionMapMachine,
@@ -91,33 +97,18 @@ export function InteractionMapMachineProvider({
     },
     services: {
       'Resolve hotkey by prefix': (context, event) => {
-        // First determine if we have a mouse or keyboard event
-        const action =
-          'key' in event.data
-            ? mapKey(event.data.code)
-            : mouseButtonToName(event.data.button)
-
-        console.log('action', action)
+        const resolvedInteraction = resolveInteractionEvent(event.data)
 
         // if the key is already a modifier key, skip everything else and reject
-        if (isModifierKey(action)) {
+        if (resolvedInteraction.isModifier) {
           // We return an empty string so that we don't clear the currentSequence
           return Promise.reject('')
         }
 
-        const modifiers = [
-          event.data.ctrlKey && 'ctrl',
-          event.data.shiftKey && 'shift',
-          event.data.altKey && 'alt',
-          event.data.metaKey && 'meta',
-        ].filter((item) => item !== false) as string[]
-        const step = [action, ...modifiers]
-          .sort(sortKeys)
-          .join(INTERACTION_MAP_SEPARATOR)
-
         // Find all the sequences that start with the current sequence
         const searchString =
-          (context.currentSequence ? context.currentSequence + ' ' : '') + step
+          (context.currentSequence ? context.currentSequence + ' ' : '') +
+          resolvedInteraction.asString
 
         const matches = context.interactionMap.filter((item) =>
           item.sequence.startsWith(searchString)
@@ -141,7 +132,7 @@ export function InteractionMapMachineProvider({
           // We have a prefix match.
           // Reject the promise and return the step
           // so we can add it to currentSequence
-          return Promise.reject(step)
+          return Promise.reject(resolvedInteraction.asString)
         }
 
         // Resolve to just one exact match
@@ -210,17 +201,4 @@ export function InteractionMapMachineProvider({
       {children}
     </InteractionMapMachineContext.Provider>
   )
-}
-
-function mouseButtonToName(button: MouseEvent['button']): MouseButtonName {
-  switch (button) {
-    case 0:
-      return 'LeftButton'
-    case 1:
-      return 'MiddleButton'
-    case 2:
-      return 'RightButton'
-    default:
-      return 'LeftButton'
-  }
 }

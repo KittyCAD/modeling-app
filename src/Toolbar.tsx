@@ -10,6 +10,7 @@ import { useInteractionMap } from 'hooks/useInteractionMap'
 import { ActionButtonDropdown } from 'components/ActionButtonDropdown'
 import { useHotkeys } from 'react-hotkeys-hook'
 import Tooltip from 'components/Tooltip'
+import { KEYBINDING_CATEGORIES } from 'lib/constants'
 
 export function Toolbar({
   className = '',
@@ -40,7 +41,8 @@ export function Toolbar({
         guard: () => !shouldDisableModelingActions && state.matches('idle'),
       },
     ],
-    [shouldDisableModelingActions, commandBarSend, state]
+    [shouldDisableModelingActions, commandBarSend, state],
+    KEYBINDING_CATEGORIES.MODELING
   )
   const iconClassName =
     'group-disabled:text-chalkboard-50 group-enabled:group-hover:!text-primary dark:group-enabled:group-hover:!text-inherit group-pressed:!text-chalkboard-10 group-ui-open:!text-chalkboard-10 dark:group-ui-open:!text-chalkboard-10'

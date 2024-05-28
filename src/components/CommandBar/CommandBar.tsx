@@ -5,9 +5,8 @@ import CommandBarArgument from './CommandBarArgument'
 import CommandComboBox from '../CommandComboBox'
 import CommandBarReview from './CommandBarReview'
 import { useLocation } from 'react-router-dom'
-import { InteractionMapItem } from 'machines/interactionMapMachine'
 import { useInteractionMap } from 'hooks/useInteractionMap'
-import useHotkeyWrapper from 'lib/hotkeyWrapper'
+import { KEYBINDING_CATEGORIES } from 'lib/constants'
 
 export const CommandBar = () => {
   const { pathname } = useLocation()
@@ -49,7 +48,7 @@ export const CommandBar = () => {
       },
     ],
     [commandBarState, commandBarSend],
-    'Command Bar'
+    KEYBINDING_CATEGORIES.COMMAND_BAR
   )
 
   function stepBack() {

@@ -48,3 +48,8 @@ export const ONBOARDING_PROJECT_NAME = 'Tutorial Project $nn'
 export const INTERACTION_MAP_SEPARATOR = '+'
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`
+/** keybinding categories */
+export const KEYBINDING_CATEGORIES = {
+  MODELING: 'modeling',
+  COMMAND_BAR: 'command-bar',
+}
