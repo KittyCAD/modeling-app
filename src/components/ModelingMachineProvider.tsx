@@ -73,6 +73,10 @@ import { useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { getVarNameModal } from 'hooks/useToolbarGuards'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
+import {
+  EngineConnectionState,
+  EngineConnectionStateType,
+} from 'lang/std/engineConnection'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -657,6 +661,19 @@ export const ModelingMachineProvider = ({
   useEffect(() => {
     editorManager.selectionRanges = modelingState.context.selectionRanges
   }, [modelingState.context.selectionRanges])
+
+  useEffect(() => {
+    const offlineCallback = () => {
+      // If we are in sketch mode we need to exit it.
+      // TODO: how do i check if we are in a sketch mode, I only want to call
+      // this then.
+      modelingSend({ type: 'Cancel' })
+    }
+    window.addEventListener('offline', offlineCallback)
+    return () => {
+      window.removeEventListener('offline', offlineCallback)
+    }
+  }, [modelingSend])
 
   useStateMachineCommands({
     machineId: 'modeling',

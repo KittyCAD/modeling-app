@@ -5,7 +5,7 @@ import { ActionButton } from '../ActionButton'
 import { FILE_EXT } from 'lib/constants'
 import { useHotkeys } from 'react-hotkeys-hook'
 import Tooltip from '../Tooltip'
-import { DeleteProjectDialog } from './DeleteProjectDialog'
+import { DeleteConfirmationDialog } from './DeleteProjectDialog'
 import { ProjectCardRenameForm } from './ProjectCardRenameForm'
 import { Project } from 'wasm-lib/kcl/bindings/Project'
 
@@ -160,14 +160,23 @@ function ProjectCard({
         </div>
       )}
       {isConfirmingDelete && (
-        <DeleteProjectDialog
-          projectName={project.name}
+        <DeleteConfirmationDialog
+          title="Delete Project"
           onConfirm={async () => {
             await handleDeleteProject(project)
             setIsConfirmingDelete(false)
           }}
           onDismiss={() => setIsConfirmingDelete(false)}
-        />
+        >
+          <p className="my-4">
+            This will permanently delete "{project.name || 'this file'}
+            ".
+          </p>
+          <p className="my-4">
+            Are you sure you want to delete "{project.name || 'this file'}
+            "? This action cannot be undone.
+          </p>
+        </DeleteConfirmationDialog>
       )}
     </li>
   )

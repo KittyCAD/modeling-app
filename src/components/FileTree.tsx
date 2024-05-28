@@ -2,11 +2,11 @@ import type { FileEntry, IndexLoaderData } from 'lib/types'
 import { paths } from 'lib/paths'
 import { ActionButton } from './ActionButton'
 import Tooltip from './Tooltip'
-import { Dispatch, useEffect, useRef, useState } from 'react'
+import { Dispatch, useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
-import { Dialog, Disclosure } from '@headlessui/react'
+import { Disclosure } from '@headlessui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronRight, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import { useFileContext } from 'hooks/useFileContext'
 import styles from './FileTree.module.css'
 import { sortProject } from 'lib/tauriFS'
@@ -16,6 +16,8 @@ import { codeManager, kclManager } from 'lib/singletons'
 import { useDocumentHasFocus } from 'hooks/useDocumentHasFocus'
 import { useLspContext } from './LspProvider'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
+import { useModelingContext } from 'hooks/useModelingContext'
+import { DeleteConfirmationDialog } from './ProjectCard/DeleteProjectDialog'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -23,11 +25,11 @@ function getIndentationCSS(level: number) {
 
 function RenameForm({
   fileOrDir,
-  setIsRenaming,
+  onSubmit,
   level = 0,
 }: {
   fileOrDir: FileEntry
-  setIsRenaming: Dispatch<React.SetStateAction<boolean>>
+  onSubmit: () => void
   level?: number
 }) {
   const { send } = useFileContext()
@@ -35,7 +37,6 @@ function RenameForm({
 
   function handleRenameSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    setIsRenaming(false)
     send({
       type: 'Rename file',
       data: {
@@ -49,7 +50,7 @@ function RenameForm({
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Escape') {
       e.stopPropagation()
-      setIsRenaming(false)
+      onSubmit()
     }
   }
 
@@ -61,10 +62,12 @@ function RenameForm({
           ref={inputRef}
           type="text"
           autoFocus
+          autoCapitalize="off"
+          autoCorrect="off"
           placeholder={fileOrDir.name}
           className="w-full py-1 bg-transparent text-chalkboard-100 placeholder:text-chalkboard-70 dark:text-chalkboard-10 dark:placeholder:text-chalkboard-50 focus:outline-none focus:ring-0"
           onKeyDown={handleKeyDown}
-          onBlur={() => setIsRenaming(false)}
+          onBlur={onSubmit}
           style={{ paddingInlineStart: getIndentationCSS(level) }}
         />
       </label>
@@ -75,7 +78,7 @@ function RenameForm({
   )
 }
 
-function DeleteConfirmationDialog({
+function DeleteFileTreeItemDialog({
   fileOrDir,
   setIsOpen,
 }: {
@@ -84,48 +87,23 @@ function DeleteConfirmationDialog({
 }) {
   const { send } = useFileContext()
   return (
-    <Dialog
-      open={true}
-      onClose={() => setIsOpen(false)}
-      className="relative z-50"
+    <DeleteConfirmationDialog
+      title={`Delete ${fileOrDir.children !== undefined ? 'folder' : 'file'}`}
+      onDismiss={() => setIsOpen(false)}
+      onConfirm={() => {
+        send({ type: 'Delete file', data: fileOrDir })
+        setIsOpen(false)
+      }}
     >
-      <div className="fixed inset-0 bg-chalkboard-110/80 grid place-content-center">
-        <Dialog.Panel className="rounded p-4 bg-chalkboard-10 dark:bg-chalkboard-100 border border-destroy-80 max-w-2xl">
-          <Dialog.Title as="h2" className="text-2xl font-bold mb-4">
-            Delete {fileOrDir.children !== undefined ? 'Folder' : 'File'}
-          </Dialog.Title>
-          <Dialog.Description className="my-6">
-            This will permanently delete "{fileOrDir.name || 'this file'}"
-            {fileOrDir.children !== undefined
-              ? ' and all of its contents. '
-              : '. '}
-            This action cannot be undone.
-          </Dialog.Description>
-
-          <div className="flex justify-between">
-            <ActionButton
-              Element="button"
-              onClick={async () => {
-                send({ type: 'Delete file', data: fileOrDir })
-                setIsOpen(false)
-              }}
-              iconStart={{
-                icon: faTrashAlt,
-                bgClassName: 'bg-destroy-80',
-                iconClassName:
-                  'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10 dark:text-destroy-20 dark:group-hover:text-destroy-10 dark:hover:text-destroy-10',
-              }}
-              className="hover:border-destroy-40 dark:hover:border-destroy-40"
-            >
-              Delete
-            </ActionButton>
-            <ActionButton Element="button" onClick={() => setIsOpen(false)}>
-              Cancel
-            </ActionButton>
-          </div>
-        </Dialog.Panel>
-      </div>
-    </Dialog>
+      <p className="my-4">
+        This will permanently delete "{fileOrDir.name || 'this file'}"
+        {fileOrDir.children !== undefined ? ' and all of its contents. ' : '. '}
+      </p>
+      <p className="my-4">
+        Are you sure you want to delete "{fileOrDir.name || 'this file'}
+        "? This action cannot be undone.
+      </p>
+    </DeleteConfirmationDialog>
   )
 }
 
@@ -133,21 +111,43 @@ const FileTreeItem = ({
   project,
   currentFile,
   fileOrDir,
-  onDoubleClick,
+  onNavigateToFile,
   level = 0,
 }: {
   project?: IndexLoaderData['project']
   currentFile?: IndexLoaderData['file']
   fileOrDir: FileEntry
-  onDoubleClick?: () => void
+  onNavigateToFile?: () => void
   level?: number
 }) => {
-  const { send, context } = useFileContext()
+  const { send: fileSend, context: fileContext } = useFileContext()
   const { onFileOpen, onFileClose } = useLspContext()
   const navigate = useNavigate()
-  const [isRenaming, setIsRenaming] = useState(false)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
   const isCurrentFile = fileOrDir.path === currentFile?.path
+
+  const isRenaming = fileContext.itemsBeingRenamed.includes(fileOrDir.path)
+  const removeCurrentItemFromRenaming = useCallback(
+    () =>
+      fileSend({
+        type: 'assign',
+        data: {
+          itemsBeingRenamed: fileContext.itemsBeingRenamed.filter(
+            (path) => path !== fileOrDir.path
+          ),
+        },
+      }),
+    [fileContext.itemsBeingRenamed, fileOrDir.path, fileSend]
+  )
+
+  const addCurrentItemToRenaming = useCallback(() => {
+    fileSend({
+      type: 'assign',
+      data: {
+        itemsBeingRenamed: [...fileContext.itemsBeingRenamed, fileOrDir.path],
+      },
+    })
+  }, [fileContext.itemsBeingRenamed, fileOrDir.path, fileSend])
 
   function handleKeyUp(e: React.KeyboardEvent<HTMLButtonElement>) {
     if (e.metaKey && e.key === 'Backspace') {
@@ -155,13 +155,13 @@ const FileTreeItem = ({
       setIsConfirmingDelete(true)
     } else if (e.key === 'Enter') {
       // Show the renaming form
-      setIsRenaming(true)
+      addCurrentItemToRenaming()
     } else if (e.code === 'Space') {
-      handleDoubleClick()
+      handleClick()
     }
   }
 
-  function handleDoubleClick() {
+  function handleClick() {
     if (fileOrDir.children !== undefined) return // Don't open directories
 
     if (fileOrDir.name?.endsWith(FILE_EXT) === false && project?.path) {
@@ -181,7 +181,7 @@ const FileTreeItem = ({
       // Open kcl files
       navigate(`${paths.FILE}/${encodeURIComponent(fileOrDir.path)}`)
     }
-    onDoubleClick?.()
+    onNavigateToFile?.()
   }
 
   return (
@@ -199,8 +199,10 @@ const FileTreeItem = ({
             <button
               className="flex gap-1 items-center py-0.5 rounded-none border-none p-0 m-0 text-sm w-full hover:!bg-transparent text-left !text-inherit"
               style={{ paddingInlineStart: getIndentationCSS(level) }}
-              onDoubleClick={handleDoubleClick}
-              onClick={(e) => e.currentTarget.focus()}
+              onClick={(e) => {
+                e.currentTarget.focus()
+                handleClick()
+              }}
               onKeyUp={handleKeyUp}
             >
               <CustomIcon
@@ -212,7 +214,7 @@ const FileTreeItem = ({
           ) : (
             <RenameForm
               fileOrDir={fileOrDir}
-              setIsRenaming={setIsRenaming}
+              onSubmit={removeCurrentItemFromRenaming}
               level={level}
             />
           )}
@@ -225,17 +227,23 @@ const FileTreeItem = ({
                 <Disclosure.Button
                   className={
                     ' group border-none text-sm rounded-none p-0 m-0 flex items-center justify-start w-full py-0.5 hover:text-primary hover:bg-primary/5 dark:hover:text-inherit dark:hover:bg-primary/10' +
-                    (context.selectedDirectory.path.includes(fileOrDir.path)
+                    (fileContext.selectedDirectory.path.includes(fileOrDir.path)
                       ? ' ui-open:bg-primary/10'
                       : '')
                   }
                   style={{ paddingInlineStart: getIndentationCSS(level) }}
                   onClick={(e) => e.currentTarget.focus()}
                   onClickCapture={(e) =>
-                    send({ type: 'Set selected directory', data: fileOrDir })
+                    fileSend({
+                      type: 'Set selected directory',
+                      data: fileOrDir,
+                    })
                   }
                   onFocusCapture={(e) =>
-                    send({ type: 'Set selected directory', data: fileOrDir })
+                    fileSend({
+                      type: 'Set selected directory',
+                      data: fileOrDir,
+                    })
                   }
                   onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
                   onKeyUp={handleKeyUp}
@@ -263,7 +271,7 @@ const FileTreeItem = ({
                   />
                   <RenameForm
                     fileOrDir={fileOrDir}
-                    setIsRenaming={setIsRenaming}
+                    onSubmit={removeCurrentItemFromRenaming}
                     level={-1}
                   />
                 </div>
@@ -279,10 +287,16 @@ const FileTreeItem = ({
                 <ul
                   className="m-0 p-0"
                   onClickCapture={(e) => {
-                    send({ type: 'Set selected directory', data: fileOrDir })
+                    fileSend({
+                      type: 'Set selected directory',
+                      data: fileOrDir,
+                    })
                   }}
                   onFocusCapture={(e) =>
-                    send({ type: 'Set selected directory', data: fileOrDir })
+                    fileSend({
+                      type: 'Set selected directory',
+                      data: fileOrDir,
+                    })
                   }
                 >
                   {fileOrDir.children?.map((child) => (
@@ -290,7 +304,7 @@ const FileTreeItem = ({
                       fileOrDir={child}
                       project={project}
                       currentFile={currentFile}
-                      onDoubleClick={onDoubleClick}
+                      onNavigateToFile={onNavigateToFile}
                       level={level + 1}
                       key={level + '-' + child.path}
                     />
@@ -302,7 +316,7 @@ const FileTreeItem = ({
         </Disclosure>
       )}
       {isConfirmingDelete && (
-        <DeleteConfirmationDialog
+        <DeleteFileTreeItemDialog
           fileOrDir={fileOrDir}
           setIsOpen={setIsConfirmingDelete}
         />
@@ -314,7 +328,7 @@ const FileTreeItem = ({
 interface FileTreeProps {
   className?: string
   file?: IndexLoaderData['file']
-  closePanel: (
+  onNavigateToFile: (
     focusableElement?:
       | HTMLElement
       | React.MutableRefObject<HTMLElement | null>
@@ -371,30 +385,34 @@ export const FileTreeMenu = () => {
   )
 }
 
-export const FileTree = ({ className = '', closePanel }: FileTreeProps) => {
+export const FileTree = ({
+  className = '',
+  onNavigateToFile: closePanel,
+}: FileTreeProps) => {
   return (
     <div className={className}>
       <div className="flex items-center gap-1 px-4 py-1 bg-chalkboard-20/40 dark:bg-chalkboard-80/50 border-b border-b-chalkboard-30 dark:border-b-chalkboard-80">
         <h2 className="flex-1 m-0 p-0 text-sm mono">Files</h2>
         <FileTreeMenu />
       </div>
-      <FileTreeInner onDoubleClick={closePanel} />
+      <FileTreeInner onNavigateToFile={closePanel} />
     </div>
   )
 }
 
 export const FileTreeInner = ({
-  onDoubleClick,
+  onNavigateToFile,
 }: {
-  onDoubleClick?: () => void
+  onNavigateToFile?: () => void
 }) => {
   const loaderData = useRouteLoaderData(paths.FILE) as IndexLoaderData
-  const { send, context } = useFileContext()
+  const { send: fileSend, context: fileContext } = useFileContext()
+  const { send: modelingSend } = useModelingContext()
   const documentHasFocus = useDocumentHasFocus()
 
   // Refresh the file tree when the document gets focus
   useEffect(() => {
-    send({ type: 'Refresh' })
+    fileSend({ type: 'Refresh' })
   }, [documentHasFocus])
 
   return (
@@ -402,15 +420,22 @@ export const FileTreeInner = ({
       <ul
         className="m-0 p-0 text-sm"
         onClickCapture={(e) => {
-          send({ type: 'Set selected directory', data: context.project })
+          fileSend({
+            type: 'Set selected directory',
+            data: fileContext.project,
+          })
         }}
       >
-        {sortProject(context.project.children || []).map((fileOrDir) => (
+        {sortProject(fileContext.project?.children || []).map((fileOrDir) => (
           <FileTreeItem
-            project={context.project}
+            project={fileContext.project}
             currentFile={loaderData?.file}
             fileOrDir={fileOrDir}
-            onDoubleClick={onDoubleClick}
+            onNavigateToFile={() => {
+              // Reset modeling state when navigating to a new file
+              modelingSend({ type: 'Cancel' })
+              onNavigateToFile?.()
+            }}
             key={fileOrDir.path}
           />
         ))}

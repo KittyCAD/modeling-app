@@ -3576,6 +3576,10 @@ test('Basic default modeling and sketch hotkeys work', async ({ page }) => {
    * TODO: There is a bug somewhere that causes this test to fail
    * if you toggle the codePane closed before your trigger the
    * start of the sketch.
+   * and a separate Safari-only bug that causes the test to fail
+   * if the pane is open the entire test. The maintainer of CodeMirror
+   * has pinpointed this to the unusual browser behavior:
+   * https://discuss.codemirror.net/t/how-to-force-unfocus-of-the-codemirror-element-in-safari/8095/3
    */
   await codePaneButton.click()
 
@@ -3679,4 +3683,131 @@ test('simulate network down and network little widget', async ({ page }) => {
 
   // Expect the network to be up
   await expect(page.getByText('Network Health (Connected)')).toBeVisible()
+})
+
+test('Engine disconnect & reconnect in sketch mode', async ({ page }) => {
+  const u = await getUtils(page)
+  await page.setViewportSize({ width: 1200, height: 500 })
+  const PUR = 400 / 37.5 //pixeltoUnitRatio
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await u.openDebugPanel()
+
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled()
+  await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
+
+  // click on "Start Sketch" button
+  await u.clearCommandLogs()
+  await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await page.waitForTimeout(100)
+
+  // select a plane
+  await page.mouse.click(700, 200)
+
+  await expect(page.locator('.cm-content')).toHaveText(
+    `const part001 = startSketchOn('XZ')`
+  )
+  await u.closeDebugPanel()
+
+  await page.waitForTimeout(300) // TODO detect animation ending, or disable animation
+
+  const startXPx = 600
+  await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('XZ')
+  |> startProfileAt(${commonPoints.startAt}, %)`)
+  await page.waitForTimeout(100)
+
+  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
+  await page.waitForTimeout(100)
+
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('XZ')
+  |> startProfileAt(${commonPoints.startAt}, %)
+  |> line([${commonPoints.num1}, 0], %)`)
+
+  // Expect the network to be up
+  await expect(page.getByText('Network Health (Connected)')).toBeVisible()
+
+  // simulate network down
+  await u.emulateNetworkConditions({
+    offline: true,
+    // values of 0 remove any active throttling. crbug.com/456324#c9
+    latency: 0,
+    downloadThroughput: -1,
+    uploadThroughput: -1,
+  })
+
+  // Expect the network to be down
+  await expect(page.getByText('Network Health (Offline)')).toBeVisible()
+
+  // Ensure we are not in sketch mode
+  await expect(
+    page.getByRole('button', { name: 'Exit Sketch' })
+  ).not.toBeVisible()
+  await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
+
+  // simulate network up
+  await u.emulateNetworkConditions({
+    offline: false,
+    // values of 0 remove any active throttling. crbug.com/456324#c9
+    latency: 0,
+    downloadThroughput: -1,
+    uploadThroughput: -1,
+  })
+
+  // Wait for the app to be ready for use
+  // Expect the network to be up
+  await expect(page.getByText('Network Health (Connected)')).toBeVisible()
+
+  // Click off the code pane.
+  await page.mouse.click(100, 100)
+
+  // select a line
+  await page.getByText(`startProfileAt(${commonPoints.startAt}, %)`).click()
+
+  // enter sketch again
+  await u.doAndWaitForCmd(
+    () => page.getByRole('button', { name: 'Edit Sketch' }).click(),
+    'default_camera_get_settings'
+  )
+  await page.waitForTimeout(150)
+
+  // Click the line tool
+  await page.getByRole('button', { name: 'Line' }).click()
+
+  await page.waitForTimeout(150)
+
+  // Ensure we can continue sketching
+  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('XZ')
+  |> startProfileAt(${commonPoints.startAt}, %)
+  |> line([${commonPoints.num1}, 0], %)
+  |> line([-11.59, 11.1], %)`)
+  await page.waitForTimeout(100)
+  await page.mouse.click(startXPx, 500 - PUR * 20)
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('XZ')
+  |> startProfileAt(${commonPoints.startAt}, %)
+  |> line([${commonPoints.num1}, 0], %)
+  |> line([-11.59, 11.1], %)
+  |> line([-6.61, 0], %)`)
+
+  // Unequip line tool
+  await page.keyboard.press('Escape')
+  // Make sure we didn't pop out of sketch mode.
+  await expect(page.getByRole('button', { name: 'Exit Sketch' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Line' })).not.toHaveAttribute(
+    'aria-pressed',
+    'true'
+  )
+
+  // Exit sketch
+  await page.keyboard.press('Escape')
+  await expect(
+    page.getByRole('button', { name: 'Exit Sketch' })
+  ).not.toBeVisible()
 })
