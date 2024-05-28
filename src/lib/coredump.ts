@@ -157,9 +157,18 @@ export class CoreDumpManager {
 
   // Currently just a placeholder to begin loading singleton and xstate data into
   getClientState(): Promise<string> {
+    
+    /**
+     * Deep clone a JavaScript Object
+     * - NOTE: this function thows on parse errors from things like circular references
+     * - It is also syncronous and could be more performant
+     * - There is a whole rabbit hole to explore here if you like.
+     * - This work for our use case.
+     * @param {object} obj - The object to clone.
+     */
     const deepClone = (obj: any) => JSON.parse(JSON.stringify(obj))
 
-    console.warn('Gathering client state for coredump')
+    console.warn('CoreDump: Gathering client state')
 
     // Initialize the clientState object
     let clientState: ClientState = {
@@ -184,102 +193,120 @@ export class CoreDumpManager {
       modeling_machine: { meta: [] },
       settings_machine: { meta: [] },
     }
-    console.log('initialized clientState', clientState)
-
-    // Singletons
-
-    // engine_command_manager
-    console.log('engineCommandManager', this.engineCommandManager)
-
-    // artifact map - this.engineCommandManager.artifactMap
-    if (this.engineCommandManager?.artifactMap) {
-      console.log('artifact map', this.engineCommandManager.artifactMap)
-      clientState.engine_command_manager.artifact_map = deepClone(
-        this.engineCommandManager.artifactMap
-      )
-    }
-
-    // command logs - this.engineCommandManager.commandLogs
-    if (this.engineCommandManager?.commandLogs) {
-      console.log('command logs', this.engineCommandManager.commandLogs)
-      clientState.engine_command_manager.command_logs = deepClone(
-        this.engineCommandManager.commandLogs
-      )
-    }
-
-    // default planes - this.engineCommandManager.defaultPlanes
-    if (this.engineCommandManager?.defaultPlanes) {
-      console.log('default planes', this.engineCommandManager.defaultPlanes)
-      clientState.engine_command_manager.default_planes = deepClone(
-        this.engineCommandManager.defaultPlanes
-      )
-    }
-
-    // engine connection state
-    if (this.engineCommandManager?.engineConnection?.state) {
-      clientState.engine_command_manager.engine_connection.state =
-        this.engineCommandManager.engineConnection.state
-      console.log(
-        'engine connection state',
-        this.engineCommandManager.engineConnection.state
-      )
-    }
-
-    // in sequence - this.engineCommandManager.inSequence
-    if (this.engineCommandManager?.inSequence) {
-      console.log('in sequence', this.engineCommandManager.inSequence)
-      clientState.engine_command_manager.in_sequence =
-        this.engineCommandManager.inSequence
-    }
-
-    // out sequence - this.engineCommandManager.outSequence
-    if (this.engineCommandManager?.inSequence) {
-      console.log('out sequence', this.engineCommandManager.outSequence)
-      clientState.engine_command_manager.out_sequence =
-        this.engineCommandManager.inSequence
-    }
-
-    // scene command artifacts - this.engineCommandManager.sceneCommandArtifacts
-    if (this.engineCommandManager?.sceneCommandArtifacts) {
-      console.log(
-        'scene command artifacts',
-        this.engineCommandManager.sceneCommandArtifacts
-      )
-      clientState.engine_command_manager.scene_command_artifacts = deepClone(
-        this.engineCommandManager.sceneCommandArtifacts
-      )
-    }
-
-    // KCL Manager
-    console.log('kclManager', this.kclManager)
-
-    // this.kclManager.ast
-    console.log('KCL Manager AST', this?.kclManager?.ast)
-
-    // this.kclManager.kclErrors
-    console.log('KCL Errors', this?.kclManager?.kclErrors)
-
-    // XState Machines
-
-    console.log('xstateServices', this?.__xstate__?.services)
-    let xstateServices = this?.__xstate__?.services || new Set()
-
-    xstateServices?.forEach((interpreter: any) => {
-      console.log('interpreter', interpreter)
-      // Command Bar Machine XState
-      if (interpreter.id('Command Bar')) {
-        // clientState.command_bar_machine.meta.push(1)
-      }
-    })
-
-    console.log('final clientState', clientState)
-    console.log('JSON', JSON.stringify(clientState))
+    console.log('CoreDump: initialized clientState', clientState)
 
     try {
-      return Promise.resolve(JSON.stringify(clientState))
+
+      // Singletons
+
+      // engine_command_manager
+      console.log('CoreDump: the engineCommandManager singlton', this.engineCommandManager)
+
+      // artifact map - this.engineCommandManager.artifactMap
+      if (this.engineCommandManager?.artifactMap) {
+        console.log('CoreDump: artifact map', this.engineCommandManager.artifactMap)
+        clientState.engine_command_manager.artifact_map = deepClone(
+          this.engineCommandManager.artifactMap
+        )
+      }
+
+      // command logs - this.engineCommandManager.commandLogs
+      if (this.engineCommandManager?.commandLogs) {
+        console.log('CoreDump: command logs', this.engineCommandManager.commandLogs)
+        clientState.engine_command_manager.command_logs = deepClone(
+          this.engineCommandManager.commandLogs
+        )
+      }
+
+      // default planes - this.engineCommandManager.defaultPlanes
+      if (this.engineCommandManager?.defaultPlanes) {
+        console.log('CoreDump: default planes', this.engineCommandManager.defaultPlanes)
+        clientState.engine_command_manager.default_planes = deepClone(
+          this.engineCommandManager.defaultPlanes
+        )
+      }
+
+      // engine connection state
+      if (this.engineCommandManager?.engineConnection?.state) {
+        clientState.engine_command_manager.engine_connection.state =
+          this.engineCommandManager.engineConnection.state
+        console.log(
+          'CoreDump: engine connection state',
+          this.engineCommandManager.engineConnection.state
+        )
+      }
+
+      // in sequence - this.engineCommandManager.inSequence
+      if (this.engineCommandManager?.inSequence) {
+        console.log('CoreDump: in sequence', this.engineCommandManager.inSequence)
+        clientState.engine_command_manager.in_sequence =
+          this.engineCommandManager.inSequence
+      }
+
+      // out sequence - this.engineCommandManager.outSequence
+      if (this.engineCommandManager?.inSequence) {
+        console.log('CoreDump: out sequence', this.engineCommandManager.outSequence)
+        clientState.engine_command_manager.out_sequence =
+          this.engineCommandManager.inSequence
+      }
+
+      // scene command artifacts - this.engineCommandManager.sceneCommandArtifacts
+      if (this.engineCommandManager?.sceneCommandArtifacts) {
+        console.log(
+          'CoreDump: scene command artifacts',
+          this.engineCommandManager.sceneCommandArtifacts
+        )
+        clientState.engine_command_manager.scene_command_artifacts = deepClone(
+          this.engineCommandManager.sceneCommandArtifacts
+        )
+      }
+
+      // KCL Manager - this.kclManager
+      console.log('CoreDump: kclManager', this.kclManager)
+
+      if (this?.kclManager) {
+        // this.kclManager.ast Object - this?.kclManager?.ast
+        console.log('CoreDump: KCL Manager AST', this?.kclManager?.ast)
+        clientState.kcl_manager.ast = deepClone(this.kclManager.ast)
+
+        // this.kclManager.kclErrors Array - this?.kclManager?.kclErrors
+        console.log('CoreDump: KCL Errors', this?.kclManager?.kclErrors)
+        clientState.kcl_manager.kcl_errors = deepClone(this.kclManager.kclErrors)
+      }
+
+      // Scene Infra - this.sceneInfra
+      console.log('CoreDump: Scene Infra', this.sceneInfra)
+      //scene_infra
+
+      // TODO: /src/lib/singletons.ts also defines the following singletons
+      // sceneEntitiesManager
+      // editorManager
+      // enableMousePositionLogs
+
+      // XState Machines
+      console.log('CoreDump: xstateServices', this?.__xstate__?.services)
+      let xstateServices = this?.__xstate__?.services || new Set()
+
+      xstateServices?.forEach((interpreter: any) => {
+        console.log('CoreDump: XState interpreter', interpreter)
+        // Command Bar Machine XState
+        if (interpreter.id('Command Bar')) {
+          // clientState.command_bar_machine.meta.push(1)
+        }
+      })
+
+      console.log('CoreDump: final clientState', clientState)
+
+      const clientStateJson = JSON.stringify(clientState);
+      console.log('CoreDump: final clientState JSON', clientStateJson)
+
+      return Promise.resolve(clientStateJson)
+    
     } catch (error) {
-      console.error('unable to return coredump data due to ', error)
+
+      console.error('CoreDump: unable to return data due to ', error)
       return Promise.reject(JSON.stringify(error))
+
     }
   }
 
