@@ -776,13 +776,8 @@ export class CameraControls {
   }
 
   async updateCameraToAxis(
-    axis: 'x' | 'y' | 'z' | '-x' | '-y' | '-z' | 'reset'
+    axis: 'x' | 'y' | 'z' | '-x' | '-y' | '-z'
   ): Promise<void> {
-    if (axis === 'reset') {
-      await this.resetCameraPosition()
-      return
-    }
-
     const distance = this.camera.position.distanceTo(this.target)
 
     let vantage = { x: 0, y: 0, z: 0 }

@@ -37,7 +37,6 @@ enum AxisNames {
   NEG_X = '-x',
   NEG_Y = '-y',
   NEG_Z = '-z',
-  RESET = 'reset',
 }
 
 export default function Gizmo() {
@@ -150,7 +149,6 @@ const createGizmo = () => {
     createAxisHead(AxisNames.NEG_X, AxisColors.Gray, [-AXIS_LENGTH, 0, 0]),
     createAxisHead(AxisNames.NEG_Y, AxisColors.Gray, [0, -AXIS_LENGTH, 0]),
     createAxisHead(AxisNames.NEG_Z, AxisColors.Gray, [0, 0, -AXIS_LENGTH]),
-    createAxisHead(AxisNames.RESET, AxisColors.Gray, [0, 0, 0]),
   ]
 
   return { gizmoAxes, gizmoAxisHeads }

@@ -696,6 +696,15 @@ export const CamDebugSettings = () => {
           }
         }}
       />
+      <div>
+        <button
+          onClick={() => {
+            sceneInfra.camControls.resetCameraPosition()
+          }}
+        >
+          Reset Camera Position
+        </button>
+      </div>
       {camSettings.type === 'perspective' && (
         <input
           type="range"
