@@ -42,6 +42,7 @@ enum AxisNames {
 export default function Gizmo() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const raycasterIntersect = useRef<Intersection<Object3D> | null>(null)
+  let cameraMoved = useRef(false)
 
   useEffect(() => {
     if (!canvasRef.current) return
@@ -68,34 +69,15 @@ export default function Gizmo() {
     const clientCamera = sceneInfra.camControls.camera
     let currentQuaternion = new Quaternion().copy(clientCamera.quaternion)
 
-    const quaternionsEqual = (
-      q1: Quaternion,
-      q2: Quaternion,
-      tolerance: number = 0.001
-    ): boolean => {
-      return (
-        Math.abs(q1.x - q2.x) < tolerance &&
-        Math.abs(q1.y - q2.y) < tolerance &&
-        Math.abs(q1.z - q2.z) < tolerance &&
-        Math.abs(q1.w - q2.w) < tolerance
-      )
-    }
-
     const animate = () => {
       const delta = clock.getDelta()
-      if (
-        !quaternionsEqual(
-          currentQuaternion,
-          sceneInfra.camControls.camera.quaternion
-        )
-      ) {
-        updateCameraOrientation(
-          camera,
-          currentQuaternion,
-          sceneInfra.camControls.camera.quaternion,
-          delta
-        )
-      }
+      updateCameraOrientation(
+        camera,
+        currentQuaternion,
+        sceneInfra.camControls.camera.quaternion,
+        delta,
+        cameraMoved
+      )
       updateRayCaster(
         raycasterObjects,
         raycaster,
@@ -188,12 +170,35 @@ const updateCameraOrientation = (
   camera: OrthographicCamera,
   currentQuaternion: Quaternion,
   targetQuaternion: Quaternion,
-  deltaTime: number
+  deltaTime: number,
+  cameraMoved: MutableRefObject<boolean>
 ) => {
-  const slerpFactor = 1 - Math.exp(-30 * deltaTime)
-  currentQuaternion.slerp(targetQuaternion, slerpFactor).normalize()
-  camera.position.set(0, 0, 1).applyQuaternion(currentQuaternion)
-  camera.quaternion.copy(currentQuaternion)
+  if (!quaternionsEqual(currentQuaternion, targetQuaternion)) {
+    cameraMoved.current = true
+  }
+  if (
+    !cameraMoved.current ||
+    !quaternionsEqual(currentQuaternion, targetQuaternion)
+  ) {
+    const slerpFactor = 1 - Math.exp(-30 * deltaTime)
+    currentQuaternion.slerp(targetQuaternion, slerpFactor).normalize()
+    camera.position.set(0, 0, 1).applyQuaternion(currentQuaternion)
+    camera.quaternion.copy(currentQuaternion)
+    console.log('Client camera current Quaternion X is:', currentQuaternion.x)
+  }
+}
+
+const quaternionsEqual = (
+  q1: Quaternion,
+  q2: Quaternion,
+  tolerance: number = 0.001
+): boolean => {
+  return (
+    Math.abs(q1.x - q2.x) < tolerance &&
+    Math.abs(q1.y - q2.y) < tolerance &&
+    Math.abs(q1.z - q2.z) < tolerance &&
+    Math.abs(q1.w - q2.w) < tolerance
+  )
 }
 
 const initializeMouseEvents = (
