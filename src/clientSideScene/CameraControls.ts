@@ -1031,6 +1031,11 @@ export class CameraControls {
         roundOff(this.camera.position.y, 2),
         roundOff(this.camera.position.z, 2),
       ],
+      target: [
+        roundOff(this.target.x, 2),
+        roundOff(this.target.y, 2),
+        roundOff(this.target.z, 2),
+      ],
       quaternion: [
         roundOff(this.camera.quaternion.x, 2),
         roundOff(this.camera.quaternion.y, 2),
