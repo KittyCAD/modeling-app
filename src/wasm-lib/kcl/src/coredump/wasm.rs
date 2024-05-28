@@ -7,10 +7,11 @@ use crate::{
     coredump::{
         AuthMachineState, ClientState, CommandBarMachineState, CoreDump,
         EngineCommandManagerState, FileMachineState, HomeMachineState, 
-        KclManagerState, ModelingMachineState,SceneInfraState, SettingsMachineState
+        KclManagerState, ModelingMachineState, SettingsMachineState
     },
     wasm::JsFuture,
 };
+use serde_json::Value as JValue;
 
 #[wasm_bindgen(module = "/../../lib/coredump.ts")]
 extern "C" {
@@ -134,18 +135,18 @@ impl CoreDump for CoreDumper {
     }
 
     async fn get_client_state(&self) -> Result<ClientState> {
-        let client_state: ClientState = ClientState {
-            engine_command_manager: EngineCommandManagerState { ..Default::default() },
-            kcl_manager: KclManagerState { ..Default::default() },
-            scene_infra: SceneInfraState { ..Default::default() },
-            auth_machine: AuthMachineState { ..Default::default() },
-            command_bar_machine: CommandBarMachineState { ..Default::default() },
-            file_machine: FileMachineState { ..Default::default() },
-            home_machine: HomeMachineState { ..Default::default() },
-            modeling_machine: ModelingMachineState { ..Default::default() },
-            settings_machine: SettingsMachineState { ..Default::default() },
-            ..Default::default()
-        };
+        // let client_state: ClientState = ClientState {
+        //     engine_command_manager: EngineCommandManagerState { ..Default::default() },
+        //     kcl_manager: KclManagerState { ..Default::default() },
+        //     scene_infra: JValue { ..Default::default() },
+        //     auth_machine: AuthMachineState { ..Default::default() },
+        //     command_bar_machine: CommandBarMachineState { ..Default::default() },
+        //     file_machine: FileMachineState { ..Default::default() },
+        //     home_machine: HomeMachineState { ..Default::default() },
+        //     modeling_machine: ModelingMachineState { ..Default::default() },
+        //     settings_machine: SettingsMachineState { ..Default::default() },
+        //     ..Default::default()
+        // };
 
         let promise = self
             .manager

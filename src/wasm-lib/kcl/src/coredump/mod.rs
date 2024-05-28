@@ -11,7 +11,6 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 /// "Value" would be OK. This is imported as "JValue" throughout the rest of this crate.
 use serde_json::Value as JValue;
-// use std::collections::HashMap;
 
 #[async_trait::async_trait(?Send)]
 pub trait CoreDump: Clone {
@@ -255,12 +254,6 @@ pub struct KclManagerState {
     pub kcl_errors: JValue,
 }
 
-#[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "snake_case")]
-pub struct SceneInfraState {
-    pub meta: [u8; 0],
-}
 /// Client State XState Structures
 
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -315,7 +308,7 @@ pub struct ClientState {
     /// Internal state of the KclManager/KclSingleton object.
     pub kcl_manager: KclManagerState,
     /// Internal state of the SceneInfra object.
-    pub scene_infra: SceneInfraState,
+    pub scene_infra: JValue,
     
     /// XState
     /// Internal state of the AuthMachine xstate object.
