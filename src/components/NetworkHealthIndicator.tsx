@@ -82,7 +82,6 @@ export const NetworkHealthIndicator = () => {
     error,
     setHasCopied,
     hasCopied,
-    pingPongHealth,
   } = useNetworkContext()
 
   return (

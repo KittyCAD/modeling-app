@@ -25,8 +25,6 @@ import { PROJECT_ENTRYPOINT } from 'lib/constants'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
 
-const DEFAULT_FILE_NAME: string = 'main.kcl'
-
 function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
   return []
 }
