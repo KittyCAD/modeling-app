@@ -184,7 +184,6 @@ const updateCameraOrientation = (
     currentQuaternion.slerp(targetQuaternion, slerpFactor).normalize()
     camera.position.set(0, 0, 1).applyQuaternion(currentQuaternion)
     camera.quaternion.copy(currentQuaternion)
-    console.log('Client camera current Quaternion X is:', currentQuaternion.x)
   }
 }
 
