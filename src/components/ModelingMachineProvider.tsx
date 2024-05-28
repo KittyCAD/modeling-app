@@ -34,6 +34,7 @@ import {
   handleSelectionBatch,
   isSelectionLastLine,
   isSketchPipe,
+  updateSelections,
 } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
@@ -53,6 +54,7 @@ import {
 } from 'lang/modifyAst'
 import {
   Program,
+  Value,
   VariableDeclaration,
   coreDump,
   parse,
@@ -73,10 +75,7 @@ import { useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { getVarNameModal } from 'hooks/useToolbarGuards'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
-import {
-  EngineConnectionState,
-  EngineConnectionStateType,
-} from 'lang/std/engineConnection'
+import { applyConstraintEqualAngle } from './Toolbar/EqualAngle'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -223,8 +222,7 @@ export const ModelingMachineProvider = ({
             : {}
         ),
         'Set selection': assign(({ selectionRanges }, event) => {
-          if (event.type !== 'Set selection') return {} // this was needed for ts after adding 'Set selection' action to on done modal events
-          const setSelections = event.data
+          const setSelections = event.data as SetSelections // this was needed for ts after adding 'Set selection' action to on done modal events
           if (!editorManager.editorView) return {}
           const dispatchSelection = (selection?: EditorSelection) => {
             if (!selection) return // TODO less of hack for the below please
@@ -309,6 +307,12 @@ export const ModelingMachineProvider = ({
             updateSceneObjectColors()
             return {
               selectionRanges: selections,
+            }
+          }
+          if (setSelections.selectionType === 'completeSelection') {
+            editorManager.selectRange(setSelections.selection)
+            return {
+              selectionRanges: setSelections.selection,
             }
           }
 
@@ -631,6 +635,28 @@ export const ModelingMachineProvider = ({
             sketchDetails.origin
           )
           return pathToReplacedNode || sketchDetails.sketchPathToNode
+        },
+        'do-constrain-parallel': async ({ selectionRanges, sketchDetails }) => {
+          const { modifiedAst, pathToNodeMap } = applyConstraintEqualAngle({
+            selectionRanges,
+          })
+          if (!sketchDetails) throw new Error('No sketch details')
+          await sceneEntitiesManager.updateAstAndRejigSketch(
+            sketchDetails?.sketchPathToNode || [],
+            parse(recast(modifiedAst)),
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin
+          )
+          const updatedSelectionRanges = updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            parse(recast(modifiedAst))
+          )
+          return {
+            selectionType: 'completeSelection',
+            selection: updatedSelectionRanges,
+          }
         },
       },
       devTools: true,
