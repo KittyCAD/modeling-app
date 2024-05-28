@@ -3811,3 +3811,92 @@ test('Engine disconnect & reconnect in sketch mode', async ({ page }) => {
     page.getByRole('button', { name: 'Exit Sketch' })
   ).not.toBeVisible()
 })
+
+test.describe('Testing Gizmo', () => {
+  const cases = [
+    {
+      testDescription: 'top view',
+      clickPosition: { x: 951, y: 387 },
+      expectedCameraPosition: { x: 123, y: 123, z: 123 },
+      expectedCameraTarget: { x: 123, y: 123, z: 123 },
+    },
+  ] as const
+  for (const {
+    clickPosition,
+    expectedCameraPosition,
+    expectedCameraTarget,
+    testDescription,
+  } of cases) {
+    test(`check ${testDescription}`, async ({ page }) => {
+      const u = await getUtils(page)
+      await page.addInitScript(async (KCL_DEFAULT_LENGTH) => {
+        localStorage.setItem(
+          'persistCode',
+          `const part001 = startSketchOn('XZ')
+    |> startProfileAt([20, 0], %)
+    |> line([7.13, 4 + 0], %)
+    |> angledLine({ angle: 3 + 0, length: 3.14 + 0 }, %)
+    |> lineTo([20.14 + 0, -0.14 + 0], %)
+    |> xLineTo(29 + 0, %)
+    |> yLine(-3.14 + 0, %, 'a')
+    |> xLine(1.63, %)
+    |> angledLineOfXLength({ angle: 3 + 0, length: 3.14 }, %)
+    |> angledLineOfYLength({ angle: 30, length: 3 + 0 }, %)
+    |> angledLineToX({ angle: 22.14 + 0, to: 12 }, %)
+    |> angledLineToY({ angle: 30, to: 11.14 }, %)
+    |> angledLineThatIntersects({
+          angle: 3.14,
+          intersectTag: 'a',
+          offset: 0
+        }, %)
+    |> tangentialArcTo([13.14 + 0, 13.14], %)
+    |> close(%)
+    |> extrude(5 + 7, %)
+  `
+        )
+      }, KCL_DEFAULT_LENGTH)
+      await page.setViewportSize({ width: 1000, height: 500 })
+      await page.goto('/')
+      await u.waitForAuthSkipAppStart()
+
+      // wait for execution done
+      await u.openDebugPanel()
+      await u.expectCmdLog('[data-message-type="execution-done"]')
+      await u.sendCustomCmd({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_look_at',
+          vantage: {
+            x: 3000,
+            y: 3000,
+            z: 3000,
+          },
+          center: {
+            x: 800,
+            y: -152,
+            z: 26,
+          },
+          up: { x: 0, y: 0, z: 1 },
+        },
+      })
+      await page.waitForTimeout(100)
+      await u.sendCustomCmd({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_get_settings',
+        },
+      })
+
+      await page.waitForTimeout(100)
+
+      await page.mouse.move(clickPosition.x, clickPosition.y)
+      await page.mouse.click(clickPosition.x, clickPosition.y)
+
+      // TODO assert the camera is where we'd expect it
+      // expect('camera x selector').toHaveValue(expectedCameraPosition.x)s
+      await page.waitForTimeout(100)
+    })
+  }
+})

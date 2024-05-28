@@ -48,12 +48,14 @@ export type ReactCameraProperties =
       type: 'perspective'
       fov?: number
       position: [number, number, number]
+      target: [number, number, number]
       quaternion: [number, number, number, number]
     }
   | {
       type: 'orthographic'
       zoom?: number
       position: [number, number, number]
+      target: [number, number, number]
       quaternion: [number, number, number, number]
     }
 
