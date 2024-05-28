@@ -2602,7 +2602,7 @@ dependencies = [
  "wasm-bindgen-futures",
  "web-sys",
  "winnow 0.5.40",
- "zip 2.1.0",
+ "zip 2.1.1",
 ]
 
 [[package]]
@@ -6016,6 +6016,7 @@ version = "8.1.0"
 source = "git+https://github.com/Aleph-Alpha/ts-rs#f898578d80d3e2a54080c1c046c45f9eaa2435c3"
 dependencies = [
  "chrono",
+ "serde_json",
  "thiserror",
  "ts-rs-macros",
  "url",
@@ -7106,9 +7107,9 @@ dependencies = [
 
 [[package]]
 name = "zip"
-version = "2.1.0"
+version = "2.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e2568cd0f20e86cd9a7349fe05178f7bd22f22724678448ae5a9bac266df2689"
+checksum = "1dd56a4d5921bc2f99947ac5b3abe5f510b1be7376fdc5e9fce4a23c6a93e87c"
 dependencies = [
  "arbitrary",
  "crc32fast",
