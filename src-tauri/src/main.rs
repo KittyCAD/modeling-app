@@ -271,7 +271,7 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
         // Overwrite with Windows variable
         match env::var("TEMP") {
             Ok(val) => temp = val,
-            Err(e) => println!("Fallback to default /tmp"),
+            Err(_e) => println!("Fallback to default /tmp"),
         }
         let path = Path::new(&temp).join("kittycad_user_code");
         println!("Writing to {}", path.to_string_lossy());
