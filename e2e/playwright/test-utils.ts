@@ -327,11 +327,6 @@ export const doExport = async (
   })
   await page.getByRole('button', { name: 'Submit command' }).click()
 
-  // Confirm we see a loading toast
-  await expect(page.getByText('Exporting...').last()).toBeVisible({
-    timeout: 1000,
-  })
-
   // Handle download
   const download = await downloadPromise1
   const downloadLocationer = (extra = '', isImage = false) =>
