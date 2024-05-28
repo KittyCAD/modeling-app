@@ -197,27 +197,31 @@ For more information on fuzzing you can check out
 
 ### Playwright
 
-First time running plawright locally, you'll need to add the secrets file
+For a portable way to run Playwright you'll need Docker.
+
+After that, open a terminal and run:
 
 ```bash
-touch ./e2e/playwright/playwright-secrets.env
-printf 'token="your-token"\nsnapshottoken="your-snapshot-token"' > ./e2e/playwright/playwright-secrets.env
+docker run --network host  --rm --init -it playwright/chrome:playwright-1.43.1
 ```
 
+and in another terminal, run:
+
+```bash
+PW_TEST_CONNECT_WS_ENDPOINT=ws://127.0.0.1:4444/ yarn playwright test --project="Google Chrome" <test suite>
+```
+
+An example of a `<test suite>` is: `e2e/playwright/flow-tests.spec.ts`
+
+YOU WILL NEED A PLAYWRIGHT-SECRETS.ENV FILE:
+
+
+```bash
+# ./e2e/playwright/playwright-secrets.env
+token=<your-token>
+snapshottoken=<your-snapshot-token>
+```
 then replace "your-token" with a dev token from dev.zoo.dev/account/api-tokens
-
-then:
-run playwright
-
-```
-yarn playwright test
-```
-
-run a specific test suite
-
-```
-yarn playwright test src/e2e-tests/example.spec.ts
-```
 
 run a specific test change the test from `test('...` to `test.only('...`
 (note if you commit this, the tests will instantly fail without running any of the tests)
