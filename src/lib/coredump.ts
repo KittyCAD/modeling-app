@@ -280,8 +280,11 @@ export class CoreDumpManager {
 
       // TODO: /src/lib/singletons.ts also defines the following singletons
       // sceneEntitiesManager
+      console.log('CoreDump: TODO? sceneEntitiesManager', this.sceneEntitiesManager)
       // editorManager
+      console.log('CoreDump: TODO? editorManager', this.editorManager)
       // enableMousePositionLogs
+      console.log('CoreDump: TODO? enableMousePositionLogs', this.enableMousePositionLogs)
 
       // XState Machines
       console.log('CoreDump: xstateServices', this?.__xstate__?.services)
