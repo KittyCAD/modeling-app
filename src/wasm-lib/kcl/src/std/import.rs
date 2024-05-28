@@ -163,9 +163,6 @@ async fn inner_import(
         }));
     }
 
-    //print the current working directory
-    println!("Current working directory: {:?}", std::env::current_dir().unwrap());
-
     // Make sure the file exists.
     if !args.ctx.fs.exists(&file_path, args.source_range).await? {
         return Err(KclError::Semantic(KclErrorDetails {

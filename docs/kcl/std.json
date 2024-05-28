@@ -29,7 +29,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const myAngle = -120\n\nconst sketch001 = startSketchOn('-XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([8, 0], %)\n  |> angledLine({ angle: abs(myAngle), length: 5 }, %)\n  |> line([-5, 0], %)\n  |> angledLine({ angle: myAngle, length: 5 }, %)\n  |> close(%)\n\nconst baseExtrusion = extrude(5, sketch001)"
+      "const myAngle = -120\n\nconst sketch001 = startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([8, 0], %)\n  |> angledLine({ angle: abs(myAngle), length: 5 }, %)\n  |> line([-5, 0], %)\n  |> angledLine({ angle: myAngle, length: 5 }, %)\n  |> close(%)\n\nconst baseExtrusion = extrude(5, sketch001)"
     ]
   },
   {
@@ -62,7 +62,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const myVar = acos(0.5)"
+      "const sketch001 = startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> angledLine({\n       angle: toDegrees(acos(0.5)),\n       length: 10\n     }, %)\n  |> line([5, 0], %)\n  |> lineTo([12, 0], %)\n  |> close(%)\n\nconst extrude001 = extrude(5, sketch001)"
     ]
   },
   {
@@ -1068,7 +1068,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const sketch001 = startSketchOn('-XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([2, 5], %, 'seg01')\n  |> angledLineToX([\n       -angleToMatchLengthX('seg01', 7, %),\n       10\n     ], %)\n  |> close(%)\n\nconst extrusion = extrude(5, sketch001)"
+      "const sketch001 = startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([2, 5], %, 'seg01')\n  |> angledLineToX([\n       -angleToMatchLengthX('seg01', 7, %),\n       10\n     ], %)\n  |> close(%)\n\nconst extrusion = extrude(5, sketch001)"
     ]
   },
   {
@@ -2074,7 +2074,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const sketch001 = startSketchOn('-XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([1, 2], %, 'seg01')\n  |> angledLine({\n       angle: angleToMatchLengthY('seg01', 15, %),\n       length: 5\n     }, %)\n  |> yLineTo(0, %)\n  |> close(%)\n\nconst extrusion = extrude(5, sketch001)"
+      "const sketch001 = startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([1, 2], %, 'seg01')\n  |> angledLine({\n       angle: angleToMatchLengthY('seg01', 15, %),\n       length: 5\n     }, %)\n  |> yLineTo(0, %)\n  |> close(%)\n\nconst extrusion = extrude(5, sketch001)"
     ]
   },
   {
@@ -4070,7 +4070,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const exampleSketch = startSketchOn('-XZ')\n  |> startProfileAt([0, 0], %)\n  |> yLineTo(15, %)\n  |> angledLine({ angle: 30, length: 15 }, %)\n  |> line([8, -10], %)\n  |> yLineTo(0, %)\n  |> close(%)\n\nconst example = extrude(10, exampleSketch)"
+      "const exampleSketch = startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> yLineTo(15, %)\n  |> angledLine({ angle: 30, length: 15 }, %)\n  |> line([8, -10], %)\n  |> yLineTo(0, %)\n  |> close(%)\n\nconst example = extrude(10, exampleSketch)"
     ]
   },
   {
@@ -10048,7 +10048,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const exampleSketch = startSketchOn('-XZ')\n  |> startProfileAt([0, 0], %)\n  |> lineTo([5, 10], %)\n  |> lineTo([-10, 10], %, \"lineToIntersect\")\n  |> lineTo([0, 20], %)\n  |> angledLineThatIntersects({\n       angle: 80,\n       intersectTag: 'lineToIntersect',\n       offset: 10\n     }, %)\n  |> close(%)\n\nconst example = extrude(10, exampleSketch)"
+      "const exampleSketch = startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> lineTo([5, 10], %)\n  |> lineTo([-10, 10], %, \"lineToIntersect\")\n  |> lineTo([0, 20], %)\n  |> angledLineThatIntersects({\n       angle: 80,\n       intersectTag: 'lineToIntersect',\n       offset: 10\n     }, %)\n  |> close(%)\n\nconst example = extrude(10, exampleSketch)"
     ]
   },
   {
@@ -12029,7 +12029,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const exampleSketch = startSketchOn('-XZ')\n  |> startProfileAt([0, 0], %)\n  |> angledLineToX({ angle: 30, to: 10 }, %)\n  |> line([0, 10], %)\n  |> line([-10, 0], %)\n  |> close(%)\n\nconst example = extrude(10, exampleSketch)"
+      "const exampleSketch = startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> angledLineToX({ angle: 30, to: 10 }, %)\n  |> line([0, 10], %)\n  |> line([-10, 0], %)\n  |> close(%)\n\nconst example = extrude(10, exampleSketch)"
     ]
   },
   {
@@ -14010,7 +14010,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const exampleSketch = startSketchOn('-XZ')\n  |> startProfileAt([0, 0], %)\n  |> angledLineToY({ angle: 60, to: 20 }, %)\n  |> line([-20, 0], %)\n  |> angledLineToY({ angle: 70, to: 10 }, %)\n  |> close(%)\n\nconst example = extrude(10, exampleSketch)"
+      "const exampleSketch = startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> angledLineToY({ angle: 60, to: 20 }, %)\n  |> line([-20, 0], %)\n  |> angledLineToY({ angle: 70, to: 10 }, %)\n  |> close(%)\n\nconst example = extrude(10, exampleSketch)"
     ]
   },
   {
@@ -16038,7 +16038,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const exampleSketch = startSketchOn('-XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 0], %)\n  |> arc({\n       angle_start: 0,\n       angle_end: 280,\n       radius: 16\n     }, %)\n  |> close(%)"
+      "const exampleSketch = startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 0], %)\n  |> arc({\n       angle_start: 0,\n       angle_end: 280,\n       radius: 16\n     }, %)\n  |> close(%)"
     ]
   },
   {
@@ -16071,7 +16071,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const myVar = asin(0.5)"
+      "const sketch001 = startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> angledLine({\n       angle: toDegrees(asin(0.5)),\n       length: 20\n     }, %)\n  |> yLineTo(0, %)\n  |> close(%)\n\nconst extrude001 = extrude(5, sketch001)"
     ]
   },
   {
@@ -16104,7 +16104,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const myVar = atan(1.0)"
+      "const sketch001 = startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> angledLine({\n       angle: toDegrees(atan(1.25)),\n       length: 20\n     }, %)\n  |> yLineTo(0, %)\n  |> close(%)\n\nconst extrude001 = extrude(5, sketch001)"
     ]
   },
   {
@@ -18106,7 +18106,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const exampleSketch = startSketchOn('-XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([0, 10], %)\n  |> bezierCurve({\n       to: [10, 10],\n       control1: [5, 0],\n       control2: [5, 10]\n     }, %)\n  |> lineTo([10, 0], %)\n  |> close(%)\n\nconst example = extrude(10, exampleSketch)"
+      "const exampleSketch = startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([0, 10], %)\n  |> bezierCurve({\n       to: [10, 10],\n       control1: [5, 0],\n       control2: [5, 10]\n     }, %)\n  |> lineTo([10, 0], %)\n  |> close(%)\n\nconst example = extrude(10, exampleSketch)"
     ]
   },
   {
@@ -18139,7 +18139,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const myVar = ceil(4.5)"
+      "const sketch001 = startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> lineTo([12, 10], %)\n  |> line([ceil(7.02986), 0], %)\n  |> yLineTo(0, %)\n  |> close(%)\n\nconst extrude001 = extrude(5, sketch001)"
     ]
   },
   {
@@ -20424,7 +20424,8 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const exampleSketch = startSketchOn(\"-XZ\")\n  |> circle([0, 0], 10, %)\n\nconst example = extrude(5, exampleSketch)"
+      "const exampleSketch = startSketchOn(\"-XZ\")\n  |> circle([0, 0], 10, %)\n\nconst example = extrude(5, exampleSketch)",
+      "const exampleSketch = startSketchOn(\"XZ\")\n  |> startProfileAt([-15, 0], %)\n  |> line([30, 0], %)\n  |> line([0, 30], %)\n  |> line([-30, 0], %)\n  |> close(%)\n  |> hole(circle([0, 15], 5, %), %)\n\nconst example = extrude(5, exampleSketch)"
     ]
   },
   {
@@ -22414,7 +22415,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const anotherVar = cos(2 * pi())"
+      "const exampleSketch = startSketchOn(\"XZ\")\n  |> startProfileAt([0, 0], %)\n  |> angledLine({\n       angle: 30,\n       length: 3 / cos(toRadians(30))\n     }, %)\n  |> yLineTo(0, %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
     ]
   },
   {
@@ -22437,7 +22438,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const myVar = e()"
+      "const exampleSketch = startSketchOn(\"XZ\")\n  |> startProfileAt([0, 0], %)\n  |> angledLine({ angle: 30, length: 2 * e() ^ 2 }, %)\n  |> yLineTo(0, %)\n  |> close(%)\n\nconst example = extrude(10, exampleSketch)"
     ]
   },
   {
@@ -25953,8 +25954,8 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const example = startSketchOn('-XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 0], %)\n  |> arc({\n       angle_end: 0,\n       angle_start: 120,\n       radius: 5\n     }, %)\n  |> line([5, 0], %)\n  |> line([0, 10], %)\n  |> bezierCurve({\n       control1: [-10, 0],\n       control2: [2, 10],\n       to: [-5, 10]\n     }, %)\n  |> line([-5, -2], %)\n  |> close(%)\n  |> extrude(10, %)",
-      "const exampleSketch = startSketchOn('-XZ')\n  |> startProfileAt([-10, 0], %)\n  |> arc({\n       angle_end: -60,\n       angle_start: 120,\n       radius: 5\n     }, %)\n  |> line([10, 0], %)\n  |> line([5, 0], %)\n  |> bezierCurve({\n       control1: [-3, 0],\n       control2: [2, 10],\n       to: [-5, 10]\n     }, %)\n  |> line([-4, 10], %)\n  |> line([-5, -2], %)\n  |> close(%)\n\nconst example = extrude(10, exampleSketch)"
+      "const example = startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 0], %)\n  |> arc({\n       angle_end: 0,\n       angle_start: 120,\n       radius: 5\n     }, %)\n  |> line([5, 0], %)\n  |> line([0, 10], %)\n  |> bezierCurve({\n       control1: [-10, 0],\n       control2: [2, 10],\n       to: [-5, 10]\n     }, %)\n  |> line([-5, -2], %)\n  |> close(%)\n  |> extrude(10, %)",
+      "const exampleSketch = startSketchOn('XZ')\n  |> startProfileAt([-10, 0], %)\n  |> arc({\n       angle_end: -60,\n       angle_start: 120,\n       radius: 5\n     }, %)\n  |> line([10, 0], %)\n  |> line([5, 0], %)\n  |> bezierCurve({\n       control1: [-3, 0],\n       control2: [2, 10],\n       to: [-5, 10]\n     }, %)\n  |> line([-4, 10], %)\n  |> line([-5, -2], %)\n  |> close(%)\n\nconst example = extrude(10, exampleSketch)"
     ]
   },
   {
@@ -27550,7 +27551,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const myVar = floor(4.5)"
+      "const sketch001 = startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> lineTo([12, 10], %)\n  |> line([floor(7.02986), 0], %)\n  |> yLineTo(0, %)\n  |> close(%)\n\nconst extrude001 = extrude(5, sketch001)"
     ]
   },
   {
@@ -28336,7 +28337,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const box = startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([0, 10], %, 'revolveAxis')\n  |> line([10, 0], %)\n  |> line([0, -10], %)\n  |> close(%)\n  |> extrude(10, %)\n\nconst revolution = startSketchOn('XZ')\n  |> startProfileAt([-10, 0], %)\n  |> line([0, 10], %)\n  |> line([2, 0], %)\n  |> line([0, -10], %)\n  |> close(%)\n  |> revolve({\n       axis: getEdge('revolveAxis', box),\n       angle: 90\n     }, %)"
+      "const box = startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([0, 10], %, 'revolveAxis')\n  |> line([10, 0], %)\n  |> line([0, -10], %)\n  |> close(%)\n  |> extrude(10, %)\n\nconst revolution = startSketchOn(box, \"revolveAxis\")\n  |> startProfileAt([5, 10], %)\n  |> line([0, 10], %)\n  |> line([2, 0], %)\n  |> line([0, -10], %)\n  |> close(%)\n  |> revolve({\n       axis: getEdge('revolveAxis', box),\n       angle: 90\n     }, %)"
     ]
   },
   {
@@ -36161,7 +36162,7 @@
     "deprecated": false,
     "examples": [
       "const exampleSketch = startSketchOn('XY')\n  |> startProfileAt([0, 0], %)\n  |> line([0, 5], %)\n  |> line([5, 0], %)\n  |> line([0, -5], %)\n  |> close(%)\n  |> hole(circle([1, 1], .25, %), %)\n  |> hole(circle([1, 4], .25, %), %)\n\nconst example = extrude(1, exampleSketch)",
-      "fn squareHoleSketch = () => {\n  const squareSketch = startSketchOn('-XZ')\n    |> startProfileAt([-1, -1], %)\n    |> line([2, 0], %)\n    |> line([0, 2], %)\n    |> line([-2, 0], %)\n    |> close(%)\n  return squareSketch\n}\n\nconst exampleSketch = startSketchOn('-XZ')\n  |> circle([0, 0], 3, %)\n  |> hole(squareHoleSketch(), %)"
+      "fn squareHoleSketch = () => {\n  const squareSketch = startSketchOn('-XZ')\n    |> startProfileAt([-1, -1], %)\n    |> line([2, 0], %)\n    |> line([0, 2], %)\n    |> line([-2, 0], %)\n    |> close(%)\n  return squareSketch\n}\n\nconst exampleSketch = startSketchOn('-XZ')\n  |> circle([0, 0], 3, %)\n  |> hole(squareHoleSketch(), %)\nconst example = extrude(1, exampleSketch)"
     ]
   },
   {
@@ -37807,7 +37808,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const exampleSketch = startSketchOn(\"-XZ\")\n  |> startProfileAt([0, 0], %)\n  |> line([5, 0], %)\n  |> line([20, 5], %)\n  |> line([0, lastSegX(%)], %)\n  |> line([-15, 0], %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
+      "const exampleSketch = startSketchOn(\"XZ\")\n  |> startProfileAt([0, 0], %)\n  |> line([5, 0], %)\n  |> line([20, 5], %)\n  |> line([0, lastSegX(%)], %)\n  |> line([-15, 0], %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
     ]
   },
   {
@@ -38796,7 +38797,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const exampleSketch = startSketchOn(\"-XZ\")\n  |> startProfileAt([0, 0], %)\n  |> line([5, 0], %)\n  |> line([20, 5], %)\n  |> line([0, lastSegY(%)], %)\n  |> line([-15, 0], %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
+      "const exampleSketch = startSketchOn(\"XZ\")\n  |> startProfileAt([0, 0], %)\n  |> line([5, 0], %)\n  |> line([20, 5], %)\n  |> line([0, lastSegY(%)], %)\n  |> line([-15, 0], %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
     ]
   },
   {
@@ -40892,7 +40893,8 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const exampleSketch = startSketchOn(\"-XZ\")\n  |> startProfileAt([0, 0], %)\n  |> line([10, 0], %)\n  |> line([0, 10], %)\n  |> line([-10, 0], %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
+      "const exampleSketch = startSketchOn(\"XZ\")\n  |> startProfileAt([0, 0], %)\n  |> line([25, 15], %)\n  |> line([5, -6], %)\n  |> line([-10, -10], %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)",
+      "const exampleSketch = startSketchOn(\"XZ\")\n  |> startProfileAt([0, 0], %)\n  |> line([10, 0], %)\n  |> line([0, 10], %)\n  |> line([-10, 0], %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
     ]
   },
   {
@@ -42862,7 +42864,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const exampleSketch = startSketchOn(\"-XZ\")\n  |> startProfileAt([0, 0], %)\n  |> lineTo([10, 0], %)\n  |> lineTo([0, 10], %)\n  |> lineTo([-10, 0], %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
+      "const exampleSketch = startSketchOn(\"XZ\")\n  |> startProfileAt([0, 0], %)\n  |> lineTo([10, 0], %)\n  |> lineTo([0, 10], %)\n  |> lineTo([-10, 0], %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
     ]
   },
   {
@@ -42895,7 +42897,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const myVar = ln(4)"
+      "const exampleSketch = startSketchOn(\"XZ\")\n  |> startProfileAt([0, 0], %)\n  |> line([ln(100), 15], %)\n  |> line([5, -6], %)\n  |> line([-10, -10], %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
     ]
   },
   {
@@ -42937,7 +42939,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const myVar = log(4, 2)"
+      "const exampleSketch = startSketchOn(\"XZ\")\n  |> startProfileAt([0, 0], %)\n  |> line([log(100, 5), 0], %)\n  |> line([5, 8], %)\n  |> line([-10, 0], %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
     ]
   },
   {
@@ -42970,7 +42972,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const myVar = log10(4)"
+      "const exampleSketch = startSketchOn(\"XZ\")\n  |> startProfileAt([0, 0], %)\n  |> line([log10(100), 0], %)\n  |> line([5, 8], %)\n  |> line([-10, 0], %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
     ]
   },
   {
@@ -43003,7 +43005,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const myVar = log2(4)"
+      "const exampleSketch = startSketchOn(\"XZ\")\n  |> startProfileAt([0, 0], %)\n  |> line([log2(100), 0], %)\n  |> line([5, 8], %)\n  |> line([-10, 0], %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
     ]
   },
   {
@@ -43039,7 +43041,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const myVar = max(4, 5, 6)"
+      "const exampleSketch = startSketchOn(\"XZ\")\n  |> startProfileAt([0, 0], %)\n  |> angledLine({\n       angle: 70,\n       length: max(15, 31, 4, 13, 22)\n     }, %)\n  |> line([20, 0], %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
     ]
   },
   {
@@ -43075,7 +43077,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const myVar = min(4, 5, 6)"
+      "const exampleSketch = startSketchOn(\"XZ\")\n  |> startProfileAt([0, 0], %)\n  |> angledLine({\n       angle: 70,\n       length: min(15, 31, 4, 13, 22)\n     }, %)\n  |> line([20, 0], %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
     ]
   },
   {
@@ -45067,7 +45069,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const exampleSketch = startSketchOn('-XZ')\n  |> startProfileAt([.5, 25], %)\n  |> line([0, 5], %)\n  |> line([-1, 0], %)\n  |> line([0, -5], %)\n  |> close(%)\n  |> patternCircular2d({\n       center: [0, 0],\n       repetitions: 12,\n       arcDegrees: 360,\n       rotateDuplicates: true\n     }, %)\n\nconst example = extrude(1, exampleSketch)"
+      "const exampleSketch = startSketchOn('XZ')\n  |> startProfileAt([.5, 25], %)\n  |> line([0, 5], %)\n  |> line([-1, 0], %)\n  |> line([0, -5], %)\n  |> close(%)\n  |> patternCircular2d({\n       center: [0, 0],\n       repetitions: 12,\n       arcDegrees: 360,\n       rotateDuplicates: true\n     }, %)\n\nconst example = extrude(1, exampleSketch)"
     ]
   },
   {
@@ -46648,7 +46650,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const exampleSketch = startSketchOn('-XZ')\n  |> circle([0, 0], 1, %)\n\nconst example = extrude(-5, exampleSketch)\n  |> patternCircular3d({\n       axis: [1, -1, 0],\n       center: [10, -20, 0],\n       repetitions: 10,\n       arcDegrees: 360,\n       rotateDuplicates: true\n     }, %)"
+      "const exampleSketch = startSketchOn('XZ')\n  |> circle([0, 0], 1, %)\n\nconst example = extrude(-5, exampleSketch)\n  |> patternCircular3d({\n       axis: [1, -1, 0],\n       center: [10, -20, 0],\n       repetitions: 10,\n       arcDegrees: 360,\n       rotateDuplicates: true\n     }, %)"
     ]
   },
   {
@@ -49626,7 +49628,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const exampleSketch = startSketchOn('-XZ')\n  |> circle([0, 0], 1, %)\n  |> patternLinear2d({\n       axis: [1, 0],\n       repetitions: 6,\n       distance: 4\n     }, %)\n\nconst example = extrude(1, exampleSketch)"
+      "const exampleSketch = startSketchOn('XZ')\n  |> circle([0, 0], 1, %)\n  |> patternLinear2d({\n       axis: [1, 0],\n       repetitions: 6,\n       distance: 4\n     }, %)\n\nconst example = extrude(1, exampleSketch)"
     ]
   },
   {
@@ -51191,7 +51193,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const exampleSketch = startSketchOn('-XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([0, 2], %)\n  |> line([3, 1], %)\n  |> line([0, -4], %)\n  |> close(%)\n\nconst example = extrude(1, exampleSketch)\n  |> patternLinear3d({\n       axis: [1, 0, 1],\n       repetitions: 6,\n       distance: 6\n     }, %)"
+      "const exampleSketch = startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([0, 2], %)\n  |> line([3, 1], %)\n  |> line([0, -4], %)\n  |> close(%)\n\nconst example = extrude(1, exampleSketch)\n  |> patternLinear3d({\n       axis: [1, 0, 1],\n       repetitions: 6,\n       distance: 6\n     }, %)"
     ]
   },
   {
@@ -51214,7 +51216,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const myVar = pi() * 3.0"
+      "const circumference = 70\n\nconst exampleSketch = startSketchOn(\"XZ\")\n  |> circle([0, 0], circumference / (2 * pi()), %)\n\nconst example = extrude(5, exampleSketch)"
     ]
   },
   {
@@ -51256,7 +51258,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const myVar = pow(4, 2)"
+      "const exampleSketch = startSketchOn(\"XZ\")\n  |> startProfileAt([0, 0], %)\n  |> angledLine({ angle: 50, length: pow(5, 2) }, %)\n  |> yLineTo(0, %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
     ]
   },
   {
@@ -57090,7 +57092,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const exampleSketch = startSketchOn('-XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 0], %)\n  |> line([5, 10], %, 'seg01')\n  |> line([-10, 0], %)\n  |> angledLine([segAng('seg01', %), 10], %)\n  |> line([-10, 0], %)\n  |> angledLine([segAng('seg01', %), -15], %)\n  |> close(%)\n\nconst example = extrude(4, exampleSketch)"
+      "const exampleSketch = startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 0], %)\n  |> line([5, 10], %, 'seg01')\n  |> line([-10, 0], %)\n  |> angledLine([segAng('seg01', %), 10], %)\n  |> line([-10, 0], %)\n  |> angledLine([segAng('seg01', %), -15], %)\n  |> close(%)\n\nconst example = extrude(4, exampleSketch)"
     ]
   },
   {
@@ -58087,7 +58089,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const exampleSketch = startSketchOn('-XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([20, 0], %, \"thing\")\n  |> line([0, 5], %)\n  |> line([segEndX(\"thing\", %), 0], %)\n  |> line([-20, 10], %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
+      "const exampleSketch = startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([20, 0], %, \"thing\")\n  |> line([0, 5], %)\n  |> line([segEndX(\"thing\", %), 0], %)\n  |> line([-20, 10], %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
     ]
   },
   {
@@ -59084,7 +59086,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const exampleSketch = startSketchOn('-XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([20, 0], %)\n  |> line([0, 3], %, \"thing\")\n  |> line([-10, 0], %)\n  |> line([0, segEndY(\"thing\", %)], %)\n  |> line([-10, 0], %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
+      "const exampleSketch = startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([20, 0], %)\n  |> line([0, 3], %, \"thing\")\n  |> line([-10, 0], %)\n  |> line([0, segEndY(\"thing\", %)], %)\n  |> line([-10, 0], %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
     ]
   },
   {
@@ -60081,7 +60083,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const exampleSketch = startSketchOn(\"-XZ\")\n  |> startProfileAt([0, 0], %)\n  |> angledLine({ angle: 60, length: 10 }, %, \"thing\")\n  |> tangentialArc({ offset: -120, radius: 5 }, %)\n  |> angledLine({\n       angle: -60,\n       length: segLen(\"thing\", %)\n     }, %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
+      "const exampleSketch = startSketchOn(\"XZ\")\n  |> startProfileAt([0, 0], %)\n  |> angledLine({ angle: 60, length: 10 }, %, \"thing\")\n  |> tangentialArc({ offset: -120, radius: 5 }, %)\n  |> angledLine({\n       angle: -60,\n       length: segLen(\"thing\", %)\n     }, %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
     ]
   },
   {
@@ -60114,7 +60116,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const myVar = sin(2 * pi())"
+      "const exampleSketch = startSketchOn(\"XZ\")\n  |> startProfileAt([0, 0], %)\n  |> angledLine({\n       angle: 50,\n       length: 15 / sin(toDegrees(135))\n     }, %)\n  |> yLineTo(0, %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
     ]
   },
   {
@@ -60147,7 +60149,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const myVar = sqrt(4)"
+      "const exampleSketch = startSketchOn(\"XZ\")\n  |> startProfileAt([0, 0], %)\n  |> angledLine({ angle: 50, length: sqrt(2500) }, %)\n  |> yLineTo(0, %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
     ]
   },
   {
@@ -61456,7 +61458,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const exampleSketch = startSketchOn('-XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 0], %)\n  |> line([0, 10], %)\n  |> line([-10, 0], %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)",
+      "const exampleSketch = startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> line([10, 0], %)\n  |> line([0, 10], %)\n  |> line([-10, 0], %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)",
       "const exampleSketch = startSketchOn('-XZ')\n  |> startProfileAt([10, 10], %)\n  |> line([10, 0], %)\n  |> line([0, 10], %)\n  |> line([-10, 0], %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)",
       "const exampleSketch = startSketchOn('-XZ')\n  |> startProfileAt([-10, 23], %)\n  |> line([10, 0], %)\n  |> line([0, 10], %)\n  |> line([-10, 0], %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
     ]
@@ -63729,7 +63731,8 @@
     "examples": [
       "const exampleSketch = startSketchOn(\"XY\")\n  |> startProfileAt([0, 0], %)\n  |> line([10, 0], %)\n  |> line([0, 10], %)\n  |> line([-10, 0], %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)\n\nconst exampleSketch002 = startSketchOn(example, 'end')\n  |> startProfileAt([1, 1], %)\n  |> line([8, 0], %)\n  |> line([0, 8], %)\n  |> line([-8, 0], %)\n  |> close(%)\n\nconst example002 = extrude(5, exampleSketch002)\n\nconst exampleSketch003 = startSketchOn(example002, 'end')\n  |> startProfileAt([2, 2], %)\n  |> line([6, 0], %)\n  |> line([0, 6], %)\n  |> line([-6, 0], %)\n  |> close(%)\n\nconst example003 = extrude(5, exampleSketch003)",
       "const exampleSketch = startSketchOn(\"XY\")\n  |> startProfileAt([0, 0], %)\n  |> line([10, 0], %)\n  |> line([0, 10], %, 'sketchingFace')\n  |> line([-10, 0], %)\n  |> close(%)\n\nconst example = extrude(10, exampleSketch)\n\nconst exampleSketch002 = startSketchOn(example, 'sketchingFace')\n  |> startProfileAt([1, 1], %)\n  |> line([8, 0], %)\n  |> line([0, 8], %)\n  |> line([-8, 0], %)\n  |> close(%, 'sketchingFace002')\n\nconst example002 = extrude(10, exampleSketch002)\n\nconst exampleSketch003 = startSketchOn(example002, 'sketchingFace002')\n  |> startProfileAt([-8, 12], %)\n  |> line([0, 6], %)\n  |> line([6, 0], %)\n  |> line([0, -6], %)\n  |> close(%)\n\nconst example003 = extrude(5, exampleSketch003)",
-      "const exampleSketch = startSketchOn('XY')\n  |> startProfileAt([4, 12], %)\n  |> line([2, 0], %)\n  |> line([0, -6], %)\n  |> line([4, -6], %)\n  |> line([0, -6], %)\n  |> line([-3.75, -4.5], %)\n  |> line([0, -5.5], %)\n  |> line([-2, 0], %)\n  |> close(%)\n\nconst example = revolve({ axis: 'y', angle: 180 }, exampleSketch)\n\nconst exampleSketch002 = startSketchOn(example, 'end')\n  |> startProfileAt([4.5, -5], %)\n  |> line([0, 5], %)\n  |> line([5, 0], %)\n  |> line([0, -5], %)\n  |> close(%)\n\nconst example002 = extrude(5, exampleSketch002)"
+      "const exampleSketch = startSketchOn('XY')\n  |> startProfileAt([4, 12], %)\n  |> line([2, 0], %)\n  |> line([0, -6], %)\n  |> line([4, -6], %)\n  |> line([0, -6], %)\n  |> line([-3.75, -4.5], %)\n  |> line([0, -5.5], %)\n  |> line([-2, 0], %)\n  |> close(%)\n\nconst example = revolve({ axis: 'y', angle: 180 }, exampleSketch)\n\nconst exampleSketch002 = startSketchOn(example, 'end')\n  |> startProfileAt([4.5, -5], %)\n  |> line([0, 5], %)\n  |> line([5, 0], %)\n  |> line([0, -5], %)\n  |> close(%)\n\nconst example002 = extrude(5, exampleSketch002)",
+      "const a1 = startSketchOn({\n       plane: {\n         origin: { x: 0, y: 0, z: 0 },\n         x_axis: { x: 1, y: 0, z: 0 },\n         y_axis: { x: 0, y: 1, z: 0 },\n         z_axis: { x: 0, y: 0, z: 1 }\n       }\n     })\n  |> startProfileAt([0, 0], %)\n  |> line([100.0, 0], %)\n  |> yLine(-100.0, %)\n  |> xLine(-100.0, %)\n  |> yLine(100.0, %)\n  |> close(%)\n  |> extrude(3.14, %)"
     ]
   },
   {
@@ -63762,7 +63765,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const myVar = tan(2 * pi())"
+      "const exampleSketch = startSketchOn(\"XZ\")\n  |> startProfileAt([0, 0], %)\n  |> angledLine({ angle: 50, length: 50 * tan(1 / 2) }, %)\n  |> yLineTo(0, %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
     ]
   },
   {
@@ -65757,7 +65760,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const exampleSketch = startSketchOn('-XZ')\n  |> startProfileAt([0, 0], %)\n  |> angledLine({ angle: 60, length: 10 }, %)\n  |> tangentialArc({ radius: 10, offset: -120 }, %)\n  |> angledLine({ angle: -60, length: 10 }, %)\n  |> close(%)\n\nconst example = extrude(10, exampleSketch)"
+      "const exampleSketch = startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> angledLine({ angle: 60, length: 10 }, %)\n  |> tangentialArc({ radius: 10, offset: -120 }, %)\n  |> angledLine({ angle: -60, length: 10 }, %)\n  |> close(%)\n\nconst example = extrude(10, exampleSketch)"
     ]
   },
   {
@@ -67727,7 +67730,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const exampleSketch = startSketchOn('-XZ')\n  |> startProfileAt([0, 0], %)\n  |> angledLine({ angle: 60, length: 10 }, %)\n  |> tangentialArcTo([15, 15], %)\n  |> line([10, -15], %)\n  |> close(%)\n\nconst example = extrude(10, exampleSketch)"
+      "const exampleSketch = startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> angledLine({ angle: 60, length: 10 }, %)\n  |> tangentialArcTo([15, 15], %)\n  |> line([10, -15], %)\n  |> close(%)\n\nconst example = extrude(10, exampleSketch)"
     ]
   },
   {
@@ -67750,7 +67753,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const myVar = tau()"
+      "const exampleSketch = startSketchOn(\"XZ\")\n  |> startProfileAt([0, 0], %)\n  |> angledLine({ angle: 50, length: 10 * tau() }, %)\n  |> yLineTo(0, %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
     ]
   },
   {
@@ -67783,7 +67786,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const myVar = toDegrees(2 * pi())"
+      "const exampleSketch = startSketchOn(\"XZ\")\n  |> startProfileAt([0, 0], %)\n  |> angledLine({\n       angle: 50,\n       length: 70 * cos(toDegrees(pi() / 4))\n     }, %)\n  |> yLineTo(0, %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
     ]
   },
   {
@@ -67816,7 +67819,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const myVar = toRadians(180)"
+      "const exampleSketch = startSketchOn(\"XZ\")\n  |> startProfileAt([0, 0], %)\n  |> angledLine({\n       angle: 50,\n       length: 70 * cos(toRadians(45))\n     }, %)\n  |> yLineTo(0, %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
     ]
   },
   {
@@ -69781,7 +69784,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const exampleSketch = startSketchOn('-XZ')\n  |> startProfileAt([0, 0], %)\n  |> xLine(15, %)\n  |> angledLine({ angle: 80, length: 15 }, %)\n  |> line([8, -10], %)\n  |> xLine(10, %)\n  |> angledLine({ angle: 120, length: 30 }, %)\n  |> xLine(-15, %)\n  |> close(%)\n\nconst example = extrude(10, exampleSketch)"
+      "const exampleSketch = startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> xLine(15, %)\n  |> angledLine({ angle: 80, length: 15 }, %)\n  |> line([8, -10], %)\n  |> xLine(10, %)\n  |> angledLine({ angle: 120, length: 30 }, %)\n  |> xLine(-15, %)\n  |> close(%)\n\nconst example = extrude(10, exampleSketch)"
     ]
   },
   {
@@ -71746,7 +71749,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const exampleSketch = startSketchOn('-XZ')\n  |> startProfileAt([0, 0], %)\n  |> xLineTo(15, %)\n  |> angledLine({ angle: 80, length: 15 }, %)\n  |> line([8, -10], %)\n  |> xLineTo(40, %)\n  |> angledLine({ angle: 135, length: 30 }, %)\n  |> xLineTo(10, %)\n  |> close(%)\n\nconst example = extrude(10, exampleSketch)"
+      "const exampleSketch = startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> xLineTo(15, %)\n  |> angledLine({ angle: 80, length: 15 }, %)\n  |> line([8, -10], %)\n  |> xLineTo(40, %)\n  |> angledLine({ angle: 135, length: 30 }, %)\n  |> xLineTo(10, %)\n  |> close(%)\n\nconst example = extrude(10, exampleSketch)"
     ]
   },
   {
@@ -73711,7 +73714,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "const exampleSketch = startSketchOn('-XZ')\n  |> startProfileAt([0, 0], %)\n  |> yLine(15, %)\n  |> angledLine({ angle: 30, length: 15 }, %)\n  |> line([8, -10], %)\n  |> yLine(-5, %)\n  |> close(%)\n\nconst example = extrude(10, exampleSketch)"
+      "const exampleSketch = startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> yLine(15, %)\n  |> angledLine({ angle: 30, length: 15 }, %)\n  |> line([8, -10], %)\n  |> yLine(-5, %)\n  |> close(%)\n\nconst example = extrude(10, exampleSketch)"
     ]
   },
   {
@@ -75676,7 +75679,7 @@
     "unpublished": false,
     "deprecated": false,
     "examples": [
-      "startSketchOn('XZ')\n  |> startProfileAt([0, 0], %)\n  |> yLineTo(10, %, \"edge1\")\n  |> line([10, 10], %)\n  |> close(%, \"edge2\")\n  |> extrude(10, %)\n  |> fillet({ radius: 2, tags: [\"edge2\"] }, %)"
+      "const exampleSketch = startSketchOn(\"XZ\")\n  |> startProfileAt([0, 0], %)\n  |> angledLine({ angle: 50, length: 45 }, %)\n  |> yLineTo(0, %)\n  |> close(%)\n\nconst example = extrude(5, exampleSketch)"
     ]
   }
 ]

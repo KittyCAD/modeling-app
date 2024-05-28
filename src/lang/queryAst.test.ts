@@ -6,6 +6,7 @@ import {
   getNodePathFromSourceRange,
   doesPipeHaveCallExp,
   hasExtrudeSketchGroup,
+  findUsesOfTagInPipe,
 } from './queryAst'
 import { enginelessExecutor } from '../lib/testHelpers'
 import {
@@ -356,5 +357,42 @@ const part001 = startSketchAt([-1.41, 3.46])
       programMemory,
     })
     expect(result).toEqual(false)
+  })
+})
+
+describe('Testing findUsesOfTagInPipe', () => {
+  const exampleCode = `const part001 = startSketchOn('-XZ')
+|> startProfileAt([68.12, 156.65], %)
+|> line([306.21, 198.82], %)
+|> line([306.21, 198.85], %, 'seg01')
+|> angledLine([-65, segLen('seg01', %)], %)
+|> line([306.21, 198.87], %)
+|> angledLine([65, segLen('seg01', %)], %)`
+  it('finds the current segment', async () => {
+    const ast = parse(exampleCode)
+    const lineOfInterest = `198.85], %, 'seg01'`
+    const characterIndex =
+      exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
+    const pathToNode = getNodePathFromSourceRange(ast, [
+      characterIndex,
+      characterIndex,
+    ])
+    const result = findUsesOfTagInPipe(ast, pathToNode)
+    expect(result).toHaveLength(2)
+    result.forEach((range) => {
+      expect(exampleCode.slice(range[0], range[1])).toContain('segLen')
+    })
+  })
+  it('find no tag if line has no tag', () => {
+    const ast = parse(exampleCode)
+    const lineOfInterest = `line([306.21, 198.82], %)`
+    const characterIndex =
+      exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
+    const pathToNode = getNodePathFromSourceRange(ast, [
+      characterIndex,
+      characterIndex,
+    ])
+    const result = findUsesOfTagInPipe(ast, pathToNode)
+    expect(result).toHaveLength(0)
   })
 })

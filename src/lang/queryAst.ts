@@ -26,10 +26,17 @@ import {
   getConstraintType,
 } from './std/sketchcombos'
 
+/**
+ * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
+ * This function navigates through the AST (Abstract Syntax Tree) based on the provided path, attempting to locate
+ * and return the node at the end of this path.
+ * By default it will return the node of the deepest "stopAt" type encountered, or the node at the end of the path if no "stopAt" type is provided.
+ * If the "returnEarly" flag is set to true, the function will return as soon as a node of the specified type is found.
+ */
 export function getNodeFromPath<T>(
   node: Program,
   path: PathToNode,
-  stopAt: string | string[] = '',
+  stopAt?: SyntaxType | SyntaxType[],
   returnEarly = false
 ): {
   node: T
@@ -50,9 +57,10 @@ export function getNodeFromPath<T>(
         pathsExplored.push(pathItem)
       }
       if (
-        Array.isArray(stopAt)
+        typeof stopAt !== 'undefined' &&
+        (Array.isArray(stopAt)
           ? stopAt.includes(currentNode.type)
-          : currentNode.type === stopAt
+          : currentNode.type === stopAt)
       ) {
         // it will match the deepest node of the type
         // instead of returning at the first match
@@ -82,17 +90,20 @@ export function getNodeFromPath<T>(
   }
 }
 
+/**
+ * Functions the same as getNodeFromPath, but returns a curried function that can be called with the stopAt and returnEarly arguments.
+ */
 export function getNodeFromPathCurry(
   node: Program,
   path: PathToNode
 ): <T>(
-  stopAt: string,
+  stopAt?: SyntaxType | SyntaxType[],
   returnEarly?: boolean
 ) => {
   node: T
   path: PathToNode
 } {
-  return <T>(stopAt: string = '', returnEarly = false) => {
+  return <T>(stopAt?: SyntaxType | SyntaxType[], returnEarly = false) => {
     const { node: _node, shallowPath } = getNodeFromPath<T>(
       node,
       path,
@@ -353,29 +364,31 @@ export interface PrevVariable<T> {
   value: T
 }
 
-export function findAllPreviousVariables(
+export function findAllPreviousVariablesPath(
   ast: Program,
   programMemory: ProgramMemory,
-  sourceRange: Selection['range'],
+  path: PathToNode,
   type: 'number' | 'string' = 'number'
 ): {
   variables: PrevVariable<typeof type extends 'number' ? number : string>[]
   bodyPath: PathToNode
   insertIndex: number
 } {
-  const path = getNodePathFromSourceRange(ast, sourceRange)
-  const { shallowPath: pathToDec } = getNodeFromPath(
+  const { shallowPath: pathToDec, node } = getNodeFromPath(
     ast,
     path,
     'VariableDeclaration'
   )
+
+  const startRange = (node as any).start
+
   const { index: insertIndex, path: bodyPath } = splitPathAtLastIndex(pathToDec)
 
   const { node: bodyItems } = getNodeFromPath<Program['body']>(ast, bodyPath)
 
   const variables: PrevVariable<any>[] = []
   bodyItems?.forEach?.((item) => {
-    if (item.type !== 'VariableDeclaration' || item.end > sourceRange[0]) return
+    if (item.type !== 'VariableDeclaration' || item.end > startRange) return
     const varName = item.declarations[0].id.name
     const varValue = programMemory?.root[varName]
     if (typeof varValue?.value !== type) return
@@ -392,25 +405,42 @@ export function findAllPreviousVariables(
   }
 }
 
-type ReplacerFn = (_ast: Program, varName: string) => { modifiedAst: Program }
-
-export function isNodeSafeToReplace(
+export function findAllPreviousVariables(
   ast: Program,
-  sourceRange: [number, number]
+  programMemory: ProgramMemory,
+  sourceRange: Selection['range'],
+  type: 'number' | 'string' = 'number'
+): {
+  variables: PrevVariable<typeof type extends 'number' ? number : string>[]
+  bodyPath: PathToNode
+  insertIndex: number
+} {
+  const path = getNodePathFromSourceRange(ast, sourceRange)
+  return findAllPreviousVariablesPath(ast, programMemory, path, type)
+}
+
+type ReplacerFn = (
+  _ast: Program,
+  varName: string
+) => { modifiedAst: Program; pathToReplaced: PathToNode }
+
+export function isNodeSafeToReplacePath(
+  ast: Program,
+  path: PathToNode
 ): {
   isSafe: boolean
   value: Value
   replacer: ReplacerFn
 } {
-  let path = getNodePathFromSourceRange(ast, sourceRange)
   if (path[path.length - 1][0] === 'callee') {
     path = path.slice(0, -1)
   }
-  const acceptedNodeTypes = [
+  const acceptedNodeTypes: SyntaxType[] = [
     'BinaryExpression',
     'Identifier',
     'CallExpression',
     'Literal',
+    'UnaryExpression',
   ]
   const { node: value, deepPath: outPath } = getNodeFromPath(
     ast,
@@ -431,10 +461,12 @@ export function isNodeSafeToReplace(
   const replaceNodeWithIdentifier: ReplacerFn = (_ast, varName) => {
     const identifier = createIdentifier(varName)
     const last = finPath[finPath.length - 1]
+    const pathToReplaced = JSON.parse(JSON.stringify(finPath))
+    pathToReplaced[1][0] = pathToReplaced[1][0] + 1
     const startPath = finPath.slice(0, -1)
     const nodeToReplace = getNodeFromPath(_ast, startPath).node as any
     nodeToReplace[last[0]] = identifier
-    return { modifiedAst: _ast }
+    return { modifiedAst: _ast, pathToReplaced }
   }
 
   const hasPipeSub = isTypeInValue(finVal as Value, 'PipeSubstitution')
@@ -448,6 +480,18 @@ export function isNodeSafeToReplace(
     value: finVal as Value,
     replacer: replaceNodeWithIdentifier,
   }
+}
+
+export function isNodeSafeToReplace(
+  ast: Program,
+  sourceRange: [number, number]
+): {
+  isSafe: boolean
+  value: Value
+  replacer: ReplacerFn
+} {
+  let path = getNodePathFromSourceRange(ast, sourceRange)
+  return isNodeSafeToReplacePath(ast, path)
 }
 
 export function isTypeInValue(node: Value, syntaxType: SyntaxType): boolean {
@@ -631,4 +675,48 @@ export function isSingleCursorInPipe(
   if (nodeTypes.includes('FunctionExpression')) return false
   if (nodeTypes.includes('PipeExpression')) return true
   return false
+}
+
+export function findUsesOfTagInPipe(
+  ast: Program,
+  pathToNode: PathToNode
+): SourceRange[] {
+  const stdlibFunctionsThatTakeTagInputs = [
+    'segAng',
+    'segEndX',
+    'segEndY',
+    'segLen',
+  ]
+  const node = getNodeFromPath<CallExpression>(
+    ast,
+    pathToNode,
+    'CallExpression'
+  ).node
+  if (node.type !== 'CallExpression') return []
+  const tagIndex = node.callee.name === 'close' ? 1 : 2
+  const thirdParam = node.arguments[tagIndex]
+  if (thirdParam?.type !== 'Literal') return []
+  const tag = String(thirdParam.value)
+
+  const varDec = getNodeFromPath<VariableDeclaration>(
+    ast,
+    pathToNode,
+    'VariableDeclaration'
+  ).node
+  const dependentRanges: SourceRange[] = []
+
+  traverse(varDec, {
+    enter: (node) => {
+      if (
+        node.type !== 'CallExpression' ||
+        !stdlibFunctionsThatTakeTagInputs.includes(node.callee.name)
+      )
+        return
+      const tagArg = node.arguments[0]
+      if (tagArg.type !== 'Literal') return
+      if (String(tagArg.value) === tag)
+        dependentRanges.push([node.start, node.end])
+    },
+  })
+  return dependentRanges
 }

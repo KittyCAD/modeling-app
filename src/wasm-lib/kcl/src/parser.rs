@@ -5,6 +5,7 @@ use crate::{
     token::{Token, TokenType},
 };
 
+mod bad_inputs;
 mod math;
 pub(crate) mod parser_impl;
 

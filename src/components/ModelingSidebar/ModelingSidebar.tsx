@@ -205,6 +205,7 @@ function ModelingPaneButton({
       key={paneConfig.id}
       className="pointer-events-auto flex items-center justify-center border-transparent dark:border-transparent p-0 m-0 rounded-sm !outline-none"
       onClick={togglePane}
+      data-testid={paneConfig.title}
     >
       <ActionIcon
         icon={paneConfig.icon}

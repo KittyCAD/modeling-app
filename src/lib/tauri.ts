@@ -26,6 +26,13 @@ export async function setState(state: ProjectState | undefined): Promise<void> {
   return await invoke('set_state', { state })
 }
 
+export async function renameProjectDirectory(
+  projectPath: string,
+  newName: string
+): Promise<string> {
+  return invoke<string>('rename_project_directory', { projectPath, newName })
+}
+
 // Get the initial default dir for holding all projects.
 export async function getInitialDefaultDir(): Promise<string> {
   if (!isTauri()) {
@@ -143,24 +150,20 @@ export async function writeAppSettingsFile(
 
 // Read project settings file.
 export async function readProjectSettingsFile(
-  appSettings: Configuration,
-  projectName: string
+  projectPath: string
 ): Promise<ProjectConfiguration> {
   return await invoke<ProjectConfiguration>('read_project_settings_file', {
-    appSettings,
-    projectName,
+    projectPath,
   })
 }
 
 // Write project settings file.
 export async function writeProjectSettingsFile(
-  appSettings: Configuration,
-  projectName: string,
+  projectPath: string,
   settings: ProjectConfiguration
 ): Promise<void> {
   return await invoke('write_project_settings_file', {
-    appSettings,
-    projectName,
+    projectPath,
     configuration: settings,
   })
 }
