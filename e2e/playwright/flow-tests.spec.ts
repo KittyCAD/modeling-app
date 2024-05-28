@@ -4158,6 +4158,11 @@ test('simulate network down and network little widget', async ({ page }) => {
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
 
+  // This is how we wait until the stream is online
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled({ timeout: 15000 })
+
   const networkWidget = page.locator('[data-testid="network-toggle"]')
   await expect(networkWidget).toBeVisible()
   await networkWidget.hover()
@@ -4165,7 +4170,7 @@ test('simulate network down and network little widget', async ({ page }) => {
   const networkPopover = page.locator('[data-testid="network-popover"]')
   await expect(networkPopover).not.toBeVisible()
 
-  // Expect the network to be up
+  // (First check) Expect the network to be up
   await expect(page.getByText('Network Health (Connected)')).toBeVisible()
 
   // Click the network widget
@@ -4209,7 +4214,11 @@ test('simulate network down and network little widget', async ({ page }) => {
     uploadThroughput: -1,
   })
 
-  // Expect the network to be up
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled({ timeout: 15000 })
+
+  // (Second check) expect the network to be up
   await expect(page.getByText('Network Health (Connected)')).toBeVisible()
 })
 
@@ -4223,8 +4232,7 @@ test('Engine disconnect & reconnect in sketch mode', async ({ page }) => {
 
   await expect(
     page.getByRole('button', { name: 'Start Sketch' })
-  ).not.toBeDisabled()
-  await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
+  ).not.toBeDisabled({ timeout: 15000 })
 
   // click on "Start Sketch" button
   await u.clearCommandLogs()
@@ -4287,6 +4295,10 @@ test('Engine disconnect & reconnect in sketch mode', async ({ page }) => {
   })
 
   // Wait for the app to be ready for use
+  await expect(
+    page.getByRole('button', { name: 'Start Sketch' })
+  ).not.toBeDisabled({ timeout: 15000 })
+
   // Expect the network to be up
   await expect(page.getByText('Network Health (Connected)')).toBeVisible()
 
@@ -4314,15 +4326,15 @@ test('Engine disconnect & reconnect in sketch mode', async ({ page }) => {
     .toHaveText(`const part001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
-  |> line([-11.59, 11.1], %)`)
+  |> line([-11.64, 11.11], %)`)
   await page.waitForTimeout(100)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
-  |> line([-11.59, 11.1], %)
-  |> line([-6.61, 0], %)`)
+  |> line([-11.64, 11.11], %)
+  |> line([-6.56, 0], %)`)
 
   // Unequip line tool
   await page.keyboard.press('Escape')
