@@ -17,7 +17,7 @@ export const config = {
       maxInstances: 1,
       'tauri:options': {
         application,
-        webviewOptions: {},  // Windows only
+        webviewOptions: {}, // Windows only
       },
     },
   ],
