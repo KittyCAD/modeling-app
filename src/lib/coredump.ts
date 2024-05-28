@@ -184,7 +184,7 @@ export class CoreDumpManager {
         ast: {},
         kcl_errors: [],
       },
-      scene_infra: { meta: [] },
+      scene_infra: {},
       auth_machine: { meta: [] },
       command_bar_machine: { meta: [] },
       file_machine: { meta: [] },
@@ -296,9 +296,33 @@ export class CoreDumpManager {
         }
       }
 
-      // Scene Infra - this.sceneInfra
-      console.log('CoreDump: Scene Infra', globalThis?.window?.sceneInfra)
-      //scene_infra
+      // Scene Infra - globalThis?.window?.sceneInfra
+      const sceneInfra = globalThis?.window?.sceneInfra
+      console.log('CoreDump: Scene Infra', sceneInfra)
+
+      if (sceneInfra) {
+        const sceneInfraSkipKeys = ['camControls']
+        const sceneInfraKeys = Object.keys(sceneInfra)
+          .sort()
+          .filter((entry) => {
+            return (
+              typeof sceneInfra[entry] !== 'function' && !sceneInfraSkipKeys.includes(entry)
+            )
+          })
+
+        console.log('CoreDump: Scene Infra keys', sceneInfraKeys)
+        sceneInfraKeys.forEach((key: string) => {
+          console.log('CoreDump: Scene Infra', key, sceneInfra[key])
+          try {
+            clientState.scene_infra[key] = sceneInfra[key]
+          } catch (error) {
+            console.error(
+              'CoreDump: unable to parse Scene Infra ' + key + ' data due to ',
+              error
+            )
+          }
+        })
+      }
 
       // TODO: /src/lib/singletons.ts also defines the following singletons
       // sceneEntitiesManager
