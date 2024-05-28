@@ -188,6 +188,8 @@ export const SettingsAuthProviderBase = ({
     if (settingsState.context.commandBar.includeSettings.current === false)
       return
 
+    console.log('settingsState', settingsState)
+
     const commands = settingsWithCommandConfigs(settingsState.context)
       .map((type) =>
         createSettingsCommand({

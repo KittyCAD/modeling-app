@@ -119,7 +119,8 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
     },
     rotate: {
       description: 'Left click + Alt + drag',
-      callback: (e) => buttonName(e).left && e.altKey && !e.shiftKey && !e.metaKey,
+      callback: (e) =>
+        buttonName(e).left && e.altKey && !e.shiftKey && !e.metaKey,
       lenientDragStartButton: 0,
     },
   },

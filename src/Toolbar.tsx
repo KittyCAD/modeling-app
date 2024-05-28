@@ -16,6 +16,7 @@ export function Toolbar({
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
   const { state, send, context } = useModelingContext()
+  const { commandBarSend } = useCommandsContext()
   const shouldDisableModelingActions = useShouldDisableModelingActions()
   useInteractionMap(
     [
@@ -41,7 +42,6 @@ export function Toolbar({
     ],
     [shouldDisableModelingActions, commandBarSend, state]
   )
-  const { commandBarSend } = useCommandsContext()
   const iconClassName =
     'group-disabled:text-chalkboard-50 group-enabled:group-hover:!text-primary dark:group-enabled:group-hover:!text-inherit group-pressed:!text-chalkboard-10 group-ui-open:!text-chalkboard-10 dark:group-ui-open:!text-chalkboard-10'
   const bgClassName =
@@ -60,14 +60,13 @@ export function Toolbar({
 
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
 
-
   useHotkeys(
     'l',
     () =>
       state.matches('Sketch.Line tool')
         ? send('CancelSketch')
         : send('Equip Line tool'),
-    { enabled: !disableAllButtons, scopes: ['sketch'] }
+    { enabled: !shouldDisableModelingActions, scopes: ['sketch'] }
   )
   useHotkeys(
     'a',
@@ -75,7 +74,7 @@ export function Toolbar({
       state.matches('Sketch.Tangential arc to')
         ? send('CancelSketch')
         : send('Equip tangential arc to'),
-    { enabled: !disableAllButtons, scopes: ['sketch'] }
+    { enabled: !shouldDisableModelingActions, scopes: ['sketch'] }
   )
   useHotkeys(
     'r',
@@ -83,7 +82,7 @@ export function Toolbar({
       state.matches('Sketch.Rectangle tool')
         ? send('CancelSketch')
         : send('Equip rectangle tool'),
-    { enabled: !disableAllButtons, scopes: ['sketch'] }
+    { enabled: !shouldDisableModelingActions, scopes: ['sketch'] }
   )
   useHotkeys(
     's',
@@ -91,7 +90,7 @@ export function Toolbar({
       state.nextEvents.includes('Enter sketch') && pathId
         ? send({ type: 'Enter sketch' })
         : send({ type: 'Enter sketch', data: { forceNewSketch: true } }),
-    { enabled: !disableAllButtons, scopes: ['modeling'] }
+    { enabled: !shouldDisableModelingActions, scopes: ['modeling'] }
   )
   useHotkeys(
     'esc',
@@ -99,7 +98,7 @@ export function Toolbar({
       state.matches('Sketch.SketchIdle')
         ? send('Cancel')
         : send('CancelSketch'),
-    { enabled: !disableAllButtons, scopes: ['sketch'] }
+    { enabled: !shouldDisableModelingActions, scopes: ['sketch'] }
   )
   useHotkeys(
     'e',
@@ -108,7 +107,7 @@ export function Toolbar({
         type: 'Find and select command',
         data: { name: 'Extrude', ownerMachine: 'modeling' },
       }),
-    { enabled: !disableAllButtons, scopes: ['modeling'] }
+    { enabled: !shouldDisableModelingActions, scopes: ['modeling'] }
   )
 
   function handleToolbarButtonsWheelEvent(ev: WheelEvent<HTMLSpanElement>) {
@@ -151,7 +150,7 @@ export function Toolbar({
           disabled:
             !nextEvents
               .filter((event) => state.can(event as any))
-              .includes(eventName) || disableAllButtons,
+              .includes(eventName) || shouldDisableModelingActions,
         })),
 
     [JSON.stringify(nextEvents), state]
