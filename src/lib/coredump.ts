@@ -4,7 +4,7 @@ import {
 } from 'lang/std/engineConnection'
 //engineCommandManager, - TODO: Can we use this instead
 // import {
-//   kclManager,s
+//   kclManager as KclManager
 //   sceneInfra,
 //   codeManager,
 //   editorManager,
@@ -157,7 +157,6 @@ export class CoreDumpManager {
 
   // Currently just a placeholder to begin loading singleton and xstate data into
   getClientState(): Promise<string> {
-    
     /**
      * Deep clone a JavaScript Object
      * - NOTE: this function thows on parse errors from things like circular references
@@ -194,17 +193,23 @@ export class CoreDumpManager {
       settings_machine: { meta: [] },
     }
     console.log('CoreDump: initialized clientState', clientState)
+    console.info('CoreDump: globalThis.window', globalThis.window)
 
     try {
-
       // Singletons
 
       // engine_command_manager
-      console.log('CoreDump: the engineCommandManager singlton', this.engineCommandManager)
+      console.log(
+        'CoreDump: the engineCommandManager singlton',
+        this.engineCommandManager
+      )
 
       // artifact map - this.engineCommandManager.artifactMap
       if (this.engineCommandManager?.artifactMap) {
-        console.log('CoreDump: artifact map', this.engineCommandManager.artifactMap)
+        console.log(
+          'CoreDump: artifact map',
+          this.engineCommandManager.artifactMap
+        )
         clientState.engine_command_manager.artifact_map = deepClone(
           this.engineCommandManager.artifactMap
         )
@@ -212,7 +217,10 @@ export class CoreDumpManager {
 
       // command logs - this.engineCommandManager.commandLogs
       if (this.engineCommandManager?.commandLogs) {
-        console.log('CoreDump: command logs', this.engineCommandManager.commandLogs)
+        console.log(
+          'CoreDump: command logs',
+          this.engineCommandManager.commandLogs
+        )
         clientState.engine_command_manager.command_logs = deepClone(
           this.engineCommandManager.commandLogs
         )
@@ -220,7 +228,10 @@ export class CoreDumpManager {
 
       // default planes - this.engineCommandManager.defaultPlanes
       if (this.engineCommandManager?.defaultPlanes) {
-        console.log('CoreDump: default planes', this.engineCommandManager.defaultPlanes)
+        console.log(
+          'CoreDump: default planes',
+          this.engineCommandManager.defaultPlanes
+        )
         clientState.engine_command_manager.default_planes = deepClone(
           this.engineCommandManager.defaultPlanes
         )
@@ -238,14 +249,20 @@ export class CoreDumpManager {
 
       // in sequence - this.engineCommandManager.inSequence
       if (this.engineCommandManager?.inSequence) {
-        console.log('CoreDump: in sequence', this.engineCommandManager.inSequence)
+        console.log(
+          'CoreDump: in sequence',
+          this.engineCommandManager.inSequence
+        )
         clientState.engine_command_manager.in_sequence =
           this.engineCommandManager.inSequence
       }
 
       // out sequence - this.engineCommandManager.outSequence
       if (this.engineCommandManager?.inSequence) {
-        console.log('CoreDump: out sequence', this.engineCommandManager.outSequence)
+        console.log(
+          'CoreDump: out sequence',
+          this.engineCommandManager.outSequence
+        )
         clientState.engine_command_manager.out_sequence =
           this.engineCommandManager.inSequence
       }
@@ -261,34 +278,51 @@ export class CoreDumpManager {
         )
       }
 
-      // KCL Manager - this.kclManager
-      console.log('CoreDump: kclManager', this.kclManager)
+      // KCL Manager - globalThis?.window?.kclManager
+      const kclManager = globalThis?.window?.kclManager
+      console.log('CoreDump: kclManager', kclManager)
 
-      if (this?.kclManager) {
-        // this.kclManager.ast Object - this?.kclManager?.ast
-        console.log('CoreDump: KCL Manager AST', this?.kclManager?.ast)
-        clientState.kcl_manager.ast = deepClone(this.kclManager.ast)
+      if (kclManager) {
+        // KCL Manager AST
+        console.log('CoreDump: KCL Manager AST', kclManager?.ast)
+        if (kclManager?.ast) {
+          clientState.kcl_manager.ast = deepClone(kclManager.ast)
+        }
 
-        // this.kclManager.kclErrors Array - this?.kclManager?.kclErrors
-        console.log('CoreDump: KCL Errors', this?.kclManager?.kclErrors)
-        clientState.kcl_manager.kcl_errors = deepClone(this.kclManager.kclErrors)
+        // KCL Errors
+        console.log('CoreDump: KCL Errors', kclManager?.kclErrors)
+        if (kclManager?.kclErrors) {
+          clientState.kcl_manager.kcl_errors = deepClone(kclManager.kclErrors)
+        }
       }
 
       // Scene Infra - this.sceneInfra
-      console.log('CoreDump: Scene Infra', this.sceneInfra)
+      console.log('CoreDump: Scene Infra', globalThis?.window?.sceneInfra)
       //scene_infra
 
       // TODO: /src/lib/singletons.ts also defines the following singletons
       // sceneEntitiesManager
-      console.log('CoreDump: TODO? sceneEntitiesManager', this.sceneEntitiesManager)
+      console.log(
+        'CoreDump: TODO? sceneEntitiesManager',
+        globalThis?.window?.sceneEntitiesManager
+      )
       // editorManager
-      console.log('CoreDump: TODO? editorManager', this.editorManager)
+      console.log(
+        'CoreDump: TODO? editorManager',
+        globalThis?.window?.editorManager
+      )
       // enableMousePositionLogs
-      console.log('CoreDump: TODO? enableMousePositionLogs', this.enableMousePositionLogs)
+      console.log(
+        'CoreDump: TODO? enableMousePositionLogs',
+        globalThis?.window?.enableMousePositionLogs
+      )
 
       // XState Machines
-      console.log('CoreDump: xstateServices', this?.__xstate__?.services)
-      let xstateServices = this?.__xstate__?.services || new Set()
+      console.log(
+        'CoreDump: xstateServices',
+        globalThis?.window?.__xstate__?.services
+      )
+      let xstateServices = globalThis?.window?.__xstate__?.services || new Set()
 
       xstateServices?.forEach((interpreter: any) => {
         console.log('CoreDump: XState interpreter', interpreter)
@@ -300,16 +334,13 @@ export class CoreDumpManager {
 
       console.log('CoreDump: final clientState', clientState)
 
-      const clientStateJson = JSON.stringify(clientState);
+      const clientStateJson = JSON.stringify(clientState)
       console.log('CoreDump: final clientState JSON', clientStateJson)
 
       return Promise.resolve(clientStateJson)
-    
     } catch (error) {
-
       console.error('CoreDump: unable to return data due to ', error)
       return Promise.reject(JSON.stringify(error))
-
     }
   }
 
