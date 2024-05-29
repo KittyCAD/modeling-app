@@ -33,6 +33,10 @@ export function App() {
    * - Maybe, "ZOO" would be better, but it doesn't look as nice.
    */
   const Zoo = { state: {} }
+  if (typeof window !== 'undefined') {
+    (window as any).Zoo = Zoo
+  }
+  
   useRefreshSettings(paths.FILE + 'SETTINGS')
   const { project, file } = useLoaderData() as IndexLoaderData
   const navigate = useNavigate()
