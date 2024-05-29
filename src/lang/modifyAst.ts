@@ -308,14 +308,7 @@ export function extrudeSketch(
     sketchIndexInPathToNode
   ][0] as number
   _node.body.splice(sketchIndexInBody + 1, 0, VariableDeclaration)
-  console.log('extruding', {
-    VariableDeclaration,
-    extrudeCall,
-    body: _node.body,
-    pathToDecleration,
-    sketchIndexInBody,
-    sketchIndexInPathToNode,
-  })
+
   const pathToExtrudeArg: PathToNode = [
     ['body', ''],
     [sketchIndexInBody + 1, 'index'],
@@ -361,11 +354,7 @@ export function sketchOnExtrudedFace(
     extrudePathToNode,
     'VariableDeclarator'
   )
-  console.log('from modifyAst', {
-    extrudePathToNode,
-    extrudeVarDec,
-    sketchPathToNode,
-  })
+  const extrudeName = extrudeVarDec.id?.name
 
   let _tag = ''
   if (cap === 'none') {
@@ -386,13 +375,16 @@ export function sketchOnExtrudedFace(
   const newSketch = createVariableDeclaration(
     newSketchName,
     createCallExpressionStdLib('startSketchOn', [
-      createIdentifier(oldSketchName),
+      createIdentifier(extrudeName ? extrudeName : oldSketchName),
       createLiteral(_tag),
     ]),
     'const'
   )
 
-  const expressionIndex = Math.max(sketchPathToNode[1][0] as number, extrudePathToNode[1][0] as number)
+  const expressionIndex = Math.max(
+    sketchPathToNode[1][0] as number,
+    extrudePathToNode[1][0] as number
+  )
   _node.body.splice(expressionIndex + 1, 0, newSketch)
   const newpathToNode: PathToNode = [
     ['body', ''],

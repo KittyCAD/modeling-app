@@ -11,41 +11,41 @@ let lastMessage = ''
 
 type CommandTypes = Models['ModelingCmd_type']['type'] | 'batch'
 
-type CommandInfo  = |
-{
-  commandType: 'extrude'
-  // commandType: CommandTypes
-  range: SourceRange
-  pathToNode: PathToNode
-  /// uuid of the entity to extrude
-  target: string
-  parentId?: string
-}|
-{
-  commandType: 'start_path'
-  // commandType: CommandTypes
-  range: SourceRange
-  pathToNode: PathToNode
-  /// uuid of the entity that have been extruded
-  extrusions: string[]
-  parentId?: string
-}|
-{
-  commandType: CommandTypes
-  range: SourceRange
-  pathToNode: PathToNode
-  parentId?: string
-  additionalData?:
-    | {
-        type: 'cap'
-        info: 'start' | 'end'
-      }
-    | {
-        type: 'batch-ids'
-        ids: string[]
-        info?: null
-      }
-}
+type CommandInfo =
+  | {
+      commandType: 'extrude'
+      // commandType: CommandTypes
+      range: SourceRange
+      pathToNode: PathToNode
+      /// uuid of the entity to extrude
+      target: string
+      parentId?: string
+    }
+  | {
+      commandType: 'start_path'
+      // commandType: CommandTypes
+      range: SourceRange
+      pathToNode: PathToNode
+      /// uuid of the entity that have been extruded
+      extrusions: string[]
+      parentId?: string
+    }
+  | {
+      commandType: CommandTypes
+      range: SourceRange
+      pathToNode: PathToNode
+      parentId?: string
+      additionalData?:
+        | {
+            type: 'cap'
+            info: 'start' | 'end'
+          }
+        | {
+            type: 'batch-ids'
+            ids: string[]
+            info?: null
+          }
+    }
 
 type WebSocketResponse = Models['WebSocketResponse_type']
 type OkWebSocketResponseData = Models['OkWebSocketResponseData_type']
@@ -1668,9 +1668,10 @@ export class EngineCommandManager {
       if (command.type === 'extend_path') return command.path
       if (command.type === 'solid3d_get_extrusion_face_info') {
         const edgeArtifact = this.artifactMap[command.edge_id]
-        console.log('edgeArtifact', edgeArtifact)
         // edges's parent id is to the original "start_path" artifact
-        if (edgeArtifact && edgeArtifact.parentId) { return edgeArtifact.parentId }
+        if (edgeArtifact && edgeArtifact.parentId) {
+          return edgeArtifact.parentId
+        }
       }
       if (command.type === 'close_path') return command.path_id
       if (command.type === 'extrude') return command.target
@@ -1698,7 +1699,7 @@ export class EngineCommandManager {
         promise,
         target: command.target,
         resolve,
-      } 
+      }
       const target = this.artifactMap[command.target]
       if (target.commandType === 'start_path') {
         const temp = target as any

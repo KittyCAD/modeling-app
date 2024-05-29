@@ -759,14 +759,6 @@ export class SceneEntities {
 
           _ast = parse(recast(_ast))
 
-          console.log('onClick', {
-            sketchInit: sketchInit,
-            _ast,
-            x,
-            y,
-            truncatedAst,
-          })
-
           // Update the primary AST and unequip the rectangle tool
           await kclManager.executeAstMock(_ast)
           sceneInfra.modelingSend({ type: 'CancelSketch' })
@@ -1422,10 +1414,20 @@ export class SceneEntities {
             return ['plane', entity_id]
           }
           const artifact = this.engineCommandManager.artifactMap[entity_id]
-          const parent = this.engineCommandManager.artifactMap?.[artifact?.parentId || '']
-          console.log('(parent as any)?.extrusions[0]', (parent as any)?.extrusions[0], (parent as any)?.extrusions)
-          const extrusions = this.engineCommandManager.artifactMap?.[(parent as any)?.extrusions[0] || '']
-          console.log('artifact', artifact, parent, extrusions)
+          // If we clicked on an extrude wall, we climb up the parent Id
+          // to get the sketch profile's face ID. If we clicked on an endcap,
+          // we already have it.
+          const targetId =
+            'additionalData' in artifact &&
+            artifact.additionalData?.type === 'cap'
+              ? entity_id
+              : artifact.parentId
+
+          const target = this.engineCommandManager.artifactMap?.[targetId || '']
+          const extrusions =
+            this.engineCommandManager.artifactMap?.[
+              (target as any)?.extrusions[0] || ''
+            ]
 
           if (artifact?.commandType !== 'solid3d_get_extrusion_face_info')
             return ['other', entity_id]
@@ -1438,10 +1440,9 @@ export class SceneEntities {
             kclManager.ast,
             artifact.range
           )
-          const otherPathToNode = extrusions?.range ? getNodePathFromSourceRange(
-            kclManager.ast,
-            extrusions.range
-          ) : []
+          const otherPathToNode = extrusions?.range
+            ? getNodePathFromSourceRange(kclManager.ast, extrusions.range)
+            : []
 
           sceneInfra.modelingSend({
             type: 'Select default plane',
@@ -1465,7 +1466,6 @@ export class SceneEntities {
         }
 
         const faceResult = await checkExtrudeFaceClick()
-        console.log('faceResult', faceResult)
         if (faceResult[0] === 'face') return
 
         if (!args || !args.intersects?.[0]) return
