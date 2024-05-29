@@ -636,28 +636,6 @@ export const ModelingMachineProvider = ({
           )
           return pathToReplacedNode || sketchDetails.sketchPathToNode
         },
-        'do-constrain-parallel': async ({ selectionRanges, sketchDetails }) => {
-          const { modifiedAst, pathToNodeMap } = applyConstraintEqualAngle({
-            selectionRanges,
-          })
-          if (!sketchDetails) throw new Error('No sketch details')
-          await sceneEntitiesManager.updateAstAndRejigSketch(
-            sketchDetails?.sketchPathToNode || [],
-            parse(recast(modifiedAst)),
-            sketchDetails.zAxis,
-            sketchDetails.yAxis,
-            sketchDetails.origin
-          )
-          const updatedSelectionRanges = updateSelections(
-            pathToNodeMap,
-            selectionRanges,
-            parse(recast(modifiedAst))
-          )
-          return {
-            selectionType: 'completeSelection',
-            selection: updatedSelectionRanges,
-          }
-        },
       },
       devTools: true,
     }
