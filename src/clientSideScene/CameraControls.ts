@@ -780,26 +780,22 @@ export class CameraControls {
   ): Promise<void> {
     const distance = this.camera.position.distanceTo(this.target)
 
-    let vantage = { x: 0, y: 0, z: 0 }
-    let up = { x: 0, y: 0, z: 0 }
+    let vantage = { x: this.target.x, y: this.target.y, z: this.target.z }
+    let up = { x: 0, y: 0, z: 1 }
 
     if (axis === 'x') {
-      vantage = { x: distance, y: 0, z: 0 }
-      up = { x: 0, y: 0, z: 1 }
+      vantage.x += distance
     } else if (axis === 'y') {
-      vantage = { x: 0, y: distance, z: 0 }
-      up = { x: 0, y: 0, z: 1 }
+      vantage.y += distance
     } else if (axis === 'z') {
-      vantage = { x: 0, y: 0, z: distance }
+      vantage.z += distance
       up = { x: -1, y: 0, z: 0 }
     } else if (axis === '-x') {
-      vantage = { x: -distance, y: 0, z: 0 }
-      up = { x: 0, y: 0, z: 1 }
+      vantage.x -= distance
     } else if (axis === '-y') {
-      vantage = { x: 0, y: -distance, z: 0 }
-      up = { x: 0, y: 0, z: 1 }
+      vantage.y -= distance
     } else if (axis === '-z') {
-      vantage = { x: 0, y: 0, z: -distance }
+      vantage.z -= distance
       up = { x: -1, y: 0, z: 0 }
     }
 
@@ -808,7 +804,7 @@ export class CameraControls {
       cmd_id: uuidv4(),
       cmd: {
         type: 'default_camera_look_at',
-        center: { x: 0, y: 0, z: 0 },
+        center: this.target,
         vantage: vantage,
         up: up,
       },
@@ -829,7 +825,11 @@ export class CameraControls {
       cmd: {
         type: 'default_camera_look_at',
         center: this.target,
-        vantage: { x: this.target.x, y: this.target.y-128, z: this.target.z+64 },
+        vantage: {
+          x: this.target.x,
+          y: this.target.y - 128,
+          z: this.target.z + 64,
+        },
         up: { x: 0, y: 0, z: 1 },
       },
     })
