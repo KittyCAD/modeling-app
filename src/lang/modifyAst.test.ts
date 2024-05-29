@@ -304,7 +304,12 @@ describe('testing sketchOnExtrudedFace', () => {
     ]
     const extrudePathToNode = getNodePathFromSourceRange(ast, extrudeRange)
 
-    const { modifiedAst } = sketchOnExtrudedFace(ast, segmentPathToNode, extrudePathToNode, programMemory)
+    const { modifiedAst } = sketchOnExtrudedFace(
+      ast,
+      segmentPathToNode,
+      extrudePathToNode,
+      programMemory
+    )
     const newCode = recast(modifiedAst)
     expect(newCode).toContain(`const part001 = startSketchOn('-XZ')
   |> startProfileAt([3.58, 2.06], %)
@@ -336,7 +341,12 @@ const sketch001 = startSketchOn(part001, 'seg01')`)
     ]
     const extrudePathToNode = getNodePathFromSourceRange(ast, extrudeRange)
 
-    const { modifiedAst } = sketchOnExtrudedFace(ast, segmentPathToNode, extrudePathToNode, programMemory)
+    const { modifiedAst } = sketchOnExtrudedFace(
+      ast,
+      segmentPathToNode,
+      extrudePathToNode,
+      programMemory
+    )
     const newCode = recast(modifiedAst)
     expect(newCode).toContain(`const part001 = startSketchOn('-XZ')
   |> startProfileAt([3.58, 2.06], %)
@@ -414,7 +424,12 @@ const sketch001 = startSketchOn(part001, 'END')`)
     ]
     const extrudePathToNode = getNodePathFromSourceRange(ast, extrudeRange)
 
-    const { modifiedAst } = sketchOnExtrudedFace(ast, segmentPathToNode, extrudePathToNode, programMemory)
+    const { modifiedAst } = sketchOnExtrudedFace(
+      ast,
+      segmentPathToNode,
+      extrudePathToNode,
+      programMemory
+    )
     const newCode = recast(modifiedAst)
     expect(newCode).toContain(`const part001 = extrude(5 + 7, sketch001)
 const sketch002 = startSketchOn(part001, 'seg01')`)
