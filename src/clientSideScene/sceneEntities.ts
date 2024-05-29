@@ -1422,6 +1422,11 @@ export class SceneEntities {
             return ['plane', entity_id]
           }
           const artifact = this.engineCommandManager.artifactMap[entity_id]
+          const parent = this.engineCommandManager.artifactMap?.[artifact?.parentId || '']
+          console.log('(parent as any)?.extrusions[0]', (parent as any)?.extrusions[0], (parent as any)?.extrusions)
+          const extrusions = this.engineCommandManager.artifactMap?.[(parent as any)?.extrusions[0] || '']
+          console.log('artifact', artifact, parent, extrusions)
+
           if (artifact?.commandType !== 'solid3d_get_extrusion_face_info')
             return ['other', entity_id]
 
@@ -1433,6 +1438,10 @@ export class SceneEntities {
             kclManager.ast,
             artifact.range
           )
+          const otherPathToNode = extrusions?.range ? getNodePathFromSourceRange(
+            kclManager.ast,
+            extrusions.range
+          ) : []
 
           sceneInfra.modelingSend({
             type: 'Select default plane',
@@ -1444,6 +1453,7 @@ export class SceneEntities {
                 (num) => num / sceneInfra._baseUnitMultiplier
               ) as [number, number, number],
               extrudeSegmentPathToNode: pathToNode,
+              otherPathToNode,
               cap:
                 artifact?.additionalData?.type === 'cap'
                   ? artifact.additionalData.info

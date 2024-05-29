@@ -9,7 +9,28 @@ import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 
 let lastMessage = ''
 
-interface CommandInfo {
+type CommandTypes = Models['ModelingCmd_type']['type'] | 'batch'
+
+type CommandInfo  = |
+{
+  commandType: 'extrude'
+  // commandType: CommandTypes
+  range: SourceRange
+  pathToNode: PathToNode
+  /// uuid of the entity to extrude
+  target: string
+  parentId?: string
+}|
+{
+  commandType: 'start_path'
+  // commandType: CommandTypes
+  range: SourceRange
+  pathToNode: PathToNode
+  /// uuid of the entity that have been extruded
+  extrusions: string[]
+  parentId?: string
+}|
+{
   commandType: CommandTypes
   range: SourceRange
   pathToNode: PathToNode
@@ -29,13 +50,13 @@ interface CommandInfo {
 type WebSocketResponse = Models['WebSocketResponse_type']
 type OkWebSocketResponseData = Models['OkWebSocketResponseData_type']
 
-interface ResultCommand extends CommandInfo {
+type ResultCommand = CommandInfo & {
   type: 'result'
   data: any
   raw: WebSocketResponse
   headVertexId?: string
 }
-interface FailedCommand extends CommandInfo {
+type FailedCommand = CommandInfo & {
   type: 'failed'
   errors: Models['FailureWebSocketResponse_type']['errors']
 }
@@ -48,7 +69,7 @@ interface ResolveCommand {
   data?: Models['OkModelingCmdResponse_type']
   errors?: Models['FailureWebSocketResponse_type']['errors']
 }
-interface PendingCommand extends CommandInfo {
+type PendingCommand = CommandInfo & {
   type: 'pending'
   promise: Promise<any>
   resolve: (val: ResolveCommand) => void
@@ -903,8 +924,6 @@ failed cmd type was ${artifactThatFailed?.commandType}`
 export type EngineCommand = Models['WebSocketRequest_type']
 type ModelTypes = Models['OkModelingCmdResponse_type']['type']
 
-type CommandTypes = Models['ModelingCmd_type']['type'] | 'batch'
-
 type UnreliableResponses = Extract<
   Models['OkModelingCmdResponse_type'],
   { type: 'highlight_set_entity' | 'camera_drag_move' }
@@ -1649,10 +1668,12 @@ export class EngineCommandManager {
       if (command.type === 'extend_path') return command.path
       if (command.type === 'solid3d_get_extrusion_face_info') {
         const edgeArtifact = this.artifactMap[command.edge_id]
+        console.log('edgeArtifact', edgeArtifact)
         // edges's parent id is to the original "start_path" artifact
-        if (edgeArtifact?.parentId) return edgeArtifact.parentId
+        if (edgeArtifact && edgeArtifact.parentId) { return edgeArtifact.parentId }
       }
       if (command.type === 'close_path') return command.path_id
+      if (command.type === 'extrude') return command.target
       // handle other commands that have a parent here
     }
     const pathToNode = ast
@@ -1666,6 +1687,27 @@ export class EngineCommandManager {
       parentId: getParentId(),
       promise,
       resolve,
+    }
+    if (command.type === 'extrude') {
+      this.artifactMap[id] = {
+        range: range || [0, 0],
+        pathToNode,
+        type: 'pending',
+        commandType: 'extrude',
+        parentId: getParentId(),
+        promise,
+        target: command.target,
+        resolve,
+      } 
+      const target = this.artifactMap[command.target]
+      if (target.commandType === 'start_path') {
+        const temp = target as any
+        if (temp?.extrusions?.length) {
+          temp.extrusions.push(id)
+        } else {
+          temp.extrusions = [id]
+        }
+      }
     }
     return promise
   }
