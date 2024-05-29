@@ -780,7 +780,7 @@ export class CameraControls {
   ): Promise<void> {
     const distance = this.camera.position.distanceTo(this.target)
 
-    let vantage = { x: this.target.x, y: this.target.y, z: this.target.z }
+    const vantage = this.target.clone()
     let up = { x: 0, y: 0, z: 1 }
 
     if (axis === 'x') {
