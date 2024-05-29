@@ -155,6 +155,13 @@ export class CoreDumpManager {
      * @param {object} obj - The object to clone.
      */
     const deepClone = (obj: any) => JSON.parse(JSON.stringify(obj))
+    
+    /**
+     * Check if a function is private method
+     */
+    const isPrivateMethod = (key: string) => {
+      return key.length && key[0] === '_'
+    }
 
     console.warn('CoreDump: Gathering client state')
 
@@ -173,6 +180,8 @@ export class CoreDumpManager {
         kcl_errors: [],
       },
       scene_infra: {},
+      scene_entities_manager: {},
+      editor_manager: {},
       // xstate
       auth_machine: {},
       command_bar_machine: {},
@@ -340,18 +349,50 @@ export class CoreDumpManager {
         })
       }
 
-      // TODO: /src/lib/singletons.ts also defines the following singletons
-      // sceneEntitiesManager
-      console.log(
-        'CoreDump: sceneEntitiesManager',
-        globalThis?.window?.sceneEntitiesManager
-      )
-      // editorManager
-      console.log(
-        'CoreDump: editorManager',
-        globalThis?.window?.editorManager
-      )
+      // Scene Entities Manager - globalThis?.window?.sceneEntitiesManager
+      const sceneEntitiesManager = globalThis?.window?.sceneEntitiesManager
+      console.log('CoreDump: sceneEntitiesManager', sceneEntitiesManager)
+
+      if (sceneEntitiesManager) {
+        // Scene Entities Manager active segments
+        console.log('CoreDump: Scene Entities Manager active segments', sceneEntitiesManager?.activeSegments)
+        if (sceneEntitiesManager?.activeSegments) {
+          clientState.scene_entities_manager.activeSegments = deepClone(sceneEntitiesManager.activeSegments)
+        }
+      }
+
+      // Editor Manager - globalThis?.window?.editorManager
+      const editorManager = globalThis?.window?.editorManager
+      console.log('CoreDump: editorManager', editorManager)
+
+      if (editorManager) {
+        const editorManagerSkipKeys = ['camControls']
+        const editorManagerKeys = Object.keys(editorManager)
+          .sort()
+          .filter((entry) => {
+            return (
+              typeof editorManager[entry] !== 'function' &&
+              !isPrivateMethod(entry) &&
+              !editorManagerSkipKeys.includes(entry)
+            )
+          })
+
+        console.log('CoreDump: Editor Manager keys', editorManagerKeys)
+        editorManagerKeys.forEach((key: string) => {
+          console.log('CoreDump: Editor Manager', key, editorManager[key])
+          try {
+            clientState.editor_manager[key] = deepClone(editorManager[key])
+          } catch (error) {
+            console.error(
+              'CoreDump: unable to parse Editor Manager ' + key + ' data due to ',
+              error
+            )
+          }
+        })
+      }
+
       // enableMousePositionLogs - Not coredumped
+      // See https://github.com/KittyCAD/modeling-app/issues/2338#issuecomment-2136441998
       console.log(
         'CoreDump: enableMousePositionLogs [not coredumped]',
         globalThis?.window?.enableMousePositionLogs
