@@ -1,6 +1,5 @@
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import { WebrtcStats } from 'wasm-lib/kcl/bindings/WebrtcStats'
-import { ClientState } from 'wasm-lib/kcl/bindings/ClientState'
 import { OsInfo } from 'wasm-lib/kcl/bindings/OsInfo'
 import { isTauri } from 'lib/isTauri'
 import {
@@ -161,13 +160,12 @@ export class CoreDumpManager {
 
     // Initialize the clientState object
     let clientState = {
+      // singletons
       engine_command_manager: {
         artifact_map: {},
         command_logs: [],
         engine_connection: { state: { type: '' } },
         default_planes: {},
-        in_sequence: 0, // TODO: is this actually a good default value
-        out_sequence: 0, // TODO: is this actually a good default value
         scene_command_artifacts: {},
       },
       kcl_manager: {
@@ -175,6 +173,7 @@ export class CoreDumpManager {
         kcl_errors: [],
       },
       scene_infra: {},
+      // xstate
       auth_machine: {},
       command_bar_machine: {},
       file_machine: {},
@@ -190,14 +189,14 @@ export class CoreDumpManager {
 
       // engine_command_manager
       console.log(
-        'CoreDump: the engineCommandManager singlton',
+        'CoreDump: engineCommandManager',
         this.engineCommandManager
       )
 
       // artifact map - this.engineCommandManager.artifactMap
       if (this.engineCommandManager?.artifactMap) {
         console.log(
-          'CoreDump: artifact map',
+          'CoreDump: Engine Command Manager artifact map',
           this.engineCommandManager.artifactMap
         )
         clientState.engine_command_manager.artifact_map = deepClone(
@@ -208,7 +207,7 @@ export class CoreDumpManager {
       // command logs - this.engineCommandManager.commandLogs
       if (this.engineCommandManager?.commandLogs) {
         console.log(
-          'CoreDump: command logs',
+          'CoreDump: Engine Command Manager command logs',
           this.engineCommandManager.commandLogs
         )
         clientState.engine_command_manager.command_logs = deepClone(
@@ -219,7 +218,7 @@ export class CoreDumpManager {
       // default planes - this.engineCommandManager.defaultPlanes
       if (this.engineCommandManager?.defaultPlanes) {
         console.log(
-          'CoreDump: default planes',
+          'CoreDump: Engine Command Manager default planes',
           this.engineCommandManager.defaultPlanes
         )
         clientState.engine_command_manager.default_planes = deepClone(
@@ -232,7 +231,7 @@ export class CoreDumpManager {
         clientState.engine_command_manager.engine_connection.state =
           this.engineCommandManager.engineConnection.state
         console.log(
-          'CoreDump: engine connection state',
+          'CoreDump: Engine Command Manager engine connection state',
           this.engineCommandManager.engineConnection.state
         )
       }
@@ -240,7 +239,7 @@ export class CoreDumpManager {
       // in sequence - this.engineCommandManager.inSequence
       if (this.engineCommandManager?.inSequence) {
         console.log(
-          'CoreDump: in sequence',
+          'CoreDump: Engine Command Manager in sequence',
           this.engineCommandManager.inSequence
         )
         clientState.engine_command_manager.in_sequence =
@@ -250,7 +249,7 @@ export class CoreDumpManager {
       // out sequence - this.engineCommandManager.outSequence
       if (this.engineCommandManager?.inSequence) {
         console.log(
-          'CoreDump: out sequence',
+          'CoreDump: Engine Command Manager out sequence',
           this.engineCommandManager.outSequence
         )
         clientState.engine_command_manager.out_sequence =
@@ -260,7 +259,7 @@ export class CoreDumpManager {
       // scene command artifacts - this.engineCommandManager.sceneCommandArtifacts
       if (this.engineCommandManager?.sceneCommandArtifacts) {
         console.log(
-          'CoreDump: scene command artifacts',
+          'CoreDump: Engine Command Manager scene command artifacts',
           this.engineCommandManager.sceneCommandArtifacts
         )
         clientState.engine_command_manager.scene_command_artifacts = deepClone(
@@ -344,23 +343,23 @@ export class CoreDumpManager {
       // TODO: /src/lib/singletons.ts also defines the following singletons
       // sceneEntitiesManager
       console.log(
-        'CoreDump: TODO? sceneEntitiesManager',
+        'CoreDump: sceneEntitiesManager',
         globalThis?.window?.sceneEntitiesManager
       )
       // editorManager
       console.log(
-        'CoreDump: TODO? editorManager',
+        'CoreDump: editorManager',
         globalThis?.window?.editorManager
       )
-      // enableMousePositionLogs
+      // enableMousePositionLogs - Not coredumped
       console.log(
-        'CoreDump: TODO? enableMousePositionLogs',
+        'CoreDump: enableMousePositionLogs [not coredumped]',
         globalThis?.window?.enableMousePositionLogs
       )
 
       // XState Machines
       console.log(
-        'CoreDump: xstateServices',
+        'CoreDump: xstate services',
         globalThis?.window?.__xstate__?.services
       )
 
