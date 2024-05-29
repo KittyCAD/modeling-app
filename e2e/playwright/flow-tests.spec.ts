@@ -3817,8 +3817,38 @@ test.describe('Testing Gizmo', () => {
     {
       testDescription: 'top view',
       clickPosition: { x: 951, y: 387 },
-      expectedCameraPosition: { x: 123, y: 123, z: 123 },
-      expectedCameraTarget: { x: 123, y: 123, z: 123 },
+      expectedCameraPosition: { x: 800, y: -152, z: 4886.02 },
+      expectedCameraTarget: { x: 800, y: -152, z: 26 },
+    },
+    {
+      testDescription: 'bottom view',
+      clickPosition: { x: 951, y: 434 },
+      expectedCameraPosition: { x: 800, y: -152, z: -4834.02 },
+      expectedCameraTarget: { x: 800, y: -152, z: 26 },
+    },
+    {
+      testDescription: '+x view',
+      clickPosition: { x: 927, y: 419 },
+      expectedCameraPosition: { x: 5660.02, y: -152, z: 26 },
+      expectedCameraTarget: { x: 800, y: -152, z: 26 },
+    },
+    {
+      testDescription: '-x view',
+      clickPosition: { x: 974, y: 398 },
+      expectedCameraPosition: { x: -4060.02, y: -152, z: 26 },
+      expectedCameraTarget: { x: 800, y: -152, z: 26 },
+    },
+    {
+      testDescription: '+y view',
+      clickPosition: { x: 966, y: 422 },
+      expectedCameraPosition: { x: 800, y: 4708.02, z: 26 },
+      expectedCameraTarget: { x: 800, y: -152, z: 26 },
+    },
+    {
+      testDescription: '-y view',
+      clickPosition: { x: 935, y: 394 },
+      expectedCameraPosition: { x: 800, y: -5012.02, z: 26 },
+      expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
   ] as const
   for (const {
@@ -3852,7 +3882,7 @@ test.describe('Testing Gizmo', () => {
     |> tangentialArcTo([13.14 + 0, 13.14], %)
     |> close(%)
     |> extrude(5 + 7, %)
-  `
+    `
         )
       }, KCL_DEFAULT_LENGTH)
       await page.setViewportSize({ width: 1000, height: 500 })
@@ -3890,12 +3920,37 @@ test.describe('Testing Gizmo', () => {
       })
 
       await page.waitForTimeout(100)
-
       await page.mouse.move(clickPosition.x, clickPosition.y)
+      await page.waitForTimeout(100)
       await page.mouse.click(clickPosition.x, clickPosition.y)
+      await page.waitForTimeout(100)
 
-      // TODO assert the camera is where we'd expect it
-      // expect('camera x selector').toHaveValue(expectedCameraPosition.x)s
+      const [cameraPositionX, cameraPositionY, cameraPositionZ] = await Promise.all([
+        page.getByTestId('cam-x-position').inputValue(),
+        page.getByTestId('cam-y-position').inputValue(),
+        page.getByTestId('cam-z-position').inputValue(),
+      ])
+
+      const [cameraTargetX, cameraTargetY, cameraTargetZ] = await Promise.all([
+        page.getByTestId('cam-x-target').inputValue(),
+        page.getByTestId('cam-y-target').inputValue(),
+        page.getByTestId('cam-z-target').inputValue(),
+      ])
+
+      const cameraPosition = {
+        x: parseFloat(cameraPositionX),
+        y: parseFloat(cameraPositionY),
+        z: parseFloat(cameraPositionZ),
+      }
+      const cameraTarget = {
+        x: parseFloat(cameraTargetX),
+        y: parseFloat(cameraTargetY),
+        z: parseFloat(cameraTargetZ),
+      }
+
+      expect(cameraPosition).toEqual(expectedCameraPosition)
+      expect(cameraTarget).toEqual(expectedCameraTarget)
+
       await page.waitForTimeout(100)
     })
   }
