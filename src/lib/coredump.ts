@@ -22,6 +22,7 @@ import { APP_VERSION } from 'routes/Settings'
 import { UAParser } from 'ua-parser-js'
 import screenshot from 'lib/screenshot'
 import React from 'react'
+import { useMachine } from '@xstate/react'
 import { VITE_KC_API_BASE_URL } from 'env'
 
 // This is a class for getting all the values from the JS world to pass to the Rust world
@@ -189,7 +190,7 @@ export class CoreDumpManager {
       command_bar_machine: { meta: [] },
       file_machine: { meta: [] },
       home_machine: { meta: [] },
-      modeling_machine: { meta: [] },
+      modeling_machine: {},
       settings_machine: { meta: [] },
     }
     console.log('CoreDump: initialized clientState', clientState)
@@ -306,7 +307,8 @@ export class CoreDumpManager {
           .sort()
           .filter((entry) => {
             return (
-              typeof sceneInfra[entry] !== 'function' && !sceneInfraSkipKeys.includes(entry)
+              typeof sceneInfra[entry] !== 'function' &&
+              !sceneInfraSkipKeys.includes(entry)
             )
           })
 
@@ -344,7 +346,8 @@ export class CoreDumpManager {
       // XState Machines
       console.log(
         'CoreDump: xstateServices',
-        globalThis?.window?.__xstate__?.services
+        globalThis?.window?.__xstate__?.services,
+        this.htmlRef
       )
       let xstateServices = globalThis?.window?.__xstate__?.services || new Set()
 

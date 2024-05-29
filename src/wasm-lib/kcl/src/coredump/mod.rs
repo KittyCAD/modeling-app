@@ -287,13 +287,6 @@ pub struct HomeMachineState {
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
-pub struct ModelingMachineState {
-    pub meta: [u8; 0],
-}
-
-#[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "snake_case")]
 pub struct SettingsMachineState {
     pub meta: [u8; 0],
 }
@@ -320,7 +313,7 @@ pub struct ClientState {
     /// Internal state of the HomeMachine xstate object (for Tauri).
     pub home_machine: HomeMachineState,
     /// Internal state of the ModelingMachine xstate object.
-    pub modeling_machine: ModelingMachineState,
+    pub modeling_machine: JValue,
     /// Internal state of the SettingsMachine xstate object.
     pub settings_machine: SettingsMachineState,
 }
