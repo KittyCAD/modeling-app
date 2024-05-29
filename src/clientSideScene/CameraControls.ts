@@ -828,8 +828,8 @@ export class CameraControls {
       cmd_id: uuidv4(),
       cmd: {
         type: 'default_camera_look_at',
-        center: { x: 0, y: 0, z: 0 },
-        vantage: { x: 0, y: -128, z: 64 },
+        center: this.target,
+        vantage: { x: this.target.x, y: this.target.y-128, z: this.target.z+64 },
         up: { x: 0, y: 0, z: 1 },
       },
     })
