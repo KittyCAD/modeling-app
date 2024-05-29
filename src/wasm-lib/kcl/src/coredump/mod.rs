@@ -249,20 +249,12 @@ pub struct EngineConnectionType {
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
-pub struct KclManagerState {
-    pub ast: JValue,
-    pub kcl_errors: JValue,
-}
-
-#[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "snake_case")]
 pub struct ClientState {
     /// Singletons
     /// Internal state of the KclManager/KclSingleton object.
     pub engine_command_manager: EngineCommandManagerState,
     /// Internal state of the KclManager/KclSingleton object.
-    pub kcl_manager: KclManagerState,
+    pub kcl_manager: JValue,
     /// Internal state of the SceneInfra object.
     pub scene_infra: JValue,
     
