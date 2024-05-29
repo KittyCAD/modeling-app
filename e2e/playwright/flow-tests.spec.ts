@@ -1669,7 +1669,7 @@ test('Hovering over 3d features highlights code', async ({ page }) => {
   await page.addInitScript(async (KCL_DEFAULT_LENGTH) => {
     localStorage.setItem(
       'persistCode',
-      `const sketch001 = startSketchOn('XZ')
+      `const part001 = startSketchOn('XZ')
   |> startProfileAt([20, 0], %)
   |> line([7.13, 4 + 0], %)
   |> angledLine({ angle: 3 + 0, length: 3.14 + 0 }, %)
@@ -1775,7 +1775,7 @@ test("Various pipe expressions should and shouldn't allow edit and or extrude", 
     }: any) => {
       localStorage.setItem(
         'persistCode',
-        `const sketch001 = startSketchOn('XZ')
+        `const part001 = startSketchOn('XZ')
   ${extrudeAndEditBlocked}
   |> line([25.96, 2.93], %)
   |> line([5.25, -5.72], %)
@@ -2435,7 +2435,7 @@ test('Extrude from command bar selects extrude line after', async ({
   await page.keyboard.press('Enter')
   await page.waitForTimeout(100)
   await expect(page.locator('.cm-activeLine')).toHaveText(
-    `const part001 = extrude(${KCL_DEFAULT_LENGTH}, sketch001)`
+    `const extrude001 = extrude(${KCL_DEFAULT_LENGTH}, sketch001)`
   )
 })
 
