@@ -1,14 +1,4 @@
-import {
-  EngineCommandManager,
-  EngineConnectionState,
-} from 'lang/std/engineConnection'
-//engineCommandManager, - TODO: Can we use this instead
-// import {
-//   kclManager as KclManager
-//   sceneInfra,
-//   codeManager,
-//   editorManager,
-// } from 'lib/singletons'
+import { EngineCommandManager } from 'lang/std/engineConnection'
 import { WebrtcStats } from 'wasm-lib/kcl/bindings/WebrtcStats'
 import { ClientState } from 'wasm-lib/kcl/bindings/ClientState'
 import { OsInfo } from 'wasm-lib/kcl/bindings/OsInfo'
@@ -22,7 +12,6 @@ import { APP_VERSION } from 'routes/Settings'
 import { UAParser } from 'ua-parser-js'
 import screenshot from 'lib/screenshot'
 import React from 'react'
-import { useMachine } from '@xstate/react'
 import { VITE_KC_API_BASE_URL } from 'env'
 
 // This is a class for getting all the values from the JS world to pass to the Rust world
@@ -186,12 +175,12 @@ export class CoreDumpManager {
         kcl_errors: [],
       },
       scene_infra: {},
-      auth_machine: { meta: [] },
-      command_bar_machine: { meta: [] },
-      file_machine: { meta: [] },
-      home_machine: { meta: [] },
+      auth_machine: {},
+      command_bar_machine: {},
+      file_machine: {},
+      home_machine: {},
       modeling_machine: {},
-      settings_machine: { meta: [] },
+      settings_machine: {},
     }
     console.log('CoreDump: initialized clientState', clientState)
     console.info('CoreDump: globalThis.window', globalThis.window)
@@ -346,18 +335,8 @@ export class CoreDumpManager {
       // XState Machines
       console.log(
         'CoreDump: xstateServices',
-        globalThis?.window?.__xstate__?.services,
-        this.htmlRef
+        globalThis?.window?.__xstate__?.services
       )
-      let xstateServices = globalThis?.window?.__xstate__?.services || new Set()
-
-      xstateServices?.forEach((interpreter: any) => {
-        console.log('CoreDump: XState interpreter', interpreter)
-        // Command Bar Machine XState
-        if (interpreter.id('Command Bar')) {
-          // clientState.command_bar_machine.meta.push(1)
-        }
-      })
 
       console.log('CoreDump: final clientState', clientState)
 

@@ -254,43 +254,6 @@ pub struct KclManagerState {
     pub kcl_errors: JValue,
 }
 
-/// Client State XState Structures
-
-#[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "snake_case")]
-pub struct AuthMachineState {
-    pub meta: [u8; 0],
-}
-
-#[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "snake_case")]
-pub struct CommandBarMachineState {
-    pub meta: [u8; 0],
-}
-
-#[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "snake_case")]
-pub struct FileMachineState {
-    pub meta: [u8; 0],
-}
-
-#[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "snake_case")]
-pub struct HomeMachineState {
-    pub meta: [u8; 0],
-}
-
-#[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "snake_case")]
-pub struct SettingsMachineState {
-    pub meta: [u8; 0],
-}
-
 #[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
@@ -305,15 +268,15 @@ pub struct ClientState {
     
     /// XState
     /// Internal state of the AuthMachine xstate object.
-    pub auth_machine: AuthMachineState,
+    pub auth_machine: JValue,
     /// Internal state of the CommandBarMachine xstate object.
-    pub command_bar_machine: CommandBarMachineState,
+    pub command_bar_machine: JValue,
     /// Internal state of the FileMachine xstate object.
-    pub file_machine: FileMachineState,
+    pub file_machine: JValue,
     /// Internal state of the HomeMachine xstate object (for Tauri).
-    pub home_machine: HomeMachineState,
+    pub home_machine: JValue,
     /// Internal state of the ModelingMachine xstate object.
     pub modeling_machine: JValue,
     /// Internal state of the SettingsMachine xstate object.
-    pub settings_machine: SettingsMachineState,
+    pub settings_machine: JValue,
 }
