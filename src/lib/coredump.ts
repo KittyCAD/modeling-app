@@ -284,6 +284,30 @@ export class CoreDumpManager {
         if (kclManager?.kclErrors) {
           clientState.kcl_manager.kcl_errors = deepClone(kclManager.kclErrors)
         }
+
+        // KCL isExecuting
+        console.log('CoreDump: KCL isExecuting', kclManager?.isExecuting)
+        if (kclManager?.isExecuting) {
+          clientState.kcl_manager.isExecuting = kclManager.isExecuting
+        }
+
+        // KCL logs
+        console.log('CoreDump: KCL logs', kclManager?.logs)
+        if (kclManager?.logs) {
+          clientState.kcl_manager.logs = deepClone(kclManager.logs)
+        }
+
+        // KCL programMemory
+        console.log('CoreDump: KCL programMemory', kclManager?.programMemory)
+        if (kclManager?.programMemory) {
+          clientState.kcl_manager.programMemory = deepClone(kclManager.programMemory)
+        }
+
+        // KCL wasmInitFailed
+        console.log('CoreDump: KCL wasmInitFailed', kclManager?.wasmInitFailed)
+        if (kclManager?.wasmInitFailed) {
+          clientState.kcl_manager.wasmInitFailed = kclManager.wasmInitFailed
+        }
       }
 
       // Scene Infra - globalThis?.window?.sceneInfra
