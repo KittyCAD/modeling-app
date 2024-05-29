@@ -1476,7 +1476,10 @@ const sketch001 = startSketchOn('XZ')
     |> line([0.73, -20.93], %)
     |> line([-23.44, 0.52], %)
     |> close(%)
-const part001 = extrude(distance001, sketch001)`.replace(/(\r\n|\n|\r)/gm, '') // remove newlines
+const extrude001 = extrude(distance001, sketch001)`.replace(
+        /(\r\n|\n|\r)/gm,
+        ''
+      ) // remove newlines
     )
   })
 })
@@ -1861,7 +1864,7 @@ fn yohey = (pos) => {
   await page.getByTestId('KCL Code').click()
   // expect main content to contain `sketch005` i.e. started a new sketch
   await expect(page.locator('.cm-content')).toHaveText(
-    /sketch005 = startSketchOn\('XZ'\)/
+    /sketch001 = startSketchOn\('XZ'\)/
   )
 })
 
