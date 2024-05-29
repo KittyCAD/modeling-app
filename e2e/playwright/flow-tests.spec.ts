@@ -2439,6 +2439,82 @@ test('Extrude from command bar selects extrude line after', async ({
   )
 })
 
+test.describe('Testing constraints', () => {
+  test.describe('Equal Length Constraint', () => {
+    const cases = [
+      {
+        codeAfter: `angledLine([83, segLen('seg01', %)], %)`,
+        constraintName: 'Equal Length',
+      },
+      {
+        codeAfter: `angledLine([segAng('seg01', %), 78.33], %)`,
+        constraintName: 'Parallel',
+      },
+      {
+        codeAfter: `lineTo([segEndX('seg01', %), 61.34], %)`,
+        constraintName: 'Vertically Align',
+      },
+      {
+        codeAfter: `lineTo([154.9, segEndY('seg01', %)], %)`,
+        constraintName: 'Horizontally Align',
+      },
+    ] as const
+    for (const { codeAfter, constraintName } of cases) {
+      test(`${constraintName}`, async ({ page }) => {
+        await page.addInitScript(async () => {
+          localStorage.setItem(
+            'persistCode',
+            `const yo = 5
+const part001 = startSketchOn('XZ')
+  |> startProfileAt([-7.54, -26.74], %)
+  |> line([74.36, 130.4], %)
+  |> line([78.92, -120.11], %)
+  |> line([9.16, 77.79], %)
+const part002 = startSketchOn('XZ')
+  |> startProfileAt([299.05, 231.45], %)
+  |> xLine(-425.34, %, 'seg-what')
+  |> yLine(-264.06, %)
+  |> xLine(segLen('seg-what', %), %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)`
+          )
+        })
+        const u = await getUtils(page)
+        await page.setViewportSize({ width: 1200, height: 500 })
+        await page.goto('/')
+        await u.waitForAuthSkipAppStart()
+
+        await page.getByText('line([74.36, 130.4], %)').click()
+        await page.getByRole('button', { name: 'Edit Sketch' }).click()
+
+        const line1 = await u.getBoundingBox(`[data-overlay-index="${0}"]`)
+        const line3 = await u.getBoundingBox(`[data-overlay-index="${2}"]`)
+
+        await page.mouse.click(line1.x - 20, line1.y + 20)
+        await page.keyboard.down('Shift')
+        await page.mouse.click(line3.x - 3, line3.y + 20)
+        await page.keyboard.up('Shift')
+        const constraintMenuButton = page.getByRole('button', {
+          name: 'Constrain',
+        })
+        const constraintButton = page.getByRole('button', {
+          name: constraintName,
+        })
+
+        // apply the constraint
+        await constraintMenuButton.click()
+        await constraintButton.click()
+
+        await expect(page.locator('.cm-content')).toContainText(codeAfter)
+        // expect the string 'seg01' to appear twice in '.cm-content' the tag segment and referencing the tag
+        const content = await page.locator('.cm-content').innerText()
+        await expect(content.match(/seg01/g)).toHaveLength(2)
+        // check there are still 2 cursors (they should stay on the same lines as before constraint was applied)
+        await expect(page.locator('.cm-cursor')).toHaveCount(2)
+      })
+    }
+  })
+})
+
 test.describe('Testing segment overlays', () => {
   test.describe('Hover over a segment should show its overlay, hovering over the input overlays should show its popover, clicking the input overlay should constrain/unconstrain it:\nfor the following segments', () => {
     /**
