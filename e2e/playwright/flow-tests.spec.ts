@@ -1,5 +1,5 @@
 import { test, expect, Page } from '@playwright/test'
-import { makeTemplate, getUtils } from './test-utils'
+import { makeTemplate, getUtils, doExport } from './test-utils'
 import waitOn from 'wait-on'
 import { roundOff, uuidv4 } from 'lib/utils'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
@@ -3810,4 +3810,76 @@ test('Engine disconnect & reconnect in sketch mode', async ({ page }) => {
   await expect(
     page.getByRole('button', { name: 'Exit Sketch' })
   ).not.toBeVisible()
+})
+
+test('Successful export shows a success toast', async ({ page }) => {
+  // FYI this test doesn't work with only engine running locally
+  // And you will need to have the KittyCAD CLI installed
+  const u = await getUtils(page)
+  await page.addInitScript(async () => {
+    ;(window as any).playwrightSkipFilePicker = true
+    localStorage.setItem(
+      'persistCode',
+      `const topAng = 25
+const bottomAng = 35
+const baseLen = 3.5
+const baseHeight = 1
+const totalHeightHalf = 2
+const armThick = 0.5
+const totalLen = 9.5
+const part001 = startSketchOn('-XZ')
+  |> startProfileAt([0, 0], %)
+  |> yLine(baseHeight, %)
+  |> xLine(baseLen, %)
+  |> angledLineToY({
+        angle: topAng,
+        to: totalHeightHalf,
+      }, %, 'seg04')
+  |> xLineTo(totalLen, %, 'seg03')
+  |> yLine(-armThick, %, 'seg01')
+  |> angledLineThatIntersects({
+        angle: HALF_TURN,
+        offset: -armThick,
+        intersectTag: 'seg04'
+      }, %)
+  |> angledLineToY([segAng('seg04', %) + 180, ZERO], %)
+  |> angledLineToY({
+        angle: -bottomAng,
+        to: -totalHeightHalf - armThick,
+      }, %, 'seg02')
+  |> xLineTo(segEndX('seg03', %) + 0, %)
+  |> yLine(-segLen('seg01', %), %)
+  |> angledLineThatIntersects({
+        angle: HALF_TURN,
+        offset: -armThick,
+        intersectTag: 'seg02'
+      }, %)
+  |> angledLineToY([segAng('seg02', %) + 180, -baseHeight], %)
+  |> xLineTo(ZERO, %)
+  |> close(%)
+  |> extrude(4, %)`
+    )
+  })
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.waitForCmdReceive('extrude')
+  await page.waitForTimeout(1000)
+  await u.clearAndCloseDebugPanel()
+
+  await doExport(
+    {
+      type: 'gltf',
+      storage: 'embedded',
+      presentation: 'pretty',
+    },
+    page
+  )
+
+  // This is the main thing we're testing,
+  // We test the export functionality across all
+  // file types in snapshot-tests.spec.ts
+  await expect(page.getByText('Exported successfully')).toBeVisible()
 })
