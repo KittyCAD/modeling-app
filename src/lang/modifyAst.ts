@@ -112,7 +112,7 @@ export function addSketchTo(
 ): { modifiedAst: Program; id: string; pathToNode: PathToNode } {
   const _node = { ...node }
   const _name =
-    name || findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.EXTRUDE)
+    name || findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SKETCH)
 
   const startSketchOn = createCallExpressionStdLib('startSketchOn', [
     createLiteral(axis.toUpperCase()),
