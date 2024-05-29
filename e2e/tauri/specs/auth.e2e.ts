@@ -35,7 +35,7 @@ async function setDatasetValue(
 describe('ZMA (Tauri)', () => {
   it('opens the auth page and signs in', async () => {
     // Clean up filesystem from previous tests
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    await new Promise((resolve) => setTimeout(resolve, 100))
     await fs.rm(defaultProjectDir, { force: true, recursive: true })
     await fs.rm(newProjectDir, { force: true, recursive: true })
     await fs.rm(userCodeDir, { force: true })
