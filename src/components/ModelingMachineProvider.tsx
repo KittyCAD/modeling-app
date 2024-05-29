@@ -18,6 +18,7 @@ import {
   engineCommandManager,
   codeManager,
   editorManager,
+  sceneEntitiesManager,
 } from 'lib/singletons'
 import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
 import {
@@ -39,11 +40,24 @@ import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
 import useStateMachineCommands from 'hooks/useStateMachineCommands'
 import { modelingMachineConfig } from 'lib/commandBarConfigs/modelingCommandConfig'
 import {
+  STRAIGHT_SEGMENT,
+  TANGENTIAL_ARC_TO_SEGMENT,
+  getParentGroup,
   getSketchOrientationDetails,
   getSketchQuaternion,
 } from 'clientSideScene/sceneEntities'
-import { sketchOnExtrudedFace, startSketchOnDefault } from 'lang/modifyAst'
-import { Program, VariableDeclaration, coreDump } from 'lang/wasm'
+import {
+  moveValueIntoNewVariablePath,
+  sketchOnExtrudedFace,
+  startSketchOnDefault,
+} from 'lang/modifyAst'
+import {
+  Program,
+  VariableDeclaration,
+  coreDump,
+  parse,
+  recast,
+} from 'lang/wasm'
 import {
   getNodeFromPath,
   getNodePathFromSourceRange,
@@ -55,9 +69,14 @@ import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
 import { EditorSelection } from '@uiw/react-codemirror'
 import { CoreDumpManager } from 'lib/coredump'
-import { useHotkeys } from 'react-hotkeys-hook'
 import { useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
+import { getVarNameModal } from 'hooks/useToolbarGuards'
+import useHotkeyWrapper from 'lib/hotkeyWrapper'
+import {
+  EngineConnectionState,
+  EngineConnectionStateType,
+} from 'lang/std/engineConnection'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -103,7 +122,7 @@ export const ModelingMachineProvider = ({
     htmlRef,
     token
   )
-  useHotkeys('meta + shift + .', () => coreDump(coreDumpManager, true))
+  useHotkeyWrapper(['meta + shift + .'], () => coreDump(coreDumpManager, true))
 
   // Settings machine setup
   // const retrievedSettings = useRef(
@@ -127,7 +146,82 @@ export const ModelingMachineProvider = ({
         },
         'Set mouse state': assign({
           mouseState: (_, event) => event.data,
+          segmentHoverMap: ({ mouseState, segmentHoverMap }, event) => {
+            if (event.data.type === 'isHovering') {
+              const parent = getParentGroup(event.data.on, [
+                STRAIGHT_SEGMENT,
+                TANGENTIAL_ARC_TO_SEGMENT,
+              ])
+              const pathToNode = parent?.userData?.pathToNode
+              const pathToNodeString = JSON.stringify(pathToNode)
+              if (!parent || !pathToNode) return {}
+              if (segmentHoverMap[pathToNodeString] !== undefined)
+                clearTimeout(segmentHoverMap[JSON.stringify(pathToNode)])
+              return {
+                ...segmentHoverMap,
+                [pathToNodeString]: 0,
+              }
+            } else if (
+              event.data.type === 'idle' &&
+              mouseState.type === 'isHovering'
+            ) {
+              const mouseOnParent = getParentGroup(mouseState.on, [
+                STRAIGHT_SEGMENT,
+                TANGENTIAL_ARC_TO_SEGMENT,
+              ])
+              if (!mouseOnParent || !mouseOnParent?.userData?.pathToNode)
+                return segmentHoverMap
+              const pathToNodeString = JSON.stringify(
+                mouseOnParent?.userData?.pathToNode
+              )
+              const timeoutId = setTimeout(() => {
+                sceneInfra.modelingSend({
+                  type: 'Set mouse state',
+                  data: {
+                    type: 'timeoutEnd',
+                    pathToNodeString,
+                  },
+                })
+              }, 800) as unknown as number
+              return {
+                ...segmentHoverMap,
+                [pathToNodeString]: timeoutId,
+              }
+            } else if (event.data.type === 'timeoutEnd') {
+              const copy = { ...segmentHoverMap }
+              delete copy[event.data.pathToNodeString]
+              return copy
+            }
+            return {}
+          },
         }),
+        'Set Segment Overlays': assign({
+          segmentOverlays: ({ segmentOverlays }, { data }) => {
+            if (data.type === 'set-many') return data.overlays
+            if (data.type === 'set-one')
+              return {
+                ...segmentOverlays,
+                [data.pathToNodeString]: data.seg,
+              }
+            if (data.type === 'delete-one') {
+              const copy = { ...segmentOverlays }
+              delete copy[data.pathToNodeString]
+              return copy
+            }
+            // data.type === 'clear'
+            return {}
+          },
+        }),
+        'Set sketchDetails': assign(({ sketchDetails }, event) =>
+          sketchDetails
+            ? {
+                sketchDetails: {
+                  ...sketchDetails,
+                  sketchPathToNode: event.data,
+                },
+              }
+            : {}
+        ),
         'Set selection': assign(({ selectionRanges }, event) => {
           if (event.type !== 'Set selection') return {} // this was needed for ts after adding 'Set selection' action to on done modal events
           const setSelections = event.data
@@ -290,7 +384,7 @@ export const ModelingMachineProvider = ({
             kclManager.ast,
             sketchDetails?.sketchPathToNode || [],
             'VariableDeclaration'
-          )?.node?.declarations[0]?.init.type !== 'PipeExpression',
+          )?.node?.declarations?.[0]?.init.type !== 'PipeExpression',
         'Selection is on face': ({ selectionRanges }, { data }) => {
           if (data?.forceNewSketch) return false
           if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))
@@ -300,8 +394,23 @@ export const ModelingMachineProvider = ({
             selectionRanges
           )
         },
-        'Has exportable geometry': () =>
-          kclManager.kclErrors.length === 0 && kclManager.ast.body.length > 0,
+        'Has exportable geometry': () => {
+          if (
+            kclManager.kclErrors.length === 0 &&
+            kclManager.ast.body.length > 0
+          )
+            return true
+          else {
+            let errorMessage = 'Unable to Export '
+            if (kclManager.kclErrors.length > 0)
+              errorMessage += 'due to KCL Errors'
+            else if (kclManager.ast.body.length === 0)
+              errorMessage += 'due to Empty Scene'
+            console.error(errorMessage)
+            toast.error(errorMessage)
+            return false
+          }
+        },
       },
       services: {
         'AST-undo-startSketchOn': async ({ sketchDetails }) => {
@@ -502,6 +611,27 @@ export const ModelingMachineProvider = ({
             ),
           }
         },
+        'Get convert to variable info': async ({ sketchDetails }, { data }) => {
+          if (!sketchDetails) return []
+          const { variableName } = await getVarNameModal({
+            valueName: data.variableName || 'var',
+          })
+          const { modifiedAst: _modifiedAst, pathToReplacedNode } =
+            moveValueIntoNewVariablePath(
+              parse(recast(kclManager.ast)),
+              kclManager.programMemory,
+              data.pathToNode,
+              variableName
+            )
+          await sceneEntitiesManager.updateAstAndRejigSketch(
+            pathToReplacedNode || [],
+            parse(recast(_modifiedAst)),
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin
+          )
+          return pathToReplacedNode || sketchDetails.sketchPathToNode
+        },
       },
       devTools: true,
     }
@@ -511,6 +641,12 @@ export const ModelingMachineProvider = ({
     kclManager.registerExecuteCallback(() => {
       modelingSend({ type: 'Re-execute' })
     })
+
+    // Before this component unmounts, call the 'Cancel'
+    // event to clean up any state in the modeling machine.
+    return () => {
+      modelingSend({ type: 'Cancel' })
+    }
   }, [modelingSend])
 
   // Give the state back to the editorManager.
@@ -526,6 +662,19 @@ export const ModelingMachineProvider = ({
     editorManager.selectionRanges = modelingState.context.selectionRanges
   }, [modelingState.context.selectionRanges])
 
+  useEffect(() => {
+    const offlineCallback = () => {
+      // If we are in sketch mode we need to exit it.
+      // TODO: how do i check if we are in a sketch mode, I only want to call
+      // this then.
+      modelingSend({ type: 'Cancel' })
+    }
+    window.addEventListener('offline', offlineCallback)
+    return () => {
+      window.removeEventListener('offline', offlineCallback)
+    }
+  }, [modelingSend])
+
   useStateMachineCommands({
     machineId: 'modeling',
     state: modelingState,
@@ -533,6 +682,10 @@ export const ModelingMachineProvider = ({
     actor: modelingActor,
     commandBarConfig: modelingMachineConfig,
     allCommandsRequireNetwork: true,
+    // TODO for when sketch tools are in the toolbar: This was added when we used one "Cancel" event,
+    // but we need to support "SketchCancel" and basically
+    // make this function take the actor or state so it
+    // can call the correct event.
     onCancel: () => modelingSend({ type: 'Cancel' }),
   })
 

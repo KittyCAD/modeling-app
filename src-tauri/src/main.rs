@@ -18,12 +18,20 @@ use oauth2::TokenResponse;
 use tauri::{ipc::InvokeError, Manager};
 use tauri_plugin_cli::CliExt;
 use tauri_plugin_shell::ShellExt;
-use tokio::process::Command;
 
 const DEFAULT_HOST: &str = "https://api.zoo.dev";
 const SETTINGS_FILE_NAME: &str = "settings.toml";
 const PROJECT_SETTINGS_FILE_NAME: &str = "project.toml";
 const PROJECT_FOLDER: &str = "zoo-modeling-app-projects";
+
+#[tauri::command]
+async fn rename_project_directory(project_path: &str, new_name: &str) -> Result<PathBuf, InvokeError> {
+    let project_dir = std::path::Path::new(project_path);
+
+    kcl_lib::settings::types::file::rename_project_directory(project_dir, new_name)
+        .await
+        .map_err(InvokeError::from_anyhow)
+}
 
 #[tauri::command]
 fn get_initial_default_dir(app: tauri::AppHandle) -> Result<PathBuf, InvokeError> {
@@ -121,11 +129,8 @@ async fn write_app_settings_file(app: tauri::AppHandle, configuration: Configura
     Ok(())
 }
 
-async fn get_project_settings_file_path(
-    app_settings: Configuration,
-    project_name: &str,
-) -> Result<PathBuf, InvokeError> {
-    let project_dir = app_settings.settings.project.directory.join(project_name);
+async fn get_project_settings_file_path(project_path: &str) -> Result<PathBuf, InvokeError> {
+    let project_dir = std::path::Path::new(project_path);
 
     if !project_dir.exists() {
         tokio::fs::create_dir_all(&project_dir)
@@ -137,11 +142,8 @@ async fn get_project_settings_file_path(
 }
 
 #[tauri::command]
-async fn read_project_settings_file(
-    app_settings: Configuration,
-    project_name: &str,
-) -> Result<ProjectConfiguration, InvokeError> {
-    let settings_path = get_project_settings_file_path(app_settings, project_name).await?;
+async fn read_project_settings_file(project_path: &str) -> Result<ProjectConfiguration, InvokeError> {
+    let settings_path = get_project_settings_file_path(project_path).await?;
 
     // Check if this file exists.
     if !settings_path.exists() {
@@ -159,11 +161,10 @@ async fn read_project_settings_file(
 
 #[tauri::command]
 async fn write_project_settings_file(
-    app_settings: Configuration,
-    project_name: &str,
+    project_path: &str,
     configuration: ProjectConfiguration,
 ) -> Result<(), InvokeError> {
-    let settings_path = get_project_settings_file_path(app_settings, project_name).await?;
+    let settings_path = get_project_settings_file_path(project_path).await?;
     let contents = toml::to_string_pretty(&configuration).map_err(|e| InvokeError::from_anyhow(e.into()))?;
     tokio::fs::write(settings_path, contents.as_bytes())
         .await
@@ -330,10 +331,20 @@ async fn get_user(token: &str, hostname: &str) -> Result<kittycad::types::User, 
 /// From this GitHub comment: https://github.com/tauri-apps/tauri/issues/4062#issuecomment-1338048169
 /// But with the Linux support removed since we don't need it for now.
 #[tauri::command]
-fn show_in_folder(path: &str) -> Result<(), InvokeError> {
+fn show_in_folder(app: tauri::AppHandle, path: &str) -> Result<(), InvokeError> {
+    // Check if the file exists.
+    // If it doesn't, return an error.
+    if !Path::new(path).exists() {
+        return Err(InvokeError::from_anyhow(anyhow::anyhow!(
+            "The file `{}` does not exist",
+            path
+        )));
+    }
+
     #[cfg(not(unix))]
     {
-        Command::new("explorer")
+        app.shell()
+            .command("explorer")
             .args(["/select,", path]) // The comma after select is not a typo
             .spawn()
             .map_err(|e| InvokeError::from_anyhow(e.into()))?;
@@ -341,7 +352,8 @@ fn show_in_folder(path: &str) -> Result<(), InvokeError> {
 
     #[cfg(unix)]
     {
-        Command::new("open")
+        app.shell()
+            .command("open")
             .args(["-R", path])
             .spawn()
             .map_err(|e| InvokeError::from_anyhow(e.into()))?;
@@ -396,6 +408,7 @@ fn main() -> Result<()> {
             write_app_settings_file,
             read_project_settings_file,
             write_project_settings_file,
+            rename_project_directory,
         ])
         .plugin(tauri_plugin_cli::init())
         .plugin(tauri_plugin_deep_link::init())
@@ -412,6 +425,7 @@ fn main() -> Result<()> {
                 .build(),
         )
         .plugin(tauri_plugin_os::init())
+        .plugin(tauri_plugin_persisted_scope::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_shell::init())
         .setup(|app| {

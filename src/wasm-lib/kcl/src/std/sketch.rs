@@ -12,7 +12,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
         BasePath, ExtrudeGroup, ExtrudeSurface, Face, GeoMeta, MemoryItem, Path, Plane, PlaneType, Point2d, Point3d,
-        Position, Rotation, SketchGroup, SketchGroupSet, SketchSurface, SourceRange,
+        Position, Rotation, SketchGroup, SketchGroupSet, SketchSurface, SourceRange, UserVal,
     },
     std::{
         utils::{
@@ -35,7 +35,7 @@ pub async fn line_to(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw a line to a point.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("-XZ")
+/// const exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> lineTo([10, 0], %)
 ///   |> lineTo([0, 10], %)
@@ -101,7 +101,7 @@ pub async fn x_line_to(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw a line to a point on the x-axis.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> xLineTo(15, %)
 ///   |> angledLine({
@@ -146,13 +146,16 @@ pub async fn y_line_to(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw a line to a point on the y-axis.
 ///
 /// ```no_run
-/// startSketchOn('XZ')
+/// const exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
-///   |> yLineTo(10, %, "edge1")
-///   |> line([10, 10], %)
-///   |> close(%, "edge2")
-///   |> extrude(10, %)
-///   |> fillet({radius: 2, tags: ["edge2"]}, %)
+///   |> angledLine({
+///     angle: 50,
+///     length: 45,
+///   }, %)
+///   |> yLineTo(0, %)
+///   |> close(%)
+///
+/// const example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "yLineTo",
@@ -181,7 +184,18 @@ pub async fn line(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw a line.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("-XZ")
+/// const exampleSketch = startSketchOn("XZ")
+///   |> startProfileAt([0, 0], %)
+///   |> line([25, 15], %)
+///   |> line([5, -6], %)
+///   |> line([-10, -10], %)
+///   |> close(%)
+///
+/// const example = extrude(5, exampleSketch)
+/// ```
+///
+/// ```no_run
+/// const exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> line([0, 10], %)
@@ -250,7 +264,7 @@ pub async fn x_line(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw a line on the x-axis.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> xLine(15, %)
 ///   |> angledLine({
@@ -292,7 +306,7 @@ pub async fn y_line(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw a line on the y-axis.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> yLine(15, %)
 ///   |> angledLine({
@@ -345,7 +359,7 @@ pub async fn angled_line(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw an angled line.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> yLineTo(15, %)
 ///   |> angledLine({
@@ -482,7 +496,7 @@ pub async fn angled_line_to_x(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw an angled line to a given x coordinate.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLineToX({ angle: 30, to: 10 }, %)
 ///   |> line([0, 10], %)
@@ -568,7 +582,7 @@ pub async fn angled_line_to_y(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw an angled line to a given y coordinate.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLineToY({ angle: 60, to: 20 }, %)
 ///   |> line([-20, 0], %)
@@ -622,7 +636,7 @@ pub async fn angled_line_that_intersects(args: Args) -> Result<MemoryItem, KclEr
 /// Draw an angled line that intersects with a given line.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> lineTo([5, 10], %)
 ///   |> lineTo([-10, 10], %, "lineToIntersect")
@@ -793,16 +807,16 @@ impl From<PlaneData> for Plane {
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(1.0, 0.0, 0.0),
                 y_axis: Point3d::new(0.0, 0.0, 1.0),
-                z_axis: Point3d::new(0.0, 1.0, 0.0),
+                z_axis: Point3d::new(0.0, -1.0, 0.0),
                 value: PlaneType::XZ,
                 meta: vec![],
             },
             PlaneData::NegXZ => Plane {
                 id,
                 origin: Point3d::new(0.0, 0.0, 0.0),
-                x_axis: Point3d::new(1.0, 0.0, 0.0),
+                x_axis: Point3d::new(-1.0, 0.0, 0.0),
                 y_axis: Point3d::new(0.0, 0.0, 1.0),
-                z_axis: Point3d::new(0.0, -1.0, 0.0),
+                z_axis: Point3d::new(0.0, 1.0, 0.0),
                 value: PlaneType::XZ,
                 meta: vec![],
             },
@@ -935,6 +949,24 @@ pub async fn start_sketch_on(args: Args) -> Result<MemoryItem, KclError> {
 ///
 /// const example002 = extrude(5, exampleSketch002)
 /// ```
+///
+/// ```no_run
+/// const a1 = startSketchOn({
+///       plane: {
+///         origin: { x: 0, y: 0, z: 0 },
+///         x_axis: { x: 1, y: 0, z: 0 },
+///         y_axis: { x: 0, y: 1, z: 0 },
+///         z_axis: { x: 0, y: 0, z: 1 }
+///       }
+///     })
+///  |> startProfileAt([0, 0], %)
+///  |> line([100.0, 0], %)
+///  |> yLine(-100.0, %)
+///  |> xLine(-100.0, %)
+///  |> yLine(100.0, %)
+///  |> close(%)
+///  |> extrude(3.14, %)
+/// ```
 #[stdlib {
     name = "startSketchOn",
 }]
@@ -995,27 +1027,35 @@ async fn start_sketch_on_face(
     args: Args,
 ) -> Result<Box<Face>, KclError> {
     let extrude_plane_id = match tag {
-        SketchOnFaceTag::String(ref s) => extrude_group
-            .value
-            .iter()
-            .find_map(|extrude_surface| match extrude_surface {
-                ExtrudeSurface::ExtrudePlane(extrude_plane) if extrude_plane.name == *s => {
-                    Some(Ok(extrude_plane.face_id))
-                }
-                ExtrudeSurface::ExtrudeArc(extrude_arc) if extrude_arc.name == *s => {
-                    Some(Err(KclError::Type(KclErrorDetails {
-                        message: format!("Cannot sketch on a non-planar surface: `{}`", tag),
-                        source_ranges: vec![args.source_range],
-                    })))
-                }
-                ExtrudeSurface::ExtrudePlane(_) | ExtrudeSurface::ExtrudeArc(_) => None,
-            })
-            .ok_or_else(|| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Expected a face with the tag `{}`", tag),
+        SketchOnFaceTag::String(ref s) => {
+            if s.is_empty() {
+                return Err(KclError::Type(KclErrorDetails {
+                    message: "Expected a non-empty tag for the face to sketch on".to_string(),
                     source_ranges: vec![args.source_range],
+                }));
+            }
+            extrude_group
+                .value
+                .iter()
+                .find_map(|extrude_surface| match extrude_surface {
+                    ExtrudeSurface::ExtrudePlane(extrude_plane) if extrude_plane.name == *s => {
+                        Some(Ok(extrude_plane.face_id))
+                    }
+                    ExtrudeSurface::ExtrudeArc(extrude_arc) if extrude_arc.name == *s => {
+                        Some(Err(KclError::Type(KclErrorDetails {
+                            message: format!("Cannot sketch on a non-planar surface: `{}`", tag),
+                            source_ranges: vec![args.source_range],
+                        })))
+                    }
+                    ExtrudeSurface::ExtrudePlane(_) | ExtrudeSurface::ExtrudeArc(_) => None,
                 })
-            })??,
+                .ok_or_else(|| {
+                    KclError::Type(KclErrorDetails {
+                        message: format!("Expected a face with the tag `{}`", tag),
+                        source_ranges: vec![args.source_range],
+                    })
+                })??
+        }
         SketchOnFaceTag::StartOrEnd(StartOrEnd::Start) => extrude_group.start_cap_id.ok_or_else(|| {
             KclError::Type(KclErrorDetails {
                 message: "Expected a start face to sketch on".to_string(),
@@ -1123,7 +1163,7 @@ pub async fn start_profile_at(args: Args) -> Result<MemoryItem, KclError> {
 /// Start a profile at a given point.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> line([0, 10], %)
@@ -1204,6 +1244,78 @@ pub(crate) async fn inner_start_profile_at(
         meta: vec![args.source_range.into()],
     };
     Ok(Box::new(sketch_group))
+}
+
+/// Returns the X component of the sketch profile start point.
+pub async fn profile_start_x(args: Args) -> Result<MemoryItem, KclError> {
+    let sketch_group: Box<SketchGroup> = args.get_sketch_group()?;
+    let x = inner_profile_start_x(sketch_group)?;
+    args.make_user_val_from_f64(x)
+}
+
+/// ```no_run
+/// const sketch001 = startSketchOn('XY')
+///  |> startProfileAt([5, 2], %)
+///  |> angledLine([-26.6, 50], %)
+///  |> angledLine([90, 50], %)
+///  |> angledLineToX({ angle: 30, to: profileStartX(%) }, %)
+/// ```
+#[stdlib {
+    name = "profileStartX"
+}]
+pub(crate) fn inner_profile_start_x(sketch_group: Box<SketchGroup>) -> Result<f64, KclError> {
+    Ok(sketch_group.start.to[0])
+}
+
+/// Returns the Y component of the sketch profile start point.
+pub async fn profile_start_y(args: Args) -> Result<MemoryItem, KclError> {
+    let sketch_group: Box<SketchGroup> = args.get_sketch_group()?;
+    let x = inner_profile_start_y(sketch_group)?;
+    args.make_user_val_from_f64(x)
+}
+
+/// ```no_run
+/// const sketch001 = startSketchOn('XY')
+///  |> startProfileAt([5, 2], %)
+///  |> angledLine({ angle: -60, length: 14 }, %)
+///  |> angledLineToY({ angle: 30, to: profileStartY(%) }, %)
+/// ```
+#[stdlib {
+    name = "profileStartY"
+}]
+pub(crate) fn inner_profile_start_y(sketch_group: Box<SketchGroup>) -> Result<f64, KclError> {
+    Ok(sketch_group.start.to[1])
+}
+
+/// Returns the sketch profile start point.
+pub async fn profile_start(args: Args) -> Result<MemoryItem, KclError> {
+    let sketch_group: Box<SketchGroup> = args.get_sketch_group()?;
+    let point = inner_profile_start(sketch_group)?;
+    Ok(MemoryItem::UserVal(UserVal {
+        value: serde_json::to_value(point).map_err(|e| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Failed to convert point to json: {}", e),
+                source_ranges: vec![args.source_range],
+            })
+        })?,
+        meta: Default::default(),
+    }))
+}
+
+/// ```no_run
+/// const sketch001 = startSketchOn('XY')
+///  |> startProfileAt([5, 2], %)
+///  |> angledLine({ angle: 120, length: 50 }, %, 'seg01')
+///  |> angledLine({ angle: segAng('seg01', %) + 120, length: 50 }, %)
+///  |> lineTo(profileStart(%), %)
+///  |> close(%)
+///  |> extrude(20, %)
+/// ```
+#[stdlib {
+    name = "profileStart"
+}]
+pub(crate) fn inner_profile_start(sketch_group: Box<SketchGroup>) -> Result<[f64; 2], KclError> {
+    Ok(sketch_group.start.to)
 }
 
 /// Close the current sketch.
@@ -1316,7 +1428,7 @@ pub async fn arc(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw an arc.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> arc({
@@ -1325,7 +1437,7 @@ pub async fn arc(args: Args) -> Result<MemoryItem, KclError> {
 ///        radius: 16
 ///      }, %)
 ///   |> close(%)
-///     
+///
 // const example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
@@ -1419,7 +1531,7 @@ pub async fn tangential_arc(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw an arc.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle: 60,
@@ -1543,7 +1655,7 @@ pub async fn tangential_arc_to(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw an arc.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle: 60,
@@ -1628,7 +1740,7 @@ pub async fn bezier_curve(args: Args) -> Result<MemoryItem, KclError> {
 /// Draw a bezier curve.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([0, 10], %)
 ///   |> bezierCurve({
@@ -1735,11 +1847,11 @@ pub async fn hole(args: Args) -> Result<MemoryItem, KclError> {
 ///       |> close(%)
 ///     return squareSketch
 ///   }
-///  
-///   const exampleSketch = startSketchOn('-XZ')
+///
+///  const exampleSketch = startSketchOn('-XZ')
 ///     |> circle([0, 0], 3, %)
 ///     |> hole(squareHoleSketch(), %)
-//   const example = extrude(1, exampleSketch)
+///  const example = extrude(1, exampleSketch)
 /// ```
 #[stdlib {
     name = "hole",

@@ -34,7 +34,7 @@ export const AppHeader = ({
       }
     >
       <ProjectSidebarMenu
-        renderAsLink={!enableMenu}
+        enableMenu={enableMenu}
         project={project?.project}
         file={project?.file}
       />

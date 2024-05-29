@@ -15,18 +15,27 @@ import {
   BinaryExpression,
   PathToNode,
   ProgramMemory,
+  SourceRange,
 } from './wasm'
 import {
+  isNodeSafeToReplacePath,
   findAllPreviousVariables,
+  findAllPreviousVariablesPath,
   getNodeFromPath,
   getNodePathFromSourceRange,
   isNodeSafeToReplace,
 } from './queryAst'
-import { addTagForSketchOnFace } from './std/sketch'
-import { isLiteralArrayOrStatic } from './std/sketchcombos'
+import { addTagForSketchOnFace, getConstraintInfo } from './std/sketch'
+import {
+  PathToNodeMap,
+  isLiteralArrayOrStatic,
+  removeSingleConstraint,
+  transformAstSketchLines,
+} from './std/sketchcombos'
 import { DefaultPlaneStr } from 'clientSideScene/sceneEntities'
-import { roundOff } from 'lib/utils'
+import { isOverlap, roundOff } from 'lib/utils'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from 'lib/constants'
+import { ConstrainInfo } from './std/stdTypes'
 
 export function startSketchOnDefault(
   node: Program,
@@ -244,11 +253,7 @@ export function extrudeSketch(
   pathToExtrudeArg: PathToNode
 } {
   const _node = { ...node }
-  const { node: sketchExpression } = getNodeFromPath(
-    _node,
-    pathToNode,
-    'SketchExpression' // TODO fix this #25
-  )
+  const { node: sketchExpression } = getNodeFromPath(_node, pathToNode)
 
   // determine if sketchExpression is in a pipeExpression or not
   const { node: pipeExpression } = getNodeFromPath<PipeExpression>(
@@ -642,6 +647,34 @@ export function giveSketchFnCallTag(
   }
 }
 
+export function moveValueIntoNewVariablePath(
+  ast: Program,
+  programMemory: ProgramMemory,
+  pathToNode: PathToNode,
+  variableName: string
+): {
+  modifiedAst: Program
+  pathToReplacedNode?: PathToNode
+} {
+  const { isSafe, value, replacer } = isNodeSafeToReplacePath(ast, pathToNode)
+  if (!isSafe || value.type === 'Identifier') return { modifiedAst: ast }
+
+  const { insertIndex } = findAllPreviousVariablesPath(
+    ast,
+    programMemory,
+    pathToNode
+  )
+  let _node = JSON.parse(JSON.stringify(ast))
+  const boop = replacer(_node, variableName)
+  _node = boop.modifiedAst
+  _node.body.splice(
+    insertIndex,
+    0,
+    createVariableDeclaration(variableName, value)
+  )
+  return { modifiedAst: _node, pathToReplacedNode: boop.pathToReplaced }
+}
+
 export function moveValueIntoNewVariable(
   ast: Program,
   programMemory: ProgramMemory,
@@ -649,6 +682,7 @@ export function moveValueIntoNewVariable(
   variableName: string
 ): {
   modifiedAst: Program
+  pathToReplacedNode?: PathToNode
 } {
   const { isSafe, value, replacer } = isNodeSafeToReplace(ast, sourceRange)
   if (!isSafe || value.type === 'Identifier') return { modifiedAst: ast }
@@ -659,11 +693,124 @@ export function moveValueIntoNewVariable(
     sourceRange
   )
   let _node = JSON.parse(JSON.stringify(ast))
-  _node = replacer(_node, variableName).modifiedAst
+  const { modifiedAst, pathToReplaced } = replacer(_node, variableName)
+  _node = modifiedAst
   _node.body.splice(
     insertIndex,
     0,
     createVariableDeclaration(variableName, value)
   )
-  return { modifiedAst: _node }
+  return { modifiedAst: _node, pathToReplacedNode: pathToReplaced }
+}
+
+/**
+ * Deletes a segment from a pipe expression, if the segment has a tag that other segments use, it will remove that value and replace it with the equivalent literal
+ * @param dependentRanges - The ranges of the segments that are dependent on the segment being deleted, this is usually the output of `findUsesOfTagInPipe`
+ */
+export function deleteSegmentFromPipeExpression(
+  dependentRanges: SourceRange[],
+  modifiedAst: Program,
+  programMemory: ProgramMemory,
+  code: string,
+  pathToNode: PathToNode
+): Program {
+  let _modifiedAst: Program = JSON.parse(JSON.stringify(modifiedAst))
+
+  dependentRanges.forEach((range) => {
+    const path = getNodePathFromSourceRange(_modifiedAst, range)
+
+    const callExp = getNodeFromPath<CallExpression>(
+      _modifiedAst,
+      path,
+      'CallExpression',
+      true
+    )
+    const constraintInfo = getConstraintInfo(callExp.node, code, path).find(
+      ({ sourceRange }) => isOverlap(sourceRange, range)
+    )
+    if (!constraintInfo) return
+    const input = makeRemoveSingleConstraintInput(
+      constraintInfo.argPosition,
+      callExp.shallowPath
+    )
+    if (!input) return
+    const transform = removeSingleConstraintInfo(
+      {
+        ...input,
+      },
+      _modifiedAst,
+      programMemory
+    )
+    if (!transform) return
+    _modifiedAst = transform.modifiedAst
+  })
+
+  const pipeExpression = getNodeFromPath<PipeExpression>(
+    _modifiedAst,
+    pathToNode,
+    'PipeExpression'
+  ).node
+
+  const pipeInPathIndex = pathToNode.findIndex(
+    ([_, desc]) => desc === 'PipeExpression'
+  )
+  const segmentIndexInPipe = pathToNode[pipeInPathIndex + 1][0] as number
+  pipeExpression.body.splice(segmentIndexInPipe, 1)
+
+  return _modifiedAst
+}
+
+export function makeRemoveSingleConstraintInput(
+  argPosition: ConstrainInfo['argPosition'],
+  pathToNode: PathToNode
+): Parameters<typeof removeSingleConstraintInfo>[0] | false {
+  return argPosition?.type === 'singleValue'
+    ? {
+        pathToCallExp: pathToNode,
+      }
+    : argPosition?.type === 'arrayItem'
+    ? {
+        pathToCallExp: pathToNode,
+        arrayIndex: argPosition.index,
+      }
+    : argPosition?.type === 'objectProperty'
+    ? {
+        pathToCallExp: pathToNode,
+        objectProperty: argPosition.key,
+      }
+    : false
+}
+
+export function removeSingleConstraintInfo(
+  {
+    pathToCallExp,
+    arrayIndex,
+    objectProperty,
+  }: {
+    pathToCallExp: PathToNode
+    arrayIndex?: number
+    objectProperty?: string
+  },
+  ast: Program,
+  programMemory: ProgramMemory
+):
+  | {
+      modifiedAst: Program
+      pathToNodeMap: PathToNodeMap
+    }
+  | false {
+  const transform = removeSingleConstraint({
+    pathToCallExp,
+    arrayIndex,
+    objectProperty,
+    ast,
+  })
+  if (!transform) return false
+  return transformAstSketchLines({
+    ast,
+    selectionRanges: [pathToCallExp],
+    transformInfos: [transform],
+    programMemory,
+    referenceSegName: '',
+  })
 }

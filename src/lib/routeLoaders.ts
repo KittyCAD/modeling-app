@@ -38,8 +38,10 @@ export const settingsLoader: LoaderFunction = async ({
       configuration
     )
     if (projectPathData) {
-      const { project_name } = projectPathData
-      const { settings: s } = await loadAndValidateSettings(project_name)
+      const { project_path } = projectPathData
+      const { settings: s } = await loadAndValidateSettings(
+        project_path || undefined
+      )
       settings = s
     }
   }
@@ -102,7 +104,8 @@ export const fileLoader: LoaderFunction = async ({
     // the file system and not the editor.
     codeManager.updateCurrentFilePath(current_file_path)
     codeManager.updateCodeStateEditor(code)
-    kclManager.executeCode(true)
+    // We don't want to call await on execute code since we don't want to block the UI
+    kclManager.executeCode(true, true)
 
     // Set the file system manager to the project path
     // So that WASM gets an updated path for operations
@@ -118,6 +121,8 @@ export const fileLoader: LoaderFunction = async ({
             children: [],
             kcl_file_count: 0,
             directory_count: 0,
+            metadata: null,
+            default_file: project_path,
           },
       file: {
         name: current_file_name,
