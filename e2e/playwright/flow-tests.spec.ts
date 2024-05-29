@@ -2215,7 +2215,7 @@ test('Sketch on face', async ({ page }) => {
   |> line([-3.86, -2.73], %)
   |> line([-17.67, 0.85], %)
   |> close(%)
-  const part001 = extrude(5 + 7, sketch001)`
+  const extrude001 = extrude(5 + 7, sketch001)`
     )
   })
 
@@ -2269,7 +2269,7 @@ test('Sketch on face', async ({ page }) => {
   previousCodeContent = await page.locator('.cm-content').innerText()
 
   await expect(page.locator('.cm-content'))
-    .toContainText(`const sketch002 = startSketchOn(sketch001, 'seg01')
+    .toContainText(`const sketch002 = startSketchOn(extrude001, 'seg01')
   |> startProfileAt([-12.94, 6.6], %)
   |> line([2.45, -0.2], %)
   |> line([-2.6, -1.25], %)
@@ -2308,7 +2308,7 @@ test('Sketch on face', async ({ page }) => {
   await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
   previousCodeContent = await page.locator('.cm-content').innerText()
 
-  const result = makeTemplate`const sketch002 = startSketchOn(sketch001, 'seg01')
+  const result = makeTemplate`const sketch002 = startSketchOn(extrude001, 'seg01')
   |> startProfileAt([-12.83, 6.7], %)
   |> line([${[2.28, 2.35]}, -${0.07}], %)
   |> line([-3.05, -1.47], %)
@@ -2337,7 +2337,7 @@ test('Sketch on face', async ({ page }) => {
   await page.keyboard.press('Enter')
 
   const result2 = result.genNext`
-const part002 = extrude(${[5, 5]} + 7, sketch002)`
+const sketch002 = extrude(${[5, 5]} + 7, sketch002)`
   await expect(page.locator('.cm-content')).toHaveText(result2.regExp)
 })
 
