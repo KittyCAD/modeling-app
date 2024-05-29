@@ -152,7 +152,7 @@ export class CoreDumpManager {
      * - NOTE: this function thows on parse errors from things like circular references
      * - It is also syncronous and could be more performant
      * - There is a whole rabbit hole to explore here if you like.
-     * - This work for our use case.
+     * - This works for our use case.
      * @param {object} obj - The object to clone.
      */
     const deepClone = (obj: any) => JSON.parse(JSON.stringify(obj))
@@ -160,7 +160,7 @@ export class CoreDumpManager {
     console.warn('CoreDump: Gathering client state')
 
     // Initialize the clientState object
-    let clientState: ClientState = {
+    let clientState = {
       engine_command_manager: {
         artifact_map: {},
         command_logs: [],
@@ -300,7 +300,9 @@ export class CoreDumpManager {
         // KCL programMemory
         console.log('CoreDump: KCL programMemory', kclManager?.programMemory)
         if (kclManager?.programMemory) {
-          clientState.kcl_manager.programMemory = deepClone(kclManager.programMemory)
+          clientState.kcl_manager.programMemory = deepClone(
+            kclManager.programMemory
+          )
         }
 
         // KCL wasmInitFailed

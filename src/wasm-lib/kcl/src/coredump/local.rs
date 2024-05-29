@@ -2,7 +2,8 @@
 
 use anyhow::Result;
 
-use crate::coredump::{ClientState, CoreDump};
+use crate::coredump::CoreDump;
+use serde_json::Value as JValue;
 
 #[derive(Debug, Clone)]
 pub struct CoreDumper {}
@@ -55,8 +56,8 @@ impl CoreDump for CoreDumper {
         Ok(crate::coredump::WebrtcStats::default())
     }
 
-    async fn get_client_state(&self) -> Result<ClientState> {
-        Ok(ClientState::default())
+    async fn get_client_state(&self) -> Result<JValue> {
+        Ok(JValue::default())
     }
 
     async fn screenshot(&self) -> Result<String> {

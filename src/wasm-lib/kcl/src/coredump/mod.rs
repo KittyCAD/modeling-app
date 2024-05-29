@@ -29,7 +29,7 @@ pub trait CoreDump: Clone {
 
     async fn get_webrtc_stats(&self) -> Result<WebrtcStats>;
 
-    async fn get_client_state(&self) -> Result<ClientState>;
+    async fn get_client_state(&self) -> Result<JValue>;
 
     /// Return a screenshot of the app.
     async fn screenshot(&self) -> Result<String>;
@@ -65,7 +65,7 @@ pub trait CoreDump: Clone {
 
     /// Dump the app info.
     async fn dump(&self) -> Result<CoreDumpInfo> {
-        let client_state = self.get_client_state().await?;
+        let client_state: JValue = self.get_client_state().await?;
         let webrtc_stats = self.get_webrtc_stats().await?;
         let os = self.os().await?;
         let screenshot_url = self.upload_screenshot().await?;
@@ -118,7 +118,7 @@ pub struct CoreDumpInfo {
     pub pool: String,
 
     /// The client state (singletons and xstate)
-    pub client_state: ClientState,
+    pub client_state: JValue,
 }
 
 impl CoreDumpInfo {
@@ -206,69 +206,4 @@ pub struct WebrtcStats {
     pub pli_count: u32,
     /// Packet jitter for this synchronizing source, measured in seconds.
     pub jitter: f32,
-}
-
-/// Client State Structures
-
-/// Client State Singleton Structures
-
-#[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "snake_case")]
-pub struct EngineCommandManagerState {
-    pub artifact_map: JValue,
-    pub command_logs: JValue,
-    pub default_planes: JValue,
-    // engine_connection is currently only a partial copy
-    // since most of engine connection information is in WebrtcStats
-    // the connection state was missing
-    pub engine_connection: EngineConnectionState,
-    pub in_sequence: JValue,
-    pub out_sequence: JValue,
-    pub scene_command_artifacts: JValue,
-}
-
-#[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "snake_case")]
-pub struct EngineConnectionState {
-    /// #[serde(skip_serializing_if = "Option::is_none")]
-    pub state: EngineConnectionType,
-}
-
-/// The Engine Connection Type structure.
-#[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "snake_case")]
-pub struct EngineConnectionType {
-    /// #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(rename = "type")]
-    pub type_field: String,
-}
-
-#[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "snake_case")]
-pub struct ClientState {
-    /// Singletons
-    /// Internal state of the KclManager/KclSingleton object.
-    pub engine_command_manager: EngineCommandManagerState,
-    /// Internal state of the KclManager/KclSingleton object.
-    pub kcl_manager: JValue,
-    /// Internal state of the SceneInfra object.
-    pub scene_infra: JValue,
-    
-    /// XState
-    /// Internal state of the AuthMachine xstate object.
-    pub auth_machine: JValue,
-    /// Internal state of the CommandBarMachine xstate object.
-    pub command_bar_machine: JValue,
-    /// Internal state of the FileMachine xstate object.
-    pub file_machine: JValue,
-    /// Internal state of the HomeMachine xstate object (for Tauri).
-    pub home_machine: JValue,
-    /// Internal state of the ModelingMachine xstate object.
-    pub modeling_machine: JValue,
-    /// Internal state of the SettingsMachine xstate object.
-    pub settings_machine: JValue,
 }

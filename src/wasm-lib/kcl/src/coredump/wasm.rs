@@ -4,9 +4,10 @@ use anyhow::Result;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::{
-    coredump::{ ClientState, CoreDump },
+    coredump::CoreDump,
     wasm::JsFuture,
 };
+use serde_json::Value as JValue;
 
 #[wasm_bindgen(module = "/../../lib/coredump.ts")]
 extern "C" {
@@ -129,7 +130,7 @@ impl CoreDump for CoreDumper {
         Ok(stats)
     }
 
-    async fn get_client_state(&self) -> Result<ClientState> {
+    async fn get_client_state(&self) -> Result<JValue> {
         let promise = self
             .manager
             .get_client_state()
@@ -144,7 +145,7 @@ impl CoreDump for CoreDumper {
             .as_string()
             .ok_or_else(|| anyhow::anyhow!("Failed to get string from response from client stat: `{:?}`", value))?;
 
-        let client_state: ClientState =
+        let client_state: JValue =
             serde_json::from_str(&s).map_err(|e| anyhow::anyhow!("Failed to parse client state: {:?}", e))?;
 
         Ok(client_state)
