@@ -27,6 +27,12 @@ import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import Gizmo from 'components/Gizmo'
 
 export function App() {
+  /**
+   * Zoo is a top level container for app structures
+   * - It intentionally breaks nameing convention since it is not a class.
+   * - Maybe, "ZOO" would be better, but it doesn't look as nice.
+   */
+  const Zoo = { state: {} }
   useRefreshSettings(paths.FILE + 'SETTINGS')
   const { project, file } = useLoaderData() as IndexLoaderData
   const navigate = useNavigate()
