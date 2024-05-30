@@ -42,7 +42,6 @@ enum AxisNames {
 export default function Gizmo() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const raycasterIntersect = useRef<Intersection<Object3D> | null>(null)
-  let cameraMoved = useRef(false)
 
   useEffect(() => {
     if (!canvasRef.current) return
@@ -75,8 +74,7 @@ export default function Gizmo() {
         camera,
         currentQuaternion,
         sceneInfra.camControls.camera.quaternion,
-        delta,
-        cameraMoved
+        delta
       )
       updateRayCaster(
         raycasterObjects,
@@ -170,16 +168,9 @@ const updateCameraOrientation = (
   camera: OrthographicCamera,
   currentQuaternion: Quaternion,
   targetQuaternion: Quaternion,
-  deltaTime: number,
-  cameraMoved: MutableRefObject<boolean>
+  deltaTime: number
 ) => {
   if (!quaternionsEqual(currentQuaternion, targetQuaternion)) {
-    cameraMoved.current = true
-  }
-  if (
-    !cameraMoved.current ||
-    !quaternionsEqual(currentQuaternion, targetQuaternion)
-  ) {
     const slerpFactor = 1 - Math.exp(-30 * deltaTime)
     currentQuaternion.slerp(targetQuaternion, slerpFactor).normalize()
     camera.position.set(0, 0, 1).applyQuaternion(currentQuaternion)
