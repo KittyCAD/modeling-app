@@ -2271,12 +2271,12 @@
   dependencies:
     "@tauri-apps/api" "2.0.0-beta.4"
 
-"@tauri-apps/plugin-shell@^2.0.0-beta.2":
-  version "2.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/@tauri-apps/plugin-shell/-/plugin-shell-2.0.0-beta.2.tgz#1eff697246140f17478527b0d947d76d3403a226"
-  integrity sha512-9rWsfN7Wt+EuWmpmNnK8bCs+04fzhEYrHtWyLIAYxb9diFdcJrEoctCP9YM2v+Uf8/y8qFC7VCbZ/9VQHANymQ==
+"@tauri-apps/plugin-shell@^2.0.0-beta.5":
+  version "2.0.0-beta.5"
+  resolved "https://registry.yarnpkg.com/@tauri-apps/plugin-shell/-/plugin-shell-2.0.0-beta.5.tgz#fe42f821fa030d4dc8f68024587925103bcb8a40"
+  integrity sha512-ftF9FNLmS3O9/2l2UVIz27E+ixvy238rsiBl2hGEgEBtNuJmerVgyUb8hF2aO+BxoJ7euG8AaZGOv6wLn1iOMw==
   dependencies:
-    "@tauri-apps/api" "2.0.0-beta.4"
+    "@tauri-apps/api" "2.0.0-beta.12"
 
 "@tauri-apps/plugin-updater@^2.0.0-beta.3":
   version "2.0.0-beta.3"
