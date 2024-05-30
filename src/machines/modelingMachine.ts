@@ -217,7 +217,7 @@ export type MoveDesc = { line: number; snippet: string }
 
 export const modelingMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogC0AdgCsAZgB04gEyjhADnEA2GgoUAWJQBoQAT0QBGGuICckmoZkbTM42YWKAvk91oMOfAQDKYdgAJYLDByTm5aBiQQFjYwniiBBEFTU2VJYWFxDUNDbPFxCQ1dAwQZO0lDW3EcuQzlBRoNFzd0LDxCXwCAW1QAVyDA9hJ2MAjeGI4ueNBE5JTJVUNNBUNlLQ05YsQsjQWNLVE5Yw0aZXFmkHc2r07-XygusFwAgHkANzAAJ0wSPVgxqITOK8RI0LYIGgXK6eKCSbAQTBgAgAUWeX0CAGs-OQABYA5isSbcEFCGTKYQVMmpLRWHLkor6RAyUy7DRZWR5GimBTKUxQ1owuEIpGokafTHYvGGSIE2JTElJaw0STZRaiNTiNQ0YTgk4ySS2YTKURWeqGcQrZT8jztIWIlF8difXoYfHRQnAhJCUTySTMmiiXmiDSiFbgnLqv08hQpdU2faGa3XWHw+3IvgsT7sN1A+VexXqKNKsq5Fmh8EZQwLMRZY0NGTCENJwXeLHsXHEMiUTCtyU5j15mZGJZpYyNrRasyycNLKs5dQ5TVLUPN2299s4ggAEWCI0CYAeT2z9HGA+J+bBjIhq-wknXHfIrX8kA4-ggvU+7QlG-7cvPQ4Qc0QwqfZjQtMpA32cEWTSDIyhUMl6gUCQb1he8cTvNtcQASWFAhkBILF90PZ5-A+LNsHIEhMF-Ilpn4IxmTnBQZE0I1NBoBtwzyaQaD4uQJAbJQmlcS4BTXLCMPQ3D7QIoighIgIcVQT8AC9uCGGiT0BM96MSKxGwWNRVBNAzyRkcNqirYN5EsM5jB9GRUMwyUXI3GSkSIbhYCdEg8H8ZS1I06i32wHyu1GbTZTohUrGDCwNk1bkslMJYFHBGQzDSAMfT4kNUvNZz0LcnC8K83AfM+PzcDIr5OCozBQvCihIpld0-z0xj6gNQ5kNWbI1A2DKGykQ5sjYuDjRElobVvYrpLK7zfP8gBBAAhbx-AADVoz0AKsZCVXEMRS2qZlMoy0x4qu8kGk40RTEyc5ROhCTXIW+1ysq6r-HWzaAE1dsHBjANY0Q-Q2VYjkDQMLKvTVC2EASTVURx9iKySSpxDziCWqr-LIKBESB-8QaAqQLXA5DFEMYRTAy9UKTkamMkDOnHox97JJxr7lpqxF8HYPEovamL83NY7pGNVRUtkapRAy5QlnSXlsjp-YlHJTmNyxnm8Z+pgvkN3AIEo3ofnFU3msoEnOtB1iVRSM6ThHU4MpWXZhEqGM4P2DQxG13FdcWiq+YClTsHU55qMwPR-Go7AoFwW3YrJfVkOWQpg1OcRwxRv0romhtA3yQOpO5kPvv88j6pjuOE6TlPxYbcw2VYumUbME1w2UORJFDR7uXqZlHGembkyx4PPv1-zYFwEgmH8dhUG2pv9uqKQyQtNRHpYswMsafUIOUE+TMcMoy6nzyZ5queF6XlfAZF3NSf0jeLCNaoMmO44MtyClgznwerTDQawx5iVmmhTGH1r6h3xjVMAABHXoIUBZQCFmvMmzJRr-zpsIAMchjrhkyMqNkJg+IBmlnyF64k5rQIrtPOBBsSBVUwIiLSbUX523NA2CwiElhlENHYcMLIKRKz4oYUM6gd6XxgbjJh-lPhgB6B8fwj4FHPH+M-XSqctALCsCGXumhJE6CvEsaoFhVi2EaPkYyTkaGQMnnIgASmAQQYA+AhF6CMTB+ler9zOMhAoJ8Sw6jMSYcGZDTAFB2ErWmsiGEimQdgReAAZPAYAH6oA4aeDqsUYxpAkCoGwV0sjqHBEocGjNrAQVAaZBJkocbImSYvIY+AjzYBCiw8gD9fFMjiiqLkAZSm1lzuEmMfofQqFOEPAM4DXp0K5o0vCzTegpP8Eo0IhNERZJyTpPJ+YyhiD9MYTQzJ9jqjGSUKwlgVQj3rNgzIDT3J4UfBgZ8psAjvk-Pgb8uI+mASyODXIIYxBrFYnDEo3IFDSCyOaCM1RuTTQgRPeaiT5E1wfmRFhnSABGxNtEHPXocasSx1jiJZOCWQ2oVRjhjLYbkV1L4rQAO5+SUhHKOmkmptMoP4PAAAzVABAIDcDAHCXAbxUBYkkDAdgghAqR2CpgQQgrUAAsyo0FUoCTiPTMI9TIGVsjmGQhC6ovI5BawcaizGrL2XhyCtHRqVteWZLVQQL4nwVKSCYD8dgQrPhdFlX4BVnLlWqtwEKjVmpgUgsXCGVij0MrgQSqcPiBQGxK2ZWy18NdKIhRdRFflkbhWitwOKvAUqZVysEHmhqEao2ErFgBTKVgKjHRWCYcklQuJXjKEoSQjhDiHAlrTex48Wy2pzQEOtBawquuLUKj1nwvWfB9X6gNQaa2zpVWq6NbaGjyGAWITQw0NgVGlpxC0LF1DzNoVA1ydrXx-W2ou0tYqJVVvFTWkguLYCCD4A29VTa9og1bbBXu-FCHlj7akfUuRGj9VkL3J51rJ2Punb9Dar73Weu9b64Ym7g3yt-f+wDe6QPA0SK2ikbJr0FFMAGLQl1VjSFDGBY4jZqETrejrJ9AQX3-TfSKj9lbpXfpDaRwQeggP7rSAUI9D1HkhipacWjjL1ShhjcihZD6+OYcE8JvDa6CP+pUluyTf7pOyco6-JkX8+GfyRifOFygqX9QsLyEJRxjrjpReh-T9rtlupLSJ8tn7xPEcEMFmznCdGHIc0uc0w7YyGAZoGA0MbLCSPYxkbNQX8A7Nwyu-DG7zNRZixRuLRKwPVBhfg7IrEbkxlpgzWmFRkv4LkAQq1PHFmBdfGgoWwmy0VslZFmtQ2cSxdyc22rkijqZRZCAmQnEwklDJIdHOX8VC0ysPlwbTx0E4iMyVkzZXA1RamzN-Zc3qPmoqOm0Mqw2KQqZOChYvctCiPkGCg7ARDafGNqbcg5sWE8qLe60bEXq0hsB8Ds2FtBCFpajd6KoHqNpx6koawvdNubD7SxcGP9QHGljIQ-7-h4dPBB2Dy287IeheM+uwj5Wa3U5NojlhyOGeo6q7NjHTIseFw5Hj4eCs+0ZApCTk+D0roU7Q7xoO6Ty27JRC0pehMOldM+D05eGq6ZpG5P-Gx0S6ZXMQLvQZ1QtDGmc0sS+KvMnL2yertZi9NltKJs71A2SNXFxOVyLIXsr3TjMZI2CSNjDanUCaOQjuMm7MkNhXAHACD+5UIOi0JoGgsjkPTK8Zo-QWmiYx46dNMoJ9Vy7zAyfU-sHT9KAXVGhdI37pxS0jWZkVjpiqM4EhbCBkYwGKvPvsmSAAHIrwAAqoDwOwWABAVoQAgIMFhAO5-PA1SfXYjGYZ54aGscEJ9W5mDwTHpQChR9J6n-4Wf8-F+kBans9HLfAKaHMCYTKLEuQHHKVefBKsGwJWaJM6HkO9RxYqFPNPAFYwVjA4fBaZQ4X-cMTKKQUBI0MkNNMkbIS+aAhvKgJvW7QXQCAMKsGMIZUBalSwBka5JidIIJUBU0GwFQS+AAFS12eE6Uam6Qfjd3WSd12W332COhjwenVF7mglAXSCRkylslOAwMvl6BNhXnCizHQheFwDCzGy-UkBWm8DYMEGUNFUEDUPYA0OTls24XyBhUOEyAKn2AKDUHBFDGVFSEqEGkyCUGOkvlcS2UKzH1r34y-AjigDwCXxXw2RCC9x2VCLwEwWuWyHBgXBWFYmqD4iTTA0cEKU1EMRSC9hjEvnIERDIECD9SRFgOyF2BMh9FNVyCKRnHNAsFOGMF3n1X20V36yDn4zUW4ExWXmxU-F-XtGhzE1h3lXURrkEGXlrRxWGLcX52ILfyOVjUaDN07SVglxKFkEqAqFSBlm+wMVEEp0mLqixTeDmPxSRGZ1MyIxrVOKzGmNQFmKGKuLR1FhIP7QpEsFNXyD2x9C2O2E1ApisRSFYlRjUBOJvgdSVSdVjnjhwCTm0Jh3FRMPUSrlwFDUdU0ljmi0RMsOqzuyF1sH7hy0tS7S9jzjUANFAmOkAVSKv06L026Mw3RLDh3XhIbi0NGPGxlTRJvlrTqnzTYRky5P90MhDFVBOD4jWDSzMVUF2BUHyGNGsEbBayhI0UCHnlaRXi2mRLGNROeLZPgVMO1KeIA2jT4gWAKC9gKAMhUz7QiUpGsEMSnAIQ1IxK1PvgGP+n1N5MNMEGNOqlNIXnNL0EtLSH9iWHwQaFrDlI21NGkDKHOhpH2I9LDiQRQUaimz9N0P5I0XcWQWokECm391SgNFVJNBsEUGQjczMS9lHAkLBlyHbggJtQw3tSDP8iYBYRjiwFzMi3zIxMEB7NYXYUtJhUY1umRgyHSjMWiRhUyi8MbBy2XDLn8FwBXgFRIEoB8GCFCDfDAG3PNgBx+HLQBUEDsGYhZHL1ty40BIQF7jSFSPZHZiNBsGcjIGwC6GGC-AGII3LQHJlS-J-JGHNO3JtisIVB9GYhj0aCg21GPwdjOlsUTTVMZL61hBAt-N+QGI8XnS-FgEkiAvFWwrApmKIr7CgvzF7nBk4hQ2N2DF83cxhRPi8NSHUFEUZNEk3IwHgCiF02bzsySAaCrFkHkE1jUGWAtxEoAQoUwN5BDwKGclTDACErtkEDWFsPJD1U0FDH9gqRWH7gRkkRQssG438yVxxHUoVA4pVGpi7QIRQMdKkHcJZG1ApUkWEGeVKkRBsvFhOE3ken9lsD0rpjnOuUqF2FyCsE1DOGOhMDbICxZPtUVS5TnWthCyFX8v2mjG1S5EUC9gbC62TRJKBU1FOAtS9kpx3QhxajfRyrJnUHg1UEsBiV7lSmGkjE4nGlyFlxNEpxfS2gaqWOEqWGiQsCUCsGiV7mjwLw22iSALZh5DsgDBYkGuwyEzVUav0hjH1F6jZCWEPlU2ND9BnIemaost00nh6OCxGtfzGpjHBjODynyG5EOGiQZmpL3mQkDA8rkMpym3uo+Lf3GtIQiTrEqBUBPkVkzzpm9iNHVhLkpw51pwtjqr5W2tGu4VrPSFSHVA4mAPyAyhpnSG9mAR9EN2vxrx2v6RMA-hsODGhXqBcKMtL1nMY0yGZGOKZMnkEJrzrw4FptKEkSrG1EZpsHUBZsLxJNWDOFpMY1ASuvvT5sTwFs3MDWomFusEehVG-n9FjLKArFuWAKhrALOD82uuKn5t91r1v3v00W1pDE3imppC-yVIrF7ijByHhWyJpDwPr2FocnMDWGDCVEplSloOHCMvnBWHNB+JXF5uKg4PaS4J1z11QG1tDG+PAg2FATJD6vDFOGeurIuvwXZktpVuKmMNUKGHUMkk0KDvqHMAkEARLi02ZBcOkKYNsBDGWsDF8OiLuppuxoVEITSFDsbCPTqzdjMSa2kBWEbD4k1kAMHv8O9yT2CN+SCHUVX0fE+HLU+Czs0D2HkFBQkCOrrOuQelIWKROl9rMDXpiMCL0OnRCM-DCPoi4THqVkjJ4VVkenGu4gWxSIOnSIKqKJKNvnKKDqnH7g2HyOsFkFsCLrOANBMm6wbOVsgKnU7L6LOIGIuNeL8tHvFlxruhDG8NXKpTKGVBiXlzLBAIwssq6Iwh6K7JqjSuVU5PxKDs0CkAKQY1VAcCvqMGrIqC9lNEtUZm8qTtwdfA4dqgogah4cTi-vi1yrZEHVSCEdWAcAiqMCU37hjCCSuhzwtHTPgS9J1O2j4YyzugbDQojyjtKCvWkG+3ZH9ksZ+jvhsf+jsefP4iRh9mcb-mQp2PwWznUGQm8f8kzNQSOyFj4a0cEYemEaHh7l1rIQU1kGyJ9FiZqlHL7MwDseBUcKKUHnjKMFsEjLWCvUUEaFrPXM3P8AgrUtIYAkvPyAWFDFWxqXBU4l1EyEmQ6pQ0-miU-NT1Ar-JXgAvaYeu4TQcel5DWPkBuVEcfLJAsGvSNEAQRlkcwskDIpmefD4AIu3skiDt1rBTt04lyERTe1KAaE+x3h6rsW4qcCAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogC0AdgCsAZgB04gEyjhADnEA2GgoUAWJQBoQAT0QBGGuICckmoZkbTM42YWKAvk91oMOfAQDKYdgAJYLDByTm5aBiQQFjYwniiBBEFTU2VJYWFxDUNDbPFxCQ1dAwQZO0lDW3EcuQzlBRoNFzd0LDxCXwCAW1QAVyDA9hJ2MAjeGI4ueNBE5JTJVUNNBUNlLQ05YsQsjQWNLVE5Yw0aZXFmkHc2r07-XygusFwAgHkANzAAJ0wSPVgxqITOK8RI0LYIGgXK6eKCSbAQTBgAgAUWeX0CAGs-OQABYA5isSbcEFCGTKYQVMmpLRWHLkor6RAyUy7DRZWR5GimBTKUxQ1owuEIpGokafTHYvGGSIE2JTElJaw0STZRaiNTiNQ0YTgk4ySS2YTKURWeqGcQrZT8jztIWIlF8difXoYfHRQnAhJCUTySTMmiiXmiDSiFbgnLqv08hQpdU2faGa3XWHw+3IvgsT7sN1A+VexXqKNKsq5Fmh8EZQwLMRZY0NGTCENJwXeLHsXHEMiUTCtyU5j15mZGJZpYyNrRasyycNLKs5dQ5TVLUPN2299s4ggAEWCI0CYAeT2z9HGA+J+bBjIhq-wknXHfIrX8kA4-ggvU+7QlG-7cvPQ4Qc0QwqfZjQtMpA32cEWTSDIyhUMl6gUCQb1he8cTvNtcQASWFAhkBILF90PZ5-A+LNsHIEhMF-Ilpn4IxmTnBQZE0I1NBoBtwzyaQaD4uQJAbJQmlcS4BTXLCMPQ3D7QIoighIgIcVQT8AC9uCGGiT0BM96MSKxGwWNRVBNAzyRkcNqirYN5EsM5jB9GRUMwyUXI3GSkSIbhYCdEg8H8ZS1I06i32wHyu1GbTZTohUrGDCwNk1bkslMJYFHBGQzDSAMfT4kNUvNZz0LcnC8K83AfM+PzcDIr5OCozBQvCihIpld0-z0xj6gNQ5kNWbI1A2DKGykQ5sjYuDjRElobVvYrpLK7zfP8gBBAAhbx-AADVoz0AKsZCVXEMRS2qZlMoy0x4qu8kGk40RTEyc5ROhCTXIW+1ysq6r-HWzaAE1dsHBjANY0Q-Q2VYjkDQMLKvTVC2EASTVURx9iKySSpxDziCWqr-LIKBESB-8QaAqQLXA5DFEMYRTAy9UKTkamMkDOnHox97JJxr7lpqxF8HYPEovamL83NY7pGNVRUtkapRAy5QlnSXlsjp-YlHJTmNyxnm8Z+pgvkN3AIEo3ofnFU3msoEnOtB1iVRSM6ThHU4MpWXZhEqGM4P2DQxG13FdcWiq+YClTsHU55qMwPR-Go7AoFwW3YrJfVkOWQpg1OcRwxRv0romhtA3yQOpO5kPvv88j6pjuOE6TlPxYbcw2VYumUbME1w2UORJFDR7uXqZlHGembkyx4PPv1-zYFwEgmH8dhUG2pv9uqKQyQtNRHpYswMsafUIOUE+TMcMoy6nzyZ5queF6XlfAZF3NSf0jeLCNaoMmO44MtyClgznwerTDQawx5iVmmhTGH1r6h3xjVMAABHXoIUBZQCFmvMmzJRr-zpsIAMchjrhkyMqNkJg+IBmlnyF64k5rQIrtPOBBsSBVUwIiLSbUX523NA2CwiElhlENHYcMLIKRKz4oYUM6gd6XxgbjJh-lPhgB6B8fwj4FHPH+M-XSqctALCsCGXumhJE6CvEsaoFhVi2EaPkYyTkaGQMnnIgASmAQQYA+AhF6CMTB+ler9zOMhAoJ8Sw6jMSYcGZDTAFB2ErWmsiGEimQdgReAAZPAYAH6oA4aeDqsUYxpAkCoGwV0sjqHBEocGjNrAQVAaZBJkocbImSYvIY+AjzYBCiw8gD9fFMjiiqLkAZSm1lzuEmMfofQqFOEPAM4DXp0K5o0vCzTegpP8Eo0IhNERZJyTpPJ+YyhiD9MYTQzJ9jqjGSUKwlgVQj3rNgzIDT3J4UfBgZ8psAjvk-Pgb8uI+mASyODXIIYxBrFYnDEo3IFDSCyOaCM1RuTTQgRPeaiT5E1wfmRFhnSABGxNtEHPXocasSx1jiJZOCWQ2oVRjhjLYbkV1L4rQAO5+SUhHKOmkmptMoP4PAAAzVABAIDcDAHCXAbxUBYkkDAdgghAqR2CpgQQgrUAAsyo0FUoCTiPTMI9TIGVsjmGQhC6ovI5BawcaizGrL2XhyCtHRqVteWZLVQQL4nwVKSCYD8dgQrPhdFlX4BVnLlWqtwEKjVmpgUgsXCGVij0MrgQSqcPiBQGxK2ZWy18NdKIhRdRFflkbhWitwOKvAUqZVysEHmhqEao2ErFgBTKVgKjHRWCYcklQuJXjKEoSQjhDiHAlrTex48Wy2pzQEOtBawquuLUKj1nwvWfB9X6gNQaa2zpVWq6NbaGjyGAWITQw0NgVGlpxC0LF1DzNoVA1ydrXx-W2ou0tYqJVVvFTWkguLYCCD4A29VTa9og1bbBXu-FCHlj7akfUuRGj9VkL3J51rJ2Punb9Dar73Weu9b64Ym7g3yt-f+wDe6QPA0SK2ikbJr0FFMAGLQl1VjSFDGBY4jZqETrejrJ9AQX3-TfSKj9lbpXfpDaRwQeggP7rSAUI9D1HkhipacWjjL1ShhjcihZD6+OYcE8JvDa6CP+pUluyTf7pOyco6-JkX8+GfyRifOFygqX9QsLyEJRxjrjpReh-T9rtlupLSJ8tn7xPEcEMFmznCdGHIc0uc0w7YyGAZoGA0MbLCSPYxkbNQX8A7Nwyu-DG7zNRZixRuLRKwPVBhfg7IrEbkxlpgzWmFRkv4LkAQq1PHFmBdfGgoWwmy0VslZFmtQ2cSxdyc22rkijqZRZCAmQnEwklDJIdHOX8VC0ysPlwbTx0E4iMyVkzZXA1RamzN-Zc3qPmoqOm0Mqw2KQqZOChYvctCiPkGCg7ARDafGNqbcg5sWE8qLe60bEXq0hsB8Ds2FtBCFpajd6KoHqNpx6koawvdNubD7SxcGP9QHGljIQ-7-h4dPBB2Dy287IeheM+uwj5Wa3U5NojlhyOGeo6q7NjHTIseFw5Hj4eCs+0ZApCTk+D0roU7Q7xoO6Ty27JRC0pehMOldM+D05eGq6ZpG5P-Gx0S6ZXMQLvQZ1QtDGmc0sS+KvMnL2yertZi9NltKJs71A2SNXFxOVyLIXsr3TjMZI2CSNjDanUCaOQjuMm7MkNhXAHACD+5UIOi0JoGgsjkPTK8Zo-QWmiYx46dNMoJ9Vy7zAyfU-sHT9KAXVGhdI37pxS0jWZkVjpiqM4EhbCBkYwGKvPvsmSAAHIrwAAqoDwOwWABAVoQAgIMFhAO5-PA1SfXYjGYZ54aGscEJ9W5mDwTHpQChR9J6n-4Wf8-F+kBans9HLfAKaHMCYTKLEuQHHKVefBKsGwJWaJM6HkO9RxYqFPNPAFYwVjA4fBaZQ4X-cMTKKQUBI0MkNNMkbIS+aAhvKgJvW7QXQCAMKsGMIZUBalSwBka5JidIIJUBU0GwFQS+AAFS12eE6Uam6Qfjd3WSd12W332COhjwenVF7mglAXSCRkylslOAwMvl6BNhXnCizHQheFwDCzGy-UkBWm8DYMEGUNFUEDUPYA0OTls24XyBhUOEyAKn2AKDUHBFDGVFSEqEGkyCUGOkvlcS2UKzH1r34y-AjigDwCXxXw2RCC9x2VCLwEwWuWyHBgXBWFYmqD4iTTA0cEKU1EMRSC9hjEvnIERDIECD9SRFgOyF2BMh9FNVyCKRnHNAsFOGMF3n1X20V36yDn4zUW4ExWXmxU-F-XtGhzE1h3lXURrkEGXlrRxWGLcX52ILfyOVjUaDN07SVglxKFkEqAqFSBlm+wMVEEp0mLqixTeDmPxSRGZ1MyIxrVOKzGmNQFmKGKuLR1FhIP7QpEsFNXyD2x9C2O2E1ApisRSFYlRjUBOJvgdSVSdVjm0Jh3FRMPUSrlwFDUdU0ljmjVuQeiDBZBMDyEsluQaw1HJB9C8yhI0VqgoganhNGPGxlWRJvlrTqnzTYT0GxPMHOmsGWyWEbHSjMX1TuVYhjDKDyCUEpNRJhK5TrnjhwCTgRLGKROeJRL5nRNhMxJkwbksOqzuyF1sH7hy0tS7S9jzjUANFAmOkAVSKv06L026Mw1VPgWpNrnZLlMTi0PpN0KZI0RZJpLrmi3lJ1Obzs1KAbFZGDH6goTWDSzMVUF2BUHyGNGsH5NSklLDjvlaRXi2kVIZOVMECdOqlMPniYCeIA2xOVH7y9gKAMhUz7QiUpGsEMSnAIXTOdMzKxX+lzO9JVOZMzLLI5KsIVE1TSH9j5MnCYL-jJGkDKHOhpH2LbJ+iQRQUaim27Mix9NRPcWQWokECm391SgNBTJNBsEUGQjczMS9lHAkLBlyHbggJtQw3tULP8iYBYRjiwHXMZN7N9LfNYXYWxJhUY1umRgyAFOuWiRhUyi8MbBy2XDLn8FwBXgFRIEoB8GCFCDfDABQvNgBx+HLQBUEDsGYhZHL1ty40BIQF7jSFSPZHZiNBsGcjIGwC6GGC-AGII3LS-PFWYtYpGDLJQptiHPzB9GYhj0aCg21GPwdjOlsUTX5NtL61hF4rYt+QGI8XnS-FgEkm4skBUv4pmO0r7GEoAl7nBk4hQ2N2DF83cxhRPi8NSHUFEVtNEiQowHgCiF0xDLtkEAaCrFkHkE1jUGWAtySEcEdhSEcu617hyGclTDAG8oVEEDWFsPJD1U0FDH9gqRWH7gRkkVkssG438yVxxESvzEcpVGpi7QIRQPrKkHcKqAQk4ktWeVKkRDKv2hOE3ken9lsAyrpnAuHBZBAisE1DOGOhMAfICwdPtUVRlOdV5z5TVQ6rJmjG1S5EUC9gbC62TQNKBU1FOAtS9kpx3QhxajfRWv0nUHg1UEsBiV7lSmGkjE4nGlyFlxNEpxfS2guqWNDKWGiQsCUCsGiRioyMugsUMUUEWDPj8100nh6MM2Wt+u4VFP7lYjZCWEPlU2ND9FAoemuqKrhuKh6OCx+tfz+pjHBjODynyG5EOGiQZnNL3mQkDG1F7gKEpymzJo+Lf3+tIQiTrEqBUBPkVkzzpm9iNHVhLkpw51pwtjOqWpLUuqMHPPSFSHVA4mAPyAyhpnSG9mAR9EN2vxr2VtKHsA-hsODGhXqBcJytLx-xWA7jOGNt91r3wNNrsBNAtuzxsHUBtsLwNNWDOEtMY1AUJvvUnkEJr0kCQsDWog9tPJVG-n9AaFkDewQEAMdhAL+PBNkBdvH1v3v00QTokCjBt07TljOArF7ijByHhWyJpDwPr1NocnMDWGDCVEplSloOHByvnBWHNB+JXDtMng4PaS4J1z11QA9tDG+PAg2FATJDevDFOCptPPxvwXZlhojuKmMNUKGHUMkk0JbvqHMAkEARLi02ZBcOkKYNsBDDZnPN8OiNJpNuRuHIkDSHbsbCPTqzdjMSa2kBWE0B2yDG3sgMxj8JiMCL0OnS0pCG4FX0fE+HLU+Bns0D2HkFBQkExovOuQelIWKROnrrMGfv8O9yT2CN+TiPoi4WHKVlHJ4VVken+u4gWxSIOnSI2qKJKNvnKJbqnH7g2HyOsFkFsBXrOANBMm6yvPDogafNfAeICAGIuNePavfvFlVruhDG8LgqpTKGVBiXlzLBAMUuKq6Iwh6JfJqjmuVVjhbpAcHVSDlidrOHToOnMGiQDDBV1TQMXOrlZNpJKHJpRrZCcbceOhujccskekHXqPqH2C6x8JHuJsdOhNsbhPriDIcbCYKQY1VAcDwaMETr21NEtUZmEH8Zqh3VjndKThyakDyYegKehTzgNIHj3herxympKtgefOhI7IGK2gcYyzugbHkojx7tKCvWkG+3ZH9iqcCBLM7JGZov4iRh9kmanJhXyDsHwWznUGQkWeXNQSOyFgafCfydWEKZ7libIQU1kGyJ9EWb-I-MwBGeBUcKKUHljIgunJ1SvUUEaCfpSckkQuQtQoSo0YAiIvyAWFDFWxqXBU4l1EyEmQepQ0-miSYtTz4vYpXk4qhZCdikkcel5DWPkBuSKaounJMHUCNEAQRkqZHv0vxefD4E0t+SMo3BbtibBTt04lyERXTtYkrNRkYyVB5FYhcBcCAA */
     id: 'Modeling',
 
     tsTypes: {} as import('./modelingMachine.typegen').Typegen0,
@@ -285,16 +285,12 @@ export const modelingMachine = createMachine(
             on: {
               'Make segment vertical': {
                 cond: 'Can make selection vertical',
-                target: 'SketchIdle',
-                internal: true,
-                actions: ['Make selection vertical'],
+                target: 'Await constrain vertically',
               },
 
               'Make segment horizontal': {
-                target: 'SketchIdle',
-                internal: true,
                 cond: 'Can make selection horizontal',
-                actions: ['Make selection horizontal'],
+                target: 'Await constrain horizontally',
               },
 
               'Constrain horizontal distance': {
@@ -589,6 +585,26 @@ export const modelingMachine = createMachine(
             },
           },
 
+          'Await constrain horizontally': {
+            invoke: {
+              src: 'do-constrain-horizontally',
+              id: 'do-constrain-horizontally',
+              onDone: {
+                target: 'SketchIdle',
+                actions: 'Set selection',
+              },
+            },
+          },
+          'Await constrain vertically': {
+            invoke: {
+              src: 'do-constrain-vertically',
+              id: 'do-constrain-vertically',
+              onDone: {
+                target: 'SketchIdle',
+                actions: 'Set selection',
+              },
+            },
+          },
           'Await constrain horizontally align': {
             invoke: {
               src: 'do-constrain-horizontally-align',
@@ -833,38 +849,38 @@ export const modelingMachine = createMachine(
       })),
       // TODO implement source ranges for all of these constraints
       // need to make the async like the modal constraints
-      'Make selection horizontal': ({ selectionRanges, sketchDetails }) => {
-        const { modifiedAst } = applyConstraintHorzVert(
-          selectionRanges,
-          'horizontal',
-          kclManager.ast,
-          kclManager.programMemory
-        )
-        if (!sketchDetails) return
-        sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails.sketchPathToNode,
-          modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin
-        )
-      },
-      'Make selection vertical': ({ selectionRanges, sketchDetails }) => {
-        const { modifiedAst } = applyConstraintHorzVert(
-          selectionRanges,
-          'vertical',
-          kclManager.ast,
-          kclManager.programMemory
-        )
-        if (!sketchDetails) return
-        sceneEntitiesManager.updateAstAndRejigSketch(
-          sketchDetails.sketchPathToNode || [],
-          modifiedAst,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin
-        )
-      },
+      // 'Make selection horizontal': ({ selectionRanges, sketchDetails }) => {
+      //   const { modifiedAst } = applyConstraintHorzVert(
+      //     selectionRanges,
+      //     'horizontal',
+      //     kclManager.ast,
+      //     kclManager.programMemory
+      //   )
+      //   if (!sketchDetails) return
+      //   sceneEntitiesManager.updateAstAndRejigSketch(
+      //     sketchDetails.sketchPathToNode,
+      //     modifiedAst,
+      //     sketchDetails.zAxis,
+      //     sketchDetails.yAxis,
+      //     sketchDetails.origin
+      //   )
+      // },
+      // 'Make selection vertical': ({ selectionRanges, sketchDetails }) => {
+      //   const { modifiedAst } = applyConstraintHorzVert(
+      //     selectionRanges,
+      //     'vertical',
+      //     kclManager.ast,
+      //     kclManager.programMemory
+      //   )
+      //   if (!sketchDetails) return
+      //   sceneEntitiesManager.updateAstAndRejigSketch(
+      //     sketchDetails.sketchPathToNode || [],
+      //     modifiedAst,
+      //     sketchDetails.zAxis,
+      //     sketchDetails.yAxis,
+      //     sketchDetails.origin
+      //   )
+      // },
       'Constrain remove constraints': ({ selectionRanges, sketchDetails }) => {
         const { modifiedAst } = applyRemoveConstrainingValues({
           selectionRanges,
@@ -1124,6 +1140,57 @@ export const modelingMachine = createMachine(
     },
     // end actions
     services: {
+      'do-constrain-horizontally': async ({
+        selectionRanges,
+        sketchDetails,
+      }) => {
+        const { modifiedAst, pathToNodeMap } = applyConstraintHorzVert(
+          selectionRanges,
+          'horizontal',
+          kclManager.ast,
+          kclManager.programMemory
+        )
+        if (!sketchDetails) return
+        await sceneEntitiesManager.updateAstAndRejigSketch(
+          sketchDetails.sketchPathToNode,
+          modifiedAst,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin
+        )
+        return {
+          selectionType: 'completeSelection',
+          selection: updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            parse(recast(modifiedAst))
+          ),
+        }
+      },
+      'do-constrain-vertically': async ({ selectionRanges, sketchDetails }) => {
+        const { modifiedAst, pathToNodeMap } = applyConstraintHorzVert(
+          selectionRanges,
+          'vertical',
+          kclManager.ast,
+          kclManager.programMemory
+        )
+        if (!sketchDetails) return
+        await sceneEntitiesManager.updateAstAndRejigSketch(
+          sketchDetails.sketchPathToNode || [],
+          modifiedAst,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin
+        )
+        return {
+          selectionType: 'completeSelection',
+          selection: updateSelections(
+            pathToNodeMap,
+            selectionRanges,
+            parse(recast(modifiedAst))
+          ),
+        }
+      },
       'do-constrain-horizontally-align': async ({
         selectionRanges,
         sketchDetails,
