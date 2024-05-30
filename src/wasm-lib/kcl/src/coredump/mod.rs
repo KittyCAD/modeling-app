@@ -64,33 +64,6 @@ pub trait CoreDump: Clone {
         Ok(links[0].clone())
     }
 
-    /// Gather coredump and upload it to *public* cloud storage.
-    async fn upload_coredump(&self, core_dump_info: &CoreDumpInfo) -> Result<String> {
-        // (Re)Create the zoo client.
-        let mut zoo = kittycad::Client::new(self.token()?);
-        zoo.set_base_url(&self.base_api_url()?);
-
-        let json = serde_json::to_string_pretty(&core_dump_info).unwrap();
-
-        // Upload the coredump.
-        let result: Vec<String> = zoo
-            .meta()
-            .create_debug_uploads(vec![kittycad::types::multipart::Attachment {
-                name: "".to_string(),
-                filename: Some(format!(r#"modeling-app/coredump-{}.json)"#, core_dump_info.id,)),
-                content_type: Some("application/json".to_string()),
-                data: json.to_vec(),
-            }])
-            .await?;
-
-        if result.is_empty() {
-            anyhow::bail!("Failed to upload coredump");
-        }
-
-        println!("{:?}", result);
-        Ok(result[0].clone())
-    }
-
     /// Dump the app info.
     async fn dump(&self) -> Result<CoreDumpInfo> {
         let os: OsInfo = self.os().await?;
@@ -111,7 +84,30 @@ pub trait CoreDump: Clone {
             client_state,
         };
 
-        let coredump_url: String = self.upload_coredump(&core_dump_info).await?;
+        // (Re)Create the zoo client.
+        let mut zooClient = kittycad::Client::new(self.token()?);
+        zooClient.set_base_url(&self.base_api_url()?);
+
+        let json = serde_json::to_string_pretty(&core_dump_info).unwrap();
+
+        // Upload the coredump.
+        let result: Vec<String> = zooClient
+            .meta()
+            .create_debug_uploads(vec![kittycad::types::multipart::Attachment {
+                name: "".to_string(),
+                filename: Some(format!(r#"modeling-app/coredump-{}.json)"#, core_dump_info.id,)),
+                content_type: Some("application/json".to_string()),
+                data: json.into(),
+            }])
+            .await?;
+
+        if result.is_empty() {
+            anyhow::bail!("Failed to upload coredump");
+        }
+
+        println!("{:?}", result);
+        
+        let coredump_url: String = result[0].clone();
 
         core_dump_info.set_github_issue_url(&screenshot_url, &coredump_url)?;
 
