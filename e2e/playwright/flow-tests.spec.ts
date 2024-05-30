@@ -2440,6 +2440,95 @@ test('Extrude from command bar selects extrude line after', async ({
 })
 
 test.describe('Testing constraints', () => {
+  test.describe('Many segments - no modal constraints', () => {
+    const cases = [
+      {
+        constraintName: 'Vertical',
+        codeAfter: [
+          `|> yLine(130.4, %)`,
+          `|> yLine(77.79, %)`,
+          `|> yLine(28.97, %)`,
+        ],
+      },
+      {
+        codeAfter: [
+          `|> xLine(74.36, %)`,
+          `|> xLine(9.16, %)`,
+          `|> xLine(41.19, %)`,
+        ],
+        constraintName: 'Horizontal',
+      },
+    ] as const
+    for (const { codeAfter, constraintName } of cases) {
+      test(`${constraintName}`, async ({ page }) => {
+        await page.addInitScript(async () => {
+          localStorage.setItem(
+            'persistCode',
+            `const yo = 5
+const part001 = startSketchOn('XZ')
+  |> startProfileAt([-7.54, -26.74], %)
+  |> line([74.36, 130.4], %)
+  |> line([78.92, -120.11], %)
+  |> line([9.16, 77.79], %)
+  |> line([41.19, 28.97], %)
+const part002 = startSketchOn('XZ')
+  |> startProfileAt([299.05, 231.45], %)
+  |> xLine(-425.34, %, 'seg-what')
+  |> yLine(-264.06, %)
+  |> xLine(segLen('seg-what', %), %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)`
+          )
+        })
+        const u = await getUtils(page)
+        await page.setViewportSize({ width: 1200, height: 500 })
+        await page.goto('/')
+        await u.waitForAuthSkipAppStart()
+
+        await page.getByText('line([74.36, 130.4], %)').click()
+        await page.getByRole('button', { name: 'Edit Sketch' }).click()
+
+        const line1 = await u.getBoundingBox(`[data-overlay-index="${0}"]`)
+        const line3 = await u.getBoundingBox(`[data-overlay-index="${2}"]`)
+        const line4 = await u.getBoundingBox(`[data-overlay-index="${3}"]`)
+
+        // select two segments by holding down shift
+        await page.mouse.click(line1.x - 20, line1.y + 20)
+        await page.keyboard.down('Shift')
+        await page.mouse.click(line3.x - 3, line3.y + 20)
+        await page.mouse.click(line4.x - 15, line4.y + 15)
+        await page.keyboard.up('Shift')
+        const constraintMenuButton = page.getByRole('button', {
+          name: 'Constrain',
+        })
+        const constraintButton = page
+          .getByRole('button', {
+            name: constraintName,
+          })
+          .first()
+
+        // apply the constraint
+        await constraintMenuButton.click()
+        await constraintButton.click()
+
+        // check actives lines
+        const activeLinesContent = await page.locator('.cm-activeLine').all()
+        await expect(activeLinesContent).toHaveLength(codeAfter.length)
+        // check there are still 3 cursors (they should stay on the same lines as before constraint was applied)
+        await expect(page.locator('.cm-cursor')).toHaveCount(codeAfter.length)
+
+        // check both cursors are where they should be after constraint is applied and the code is correct
+        await Promise.all(
+          activeLinesContent.map(async (line, i) => {
+            await expect(page.locator('.cm-content')).toContainText(
+              codeAfter[i]
+            )
+            // if the code is an active line then the cursor should be on that line
+            await expect(line).toHaveText(codeAfter[i])
+          })
+        )
+      })
+    }
+  })
   test.describe('Two segment - no modal constraints', () => {
     const cases = [
       {
