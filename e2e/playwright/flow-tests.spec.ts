@@ -3710,7 +3710,7 @@ test('Engine disconnect & reconnect in sketch mode', async ({ page }) => {
   await page.mouse.click(700, 200)
 
   await expect(page.locator('.cm-content')).toHaveText(
-    `const part001 = startSketchOn('XZ')`
+    `const sketch001 = startSketchOn('XZ')`
   )
   await u.closeDebugPanel()
 
@@ -3719,7 +3719,7 @@ test('Engine disconnect & reconnect in sketch mode', async ({ page }) => {
   const startXPx = 600
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XZ')
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)`)
   await page.waitForTimeout(100)
 
@@ -3727,7 +3727,7 @@ test('Engine disconnect & reconnect in sketch mode', async ({ page }) => {
   await page.waitForTimeout(100)
 
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XZ')
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)`)
 
@@ -3786,14 +3786,14 @@ test('Engine disconnect & reconnect in sketch mode', async ({ page }) => {
   // Ensure we can continue sketching
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XZ')
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([-11.59, 11.1], %)`)
   await page.waitForTimeout(100)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XZ')
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
   |> line([${commonPoints.num1}, 0], %)
   |> line([-11.59, 11.1], %)
