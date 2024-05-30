@@ -132,6 +132,19 @@ export async function getUtils(page: Page) {
     },
     waitForCmdReceive: (commandType: string) =>
       waitForCmdReceive(page, commandType),
+    getSegmentBodyCoords: async (locator: string, px = 30) => {
+      const overlay = page.locator(locator)
+      const bbox = await overlay
+        .boundingBox()
+        .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 }))
+      const angle = Number(await overlay.getAttribute('data-overlay-angle'))
+      const angleXOffset = Math.cos((angle * Math.PI) / 180) * px
+      const angleYOffset = Math.sin((angle * Math.PI) / 180) * px
+      return {
+        x: bbox.x + angleXOffset,
+        y: bbox.y + angleYOffset,
+      }
+    },
     getBoundingBox: async (locator: string) =>
       page
         .locator(locator)
