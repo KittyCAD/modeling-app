@@ -165,7 +165,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          cache: 'yarn' # Set this to npm, yarn or pnpm.
+          # cache: 'yarn' # Set this to npm, yarn or pnpm.
 
       - run: yarn install
 
@@ -232,12 +232,13 @@ jobs:
         shell: cmd
 
       - name: Build the app (debug)
-        uses: tauri-apps/tauri-action@v0
+        # uses: tauri-apps/tauri-action@v0
         if: ${{ env.BUILD_RELEASE == 'false' }}
-        with:
-          includeRelease: false
-          includeDebug: true
-          args: "${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
+        # with:
+        #   includeRelease: false
+        #   includeDebug: true
+        #   args: "${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
+        run: yarn tauri build -d -b
 
       - name: Build for Mac TestFlight (nightly)
         if: ${{ github.event_name == 'schedule' && matrix.os == 'macos-14' }}
@@ -365,9 +366,7 @@ jobs:
           KITTYCAD_API_TOKEN: ${{ env.BUILD_RELEASE == 'true' && secrets.KITTYCAD_API_TOKEN || secrets.KITTYCAD_API_TOKEN_DEV }}
 
       - name: Run e2e tests (windows only)
-        # TODO: enable CI tests once the mismatch issue is addressed
-        # if: ${{ matrix.os == 'windows-latest' && github.event_name != 'release' && github.event_name != 'schedule' }}
-        if: false
+        if: ${{ matrix.os == 'windows-latest' && github.event_name != 'release' && github.event_name != 'schedule' }}
         run: |
           cargo install tauri-driver --force
           yarn wdio run wdio.conf.ts
