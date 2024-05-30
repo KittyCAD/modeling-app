@@ -149,7 +149,7 @@ export async function getUtils(page: Page) {
       page
         .locator(locator)
         .boundingBox()
-        .then((box) => ({ x: box?.x || 0, y: box?.y || 0 })),
+        .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 })),
     doAndWaitForCmd: async (
       fn: () => Promise<void>,
       commandType: string,
