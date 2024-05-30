@@ -144,7 +144,7 @@ export async function applyConstraintAngleLength({
       pathToNodeMap,
     }
   } catch (e) {
-    console.log('erorr', e)
+    console.log('error', e)
     throw e
   }
 }

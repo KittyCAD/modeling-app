@@ -34,6 +34,7 @@ import {
   handleSelectionBatch,
   isSelectionLastLine,
   isSketchPipe,
+  updateSelections,
 } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
@@ -53,6 +54,7 @@ import {
 } from 'lang/modifyAst'
 import {
   Program,
+  Value,
   VariableDeclaration,
   coreDump,
   parse,
@@ -73,10 +75,7 @@ import { useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { getVarNameModal } from 'hooks/useToolbarGuards'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
-import {
-  EngineConnectionState,
-  EngineConnectionStateType,
-} from 'lang/std/engineConnection'
+import { applyConstraintEqualAngle } from './Toolbar/EqualAngle'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -223,8 +222,7 @@ export const ModelingMachineProvider = ({
             : {}
         ),
         'Set selection': assign(({ selectionRanges }, event) => {
-          if (event.type !== 'Set selection') return {} // this was needed for ts after adding 'Set selection' action to on done modal events
-          const setSelections = event.data
+          const setSelections = event.data as SetSelections // this was needed for ts after adding 'Set selection' action to on done modal events
           if (!editorManager.editorView) return {}
           const dispatchSelection = (selection?: EditorSelection) => {
             if (!selection) return // TODO less of hack for the below please
@@ -311,11 +309,18 @@ export const ModelingMachineProvider = ({
               selectionRanges: selections,
             }
           }
+          if (setSelections.selectionType === 'completeSelection') {
+            editorManager.selectRange(setSelections.selection)
+            return {
+              selectionRanges: setSelections.selection,
+            }
+          }
 
           return {}
         }),
-        'Engine export': (_, event) => {
+        'Engine export': async (_, event) => {
           if (event.type !== 'Export' || TEST) return
+          console.log('exporting', event.data)
           const format = {
             ...event.data,
           } as Partial<Models['OutputFormat_type']>
@@ -359,9 +364,16 @@ export const ModelingMachineProvider = ({
             format.selection = { type: 'default_scene' }
           }
 
-          exportFromEngine({
-            format: format as Models['OutputFormat_type'],
-          }).catch((e) => toast.error('Error while exporting', e)) // TODO I think we need to throw the error from engineCommandManager
+          toast.promise(
+            exportFromEngine({
+              format: format as Models['OutputFormat_type'],
+            }),
+            {
+              loading: 'Exporting...',
+              success: 'Exported successfully',
+              error: 'Error while exporting',
+            }
+          )
         },
       },
       guards: {
