@@ -11,6 +11,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 /// "Value" would be OK. This is imported as "JValue" throughout the rest of this crate.
 use serde_json::Value as JValue;
+use uuid::Uuid;
 
 #[async_trait::async_trait(?Send)]
 pub trait CoreDump: Clone {
@@ -57,6 +58,35 @@ pub trait CoreDump: Clone {
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         if links.is_empty() {
+            anyhow::bail!("Failed to upload coredump");
+        }
+
+        Ok(links[0].clone())
+    }
+
+    /// Gather coredump and upload it to *public* cloud storage.
+    async fn upload_coredump(&self) -> Result<String> {
+        let screenshot = self.screenshot().await?;
+        let cleaned = screenshot.trim_start_matches("data:image/png;base64,");
+        // Create the zoo client.
+        let mut zoo = kittycad::Client::new(self.token()?);
+        zoo.set_base_url(&self.base_api_url()?);
+
+        // Base64 decode the screenshot.
+        let data = base64::engine::general_purpose::STANDARD.decode(cleaned)?;
+        // Upload the screenshot.
+        let links = zoo
+            .meta()
+            .create_debug_uploads(vec![kittycad::types::multipart::Attachment {
+                name: "".to_string(),
+                filename: Some("modeling-app/core-dump-screenshot.png".to_string()),
+                content_type: Some("file/json".to_string()),
+                data,
+            }])
+            .await
+            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+
+        if links.is_empty() {
             anyhow::bail!("Failed to upload screenshot");
         }
 
@@ -65,12 +95,13 @@ pub trait CoreDump: Clone {
 
     /// Dump the app info.
     async fn dump(&self) -> Result<CoreDumpInfo> {
+        let os: OsInfo = self.os().await?;
+        let webrtc_stats: WebrtcStats = self.get_webrtc_stats().await?;
         let client_state: JValue = self.get_client_state().await?;
-        let webrtc_stats = self.get_webrtc_stats().await?;
-        let os = self.os().await?;
-        let screenshot_url = self.upload_screenshot().await?;
+        let screenshot_url: String = self.upload_screenshot().await?;
 
-        let mut core_dump_info = CoreDumpInfo {
+        let mut core_dump_info: CoreDumpInfo = CoreDumpInfo {
+            id: uuid::Uuid::new_v4(),
             version: self.version()?,
             git_rev: git_rev::try_revision_string!().map_or_else(|| "unknown".to_string(), |s| s.to_string()),
             timestamp: chrono::Utc::now(),
@@ -81,7 +112,10 @@ pub trait CoreDump: Clone {
             pool: self.pool()?,
             client_state,
         };
-        core_dump_info.set_github_issue_url(&screenshot_url)?;
+        
+        let coredump_url = screenshot_url.clone();
+
+        core_dump_info.set_github_issue_url(&screenshot_url, &coredump_url)?;
 
         Ok(core_dump_info)
     }
@@ -93,6 +127,8 @@ pub trait CoreDump: Clone {
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct CoreDumpInfo {
+    /// The unique id for the coredump - this helps correlate screenshot with coredump data
+    pub id: Uuid,
     /// The version of the app.
     pub version: String,
     /// The git revision of the app.
@@ -123,7 +159,7 @@ pub struct CoreDumpInfo {
 
 impl CoreDumpInfo {
     /// Set the github issue url.
-    pub fn set_github_issue_url(&mut self, screenshot_url: &str) -> Result<()> {
+    pub fn set_github_issue_url(&mut self, screenshot_url: &str, coredump_url: &str) -> Result<()> {
         let tauri_or_browser_label = if self.tauri { "tauri" } else { "browser" };
         let labels = ["coredump", "bug", tauri_or_browser_label];
         let body = format!(
@@ -131,16 +167,12 @@ impl CoreDumpInfo {
 
 ![Screenshot]({})
 
-<details>
 <summary><b>Core Dump</b></summary>
 
-```json
-{}
-```
-</details>
+![Coredump]({})
 "#,
             screenshot_url,
-            serde_json::to_string_pretty(&self)?
+            coredump_url
         );
         let urlencoded: String = form_urlencoded::byte_serialize(body.as_bytes()).collect();
 
