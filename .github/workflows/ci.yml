@@ -147,6 +147,12 @@ jobs:
           cp artifact/src-tauri/tauri.conf.json src-tauri/tauri.conf.json
           cp artifact/src-tauri/tauri.release.conf.json src-tauri/tauri.release.conf.json
 
+      - name: Update WebView2 on Windows
+        if: matrix.os == 'windows-latest'
+        run: |
+          Invoke-WebRequest -Uri 'https://go.microsoft.com/fwlink/p/?LinkId=2124703' -OutFile 'setup.exe'
+          Start-Process -FilePath setup.exe -Verb RunAs -Wait
+
       - name: Install ubuntu system dependencies
         if: matrix.os == 'ubuntu-latest'
         run: |
@@ -165,7 +171,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
-          # cache: 'yarn' # Set this to npm, yarn or pnpm.
+          cache: 'yarn' # Set this to npm, yarn or pnpm.
 
       - run: yarn install
 
@@ -232,13 +238,12 @@ jobs:
         shell: cmd
 
       - name: Build the app (debug)
-        # uses: tauri-apps/tauri-action@v0
+        uses: tauri-apps/tauri-action@v0
         if: ${{ env.BUILD_RELEASE == 'false' }}
-        # with:
-        #   includeRelease: false
-        #   includeDebug: true
-        #   args: "${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
-        run: yarn tauri build -d -b
+        with:
+          includeRelease: false
+          includeDebug: true
+          args: "${{ env.TAURI_ARGS_MACOS }} ${{ env.TAURI_ARGS_UBUNTU }}"
 
       - name: Build for Mac TestFlight (nightly)
         if: ${{ github.event_name == 'schedule' && matrix.os == 'macos-14' }}
