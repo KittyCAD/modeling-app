@@ -34,9 +34,9 @@ export function App() {
    */
   const Zoo = { state: {} }
   if (typeof window !== 'undefined') {
-    (window as any).Zoo = Zoo
+    ;(window as any).Zoo = Zoo
   }
-  
+
   useRefreshSettings(paths.FILE + 'SETTINGS')
   const { project, file } = useLoaderData() as IndexLoaderData
   const navigate = useNavigate()
