@@ -448,7 +448,7 @@ test('Draft segments should look right', async ({ page, context }) => {
   await page.mouse.click(700, 200)
 
   await expect(page.locator('.cm-content')).toHaveText(
-    `const part001 = startSketchOn('XZ')`
+    `const sketch001 = startSketchOn('XZ')`
   )
 
   await page.waitForTimeout(300) // TODO detect animation ending, or disable animation
@@ -456,7 +456,7 @@ test('Draft segments should look right', async ({ page, context }) => {
   const startXPx = 600
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XZ')
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt([9.06, -12.22], %)`)
   await page.waitForTimeout(100)
 
@@ -470,7 +470,7 @@ test('Draft segments should look right', async ({ page, context }) => {
   await page.waitForTimeout(100)
 
   await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XZ')
+    .toHaveText(`const sketch001 = startSketchOn('XZ')
   |> startProfileAt([9.06, -12.22], %)
   |> line([9.14, 0], %)`)
 
@@ -507,7 +507,7 @@ test('Draft rectangles should look right', async ({ page, context }) => {
   await page.mouse.click(700, 200)
 
   await expect(page.locator('.cm-content')).toHaveText(
-    `const part001 = startSketchOn('XZ')`
+    `const sketch001 = startSketchOn('XZ')`
   )
 
   await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
@@ -556,7 +556,7 @@ test.describe('Client side scene scale should match engine scale', () => {
     await page.mouse.click(700, 200)
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `const part001 = startSketchOn('XZ')`
+      `const sketch001 = startSketchOn('XZ')`
     )
 
     await page.waitForTimeout(300) // TODO detect animation ending, or disable animation
@@ -564,7 +564,7 @@ test.describe('Client side scene scale should match engine scale', () => {
     const startXPx = 600
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const part001 = startSketchOn('XZ')
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
     |> startProfileAt([9.06, -12.22], %)`)
     await page.waitForTimeout(100)
 
@@ -574,7 +574,7 @@ test.describe('Client side scene scale should match engine scale', () => {
     await page.waitForTimeout(100)
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const part001 = startSketchOn('XZ')
+      .toHaveText(`const sketch = startSketchOn('XZ')
     |> startProfileAt([9.06, -12.22], %)
     |> line([9.14, 0], %)`)
 
@@ -584,7 +584,7 @@ test.describe('Client side scene scale should match engine scale', () => {
     await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const part001 = startSketchOn('XZ')
+      .toHaveText(`const sketch = startSketchOn('XZ')
     |> startProfileAt([9.06, -12.22], %)
     |> line([9.14, 0], %)
     |> tangentialArcTo([27.34, -3.08], %)`)
@@ -659,7 +659,7 @@ test.describe('Client side scene scale should match engine scale', () => {
     await page.mouse.click(700, 200)
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `const part001 = startSketchOn('XZ')`
+      `const sketch001 = startSketchOn('XZ')`
     )
 
     await page.waitForTimeout(300) // TODO detect animation ending, or disable animation
@@ -667,7 +667,7 @@ test.describe('Client side scene scale should match engine scale', () => {
     const startXPx = 600
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const part001 = startSketchOn('XZ')
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
       |> startProfileAt([230.03, -310.32], %)`)
     await page.waitForTimeout(100)
 
@@ -677,7 +677,7 @@ test.describe('Client side scene scale should match engine scale', () => {
     await page.waitForTimeout(100)
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const part001 = startSketchOn('XZ')
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
       |> startProfileAt([230.03, -310.32], %)
       |> line([232.2, 0], %)`)
 
@@ -687,7 +687,7 @@ test.describe('Client side scene scale should match engine scale', () => {
     await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const part001 = startSketchOn('XZ')
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
       |> startProfileAt([230.03, -310.32], %)
       |> line([232.2, 0], %)
       |> tangentialArcTo([694.43, -78.12], %)`)
