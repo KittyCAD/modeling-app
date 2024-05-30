@@ -16,7 +16,7 @@ kittycad-modeling-cmds = { workspace = true }
 kittycad-modeling-session = { workspace = true }
 thiserror = "1.0.61"
 tokio = { version = "1.37.0", features = ["macros", "rt"] }
-twenty-twenty = "0.7.0"
+twenty-twenty = "0.8.1"
 uuid = "1.8"
 
 [dev-dependencies]

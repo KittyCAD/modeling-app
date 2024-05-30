@@ -1475,7 +1475,7 @@ dependencies = [
 name = "grackle"
 version = "0.1.0"
 dependencies = [
- "image",
+ "image 0.24.9",
  "kcl-lib",
  "kittycad",
  "kittycad-execution-plan",
@@ -1754,13 +1754,25 @@ dependencies = [
 ]
 
 [[package]]
-name = "image-compare"
-version = "0.3.1"
+name = "image"
+version = "0.25.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c16b73efbb4b417b4e036cb6f0b0d31c43568a90ab575a4c7611c4396ec1a6b8"
+checksum = "fd54d660e773627692c524beaad361aca785a4f9f5730ce91f42aabe5bce3d11"
 dependencies = [
- "image",
- "itertools 0.10.5",
+ "bytemuck",
+ "byteorder",
+ "num-traits 0.2.18",
+ "png",
+]
+
+[[package]]
+name = "image-compare"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "96cd73af13ae2e7220a1c02fe7d6bb53be50612ba7fabbb5c88e7753645f1f3c"
+dependencies = [
+ "image 0.25.1",
+ "itertools 0.12.1",
  "rayon",
  "thiserror",
 ]
@@ -1936,7 +1948,7 @@ dependencies = [
  "git_rev",
  "gltf-json",
  "iai",
- "image",
+ "image 0.24.9",
  "insta",
  "itertools 0.13.0",
  "js-sys",
@@ -4454,12 +4466,12 @@ dependencies = [
 
 [[package]]
 name = "twenty-twenty"
-version = "0.7.0"
+version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "89a5e28c4bcd7c383369d2c546aee1690febefcfc51b051e098fb8233cb9c08e"
+checksum = "48e62b93cc5b5a8fabe3056a7d189f2195ebc7d57934a2cbe124601e34ad79b9"
 dependencies = [
  "anyhow",
- "image",
+ "image 0.25.1",
  "image-compare",
  "uuid",
 ]
@@ -4735,7 +4747,7 @@ dependencies = [
  "console_error_panic_hook",
  "futures",
  "gloo-utils",
- "image",
+ "image 0.24.9",
  "js-sys",
  "kcl-lib",
  "kittycad",

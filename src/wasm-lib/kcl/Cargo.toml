@@ -84,7 +84,7 @@ insta = { version = "1.38.0", features = ["json"] }
 itertools = "0.13.0"
 pretty_assertions = "1.4.0"
 tokio = { version = "1.37.0", features = ["rt-multi-thread", "macros", "time"] }
-twenty-twenty = "0.7.0"
+twenty-twenty = "0.8.1"
 
 [[bench]]
 name = "compiler_benchmark_criterion"
