@@ -149,6 +149,8 @@ jobs:
 
       - name: Update WebView2 on Windows
         if: matrix.os == 'windows-latest'
+        # Workaround needed to build the tauri windows app with matching edge version.
+        # From https://github.com/actions/runner-images/issues/9538
         run: |
           Invoke-WebRequest -Uri 'https://go.microsoft.com/fwlink/p/?LinkId=2124703' -OutFile 'setup.exe'
           Start-Process -FilePath setup.exe -Verb RunAs -Wait
