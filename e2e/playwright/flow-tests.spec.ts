@@ -3925,11 +3925,12 @@ test.describe('Testing Gizmo', () => {
       await page.mouse.click(clickPosition.x, clickPosition.y)
       await page.waitForTimeout(100)
 
-      const [cameraPositionX, cameraPositionY, cameraPositionZ] = await Promise.all([
-        page.getByTestId('cam-x-position').inputValue(),
-        page.getByTestId('cam-y-position').inputValue(),
-        page.getByTestId('cam-z-position').inputValue(),
-      ])
+      const [cameraPositionX, cameraPositionY, cameraPositionZ] =
+        await Promise.all([
+          page.getByTestId('cam-x-position').inputValue(),
+          page.getByTestId('cam-y-position').inputValue(),
+          page.getByTestId('cam-z-position').inputValue(),
+        ])
 
       const [cameraTargetX, cameraTargetY, cameraTargetZ] = await Promise.all([
         page.getByTestId('cam-x-target').inputValue(),
@@ -3950,8 +3951,6 @@ test.describe('Testing Gizmo', () => {
 
       expect(cameraPosition).toEqual(expectedCameraPosition)
       expect(cameraTarget).toEqual(expectedCameraTarget)
-
-      await page.waitForTimeout(100)
     })
   }
 })
