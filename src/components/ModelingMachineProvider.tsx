@@ -430,8 +430,8 @@ export const ModelingMachineProvider = ({
             const { modifiedAst, pathToNode: pathToNewSketchNode } =
               sketchOnExtrudedFace(
                 kclManager.ast,
-                data.extrudeSegmentPathToNode,
-                data.otherPathToNode,
+                data.sketchPathToNode,
+                data.extrudePathToNode,
                 kclManager.programMemory,
                 data.cap
               )

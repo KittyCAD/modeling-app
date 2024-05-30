@@ -1436,11 +1436,11 @@ export class SceneEntities {
           if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
             return ['other', entity_id]
           const { z_axis, y_axis, origin } = faceInfo
-          const pathToNode = getNodePathFromSourceRange(
+          const sketchPathToNode = getNodePathFromSourceRange(
             kclManager.ast,
             artifact.range
           )
-          const otherPathToNode = extrusions?.range
+          const extrudePathToNode = extrusions?.range
             ? getNodePathFromSourceRange(kclManager.ast, extrusions.range)
             : []
 
@@ -1453,8 +1453,8 @@ export class SceneEntities {
               position: [origin.x, origin.y, origin.z].map(
                 (num) => num / sceneInfra._baseUnitMultiplier
               ) as [number, number, number],
-              extrudeSegmentPathToNode: pathToNode,
-              otherPathToNode,
+              sketchPathToNode,
+              extrudePathToNode,
               cap:
                 artifact?.additionalData?.type === 'cap'
                   ? artifact.additionalData.info
