@@ -35,6 +35,55 @@ const commonPoints = {
   // num2: 19.19,
 }
 
+// Utilities for writing tests that depend on test values
+const getTools = (opts) => {
+  // The way we truncate is kinda odd apparently, so we need this function
+  // "[k]itty[c]ad round"
+  const kcRound = (n) => Math.trunc(n * 100) / 100
+
+  // To translate between screen and engine ("[U]nit") coordinates
+  // NOTE: these pretty much can't be perfect because of screen scaling.
+  // Handle on a case-by-case.
+  const toU = (x, y) => [
+    kcRound( x*0.0854),
+    kcRound(-y*0.0854), // Y is inverted in our coordinate system
+  ];
+
+  // Turn the array into a string with specific formatting
+  const fromUToString = (xy) => `[${xy[0]}, ${xy[1]}]`
+
+  // Combine because used often
+  const toSU = (xy) => fromUToString(toU(xy[0], xy[1]))
+
+  // Make it easier to click around from center ("click [from] zero zero")
+  const click00 = (x, y) => opts.page.mouse.click(opts.center.x + x, opts.center.y + y)
+
+  // Relative clicker, must keep state
+  let last = { x: 0, y: 0 };
+  const click00r = (x, y) => {
+    // reset relative coordinates when anything is undefined
+    if (x === undefined || y === undefined) {
+      last.x = 0
+      last.y = 0
+      return
+    }
+
+    const ret = click00(last.x + x, last.y + y)
+    last.x += x
+    last.y += y
+
+    // Returns the new absolute coordinate if you need it.
+    return ret.then(() => [last.x, last.y])
+  }
+
+  const expectCodeToBe = async (str) => {
+    await expect(opts.page.locator('.cm-content')).toHaveText(str)
+    await opts.page.waitForTimeout(100)
+  }
+
+  return { toSU, click00r, expectCodeToBe }
+}
+
 test.beforeEach(async ({ context, page }) => {
   // wait for Vite preview server to be up
   await waitOn({
@@ -1484,11 +1533,14 @@ const part001 = startSketchOn('XZ')
 test('Can add multiple sketches', async ({ page }) => {
   test.skip(process.platform === 'darwin', 'Can add multiple sketches')
   const u = await getUtils(page)
-  await page.setViewportSize({ width: 1200, height: 500 })
-  const PUR = 400 / 37.5 //pixeltoUnitRatio
+  const viewportSize = { width: 1200, height: 500, };
+  await page.setViewportSize(viewportSize)
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
+
+  const center = { x: viewportSize.width / 2, y: viewportSize.height / 2 };
+  const { toSU, click00r, expectCodeToBe } = getTools({ center, page });
 
   await expect(
     page.getByRole('button', { name: 'Start Sketch' })
@@ -1502,127 +1554,71 @@ test('Can add multiple sketches', async ({ page }) => {
     200
   )
 
-  // select a plane
-  await page.mouse.click(700, 200)
+  let codeStr = "const part001 = startSketchOn('XY')";
 
-  await expect(page.locator('.cm-content')).toHaveText(
-    `const part001 = startSketchOn('XZ')`
-  )
-
+  await page.mouse.click(center.x, viewportSize.height * 0.55)
+  await expectCodeToBe(codeStr)
+  await u.closeDebugPanel()
   await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
 
-  const startXPx = 600
-  await u.closeDebugPanel()
-  await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XZ')
-  |> startProfileAt(${commonPoints.startAt}, %)`)
-  await page.waitForTimeout(100)
+  await click00r(0, 0)
+  codeStr += `  |> startProfileAt(${toSU([0, 0])}, %)`
+  await expectCodeToBe(codeStr)
 
-  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
-  await page.waitForTimeout(100)
+  await click00r(50, 0)
+  codeStr += `  |> line(${toSU([50, 0])}, %)`;
+  await expectCodeToBe(codeStr)
 
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XZ')
-  |> startProfileAt(${commonPoints.startAt}, %)
-  |> line([${commonPoints.num1}, 0], %)`)
+  await click00r(0, 50)
+  codeStr += `  |> line(${toSU([0, 50])}, %)`;
+  await expectCodeToBe(codeStr)
 
-  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('XZ')
-  |> startProfileAt(${commonPoints.startAt}, %)
-  |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1}], %)`)
-  await page.waitForTimeout(100)
-  await page.mouse.click(startXPx, 500 - PUR * 20)
-  const finalCodeFirstSketch = `const part001 = startSketchOn('XZ')
-  |> startProfileAt(${commonPoints.startAt}, %)
-  |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1}], %)
-  |> line([-${commonPoints.num2}, 0], %)`
-  await expect(page.locator('.cm-content')).toHaveText(finalCodeFirstSketch)
+  await click00r(-50, 0)
+  codeStr += `  |> line(${toSU([-50, 0])}, %)`;
+  await expectCodeToBe(codeStr)
 
-  // exit the sketch
-
+  // exit the sketch, reset relative clicker
+  click00r(undefined, undefined)
   await u.openAndClearDebugPanel()
   await page.getByRole('button', { name: 'Exit Sketch' }).click()
-
   await u.expectCmdLog('[data-message-type="execution-done"]')
-
-  await u.updateCamPosition([100, 100, 100])
   await page.waitForTimeout(250)
+  await u.clearCommandLogs()
 
   // start a new sketch
-  await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await page.waitForTimeout(400)
-  await page.mouse.click(650, 450)
 
+  // when exiting the sketch above the camera is still looking down at XY,
+  // so selecting the plane again is a bit easier.
+  await page.mouse.click(center.x + 30, center.y)
   await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
-  await u.clearAndCloseDebugPanel()
-
-  // on mock os there are issues with getting the camera to update
-  // it should not be selecting the 'XZ' plane here if the camera updated
-  // properly, but if we just role with it we can still verify everything
-  // in the rest of the test
-  const plane = process.platform === 'darwin' ? 'XZ' : 'XY'
-
-  await page.waitForTimeout(100)
-  await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  const startAt2 =
-    process.platform === 'darwin' ? '[9.75, -13.16]' : '[0.93, -1.25]'
-  await expect(
-    (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
-  ).toBe(
-    `${finalCodeFirstSketch}
-const part002 = startSketchOn('${plane}')
-  |> startProfileAt(${startAt2}, %)`.replace(/\s/g, '')
-  )
-  await page.waitForTimeout(100)
-
+  codeStr += "const part002 = startSketchOn('XY')";
+  await expectCodeToBe(codeStr)
   await u.closeDebugPanel()
-  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
-  await page.waitForTimeout(100)
 
-  const num2 = process.platform === 'darwin' ? 9.84 : 0.94
-  await expect(
-    (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
-  ).toBe(
-    `${finalCodeFirstSketch}
-const part002 = startSketchOn('${plane}')
-  |> startProfileAt(${startAt2}, %)
-  |> line([${num2}, 0], %)`.replace(/\s/g, '')
-  )
+  await click00r(30, 0)
+  codeStr += `  |> startProfileAt(${toSU([30, 0])}, %)`
+  await expectCodeToBe(codeStr)
 
-  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
-  await expect(
-    (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
-  ).toBe(
-    `${finalCodeFirstSketch}
-const part002 = startSketchOn('${plane}')
-  |> startProfileAt(${startAt2}, %)
-  |> line([${num2}, 0], %)
-  |> line([0, ${roundOff(
-    num2 + (process.platform === 'darwin' ? 0.01 : -0.01)
-  )}], %)`.replace(/\s/g, '')
-  )
-  await page.waitForTimeout(100)
-  await page.mouse.click(startXPx, 500 - PUR * 20)
-  await expect(
-    (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
-  ).toBe(
-    `${finalCodeFirstSketch}
-const part002 = startSketchOn('${plane}')
-  |> startProfileAt(${startAt2}, %)
-  |> line([${num2}, 0], %)
-  |> line([0, ${roundOff(
-    num2 + (process.platform === 'darwin' ? 0.01 : -0.01)
-  )}], %)
-  |> line([-${process.platform === 'darwin' ? 19.59 : 1.87}, 0], %)`.replace(
-      /\s/g,
-      ''
-    )
-  )
+  await click00r(30, 0)
+  codeStr += `  |> line(${toSU([30 - 0.1 /* imprecision */, 0])}, %)`;
+  await expectCodeToBe(codeStr)
+
+  await click00r(0, 30)
+  codeStr += `  |> line(${toSU([0, 30])}, %)`;
+  await expectCodeToBe(codeStr)
+
+  await click00r(-30, 0)
+  codeStr += `  |> line(${toSU([-30 + 0.1, 0])}, %)`;
+  await expectCodeToBe(codeStr)
+
+  click00r(undefined, undefined)
+  await u.openAndClearDebugPanel()
+  await page.getByRole('button', { name: 'Exit Sketch' }).click()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.updateCamPosition([100, 100, 100])
+  await page.waitForTimeout(250)
+  await u.clearCommandLogs()
 })
 
 test('ProgramMemory can be serialised', async ({ page }) => {
@@ -2967,6 +2963,17 @@ const part002 = startSketchOn('XZ')
   })
 })
 
+const spiralMove = async (page, x, y, steps, amplitude, freq) => {
+  for (let i = 0; i < steps; i += 1) {
+    const [x1, y1] = [
+      Math.cos((Math.PI*2 / steps) * i * freq) * amplitude * i,
+      Math.sin((Math.PI*2 / steps) * i * freq) * amplitude * i,
+    ]
+    await page.mouse.move(x + x1, y + y1, { steps: 5 })
+  }
+}
+
+
 test.describe('Testing segment overlays', () => {
   test.describe('Hover over a segment should show its overlay, hovering over the input overlays should show its popover, clicking the input overlay should constrain/unconstrain it:\nfor the following segments', () => {
     /**
@@ -2987,7 +2994,7 @@ test.describe('Testing segment overlays', () => {
         expectAfterUnconstrained,
         expectFinal,
         ang = 45,
-        steps = 6,
+        steps = 10,
       }: {
         hoverPos: { x: number; y: number }
         constraintType:
@@ -3002,13 +3009,8 @@ test.describe('Testing segment overlays', () => {
         steps?: number
       }) => {
         await expect(page.getByText('Added variable')).not.toBeVisible()
-        const [x, y] = [
-          Math.cos((ang * Math.PI) / 180) * 45,
-          Math.sin((ang * Math.PI) / 180) * 45,
-        ]
 
-        await page.mouse.move(hoverPos.x + x, hoverPos.y + y)
-        await page.mouse.move(hoverPos.x, hoverPos.y, { steps })
+        await spiralMove(page, hoverPos.x, hoverPos.y, 4, 0.2, 1)
         await expect(page.locator('.cm-content')).toContainText(
           expectBeforeUnconstrained
         )
@@ -3024,6 +3026,8 @@ test.describe('Testing segment overlays', () => {
         await expect(page.locator('.cm-content')).toContainText(
           expectAfterUnconstrained
         )
+
+        await spiralMove(page, hoverPos.x, hoverPos.y, 4, 0.2, 1)
         const unconstrainedLocator = page.locator(
           `[data-constraint-type="${constraintType}"][data-is-constrained="false"]`
         )
@@ -3069,14 +3073,9 @@ test.describe('Testing segment overlays', () => {
         ang?: number
         steps?: number
       }) => {
-        const [x, y] = [
-          Math.cos((ang * Math.PI) / 180) * 45,
-          Math.sin((ang * Math.PI) / 180) * 45,
-        ]
-        await page.mouse.move(hoverPos.x + x, hoverPos.y + y)
+        await spiralMove(page, hoverPos.x, hoverPos.y, 4, 0.2, 1)
 
         await expect(page.getByText('Added variable')).not.toBeVisible()
-        await page.mouse.move(hoverPos.x, hoverPos.y, { steps })
         await expect(page.locator('.cm-content')).toContainText(
           expectBeforeUnconstrained
         )
@@ -3094,7 +3093,9 @@ test.describe('Testing segment overlays', () => {
           expectAfterUnconstrained
         )
         await expect(page.getByText('Added variable')).not.toBeVisible()
-        await page.mouse.move(hoverPos.x, hoverPos.y, { steps })
+
+        await spiralMove(page, hoverPos.x, hoverPos.y, 4, 0.2, 1)
+
         const constrainedLocator = page.locator(
           `[data-constraint-type="${constraintType}"][data-is-constrained="true"]`
         )
@@ -3164,6 +3165,7 @@ test.describe('Testing segment overlays', () => {
         },
       })
       await page.waitForTimeout(100)
+      await u.closeDebugPanel()
 
       await page.getByText('xLineTo(9 - 5, %)').click()
       await page.waitForTimeout(100)
@@ -3366,6 +3368,7 @@ const part001 = startSketchOn('XZ')
       await u.openDebugPanel()
       await u.expectCmdLog('[data-message-type="execution-done"]')
       await u.closeDebugPanel()
+      await page.waitForTimeout(500)
 
       await page.getByText('xLineTo(9 - 5, %)').click()
       await page.waitForTimeout(100)
@@ -3748,25 +3751,7 @@ const part001 = startSketchOn('XZ')
         steps: 6,
       })
 
-      segmentToDelete = await getOverlayByIndex(0)
-      await deleteSegmentSequence({
-        hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y - 20 },
-        codeToBeDeleted: 'line([0.5, -14 + 0], %)',
-        stdLibFnName: 'line',
-        ang: -45,
-      })
-
-      segmentToDelete = await getOverlayByIndex(0)
-      await deleteSegmentSequence({
-        hoverPos: { x: segmentToDelete.x - 20, y: segmentToDelete.y },
-        codeToBeDeleted: 'angledLine({ angle: 3 + 0, length: 32 + 0 }, %)',
-        stdLibFnName: 'angledLine',
-        ang: 135,
-      })
-
-      await page.waitForTimeout(200)
-
-      segmentToDelete = await getOverlayByIndex(9)
+      segmentToDelete = await getOverlayByIndex(11)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x + 10, y: segmentToDelete.y },
         codeToBeDeleted: `angledLineThatIntersects({
@@ -3779,21 +3764,21 @@ const part001 = startSketchOn('XZ')
         steps: 7,
       })
 
-      segmentToDelete = await getOverlayByIndex(8)
+      segmentToDelete = await getOverlayByIndex(10)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x + 10, y: segmentToDelete.y },
         codeToBeDeleted: 'angledLineToY({ angle: 89, to: 9.14 + 0 }, %)',
         stdLibFnName: 'angledLineToY',
       })
 
-      segmentToDelete = await getOverlayByIndex(7)
+      segmentToDelete = await getOverlayByIndex(9)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x - 10, y: segmentToDelete.y },
         codeToBeDeleted: 'angledLineToX({ angle: 3 + 0, to: 26 }, %)',
         stdLibFnName: 'angledLineToX',
       })
 
-      segmentToDelete = await getOverlayByIndex(6)
+      segmentToDelete = await getOverlayByIndex(8)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y - 10 },
         codeToBeDeleted:
@@ -3801,7 +3786,7 @@ const part001 = startSketchOn('XZ')
         stdLibFnName: 'angledLineOfYLength',
       })
 
-      segmentToDelete = await getOverlayByIndex(5)
+      segmentToDelete = await getOverlayByIndex(7)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x + 10, y: segmentToDelete.y },
         codeToBeDeleted:
@@ -3809,42 +3794,36 @@ const part001 = startSketchOn('XZ')
         stdLibFnName: 'angledLineOfXLength',
       })
 
-      segmentToDelete = await getOverlayByIndex(4)
+      segmentToDelete = await getOverlayByIndex(6)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y + 10 },
         codeToBeDeleted: 'yLine(21.14 + 0, %)',
         stdLibFnName: 'yLine',
       })
 
-      segmentToDelete = await getOverlayByIndex(3)
+      segmentToDelete = await getOverlayByIndex(5)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x - 10, y: segmentToDelete.y },
         codeToBeDeleted: 'xLine(26.04, %)',
         stdLibFnName: 'xLine',
       })
 
-      segmentToDelete = await getOverlayByIndex(2)
+      segmentToDelete = await getOverlayByIndex(4)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y - 10 },
         codeToBeDeleted: "yLineTo(-10.77, %, 'a')",
         stdLibFnName: 'yLineTo',
       })
 
-      segmentToDelete = await getOverlayByIndex(1)
+      segmentToDelete = await getOverlayByIndex(3)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x + 10, y: segmentToDelete.y },
         codeToBeDeleted: 'xLineTo(9 - 5, %)',
         stdLibFnName: 'xLineTo',
       })
 
-      for (let i = 0; i < 15; i++) {
-        await page.mouse.wheel(0, 100)
-        await page.waitForTimeout(25)
-      }
-
-      await page.waitForTimeout(200)
-
-      segmentToDelete = await getOverlayByIndex(0)
+      // Not sure why this is diff. from the others - Kurt, ideas?
+      segmentToDelete = await getOverlayByIndex(2)
       const hoverPos = { x: segmentToDelete.x - 10, y: segmentToDelete.y + 10 }
       await expect(page.getByText('Added variable')).not.toBeVisible()
       const [x, y] = [
@@ -3863,6 +3842,24 @@ const part001 = startSketchOn('XZ')
       await expect(page.locator('.cm-content')).not.toContainText(
         codeToBeDeleted
       )
+
+      segmentToDelete = await getOverlayByIndex(1)
+      await deleteSegmentSequence({
+        hoverPos: { x: segmentToDelete.x - 20, y: segmentToDelete.y },
+        codeToBeDeleted: 'angledLine({ angle: 3 + 0, length: 32 + 0 }, %)',
+        stdLibFnName: 'angledLine',
+        ang: 135,
+      })
+
+      segmentToDelete = await getOverlayByIndex(0)
+      await deleteSegmentSequence({
+        hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y - 20 },
+        codeToBeDeleted: 'line([0.5, -14 + 0], %)',
+        stdLibFnName: 'line',
+        ang: -45,
+      })
+
+      await page.waitForTimeout(200)
     })
   })
   test.describe('Testing delete with dependent segments', () => {
