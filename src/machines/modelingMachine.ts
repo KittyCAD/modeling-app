@@ -849,38 +849,6 @@ export const modelingMachine = createMachine(
       })),
       // TODO implement source ranges for all of these constraints
       // need to make the async like the modal constraints
-      // 'Make selection horizontal': ({ selectionRanges, sketchDetails }) => {
-      //   const { modifiedAst } = applyConstraintHorzVert(
-      //     selectionRanges,
-      //     'horizontal',
-      //     kclManager.ast,
-      //     kclManager.programMemory
-      //   )
-      //   if (!sketchDetails) return
-      //   sceneEntitiesManager.updateAstAndRejigSketch(
-      //     sketchDetails.sketchPathToNode,
-      //     modifiedAst,
-      //     sketchDetails.zAxis,
-      //     sketchDetails.yAxis,
-      //     sketchDetails.origin
-      //   )
-      // },
-      // 'Make selection vertical': ({ selectionRanges, sketchDetails }) => {
-      //   const { modifiedAst } = applyConstraintHorzVert(
-      //     selectionRanges,
-      //     'vertical',
-      //     kclManager.ast,
-      //     kclManager.programMemory
-      //   )
-      //   if (!sketchDetails) return
-      //   sceneEntitiesManager.updateAstAndRejigSketch(
-      //     sketchDetails.sketchPathToNode || [],
-      //     modifiedAst,
-      //     sketchDetails.zAxis,
-      //     sketchDetails.yAxis,
-      //     sketchDetails.origin
-      //   )
-      // },
       'Constrain remove constraints': ({ selectionRanges, sketchDetails }) => {
         const { modifiedAst } = applyRemoveConstrainingValues({
           selectionRanges,
