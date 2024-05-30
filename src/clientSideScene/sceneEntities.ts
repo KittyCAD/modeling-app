@@ -93,7 +93,10 @@ import { createGridHelper, orthoScale, perspScale } from './helpers'
 import { Models } from '@kittycad/lib'
 import { uuidv4 } from 'lib/utils'
 import { SegmentOverlayPayload, SketchDetails } from 'machines/modelingMachine'
-import { EngineCommandManager } from 'lang/std/engineConnection'
+import {
+  ArtifactMapCommand,
+  EngineCommandManager,
+} from 'lang/std/engineConnection'
 import {
   getRectangleCallExpressions,
   updateRectangleSketch,
@@ -1423,10 +1426,19 @@ export class SceneEntities {
               ? entity_id
               : artifact.parentId
 
-          const target = this.engineCommandManager.artifactMap?.[targetId || '']
+          // tsc cannot infer that target can have extrusions
+          // from the commandType (why?) so we need to cast it
+          const target = this.engineCommandManager.artifactMap?.[
+            targetId || ''
+          ] as ArtifactMapCommand & { extrusions?: string[] }
+
+          // TODO: We get the first extrusion command ID,
+          // which is fine while backend systems only support one extrusion.
+          // but we need to more robustly handle resolving to the correct extrusion
+          // if there are multiple.
           const extrusions =
             this.engineCommandManager.artifactMap?.[
-              (target as any)?.extrusions[0] || ''
+              target?.extrusions?.[0] || ''
             ]
 
           if (artifact?.commandType !== 'solid3d_get_extrusion_face_info')

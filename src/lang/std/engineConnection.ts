@@ -75,6 +75,8 @@ type PendingCommand = CommandInfo & {
   resolve: (val: ResolveCommand) => void
 }
 
+export type ArtifactMapCommand = ResultCommand | PendingCommand | FailedCommand
+
 /**
  * The ArtifactMap is a client-side representation of the artifacts that
  * have been sent to the server-side engine. It is used to keep track of
@@ -84,7 +86,7 @@ type PendingCommand = CommandInfo & {
  * lines of KCL code that generated them.
  */
 export interface ArtifactMap {
-  [commandId: string]: ResultCommand | PendingCommand | FailedCommand
+  [commandId: string]: ArtifactMapCommand
 }
 
 interface NewTrackArgs {
@@ -1702,11 +1704,17 @@ export class EngineCommandManager {
       }
       const target = this.artifactMap[command.target]
       if (target.commandType === 'start_path') {
-        const temp = target as any
-        if (temp?.extrusions?.length) {
-          temp.extrusions.push(id)
+        // tsc cannot infer that target can have extrusions
+        // from the commandType (why?) so we need to cast it
+        const typedTarget = target as (
+          | PendingCommand
+          | ResultCommand
+          | FailedCommand
+        ) & { extrusions?: string[] }
+        if (typedTarget?.extrusions?.length) {
+          typedTarget.extrusions.push(id)
         } else {
-          temp.extrusions = [id]
+          typedTarget.extrusions = [id]
         }
       }
     }
