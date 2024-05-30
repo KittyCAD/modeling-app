@@ -364,6 +364,19 @@ jobs:
           E2E_APPLICATION: "./src-tauri/target/${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}/zoo-modeling-app"
           KITTYCAD_API_TOKEN: ${{ env.BUILD_RELEASE == 'true' && secrets.KITTYCAD_API_TOKEN || secrets.KITTYCAD_API_TOKEN_DEV }}
 
+      - name: Run e2e tests (windows only)
+        # TODO: enable CI tests once the mismatch issue is addressed
+        # if: ${{ matrix.os == 'windows-latest' && github.event_name != 'release' && github.event_name != 'schedule' }}
+        if: false
+        run: |
+          cargo install tauri-driver --force
+          yarn wdio run wdio.conf.ts
+        env:
+          E2E_APPLICATION: ".\\src-tauri\\target\\${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}\\Zoo Modeling App.exe"
+          KITTYCAD_API_TOKEN: ${{ env.BUILD_RELEASE == 'true' && secrets.KITTYCAD_API_TOKEN || secrets.KITTYCAD_API_TOKEN_DEV }}
+          VITE_KC_API_BASE_URL: ${{ env.BUILD_RELEASE == 'true' && 'https://api.zoo.dev' || 'https://api.dev.zoo.dev' }}
+          E2E_TAURI_ENABLED: true
+          TS_NODE_COMPILER_OPTIONS: '{"module": "commonjs"}'
 
   publish-apps-release:
     runs-on: ubuntu-latest
