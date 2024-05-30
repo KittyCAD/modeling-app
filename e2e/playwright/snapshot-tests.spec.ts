@@ -574,7 +574,7 @@ test.describe('Client side scene scale should match engine scale', () => {
     await page.waitForTimeout(100)
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch = startSketchOn('XZ')
+      .toHaveText(`const sketch001 = startSketchOn('XZ')
     |> startProfileAt([9.06, -12.22], %)
     |> line([9.14, 0], %)`)
 
