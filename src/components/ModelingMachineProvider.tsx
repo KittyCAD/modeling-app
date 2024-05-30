@@ -318,8 +318,9 @@ export const ModelingMachineProvider = ({
 
           return {}
         }),
-        'Engine export': (_, event) => {
+        'Engine export': async (_, event) => {
           if (event.type !== 'Export' || TEST) return
+          console.log('exporting', event.data)
           const format = {
             ...event.data,
           } as Partial<Models['OutputFormat_type']>
@@ -363,9 +364,16 @@ export const ModelingMachineProvider = ({
             format.selection = { type: 'default_scene' }
           }
 
-          exportFromEngine({
-            format: format as Models['OutputFormat_type'],
-          }).catch((e) => toast.error('Error while exporting', e)) // TODO I think we need to throw the error from engineCommandManager
+          toast.promise(
+            exportFromEngine({
+              format: format as Models['OutputFormat_type'],
+            }),
+            {
+              loading: 'Exporting...',
+              success: 'Exported successfully',
+              error: 'Error while exporting',
+            }
+          )
         },
       },
       guards: {
