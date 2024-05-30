@@ -65,32 +65,30 @@ pub trait CoreDump: Clone {
     }
 
     /// Gather coredump and upload it to *public* cloud storage.
-    async fn upload_coredump(&self) -> Result<String> {
-        let screenshot = self.screenshot().await?;
-        let cleaned = screenshot.trim_start_matches("data:image/png;base64,");
-        // Create the zoo client.
+    async fn upload_coredump(&self, core_dump_info: &CoreDumpInfo) -> Result<String> {
+        // (Re)Create the zoo client.
         let mut zoo = kittycad::Client::new(self.token()?);
         zoo.set_base_url(&self.base_api_url()?);
 
-        // Base64 decode the screenshot.
-        let data = base64::engine::general_purpose::STANDARD.decode(cleaned)?;
-        // Upload the screenshot.
-        let links = zoo
+        let json = serde_json::to_string_pretty(&core_dump_info).unwrap();
+
+        // Upload the coredump.
+        let result: Vec<String> = zoo
             .meta()
             .create_debug_uploads(vec![kittycad::types::multipart::Attachment {
                 name: "".to_string(),
-                filename: Some("modeling-app/core-dump-screenshot.png".to_string()),
-                content_type: Some("file/json".to_string()),
-                data,
+                filename: Some(format!(r#"modeling-app/coredump-{}.json)"#, core_dump_info.id,)),
+                content_type: Some("application/json".to_string()),
+                data: json.to_vec(),
             }])
-            .await
-            .map_err(|e| anyhow::anyhow!(e.to_string()))?;
+            .await?;
 
-        if links.is_empty() {
-            anyhow::bail!("Failed to upload screenshot");
+        if result.is_empty() {
+            anyhow::bail!("Failed to upload coredump");
         }
 
-        Ok(links[0].clone())
+        println!("{:?}", result);
+        Ok(result[0].clone())
     }
 
     /// Dump the app info.
@@ -112,8 +110,8 @@ pub trait CoreDump: Clone {
             pool: self.pool()?,
             client_state,
         };
-        
-        let coredump_url = screenshot_url.clone();
+
+        let coredump_url: String = self.upload_coredump(&core_dump_info).await?;
 
         core_dump_info.set_github_issue_url(&screenshot_url, &coredump_url)?;
 
@@ -171,8 +169,7 @@ impl CoreDumpInfo {
 
 ![Coredump]({})
 "#,
-            screenshot_url,
-            coredump_url
+            screenshot_url, coredump_url
         );
         let urlencoded: String = form_urlencoded::byte_serialize(body.as_bytes()).collect();
 
