@@ -154,7 +154,7 @@ export const ModelingMachineProvider = ({
               ])
               const pathToNode = parent?.userData?.pathToNode
               const pathToNodeString = JSON.stringify(pathToNode)
-              if (!parent || !pathToNode) return {}
+              if (!parent || !pathToNode) return segmentHoverMap
               if (segmentHoverMap[pathToNodeString] !== undefined)
                 clearTimeout(segmentHoverMap[JSON.stringify(pathToNode)])
               return {
