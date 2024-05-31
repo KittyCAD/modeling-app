@@ -27,7 +27,7 @@ document.addEventListener('mousemove', (e) =>
 )
 */
 
-const deg = Math.PI*2 / 360
+const deg = (Math.PI * 2) / 360
 
 const commonPoints = {
   startAt: '[9.06, -12.22]',
@@ -47,9 +47,9 @@ const getTools = (opts) => {
   // NOTE: these pretty much can't be perfect because of screen scaling.
   // Handle on a case-by-case.
   const toU = (x, y) => [
-    kcRound( x*0.0854),
-    kcRound(-y*0.0854), // Y is inverted in our coordinate system
-  ];
+    kcRound(x * 0.0854),
+    kcRound(-y * 0.0854), // Y is inverted in our coordinate system
+  ]
 
   // Turn the array into a string with specific formatting
   const fromUToString = (xy) => `[${xy[0]}, ${xy[1]}]`
@@ -58,10 +58,11 @@ const getTools = (opts) => {
   const toSU = (xy) => fromUToString(toU(xy[0], xy[1]))
 
   // Make it easier to click around from center ("click [from] zero zero")
-  const click00 = (x, y) => opts.page.mouse.click(opts.center.x + x, opts.center.y + y)
+  const click00 = (x, y) =>
+    opts.page.mouse.click(opts.center.x + x, opts.center.y + y)
 
   // Relative clicker, must keep state
-  let last = { x: 0, y: 0 };
+  let last = { x: 0, y: 0 }
   const click00r = (x, y) => {
     // reset relative coordinates when anything is undefined
     if (x === undefined || y === undefined) {
@@ -1535,14 +1536,14 @@ const part001 = startSketchOn('XZ')
 test('Can add multiple sketches', async ({ page }) => {
   test.skip(process.platform === 'darwin', 'Can add multiple sketches')
   const u = await getUtils(page)
-  const viewportSize = { width: 1200, height: 500, };
+  const viewportSize = { width: 1200, height: 500 }
   await page.setViewportSize(viewportSize)
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
 
-  const center = { x: viewportSize.width / 2, y: viewportSize.height / 2 };
-  const { toSU, click00r, expectCodeToBe } = getTools({ center, page });
+  const center = { x: viewportSize.width / 2, y: viewportSize.height / 2 }
+  const { toSU, click00r, expectCodeToBe } = getTools({ center, page })
 
   await expect(
     page.getByRole('button', { name: 'Start Sketch' })
@@ -1556,7 +1557,7 @@ test('Can add multiple sketches', async ({ page }) => {
     200
   )
 
-  let codeStr = "const part001 = startSketchOn('XY')";
+  let codeStr = "const part001 = startSketchOn('XY')"
 
   await page.mouse.click(center.x, viewportSize.height * 0.55)
   await expectCodeToBe(codeStr)
@@ -1568,15 +1569,15 @@ test('Can add multiple sketches', async ({ page }) => {
   await expectCodeToBe(codeStr)
 
   await click00r(50, 0)
-  codeStr += `  |> line(${toSU([50, 0])}, %)`;
+  codeStr += `  |> line(${toSU([50, 0])}, %)`
   await expectCodeToBe(codeStr)
 
   await click00r(0, 50)
-  codeStr += `  |> line(${toSU([0, 50])}, %)`;
+  codeStr += `  |> line(${toSU([0, 50])}, %)`
   await expectCodeToBe(codeStr)
 
   await click00r(-50, 0)
-  codeStr += `  |> line(${toSU([-50, 0])}, %)`;
+  codeStr += `  |> line(${toSU([-50, 0])}, %)`
   await expectCodeToBe(codeStr)
 
   // exit the sketch, reset relative clicker
@@ -1594,7 +1595,7 @@ test('Can add multiple sketches', async ({ page }) => {
   // so selecting the plane again is a bit easier.
   await page.mouse.click(center.x + 30, center.y)
   await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
-  codeStr += "const part002 = startSketchOn('XY')";
+  codeStr += "const part002 = startSketchOn('XY')"
   await expectCodeToBe(codeStr)
   await u.closeDebugPanel()
 
@@ -1603,15 +1604,15 @@ test('Can add multiple sketches', async ({ page }) => {
   await expectCodeToBe(codeStr)
 
   await click00r(30, 0)
-  codeStr += `  |> line(${toSU([30 - 0.1 /* imprecision */, 0])}, %)`;
+  codeStr += `  |> line(${toSU([30 - 0.1 /* imprecision */, 0])}, %)`
   await expectCodeToBe(codeStr)
 
   await click00r(0, 30)
-  codeStr += `  |> line(${toSU([0, 30])}, %)`;
+  codeStr += `  |> line(${toSU([0, 30])}, %)`
   await expectCodeToBe(codeStr)
 
   await click00r(-30, 0)
-  codeStr += `  |> line(${toSU([-30 + 0.1, 0])}, %)`;
+  codeStr += `  |> line(${toSU([-30 + 0.1, 0])}, %)`
   await expectCodeToBe(codeStr)
 
   click00r(undefined, undefined)
@@ -2966,22 +2967,16 @@ const part002 = startSketchOn('XZ')
 })
 
 const wiggleMove = async (page, x, y, steps, dist, ang, amplitude, freq) => {
-  const tau = Math.PI*2
+  const tau = Math.PI * 2
   const deg = tau / 360
-  const step = dist / steps;
+  const step = dist / steps
   for (let i = 0, j = 0; i < dist; i += step, j += 1) {
-    const [x1, y1] = [
-      0,
-      Math.sin(tau / steps * j * freq) * amplitude,
-    ]
+    const [x1, y1] = [0, Math.sin((tau / steps) * j * freq) * amplitude]
     const [x2, y2] = [
-      Math.cos(-ang*deg)*i - Math.sin(-ang*deg)*y1,
-      Math.sin(-ang*deg)*i + Math.cos(-ang*deg)*y1,
+      Math.cos(-ang * deg) * i - Math.sin(-ang * deg) * y1,
+      Math.sin(-ang * deg) * i + Math.cos(-ang * deg) * y1,
     ]
-    const [xr, yr] = [
-      x2,
-      y2
-    ]
+    const [xr, yr] = [x2, y2]
     await page.mouse.move(x + xr, y + yr, { steps: 2 })
   }
 }
@@ -3024,9 +3019,10 @@ test.describe('Testing segment overlays', () => {
 
         await page.mouse.move(0, 0)
         await page.waitForTimeout(1000)
-        let x = 0, y = 0
-        x = hoverPos.x + Math.cos(ang*deg)*32
-        y = hoverPos.y - Math.sin(ang*deg)*32
+        let x = 0,
+          y = 0
+        x = hoverPos.x + Math.cos(ang * deg) * 32
+        y = hoverPos.y - Math.sin(ang * deg) * 32
         await page.mouse.move(x, y)
         await wiggleMove(page, x, y, 20, 30, ang, 10, 5)
 
@@ -3048,8 +3044,8 @@ test.describe('Testing segment overlays', () => {
 
         await page.mouse.move(0, 0)
         await page.waitForTimeout(1000)
-        x = hoverPos.x + Math.cos(ang*deg)*32
-        y = hoverPos.y - Math.sin(ang*deg)*32
+        x = hoverPos.x + Math.cos(ang * deg) * 32
+        y = hoverPos.y - Math.sin(ang * deg) * 32
         await page.mouse.move(x, y)
         await wiggleMove(page, x, y, 20, 30, ang, 10, 5)
 
@@ -3100,12 +3096,12 @@ test.describe('Testing segment overlays', () => {
       }) => {
         await page.mouse.move(0, 0)
         await page.waitForTimeout(1000)
-        let x = 0, y = 0
-        x = hoverPos.x + Math.cos(ang*deg)*32
-        y = hoverPos.y - Math.sin(ang*deg)*32
+        let x = 0,
+          y = 0
+        x = hoverPos.x + Math.cos(ang * deg) * 32
+        y = hoverPos.y - Math.sin(ang * deg) * 32
         await page.mouse.move(x, y)
         await wiggleMove(page, x, y, 20, 30, ang, 10, 5)
-
 
         await expect(page.getByText('Added variable')).not.toBeVisible()
         await expect(page.locator('.cm-content')).toContainText(
@@ -3128,8 +3124,8 @@ test.describe('Testing segment overlays', () => {
 
         await page.mouse.move(0, 0)
         await page.waitForTimeout(1000)
-        x = hoverPos.x + Math.cos(ang*deg)*32
-        y = hoverPos.y - Math.sin(ang*deg)*32
+        x = hoverPos.x + Math.cos(ang * deg) * 32
+        y = hoverPos.y - Math.sin(ang * deg) * 32
         await page.mouse.move(x, y)
         await wiggleMove(page, x, y, 20, 30, ang, 10, 5)
 
@@ -3217,14 +3213,14 @@ test.describe('Testing segment overlays', () => {
 
       // Drag the sketch into view
       await page.mouse.move(600, 64)
-      await page.mouse.down({ button: "middle" })
+      await page.mouse.down({ button: 'middle' })
       await page.mouse.move(600, 450, { steps: 10 })
-      await page.mouse.up({ button: "middle" })
+      await page.mouse.up({ button: 'middle' })
 
       await page.mouse.move(600, 64)
-      await page.mouse.down({ button: "middle" })
+      await page.mouse.down({ button: 'middle' })
       await page.mouse.move(600, 120, { steps: 10 })
-      await page.mouse.up({ button: "middle" })
+      await page.mouse.up({ button: 'middle' })
 
       let ang = 0
 
@@ -3237,7 +3233,7 @@ test.describe('Testing segment overlays', () => {
         expectBeforeUnconstrained: '|> line([0.5, -14 + 0], %)',
         expectAfterUnconstrained: '|> line([0.5, -14], %)',
         expectFinal: '|> line([0.5, yRel001], %)',
-        ang: ang+180,
+        ang: ang + 180,
       })
       console.log('line2')
       await clickUnconstrained({
@@ -3246,7 +3242,7 @@ test.describe('Testing segment overlays', () => {
         expectBeforeUnconstrained: '|> line([0.5, yRel001], %)',
         expectAfterUnconstrained: 'line([xRel001, yRel001], %)',
         expectFinal: '|> line([0.5, yRel001], %)',
-        ang: ang+180,
+        ang: ang + 180,
       })
 
       const angledLine = await u.getBoundingBox(`[data-overlay-index="1"]`)
@@ -3259,7 +3255,7 @@ test.describe('Testing segment overlays', () => {
           'angledLine({ angle: 3 + 0, length: 32 + 0 }, %)',
         expectAfterUnconstrained: 'angledLine({ angle: 3, length: 32 + 0 }, %)',
         expectFinal: 'angledLine({ angle: angle001, length: 32 + 0 }, %)',
-        ang: ang+180,
+        ang: ang + 180,
       })
       console.log('angledLine2')
       await clickConstrained({
@@ -3270,7 +3266,7 @@ test.describe('Testing segment overlays', () => {
         expectAfterUnconstrained:
           'angledLine({ angle: angle001, length: 32 }, %)',
         expectFinal: 'angledLine({ angle: angle001, length: len001 }, %)',
-        ang: ang+180,
+        ang: ang + 180,
       })
 
       await page.mouse.move(700, 250)
@@ -3290,7 +3286,7 @@ test.describe('Testing segment overlays', () => {
         expectAfterUnconstrained: 'lineTo([5 + 33, 31.5], %)',
         expectFinal: 'lineTo([5 + 33, yAbs001], %)',
         steps: 8,
-        ang: ang+180,
+        ang: ang + 180,
       })
       console.log('lineTo2')
       await clickConstrained({
@@ -3300,7 +3296,7 @@ test.describe('Testing segment overlays', () => {
         expectAfterUnconstrained: 'lineTo([38, yAbs001], %)',
         expectFinal: 'lineTo([xAbs001, yAbs001], %)',
         steps: 8,
-        ang: ang+180,
+        ang: ang + 180,
       })
 
       const xLineTo = await u.getBoundingBox(`[data-overlay-index="3"]`)
@@ -3312,7 +3308,7 @@ test.describe('Testing segment overlays', () => {
         expectBeforeUnconstrained: 'xLineTo(5 + 9 - 5, %)',
         expectAfterUnconstrained: 'xLineTo(9, %)',
         expectFinal: 'xLineTo(xAbs002, %)',
-        ang: ang+180,
+        ang: ang + 180,
         steps: 8,
       })
     })
@@ -3454,7 +3450,7 @@ const part001 = startSketchOn('XZ')
         expectBeforeUnconstrained: 'yLine(21.14 + 0, %)',
         expectAfterUnconstrained: 'yLine(21.14, %)',
         expectFinal: 'yLine(yRel001, %)',
-        ang: ang + 180
+        ang: ang + 180,
       })
 
       const angledLineOfXLength = await u.getBoundingBox(
@@ -3471,7 +3467,7 @@ const part001 = startSketchOn('XZ')
           'angledLineOfXLength({ angle: -179, length: 23.14 }, %)',
         expectFinal:
           'angledLineOfXLength({ angle: angle001, length: 23.14 }, %)',
-          ang: ang + 180
+        ang: ang + 180,
       })
       console.log('angledLineOfXLength2')
       await clickUnconstrained({
@@ -3484,7 +3480,7 @@ const part001 = startSketchOn('XZ')
         expectFinal:
           'angledLineOfXLength({ angle: angle001, length: 23.14 }, %)',
         steps: 7,
-        ang: ang + 180
+        ang: ang + 180,
       })
 
       const angledLineOfYLength = await u.getBoundingBox(
@@ -3575,7 +3571,7 @@ const part001 = startSketchOn('XZ')
         expectBeforeUnconstrained: 'angledLineToX({ angle: 3 + 0, to: 26 }, %)',
         expectAfterUnconstrained: 'angledLineToX({ angle: 3, to: 26 }, %)',
         expectFinal: 'angledLineToX({ angle: angle001, to: 26 }, %)',
-        ang: ang + 180
+        ang: ang + 180,
       })
       console.log('angledLineToX2')
       await clickUnconstrained({
@@ -3586,7 +3582,7 @@ const part001 = startSketchOn('XZ')
         expectAfterUnconstrained:
           'angledLineToX({ angle: angle001, to: xAbs001 }, %)',
         expectFinal: 'angledLineToX({ angle: angle001, to: 26 }, %)',
-        ang: ang + 180
+        ang: ang + 180,
       })
 
       const angledLineToY = await u.getBoundingBox(`[data-overlay-index="10"]`)
@@ -3601,7 +3597,7 @@ const part001 = startSketchOn('XZ')
           'angledLineToY({ angle: angle002, to: 9.14 + 0 }, %)',
         expectFinal: 'angledLineToY({ angle: 89, to: 9.14 + 0 }, %)',
         steps: process.platform === 'darwin' ? 8 : 9,
-        ang: ang + 180
+        ang: ang + 180,
       })
       console.log('angledLineToY2')
       await clickConstrained({
@@ -3611,7 +3607,7 @@ const part001 = startSketchOn('XZ')
           'angledLineToY({ angle: 89, to: 9.14 + 0 }, %)',
         expectAfterUnconstrained: 'angledLineToY({ angle: 89, to: 9.14 }, %)',
         expectFinal: 'angledLineToY({ angle: 89, to: yAbs001 }, %)',
-        ang: ang + 180
+        ang: ang + 180,
       })
 
       const angledLineThatIntersects = await u.getBoundingBox(
