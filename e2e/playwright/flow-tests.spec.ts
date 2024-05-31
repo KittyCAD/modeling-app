@@ -4439,6 +4439,7 @@ test.describe('Testing Gizmo', () => {
         },
       })
       await page.waitForTimeout(100)
+      await u.clearCommandLogs()
       await u.sendCustomCmd({
         type: 'modeling_cmd_req',
         cmd_id: uuidv4(),
@@ -4446,6 +4447,7 @@ test.describe('Testing Gizmo', () => {
           type: 'default_camera_get_settings',
         },
       })
+      await u.waitForCmdReceive('default_camera_get_settings')
 
       await page.waitForTimeout(100)
       await page.mouse.move(clickPosition.x, clickPosition.y)
