@@ -17,7 +17,7 @@ export const AllKeybindingsFields = forwardRef(
     // const { state } = useInteractionMapContext()
 
     return (
-      <div className="relative overflow-y-auto">
+      <div className="relative overflow-y-auto pb-16">
         <div ref={scrollRef} className="flex flex-col gap-12">
           {Object.entries(interactionMap)
             .sort(sortInteractionMapByCategory)
