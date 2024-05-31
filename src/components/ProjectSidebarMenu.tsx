@@ -138,41 +138,7 @@ function ProjectMenuPopover({
         >
           {({ close }) => (
             <>
-              <div className="flex items-center gap-4 px-4 py-3">
-                <div>
-                  <p className="m-0 text-mono" data-testid="projectName">
-                    {project?.name ? project.name : APP_NAME}
-                  </p>
-                  {project?.metadata && project.metadata.created && (
-                    <p
-                      className="m-0 text-xs text-chalkboard-80 dark:text-chalkboard-40"
-                      data-testid="createdAt"
-                    >
-                      Created{' '}
-                      {new Date(project.metadata.created).toLocaleDateString()}
-                    </p>
-                  )}
-                </div>
-              </div>
-              {isTauri() ? (
-                <FileTree
-                  file={file}
-                  className="overflow-hidden border-0 border-y border-chalkboard-30 dark:border-chalkboard-80"
-                  onNavigateToFile={close}
-                />
-              ) : (
-                <div className="flex-1 p-4 text-sm overflow-hidden">
-                  <p>
-                    In the browser version of Modeling App you can only have one
-                    part, and the code is stored in your browser's storage.
-                  </p>
-                  <p className="my-6">
-                    Please save any code you want to keep more permanently, as
-                    your browser's storage is not guaranteed to be permanent.
-                  </p>
-                </div>
-              )}
-              <div className="flex flex-col gap-2 p-4 dark:bg-chalkboard-90">
+              <div className="flex flex-col gap-2 p-4">
                 <ActionButton
                   Element="button"
                   iconStart={{ icon: 'exportFile', className: 'p-1' }}
