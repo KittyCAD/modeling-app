@@ -504,50 +504,44 @@ impl SketchGroup {
         }
     }
 
-    pub fn get_coords_from_paths(&self) -> Result<Point2d, KclError> {
-        if self.value.is_empty() {
-            return Ok(self.start.to.into());
-        }
+    /// Get the path most recently sketched.
+    pub fn latest_path(&self) -> Option<&Path> {
+        self.value.last()
+    }
 
-        let index = self.value.len() - 1;
-        if let Some(path) = self.value.get(index) {
-            let base = path.get_base();
-            Ok(base.to.into())
-        } else {
-            Ok(self.start.to.into())
-        }
+    /// The "pen" is an imaginary pen drawing the path.
+    /// This gets the current point the pen is hovering over, i.e. the point
+    /// where the last path segment ends, and the next path segment will begin.
+    pub fn current_pen_position(&self) -> Result<Point2d, KclError> {
+        let Some(path) = self.latest_path() else {
+            return Ok(self.start.to.into());
+        };
+
+        let base = path.get_base();
+        Ok(base.to.into())
     }
 
     pub fn get_tangential_info_from_paths(&self) -> GetTangentialInfoFromPathsResult {
-        if self.value.is_empty() {
+        let Some(path) = self.latest_path() else {
             return GetTangentialInfoFromPathsResult {
                 center_or_tangent_point: self.start.to,
                 is_center: false,
                 ccw: false,
             };
-        }
-        let index = self.value.len() - 1;
-        if let Some(path) = self.value.get(index) {
-            match path {
-                Path::TangentialArcTo { center, ccw, .. } => GetTangentialInfoFromPathsResult {
-                    center_or_tangent_point: *center,
-                    is_center: true,
-                    ccw: *ccw,
-                },
-                _ => {
-                    let base = path.get_base();
-                    GetTangentialInfoFromPathsResult {
-                        center_or_tangent_point: base.from,
-                        is_center: false,
-                        ccw: false,
-                    }
+        };
+        match path {
+            Path::TangentialArcTo { center, ccw, .. } => GetTangentialInfoFromPathsResult {
+                center_or_tangent_point: *center,
+                is_center: true,
+                ccw: *ccw,
+            },
+            _ => {
+                let base = path.get_base();
+                GetTangentialInfoFromPathsResult {
+                    center_or_tangent_point: base.from,
+                    is_center: false,
+                    ccw: false,
                 }
-            }
-        } else {
-            GetTangentialInfoFromPathsResult {
-                center_or_tangent_point: self.start.to,
-                is_center: false,
-                ccw: false,
             }
         }
     }

@@ -120,6 +120,10 @@ export async function applyConstraintAbsDistance({
       createVariableDeclaration(variableName, valueNode)
     )
     _modifiedAst.body = newBody
+    Object.values(pathToNodeMap).forEach((pathToNode) => {
+      const index = pathToNode.findIndex((a) => a[0] === 'body') + 1
+      pathToNode[index][0] = Number(pathToNode[index][0]) + 1
+    })
   }
   return { modifiedAst: _modifiedAst, pathToNodeMap }
 }

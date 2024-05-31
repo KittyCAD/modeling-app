@@ -64,6 +64,7 @@ export type SetSelections =
   | {
       selectionType: 'completeSelection'
       selection: Selections
+      updatedPathToNode?: PathToNode
     }
   | {
       selectionType: 'mirrorCodeMirrorSelections'
