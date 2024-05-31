@@ -11,7 +11,10 @@ import {
 import { SetSelections, modelingMachine } from 'machines/modelingMachine'
 import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import { isCursorInSketchCommandRange } from 'lang/util'
+import {
+  isCursorInSketchCommandRange,
+  updatePathToNodeFromMap,
+} from 'lang/util'
 import {
   kclManager,
   sceneInfra,
@@ -34,7 +37,6 @@ import {
   handleSelectionBatch,
   isSelectionLastLine,
   isSketchPipe,
-  updateSelections,
 } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
@@ -54,7 +56,6 @@ import {
 } from 'lang/modifyAst'
 import {
   Program,
-  Value,
   VariableDeclaration,
   coreDump,
   parse,
@@ -75,7 +76,6 @@ import { useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { getVarNameModal } from 'hooks/useToolbarGuards'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
-import { applyConstraintEqualAngle } from './Toolbar/EqualAngle'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -221,7 +221,7 @@ export const ModelingMachineProvider = ({
               }
             : {}
         ),
-        'Set selection': assign(({ selectionRanges }, event) => {
+        'Set selection': assign(({ selectionRanges, sketchDetails }, event) => {
           const setSelections = event.data as SetSelections // this was needed for ts after adding 'Set selection' action to on done modal events
           if (!editorManager.editorView) return {}
           const dispatchSelection = (selection?: EditorSelection) => {
@@ -311,8 +311,19 @@ export const ModelingMachineProvider = ({
           }
           if (setSelections.selectionType === 'completeSelection') {
             editorManager.selectRange(setSelections.selection)
+            if (!sketchDetails)
+              return {
+                selectionRanges: setSelections.selection,
+              }
             return {
               selectionRanges: setSelections.selection,
+              sketchDetails: {
+                ...sketchDetails,
+                sketchPathToNode:
+                  setSelections.updatedPathToNode ||
+                  sketchDetails?.sketchPathToNode ||
+                  [],
+              },
             }
           }
 
@@ -533,6 +544,7 @@ export const ModelingMachineProvider = ({
         },
         'Get angle info': async ({
           selectionRanges,
+          sketchDetails,
         }): Promise<SetSelections> => {
           const { modifiedAst, pathToNodeMap } = await (angleBetweenInfo({
             selectionRanges,
@@ -544,14 +556,27 @@ export const ModelingMachineProvider = ({
                 selectionRanges,
                 angleOrLength: 'setAngle',
               }))
-          await kclManager.updateAst(modifiedAst, true)
+          const _modifiedAst = parse(recast(modifiedAst))
+          if (!sketchDetails) throw new Error('No sketch details')
+          const updatedPathToNode = updatePathToNodeFromMap(
+            sketchDetails.sketchPathToNode,
+            pathToNodeMap
+          )
+          await sceneEntitiesManager.updateAstAndRejigSketch(
+            updatedPathToNode,
+            _modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin
+          )
           return {
             selectionType: 'completeSelection',
             selection: pathMapToSelections(
-              kclManager.ast,
+              _modifiedAst,
               selectionRanges,
               pathToNodeMap
             ),
+            updatedPathToNode,
           }
         },
         'Get length info': async ({
