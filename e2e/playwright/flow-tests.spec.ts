@@ -2437,7 +2437,6 @@ test('Extrude from command bar selects extrude line after', async ({
   )
 })
 
-<<<<<<< HEAD
 test.describe('Testing constraints', () => {
   test(`Test remove constraints`, async ({ page }) => {
     await page.addInitScript(async () => {
@@ -3540,7 +3539,7 @@ test.describe('Testing segment overlays', () => {
       }
       await page.waitForTimeout(200)
 
-      const lineTo = await u.getBoundingBox(`[data-overlay-index="2"]`)
+      let lineTo = await u.getBoundingBox(`[data-overlay-index="2"]`)
       ang = await u.getAngle(`[data-overlay-index="2"]`)
       console.log('lineTo1')
       await clickConstrained({
