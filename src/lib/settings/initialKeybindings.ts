@@ -17,6 +17,8 @@ export const interactionMapCategories = [
   'Command Palette',
   'Settings',
   'Panes',
+  'Code Editor',
+  'File Tree',
   'Miscellaneous',
 ]
 
@@ -136,6 +138,31 @@ export const interactionMap: Record<
       title: 'Extrude',
       description:
         'Available while modeling with either a face selected or an empty selection, when not typing in the code editor.',
+    },
+  ],
+  'Code Editor': [
+    {
+      name: 'format-code',
+      sequence: 'Shift+Alt+F',
+      title: 'Format Code',
+      description:
+        'Nicely formats the KCL code in the editor, available when the editor is focused.',
+    },
+  ],
+  'File Tree': [
+    {
+      name: 'rename-file',
+      sequence: 'Enter',
+      title: 'Rename File/Folder',
+      description:
+        'Available when a file or folder is selected in the file tree.',
+    },
+    {
+      name: 'delete-file',
+      sequence: 'Meta+Backspace',
+      title: 'Delete File/Folder',
+      description:
+        'Available when a file or folder is selected in the file tree.',
     },
   ],
 }
