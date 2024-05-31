@@ -614,13 +614,26 @@ export const ModelingMachineProvider = ({
         },
         'Get ABS X info': async ({
           selectionRanges,
+          sketchDetails,
         }): Promise<SetSelections> => {
           const { modifiedAst, pathToNodeMap } =
             await applyConstraintAbsDistance({
               constraint: 'xAbs',
               selectionRanges,
             })
-          await kclManager.updateAst(modifiedAst, true)
+          const _modifiedAst = parse(recast(modifiedAst))
+          if (!sketchDetails) throw new Error('No sketch details')
+          const updatedPathToNode = updatePathToNodeFromMap(
+            sketchDetails.sketchPathToNode,
+            pathToNodeMap
+          )
+          await sceneEntitiesManager.updateAstAndRejigSketch(
+            updatedPathToNode,
+            _modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin
+          )
           return {
             selectionType: 'completeSelection',
             selection: pathMapToSelections(
@@ -628,17 +641,31 @@ export const ModelingMachineProvider = ({
               selectionRanges,
               pathToNodeMap
             ),
+            updatedPathToNode,
           }
         },
         'Get ABS Y info': async ({
           selectionRanges,
+          sketchDetails,
         }): Promise<SetSelections> => {
           const { modifiedAst, pathToNodeMap } =
             await applyConstraintAbsDistance({
               constraint: 'yAbs',
               selectionRanges,
             })
-          await kclManager.updateAst(modifiedAst, true)
+          const _modifiedAst = parse(recast(modifiedAst))
+          if (!sketchDetails) throw new Error('No sketch details')
+          const updatedPathToNode = updatePathToNodeFromMap(
+            sketchDetails.sketchPathToNode,
+            pathToNodeMap
+          )
+          await sceneEntitiesManager.updateAstAndRejigSketch(
+            updatedPathToNode,
+            _modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin
+          )
           return {
             selectionType: 'completeSelection',
             selection: pathMapToSelections(
@@ -646,6 +673,7 @@ export const ModelingMachineProvider = ({
               selectionRanges,
               pathToNodeMap
             ),
+            updatedPathToNode,
           }
         },
         'Get convert to variable info': async ({ sketchDetails }, { data }) => {
