@@ -4453,32 +4453,28 @@ test.describe('Testing Gizmo', () => {
       await page.mouse.click(clickPosition.x, clickPosition.y)
       await page.waitForTimeout(100)
 
-      const [cameraPositionX, cameraPositionY, cameraPositionZ] =
-        await Promise.all([
-          page.getByTestId('cam-x-position').inputValue(),
-          page.getByTestId('cam-y-position').inputValue(),
-          page.getByTestId('cam-z-position').inputValue(),
-        ])
-
-      const [cameraTargetX, cameraTargetY, cameraTargetZ] = await Promise.all([
-        page.getByTestId('cam-x-target').inputValue(),
-        page.getByTestId('cam-y-target').inputValue(),
-        page.getByTestId('cam-z-target').inputValue(),
+      await Promise.all([
+        // position
+        expect(page.getByTestId('cam-x-position')).toHaveValue(
+          expectedCameraPosition.x.toString()
+        ),
+        expect(page.getByTestId('cam-y-position')).toHaveValue(
+          expectedCameraPosition.y.toString()
+        ),
+        expect(page.getByTestId('cam-z-position')).toHaveValue(
+          expectedCameraPosition.z.toString()
+        ),
+        // target
+        expect(page.getByTestId('cam-x-target')).toHaveValue(
+          expectedCameraTarget.x.toString()
+        ),
+        expect(page.getByTestId('cam-y-target')).toHaveValue(
+          expectedCameraTarget.y.toString()
+        ),
+        expect(page.getByTestId('cam-z-target')).toHaveValue(
+          expectedCameraTarget.z.toString()
+        ),
       ])
-
-      const cameraPosition = {
-        x: parseFloat(cameraPositionX),
-        y: parseFloat(cameraPositionY),
-        z: parseFloat(cameraPositionZ),
-      }
-      const cameraTarget = {
-        x: parseFloat(cameraTargetX),
-        y: parseFloat(cameraTargetY),
-        z: parseFloat(cameraTargetZ),
-      }
-
-      expect(cameraPosition).toEqual(expectedCameraPosition)
-      expect(cameraTarget).toEqual(expectedCameraTarget)
     })
   }
 })
