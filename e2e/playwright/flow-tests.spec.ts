@@ -38,32 +38,32 @@ const commonPoints = {
 }
 
 // Utilities for writing tests that depend on test values
-const getTools = (opts) => {
+const getTools = (opts: any) => {
   // The way we truncate is kinda odd apparently, so we need this function
   // "[k]itty[c]ad round"
-  const kcRound = (n) => Math.trunc(n * 100) / 100
+  const kcRound = (n: number) => Math.trunc(n * 100) / 100
 
   // To translate between screen and engine ("[U]nit") coordinates
   // NOTE: these pretty much can't be perfect because of screen scaling.
   // Handle on a case-by-case.
-  const toU = (x, y) => [
+  const toU = (x: number, y: number) => [
     kcRound(x * 0.0854),
     kcRound(-y * 0.0854), // Y is inverted in our coordinate system
   ]
 
   // Turn the array into a string with specific formatting
-  const fromUToString = (xy) => `[${xy[0]}, ${xy[1]}]`
+  const fromUToString = (xy: number[]) => `[${xy[0]}, ${xy[1]}]`
 
   // Combine because used often
-  const toSU = (xy) => fromUToString(toU(xy[0], xy[1]))
+  const toSU = (xy: number[]) => fromUToString(toU(xy[0], xy[1]))
 
   // Make it easier to click around from center ("click [from] zero zero")
-  const click00 = (x, y) =>
+  const click00 = (x: number, y: number) =>
     opts.page.mouse.click(opts.center.x + x, opts.center.y + y)
 
   // Relative clicker, must keep state
   let last = { x: 0, y: 0 }
-  const click00r = (x, y) => {
+  const click00r = (x?: number, y?: number) => {
     // reset relative coordinates when anything is undefined
     if (x === undefined || y === undefined) {
       last.x = 0
@@ -79,7 +79,7 @@ const getTools = (opts) => {
     return ret.then(() => [last.x, last.y])
   }
 
-  const expectCodeToBe = async (str) => {
+  const expectCodeToBe = async (str: string) => {
     await expect(opts.page.locator('.cm-content')).toHaveText(str)
     await opts.page.waitForTimeout(100)
   }
@@ -3225,7 +3225,7 @@ const part002 = startSketchOn('XZ')
   })
 })
 
-const wiggleMove = async (page, x, y, steps, dist, ang, amplitude, freq) => {
+const wiggleMove = async (page: any, x: number, y: number, steps: number, dist: number, ang: number, amplitude: number, freq: number) => {
   const tau = Math.PI * 2
   const deg = tau / 360
   const step = dist / steps
