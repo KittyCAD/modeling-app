@@ -2507,6 +2507,7 @@ const part002 = startSketchOn('XZ')
         }
         await page.keyboard.down('Shift')
         await page.mouse.click(line3.x, line3.y)
+        await page.waitForTimeout(100) // this wait is needed for webkit - not sure why
         await page.keyboard.up('Shift')
         await page
           .getByRole('button', {

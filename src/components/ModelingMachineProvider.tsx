@@ -76,7 +76,6 @@ import { useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { getVarNameModal } from 'hooks/useToolbarGuards'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
-import { applyConstraintEqualAngle } from './Toolbar/EqualAngle'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
