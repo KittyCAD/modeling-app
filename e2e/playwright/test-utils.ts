@@ -1,9 +1,11 @@
-import { test, expect, Page } from '@playwright/test'
+import { test, expect, Page, Download } from '@playwright/test'
 import { EngineCommand } from '../../src/lang/std/engineConnection'
 import fsp from 'fs/promises'
 import pixelMatch from 'pixelmatch'
 import { PNG } from 'pngjs'
 import { Protocol } from 'playwright-core/types/protocol'
+import type { Models } from '@kittycad/lib'
+import { APP_NAME } from 'lib/constants'
 
 async function waitForPageLoad(page: Page) {
   // wait for 'Loading stream...' spinner
@@ -130,6 +132,19 @@ export async function getUtils(page: Page) {
     },
     waitForCmdReceive: (commandType: string) =>
       waitForCmdReceive(page, commandType),
+    getSegmentBodyCoords: async (locator: string, px = 30) => {
+      const overlay = page.locator(locator)
+      const bbox = await overlay
+        .boundingBox()
+        .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 }))
+      const angle = Number(await overlay.getAttribute('data-overlay-angle'))
+      const angleXOffset = Math.cos(((angle - 180) * Math.PI) / 180) * px
+      const angleYOffset = Math.sin(((angle - 180) * Math.PI) / 180) * px
+      return {
+        x: bbox.x + angleXOffset,
+        y: bbox.y - angleYOffset,
+      }
+    },
     getBoundingBox: async (locator: string) =>
       page
         .locator(locator)
@@ -275,5 +290,79 @@ export const makeTemplate: (
         [...templateParts, ...nextTemplateParts] as any as TemplateStringsArray,
         [...options, ...nextOptions] as any
       ),
+  }
+}
+
+export interface Paths {
+  modelPath: string
+  imagePath: string
+  outputType: string
+}
+
+export const doExport = async (
+  output: Models['OutputFormat_type'],
+  page: Page
+): Promise<Paths> => {
+  await page.getByRole('button', { name: APP_NAME }).click()
+  await expect(page.getByRole('button', { name: 'Export Part' })).toBeVisible()
+  await page.getByRole('button', { name: 'Export Part' }).click()
+  await expect(page.getByTestId('command-bar')).toBeVisible()
+
+  // Go through export via command bar
+  await page.getByRole('option', { name: output.type, exact: false }).click()
+  await page.locator('#arg-form').waitFor({ state: 'detached' })
+  if ('storage' in output) {
+    await page.getByTestId('arg-name-storage').waitFor({ timeout: 1000 })
+    await page.getByRole('button', { name: 'storage', exact: false }).click()
+    await page
+      .getByRole('option', { name: output.storage, exact: false })
+      .click()
+    await page.locator('#arg-form').waitFor({ state: 'detached' })
+  }
+  await expect(page.getByText('Confirm Export')).toBeVisible()
+
+  const getPromiseAndResolve = () => {
+    let resolve: any = () => {}
+    const promise = new Promise<Download>((r) => {
+      resolve = r
+    })
+    return [promise, resolve]
+  }
+
+  const [downloadPromise1, downloadResolve1] = getPromiseAndResolve()
+  let downloadCnt = 0
+
+  page.on('download', async (download) => {
+    if (downloadCnt === 0) {
+      downloadResolve1(download)
+    }
+    downloadCnt++
+  })
+  await page.getByRole('button', { name: 'Submit command' }).click()
+
+  // Handle download
+  const download = await downloadPromise1
+  const downloadLocationer = (extra = '', isImage = false) =>
+    `./e2e/playwright/export-snapshots/${output.type}-${
+      'storage' in output ? output.storage : ''
+    }${extra}.${isImage ? 'png' : output.type}`
+  const downloadLocation = downloadLocationer()
+
+  await download.saveAs(downloadLocation)
+
+  if (output.type === 'step') {
+    // stable timestamps for step files
+    const fileContents = await fsp.readFile(downloadLocation, 'utf-8')
+    const newFileContents = fileContents.replace(
+      /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]+[0-9]+[0-9]\+[0-9]{2}:[0-9]{2}/g,
+      '1970-01-01T00:00:00.0+00:00'
+    )
+    await fsp.writeFile(downloadLocation, newFileContents)
+  }
+
+  return {
+    modelPath: downloadLocation,
+    imagePath: downloadLocationer('', true),
+    outputType: output.type,
   }
 }

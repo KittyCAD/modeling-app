@@ -309,6 +309,25 @@ PS: for the debug panel, the following JSON is useful for snapping the camera
 
 </details>
 
+### Tauri e2e tests
+
+#### Windows (local only until the CI edge version mismatch is fixed)
+
+```
+yarn install
+yarn build:wasm
+cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
+yarn vite build --mode development
+yarn tauri build --debug -b
+$env:KITTYCAD_API_TOKEN="<YOUR_KITTYCAD_API_TOKEN>"
+$env:VITE_KC_API_BASE_URL="https://api.dev.zoo.dev"
+$env:E2E_TAURI_ENABLED="true"
+$env:TS_NODE_COMPILER_OPTIONS='{"module": "commonjs"}'
+$env:E2E_APPLICATION=".\src-tauri\target\debug\Zoo Modeling App.exe"
+Stop-Process -Name msedgedriver
+yarn wdio run wdio.conf.ts
+```
+
 ## KCL
 
 For how to contribute to KCL, [see our KCL README](https://github.com/KittyCAD/modeling-app/tree/main/src/wasm-lib/kcl).

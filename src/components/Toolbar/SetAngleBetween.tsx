@@ -98,7 +98,11 @@ export async function applyConstraintAngleBetween({
     value: valueUsedInTransform,
     initialVariableName: 'angle',
   } as any)
-  if (segName === tagInfo?.tag && Number(value) === valueUsedInTransform) {
+  if (
+    segName === tagInfo?.tag &&
+    Number(value) === valueUsedInTransform &&
+    !variableName
+  ) {
     return {
       modifiedAst,
       pathToNodeMap,
@@ -128,6 +132,10 @@ export async function applyConstraintAngleBetween({
       createVariableDeclaration(variableName, valueNode)
     )
     _modifiedAst.body = newBody
+    Object.values(_pathToNodeMap).forEach((pathToNode) => {
+      const index = pathToNode.findIndex((a) => a[0] === 'body') + 1
+      pathToNode[index][0] = Number(pathToNode[index][0]) + 1
+    })
   }
   return {
     modifiedAst: _modifiedAst,
