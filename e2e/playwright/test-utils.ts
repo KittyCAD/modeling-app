@@ -138,11 +138,11 @@ export async function getUtils(page: Page) {
         .boundingBox()
         .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 }))
       const angle = Number(await overlay.getAttribute('data-overlay-angle'))
-      const angleXOffset = Math.cos((angle * Math.PI) / 180) * px
-      const angleYOffset = Math.sin((angle * Math.PI) / 180) * px
+      const angleXOffset = Math.cos(((angle - 180) * Math.PI) / 180) * px
+      const angleYOffset = Math.sin(((angle - 180) * Math.PI) / 180) * px
       return {
         x: bbox.x + angleXOffset,
-        y: bbox.y + angleYOffset,
+        y: bbox.y - angleYOffset,
       }
     },
     getBoundingBox: async (locator: string) =>
