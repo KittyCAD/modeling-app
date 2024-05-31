@@ -10,6 +10,8 @@ import { SettingsSearchBar } from 'components/Settings/SettingsSearchBar'
 import { SettingsTabs } from 'components/Settings/SettingsTabs'
 import { SettingsSectionsList } from 'components/Settings/SettingsSectionsList'
 import { AllSettingsFields } from 'components/Settings/AllSettingsFields'
+import { AllKeybindingsFields } from 'components/Settings/AllKeybindingsFields'
+import { KeybindingsSectionsList } from 'components/Settings/KeybindingsSectionsList'
 
 export const APP_VERSION = import.meta.env.PACKAGE_VERSION || 'unknown'
 
@@ -20,7 +22,7 @@ export const Settings = () => {
   const location = useLocation()
   const isFileSettings = location.pathname.includes(paths.FILE)
   const searchParamTab =
-    (searchParams.get('tab') as SettingsLevel) ??
+    (searchParams.get('tab') as SettingsLevel | 'keybindings') ??
     (isFileSettings ? 'project' : 'user')
 
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -96,17 +98,24 @@ export const Settings = () => {
                 gridTemplateRows: '1fr',
               }}
             >
-              <>
-                <SettingsSectionsList
-                  searchParamTab={searchParamTab}
-                  scrollRef={scrollRef}
-                />
-                <AllSettingsFields
-                  searchParamTab={searchParamTab}
-                  isFileSettings={isFileSettings}
-                  ref={scrollRef}
-                />
-              </>
+              {searchParamTab !== 'keybindings' ? (
+                <>
+                  <SettingsSectionsList
+                    searchParamTab={searchParamTab}
+                    scrollRef={scrollRef}
+                  />
+                  <AllSettingsFields
+                    searchParamTab={searchParamTab}
+                    isFileSettings={isFileSettings}
+                    ref={scrollRef}
+                  />
+                </>
+              ) : (
+                <>
+                  <KeybindingsSectionsList scrollRef={scrollRef} />
+                  <AllKeybindingsFields ref={scrollRef} />
+                </>
+              )}
             </div>
           </Dialog.Panel>
         </Transition.Child>
