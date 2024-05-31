@@ -4453,7 +4453,7 @@ test.describe('Testing Gizmo', () => {
       await page.mouse.move(clickPosition.x, clickPosition.y)
       await page.waitForTimeout(100)
       await page.mouse.click(clickPosition.x, clickPosition.y)
-      await page.waitForTimeout(300) // wait for camera to move and update debug values
+      await page.waitForTimeout(1000) // wait for camera to move and update debug values
 
       await Promise.all([
         // position
