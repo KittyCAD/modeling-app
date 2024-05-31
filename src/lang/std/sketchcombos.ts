@@ -341,36 +341,29 @@ const setAbsDistanceCreateNode =
     isXOrYLine = false,
     index = xOrY === 'x' ? 0 : 1
   ): TransformInfo['createNode'] =>
-  ({ tag, forceValueUsedInTransform }) => {
-    return (args, _, referencedSegment) => {
-      const valueUsedInTransform = roundOff(
-        getArgLiteralVal(args?.[index]) - (referencedSegment?.to?.[index] || 0),
-        2
-      )
-      const val =
-        (forceValueUsedInTransform as BinaryPart) ||
-        createLiteral(valueUsedInTransform)
-      if (isXOrYLine) {
-        return createCallWrapper(
-          xOrY === 'x' ? 'xLineTo' : 'yLineTo',
-          val,
-          tag,
-          valueUsedInTransform
-        )
-      }
+  ({ tag, forceValueUsedInTransform }) =>
+  (args) => {
+    const valueUsedInTransform = roundOff(getArgLiteralVal(args?.[index]), 2)
+    const val =
+      (forceValueUsedInTransform as BinaryPart) ||
+      createLiteral(valueUsedInTransform)
+    if (isXOrYLine) {
       return createCallWrapper(
-        'lineTo',
-        !index ? [val, args[1]] : [args[0], val],
+        xOrY === 'x' ? 'xLineTo' : 'yLineTo',
+        val,
         tag,
         valueUsedInTransform
       )
     }
+    return createCallWrapper(
+      'lineTo',
+      !index ? [val, args[1]] : [args[0], val],
+      tag,
+      valueUsedInTransform
+    )
   }
 const setAbsDistanceForAngleLineCreateNode =
-  (
-    xOrY: 'x' | 'y',
-    index = xOrY === 'x' ? 0 : 1
-  ): TransformInfo['createNode'] =>
+  (xOrY: 'x' | 'y'): TransformInfo['createNode'] =>
   ({ tag, forceValueUsedInTransform, varValA }) => {
     return (args) => {
       const valueUsedInTransform = roundOff(getArgLiteralVal(args?.[1]), 2)
