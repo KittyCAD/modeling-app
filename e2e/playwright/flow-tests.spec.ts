@@ -4391,26 +4391,26 @@ test.describe('Testing Gizmo', () => {
         localStorage.setItem(
           'persistCode',
           `const part001 = startSketchOn('XZ')
-    |> startProfileAt([20, 0], %)
-    |> line([7.13, 4 + 0], %)
-    |> angledLine({ angle: 3 + 0, length: 3.14 + 0 }, %)
-    |> lineTo([20.14 + 0, -0.14 + 0], %)
-    |> xLineTo(29 + 0, %)
-    |> yLine(-3.14 + 0, %, 'a')
-    |> xLine(1.63, %)
-    |> angledLineOfXLength({ angle: 3 + 0, length: 3.14 }, %)
-    |> angledLineOfYLength({ angle: 30, length: 3 + 0 }, %)
-    |> angledLineToX({ angle: 22.14 + 0, to: 12 }, %)
-    |> angledLineToY({ angle: 30, to: 11.14 }, %)
-    |> angledLineThatIntersects({
-          angle: 3.14,
-          intersectTag: 'a',
-          offset: 0
-        }, %)
-    |> tangentialArcTo([13.14 + 0, 13.14], %)
-    |> close(%)
-    |> extrude(5 + 7, %)
-    `
+            |> startProfileAt([20, 0], %)
+            |> line([7.13, 4 + 0], %)
+            |> angledLine({ angle: 3 + 0, length: 3.14 + 0 }, %)
+            |> lineTo([20.14 + 0, -0.14 + 0], %)
+            |> xLineTo(29 + 0, %)
+            |> yLine(-3.14 + 0, %, 'a')
+            |> xLine(1.63, %)
+            |> angledLineOfXLength({ angle: 3 + 0, length: 3.14 }, %)
+            |> angledLineOfYLength({ angle: 30, length: 3 + 0 }, %)
+            |> angledLineToX({ angle: 22.14 + 0, to: 12 }, %)
+            |> angledLineToY({ angle: 30, to: 11.14 }, %)
+            |> angledLineThatIntersects({
+              angle: 3.14,
+              intersectTag: 'a',
+              offset: 0
+            }, %)
+            |> tangentialArcTo([13.14 + 0, 13.14], %)
+            |> close(%)
+            |> extrude(5 + 7, %)
+          `
         )
       }, KCL_DEFAULT_LENGTH)
       await page.setViewportSize({ width: 1000, height: 500 })
@@ -4480,6 +4480,7 @@ test.describe('Testing Gizmo', () => {
     })
   }
 })
+
 test('Successful export shows a success toast', async ({ page }) => {
   // FYI this test doesn't work with only engine running locally
   // And you will need to have the KittyCAD CLI installed
