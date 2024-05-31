@@ -3225,7 +3225,16 @@ const part002 = startSketchOn('XZ')
   })
 })
 
-const wiggleMove = async (page: any, x: number, y: number, steps: number, dist: number, ang: number, amplitude: number, freq: number) => {
+const wiggleMove = async (
+  page: any,
+  x: number,
+  y: number,
+  steps: number,
+  dist: number,
+  ang: number,
+  amplitude: number,
+  freq: number
+) => {
   const tau = Math.PI * 2
   const deg = tau / 360
   const step = dist / steps
