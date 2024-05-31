@@ -147,6 +147,14 @@ jobs:
           cp artifact/src-tauri/tauri.conf.json src-tauri/tauri.conf.json
           cp artifact/src-tauri/tauri.release.conf.json src-tauri/tauri.release.conf.json
 
+      - name: Update WebView2 on Windows
+        if: matrix.os == 'windows-latest'
+        # Workaround needed to build the tauri windows app with matching edge version.
+        # From https://github.com/actions/runner-images/issues/9538
+        run: |
+          Invoke-WebRequest -Uri 'https://go.microsoft.com/fwlink/p/?LinkId=2124703' -OutFile 'setup.exe'
+          Start-Process -FilePath setup.exe -Verb RunAs -Wait
+
       - name: Install ubuntu system dependencies
         if: matrix.os == 'ubuntu-latest'
         run: |
@@ -365,9 +373,7 @@ jobs:
           KITTYCAD_API_TOKEN: ${{ env.BUILD_RELEASE == 'true' && secrets.KITTYCAD_API_TOKEN || secrets.KITTYCAD_API_TOKEN_DEV }}
 
       - name: Run e2e tests (windows only)
-        # TODO: enable CI tests once the mismatch issue is addressed
-        # if: ${{ matrix.os == 'windows-latest' && github.event_name != 'release' && github.event_name != 'schedule' }}
-        if: false
+        if: ${{ matrix.os == 'windows-latest' && github.event_name != 'release' && github.event_name != 'schedule' }}
         run: |
           cargo install tauri-driver --force
           yarn wdio run wdio.conf.ts
