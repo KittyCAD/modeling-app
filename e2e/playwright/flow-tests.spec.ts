@@ -2443,6 +2443,293 @@ test('Extrude from command bar selects extrude line after', async ({
 })
 
 test.describe('Testing constraints', () => {
+  test.describe('Test ABS distance constraint', () => {
+    const cases = [
+      {
+        testName: 'Add variable',
+        addVariable: true,
+        constraint: 'ABS X',
+        value: 'xDis001, 61.34',
+      },
+      {
+        testName: 'No variable',
+        addVariable: false,
+        constraint: 'ABS X',
+        value: '154.9, 61.34',
+      },
+      {
+        testName: 'Add variable',
+        addVariable: true,
+        constraint: 'ABS Y',
+        value: '154.9, yDis001',
+      },
+      {
+        testName: 'No variable',
+        addVariable: false,
+        constraint: 'ABS Y',
+        value: '154.9, 61.34',
+      },
+    ] as const
+    for (const { testName, addVariable, value, constraint } of cases) {
+      test(`${constraint} - ${testName}`, async ({ page }) => {
+        await page.addInitScript(async () => {
+          localStorage.setItem(
+            'persistCode',
+            `const yo = 5
+const part001 = startSketchOn('XZ')
+  |> startProfileAt([-7.54, -26.74], %)
+  |> line([74.36, 130.4], %)
+  |> line([78.92, -120.11], %)
+  |> line([9.16, 77.79], %)
+  |> line([41.19, 28.97], %)
+const part002 = startSketchOn('XZ')
+  |> startProfileAt([299.05, 231.45], %)
+  |> xLine(-425.34, %, 'seg-what')
+  |> yLine(-264.06, %)
+  |> xLine(segLen('seg-what', %), %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)`
+          )
+        })
+        const u = await getUtils(page)
+        await page.setViewportSize({ width: 1200, height: 500 })
+        await page.goto('/')
+        await u.waitForAuthSkipAppStart()
+
+        await page.getByText('line([74.36, 130.4], %)').click()
+        await page.getByRole('button', { name: 'Edit Sketch' }).click()
+
+        const [line3] = await Promise.all([
+          u.getSegmentBodyCoords(`[data-overlay-index="${2}"]`),
+        ])
+
+        if (constraint === 'ABS X') {
+          await page.mouse.click(600, 130)
+        } else {
+          await page.mouse.click(900, 250)
+        }
+        await page.keyboard.down('Shift')
+        await page.mouse.click(line3.x, line3.y)
+        await page.waitForTimeout(100) // this wait is needed for webkit - not sure why
+        await page.keyboard.up('Shift')
+        await page
+          .getByRole('button', {
+            name: 'Constrain',
+          })
+          .click()
+        await page
+          .getByRole('button', { name: constraint, exact: true })
+          .click()
+
+        const createNewVariableCheckbox = page.getByTestId(
+          'create-new-variable-checkbox'
+        )
+        const isChecked = await createNewVariableCheckbox.isChecked()
+        ;((isChecked && !addVariable) || (!isChecked && addVariable)) &&
+          (await createNewVariableCheckbox.click())
+
+        await page
+          .getByRole('button', { name: 'Add constraining value' })
+          .click()
+
+        // checking activeLines assures the cursors are where they should be
+        const codeAfter = [`|> lineTo([${value}], %)`]
+
+        const activeLinesContent = await page.locator('.cm-activeLine').all()
+        await Promise.all(
+          activeLinesContent.map(async (line, i) => {
+            await expect(page.locator('.cm-content')).toContainText(
+              codeAfter[i]
+            )
+            // if the code is an active line then the cursor should be on that line
+            await expect(line).toHaveText(codeAfter[i])
+          })
+        )
+
+        // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
+      })
+    }
+  })
+  test.describe('Test Angle constraint double segment selection', () => {
+    const cases = [
+      {
+        testName: 'Add variable',
+        addVariable: true,
+        axisSelect: false,
+        value: "segAng('seg01', %) + angle001",
+      },
+      {
+        testName: 'No variable',
+        addVariable: false,
+        axisSelect: false,
+        value: "segAng('seg01', %) + 22.69",
+      },
+      {
+        testName: 'Add variable, selecting axis',
+        addVariable: true,
+        axisSelect: true,
+        value: 'QUARTER_TURN - angle001',
+      },
+      {
+        testName: 'No variable, selecting axis',
+        addVariable: false,
+        axisSelect: true,
+        value: 'QUARTER_TURN - 7',
+      },
+    ] as const
+    for (const { testName, addVariable, value, axisSelect } of cases) {
+      test(`${testName}`, async ({ page }) => {
+        await page.addInitScript(async () => {
+          localStorage.setItem(
+            'persistCode',
+            `const yo = 5
+const part001 = startSketchOn('XZ')
+  |> startProfileAt([-7.54, -26.74], %)
+  |> line([74.36, 130.4], %)
+  |> line([78.92, -120.11], %)
+  |> line([9.16, 77.79], %)
+  |> line([41.19, 28.97], %)
+const part002 = startSketchOn('XZ')
+  |> startProfileAt([299.05, 231.45], %)
+  |> xLine(-425.34, %, 'seg-what')
+  |> yLine(-264.06, %)
+  |> xLine(segLen('seg-what', %), %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)`
+          )
+        })
+        const u = await getUtils(page)
+        await page.setViewportSize({ width: 1200, height: 500 })
+        await page.goto('/')
+        await u.waitForAuthSkipAppStart()
+
+        await page.getByText('line([74.36, 130.4], %)').click()
+        await page.getByRole('button', { name: 'Edit Sketch' }).click()
+
+        const [line1, line3] = await Promise.all([
+          u.getSegmentBodyCoords(`[data-overlay-index="${0}"]`),
+          u.getSegmentBodyCoords(`[data-overlay-index="${2}"]`),
+        ])
+
+        if (axisSelect) {
+          await page.mouse.click(600, 130)
+        } else {
+          await page.mouse.click(line1.x, line1.y)
+        }
+        await page.keyboard.down('Shift')
+        await page.mouse.click(line3.x, line3.y)
+        await page.waitForTimeout(100) // this wait is needed for webkit - not sure why
+        await page.keyboard.up('Shift')
+        await page
+          .getByRole('button', {
+            name: 'Constrain',
+          })
+          .click()
+        await page.getByTestId('angle').click()
+
+        const createNewVariableCheckbox = page.getByTestId(
+          'create-new-variable-checkbox'
+        )
+        const isChecked = await createNewVariableCheckbox.isChecked()
+        ;((isChecked && !addVariable) || (!isChecked && addVariable)) &&
+          (await createNewVariableCheckbox.click())
+
+        await page
+          .getByRole('button', { name: 'Add constraining value' })
+          .click()
+
+        // checking activeLines assures the cursors are where they should be
+        const codeAfter = [
+          "|> line([74.36, 130.4], %, 'seg01')",
+          `|> angledLine([${value}, 78.33], %)`,
+        ]
+        if (axisSelect) codeAfter.shift()
+
+        const activeLinesContent = await page.locator('.cm-activeLine').all()
+        await Promise.all(
+          activeLinesContent.map(async (line, i) => {
+            await expect(page.locator('.cm-content')).toContainText(
+              codeAfter[i]
+            )
+            // if the code is an active line then the cursor should be on that line
+            await expect(line).toHaveText(codeAfter[i])
+          })
+        )
+
+        // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
+      })
+    }
+  })
+  test.describe('Test Angle constraint single selection', () => {
+    const cases = [
+      {
+        testName: 'Add variable',
+        addVariable: true,
+        value: 'angle001',
+      },
+      {
+        testName: 'No variable',
+        addVariable: false,
+        value: '83',
+      },
+    ] as const
+    for (const { testName, addVariable, value } of cases) {
+      test(`${testName}`, async ({ page }) => {
+        await page.addInitScript(async () => {
+          localStorage.setItem(
+            'persistCode',
+            `const yo = 5
+    const part001 = startSketchOn('XZ')
+      |> startProfileAt([-7.54, -26.74], %)
+      |> line([74.36, 130.4], %)
+      |> line([78.92, -120.11], %)
+      |> line([9.16, 77.79], %)
+      |> line([41.19, 28.97], %)
+    const part002 = startSketchOn('XZ')
+      |> startProfileAt([299.05, 231.45], %)
+      |> xLine(-425.34, %, 'seg-what')
+      |> yLine(-264.06, %)
+      |> xLine(segLen('seg-what', %), %)
+      |> lineTo([profileStartX(%), profileStartY(%)], %)`
+          )
+        })
+        const u = await getUtils(page)
+        await page.setViewportSize({ width: 1200, height: 500 })
+        await page.goto('/')
+        await u.waitForAuthSkipAppStart()
+
+        await page.getByText('line([74.36, 130.4], %)').click()
+        await page.getByRole('button', { name: 'Edit Sketch' }).click()
+
+        const line3 = await u.getSegmentBodyCoords(
+          `[data-overlay-index="${2}"]`
+        )
+
+        await page.mouse.click(line3.x, line3.y)
+        await page
+          .getByRole('button', {
+            name: 'Constrain',
+          })
+          .click()
+        await page.getByTestId('angle').click()
+
+        if (!addVariable) {
+          await page.getByTestId('create-new-variable-checkbox').click()
+        }
+        await page
+          .getByRole('button', { name: 'Add constraining value' })
+          .click()
+
+        const changedCode = `|> angledLine([${value}, 78.33], %)`
+        await expect(page.locator('.cm-content')).toContainText(changedCode)
+        // checking active assures the cursor is where it should be
+        await expect(page.locator('.cm-activeLine')).toHaveText(changedCode)
+
+        // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
+      })
+    }
+  })
   test.describe('Many segments - no modal constraints', () => {
     const cases = [
       {
