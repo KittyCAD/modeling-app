@@ -1,5 +1,5 @@
 import { test, expect, Page } from '@playwright/test'
-import { makeTemplate, getUtils } from './test-utils'
+import { makeTemplate, getUtils, doExport } from './test-utils'
 import waitOn from 'wait-on'
 import { roundOff, uuidv4 } from 'lib/utils'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
@@ -2439,6 +2439,534 @@ test('Extrude from command bar selects extrude line after', async ({
   )
 })
 
+test.describe('Testing constraints', () => {
+  test.describe('Test ABS distance constraint', () => {
+    const cases = [
+      {
+        testName: 'Add variable',
+        addVariable: true,
+        constraint: 'ABS X',
+        value: 'xDis001, 61.34',
+      },
+      {
+        testName: 'No variable',
+        addVariable: false,
+        constraint: 'ABS X',
+        value: '154.9, 61.34',
+      },
+      {
+        testName: 'Add variable',
+        addVariable: true,
+        constraint: 'ABS Y',
+        value: '154.9, yDis001',
+      },
+      {
+        testName: 'No variable',
+        addVariable: false,
+        constraint: 'ABS Y',
+        value: '154.9, 61.34',
+      },
+    ] as const
+    for (const { testName, addVariable, value, constraint } of cases) {
+      test(`${constraint} - ${testName}`, async ({ page }) => {
+        await page.addInitScript(async () => {
+          localStorage.setItem(
+            'persistCode',
+            `const yo = 5
+const part001 = startSketchOn('XZ')
+  |> startProfileAt([-7.54, -26.74], %)
+  |> line([74.36, 130.4], %)
+  |> line([78.92, -120.11], %)
+  |> line([9.16, 77.79], %)
+  |> line([41.19, 28.97], %)
+const part002 = startSketchOn('XZ')
+  |> startProfileAt([299.05, 231.45], %)
+  |> xLine(-425.34, %, 'seg-what')
+  |> yLine(-264.06, %)
+  |> xLine(segLen('seg-what', %), %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)`
+          )
+        })
+        const u = await getUtils(page)
+        await page.setViewportSize({ width: 1200, height: 500 })
+        await page.goto('/')
+        await u.waitForAuthSkipAppStart()
+
+        await page.getByText('line([74.36, 130.4], %)').click()
+        await page.getByRole('button', { name: 'Edit Sketch' }).click()
+
+        const [line3] = await Promise.all([
+          u.getSegmentBodyCoords(`[data-overlay-index="${2}"]`),
+        ])
+
+        if (constraint === 'ABS X') {
+          await page.mouse.click(600, 130)
+        } else {
+          await page.mouse.click(900, 250)
+        }
+        await page.keyboard.down('Shift')
+        await page.mouse.click(line3.x, line3.y)
+        await page.waitForTimeout(100) // this wait is needed for webkit - not sure why
+        await page.keyboard.up('Shift')
+        await page
+          .getByRole('button', {
+            name: 'Constrain',
+          })
+          .click()
+        await page
+          .getByRole('button', { name: constraint, exact: true })
+          .click()
+
+        const createNewVariableCheckbox = page.getByTestId(
+          'create-new-variable-checkbox'
+        )
+        const isChecked = await createNewVariableCheckbox.isChecked()
+        ;((isChecked && !addVariable) || (!isChecked && addVariable)) &&
+          (await createNewVariableCheckbox.click())
+
+        await page
+          .getByRole('button', { name: 'Add constraining value' })
+          .click()
+
+        // checking activeLines assures the cursors are where they should be
+        const codeAfter = [`|> lineTo([${value}], %)`]
+
+        const activeLinesContent = await page.locator('.cm-activeLine').all()
+        await Promise.all(
+          activeLinesContent.map(async (line, i) => {
+            await expect(page.locator('.cm-content')).toContainText(
+              codeAfter[i]
+            )
+            // if the code is an active line then the cursor should be on that line
+            await expect(line).toHaveText(codeAfter[i])
+          })
+        )
+
+        // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
+      })
+    }
+  })
+  test.describe('Test Angle constraint double segment selection', () => {
+    const cases = [
+      {
+        testName: 'Add variable',
+        addVariable: true,
+        axisSelect: false,
+        value: "segAng('seg01', %) + angle001",
+      },
+      {
+        testName: 'No variable',
+        addVariable: false,
+        axisSelect: false,
+        value: "segAng('seg01', %) + 22.69",
+      },
+      {
+        testName: 'Add variable, selecting axis',
+        addVariable: true,
+        axisSelect: true,
+        value: 'QUARTER_TURN - angle001',
+      },
+      {
+        testName: 'No variable, selecting axis',
+        addVariable: false,
+        axisSelect: true,
+        value: 'QUARTER_TURN - 7',
+      },
+    ] as const
+    for (const { testName, addVariable, value, axisSelect } of cases) {
+      test(`${testName}`, async ({ page }) => {
+        await page.addInitScript(async () => {
+          localStorage.setItem(
+            'persistCode',
+            `const yo = 5
+const part001 = startSketchOn('XZ')
+  |> startProfileAt([-7.54, -26.74], %)
+  |> line([74.36, 130.4], %)
+  |> line([78.92, -120.11], %)
+  |> line([9.16, 77.79], %)
+  |> line([41.19, 28.97], %)
+const part002 = startSketchOn('XZ')
+  |> startProfileAt([299.05, 231.45], %)
+  |> xLine(-425.34, %, 'seg-what')
+  |> yLine(-264.06, %)
+  |> xLine(segLen('seg-what', %), %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)`
+          )
+        })
+        const u = await getUtils(page)
+        await page.setViewportSize({ width: 1200, height: 500 })
+        await page.goto('/')
+        await u.waitForAuthSkipAppStart()
+
+        await page.getByText('line([74.36, 130.4], %)').click()
+        await page.getByRole('button', { name: 'Edit Sketch' }).click()
+
+        const [line1, line3] = await Promise.all([
+          u.getSegmentBodyCoords(`[data-overlay-index="${0}"]`),
+          u.getSegmentBodyCoords(`[data-overlay-index="${2}"]`),
+        ])
+
+        if (axisSelect) {
+          await page.mouse.click(600, 130)
+        } else {
+          await page.mouse.click(line1.x, line1.y)
+        }
+        await page.keyboard.down('Shift')
+        await page.mouse.click(line3.x, line3.y)
+        await page.waitForTimeout(100) // this wait is needed for webkit - not sure why
+        await page.keyboard.up('Shift')
+        await page
+          .getByRole('button', {
+            name: 'Constrain',
+          })
+          .click()
+        await page.getByTestId('angle').click()
+
+        const createNewVariableCheckbox = page.getByTestId(
+          'create-new-variable-checkbox'
+        )
+        const isChecked = await createNewVariableCheckbox.isChecked()
+        ;((isChecked && !addVariable) || (!isChecked && addVariable)) &&
+          (await createNewVariableCheckbox.click())
+
+        await page
+          .getByRole('button', { name: 'Add constraining value' })
+          .click()
+
+        // checking activeLines assures the cursors are where they should be
+        const codeAfter = [
+          "|> line([74.36, 130.4], %, 'seg01')",
+          `|> angledLine([${value}, 78.33], %)`,
+        ]
+        if (axisSelect) codeAfter.shift()
+
+        const activeLinesContent = await page.locator('.cm-activeLine').all()
+        await Promise.all(
+          activeLinesContent.map(async (line, i) => {
+            await expect(page.locator('.cm-content')).toContainText(
+              codeAfter[i]
+            )
+            // if the code is an active line then the cursor should be on that line
+            await expect(line).toHaveText(codeAfter[i])
+          })
+        )
+
+        // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
+      })
+    }
+  })
+  test.describe('Test Angle constraint single selection', () => {
+    const cases = [
+      {
+        testName: 'Add variable',
+        addVariable: true,
+        value: 'angle001',
+      },
+      {
+        testName: 'No variable',
+        addVariable: false,
+        value: '83',
+      },
+    ] as const
+    for (const { testName, addVariable, value } of cases) {
+      test(`${testName}`, async ({ page }) => {
+        await page.addInitScript(async () => {
+          localStorage.setItem(
+            'persistCode',
+            `const yo = 5
+    const part001 = startSketchOn('XZ')
+      |> startProfileAt([-7.54, -26.74], %)
+      |> line([74.36, 130.4], %)
+      |> line([78.92, -120.11], %)
+      |> line([9.16, 77.79], %)
+      |> line([41.19, 28.97], %)
+    const part002 = startSketchOn('XZ')
+      |> startProfileAt([299.05, 231.45], %)
+      |> xLine(-425.34, %, 'seg-what')
+      |> yLine(-264.06, %)
+      |> xLine(segLen('seg-what', %), %)
+      |> lineTo([profileStartX(%), profileStartY(%)], %)`
+          )
+        })
+        const u = await getUtils(page)
+        await page.setViewportSize({ width: 1200, height: 500 })
+        await page.goto('/')
+        await u.waitForAuthSkipAppStart()
+
+        await page.getByText('line([74.36, 130.4], %)').click()
+        await page.getByRole('button', { name: 'Edit Sketch' }).click()
+
+        const line3 = await u.getSegmentBodyCoords(
+          `[data-overlay-index="${2}"]`
+        )
+
+        await page.mouse.click(line3.x, line3.y)
+        await page
+          .getByRole('button', {
+            name: 'Constrain',
+          })
+          .click()
+        await page.getByTestId('angle').click()
+
+        if (!addVariable) {
+          await page.getByTestId('create-new-variable-checkbox').click()
+        }
+        await page
+          .getByRole('button', { name: 'Add constraining value' })
+          .click()
+
+        const changedCode = `|> angledLine([${value}, 78.33], %)`
+        await expect(page.locator('.cm-content')).toContainText(changedCode)
+        // checking active assures the cursor is where it should be
+        await expect(page.locator('.cm-activeLine')).toHaveText(changedCode)
+
+        // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
+      })
+    }
+  })
+  test.describe('Many segments - no modal constraints', () => {
+    const cases = [
+      {
+        constraintName: 'Vertical',
+        codeAfter: [
+          `|> yLine(130.4, %)`,
+          `|> yLine(77.79, %)`,
+          `|> yLine(28.97, %)`,
+        ],
+      },
+      {
+        codeAfter: [
+          `|> xLine(74.36, %)`,
+          `|> xLine(9.16, %)`,
+          `|> xLine(41.19, %)`,
+        ],
+        constraintName: 'Horizontal',
+      },
+    ] as const
+    for (const { codeAfter, constraintName } of cases) {
+      test(`${constraintName}`, async ({ page }) => {
+        await page.addInitScript(async () => {
+          localStorage.setItem(
+            'persistCode',
+            `const yo = 5
+const part001 = startSketchOn('XZ')
+  |> startProfileAt([-7.54, -26.74], %)
+  |> line([74.36, 130.4], %)
+  |> line([78.92, -120.11], %)
+  |> line([9.16, 77.79], %)
+  |> line([41.19, 28.97], %)
+const part002 = startSketchOn('XZ')
+  |> startProfileAt([299.05, 231.45], %)
+  |> xLine(-425.34, %, 'seg-what')
+  |> yLine(-264.06, %)
+  |> xLine(segLen('seg-what', %), %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)`
+          )
+        })
+        const u = await getUtils(page)
+        await page.setViewportSize({ width: 1200, height: 500 })
+        await page.goto('/')
+        await u.waitForAuthSkipAppStart()
+
+        await page.getByText('line([74.36, 130.4], %)').click()
+        await page.getByRole('button', { name: 'Edit Sketch' }).click()
+
+        const line1 = await u.getBoundingBox(`[data-overlay-index="${0}"]`)
+        const line3 = await u.getBoundingBox(`[data-overlay-index="${2}"]`)
+        const line4 = await u.getBoundingBox(`[data-overlay-index="${3}"]`)
+
+        // select two segments by holding down shift
+        await page.mouse.click(line1.x - 20, line1.y + 20)
+        await page.keyboard.down('Shift')
+        await page.mouse.click(line3.x - 3, line3.y + 20)
+        await page.mouse.click(line4.x - 15, line4.y + 15)
+        await page.keyboard.up('Shift')
+        const constraintMenuButton = page.getByRole('button', {
+          name: 'Constrain',
+        })
+        const constraintButton = page
+          .getByRole('button', {
+            name: constraintName,
+          })
+          .first()
+
+        // apply the constraint
+        await constraintMenuButton.click()
+        await constraintButton.click()
+
+        // check actives lines
+        const activeLinesContent = await page.locator('.cm-activeLine').all()
+        await expect(activeLinesContent).toHaveLength(codeAfter.length)
+        // check there are still 3 cursors (they should stay on the same lines as before constraint was applied)
+        await expect(page.locator('.cm-cursor')).toHaveCount(codeAfter.length)
+
+        // check both cursors are where they should be after constraint is applied and the code is correct
+        await Promise.all(
+          activeLinesContent.map(async (line, i) => {
+            await expect(page.locator('.cm-content')).toContainText(
+              codeAfter[i]
+            )
+            // if the code is an active line then the cursor should be on that line
+            await expect(line).toHaveText(codeAfter[i])
+          })
+        )
+      })
+    }
+  })
+  test.describe('Two segment - no modal constraints', () => {
+    const cases = [
+      {
+        codeAfter: `|> angledLine([83, segLen('seg01', %)], %)`,
+        constraintName: 'Equal Length',
+      },
+      {
+        codeAfter: `|> angledLine([segAng('seg01', %), 78.33], %)`,
+        constraintName: 'Parallel',
+      },
+      {
+        codeAfter: `|> lineTo([segEndX('seg01', %), 61.34], %)`,
+        constraintName: 'Vertically Align',
+      },
+      {
+        codeAfter: `|> lineTo([154.9, segEndY('seg01', %)], %)`,
+        constraintName: 'Horizontally Align',
+      },
+    ] as const
+    for (const { codeAfter, constraintName } of cases) {
+      test(`${constraintName}`, async ({ page }) => {
+        await page.addInitScript(async () => {
+          localStorage.setItem(
+            'persistCode',
+            `const yo = 5
+const part001 = startSketchOn('XZ')
+  |> startProfileAt([-7.54, -26.74], %)
+  |> line([74.36, 130.4], %)
+  |> line([78.92, -120.11], %)
+  |> line([9.16, 77.79], %)
+const part002 = startSketchOn('XZ')
+  |> startProfileAt([299.05, 231.45], %)
+  |> xLine(-425.34, %, 'seg-what')
+  |> yLine(-264.06, %)
+  |> xLine(segLen('seg-what', %), %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)`
+          )
+        })
+        const u = await getUtils(page)
+        await page.setViewportSize({ width: 1200, height: 500 })
+        await page.goto('/')
+        await u.waitForAuthSkipAppStart()
+
+        await page.getByText('line([74.36, 130.4], %)').click()
+        await page.getByRole('button', { name: 'Edit Sketch' }).click()
+
+        const line1 = await u.getBoundingBox(`[data-overlay-index="${0}"]`)
+        const line3 = await u.getBoundingBox(`[data-overlay-index="${2}"]`)
+
+        // select two segments by holding down shift
+        await page.mouse.click(line1.x - 20, line1.y + 20)
+        await page.keyboard.down('Shift')
+        await page.mouse.click(line3.x - 3, line3.y + 20)
+        await page.keyboard.up('Shift')
+        const constraintMenuButton = page.getByRole('button', {
+          name: 'Constrain',
+        })
+        const constraintButton = page.getByRole('button', {
+          name: constraintName,
+        })
+
+        // apply the constraint
+        await constraintMenuButton.click()
+        await constraintButton.click()
+
+        await expect(page.locator('.cm-content')).toContainText(codeAfter)
+        // expect the string 'seg01' to appear twice in '.cm-content' the tag segment and referencing the tag
+        const content = await page.locator('.cm-content').innerText()
+        await expect(content.match(/seg01/g)).toHaveLength(2)
+        // check there are still 2 cursors (they should stay on the same lines as before constraint was applied)
+        await expect(page.locator('.cm-cursor')).toHaveCount(2)
+        // check actives lines
+        const activeLinesContent = await page.locator('.cm-activeLine').all()
+        await expect(activeLinesContent).toHaveLength(2)
+
+        // check both cursors are where they should be after constraint is applied
+        await expect(activeLinesContent[0]).toHaveText(
+          "|> line([74.36, 130.4], %, 'seg01')"
+        )
+        await expect(activeLinesContent[1]).toHaveText(codeAfter)
+      })
+    }
+  })
+  test.describe('Axis & segment - no modal constraints', () => {
+    const cases = [
+      {
+        codeAfter: `|> lineTo([154.9, ZERO], %)`,
+        axisClick: { x: 950, y: 250 },
+        constraintName: 'Snap To X',
+      },
+      {
+        codeAfter: `|> lineTo([ZERO, 61.34], %)`,
+        axisClick: { x: 600, y: 150 },
+        constraintName: 'Snap To Y',
+      },
+    ] as const
+    for (const { codeAfter, constraintName, axisClick } of cases) {
+      test(`${constraintName}`, async ({ page }) => {
+        await page.addInitScript(async () => {
+          localStorage.setItem(
+            'persistCode',
+            `const yo = 5
+const part001 = startSketchOn('XZ')
+  |> startProfileAt([-7.54, -26.74], %)
+  |> line([74.36, 130.4], %)
+  |> line([78.92, -120.11], %)
+  |> line([9.16, 77.79], %)
+const part002 = startSketchOn('XZ')
+  |> startProfileAt([299.05, 231.45], %)
+  |> xLine(-425.34, %, 'seg-what')
+  |> yLine(-264.06, %)
+  |> xLine(segLen('seg-what', %), %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)`
+          )
+        })
+        const u = await getUtils(page)
+        await page.setViewportSize({ width: 1200, height: 500 })
+        await page.goto('/')
+        await u.waitForAuthSkipAppStart()
+
+        await page.getByText('line([74.36, 130.4], %)').click()
+        await page.getByRole('button', { name: 'Edit Sketch' }).click()
+
+        const line3 = await u.getBoundingBox(`[data-overlay-index="${2}"]`)
+
+        // select segment and axis by holding down shift
+        await page.mouse.click(line3.x - 3, line3.y + 20)
+        await page.keyboard.down('Shift')
+        await page.waitForTimeout(100)
+        await page.mouse.click(axisClick.x, axisClick.y)
+        await page.keyboard.up('Shift')
+        const constraintMenuButton = page.getByRole('button', {
+          name: 'Constrain',
+        })
+        const constraintButton = page.getByRole('button', {
+          name: constraintName,
+        })
+
+        // apply the constraint
+        await constraintMenuButton.click()
+        await expect(constraintButton).toBeVisible()
+        await constraintButton.click()
+
+        // check the cursor is where is should be after constraint is applied
+        await expect(page.locator('.cm-content')).toContainText(codeAfter)
+        await expect(page.locator('.cm-activeLine')).toHaveText(codeAfter)
+      })
+    }
+  })
+})
+
 test.describe('Testing segment overlays', () => {
   test.describe('Hover over a segment should show its overlay, hovering over the input overlays should show its popover, clicking the input overlay should constrain/unconstrain it:\nfor the following segments', () => {
     /**
@@ -3953,4 +4481,75 @@ test.describe('Testing Gizmo', () => {
       expect(cameraTarget).toEqual(expectedCameraTarget)
     })
   }
+})
+test('Successful export shows a success toast', async ({ page }) => {
+  // FYI this test doesn't work with only engine running locally
+  // And you will need to have the KittyCAD CLI installed
+  const u = await getUtils(page)
+  await page.addInitScript(async () => {
+    ;(window as any).playwrightSkipFilePicker = true
+    localStorage.setItem(
+      'persistCode',
+      `const topAng = 25
+const bottomAng = 35
+const baseLen = 3.5
+const baseHeight = 1
+const totalHeightHalf = 2
+const armThick = 0.5
+const totalLen = 9.5
+const part001 = startSketchOn('-XZ')
+  |> startProfileAt([0, 0], %)
+  |> yLine(baseHeight, %)
+  |> xLine(baseLen, %)
+  |> angledLineToY({
+        angle: topAng,
+        to: totalHeightHalf,
+      }, %, 'seg04')
+  |> xLineTo(totalLen, %, 'seg03')
+  |> yLine(-armThick, %, 'seg01')
+  |> angledLineThatIntersects({
+        angle: HALF_TURN,
+        offset: -armThick,
+        intersectTag: 'seg04'
+      }, %)
+  |> angledLineToY([segAng('seg04', %) + 180, ZERO], %)
+  |> angledLineToY({
+        angle: -bottomAng,
+        to: -totalHeightHalf - armThick,
+      }, %, 'seg02')
+  |> xLineTo(segEndX('seg03', %) + 0, %)
+  |> yLine(-segLen('seg01', %), %)
+  |> angledLineThatIntersects({
+        angle: HALF_TURN,
+        offset: -armThick,
+        intersectTag: 'seg02'
+      }, %)
+  |> angledLineToY([segAng('seg02', %) + 180, -baseHeight], %)
+  |> xLineTo(ZERO, %)
+  |> close(%)
+  |> extrude(4, %)`
+    )
+  })
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.waitForCmdReceive('extrude')
+  await page.waitForTimeout(1000)
+  await u.clearAndCloseDebugPanel()
+
+  await doExport(
+    {
+      type: 'gltf',
+      storage: 'embedded',
+      presentation: 'pretty',
+    },
+    page
+  )
+
+  // This is the main thing we're testing,
+  // We test the export functionality across all
+  // file types in snapshot-tests.spec.ts
+  await expect(page.getByText('Exported successfully')).toBeVisible()
 })

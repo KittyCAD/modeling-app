@@ -531,8 +531,7 @@ const ConstraintSymbol = ({
     varNameMap[_type as LineInputsType]?.implicitConstraintDesc
 
   const node = useMemo(
-    () =>
-      getNodeFromPath<Value>(parse(recast(kclManager.ast)), pathToNode).node,
+    () => getNodeFromPath<Value>(kclManager.ast, pathToNode).node,
     [kclManager.ast, pathToNode]
   )
   const range: SourceRange = node ? [node.start, node.end] : [0, 0]

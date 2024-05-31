@@ -5,7 +5,7 @@ import {
   kclManager,
   sceneEntitiesManager,
 } from 'lib/singletons'
-import { CallExpression, SourceRange, parse, recast } from 'lang/wasm'
+import { CallExpression, SourceRange, Value, parse, recast } from 'lang/wasm'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { uuidv4 } from 'lib/utils'
 import { EditorSelection } from '@codemirror/state'
@@ -27,6 +27,7 @@ import {
 } from 'clientSideScene/sceneEntities'
 import { Mesh, Object3D, Object3DEventMap } from 'three'
 import { AXIS_GROUP, X_AXIS } from 'clientSideScene/sceneInfra'
+import { PathToNodeMap } from 'lang/std/sketchcombos'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -563,4 +564,23 @@ export function sendSelectEventToEngine(
     })
     .then((res) => res.data.data)
   return result
+}
+
+export function updateSelections(
+  pathToNodeMap: PathToNodeMap,
+  prevSelectionRanges: Selections,
+  ast: Program
+): Selections {
+  return {
+    ...prevSelectionRanges,
+    codeBasedSelections: Object.entries(pathToNodeMap).map(
+      ([index, pathToNode]): Selection => {
+        const node = getNodeFromPath<Value>(ast, pathToNode).node
+        return {
+          range: [node.start, node.end],
+          type: prevSelectionRanges.codeBasedSelections[Number(index)]?.type,
+        }
+      }
+    ),
+  }
 }
