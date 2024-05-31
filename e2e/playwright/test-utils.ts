@@ -145,6 +145,10 @@ export async function getUtils(page: Page) {
         y: bbox.y - angleYOffset,
       }
     },
+    getAngle: async (locator: string) => {
+      const overlay = page.locator(locator)
+      return Number(await overlay.getAttribute('data-overlay-angle'))
+    },
     getBoundingBox: async (locator: string) =>
       page
         .locator(locator)
