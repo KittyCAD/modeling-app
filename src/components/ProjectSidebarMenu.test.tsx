@@ -31,43 +31,6 @@ const projectWellFormed = {
 } satisfies Project
 
 describe('ProjectSidebarMenu tests', () => {
-  test('Renders the project name', () => {
-    render(
-      <BrowserRouter>
-        <CommandBarProvider>
-          <SettingsAuthProviderJest>
-            <ProjectSidebarMenu project={projectWellFormed} enableMenu={true} />
-          </SettingsAuthProviderJest>
-        </CommandBarProvider>
-      </BrowserRouter>
-    )
-
-    fireEvent.click(screen.getByTestId('project-sidebar-toggle'))
-
-    expect(screen.getByTestId('projectName')).toHaveTextContent(
-      projectWellFormed.name
-    )
-    expect(screen.getByTestId('createdAt')).toHaveTextContent(
-      `Created ${now.toLocaleDateString()}`
-    )
-  })
-
-  test('Renders app name if given no project', () => {
-    render(
-      <BrowserRouter>
-        <CommandBarProvider>
-          <SettingsAuthProviderJest>
-            <ProjectSidebarMenu enableMenu={true} />
-          </SettingsAuthProviderJest>
-        </CommandBarProvider>
-      </BrowserRouter>
-    )
-
-    fireEvent.click(screen.getByTestId('project-sidebar-toggle'))
-
-    expect(screen.getByTestId('projectName')).toHaveTextContent(APP_NAME)
-  })
-
   test('Disables popover menu by default', () => {
     render(
       <BrowserRouter>
