@@ -4449,11 +4449,11 @@ test.describe('Testing Gizmo', () => {
       })
       await u.waitForCmdReceive('default_camera_get_settings')
 
-      await page.waitForTimeout(3000)
+      await page.waitForTimeout(10000)
       await page.mouse.move(clickPosition.x, clickPosition.y)
-      await page.waitForTimeout(3000)
+      await page.waitForTimeout(10000)
       await page.mouse.click(clickPosition.x, clickPosition.y)
-      await page.waitForTimeout(3000) // wait for camera to move and update debug values
+      await page.waitForTimeout(10000) // wait for camera to move and update debug values
 
       await Promise.all([
         // position
