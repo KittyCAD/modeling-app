@@ -42,6 +42,8 @@ enum AxisNames {
 export default function Gizmo() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const raycasterIntersect = useRef<Intersection<Object3D> | null>(null)
+  const cameraPassiveUpdateTimer = useRef(0)
+  const raycasterPassiveUpdateTimer = useRef(0)
 
   useEffect(() => {
     if (!canvasRef.current) return
@@ -74,14 +76,17 @@ export default function Gizmo() {
         camera,
         currentQuaternion,
         sceneInfra.camControls.camera.quaternion,
-        delta
+        delta,
+        cameraPassiveUpdateTimer
       )
       updateRayCaster(
         raycasterObjects,
         raycaster,
         mouse,
         camera,
-        raycasterIntersect
+        raycasterIntersect,
+        delta,
+        raycasterPassiveUpdateTimer
       )
       renderer.render(scene, camera)
       requestAnimationFrame(animate)
@@ -168,13 +173,19 @@ const updateCameraOrientation = (
   camera: OrthographicCamera,
   currentQuaternion: Quaternion,
   targetQuaternion: Quaternion,
-  deltaTime: number
+  deltaTime: number,
+  cameraPassiveUpdateTimer: MutableRefObject<number>
 ) => {
-  if (!quaternionsEqual(currentQuaternion, targetQuaternion)) {
+  cameraPassiveUpdateTimer.current += deltaTime
+  if (
+    !quaternionsEqual(currentQuaternion, targetQuaternion) ||
+    cameraPassiveUpdateTimer.current >= 5
+  ) {
     const slerpFactor = 1 - Math.exp(-30 * deltaTime)
     currentQuaternion.slerp(targetQuaternion, slerpFactor).normalize()
     camera.position.set(0, 0, 1).applyQuaternion(currentQuaternion)
     camera.quaternion.copy(currentQuaternion)
+    cameraPassiveUpdateTimer.current = 0
   }
 }
 
@@ -228,12 +239,18 @@ const updateRayCaster = (
   raycaster: Raycaster,
   mouse: Vector2,
   camera: Camera,
-  raycasterIntersect: MutableRefObject<Intersection<Object3D> | null>
+  raycasterIntersect: MutableRefObject<Intersection<Object3D> | null>,
+  deltaTime: number,
+  raycasterPassiveUpdateTimer: MutableRefObject<number>
 ) => {
+  raycasterPassiveUpdateTimer.current += deltaTime
+
   // check if mouse is outside the canvas bounds and stop raycaster
-  if (mouse.x < -1 || mouse.x > 1 || mouse.y < -1 || mouse.y > 1) {
-    raycasterIntersect.current = null
-    return
+  if (raycasterPassiveUpdateTimer.current < 2) {
+    if (mouse.x < -1 || mouse.x > 1 || mouse.y < -1 || mouse.y > 1) {
+      raycasterIntersect.current = null
+      return
+    }
   }
 
   raycaster.setFromCamera(mouse, camera)
@@ -245,5 +262,8 @@ const updateRayCaster = (
     raycasterIntersect.current = intersects[0] // filter first object
   } else {
     raycasterIntersect.current = null
+  }
+  if (raycasterPassiveUpdateTimer.current > 2) {
+    raycasterPassiveUpdateTimer.current = 0
   }
 }
