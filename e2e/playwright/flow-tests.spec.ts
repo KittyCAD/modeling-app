@@ -4344,37 +4344,37 @@ test.describe('Testing Gizmo', () => {
   const cases = [
     {
       testDescription: 'top view',
-      clickPosition: { x: 951, y: 387 },
+      clickPosition: { x: 951, y: 385 },
       expectedCameraPosition: { x: 800, y: -152, z: 4886.02 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
       testDescription: 'bottom view',
-      clickPosition: { x: 951, y: 434 },
+      clickPosition: { x: 951, y: 429 },
       expectedCameraPosition: { x: 800, y: -152, z: -4834.02 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
       testDescription: '+x view',
-      clickPosition: { x: 927, y: 419 },
+      clickPosition: { x: 929, y: 417 },
       expectedCameraPosition: { x: 5660.02, y: -152, z: 26 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
       testDescription: '-x view',
-      clickPosition: { x: 974, y: 398 },
+      clickPosition: { x: 974, y: 397 },
       expectedCameraPosition: { x: -4060.02, y: -152, z: 26 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
       testDescription: '+y view',
-      clickPosition: { x: 966, y: 422 },
+      clickPosition: { x: 967, y: 421 },
       expectedCameraPosition: { x: 800, y: 4708.02, z: 26 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
       testDescription: '-y view',
-      clickPosition: { x: 935, y: 394 },
+      clickPosition: { x: 935, y: 393 },
       expectedCameraPosition: { x: 800, y: -5012.02, z: 26 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
