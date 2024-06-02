@@ -102,6 +102,29 @@ export async function getUtils(page: Page) {
   const cdpSession =
     browserType !== 'chromium' ? null : await page.context().newCDPSession(page)
 
+  let click00rCenter = { x: 0, y: 0 }
+  const click00 = (x: number, y: number) =>
+    page.mouse.click(click00rCenter.x + x, click00rCenter.y + y)
+  let click00rLastPos = { x: 0, y: 0 }
+
+  // The way we truncate is kinda odd apparently, so we need this function
+  // "[k]itty[c]ad round"
+  const kcRound = (n: number) => Math.trunc(n * 100) / 100
+
+  // To translate between screen and engine ("[U]nit") coordinates
+  // NOTE: these pretty much can't be perfect because of screen scaling.
+  // Handle on a case-by-case.
+  const toU = (x: number, y: number) => [
+    kcRound(x * 0.0854),
+    kcRound(-y * 0.0854), // Y is inverted in our coordinate system
+  ]
+
+  // Turn the array into a string with specific formatting
+  const fromUToString = (xy: number[]) => `[${xy[0]}, ${xy[1]}]`
+
+  // Combine because used often
+  const toSU = (xy: number[]) => fromUToString(toU(xy[0], xy[1]))
+
   return {
     waitForAuthSkipAppStart: () => waitForPageLoad(page),
     removeCurrentCode: () => removeCurrentCode(page),
@@ -220,6 +243,51 @@ export async function getUtils(page: Page) {
       )
 
       cdpSession?.send('Network.emulateNetworkConditions', networkOptions)
+    },
+    expectCodeToBe: async (str: string) => {
+      await expect(page.locator('.cm-content')).toHaveText(str)
+      await page.waitForTimeout(100)
+    },
+    click00rSetCenter: (x: number, y: number) => {
+      click00rCenter = { x, y }
+    },
+    click00r: (x?: number, y?: number) => {
+      // reset relative coordinates when anything is undefined
+      if (x === undefined || y === undefined) {
+        click00rLastPos.x = 0
+        click00rLastPos.y = 0
+        return
+      }
+
+      const ret = click00(click00rLastPos.x + x, click00rLastPos.y + y)
+      click00rLastPos.x += x
+      click00rLastPos.y += y
+
+      // Returns the new absolute coordinate if you need it.
+      return ret.then(() => [click00rLastPos.x, click00rLastPos.y])
+    },
+    toSU,
+    wiggleMove: async (
+      x: number,
+      y: number,
+      steps: number,
+      dist: number,
+      ang: number,
+      amplitude: number,
+      freq: number
+    ) => {
+      const tau = Math.PI * 2
+      const deg = tau / 360
+      const step = dist / steps
+      for (let i = 0, j = 0; i < dist; i += step, j += 1) {
+        const y1 = Math.sin((tau / steps) * j * freq) * amplitude
+        const [x2, y2] = [
+          Math.cos(-ang * deg) * i - Math.sin(-ang * deg) * y1,
+          Math.sin(-ang * deg) * i + Math.cos(-ang * deg) * y1,
+        ]
+        const [xr, yr] = [x2, y2]
+        await page.mouse.move(x + xr, y + yr, { steps: 2 })
+      }
     },
   }
 }
