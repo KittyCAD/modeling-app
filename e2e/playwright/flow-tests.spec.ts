@@ -4416,7 +4416,7 @@ test.describe('Testing Gizmo', () => {
       await page.setViewportSize({ width: 1000, height: 500 })
       await page.goto('/')
       await u.waitForAuthSkipAppStart()
-
+      await page.waitForTimeout(100)
       // wait for execution done
       await u.openDebugPanel()
       await u.expectCmdLog('[data-message-type="execution-done"]')
@@ -4454,6 +4454,15 @@ test.describe('Testing Gizmo', () => {
       await page.waitForTimeout(100)
       await page.mouse.click(clickPosition.x, clickPosition.y)
       await page.waitForTimeout(500) // wait for camera to move and update debug values
+
+      await u.sendCustomCmd({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_get_settings',
+        },
+      })
+      await u.waitForCmdReceive('default_camera_get_settings')
 
       await Promise.all([
         // position
