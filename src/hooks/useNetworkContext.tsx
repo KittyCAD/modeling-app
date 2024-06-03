@@ -3,9 +3,9 @@ import {
   ConnectingTypeGroup,
   initialConnectingTypeGroupState,
 } from '../lang/std/engineConnection'
-import { NetworkHealthState } from './useNetworkStatus'
+import { NetworkStatus, NetworkHealthState } from './useNetworkStatus'
 
-export const NetworkContext = createContext({
+export const NetworkContext = createContext<NetworkStatus>({
   hasIssues: undefined,
   overallState: NetworkHealthState.Disconnected,
   internetConnected: true,
@@ -19,7 +19,7 @@ export const NetworkContext = createContext({
   setHasCopied: (b: boolean) => {},
   hasCopied: false,
   pingPongHealth: undefined,
-})
+} as NetworkStatus)
 export const useNetworkContext = () => {
   return useContext(NetworkContext)
 }

@@ -18,6 +18,18 @@ export enum NetworkHealthState {
   Disconnected,
 }
 
+export interface NetworkStatus {
+  hasIssues: boolean | undefined
+  overallState: NetworkHealthState
+  internetConnected: boolean
+  steps: typeof initialConnectingTypeGroupState
+  issues: Record<ConnectingTypeGroup, boolean | undefined>
+  error: ErrorType | undefined
+  setHasCopied: (b: boolean) => void
+  hasCopied: boolean
+  pingPongHealth: undefined | 'OK' | 'TIMEOUT'
+}
+
 // Must be called from one place in the application.
 // We've chosen the <Router /> component for this.
 export function useNetworkStatus() {

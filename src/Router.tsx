@@ -160,7 +160,7 @@ export const Router = () => {
   const networkStatus = useNetworkStatus()
 
   return (
-    <NetworkContext.Provider value={networkStatus as any}>
+    <NetworkContext.Provider value={networkStatus}>
       <RouterProvider router={router} />
     </NetworkContext.Provider>
   )

@@ -1,5 +1,11 @@
 import { test, expect, Page } from '@playwright/test'
-import { makeTemplate, getUtils, doExport } from './test-utils'
+import {
+  makeTemplate,
+  getUtils,
+  getMovementUtils,
+  wiggleMove,
+  doExport,
+} from './test-utils'
 import waitOn from 'wait-on'
 import { XOR, roundOff, uuidv4 } from 'lib/utils'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
@@ -38,54 +44,6 @@ const commonPoints = {
 }
 
 // Utilities for writing tests that depend on test values
-const getTools = (opts: any) => {
-  // The way we truncate is kinda odd apparently, so we need this function
-  // "[k]itty[c]ad round"
-  const kcRound = (n: number) => Math.trunc(n * 100) / 100
-
-  // To translate between screen and engine ("[U]nit") coordinates
-  // NOTE: these pretty much can't be perfect because of screen scaling.
-  // Handle on a case-by-case.
-  const toU = (x: number, y: number) => [
-    kcRound(x * 0.0854),
-    kcRound(-y * 0.0854), // Y is inverted in our coordinate system
-  ]
-
-  // Turn the array into a string with specific formatting
-  const fromUToString = (xy: number[]) => `[${xy[0]}, ${xy[1]}]`
-
-  // Combine because used often
-  const toSU = (xy: number[]) => fromUToString(toU(xy[0], xy[1]))
-
-  // Make it easier to click around from center ("click [from] zero zero")
-  const click00 = (x: number, y: number) =>
-    opts.page.mouse.click(opts.center.x + x, opts.center.y + y)
-
-  // Relative clicker, must keep state
-  let last = { x: 0, y: 0 }
-  const click00r = (x?: number, y?: number) => {
-    // reset relative coordinates when anything is undefined
-    if (x === undefined || y === undefined) {
-      last.x = 0
-      last.y = 0
-      return
-    }
-
-    const ret = click00(last.x + x, last.y + y)
-    last.x += x
-    last.y += y
-
-    // Returns the new absolute coordinate if you need it.
-    return ret.then(() => [last.x, last.y])
-  }
-
-  const expectCodeToBe = async (str: string) => {
-    await expect(opts.page.locator('.cm-content')).toHaveText(str)
-    await opts.page.waitForTimeout(100)
-  }
-
-  return { toSU, click00r, expectCodeToBe }
-}
 
 test.beforeEach(async ({ context, page }) => {
   // wait for Vite preview server to be up
@@ -1543,7 +1501,7 @@ test('Can add multiple sketches', async ({ page }) => {
   await u.openDebugPanel()
 
   const center = { x: viewportSize.width / 2, y: viewportSize.height / 2 }
-  const { toSU, click00r, expectCodeToBe } = getTools({ center, page })
+  const { toSU, click00r, expectCodeToBe } = getMovementUtils({ center, page })
 
   await expect(
     page.getByRole('button', { name: 'Start Sketch' })
@@ -3224,30 +3182,6 @@ const part002 = startSketchOn('XZ')
     }
   })
 })
-
-const wiggleMove = async (
-  page: any,
-  x: number,
-  y: number,
-  steps: number,
-  dist: number,
-  ang: number,
-  amplitude: number,
-  freq: number
-) => {
-  const tau = Math.PI * 2
-  const deg = tau / 360
-  const step = dist / steps
-  for (let i = 0, j = 0; i < dist; i += step, j += 1) {
-    const [x1, y1] = [0, Math.sin((tau / steps) * j * freq) * amplitude]
-    const [x2, y2] = [
-      Math.cos(-ang * deg) * i - Math.sin(-ang * deg) * y1,
-      Math.sin(-ang * deg) * i + Math.cos(-ang * deg) * y1,
-    ]
-    const [xr, yr] = [x2, y2]
-    await page.mouse.move(x + xr, y + yr, { steps: 2 })
-  }
-}
 
 test.describe('Testing segment overlays', () => {
   test.describe('Hover over a segment should show its overlay, hovering over the input overlays should show its popover, clicking the input overlay should constrain/unconstrain it:\nfor the following segments', () => {
