@@ -130,7 +130,6 @@ export async function applyConstraintHorzVertDistance({
         forceValueUsedInTransform: finalValue,
       })
     if (variableName) {
-      console.log('variableName', variableName)
       const newBody = [..._modifiedAst.body]
       newBody.splice(
         newVariableInsertIndex,
