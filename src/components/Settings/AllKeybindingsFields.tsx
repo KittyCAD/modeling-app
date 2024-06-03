@@ -4,6 +4,7 @@ import {
   sortInteractionMapByCategory,
 } from 'lib/settings/initialKeybindings'
 import { ForwardedRef, forwardRef } from 'react'
+import { useLocation } from 'react-router-dom'
 
 interface AllKeybindingsFieldsProps {}
 
@@ -51,8 +52,18 @@ function KeybindingField({
   item: InteractionMapItem
   category: string
 }) {
+  const location = useLocation()
+
   return (
-    <div className="flex gap-16 justify-between items-start">
+    <div
+      className={
+        'flex gap-16 justify-between items-start py-1 px-2 -my-1 -mx-2 ' +
+        (location.hash === `#${item.name}`
+          ? 'bg-primary/5 dark:bg-chalkboard-90'
+          : '')
+      }
+      id={item.name}
+    >
       <div>
         <h3 className="text-lg font-normal capitalize tracking-wide">
           {item.title}
