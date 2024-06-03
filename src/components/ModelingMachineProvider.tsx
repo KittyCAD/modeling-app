@@ -609,10 +609,23 @@ export const ModelingMachineProvider = ({
         },
         'Get length info': async ({
           selectionRanges,
+          sketchDetails,
         }): Promise<SetSelections> => {
           const { modifiedAst, pathToNodeMap } =
             await applyConstraintAngleLength({ selectionRanges })
-          await kclManager.updateAst(modifiedAst, true)
+          const _modifiedAst = parse(recast(modifiedAst))
+          if (!sketchDetails) throw new Error('No sketch details')
+          const updatedPathToNode = updatePathToNodeFromMap(
+            sketchDetails.sketchPathToNode,
+            pathToNodeMap
+          )
+          await sceneEntitiesManager.updateAstAndRejigSketch(
+            updatedPathToNode,
+            _modifiedAst,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin
+          )
           return {
             selectionType: 'completeSelection',
             selection: pathMapToSelections(
@@ -620,6 +633,7 @@ export const ModelingMachineProvider = ({
               selectionRanges,
               pathToNodeMap
             ),
+            updatedPathToNode,
           }
         },
         'Get perpendicular distance info': async ({

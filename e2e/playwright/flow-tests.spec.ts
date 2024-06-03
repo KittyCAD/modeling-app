@@ -2761,37 +2761,51 @@ const part002 = startSketchOn('XZ')
       })
     }
   })
-  test.describe('Test Angle constraint single selection', () => {
+  test.describe('Test Angle/Length constraint single selection', () => {
     const cases = [
       {
-        testName: 'Add variable',
+        testName: 'Angle - Add variable',
         addVariable: true,
-        value: 'angle001',
+        constraint: 'angle',
+        value: 'angle001, 78.33',
       },
       {
-        testName: 'No variable',
+        testName: 'Angle - No variable',
         addVariable: false,
-        value: '83',
+        constraint: 'angle',
+        value: '83, 78.33',
+      },
+      {
+        testName: 'Length - Add variable',
+        addVariable: true,
+        constraint: 'length',
+        value: '83, length001',
+      },
+      {
+        testName: 'Length - No variable',
+        addVariable: false,
+        constraint: 'length',
+        value: '83, 78.33',
       },
     ] as const
-    for (const { testName, addVariable, value } of cases) {
+    for (const { testName, addVariable, value, constraint } of cases) {
       test(`${testName}`, async ({ page }) => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
             `const yo = 5
-    const part001 = startSketchOn('XZ')
-      |> startProfileAt([-7.54, -26.74], %)
-      |> line([74.36, 130.4], %)
-      |> line([78.92, -120.11], %)
-      |> line([9.16, 77.79], %)
-      |> line([41.19, 28.97], %)
-    const part002 = startSketchOn('XZ')
-      |> startProfileAt([299.05, 231.45], %)
-      |> xLine(-425.34, %, 'seg-what')
-      |> yLine(-264.06, %)
-      |> xLine(segLen('seg-what', %), %)
-      |> lineTo([profileStartX(%), profileStartY(%)], %)`
+const part001 = startSketchOn('XZ')
+  |> startProfileAt([-7.54, -26.74], %)
+  |> line([74.36, 130.4], %)
+  |> line([78.92, -120.11], %)
+  |> line([9.16, 77.79], %)
+  |> line([41.19, 28.97], %)
+const part002 = startSketchOn('XZ')
+  |> startProfileAt([299.05, 231.45], %)
+  |> xLine(-425.34, %, 'seg-what')
+  |> yLine(-264.06, %)
+  |> xLine(segLen('seg-what', %), %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)`
           )
         })
         const u = await getUtils(page)
@@ -2812,7 +2826,7 @@ const part002 = startSketchOn('XZ')
             name: 'Constrain',
           })
           .click()
-        await page.getByTestId('angle').click()
+        await page.getByTestId(constraint).click()
 
         if (!addVariable) {
           await page.getByTestId('create-new-variable-checkbox').click()
@@ -2821,7 +2835,7 @@ const part002 = startSketchOn('XZ')
           .getByRole('button', { name: 'Add constraining value' })
           .click()
 
-        const changedCode = `|> angledLine([${value}, 78.33], %)`
+        const changedCode = `|> angledLine([${value}], %)`
         await expect(page.locator('.cm-content')).toContainText(changedCode)
         // checking active assures the cursor is where it should be
         await expect(page.locator('.cm-activeLine')).toHaveText(changedCode)
