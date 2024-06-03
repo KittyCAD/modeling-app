@@ -1578,7 +1578,7 @@ test('Can add multiple sketches', async ({ page }) => {
     (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
   ).toBe(
     `${finalCodeFirstSketch}
-const part002 = startSketchOn('${plane}')
+const sketch002 = startSketchOn('${plane}')
   |> startProfileAt(${startAt2}, %)`.replace(/\s/g, '')
   )
   await page.waitForTimeout(100)
@@ -1592,7 +1592,7 @@ const part002 = startSketchOn('${plane}')
     (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
   ).toBe(
     `${finalCodeFirstSketch}
-const part002 = startSketchOn('${plane}')
+const sketch002 = startSketchOn('${plane}')
   |> startProfileAt(${startAt2}, %)
   |> line([${num2}, 0], %)`.replace(/\s/g, '')
   )
@@ -1602,7 +1602,7 @@ const part002 = startSketchOn('${plane}')
     (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
   ).toBe(
     `${finalCodeFirstSketch}
-const part002 = startSketchOn('${plane}')
+const sketch002 = startSketchOn('${plane}')
   |> startProfileAt(${startAt2}, %)
   |> line([${num2}, 0], %)
   |> line([0, ${roundOff(
@@ -1615,7 +1615,7 @@ const part002 = startSketchOn('${plane}')
     (await page.locator('.cm-content').innerText()).replace(/\s/g, '')
   ).toBe(
     `${finalCodeFirstSketch}
-const part002 = startSketchOn('${plane}')
+const sketch002 = startSketchOn('${plane}')
   |> startProfileAt(${startAt2}, %)
   |> line([${num2}, 0], %)
   |> line([0, ${roundOff(
