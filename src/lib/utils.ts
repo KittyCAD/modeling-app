@@ -127,3 +127,7 @@ export function isReducedMotion(): boolean {
     window.matchMedia('(prefers-reduced-motion)').matches
   )
 }
+
+export function XOR(bool1: boolean, bool2: boolean): boolean {
+  return (bool1 || bool2) && !(bool1 && bool2)
+}
